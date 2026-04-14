@@ -1,0 +1,11 @@
+.DS_Store
+.claude
+node_modules
+.output
+.nuxt
+.nitro
+.cache
+dist
+.env
+.env.*
+!.env.example
