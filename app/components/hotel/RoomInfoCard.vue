@@ -168,11 +168,12 @@ const showUpgradeLabel = computed(() => {
 }
 
 .room-info-card__amenities li::before {
-  content: '·';
+  content: '✓';
   position: absolute;
-  left: 4px;
-  color: var(--color-text-muted);
+  left: 2px;
+  color: var(--color-primary);
   font-weight: 700;
+  font-size: 13px;
 }
 
 /* CTA group */

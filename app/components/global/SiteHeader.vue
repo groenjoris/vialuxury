@@ -23,6 +23,40 @@
 
         <!-- Right actions -->
         <div class="site-header__nav-actions">
+          <!-- Language switcher -->
+          <div class="lang-switcher" ref="langSwitcherRef">
+            <button
+              type="button"
+              class="lang-switcher__trigger"
+              @click.stop="langDropdownOpen = !langDropdownOpen"
+              aria-haspopup="listbox"
+              :aria-expanded="langDropdownOpen"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M2 12h20"/>
+                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+              </svg>
+              <span>{{ selectedLanguage.code }}</span>
+            </button>
+            <Transition name="dropdown">
+              <ul v-if="langDropdownOpen" class="lang-switcher__menu" role="listbox">
+                <li
+                  v-for="lang in languages"
+                  :key="lang.label"
+                  class="lang-switcher__option"
+                  :class="{ 'lang-switcher__option--active': lang.label === selectedLanguage.label }"
+                  role="option"
+                  @click="selectLanguage(lang)"
+                >
+                  <span class="lang-switcher__flag">{{ lang.flag }}</span>
+                  <span class="lang-switcher__label">{{ lang.label }}</span>
+                  <span class="lang-switcher__code">{{ lang.code }}</span>
+                </li>
+              </ul>
+            </Transition>
+          </div>
+
           <button type="button" class="vip-btn">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M12 2 15 8l6 .9-4.5 4.4L17.5 20 12 16.9 6.5 20 8 13.3 3.5 8.9 9.5 8z" />
@@ -251,10 +285,36 @@
 const verticals = [
   { id: 'hotels', label: 'Hotels', href: '/' },
   { id: 'vakantieparken', label: 'Vakantieparken', href: '/vakantieparken' },
-  { id: 'huisjes', label: 'Huisjes', href: '/huisjes' },
   { id: 'restaurants', label: 'Restaurants', href: '/restaurants' },
 ]
 const activeVertical = ref('hotels')
+
+// --- Language switcher ---
+const languages = [
+  { code: 'EN', label: 'English', flag: '🇬🇧' },
+  { code: 'NL', label: 'Nederlands', flag: '🇳🇱' },
+  { code: 'NL-BE', label: 'Nederlands (BE)', flag: '🇧🇪' },
+  { code: 'FR', label: 'Français', flag: '🇫🇷' },
+  { code: 'FR-BE', label: 'Français (BE)', flag: '🇧🇪' },
+  { code: 'DE', label: 'Deutsch', flag: '🇩🇪' },
+]
+const selectedLanguage = ref(languages[1]) // NL default
+const langDropdownOpen = ref(false)
+const langSwitcherRef = ref<HTMLElement | null>(null)
+
+function selectLanguage(lang: typeof languages[number]) {
+  selectedLanguage.value = lang
+  langDropdownOpen.value = false
+}
+
+function onLangClickOutside(e: MouseEvent) {
+  if (langSwitcherRef.value && !langSwitcherRef.value.contains(e.target as Node)) {
+    langDropdownOpen.value = false
+  }
+}
+
+onMounted(() => document.addEventListener('click', onLangClickOutside))
+onUnmounted(() => document.removeEventListener('click', onLangClickOutside))
 
 const activePopup = ref<'destination' | 'when' | 'who' | null>(null)
 
@@ -567,6 +627,100 @@ function handleSearch() {
   height: 2px;
   background: #ffffff;
   border-radius: 1px;
+}
+
+/* Language switcher */
+.lang-switcher {
+  position: relative;
+}
+
+.lang-switcher__trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.85);
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+
+.lang-switcher__trigger:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.lang-switcher__trigger svg {
+  opacity: 0.75;
+}
+
+.lang-switcher__menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 210px;
+  background: #1A1A1A;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-md);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  list-style: none;
+  padding: 6px 0;
+  margin: 0;
+  z-index: 100;
+}
+
+.lang-switcher__option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 13px;
+  transition: background var(--transition-fast);
+}
+
+.lang-switcher__option:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.lang-switcher__option--active {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.lang-switcher__flag {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.lang-switcher__label {
+  flex: 1;
+  font-weight: 500;
+}
+
+.lang-switcher__code {
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 12px;
+}
+
+/* Language dropdown transition */
+.dropdown-enter-active,
+.dropdown-leave-active {
+  transition: opacity 150ms ease, transform 150ms ease;
+}
+
+.dropdown-enter-from,
+.dropdown-leave-to {
+  opacity: 0;
+  transform: translateY(-4px);
 }
 
 /* Search dock: overlaps nav & page below */

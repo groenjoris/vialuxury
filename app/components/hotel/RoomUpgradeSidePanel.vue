@@ -345,10 +345,12 @@ onUnmounted(() => {
 }
 
 .room-card__features li::before {
-  content: '·';
+  content: '✓';
   position: absolute;
-  left: 3px;
+  left: 1px;
   font-weight: 700;
+  color: var(--color-primary);
+  font-size: 12px;
 }
 
 .room-card__action {
