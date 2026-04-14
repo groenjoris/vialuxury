@@ -18,7 +18,8 @@ logs
 .fleet
 .idea
 .claude
-assets
+/assets
+HFVR project
 
 # Local env files
 .env
