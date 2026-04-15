@@ -9,6 +9,8 @@ import HotelMapSidebar from '~/components/map/HotelMapSidebar.vue'
 import HotelMapZoomControls from '~/components/map/HotelMapZoomControls.vue'
 import HotelMapFilterBar from '~/components/map/HotelMapFilterBar.vue'
 
+const { t } = useI18n()
+
 useHead({ title: 'Kaart — Via Luxury' })
 
 const router = useRouter()
@@ -41,10 +43,10 @@ function closeMap() {
   <div class="kaart-page">
     <!-- USP top bar (matches Figma) -->
     <div class="kaart-topbar">
-      <span><span class="kaart-topbar__check">✓</span> Gasten beoordelen ons met een <strong>4.5/5</strong> op Trustpilot</span>
-      <span><span class="kaart-topbar__check">✓</span> Altijd de beste deal</span>
-      <span><span class="kaart-topbar__check">✓</span> Gratis annuleren</span>
-      <span><span class="kaart-topbar__check">✓</span> 100% geld-terug-garantie</span>
+      <span><span class="kaart-topbar__check">✓</span> {{ t('topbar.trustpilot') }}</span>
+      <span><span class="kaart-topbar__check">✓</span> {{ t('topbar.bestDeal') }}</span>
+      <span><span class="kaart-topbar__check">✓</span> {{ t('map.freeCancel') }}</span>
+      <span><span class="kaart-topbar__check">✓</span> {{ t('map.moneyBackGuarantee') }}</span>
     </div>
 
     <!-- Map-specific simplified header (matches Figma; differs from
@@ -58,24 +60,24 @@ function closeMap() {
 
       <button type="button" class="kaart-header__help">
         <span class="kaart-header__help-icon" aria-hidden="true">🎧</span>
-        Hulp nodig? <a href="tel:+31207052222">+31 20 705 2222</a>
+        {{ t('map.needHelp') }} <a href="tel:+31207052222">+31 20 705 2222</a>
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9" /></svg>
       </button>
 
       <nav class="kaart-header__nav">
         <a href="#" class="kaart-header__nav-item">
           <svg width="14" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2" /><line x1="12" y1="18" x2="12" y2="18" /></svg>
-          Klantenservice
+          {{ t('map.customerService') }}
         </a>
         <a href="#" class="kaart-header__nav-item">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" /></svg>
-          Favorieten
+          {{ t('map.favorites') }}
         </a>
         <a href="#" class="kaart-header__nav-item">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4" /><path d="M4 21c0-4 4-7 8-7s8 3 8 7" /></svg>
-          Account
+          {{ t('map.account') }}
         </a>
-        <button type="button" class="kaart-header__hamburger" aria-label="Menu">
+        <button type="button" class="kaart-header__hamburger" :aria-label="t('map.menu')">
           <span /><span /><span />
         </button>
       </nav>

@@ -1,9 +1,9 @@
 <template>
   <section class="date-picker-section">
     <div class="date-picker-section__header">
-      <h2>Kies aankomstdatum</h2>
+      <h2>{{ t('calendar.chooseArrivalDate') }}</h2>
       <p class="date-picker-section__subtitle">
-        Getoonde prijs is voor
+        {{ t('calendar.priceShownFor') }}
         <button class="date-picker-section__persons-link" @click="store.openTravelGroupModal()">
           {{ store.travelGroupSummary }}
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
@@ -23,14 +23,14 @@
     <div class="date-picker-section__inputs">
       <div class="date-input">
         <span class="date-input__value" :class="{ 'date-input__value--active': store.checkInDate }">
-          {{ store.formattedCheckIn || 'Start datum' }}
+          {{ store.formattedCheckIn || t('calendar.startDate') }}
         </span>
         <div v-if="store.checkInDate" class="date-input__underline"></div>
       </div>
       <span class="date-input__arrow">→</span>
       <div class="date-input">
         <span class="date-input__value" :class="{ 'date-input__value--active': store.checkOutDate }">
-          {{ store.formattedCheckOut || 'Eind datum' }}
+          {{ store.formattedCheckOut || t('calendar.endDate') }}
         </span>
       </div>
     </div>
@@ -61,7 +61,7 @@
 
     <!-- Clear dates -->
     <div v-if="store.checkInDate" class="date-picker-section__clear">
-      <button class="clear-btn" @click="store.clearDates()">Datums wissen</button>
+      <button class="clear-btn" @click="store.clearDates()">{{ t('calendar.clearDates') }}</button>
     </div>
   </section>
 </template>
@@ -70,6 +70,7 @@
 import { useDealStore } from '~/stores/deal'
 import { generateDealAvailability } from '~/data/mock/deal-pricing'
 
+const { t } = useI18n()
 const store = useDealStore()
 
 const emit = defineEmits<{

@@ -4,8 +4,8 @@
       <div v-if="store.isTravelGroupModalOpen" class="modal-overlay" @click.self="store.closeTravelGroupModal()">
         <div class="modal" role="dialog" aria-modal="true" aria-labelledby="travel-group-title">
           <div class="modal__header">
-            <h2 id="travel-group-title" class="modal__title">Reisgezelschap</h2>
-            <button class="modal__close" @click="store.closeTravelGroupModal()" aria-label="Sluiten">
+            <h2 id="travel-group-title" class="modal__title">{{ t('travelGroup.title') }}</h2>
+            <button class="modal__close" @click="store.closeTravelGroupModal()" :aria-label="t('common.close')">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M18 6L6 18M6 6l12 12" />
               </svg>
@@ -16,22 +16,22 @@
             <!-- Adults -->
             <div class="modal__row">
               <div class="modal__row-info">
-                <span class="modal__row-label">Volwassenen</span>
-                <span class="modal__row-sub">18 jaar of ouder</span>
+                <span class="modal__row-label">{{ t('travelGroup.adults') }}</span>
+                <span class="modal__row-sub">{{ t('header.adultsAge') }}</span>
               </div>
               <div class="stepper">
                 <button
                   class="stepper__btn"
                   :disabled="localGroup.adults <= 1"
                   @click="localGroup.adults = Math.max(1, localGroup.adults - 1)"
-                  aria-label="Minder volwassenen"
+                  :aria-label="`${t('travelGroup.adults')} -`"
                 >−</button>
                 <span class="stepper__value">{{ localGroup.adults }}</span>
                 <button
                   class="stepper__btn"
                   :disabled="localGroup.adults >= 6"
                   @click="localGroup.adults = Math.min(6, localGroup.adults + 1)"
-                  aria-label="Meer volwassenen"
+                  :aria-label="`${t('travelGroup.adults')} +`"
                 >+</button>
               </div>
             </div>
@@ -39,22 +39,22 @@
             <!-- Children -->
             <div class="modal__row">
               <div class="modal__row-info">
-                <span class="modal__row-label">Kinderen</span>
-                <span class="modal__row-sub">0–17 jaar</span>
+                <span class="modal__row-label">{{ t('travelGroup.children') }}</span>
+                <span class="modal__row-sub">{{ t('header.childrenAge') }}</span>
               </div>
               <div class="stepper">
                 <button
                   class="stepper__btn"
                   :disabled="localGroup.children.length <= 0"
                   @click="removeChild()"
-                  aria-label="Minder kinderen"
+                  :aria-label="`${t('travelGroup.children')} -`"
                 >−</button>
                 <span class="stepper__value">{{ localGroup.children.length }}</span>
                 <button
                   class="stepper__btn"
                   :disabled="localGroup.children.length >= 4"
                   @click="addChild()"
-                  aria-label="Meer kinderen"
+                  :aria-label="`${t('travelGroup.children')} +`"
                 >+</button>
               </div>
             </div>
@@ -68,7 +68,7 @@
                   class="modal__child-age"
                 >
                   <label :for="`child-age-${index}`" class="modal__age-label">
-                    Leeftijd kind {{ index + 1 }}
+                    {{ t('travelGroup.childAge') }} {{ index + 1 }}
                   </label>
                   <select
                     :id="`child-age-${index}`"
@@ -76,7 +76,7 @@
                     class="modal__age-select"
                   >
                     <option v-for="age in 18" :key="age - 1" :value="age - 1">
-                      {{ age - 1 }} {{ age - 1 === 1 ? 'jaar' : 'jaar' }}
+                      {{ age - 1 }} {{ t('travelGroup.years') }}
                     </option>
                   </select>
                 </div>
@@ -86,21 +86,21 @@
             <!-- Rooms -->
             <div class="modal__row">
               <div class="modal__row-info">
-                <span class="modal__row-label">Kamers</span>
+                <span class="modal__row-label">{{ t('travelGroup.rooms') }}</span>
               </div>
               <div class="stepper">
                 <button
                   class="stepper__btn"
                   :disabled="localGroup.rooms <= 1"
                   @click="localGroup.rooms = Math.max(1, localGroup.rooms - 1)"
-                  aria-label="Minder kamers"
+                  :aria-label="`${t('travelGroup.rooms')} -`"
                 >−</button>
                 <span class="stepper__value">{{ localGroup.rooms }}</span>
                 <button
                   class="stepper__btn"
                   :disabled="localGroup.rooms >= 4"
                   @click="localGroup.rooms = Math.min(4, localGroup.rooms + 1)"
-                  aria-label="Meer kamers"
+                  :aria-label="`${t('travelGroup.rooms')} +`"
                 >+</button>
               </div>
             </div>
@@ -108,7 +108,7 @@
 
           <div class="modal__footer">
             <button class="btn btn-primary modal__apply" @click="apply">
-              Toepassen
+              {{ t('common.apply') }}
             </button>
           </div>
         </div>
@@ -121,6 +121,7 @@
 import { useDealStore } from '~/stores/deal'
 import type { TravelGroup, ChildEntry } from '~/types/deal'
 
+const { t } = useI18n()
 const store = useDealStore()
 
 // Local copy for editing (don't mutate store directly)

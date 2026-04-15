@@ -82,7 +82,7 @@
           :class="{ 'search-bar__field--active': activePopup === 'destination' }"
           @click="togglePopup('destination')"
         >
-          <span class="search-bar__label">Waarheen</span>
+          <span class="search-bar__label">{{ t('header.destination') }}</span>
           <span class="search-bar__value">{{ destinationLabel }}</span>
         </button>
 
@@ -94,7 +94,7 @@
           :class="{ 'search-bar__field--active': activePopup === 'when' }"
           @click="togglePopup('when')"
         >
-          <span class="search-bar__label">Wanneer & hoelang</span>
+          <span class="search-bar__label">{{ t('header.whenAndHowLong') }}</span>
           <span class="search-bar__value">{{ whenLabel }}</span>
         </button>
 
@@ -106,12 +106,12 @@
           :class="{ 'search-bar__field--active': activePopup === 'who' }"
           @click="togglePopup('who')"
         >
-          <span class="search-bar__label">Wie gaat er mee</span>
+          <span class="search-bar__label">{{ t('header.whosComing') }}</span>
           <span class="search-bar__value">{{ whoLabel }}</span>
         </button>
 
           <!-- Search button -->
-          <button class="search-bar__btn" @click="handleSearch" aria-label="Zoeken">
+          <button class="search-bar__btn" @click="handleSearch" :aria-label="t('header.search')">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
               <circle cx="11" cy="11" r="8" />
               <path d="M21 21l-4.35-4.35" />
@@ -127,7 +127,7 @@
         <!-- DESTINATION POPUP -->
         <div v-if="activePopup === 'destination'" class="popup popup--destination">
           <div class="popup__section">
-            <h4 class="popup__section-title">Populaire bestemmingen</h4>
+            <h4 class="popup__section-title">{{ t('header.popularDestinations') }}</h4>
             <div class="popup__grid">
               <button
                 v-for="dest in destinations"
@@ -143,7 +143,7 @@
             </div>
           </div>
           <div class="popup__section">
-            <h4 class="popup__section-title">Thema's</h4>
+            <h4 class="popup__section-title">{{ t('header.themes') }}</h4>
             <div class="popup__grid">
               <button
                 v-for="theme in themes"
@@ -164,15 +164,15 @@
           <div class="popup__row">
             <!-- Mini calendar -->
             <div class="popup__section popup__section--calendar">
-              <h4 class="popup__section-title">Datum</h4>
+              <h4 class="popup__section-title">{{ t('header.date') }}</h4>
               <div class="mini-cal">
                 <div class="mini-cal__header">
-                  <button class="mini-cal__nav" @click="calPrev">‹</button>
+                  <button class="mini-cal__nav" @click="calPrev">&#8249;</button>
                   <span class="mini-cal__month">{{ calMonthLabel }}</span>
-                  <button class="mini-cal__nav" @click="calNext">›</button>
+                  <button class="mini-cal__nav" @click="calNext">&#8250;</button>
                 </div>
                 <div class="mini-cal__days-header">
-                  <span v-for="d in ['Ma','Di','Wo','Do','Vr','Za','Zo']" :key="d">{{ d }}</span>
+                  <span v-for="(d, i) in dayHeaders" :key="i">{{ d }}</span>
                 </div>
                 <div class="mini-cal__grid">
                   <span
@@ -191,7 +191,7 @@
                 </div>
               </div>
               <div class="flex-row">
-                <h4 class="popup__section-title">Flexibiliteit</h4>
+                <h4 class="popup__section-title">{{ t('header.flexibility') }}</h4>
                 <div class="flex-chips">
                   <button
                     v-for="f in flexOptions"
@@ -208,7 +208,7 @@
 
             <!-- Duration -->
             <div class="popup__section popup__section--duration">
-              <h4 class="popup__section-title">Hoelang</h4>
+              <h4 class="popup__section-title">{{ t('header.howLong') }}</h4>
               <div class="duration-options">
                 <button
                   v-for="dur in durationOptions"
@@ -230,11 +230,11 @@
           <!-- Adults -->
           <div class="who-row">
             <div class="who-row__info">
-              <span class="who-row__label">Volwassenen</span>
-              <span class="who-row__sub">18 jaar of ouder</span>
+              <span class="who-row__label">{{ t('header.adults') }}</span>
+              <span class="who-row__sub">{{ t('header.adultsAge') }}</span>
             </div>
             <div class="stepper">
-              <button class="stepper__btn" :disabled="searchGroup.adults <= 1" @click="searchGroup.adults--">−</button>
+              <button class="stepper__btn" :disabled="searchGroup.adults <= 1" @click="searchGroup.adults--">&#8722;</button>
               <span class="stepper__val">{{ searchGroup.adults }}</span>
               <button class="stepper__btn" :disabled="searchGroup.adults >= 8" @click="searchGroup.adults++">+</button>
             </div>
@@ -243,11 +243,11 @@
           <!-- Children -->
           <div class="who-row">
             <div class="who-row__info">
-              <span class="who-row__label">Kinderen</span>
-              <span class="who-row__sub">0–17 jaar</span>
+              <span class="who-row__label">{{ t('header.children') }}</span>
+              <span class="who-row__sub">{{ t('header.childrenAge') }}</span>
             </div>
             <div class="stepper">
-              <button class="stepper__btn" :disabled="searchGroup.children.length <= 0" @click="removeSearchChild">−</button>
+              <button class="stepper__btn" :disabled="searchGroup.children.length <= 0" @click="removeSearchChild">&#8722;</button>
               <span class="stepper__val">{{ searchGroup.children.length }}</span>
               <button class="stepper__btn" :disabled="searchGroup.children.length >= 4" @click="addSearchChild">+</button>
             </div>
@@ -266,8 +266,8 @@
           <!-- Dog -->
           <div class="who-row who-row--dog">
             <div class="who-row__info">
-              <span class="who-row__label">Hond meenemen</span>
-              <span class="who-row__sub">Check beschikbaarheid per hotel</span>
+              <span class="who-row__label">{{ t('header.dog') }}</span>
+              <span class="who-row__sub">{{ t('header.dogSub') }}</span>
             </div>
             <label class="toggle">
               <input type="checkbox" v-model="searchGroup.dog" />
@@ -281,30 +281,39 @@
 </template>
 
 <script setup lang="ts">
-// --- Verticals ---
-const verticals = [
-  { id: 'hotels', label: 'Hotels', href: '/' },
-  { id: 'vakantieparken', label: 'Vakantieparken', href: '/vakantieparken' },
-  { id: 'restaurants', label: 'Restaurants', href: '/restaurants' },
-]
+import { useLocaleStore } from '~/stores/locale'
+
+const { t } = useI18n()
+const localeStore = useLocaleStore()
+
+// --- Verticals (computed for reactivity on locale change) ---
+const verticals = computed(() => [
+  { id: 'hotels', label: t('header.hotels'), href: '/' },
+  { id: 'vakantieparken', label: t('header.holidayParks'), href: '/vakantieparken' },
+  { id: 'restaurants', label: t('header.restaurants'), href: '/restaurants' },
+])
 const activeVertical = ref('hotels')
 
 // --- Language switcher ---
 const languages = [
-  { code: 'EN', label: 'English', flag: '🇬🇧' },
-  { code: 'NL', label: 'Nederlands', flag: '🇳🇱' },
-  { code: 'NL-BE', label: 'Nederlands (BE)', flag: '🇧🇪' },
-  { code: 'FR', label: 'Français', flag: '🇫🇷' },
-  { code: 'FR-BE', label: 'Français (BE)', flag: '🇧🇪' },
-  { code: 'DE', label: 'Deutsch', flag: '🇩🇪' },
+  { code: 'EN', label: 'English', flag: '\u{1F1EC}\u{1F1E7}' },
+  { code: 'NL', label: 'Nederlands', flag: '\u{1F1F3}\u{1F1F1}' },
 ]
-const selectedLanguage = ref(languages[1]) // NL default
+
+const selectedLanguage = ref(
+  localeStore.locale === 'en' ? languages[0] : languages[1]
+)
 const langDropdownOpen = ref(false)
 const langSwitcherRef = ref<HTMLElement | null>(null)
 
 function selectLanguage(lang: typeof languages[number]) {
   selectedLanguage.value = lang
   langDropdownOpen.value = false
+  if (lang.code === 'EN') {
+    localeStore.setLocale('en')
+  } else {
+    localeStore.setLocale('nl')
+  }
 }
 
 function onLangClickOutside(e: MouseEvent) {
@@ -328,32 +337,32 @@ function closePopup() {
 
 // --- DESTINATION ---
 const destinations = [
-  { id: 'zeeland', name: 'Zeeland', country: 'NL', emoji: '🏖️' },
-  { id: 'brabant', name: 'Noord-Brabant', country: 'NL', emoji: '🌳' },
-  { id: 'limburg', name: 'Limburg', country: 'NL', emoji: '⛰️' },
-  { id: 'gelderland', name: 'Gelderland', country: 'NL', emoji: '🌲' },
-  { id: 'drenthe', name: 'Drenthe', country: 'NL', emoji: '🌾' },
-  { id: 'friesland', name: 'Friesland', country: 'NL', emoji: '⛵' },
-  { id: 'overijssel', name: 'Overijssel', country: 'NL', emoji: '🏡' },
-  { id: 'flevoland', name: 'Flevoland', country: 'NL', emoji: '🌅' },
-  { id: 'noord-holland', name: 'Noord-Holland', country: 'NL', emoji: '🌷' },
-  { id: 'zuid-holland', name: 'Zuid-Holland', country: 'NL', emoji: '🏙️' },
-  { id: 'ardennen', name: 'Ardennen', country: 'BE', emoji: '🏔️' },
-  { id: 'vlaanderen', name: 'Vlaanderen', country: 'BE', emoji: '🏰' },
-  { id: 'belgische-kust', name: 'Belgische Kust', country: 'BE', emoji: '🐚' },
-  { id: 'wallonie', name: 'Wallonië', country: 'BE', emoji: '🍺' },
+  { id: 'zeeland', name: 'Zeeland', country: 'NL', emoji: '\u{1F3D6}\u{FE0F}' },
+  { id: 'brabant', name: 'Noord-Brabant', country: 'NL', emoji: '\u{1F333}' },
+  { id: 'limburg', name: 'Limburg', country: 'NL', emoji: '\u26F0\u{FE0F}' },
+  { id: 'gelderland', name: 'Gelderland', country: 'NL', emoji: '\u{1F332}' },
+  { id: 'drenthe', name: 'Drenthe', country: 'NL', emoji: '\u{1F33E}' },
+  { id: 'friesland', name: 'Friesland', country: 'NL', emoji: '\u26F5' },
+  { id: 'overijssel', name: 'Overijssel', country: 'NL', emoji: '\u{1F3E1}' },
+  { id: 'flevoland', name: 'Flevoland', country: 'NL', emoji: '\u{1F305}' },
+  { id: 'noord-holland', name: 'Noord-Holland', country: 'NL', emoji: '\u{1F337}' },
+  { id: 'zuid-holland', name: 'Zuid-Holland', country: 'NL', emoji: '\u{1F3D9}\u{FE0F}' },
+  { id: 'ardennen', name: 'Ardennen', country: 'BE', emoji: '\u{1F3D4}\u{FE0F}' },
+  { id: 'vlaanderen', name: 'Vlaanderen', country: 'BE', emoji: '\u{1F3F0}' },
+  { id: 'belgische-kust', name: 'Belgische Kust', country: 'BE', emoji: '\u{1F41A}' },
+  { id: 'wallonie', name: 'Walloni\u00EB', country: 'BE', emoji: '\u{1F37A}' },
 ]
 
-const themes = [
-  { id: 'aan-zee', name: 'Aan zee', emoji: '🌊' },
-  { id: 'natuur', name: 'Natuur', emoji: '🌿' },
-  { id: 'wellness', name: 'Wellness & Spa', emoji: '🧖' },
-  { id: 'romantisch', name: 'Romantisch', emoji: '❤️' },
-  { id: 'culinair', name: 'Culinair', emoji: '🍽️' },
-  { id: 'actief', name: 'Actief & Sport', emoji: '🚴' },
-  { id: 'steden', name: 'Stedentrip', emoji: '🏛️' },
-  { id: 'kasteel', name: 'Kasteel & Landgoed', emoji: '🏰' },
-]
+const themes = computed(() => [
+  { id: 'aan-zee', name: t('header.theme.beach'), emoji: '\u{1F30A}' },
+  { id: 'natuur', name: t('header.theme.nature'), emoji: '\u{1F33F}' },
+  { id: 'wellness', name: t('header.theme.wellness'), emoji: '\u{1F9D6}' },
+  { id: 'romantisch', name: t('header.theme.romantic'), emoji: '\u2764\u{FE0F}' },
+  { id: 'culinair', name: t('header.theme.culinary'), emoji: '\u{1F37D}\u{FE0F}' },
+  { id: 'actief', name: t('header.theme.active'), emoji: '\u{1F6B4}' },
+  { id: 'steden', name: t('header.theme.city'), emoji: '\u{1F3DB}\u{FE0F}' },
+  { id: 'kasteel', name: t('header.theme.castle'), emoji: '\u{1F3F0}' },
+])
 
 const selectedDestinations = ref<string[]>([])
 const selectedThemes = ref<string[]>([])
@@ -372,13 +381,13 @@ function toggleTheme(id: string) {
 
 const destinationLabel = computed(() => {
   const count = selectedDestinations.value.length + selectedThemes.value.length
-  if (count === 0) return 'Kies bestemming'
+  if (count === 0) return t('header.chooseDestination')
   if (count === 1) {
     const d = destinations.find(d => d.id === selectedDestinations.value[0])
-    const t = themes.find(t => t.id === selectedThemes.value[0])
-    return d?.name || t?.name || `${count} gekozen`
+    const th = themes.value.find(th => th.id === selectedThemes.value[0])
+    return d?.name || th?.name || `${count} ${t('header.chosen')}`
   }
-  return `${count} gekozen`
+  return `${count} ${t('header.chosen')}`
 })
 
 // --- WHEN ---
@@ -387,27 +396,29 @@ const selectedDate = ref<string | null>(null)
 const flexibility = ref(0)
 const selectedDuration = ref('2')
 
-const flexOptions = [
-  { label: 'Exact', value: 0 },
-  { label: '± 1 dag', value: 1 },
-  { label: '± 2 dagen', value: 2 },
-  { label: '± 3 dagen', value: 3 },
-]
+const flexOptions = computed(() => [
+  { label: t('header.flex.exact'), value: 0 },
+  { label: t('header.flex.1day'), value: 1 },
+  { label: t('header.flex.2days'), value: 2 },
+  { label: t('header.flex.3days'), value: 3 },
+])
 
-const durationOptions = [
-  { id: '1', label: '1 nacht', sub: null },
-  { id: '2', label: '2 nachten', sub: null },
-  { id: '3', label: '3 nachten', sub: null },
-  { id: '4', label: '4 nachten', sub: null },
-  { id: '5+', label: '5+ nachten', sub: null },
-  { id: 'weekend-short', label: 'Weekend', sub: 'za – zo' },
-  { id: 'weekend-long', label: 'Weekend', sub: 'vr – zo' },
-  { id: 'long-weekend', label: 'Lang weekend', sub: 'vr – ma' },
-]
+const durationOptions = computed(() => [
+  { id: '1', label: t('header.duration.1night'), sub: null },
+  { id: '2', label: t('header.duration.2nights'), sub: null },
+  { id: '3', label: t('header.duration.3nights'), sub: null },
+  { id: '4', label: t('header.duration.4nights'), sub: null },
+  { id: '5+', label: t('header.duration.5nights'), sub: null },
+  { id: 'weekend-short', label: t('header.duration.weekendShort'), sub: t('header.duration.weekendShortSub') },
+  { id: 'weekend-long', label: t('header.duration.weekendLong'), sub: t('header.duration.weekendLongSub') },
+  { id: 'long-weekend', label: t('header.duration.longWeekend'), sub: t('header.duration.longWeekendSub') },
+])
 
-const monthNames = ['Januari', 'Februari', 'Maart', 'April', 'Mei', 'Juni', 'Juli', 'Augustus', 'September', 'Oktober', 'November', 'December']
+const monthNames = computed(() => Array.from({ length: 12 }, (_, i) => t(`header.months.${i}`)))
 
-const calMonthLabel = computed(() => `${monthNames[calMonth.value.month]} ${calMonth.value.year}`)
+const dayHeaders = computed(() => Array.from({ length: 7 }, (_, i) => t(`header.days.${i}`)))
+
+const calMonthLabel = computed(() => `${monthNames.value[calMonth.value.month]} ${calMonth.value.year}`)
 
 function calPrev() {
   if (calMonth.value.month === 0) {
@@ -452,11 +463,11 @@ const whenLabel = computed(() => {
   if (selectedDate.value) {
     const [y, m, d] = selectedDate.value.split('-')
     parts.push(`${d}/${m}`)
-    if (flexibility.value > 0) parts[0] += ` ±${flexibility.value}`
+    if (flexibility.value > 0) parts[0] += ` \u00B1${flexibility.value}`
   }
-  const dur = durationOptions.find(o => o.id === selectedDuration.value)
+  const dur = durationOptions.value.find(o => o.id === selectedDuration.value)
   if (dur) parts.push(dur.label)
-  if (parts.length === 0) return 'Kies datum'
+  if (parts.length === 0) return t('header.chooseDate')
   return parts.join(', ')
 })
 
@@ -477,11 +488,11 @@ function removeSearchChild() {
 
 const whoLabel = computed(() => {
   const parts: string[] = []
-  parts.push(`${searchGroup.value.adults} volw.`)
+  parts.push(`${searchGroup.value.adults} ${t('common.adultsShort')}`)
   if (searchGroup.value.children.length > 0) {
-    parts.push(`${searchGroup.value.children.length} kind.`)
+    parts.push(`${searchGroup.value.children.length} ${t('common.childrenShort')}`)
   }
-  if (searchGroup.value.dog) parts.push('🐕')
+  if (searchGroup.value.dog) parts.push('\u{1F415}')
   return parts.join(', ')
 })
 

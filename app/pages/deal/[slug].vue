@@ -12,7 +12,7 @@
       <!-- Title ABOVE gallery -->
       <section class="deal-page__title-section container">
         <div class="deal-page__title-left">
-          <h1 class="deal-page__package-title">{{ currentDeal.title }}</h1>
+          <h1 class="deal-page__package-title">{{ localized(currentDeal.title) }}</h1>
           <div class="deal-page__hotel-name-wrap">
             <p class="deal-page__hotel-subtitle">{{ hotel.name }}</p>
             <div class="deal-page__stars-adjacent" aria-hidden="true">
@@ -22,14 +22,14 @@
           <div class="deal-page__meta">
             <span class="deal-page__score">{{ hotel.reviews.overallScore }}</span>
             <span class="deal-page__divider">|</span>
-            <span>{{ hotel.reviews.totalReviews }} beoordelingen</span>
+            <span>{{ hotel.reviews.totalReviews }} {{ t('common.reviews') }}</span>
             <span class="deal-page__divider">·</span>
             <span>{{ hotel.location.city }}, {{ hotel.location.region }}</span>
           </div>
         </div>
         <div class="deal-page__title-actions">
-          <button class="icon-action" aria-label="Opslaan">♡</button>
-          <button class="icon-action" aria-label="Delen">↗</button>
+          <button class="icon-action" :aria-label="t('common.save')">♡</button>
+          <button class="icon-action" :aria-label="t('common.share')">↗</button>
         </div>
       </section>
 
@@ -43,16 +43,16 @@
         <div class="deal-page__col-left">
           <!-- Description + Mini map row -->
           <div class="deal-page__intro">
-            <p class="deal-page__description">{{ hotel.description }}</p>
+            <p class="deal-page__description">{{ localized(hotel.description) }}</p>
             <div class="mini-map">
               <div class="mini-map__placeholder">
-                <img src="/images/kasteel/iStock-1189537172.jpg" alt="Kaart omgeving" class="mini-map__img" />
+                <img src="/images/kasteel/iStock-1189537172.jpg" :alt="t('deal.mapArea')" class="mini-map__img" />
                 <div class="mini-map__overlay">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
                     <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" />
                   </svg>
                   <span class="mini-map__label">{{ hotel.location.city }}</span>
-                  <a href="#location" class="mini-map__link">Bekijk kaart</a>
+                  <a href="#location" class="mini-map__link">{{ t('common.viewMap') }}</a>
                 </div>
               </div>
             </div>
@@ -60,7 +60,7 @@
 
           <!-- Highlights -->
           <section class="deal-page__highlights">
-            <h2 class="section-title">Highlights</h2>
+            <h2 class="section-title">{{ t('deal.highlights') }}</h2>
             <div class="highlights__grid">
               <div v-for="hl in highlights" :key="hl.text" class="highlight-item">
                 <span class="highlight-item__icon" v-html="hl.icon"></span>
@@ -72,12 +72,12 @@
           <!-- Content blocks: What's included -->
           <section class="deal-page__content-blocks">
             <h2 class="section-title">
-              In dit arrangement voor
+              {{ t('deal.inclusionsHeading') }}
               <button class="inline-edit-link" @click="store.openTravelGroupModal()">
-                {{ store.totalPersons }} personen
+                {{ store.totalPersons }} {{ store.totalPersons === 1 ? t('common.personSingular') : t('common.personPlural') }}
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
               </button>
-              is het volgende inbegrepen
+              {{ t('deal.inclusionsEndAlt') }}
             </h2>
             <div class="content-blocks__grid">
               <!-- Row 1: overnight card + room info card -->
@@ -91,14 +91,14 @@
                 class="content-block"
               >
                 <div v-if="inc.image" class="content-block__image">
-                  <img :src="inc.image" :alt="inc.title" loading="lazy" />
+                  <img :src="inc.image" :alt="localized(inc.title)" loading="lazy" />
                 </div>
                 <div class="content-block__body">
                   <h3 class="content-block__title">
                     <span class="content-block__check">✓</span>
-                    {{ inc.title }}
+                    {{ localized(inc.title) }}
                   </h3>
-                  <p class="content-block__desc">{{ inc.description }}</p>
+                  <p class="content-block__desc">{{ localized(inc.description) }}</p>
                 </div>
               </div>
             </div>
@@ -110,7 +110,7 @@
             <div class="facilities__grid">
               <div v-for="fac in hotel.facilities" :key="fac.label" class="facility-item">
                 <span class="facility-item__check">✓</span>
-                <span>{{ fac.label }}</span>
+                <span>{{ localized(fac.label) }}</span>
               </div>
             </div>
           </section>
@@ -123,11 +123,11 @@
               <div class="reviews__score-stars">
                 <span v-for="n in 5" :key="n" class="star" :class="{ 'star--dim': n > Math.round(hotel.reviews.overallScore) }">★</span>
               </div>
-              <span class="reviews__score-count">{{ hotel.reviews.totalReviews }} beoordelingen</span>
+              <span class="reviews__score-count">{{ hotel.reviews.totalReviews }} {{ t('common.reviews') }}</span>
             </div>
             <div class="reviews__categories">
-              <div v-for="cat in hotel.reviews.categories" :key="cat.name" class="reviews__cat">
-                <span class="reviews__cat-name">{{ cat.name }}</span>
+              <div v-for="cat in hotel.reviews.categories" :key="localized(cat.name)" class="reviews__cat">
+                <span class="reviews__cat-name">{{ localized(cat.name) }}</span>
                 <div class="reviews__cat-bar"><div class="reviews__cat-fill" :style="{ width: (cat.score / 5 * 100) + '%' }"></div></div>
                 <span class="reviews__cat-score">{{ cat.score }}</span>
               </div>
@@ -138,12 +138,12 @@
                   <span class="review-card__author">{{ rev.author }}</span>
                   <span class="review-card__stars"><span v-for="n in rev.score" :key="n" class="star">★</span></span>
                 </div>
-                <p class="review-card__text">{{ rev.text }}</p>
+                <p class="review-card__text">{{ localized(rev.text) }}</p>
                 <div v-if="rev.arrangement" class="review-card__arrangement">
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M20 7h-3V5a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v2H4a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V8a1 1 0 0 0-1-1zM9 5h6v2H9V5z" />
                   </svg>
-                  <span>Geboekt: {{ rev.arrangement }}</span>
+                  <span>Geboekt: {{ localized(rev.arrangement) }}</span>
                 </div>
               </div>
             </div>
@@ -159,29 +159,29 @@
         <div class="deal-page__col-right">
           <!-- Inclusions -->
           <h3 class="sidebar__title">
-            Jouw arrangement voor
+            {{ t('inclusion.inThisDealFor') }}
             <button
               type="button"
               class="sidebar__title-link"
               @click="store.openTravelGroupModal()"
-            >{{ store.totalPersons }} {{ store.totalPersons === 1 ? 'persoon' : 'personen' }}</button>
+            >{{ store.totalPersons }} {{ store.totalPersons === 1 ? t('common.personSingular') : t('common.personPlural') }}</button>
           </h3>
           <ul class="sidebar__inc-list">
             <li v-for="inc in currentDeal.inclusions" :key="inc.id">
               <span class="sidebar__inc-check">✓</span>
-              <span>{{ inc.title }}</span>
+              <span>{{ localized(inc.title) }}</span>
             </li>
           </ul>
 
           <!-- Variant CTA -->
           <div class="sidebar__variant-cta">
-            <span class="sidebar__variant-text">Korter of langer verblijf?</span>
-            <button class="sidebar__variant-btn" @click="isPanelOpen = true">Bekijk de mogelijkheden</button>
+            <span class="sidebar__variant-text">{{ t('deal.shorterOrLonger') }}</span>
+            <button class="sidebar__variant-btn" @click="isPanelOpen = true">{{ t('deal.viewOptions') }}</button>
           </div>
 
           <!-- Calendar -->
           <div class="sidebar__calendar" ref="calendarRef">
-            <h4 class="sidebar__cal-title">Kies aankomstdatum</h4>
+            <h4 class="sidebar__cal-title">{{ t('calendar.chooseArrivalDate') }}</h4>
             <CalendarMonth
               :year="calMonth.year" :month="calMonth.month"
               :availability="calAvailability"
@@ -192,7 +192,7 @@
           </div>
 
           <!-- Before date selection: disabled button -->
-          <button v-if="!store.checkInDate" class="btn btn-primary sidebar__book" disabled>Ik ga boeken</button>
+          <button v-if="!store.checkInDate" class="btn btn-primary sidebar__book" disabled>{{ t('deal.bookNow') }}</button>
 
           <!-- After date selection: price summary + active button -->
           <div v-if="store.checkInDate" class="sidebar__summary">
@@ -206,17 +206,17 @@
                 <span class="sidebar__date-label">Check-out</span>
                 <span class="sidebar__date-val">{{ store.formattedCheckOut }}</span>
               </div>
-              <button class="sidebar__date-clear" @click="store.clearDates()">Wissen</button>
+              <button class="sidebar__date-clear" @click="store.clearDates()">{{ t('calendar.clearDates') }}</button>
             </div>
 
             <!-- Price breakdown -->
             <div v-if="store.roomUpgradeCost > 0" class="sidebar__breakdown">
               <div class="sidebar__breakdown-row">
-                <span>Arrangement</span>
+                <span>{{ t('search.arrangement') }}</span>
                 <span>{{ formatPrice(store.pricing.breakdown[0]?.amount ?? store.pricing.totalPrice - store.roomUpgradeCost) }}</span>
               </div>
               <div class="sidebar__breakdown-row sidebar__breakdown-row--upgrade">
-                <span>Upgrade naar {{ store.selectedRoom?.name }}</span>
+                <span>{{ t('store.roomUpgrade') }} {{ store.selectedRoom?.name ? localized(store.selectedRoom.name) : '' }}</span>
                 <span>{{ formatPrice(store.roomUpgradeCost) }}</span>
               </div>
             </div>
@@ -226,11 +226,11 @@
               <span class="sidebar__amount">{{ formatPrice(store.pricing.totalPrice) }}</span>
               <span class="sidebar__original">{{ formatPrice(store.pricing.originalPrice) }}</span>
             </div>
-            <p class="sidebar__price-meta">Voor {{ currentDeal.nights }} nachten, {{ store.totalPersons }} personen</p>
+            <p class="sidebar__price-meta">{{ t('deal.priceFor').replace('{nights}', String(currentDeal.nights)).replace('{persons}', String(store.totalPersons)) }}</p>
 
-            <p class="sidebar__disclaimer">Je dient ter plaatse alleen de lokale belastingen, eventuele service-/administratiekosten van het hotel en parkeerkosten te betalen (indien dit niet is inbegrepen in het arrangement).</p>
+            <p class="sidebar__disclaimer">{{ t('deal.disclaimer') }}</p>
 
-            <button class="btn btn-primary sidebar__book" @click="() => {}">Ik ga boeken</button>
+            <button class="btn btn-primary sidebar__book" @click="() => {}">{{ t('deal.bookNow') }}</button>
           </div>
         </div>
       </div>
@@ -283,6 +283,7 @@ import {
   dealsMapKasteel,
 } from '~/data/mock/kasteel-ter-worm'
 
+const { t, localized } = useI18n()
 const route = useRoute()
 const router = useRouter()
 const store = useDealStore()
@@ -322,26 +323,26 @@ function handlePanelSelect(dealId: string) {
   if (deal) { store.switchDeal(deal); isPanelOpen.value = false }
 }
 
-const highlights = [
-  { icon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-6h6v6"/><path d="M3 11h2"/><path d="M19 11h2"/><path d="M10 3v2"/><path d="M14 3v2"/><rect x="9" y="9" width="2" height="2"/><rect x="13" y="9" width="2" height="2"/></svg>', text: 'Exclusief kasteelhotel' },
-  { icon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a4 4 0 0 1 4 4c0 3-4 5-4 5s-4-2-4-5a4 4 0 0 1 4-4z"/><path d="M4 16h16"/><path d="M4 16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2"/><path d="M6 18v2"/><path d="M18 18v2"/><path d="M8 20h8"/></svg>', text: 'Culinair restaurant' },
-  { icon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21c-1.5-1.5-6-5.5-6-10a6 6 0 0 1 12 0c0 2.5-1.5 5-3 7"/><path d="M12 3c-.5 2-1 3.5-1 5a3 3 0 0 0 6 0c0-1.5-.5-3-1-5"/><path d="M9 8c-1.5.5-3 1.5-3 3a3 3 0 0 0 5 2.2"/><path d="M15 8c1.5.5 3 1.5 3 3a3 3 0 0 1-5 2.2"/></svg>', text: 'Wellness & zwembad' },
-  { icon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 18c2-2 4-5 6-5s3 3 5 3 3-4 5-4 3 2 4 3"/><path d="M2 14c1.5-1.5 3-4 5-4s2.5 2.5 4.5 2.5S14 9 16 9s3 1.5 4 2.5"/><path d="M22 22H2"/></svg>', text: 'Schitterend landgoed in Zuid-Limburg' },
-  { icon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="17" r="2"/><circle cx="9" cy="17" r="4"/><path d="M9 13V6l7-2v4"/><path d="M17 10l3-1"/><path d="M17 14l2 2"/><path d="M19 18h2"/></svg>', text: 'Perfect voor fietsen en wandelen' },
-  { icon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="14" rx="2"/><path d="M12 8V4"/><path d="M8 8V5"/><path d="M16 8V5"/><path d="M12 8c3 0 5-1.5 5-3s-2-2.5-5-2.5S7 3.5 7 5s2 3 5 3z"/><path d="M3 12h18"/><line x1="12" y1="12" x2="12" y2="22"/></svg>', text: 'Exclusief arrangement via ViaLuxury' },
-]
+const highlights = computed(() => [
+  { icon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-6h6v6"/><path d="M3 11h2"/><path d="M19 11h2"/><path d="M10 3v2"/><path d="M14 3v2"/><rect x="9" y="9" width="2" height="2"/><rect x="13" y="9" width="2" height="2"/></svg>', text: t('deal.highlight.castle') },
+  { icon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a4 4 0 0 1 4 4c0 3-4 5-4 5s-4-2-4-5a4 4 0 0 1 4-4z"/><path d="M4 16h16"/><path d="M4 16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2"/><path d="M6 18v2"/><path d="M18 18v2"/><path d="M8 20h8"/></svg>', text: t('deal.highlight.restaurant') },
+  { icon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21c-1.5-1.5-6-5.5-6-10a6 6 0 0 1 12 0c0 2.5-1.5 5-3 7"/><path d="M12 3c-.5 2-1 3.5-1 5a3 3 0 0 0 6 0c0-1.5-.5-3-1-5"/><path d="M9 8c-1.5.5-3 1.5-3 3a3 3 0 0 0 5 2.2"/><path d="M15 8c1.5.5 3 1.5 3 3a3 3 0 0 1-5 2.2"/></svg>', text: t('deal.highlight.wellness') },
+  { icon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 18c2-2 4-5 6-5s3 3 5 3 3-4 5-4 3 2 4 3"/><path d="M2 14c1.5-1.5 3-4 5-4s2.5 2.5 4.5 2.5S14 9 16 9s3 1.5 4 2.5"/><path d="M22 22H2"/></svg>', text: t('deal.highlight.estate') },
+  { icon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="17" r="2"/><circle cx="9" cy="17" r="4"/><path d="M9 13V6l7-2v4"/><path d="M17 10l3-1"/><path d="M17 14l2 2"/><path d="M19 18h2"/></svg>', text: t('deal.highlight.cycling') },
+  { icon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="14" rx="2"/><path d="M12 8V4"/><path d="M8 8V5"/><path d="M16 8V5"/><path d="M12 8c3 0 5-1.5 5-3s-2-2.5-5-2.5S7 3.5 7 5s2 3 5 3z"/><path d="M3 12h18"/><line x1="12" y1="12" x2="12" y2="22"/></svg>', text: t('deal.highlight.exclusive') },
+])
 
 const inclusionsMap = computed(() => ({
-  [dealKasteel2Nights.id]: dealKasteel2Nights.inclusions.map(i => i.title),
-  [dealKasteel3Nights.id]: dealKasteel3Nights.inclusions.map(i => i.title),
-  [dealKasteel4Nights.id]: dealKasteel4Nights.inclusions.map(i => i.title),
+  [dealKasteel2Nights.id]: dealKasteel2Nights.inclusions.map(i => localized(i.title)),
+  [dealKasteel3Nights.id]: dealKasteel3Nights.inclusions.map(i => localized(i.title)),
+  [dealKasteel4Nights.id]: dealKasteel4Nights.inclusions.map(i => localized(i.title)),
 }))
 
-useHead({ title: `${currentDeal.value?.title || 'Deal'} | ViaLuxury` })
+useHead({ title: `${currentDeal.value?.title ? localized(currentDeal.value.title) : 'Deal'} | ViaLuxury` })
 
 const breadcrumbs = computed(() => [
-  { label: 'Home', href: '/' },
-  { label: 'Hotelarrangementen', href: '/' },
+  { label: t('search.home'), href: '/' },
+  { label: t('search.arrangements'), href: '/' },
   { label: hotel.value.name },
 ])
 

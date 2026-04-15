@@ -1,16 +1,18 @@
 <template>
   <section id="location" class="location-section">
-    <h2>Waar je verblijft</h2>
+    <h2>{{ t('hotel.whereYouStay') }}</h2>
     <p class="location-section__address">📍 {{ address }}</p>
     <div class="location-section__map">
       <div class="map-placeholder">
-        <span>Kaart - {{ city }}, {{ region }}</span>
+        <span>{{ t('hotel.mapLabel') }} {{ city }}, {{ region }}</span>
       </div>
     </div>
   </section>
 </template>
 
 <script setup lang="ts">
+const { t } = useI18n()
+
 defineProps<{
   address: string
   city: string

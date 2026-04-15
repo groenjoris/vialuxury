@@ -1,25 +1,25 @@
 <template>
   <div class="content-block room-inclusion">
     <div v-if="roomImage" class="content-block__image">
-      <img :src="roomImage" :alt="roomName" loading="lazy" />
+      <img :src="roomImage" :alt="localized(roomName)" loading="lazy" />
     </div>
     <div class="content-block__body">
       <h3 class="content-block__title">
         <span class="content-block__check">✓</span>
-        {{ overnightTitle }}
+        {{ localized(overnightTitle) }}
       </h3>
-      <p class="content-block__desc">{{ overnightDesc }}</p>
+      <p class="content-block__desc">{{ localized(overnightDesc) }}</p>
     </div>
     <div class="room-inclusion__footer">
       <p class="room-inclusion__footer-text">
-        Deze kamer is voor {{ store.totalPersons }} {{ store.totalPersons === 1 ? 'persoon' : 'personen' }}.
+        {{ t('room.thisRoomFor') }} {{ store.totalPersons }} {{ store.totalPersons === 1 ? t('common.personSingular') : t('common.personPlural') }}.
       </p>
       <button
         type="button"
         class="room-inclusion__footer-link"
         @click="store.openTravelGroupModal()"
       >
-        Wijzig reisgezelschap
+        {{ t('room.editTravelGroup') }}
       </button>
     </div>
   </div>
@@ -28,6 +28,8 @@
 <script setup lang="ts">
 import type { Deal } from '~/types/deal'
 import { useDealStore } from '~/stores/deal'
+
+const { t, localized } = useI18n()
 
 const props = defineProps<{
   deal: Deal

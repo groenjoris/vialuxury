@@ -1,13 +1,13 @@
 <template>
   <section class="nearby-tips">
     <div class="nearby-tips__header container">
-      <h2 class="nearby-tips__title">Tips in de buurt</h2>
-      <p class="nearby-tips__subtitle">{{ tips.length }} leuke uitjes bij {{ hotelName }}</p>
+      <h2 class="nearby-tips__title">{{ t('hotel.nearbyTips') }}</h2>
+      <p class="nearby-tips__subtitle">{{ tips.length }} {{ t('hotel.nearbySubtitle') }} {{ hotelName }}</p>
     </div>
 
     <div class="nearby-tips__carousel">
       <!-- Prev arrow -->
-      <button class="nearby-tips__arrow nearby-tips__arrow--prev" @click="prev" aria-label="Vorige tip">
+      <button class="nearby-tips__arrow nearby-tips__arrow--prev" @click="prev" :aria-label="t('hotel.previousTip')">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="15 18 9 12 15 6" />
         </svg>
@@ -24,14 +24,14 @@
           <div class="nearby-tips__slide-inner container">
             <div class="nearby-tips__image-col">
               <div class="nearby-tips__image-wrap">
-                <img :src="tip.image" :alt="tip.title" loading="lazy" />
+                <img :src="tip.image" :alt="localized(tip.title)" loading="lazy" />
               </div>
             </div>
             <div class="nearby-tips__text-col">
               <div class="nearby-tips__text-inner">
                 <hr class="nearby-tips__divider" />
-                <h3 class="nearby-tips__tip-title">{{ tip.title }}</h3>
-                <p class="nearby-tips__tip-desc">{{ tip.description }}</p>
+                <h3 class="nearby-tips__tip-title">{{ localized(tip.title) }}</h3>
+                <p class="nearby-tips__tip-desc">{{ localized(tip.description) }}</p>
               </div>
             </div>
           </div>
@@ -39,7 +39,7 @@
       </div>
 
       <!-- Next arrow -->
-      <button class="nearby-tips__arrow nearby-tips__arrow--next" @click="next" aria-label="Volgende tip">
+      <button class="nearby-tips__arrow nearby-tips__arrow--next" @click="next" :aria-label="t('hotel.nextTip')">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="9 18 15 12 9 6" />
         </svg>
@@ -62,6 +62,8 @@
 
 <script setup lang="ts">
 import type { NearbyTip } from '~/types/hotel'
+
+const { t, localized } = useI18n()
 
 const props = defineProps<{
   tips: NearbyTip[]

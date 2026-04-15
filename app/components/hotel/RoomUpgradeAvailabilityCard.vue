@@ -14,16 +14,16 @@
           <path d="M12 2 15 8l6 .9-4.5 4.4L17.5 20 12 16.9 6.5 20 8 13.3 3.5 8.9 9.5 8z" />
         </svg>
       </div>
-      <h3 class="room-upgrade-avail__title">Kamerupgrades beschikbaar</h3>
+      <h3 class="room-upgrade-avail__title">{{ t('room.upgradeAvailable') }}</h3>
       <p class="room-upgrade-avail__desc">
-        Kies een aankomstdatum om te zien welke upgrades beschikbaar zijn.
+        {{ t('room.chooseArrivalDate') }}
       </p>
       <button
         type="button"
         class="btn btn-secondary room-upgrade-avail__btn"
         @click="openCalendar"
       >
-        Kies aankomstdatum
+        {{ t('room.chooseArrivalDateBtn') }}
       </button>
     </div>
 
@@ -34,27 +34,27 @@
           <path d="M12 2 15 8l6 .9-4.5 4.4L17.5 20 12 16.9 6.5 20 8 13.3 3.5 8.9 9.5 8z" />
         </svg>
       </div>
-      <h3 class="room-upgrade-avail__title">Kamerupgrades beschikbaar</h3>
+      <h3 class="room-upgrade-avail__title">{{ t('room.upgradeAvailable') }}</h3>
       <p class="room-upgrade-avail__desc">
-        Voor aankomst op <strong>{{ store.formattedCheckIn }}</strong>. Bekijk hieronder de beschikbare upgrades.
+        {{ t('room.forArrivalOn') }} <strong>{{ store.formattedCheckIn }}</strong>. {{ t('room.viewUpgradesBelow') }}
       </p>
       <button
         type="button"
         class="room-upgrade-avail__link"
         @click="openCalendar"
       >
-        Wijzig datum
+        {{ t('room.changeDate') }}
       </button>
     </div>
 
     <!-- State C: calendar open inline -->
     <div v-else class="room-upgrade-avail__calendar">
       <div class="room-upgrade-avail__cal-header">
-        <h4 class="room-upgrade-avail__cal-title">Kies aankomstdatum</h4>
+        <h4 class="room-upgrade-avail__cal-title">{{ t('room.chooseArrivalDateBtn') }}</h4>
         <button
           type="button"
           class="room-upgrade-avail__close"
-          aria-label="Sluiten"
+          :aria-label="t('common.close')"
           @click="closeCalendar"
         >
           ×
@@ -81,6 +81,8 @@
 import type { Deal } from '~/types/deal'
 import { useDealStore } from '~/stores/deal'
 import { generateDealAvailability } from '~/data/mock/deal-pricing'
+
+const { t } = useI18n()
 
 const props = defineProps<{
   deal: Deal

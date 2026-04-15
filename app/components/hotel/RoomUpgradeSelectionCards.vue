@@ -1,6 +1,6 @@
 <template>
   <div class="upgrade-selection">
-    <h4 class="upgrade-selection__title">Beschikbare kamerupgrades voor deze datum</h4>
+    <h4 class="upgrade-selection__title">{{ t('room.availableUpgradesForDate') }}</h4>
     <div class="upgrade-selection__grid">
       <button
         v-for="room in deal.roomUpgrades"
@@ -11,17 +11,17 @@
         @click="store.selectRoom(room.id)"
       >
         <div class="room-card__image">
-          <img :src="room.image" :alt="room.name" loading="lazy" />
+          <img :src="room.image" :alt="localized(room.name)" loading="lazy" />
           <span v-if="store.selectedRoomId === room.id" class="room-card__check">✓</span>
         </div>
         <div class="room-card__info">
-          <span class="room-card__name">{{ room.name }}</span>
+          <span class="room-card__name">{{ localized(room.name) }}</span>
           <span class="room-card__price">+ {{ formatPrice(room.priceExtra * deal.nights) }}</span>
         </div>
-        <p class="room-card__desc">{{ room.description }}</p>
+        <p class="room-card__desc">{{ localized(room.description) }}</p>
         <ul class="room-card__features">
-          <li v-for="feature in room.features.slice(0, 4)" :key="feature">
-            {{ feature }}
+          <li v-for="feature in room.features.slice(0, 4)" :key="localized(feature)">
+            {{ localized(feature) }}
           </li>
         </ul>
       </button>
@@ -33,6 +33,8 @@
 import type { Deal } from '~/types/deal'
 import { useDealStore } from '~/stores/deal'
 import { formatPrice } from '~/utils/formatPrice'
+
+const { t, localized } = useI18n()
 
 defineProps<{
   deal: Deal

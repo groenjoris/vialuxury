@@ -1,18 +1,20 @@
 <template>
   <section class="facilities">
-    <h3 class="facilities__title">Hotelfaciliteiten</h3>
+    <h3 class="facilities__title">{{ t('hotel.facilities') }}</h3>
     <div class="facilities__grid">
       <div v-for="facility in facilities" :key="facility.label" class="facility-item">
         <span class="facility-item__icon">✓</span>
-        <span class="facility-item__label">{{ facility.label }}</span>
+        <span class="facility-item__label">{{ localized(facility.label) }}</span>
       </div>
     </div>
-    <button class="facilities__more">Bekijk alle {{ facilities.length }} faciliteiten</button>
+    <button class="facilities__more">{{ t('hotel.viewAllFacilities') }} {{ facilities.length }} {{ t('hotel.facilitiesWord') }}</button>
   </section>
 </template>
 
 <script setup lang="ts">
 import type { Facility } from '~/types/hotel'
+
+const { t, localized } = useI18n()
 
 defineProps<{
   facilities: Facility[]

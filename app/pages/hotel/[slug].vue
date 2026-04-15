@@ -16,7 +16,7 @@
         <div class="hotel-page__hero-actions">
           <button class="icon-action">♡</button>
           <button class="icon-action">↗</button>
-          <button class="btn btn-primary hero-cta" @click="scrollToCalendar">Boek nu</button>
+          <button class="btn btn-primary hero-cta" @click="scrollToCalendar">{{ t('common.bookNow') }}</button>
         </div>
       </section>
 
@@ -29,7 +29,7 @@
         <div class="hotel-page__left">
           <!-- Description & Included Items -->
           <DealDescription
-            :description="hotel.description"
+            :description="localized(hotel.description)"
             :items="store.includedItems"
             :persons="store.configuration.persons"
           />
@@ -84,7 +84,7 @@
 
     <!-- Loading state -->
     <div v-else class="hotel-page__loading container">
-      <p>Laden...</p>
+      <p>{{ t('common.loading') }}</p>
     </div>
 
     <SiteFooter />
@@ -95,6 +95,7 @@
 import { useBookingStore } from '~/stores/booking'
 import { hotelTerZand, arrangementTerZand } from '~/data/mock/hotel-ter-zand'
 
+const { t, localized } = useI18n()
 const route = useRoute()
 const store = useBookingStore()
 const calendarRef = ref<HTMLElement | null>(null)
@@ -128,14 +129,14 @@ useHead({
   meta: [
     {
       name: 'description',
-      content: `Boek het exclusieve ${hotel.value.name} arrangement in ${hotel.value.location.city}. Inclusief overnachting, ontbijt en diner.`,
+      content: computed(() => `${hotel.value.name} - ViaLuxury ${t('search.arrangement')} - ${hotel.value.location.city}`),
     },
   ],
 })
 
 const breadcrumbs = computed(() => [
-  { label: 'Home', href: '/' },
-  { label: 'Arrangementen', href: '/' },
+  { label: t('search.home'), href: '/' },
+  { label: t('search.arrangements'), href: '/search' },
   { label: `${hotel.value.name}` },
 ])
 

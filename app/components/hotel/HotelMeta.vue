@@ -9,15 +9,17 @@
     <div class="hotel-meta__info">
       <span class="hotel-meta__score">{{ reviews.overallScore }}</span>
       <span class="hotel-meta__divider">|</span>
-      <span class="hotel-meta__reviews">{{ reviews.totalReviews }} beoordelingen</span>
+      <span class="hotel-meta__reviews">{{ reviews.totalReviews }} {{ t('common.reviews') }}</span>
       <span class="hotel-meta__divider">·</span>
-      <a href="#location" class="hotel-meta__map-link">Bekijk op kaart</a>
+      <a href="#location" class="hotel-meta__map-link">{{ t('common.viewOnMap') }}</a>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import type { HotelLocation, ReviewSummary } from '~/types/hotel'
+
+const { t } = useI18n()
 
 defineProps<{
   name: string

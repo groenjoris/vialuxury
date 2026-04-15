@@ -9,7 +9,7 @@
       </div>
 
       <div class="footer-col">
-        <h4 class="footer-heading">Hulp nodig?</h4>
+        <h4 class="footer-heading">{{ t('footer.needHelp') }}</h4>
         <ul class="footer-links">
           <li><a href="tel:+31857773222">☎ +31 85 777 3222</a></li>
           <li><a href="mailto:info@vialuxury.nl">✉ info@vialuxury.nl</a></li>
@@ -17,33 +17,37 @@
       </div>
 
       <div class="footer-col">
-        <h4 class="footer-heading">Inspiratie</h4>
+        <h4 class="footer-heading">{{ t('footer.inspiration') }}</h4>
         <ul class="footer-links">
-          <li><a href="#">Populaire bestemmingen</a></li>
-          <li><a href="#">Last minutes</a></li>
-          <li><a href="#">Gift Cards</a></li>
+          <li><a href="#">{{ t('footer.popularDestinations') }}</a></li>
+          <li><a href="#">{{ t('footer.lastMinutes') }}</a></li>
+          <li><a href="#">{{ t('footer.giftCards') }}</a></li>
         </ul>
       </div>
 
       <div class="footer-col">
         <h4 class="footer-heading">ViaLuxury</h4>
         <ul class="footer-links">
-          <li><a href="#">Over ons</a></li>
-          <li><a href="#">Veelgestelde vragen</a></li>
-          <li><a href="#">Contact</a></li>
-          <li><a href="#">Algemene voorwaarden</a></li>
-          <li><a href="#">Privacybeleid</a></li>
+          <li><a href="#">{{ t('footer.aboutUs') }}</a></li>
+          <li><a href="#">{{ t('footer.faq') }}</a></li>
+          <li><a href="#">{{ t('footer.contact') }}</a></li>
+          <li><a href="#">{{ t('footer.terms') }}</a></li>
+          <li><a href="#">{{ t('footer.privacy') }}</a></li>
         </ul>
       </div>
     </div>
 
     <div class="site-footer__bottom">
       <div class="container">
-        <p>&copy; {{ new Date().getFullYear() }} ViaLuxury. Alle rechten voorbehouden.</p>
+        <p>&copy; {{ new Date().getFullYear() }} ViaLuxury. {{ t('footer.allRightsReserved') }}</p>
       </div>
     </div>
   </footer>
 </template>
+
+<script setup lang="ts">
+const { t } = useI18n()
+</script>
 
 <style scoped>
 .site-footer {

@@ -1,6 +1,6 @@
 <template>
   <section class="faq-section">
-    <h2>Heb je meer vragen?</h2>
+    <h2>{{ t('hotel.faqHeading') }}</h2>
     <div class="faq-list">
       <div
         v-for="item in faqItems"
@@ -9,11 +9,11 @@
         :class="{ 'faq-item--open': openId === item.id }"
       >
         <button class="faq-item__question" @click="toggle(item.id)">
-          <span>{{ item.question }}</span>
+          <span>{{ localized(item.question) }}</span>
           <span class="faq-item__arrow">{{ openId === item.id ? '−' : '+' }}</span>
         </button>
         <div v-if="openId === item.id" class="faq-item__answer">
-          <p>{{ item.answer }}</p>
+          <p>{{ localized(item.answer) }}</p>
         </div>
       </div>
     </div>
@@ -22,6 +22,8 @@
 
 <script setup lang="ts">
 import type { FaqItem } from '~/types/hotel'
+
+const { t, localized } = useI18n()
 
 defineProps<{
   faqItems: FaqItem[]

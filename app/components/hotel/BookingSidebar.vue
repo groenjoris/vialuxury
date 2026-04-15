@@ -17,44 +17,44 @@
       <!-- Dates -->
       <div class="sidebar__dates">
         <div class="sidebar__date-col">
-          <span class="date-label">Check-in</span>
-          <span class="date-value">{{ store.formattedCheckIn || 'Kies datum' }}</span>
+          <span class="date-label">{{ t('common.checkIn') }}</span>
+          <span class="date-value">{{ store.formattedCheckIn || t('common.chooseDate') }}</span>
         </div>
         <div class="sidebar__date-divider"></div>
         <div class="sidebar__date-col">
-          <span class="date-label">Check-out</span>
-          <span class="date-value">{{ store.formattedCheckOut || 'Kies datum' }}</span>
+          <span class="date-label">{{ t('common.checkOut') }}</span>
+          <span class="date-value">{{ store.formattedCheckOut || t('common.chooseDate') }}</span>
         </div>
       </div>
 
       <!-- Cancellation -->
       <div class="sidebar__cancel">
-        {{ store.arrangement?.cancellationPolicy || 'Flexibele annulering' }}
+        {{ store.arrangement?.cancellationPolicy ? localized(store.arrangement.cancellationPolicy) : t('trust.flexibleCancellation') }}
       </div>
 
       <!-- CTA -->
       <button class="btn btn-primary sidebar__cta" :disabled="!store.isBookingReady">
-        Boek nu
+        {{ t('common.bookNow') }}
       </button>
 
       <!-- Trust -->
       <div class="sidebar__trust">
         <div class="trust-badge">
           <div class="trust-logo">★★★★★</div>
-          <span class="trust-text">15.000+ reviews</span>
+          <span class="trust-text">{{ t('trust.reviews') }}</span>
         </div>
         <ul class="trust-list">
           <li class="trust-item">
             <span class="trust-check">✓</span>
-            Zeer flexibele annuleringsvoorwaarden
+            {{ t('trust.flexibleCancel') }}
           </li>
           <li class="trust-item">
             <span class="trust-check">✓</span>
-            Profiteer direct van hoge kortingen
+            {{ t('trust.directDiscount') }}
           </li>
           <li class="trust-item">
             <span class="trust-check">✓</span>
-            Members profiteren van speciale aanbiedingen
+            {{ t('trust.memberDeals') }}
           </li>
         </ul>
       </div>
@@ -66,6 +66,7 @@
 import { useBookingStore } from '~/stores/booking'
 import { formatPrice } from '~/utils/formatPrice'
 
+const { t, localized } = useI18n()
 const store = useBookingStore()
 </script>
 

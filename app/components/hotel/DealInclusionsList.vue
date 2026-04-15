@@ -2,7 +2,7 @@
   <section class="inclusions">
     <div class="inclusions__header">
       <h3 class="inclusions__title">
-        In deze deal voor
+        {{ t('inclusion.inThisDealFor') }}
         <button class="inclusions__persons-link" @click="store.openTravelGroupModal()">
           {{ store.travelGroupSummary }}
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -10,7 +10,7 @@
             <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
           </svg>
         </button>
-        is het volgende inbegrepen:
+        {{ t('inclusion.isIncluded') }}
       </h3>
     </div>
 
@@ -22,8 +22,8 @@
         :class="{ 'inclusions__item--highlight': item.highlight }"
       >
         <span class="inclusions__check">✓</span>
-        <span class="inclusions__item-title">{{ item.title }}</span>
-        <span v-if="item.highlight" class="inclusions__badge">Inclusief</span>
+        <span class="inclusions__item-title">{{ localized(item.title) }}</span>
+        <span v-if="item.highlight" class="inclusions__badge">{{ t('inclusion.included') }}</span>
       </li>
     </ul>
   </section>
@@ -32,6 +32,8 @@
 <script setup lang="ts">
 import { useDealStore } from '~/stores/deal'
 import type { Deal } from '~/types/deal'
+
+const { t, localized } = useI18n()
 
 defineProps<{
   deal: Deal

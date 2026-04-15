@@ -4,9 +4,9 @@
       <div v-if="isOpen" class="panel-overlay" @click.self="$emit('close')">
         <aside class="panel">
           <div class="panel__header">
-            <h2 class="panel__title">Beschikbare arrangementen</h2>
+            <h2 class="panel__title">{{ t('deal.availableArrangements') }}</h2>
             <p class="panel__subtitle">{{ hotelName }}</p>
-            <button class="panel__close" @click="$emit('close')" aria-label="Sluiten">
+            <button class="panel__close" @click="$emit('close')" :aria-label="t('common.close')">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M18 6L6 18M6 6l12 12" />
               </svg>
@@ -21,7 +21,7 @@
               :class="{ 'package-card--active': variant.id === currentDealId }"
             >
               <div class="package-card__header">
-                <span class="package-card__nights">{{ variant.nights }} nachten</span>
+                <span class="package-card__nights">{{ variant.nights }} {{ t('common.nights') }}</span>
                 <div class="package-card__pricing">
                   <span class="package-card__discount">-{{ discountPercentage }}%</span>
                   <span class="package-card__price">{{ formatPrice(variant.basePrice) }}</span>
@@ -32,11 +32,11 @@
               <div class="package-card__inclusions">
                 <div
                   v-for="inc in getInclusions(variant.id)"
-                  :key="inc"
+                  :key="localized(inc)"
                   class="package-card__inc"
                 >
                   <span class="package-card__check">✓</span>
-                  <span>{{ inc }}</span>
+                  <span>{{ localized(inc) }}</span>
                 </div>
               </div>
 
@@ -45,10 +45,10 @@
                 class="btn btn-primary package-card__btn"
                 @click="$emit('select', variant.id)"
               >
-                Selecteer dit arrangement
+                {{ t('deal.selectArrangement') }}
               </button>
               <div v-else class="package-card__current">
-                <span class="package-card__current-badge">Huidig arrangement</span>
+                <span class="package-card__current-badge">{{ t('deal.currentArrangement') }}</span>
               </div>
             </div>
           </div>
@@ -61,6 +61,8 @@
 <script setup lang="ts">
 import type { DealVariant } from '~/types/deal'
 import { formatPrice } from '~/utils/formatPrice'
+
+const { t, localized } = useI18n()
 
 const props = defineProps<{
   isOpen: boolean

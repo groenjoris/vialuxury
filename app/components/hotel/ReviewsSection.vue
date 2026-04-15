@@ -1,10 +1,10 @@
 <template>
   <section id="reviews" class="reviews-section">
     <div class="reviews-section__header">
-      <h2>Beoordelingen</h2>
+      <h2>{{ t('hotel.reviews') }}</h2>
       <div class="reviews-section__actions">
-        <span class="text-secondary text-sm">Alle beoordelingen ({{ reviews.totalReviews }})</span>
-        <button class="btn btn-secondary">✏️ Schrijf een beoordeling</button>
+        <span class="text-secondary text-sm">{{ t('hotel.allReviews') }} ({{ reviews.totalReviews }})</span>
+        <button class="btn btn-secondary">✏️ {{ t('hotel.writeReview') }}</button>
       </div>
     </div>
 
@@ -14,13 +14,13 @@
         <span class="score-big__number">{{ reviews.overallScore }}</span>
         <div class="score-big__meta">
           <span class="score-big__stars">★★★★☆</span>
-          <span class="score-big__count">{{ reviews.totalReviews }} beoordelingen</span>
+          <span class="score-big__count">{{ reviews.totalReviews }} {{ t('hotel.reviewsWord') }}</span>
         </div>
       </div>
 
       <div class="category-scores">
         <div v-for="cat in reviews.categories" :key="cat.name" class="category-score">
-          <span class="category-score__name">{{ cat.name }}</span>
+          <span class="category-score__name">{{ localized(cat.name) }}</span>
           <span class="category-score__value">{{ cat.score }}</span>
         </div>
       </div>
@@ -34,7 +34,7 @@
             <img :src="img" alt="Review foto" class="review-card__img" />
           </div>
           <button v-if="review.images.length > 2" class="review-card__more-images">
-            Alle {{ review.images.length }} foto's weergeven
+            {{ t('hotel.allReviewsButton') }} {{ review.images.length }} {{ t('hotel.showAllPhotos') }}
           </button>
         </div>
 
@@ -48,13 +48,13 @@
           </span>
         </div>
 
-        <p class="review-card__text">{{ review.text }}</p>
-        <button class="review-card__readmore">Lees meer</button>
+        <p class="review-card__text">{{ localized(review.text) }}</p>
+        <button class="review-card__readmore">{{ t('common.readMore') }}</button>
       </div>
     </div>
 
     <button v-if="individualReviews.length > 6" class="btn btn-secondary reviews-section__load-more">
-      Alle {{ reviews.totalReviews }} beoordelingen
+      {{ t('hotel.allReviewsButton') }} {{ reviews.totalReviews }} {{ t('hotel.reviewsWord') }}
     </button>
   </section>
 </template>
@@ -63,6 +63,8 @@
 import type { ReviewSummary, Review } from '~/types/hotel'
 import dayjs from 'dayjs'
 
+const { t, localized } = useI18n()
+
 defineProps<{
   reviews: ReviewSummary
   individualReviews: Review[]
@@ -70,8 +72,13 @@ defineProps<{
 
 function formatReviewDate(date: string): string {
   const d = dayjs(date)
-  const months = ['Jan', 'Feb', 'Mrt', 'Apr', 'Mei', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dec']
-  return `${d.date()} ${months[d.month()]}`
+  const monthKeys = [
+    'header.months.0', 'header.months.1', 'header.months.2', 'header.months.3',
+    'header.months.4', 'header.months.5', 'header.months.6', 'header.months.7',
+    'header.months.8', 'header.months.9', 'header.months.10', 'header.months.11',
+  ]
+  const monthName = t(monthKeys[d.month()])
+  return `${d.date()} ${monthName.substring(0, 3)}`
 }
 </script>
 

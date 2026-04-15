@@ -1,10 +1,12 @@
+import type { LocalizedString } from '~/i18n/types'
+
 export interface Hotel {
   id: string
   slug: string
   name: string
   starRating: number
   location: HotelLocation
-  description: string
+  description: LocalizedString
   images: HotelImage[]
   facilities: Facility[]
   reviews: ReviewSummary
@@ -24,13 +26,13 @@ export interface HotelLocation {
 export interface HotelImage {
   id: string
   url: string
-  alt: string
+  alt: LocalizedString
   position: 'hero' | 'gallery'
 }
 
 export interface Facility {
   icon: string
-  label: string
+  label: LocalizedString
 }
 
 export interface ReviewSummary {
@@ -40,7 +42,7 @@ export interface ReviewSummary {
 }
 
 export interface ReviewCategory {
-  name: string
+  name: LocalizedString
   icon: string
   score: number
 }
@@ -50,20 +52,20 @@ export interface Review {
   author: string
   date: string
   score: number
-  text: string
+  text: LocalizedString
   images?: string[]
-  arrangement?: string
+  arrangement?: LocalizedString
 }
 
 export interface NearbyTip {
   id: string
-  title: string
-  description: string
+  title: LocalizedString
+  description: LocalizedString
   image: string
 }
 
 export interface FaqItem {
   id: string
-  question: string
-  answer: string
+  question: LocalizedString
+  answer: LocalizedString
 }

@@ -1,11 +1,11 @@
 <template>
   <aside class="filter-panel">
-    <h2 class="filter-panel__title">Filters</h2>
+    <h2 class="filter-panel__title">{{ t('search.filters') }}</h2>
 
-    <div v-for="group in filterGroups" :key="group.title" class="filter-group">
+    <div v-for="(group, index) in filterGroups" :key="group.title" class="filter-group">
       <button
         class="filter-group__toggle"
-        @click="group.open = !group.open"
+        @click="toggleGroup(index)"
         :aria-expanded="group.open"
       >
         <span class="filter-group__label">{{ group.title }}</span>
@@ -34,49 +34,68 @@
 </template>
 
 <script setup lang="ts">
+const { t } = useI18n()
+
 interface FilterGroup {
   title: string
   open: boolean
   items: string[]
 }
 
-const filterGroups = reactive<FilterGroup[]>([
+const openState = reactive<Record<string, boolean>>({
+  travelDuration: true,
+  location: true,
+  arrangement: true,
+  activities: true,
+  hotelFacilities: true,
+  room: true,
+  special: true,
+})
+
+const filterGroups = computed<FilterGroup[]>(() => [
   {
-    title: 'Reisduur',
-    open: true,
-    items: ['1 dag', '2 dagen', '3 dagen', '4 dagen', '5 of meer dagen'],
+    title: t('filter.travelDuration'),
+    open: openState.travelDuration,
+    items: [t('filter.1day'), t('filter.2days'), t('filter.3days'), t('filter.4days'), t('filter.5plusDays')],
   },
   {
-    title: 'Locatie',
-    open: true,
-    items: ['Aan het water', 'Dicht bij zee', 'In het bos', 'In de natuur', 'City breaks'],
+    title: t('filter.location'),
+    open: openState.location,
+    items: [t('filter.waterside'), t('filter.nearSea'), t('filter.inForest'), t('filter.inNature'), t('filter.cityBreaks')],
   },
   {
-    title: 'Arrangement',
-    open: true,
-    items: ['Culinaire hoogstandjes', 'Met diner', 'Laat uitchecken, lang uitslapen'],
+    title: t('filter.arrangement'),
+    open: openState.arrangement,
+    items: [t('filter.culinaryHighlights'), t('filter.withDinner'), t('filter.lateCheckout')],
   },
   {
-    title: 'Activiteiten',
-    open: true,
-    items: ['Fietsen', 'Wandelen'],
+    title: t('filter.activities'),
+    open: openState.activities,
+    items: [t('filter.cycling'), t('filter.hiking')],
   },
   {
-    title: 'Hotel Faciliteiten',
-    open: true,
-    items: ['Wellness', 'Zwembad', 'Hond mag mee', '5-sterren luxe'],
+    title: t('filter.hotelFacilities'),
+    open: openState.hotelFacilities,
+    items: [t('filter.wellness'), t('filter.pool'), t('filter.dogFriendly'), t('filter.fiveStarLuxury')],
   },
   {
-    title: 'Kamer',
-    open: true,
-    items: ['Jacuzzi op de kamer', 'Luxe Suite'],
+    title: t('filter.room'),
+    open: openState.room,
+    items: [t('filter.jacuzzi'), t('filter.luxeSuite')],
   },
   {
-    title: 'Special',
-    open: true,
-    items: ['Best price', 'New hotels', 'Exclusief bij ViaLuxury'],
+    title: t('filter.special'),
+    open: openState.special,
+    items: [t('filter.bestPrice'), t('filter.newHotels'), t('filter.exclusive')],
   },
 ])
+
+const groupKeys = ['travelDuration', 'location', 'arrangement', 'activities', 'hotelFacilities', 'room', 'special'] as const
+
+function toggleGroup(index: number) {
+  const key = groupKeys[index]
+  openState[key] = !openState[key]
+}
 </script>
 
 <style scoped>

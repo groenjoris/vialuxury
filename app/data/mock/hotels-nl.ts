@@ -1,4 +1,5 @@
 import type { MapHotel, MapHotelPackage } from '~/types/mapHotel'
+import type { LocalizedString } from '~/i18n/types'
 
 /**
  * Generated demo dataset for the /kaart browse-map page.
@@ -98,17 +99,17 @@ const HERO_IMAGES = [
   '/images/hotel-ter-zand-tower.jpg',
   '/images/hotel-ter-zand-pool.jpg',
 ]
-const ALL_INCLUSIONS = [
-  'Royal breakfast included',
-  '6 course Michelin diner at Sense',
-  'Welcome drink on arrival',
-  'Late check-out until 14:00',
-  'Spa & wellness access',
-  'Free parking',
-  'Bike rental for 1 day',
-  'Bottle of champagne',
-  'Hammam treatment',
-  'Daily housekeeping',
+const ALL_INCLUSIONS: LocalizedString[] = [
+  { nl: 'Koninklijk ontbijt inbegrepen', en: 'Royal breakfast included' },
+  { nl: '6-gangen Michelin diner bij Sense', en: '6 course Michelin diner at Sense' },
+  { nl: 'Welkomstdrankje bij aankomst', en: 'Welcome drink on arrival' },
+  { nl: 'Late check-out tot 14:00', en: 'Late check-out until 14:00' },
+  { nl: 'Spa & wellness toegang', en: 'Spa & wellness access' },
+  { nl: 'Gratis parkeren', en: 'Free parking' },
+  { nl: 'Fietsverhuur voor 1 dag', en: 'Bike rental for 1 day' },
+  { nl: 'Fles champagne', en: 'Bottle of champagne' },
+  { nl: 'Hammam behandeling', en: 'Hammam treatment' },
+  { nl: 'Dagelijkse schoonmaak', en: 'Daily housekeeping' },
 ]
 
 function randomName(seedIdx: number): string {

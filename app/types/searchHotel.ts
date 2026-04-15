@@ -1,3 +1,5 @@
+import type { LocalizedString } from '~/i18n/types'
+
 export interface SearchHotel {
   id: string
   slug: string
@@ -15,10 +17,10 @@ export interface SearchHotelDeal {
   id: string
   slug: string
   nights: number
-  title: string
+  title: LocalizedString
   basePrice: number
   originalPrice: number
   discountPercentage: number
-  highlights: string[]
-  inclusions: string[]
+  highlights: LocalizedString[]
+  inclusions: LocalizedString[]
 }

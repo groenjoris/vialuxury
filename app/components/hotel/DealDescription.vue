@@ -6,12 +6,12 @@
 
     <div class="deal-description__included">
       <h3 class="deal-description__heading">
-        In dit arrangement voor <strong>{{ persons }} {{ persons === 1 ? 'persoon' : 'personen' }}</strong> is het volgende inbegrepen:
+        {{ t('deal.inclusionsHeading') }} <strong>{{ persons }} {{ persons === 1 ? t('common.personSingular') : t('common.personPlural') }}</strong> {{ t('deal.inclusionsEnd') }}
       </h3>
       <ul class="included-list">
         <li v-for="item in items" :key="item.id" class="included-list__item">
           <span class="included-list__icon">✓</span>
-          <span>{{ item.title }}</span>
+          <span>{{ localized(item.title) }}</span>
         </li>
       </ul>
     </div>
@@ -20,6 +20,8 @@
 
 <script setup lang="ts">
 import type { ArrangementItem } from '~/types/booking'
+
+const { t, localized } = useI18n()
 
 defineProps<{
   description: string

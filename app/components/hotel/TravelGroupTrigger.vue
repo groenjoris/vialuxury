@@ -9,13 +9,14 @@
       </svg>
     </span>
     <span class="travel-trigger__text">{{ store.travelGroupSummary }}</span>
-    <span class="travel-trigger__edit">Wijzig</span>
+    <span class="travel-trigger__edit">{{ t('common.edit') }}</span>
   </button>
 </template>
 
 <script setup lang="ts">
 import { useDealStore } from '~/stores/deal'
 
+const { t } = useI18n()
 const store = useDealStore()
 </script>
 

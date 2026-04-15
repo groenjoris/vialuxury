@@ -1,8 +1,10 @@
+import type { LocalizedString } from '~/i18n/types'
+
 export interface Arrangement {
   id: string
   hotelId: string
   hotelSlug: string
-  title: string
+  title: LocalizedString
   baseNights: number
   maxNights: number
   minNights: number
@@ -12,7 +14,7 @@ export interface Arrangement {
   baseItems: ArrangementItem[]
   configurableExtras: ConfigurableExtra[]
   roomTypes: RoomType[]
-  cancellationPolicy: string
+  cancellationPolicy: LocalizedString
   discountPercentage: number
   basePricePerNight: number
 }
@@ -20,10 +22,10 @@ export interface Arrangement {
 export interface ArrangementItem {
   id: string
   type: 'overnight' | 'breakfast' | 'dinner' | 'activity' | 'spa' | 'amenity' | 'upgrade'
-  title: string
-  titleTemplate: string
-  shortDescription: string
-  description: string
+  title: LocalizedString
+  titleTemplate: LocalizedString
+  shortDescription: LocalizedString
+  description: LocalizedString
   image?: string
   icon: string
   isPerNight: boolean
@@ -33,8 +35,8 @@ export interface ArrangementItem {
 
 export interface ConfigurableExtra {
   id: string
-  title: string
-  description: string
+  title: LocalizedString
+  description: LocalizedString
   icon: string
   image?: string
   pricePerUnit: number
@@ -45,8 +47,8 @@ export interface ConfigurableExtra {
 
 export interface RoomType {
   id: string
-  name: string
-  description: string
+  name: LocalizedString
+  description: LocalizedString
   pricePerNight: number
   images: string[]
   isDefault: boolean

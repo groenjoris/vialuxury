@@ -13,37 +13,39 @@ export const hotelTerZand: Hotel = {
     coordinates: { lat: 51.6975, lng: 3.6953 },
     address: 'Duinweg 1, 4328 KX Burgh-Haamstede',
   },
-  description:
-    'Dit exclusieve hotelarrangement is uitsluitend te boeken via ViaLuxury – en daar zijn we trots op! Adem diep in, Adem rustig uit! Je bent aangekomen bij Hotel Ter Zand, verscholen tussen de duinen. Een plek waar rust en comfort samenkomen. Je komt hier niet alleen om te overnachten – je komt om te beleven, te vertragen en opnieuw verbinding te maken. Met jezelf. Met de natuur. Met het moment.',
+  description: {
+    nl: 'Dit exclusieve hotelarrangement is uitsluitend te boeken via ViaLuxury – en daar zijn we trots op! Adem diep in, Adem rustig uit! Je bent aangekomen bij Hotel Ter Zand, verscholen tussen de duinen. Een plek waar rust en comfort samenkomen. Je komt hier niet alleen om te overnachten – je komt om te beleven, te vertragen en opnieuw verbinding te maken. Met jezelf. Met de natuur. Met het moment.',
+    en: 'This exclusive hotel package is available only through ViaLuxury – and we are proud of that! Breathe in deeply, breathe out slowly! You have arrived at Hotel Ter Zand, tucked away among the dunes. A place where tranquility and comfort come together. You are not just here to stay overnight – you are here to experience, to slow down and to reconnect. With yourself. With nature. With the moment.',
+  },
   images: [
-    { id: 'img-1', url: '/images/hotel-ter-zand-hero.jpg', alt: 'Strand bij Hotel Ter Zand bij zonsondergang', position: 'hero' },
-    { id: 'img-2', url: '/images/hotel-ter-zand-room.jpg', alt: 'Luxe hotelkamer met comfortabel bed', position: 'gallery' },
-    { id: 'img-3', url: '/images/hotel-ter-zand-tower.jpg', alt: 'Historische toren in de omgeving', position: 'gallery' },
-    { id: 'img-4', url: '/images/hotel-ter-zand-food.jpg', alt: 'Culinair gerecht van het restaurant', position: 'gallery' },
-    { id: 'img-5', url: '/images/hotel-ter-zand-pool.jpg', alt: 'Binnenzwembad van het hotel', position: 'gallery' },
+    { id: 'img-1', url: '/images/hotel-ter-zand-hero.jpg', alt: { nl: 'Strand bij Hotel Ter Zand bij zonsondergang', en: 'Beach at Hotel Ter Zand at sunset' }, position: 'hero' },
+    { id: 'img-2', url: '/images/hotel-ter-zand-room.jpg', alt: { nl: 'Luxe hotelkamer met comfortabel bed', en: 'Luxury hotel room with comfortable bed' }, position: 'gallery' },
+    { id: 'img-3', url: '/images/hotel-ter-zand-tower.jpg', alt: { nl: 'Historische toren in de omgeving', en: 'Historic tower in the surrounding area' }, position: 'gallery' },
+    { id: 'img-4', url: '/images/hotel-ter-zand-food.jpg', alt: { nl: 'Culinair gerecht van het restaurant', en: 'Culinary dish from the restaurant' }, position: 'gallery' },
+    { id: 'img-5', url: '/images/hotel-ter-zand-pool.jpg', alt: { nl: 'Binnenzwembad van het hotel', en: 'Indoor swimming pool of the hotel' }, position: 'gallery' },
   ],
   facilities: [
-    { icon: 'breakfast', label: 'Inclusief ontbijt' },
-    { icon: 'dinner', label: 'Inclusief diner' },
-    { icon: 'beach', label: 'Ligging aan zee' },
-    { icon: 'parking', label: 'Gratis parkeren' },
-    { icon: 'pool', label: 'Zwembad' },
-    { icon: 'spa', label: 'Wellness' },
-    { icon: 'checkout', label: 'Late check-out' },
-    { icon: 'wifi', label: 'Gratis WiFi' },
-    { icon: 'bike', label: 'Fietsverhuur' },
-    { icon: 'restaurant', label: 'Restaurant/Bar' },
+    { icon: 'breakfast', label: { nl: 'Inclusief ontbijt', en: 'Breakfast included' } },
+    { icon: 'dinner', label: { nl: 'Inclusief diner', en: 'Dinner included' } },
+    { icon: 'beach', label: { nl: 'Ligging aan zee', en: 'Beachfront location' } },
+    { icon: 'parking', label: { nl: 'Gratis parkeren', en: 'Free parking' } },
+    { icon: 'pool', label: { nl: 'Zwembad', en: 'Swimming pool' } },
+    { icon: 'spa', label: { nl: 'Wellness', en: 'Wellness' } },
+    { icon: 'checkout', label: { nl: 'Late check-out', en: 'Late check-out' } },
+    { icon: 'wifi', label: { nl: 'Gratis WiFi', en: 'Free WiFi' } },
+    { icon: 'bike', label: { nl: 'Fietsverhuur', en: 'Bike rental' } },
+    { icon: 'restaurant', label: { nl: 'Restaurant/Bar', en: 'Restaurant/Bar' } },
   ],
   reviews: {
     overallScore: 4.3,
     totalReviews: 77,
     categories: [
-      { name: 'Hygiëne', icon: 'cleaning_services', score: 4.8 },
-      { name: 'Service', icon: 'local_activity', score: 4.7 },
-      { name: 'Kamers', icon: 'bed', score: 4.8 },
-      { name: 'Locatie', icon: 'location_on', score: 4.9 },
-      { name: 'Gastronomie', icon: 'restaurant', score: 4.8 },
-      { name: 'Aankomst', icon: 'card_travel', score: 4.6 },
+      { name: { nl: 'Hygiëne', en: 'Hygiene' }, icon: 'cleaning_services', score: 4.8 },
+      { name: { nl: 'Service', en: 'Service' }, icon: 'local_activity', score: 4.7 },
+      { name: { nl: 'Kamers', en: 'Rooms' }, icon: 'bed', score: 4.8 },
+      { name: { nl: 'Locatie', en: 'Location' }, icon: 'location_on', score: 4.9 },
+      { name: { nl: 'Gastronomie', en: 'Gastronomy' }, icon: 'restaurant', score: 4.8 },
+      { name: { nl: 'Aankomst', en: 'Arrival' }, icon: 'card_travel', score: 4.6 },
     ],
   },
   individualReviews: [
@@ -52,7 +54,10 @@ export const hotelTerZand: Hotel = {
       author: 'KaiB',
       date: '2026-07-22',
       score: 5,
-      text: 'Een fantastisch verblijf! De kamer was ruim en schoon, het ontbijt uitgebreid en het personeel ontzettend vriendelijk. De ligging tussen de duinen is werkelijk prachtig. We komen zeker terug!',
+      text: {
+        nl: 'Een fantastisch verblijf! De kamer was ruim en schoon, het ontbijt uitgebreid en het personeel ontzettend vriendelijk. De ligging tussen de duinen is werkelijk prachtig. We komen zeker terug!',
+        en: 'A fantastic stay! The room was spacious and clean, the breakfast extensive and the staff incredibly friendly. The location among the dunes is truly beautiful. We will definitely come back!',
+      },
       images: ['/images/reviews/rev-1-1.jpg', '/images/reviews/rev-1-2.jpg'],
     },
     {
@@ -60,21 +65,30 @@ export const hotelTerZand: Hotel = {
       author: 'MarjaV',
       date: '2026-07-22',
       score: 5,
-      text: 'Perfect weekend getaway. Het diner was voortreffelijk en de wellness geweldig om te ontspannen na een strandwandeling. Aanrader!',
+      text: {
+        nl: 'Perfect weekend getaway. Het diner was voortreffelijk en de wellness geweldig om te ontspannen na een strandwandeling. Aanrader!',
+        en: 'Perfect weekend getaway. The dinner was exquisite and the wellness was wonderful for relaxing after a beach walk. Highly recommended!',
+      },
     },
     {
       id: 'rev-3',
       author: 'PeterK',
       date: '2026-07-22',
       score: 4,
-      text: 'Mooi hotel met goede faciliteiten. De locatie is top, direct bij het strand. Enige minpuntje was dat het zwembad vrij druk was in het weekend.',
+      text: {
+        nl: 'Mooi hotel met goede faciliteiten. De locatie is top, direct bij het strand. Enige minpuntje was dat het zwembad vrij druk was in het weekend.',
+        en: 'Beautiful hotel with great facilities. The location is superb, right next to the beach. The only downside was that the pool was quite busy on the weekend.',
+      },
     },
     {
       id: 'rev-4',
       author: 'SophieD',
       date: '2026-07-22',
       score: 5,
-      text: 'Wat een heerlijk arrangement! Alles was tot in de puntjes verzorgd. Het welkomstdrankje bij aankomst zette meteen de toon voor een ontspannen verblijf.',
+      text: {
+        nl: 'Wat een heerlijk arrangement! Alles was tot in de puntjes verzorgd. Het welkomstdrankje bij aankomst zette meteen de toon voor een ontspannen verblijf.',
+        en: 'What a wonderful package! Everything was perfectly arranged. The welcome drink upon arrival immediately set the tone for a relaxing stay.',
+      },
       images: ['/images/reviews/rev-4-1.jpg', '/images/reviews/rev-4-2.jpg'],
     },
     {
@@ -82,66 +96,117 @@ export const hotelTerZand: Hotel = {
       author: 'JanW',
       date: '2026-07-22',
       score: 4,
-      text: 'Goede prijs-kwaliteitverhouding. Het hotel is netjes en de omgeving is prachtig. Het ontbijt had wat meer variatie mogen hebben.',
+      text: {
+        nl: 'Goede prijs-kwaliteitverhouding. Het hotel is netjes en de omgeving is prachtig. Het ontbijt had wat meer variatie mogen hebben.',
+        en: 'Good value for money. The hotel is well-maintained and the surroundings are beautiful. The breakfast could have had a bit more variety.',
+      },
     },
     {
       id: 'rev-6',
       author: 'AnneL',
       date: '2026-07-22',
       score: 5,
-      text: 'Topverblijf! De upgrade naar een luxere kamer was fantastisch. Uitzicht op de duinen, heerlijk bed en een geweldige service.',
+      text: {
+        nl: 'Topverblijf! De upgrade naar een luxere kamer was fantastisch. Uitzicht op de duinen, heerlijk bed en een geweldige service.',
+        en: 'Excellent stay! The upgrade to a more luxurious room was fantastic. Views of the dunes, a wonderful bed and great service.',
+      },
     },
   ],
   nearbyTips: [
     {
       id: 'tip-1',
-      title: 'Restaurant Grand Hotel Ter Duin',
-      description: 'Stijlvol dineren met uitzicht op de duinen. Geniet van gerechten met verse, regionale ingrediënten in het restaurant van Grand Hotel Ter Duin.',
+      title: { nl: 'Restaurant Grand Hotel Ter Duin', en: 'Restaurant Grand Hotel Ter Duin' },
+      description: {
+        nl: 'Stijlvol dineren met uitzicht op de duinen. Geniet van gerechten met verse, regionale ingrediënten in het restaurant van Grand Hotel Ter Duin.',
+        en: 'Stylish dining with views of the dunes. Enjoy dishes made with fresh, regional ingredients at the restaurant of Grand Hotel Ter Duin.',
+      },
       image: '/images/tips/restaurant.jpg',
     },
     {
       id: 'tip-2',
-      title: 'Ontdek Museum Burgh-Haamstede',
-      description: 'Ontdek de rijke geschiedenis en cultuur van de Zeeuwse kust in dit charmante lokale museum.',
+      title: { nl: 'Ontdek Museum Burgh-Haamstede', en: 'Discover Museum Burgh-Haamstede' },
+      description: {
+        nl: 'Ontdek de rijke geschiedenis en cultuur van de Zeeuwse kust in dit charmante lokale museum.',
+        en: 'Discover the rich history and culture of the Zeeland coast in this charming local museum.',
+      },
       image: '/images/tips/museum.jpg',
     },
     {
       id: 'tip-3',
-      title: 'Strandwandeling',
-      description: 'Maak een wandeling over het uitgestrekte strand van Burgh-Haamstede, een van de mooiste stranden van Zeeland.',
+      title: { nl: 'Strandwandeling', en: 'Beach walk' },
+      description: {
+        nl: 'Maak een wandeling over het uitgestrekte strand van Burgh-Haamstede, een van de mooiste stranden van Zeeland.',
+        en: 'Take a walk along the expansive beach of Burgh-Haamstede, one of the most beautiful beaches in Zeeland.',
+      },
       image: '/images/tips/beach.jpg',
     },
   ],
   faq: [
     {
       id: 'faq-1',
-      question: 'Kan het arrangement ook voor meer personen gebruikt worden?',
-      answer: 'Ja, je kunt het aantal personen aanpassen in de configuratie bovenaan de pagina. De prijs wordt automatisch herberekend.',
+      question: {
+        nl: 'Kan het arrangement ook voor meer personen gebruikt worden?',
+        en: 'Can the package be used for more people?',
+      },
+      answer: {
+        nl: 'Ja, je kunt het aantal personen aanpassen in de configuratie bovenaan de pagina. De prijs wordt automatisch herberekend.',
+        en: 'Yes, you can adjust the number of people in the configuration at the top of the page. The price is automatically recalculated.',
+      },
     },
     {
       id: 'faq-2',
-      question: 'Hoe zit het met de annuleringsvoorwaarden?',
-      answer: 'Bij dit arrangement kun je gratis annuleren tot 7 dagen voor de check-in datum. Daarna worden annuleringskosten in rekening gebracht.',
+      question: {
+        nl: 'Hoe zit het met de annuleringsvoorwaarden?',
+        en: 'What about the cancellation policy?',
+      },
+      answer: {
+        nl: 'Bij dit arrangement kun je gratis annuleren tot 7 dagen voor de check-in datum. Daarna worden annuleringskosten in rekening gebracht.',
+        en: 'With this package you can cancel for free up to 7 days before the check-in date. After that, cancellation fees will apply.',
+      },
     },
     {
       id: 'faq-3',
-      question: 'Zijn huisdieren welkom?',
-      answer: 'Nee, helaas zijn huisdieren niet toegestaan in Hotel Ter Zand.',
+      question: {
+        nl: 'Zijn huisdieren welkom?',
+        en: 'Are pets welcome?',
+      },
+      answer: {
+        nl: 'Nee, helaas zijn huisdieren niet toegestaan in Hotel Ter Zand.',
+        en: 'No, unfortunately pets are not allowed at Hotel Ter Zand.',
+      },
     },
     {
       id: 'faq-4',
-      question: 'Hoe laat is het inchecken en uitchecken?',
-      answer: 'Check-in is vanaf 15:00 uur. Check-out is tot 11:00 uur, of tot 12:00 uur met de late check-out die bij dit arrangement is inbegrepen.',
+      question: {
+        nl: 'Hoe laat is het inchecken en uitchecken?',
+        en: 'What are the check-in and check-out times?',
+      },
+      answer: {
+        nl: 'Check-in is vanaf 15:00 uur. Check-out is tot 11:00 uur, of tot 12:00 uur met de late check-out die bij dit arrangement is inbegrepen.',
+        en: 'Check-in is from 3:00 PM. Check-out is until 11:00 AM, or until 12:00 PM with the late check-out included in this package.',
+      },
     },
     {
       id: 'faq-5',
-      question: 'Is er parkeergelegenheid?',
-      answer: 'Ja, er is gratis parkeergelegenheid bij het hotel. Reserveren is niet nodig.',
+      question: {
+        nl: 'Is er parkeergelegenheid?',
+        en: 'Is there parking available?',
+      },
+      answer: {
+        nl: 'Ja, er is gratis parkeergelegenheid bij het hotel. Reserveren is niet nodig.',
+        en: 'Yes, there is free parking at the hotel. No reservation is needed.',
+      },
     },
     {
       id: 'faq-6',
-      question: 'Hoe bereik ik de wellness?',
-      answer: 'De wellness- en saunafaciliteiten bevinden zich in Grand Hotel Ter Duin, op circa 200 meter loopafstand van Hotel Ter Zand.',
+      question: {
+        nl: 'Hoe bereik ik de wellness?',
+        en: 'How do I reach the wellness facilities?',
+      },
+      answer: {
+        nl: 'De wellness- en saunafaciliteiten bevinden zich in Grand Hotel Ter Duin, op circa 200 meter loopafstand van Hotel Ter Zand.',
+        en: 'The wellness and sauna facilities are located at Grand Hotel Ter Duin, approximately 200 metres walking distance from Hotel Ter Zand.',
+      },
     },
   ],
 }
@@ -150,7 +215,10 @@ export const arrangementTerZand: Arrangement = {
   id: 'arr-ter-zand-1',
   hotelId: 'hotel-ter-zand-1',
   hotelSlug: 'ter-zand',
-  title: 'Hotel De Plesman x Chanson, Den Haag incl. 4* hotel',
+  title: {
+    nl: 'Hotel De Plesman x Chanson, Den Haag incl. 4* hotel',
+    en: 'Hotel De Plesman x Chanson, The Hague incl. 4* hotel',
+  },
   baseNights: 2,
   maxNights: 7,
   minNights: 1,
@@ -159,16 +227,21 @@ export const arrangementTerZand: Arrangement = {
   minPersons: 1,
   discountPercentage: 20,
   basePricePerNight: 129,
-  cancellationPolicy: 'Gratis annuleren tot 7 dagen voor check-in',
+  cancellationPolicy: {
+    nl: 'Gratis annuleren tot 7 dagen voor check-in',
+    en: 'Free cancellation up to 7 days before check-in',
+  },
   baseItems: [
     {
       id: 'item-overnight',
       type: 'overnight',
-      title: '2 x Overnachting',
-      titleTemplate: '{count} x Overnachting',
-      shortDescription: 'Verblijf in een comfortabele kamer',
-      description:
-        'Ervaar de rust van de Zeeuwse kust in een stijlvolle en comfortabele omgeving. Bij Hotel Ter Zand verblijf je in een ruime standaard kamer, voorzien van alle gemakken voor een ontspannen verblijf. Geniet van twee heerlijke overnachtingen in het hart van de natuur, op loopafstand van strand, bos en duinen.',
+      title: { nl: '2 x Overnachting', en: '2 x Overnight stay' },
+      titleTemplate: { nl: '{count} x Overnachting', en: '{count} x Overnight stay' },
+      shortDescription: { nl: 'Verblijf in een comfortabele kamer', en: 'Stay in a comfortable room' },
+      description: {
+        nl: 'Ervaar de rust van de Zeeuwse kust in een stijlvolle en comfortabele omgeving. Bij Hotel Ter Zand verblijf je in een ruime standaard kamer, voorzien van alle gemakken voor een ontspannen verblijf. Geniet van twee heerlijke overnachtingen in het hart van de natuur, op loopafstand van strand, bos en duinen.',
+        en: 'Experience the tranquility of the Zeeland coast in a stylish and comfortable setting. At Hotel Ter Zand you stay in a spacious standard room equipped with all amenities for a relaxing stay. Enjoy two wonderful nights in the heart of nature, within walking distance of the beach, forest and dunes.',
+      },
       image: '/images/arrangement/overnight.jpg',
       icon: 'hotel',
       isPerNight: true,
@@ -178,11 +251,13 @@ export const arrangementTerZand: Arrangement = {
     {
       id: 'item-upgrade',
       type: 'upgrade',
-      title: 'Upgrade naar luxer kamertype',
-      titleTemplate: 'Upgrade naar luxer kamertype',
-      shortDescription: 'Geniet van extra ruimte en comfort',
-      description:
-        'Bij Hotel Ter Zand maken we je verblijf nog specialer. Boek nu en je wordt standaard geüpgraded naar een luxer kamertype – zonder extra kosten. Geniet van extra ruimte, nog meer comfort en luxe voorzieningen, terwijl je omringd bent door de rustgevende natuur van de Zeeuwse kust.',
+      title: { nl: 'Upgrade naar luxer kamertype', en: 'Upgrade to a more luxurious room type' },
+      titleTemplate: { nl: 'Upgrade naar luxer kamertype', en: 'Upgrade to a more luxurious room type' },
+      shortDescription: { nl: 'Geniet van extra ruimte en comfort', en: 'Enjoy extra space and comfort' },
+      description: {
+        nl: 'Bij Hotel Ter Zand maken we je verblijf nog specialer. Boek nu en je wordt standaard geüpgraded naar een luxer kamertype – zonder extra kosten. Geniet van extra ruimte, nog meer comfort en luxe voorzieningen, terwijl je omringd bent door de rustgevende natuur van de Zeeuwse kust.',
+        en: 'At Hotel Ter Zand we make your stay even more special. Book now and you will be upgraded to a more luxurious room type as standard – at no extra cost. Enjoy extra space, even more comfort and luxury amenities, while surrounded by the soothing nature of the Zeeland coast.',
+      },
       image: '/images/arrangement/upgrade.jpg',
       icon: 'upgrade',
       isPerNight: false,
@@ -192,11 +267,13 @@ export const arrangementTerZand: Arrangement = {
     {
       id: 'item-breakfast',
       type: 'breakfast',
-      title: 'Dagelijks ontbijtbuffet',
-      titleTemplate: 'Dagelijks ontbijtbuffet',
-      shortDescription: 'Uitgebreid ontbijtbuffet elke ochtend',
-      description:
-        "'s Ochtends kan je gebruik maken van het uitgebreide ontbijtbuffet van het hotel. Begin de dag goed met een vers eitje, luxe broodjes, een rijke salade of vers fruit.",
+      title: { nl: 'Dagelijks ontbijtbuffet', en: 'Daily breakfast buffet' },
+      titleTemplate: { nl: 'Dagelijks ontbijtbuffet', en: 'Daily breakfast buffet' },
+      shortDescription: { nl: 'Uitgebreid ontbijtbuffet elke ochtend', en: 'Extensive breakfast buffet every morning' },
+      description: {
+        nl: "'s Ochtends kan je gebruik maken van het uitgebreide ontbijtbuffet van het hotel. Begin de dag goed met een vers eitje, luxe broodjes, een rijke salade of vers fruit.",
+        en: 'In the morning you can enjoy the extensive breakfast buffet of the hotel. Start the day right with a fresh egg, luxury rolls, a rich salad or fresh fruit.',
+      },
       image: '/images/arrangement/breakfast.jpg',
       icon: 'free_breakfast',
       isPerNight: true,
@@ -206,11 +283,16 @@ export const arrangementTerZand: Arrangement = {
     {
       id: 'item-dinner',
       type: 'dinner',
-      title: 'Culinair 3-Gangendiner (1 avond)',
-      titleTemplate: 'Culinair 3-Gangendiner (1 avond)',
-      shortDescription: '3-gangen diner met seizoensgebonden ingrediënten',
-      description:
-        'Tijdens je verblijf geniet je van een verfijnd 3-gangendiner, bereid met verse, seizoensgebonden ingrediënten uit de streek. Het diner vindt plaats in het restaurant van Hotel Ter Zand óf in het sfeervolle restaurant van Grand Hotel Ter Duin, op slechts enkele minuten loopafstand.',
+      title: { nl: 'Culinair 3-Gangendiner (1 avond)', en: 'Culinary 3-course dinner (1 evening)' },
+      titleTemplate: { nl: 'Culinair 3-Gangendiner (1 avond)', en: 'Culinary 3-course dinner (1 evening)' },
+      shortDescription: {
+        nl: '3-gangen diner met seizoensgebonden ingrediënten',
+        en: '3-course dinner with seasonal ingredients',
+      },
+      description: {
+        nl: 'Tijdens je verblijf geniet je van een verfijnd 3-gangendiner, bereid met verse, seizoensgebonden ingrediënten uit de streek. Het diner vindt plaats in het restaurant van Hotel Ter Zand óf in het sfeervolle restaurant van Grand Hotel Ter Duin, op slechts enkele minuten loopafstand.',
+        en: 'During your stay you will enjoy a refined 3-course dinner, prepared with fresh, seasonal ingredients from the region. Dinner takes place in the restaurant of Hotel Ter Zand or in the atmospheric restaurant of Grand Hotel Ter Duin, just a few minutes walk away.',
+      },
       image: '/images/arrangement/dinner.jpg',
       icon: 'restaurant',
       isPerNight: false,
@@ -220,11 +302,13 @@ export const arrangementTerZand: Arrangement = {
     {
       id: 'item-welcome',
       type: 'amenity',
-      title: 'Welkomstdrankje',
-      titleTemplate: 'Welkomstdrankje',
-      shortDescription: 'Welkomstdrankje bij aankomst',
-      description:
-        'Bij aankomst in Hotel Ter Zand ontvang je een welkomstdrankje. Laat dit moment het perfecte begin van je verblijf zijn, terwijl je geniet en tot rust komt.',
+      title: { nl: 'Welkomstdrankje', en: 'Welcome drink' },
+      titleTemplate: { nl: 'Welkomstdrankje', en: 'Welcome drink' },
+      shortDescription: { nl: 'Welkomstdrankje bij aankomst', en: 'Welcome drink upon arrival' },
+      description: {
+        nl: 'Bij aankomst in Hotel Ter Zand ontvang je een welkomstdrankje. Laat dit moment het perfecte begin van je verblijf zijn, terwijl je geniet en tot rust komt.',
+        en: 'Upon arrival at Hotel Ter Zand you will receive a welcome drink. Let this moment be the perfect start of your stay, as you enjoy and unwind.',
+      },
       icon: 'local_bar',
       isPerNight: false,
       isPerPerson: true,
@@ -233,11 +317,13 @@ export const arrangementTerZand: Arrangement = {
     {
       id: 'item-spa',
       type: 'spa',
-      title: 'Gebruik van wellness en fitness',
-      titleTemplate: 'Gebruik van wellness en fitness',
-      shortDescription: 'Sauna, stoombad en fitness',
-      description:
-        "Exclusief voor gasten van ViaLuxury! Je kan tijdens het verblijf gebruik maken van de spa en ontspannende wellnessfaciliteiten. Deze bevinden zich op 200 meter afstand van het hoofdgebouw (gelegen in Grand Hotel Ter Duin). Je kan hier gebruik maken van verschillende faciliteiten zoals 2 sauna's, een Turks stoombad en een zonnebank.",
+      title: { nl: 'Gebruik van wellness en fitness', en: 'Access to wellness and fitness' },
+      titleTemplate: { nl: 'Gebruik van wellness en fitness', en: 'Access to wellness and fitness' },
+      shortDescription: { nl: 'Sauna, stoombad en fitness', en: 'Sauna, steam bath and fitness' },
+      description: {
+        nl: "Exclusief voor gasten van ViaLuxury! Je kan tijdens het verblijf gebruik maken van de spa en ontspannende wellnessfaciliteiten. Deze bevinden zich op 200 meter afstand van het hoofdgebouw (gelegen in Grand Hotel Ter Duin). Je kan hier gebruik maken van verschillende faciliteiten zoals 2 sauna's, een Turks stoombad en een zonnebank.",
+        en: 'Exclusive for ViaLuxury guests! During your stay you can use the spa and relaxing wellness facilities. These are located 200 metres from the main building (at Grand Hotel Ter Duin). You can enjoy various facilities such as 2 saunas, a Turkish steam bath and a sunbed.',
+      },
       icon: 'spa',
       isPerNight: false,
       isPerPerson: false,
@@ -246,11 +332,13 @@ export const arrangementTerZand: Arrangement = {
     {
       id: 'item-pool',
       type: 'amenity',
-      title: 'Gebruik van zwembad',
-      titleTemplate: 'Gebruik van zwembad',
-      shortDescription: 'Overdekt zwembad op 200m afstand',
-      description:
-        'Exclusief voor gasten van ViaLuxury! Je kan tijdens het verblijf gebruik maken van een overdekt zwembad op 200 meter afstand van het hoofdgebouw (gelegen in Grand Hotel Ter Duin). Bij de wellness en het zwembad is badkleding verplicht.',
+      title: { nl: 'Gebruik van zwembad', en: 'Access to swimming pool' },
+      titleTemplate: { nl: 'Gebruik van zwembad', en: 'Access to swimming pool' },
+      shortDescription: { nl: 'Overdekt zwembad op 200m afstand', en: 'Indoor pool 200m away' },
+      description: {
+        nl: 'Exclusief voor gasten van ViaLuxury! Je kan tijdens het verblijf gebruik maken van een overdekt zwembad op 200 meter afstand van het hoofdgebouw (gelegen in Grand Hotel Ter Duin). Bij de wellness en het zwembad is badkleding verplicht.',
+        en: 'Exclusive for ViaLuxury guests! During your stay you can use an indoor swimming pool located 200 metres from the main building (at Grand Hotel Ter Duin). Swimwear is required at the wellness and pool area.',
+      },
       icon: 'pool',
       isPerNight: false,
       isPerPerson: false,
@@ -260,8 +348,11 @@ export const arrangementTerZand: Arrangement = {
   configurableExtras: [
     {
       id: 'extra-dinner-extra',
-      title: 'Extra dineravond',
-      description: 'Nog een avond genieten van een 3-gangendiner in het restaurant.',
+      title: { nl: 'Extra dineravond', en: 'Extra dinner evening' },
+      description: {
+        nl: 'Nog een avond genieten van een 3-gangendiner in het restaurant.',
+        en: 'Another evening enjoying a 3-course dinner at the restaurant.',
+      },
       icon: 'restaurant',
       pricePerUnit: 45,
       pricingBasis: 'per_person',
@@ -270,8 +361,11 @@ export const arrangementTerZand: Arrangement = {
     },
     {
       id: 'extra-spa-treatment',
-      title: 'Spa behandeling',
-      description: 'Ontspannende massage of behandeling in de wellness.',
+      title: { nl: 'Spa behandeling', en: 'Spa treatment' },
+      description: {
+        nl: 'Ontspannende massage of behandeling in de wellness.',
+        en: 'Relaxing massage or treatment at the wellness centre.',
+      },
       icon: 'spa',
       image: '/images/extras/spa-treatment.jpg',
       pricePerUnit: 65,
@@ -281,8 +375,11 @@ export const arrangementTerZand: Arrangement = {
     },
     {
       id: 'extra-bike-rental',
-      title: 'Fietsverhuur (per dag)',
-      description: 'Ontdek de omgeving op de fiets. Inclusief kaart met routes.',
+      title: { nl: 'Fietsverhuur (per dag)', en: 'Bike rental (per day)' },
+      description: {
+        nl: 'Ontdek de omgeving op de fiets. Inclusief kaart met routes.',
+        en: 'Explore the surroundings by bike. Includes a map with routes.',
+      },
       icon: 'pedal_bike',
       pricePerUnit: 15,
       pricingBasis: 'per_person_per_night',
@@ -291,8 +388,11 @@ export const arrangementTerZand: Arrangement = {
     },
     {
       id: 'extra-late-checkout',
-      title: 'Late check-out tot 14:00',
-      description: 'Verleng je verblijf met een late check-out tot 14:00 uur in plaats van 12:00.',
+      title: { nl: 'Late check-out tot 14:00', en: 'Late check-out until 2:00 PM' },
+      description: {
+        nl: 'Verleng je verblijf met een late check-out tot 14:00 uur in plaats van 12:00.',
+        en: 'Extend your stay with a late check-out until 2:00 PM instead of 12:00 PM.',
+      },
       icon: 'schedule',
       pricePerUnit: 25,
       pricingBasis: 'flat',
@@ -303,32 +403,32 @@ export const arrangementTerZand: Arrangement = {
   roomTypes: [
     {
       id: 'room-standard',
-      name: 'Standaard Kamer',
-      description: 'Comfortabele kamer met alle basisvoorzieningen.',
+      name: { nl: 'Standaard Kamer', en: 'Standard Room' },
+      description: { nl: 'Comfortabele kamer met alle basisvoorzieningen.', en: 'Comfortable room with all basic amenities.' },
       pricePerNight: 0,
       images: ['/images/rooms/standard.jpg'],
       isDefault: true,
     },
     {
       id: 'room-superior',
-      name: 'Superior Kamer',
-      description: 'Ruimere kamer met zithoek en uitzicht op de tuin.',
+      name: { nl: 'Superior Kamer', en: 'Superior Room' },
+      description: { nl: 'Ruimere kamer met zithoek en uitzicht op de tuin.', en: 'More spacious room with seating area and garden view.' },
       pricePerNight: 30,
       images: ['/images/rooms/superior.jpg'],
       isDefault: false,
     },
     {
       id: 'room-deluxe',
-      name: 'Deluxe Kamer',
-      description: 'Luxe kamer met balkon en uitzicht op de duinen.',
+      name: { nl: 'Deluxe Kamer', en: 'Deluxe Room' },
+      description: { nl: 'Luxe kamer met balkon en uitzicht op de duinen.', en: 'Luxury room with balcony and dune views.' },
       pricePerNight: 65,
       images: ['/images/rooms/deluxe.jpg'],
       isDefault: false,
     },
     {
       id: 'room-suite',
-      name: 'Junior Suite',
-      description: 'Ruime suite met aparte woonkamer en premium voorzieningen.',
+      name: { nl: 'Junior Suite', en: 'Junior Suite' },
+      description: { nl: 'Ruime suite met aparte woonkamer en premium voorzieningen.', en: 'Spacious suite with separate living room and premium amenities.' },
       pricePerNight: 110,
       images: ['/images/rooms/suite.jpg'],
       isDefault: false,

@@ -29,7 +29,7 @@
 
     <div v-if="showLegend" class="calendar-month__legend">
       <span class="legend-swatch legend-swatch--gold"></span>
-      <span class="legend-label">Kamerupgrade beschikbaar</span>
+      <span class="legend-label">{{ t('room.upgradeAvailable') }}</span>
     </div>
   </div>
 </template>
@@ -38,6 +38,8 @@
 import type { DateAvailability } from '~/types/calendar'
 import { getDutchDayHeaders, getDutchMonthName } from '~/utils/formatDate'
 import dayjs from 'dayjs'
+
+const { t } = useI18n()
 
 const props = defineProps<{
   year: number
@@ -56,14 +58,13 @@ defineEmits<{
   nextMonth: []
 }>()
 
-const dayHeaders = getDutchDayHeaders()
+const dayHeaders = computed(() => [
+  t('header.days.0'), t('header.days.1'), t('header.days.2'), t('header.days.3'),
+  t('header.days.4'), t('header.days.5'), t('header.days.6'),
+])
 
 const monthName = computed(() => {
-  const months = [
-    'Januari', 'Februari', 'Maart', 'April', 'Mei', 'Juni',
-    'Juli', 'Augustus', 'September', 'Oktober', 'November', 'December',
-  ]
-  return months[props.month - 1]
+  return t(`header.months.${props.month - 1}`)
 })
 
 const startOffset = computed(() => {

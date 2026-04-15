@@ -1,3 +1,5 @@
+import type { LocalizedString } from '~/i18n/types'
+
 /**
  * MapHotel — a slim hotel summary used by the /kaart browse map.
  *
@@ -32,7 +34,7 @@ export interface MapHotelPackage {
   /** Original undiscounted price (used for the strikethrough). */
   originalPrice: number
   discountPct: number
-  inclusions: string[]
+  inclusions: LocalizedString[]
   /** Total inclusions count (so we can render "+N more extras included!"). */
   totalInclusions: number
   soldOut: boolean

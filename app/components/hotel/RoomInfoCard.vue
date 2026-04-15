@@ -2,15 +2,15 @@
   <div class="room-info-card">
     <!-- Upgrade ribbon -->
     <div v-if="showUpgradeLabel" class="room-info-card__ribbon">
-      <span>UPGRADE</span>
+      <span>{{ t('common.upgrade') }}</span>
     </div>
 
     <div class="room-info-card__body">
-      <span class="room-info-card__eyebrow">Jouw kamer</span>
-      <h3 class="room-info-card__name">{{ selectedRoom.name }}</h3>
-      <p class="room-info-card__desc">{{ selectedRoom.description }}</p>
+      <span class="room-info-card__eyebrow">{{ t('room.yourRoom') }}</span>
+      <h3 class="room-info-card__name">{{ localized(selectedRoom.name) }}</h3>
+      <p class="room-info-card__desc">{{ localized(selectedRoom.description) }}</p>
       <ul v-if="selectedRoom.features.length" class="room-info-card__amenities">
-        <li v-for="feature in selectedRoom.features" :key="feature">{{ feature }}</li>
+        <li v-for="feature in selectedRoom.features" :key="localized(feature)">{{ localized(feature) }}</li>
       </ul>
     </div>
 
@@ -18,21 +18,21 @@
       <div class="room-info-card__cta">
         <!-- State A: no date selected -->
         <template v-if="!store.checkInDate">
-          <h4 class="room-info-card__cta-heading">Kamer kiezen?</h4>
+          <h4 class="room-info-card__cta-heading">{{ t('room.chooseRoom') }}</h4>
           <p class="room-info-card__cta-text">
-            Voer hiernaast je aankomstdatum in om beschikbare kamers te zien.
+            {{ t('room.enterDate') }}
           </p>
         </template>
 
         <!-- State B: date selected, base/default room -->
         <template v-else-if="selectedRoom.isDefault">
-          <h4 class="room-info-card__cta-heading">Meer luxe?</h4>
+          <h4 class="room-info-card__cta-heading">{{ t('room.moreLuxury') }}</h4>
           <button
             type="button"
             class="room-info-card__cta-action"
             @click="emit('open-upgrades')"
           >
-            Bekijk {{ deal.roomUpgrades.length }} beschikbare kamerupgrades
+            {{ t('room.viewUpgrades') }} {{ deal.roomUpgrades.length }} {{ t('room.availableUpgrades') }}
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
               <polyline points="9 18 15 12 9 6" />
             </svg>
@@ -42,7 +42,7 @@
         <!-- State C: paid upgrade selected -->
         <template v-else>
           <h4 class="room-info-card__cta-heading">
-            Betaalde upgrade geselecteerd
+            {{ t('room.paidUpgradeSelected') }}
             <span class="room-info-card__cta-price">(+{{ formatPrice(selectedRoom.priceExtra) }})</span>
           </h4>
           <button
@@ -53,7 +53,7 @@
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
               <polyline points="15 18 9 12 15 6" />
             </svg>
-            Ongedaan maken
+            {{ t('room.undo') }}
           </button>
         </template>
       </div>
@@ -65,6 +65,8 @@
 import type { Deal } from '~/types/deal'
 import { useDealStore } from '~/stores/deal'
 import { formatPrice } from '~/utils/formatPrice'
+
+const { t, localized } = useI18n()
 
 const props = defineProps<{
   deal: Deal

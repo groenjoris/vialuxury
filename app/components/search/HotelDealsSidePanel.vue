@@ -4,7 +4,7 @@
       <div v-if="isOpen && hotel" class="panel-overlay" @click.self="$emit('close')">
         <aside class="panel" @wheel.stop @touchmove.stop>
           <div class="panel__header">
-            <h2 class="panel__title">Beschikbare deals</h2>
+            <h2 class="panel__title">{{ t('search.availableDeals') }}</h2>
             <p class="panel__subtitle">{{ hotel.name }}</p>
             <div class="panel__hotel-meta">
               <span class="panel__stars" aria-hidden="true">
@@ -12,7 +12,7 @@
               </span>
               <span class="panel__location">{{ hotel.city }}, {{ hotel.region }}</span>
             </div>
-            <button class="panel__close" @click="$emit('close')" aria-label="Sluiten">
+            <button class="panel__close" @click="$emit('close')" :aria-label="t('common.close')">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M18 6L6 18M6 6l12 12" />
               </svg>
@@ -22,7 +22,7 @@
           <div class="panel__body">
             <div v-for="deal in hotel.deals" :key="deal.id" class="deal-card">
               <div class="deal-card__header">
-                <span class="deal-card__nights">{{ deal.nights }} nachten</span>
+                <span class="deal-card__nights">{{ deal.nights }} {{ t('common.nights') }}</span>
                 <div class="deal-card__pricing">
                   <span class="deal-card__discount">-{{ deal.discountPercentage }}%</span>
                   <span class="deal-card__price">{{ formatPrice(deal.basePrice) }}</span>
@@ -30,16 +30,16 @@
                 </div>
               </div>
 
-              <h3 class="deal-card__title">{{ deal.title }}</h3>
+              <h3 class="deal-card__title">{{ localized(deal.title) }}</h3>
 
               <div class="deal-card__inclusions">
                 <div
                   v-for="inc in deal.inclusions"
-                  :key="inc"
+                  :key="localized(inc)"
                   class="deal-card__inc"
                 >
                   <span class="deal-card__check">✓</span>
-                  <span>{{ inc }}</span>
+                  <span>{{ localized(inc) }}</span>
                 </div>
               </div>
 
@@ -47,7 +47,7 @@
                 :to="`/deal/${deal.slug}`"
                 class="btn btn-primary deal-card__btn"
               >
-                Bekijk arrangement
+                {{ t('search.viewArrangement') }}
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                   <polyline points="9 18 15 12 9 6" />
                 </svg>
@@ -63,6 +63,8 @@
 <script setup lang="ts">
 import type { SearchHotel } from '~/types/searchHotel'
 import { formatPrice } from '~/utils/formatPrice'
+
+const { t, localized } = useI18n()
 
 const props = defineProps<{
   isOpen: boolean

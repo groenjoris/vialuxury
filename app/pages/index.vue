@@ -3,11 +3,15 @@
     <TopBar />
     <SiteHeader />
     <div class="container home__content">
-      <p class="home__message">Gebruik de zoekbalk om demo te starten.</p>
+      <p class="home__message">{{ t('home.searchPrompt') }}</p>
     </div>
     <SiteFooter />
   </div>
 </template>
+
+<script setup lang="ts">
+const { t } = useI18n()
+</script>
 
 <style scoped>
 .home__content {

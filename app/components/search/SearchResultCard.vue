@@ -15,33 +15,33 @@
         <span class="result-card__stars" aria-hidden="true">
           <span v-for="n in hotel.starRating" :key="n">★</span>
         </span>
-        <span class="result-card__location">{{ hotel.city }} - Nederland</span>
+        <span class="result-card__location">{{ hotel.city }} - {{ t('common.nederland') }}</span>
       </div>
 
       <!-- Row 3: Arrangement | duration | persons -->
       <div class="result-card__arrangement">
-        <span class="result-card__arrangement-label">Arrangement</span>
+        <span class="result-card__arrangement-label">{{ t('search.arrangement') }}</span>
         <span class="result-card__arrangement-sep">|</span>
         <span>{{ durationLabel }}</span>
         <span class="result-card__arrangement-sep">|</span>
-        <span>2 personen</span>
+        <span>{{ t('search.persons') }}</span>
       </div>
 
       <!-- Two-column area -->
       <div class="result-card__details">
         <!-- Left column: highlights -->
         <div class="result-card__highlights">
-          <span class="result-card__highlights-subtitle">Afhankelijk van gekozen pakket</span>
+          <span class="result-card__highlights-subtitle">{{ t('search.dependsOnPackage') }}</span>
           <div class="result-card__highlight-list">
-            <span v-for="h in topHighlights" :key="h" class="result-card__highlight">
-              <span class="result-card__highlight-check">✓</span> {{ h }}
+            <span v-for="h in topHighlights" :key="localized(h)" class="result-card__highlight">
+              <span class="result-card__highlight-check">✓</span> {{ localized(h) }}
             </span>
           </div>
         </div>
 
         <!-- Right column: pricing + CTA -->
         <div class="result-card__pricing-col">
-          <span class="result-card__price-label">Al vanaf *</span>
+          <span class="result-card__price-label">{{ t('search.fromPrice') }}</span>
           <div class="result-card__price-row">
             <span v-if="lowestOriginal > lowestPrice" class="result-card__original">
               {{ formatPrice(lowestOriginal) }}
@@ -49,7 +49,7 @@
             <span class="result-card__price">{{ formatPrice(lowestPrice) }}</span>
           </div>
           <button class="result-card__cta" @click="$emit('view-deals')">
-            Bekijk {{ hotel.deals.length }} {{ hotel.deals.length === 1 ? 'Deal' : 'Deals' }}
+            {{ t('search.viewDeals') }} {{ hotel.deals.length }} {{ hotel.deals.length === 1 ? t('search.deal') : t('search.dealPlural') }}
           </button>
         </div>
       </div>
@@ -61,6 +61,8 @@
 import type { SearchHotel } from '~/types/searchHotel'
 import { formatPrice } from '~/utils/formatPrice'
 
+const { t, localized } = useI18n()
+
 const props = defineProps<{
   hotel: SearchHotel
 }>()
@@ -71,9 +73,9 @@ defineEmits<{
 
 const durationLabel = computed(() => {
   const nights = [...new Set(props.hotel.deals.map(d => d.nights))].sort((a, b) => a - b)
-  if (nights.length === 1) return `${nights[0]} nachten`
-  if (nights.length === 2) return `${nights[0]} of ${nights[1]} nachten`
-  return `${nights.slice(0, -1).join(', ')} of ${nights[nights.length - 1]} nachten`
+  if (nights.length === 1) return `${nights[0]} ${t('common.nights')}`
+  if (nights.length === 2) return `${nights[0]} of ${nights[1]} ${t('common.nights')}`
+  return `${nights.slice(0, -1).join(', ')} of ${nights[nights.length - 1]} ${t('common.nights')}`
 })
 
 const topHighlights = computed(() => {

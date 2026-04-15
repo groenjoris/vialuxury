@@ -1,8 +1,8 @@
 <template>
   <section class="room-upgrades">
-    <h3 class="room-upgrades__title">Kies je kamertype</h3>
+    <h3 class="room-upgrades__title">{{ t('room.chooseRoomType') }}</h3>
     <p class="room-upgrades__subtitle">
-      Standaard kamer is inbegrepen. Upgrade voor extra comfort.
+      {{ t('room.standardIncluded') }}
     </p>
 
     <div class="room-upgrades__grid">
@@ -13,16 +13,16 @@
         @click="store.selectRoom(deal.baseRoomType.id)"
       >
         <div class="room-card__image">
-          <img :src="deal.baseRoomType.image" :alt="deal.baseRoomType.name" loading="lazy" />
+          <img :src="deal.baseRoomType.image" :alt="localized(deal.baseRoomType.name)" loading="lazy" />
           <span v-if="store.selectedRoomId === deal.baseRoomType.id" class="room-card__check">✓</span>
         </div>
         <div class="room-card__info">
-          <span class="room-card__name">{{ deal.baseRoomType.name }}</span>
-          <span class="room-card__price room-card__price--included">Inbegrepen</span>
+          <span class="room-card__name">{{ localized(deal.baseRoomType.name) }}</span>
+          <span class="room-card__price room-card__price--included">{{ t('common.included') }}</span>
         </div>
         <ul class="room-card__features">
-          <li v-for="feature in deal.baseRoomType.features.slice(0, 3)" :key="feature">
-            {{ feature }}
+          <li v-for="feature in deal.baseRoomType.features.slice(0, 3)" :key="localized(feature)">
+            {{ localized(feature) }}
           </li>
         </ul>
       </button>
@@ -36,16 +36,16 @@
         @click="store.selectRoom(room.id)"
       >
         <div class="room-card__image">
-          <img :src="room.image" :alt="room.name" loading="lazy" />
+          <img :src="room.image" :alt="localized(room.name)" loading="lazy" />
           <span v-if="store.selectedRoomId === room.id" class="room-card__check">✓</span>
         </div>
         <div class="room-card__info">
-          <span class="room-card__name">{{ room.name }}</span>
+          <span class="room-card__name">{{ localized(room.name) }}</span>
           <span class="room-card__price">+ {{ formatPrice(room.priceExtra * deal.nights) }}</span>
         </div>
         <ul class="room-card__features">
-          <li v-for="feature in room.features.slice(0, 3)" :key="feature">
-            {{ feature }}
+          <li v-for="feature in room.features.slice(0, 3)" :key="localized(feature)">
+            {{ localized(feature) }}
           </li>
         </ul>
       </button>
@@ -57,6 +57,8 @@
 import { useDealStore } from '~/stores/deal'
 import { formatPrice } from '~/utils/formatPrice'
 import type { Deal } from '~/types/deal'
+
+const { t, localized } = useI18n()
 
 defineProps<{
   deal: Deal

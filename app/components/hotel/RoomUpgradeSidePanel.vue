@@ -4,9 +4,9 @@
       <div v-if="isOpen" class="panel-overlay" @click.self="$emit('close')">
         <aside class="panel" @wheel.stop @touchmove.stop>
           <div class="panel__header">
-            <h2 class="panel__title">Beschikbare kamerupgrades</h2>
+            <h2 class="panel__title">{{ t('room.availableUpgradesTitle') }}</h2>
             <p class="panel__subtitle">{{ hotelName }}</p>
-            <button class="panel__close" @click="$emit('close')" aria-label="Sluiten">
+            <button class="panel__close" @click="$emit('close')" :aria-label="t('common.close')">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M18 6L6 18M6 6l12 12" />
               </svg>
@@ -16,15 +16,15 @@
           <!-- Check-in / Check-out bar -->
           <div v-if="store.checkInDate" class="panel__dates">
             <div class="panel__date-item">
-              <span class="panel__date-label">Check-in</span>
+              <span class="panel__date-label">{{ t('common.checkIn') }}</span>
               <span class="panel__date-value">{{ formatDate(store.checkInDate) }}</span>
             </div>
             <span class="panel__date-separator">→</span>
             <div class="panel__date-item">
-              <span class="panel__date-label">Check-out</span>
+              <span class="panel__date-label">{{ t('common.checkOut') }}</span>
               <span class="panel__date-value">{{ formatDate(checkOutDate) }}</span>
             </div>
-            <span class="panel__date-nights">{{ deal.nights }} nachten</span>
+            <span class="panel__date-nights">{{ deal.nights }} {{ t('common.nights') }}</span>
           </div>
 
           <div class="panel__body">
@@ -34,16 +34,16 @@
               :class="{ 'room-card--active': store.selectedRoomId === deal.baseRoomType.id }"
             >
               <div v-if="deal.baseRoomType.image" class="room-card__image">
-                <img :src="deal.baseRoomType.image" :alt="deal.baseRoomType.name" loading="lazy" />
+                <img :src="deal.baseRoomType.image" :alt="localized(deal.baseRoomType.name)" loading="lazy" />
               </div>
               <div class="room-card__body">
                 <div class="room-card__header">
-                  <h3 class="room-card__name">{{ deal.baseRoomType.name }}</h3>
-                  <span class="room-card__price room-card__price--included">Inbegrepen</span>
+                  <h3 class="room-card__name">{{ localized(deal.baseRoomType.name) }}</h3>
+                  <span class="room-card__price room-card__price--included">{{ t('common.included') }}</span>
                 </div>
-                <p class="room-card__desc">{{ deal.baseRoomType.description }}</p>
+                <p class="room-card__desc">{{ localized(deal.baseRoomType.description) }}</p>
                 <ul v-if="deal.baseRoomType.features.length" class="room-card__features">
-                  <li v-for="f in deal.baseRoomType.features" :key="f">{{ f }}</li>
+                  <li v-for="f in deal.baseRoomType.features" :key="localized(f)">{{ localized(f) }}</li>
                 </ul>
               </div>
               <div class="room-card__action">
@@ -52,10 +52,10 @@
                   class="btn btn-primary room-card__btn"
                   @click="selectAndClose(deal.baseRoomType.id)"
                 >
-                  Selecteer deze kamer
+                  {{ t('room.selectRoom') }}
                 </button>
                 <div v-else class="room-card__selected">
-                  <span class="room-card__selected-badge">Huidige selectie</span>
+                  <span class="room-card__selected-badge">{{ t('room.currentSelection') }}</span>
                 </div>
               </div>
             </div>
@@ -68,16 +68,16 @@
               :class="{ 'room-card--active': store.selectedRoomId === room.id }"
             >
               <div v-if="room.image" class="room-card__image">
-                <img :src="room.image" :alt="room.name" loading="lazy" />
+                <img :src="room.image" :alt="localized(room.name)" loading="lazy" />
               </div>
               <div class="room-card__body">
                 <div class="room-card__header">
-                  <h3 class="room-card__name">{{ room.name }}</h3>
+                  <h3 class="room-card__name">{{ localized(room.name) }}</h3>
                   <span class="room-card__price">+ {{ formatPrice(room.priceExtra) }}</span>
                 </div>
-                <p class="room-card__desc">{{ room.description }}</p>
+                <p class="room-card__desc">{{ localized(room.description) }}</p>
                 <ul v-if="room.features.length" class="room-card__features">
-                  <li v-for="f in room.features" :key="f">{{ f }}</li>
+                  <li v-for="f in room.features" :key="localized(f)">{{ localized(f) }}</li>
                 </ul>
               </div>
               <div class="room-card__action">
@@ -86,10 +86,10 @@
                   class="btn btn-primary room-card__btn"
                   @click="selectAndClose(room.id)"
                 >
-                  Selecteer deze kamer
+                  {{ t('room.selectRoom') }}
                 </button>
                 <div v-else class="room-card__selected">
-                  <span class="room-card__selected-badge">Huidige selectie</span>
+                  <span class="room-card__selected-badge">{{ t('room.currentSelection') }}</span>
                 </div>
               </div>
             </div>
@@ -104,6 +104,8 @@
 import type { Deal } from '~/types/deal'
 import { useDealStore } from '~/stores/deal'
 import { formatPrice } from '~/utils/formatPrice'
+
+const { t, localized } = useI18n()
 
 const props = defineProps<{
   isOpen: boolean

@@ -3,7 +3,7 @@
     <div class="hero-gallery__main">
       <img
         :src="heroImage?.url || '/images/placeholder.jpg'"
-        :alt="heroImage?.alt || 'Hotel foto'"
+        :alt="heroImage?.alt ? localized(heroImage.alt) : t('common.hotelPhoto')"
         class="hero-gallery__hero-img"
       />
     </div>
@@ -13,14 +13,14 @@
         :key="image.id"
         class="hero-gallery__cell"
       >
-        <img :src="image.url" :alt="image.alt" class="hero-gallery__img" />
+        <img :src="image.url" :alt="localized(image.alt)" class="hero-gallery__img" />
         <button
           v-if="index === galleryImages.length - 1"
           class="hero-gallery__all-btn"
           @click="$emit('openGallery')"
         >
           <span class="all-btn-icon">⊞</span>
-          Alle foto's
+          {{ t('common.allPhotos') }}
         </button>
       </div>
     </div>
@@ -29,6 +29,8 @@
 
 <script setup lang="ts">
 import type { HotelImage } from '~/types/hotel'
+
+const { t, localized } = useI18n()
 
 const props = defineProps<{
   images: HotelImage[]

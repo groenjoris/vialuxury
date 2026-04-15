@@ -3,23 +3,27 @@
     <div class="top-bar__inner container">
       <div class="top-bar__item">
         <span class="top-bar__icon">★</span>
-        <span>Gasten beoordelen ons met een 4.5/5 op Trustpilot</span>
+        <span>{{ t('topbar.trustpilot') }}</span>
       </div>
       <div class="top-bar__item">
         <span class="top-bar__icon">✓</span>
-        <span>Altijd de beste deal</span>
+        <span>{{ t('topbar.bestDeal') }}</span>
       </div>
       <div class="top-bar__item">
         <span class="top-bar__icon">✓</span>
-        <span>Gemakkelijk annuleren</span>
+        <span>{{ t('topbar.easyCancel') }}</span>
       </div>
       <div class="top-bar__item">
         <span class="top-bar__icon">✓</span>
-        <span>Uitgebreid aanbod hotel experiences</span>
+        <span>{{ t('topbar.wideSelection') }}</span>
       </div>
     </div>
   </div>
 </template>
+
+<script setup lang="ts">
+const { t } = useI18n()
+</script>
 
 <style scoped>
 .top-bar {

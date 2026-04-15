@@ -1,15 +1,15 @@
 <template>
   <section class="related-deals">
-    <h2>Misschien vind je deze {{ hotelName }} arrangementen ook leuk</h2>
+    <h2>{{ t('hotel.relatedDeals') }} {{ hotelName }} {{ t('hotel.relatedDealsEnd') }}</h2>
     <div class="related-deals__grid">
       <div v-for="deal in mockDeals" :key="deal.id" class="deal-card">
         <div class="deal-card__image">
-          <img :src="deal.image" :alt="deal.title" />
+          <img :src="deal.image" :alt="localized(deal.title)" />
           <span class="deal-card__rating">{{ deal.rating }} ★</span>
         </div>
         <div class="deal-card__content">
-          <h4 class="deal-card__title">{{ deal.title }}</h4>
-          <p class="deal-card__subtitle">{{ deal.subtitle }}</p>
+          <h4 class="deal-card__title">{{ localized(deal.title) }}</h4>
+          <p class="deal-card__subtitle">{{ localized(deal.subtitle) }}</p>
           <div class="deal-card__price">
             <span class="deal-card__price-current">{{ formatPrice(deal.price) }}</span>
             <span class="deal-card__price-original">{{ formatPrice(deal.originalPrice) }}</span>
@@ -23,16 +23,18 @@
 <script setup lang="ts">
 import { formatPrice } from '~/utils/formatPrice'
 
+const { t, localized } = useI18n()
+
 defineProps<{
   hotelName: string
 }>()
 
 // Mock related deals
-const mockDeals = [
+const mockDeals = computed(() => [
   {
     id: 'deal-1',
     title: 'Hotel Ter Zand - Handwritten Collection ★★★★',
-    subtitle: '2 nachten incl. ontbijt & diner',
+    subtitle: `2 ${t('common.nights')} incl. ${t('related.breakfastAndDinner')}`,
     image: '/images/related/deal-1.jpg',
     rating: 4.3,
     price: 289,
@@ -41,7 +43,7 @@ const mockDeals = [
   {
     id: 'deal-2',
     title: 'Hotel Ter Zand - Handwritten Collection ★★★★',
-    subtitle: '3 nachten incl. ontbijt',
+    subtitle: `3 ${t('common.nights')} incl. ${t('related.breakfast')}`,
     image: '/images/related/deal-2.jpg',
     rating: 4.3,
     price: 399,
@@ -50,13 +52,13 @@ const mockDeals = [
   {
     id: 'deal-3',
     title: 'Amber Hotel Amsterdam ★★★★',
-    subtitle: '2 nachten incl. ontbijt',
+    subtitle: `2 ${t('common.nights')} incl. ${t('related.breakfast')}`,
     image: '/images/related/deal-3.jpg',
     rating: 4.5,
     price: 259,
     originalPrice: 450,
   },
-]
+])
 </script>
 
 <style scoped>

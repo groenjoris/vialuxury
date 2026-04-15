@@ -4,6 +4,7 @@ import type { DateAvailability } from '~/types/calendar'
 import dayjs from 'dayjs'
 
 export const useDealStore = defineStore('deal', () => {
+  const { t, localized } = useI18n()
   // --- State ---
   const currentDeal = ref<Deal | null>(null)
   const dealVariants = ref<DealVariant[]>([])
@@ -30,11 +31,11 @@ export const useDealStore = defineStore('deal', () => {
   /** Human-readable travel group summary */
   const travelGroupSummary = computed(() => {
     const parts: string[] = []
-    parts.push(`${travelGroup.value.adults} ${travelGroup.value.adults === 1 ? 'volwassene' : 'volwassenen'}`)
+    parts.push(`${travelGroup.value.adults} ${travelGroup.value.adults === 1 ? t('common.adultSingular') : t('common.adultPlural')}`)
     if (travelGroup.value.children.length > 0) {
-      parts.push(`${travelGroup.value.children.length} ${travelGroup.value.children.length === 1 ? 'kind' : 'kinderen'}`)
+      parts.push(`${travelGroup.value.children.length} ${travelGroup.value.children.length === 1 ? t('common.childSingular') : t('common.childPlural')}`)
     }
-    parts.push(`${travelGroup.value.rooms} ${travelGroup.value.rooms === 1 ? 'kamer' : 'kamers'}`)
+    parts.push(`${travelGroup.value.rooms} ${travelGroup.value.rooms === 1 ? t('common.roomSingular') : t('common.roomPlural')}`)
     return parts.join(', ')
   })
 
@@ -87,20 +88,20 @@ export const useDealStore = defineStore('deal', () => {
     const pricePerPerson = Math.round(totalPrice / Math.max(1, persons))
 
     const breakdown: { label: string; amount: number }[] = [
-      { label: `${deal.title}`, amount: baseDealPrice },
+      { label: localized(deal.title), amount: baseDealPrice },
     ]
 
     if (extraPersonCost > 0) {
-      breakdown.push({ label: `${extraPersons} extra ${extraPersons === 1 ? 'persoon' : 'personen'}`, amount: extraPersonCost })
+      breakdown.push({ label: `${extraPersons} ${t('store.extraPerson')} ${extraPersons === 1 ? t('common.personSingular') : t('common.personPlural')}`, amount: extraPersonCost })
     }
     if (extraRoomsCost > 0) {
-      breakdown.push({ label: `${rooms - 1} extra ${rooms - 1 === 1 ? 'kamer' : 'kamers'}`, amount: extraRoomsCost })
+      breakdown.push({ label: `${rooms - 1} ${t('store.extraPerson')} ${rooms - 1 === 1 ? t('common.roomSingular') : t('common.roomPlural')}`, amount: extraRoomsCost })
     }
     if (roomUpgrade > 0) {
-      breakdown.push({ label: `Kamerupgrade: ${selectedRoom.value?.name}`, amount: roomUpgrade })
+      breakdown.push({ label: `${t('store.roomUpgrade')} ${localized(selectedRoom.value!.name)}`, amount: roomUpgrade })
     }
     if (childrenDiscount > 0) {
-      breakdown.push({ label: 'Kinderkorting', amount: -childrenDiscount })
+      breakdown.push({ label: t('store.childDiscount'), amount: -childrenDiscount })
     }
 
     return { totalPrice, originalPrice, pricePerPerson, breakdown }
@@ -185,9 +186,8 @@ export const useDealStore = defineStore('deal', () => {
   function setCheckIn(date: string) {
     // If a paid upgrade was selected, show unavailability popup (don't change room yet)
     if (currentDeal.value && selectedRoom.value && !selectedRoom.value.isDefault) {
-      const roomName = selectedRoom.value.name
       previousCheckInDate.value = checkInDate.value
-      roomUnavailableMessage.value = `Voor deze datum is de ${roomName} niet beschikbaar.`
+      roomUnavailableMessage.value = t('store.roomUnavailable').replace('{room}', localized(selectedRoom.value.name))
     }
     checkInDate.value = date
     updateCheckOut()

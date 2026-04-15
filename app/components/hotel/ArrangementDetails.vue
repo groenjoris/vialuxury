@@ -2,19 +2,19 @@
   <section class="arrangement-details">
     <div class="arrangement-details__header">
       <h2>
-        In dit arrangement voor <strong>{{ persons }} {{ persons === 1 ? 'persoon' : 'personen' }}</strong> is het volgende inbegrepen:
+        {{ t('deal.inclusionsHeading') }} <strong>{{ persons }} {{ persons === 1 ? t('common.personSingular') : t('common.personPlural') }}</strong> {{ t('deal.inclusionsEnd') }}
       </h2>
-      <p class="text-secondary">ViaLuxury en het hotel hebben met zorg een mooi arrangement samengesteld.</p>
+      <p class="text-secondary">{{ t('deal.arrangementCurated') }}</p>
     </div>
 
     <div class="arrangement-details__grid">
       <div v-for="item in items" :key="item.id" class="detail-card">
         <div v-if="item.image" class="detail-card__image">
-          <img :src="item.image" :alt="item.title" />
+          <img :src="item.image" :alt="localized(item.title)" />
         </div>
         <div class="detail-card__content">
-          <h3 class="detail-card__title">{{ item.title }}</h3>
-          <p class="detail-card__desc">{{ item.description }}</p>
+          <h3 class="detail-card__title">{{ localized(item.title) }}</h3>
+          <p class="detail-card__desc">{{ localized(item.description) }}</p>
         </div>
       </div>
     </div>
@@ -23,6 +23,8 @@
 
 <script setup lang="ts">
 import type { ArrangementItem } from '~/types/booking'
+
+const { t, localized } = useI18n()
 
 defineProps<{
   items: ArrangementItem[]

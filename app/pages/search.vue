@@ -18,8 +18,8 @@
         <div class="search-page__results">
           <!-- Header inside results column for alignment -->
           <div class="search-page__header">
-            <h1 class="search-page__title">{{ totalDeals }} deals</h1>
-            <p class="search-page__usp">Unieke arrangementen, samengesteld en onderhandeld door onze mensen.</p>
+            <h1 class="search-page__title">{{ totalDeals }} {{ t('search.deals') }}</h1>
+            <p class="search-page__usp">{{ t('search.usp') }}</p>
           </div>
 
           <SearchResultCard
@@ -47,10 +47,12 @@
 import type { SearchHotel } from '~/types/searchHotel'
 import { searchHotels } from '~/data/mock/search-hotels'
 
-const breadcrumbs = [
-  { label: 'Home', href: '/' },
-  { label: 'Arrangementen', href: '/search' },
-]
+const { t } = useI18n()
+
+const breadcrumbs = computed(() => [
+  { label: t('search.home'), href: '/' },
+  { label: t('search.arrangements'), href: '/search' },
+])
 
 const totalDeals = computed(() => {
   return searchHotels.reduce((sum, hotel) => sum + hotel.deals.length, 0)

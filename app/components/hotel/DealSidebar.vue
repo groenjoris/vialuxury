@@ -9,7 +9,7 @@
           <span class="price-original">{{ formatPrice(store.pricing.originalPrice) }}</span>
         </div>
         <div class="sidebar__price-per-person">
-          {{ formatPrice(store.pricing.pricePerPerson) }} p.p.
+          {{ formatPrice(store.pricing.pricePerPerson) }} {{ t('common.perPerson') }}
         </div>
       </div>
 
@@ -21,58 +21,58 @@
             <circle cx="9" cy="7" r="4" />
           </svg>
           <span>{{ store.travelGroupSummary }}</span>
-          <span class="sidebar__travel-edit">Wijzig</span>
+          <span class="sidebar__travel-edit">{{ t('common.edit') }}</span>
         </button>
       </div>
 
       <!-- Dates -->
       <div class="sidebar__dates">
         <div class="sidebar__date-col">
-          <span class="date-label">Check-in</span>
-          <span class="date-value">{{ store.formattedCheckIn || 'Kies datum' }}</span>
+          <span class="date-label">{{ t('common.checkIn') }}</span>
+          <span class="date-value">{{ store.formattedCheckIn || t('common.chooseDate') }}</span>
         </div>
         <div class="sidebar__date-divider"></div>
         <div class="sidebar__date-col">
-          <span class="date-label">Check-out</span>
-          <span class="date-value">{{ store.formattedCheckOut || 'Kies datum' }}</span>
+          <span class="date-label">{{ t('common.checkOut') }}</span>
+          <span class="date-value">{{ store.formattedCheckOut || t('common.chooseDate') }}</span>
         </div>
       </div>
 
       <!-- Room upgrade indicator -->
       <div v-if="store.selectedRoom && !store.selectedRoom.isDefault" class="sidebar__room-upgrade">
         <span class="sidebar__room-icon">🏨</span>
-        <span>{{ store.selectedRoom.name }}</span>
+        <span>{{ localized(store.selectedRoom.name) }}</span>
         <span class="sidebar__room-price">+ {{ formatPrice(store.roomUpgradeCost) }}</span>
       </div>
 
       <!-- Cancellation -->
       <div class="sidebar__cancel">
-        Gratis annuleren tot 7 dagen voor check-in
+        {{ t('common.freeCancel') }}
       </div>
 
       <!-- CTA -->
       <button class="btn btn-primary sidebar__cta" :disabled="!store.isBookingReady">
-        Boek nu
+        {{ t('common.bookNow') }}
       </button>
 
       <!-- Trust -->
       <div class="sidebar__trust">
         <div class="trust-badge">
           <div class="trust-logo">★★★★★</div>
-          <span class="trust-text">15.000+ reviews</span>
+          <span class="trust-text">{{ t('trust.reviews') }}</span>
         </div>
         <ul class="trust-list">
           <li class="trust-item">
             <span class="trust-check">✓</span>
-            Zeer flexibele annuleringsvoorwaarden
+            {{ t('trust.flexibleCancel') }}
           </li>
           <li class="trust-item">
             <span class="trust-check">✓</span>
-            Profiteer direct van hoge kortingen
+            {{ t('trust.directDiscount') }}
           </li>
           <li class="trust-item">
             <span class="trust-check">✓</span>
-            Members profiteren van speciale aanbiedingen
+            {{ t('trust.memberDeals') }}
           </li>
         </ul>
       </div>
@@ -84,6 +84,7 @@
 import { useDealStore } from '~/stores/deal'
 import { formatPrice } from '~/utils/formatPrice'
 
+const { t, localized } = useI18n()
 const store = useDealStore()
 </script>
 

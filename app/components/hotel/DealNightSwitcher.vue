@@ -1,6 +1,6 @@
 <template>
   <div class="night-switcher">
-    <span class="night-switcher__label">Kies je verblijf:</span>
+    <span class="night-switcher__label">{{ t('deal.chooseStay') }}</span>
     <div class="night-switcher__tabs" role="tablist">
       <button
         v-for="variant in store.dealVariants"
@@ -15,9 +15,9 @@
         :disabled="!variant.available"
         @click="switchToVariant(variant)"
       >
-        <span class="night-switcher__nights">{{ variant.label }}</span>
+        <span class="night-switcher__nights">{{ localized(variant.label) }}</span>
         <span class="night-switcher__price">
-          <span class="night-switcher__price-from">vanaf</span>
+          <span class="night-switcher__price-from">{{ t('common.from') }}</span>
           {{ formatPrice(variant.basePrice) }}
         </span>
       </button>
@@ -30,6 +30,7 @@ import { useDealStore } from '~/stores/deal'
 import { formatPrice } from '~/utils/formatPrice'
 import type { DealVariant } from '~/types/deal'
 
+const { t, localized } = useI18n()
 const store = useDealStore()
 
 const emit = defineEmits<{
