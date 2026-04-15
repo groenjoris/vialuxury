@@ -9,12 +9,6 @@
         <BreadcrumbNav :items="breadcrumbs" />
       </section>
 
-      <!-- Header -->
-      <section class="search-page__header container">
-        <h1 class="search-page__title">{{ searchHotels.length }} luxe hotels gevonden</h1>
-        <p class="search-page__usp">Unieke deals, samengesteld en onderhandeld door ViaLuxury</p>
-      </section>
-
       <!-- Grid: Filter Sidebar + Results -->
       <div class="search-page__grid container">
         <div class="search-page__sidebar">
@@ -22,6 +16,12 @@
         </div>
 
         <div class="search-page__results">
+          <!-- Header inside results column for alignment -->
+          <div class="search-page__header">
+            <h1 class="search-page__title">{{ totalDeals }} deals</h1>
+            <p class="search-page__usp">Unieke arrangementen, samengesteld en onderhandeld door onze mensen.</p>
+          </div>
+
           <SearchResultCard
             v-for="hotel in searchHotels"
             :key="hotel.id"
@@ -48,9 +48,13 @@ import type { SearchHotel } from '~/types/searchHotel'
 import { searchHotels } from '~/data/mock/search-hotels'
 
 const breadcrumbs = [
-  { label: 'Home', to: '/' },
-  { label: 'Zoekresultaten' },
+  { label: 'Home', href: '/' },
+  { label: 'Arrangementen', href: '/search' },
 ]
+
+const totalDeals = computed(() => {
+  return searchHotels.reduce((sum, hotel) => sum + hotel.deals.length, 0)
+})
 
 const panelOpen = ref(false)
 const activePanelHotel = ref<SearchHotel | null>(null)
@@ -71,8 +75,24 @@ function openDealPanel(hotel: SearchHotel) {
   padding-bottom: var(--space-sm);
 }
 
+.search-page__grid {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: var(--space-xl);
+  align-items: start;
+}
+
+.search-page__sidebar {
+}
+
+.search-page__results {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
 .search-page__header {
-  padding-bottom: var(--space-xl);
+  margin-bottom: var(--space-sm);
 }
 
 .search-page__title {
@@ -86,24 +106,6 @@ function openDealPanel(hotel: SearchHotel) {
 .search-page__usp {
   font-size: 15px;
   color: var(--color-text-secondary);
-}
-
-.search-page__grid {
-  display: grid;
-  grid-template-columns: 280px 1fr;
-  gap: var(--space-xl);
-  align-items: start;
-}
-
-.search-page__sidebar {
-  position: sticky;
-  top: 20px;
-}
-
-.search-page__results {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-lg);
 }
 
 /* Responsive */

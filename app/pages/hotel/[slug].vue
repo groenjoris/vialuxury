@@ -34,9 +34,6 @@
             :persons="store.configuration.persons"
           />
 
-          <!-- Configurator -->
-          <DealConfigurator :arrangement="arrangement" />
-
           <!-- Facilities -->
           <HotelFacilities :facilities="hotel.facilities" />
 

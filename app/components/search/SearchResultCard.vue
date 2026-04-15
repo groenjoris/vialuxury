@@ -7,45 +7,51 @@
       </span>
     </div>
     <div class="result-card__content">
-      <div class="result-card__top">
-        <div class="result-card__name-row">
-          <h3 class="result-card__name">
-            <span class="result-card__name-text">{{ hotel.name }}</span>
-          </h3>
-          <div class="result-card__stars" aria-hidden="true">
-            <span v-for="n in hotel.starRating" :key="n" class="result-card__star">★</span>
+      <!-- Row 1: Hotel name -->
+      <h3 class="result-card__name">{{ hotel.name }}</h3>
+
+      <!-- Row 2: Stars + location -->
+      <div class="result-card__meta">
+        <span class="result-card__stars" aria-hidden="true">
+          <span v-for="n in hotel.starRating" :key="n">★</span>
+        </span>
+        <span class="result-card__location">{{ hotel.city }} - Nederland</span>
+      </div>
+
+      <!-- Row 3: Arrangement | duration | persons -->
+      <div class="result-card__arrangement">
+        <span class="result-card__arrangement-label">Arrangement</span>
+        <span class="result-card__arrangement-sep">|</span>
+        <span>{{ durationLabel }}</span>
+        <span class="result-card__arrangement-sep">|</span>
+        <span>2 personen</span>
+      </div>
+
+      <!-- Two-column area -->
+      <div class="result-card__details">
+        <!-- Left column: highlights -->
+        <div class="result-card__highlights">
+          <span class="result-card__highlights-subtitle">Afhankelijk van gekozen pakket</span>
+          <div class="result-card__highlight-list">
+            <span v-for="h in topHighlights" :key="h" class="result-card__highlight">
+              <span class="result-card__highlight-check">✓</span> {{ h }}
+            </span>
           </div>
         </div>
-        <div class="result-card__meta">
-          <span class="result-card__location">{{ hotel.city }}, {{ hotel.region }}</span>
-          <span class="result-card__review-pill">
-            <span class="result-card__review-score">{{ hotel.reviewScore }}</span>
-            <span class="result-card__review-count">{{ hotel.reviewCount }} beoordelingen</span>
-          </span>
-        </div>
-        <span class="result-card__duration">{{ durationLabel }}</span>
-      </div>
 
-      <div class="result-card__highlights">
-        <span v-for="h in topHighlights" :key="h" class="result-card__highlight">
-          <span class="result-card__highlight-check">✓</span> {{ h }}
-        </span>
-      </div>
-
-      <div class="result-card__bottom">
-        <div class="result-card__pricing">
-          <span class="result-card__price-label">Vanaf</span>
-          <span class="result-card__price">{{ formatPrice(lowestPrice) }}</span>
-          <span v-if="lowestOriginal > lowestPrice" class="result-card__original">
-            {{ formatPrice(lowestOriginal) }}
-          </span>
+        <!-- Right column: pricing + CTA -->
+        <div class="result-card__pricing-col">
+          <span class="result-card__price-label">Al vanaf *</span>
+          <div class="result-card__price-row">
+            <span v-if="lowestOriginal > lowestPrice" class="result-card__original">
+              {{ formatPrice(lowestOriginal) }}
+            </span>
+            <span class="result-card__price">{{ formatPrice(lowestPrice) }}</span>
+          </div>
+          <button class="result-card__cta" @click="$emit('view-deals')">
+            Bekijk {{ hotel.deals.length }} {{ hotel.deals.length === 1 ? 'Deal' : 'Deals' }}
+          </button>
         </div>
-        <button class="btn btn-primary result-card__cta" @click="$emit('view-deals')">
-          Bekijk {{ hotel.deals.length }} {{ hotel.deals.length === 1 ? 'deal' : 'deals' }}
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="9 18 15 12 9 6" />
-          </svg>
-        </button>
       </div>
     </div>
   </article>
@@ -134,136 +140,130 @@ const lowestDiscount = computed(() => {
 
 .result-card__content {
   flex: 1;
-  padding: var(--space-lg);
+  padding: var(--space-lg) var(--space-xl) var(--space-lg) var(--space-lg);
   display: flex;
   flex-direction: column;
   min-width: 0;
 }
 
-.result-card__top {
-  margin-bottom: var(--space-md);
-}
-
-.result-card__name-row {
-  display: flex;
-  align-items: baseline;
-  gap: var(--space-sm);
-  margin-bottom: 4px;
-}
-
+/* Row 1: Hotel name */
 .result-card__name {
   font-family: var(--font-heading);
-  font-size: 19px;
+  font-size: 20px;
   font-weight: 700;
   color: var(--color-text-primary);
   line-height: 1.3;
+  margin-bottom: 4px;
 }
 
-.result-card__name-text {
-  text-decoration: none;
-  transition: text-decoration var(--transition-fast);
-}
-
-.result-card:hover .result-card__name-text {
+.result-card:hover .result-card__name {
   text-decoration: underline;
   text-underline-offset: 2px;
 }
 
-.result-card__stars {
-  display: flex;
-  gap: 1px;
-  flex-shrink: 0;
-}
-
-.result-card__star {
-  color: var(--color-star);
-  font-size: 13px;
-}
-
+/* Row 2: Stars + location */
 .result-card__meta {
   display: flex;
   align-items: center;
-  gap: var(--space-md);
+  gap: var(--space-sm);
   margin-bottom: 6px;
 }
 
-.result-card__location {
+.result-card__stars {
+  color: #1A1A1A;
   font-size: 13px;
+  letter-spacing: 1px;
+}
+
+.result-card__location {
+  font-size: 14px;
   color: var(--color-text-secondary);
 }
 
-.result-card__review-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.result-card__review-score {
-  background: var(--color-primary);
-  color: #fff;
-  font-size: 12px;
-  font-weight: 700;
-  padding: 2px 6px;
-  border-radius: var(--radius-sm);
-}
-
-.result-card__review-count {
-  font-size: 12px;
-  color: var(--color-text-muted);
-}
-
-.result-card__duration {
-  font-size: 13px;
-  color: var(--color-text-muted);
-  font-weight: 500;
-}
-
-.result-card__highlights {
+/* Row 3: Arrangement line */
+.result-card__arrangement {
   display: flex;
-  flex-wrap: wrap;
-  gap: 6px var(--space-md);
-  margin-bottom: auto;
-  padding-bottom: var(--space-md);
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-md);
+  font-style: italic;
+}
+
+.result-card__arrangement-label {
+  color: var(--color-primary);
+  font-weight: 600;
+  font-style: italic;
+}
+
+.result-card__arrangement-sep {
+  color: var(--color-text-muted);
+}
+
+/* Two-column details area */
+.result-card__details {
+  display: flex;
+  gap: var(--space-lg);
+  margin-top: auto;
+}
+
+/* Left column: highlights */
+.result-card__highlights {
+  flex: 1;
+}
+
+.result-card__highlights-subtitle {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: 6px;
+}
+
+.result-card__highlight-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .result-card__highlight {
   font-size: 13px;
   color: var(--color-text-secondary);
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
 }
 
 .result-card__highlight-check {
   color: var(--color-discount);
   font-weight: 700;
-  font-size: 13px;
+  font-size: 14px;
+  flex-shrink: 0;
 }
 
-.result-card__bottom {
+/* Right column: pricing */
+.result-card__pricing-col {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-top: 1px solid var(--color-border-light);
-  padding-top: var(--space-md);
-}
-
-.result-card__pricing {
-  display: flex;
-  align-items: baseline;
-  gap: 6px;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: flex-end;
+  flex-shrink: 0;
+  min-width: 140px;
 }
 
 .result-card__price-label {
   font-size: 13px;
   color: var(--color-text-muted);
+  font-style: italic;
+  margin-bottom: 2px;
 }
 
-.result-card__price {
-  font-size: 22px;
-  font-weight: 700;
-  font-family: var(--font-heading);
-  color: var(--color-text-primary);
+.result-card__price-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: var(--space-sm);
 }
 
 .result-card__original {
@@ -272,18 +272,31 @@ const lowestDiscount = computed(() => {
   text-decoration: line-through;
 }
 
+.result-card__price {
+  font-size: 24px;
+  font-weight: 700;
+  font-family: var(--font-heading);
+  color: var(--color-text-primary);
+}
+
 .result-card__cta {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 10px 20px;
+  justify-content: center;
+  padding: 8px 20px;
   font-size: 14px;
+  font-weight: 600;
   white-space: nowrap;
-  flex-shrink: 0;
+  background: var(--color-primary);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background var(--transition-fast);
 }
 
-.result-card__cta svg {
-  flex-shrink: 0;
+.result-card__cta:hover {
+  background: var(--color-primary-hover);
 }
 
 /* Responsive */
@@ -296,6 +309,14 @@ const lowestDiscount = computed(() => {
     width: 100%;
     min-height: 180px;
     max-height: 200px;
+  }
+
+  .result-card__details {
+    flex-direction: column;
+  }
+
+  .result-card__pricing-col {
+    align-items: flex-start;
   }
 }
 </style>

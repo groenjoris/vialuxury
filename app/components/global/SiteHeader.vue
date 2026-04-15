@@ -487,6 +487,7 @@ const whoLabel = computed(() => {
 
 function handleSearch() {
   closePopup()
+  navigateTo('/search')
 }
 </script>
 

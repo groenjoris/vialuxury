@@ -21,12 +21,11 @@
         <div v-if="group.open" class="filter-group__body">
           <label
             v-for="item in group.items"
-            :key="item.label"
+            :key="item"
             class="filter-item"
           >
             <input type="checkbox" class="filter-item__checkbox" />
-            <span class="filter-item__label">{{ item.label }}</span>
-            <span class="filter-item__count">({{ item.count }})</span>
+            <span class="filter-item__label">{{ item }}</span>
           </label>
         </div>
       </Transition>
@@ -35,94 +34,47 @@
 </template>
 
 <script setup lang="ts">
-interface FilterItem {
-  label: string
-  count: number
-}
-
 interface FilterGroup {
   title: string
   open: boolean
-  items: FilterItem[]
+  items: string[]
 }
 
 const filterGroups = reactive<FilterGroup[]>([
   {
-    title: 'Duur',
+    title: 'Reisduur',
     open: true,
-    items: [
-      { label: '2 nachten', count: 8 },
-      { label: '3 nachten', count: 7 },
-      { label: '4 nachten', count: 5 },
-      { label: '5+ nachten', count: 1 },
-    ],
+    items: ['1 dag', '2 dagen', '3 dagen', '4 dagen', '5 of meer dagen'],
   },
   {
     title: 'Locatie',
     open: true,
-    items: [
-      { label: 'Noord-Holland', count: 2 },
-      { label: 'Zuid-Holland', count: 1 },
-      { label: 'Gelderland', count: 2 },
-      { label: 'Limburg (NL)', count: 1 },
-      { label: 'Limburg (BE)', count: 1 },
-      { label: 'Antwerpen', count: 1 },
-    ],
+    items: ['Aan het water', 'Dicht bij zee', 'In het bos', 'In de natuur', 'City breaks'],
   },
   {
     title: 'Arrangement',
     open: true,
-    items: [
-      { label: 'Diner inbegrepen', count: 6 },
-      { label: 'Ontbijt inbegrepen', count: 8 },
-      { label: 'Wellness & spa', count: 4 },
-      { label: 'Museumkaartjes', count: 3 },
-      { label: 'Rondvaart / rondleiding', count: 3 },
-    ],
+    items: ['Culinaire hoogstandjes', 'Met diner', 'Laat uitchecken, lang uitslapen'],
   },
   {
-    title: 'Hotelfaciliteiten',
-    open: false,
-    items: [
-      { label: 'Zwembad', count: 2 },
-      { label: 'Wellness / sauna', count: 3 },
-      { label: 'Restaurant', count: 6 },
-      { label: 'Gratis parkeren', count: 4 },
-      { label: 'Fitnessruimte', count: 3 },
-      { label: 'Roomservice', count: 5 },
-    ],
+    title: 'Activiteiten',
+    open: true,
+    items: ['Fietsen', 'Wandelen'],
   },
   {
-    title: 'Thema',
-    open: false,
-    items: [
-      { label: 'Romantisch', count: 3 },
-      { label: 'Wellness & ontspanning', count: 4 },
-      { label: 'Culinair', count: 5 },
-      { label: 'Cultuur & historie', count: 4 },
-      { label: 'Stadsontdekking', count: 3 },
-      { label: 'Natuur & wandelen', count: 2 },
-    ],
+    title: 'Hotel Faciliteiten',
+    open: true,
+    items: ['Wellness', 'Zwembad', 'Hond mag mee', '5-sterren luxe'],
   },
   {
     title: 'Kamer',
-    open: false,
-    items: [
-      { label: 'Suite', count: 3 },
-      { label: 'Deluxe kamer', count: 4 },
-      { label: 'Standaard kamer', count: 6 },
-      { label: 'Kamerupgrade mogelijk', count: 4 },
-    ],
+    open: true,
+    items: ['Jacuzzi op de kamer', 'Luxe Suite'],
   },
   {
-    title: 'Speciaal',
-    open: false,
-    items: [
-      { label: 'Nieuw op ViaLuxury', count: 2 },
-      { label: 'Populair', count: 3 },
-      { label: 'Beste prijs-kwaliteit', count: 4 },
-      { label: 'Last minute', count: 1 },
-    ],
+    title: 'Special',
+    open: true,
+    items: ['Best price', 'New hotels', 'Exclusief bij ViaLuxury'],
   },
 ])
 </script>
@@ -209,11 +161,6 @@ const filterGroups = reactive<FilterGroup[]>([
 
 .filter-item__label {
   flex: 1;
-}
-
-.filter-item__count {
-  color: var(--color-text-muted);
-  font-size: 12px;
 }
 
 /* Expand transition */

@@ -30,7 +30,7 @@ export const searchHotels: SearchHotel[] = [
     starRating: hotelKasteelTerWorm.starRating,
     city: hotelKasteelTerWorm.location.city,
     region: hotelKasteelTerWorm.location.region,
-    heroImage: '/images/kasteel/Kasteel_ter_Worm_08-06-2023_Website-25.jpg',
+    heroImage: '/images/hotels/terworm.jpg',
     reviewScore: hotelKasteelTerWorm.reviews.overallScore,
     reviewCount: hotelKasteelTerWorm.reviews.totalReviews,
     deals: [

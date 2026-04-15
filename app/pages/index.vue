@@ -3,14 +3,7 @@
     <TopBar />
     <SiteHeader />
     <div class="container home__content">
-      <h1>Via Luxury</h1>
-      <p>Ontdek exclusieve hotelarrangementen</p>
-      <NuxtLink to="/deal/ter-zand" class="btn btn-primary home__cta">
-        Bekijk Hotel Ter Zand deal →
-      </NuxtLink>
-      <NuxtLink to="/hotel/ter-zand" class="home__link">
-        Of bekijk de configurator-versie →
-      </NuxtLink>
+      <p class="home__message">Gebruik de zoekbalk om demo te starten.</p>
     </div>
     <SiteFooter />
   </div>
@@ -24,11 +17,11 @@
   align-items: center;
   justify-content: center;
   text-align: center;
-  gap: var(--space-lg);
 }
 
-.home__cta {
-  max-width: 400px;
-  text-decoration: none;
+.home__message {
+  font-size: 18px;
+  color: var(--color-text-secondary);
+  font-style: italic;
 }
 </style>
