@@ -7,10 +7,25 @@
 
     <div class="room-info-card__body">
       <span class="room-info-card__eyebrow">{{ store.travelGroup.rooms > 1 ? t('room.yourRooms') : t('room.yourRoom') }}</span>
-      <h3 class="room-info-card__name">{{ localized(selectedRoom.name) }}</h3>
-      <p class="room-info-card__desc">{{ localized(selectedRoom.description) }}</p>
+
+      <!-- Multi-room allocation display -->
+      <template v-if="store.isRoomAllocationActive && hasMultipleTypes">
+        <div v-for="(entry, idx) in allocationEntries" :key="entry.room.id" class="room-info-card__alloc-entry">
+          <h3 class="room-info-card__name">{{ entry.count }}x {{ localized(entry.room.name) }}</h3>
+          <p v-if="idx === 0" class="room-info-card__desc">{{ localized(entry.room.description) }}</p>
+        </div>
+      </template>
+
+      <!-- Single room type display -->
+      <template v-else>
+        <h3 class="room-info-card__name">
+          <template v-if="store.travelGroup.rooms > 1">{{ store.travelGroup.rooms }}x </template>{{ localized(selectedRoom.name) }}
+        </h3>
+        <p class="room-info-card__desc">{{ localized(selectedRoom.description) }}</p>
+      </template>
+
       <ul v-if="selectedRoom.features.length" class="room-info-card__amenities">
-        <li v-for="feature in selectedRoom.features" :key="localized(feature)">{{ localized(feature) }}</li>
+        <li v-for="feature in displayFeatures" :key="localized(feature)">{{ localized(feature) }}</li>
       </ul>
     </div>
 
@@ -80,9 +95,34 @@ const store = useDealStore()
 
 const selectedRoom = computed(() => store.selectedRoom ?? props.deal.baseRoomType)
 
+const displayFeatures = computed(() => {
+  const features = selectedRoom.value.features
+  // Show fewer features when multiple rooms to keep card compact
+  if (store.travelGroup.rooms > 1 && features.length > 4) {
+    return features.slice(0, 4)
+  }
+  return features
+})
+
 /** Show upgrade label when base room is an upgrade OR a paid upgrade is selected */
 const showUpgradeLabel = computed(() => {
   return selectedRoom.value.isUpgrade || !selectedRoom.value.isDefault
+})
+
+/** Allocation entries for multi-room display */
+const allocationEntries = computed(() => {
+  const entries: { room: typeof selectedRoom.value; count: number }[] = []
+  for (const [roomId, count] of Object.entries(store.effectiveAllocation)) {
+    if (count <= 0) continue
+    const room = store.allRoomTypes.find(r => r.id === roomId)
+    if (room) entries.push({ room, count })
+  }
+  return entries
+})
+
+/** Whether there are multiple different room types allocated */
+const hasMultipleTypes = computed(() => {
+  return allocationEntries.value.length > 1
 })
 </script>
 
@@ -176,6 +216,19 @@ const showUpgradeLabel = computed(() => {
   color: var(--color-primary);
   font-weight: 700;
   font-size: 13px;
+}
+
+/* Multi-room allocation entries */
+.room-info-card__alloc-entry {
+  margin-bottom: var(--space-sm);
+}
+
+.room-info-card__alloc-entry:last-child {
+  margin-bottom: 0;
+}
+
+.room-info-card__alloc-entry .room-info-card__name {
+  margin-bottom: 2px;
 }
 
 /* CTA group */

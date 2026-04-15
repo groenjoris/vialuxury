@@ -249,6 +249,12 @@ const en: Record<string, string> = {
   'room.roomFor': 'room for',
   'room.roomsFor': 'rooms for',
   'room.yourRooms': 'Your rooms',
+  'room.allocateRooms': 'Allocate your rooms',
+  'room.allocateRoomsSub': 'Choose how many rooms of each type you want.',
+  'room.roomsAllocated': 'rooms allocated',
+  'room.maxAvailable': 'max. {n} available',
+  'room.perRoom': 'per room',
+  'room.included': 'Included',
   'room.chooseRoomType': 'Choose your room type',
   'room.standardIncluded': 'Standard room is included. Upgrade for extra comfort.',
   'room.availableUpgradesTitle': 'Available room upgrades',
@@ -294,6 +300,17 @@ const en: Record<string, string> = {
 
   // Home
   'home.searchPrompt': 'Use the search bar to start the demo.',
+
+  // Search toolbar
+  'search.listView': 'List',
+  'search.gridView': 'Grid',
+  'search.sort': 'Sort',
+  'search.sort.priceLow': 'Price low to high',
+  'search.sort.priceHigh': 'Price high to low',
+  'search.sort.ratingHigh': 'Rating high to low',
+  'search.sort.ratingLow': 'Rating low to high',
+  'search.hideFilters': 'Hide filters',
+  'search.showFilters': 'Show filters',
 
   // Map page
   'map.freeCancel': 'Free cancellation',

@@ -21,6 +21,13 @@ export const useDealStore = defineStore('deal', () => {
   const roomUnavailableMessage = ref<string | null>(null)
   const previousCheckInDate = ref<string | null>(null)
 
+  /**
+   * Room allocation: maps roomId → count.
+   * Used when rooms >= 2 to allow mixing room types.
+   * e.g. { 'room-kasteel-std': 2, 'room-kasteel-baron': 1 }
+   */
+  const roomAllocation = ref<Record<string, number>>({})
+
   // --- Getters ---
 
   /** Total number of persons (adults + children) */
@@ -54,6 +61,47 @@ export const useDealStore = defineStore('deal', () => {
     return selectedRoom.value.priceExtra
   })
 
+  /** All available room types (base + upgrades) */
+  const allRoomTypes = computed<RoomOption[]>(() => {
+    if (!currentDeal.value) return []
+    return [currentDeal.value.baseRoomType, ...currentDeal.value.roomUpgrades]
+  })
+
+  /** Whether room allocation mode is active (2+ rooms with date) */
+  const isRoomAllocationActive = computed(() => {
+    return travelGroup.value.rooms >= 2 && checkInDate.value !== null
+  })
+
+  /** Effective room allocation — either custom or default (all base rooms) */
+  const effectiveAllocation = computed<Record<string, number>>(() => {
+    if (!currentDeal.value) return {}
+    const totalRooms = travelGroup.value.rooms
+    const alloc = roomAllocation.value
+
+    // Check if allocation sums to total rooms
+    const allocSum = Object.values(alloc).reduce((s, n) => s + n, 0)
+    if (allocSum === totalRooms && allocSum > 0) {
+      return alloc
+    }
+
+    // Default: all rooms are base type
+    return { [currentDeal.value.baseRoomType.id]: totalRooms }
+  })
+
+  /** Total upgrade cost based on allocation */
+  const allocationUpgradeCost = computed(() => {
+    if (!currentDeal.value) return 0
+    let cost = 0
+    for (const [roomId, count] of Object.entries(effectiveAllocation.value)) {
+      if (count <= 0) continue
+      const room = allRoomTypes.value.find(r => r.id === roomId)
+      if (room && room.priceExtra > 0) {
+        cost += room.priceExtra * count
+      }
+    }
+    return cost
+  })
+
   /** Price calculations for current configuration */
   const pricing = computed<TravelGroupPricing>(() => {
     if (!currentDeal.value) {
@@ -74,8 +122,10 @@ export const useDealStore = defineStore('deal', () => {
     // Extra rooms cost
     const extraRoomsCost = Math.max(0, rooms - 1) * 109 * deal.nights
 
-    // Room upgrade
-    const roomUpgrade = roomUpgradeCost.value * rooms
+    // Room upgrade — use allocation-based cost in multi-room mode
+    const roomUpgrade = isRoomAllocationActive.value
+      ? allocationUpgradeCost.value
+      : roomUpgradeCost.value * rooms
 
     // Children discount: 50% for children under 12
     const childrenDiscount = travelGroup.value.children
@@ -98,7 +148,17 @@ export const useDealStore = defineStore('deal', () => {
       breakdown.push({ label: `${rooms - 1} ${t('store.extraPerson')} ${rooms - 1 === 1 ? t('common.roomSingular') : t('common.roomPlural')}`, amount: extraRoomsCost })
     }
     if (roomUpgrade > 0) {
-      breakdown.push({ label: `${t('store.roomUpgrade')} ${localized(selectedRoom.value!.name)}`, amount: roomUpgrade })
+      if (isRoomAllocationActive.value) {
+        // Show per-type upgrade costs
+        for (const [roomId, count] of Object.entries(effectiveAllocation.value)) {
+          const room = allRoomTypes.value.find(r => r.id === roomId)
+          if (room && room.priceExtra > 0 && count > 0) {
+            breakdown.push({ label: `${count}x ${t('store.roomUpgrade')} ${localized(room.name)}`, amount: room.priceExtra * count })
+          }
+        }
+      } else {
+        breakdown.push({ label: `${t('store.roomUpgrade')} ${localized(selectedRoom.value!.name)}`, amount: roomUpgrade })
+      }
     }
     if (childrenDiscount > 0) {
       breakdown.push({ label: t('store.childDiscount'), amount: -childrenDiscount })
@@ -174,12 +234,34 @@ export const useDealStore = defineStore('deal', () => {
 
   /** Set travel group */
   function setTravelGroup(group: TravelGroup) {
+    // Auto-adjust rooms: minimum ceil(totalPersons / 2)
+    const totalPersons = group.adults + group.children.length
+    const minRooms = Math.ceil(totalPersons / 2)
+    if (group.rooms < minRooms) {
+      group.rooms = minRooms
+    }
     travelGroup.value = { ...group }
   }
 
-  /** Select a room */
+  /** Select a room (single-room mode) */
   function selectRoom(roomId: string) {
     selectedRoomId.value = roomId
+  }
+
+  /** Set room allocation for a specific room type */
+  function setRoomAllocationCount(roomId: string, count: number) {
+    const newAlloc = { ...roomAllocation.value }
+    if (count <= 0) {
+      delete newAlloc[roomId]
+    } else {
+      newAlloc[roomId] = count
+    }
+    roomAllocation.value = newAlloc
+  }
+
+  /** Reset room allocation to default (all base rooms) */
+  function resetRoomAllocation() {
+    roomAllocation.value = {}
   }
 
   /** Set check-in date */
@@ -280,11 +362,16 @@ export const useDealStore = defineStore('deal', () => {
     dateAvailability,
     isTravelGroupModalOpen,
     roomUnavailableMessage,
+    roomAllocation,
     // Getters
     totalPersons,
     travelGroupSummary,
     selectedRoom,
     roomUpgradeCost,
+    allRoomTypes,
+    isRoomAllocationActive,
+    effectiveAllocation,
+    allocationUpgradeCost,
     pricing,
     formattedCheckIn,
     formattedCheckOut,
@@ -296,6 +383,8 @@ export const useDealStore = defineStore('deal', () => {
     switchDeal,
     setTravelGroup,
     selectRoom,
+    setRoomAllocationCount,
+    resetRoomAllocation,
     setCheckIn,
     clearDates,
     setDateAvailability,

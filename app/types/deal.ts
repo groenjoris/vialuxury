@@ -32,10 +32,12 @@ export interface RoomOption {
   id: string
   name: LocalizedString
   description: LocalizedString
+  upgradeDescription?: LocalizedString // Shown in left room block when this upgrade is selected
   image: string
   priceExtra: number // 0 for base, positive for upgrades
   isDefault: boolean
   isUpgrade?: boolean // true when the base room is an upgrade included in the deal
+  maxAvailable?: number // Max rooms of this type available (default: unlimited/5)
   features: LocalizedString[]
 }
 

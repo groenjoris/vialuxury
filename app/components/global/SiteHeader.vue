@@ -256,10 +256,22 @@
           <!-- Child ages -->
           <div v-if="searchGroup.children.length > 0" class="who-children-ages">
             <div v-for="(child, idx) in searchGroup.children" :key="idx" class="who-child-age">
-              <label>Leeftijd kind {{ idx + 1 }}</label>
+              <label>{{ t('travelGroup.childAge') }} {{ idx + 1 }}</label>
               <select v-model.number="child.age">
-                <option v-for="a in 18" :key="a - 1" :value="a - 1">{{ a - 1 }} jaar</option>
+                <option v-for="a in 18" :key="a - 1" :value="a - 1">{{ a - 1 }} {{ t('travelGroup.years') }}</option>
               </select>
+            </div>
+          </div>
+
+          <!-- Rooms -->
+          <div class="who-row">
+            <div class="who-row__info">
+              <span class="who-row__label">{{ t('travelGroup.rooms') }}</span>
+            </div>
+            <div class="stepper">
+              <button class="stepper__btn" :disabled="searchGroup.rooms <= 1" @click="searchGroup.rooms--">&#8722;</button>
+              <span class="stepper__val">{{ searchGroup.rooms }}</span>
+              <button class="stepper__btn" :disabled="searchGroup.rooms >= 4" @click="searchGroup.rooms++">+</button>
             </div>
           </div>
 
@@ -475,6 +487,7 @@ const whenLabel = computed(() => {
 const searchGroup = ref({
   adults: 2,
   children: [] as { age: number }[],
+  rooms: 1,
   dog: false,
 })
 
@@ -491,6 +504,9 @@ const whoLabel = computed(() => {
   parts.push(`${searchGroup.value.adults} ${t('common.adultsShort')}`)
   if (searchGroup.value.children.length > 0) {
     parts.push(`${searchGroup.value.children.length} ${t('common.childrenShort')}`)
+  }
+  if (searchGroup.value.rooms > 1) {
+    parts.push(`${searchGroup.value.rooms} ${searchGroup.value.rooms === 1 ? t('common.roomSingular') : t('common.roomPlural')}`)
   }
   if (searchGroup.value.dog) parts.push('\u{1F415}')
   return parts.join(', ')

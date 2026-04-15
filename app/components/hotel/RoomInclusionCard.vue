@@ -6,13 +6,16 @@
     <div class="content-block__body">
       <h3 class="content-block__title">
         <span class="content-block__check">✓</span>
-        {{ localized(overnightTitle) }}
+        {{ overnightTitleDisplay }}
       </h3>
-      <p class="content-block__desc">{{ localized(overnightDesc) }}</p>
+      <p v-if="upgradeDescriptionText" class="content-block__desc content-block__desc--upgrade">
+        {{ upgradeDescriptionText }}
+      </p>
+      <p v-else class="content-block__desc">{{ overnightDescDisplay }}</p>
     </div>
     <div class="room-inclusion__footer">
       <p class="room-inclusion__footer-text">
-        {{ t('room.youBook') }} 1 {{ t('room.roomFor') }} {{ store.totalPersons }} {{ store.totalPersons === 1 ? t('common.personSingular') : t('common.personPlural') }}.
+        {{ t('room.youBook') }} {{ store.travelGroup.rooms }} {{ store.travelGroup.rooms === 1 ? t('room.roomFor') : t('room.roomsFor') }} {{ store.totalPersons }} {{ store.totalPersons === 1 ? t('common.personSingular') : t('common.personPlural') }}.
       </p>
       <button
         type="button"
@@ -41,14 +44,21 @@ const selectedRoom = computed(() => store.selectedRoom ?? props.deal.baseRoomTyp
 const roomImage = computed(() => selectedRoom.value.image)
 const roomName = computed(() => selectedRoom.value.name)
 
-const overnightTitle = computed(() => {
+const overnightTitleDisplay = computed(() => {
   const inc = props.deal.inclusions.find((i) => i.id.startsWith('inc-overnight'))
-  return inc?.title ?? `${props.deal.nights}x Overnachting`
+  return inc ? localized(inc.title) : `${props.deal.nights}x Overnachting`
 })
 
-const overnightDesc = computed(() => {
+const overnightDescDisplay = computed(() => {
   const inc = props.deal.inclusions.find((i) => i.id.startsWith('inc-overnight'))
-  return inc?.description ?? selectedRoom.value.description
+  return inc ? localized(inc.description) : localized(selectedRoom.value.description)
+})
+
+/** Show upgrade description when a paid upgrade is selected */
+const upgradeDescriptionText = computed(() => {
+  if (selectedRoom.value.isDefault) return null
+  if (!selectedRoom.value.upgradeDescription) return null
+  return localized(selectedRoom.value.upgradeDescription)
 })
 </script>
 
@@ -96,6 +106,11 @@ const overnightDesc = computed(() => {
   font-size: 14px;
   line-height: 1.65;
   color: var(--color-text-secondary);
+}
+
+.content-block__desc--upgrade {
+  color: var(--color-text-primary);
+  font-style: italic;
 }
 
 .room-inclusion__footer {

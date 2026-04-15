@@ -1,5 +1,5 @@
 <template>
-  <article class="result-card">
+  <article class="result-card" :class="{ 'result-card--grid': gridMode }">
     <div class="result-card__image">
       <img :src="hotel.heroImage" :alt="hotel.name" loading="lazy" />
       <span v-if="lowestDiscount" class="result-card__discount-badge">
@@ -27,7 +27,7 @@
         <span>{{ t('search.persons') }}</span>
       </div>
 
-      <!-- Two-column area -->
+      <!-- Two-column area (list mode) / stacked (grid mode) -->
       <div class="result-card__details">
         <!-- Left column: highlights -->
         <div class="result-card__highlights">
@@ -65,6 +65,7 @@ const { t, localized } = useI18n()
 
 const props = defineProps<{
   hotel: SearchHotel
+  gridMode?: boolean
 }>()
 
 defineEmits<{
@@ -300,6 +301,43 @@ const lowestDiscount = computed(() => {
 
 .result-card__cta:hover {
   background: var(--color-primary-hover);
+}
+
+/* ===== GRID MODE ===== */
+.result-card--grid {
+  flex-direction: column;
+}
+
+.result-card--grid .result-card__image {
+  width: 100%;
+  min-height: 180px;
+  max-height: 200px;
+}
+
+.result-card--grid .result-card__content {
+  padding: var(--space-md);
+}
+
+.result-card--grid .result-card__name {
+  font-size: 17px;
+}
+
+.result-card--grid .result-card__details {
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.result-card--grid .result-card__pricing-col {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  min-width: 0;
+  width: 100%;
+  gap: var(--space-sm);
+}
+
+.result-card--grid .result-card__price-row {
+  margin-bottom: 0;
 }
 
 /* Responsive */

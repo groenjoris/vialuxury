@@ -344,9 +344,14 @@ export const dealKasteel2Nights: Deal = {
         nl: 'Geniet van luxe en ruimte in de Kasteel Junior Suite van Kasteel TerWorm. Met elegant interieur, comfortabele zithoek en prachtig uitzicht op de kasteeltuinen biedt deze suite een verfijnde ervaring.',
         en: 'Enjoy luxury and space in the Castle Junior Suite at Kasteel TerWorm. With elegant interiors, a comfortable seating area and beautiful views of the castle gardens, this suite offers a refined experience.',
       },
+      upgradeDescription: {
+        nl: 'U heeft een kamerupgrade geselecteerd, namelijk de Kasteel Junior Suite. Dat is een supergoede keuze, want deze suite combineert historische charme met modern comfort. Het elegante interieur, de comfortabele zithoek en het adembenemende uitzicht op de kasteeltuinen maken uw verblijf in Kasteel TerWorm extra bijzonder.',
+        en: 'You have selected a room upgrade, namely the Castle Junior Suite. That is an excellent choice, because this suite combines historical charm with modern comfort. The elegant interior, comfortable seating area and breathtaking views of the castle gardens make your stay at Kasteel TerWorm extra special.',
+      },
       image: '/images/kasteel/kasteel-junior-suite.jpg',
       priceExtra: 99,
       isDefault: false,
+      maxAvailable: 5,
       features: [
         { nl: 'Elegant interieur', en: 'Elegant interior' },
         { nl: 'Comfortabele zithoek', en: 'Comfortable seating area' },
@@ -361,9 +366,14 @@ export const dealKasteel2Nights: Deal = {
         nl: 'Ervaar ongeëvenaarde luxe en elegantie in de Baronsuite van Kasteel TerWorm. Deze statige suite biedt een weelderig interieur en een verfijnde sfeer, perfect voor een onvergetelijk verblijf.',
         en: 'Experience unparalleled luxury and elegance in the Baron Suite at Kasteel TerWorm. This stately suite features a lavish interior and a refined atmosphere, perfect for an unforgettable stay.',
       },
+      upgradeDescription: {
+        nl: 'U heeft een kamerupgrade geselecteerd, namelijk de Baronsuite. Dat is een supergoede keuze, want de Baronsuite is de meest exclusieve kamer van Kasteel TerWorm. Met een weelderig interieur, een luxe kingsize bed en een prachtige badkamer met inloopdouche en bad verblijft u hier als een echte baron. Er zijn slechts 2 Baronsuites in het kasteel — u heeft dus een zeer gewilde kamer te pakken.',
+        en: 'You have selected a room upgrade, namely the Baron Suite. That is an excellent choice, because the Baron Suite is the most exclusive room at Kasteel TerWorm. With a lavish interior, a luxury king-size bed and a beautiful bathroom with walk-in shower and bath, you will stay here like a true baron. There are only 2 Baron Suites in the castle — so you have secured a highly sought-after room.',
+      },
       image: '/images/kasteel/baronsuite.jpg',
       priceExtra: 198,
       isDefault: false,
+      maxAvailable: 2,
       features: [
         { nl: 'Ruime zit- en slaapruimte', en: 'Spacious living and sleeping area' },
         { nl: 'Luxe kingsize bed', en: 'Luxury king-size bed' },

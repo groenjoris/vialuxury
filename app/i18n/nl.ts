@@ -249,6 +249,12 @@ const nl: Record<string, string> = {
   'room.roomFor': 'kamer voor',
   'room.roomsFor': 'kamers voor',
   'room.yourRooms': 'Jouw kamers',
+  'room.allocateRooms': 'Verdeel je kamers',
+  'room.allocateRoomsSub': 'Kies hoeveel kamers je van elk type wilt.',
+  'room.roomsAllocated': 'kamers verdeeld',
+  'room.maxAvailable': 'max. {n} beschikbaar',
+  'room.perRoom': 'per kamer',
+  'room.included': 'Inbegrepen',
   'room.chooseRoomType': 'Kies je kamertype',
   'room.standardIncluded': 'Standaard kamer is inbegrepen. Upgrade voor extra comfort.',
   'room.availableUpgradesTitle': 'Beschikbare kamerupgrades',
@@ -294,6 +300,17 @@ const nl: Record<string, string> = {
 
   // Home
   'home.searchPrompt': 'Gebruik de zoekbalk om demo te starten.',
+
+  // Search toolbar
+  'search.listView': 'Lijst',
+  'search.gridView': 'Grid',
+  'search.sort': 'Sorteren',
+  'search.sort.priceLow': 'Prijs laagste eerst',
+  'search.sort.priceHigh': 'Prijs hoogste eerst',
+  'search.sort.ratingHigh': 'Rating hoog naar laag',
+  'search.sort.ratingLow': 'Rating laag naar hoog',
+  'search.hideFilters': 'Verberg filters',
+  'search.showFilters': 'Toon filters',
 
   // Map page
   'map.freeCancel': 'Gratis annuleren',

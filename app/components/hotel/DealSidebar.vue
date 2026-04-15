@@ -38,8 +38,47 @@
         </div>
       </div>
 
-      <!-- Room upgrade indicator -->
-      <div v-if="store.selectedRoom && !store.selectedRoom.isDefault" class="sidebar__room-upgrade">
+      <!-- Room allocation (multi-room with date) -->
+      <div v-if="store.isRoomAllocationActive" class="sidebar__room-allocation">
+        <div class="sidebar__room-alloc-header">
+          <h4 class="sidebar__room-alloc-title">{{ t('room.allocateRooms') }}</h4>
+          <span class="sidebar__room-alloc-counter">
+            {{ allocatedCount }} / {{ store.travelGroup.rooms }} {{ t('room.roomsAllocated') }}
+          </span>
+        </div>
+        <div
+          v-for="roomType in store.allRoomTypes"
+          :key="roomType.id"
+          class="sidebar__room-alloc-row"
+        >
+          <div class="sidebar__room-alloc-info">
+            <span class="sidebar__room-alloc-name">{{ localized(roomType.name) }}</span>
+            <span class="sidebar__room-alloc-price">
+              <template v-if="roomType.priceExtra > 0">+{{ formatPrice(roomType.priceExtra) }} {{ t('room.perRoom') }}</template>
+              <template v-else>{{ t('room.included') }}</template>
+            </span>
+            <span v-if="roomType.maxAvailable" class="sidebar__room-alloc-max">
+              {{ t('room.maxAvailable').replace('{n}', String(roomType.maxAvailable)) }}
+            </span>
+          </div>
+          <div class="stepper stepper--small">
+            <button
+              class="stepper__btn"
+              :disabled="(store.effectiveAllocation[roomType.id] || 0) <= 0"
+              @click="decrementRoom(roomType.id)"
+            >−</button>
+            <span class="stepper__val">{{ store.effectiveAllocation[roomType.id] || 0 }}</span>
+            <button
+              class="stepper__btn"
+              :disabled="allocatedCount >= store.travelGroup.rooms || (store.effectiveAllocation[roomType.id] || 0) >= (roomType.maxAvailable ?? 5)"
+              @click="incrementRoom(roomType.id)"
+            >+</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Room upgrade indicator (single room mode) -->
+      <div v-else-if="store.selectedRoom && !store.selectedRoom.isDefault" class="sidebar__room-upgrade">
         <span class="sidebar__room-icon">🏨</span>
         <span>{{ localized(store.selectedRoom.name) }}</span>
         <span class="sidebar__room-price">+ {{ formatPrice(store.roomUpgradeCost) }}</span>
@@ -86,6 +125,25 @@ import { formatPrice } from '~/utils/formatPrice'
 
 const { t, localized } = useI18n()
 const store = useDealStore()
+
+const allocatedCount = computed(() => {
+  return Object.values(store.effectiveAllocation).reduce((s, n) => s + n, 0)
+})
+
+function incrementRoom(roomId: string) {
+  const current = store.effectiveAllocation[roomId] || 0
+  const roomType = store.allRoomTypes.find(r => r.id === roomId)
+  const max = roomType?.maxAvailable ?? 5
+  if (current >= max) return
+  if (allocatedCount.value >= store.travelGroup.rooms) return
+  store.setRoomAllocationCount(roomId, current + 1)
+}
+
+function decrementRoom(roomId: string) {
+  const current = store.effectiveAllocation[roomId] || 0
+  if (current <= 0) return
+  store.setRoomAllocationCount(roomId, current - 1)
+}
 </script>
 
 <style scoped>
@@ -208,6 +266,110 @@ const store = useDealStore()
 .date-value {
   font-size: 14px;
   color: var(--color-text-secondary);
+}
+
+/* Room allocation (multi-room) */
+.sidebar__room-allocation {
+  padding: var(--space-md) var(--space-lg);
+  border-top: 1px solid var(--color-border-light);
+}
+
+.sidebar__room-alloc-header {
+  margin-bottom: var(--space-md);
+}
+
+.sidebar__room-alloc-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin-bottom: 2px;
+}
+
+.sidebar__room-alloc-counter {
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+.sidebar__room-alloc-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-sm) 0;
+  border-top: 1px solid var(--color-border-light);
+}
+
+.sidebar__room-alloc-row:first-of-type {
+  border-top: none;
+}
+
+.sidebar__room-alloc-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.sidebar__room-alloc-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sidebar__room-alloc-price {
+  font-size: 12px;
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.sidebar__room-alloc-max {
+  font-size: 11px;
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
+/* Small stepper for sidebar */
+.stepper--small {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  flex-shrink: 0;
+}
+
+.stepper--small .stepper__btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  font-size: 16px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  color: var(--color-text-primary);
+  line-height: 1;
+}
+
+.stepper--small .stepper__btn:hover:not(:disabled) {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.stepper--small .stepper__btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.stepper--small .stepper__val {
+  min-width: 18px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
 }
 
 /* Room upgrade */

@@ -191,6 +191,45 @@
             />
           </div>
 
+          <!-- Room allocation (multi-room with date) -->
+          <div v-if="store.isRoomAllocationActive" class="sidebar__room-allocation">
+            <div class="sidebar__room-alloc-header">
+              <h4 class="sidebar__room-alloc-title">{{ t('room.allocateRooms') }}</h4>
+              <span class="sidebar__room-alloc-counter">
+                {{ allocatedCount }} / {{ store.travelGroup.rooms }} {{ t('room.roomsAllocated') }}
+              </span>
+            </div>
+            <div
+              v-for="roomType in store.allRoomTypes"
+              :key="roomType.id"
+              class="sidebar__room-alloc-row"
+            >
+              <div class="sidebar__room-alloc-info">
+                <span class="sidebar__room-alloc-name">{{ localized(roomType.name) }}</span>
+                <span class="sidebar__room-alloc-price">
+                  <template v-if="roomType.priceExtra > 0">+{{ formatPrice(roomType.priceExtra) }} {{ t('room.perRoom') }}</template>
+                  <template v-else>{{ t('room.included') }}</template>
+                </span>
+                <span v-if="roomType.maxAvailable" class="sidebar__room-alloc-max">
+                  {{ t('room.maxAvailable').replace('{n}', String(roomType.maxAvailable)) }}
+                </span>
+              </div>
+              <div class="sidebar__room-alloc-stepper">
+                <button
+                  class="sidebar__room-alloc-btn"
+                  :disabled="(store.effectiveAllocation[roomType.id] || 0) <= 0"
+                  @click="decrementRoom(roomType.id)"
+                >−</button>
+                <span class="sidebar__room-alloc-val">{{ store.effectiveAllocation[roomType.id] || 0 }}</span>
+                <button
+                  class="sidebar__room-alloc-btn"
+                  :disabled="allocatedCount >= store.travelGroup.rooms || (store.effectiveAllocation[roomType.id] || 0) >= (roomType.maxAvailable ?? 5)"
+                  @click="incrementRoom(roomType.id)"
+                >+</button>
+              </div>
+            </div>
+          </div>
+
           <!-- Before date selection: disabled button -->
           <button v-if="!store.checkInDate" class="btn btn-primary sidebar__book" disabled>{{ t('deal.bookNow') }}</button>
 
@@ -210,14 +249,10 @@
             </div>
 
             <!-- Price breakdown -->
-            <div v-if="store.roomUpgradeCost > 0" class="sidebar__breakdown">
-              <div class="sidebar__breakdown-row">
-                <span>{{ t('search.arrangement') }}</span>
-                <span>{{ formatPrice(store.pricing.breakdown[0]?.amount ?? store.pricing.totalPrice - store.roomUpgradeCost) }}</span>
-              </div>
-              <div class="sidebar__breakdown-row sidebar__breakdown-row--upgrade">
-                <span>{{ t('store.roomUpgrade') }} {{ store.selectedRoom?.name ? localized(store.selectedRoom.name) : '' }}</span>
-                <span>{{ formatPrice(store.roomUpgradeCost) }}</span>
+            <div v-if="store.pricing.breakdown.length > 1" class="sidebar__breakdown">
+              <div v-for="(item, idx) in store.pricing.breakdown" :key="idx" class="sidebar__breakdown-row" :class="{ 'sidebar__breakdown-row--upgrade': item.amount > 0 && idx > 0, 'sidebar__breakdown-row--discount': item.amount < 0 }">
+                <span>{{ item.label }}</span>
+                <span>{{ item.amount < 0 ? '- ' : '' }}{{ formatPrice(Math.abs(item.amount)) }}</span>
               </div>
             </div>
 
@@ -318,6 +353,25 @@ const calAvailability = computed(() => {
 function calPrev() { let m = calMonth.value.month - 1, y = calMonth.value.year; if (m < 1) { m = 12; y-- }; calMonth.value = { year: y, month: m } }
 function calNext() { let m = calMonth.value.month + 1, y = calMonth.value.year; if (m > 12) { m = 1; y++ }; calMonth.value = { year: y, month: m } }
 function handleDateSelect(date: string) { store.setCheckIn(date) }
+
+// Room allocation helpers
+const allocatedCount = computed(() => {
+  return Object.values(store.effectiveAllocation).reduce((s, n) => s + n, 0)
+})
+
+function incrementRoom(roomId: string) {
+  const current = store.effectiveAllocation[roomId] || 0
+  const roomType = store.allRoomTypes.find(r => r.id === roomId)
+  const max = roomType?.maxAvailable ?? 5
+  if (current >= max || allocatedCount.value >= store.travelGroup.rooms) return
+  store.setRoomAllocationCount(roomId, current + 1)
+}
+
+function decrementRoom(roomId: string) {
+  const current = store.effectiveAllocation[roomId] || 0
+  if (current <= 0) return
+  store.setRoomAllocationCount(roomId, current - 1)
+}
 
 function handlePanelSelect(dealId: string) {
   const deal = dealsMapKasteel[dealId]
@@ -466,6 +520,23 @@ function openGallery() { }
 .sidebar__price-meta { font-size: 13px; color: var(--color-text-secondary); margin-bottom: var(--space-md); }
 .sidebar__disclaimer { font-size: 12px; line-height: 1.5; color: var(--color-text-muted); margin-bottom: var(--space-md); }
 .sidebar__summary .sidebar__book { margin-top: 0; }
+
+/* Room allocation */
+.sidebar__room-allocation { margin-bottom: var(--space-md); padding: var(--space-md); background: var(--color-background-secondary); border-radius: var(--radius-md); }
+.sidebar__room-alloc-header { margin-bottom: var(--space-sm); }
+.sidebar__room-alloc-title { font-size: 14px; font-weight: 700; color: var(--color-text-primary); margin-bottom: 2px; }
+.sidebar__room-alloc-counter { font-size: 12px; color: var(--color-text-muted); }
+.sidebar__room-alloc-row { display: flex; align-items: center; justify-content: space-between; padding: var(--space-sm) 0; border-top: 1px solid var(--color-border-light); }
+.sidebar__room-alloc-row:first-of-type { border-top: none; }
+.sidebar__room-alloc-info { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.sidebar__room-alloc-name { font-size: 13px; font-weight: 600; color: var(--color-text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sidebar__room-alloc-price { font-size: 12px; color: var(--color-primary); font-weight: 600; }
+.sidebar__room-alloc-max { font-size: 11px; color: var(--color-text-muted); font-style: italic; }
+.sidebar__room-alloc-stepper { display: flex; align-items: center; gap: var(--space-sm); flex-shrink: 0; }
+.sidebar__room-alloc-btn { width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--color-border); background: var(--color-surface); font-size: 16px; font-weight: 500; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all var(--transition-fast); color: var(--color-text-primary); line-height: 1; }
+.sidebar__room-alloc-btn:hover:not(:disabled) { border-color: var(--color-primary); color: var(--color-primary); }
+.sidebar__room-alloc-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+.sidebar__room-alloc-val { min-width: 18px; text-align: center; font-size: 14px; font-weight: 600; }
 
 /* ===== SECTION TITLES ===== */
 .section-title { font-size: 22px; font-weight: 600; margin-bottom: var(--space-lg); }
