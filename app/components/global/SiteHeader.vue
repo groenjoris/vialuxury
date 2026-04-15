@@ -547,8 +547,6 @@ function handleSearch() {
   display: flex;
   align-items: center;
   gap: 4px;
-  flex: 1;
-  justify-content: center;
 }
 
 .verticals__item {
@@ -581,6 +579,7 @@ function handleSearch() {
   align-items: center;
   gap: var(--space-md);
   flex-shrink: 0;
+  margin-left: auto;
 }
 
 /* VIP button — gold gradient */

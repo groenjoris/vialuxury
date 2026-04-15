@@ -6,7 +6,7 @@
     </div>
 
     <div class="room-info-card__body">
-      <span class="room-info-card__eyebrow">{{ t('room.yourRoom') }}</span>
+      <span class="room-info-card__eyebrow">{{ store.travelGroup.rooms > 1 ? t('room.yourRooms') : t('room.yourRoom') }}</span>
       <h3 class="room-info-card__name">{{ localized(selectedRoom.name) }}</h3>
       <p class="room-info-card__desc">{{ localized(selectedRoom.description) }}</p>
       <ul v-if="selectedRoom.features.length" class="room-info-card__amenities">
@@ -18,7 +18,7 @@
       <div class="room-info-card__cta">
         <!-- State A: no date selected -->
         <template v-if="!store.checkInDate">
-          <h4 class="room-info-card__cta-heading">{{ t('room.chooseRoom') }}</h4>
+          <h4 class="room-info-card__cta-heading">{{ t('room.moreLuxury') }}</h4>
           <p class="room-info-card__cta-text">
             {{ t('room.enterDate') }}
           </p>
@@ -181,6 +181,7 @@ const showUpgradeLabel = computed(() => {
 /* CTA group */
 .room-info-card__cta-group {
   border-top: 1px solid var(--color-border-light);
+  background: var(--color-background-secondary);
 }
 
 .room-info-card__cta {

@@ -144,7 +144,7 @@ const en: Record<string, string> = {
 
   // Search page
   'search.deals': 'deals',
-  'search.usp': 'Unique arrangements, curated and negotiated by our people.',
+  'search.usp': 'Unique arrangements, lovingly curated with discounts negotiated by the ViaLuxury team.',
   'search.home': 'Home',
   'search.arrangements': 'Arrangements',
   'search.filters': 'Filters',
@@ -245,6 +245,10 @@ const en: Record<string, string> = {
   'room.undo': 'Undo',
   'room.editTravelGroup': 'Edit travel group',
   'room.thisRoomFor': 'This room is for',
+  'room.youBook': 'You book',
+  'room.roomFor': 'room for',
+  'room.roomsFor': 'rooms for',
+  'room.yourRooms': 'Your rooms',
   'room.chooseRoomType': 'Choose your room type',
   'room.standardIncluded': 'Standard room is included. Upgrade for extra comfort.',
   'room.availableUpgradesTitle': 'Available room upgrades',
@@ -299,6 +303,9 @@ const en: Record<string, string> = {
   'map.favorites': 'Favorites',
   'map.account': 'Account',
   'map.menu': 'Menu',
+
+  // Hotel (deal page hardcoded fixes)
+  'hotel.bookedAs': 'Booked:',
 }
 
 export default en

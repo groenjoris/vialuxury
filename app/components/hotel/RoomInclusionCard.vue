@@ -12,7 +12,7 @@
     </div>
     <div class="room-inclusion__footer">
       <p class="room-inclusion__footer-text">
-        {{ t('room.thisRoomFor') }} {{ store.totalPersons }} {{ store.totalPersons === 1 ? t('common.personSingular') : t('common.personPlural') }}.
+        {{ t('room.youBook') }} 1 {{ t('room.roomFor') }} {{ store.totalPersons }} {{ store.totalPersons === 1 ? t('common.personSingular') : t('common.personPlural') }}.
       </p>
       <button
         type="button"

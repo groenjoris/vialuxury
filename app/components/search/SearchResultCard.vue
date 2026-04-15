@@ -142,7 +142,7 @@ const lowestDiscount = computed(() => {
 
 .result-card__content {
   flex: 1;
-  padding: var(--space-lg) var(--space-xl) var(--space-lg) var(--space-lg);
+  padding: var(--space-md) var(--space-xl) var(--space-md) var(--space-lg);
   display: flex;
   flex-direction: column;
   min-width: 0;
@@ -185,6 +185,7 @@ const lowestDiscount = computed(() => {
 /* Row 3: Arrangement line */
 .result-card__arrangement {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 6px;
   font-size: 14px;

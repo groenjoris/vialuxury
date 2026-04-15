@@ -144,7 +144,7 @@ const nl: Record<string, string> = {
 
   // Search page
   'search.deals': 'deals',
-  'search.usp': 'Unieke arrangementen, samengesteld en onderhandeld door onze mensen.',
+  'search.usp': 'Unieke arrangementen, met liefde samengesteld en korting onderhandeld door het ViaLuxury team.',
   'search.home': 'Home',
   'search.arrangements': 'Arrangementen',
   'search.filters': 'Filters',
@@ -245,6 +245,10 @@ const nl: Record<string, string> = {
   'room.undo': 'Ongedaan maken',
   'room.editTravelGroup': 'Wijzig reisgezelschap',
   'room.thisRoomFor': 'Deze kamer is voor',
+  'room.youBook': 'U boekt',
+  'room.roomFor': 'kamer voor',
+  'room.roomsFor': 'kamers voor',
+  'room.yourRooms': 'Jouw kamers',
   'room.chooseRoomType': 'Kies je kamertype',
   'room.standardIncluded': 'Standaard kamer is inbegrepen. Upgrade voor extra comfort.',
   'room.availableUpgradesTitle': 'Beschikbare kamerupgrades',
@@ -299,6 +303,9 @@ const nl: Record<string, string> = {
   'map.favorites': 'Favorieten',
   'map.account': 'Account',
   'map.menu': 'Menu',
+
+  // Hotel (deal page hardcoded fixes)
+  'hotel.bookedAs': 'Geboekt:',
 }
 
 export default nl

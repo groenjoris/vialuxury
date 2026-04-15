@@ -28,8 +28,8 @@
           </div>
         </div>
         <div class="deal-page__title-actions">
-          <button class="icon-action" :aria-label="t('common.save')">♡</button>
-          <button class="icon-action" :aria-label="t('common.share')">↗</button>
+          <button class="icon-action" :class="{ 'icon-action--favorited': isFavorited }" :aria-label="t('common.save')" @click="isFavorited = !isFavorited">{{ isFavorited ? '♥' : '♡' }}</button>
+          <button class="icon-action" :aria-label="t('common.share')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg></button>
         </div>
       </section>
 
@@ -106,7 +106,7 @@
 
           <!-- Facilities -->
           <section class="deal-page__facilities">
-            <h2 class="section-title">Populaire hotelfaciliteiten</h2>
+            <h2 class="section-title">{{ t('hotel.facilities') }}</h2>
             <div class="facilities__grid">
               <div v-for="fac in hotel.facilities" :key="fac.label" class="facility-item">
                 <span class="facility-item__check">✓</span>
@@ -117,7 +117,7 @@
 
           <!-- Hotel reviews with arrangement indicator -->
           <section class="deal-page__reviews">
-            <h2 class="section-title">Beoordelingen</h2>
+            <h2 class="section-title">{{ t('hotel.reviews') }}</h2>
             <div class="reviews__score-bar">
               <span class="reviews__score-big">{{ hotel.reviews.overallScore }}</span>
               <div class="reviews__score-stars">
@@ -143,7 +143,7 @@
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M20 7h-3V5a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v2H4a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V8a1 1 0 0 0-1-1zM9 5h6v2H9V5z" />
                   </svg>
-                  <span>Geboekt: {{ localized(rev.arrangement) }}</span>
+                  <span>{{ t('hotel.bookedAs') }} {{ localized(rev.arrangement) }}</span>
                 </div>
               </div>
             </div>
@@ -288,6 +288,7 @@ const route = useRoute()
 const router = useRouter()
 const store = useDealStore()
 const calendarRef = ref<HTMLElement | null>(null)
+const isFavorited = ref(false)
 const isPanelOpen = ref(false)
 const isUpgradePanelOpen = ref(false)
 
@@ -389,6 +390,7 @@ function openGallery() { }
 .deal-page__title-actions { display: flex; gap: var(--space-sm); flex-shrink: 0; }
 .icon-action { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--color-border); display: flex; align-items: center; justify-content: center; font-size: 18px; background: var(--color-surface); cursor: pointer; }
 .icon-action:hover { border-color: var(--color-primary); }
+.icon-action--favorited { color: #e74c3c; border-color: #e74c3c; }
 .deal-page__breadcrumbs { padding-top: var(--space-md); }
 
 /* ===== 2-COLUMN GRID ===== */
