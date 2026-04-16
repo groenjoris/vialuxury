@@ -46,10 +46,10 @@
       <div class="result-card__details">
         <!-- Left column: 3 highlights (plain checkmarks) -->
         <div class="result-card__highlights">
-          <span class="result-card__highlights-subtitle">{{ t('search.dependsOnPackage') }}</span>
+          <strong class="result-card__highlights-subtitle">Inclusief</strong>
           <div class="result-card__highlight-list">
-            <span v-for="h in topHighlights" :key="localized(h)" class="result-card__highlight">
-              <span class="result-card__highlight-check">✓</span> {{ localized(h) }}
+            <span v-for="item in inclusionItems" :key="item" class="result-card__highlight">
+              <span class="result-card__highlight-check">✓</span> {{ item }}
             </span>
           </div>
         </div>
@@ -123,10 +123,22 @@ const singleDealArrangementSuffix = computed(() => {
     .replace('{persons}', String(persons.value))
 })
 
-const topHighlights = computed(() => {
-  const all = props.hotel.deals.flatMap(d => d.highlights)
-  const unique = [...new Set(all)]
-  return unique.slice(0, 3)
+const firstInclusionOptions = [
+  'Diner', 'Museumkaartjes', 'Welkomstbubbels',
+  'Gebruik wellness', 'Een fiets voor iedereen', 'Royaal ontbijt', 'Super lang uitslapen',
+]
+
+const inclusionItems = computed(() => {
+  const name = props.hotel.name
+  let first: string
+  if (name === 'Hotel Haarhuis' || name === 'Kasteel TerWorm') {
+    first = 'Culinair 3-gangendiner'
+  } else {
+    // Pick a stable option based on hotel name length as a simple hash
+    const index = name.length % firstInclusionOptions.length
+    first = firstInclusionOptions[index]
+  }
+  return [first, 'De beste kamer', 'En andere extra\'s']
 })
 
 const lowestPrice = computed(() => {
@@ -253,7 +265,7 @@ const lowestDiscount = computed(() => {
   width: 36px;
   height: 36px;
   border-radius: var(--radius-sm);
-  background: #004E4A;
+  background: #00B67A;
   color: #fff;
   font-size: 14px;
   font-weight: 700;
@@ -338,8 +350,8 @@ const lowestDiscount = computed(() => {
 .result-card__highlights-subtitle {
   display: block;
   font-size: 13px;
-  font-weight: 400;
-  color: var(--color-text-muted);
+  font-weight: 700;
+  color: var(--color-text-primary);
   margin-bottom: 6px;
 }
 

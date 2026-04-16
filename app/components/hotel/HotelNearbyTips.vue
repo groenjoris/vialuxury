@@ -228,7 +228,7 @@ function toggleBottom(index: number) {
   bottom: 0;
   width: 45%;
   z-index: 4;
-  background: #F8F2E6;
+  background: #F5F5F5;
   display: flex;
   align-items: center;
   opacity: 0;

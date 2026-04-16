@@ -2,8 +2,8 @@
   /* Colors */
   --color-primary: #FB862D;
   --color-primary-hover: #E5771F;
-  --color-primary-light: #FFF3E8;
-  --color-discount: #004E4A;
+  --color-primary-light: #F5F5F5;
+  --color-discount: #00B67A;
   --color-discount-light: #E8F5E9;
   --color-text-primary: #1A1A1A;
   --color-text-secondary: #555555;
@@ -15,13 +15,12 @@
   --color-surface: #FFFFFF;
   --color-top-bar: #1A1A1A;
   --color-star: #FB862D;
+  --color-review: #00B67A;
   --color-error: #D32F2F;
-  --color-gold: #D4A843;
-  --color-gold-light: #FFF8E7;
 
   /* Typography */
-  --font-heading: 'Playfair Display', 'Recoleta', Georgia, serif;
-  --font-body: 'Inter', 'Basis Grotesque', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-heading: 'Recoleta', 'Playfair Display', Georgia, serif;
+  --font-body: 'Basis Grotesque', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 
   /* Shadows */
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);

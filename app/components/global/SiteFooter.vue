@@ -83,7 +83,7 @@ const { t } = useI18n()
 
 <style scoped>
 .site-footer {
-  background-color: #1B4D4A;
+  background-color: #1A1A1A;
   color: white;
   margin-top: var(--space-3xl);
 }

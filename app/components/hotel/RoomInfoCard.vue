@@ -121,32 +121,22 @@ const hasAnyPaidUpgrade = computed(() => {
 
 .room-info-card__ribbon {
   position: absolute;
-  top: 0;
-  right: 0;
-  width: 100px;
-  height: 100px;
-  overflow: hidden;
-  pointer-events: none;
+  top: 12px;
+  right: 12px;
   z-index: 1;
 }
 
 .room-info-card__ribbon span {
-  position: absolute;
-  display: block;
-  width: 150px;
-  padding: 6px 0;
-  background: #F8F2E6;
-  color: #1A1A1A;
-  font-family: var(--font-heading);
+  display: inline-block;
+  padding: 4px 14px;
+  background: var(--color-discount);
+  color: #fff;
+  font-family: var(--font-body);
   font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  text-align: center;
-  transform: rotate(45deg);
-  top: 22px;
-  right: -38px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+  letter-spacing: 0.06em;
+  border-radius: 999px;
 }
 
 .room-info-card__body {

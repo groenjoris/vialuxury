@@ -68,7 +68,7 @@
             />
             <div class="mini-map__pin">
               <svg width="32" height="42" viewBox="0 0 32 42" fill="none">
-                <path d="M16 0C7.16 0 0 7.16 0 16c0 12 16 26 16 26s16-14 16-26C32 7.16 24.84 0 16 0z" fill="#c5a254"/>
+                <path d="M16 0C7.16 0 0 7.16 0 16c0 12 16 26 16 26s16-14 16-26C32 7.16 24.84 0 16 0z" fill="#00B67A"/>
                 <circle cx="16" cy="16" r="6" fill="#fff"/>
               </svg>
             </div>
@@ -368,7 +368,7 @@ const mapTileUrl = computed(() => {
 }
 .hotel-page__meta { display: flex; align-items: center; gap: var(--space-sm); font-size: 14px; color: var(--color-text-secondary); }
 .hotel-page__score-wrap { display: flex; align-items: center; gap: 6px; }
-.hotel-page__score { display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: var(--radius-sm); background: #004E4A; color: #fff; font-size: 13px; font-weight: 700; flex-shrink: 0; }
+.hotel-page__score { display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: var(--radius-sm); background: #00B67A; color: #fff; font-size: 13px; font-weight: 700; flex-shrink: 0; }
 .hotel-page__score-label { font-size: 13px; font-weight: 600; color: var(--color-text-primary); }
 .hotel-page__divider { color: var(--color-text-muted); }
 .hotel-page__title-actions { display: flex; gap: var(--space-sm); flex-shrink: 0; }
@@ -408,7 +408,7 @@ const mapTileUrl = computed(() => {
 /* ===== REVIEWS ===== */
 .hotel-page__reviews { padding: var(--space-xl) 0; border-top: 1px solid var(--color-border-light); }
 .reviews__score-bar { display: flex; align-items: center; gap: var(--space-sm); margin-bottom: var(--space-md); }
-.reviews__score-big { font-size: 24px; font-weight: 700; font-family: var(--font-heading); background: #004E4A; color: #fff; padding: 8px 12px; border-radius: var(--radius-sm); }
+.reviews__score-big { font-size: 24px; font-weight: 700; font-family: var(--font-heading); background: #00B67A; color: #fff; padding: 8px 12px; border-radius: var(--radius-sm); }
 .reviews__score-meta { display: flex; flex-direction: column; gap: 1px; }
 .reviews__score-verdict { font-size: 15px; font-weight: 600; color: var(--color-text-primary); }
 .reviews__score-count { font-size: 13px; color: var(--color-text-muted); }
@@ -416,7 +416,7 @@ const mapTileUrl = computed(() => {
 .reviews__cat { display: grid; grid-template-columns: 110px 1fr 32px; align-items: center; gap: var(--space-sm); font-size: 13px; }
 .reviews__cat-name { color: var(--color-text-secondary); }
 .reviews__cat-bar { height: 6px; background: var(--color-border-light); border-radius: 3px; overflow: hidden; }
-.reviews__cat-fill { height: 100%; background: #004E4A; border-radius: 3px; }
+.reviews__cat-fill { height: 100%; background: #00B67A; border-radius: 3px; }
 .reviews__cat-score { font-weight: 600; text-align: right; }
 .reviews__grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md); }
 .review-card { padding: var(--space-md); background: var(--color-background-secondary); border-radius: var(--radius-md); display: flex; flex-direction: column; }
@@ -435,7 +435,7 @@ const mapTileUrl = computed(() => {
   font-weight: 500;
   color: var(--color-text-muted);
 }
-.review-card__arrangement svg { color: #004E4A; flex-shrink: 0; }
+.review-card__arrangement svg { color: #00B67A; flex-shrink: 0; }
 
 /* ===== HOUSE RULES ===== */
 .hotel-page__house-rules { padding: var(--space-xl) 0; border-top: 1px solid var(--color-border-light); }

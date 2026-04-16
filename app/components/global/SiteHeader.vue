@@ -208,7 +208,10 @@
             @select-hotel="handleSelectHotel"
             @select-city="handleSelectCity"
           />
-          <button class="popup__done-btn popup__done-btn--dest" @click="closePopup()">{{ t('header.done') }}</button>
+          <div class="popup__footer popup__footer--padded">
+            <a href="#" class="popup__clear-link" @click.prevent="clearDestination">{{ t('header.clear') }}</a>
+            <button class="popup__done-btn" @click="closePopup()">{{ t('header.done') }}</button>
+          </div>
         </div>
 
         <!-- WHEN POPUP -->
@@ -220,7 +223,10 @@
             v-model:selected-duration="selectedDuration"
             @update:flex-state="handleFlexState"
           />
-          <button class="popup__done-btn popup__done-btn--when" @click="closePopup()">{{ t('header.done') }}</button>
+          <div class="popup__footer popup__footer--padded">
+            <a href="#" class="popup__clear-link" @click.prevent="clearWhen">{{ t('header.clear') }}</a>
+            <button class="popup__done-btn" @click="closePopup()">{{ t('header.done') }}</button>
+          </div>
         </div>
 
         <!-- WHO POPUP -->
@@ -286,7 +292,10 @@
           </div>
 
           <!-- Done button -->
-          <button class="popup__done-btn" @click="closePopup()">{{ t('header.done') }}</button>
+          <div class="popup__footer">
+            <a href="#" class="popup__clear-link" @click.prevent="clearWho">{{ t('header.clear') }}</a>
+            <button class="popup__done-btn" @click="closePopup()">{{ t('header.done') }}</button>
+          </div>
         </div>
       </div>
     </Transition>
@@ -373,6 +382,27 @@ function closePopup() {
   setSearchGroup(totalPersons, searchGroup.value.rooms)
   triggerSearchUpdate()
   activePopup.value = null
+}
+
+function clearDestination() {
+  selectedDestinations.value = []
+  selectedThemes.value = []
+  selectedCities.value = []
+  closePopup()
+}
+
+function clearWhen() {
+  selectedDate.value = null
+  flexibility.value = 0
+  selectedDuration.value = ''
+  flexState.value = { duration: '', months: [] }
+  calMonth.value = { year: new Date().getFullYear(), month: new Date().getMonth() }
+  closePopup()
+}
+
+function clearWho() {
+  searchGroup.value = { adults: 2, children: [], rooms: 1, dog: false }
+  closePopup()
 }
 
 // --- DESTINATION ---
@@ -563,13 +593,11 @@ function removeSearchChild() {
 
 const whoLabel = computed(() => {
   const parts: string[] = []
-  parts.push(`${searchGroup.value.adults} ${t('common.adultsShort')}`)
+  parts.push(`${searchGroup.value.adults} ${searchGroup.value.adults === 1 ? t('common.adultSingular') : t('common.adultPlural')}`)
   if (searchGroup.value.children.length > 0) {
-    parts.push(`${searchGroup.value.children.length} ${t('common.childrenShort')}`)
+    parts.push(`${searchGroup.value.children.length} ${searchGroup.value.children.length === 1 ? t('common.childSingular') : t('common.childPlural')}`)
   }
-  if (searchGroup.value.rooms > 1) {
-    parts.push(`${searchGroup.value.rooms} ${searchGroup.value.rooms === 1 ? t('common.roomSingular') : t('common.roomPlural')}`)
-  }
+  parts.push(`${searchGroup.value.rooms} ${searchGroup.value.rooms === 1 ? t('common.roomSingular') : t('common.roomPlural')}`)
   if (searchGroup.value.dog) parts.push('\u{1F415}')
   return parts.join(', ')
 })
@@ -671,33 +699,31 @@ function handleSelectHotel(slug: string) {
   margin-left: auto;
 }
 
-/* VIP button — gold gradient */
+/* VIP button — ghost / outline */
 .vip-btn {
   display: inline-flex;
   align-items: center;
   gap: 8px;
   padding: 9px 18px;
-  border: 1px solid rgba(212, 168, 67, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: 999px;
-  background: linear-gradient(135deg, #E6C56B 0%, #D4A843 45%, #B8862A 100%);
-  color: #1A1A1A;
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.85);
   font-family: var(--font-body);
   font-size: 13px;
   font-weight: 700;
   letter-spacing: 0.4px;
   cursor: pointer;
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08) inset, 0 4px 12px rgba(180, 130, 30, 0.25);
-  transition: transform var(--transition-fast), box-shadow var(--transition-fast), filter var(--transition-fast);
+  transition: background var(--transition-fast), border-color var(--transition-fast);
 }
 
 .vip-btn:hover {
-  filter: brightness(1.06);
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.12) inset, 0 6px 18px rgba(180, 130, 30, 0.35);
-  transform: translateY(-1px);
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.3);
 }
 
 .vip-btn svg {
-  color: #1A1A1A;
+  color: rgba(255, 255, 255, 0.85);
 }
 
 /* Hamburger button */
@@ -882,11 +908,11 @@ function handleSelectHotel(slug: string) {
   display: flex;
   align-items: center;
   background: white;
-  border-radius: 999px;
+  border-radius: 16px;
   height: 72px;
   padding: 0 6px 0 0;
   position: relative;
-  border: 2px solid var(--color-gold);
+  border: 2px solid var(--color-border);
   box-shadow: 0 14px 40px rgba(0, 0, 0, 0.22), 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
@@ -943,7 +969,7 @@ function handleSelectHotel(slug: string) {
 .search-bar__btn {
   width: 56px;
   height: 56px;
-  border-radius: 50%;
+  border-radius: 12px;
   background: var(--color-primary);
   border: none;
   display: flex;
@@ -1142,30 +1168,49 @@ function handleSelectHotel(slug: string) {
   transform: translateX(22px);
 }
 
-/* Done button in who popup */
-.popup__done-btn {
-  width: 100%;
+/* Popup footer: clear link + done button */
+.popup__footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-md);
   margin-top: var(--space-md);
-  padding: 12px;
+}
+
+.popup__footer--padded {
+  padding: var(--space-sm) var(--space-lg) var(--space-lg);
+}
+
+.popup__clear-link {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text-muted);
+  text-decoration: underline;
+  cursor: pointer;
+  font-family: inherit;
+  transition: color var(--transition-fast);
+}
+
+.popup__clear-link:hover {
+  color: var(--color-text-primary);
+}
+
+.popup__done-btn {
+  padding: 10px 24px;
   border: none;
   border-radius: var(--radius-md);
   background: var(--color-primary);
   color: white;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 600;
   font-family: inherit;
   cursor: pointer;
   transition: background var(--transition-fast);
+  white-space: nowrap;
 }
 
 .popup__done-btn:hover {
   background: var(--color-primary-hover);
-}
-
-.popup__done-btn--dest,
-.popup__done-btn--when {
-  margin: var(--space-md) var(--space-lg) var(--space-lg);
-  width: calc(100% - var(--space-lg) * 2);
 }
 
 /* ==================== */

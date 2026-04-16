@@ -25,8 +25,33 @@
         <div class="search-page__results">
           <!-- Header inside results column for alignment -->
           <div class="search-page__header">
-            <h1 class="search-page__title">{{ totalDeals }} {{ t('search.deals') }}</h1>
-            <p class="search-page__usp">{{ t('search.usp') }}</p>
+            <div class="search-page__header-row">
+              <div>
+                <h1 class="search-page__title">{{ totalDeals }} {{ t('search.deals') }}</h1>
+                <p class="search-page__usp">{{ t('search.usp') }}</p>
+              </div>
+              <div class="team-avatars">
+                <div
+                  v-for="member in teamMembers"
+                  :key="member.name"
+                  class="team-avatars__item"
+                  @mouseenter="hoveredMember = member.name"
+                  @mouseleave="hoveredMember = null"
+                >
+                  <div class="team-avatars__circle" :class="{ 'team-avatars__circle--photo': member.photo }">
+                    <img v-if="member.photo" :src="member.photo" :alt="member.name" />
+                    <span v-else class="team-avatars__initials">{{ member.initials }}</span>
+                  </div>
+                  <Transition name="tooltip-fade">
+                    <div v-if="hoveredMember === member.name" class="team-avatars__tooltip">
+                      <strong class="team-avatars__tooltip-name">{{ member.name }}</strong>
+                      <span class="team-avatars__tooltip-role">{{ member.role }}</span>
+                      <span class="team-avatars__tooltip-score">{{ member.score }}</span>
+                    </div>
+                  </Transition>
+                </div>
+              </div>
+            </div>
           </div>
 
           <!-- Toolbar: filter toggle, sort, view switch -->
@@ -147,6 +172,46 @@ import { searchHotels } from '~/data/mock/search-hotels'
 
 const { t } = useI18n()
 const { loading, setLoading, persons, rooms } = useSearchState()
+
+// Team members for avatar row
+const hoveredMember = ref<string | null>(null)
+const teamMembers = [
+  {
+    name: 'Yvette',
+    initials: 'YV',
+    photo: '/images/yvette.jpeg',
+    role: '15 jaar Experience Maker bij ViaLuxury',
+    score: 'Gemiddelde score voor haar experiences: 9.8',
+  },
+  {
+    name: 'Jan',
+    initials: 'JA',
+    photo: '/images/team/jan.avif',
+    role: 'Gespecialiseerd in oude kastelen en landgoederen',
+    score: 'Gemiddelde score voor zijn experiences: 9.6',
+  },
+  {
+    name: 'Anoeska',
+    initials: 'AN',
+    photo: '/images/team/anoeska.jpeg',
+    role: 'Onze België-kenner — van de Ardennen tot de kust',
+    score: 'Gemiddelde score voor haar experiences: 9.7',
+  },
+  {
+    name: 'Alyssa',
+    initials: 'AL',
+    photo: '/images/team/alyssa.jpeg',
+    role: 'Specialist wellness & romantische weekendjes',
+    score: 'Gemiddelde score voor haar experiences: 9.5',
+  },
+  {
+    name: 'Esther',
+    initials: 'ES',
+    photo: '/images/team/esther.jpeg',
+    role: 'Culinaire hotspots en stedentrips',
+    score: 'Gemiddelde score voor haar experiences: 9.4',
+  },
+]
 
 // Fake loading state
 const searchLoading = ref(false)
@@ -283,6 +348,115 @@ function navigateToDeal(slug: string) {
 
 .search-page__header {
   margin-bottom: var(--space-sm);
+}
+
+.search-page__header-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-lg);
+}
+
+/* ── Team Avatars ── */
+.team-avatars {
+  display: flex;
+  gap: 0;
+  flex-shrink: 0;
+}
+
+.team-avatars__item {
+  position: relative;
+  margin-left: -8px;
+}
+
+.team-avatars__item:first-child {
+  margin-left: 0;
+}
+
+.team-avatars__circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--color-background-secondary);
+  border: 2px solid #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 150ms ease, box-shadow 150ms ease;
+  position: relative;
+  z-index: 1;
+}
+
+.team-avatars__item:hover .team-avatars__circle {
+  transform: scale(1.15);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 5;
+}
+
+.team-avatars__circle--photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.team-avatars__initials {
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  line-height: 1;
+}
+
+.team-avatars__tooltip {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 240px;
+  padding: 12px 14px;
+  background: #fff;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+  z-index: 100;
+  pointer-events: none;
+}
+
+.team-avatars__tooltip-name {
+  display: block;
+  font-family: var(--font-heading);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin-bottom: 4px;
+}
+
+.team-avatars__tooltip-role {
+  display: block;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--color-text-secondary);
+  margin-bottom: 6px;
+}
+
+.team-avatars__tooltip-score {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-discount);
+}
+
+.tooltip-fade-enter-active {
+  transition: opacity 150ms ease, transform 150ms ease;
+}
+.tooltip-fade-leave-active {
+  transition: opacity 100ms ease, transform 100ms ease;
+}
+.tooltip-fade-enter-from,
+.tooltip-fade-leave-to {
+  opacity: 0;
+  transform: translateY(-4px);
 }
 
 .search-page__title {

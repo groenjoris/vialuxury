@@ -65,7 +65,7 @@
                 />
                 <div class="mini-map__pin">
                   <svg width="32" height="42" viewBox="0 0 32 42" fill="none">
-                    <path d="M16 0C7.16 0 0 7.16 0 16c0 12 16 26 16 26s16-14 16-26C32 7.16 24.84 0 16 0z" fill="#c5a254"/>
+                    <path d="M16 0C7.16 0 0 7.16 0 16c0 12 16 26 16 26s16-14 16-26C32 7.16 24.84 0 16 0z" fill="#00B67A"/>
                     <circle cx="16" cy="16" r="6" fill="#fff"/>
                   </svg>
                 </div>
@@ -563,7 +563,7 @@ function openGallery() { }
 }
 .deal-page__meta { display: flex; align-items: center; gap: var(--space-sm); font-size: 14px; color: var(--color-text-secondary); }
 .deal-page__score-wrap { display: flex; align-items: center; gap: 6px; }
-.deal-page__score { display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: var(--radius-sm); background: #004E4A; color: #fff; font-size: 13px; font-weight: 700; flex-shrink: 0; }
+.deal-page__score { display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: var(--radius-sm); background: #00B67A; color: #fff; font-size: 13px; font-weight: 700; flex-shrink: 0; }
 .deal-page__score-label { font-size: 13px; font-weight: 600; color: var(--color-text-primary); }
 .deal-page__divider { color: var(--color-text-muted); }
 .deal-page__title-actions { display: flex; gap: var(--space-sm); flex-shrink: 0; }
@@ -673,7 +673,7 @@ function openGallery() { }
   line-height: 1.4;
 }
 .sidebar__trust-check {
-  color: #004E4A;
+  color: #00B67A;
   font-weight: 700;
   font-size: 14px;
   flex-shrink: 0;
@@ -706,7 +706,7 @@ function openGallery() { }
 .deal-page__highlights { padding: var(--space-xl) 0; border-top: 1px solid var(--color-border-light); }
 .highlights__grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md) var(--space-xl); }
 .highlight-item { display: flex; align-items: center; gap: var(--space-md); }
-.highlight-item__icon { width: 40px; height: 40px; border-radius: var(--radius-md); background: #F8F2E6; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.highlight-item__icon { width: 40px; height: 40px; border-radius: var(--radius-md); background: #FFFFFF; border: 1px solid #E5E5E5; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .highlight-item__text { font-size: 14px; font-weight: 500; color: var(--color-text-primary); }
 
 /* ===== CONTENT BLOCKS ===== */
@@ -734,7 +734,7 @@ function openGallery() { }
 /* ===== REVIEWS ===== */
 .deal-page__reviews { padding: var(--space-xl) 0; border-top: 1px solid var(--color-border-light); }
 .reviews__score-bar { display: flex; align-items: center; gap: var(--space-sm); margin-bottom: var(--space-md); }
-.reviews__score-big { font-size: 24px; font-weight: 700; font-family: var(--font-heading); background: #004E4A; color: #fff; padding: 8px 12px; border-radius: var(--radius-sm); }
+.reviews__score-big { font-size: 24px; font-weight: 700; font-family: var(--font-heading); background: #00B67A; color: #fff; padding: 8px 12px; border-radius: var(--radius-sm); }
 .reviews__score-meta { display: flex; flex-direction: column; gap: 1px; }
 .reviews__score-verdict { font-size: 15px; font-weight: 600; color: var(--color-text-primary); }
 .reviews__score-count { font-size: 13px; color: var(--color-text-muted); }
@@ -742,7 +742,7 @@ function openGallery() { }
 .reviews__cat { display: grid; grid-template-columns: 110px 1fr 32px; align-items: center; gap: var(--space-sm); font-size: 13px; }
 .reviews__cat-name { color: var(--color-text-secondary); }
 .reviews__cat-bar { height: 6px; background: var(--color-border-light); border-radius: 3px; overflow: hidden; }
-.reviews__cat-fill { height: 100%; background: #004E4A; border-radius: 3px; }
+.reviews__cat-fill { height: 100%; background: #00B67A; border-radius: 3px; }
 .reviews__cat-score { font-weight: 600; text-align: right; }
 .reviews__grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md); }
 .review-card { padding: var(--space-md); background: var(--color-background-secondary); border-radius: var(--radius-md); display: flex; flex-direction: column; }
@@ -761,7 +761,7 @@ function openGallery() { }
   font-weight: 500;
   color: var(--color-text-muted);
 }
-.review-card__arrangement svg { color: #004E4A; flex-shrink: 0; }
+.review-card__arrangement svg { color: #00B67A; flex-shrink: 0; }
 
 /* ===== FAQ ===== */
 .deal-page__faq { padding: var(--space-xl) 0; border-top: 1px solid var(--color-border-light); }
@@ -788,7 +788,7 @@ function openGallery() { }
   display: flex; align-items: center; justify-content: center;
 }
 .room-unavailable-popup {
-  background: #fff; border: 2px solid #c5a254; border-radius: 12px;
+  background: #fff; border: 2px solid var(--color-discount); border-radius: 12px;
   width: 450px; max-width: 90vw; min-height: 300px;
   padding: var(--space-2xl);
   display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -800,10 +800,10 @@ function openGallery() { }
 }
 .room-unavailable-popup__btn {
   display: inline-block; padding: 12px 40px; border-radius: 8px;
-  background: #c5a254; color: #fff; font-size: 14px; font-weight: 600;
+  background: var(--color-discount); color: #fff; font-size: 14px; font-weight: 600;
   border: none; cursor: pointer; transition: background 150ms ease-out;
 }
-.room-unavailable-popup__btn:hover { background: #b08e3f; }
+.room-unavailable-popup__btn:hover { background: #009e6a; }
 .fade-enter-active, .fade-leave-active { transition: opacity 200ms ease; }
 .fade-enter-from, .fade-leave-to { opacity: 0; }
 

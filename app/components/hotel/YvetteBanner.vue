@@ -23,8 +23,8 @@ const { t } = useI18n()
   align-items: center;
   gap: var(--space-xl);
   padding: var(--space-lg) var(--space-xl);
-  background: linear-gradient(135deg, #faf7f0 0%, #f5efe3 100%);
-  border: 1px solid #e8dcc8;
+  background: #F5F5F5;
+  border: 1px solid #E5E5E5;
   border-radius: var(--radius-lg);
 }
 
@@ -34,8 +34,8 @@ const { t } = useI18n()
   border-radius: 50%;
   overflow: hidden;
   flex-shrink: 0;
-  border: 3px solid #c5a254;
-  box-shadow: 0 4px 12px rgba(197, 162, 84, 0.2);
+  border: 3px solid var(--color-discount);
+  box-shadow: 0 4px 12px rgba(0, 182, 122, 0.2);
 }
 
 .yvette-banner__photo img {

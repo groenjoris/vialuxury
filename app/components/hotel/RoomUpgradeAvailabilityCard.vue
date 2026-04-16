@@ -156,12 +156,12 @@ function onSelectDate(date: string) {
   border-radius: var(--radius-lg);
   overflow: visible;
   border: 1px solid var(--color-border-light);
-  background: var(--color-gold-light);
+  background: var(--color-discount-light);
 }
 
 .room-upgrade-avail--selected {
   background: var(--color-surface);
-  border-color: var(--color-gold);
+  border-color: var(--color-discount);
 }
 
 .room-upgrade-avail__body {
@@ -176,7 +176,7 @@ function onSelectDate(date: string) {
 }
 
 .room-upgrade-avail__icon {
-  color: var(--color-gold);
+  color: var(--color-discount);
   width: 56px;
   height: 56px;
   border-radius: 50%;
@@ -184,7 +184,7 @@ function onSelectDate(date: string) {
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: inset 0 0 0 2px var(--color-gold);
+  box-shadow: inset 0 0 0 2px var(--color-discount);
   margin-bottom: var(--space-xs);
 }
 
@@ -222,7 +222,7 @@ function onSelectDate(date: string) {
 
 .room-upgrade-avail--open {
   background: var(--color-surface);
-  border-color: var(--color-gold);
+  border-color: var(--color-discount);
 }
 
 .room-upgrade-avail__calendar {

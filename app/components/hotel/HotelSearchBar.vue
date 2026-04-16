@@ -52,7 +52,10 @@
           v-model:selected-duration="selectedDuration"
           @update:flex-state="handleFlexState"
         />
-        <button class="hsb-done-btn" @click="closePopup()">{{ t('header.done') }}</button>
+        <div class="hsb-popup__footer">
+          <a href="#" class="hsb-popup__clear" @click.prevent="clearWhen">{{ t('header.clear') }}</a>
+          <button class="hsb-done-btn" @click="closePopup()">{{ t('header.done') }}</button>
+        </div>
       </div>
 
       <!-- WHO POPUP -->
@@ -106,7 +109,10 @@
         </div>
 
         <!-- Done button -->
-        <button class="hsb-popup__done" @click="closePopup()">{{ t('header.done') }}</button>
+        <div class="hsb-popup__footer">
+          <a href="#" class="hsb-popup__clear" @click.prevent="clearWho">{{ t('header.clear') }}</a>
+          <button class="hsb-done-btn" @click="closePopup()">{{ t('header.done') }}</button>
+        </div>
       </div>
     </div>
   </div>
@@ -172,6 +178,20 @@ function togglePopup(popup: 'when' | 'who') {
 
 function closePopup() {
   activePopup.value = null
+}
+
+function clearWhen() {
+  selectedDate.value = null
+  flexibility.value = 0
+  selectedDuration.value = ''
+  flexState.value = { duration: '', months: [] }
+  calMonth.value = { year: new Date().getFullYear(), month: new Date().getMonth() }
+  closePopup()
+}
+
+function clearWho() {
+  group.value = { adults: 2, children: [], rooms: 1, dog: false }
+  closePopup()
 }
 
 // --- WHEN state ---
@@ -393,19 +413,39 @@ function handleChangeSearch() {
   max-width: 95vw;
 }
 
+.hsb-popup__footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-md);
+  padding: var(--space-sm) var(--space-lg) var(--space-lg);
+}
+
+.hsb-popup__clear {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text-muted);
+  text-decoration: underline;
+  cursor: pointer;
+  transition: color var(--transition-fast);
+}
+
+.hsb-popup__clear:hover {
+  color: var(--color-text-primary);
+}
+
 .hsb-done-btn {
-  width: calc(100% - var(--space-lg) * 2);
-  margin: var(--space-md) var(--space-lg) var(--space-lg);
-  padding: 12px;
+  padding: 10px 24px;
   border: none;
   border-radius: var(--radius-md);
   background: var(--color-primary);
   color: white;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 600;
   font-family: inherit;
   cursor: pointer;
   transition: background var(--transition-fast);
+  white-space: nowrap;
 }
 
 .hsb-done-btn:hover {

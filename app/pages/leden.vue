@@ -83,10 +83,10 @@
         <div class="members-usp__visual">
           <div class="members-usp__icon-block">
             <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" class="members-usp__icon">
-              <circle cx="40" cy="40" r="38" stroke="#004E4A" stroke-width="2.5" fill="none"/>
-              <rect x="26" y="24" width="28" height="32" rx="3" fill="#004E4A" opacity="0.12"/>
-              <rect x="29" y="27" width="22" height="26" rx="2" fill="none" stroke="#004E4A" stroke-width="2"/>
-              <path d="M34 36h12M34 41h8" stroke="#004E4A" stroke-width="2" stroke-linecap="round"/>
+              <circle cx="40" cy="40" r="38" stroke="#00B67A" stroke-width="2.5" fill="none"/>
+              <rect x="26" y="24" width="28" height="32" rx="3" fill="#00B67A" opacity="0.12"/>
+              <rect x="29" y="27" width="22" height="26" rx="2" fill="none" stroke="#00B67A" stroke-width="2"/>
+              <path d="M34 36h12M34 41h8" stroke="#00B67A" stroke-width="2" stroke-linecap="round"/>
               <circle cx="54" cy="28" r="8" fill="#FB862D"/>
               <path d="M51.5 28l2 2 3.5-3.5" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
@@ -105,12 +105,12 @@
         <div class="members-usp__visual">
           <div class="members-usp__icon-block">
             <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" class="members-usp__icon">
-              <circle cx="40" cy="40" r="38" stroke="#004E4A" stroke-width="2.5" fill="none"/>
-              <path d="M28 34a12 12 0 0124 0v4H28v-4z" fill="#004E4A" opacity="0.12"/>
-              <rect x="26" y="38" width="28" height="18" rx="2" fill="#004E4A" opacity="0.15"/>
-              <rect x="28" y="40" width="24" height="14" rx="1.5" fill="none" stroke="#004E4A" stroke-width="2"/>
+              <circle cx="40" cy="40" r="38" stroke="#00B67A" stroke-width="2.5" fill="none"/>
+              <path d="M28 34a12 12 0 0124 0v4H28v-4z" fill="#00B67A" opacity="0.12"/>
+              <rect x="26" y="38" width="28" height="18" rx="2" fill="#00B67A" opacity="0.15"/>
+              <rect x="28" y="40" width="24" height="14" rx="1.5" fill="none" stroke="#00B67A" stroke-width="2"/>
               <circle cx="40" cy="47" r="3" fill="#FB862D"/>
-              <path d="M36 38v-4a4 4 0 018 0v4" stroke="#004E4A" stroke-width="2" stroke-linecap="round"/>
+              <path d="M36 38v-4a4 4 0 018 0v4" stroke="#00B67A" stroke-width="2" stroke-linecap="round"/>
             </svg>
           </div>
         </div>
@@ -156,7 +156,7 @@ useHead({ title: 'Leden ingang | ViaLuxury' })
 <style scoped>
 /* ── Hero Section ─────────────────────────── */
 .members-hero {
-  background-color: #F8F2E6;
+  background-color: #F5F5F5;
   padding: 64px 0 80px;
 }
 
@@ -290,7 +290,7 @@ useHead({ title: 'Leden ingang | ViaLuxury' })
 }
 
 .members-usp--beige {
-  background-color: #F8F2E6;
+  background-color: #F5F5F5;
 }
 
 .members-usp__row {
@@ -333,12 +333,13 @@ useHead({ title: 'Leden ingang | ViaLuxury' })
 .members-usp__icon-block {
   width: 200px;
   height: 200px;
-  background: var(--color-background-secondary);
+  background: #FFFFFF;
+  border: 1px solid #E5E5E5;
   border-radius: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+  box-shadow: none;
 }
 
 .members-usp__icon {
@@ -352,7 +353,7 @@ useHead({ title: 'Leden ingang | ViaLuxury' })
 }
 
 .members-steps--beige {
-  background-color: #F8F2E6;
+  background-color: #F5F5F5;
 }
 
 .members-steps__heading {

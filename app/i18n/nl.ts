@@ -9,10 +9,10 @@ const nl: Record<string, string> = {
   'header.destination': 'Waarheen',
   'header.whenAndHowLong': 'Wanneer & hoelang',
   'header.whosComing': 'Wie gaat er mee',
-  'header.chooseDestination': 'Kies bestemming',
+  'header.chooseDestination': 'Alle bestemmingen',
   'header.chooseDate': 'Flexibel, elke duur',
   'header.flexibleLabel': 'Flexibel',
-  'header.anyDuration': 'elke duur',
+  'header.anyDuration': 'elke reisduur',
   'header.search': 'Zoeken',
   'header.chosen': 'gekozen',
 
@@ -37,6 +37,7 @@ const nl: Record<string, string> = {
   'header.dog': 'Hond meenemen',
   'header.dogSub': 'Check beschikbaarheid per hotel',
   'header.done': 'Klaar',
+  'header.clear': 'Wissen',
   'header.recentSearches': 'Recente zoekopdrachten',
 
   // Header - Verticals

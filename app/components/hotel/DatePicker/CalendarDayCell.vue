@@ -129,11 +129,11 @@ function handleClick() {
 }
 
 .day-cell--has-upgrades {
-  box-shadow: inset 0 0 0 2px var(--color-gold);
+  box-shadow: inset 0 0 0 2px var(--color-discount);
 }
 
 .day-cell--has-upgrades.day-cell--selected {
-  box-shadow: inset 0 0 0 2px var(--color-gold);
+  box-shadow: inset 0 0 0 2px var(--color-discount);
 }
 
 .day-cell__number {

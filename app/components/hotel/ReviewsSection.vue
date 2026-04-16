@@ -129,7 +129,7 @@ function formatReviewDate(date: string): string {
 }
 
 .score-big__stars {
-  color: var(--color-primary);
+  color: #00B67A;
   font-size: 14px;
 }
 
@@ -225,7 +225,7 @@ function formatReviewDate(date: string): string {
   color: var(--color-text-muted);
 }
 
-.star-filled { color: var(--color-primary); font-size: 12px; }
+.star-filled { color: #00B67A; font-size: 12px; }
 .star-empty { color: var(--color-border); font-size: 12px; }
 
 .review-card__text {

@@ -13,10 +13,10 @@ export default defineNuxtConfig({
   modules: [
     '@pinia/nuxt',
     '@vueuse/nuxt',
-    '@nuxtjs/google-fonts',
   ],
 
   css: [
+    '~/assets/css/fonts.css',
     '~/assets/css/variables.css',
     '~/assets/css/typography.css',
     '~/assets/css/base.css',
@@ -24,16 +24,6 @@ export default defineNuxtConfig({
     'leaflet.markercluster/dist/MarkerCluster.css',
     '~/assets/css/leaflet-overrides.css',
   ],
-
-  googleFonts: {
-    families: {
-      // Basis Grotesque is a commercial font — using Inter as fallback
-      // Recoleta is a commercial font — using Playfair Display as fallback
-      'Playfair Display': [600, 700],
-      'Inter': [400, 500, 600, 700],
-    },
-    display: 'swap',
-  },
 
   app: {
     head: {

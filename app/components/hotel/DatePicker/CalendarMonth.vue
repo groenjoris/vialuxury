@@ -175,7 +175,7 @@ const days = computed(() => {
 }
 
 .legend-swatch--gold {
-  box-shadow: inset 0 0 0 2px var(--color-gold);
+  box-shadow: inset 0 0 0 2px var(--color-discount);
 }
 
 .legend-label {

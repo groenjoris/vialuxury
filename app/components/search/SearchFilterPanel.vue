@@ -5,11 +5,8 @@
     <!-- Budget slider -->
     <div class="filter-budget">
       <div class="filter-budget__header">
-        <span class="filter-budget__label">{{ t('filter.budget') }}</span>
-        <span class="filter-budget__range">
-          <template v-if="budgetMin <= 100 && budgetMax >= 2000">{{ t('filter.budgetAll') }}</template>
-          <template v-else>{{ formatPrice(budgetMin) }} – {{ formatPrice(budgetMax) }}</template>
-        </span>
+        <span class="filter-budget__label">Totaalprijs <span class="filter-budget__persons">{{ persons }} personen</span></span>
+        <div class="filter-budget__range">{{ formatPrice(budgetMin) }} – {{ formatPrice(budgetMax) }}</div>
       </div>
       <div class="filter-budget__slider">
         <div class="filter-budget__track">
@@ -75,10 +72,13 @@ import { formatPrice } from '~/utils/formatPrice'
 
 const { t } = useI18n()
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   budgetMin: number
   budgetMax: number
-}>()
+  persons?: number
+}>(), {
+  persons: 2,
+})
 
 const emit = defineEmits<{
   'update:budgetMin': [value: number]
@@ -180,9 +180,6 @@ function toggleGroup(index: number) {
 }
 
 .filter-budget__header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   margin-bottom: var(--space-md);
 }
 
@@ -192,10 +189,16 @@ function toggleGroup(index: number) {
   color: var(--color-text-primary);
 }
 
+.filter-budget__persons {
+  font-weight: 400;
+  color: var(--color-text-secondary);
+}
+
 .filter-budget__range {
   font-size: 13px;
-  font-weight: 600;
-  color: var(--color-primary);
+  font-weight: 400;
+  color: var(--color-text-secondary);
+  margin-top: 2px;
 }
 
 .filter-budget__slider {
@@ -218,7 +221,7 @@ function toggleGroup(index: number) {
   position: absolute;
   top: 0;
   height: 100%;
-  background: var(--color-primary);
+  background: #1A1A1A;
   border-radius: 2px;
 }
 
@@ -242,7 +245,7 @@ function toggleGroup(index: number) {
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  background: var(--color-primary);
+  background: #1A1A1A;
   border: 3px solid #fff;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
   cursor: pointer;
@@ -253,7 +256,7 @@ function toggleGroup(index: number) {
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  background: var(--color-primary);
+  background: #1A1A1A;
   border: 3px solid #fff;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
   cursor: pointer;

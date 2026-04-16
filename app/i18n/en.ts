@@ -9,10 +9,10 @@ const en: Record<string, string> = {
   'header.destination': 'Where to',
   'header.whenAndHowLong': 'When & how long',
   'header.whosComing': 'Who\'s coming',
-  'header.chooseDestination': 'Choose destination',
+  'header.chooseDestination': 'All destinations',
   'header.chooseDate': 'Flexible, any duration',
   'header.flexibleLabel': 'Flexible',
-  'header.anyDuration': 'any duration',
+  'header.anyDuration': 'any travel duration',
   'header.search': 'Search',
   'header.chosen': 'chosen',
 
@@ -29,6 +29,7 @@ const en: Record<string, string> = {
   'header.duration': 'Duration',
   'header.flexArrival': 'Flexibility of arrival date',
   'header.done': 'Ready',
+  'header.clear': 'Clear',
   'header.recentSearches': 'Recent searches',
 
   // Header - Travel group
