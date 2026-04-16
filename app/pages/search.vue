@@ -13,7 +13,12 @@
       <div class="search-page__grid container" :class="{ 'search-page__grid--no-sidebar': !showFilters }">
         <Transition name="sidebar-slide">
           <div v-if="showFilters" class="search-page__sidebar">
-            <SearchFilterPanel />
+            <SearchFilterPanel
+              :budget-min="budgetMin"
+              :budget-max="budgetMax"
+              @update:budget-min="budgetMin = $event"
+              @update:budget-max="budgetMax = $event"
+            />
           </div>
         </Transition>
 
@@ -96,8 +101,16 @@
             </div>
           </div>
 
+          <!-- Loading overlay -->
+          <Transition name="fade">
+            <div v-if="searchLoading" class="search-page__loading">
+              <div class="search-page__spinner"></div>
+            </div>
+          </Transition>
+
           <!-- Results: list or grid -->
           <div
+            v-if="!searchLoading"
             class="search-page__result-list"
             :class="{
               'search-page__result-list--grid': viewMode === 'grid',
@@ -110,6 +123,7 @@
               :hotel="hotel"
               :grid-mode="viewMode === 'grid'"
               @view-deals="openDealPanel(hotel)"
+              @view-deal="navigateToDeal"
             />
           </div>
         </div>
@@ -132,6 +146,26 @@ import type { SearchHotel } from '~/types/searchHotel'
 import { searchHotels } from '~/data/mock/search-hotels'
 
 const { t } = useI18n()
+const { loading, setLoading, persons, rooms } = useSearchState()
+
+// Fake loading state
+const searchLoading = ref(false)
+
+function triggerFakeLoad() {
+  searchLoading.value = true
+  setTimeout(() => {
+    searchLoading.value = false
+    setLoading(false)
+  }, 1000)
+}
+
+onMounted(() => {
+  if (loading.value) triggerFakeLoad()
+})
+
+watch(loading, (val) => {
+  if (val) triggerFakeLoad()
+})
 
 const breadcrumbs = computed(() => [
   { label: t('search.home'), href: '/' },
@@ -145,6 +179,8 @@ const totalDeals = computed(() => {
 // View mode & filter state
 const viewMode = ref<'list' | 'grid'>('list')
 const showFilters = ref(true)
+const budgetMin = ref(100)
+const budgetMax = ref(2000)
 
 // Sort
 const sortOpen = ref(false)
@@ -158,8 +194,16 @@ const sortOptions = computed(() => [
   { value: 'ratingLow' as const, label: t('search.sort.ratingLow') },
 ])
 
+// Budget-filtered hotels
+const filteredHotels = computed(() => {
+  return searchHotels.filter((hotel) => {
+    // Hotel passes if ANY deal's price is within range
+    return hotel.deals.some(d => d.basePrice >= budgetMin.value && d.basePrice <= budgetMax.value)
+  })
+})
+
 const sortedHotels = computed(() => {
-  const hotels = [...searchHotels]
+  const hotels = [...filteredHotels.value]
   switch (sortBy.value) {
     case 'priceLow':
       return hotels.sort((a, b) => Math.min(...a.deals.map(d => d.basePrice)) - Math.min(...b.deals.map(d => d.basePrice)))
@@ -194,6 +238,14 @@ const activePanelHotel = ref<SearchHotel | null>(null)
 function openDealPanel(hotel: SearchHotel) {
   activePanelHotel.value = hotel
   panelOpen.value = true
+}
+
+function navigateToDeal(slug: string) {
+  const params = new URLSearchParams()
+  if (persons.value !== 2) params.set('adults', String(persons.value))
+  if (rooms.value !== 1) params.set('rooms', String(rooms.value))
+  const qs = params.toString()
+  window.open(`/deal/${slug}${qs ? '?' + qs : ''}`, '_blank')
 }
 </script>
 
@@ -459,5 +511,36 @@ function openDealPanel(hotel: SearchHotel) {
   .search-page__result-list--grid-3 {
     grid-template-columns: 1fr;
   }
+}
+
+/* Loading state */
+.search-page__loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+}
+
+.search-page__spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--color-border);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 200ms ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>

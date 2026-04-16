@@ -6,6 +6,7 @@
           <div class="panel__header">
             <h2 class="panel__title">{{ t('deal.availableArrangements') }}</h2>
             <p class="panel__subtitle">{{ hotelName }}</p>
+            <p class="panel__persons">{{ t('common.for') }} {{ store.totalPersons }} {{ store.totalPersons === 1 ? t('common.personSingular') : t('common.personPlural') }}</p>
             <button class="panel__close" @click="$emit('close')" :aria-label="t('common.close')">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M18 6L6 18M6 6l12 12" />
@@ -21,13 +22,15 @@
               :class="{ 'package-card--active': variant.id === currentDealId }"
             >
               <div class="package-card__header">
-                <span class="package-card__nights">{{ variant.nights }} {{ t('common.nights') }}</span>
+                <span class="package-card__nights">{{ variant.nights }} {{ variant.nights === 1 ? t('common.night') : t('common.nights') }}</span>
                 <div class="package-card__pricing">
                   <span class="package-card__discount">-{{ discountPercentage }}%</span>
                   <span class="package-card__price">{{ formatPrice(variant.basePrice) }}</span>
                   <span class="package-card__original">{{ formatPrice(variant.originalPrice) }}</span>
                 </div>
               </div>
+
+              <p v-if="getTitle(variant.id)" class="package-card__title">{{ getTitle(variant.id) }}</p>
 
               <div class="package-card__inclusions">
                 <div
@@ -61,8 +64,10 @@
 <script setup lang="ts">
 import type { DealVariant } from '~/types/deal'
 import { formatPrice } from '~/utils/formatPrice'
+import { useDealStore } from '~/stores/deal'
 
 const { t, localized } = useI18n()
+const store = useDealStore()
 
 const props = defineProps<{
   isOpen: boolean
@@ -71,6 +76,7 @@ const props = defineProps<{
   hotelName: string
   discountPercentage: number
   inclusionsMap: Record<string, string[]>
+  titlesMap: Record<string, string>
 }>()
 
 defineEmits<{
@@ -80,6 +86,10 @@ defineEmits<{
 
 function getInclusions(dealId: string): string[] {
   return props.inclusionsMap[dealId] || []
+}
+
+function getTitle(dealId: string): string {
+  return props.titlesMap[dealId] || ''
 }
 </script>
 
@@ -119,6 +129,12 @@ function getInclusions(dealId: string): string[] {
 .panel__subtitle {
   font-size: 14px;
   color: var(--color-text-secondary);
+}
+
+.panel__persons {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  margin-top: 2px;
 }
 
 .panel__close {
@@ -205,6 +221,15 @@ function getInclusions(dealId: string): string[] {
   font-size: 14px;
   color: var(--color-text-muted);
   text-decoration: line-through;
+}
+
+.package-card__title {
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--color-text-muted);
+  line-height: 1.4;
+  margin-bottom: var(--space-md);
 }
 
 .package-card__inclusions {

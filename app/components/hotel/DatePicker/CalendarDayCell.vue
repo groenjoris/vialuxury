@@ -2,7 +2,7 @@
   <button
     class="day-cell"
     :class="{
-      'day-cell--unavailable': !availability?.available,
+      'day-cell--sold-out': isSoldOut && !isPast,
       'day-cell--selected': isSelected,
       'day-cell--in-range': isInRange,
       'day-cell--other-month': !isCurrentMonth,
@@ -13,7 +13,24 @@
     @click="handleClick"
   >
     <span class="day-cell__number">{{ dayOfMonth }}</span>
-    <span v-if="availability?.available && !isPast && availability.totalPrice > 0" class="day-cell__price">
+
+    <!-- Sold out: show dash -->
+    <span v-if="isSoldOut && !isPast" class="day-cell__sold" :class="{ 'day-cell__sold--in-range': isInRange }">-</span>
+
+    <!-- Check-in date: show price -->
+    <span
+      v-else-if="isCheckIn && availability?.available && !isPast && availability.totalPrice > 0"
+      class="day-cell__price day-cell__price--selected"
+    >
+      {{ formatPrice(availability.totalPrice) }}
+    </span>
+
+    <!-- Normal available date (not selected, not check-out): show price -->
+    <span
+      v-else-if="!isSelected && !isInRange && availability?.available && !isPast && availability.totalPrice > 0"
+      class="day-cell__price"
+      :class="{ 'day-cell__price--cheapest': isCheapest }"
+    >
       {{ formatPrice(availability.totalPrice) }}
     </span>
   </button>
@@ -31,6 +48,7 @@ const props = defineProps<{
   availability: DateAvailability | null
   selectedCheckIn: string | null
   selectedCheckOut: string | null
+  isCheapest?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -39,9 +57,13 @@ const emit = defineEmits<{
 
 const isPast = computed(() => dayjs(props.date).isBefore(dayjs(), 'day'))
 
+const isSoldOut = computed(() => props.availability?.soldOut === true)
+
 const isSelected = computed(() => {
   return props.date === props.selectedCheckIn || props.date === props.selectedCheckOut
 })
+
+const isCheckIn = computed(() => props.date === props.selectedCheckIn)
 
 const isInRange = computed(() => {
   if (!props.selectedCheckIn || !props.selectedCheckOut) return false
@@ -68,27 +90,36 @@ function handleClick() {
   transition: all var(--transition-fast);
   background: none;
   cursor: pointer;
+  position: relative;
 }
 
 .day-cell:hover:not(:disabled) {
-  background: var(--color-primary-light);
+  background: #d4f5e6;
 }
 
+/* Selected check-in / check-out dates: green */
 .day-cell--selected {
-  background: var(--color-primary) !important;
+  background: #00CB8B !important;
   color: white;
 }
 
-.day-cell--selected .day-cell__price {
-  color: rgba(255, 255, 255, 0.9);
-}
-
+/* In-between range dates: light green */
 .day-cell--in-range {
-  background: var(--color-primary-light);
+  background: #9AE3C7;
 }
 
-.day-cell--unavailable,
-.day-cell--past {
+/* Sold out dates */
+.day-cell--sold-out {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Sold out within range gets the range background */
+.day-cell--sold-out.day-cell--in-range {
+  opacity: 1;
+}
+
+.day-cell--past:not(.day-cell--sold-out) {
   opacity: 0.3;
   cursor: not-allowed;
 }
@@ -110,9 +141,32 @@ function handleClick() {
   font-weight: 500;
 }
 
+/* Sold out dash */
+.day-cell__sold {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+/* Sold out dash within a selected range: white */
+.day-cell__sold--in-range {
+  color: white;
+}
+
+/* Default price color: green */
 .day-cell__price {
   font-size: 12px;
-  color: var(--color-primary);
+  color: #00CB8B;
   font-weight: 600;
+}
+
+/* Cheapest price: orange */
+.day-cell__price--cheapest {
+  color: var(--color-primary);
+}
+
+/* Selected (check-in) price: white */
+.day-cell__price--selected {
+  color: rgba(255, 255, 255, 0.9);
 }
 </style>

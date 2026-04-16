@@ -23,6 +23,7 @@
         :availability="day.availability"
         :selected-check-in="selectedCheckIn"
         :selected-check-out="selectedCheckOut"
+        :is-cheapest="cheapestPrice != null && day.availability?.available === true && day.availability.totalPrice === cheapestPrice"
         @select-date="$emit('selectDate', $event)"
       />
     </div>
@@ -47,6 +48,7 @@ const props = defineProps<{
   availability: DateAvailability[]
   selectedCheckIn: string | null
   selectedCheckOut: string | null
+  cheapestPrice?: number | null
   showPrevButton?: boolean
   showNextButton?: boolean
   showLegend?: boolean

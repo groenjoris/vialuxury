@@ -55,6 +55,7 @@ export interface Review {
   text: LocalizedString
   images?: string[]
   arrangement?: LocalizedString
+  dealId?: string
 }
 
 export interface NearbyTip {

@@ -91,15 +91,15 @@
               <div class="stepper">
                 <button
                   class="stepper__btn"
-                  :disabled="localGroup.rooms <= 1"
-                  @click="localGroup.rooms = Math.max(1, localGroup.rooms - 1)"
+                  :disabled="localGroup.rooms <= minRooms"
+                  @click="localGroup.rooms = Math.max(minRooms, localGroup.rooms - 1)"
                   :aria-label="`${t('travelGroup.rooms')} -`"
                 >−</button>
                 <span class="stepper__value">{{ localGroup.rooms }}</span>
                 <button
                   class="stepper__btn"
-                  :disabled="localGroup.rooms >= 4"
-                  @click="localGroup.rooms = Math.min(4, localGroup.rooms + 1)"
+                  :disabled="localGroup.rooms >= maxRooms"
+                  @click="localGroup.rooms = Math.min(maxRooms, localGroup.rooms + 1)"
                   :aria-label="`${t('travelGroup.rooms')} +`"
                 >+</button>
               </div>
@@ -140,6 +140,17 @@ watch(() => store.isTravelGroupModalOpen, (open) => {
       rooms: store.travelGroup.rooms,
     }
   }
+})
+
+// Room dependency logic: max 2 persons per room, children count as persons
+const totalPersons = computed(() => localGroup.value.adults + localGroup.value.children.length)
+const minRooms = computed(() => Math.ceil(totalPersons.value / 2))
+const maxRooms = 10 // No hard cap — limited by availability per room type
+
+// Auto-adjust rooms when person count changes
+watch(totalPersons, (tp) => {
+  const min = Math.ceil(tp / 2)
+  if (localGroup.value.rooms < min) localGroup.value.rooms = min
 })
 
 let childIdCounter = 0

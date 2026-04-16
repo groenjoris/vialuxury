@@ -2,6 +2,43 @@
   <aside class="filter-panel">
     <h2 class="filter-panel__title">{{ t('search.filters') }}</h2>
 
+    <!-- Budget slider -->
+    <div class="filter-budget">
+      <div class="filter-budget__header">
+        <span class="filter-budget__label">{{ t('filter.budget') }}</span>
+        <span class="filter-budget__range">
+          <template v-if="budgetMin <= 100 && budgetMax >= 2000">{{ t('filter.budgetAll') }}</template>
+          <template v-else>{{ formatPrice(budgetMin) }} – {{ formatPrice(budgetMax) }}</template>
+        </span>
+      </div>
+      <div class="filter-budget__slider">
+        <div class="filter-budget__track">
+          <div
+            class="filter-budget__fill"
+            :style="{ left: ((budgetMin - 100) / 1900 * 100) + '%', right: (100 - (budgetMax - 100) / 1900 * 100) + '%' }"
+          ></div>
+        </div>
+        <input
+          type="range"
+          class="filter-budget__input filter-budget__input--min"
+          :min="100" :max="2000" :step="25"
+          :value="budgetMin"
+          @input="onMinChange"
+        />
+        <input
+          type="range"
+          class="filter-budget__input filter-budget__input--max"
+          :min="100" :max="2000" :step="25"
+          :value="budgetMax"
+          @input="onMaxChange"
+        />
+      </div>
+      <div class="filter-budget__labels">
+        <span>€100</span>
+        <span>€2000</span>
+      </div>
+    </div>
+
     <div v-for="(group, index) in filterGroups" :key="group.title" class="filter-group">
       <button
         class="filter-group__toggle"
@@ -34,7 +71,29 @@
 </template>
 
 <script setup lang="ts">
+import { formatPrice } from '~/utils/formatPrice'
+
 const { t } = useI18n()
+
+const props = defineProps<{
+  budgetMin: number
+  budgetMax: number
+}>()
+
+const emit = defineEmits<{
+  'update:budgetMin': [value: number]
+  'update:budgetMax': [value: number]
+}>()
+
+function onMinChange(e: Event) {
+  const val = Number((e.target as HTMLInputElement).value)
+  emit('update:budgetMin', Math.min(val, props.budgetMax - 25))
+}
+
+function onMaxChange(e: Event) {
+  const val = Number((e.target as HTMLInputElement).value)
+  emit('update:budgetMax', Math.max(val, props.budgetMin + 25))
+}
 
 interface FilterGroup {
   title: string
@@ -111,6 +170,102 @@ function toggleGroup(index: number) {
   font-weight: 700;
   margin-bottom: var(--space-lg);
   color: var(--color-text-primary);
+}
+
+/* Budget slider */
+.filter-budget {
+  padding-bottom: var(--space-md);
+  margin-bottom: var(--space-md);
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.filter-budget__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-md);
+}
+
+.filter-budget__label {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.filter-budget__range {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+.filter-budget__slider {
+  position: relative;
+  height: 28px;
+}
+
+.filter-budget__track {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--color-border);
+  border-radius: 2px;
+  transform: translateY(-50%);
+}
+
+.filter-budget__fill {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  background: var(--color-primary);
+  border-radius: 2px;
+}
+
+.filter-budget__input {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  pointer-events: none;
+  outline: none;
+}
+
+.filter-budget__input::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  border: 3px solid #fff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  pointer-events: all;
+}
+
+.filter-budget__input::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  border: 3px solid #fff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  pointer-events: all;
+}
+
+.filter-budget__labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--color-text-muted);
+  margin-top: 2px;
 }
 
 .filter-group {

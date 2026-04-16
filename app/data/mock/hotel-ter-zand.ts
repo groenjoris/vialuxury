@@ -37,15 +37,15 @@ export const hotelTerZand: Hotel = {
     { icon: 'restaurant', label: { nl: 'Restaurant/Bar', en: 'Restaurant/Bar' } },
   ],
   reviews: {
-    overallScore: 4.3,
+    overallScore: 8.6,
     totalReviews: 77,
     categories: [
-      { name: { nl: 'Hygiëne', en: 'Hygiene' }, icon: 'cleaning_services', score: 4.8 },
-      { name: { nl: 'Service', en: 'Service' }, icon: 'local_activity', score: 4.7 },
-      { name: { nl: 'Kamers', en: 'Rooms' }, icon: 'bed', score: 4.8 },
-      { name: { nl: 'Locatie', en: 'Location' }, icon: 'location_on', score: 4.9 },
-      { name: { nl: 'Gastronomie', en: 'Gastronomy' }, icon: 'restaurant', score: 4.8 },
-      { name: { nl: 'Aankomst', en: 'Arrival' }, icon: 'card_travel', score: 4.6 },
+      { name: { nl: 'Hygiëne', en: 'Hygiene' }, icon: 'cleaning_services', score: 9.6 },
+      { name: { nl: 'Service', en: 'Service' }, icon: 'local_activity', score: 9.4 },
+      { name: { nl: 'Kamers', en: 'Rooms' }, icon: 'bed', score: 9.6 },
+      { name: { nl: 'Locatie', en: 'Location' }, icon: 'location_on', score: 9.8 },
+      { name: { nl: 'Gastronomie', en: 'Gastronomy' }, icon: 'restaurant', score: 9.6 },
+      { name: { nl: 'Aankomst', en: 'Arrival' }, icon: 'card_travel', score: 9.2 },
     ],
   },
   individualReviews: [
@@ -53,7 +53,7 @@ export const hotelTerZand: Hotel = {
       id: 'rev-1',
       author: 'KaiB',
       date: '2026-07-22',
-      score: 5,
+      score: 10,
       text: {
         nl: 'Een fantastisch verblijf! De kamer was ruim en schoon, het ontbijt uitgebreid en het personeel ontzettend vriendelijk. De ligging tussen de duinen is werkelijk prachtig. We komen zeker terug!',
         en: 'A fantastic stay! The room was spacious and clean, the breakfast extensive and the staff incredibly friendly. The location among the dunes is truly beautiful. We will definitely come back!',
@@ -64,7 +64,7 @@ export const hotelTerZand: Hotel = {
       id: 'rev-2',
       author: 'MarjaV',
       date: '2026-07-22',
-      score: 5,
+      score: 10,
       text: {
         nl: 'Perfect weekend getaway. Het diner was voortreffelijk en de wellness geweldig om te ontspannen na een strandwandeling. Aanrader!',
         en: 'Perfect weekend getaway. The dinner was exquisite and the wellness was wonderful for relaxing after a beach walk. Highly recommended!',
@@ -74,7 +74,7 @@ export const hotelTerZand: Hotel = {
       id: 'rev-3',
       author: 'PeterK',
       date: '2026-07-22',
-      score: 4,
+      score: 8,
       text: {
         nl: 'Mooi hotel met goede faciliteiten. De locatie is top, direct bij het strand. Enige minpuntje was dat het zwembad vrij druk was in het weekend.',
         en: 'Beautiful hotel with great facilities. The location is superb, right next to the beach. The only downside was that the pool was quite busy on the weekend.',
@@ -84,7 +84,7 @@ export const hotelTerZand: Hotel = {
       id: 'rev-4',
       author: 'SophieD',
       date: '2026-07-22',
-      score: 5,
+      score: 10,
       text: {
         nl: 'Wat een heerlijk arrangement! Alles was tot in de puntjes verzorgd. Het welkomstdrankje bij aankomst zette meteen de toon voor een ontspannen verblijf.',
         en: 'What a wonderful package! Everything was perfectly arranged. The welcome drink upon arrival immediately set the tone for a relaxing stay.',
@@ -95,7 +95,7 @@ export const hotelTerZand: Hotel = {
       id: 'rev-5',
       author: 'JanW',
       date: '2026-07-22',
-      score: 4,
+      score: 8,
       text: {
         nl: 'Goede prijs-kwaliteitverhouding. Het hotel is netjes en de omgeving is prachtig. Het ontbijt had wat meer variatie mogen hebben.',
         en: 'Good value for money. The hotel is well-maintained and the surroundings are beautiful. The breakfast could have had a bit more variety.',
@@ -105,7 +105,7 @@ export const hotelTerZand: Hotel = {
       id: 'rev-6',
       author: 'AnneL',
       date: '2026-07-22',
-      score: 5,
+      score: 10,
       text: {
         nl: 'Topverblijf! De upgrade naar een luxere kamer was fantastisch. Uitzicht op de duinen, heerlijk bed en een geweldige service.',
         en: 'Excellent stay! The upgrade to a more luxurious room was fantastic. Views of the dunes, a wonderful bed and great service.',

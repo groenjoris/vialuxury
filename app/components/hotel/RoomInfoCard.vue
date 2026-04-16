@@ -1,35 +1,23 @@
 <template>
   <div class="room-info-card">
-    <!-- Upgrade ribbon -->
-    <div v-if="showUpgradeLabel" class="room-info-card__ribbon">
+    <!-- Upgrade ribbon — shown on all room cards (free or paid upgrade) -->
+    <div class="room-info-card__ribbon">
       <span>{{ t('common.upgrade') }}</span>
     </div>
 
     <div class="room-info-card__body">
-      <span class="room-info-card__eyebrow">{{ store.travelGroup.rooms > 1 ? t('room.yourRooms') : t('room.yourRoom') }}</span>
-
-      <!-- Multi-room allocation display -->
-      <template v-if="store.isRoomAllocationActive && hasMultipleTypes">
-        <div v-for="(entry, idx) in allocationEntries" :key="entry.room.id" class="room-info-card__alloc-entry">
-          <h3 class="room-info-card__name">{{ entry.count }}x {{ localized(entry.room.name) }}</h3>
-          <p v-if="idx === 0" class="room-info-card__desc">{{ localized(entry.room.description) }}</p>
-        </div>
-      </template>
-
-      <!-- Single room type display -->
-      <template v-else>
-        <h3 class="room-info-card__name">
-          <template v-if="store.travelGroup.rooms > 1">{{ store.travelGroup.rooms }}x </template>{{ localized(selectedRoom.name) }}
-        </h3>
-        <p class="room-info-card__desc">{{ localized(selectedRoom.description) }}</p>
-      </template>
-
-      <ul v-if="selectedRoom.features.length" class="room-info-card__amenities">
+      <span class="room-info-card__eyebrow">{{ count > 1 ? t('room.yourRooms') : t('room.yourRoom') }}</span>
+      <h3 class="room-info-card__name">
+        <template v-if="count > 1">{{ count }}x </template>{{ localized(room.name) }}
+      </h3>
+      <p class="room-info-card__desc">{{ localized(room.description) }}</p>
+      <ul v-if="room.features.length" class="room-info-card__amenities">
         <li v-for="feature in displayFeatures" :key="localized(feature)">{{ localized(feature) }}</li>
       </ul>
     </div>
 
-    <div class="room-info-card__cta-group">
+    <!-- CTA: "Meer luxe?" only on first card when no paid upgrades selected globally -->
+    <div v-if="isFirst && !isPaidRoom && !hasAnyPaidUpgrade" class="room-info-card__cta-group">
       <div class="room-info-card__cta">
         <!-- State A: no date selected -->
         <template v-if="!store.checkInDate">
@@ -39,8 +27,8 @@
           </p>
         </template>
 
-        <!-- State B: date selected, base/default room -->
-        <template v-else-if="selectedRoom.isDefault">
+        <!-- State B: date selected, only default rooms -->
+        <template v-else-if="!hasAnyPaidUpgrade">
           <h4 class="room-info-card__cta-heading">{{ t('room.moreLuxury') }}</h4>
           <button
             type="button"
@@ -53,37 +41,40 @@
             </svg>
           </button>
         </template>
+      </div>
+    </div>
 
-        <!-- State C: paid upgrade selected -->
-        <template v-else>
-          <h4 class="room-info-card__cta-heading">
-            {{ t('room.paidUpgradeSelected') }}
-            <span class="room-info-card__cta-price">(+{{ formatPrice(selectedRoom.priceExtra) }})</span>
-          </h4>
-          <button
-            type="button"
-            class="room-info-card__cta-undo"
-            @click="store.selectRoom(deal.baseRoomType.id)"
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="15 18 9 12 15 6" />
-            </svg>
-            {{ t('room.undo') }}
-          </button>
-        </template>
+    <!-- CTA: "Betaalde upgrade geselecteerd" on each paid room card -->
+    <div v-if="isPaidRoom" class="room-info-card__cta-group">
+      <div class="room-info-card__cta">
+        <h4 class="room-info-card__cta-heading">
+          {{ t('room.paidUpgradesSelected') }}
+        </h4>
+        <button
+          type="button"
+          class="room-info-card__cta-action"
+          @click="emit('open-upgrades')"
+        >
+          {{ t('room.changeRoomChoice') }}
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6" />
+          </svg>
+        </button>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import type { Deal } from '~/types/deal'
+import type { Deal, RoomOption } from '~/types/deal'
 import { useDealStore } from '~/stores/deal'
-import { formatPrice } from '~/utils/formatPrice'
 
 const { t, localized } = useI18n()
 
 const props = defineProps<{
+  room: RoomOption
+  count: number
+  isFirst: boolean
   deal: Deal
 }>()
 
@@ -93,36 +84,28 @@ const emit = defineEmits<{
 
 const store = useDealStore()
 
-const selectedRoom = computed(() => store.selectedRoom ?? props.deal.baseRoomType)
+/** Whether THIS specific room is a paid upgrade */
+const isPaidRoom = computed(() => props.room.priceExtra > 0)
 
 const displayFeatures = computed(() => {
-  const features = selectedRoom.value.features
-  // Show fewer features when multiple rooms to keep card compact
-  if (store.travelGroup.rooms > 1 && features.length > 4) {
+  const features = props.room.features
+  if (props.count > 1 && features.length > 4) {
     return features.slice(0, 4)
   }
   return features
 })
 
-/** Show upgrade label when base room is an upgrade OR a paid upgrade is selected */
-const showUpgradeLabel = computed(() => {
-  return selectedRoom.value.isUpgrade || !selectedRoom.value.isDefault
-})
-
-/** Allocation entries for multi-room display */
-const allocationEntries = computed(() => {
-  const entries: { room: typeof selectedRoom.value; count: number }[] = []
-  for (const [roomId, count] of Object.entries(store.effectiveAllocation)) {
-    if (count <= 0) continue
-    const room = store.allRoomTypes.find(r => r.id === roomId)
-    if (room) entries.push({ room, count })
+/** Whether ANY paid upgrade is selected (across all room types) */
+const hasAnyPaidUpgrade = computed(() => {
+  if (store.isRoomAllocationActive) {
+    for (const [roomId, count] of Object.entries(store.effectiveAllocation)) {
+      if (count <= 0) continue
+      const room = store.allRoomTypes.find(r => r.id === roomId)
+      if (room && room.priceExtra > 0) return true
+    }
+    return false
   }
-  return entries
-})
-
-/** Whether there are multiple different room types allocated */
-const hasMultipleTypes = computed(() => {
-  return allocationEntries.value.length > 1
+  return !props.room.isDefault
 })
 </script>
 
@@ -152,8 +135,9 @@ const hasMultipleTypes = computed(() => {
   display: block;
   width: 150px;
   padding: 6px 0;
-  background: linear-gradient(135deg, #c5a254, #e4c777);
-  color: #3a2e0f;
+  background: #F8F2E6;
+  color: #1A1A1A;
+  font-family: var(--font-heading);
   font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
@@ -213,22 +197,9 @@ const hasMultipleTypes = computed(() => {
   content: '✓';
   position: absolute;
   left: 2px;
-  color: var(--color-primary);
+  color: var(--color-discount);
   font-weight: 700;
   font-size: 13px;
-}
-
-/* Multi-room allocation entries */
-.room-info-card__alloc-entry {
-  margin-bottom: var(--space-sm);
-}
-
-.room-info-card__alloc-entry:last-child {
-  margin-bottom: 0;
-}
-
-.room-info-card__alloc-entry .room-info-card__name {
-  margin-bottom: 2px;
 }
 
 /* CTA group */
@@ -242,15 +213,11 @@ const hasMultipleTypes = computed(() => {
 }
 
 .room-info-card__cta-heading {
-  font-size: 15px;
-  font-weight: 700;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 500;
   color: var(--color-text-primary);
   margin-bottom: 6px;
-}
-
-.room-info-card__cta-price {
-  color: var(--color-primary);
-  font-weight: 700;
 }
 
 .room-info-card__cta-text {
@@ -280,30 +247,6 @@ const hasMultipleTypes = computed(() => {
 }
 
 .room-info-card__cta-action svg {
-  flex-shrink: 0;
-}
-
-.room-info-card__cta-undo {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  background: none;
-  border: none;
-  padding: 0;
-  font: inherit;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--color-text-secondary);
-  cursor: pointer;
-  text-decoration: underline;
-  text-underline-offset: 2px;
-}
-
-.room-info-card__cta-undo:hover {
-  color: var(--color-text-primary);
-}
-
-.room-info-card__cta-undo svg {
   flex-shrink: 0;
 }
 </style>

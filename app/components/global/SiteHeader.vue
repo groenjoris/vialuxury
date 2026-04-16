@@ -126,103 +126,27 @@
       <div v-if="activePopup" class="popup-overlay" @click.self="closePopup">
         <!-- DESTINATION POPUP -->
         <div v-if="activePopup === 'destination'" class="popup popup--destination">
-          <div class="popup__section">
-            <h4 class="popup__section-title">{{ t('header.popularDestinations') }}</h4>
-            <div class="popup__grid">
-              <button
-                v-for="dest in destinations"
-                :key="dest.id"
-                class="dest-chip"
-                :class="{ 'dest-chip--selected': selectedDestinations.includes(dest.id) }"
-                @click="toggleDestination(dest.id)"
-              >
-                <span class="dest-chip__emoji">{{ dest.emoji }}</span>
-                <span class="dest-chip__name">{{ dest.name }}</span>
-                <span v-if="dest.country" class="dest-chip__country">{{ dest.country }}</span>
-              </button>
-            </div>
-          </div>
-          <div class="popup__section">
-            <h4 class="popup__section-title">{{ t('header.themes') }}</h4>
-            <div class="popup__grid">
-              <button
-                v-for="theme in themes"
-                :key="theme.id"
-                class="dest-chip dest-chip--theme"
-                :class="{ 'dest-chip--selected': selectedThemes.includes(theme.id) }"
-                @click="toggleTheme(theme.id)"
-              >
-                <span class="dest-chip__emoji">{{ theme.emoji }}</span>
-                <span class="dest-chip__name">{{ theme.name }}</span>
-              </button>
-            </div>
-          </div>
+          <DestinationPopup
+            :destinations="destinations"
+            :themes="themes"
+            :selected-destinations="selectedDestinations"
+            :selected-themes="selectedThemes"
+            @toggle-destination="toggleDestination"
+            @toggle-theme="toggleTheme"
+            @select-hotel="handleSelectHotel"
+            @select-city="handleSelectCity"
+          />
         </div>
 
         <!-- WHEN POPUP -->
         <div v-if="activePopup === 'when'" class="popup popup--when">
-          <div class="popup__row">
-            <!-- Mini calendar -->
-            <div class="popup__section popup__section--calendar">
-              <h4 class="popup__section-title">{{ t('header.date') }}</h4>
-              <div class="mini-cal">
-                <div class="mini-cal__header">
-                  <button class="mini-cal__nav" @click="calPrev">&#8249;</button>
-                  <span class="mini-cal__month">{{ calMonthLabel }}</span>
-                  <button class="mini-cal__nav" @click="calNext">&#8250;</button>
-                </div>
-                <div class="mini-cal__days-header">
-                  <span v-for="(d, i) in dayHeaders" :key="i">{{ d }}</span>
-                </div>
-                <div class="mini-cal__grid">
-                  <span
-                    v-for="(cell, i) in calCells"
-                    :key="i"
-                    class="mini-cal__cell"
-                    :class="{
-                      'mini-cal__cell--empty': !cell.day,
-                      'mini-cal__cell--selected': cell.date === selectedDate,
-                      'mini-cal__cell--past': cell.past,
-                    }"
-                    @click="cell.day && !cell.past ? selectDate(cell.date!) : null"
-                  >
-                    {{ cell.day || '' }}
-                  </span>
-                </div>
-              </div>
-              <div class="flex-row">
-                <h4 class="popup__section-title">{{ t('header.flexibility') }}</h4>
-                <div class="flex-chips">
-                  <button
-                    v-for="f in flexOptions"
-                    :key="f.value"
-                    class="flex-chip"
-                    :class="{ 'flex-chip--selected': flexibility === f.value }"
-                    @click="flexibility = f.value"
-                  >
-                    {{ f.label }}
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            <!-- Duration -->
-            <div class="popup__section popup__section--duration">
-              <h4 class="popup__section-title">{{ t('header.howLong') }}</h4>
-              <div class="duration-options">
-                <button
-                  v-for="dur in durationOptions"
-                  :key="dur.id"
-                  class="dur-chip"
-                  :class="{ 'dur-chip--selected': selectedDuration === dur.id }"
-                  @click="selectedDuration = dur.id"
-                >
-                  <span class="dur-chip__label">{{ dur.label }}</span>
-                  <span v-if="dur.sub" class="dur-chip__sub">{{ dur.sub }}</span>
-                </button>
-              </div>
-            </div>
-          </div>
+          <DatePopup
+            v-model:cal-month="calMonth"
+            v-model:selected-date="selectedDate"
+            v-model:flexibility="flexibility"
+            v-model:selected-duration="selectedDuration"
+            @update:flex-state="handleFlexState"
+          />
         </div>
 
         <!-- WHO POPUP -->
@@ -286,6 +210,9 @@
               <span class="toggle__slider"></span>
             </label>
           </div>
+
+          <!-- Done button -->
+          <button class="popup__done-btn" @click="closePopup()">{{ t('header.done') }}</button>
         </div>
       </div>
     </Transition>
@@ -378,6 +305,7 @@ const themes = computed(() => [
 
 const selectedDestinations = ref<string[]>([])
 const selectedThemes = ref<string[]>([])
+const selectedCities = ref<{ name: string; province: string }[]>([])
 
 function toggleDestination(id: string) {
   const idx = selectedDestinations.value.indexOf(id)
@@ -391,29 +319,56 @@ function toggleTheme(id: string) {
   else selectedThemes.value.splice(idx, 1)
 }
 
-const destinationLabel = computed(() => {
-  const count = selectedDestinations.value.length + selectedThemes.value.length
-  if (count === 0) return t('header.chooseDestination')
-  if (count === 1) {
-    const d = destinations.find(d => d.id === selectedDestinations.value[0])
-    const th = themes.value.find(th => th.id === selectedThemes.value[0])
-    return d?.name || th?.name || `${count} ${t('header.chosen')}`
+function handleSelectCity(city: { name: string; province: string }) {
+  // Avoid duplicates
+  if (!selectedCities.value.find(c => c.name === city.name)) {
+    selectedCities.value.push(city)
   }
-  return `${count} ${t('header.chosen')}`
+}
+
+const destinationLabel = computed(() => {
+  // Collect all selected names in order
+  const names: string[] = []
+
+  for (const id of selectedDestinations.value) {
+    const d = destinations.find(d => d.id === id)
+    if (d) names.push(d.name)
+  }
+  for (const id of selectedThemes.value) {
+    const th = themes.value.find(th => th.id === id)
+    if (th) names.push(th.name)
+  }
+  for (const city of selectedCities.value) {
+    names.push(city.name)
+  }
+
+  if (names.length === 0) return t('header.chooseDestination')
+  if (names.length === 1) return names[0]
+  return `${names[0]} + ${names.length - 1}`
 })
 
 // --- WHEN ---
 const calMonth = ref({ year: new Date().getFullYear(), month: new Date().getMonth() })
 const selectedDate = ref<string | null>(null)
 const flexibility = ref(0)
-const selectedDuration = ref('2')
+const selectedDuration = ref('')
+const flexState = ref<{ duration: string; months: string[] }>({ duration: '', months: [] })
 
-const flexOptions = computed(() => [
-  { label: t('header.flex.exact'), value: 0 },
-  { label: t('header.flex.1day'), value: 1 },
-  { label: t('header.flex.2days'), value: 2 },
-  { label: t('header.flex.3days'), value: 3 },
-])
+// Sync arrival date to shared composable so sidebar can read it
+const { setArrivalDate, setSearchGroup, setLoading } = useSearchState()
+watch(selectedDate, (val) => {
+  setArrivalDate(val)
+  // Selecting an arrival date clears flex months
+  if (val && flexState.value.months.length > 0) {
+    flexState.value = { ...flexState.value, months: [] }
+  }
+})
+// Calendar duration clears flex duration
+watch(selectedDuration, (val) => {
+  if (val && flexState.value.duration) {
+    flexState.value = { ...flexState.value, duration: '' }
+  }
+})
 
 const durationOptions = computed(() => [
   { id: '1', label: t('header.duration.1night'), sub: null },
@@ -428,59 +383,65 @@ const durationOptions = computed(() => [
 
 const monthNames = computed(() => Array.from({ length: 12 }, (_, i) => t(`header.months.${i}`)))
 
-const dayHeaders = computed(() => Array.from({ length: 7 }, (_, i) => t(`header.days.${i}`)))
-
-const calMonthLabel = computed(() => `${monthNames.value[calMonth.value.month]} ${calMonth.value.year}`)
-
-function calPrev() {
-  if (calMonth.value.month === 0) {
-    calMonth.value = { year: calMonth.value.year - 1, month: 11 }
-  } else {
-    calMonth.value = { ...calMonth.value, month: calMonth.value.month - 1 }
+function handleFlexState(state: { duration: string; months: string[] }) {
+  flexState.value = state
+  // Selecting months replaces the arrival date
+  if (state.months.length > 0 && selectedDate.value) {
+    selectedDate.value = null
   }
-}
-
-function calNext() {
-  if (calMonth.value.month === 11) {
-    calMonth.value = { year: calMonth.value.year + 1, month: 0 }
-  } else {
-    calMonth.value = { ...calMonth.value, month: calMonth.value.month + 1 }
+  // Flex duration replaces calendar duration
+  if (state.duration) {
+    selectedDuration.value = ''
   }
-}
-
-const calCells = computed(() => {
-  const { year, month } = calMonth.value
-  const firstDay = new Date(year, month, 1).getDay()
-  const offset = firstDay === 0 ? 6 : firstDay - 1 // Monday start
-  const daysInMonth = new Date(year, month + 1, 0).getDate()
-  const today = new Date()
-  today.setHours(0, 0, 0, 0)
-
-  const cells: { day: number | null; date: string | null; past: boolean }[] = []
-  for (let i = 0; i < offset; i++) cells.push({ day: null, date: null, past: false })
-  for (let d = 1; d <= daysInMonth; d++) {
-    const date = new Date(year, month, d)
-    const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`
-    cells.push({ day: d, date: dateStr, past: date < today })
-  }
-  return cells
-})
-
-function selectDate(date: string) {
-  selectedDate.value = selectedDate.value === date ? null : date
 }
 
 const whenLabel = computed(() => {
-  const parts: string[] = []
+  // Format: [when], [duration]
+  // When = arrival date OR flex months OR "Flexibel"
+  // Duration = calendar duration OR flex type/nights OR "elke duur"/"any duration"
+
+  let whenPart = ''
+  let durationPart = ''
+
+  // When part
   if (selectedDate.value) {
     const [y, m, d] = selectedDate.value.split('-')
-    parts.push(`${d}/${m}`)
-    if (flexibility.value > 0) parts[0] += ` \u00B1${flexibility.value}`
+    whenPart = `${d}/${m}`
+    if (flexibility.value > 0) whenPart += ` \u00B1${flexibility.value}`
+  } else if (flexState.value.months.length > 0) {
+    const monthLabels = flexState.value.months.map((key) => {
+      const monthIndex = parseInt(key.split('-')[1], 10) - 1
+      return monthNames.value[monthIndex]
+    })
+    whenPart = monthLabels.join(', ')
+  } else {
+    whenPart = t('header.flexibleLabel')
   }
-  const dur = durationOptions.value.find(o => o.id === selectedDuration.value)
-  if (dur) parts.push(dur.label)
-  if (parts.length === 0) return t('header.chooseDate')
-  return parts.join(', ')
+
+  // Duration part
+  if (selectedDuration.value) {
+    const dur = durationOptions.value.find(o => o.id === selectedDuration.value)
+    if (dur) durationPart = dur.label
+  } else if (flexState.value.duration) {
+    const flexDur = flexState.value.duration
+    const nightsOpt = durationOptions.value.find(o => o.id === flexDur)
+    if (nightsOpt) {
+      durationPart = nightsOpt.label
+    } else {
+      const typeLabels: Record<string, string> = {
+        'weekend-fri-sun': t('header.flex.weekendFriSun'),
+        'weekend-sat-sun': t('header.flex.weekendSatSun'),
+        'long-weekend': t('header.flex.longWeekend'),
+        'midweek': t('header.flex.midweek'),
+      }
+      durationPart = typeLabels[flexDur] || ''
+    }
+  } else {
+    durationPart = t('header.anyDuration')
+  }
+
+  const label = `${whenPart}, ${durationPart}`
+  return label.length > 32 ? label.substring(0, 30) + '...' : label
 })
 
 // --- WHO ---
@@ -514,7 +475,15 @@ const whoLabel = computed(() => {
 
 function handleSearch() {
   closePopup()
+  const totalPersons = searchGroup.value.adults + searchGroup.value.children.length
+  setSearchGroup(totalPersons, searchGroup.value.rooms)
+  setLoading(true)
   navigateTo('/search')
+}
+
+function handleSelectHotel(slug: string) {
+  closePopup()
+  navigateTo(`/deal/${slug}`)
 }
 </script>
 
@@ -562,7 +531,8 @@ function handleSearch() {
 .verticals {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 28px;
+  margin-left: 24px;
 }
 
 .verticals__item {
@@ -873,259 +843,31 @@ function handleSearch() {
   background: var(--color-surface);
   border-radius: var(--radius-lg);
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18), 0 2px 8px rgba(0, 0, 0, 0.08);
-  padding: var(--space-lg);
-  max-width: 680px;
-  width: 100%;
   max-height: 70vh;
   overflow-y: auto;
 }
 
-.popup__section {
-  margin-bottom: var(--space-lg);
+.popup--destination {
+  padding: 0;
+  max-width: 680px;
+  width: 100%;
 }
 
-.popup__section:last-child {
-  margin-bottom: 0;
+.popup--when {
+  padding: 0;
+  max-width: 660px;
+  width: 100%;
 }
 
-.popup__section-title {
-  font-family: var(--font-body);
-  font-size: 13px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: var(--color-text-muted);
-  margin-bottom: var(--space-md);
-}
-
-.popup__grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-sm);
-}
-
-.popup__row {
-  display: grid;
-  grid-template-columns: 1.2fr 1fr;
-  gap: var(--space-xl);
-}
-
-/* ==================== */
-/* DESTINATION CHIPS    */
-/* ==================== */
-.dest-chip {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 14px;
-  border: 1px solid var(--color-border);
-  border-radius: 24px;
-  background: var(--color-surface);
-  cursor: pointer;
-  transition: all var(--transition-fast);
-  font-size: 13px;
-}
-
-.dest-chip:hover {
-  border-color: var(--color-primary);
-  background: var(--color-primary-light);
-}
-
-.dest-chip--selected {
-  border-color: var(--color-primary);
-  background: var(--color-primary-light);
-  font-weight: 600;
-}
-
-.dest-chip__emoji {
-  font-size: 15px;
-}
-
-.dest-chip__name {
-  color: var(--color-text-primary);
-}
-
-.dest-chip__country {
-  font-size: 11px;
-  color: var(--color-text-muted);
-  font-weight: 500;
-}
-
-/* ==================== */
-/* MINI CALENDAR        */
-/* ==================== */
-.mini-cal {
-  margin-bottom: var(--space-lg);
-}
-
-.mini-cal__header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: var(--space-md);
-}
-
-.mini-cal__month {
-  font-size: 15px;
-  font-weight: 600;
-}
-
-.mini-cal__nav {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  border: 1px solid var(--color-border);
-  background: none;
-  font-size: 18px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all var(--transition-fast);
-  color: var(--color-text-primary);
-}
-
-.mini-cal__nav:hover {
-  border-color: var(--color-primary);
-  color: var(--color-primary);
-}
-
-.mini-cal__days-header {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  text-align: center;
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--color-text-muted);
-  margin-bottom: var(--space-xs);
-}
-
-.mini-cal__grid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 2px;
-}
-
-.mini-cal__cell {
-  aspect-ratio: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 13px;
-  border-radius: 50%;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-}
-
-.mini-cal__cell:hover:not(.mini-cal__cell--empty):not(.mini-cal__cell--past) {
-  background: var(--color-primary-light);
-  color: var(--color-primary-hover);
-}
-
-.mini-cal__cell--empty {
-  cursor: default;
-}
-
-.mini-cal__cell--past {
-  color: var(--color-text-muted);
-  opacity: 0.4;
-  cursor: default;
-}
-
-.mini-cal__cell--selected {
-  background: var(--color-primary) !important;
-  color: white !important;
-  font-weight: 600;
-}
-
-/* Flexibility */
-.flex-row {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-sm);
-}
-
-.flex-chips {
-  display: flex;
-  gap: 6px;
-}
-
-.flex-chip {
-  padding: 6px 12px;
-  border: 1px solid var(--color-border);
-  border-radius: 20px;
-  background: none;
-  font-size: 12px;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-  color: var(--color-text-primary);
-}
-
-.flex-chip:hover {
-  border-color: var(--color-primary);
-}
-
-.flex-chip--selected {
-  border-color: var(--color-primary);
-  background: var(--color-primary-light);
-  font-weight: 600;
-  color: var(--color-primary-hover);
-}
-
-/* ==================== */
-/* DURATION OPTIONS     */
-/* ==================== */
-.duration-options {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.dur-chip {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 16px;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  background: none;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-  text-align: left;
-}
-
-.dur-chip:hover {
-  border-color: var(--color-primary);
-}
-
-.dur-chip--selected {
-  border-color: var(--color-primary);
-  background: var(--color-primary-light);
-}
-
-.dur-chip__label {
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--color-text-primary);
-}
-
-.dur-chip__sub {
-  font-size: 12px;
-  color: var(--color-text-muted);
-}
-
-.dur-chip--selected .dur-chip__label {
-  font-weight: 600;
-  color: var(--color-primary-hover);
+.popup--who {
+  padding: var(--space-lg);
+  max-width: 420px;
+  width: 100%;
 }
 
 /* ==================== */
 /* WHO POPUP            */
 /* ==================== */
-.popup--who {
-  max-width: 420px;
-}
-
 .who-row {
   display: flex;
   align-items: center;
@@ -1263,6 +1005,26 @@ function handleSearch() {
 
 .toggle input:checked + .toggle__slider::before {
   transform: translateX(22px);
+}
+
+/* Done button in who popup */
+.popup__done-btn {
+  width: 100%;
+  margin-top: var(--space-md);
+  padding: 12px;
+  border: none;
+  border-radius: var(--radius-md);
+  background: var(--color-primary);
+  color: white;
+  font-size: 15px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.popup__done-btn:hover {
+  background: var(--color-primary-dark);
 }
 
 /* ==================== */

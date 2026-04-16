@@ -40,15 +40,15 @@ export const hotelKasteelTerWorm: Hotel = {
     { icon: 'meeting', label: { nl: 'Vergaderzalen', en: 'Meeting rooms' } },
   ],
   reviews: {
-    overallScore: 4.5,
+    overallScore: 9.0,
     totalReviews: 124,
     categories: [
-      { name: { nl: 'Hygiëne', en: 'Hygiene' }, icon: 'cleaning_services', score: 4.7 },
-      { name: { nl: 'Service', en: 'Service' }, icon: 'local_activity', score: 4.8 },
-      { name: { nl: 'Kamers', en: 'Rooms' }, icon: 'bed', score: 4.6 },
-      { name: { nl: 'Locatie', en: 'Location' }, icon: 'location_on', score: 4.9 },
-      { name: { nl: 'Gastronomie', en: 'Gastronomy' }, icon: 'restaurant', score: 4.7 },
-      { name: { nl: 'Aankomst', en: 'Check-in' }, icon: 'card_travel', score: 4.5 },
+      { name: { nl: 'Hygiëne', en: 'Hygiene' }, icon: 'cleaning_services', score: 9.4 },
+      { name: { nl: 'Service', en: 'Service' }, icon: 'local_activity', score: 9.6 },
+      { name: { nl: 'Kamers', en: 'Rooms' }, icon: 'bed', score: 9.2 },
+      { name: { nl: 'Locatie', en: 'Location' }, icon: 'location_on', score: 9.8 },
+      { name: { nl: 'Gastronomie', en: 'Gastronomy' }, icon: 'restaurant', score: 9.4 },
+      { name: { nl: 'Aankomst', en: 'Check-in' }, icon: 'card_travel', score: 9.0 },
     ],
   },
   individualReviews: [
@@ -56,68 +56,74 @@ export const hotelKasteelTerWorm: Hotel = {
       id: 'rev-1',
       author: 'MarcoB',
       date: '2026-03-15',
-      score: 5,
+      score: 10,
       text: {
         nl: 'Wat een prachtig kasteel! De nieuwe wellness is fantastisch, de kamer had een geweldig uitzicht over het landgoed. Het diner was uitstekend.',
         en: 'What a beautiful castle! The new wellness is fantastic, the room had an amazing view over the estate. The dinner was excellent.',
       },
       arrangement: { nl: '3-daags verblijf met wellness & diner', en: '3-day stay with wellness & dinner' },
+      dealId: 'deal-kasteel-3n',
     },
     {
       id: 'rev-2',
       author: 'LisaV',
       date: '2026-03-10',
-      score: 5,
+      score: 10,
       text: {
         nl: 'Perfecte plek voor een romantisch weekendje weg. De welkomstbubbels waren een mooie touch. Zeker aanrader!',
         en: 'Perfect spot for a romantic weekend getaway. The welcome bubbles were a nice touch. Highly recommended!',
       },
       arrangement: { nl: '2-daags verblijf met welkomstbubbels', en: '2-day stay with welcome bubbles' },
+      dealId: 'deal-kasteel-2n',
     },
     {
       id: 'rev-3',
       author: 'JanK',
       date: '2026-02-28',
-      score: 4,
+      score: 8,
       text: {
         nl: 'Mooi hotel in een historische setting. De wellness is top, het zwembad is gezellig. Alleen de parkeerplaats was wat vol.',
         en: 'Beautiful hotel in a historic setting. The wellness is top-notch, the pool is lovely. Only the parking lot was a bit full.',
       },
       arrangement: { nl: '3-daags verblijf met wellness & diner', en: '3-day stay with wellness & dinner' },
+      dealId: 'deal-kasteel-3n',
     },
     {
       id: 'rev-4',
       author: 'AnneM',
       date: '2026-02-20',
-      score: 5,
+      score: 10,
       text: {
         nl: 'De combinatie van het kasteel, de omgeving en de faciliteiten is echt uniek. We hebben heerlijk gewandeld in de heuvels en daarna genoten van de sauna.',
         en: 'The combination of the castle, the surroundings and the facilities is truly unique. We had wonderful walks in the hills and then enjoyed the sauna.',
       },
       images: ['/images/kasteel/iStock-1189537172.jpg'],
       arrangement: { nl: '4-daags verblijf met wellness & diner', en: '4-day stay with wellness & dinner' },
+      dealId: 'deal-kasteel-4n',
     },
     {
       id: 'rev-5',
       author: 'PeterD',
       date: '2026-02-14',
-      score: 4,
+      score: 8,
       text: {
         nl: 'Goed arrangement via ViaLuxury. Het ontbijt is uitgebreid en lekker. De kamer in het kasteel heeft echt karakter.',
         en: 'Great package via ViaLuxury. The breakfast is extensive and delicious. The room in the castle has real character.',
       },
       arrangement: { nl: '2-daags verblijf met welkomstbubbels', en: '2-day stay with welcome bubbles' },
+      dealId: 'deal-kasteel-2n',
     },
     {
       id: 'rev-6',
       author: 'SophieR',
       date: '2026-01-30',
-      score: 5,
+      score: 10,
       text: {
         nl: 'Schitterend! De wellness is splinternieuw en heerlijk. Het diner in het restaurant was van hoog niveau. Komen zeker terug.',
         en: 'Gorgeous! The wellness is brand new and wonderful. The dinner in the restaurant was of a high standard. We will definitely return.',
       },
       arrangement: { nl: '3-daags verblijf met wellness & diner', en: '3-day stay with wellness & dinner' },
+      dealId: 'deal-kasteel-3n',
     },
   ],
   nearbyTips: [
@@ -245,17 +251,17 @@ export const packageReviews = [
 ]
 
 // --- Deal variants ---
-export const dealKasteel2Nights: Deal = {
-  id: 'deal-kasteel-2n',
+export const dealKasteel1Night: Deal = {
+  id: 'deal-kasteel-1n',
   hotelSlug: 'kasteel-ter-worm',
-  nights: 2,
+  nights: 1,
   title: { nl: '2-daags kasteelverblijf met wellness & culinair diner', en: '2-day castle stay with wellness & fine dining dinner' },
   subtitle: { nl: 'Van der Valk Hotel Kasteel TerWorm', en: 'Van der Valk Hotel Kasteel TerWorm' },
   inclusions: [
     {
-      id: 'inc-overnight-2',
+      id: 'inc-overnight-1',
       icon: 'hotel',
-      title: { nl: '2x Overnachting', en: '2x Overnight stay' },
+      title: { nl: '1x Overnachting', en: '1x Overnight stay' },
       description: {
         nl: 'Bij dit arrangement zit een kamerupgrade naar een van de luxe junior Suites. Deze luxe kamer biedt uitzicht op de gracht rondom het kasteel. De kamer is uitgerust met comfortabele fauteuils en een groot bureau. De kamers bevinden zich op de eerste/tweede etage (enkel per trap te bereiken).',
         en: 'This package includes a room upgrade to one of the luxurious Junior Suites. This elegant room offers a view of the moat surrounding the castle. The room is equipped with comfortable armchairs and a large desk. The rooms are located on the first/second floor (accessible by stairs only).',
@@ -392,17 +398,17 @@ export const dealKasteel2Nights: Deal = {
   pricePerPerson: 149,
 }
 
-export const dealKasteel3Nights: Deal = {
-  id: 'deal-kasteel-3n',
+export const dealKasteel2Nights: Deal = {
+  id: 'deal-kasteel-2n',
   hotelSlug: 'kasteel-ter-worm',
-  nights: 3,
+  nights: 2,
   title: { nl: '3-daags verblijf met gloednieuwe wellness in een exclusief kasteelhotel in Zuid-Limburg', en: '3-day stay with brand-new wellness at an exclusive castle hotel in South Limburg' },
   subtitle: { nl: 'Van der Valk Hotel Kasteel TerWorm', en: 'Van der Valk Hotel Kasteel TerWorm' },
   inclusions: [
     {
-      id: 'inc-overnight-3',
+      id: 'inc-overnight-2',
       icon: 'hotel',
-      title: { nl: '3x Overnachting', en: '3x Overnight stay' },
+      title: { nl: '2x Overnachting', en: '2x Overnight stay' },
       description: {
         nl: 'Bij dit arrangement zit een kamerupgrade naar een van de luxe junior Suites. Deze luxe kamer biedt uitzicht op de gracht rondom het kasteel. De kamer is uitgerust met comfortabele fauteuils en een groot bureau. De kamers bevinden zich op de eerste/tweede etage (enkel per trap te bereiken).',
         en: 'This package includes a room upgrade to one of the luxurious Junior Suites. This elegant room offers a view of the moat surrounding the castle. The room is equipped with comfortable armchairs and a large desk. The rooms are located on the first/second floor (accessible by stairs only).',
@@ -463,23 +469,23 @@ export const dealKasteel3Nights: Deal = {
       highlight: true,
     },
   ],
-  baseRoomType: dealKasteel2Nights.baseRoomType,
-  roomUpgrades: dealKasteel2Nights.roomUpgrades,
+  baseRoomType: dealKasteel1Night.baseRoomType,
+  roomUpgrades: dealKasteel1Night.roomUpgrades,
   basePrice: 449,
   originalPrice: 669,
   discountPercentage: 33,
   pricePerPerson: 224,
 }
 
-export const dealKasteel4Nights: Deal = {
-  id: 'deal-kasteel-4n',
+export const dealKasteel3Nights: Deal = {
+  id: 'deal-kasteel-3n',
   hotelSlug: 'kasteel-ter-worm',
-  nights: 4,
+  nights: 3,
   title: { nl: '4-daags luxe kasteelverblijf met wellness, 2x diner & fietsverhuur', en: '4-day luxury castle stay with wellness, 2x dinner & bicycle rental' },
   subtitle: { nl: 'Van der Valk Hotel Kasteel TerWorm', en: 'Van der Valk Hotel Kasteel TerWorm' },
   inclusions: [
-    ...dealKasteel3Nights.inclusions.map(inc => {
-      if (inc.id === 'inc-overnight-3') return { ...inc, id: 'inc-overnight-4', title: { nl: '4x Overnachting', en: '4x Overnight stay' } as LocalizedString }
+    ...dealKasteel2Nights.inclusions.map(inc => {
+      if (inc.id === 'inc-overnight-2') return { ...inc, id: 'inc-overnight-3', title: { nl: '3x Overnachting', en: '3x Overnight stay' } as LocalizedString }
       return inc
     }),
     {
@@ -492,8 +498,8 @@ export const dealKasteel4Nights: Deal = {
       },
     },
   ],
-  baseRoomType: dealKasteel2Nights.baseRoomType,
-  roomUpgrades: dealKasteel2Nights.roomUpgrades,
+  baseRoomType: dealKasteel1Night.baseRoomType,
+  roomUpgrades: dealKasteel1Night.roomUpgrades,
   basePrice: 579,
   originalPrice: 864,
   discountPercentage: 33,
@@ -501,13 +507,13 @@ export const dealKasteel4Nights: Deal = {
 }
 
 export const dealVariantsKasteel: DealVariant[] = [
+  { id: dealKasteel1Night.id, nights: 1, label: { nl: '1 nacht', en: '1 night' }, basePrice: dealKasteel1Night.basePrice, originalPrice: dealKasteel1Night.originalPrice, available: true },
   { id: dealKasteel2Nights.id, nights: 2, label: { nl: '2 nachten', en: '2 nights' }, basePrice: dealKasteel2Nights.basePrice, originalPrice: dealKasteel2Nights.originalPrice, available: true },
   { id: dealKasteel3Nights.id, nights: 3, label: { nl: '3 nachten', en: '3 nights' }, basePrice: dealKasteel3Nights.basePrice, originalPrice: dealKasteel3Nights.originalPrice, available: true },
-  { id: dealKasteel4Nights.id, nights: 4, label: { nl: '4 nachten', en: '4 nights' }, basePrice: dealKasteel4Nights.basePrice, originalPrice: dealKasteel4Nights.originalPrice, available: true },
 ]
 
 export const dealsMapKasteel: Record<string, Deal> = {
+  [dealKasteel1Night.id]: dealKasteel1Night,
   [dealKasteel2Nights.id]: dealKasteel2Nights,
   [dealKasteel3Nights.id]: dealKasteel3Nights,
-  [dealKasteel4Nights.id]: dealKasteel4Nights,
 }

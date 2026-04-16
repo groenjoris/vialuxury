@@ -119,8 +119,10 @@ export const useDealStore = defineStore('deal', () => {
     // Extra persons cost (per person per night)
     const extraPersonCost = extraPersons * 89 * deal.nights
 
-    // Extra rooms cost
-    const extraRoomsCost = Math.max(0, rooms - 1) * 109 * deal.nights
+    // Extra rooms: only rooms beyond minRooms are charged
+    const minRooms = Math.ceil(persons / 2)
+    const extraRooms = Math.max(0, rooms - minRooms)
+    const extraRoomsCost = extraRooms * 109 * deal.nights
 
     // Room upgrade — use allocation-based cost in multi-room mode
     const roomUpgrade = isRoomAllocationActive.value
@@ -137,31 +139,32 @@ export const useDealStore = defineStore('deal', () => {
     const originalPrice = Math.round(totalPrice * originalMultiplier)
     const pricePerPerson = Math.round(totalPrice / Math.max(1, persons))
 
+    // Breakdown
+    const arrangementLabel = `${t('sidebar.arrangementFor')} ${persons} ${persons === 1 ? t('common.personSingular') : t('common.personPlural')}`
+    const arrangementAmount = baseDealPrice + extraPersonCost - childrenDiscount
+
     const breakdown: { label: string; amount: number }[] = [
-      { label: localized(deal.title), amount: baseDealPrice },
+      { label: arrangementLabel, amount: arrangementAmount },
     ]
 
-    if (extraPersonCost > 0) {
-      breakdown.push({ label: `${extraPersons} ${t('store.extraPerson')} ${extraPersons === 1 ? t('common.personSingular') : t('common.personPlural')}`, amount: extraPersonCost })
+    if (extraRooms > 0) {
+      breakdown.push({ label: `${extraRooms}x ${t('store.extraRoom')}`, amount: extraRoomsCost })
     }
-    if (extraRoomsCost > 0) {
-      breakdown.push({ label: `${rooms - 1} ${t('store.extraPerson')} ${rooms - 1 === 1 ? t('common.roomSingular') : t('common.roomPlural')}`, amount: extraRoomsCost })
-    }
+
     if (roomUpgrade > 0) {
+      // Count rooms with paid upgrades
+      let upgradeRoomCount = 0
       if (isRoomAllocationActive.value) {
-        // Show per-type upgrade costs
         for (const [roomId, count] of Object.entries(effectiveAllocation.value)) {
           const room = allRoomTypes.value.find(r => r.id === roomId)
           if (room && room.priceExtra > 0 && count > 0) {
-            breakdown.push({ label: `${count}x ${t('store.roomUpgrade')} ${localized(room.name)}`, amount: room.priceExtra * count })
+            upgradeRoomCount += count
           }
         }
       } else {
-        breakdown.push({ label: `${t('store.roomUpgrade')} ${localized(selectedRoom.value!.name)}`, amount: roomUpgrade })
+        upgradeRoomCount = rooms
       }
-    }
-    if (childrenDiscount > 0) {
-      breakdown.push({ label: t('store.childDiscount'), amount: -childrenDiscount })
+      breakdown.push({ label: `${upgradeRoomCount}x ${t('store.roomUpgrade')}`, amount: roomUpgrade })
     }
 
     return { totalPrice, originalPrice, pricePerPerson, breakdown }
@@ -221,6 +224,10 @@ export const useDealStore = defineStore('deal', () => {
     currentDeal.value = deal
     dealVariants.value = variants
     selectedRoomId.value = deal.baseRoomType.id
+    // Reset state coming from search results
+    roomUnavailableMessage.value = null
+    previousCheckInDate.value = null
+    roomAllocation.value = {}
   }
 
   /** Switch to a different deal variant (different nights) */
@@ -266,8 +273,8 @@ export const useDealStore = defineStore('deal', () => {
 
   /** Set check-in date */
   function setCheckIn(date: string) {
-    // If a paid upgrade was selected, show unavailability popup (don't change room yet)
-    if (currentDeal.value && selectedRoom.value && !selectedRoom.value.isDefault) {
+    // Only show unavailability popup when CHANGING an existing date while a paid upgrade is selected
+    if (checkInDate.value && currentDeal.value && selectedRoom.value && !selectedRoom.value.isDefault) {
       previousCheckInDate.value = checkInDate.value
       roomUnavailableMessage.value = t('store.roomUnavailable').replace('{room}', localized(selectedRoom.value.name))
     }

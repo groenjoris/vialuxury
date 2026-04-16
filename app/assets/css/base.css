@@ -84,6 +84,7 @@ ul, ol {
 
 .btn-primary:hover {
   background-color: var(--color-primary-hover);
+  color: white;
 }
 
 .btn-secondary {

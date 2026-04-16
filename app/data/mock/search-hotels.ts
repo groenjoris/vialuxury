@@ -1,13 +1,13 @@
 import type { SearchHotel, SearchHotelDeal } from '~/types/searchHotel'
 import {
   hotelKasteelTerWorm,
+  dealKasteel1Night,
   dealKasteel2Nights,
   dealKasteel3Nights,
-  dealKasteel4Nights,
 } from './kasteel-ter-worm'
 
 // Map TerWorm deals to SearchHotelDeal format
-function mapTerWormDeal(deal: typeof dealKasteel2Nights): SearchHotelDeal {
+function mapTerWormDeal(deal: typeof dealKasteel1Night): SearchHotelDeal {
   return {
     id: deal.id,
     slug: 'kasteel-ter-worm',
@@ -33,10 +33,11 @@ export const searchHotels: SearchHotel[] = [
     heroImage: '/images/hotels/terworm.jpg',
     reviewScore: hotelKasteelTerWorm.reviews.overallScore,
     reviewCount: hotelKasteelTerWorm.reviews.totalReviews,
+    pitch: { nl: 'Exclusief kasteelhotel in het glooiende Zuid-Limburg', en: 'Exclusive castle hotel in the rolling hills of South Limburg' },
     deals: [
+      mapTerWormDeal(dealKasteel1Night),
       mapTerWormDeal(dealKasteel2Nights),
       mapTerWormDeal(dealKasteel3Nights),
-      mapTerWormDeal(dealKasteel4Nights),
     ],
   },
 
@@ -49,8 +50,9 @@ export const searchHotels: SearchHotel[] = [
     city: 'Lanaken',
     region: 'Limburg (BE)',
     heroImage: '/images/hotels/labutteauboix.jpg',
-    reviewScore: 4.8,
+    reviewScore: 9.6,
     reviewCount: 87,
+    pitch: { nl: 'Betoverend 5-sterren relais & châteaux in Belgisch Limburg', en: 'Enchanting 5-star relais & châteaux in Belgian Limburg' },
     deals: [
       {
         id: 'deal-butte-2n',
@@ -128,8 +130,9 @@ export const searchHotels: SearchHotel[] = [
     city: "'s-Heerenberg",
     region: 'Gelderland',
     heroImage: '/images/hotels/huisberg.jpg',
-    reviewScore: 4.4,
+    reviewScore: 8.8,
     reviewCount: 56,
+    pitch: { nl: 'Middeleeuws kasteel met ridderzalen en kasteeltuinen', en: 'Medieval castle with knight halls and castle gardens' },
     deals: [
       {
         id: 'deal-bergh-2n',
@@ -186,8 +189,9 @@ export const searchHotels: SearchHotel[] = [
     city: 'Arnhem',
     region: 'Gelderland',
     heroImage: '/images/hotels/haarhuis.jpg',
-    reviewScore: 4.3,
+    reviewScore: 8.6,
     reviewCount: 203,
+    pitch: { nl: 'Stijlvol stadshotel in het hart van Arnhem bij de Veluwe', en: 'Stylish city hotel in the heart of Arnhem near the Veluwe' },
     deals: [
       {
         id: 'deal-haarhuis-2n',
@@ -285,8 +289,9 @@ export const searchHotels: SearchHotel[] = [
     city: 'Antwerpen',
     region: 'Antwerpen',
     heroImage: '/images/hotels/premiersuitesplusantwerp.jpg',
-    reviewScore: 4.5,
+    reviewScore: 9.0,
     reviewCount: 142,
+    pitch: { nl: 'Luxe suites met eigen keuken in het bruisende Antwerpen', en: 'Luxury suites with own kitchen in vibrant Antwerp' },
     deals: [
       {
         id: 'deal-premier-2n',
@@ -363,8 +368,9 @@ export const searchHotels: SearchHotel[] = [
     city: 'Amsterdam',
     region: 'Noord-Holland',
     heroImage: '/images/hotels/inntel-amsterdam.jpg',
-    reviewScore: 4.2,
+    reviewScore: 8.4,
     reviewCount: 318,
+    pitch: { nl: 'Modern 4-sterren hotel midden in het centrum van Amsterdam', en: 'Modern 4-star hotel in the heart of Amsterdam' },
     deals: [
       {
         id: 'deal-inntel-2n',
@@ -483,8 +489,9 @@ export const searchHotels: SearchHotel[] = [
     city: 'Amsterdam',
     region: 'Noord-Holland',
     heroImage: '/images/hotels/hotelcentral.jpg',
-    reviewScore: 4.0,
+    reviewScore: 8.0,
     reviewCount: 89,
+    pitch: { nl: 'Gezellig budget hotel op loopafstand van de grachten', en: 'Cozy budget hotel within walking distance of the canals' },
     deals: [
       {
         id: 'deal-central-2n',
@@ -506,27 +513,6 @@ export const searchHotels: SearchHotel[] = [
           { nl: 'Gratis WiFi', en: 'Free WiFi' },
         ],
       },
-      {
-        id: 'deal-central-3n',
-        slug: 'hotel-central-amsterdam',
-        nights: 3,
-        title: { nl: '3-daags Amsterdam arrangement met grachtenrondvaart', en: '3-day Amsterdam package with canal cruise' },
-        basePrice: 279,
-        originalPrice: 465,
-        discountPercentage: 40,
-        highlights: [
-          { nl: 'Grachtenrondvaart', en: 'Canal cruise' },
-          { nl: 'Ontbijt', en: 'Breakfast' },
-          { nl: 'Centraal gelegen', en: 'Centrally located' },
-        ],
-        inclusions: [
-          { nl: '3x Overnachting', en: '3x Night stay' },
-          { nl: 'Dagelijks ontbijt', en: 'Daily breakfast' },
-          { nl: 'Grachtenrondvaart voor 2', en: 'Canal cruise for 2' },
-          { nl: 'Welkomstdrankje', en: 'Welcome drink' },
-          { nl: 'Gratis WiFi', en: 'Free WiFi' },
-        ],
-      },
     ],
   },
 
@@ -539,8 +525,9 @@ export const searchHotels: SearchHotel[] = [
     city: 'Den Haag',
     region: 'Zuid-Holland',
     heroImage: '/images/hotels/desIndes.jpg',
-    reviewScore: 4.7,
+    reviewScore: 9.4,
     reviewCount: 176,
+    pitch: { nl: 'Iconisch 5-sterren hotel aan het Lange Voorhout in Den Haag', en: 'Iconic 5-star hotel on the Lange Voorhout in The Hague' },
     deals: [
       {
         id: 'deal-indes-2n',

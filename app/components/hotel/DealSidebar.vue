@@ -38,45 +38,6 @@
         </div>
       </div>
 
-      <!-- Room allocation (multi-room with date) -->
-      <div v-if="store.isRoomAllocationActive" class="sidebar__room-allocation">
-        <div class="sidebar__room-alloc-header">
-          <h4 class="sidebar__room-alloc-title">{{ t('room.allocateRooms') }}</h4>
-          <span class="sidebar__room-alloc-counter">
-            {{ allocatedCount }} / {{ store.travelGroup.rooms }} {{ t('room.roomsAllocated') }}
-          </span>
-        </div>
-        <div
-          v-for="roomType in store.allRoomTypes"
-          :key="roomType.id"
-          class="sidebar__room-alloc-row"
-        >
-          <div class="sidebar__room-alloc-info">
-            <span class="sidebar__room-alloc-name">{{ localized(roomType.name) }}</span>
-            <span class="sidebar__room-alloc-price">
-              <template v-if="roomType.priceExtra > 0">+{{ formatPrice(roomType.priceExtra) }} {{ t('room.perRoom') }}</template>
-              <template v-else>{{ t('room.included') }}</template>
-            </span>
-            <span v-if="roomType.maxAvailable" class="sidebar__room-alloc-max">
-              {{ t('room.maxAvailable').replace('{n}', String(roomType.maxAvailable)) }}
-            </span>
-          </div>
-          <div class="stepper stepper--small">
-            <button
-              class="stepper__btn"
-              :disabled="(store.effectiveAllocation[roomType.id] || 0) <= 0"
-              @click="decrementRoom(roomType.id)"
-            >−</button>
-            <span class="stepper__val">{{ store.effectiveAllocation[roomType.id] || 0 }}</span>
-            <button
-              class="stepper__btn"
-              :disabled="allocatedCount >= store.travelGroup.rooms || (store.effectiveAllocation[roomType.id] || 0) >= (roomType.maxAvailable ?? 5)"
-              @click="incrementRoom(roomType.id)"
-            >+</button>
-          </div>
-        </div>
-      </div>
-
       <!-- Room upgrade indicator (single room mode) -->
       <div v-else-if="store.selectedRoom && !store.selectedRoom.isDefault" class="sidebar__room-upgrade">
         <span class="sidebar__room-icon">🏨</span>

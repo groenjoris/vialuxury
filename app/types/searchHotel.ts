@@ -10,6 +10,7 @@ export interface SearchHotel {
   heroImage: string
   reviewScore: number
   reviewCount: number
+  pitch: LocalizedString
   deals: SearchHotelDeal[]
 }
 

@@ -4,7 +4,7 @@
     <SiteHeader />
 
     <main v-if="hotel && currentDeal" class="deal-page__main">
-      <!-- Breadcrumbs -->
+      <!-- Back link + Breadcrumbs -->
       <section class="deal-page__breadcrumbs container">
         <BreadcrumbNav :items="breadcrumbs" />
       </section>
@@ -20,7 +20,10 @@
             </div>
           </div>
           <div class="deal-page__meta">
-            <span class="deal-page__score">{{ hotel.reviews.overallScore }}</span>
+            <div class="deal-page__score-wrap">
+              <span class="deal-page__score">{{ hotel.reviews.overallScore.toFixed(1) }}</span>
+              <span class="deal-page__score-label">{{ t(getReviewLabelKey(hotel.reviews.overallScore)) }}</span>
+            </div>
             <span class="deal-page__divider">|</span>
             <span>{{ hotel.reviews.totalReviews }} {{ t('common.reviews') }}</span>
             <span class="deal-page__divider">·</span>
@@ -28,7 +31,7 @@
           </div>
         </div>
         <div class="deal-page__title-actions">
-          <button class="icon-action" :class="{ 'icon-action--favorited': isFavorited }" :aria-label="t('common.save')" @click="isFavorited = !isFavorited">{{ isFavorited ? '♥' : '♡' }}</button>
+          <button class="icon-action" :class="{ 'icon-action--favorited': isFavorited }" :aria-label="t('common.save')" @click="handleFavoriteClick">{{ isFavorited ? '♥' : '♡' }}</button>
           <button class="icon-action" :aria-label="t('common.share')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg></button>
         </div>
       </section>
@@ -46,11 +49,19 @@
             <p class="deal-page__description">{{ localized(hotel.description) }}</p>
             <div class="mini-map">
               <div class="mini-map__placeholder">
-                <img src="/images/kasteel/iStock-1189537172.jpg" :alt="t('deal.mapArea')" class="mini-map__img" />
-                <div class="mini-map__overlay">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
-                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" />
+                <img
+                  :src="mapTileUrl"
+                  :alt="t('deal.mapArea')"
+                  class="mini-map__img mini-map__img--map"
+                  @error="($event.target as HTMLImageElement).src = '/images/kasteel/iStock-1189537172.jpg'"
+                />
+                <div class="mini-map__pin">
+                  <svg width="32" height="42" viewBox="0 0 32 42" fill="none">
+                    <path d="M16 0C7.16 0 0 7.16 0 16c0 12 16 26 16 26s16-14 16-26C32 7.16 24.84 0 16 0z" fill="#c5a254"/>
+                    <circle cx="16" cy="16" r="6" fill="#fff"/>
                   </svg>
+                </div>
+                <div class="mini-map__bottom">
                   <span class="mini-map__label">{{ hotel.location.city }}</span>
                   <a href="#location" class="mini-map__link">{{ t('common.viewMap') }}</a>
                 </div>
@@ -63,7 +74,7 @@
             <h2 class="section-title">{{ t('deal.highlights') }}</h2>
             <div class="highlights__grid">
               <div v-for="hl in highlights" :key="hl.text" class="highlight-item">
-                <span class="highlight-item__icon" v-html="hl.icon"></span>
+                <span class="highlight-item__icon"><img :src="hl.icon" :alt="hl.text" width="20" height="20" /></span>
                 <span class="highlight-item__text">{{ hl.text }}</span>
               </div>
             </div>
@@ -80,13 +91,42 @@
               {{ t('deal.inclusionsEndAlt') }}
             </h2>
             <div class="content-blocks__grid">
-              <!-- Row 1: overnight card + room info card -->
+              <!-- Row 1: overnight card + first room info card -->
               <RoomInclusionCard :deal="currentDeal" />
-              <RoomInfoCard :deal="currentDeal" @open-upgrades="isUpgradePanelOpen = true" />
+              <RoomInfoCard
+                v-for="(entry, idx) in roomAllocationEntries"
+                :key="entry.room.id"
+                :room="entry.room"
+                :count="entry.count"
+                :is-first="idx === 0"
+                :deal="currentDeal"
+                @open-upgrades="isUpgradePanelOpen = true"
+              />
 
-              <!-- Remaining inclusions -->
+              <!-- Inclusions before Yvette (breakfast, welcome bubbles) -->
               <div
-                v-for="inc in filteredInclusions"
+                v-for="inc in inclusionsBeforeYvette"
+                :key="inc.id"
+                class="content-block"
+              >
+                <div v-if="inc.image" class="content-block__image">
+                  <img :src="inc.image" :alt="localized(inc.title)" loading="lazy" />
+                </div>
+                <div class="content-block__body">
+                  <h3 class="content-block__title">
+                    <span class="content-block__check">✓</span>
+                    {{ localized(inc.title) }}
+                  </h3>
+                  <p class="content-block__desc">{{ localized(inc.description) }}</p>
+                </div>
+              </div>
+
+              <!-- Yvette banner -->
+              <YvetteBanner />
+
+              <!-- Inclusions after Yvette (wellness, pool, dinner) -->
+              <div
+                v-for="inc in inclusionsAfterYvette"
                 :key="inc.id"
                 class="content-block"
               >
@@ -119,24 +159,24 @@
           <section class="deal-page__reviews">
             <h2 class="section-title">{{ t('hotel.reviews') }}</h2>
             <div class="reviews__score-bar">
-              <span class="reviews__score-big">{{ hotel.reviews.overallScore }}</span>
-              <div class="reviews__score-stars">
-                <span v-for="n in 5" :key="n" class="star" :class="{ 'star--dim': n > Math.round(hotel.reviews.overallScore) }">★</span>
+              <span class="reviews__score-big">{{ hotel.reviews.overallScore.toFixed(1) }}</span>
+              <div class="reviews__score-meta">
+                <span class="reviews__score-verdict">{{ t(getReviewLabelKey(hotel.reviews.overallScore)) }}</span>
+                <span class="reviews__score-count">{{ hotel.reviews.totalReviews }} {{ t('common.reviews') }}</span>
               </div>
-              <span class="reviews__score-count">{{ hotel.reviews.totalReviews }} {{ t('common.reviews') }}</span>
             </div>
             <div class="reviews__categories">
               <div v-for="cat in hotel.reviews.categories" :key="localized(cat.name)" class="reviews__cat">
                 <span class="reviews__cat-name">{{ localized(cat.name) }}</span>
-                <div class="reviews__cat-bar"><div class="reviews__cat-fill" :style="{ width: (cat.score / 5 * 100) + '%' }"></div></div>
-                <span class="reviews__cat-score">{{ cat.score }}</span>
+                <div class="reviews__cat-bar"><div class="reviews__cat-fill" :style="{ width: (cat.score / 10 * 100) + '%' }"></div></div>
+                <span class="reviews__cat-score">{{ cat.score.toFixed(1) }}</span>
               </div>
             </div>
             <div class="reviews__grid">
               <div v-for="rev in hotel.individualReviews" :key="rev.id" class="review-card">
                 <div class="review-card__header">
                   <span class="review-card__author">{{ rev.author }}</span>
-                  <span class="review-card__stars"><span v-for="n in rev.score" :key="n" class="star">★</span></span>
+                  <span class="review-card__review-score">{{ Number(rev.score).toFixed(1) }}/10</span>
                 </div>
                 <p class="review-card__text">{{ localized(rev.text) }}</p>
                 <div v-if="rev.arrangement" class="review-card__arrangement">
@@ -159,7 +199,7 @@
         <div class="deal-page__col-right">
           <!-- Inclusions -->
           <h3 class="sidebar__title">
-            {{ t('inclusion.inThisDealFor') }}
+            {{ t('sidebar.arrangementFor') }}
             <button
               type="button"
               class="sidebar__title-link"
@@ -167,16 +207,27 @@
             >{{ store.totalPersons }} {{ store.totalPersons === 1 ? t('common.personSingular') : t('common.personPlural') }}</button>
           </h3>
           <ul class="sidebar__inc-list">
-            <li v-for="inc in currentDeal.inclusions" :key="inc.id">
-              <span class="sidebar__inc-check">✓</span>
-              <span>{{ localized(inc.title) }}</span>
-            </li>
+            <template v-for="(inc, idx) in currentDeal.inclusions" :key="inc.id">
+              <li>
+                <span class="sidebar__inc-check">✓</span>
+                <span>{{ localized(inc.title) }}</span>
+              </li>
+              <li v-if="idx === 0">
+                <span class="sidebar__inc-check">✓</span>
+                <span>{{ store.travelGroup.rooms }} {{ store.travelGroup.rooms === 1 ? t('sidebar.luxeRoomSingular') : t('sidebar.luxeRoomPlural') }}</span>
+              </li>
+            </template>
           </ul>
 
           <!-- Variant CTA -->
           <div class="sidebar__variant-cta">
-            <span class="sidebar__variant-text">{{ t('deal.shorterOrLonger') }}</span>
-            <button class="sidebar__variant-btn" @click="isPanelOpen = true">{{ t('deal.viewOptions') }}</button>
+            <h4 class="sidebar__variant-heading">{{ t('deal.shorterOrLonger') }}</h4>
+            <button class="sidebar__variant-btn" @click="isPanelOpen = true">
+              {{ t('deal.viewOptions') }}
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="9 18 15 12 9 6" />
+              </svg>
+            </button>
           </div>
 
           <!-- Calendar -->
@@ -186,48 +237,10 @@
               :year="calMonth.year" :month="calMonth.month"
               :availability="calAvailability"
               :selected-check-in="store.checkInDate" :selected-check-out="store.checkOutDate"
+              :cheapest-price="calCheapestPrice"
               :show-prev-button="true" :show-next-button="true"
               @select-date="handleDateSelect" @prev-month="calPrev" @next-month="calNext"
             />
-          </div>
-
-          <!-- Room allocation (multi-room with date) -->
-          <div v-if="store.isRoomAllocationActive" class="sidebar__room-allocation">
-            <div class="sidebar__room-alloc-header">
-              <h4 class="sidebar__room-alloc-title">{{ t('room.allocateRooms') }}</h4>
-              <span class="sidebar__room-alloc-counter">
-                {{ allocatedCount }} / {{ store.travelGroup.rooms }} {{ t('room.roomsAllocated') }}
-              </span>
-            </div>
-            <div
-              v-for="roomType in store.allRoomTypes"
-              :key="roomType.id"
-              class="sidebar__room-alloc-row"
-            >
-              <div class="sidebar__room-alloc-info">
-                <span class="sidebar__room-alloc-name">{{ localized(roomType.name) }}</span>
-                <span class="sidebar__room-alloc-price">
-                  <template v-if="roomType.priceExtra > 0">+{{ formatPrice(roomType.priceExtra) }} {{ t('room.perRoom') }}</template>
-                  <template v-else>{{ t('room.included') }}</template>
-                </span>
-                <span v-if="roomType.maxAvailable" class="sidebar__room-alloc-max">
-                  {{ t('room.maxAvailable').replace('{n}', String(roomType.maxAvailable)) }}
-                </span>
-              </div>
-              <div class="sidebar__room-alloc-stepper">
-                <button
-                  class="sidebar__room-alloc-btn"
-                  :disabled="(store.effectiveAllocation[roomType.id] || 0) <= 0"
-                  @click="decrementRoom(roomType.id)"
-                >−</button>
-                <span class="sidebar__room-alloc-val">{{ store.effectiveAllocation[roomType.id] || 0 }}</span>
-                <button
-                  class="sidebar__room-alloc-btn"
-                  :disabled="allocatedCount >= store.travelGroup.rooms || (store.effectiveAllocation[roomType.id] || 0) >= (roomType.maxAvailable ?? 5)"
-                  @click="incrementRoom(roomType.id)"
-                >+</button>
-              </div>
-            </div>
           </div>
 
           <!-- Before date selection: disabled button -->
@@ -267,6 +280,16 @@
 
             <button class="btn btn-primary sidebar__book" @click="() => {}">{{ t('deal.bookNow') }}</button>
           </div>
+
+          <!-- Trust USPs + Trustpilot logo -->
+          <div class="sidebar__trust">
+            <ul class="sidebar__trust-list">
+              <li><span class="sidebar__trust-check">✓</span> {{ t('deal.trust2min') }}</li>
+              <li><span class="sidebar__trust-check">✓</span> {{ t('deal.trustCancel') }}</li>
+              <li><span class="sidebar__trust-check">✓</span> {{ t('deal.trustTrustpilot') }}</li>
+            </ul>
+            <img src="/images/trustpilot.svg" alt="Trustpilot" class="sidebar__trust-logo" />
+          </div>
         </div>
       </div>
 
@@ -280,6 +303,7 @@
       :current-deal-id="currentDeal?.id || ''" :hotel-name="hotel?.name || ''"
       :discount-percentage="currentDeal?.discountPercentage || 0"
       :inclusions-map="inclusionsMap"
+      :titles-map="titlesMap"
       @close="isPanelOpen = false" @select="handlePanelSelect"
     />
     <RoomUpgradeSidePanel
@@ -301,6 +325,12 @@
       </Transition>
     </Teleport>
 
+    <!-- Toast notification -->
+    <ToastNotification :message="toastMessage" type="success" />
+
+    <!-- Auth popup -->
+    <AuthPopup :is-open="isAuthPopupOpen" @close="isAuthPopupOpen = false" @login="handleLogin" />
+
     <SiteFooter />
   </div>
 </template>
@@ -308,12 +338,13 @@
 <script setup lang="ts">
 import { useDealStore } from '~/stores/deal'
 import { formatPrice } from '~/utils/formatPrice'
+import { getReviewLabelKey } from '~/utils/reviewLabel'
 import { generateDealAvailability } from '~/data/mock/deal-pricing'
 import {
   hotelKasteelTerWorm,
-  dealKasteel3Nights,
+  dealKasteel1Night,
   dealKasteel2Nights,
-  dealKasteel4Nights,
+  dealKasteel3Nights,
   dealVariantsKasteel,
   dealsMapKasteel,
 } from '~/data/mock/kasteel-ter-worm'
@@ -324,8 +355,37 @@ const router = useRouter()
 const store = useDealStore()
 const calendarRef = ref<HTMLElement | null>(null)
 const isFavorited = ref(false)
+const isLoggedIn = ref(false)
 const isPanelOpen = ref(false)
 const isUpgradePanelOpen = ref(false)
+const isAuthPopupOpen = ref(false)
+const toastMessage = ref('')
+
+function handleFavoriteClick() {
+  if (!isLoggedIn.value) {
+    isAuthPopupOpen.value = true
+    return
+  }
+  isFavorited.value = !isFavorited.value
+  // Reset toast to re-trigger the watcher
+  toastMessage.value = ''
+  nextTick(() => {
+    toastMessage.value = isFavorited.value
+      ? t('toast.addedToFavorites')
+      : t('toast.removedFromFavorites')
+  })
+}
+
+function handleLogin() {
+  isLoggedIn.value = true
+  isAuthPopupOpen.value = false
+  // Auto-favorite after login
+  isFavorited.value = true
+  toastMessage.value = ''
+  nextTick(() => {
+    toastMessage.value = t('toast.addedToFavorites')
+  })
+}
 
 const hotel = ref(hotelKasteelTerWorm)
 const currentDeal = computed(() => store.currentDeal)
@@ -333,9 +393,33 @@ const filteredInclusions = computed(() => {
   if (!currentDeal.value) return []
   return currentDeal.value.inclusions.filter((i) => !i.id.startsWith('inc-overnight'))
 })
+
+/** Split inclusions around Yvette banner: after welcome bubbles, before wellness */
+const inclusionSplitIndex = computed(() => {
+  const idx = filteredInclusions.value.findIndex(i => i.id.startsWith('inc-welcome'))
+  return idx >= 0 ? idx + 1 : 1
+})
+const inclusionsBeforeYvette = computed(() => filteredInclusions.value.slice(0, inclusionSplitIndex.value))
+const inclusionsAfterYvette = computed(() => filteredInclusions.value.slice(inclusionSplitIndex.value))
+
+/** Room allocation entries for rendering separate room cards */
+const roomAllocationEntries = computed(() => {
+  if (!store.isRoomAllocationActive) {
+    const room = store.selectedRoom ?? currentDeal.value?.baseRoomType
+    if (!room) return []
+    return [{ room, count: store.travelGroup.rooms }]
+  }
+  const entries: { room: any; count: number }[] = []
+  for (const [roomId, count] of Object.entries(store.effectiveAllocation)) {
+    if (count <= 0) continue
+    const room = store.allRoomTypes.find(r => r.id === roomId)
+    if (room) entries.push({ room, count })
+  }
+  return entries
+})
 const dealVariants = dealVariantsKasteel
 
-store.initializeDeal(dealKasteel3Nights, dealVariantsKasteel)
+store.initializeDeal(dealKasteel2Nights, dealVariantsKasteel)
 
 const query = route.query as Record<string, string>
 if (Object.keys(query).length > 0) {
@@ -349,6 +433,10 @@ const calMonth = ref({ year: new Date().getFullYear(), month: new Date().getMont
 const calAvailability = computed(() => {
   if (!store.currentDeal) return []
   return generateDealAvailability(calMonth.value.year, calMonth.value.month, store.currentDeal, store.totalPersons)
+})
+const calCheapestPrice = computed(() => {
+  const prices = calAvailability.value.filter(a => a.available && a.totalPrice > 0).map(a => a.totalPrice)
+  return prices.length > 0 ? Math.min(...prices) : null
 })
 function calPrev() { let m = calMonth.value.month - 1, y = calMonth.value.year; if (m < 1) { m = 12; y-- }; calMonth.value = { year: y, month: m } }
 function calNext() { let m = calMonth.value.month + 1, y = calMonth.value.year; if (m > 12) { m = 1; y++ }; calMonth.value = { year: y, month: m } }
@@ -378,26 +466,42 @@ function handlePanelSelect(dealId: string) {
   if (deal) { store.switchDeal(deal); isPanelOpen.value = false }
 }
 
+// Static map tile URL (OpenStreetMap)
+const mapTileUrl = computed(() => {
+  const { lat, lng } = hotel.value.location.coordinates
+  const zoom = 13
+  const x = Math.floor(((lng + 180) / 360) * Math.pow(2, zoom))
+  const latRad = (lat * Math.PI) / 180
+  const y = Math.floor((1 - Math.log(Math.tan(latRad) + 1 / Math.cos(latRad)) / Math.PI) / 2 * Math.pow(2, zoom))
+  return `https://tile.openstreetmap.org/${zoom}/${x}/${y}.png`
+})
+
 const highlights = computed(() => [
-  { icon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-6h6v6"/><path d="M3 11h2"/><path d="M19 11h2"/><path d="M10 3v2"/><path d="M14 3v2"/><rect x="9" y="9" width="2" height="2"/><rect x="13" y="9" width="2" height="2"/></svg>', text: t('deal.highlight.castle') },
-  { icon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a4 4 0 0 1 4 4c0 3-4 5-4 5s-4-2-4-5a4 4 0 0 1 4-4z"/><path d="M4 16h16"/><path d="M4 16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2"/><path d="M6 18v2"/><path d="M18 18v2"/><path d="M8 20h8"/></svg>', text: t('deal.highlight.restaurant') },
-  { icon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21c-1.5-1.5-6-5.5-6-10a6 6 0 0 1 12 0c0 2.5-1.5 5-3 7"/><path d="M12 3c-.5 2-1 3.5-1 5a3 3 0 0 0 6 0c0-1.5-.5-3-1-5"/><path d="M9 8c-1.5.5-3 1.5-3 3a3 3 0 0 0 5 2.2"/><path d="M15 8c1.5.5 3 1.5 3 3a3 3 0 0 1-5 2.2"/></svg>', text: t('deal.highlight.wellness') },
-  { icon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 18c2-2 4-5 6-5s3 3 5 3 3-4 5-4 3 2 4 3"/><path d="M2 14c1.5-1.5 3-4 5-4s2.5 2.5 4.5 2.5S14 9 16 9s3 1.5 4 2.5"/><path d="M22 22H2"/></svg>', text: t('deal.highlight.estate') },
-  { icon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="17" r="2"/><circle cx="9" cy="17" r="4"/><path d="M9 13V6l7-2v4"/><path d="M17 10l3-1"/><path d="M17 14l2 2"/><path d="M19 18h2"/></svg>', text: t('deal.highlight.cycling') },
-  { icon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="14" rx="2"/><path d="M12 8V4"/><path d="M8 8V5"/><path d="M16 8V5"/><path d="M12 8c3 0 5-1.5 5-3s-2-2.5-5-2.5S7 3.5 7 5s2 3 5 3z"/><path d="M3 12h18"/><line x1="12" y1="12" x2="12" y2="22"/></svg>', text: t('deal.highlight.exclusive') },
+  { icon: '/icons/highlights/castle.svg', text: t('deal.highlight.castle') },
+  { icon: '/icons/highlights/restaurant.svg', text: t('deal.highlight.restaurant') },
+  { icon: '/icons/highlights/spa.svg', text: t('deal.highlight.wellness') },
+  { icon: '/icons/highlights/nature.svg', text: t('deal.highlight.estate') },
+  { icon: '/icons/highlights/bike.svg', text: t('deal.highlight.cycling') },
+  { icon: '/icons/highlights/special.svg', text: t('deal.highlight.exclusive') },
 ])
 
 const inclusionsMap = computed(() => ({
+  [dealKasteel1Night.id]: dealKasteel1Night.inclusions.map(i => localized(i.title)),
   [dealKasteel2Nights.id]: dealKasteel2Nights.inclusions.map(i => localized(i.title)),
   [dealKasteel3Nights.id]: dealKasteel3Nights.inclusions.map(i => localized(i.title)),
-  [dealKasteel4Nights.id]: dealKasteel4Nights.inclusions.map(i => localized(i.title)),
+}))
+
+const titlesMap = computed(() => ({
+  [dealKasteel1Night.id]: localized(dealKasteel1Night.title),
+  [dealKasteel2Nights.id]: localized(dealKasteel2Nights.title),
+  [dealKasteel3Nights.id]: localized(dealKasteel3Nights.title),
 }))
 
 useHead({ title: `${currentDeal.value?.title ? localized(currentDeal.value.title) : 'Deal'} | ViaLuxury` })
 
 const breadcrumbs = computed(() => [
   { label: t('search.home'), href: '/' },
-  { label: t('search.arrangements'), href: '/' },
+  { label: t('search.arrangements'), href: '/search' },
   { label: hotel.value.name },
 ])
 
@@ -439,7 +543,9 @@ function openGallery() { }
   margin: 0;
 }
 .deal-page__meta { display: flex; align-items: center; gap: var(--space-sm); font-size: 14px; color: var(--color-text-secondary); }
-.deal-page__score { font-weight: 600; color: var(--color-text-primary); }
+.deal-page__score-wrap { display: flex; align-items: center; gap: 6px; }
+.deal-page__score { display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: var(--radius-sm); background: #004E4A; color: #fff; font-size: 13px; font-weight: 700; flex-shrink: 0; }
+.deal-page__score-label { font-size: 13px; font-weight: 600; color: var(--color-text-primary); }
 .deal-page__divider { color: var(--color-text-muted); }
 .deal-page__title-actions { display: flex; gap: var(--space-sm); flex-shrink: 0; }
 .icon-action { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--color-border); display: flex; align-items: center; justify-content: center; font-size: 18px; background: var(--color-surface); cursor: pointer; }
@@ -458,10 +564,12 @@ function openGallery() { }
 /* Mini map */
 .mini-map { border-radius: var(--radius-lg); overflow: hidden; height: 100%; min-height: 200px; max-height: 280px; }
 .mini-map__placeholder { position: relative; width: 100%; height: 100%; min-height: 200px; max-height: 280px; border-radius: var(--radius-lg); overflow: hidden; }
-.mini-map__img { width: 100%; height: 100%; min-height: 200px; object-fit: cover; filter: brightness(0.7) saturate(0.8); }
-.mini-map__overlay { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; color: white; }
-.mini-map__label { font-size: 15px; font-weight: 600; margin-top: 4px; }
-.mini-map__link { font-size: 13px; color: white; text-decoration: underline; text-underline-offset: 2px; opacity: 0.85; }
+.mini-map__img { width: 100%; height: 100%; min-height: 200px; object-fit: cover; }
+.mini-map__img--map { filter: saturate(0.85) contrast(1.05); }
+.mini-map__pin { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -100%); filter: drop-shadow(0 3px 6px rgba(0,0,0,0.25)); z-index: 2; pointer-events: none; }
+.mini-map__bottom { position: absolute; bottom: 0; left: 0; right: 0; padding: 10px 14px; background: linear-gradient(transparent, rgba(0,0,0,0.6)); display: flex; align-items: center; justify-content: space-between; z-index: 2; }
+.mini-map__label { font-size: 14px; font-weight: 600; color: #fff; }
+.mini-map__link { font-size: 13px; color: #fff; text-decoration: underline; text-underline-offset: 2px; opacity: 0.85; }
 .mini-map__link:hover { opacity: 1; }
 
 /* ===== SIDEBAR ===== */
@@ -487,13 +595,15 @@ function openGallery() { }
 .sidebar__inc-check { color: var(--color-discount); font-weight: 700; flex-shrink: 0; }
 
 /* Variant CTA */
-.sidebar__variant-cta { display: flex; align-items: center; justify-content: space-between; gap: var(--space-sm); padding: 10px 14px; background: var(--color-background-secondary); border-radius: var(--radius-md); margin-bottom: var(--space-lg); }
-.sidebar__variant-text { font-size: 13px; color: var(--color-text-secondary); font-weight: 500; }
-.sidebar__variant-btn { font-size: 12px; font-weight: 600; color: var(--color-primary); background: none; border: none; cursor: pointer; white-space: nowrap; text-decoration: underline; text-underline-offset: 2px; }
+.sidebar__variant-cta { display: flex; flex-direction: column; align-items: flex-start; padding: var(--space-md) var(--space-lg); background: var(--color-background-secondary); border-radius: var(--radius-md); margin-bottom: var(--space-lg); }
+.sidebar__variant-heading { font-family: var(--font-body); font-size: 14px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 6px; }
+.sidebar__variant-btn { display: inline-flex; align-items: center; gap: 6px; font: inherit; font-size: 14px; font-weight: 600; color: var(--color-primary); background: none; border: none; padding: 0; cursor: pointer; text-decoration: underline; text-underline-offset: 2px; }
+.sidebar__variant-btn:hover { opacity: 0.85; }
+.sidebar__variant-btn svg { flex-shrink: 0; }
 
 /* Calendar */
 .sidebar__calendar { margin-bottom: var(--space-md); }
-.sidebar__cal-title { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px; color: var(--color-text-muted); margin-bottom: var(--space-sm); }
+.sidebar__cal-title { font-family: var(--font-heading); font-size: 16px; font-weight: 700; color: var(--color-text-primary); margin-bottom: var(--space-sm); }
 
 /* Book button */
 .sidebar__book { width: 100%; padding: 14px; font-size: 16px; }
@@ -521,6 +631,38 @@ function openGallery() { }
 .sidebar__disclaimer { font-size: 12px; line-height: 1.5; color: var(--color-text-muted); margin-bottom: var(--space-md); }
 .sidebar__summary .sidebar__book { margin-top: 0; }
 
+/* Trust section below sidebar */
+.sidebar__trust {
+  margin-top: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.sidebar__trust-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: var(--space-lg);
+}
+.sidebar__trust-list li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  line-height: 1.4;
+}
+.sidebar__trust-check {
+  color: #004E4A;
+  font-weight: 700;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+.sidebar__trust-logo {
+  height: 72px;
+}
+
 /* Room allocation */
 .sidebar__room-allocation { margin-bottom: var(--space-md); padding: var(--space-md); background: var(--color-background-secondary); border-radius: var(--radius-md); }
 .sidebar__room-alloc-header { margin-bottom: var(--space-sm); }
@@ -545,7 +687,7 @@ function openGallery() { }
 .deal-page__highlights { padding: var(--space-xl) 0; border-top: 1px solid var(--color-border-light); }
 .highlights__grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md) var(--space-xl); }
 .highlight-item { display: flex; align-items: center; gap: var(--space-md); }
-.highlight-item__icon { width: 40px; height: 40px; border-radius: var(--radius-md); background: var(--color-primary-light); display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: var(--color-primary); }
+.highlight-item__icon { width: 40px; height: 40px; border-radius: var(--radius-md); background: #F8F2E6; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .highlight-item__text { font-size: 14px; font-weight: 500; color: var(--color-text-primary); }
 
 /* ===== CONTENT BLOCKS ===== */
@@ -573,21 +715,21 @@ function openGallery() { }
 /* ===== REVIEWS ===== */
 .deal-page__reviews { padding: var(--space-xl) 0; border-top: 1px solid var(--color-border-light); }
 .reviews__score-bar { display: flex; align-items: center; gap: var(--space-sm); margin-bottom: var(--space-md); }
-.reviews__score-big { font-size: 32px; font-weight: 700; font-family: var(--font-heading); }
-.reviews__score-stars { color: var(--color-primary); font-size: 14px; }
-.star--dim { opacity: 0.25; }
+.reviews__score-big { font-size: 24px; font-weight: 700; font-family: var(--font-heading); background: #004E4A; color: #fff; padding: 8px 12px; border-radius: var(--radius-sm); }
+.reviews__score-meta { display: flex; flex-direction: column; gap: 1px; }
+.reviews__score-verdict { font-size: 15px; font-weight: 600; color: var(--color-text-primary); }
 .reviews__score-count { font-size: 13px; color: var(--color-text-muted); }
 .reviews__categories { display: grid; grid-template-columns: 1fr 1fr; gap: 6px var(--space-xl); margin-bottom: var(--space-lg); max-width: 720px; }
 .reviews__cat { display: grid; grid-template-columns: 110px 1fr 32px; align-items: center; gap: var(--space-sm); font-size: 13px; }
 .reviews__cat-name { color: var(--color-text-secondary); }
 .reviews__cat-bar { height: 6px; background: var(--color-border-light); border-radius: 3px; overflow: hidden; }
-.reviews__cat-fill { height: 100%; background: var(--color-primary); border-radius: 3px; }
+.reviews__cat-fill { height: 100%; background: #004E4A; border-radius: 3px; }
 .reviews__cat-score { font-weight: 600; text-align: right; }
 .reviews__grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md); }
 .review-card { padding: var(--space-md); background: var(--color-background-secondary); border-radius: var(--radius-md); display: flex; flex-direction: column; }
 .review-card__header { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-sm); }
 .review-card__author { font-size: 14px; font-weight: 600; }
-.review-card__stars { color: var(--color-primary); font-size: 12px; }
+.review-card__review-score { font-size: 13px; font-weight: 700; color: var(--color-text-primary); }
 .review-card__text { font-size: 13px; line-height: 1.6; color: var(--color-text-secondary); }
 .review-card__arrangement {
   margin-top: var(--space-sm);
@@ -600,7 +742,7 @@ function openGallery() { }
   font-weight: 500;
   color: var(--color-text-muted);
 }
-.review-card__arrangement svg { color: var(--color-primary); flex-shrink: 0; }
+.review-card__arrangement svg { color: #004E4A; flex-shrink: 0; }
 
 /* ===== FAQ ===== */
 .deal-page__faq { padding: var(--space-xl) 0; border-top: 1px solid var(--color-border-light); }

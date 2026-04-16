@@ -10,16 +10,25 @@ const en: Record<string, string> = {
   'header.whenAndHowLong': 'When & how long',
   'header.whosComing': 'Who\'s coming',
   'header.chooseDestination': 'Choose destination',
-  'header.chooseDate': 'Choose date',
+  'header.chooseDate': 'Flexible, any duration',
+  'header.flexibleLabel': 'Flexible',
+  'header.anyDuration': 'any duration',
   'header.search': 'Search',
   'header.chosen': 'chosen',
 
   // Header - Popups
   'header.popularDestinations': 'Popular destinations',
   'header.themes': 'Themes',
+  'header.searchDestinationPlaceholder': 'Search destination or hotel...',
+  'header.destinations': 'Destinations',
+  'header.noResults': 'No results found',
   'header.date': 'Date',
   'header.flexibility': 'Flexibility',
   'header.howLong': 'How long',
+  'header.arrivalDate': 'Arrival date',
+  'header.duration': 'Duration',
+  'header.flexArrival': 'Flexibility of arrival date',
+  'header.done': 'Ready',
 
   // Header - Travel group
   'header.adults': 'Adults',
@@ -39,6 +48,26 @@ const en: Record<string, string> = {
   'header.flex.1day': '\u00b1 1 day',
   'header.flex.2days': '\u00b1 2 days',
   'header.flex.3days': '\u00b1 3 days',
+  'header.flex.7days': '\u00b1 7 days',
+
+  // Header - Tabs
+  'header.tab.calendar': 'Calendar',
+  'header.tab.flexible': 'Flexible',
+
+  // Header - Flexible tab
+  'header.flex.howLong': 'How long do you want to stay?',
+  'header.flex.whenApprox': 'When approximately?',
+  'header.flex.weekend': 'A weekend',
+  'header.flex.weekday': 'Weekdays',
+  'header.flex.oneWeek': 'A week',
+  'header.flex.weekendFriSun': 'Weekend',
+  'header.flex.weekendFriSunSub': 'Fri \u2013 Sun',
+  'header.flex.weekendSatSun': 'Weekend',
+  'header.flex.weekendSatSunSub': 'Sat \u2013 Sun',
+  'header.flex.longWeekend': 'Long weekend',
+  'header.flex.longWeekendSub': 'Fri \u2013 Mon',
+  'header.flex.midweek': 'Midweek',
+  'header.flex.midweekSub': 'Mon \u2013 Fri',
 
   // Header - Duration options
   'header.duration.1night': '1 night',
@@ -99,6 +128,15 @@ const en: Record<string, string> = {
   'footer.privacy': 'Privacy Policy',
   'footer.allRightsReserved': 'All rights reserved.',
 
+  // Review labels
+  'review.outstanding': 'Outstanding',
+  'review.excellent': 'Excellent',
+  'review.veryGood': 'Fantastic',
+  'review.good': 'Good',
+  'review.sufficient': 'Sufficient',
+  'review.fair': 'Fair',
+  'review.poor': 'Poor',
+
   // Common
   'common.bookNow': 'Book now',
   'common.checkIn': 'Check-in',
@@ -107,6 +145,7 @@ const en: Record<string, string> = {
   'common.reviews': 'reviews',
   'common.nights': 'nights',
   'common.night': 'night',
+  'common.for': 'for',
   'common.perPerson': 'p.p.',
   'common.close': 'Close',
   'common.save': 'Save',
@@ -144,19 +183,19 @@ const en: Record<string, string> = {
 
   // Search page
   'search.deals': 'deals',
-  'search.usp': 'Unique arrangements, lovingly curated with discounts negotiated by the ViaLuxury team.',
+  'search.usp': 'Unique packages, lovingly curated with discounts negotiated by the ViaLuxury team.',
   'search.home': 'Home',
-  'search.arrangements': 'Arrangements',
+  'search.arrangements': 'Packages',
   'search.filters': 'Filters',
-  'search.arrangement': 'Arrangement',
+  'search.arrangement': 'Package',
   'search.persons': '2 persons',
   'search.dependsOnPackage': 'Depending on chosen package',
-  'search.fromPrice': 'Starting at *',
+  'search.fromPrice': 'From',
   'search.viewDeals': 'View',
   'search.deal': 'Deal',
   'search.dealPlural': 'Deals',
   'search.availableDeals': 'Available deals',
-  'search.viewArrangement': 'View arrangement',
+  'search.viewArrangement': 'View package',
 
   // Search filters
   'filter.travelDuration': 'Duration',
@@ -171,7 +210,7 @@ const en: Record<string, string> = {
   'filter.inForest': 'In the forest',
   'filter.inNature': 'In nature',
   'filter.cityBreaks': 'City breaks',
-  'filter.arrangement': 'Arrangement',
+  'filter.arrangement': 'Package',
   'filter.culinaryHighlights': 'Culinary highlights',
   'filter.withDinner': 'With dinner',
   'filter.lateCheckout': 'Late checkout, sleep in',
@@ -192,15 +231,16 @@ const en: Record<string, string> = {
   'filter.exclusive': 'Exclusive at ViaLuxury',
 
   // Deal page
+  'deal.backToResults': 'Back to results',
   'deal.highlights': 'Highlights',
-  'deal.inclusionsHeading': 'This arrangement for',
+  'deal.inclusionsHeading': 'This package for',
   'deal.inclusionsEnd': 'includes the following:',
   'deal.inclusionsEndAlt': 'includes the following',
-  'deal.arrangementCurated': 'ViaLuxury and the hotel have carefully curated a beautiful arrangement.',
+  'deal.arrangementCurated': 'ViaLuxury and the hotel have carefully curated a beautiful package.',
   'deal.chooseStay': 'Choose your stay:',
-  'deal.availableArrangements': 'Available arrangements',
-  'deal.selectArrangement': 'Select this arrangement',
-  'deal.currentArrangement': 'Current arrangement',
+  'deal.availableArrangements': 'Available packages',
+  'deal.selectArrangement': 'Select this package',
+  'deal.currentArrangement': 'Current package',
   'deal.mapArea': 'Area map',
   'deal.shorterOrLonger': 'Shorter or longer stay?',
   'deal.viewOptions': 'View options',
@@ -210,15 +250,18 @@ const en: Record<string, string> = {
   'deal.highlight.wellness': 'Wellness & swimming pool',
   'deal.highlight.estate': 'Stunning estate in South Limburg',
   'deal.highlight.cycling': 'Perfect for cycling and hiking',
-  'deal.highlight.exclusive': 'Exclusive arrangement via ViaLuxury',
+  'deal.highlight.exclusive': 'Exclusive package via ViaLuxury',
   'deal.priceFor': 'For {nights} nights, {persons} persons',
-  'deal.disclaimer': 'You only need to pay local taxes, any service/administration fees of the hotel and parking costs on-site (if not included in the arrangement).',
+  'deal.disclaimer': 'You only need to pay local taxes, any service/administration fees of the hotel and parking costs on-site (if not included in the package).',
+  'deal.trust2min': 'It only takes 2 minutes',
+  'deal.trustCancel': 'Easy cancellation',
+  'deal.trustTrustpilot': 'Excellently reviewed on Trustpilot',
 
   // Hotel page
   'hotel.facilities': 'Hotel facilities',
   'hotel.viewAllFacilities': 'View all',
   'hotel.facilitiesWord': 'facilities',
-  'hotel.reviews': 'Reviews',
+  'hotel.reviews': 'Guest reviews',
   'hotel.allReviews': 'All reviews',
   'hotel.writeReview': 'Write a review',
   'hotel.showAllPhotos': 'photos',
@@ -230,7 +273,7 @@ const en: Record<string, string> = {
   'hotel.previousTip': 'Previous tip',
   'hotel.nextTip': 'Next tip',
   'hotel.relatedDeals': 'You might also like these',
-  'hotel.relatedDealsEnd': 'arrangements',
+  'hotel.relatedDealsEnd': 'packages',
   'hotel.whereYouStay': 'Where you\'ll stay',
   'hotel.mapLabel': 'Map -',
 
@@ -243,12 +286,18 @@ const en: Record<string, string> = {
   'room.availableUpgrades': 'available room upgrades',
   'room.paidUpgradeSelected': 'Paid upgrade selected',
   'room.undo': 'Undo',
+  'room.changeRoomChoice': 'Change room choice',
+  'room.paidUpgradesSelected': 'Paid upgrade(s) selected.',
+  'room.roomsChosen': 'rooms chosen',
+  'room.roomsChosenForPersons': 'rooms selected for {n} persons',
+  'room.stillAvailable': '{n} rooms still available',
   'room.editTravelGroup': 'Edit travel group',
   'room.thisRoomFor': 'This room is for',
   'room.youBook': 'You book',
   'room.roomFor': 'room for',
   'room.roomsFor': 'rooms for',
   'room.yourRooms': 'Your rooms',
+  'room.multiRoomTypesSelected': 'You have selected different room types for your travel group.',
   'room.allocateRooms': 'Allocate your rooms',
   'room.allocateRoomsSub': 'Choose how many rooms of each type you want.',
   'room.roomsAllocated': 'rooms allocated',
@@ -285,7 +334,8 @@ const en: Record<string, string> = {
 
   // Deal store
   'store.extraPerson': 'extra',
-  'store.roomUpgrade': 'Room upgrade:',
+  'store.extraRoom': 'Extra room',
+  'store.roomUpgrade': 'Room upgrade',
   'store.childDiscount': 'Children discount',
   'store.roomUnavailable': 'The {room} is not available for this date.',
 
@@ -312,6 +362,17 @@ const en: Record<string, string> = {
   'search.hideFilters': 'Hide filters',
   'search.showFilters': 'Show filters',
 
+  // Budget filter
+  'filter.budget': 'Budget',
+  'filter.budgetAll': 'All prices',
+
+  // Deal card
+  'search.andMore': 'and {n} more extras',
+  'search.andOneMore': 'and 1 more extra',
+  'search.inclArrangement': 'Includes package for {nights} nights for {persons} persons',
+  'search.arrangementSuffix': 'for {nights} nights for {persons} persons.',
+  'search.viewArrangementSingle': 'View package',
+
   // Map page
   'map.freeCancel': 'Free cancellation',
   'map.moneyBackGuarantee': '100% money-back guarantee',
@@ -321,8 +382,43 @@ const en: Record<string, string> = {
   'map.account': 'Account',
   'map.menu': 'Menu',
 
+  // Toast / favorites
+  'toast.addedToFavorites': 'Added to favorites',
+  'toast.removedFromFavorites': 'Removed from favorites',
+
+  // Auth flow
+  'auth.createAccount': 'Create an account',
+  'auth.createAccountDesc': 'Create a free account to save your favorites and receive exclusive offers.',
+  'auth.createAccountBtn': 'Create account',
+  'auth.loginBtn': 'Log in',
+  'auth.orContinueWith': 'Or continue with',
+  'auth.continueWithGoogle': 'Continue with Google',
+  'auth.continueWithFacebook': 'Continue with Facebook',
+  'auth.continueWithApple': 'Continue with Apple',
+  'auth.email': 'Email address',
+  'auth.password': 'Password',
+  'auth.forgotPassword': 'Forgot password?',
+  'auth.noAccount': 'Don\'t have an account?',
+  'auth.signUp': 'Sign up',
+  'auth.alreadyHaveAccount': 'Already have an account?',
+  'auth.login': 'Log in',
+  'auth.register': 'Register',
+  'auth.close': 'Close',
+
+  // Yvette banner
+  'yvette.heading': 'Curated by Yvette from ViaLuxury',
+  'yvette.subheading': '',
+  'yvette.text': '\'We were actually just driving past, but turned around immediately. Sometimes you see a place and you just know: this belongs at ViaLuxury. I\'m very happy that we\'ve been able to add this special castle to our collection, and with a great discount too.\'',
+
   // Hotel (deal page hardcoded fixes)
   'hotel.bookedAs': 'Booked:',
+
+  // Sidebar
+  'sidebar.arrangementFor': 'Package for',
+  'sidebar.forArrival': 'For arrival date',
+  'sidebar.clear': 'clear',
+  'sidebar.luxeRoomSingular': 'luxury room (upgrade)',
+  'sidebar.luxeRoomPlural': 'luxury rooms (upgrade)',
 }
 
 export default en

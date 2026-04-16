@@ -12,6 +12,7 @@
               </span>
               <span class="panel__location">{{ hotel.city }}, {{ hotel.region }}</span>
             </div>
+            <p v-if="hotel.pitch" class="panel__pitch">{{ localized(hotel.pitch) }}</p>
             <button class="panel__close" @click="$emit('close')" :aria-label="t('common.close')">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M18 6L6 18M6 6l12 12" />
@@ -20,13 +21,23 @@
           </div>
 
           <div class="panel__body">
+            <!-- Hotel hero image -->
+            <div class="panel__hero">
+              <img :src="hotel.heroImage" :alt="hotel.name" class="panel__hero-img" />
+            </div>
+            <!-- Arrival date bar -->
+            <div v-if="arrivalDate" class="panel__arrival-bar">
+              <span>{{ t('sidebar.forArrival') }} {{ formatDisplayDate(arrivalDate) }}</span>
+              <button class="panel__arrival-clear" @click="clearArrivalDate">{{ t('sidebar.clear') }}</button>
+            </div>
+
             <div v-for="deal in hotel.deals" :key="deal.id" class="deal-card">
               <div class="deal-card__header">
-                <span class="deal-card__nights">{{ deal.nights }} {{ t('common.nights') }}</span>
+                <span class="deal-card__nights">{{ deal.nights }} {{ deal.nights === 1 ? t('common.night') : t('common.nights') }} {{ t('common.for') }} {{ persons }} {{ persons === 1 ? t('common.personSingular') : t('common.personPlural') }}</span>
                 <div class="deal-card__pricing">
                   <span class="deal-card__discount">-{{ deal.discountPercentage }}%</span>
-                  <span class="deal-card__price">{{ formatPrice(deal.basePrice) }}</span>
-                  <span class="deal-card__original">{{ formatPrice(deal.originalPrice) }}</span>
+                  <span class="deal-card__price">{{ formatPrice(adjustPrice(deal.basePrice, persons)) }}</span>
+                  <span class="deal-card__original">{{ formatPrice(adjustPrice(deal.originalPrice, persons)) }}</span>
                 </div>
               </div>
 
@@ -34,17 +45,22 @@
 
               <div class="deal-card__inclusions">
                 <div
-                  v-for="inc in deal.inclusions"
+                  v-for="inc in getSmartInclusions(deal)"
                   :key="localized(inc)"
                   class="deal-card__inc"
                 >
                   <span class="deal-card__check">✓</span>
                   <span>{{ localized(inc) }}</span>
                 </div>
+                <div v-if="getRemainingCount(deal) > 0" class="deal-card__inc deal-card__inc--more">
+                  <span class="deal-card__check">✓</span>
+                  <span>{{ getRemainingCount(deal) === 1 ? t('search.andOneMore') : t('search.andMore').replace('{n}', String(getRemainingCount(deal))) }}</span>
+                </div>
               </div>
 
               <NuxtLink
-                :to="`/deal/${deal.slug}`"
+                :to="`/deal/${deal.slug}${persons !== 2 || rooms !== 1 ? '?adults=' + persons + (rooms !== 1 ? '&rooms=' + rooms : '') : ''}`"
+                target="_blank"
                 class="btn btn-primary deal-card__btn"
               >
                 {{ t('search.viewArrangement') }}
@@ -61,10 +77,17 @@
 </template>
 
 <script setup lang="ts">
-import type { SearchHotel } from '~/types/searchHotel'
+import type { SearchHotel, SearchHotelDeal } from '~/types/searchHotel'
 import { formatPrice } from '~/utils/formatPrice'
+import { pickSmartInclusions } from '~/utils/smartInclusions'
 
-const { t, localized } = useI18n()
+const { t, localized, locale } = useI18n()
+const { arrivalDate, clearArrivalDate, persons, rooms } = useSearchState()
+
+function adjustPrice(basePrice: number, p: number): number {
+  if (p % 2 === 0) return Math.round(basePrice * (p / 2))
+  return Math.round(basePrice * ((p + 1) / 2) - 50)
+}
 
 const props = defineProps<{
   isOpen: boolean
@@ -74,6 +97,30 @@ const props = defineProps<{
 defineEmits<{
   (e: 'close'): void
 }>()
+
+// Collect all deals' inclusions for smart selection context
+const allDealsInclusions = computed(() => {
+  if (!props.hotel) return []
+  return props.hotel.deals.map(d => d.inclusions)
+})
+
+function getSmartInclusions(deal: SearchHotelDeal) {
+  return pickSmartInclusions(
+    deal.inclusions,
+    allDealsInclusions.value,
+    locale.value as 'nl' | 'en',
+    3,
+  )
+}
+
+function getRemainingCount(deal: SearchHotelDeal) {
+  return Math.max(0, deal.inclusions.length - 3)
+}
+
+function formatDisplayDate(dateStr: string) {
+  const [y, m, d] = dateStr.split('-')
+  return `${d}-${m}-${y}`
+}
 
 // Lock body scroll when panel is open
 watch(() => props.isOpen, (open) => {
@@ -150,6 +197,13 @@ onUnmounted(() => {
   color: var(--color-text-secondary);
 }
 
+.panel__pitch {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  line-height: 1.4;
+  margin-top: 4px;
+}
+
 .panel__close {
   position: absolute;
   top: var(--space-lg);
@@ -168,6 +222,46 @@ onUnmounted(() => {
 
 .panel__close:hover {
   background: var(--color-border);
+}
+
+/* Hotel hero image */
+.panel__hero {
+  height: 200px;
+  flex-shrink: 0;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-md);
+}
+
+.panel__hero-img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  display: block;
+  border-radius: var(--radius-md);
+}
+
+/* Arrival date bar */
+.panel__arrival-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-sm) var(--space-md);
+  background: var(--color-background-secondary);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-md);
+}
+
+.panel__arrival-clear {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-primary);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: underline;
 }
 
 /* Scrollable body */
@@ -234,9 +328,10 @@ onUnmounted(() => {
 }
 
 .deal-card__title {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--color-text-primary);
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--color-text-muted);
   line-height: 1.4;
   margin-bottom: var(--space-md);
 }
@@ -262,6 +357,11 @@ onUnmounted(() => {
   flex-shrink: 0;
 }
 
+.deal-card__inc--more span:last-child {
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
 .deal-card__btn {
   display: flex;
   align-items: center;
@@ -271,6 +371,10 @@ onUnmounted(() => {
   padding: 10px;
   font-size: 14px;
   text-decoration: none;
+}
+
+.deal-card__btn:hover {
+  color: #fff;
 }
 
 .deal-card__btn svg {

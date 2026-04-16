@@ -48,25 +48,29 @@ const galleryImages = computed(() => props.images.filter((img) => img.position =
 .hero-gallery {
   display: grid;
   grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
   gap: 6px;
   border-radius: var(--radius-lg);
   overflow: hidden;
-  max-height: 420px;
+  height: 420px;
 }
 
 .hero-gallery__main {
-  grid-row: span 2;
+  grid-row: 1 / -1;
 }
 
 .hero-gallery__hero-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  display: block;
 }
 
 .hero-gallery__grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  grid-row: 1 / -1;
   gap: 6px;
 }
 
@@ -79,7 +83,7 @@ const galleryImages = computed(() => props.images.filter((img) => img.position =
   width: 100%;
   height: 100%;
   object-fit: cover;
-  aspect-ratio: 4/3;
+  display: block;
 }
 
 .hero-gallery__all-btn {

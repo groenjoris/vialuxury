@@ -43,6 +43,7 @@
         :availability="leftAvailability"
         :selected-check-in="store.checkInDate"
         :selected-check-out="store.checkOutDate"
+        :cheapest-price="cheapestPrice"
         :show-prev-button="true"
         @select-date="handleDateSelect"
         @prev-month="goToPrevMonth"
@@ -53,6 +54,7 @@
         :availability="rightAvailability"
         :selected-check-in="store.checkInDate"
         :selected-check-out="store.checkOutDate"
+        :cheapest-price="cheapestPrice"
         :show-next-button="true"
         @select-date="handleDateSelect"
         @next-month="goToNextMonth"
@@ -110,6 +112,15 @@ const rightAvailability = computed(() => {
     store.currentDeal,
     store.totalPersons,
   )
+})
+
+/** Cheapest available price across both visible months */
+const cheapestPrice = computed(() => {
+  const all = [...leftAvailability.value, ...rightAvailability.value]
+  const prices = all
+    .filter(a => a.available && a.totalPrice > 0)
+    .map(a => a.totalPrice)
+  return prices.length > 0 ? Math.min(...prices) : null
 })
 
 function goToPrevMonth() {

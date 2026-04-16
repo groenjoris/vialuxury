@@ -1,6 +1,7 @@
 export interface DateAvailability {
   date: string
   available: boolean
+  soldOut?: boolean
   totalPrice: number
   originalPrice?: number
   discountPercentage?: number
