@@ -126,16 +126,34 @@ const en: Record<string, string> = {
 
   // Footer
   'footer.needHelp': 'Need help?',
-  'footer.inspiration': 'Inspiration',
+  'footer.phone': '+31 85 777 3222',
+  'footer.phoneHours': 'Mon–Fri, 8:00 AM – 6:00 PM',
+  'footer.whatsapp': 'WhatsApp',
+  'footer.whatsappNumber': '+31 85 777 3222',
+  'footer.faqLink': 'FAQ',
+  'footer.contactForm': 'Contact form',
+  'footer.inspiration': 'Inspiration / Most booked',
   'footer.popularDestinations': 'Popular destinations',
   'footer.lastMinutes': 'Last minutes',
-  'footer.giftCards': 'Gift Cards',
+  'footer.giftCards': 'Gift cards',
+  'footer.shopping': 'Shopping & gift cards',
   'footer.aboutUs': 'About us',
   'footer.faq': 'FAQ',
   'footer.contact': 'Contact',
   'footer.terms': 'Terms & Conditions',
   'footer.privacy': 'Privacy Policy',
   'footer.allRightsReserved': 'All rights reserved.',
+  'footer.trustpilotScore': '4.5/5',
+  'footer.trustpilotLabel': 'Rated on Trustpilot',
+
+  // Vakantieparken page
+  'vakantieparken.heading': 'Holiday parks are coming',
+  'vakantieparken.intro': 'We are working hard to add holiday parks. Leave your email and we will keep you updated when you can book them.',
+  'vakantieparken.emailPlaceholder': 'Your email address',
+  'vakantieparken.submit': 'Keep me updated',
+  'vakantieparken.b2bHeading': 'Do you own a holiday park?',
+  'vakantieparken.b2bText': 'Send us an email at vakantieparken@vialuxury.com if you are interested in joining. Our loyal members bring a super positive vibe and will love your holiday park with their presence.',
+  'vakantieparken.b2bButton': 'Email us',
 
   // Review labels
   'review.outstanding': 'Outstanding',

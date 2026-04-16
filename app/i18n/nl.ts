@@ -126,16 +126,34 @@ const nl: Record<string, string> = {
 
   // Footer
   'footer.needHelp': 'Hulp nodig?',
-  'footer.inspiration': 'Inspiratie',
+  'footer.phone': '+31 85 777 3222',
+  'footer.phoneHours': 'Ma t/m vr, 8:00 – 18:00',
+  'footer.whatsapp': 'WhatsApp',
+  'footer.whatsappNumber': '+31 85 777 3222',
+  'footer.faqLink': 'Veelgestelde vragen',
+  'footer.contactForm': 'Contactformulier',
+  'footer.inspiration': 'Inspiratie / Best geboekt',
   'footer.popularDestinations': 'Populaire bestemmingen',
   'footer.lastMinutes': 'Last minutes',
-  'footer.giftCards': 'Gift Cards',
+  'footer.giftCards': 'Cadeaukaarten',
+  'footer.shopping': 'Shopping & cadeaukaarten',
   'footer.aboutUs': 'Over ons',
   'footer.faq': 'Veelgestelde vragen',
   'footer.contact': 'Contact',
   'footer.terms': 'Algemene voorwaarden',
   'footer.privacy': 'Privacybeleid',
   'footer.allRightsReserved': 'Alle rechten voorbehouden.',
+  'footer.trustpilotScore': '4.5/5',
+  'footer.trustpilotLabel': 'Beoordeeld op Trustpilot',
+
+  // Vakantieparken page
+  'vakantieparken.heading': 'Vakantieparken komen eraan',
+  'vakantieparken.intro': 'We zijn hard bezig vakantieparken aan te sluiten. Laat je e-mail achter en we houden je op de hoogte wanneer je deze kunt boeken.',
+  'vakantieparken.emailPlaceholder': 'Je e-mailadres',
+  'vakantieparken.submit': 'Houd mij op de hoogte',
+  'vakantieparken.b2bHeading': 'Heb je een vakantiepark?',
+  'vakantieparken.b2bText': 'Stuur ons een e-mail op vakantieparken@vialuxury.com als je interesse hebt om mee te doen. Onze vaste leden brengen een super positieve vibe met zich mee en zullen ook jouw vakantiepark verpleiden met hun aanwezigheid.',
+  'vakantieparken.b2bButton': 'Mail ons',
 
   // Review labels
   'review.outstanding': 'Uitmuntend',
