@@ -52,6 +52,7 @@
           v-model:selected-duration="selectedDuration"
           @update:flex-state="handleFlexState"
         />
+        <button class="hsb-done-btn" @click="closePopup()">{{ t('header.done') }}</button>
       </div>
 
       <!-- WHO POPUP -->
@@ -130,23 +131,34 @@ function calcPopupPosition(popup: 'when' | 'who') {
   if (!bar) return {}
 
   const barRect = bar.getBoundingClientRect()
+  const popupW = popup === 'when' ? 660 : 420
+  const popupH = popup === 'when' ? 520 : 480 // estimated heights
+
+  // Center horizontally relative to bar
+  const barCenter = barRect.left + barRect.width / 2
+  let left = barCenter - popupW / 2
+  left = Math.max(8, Math.min(left, window.innerWidth - popupW - 8))
+
+  // Check if popup would go below viewport — if so, open above
+  const spaceBelow = window.innerHeight - barRect.bottom - 8
+  const openAbove = spaceBelow < popupH && barRect.top > popupH
+
+  const style: Record<string, string> = {
+    position: 'fixed',
+    left: `${left}px`,
+  }
+
+  if (openAbove) {
+    style.bottom = `${window.innerHeight - barRect.top + 8}px`
+  } else {
+    style.top = `${barRect.bottom + 8}px`
+  }
 
   if (popup === 'when') {
-    // Center horizontally relative to bar
-    const barCenter = barRect.left + barRect.width / 2
-    const popupW = 660
-    let left = barCenter - popupW / 2
-    // Clamp to viewport
-    left = Math.max(8, Math.min(left, window.innerWidth - popupW - 8))
-    return { position: 'fixed', top: `${barRect.bottom + 8}px`, left: `${left}px`, width: `${popupW}px` }
-  } else {
-    // Center horizontally relative to bar
-    const barCenter = barRect.left + barRect.width / 2
-    const popupW = 420
-    let left = barCenter - popupW / 2
-    left = Math.max(8, Math.min(left, window.innerWidth - popupW - 8))
-    return { position: 'fixed', top: `${barRect.bottom + 8}px`, left: `${left}px` }
+    style.width = `${popupW}px`
   }
+
+  return style
 }
 
 function togglePopup(popup: 'when' | 'who') {
@@ -379,6 +391,25 @@ function handleChangeSearch() {
 .hsb-popup--who {
   width: 420px;
   max-width: 95vw;
+}
+
+.hsb-done-btn {
+  width: calc(100% - var(--space-lg) * 2);
+  margin: var(--space-md) var(--space-lg) var(--space-lg);
+  padding: 12px;
+  border: none;
+  border-radius: var(--radius-md);
+  background: var(--color-primary);
+  color: white;
+  font-size: 15px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.hsb-done-btn:hover {
+  background: var(--color-primary-hover);
 }
 
 /* Who rows */

@@ -7,6 +7,7 @@ const selectedArrivalDate = ref<string | null>(null)
 const searchPersons = ref(2)
 const searchRooms = ref(1)
 const searchLoading = ref(false)
+const searchVersion = ref(0) // increments when search params change
 
 export function useSearchState() {
   function setArrivalDate(date: string | null) {
@@ -26,14 +27,20 @@ export function useSearchState() {
     searchLoading.value = val
   }
 
+  function triggerSearchUpdate() {
+    searchVersion.value++
+  }
+
   return {
     arrivalDate: readonly(selectedArrivalDate),
     persons: readonly(searchPersons),
     rooms: readonly(searchRooms),
     loading: readonly(searchLoading),
+    searchVersion: readonly(searchVersion),
     setArrivalDate,
     clearArrivalDate,
     setSearchGroup,
     setLoading,
+    triggerSearchUpdate,
   }
 }

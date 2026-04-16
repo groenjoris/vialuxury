@@ -42,6 +42,31 @@
     <div class="destination-popup__content">
       <!-- Browse mode: destinations + themes (when not searching) -->
       <div v-if="!isSearching" class="destination-popup__browse">
+        <!-- Recent searches -->
+        <div v-if="searchHistory.length > 0" class="destination-popup__section">
+          <h4 class="destination-popup__section-title">{{ t('header.recentSearches') }}</h4>
+          <div class="destination-popup__chips">
+            <button
+              v-for="item in searchHistory"
+              :key="item.name"
+              class="dest-chip dest-chip--history"
+              @click="reSelectHistory(item)"
+            >
+              <svg class="dest-chip__history-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10" />
+                <polyline points="12 6 12 12 16 14" />
+              </svg>
+              <span class="dest-chip__name">{{ item.name }}</span>
+              <span class="dest-chip__remove" @click.stop="removeHistory(item)">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </span>
+            </button>
+          </div>
+        </div>
+
         <div class="destination-popup__section">
           <h4 class="destination-popup__section-title">{{ t('header.popularDestinations') }}</h4>
           <div class="destination-popup__chips">
@@ -105,7 +130,7 @@
               v-for="hotel in filteredHotels"
               :key="hotel.id"
               class="destination-popup__list-item destination-popup__list-item--hotel"
-              @click="$emit('select-hotel', hotel.slug)"
+              @click="selectHotel(hotel)"
             >
               <svg class="destination-popup__list-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M3 21V7a2 2 0 012-2h14a2 2 0 012 2v14" />
@@ -153,6 +178,44 @@ const emit = defineEmits<{
 }>()
 
 const { t } = useI18n()
+
+// Persistent search history (module-level would reset on HMR, so use provide/inject pattern)
+// Keep it simple: store in component, persists as long as popup is alive via parent keep-alive
+const searchHistory = ref<{ name: string; type: 'city' | 'destination' | 'hotel'; id?: string; province?: string }[]>([])
+
+// Load from sessionStorage on mount
+onMounted(() => {
+  try {
+    const stored = sessionStorage.getItem('vl-search-history')
+    if (stored) searchHistory.value = JSON.parse(stored)
+  } catch { /* ignore */ }
+})
+
+function addToHistory(item: { name: string; type: 'city' | 'destination' | 'hotel'; id?: string; province?: string }) {
+  // Remove duplicate if exists
+  searchHistory.value = searchHistory.value.filter(h => h.name !== item.name)
+  // Prepend
+  searchHistory.value.unshift(item)
+  // Keep max 3
+  if (searchHistory.value.length > 3) searchHistory.value.pop()
+  // Persist
+  try { sessionStorage.setItem('vl-search-history', JSON.stringify(searchHistory.value)) } catch { /* ignore */ }
+}
+
+function removeHistory(item: { name: string }) {
+  searchHistory.value = searchHistory.value.filter(h => h.name !== item.name)
+  try { sessionStorage.setItem('vl-search-history', JSON.stringify(searchHistory.value)) } catch { /* ignore */ }
+}
+
+function reSelectHistory(item: { name: string; type: string; id?: string; province?: string }) {
+  if (item.type === 'destination' && item.id) {
+    emit('toggle-destination', item.id)
+  } else if (item.type === 'hotel' && item.id) {
+    emit('select-hotel', item.id)
+  } else if (item.type === 'city' && item.province) {
+    emit('select-city', { name: item.name, province: item.province })
+  }
+}
 
 const searchQuery = ref('')
 const searchInputRef = ref<HTMLInputElement | null>(null)
@@ -214,6 +277,7 @@ function selectSuggestion(item: { name: string; province: string; isProvince: bo
     const dest = props.destinations.find(d => d.name === item.name)
     if (dest) {
       emit('toggle-destination', dest.id)
+      addToHistory({ name: item.name, type: 'destination', id: dest.id })
       searchQuery.value = ''
       return
     }
@@ -221,6 +285,13 @@ function selectSuggestion(item: { name: string; province: string; isProvince: bo
 
   // Otherwise emit as city selection
   emit('select-city', { name: item.name, province: item.province })
+  addToHistory({ name: item.name, type: 'city', province: item.province })
+  searchQuery.value = ''
+}
+
+function selectHotel(hotel: { name: string; slug: string }) {
+  emit('select-hotel', hotel.slug)
+  addToHistory({ name: hotel.name, type: 'hotel', id: hotel.slug })
   searchQuery.value = ''
 }
 </script>
@@ -367,6 +438,41 @@ function selectSuggestion(item: { name: string; province: string; isProvince: bo
   font-size: 11px;
   color: var(--color-text-muted);
   font-weight: 500;
+}
+
+/* History chip variant */
+.dest-chip--history {
+  background: var(--color-background-secondary, #f5f5f5);
+  border-color: transparent;
+  gap: 8px;
+  padding-right: 8px;
+}
+
+.dest-chip--history:hover {
+  background: var(--color-border-light, #eee);
+  border-color: transparent;
+}
+
+.dest-chip__history-icon {
+  flex-shrink: 0;
+  color: var(--color-text-muted);
+}
+
+.dest-chip__remove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  color: var(--color-text-muted);
+  transition: background 150ms ease, color 150ms ease;
+  margin-left: 2px;
+}
+
+.dest-chip__remove:hover {
+  background: rgba(0, 0, 0, 0.1);
+  color: var(--color-text-primary);
 }
 
 /* ==================== */

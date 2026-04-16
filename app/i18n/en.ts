@@ -29,6 +29,7 @@ const en: Record<string, string> = {
   'header.duration': 'Duration',
   'header.flexArrival': 'Flexibility of arrival date',
   'header.done': 'Ready',
+  'header.recentSearches': 'Recent searches',
 
   // Header - Travel group
   'header.adults': 'Adults',
@@ -42,6 +43,14 @@ const en: Record<string, string> = {
   'header.hotels': 'Hotels',
   'header.holidayParks': 'Holiday Parks',
   'header.restaurants': 'Restaurants',
+  'header.membersEntrance': 'Members',
+  'header.contact': 'Contact',
+  'header.contactNeedHelp': 'Need help?',
+  'header.contactPhoneHours': 'Mon–Fri, 8:00 AM – 6:00 PM',
+  'header.contactWhatsappSub': 'Instant reply via WhatsApp',
+  'header.contactForm': 'Contact form',
+  'header.contactUrgent': 'Emergency line',
+  'header.faq': 'FAQ',
 
   // Header - Flexibility options
   'header.flex.exact': 'Exact',
@@ -424,7 +433,38 @@ const en: Record<string, string> = {
   'hotel.tabNearby': 'Nearby tips',
   'hotel.changeSearch': 'Change search',
 
+  // Members page
+  'members.pageTitle': 'Members entrance | ViaLuxury',
+  'members.loginHeading': 'Already a member? Log in and enjoy all benefits.',
+  'members.emailPlaceholder': 'Email address',
+  'members.continueWithEmail': 'Continue with email',
+  'members.orUseSocial': 'or use one of these options',
+  'members.heroHeading': 'Become a member and enjoy even more benefits.',
+  'members.heroIntro': 'There is a reason our members keep coming back. Not just for the hotels — but for what lies behind them. Discounts you will not find anywhere else. Packages that never appear on the website. And the feeling that luxury travel was made just for you. Membership is not for everyone. It is for people who know that the best things in life do not just come to you.',
+  'members.usp1Heading': 'Earn loyalty points for free holidays — members only.',
+  'members.usp1Text': 'Every booking brings you closer to your next free stay. You earn points automatically, redeemable for nights at the finest hotels in the Netherlands. No fine print, no expiry date. Just book, save, and one day wake up in a suite — on the house.',
+  'members.usp2Heading': 'You see the deals 24 hours before everyone else.',
+  'members.usp2Text': 'You know the ones: offers so absurdly good they sell out in hours. We send them to our members 24 hours early. While everyone else is still waiting, you have already booked. That castle hotel weekend at half price? As a member, it would have been yours.',
+  'members.usp3Heading': 'Exclusive deals, members only.',
+  'members.usp3Text': 'Some packages are too good to share with the world. Thanks to agreements with our hotel partners, we offer deals that exist nowhere else — not on our site, not with competitors, nowhere. Only when you log in do you see them. That is the advantage of a closed community.',
+  'members.howItWorksHeading': 'How to become a member',
+  'members.step1Number': '1',
+  'members.step1Title': 'Book your first package',
+  'members.step1Text': 'Book your first package and indicate at checkout that you want to become a member. That is all it takes.',
+  'members.step2Number': '2',
+  'members.step2Title': 'Be a wonderful guest',
+  'members.step2Text': 'After your stay, the hotel reviews you. Our members are welcome guests — polite, respectful and pleasant. Only this way can we guarantee the extreme discounts our hotel partners grant us.',
+  'members.step3Number': '3',
+  'members.step3Title': 'Welcome to the club',
+  'members.step3Text': 'Once we receive your review, your account is converted to a full member account. You receive a welcome gift immediately and gain instant access to all member benefits.',
+  'members.disclaimer': 'Please do not share this with others — we want to keep it exclusive for our members.',
+  'members.ctaHeading': 'This is your invitation.',
+  'members.ctaText': 'Start with your first booking and discover what happens when luxury travel becomes personal. Your next stay is the beginning of something special.',
+  'members.ctaButton': 'View packages',
+
   // Sidebar
+  'deal.refreshing': 'Updating availability...',
+
   'sidebar.arrangementFor': 'Package for',
   'sidebar.forArrival': 'For arrival date',
   'sidebar.clear': 'clear',

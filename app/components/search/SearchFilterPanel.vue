@@ -325,12 +325,34 @@ function toggleGroup(index: number) {
 }
 
 .filter-item__checkbox {
+  appearance: none;
+  -webkit-appearance: none;
   width: 16px;
   height: 16px;
-  border-radius: var(--radius-xs);
-  accent-color: var(--color-primary);
+  border: 1px solid var(--color-border);
+  border-radius: 3px;
   cursor: pointer;
   flex-shrink: 0;
+  position: relative;
+  background: white;
+  transition: background-color 150ms ease, border-color 150ms ease;
+}
+
+.filter-item__checkbox:checked {
+  background-color: var(--color-discount);
+  border-color: var(--color-discount);
+}
+
+.filter-item__checkbox:checked::after {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 1px;
+  width: 5px;
+  height: 9px;
+  border: solid #fff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
 }
 
 .filter-item__label {

@@ -3,6 +3,14 @@
     <TopBar />
     <SiteHeader />
 
+    <!-- Search refresh overlay -->
+    <Transition name="fade-fast">
+      <div v-if="isRefreshing" class="deal-page__refresh-overlay">
+        <div class="deal-page__refresh-spinner"></div>
+        <span class="deal-page__refresh-text">{{ t('deal.refreshing') }}</span>
+      </div>
+    </Transition>
+
     <main v-if="hotel && currentDeal" class="deal-page__main">
       <!-- Back link + Breadcrumbs -->
       <section class="deal-page__breadcrumbs container">
@@ -355,6 +363,17 @@ const router = useRouter()
 const store = useDealStore()
 const calendarRef = ref<HTMLElement | null>(null)
 const isFavorited = ref(false)
+
+// Watch for search bar changes → fake refresh
+const { searchVersion } = useSearchState()
+const isRefreshing = ref(false)
+watch(searchVersion, () => {
+  isRefreshing.value = true
+  setTimeout(() => {
+    isRefreshing.value = false
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }, 800)
+})
 const isLoggedIn = ref(false)
 const isPanelOpen = ref(false)
 const isUpgradePanelOpen = ref(false)
@@ -787,4 +806,39 @@ function openGallery() { }
 .room-unavailable-popup__btn:hover { background: #b08e3f; }
 .fade-enter-active, .fade-leave-active { transition: opacity 200ms ease; }
 .fade-enter-from, .fade-leave-to { opacity: 0; }
+
+/* Search refresh overlay */
+.deal-page__refresh-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(255, 255, 255, 0.85);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-md);
+}
+
+.deal-page__refresh-spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid var(--color-border);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: refresh-spin 0.7s linear infinite;
+}
+
+@keyframes refresh-spin {
+  to { transform: rotate(360deg); }
+}
+
+.deal-page__refresh-text {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+.fade-fast-enter-active, .fade-fast-leave-active { transition: opacity 300ms ease; }
+.fade-fast-enter-from, .fade-fast-leave-to { opacity: 0; }
 </style>

@@ -23,6 +23,76 @@
 
         <!-- Right actions -->
         <div class="site-header__nav-actions">
+          <!-- Contact dropdown -->
+          <div class="contact-dropdown" ref="contactDropdownRef">
+            <button
+              type="button"
+              class="contact-trigger"
+              @click.stop="contactDropdownOpen = !contactDropdownOpen"
+              :aria-expanded="contactDropdownOpen"
+            >
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
+              </svg>
+              <span>{{ t('header.contact') }}</span>
+            </button>
+            <Teleport to="body">
+            <Transition name="dropdown">
+              <div v-if="contactDropdownOpen" class="contact-dropdown__menu" :style="contactMenuStyle">
+                <span class="contact-dropdown__heading">{{ t('header.contactNeedHelp') }}</span>
+
+                <a href="tel:+31857773222" class="contact-dropdown__item">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
+                  </svg>
+                  <div class="contact-dropdown__item-text">
+                    <span class="contact-dropdown__item-label">+31 85 777 3222</span>
+                    <span class="contact-dropdown__item-sub">{{ t('header.contactPhoneHours') }}</span>
+                  </div>
+                </a>
+
+                <a href="https://wa.me/31857773222" target="_blank" class="contact-dropdown__item">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                  </svg>
+                  <div class="contact-dropdown__item-text">
+                    <span class="contact-dropdown__item-label">WhatsApp</span>
+                    <span class="contact-dropdown__item-sub">{{ t('header.contactWhatsappSub') }}</span>
+                  </div>
+                </a>
+
+                <div class="contact-dropdown__divider"></div>
+
+                <NuxtLink to="/contact" class="contact-dropdown__link" @click="contactDropdownOpen = false">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+                  </svg>
+                  {{ t('header.contactForm') }}
+                </NuxtLink>
+
+                <NuxtLink to="/veelgestelde-vragen" class="contact-dropdown__link" @click="contactDropdownOpen = false">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+                  </svg>
+                  {{ t('header.faq') }}
+                </NuxtLink>
+
+                <div class="contact-dropdown__divider"></div>
+
+                <a href="tel:+31857773333" class="contact-dropdown__item contact-dropdown__item--urgent">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+                  </svg>
+                  <div class="contact-dropdown__item-text">
+                    <span class="contact-dropdown__item-label">{{ t('header.contactUrgent') }}</span>
+                    <span class="contact-dropdown__item-sub">+31 85 777 3333</span>
+                  </div>
+                </a>
+              </div>
+            </Transition>
+            </Teleport>
+          </div>
+
           <!-- Language switcher -->
           <div class="lang-switcher" ref="langSwitcherRef">
             <button
@@ -57,12 +127,14 @@
             </Transition>
           </div>
 
-          <button type="button" class="vip-btn">
+          <!-- Leden ingang -->
+          <NuxtLink to="/leden" class="vip-btn">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M12 2 15 8l6 .9-4.5 4.4L17.5 20 12 16.9 6.5 20 8 13.3 3.5 8.9 9.5 8z" />
             </svg>
-            <span>VIP Login</span>
-          </button>
+            <span>{{ t('header.membersEntrance') }}</span>
+          </NuxtLink>
+
           <button type="button" class="hamburger-btn" aria-label="Menu">
             <span></span>
             <span></span>
@@ -136,6 +208,7 @@
             @select-hotel="handleSelectHotel"
             @select-city="handleSelectCity"
           />
+          <button class="popup__done-btn popup__done-btn--dest" @click="closePopup()">{{ t('header.done') }}</button>
         </div>
 
         <!-- WHEN POPUP -->
@@ -147,6 +220,7 @@
             v-model:selected-duration="selectedDuration"
             @update:flex-state="handleFlexState"
           />
+          <button class="popup__done-btn popup__done-btn--when" @click="closePopup()">{{ t('header.done') }}</button>
         </div>
 
         <!-- WHO POPUP -->
@@ -216,6 +290,7 @@
         </div>
       </div>
     </Transition>
+
   </header>
 </template>
 
@@ -255,14 +330,36 @@ function selectLanguage(lang: typeof languages[number]) {
   }
 }
 
-function onLangClickOutside(e: MouseEvent) {
+// --- Contact dropdown ---
+const contactDropdownOpen = ref(false)
+const contactDropdownRef = ref<HTMLElement | null>(null)
+const contactMenuStyle = ref<Record<string, string>>({})
+
+watch(contactDropdownOpen, (open) => {
+  if (open && contactDropdownRef.value) {
+    const trigger = contactDropdownRef.value.querySelector('.contact-trigger')
+    if (trigger) {
+      const rect = trigger.getBoundingClientRect()
+      contactMenuStyle.value = {
+        position: 'fixed',
+        top: `${rect.bottom + 8}px`,
+        right: `${window.innerWidth - rect.right}px`,
+      }
+    }
+  }
+})
+
+function onClickOutside(e: MouseEvent) {
   if (langSwitcherRef.value && !langSwitcherRef.value.contains(e.target as Node)) {
     langDropdownOpen.value = false
   }
+  if (contactDropdownRef.value && !contactDropdownRef.value.contains(e.target as Node)) {
+    contactDropdownOpen.value = false
+  }
 }
 
-onMounted(() => document.addEventListener('click', onLangClickOutside))
-onUnmounted(() => document.removeEventListener('click', onLangClickOutside))
+onMounted(() => document.addEventListener('click', onClickOutside))
+onUnmounted(() => document.removeEventListener('click', onClickOutside))
 
 const activePopup = ref<'destination' | 'when' | 'who' | null>(null)
 
@@ -271,6 +368,10 @@ function togglePopup(popup: 'destination' | 'when' | 'who') {
 }
 
 function closePopup() {
+  // Sync search state when popup closes (for deal page reactivity)
+  const totalPersons = searchGroup.value.adults + searchGroup.value.children.length
+  setSearchGroup(totalPersons, searchGroup.value.rooms)
+  triggerSearchUpdate()
   activePopup.value = null
 }
 
@@ -355,7 +456,7 @@ const selectedDuration = ref('')
 const flexState = ref<{ duration: string; months: string[] }>({ duration: '', months: [] })
 
 // Sync arrival date to shared composable so sidebar can read it
-const { setArrivalDate, setSearchGroup, setLoading } = useSearchState()
+const { setArrivalDate, setSearchGroup, setLoading, triggerSearchUpdate } = useSearchState()
 watch(selectedDate, (val) => {
   setArrivalDate(val)
   // Selecting an arrival date clears flex months
@@ -505,6 +606,8 @@ function handleSelectHotel(slug: string) {
   height: 88px;
   display: flex;
   align-items: center;
+  position: relative;
+  z-index: 10;
 }
 
 .site-header__nav-inner {
@@ -624,6 +727,38 @@ function handleSelectHotel(slug: string) {
   height: 2px;
   background: #ffffff;
   border-radius: 1px;
+}
+
+/* Contact dropdown */
+.contact-dropdown {
+  position: relative;
+  z-index: 20;
+}
+
+.contact-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.85);
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+
+.contact-trigger:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.contact-trigger svg {
+  opacity: 0.75;
 }
 
 /* Language switcher */
@@ -1024,7 +1159,13 @@ function handleSelectHotel(slug: string) {
 }
 
 .popup__done-btn:hover {
-  background: var(--color-primary-dark);
+  background: var(--color-primary-hover);
+}
+
+.popup__done-btn--dest,
+.popup__done-btn--when {
+  margin: var(--space-md) var(--space-lg) var(--space-lg);
+  width: calc(100% - var(--space-lg) * 2);
 }
 
 /* ==================== */
@@ -1039,5 +1180,106 @@ function handleSelectHotel(slug: string) {
 .popup-leave-to {
   opacity: 0;
   transform: translateY(-8px);
+}
+</style>
+
+<style>
+/* Teleported contact dropdown — not scoped */
+.contact-dropdown__menu {
+  min-width: 300px;
+  background: #1A1A1A;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+  padding: 16px;
+  z-index: 9999;
+}
+
+.contact-dropdown__heading {
+  display: block;
+  font-size: 16px;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 12px;
+}
+
+.contact-dropdown__item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px 0;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.85);
+  text-decoration: none;
+  transition: color 150ms;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.contact-dropdown__item:hover {
+  color: #FB862D;
+}
+
+.contact-dropdown__item svg {
+  color: rgba(255, 255, 255, 0.5);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.contact-dropdown__item:hover svg {
+  color: #FB862D;
+}
+
+.contact-dropdown__item--urgent {
+  border-bottom: none;
+}
+
+.contact-dropdown__item--urgent svg {
+  color: #E6A033;
+}
+
+.contact-dropdown__item-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.contact-dropdown__item-label {
+  font-weight: 600;
+}
+
+.contact-dropdown__item-sub {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.contact-dropdown__divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.1);
+  margin: 6px 0;
+}
+
+.contact-dropdown__link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.75);
+  text-decoration: none;
+  transition: color 150ms;
+}
+
+.contact-dropdown__link svg {
+  color: rgba(255, 255, 255, 0.4);
+  flex-shrink: 0;
+}
+
+.contact-dropdown__link:hover {
+  color: white;
+}
+
+.contact-dropdown__link:hover svg {
+  color: rgba(255, 255, 255, 0.7);
 }
 </style>
