@@ -46,7 +46,7 @@
         <div class="deal-page__col-left">
           <!-- Description + Mini map row -->
           <div class="deal-page__intro">
-            <p class="deal-page__description">{{ localized(hotel.description) }}</p>
+            <p class="deal-page__description">{{ localized(hotel.description).split('\n')[0] }}</p>
             <div class="mini-map">
               <div class="mini-map__placeholder">
                 <img

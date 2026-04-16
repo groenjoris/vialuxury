@@ -410,8 +410,19 @@ const en: Record<string, string> = {
   'yvette.subheading': '',
   'yvette.text': '\'We were actually just driving past, but turned around immediately. Sometimes you see a place and you just know: this belongs at ViaLuxury. I\'m very happy that we\'ve been able to add this special castle to our collection, and with a great discount too.\'',
 
-  // Hotel (deal page hardcoded fixes)
+  // Hotel page
   'hotel.bookedAs': 'Booked:',
+  'hotel.availableDeals': 'Available packages',
+  'hotel.selectDeal': 'View this package',
+  'hotel.houseRules': 'House rules',
+  'hotel.houseRulesIntro': 'The following information applies to this hotel.',
+  'hotel.tabOverview': 'Overview',
+  'hotel.tabDeals': 'Packages',
+  'hotel.tabReviews': 'Reviews',
+  'hotel.tabFaq': 'FAQ',
+  'hotel.tabHouseRules': 'House rules',
+  'hotel.tabNearby': 'Nearby tips',
+  'hotel.changeSearch': 'Change search',
 
   // Sidebar
   'sidebar.arrangementFor': 'Package for',

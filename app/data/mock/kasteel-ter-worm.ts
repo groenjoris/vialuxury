@@ -15,9 +15,45 @@ export const hotelKasteelTerWorm: Hotel = {
     address: 'Terworm 5, 6411 RV Heerlen',
   },
   description: {
-    nl: 'Welkom bij Van der Valk Hotel Kasteel TerWorm, een exclusief kasteelhotel verscholen in het glooiende landschap van Zuid-Limburg. Dit monumentale kasteel uit de 14e eeuw is met liefde gerestaureerd en biedt een unieke combinatie van historische grandeur en modern comfort. Geniet van de gloednieuwe wellnessfaciliteiten, ontdek de Limburgse heuvels en laat je culinair verrassen in het sfeervolle restaurant.',
-    en: 'Welcome to Van der Valk Hotel Kasteel TerWorm, an exclusive castle hotel nestled in the rolling landscape of South Limburg. This monumental 14th-century castle has been lovingly restored and offers a unique combination of historic grandeur and modern comfort. Enjoy the brand-new wellness facilities, explore the Limburg hills and be surprised by the culinary delights of the atmospheric restaurant.',
+    nl: 'Welkom bij Van der Valk Hotel Kasteel TerWorm, een exclusief kasteelhotel verscholen in het glooiende landschap van Zuid-Limburg. Dit monumentale kasteel uit de 14e eeuw is met liefde gerestaureerd en biedt een unieke combinatie van historische grandeur en modern comfort. Geniet van de gloednieuwe wellnessfaciliteiten, ontdek de Limburgse heuvels en laat je culinair verrassen in het sfeervolle restaurant.\n\nGeniet van een stijlvolle ambiance tijdens uw overnachting in onze kamers en suites. Rust, luxe, gemak en natuur staan centraal. Met een comfortabel bed en een ruime badkamer met ligbad en douche, geniet u in een ontspannen omgeving.\nOp onze hotelkamers en in het restaurant zijn huisdieren niet toegestaan.\n\nToegang voor onze vriendjes op viervoeten is uitsluitend op terras en in de auberge.',
+    en: 'Welcome to Van der Valk Hotel Kasteel TerWorm, an exclusive castle hotel nestled in the rolling landscape of South Limburg. This monumental 14th-century castle has been lovingly restored and offers a unique combination of historic grandeur and modern comfort. Enjoy the brand-new wellness facilities, explore the Limburg hills and be surprised by the culinary delights of the atmospheric restaurant.\n\nEnjoy a stylish ambiance during your stay in our rooms and suites. Peace, luxury, comfort and nature are central. With a comfortable bed and a spacious bathroom with bathtub and shower, you will enjoy a relaxed environment.\nPets are not allowed in our hotel rooms and restaurant.\n\nAccess for our four-legged friends is exclusively on the terrace and in the auberge.',
   },
+  pitch: {
+    nl: 'Exclusief kasteelhotel in het glooiende Zuid-Limburg',
+    en: 'Exclusive castle hotel in the rolling hills of South Limburg',
+  },
+  houseRules: [
+    {
+      id: 'rule-checkin',
+      title: { nl: 'Check-in / Check-out', en: 'Check-in / Check-out' },
+      description: { nl: 'Check-in vanaf 15:00 uur. Check-out tot 11:00 uur. Vroeg inchecken of laat uitchecken op aanvraag, afhankelijk van beschikbaarheid.', en: 'Check-in from 3:00 PM. Check-out until 11:00 AM. Early check-in or late check-out on request, subject to availability.' },
+    },
+    {
+      id: 'rule-pets',
+      title: { nl: 'Huisdieren', en: 'Pets' },
+      description: { nl: 'Huisdieren zijn niet toegestaan op de hotelkamers en in het restaurant. Uw viervoeters zijn wel welkom op het terras en in de auberge.', en: 'Pets are not allowed in hotel rooms or the restaurant. Your four-legged friends are welcome on the terrace and in the auberge.' },
+    },
+    {
+      id: 'rule-parking',
+      title: { nl: 'Parkeren', en: 'Parking' },
+      description: { nl: 'Gratis parkeren op het ruime parkeerterrein van het hotel. Oplaadpunten voor elektrische auto\'s zijn beschikbaar.', en: 'Free parking in the hotel\'s spacious car park. Charging points for electric cars are available.' },
+    },
+    {
+      id: 'rule-smoking',
+      title: { nl: 'Roken', en: 'Smoking' },
+      description: { nl: 'Het hotel is volledig rookvrij. Roken is uitsluitend toegestaan op de daarvoor aangewezen plekken buiten.', en: 'The hotel is completely smoke-free. Smoking is only permitted in designated outdoor areas.' },
+    },
+    {
+      id: 'rule-children',
+      title: { nl: 'Kinderen', en: 'Children' },
+      description: { nl: 'Kinderen van alle leeftijden zijn welkom. Kinderen tot 3 jaar verblijven gratis in een bestaand bed. Een kinderbedje is op aanvraag beschikbaar.', en: 'Children of all ages are welcome. Children under 3 stay free in an existing bed. A crib is available on request.' },
+    },
+    {
+      id: 'rule-dresscode',
+      title: { nl: 'Dresscode', en: 'Dress code' },
+      description: { nl: 'In het restaurant geldt een smart casual dresscode. Zwemkleding en slippers zijn niet toegestaan in het restaurant en de lobby.', en: 'A smart casual dress code applies in the restaurant. Swimwear and flip-flops are not permitted in the restaurant and lobby.' },
+    },
+  ],
   images: [
     { id: 'img-1', url: '/images/kasteel/Kasteel_ter_Worm_08-06-2023_Website-25.jpg', alt: { nl: 'Ontbijt in kasteel TerWorm', en: 'Breakfast at castle TerWorm' }, position: 'hero' },
     { id: 'img-2', url: '/images/kasteel/prachthof-junior-suite.jpg', alt: { nl: 'Prachthof Junior Suite met uitzicht op de gracht', en: 'Prachthof Junior Suite with view of the moat' }, position: 'gallery' },
@@ -222,6 +258,14 @@ export const hotelKasteelTerWorm: Hotel = {
         en: 'The package is primarily aimed at adults, but children are welcome. Please contact us for options.',
       },
     },
+  ],
+  highlights: [
+    { icon: '/icons/highlights/castle.svg', text: { nl: 'Exclusief kasteelhotel', en: 'Exclusive castle hotel' } },
+    { icon: '/icons/highlights/restaurant.svg', text: { nl: 'Culinair restaurant', en: 'Fine dining restaurant' } },
+    { icon: '/icons/highlights/spa.svg', text: { nl: 'Wellness & zwembad', en: 'Wellness & swimming pool' } },
+    { icon: '/icons/highlights/nature.svg', text: { nl: 'Schitterend landgoed in Zuid-Limburg', en: 'Beautiful estate in South Limburg' } },
+    { icon: '/icons/highlights/bike.svg', text: { nl: 'Perfect voor fietsen en wandelen', en: 'Perfect for cycling and hiking' } },
+    { icon: '/icons/highlights/special.svg', text: { nl: 'Exclusief arrangement via ViaLuxury', en: 'Exclusive package via ViaLuxury' } },
   ],
 }
 

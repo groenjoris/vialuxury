@@ -7,12 +7,15 @@ export interface Hotel {
   starRating: number
   location: HotelLocation
   description: LocalizedString
+  pitch?: LocalizedString
+  houseRules?: HouseRule[]
   images: HotelImage[]
   facilities: Facility[]
   reviews: ReviewSummary
   individualReviews: Review[]
   nearbyTips: NearbyTip[]
   faq: FaqItem[]
+  highlights?: { icon: string; text: LocalizedString }[]
 }
 
 export interface HotelLocation {
@@ -69,4 +72,10 @@ export interface FaqItem {
   id: string
   question: LocalizedString
   answer: LocalizedString
+}
+
+export interface HouseRule {
+  id: string
+  title: LocalizedString
+  description: LocalizedString
 }

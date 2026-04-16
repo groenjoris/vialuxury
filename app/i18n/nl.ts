@@ -410,8 +410,19 @@ const nl: Record<string, string> = {
   'yvette.subheading': '',
   'yvette.text': '\'We reden hier eigenlijk toevallig langs, maar zijn meteen omgekeerd. Soms zie je een plek en weet je het direct: dit hoort bij ViaLuxury. Ik ben heel blij dat we dit bijzondere kasteel nu aan ons aanbod hebben kunnen toevoegen, ook nog eens met een mooie korting.\'',
 
-  // Hotel (deal page hardcoded fixes)
+  // Hotel page
   'hotel.bookedAs': 'Geboekt:',
+  'hotel.availableDeals': 'Beschikbare arrangementen',
+  'hotel.selectDeal': 'Bekijk dit arrangement',
+  'hotel.houseRules': 'Huisregels',
+  'hotel.houseRulesIntro': 'De volgende informatie is van toepassing op dit hotel.',
+  'hotel.tabOverview': 'Overzicht',
+  'hotel.tabDeals': 'Arrangementen',
+  'hotel.tabReviews': 'Beoordelingen',
+  'hotel.tabFaq': 'Veelgestelde vragen',
+  'hotel.tabHouseRules': 'Huisregels',
+  'hotel.tabNearby': 'Tips in de buurt',
+  'hotel.changeSearch': 'Wijzig zoekopdracht',
 
   // Sidebar
   'sidebar.arrangementFor': 'Arrangement voor',

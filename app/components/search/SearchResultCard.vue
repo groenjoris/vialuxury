@@ -10,7 +10,9 @@
       <!-- Hotel info header -->
       <div class="result-card__hotel-header">
         <div class="result-card__hotel-info">
-          <h3 class="result-card__name">{{ hotel.name }}</h3>
+          <NuxtLink :to="`/hotel/${hotel.slug}`" target="_blank" class="result-card__name-link" @click.stop>
+            <h3 class="result-card__name">{{ hotel.name }}</h3>
+          </NuxtLink>
           <div class="result-card__meta">
             <span class="result-card__stars" aria-hidden="true">
               <span v-for="n in hotel.starRating" :key="n">★</span>
@@ -217,6 +219,18 @@ const lowestDiscount = computed(() => {
   color: var(--color-text-primary);
   line-height: 1.3;
   margin-bottom: 2px;
+}
+
+.result-card__name-link {
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  display: block;
+}
+
+.result-card__name-link:hover .result-card__name {
+  text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
 .result-card:hover .result-card__name {
