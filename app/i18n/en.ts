@@ -420,6 +420,15 @@ const en: Record<string, string> = {
   'sidebar.clear': 'clear',
   'sidebar.luxeRoomSingular': 'luxury room (upgrade)',
   'sidebar.luxeRoomPlural': 'luxury rooms (upgrade)',
+
+  // Review score labels
+  'review.outstanding': 'Outstanding',
+  'review.excellent': 'Excellent',
+  'review.veryGood': 'Very good',
+  'review.good': 'Good',
+  'review.sufficient': 'Sufficient',
+  'review.fair': 'Fair',
+  'review.poor': 'Poor',
 }
 
 export default en

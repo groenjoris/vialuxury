@@ -420,6 +420,15 @@ const nl: Record<string, string> = {
   'sidebar.clear': 'wissen',
   'sidebar.luxeRoomSingular': 'luxe kamer (upgrade)',
   'sidebar.luxeRoomPlural': 'luxe kamers (upgrade)',
+
+  // Review score labels
+  'review.outstanding': 'Uitzonderlijk',
+  'review.excellent': 'Uitmuntend',
+  'review.veryGood': 'Fantastisch',
+  'review.good': 'Goed',
+  'review.sufficient': 'Voldoende',
+  'review.fair': 'Redelijk',
+  'review.poor': 'Matig',
 }
 
 export default nl
