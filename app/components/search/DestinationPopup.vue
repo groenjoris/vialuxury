@@ -1,74 +1,90 @@
 <template>
   <div class="destination-popup">
-    <!-- Search input -->
-    <div class="destination-popup__search">
-      <svg
-        class="destination-popup__search-icon"
-        width="18"
-        height="18"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        aria-hidden="true"
-      >
-        <circle cx="11" cy="11" r="8" />
-        <path d="M21 21l-4.35-4.35" />
-      </svg>
-      <input
-        ref="searchInputRef"
-        v-model="searchQuery"
-        type="text"
-        class="destination-popup__input"
-        :placeholder="t('header.searchDestinationPlaceholder')"
-        autocomplete="off"
-      />
-      <button
-        v-if="searchQuery.length > 0"
-        class="destination-popup__clear"
-        @click="clearSearch"
-        aria-label="Clear"
-      >
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="18" y1="6" x2="6" y2="18" />
-          <line x1="6" y1="6" x2="18" y2="18" />
+    <!-- Top bar: grey row with white input field -->
+    <div class="destination-popup__topbar">
+      <div class="destination-popup__search">
+        <svg
+          class="destination-popup__search-icon"
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <circle cx="11" cy="11" r="8" />
+          <path d="M21 21l-4.35-4.35" />
         </svg>
-      </button>
+        <input
+          ref="searchInputRef"
+          v-model="searchQuery"
+          type="text"
+          class="destination-popup__input"
+          :placeholder="t('header.searchDestinationPlaceholder')"
+          autocomplete="off"
+        />
+        <button
+          v-if="searchQuery.length > 0"
+          class="destination-popup__clear"
+          @click="clearSearch"
+          aria-label="Clear"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Selected items row: minimal pills + Klaar button — only when something is selected -->
+    <div v-if="!isSearching && totalSelectedChips.length > 0" class="destination-popup__selected-row">
+      <div class="destination-popup__selected-pills">
+        <span
+          v-for="item in totalSelectedChips"
+          :key="`${item.type}-${item.key}`"
+          class="selected-pill"
+        >
+          <span class="selected-pill__name">{{ item.name }}</span>
+          <button
+            type="button"
+            class="selected-pill__remove"
+            :aria-label="`Remove ${item.name}`"
+            @click.stop="handleChipRemove(item)"
+          >
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </span>
+      </div>
+      <div class="destination-popup__actions">
+        <button
+          type="button"
+          class="destination-popup__done"
+          @click="$emit('save')"
+        >
+          {{ t('header.done') }}
+        </button>
+        <a
+          href="#"
+          class="destination-popup__clear-link"
+          @click.prevent="handleClear"
+        >
+          {{ t('header.clear') }}
+        </a>
+      </div>
     </div>
 
     <!-- Content area: fixed height -->
     <div class="destination-popup__content">
       <!-- Browse mode: destinations + themes (when not searching) -->
       <div v-if="!isSearching" class="destination-popup__browse">
-        <!-- Recent searches -->
-        <div v-if="searchHistory.length > 0" class="destination-popup__section">
-          <h4 class="destination-popup__section-title">{{ t('header.recentSearches') }}</h4>
-          <div class="destination-popup__chips">
-            <button
-              v-for="item in searchHistory"
-              :key="item.name"
-              class="dest-chip dest-chip--history"
-              @click="reSelectHistory(item)"
-            >
-              <svg class="dest-chip__history-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="10" />
-                <polyline points="12 6 12 12 16 14" />
-              </svg>
-              <span class="dest-chip__name">{{ item.name }}</span>
-              <span class="dest-chip__remove" @click.stop="removeHistory(item)">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                  <line x1="18" y1="6" x2="6" y2="18" />
-                  <line x1="6" y1="6" x2="18" y2="18" />
-                </svg>
-              </span>
-            </button>
-          </div>
-        </div>
-
-        <div class="destination-popup__section">
-          <h4 class="destination-popup__section-title">{{ t('header.popularDestinations') }}</h4>
+        <div class="destination-popup__section destination-popup__section--destinations">
           <div class="destination-popup__chips">
             <button
               v-for="dest in destinations"
@@ -168,6 +184,8 @@ const props = defineProps<{
   themes: Array<{ id: string; name: string; emoji: string }>
   selectedDestinations: string[]
   selectedThemes: string[]
+  selectedCities?: Array<{ name: string; province: string }>
+  selectionOrder?: Array<{ type: 'destination' | 'theme' | 'city'; key: string }>
 }>()
 
 const emit = defineEmits<{
@@ -175,7 +193,79 @@ const emit = defineEmits<{
   'toggle-theme': [id: string]
   'select-hotel': [slug: string]
   'select-city': [city: { name: string; province: string }]
+  'remove-city': [cityName: string]
+  'save': []
+  'clear': []
 }>()
+
+type ChipKind = 'destination' | 'theme' | 'city' | 'history'
+type ChipItem = {
+  key: string
+  type: ChipKind
+  name: string
+  emoji?: string
+  historyRef?: { name: string; type: string; id?: string; province?: string }
+}
+
+// Unified top row: iterate selectionOrder so chips appear chronologically (newest on the right).
+// Falls back to grouped iteration if selectionOrder prop isn't provided.
+const totalSelectedChips = computed<ChipItem[]>(() => {
+  const out: ChipItem[] = []
+
+  if (props.selectionOrder && props.selectionOrder.length > 0) {
+    for (const entry of props.selectionOrder) {
+      if (entry.type === 'destination') {
+        const dest = props.destinations.find(d => d.id === entry.key)
+        if (dest) out.push({ key: `dest-${entry.key}`, type: 'destination', name: dest.name, emoji: dest.emoji })
+      } else if (entry.type === 'theme') {
+        const theme = props.themes.find(th => th.id === entry.key)
+        if (theme) out.push({ key: `theme-${entry.key}`, type: 'theme', name: theme.name, emoji: theme.emoji })
+      } else if (entry.type === 'city') {
+        out.push({ key: `city-${entry.key}`, type: 'city', name: entry.key })
+      }
+    }
+  } else {
+    // Fallback grouped order
+    for (const id of props.selectedDestinations) {
+      const dest = props.destinations.find(d => d.id === id)
+      if (dest) out.push({ key: `dest-${id}`, type: 'destination', name: dest.name, emoji: dest.emoji })
+    }
+    for (const id of props.selectedThemes) {
+      const theme = props.themes.find(th => th.id === id)
+      if (theme) out.push({ key: `theme-${id}`, type: 'theme', name: theme.name, emoji: theme.emoji })
+    }
+    for (const city of (props.selectedCities || [])) {
+      out.push({ key: `city-${city.name}`, type: 'city', name: city.name })
+    }
+  }
+
+  // History items that aren't already represented above
+  const takenNames = new Set(out.map(i => i.name))
+  for (const h of searchHistory.value) {
+    if (takenNames.has(h.name)) continue
+    out.push({ key: `hist-${h.name}`, type: 'history', name: h.name, historyRef: h })
+  }
+  return out
+})
+
+function handleChipClick(item: ChipItem) {
+  if (item.type === 'history' && item.historyRef) reSelectHistory(item.historyRef)
+  // Destinations / themes / cities already active — click does nothing (remove via X)
+}
+
+function handleChipRemove(item: ChipItem) {
+  if (item.type === 'destination') emit('toggle-destination', item.key.replace('dest-', ''))
+  else if (item.type === 'theme') emit('toggle-theme', item.key.replace('theme-', ''))
+  else if (item.type === 'city') emit('remove-city', item.name)
+  else if (item.type === 'history' && item.historyRef) removeHistory(item.historyRef)
+}
+
+function handleClear() {
+  searchQuery.value = ''            // Clear typed text
+  searchHistory.value = []          // Clear recent-search chips
+  try { sessionStorage.removeItem('vl-search-history') } catch { /* ignore */ }
+  emit('clear')                     // Parent clears destinations/themes/cities
+}
 
 const { t } = useI18n()
 
@@ -298,7 +388,82 @@ function selectHotel(hotel: { name: string; slug: string }) {
 
 <style scoped>
 .destination-popup {
-  width: 640px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+/* ==================== */
+/* TOP BAR              */
+/* ==================== */
+.destination-popup__topbar {
+  flex-shrink: 0;
+  background: var(--color-background-secondary);
+  padding: 12px var(--space-lg);
+  border-bottom: 1px solid var(--color-border);
+}
+
+/* ==================== */
+/* SELECTED ROW         */
+/* (chips + done button)*/
+/* ==================== */
+.destination-popup__selected-row {
+  flex-shrink: 0;
+  background: var(--color-surface);
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+  padding: 12px var(--space-lg);
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.destination-popup__chips--flex {
+  flex: 1;
+  min-width: 0;
+  flex-wrap: wrap;
+  display: flex;
+  gap: var(--space-sm);
+}
+
+.destination-popup__actions {
+  flex-shrink: 0;
+  margin-left: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.destination-popup__done {
+  padding: 8px 20px;
+  border: none;
+  border-radius: var(--radius-md);
+  background: var(--color-primary);
+  color: #fff;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background var(--transition-fast);
+  font-family: inherit;
+  white-space: nowrap;
+}
+
+.destination-popup__done:hover {
+  background: var(--color-primary-hover);
+}
+
+.destination-popup__clear-link {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  text-decoration: underline;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.destination-popup__clear-link:hover {
+  color: var(--color-text-primary);
 }
 
 /* ==================== */
@@ -308,8 +473,12 @@ function selectHotel(hotel: { name: string; slug: string }) {
   display: flex;
   align-items: center;
   gap: var(--space-sm);
-  padding: 0 var(--space-md);
-  border-bottom: 1px solid var(--color-border);
+  padding: 4px 10px;
+  flex: 1;
+  min-width: 0;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
 }
 
 .destination-popup__search-icon {
@@ -319,7 +488,7 @@ function selectHotel(hotel: { name: string; slug: string }) {
 
 .destination-popup__input {
   flex: 1;
-  height: 48px;
+  height: 32px;
   border: none;
   outline: none;
   background: transparent;
@@ -354,9 +523,11 @@ function selectHotel(hotel: { name: string; slug: string }) {
 }
 
 /* ==================== */
-/* CONTENT (FIXED SIZE) */
+/* CONTENT (SCROLLABLE) */
 /* ==================== */
 .destination-popup__content {
+  flex: 1 1 auto;
+  min-height: 0;
   overflow-y: auto;
 }
 
@@ -364,24 +535,31 @@ function selectHotel(hotel: { name: string; slug: string }) {
 /* BROWSE MODE          */
 /* ==================== */
 .destination-popup__browse {
-  padding: var(--space-lg);
+  padding: var(--space-md) var(--space-lg) var(--space-lg);
 }
 
 .destination-popup__section {
-  margin-bottom: var(--space-lg);
+  margin-bottom: var(--space-md);
 }
 
 .destination-popup__section:last-child {
   margin-bottom: 0;
 }
 
+/* Divider between destinations and themes sections */
+.destination-popup__section--destinations {
+  padding-bottom: var(--space-md);
+  margin-bottom: var(--space-md);
+  border-bottom: 1px solid var(--color-border-light);
+}
+
 .destination-popup__section-title {
   font-family: var(--font-body);
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: var(--color-text-muted);
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--color-text-primary);
   margin: 0 0 var(--space-sm);
 }
 
@@ -405,7 +583,7 @@ function selectHotel(hotel: { name: string; slug: string }) {
   gap: 6px;
   padding: 8px 14px;
   border: 1px solid var(--color-border);
-  border-radius: 24px;
+  border-radius: var(--radius-md);
   background: var(--color-surface);
   cursor: pointer;
   transition: border-color 150ms ease, background-color 150ms ease;
@@ -451,6 +629,56 @@ function selectHotel(hotel: { name: string; slug: string }) {
 .dest-chip--history:hover {
   background: var(--color-border-light, #eee);
   border-color: transparent;
+}
+
+/* ==================== */
+/* SELECTED PILLS       */
+/* (minimal, no icons)  */
+/* ==================== */
+.destination-popup__selected-pills {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.selected-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 4px 3px 10px;
+  background: rgba(251, 134, 45, 0.08);
+  border-radius: 999px;
+  font-size: 12px;
+  line-height: 1.2;
+  color: var(--color-text-primary);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.selected-pill__name {
+  font-family: inherit;
+}
+
+.selected-pill__remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  padding: 0;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.selected-pill__remove:hover {
+  background: rgba(0, 0, 0, 0.08);
+  color: var(--color-text-primary);
 }
 
 .dest-chip__history-icon {

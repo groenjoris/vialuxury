@@ -203,15 +203,16 @@
             :themes="themes"
             :selected-destinations="selectedDestinations"
             :selected-themes="selectedThemes"
+            :selected-cities="selectedCities"
+            :selection-order="selectionOrder"
             @toggle-destination="toggleDestination"
             @toggle-theme="toggleTheme"
             @select-hotel="handleSelectHotel"
             @select-city="handleSelectCity"
+            @remove-city="handleRemoveCity"
+            @save="closePopup()"
+            @clear="clearDestination"
           />
-          <div class="popup__footer popup__footer--padded">
-            <a href="#" class="popup__clear-link" @click.prevent="clearDestination">{{ t('header.clear') }}</a>
-            <button class="popup__done-btn" @click="closePopup()">{{ t('header.done') }}</button>
-          </div>
         </div>
 
         <!-- WHEN POPUP -->
@@ -220,13 +221,11 @@
             v-model:cal-month="calMonth"
             v-model:selected-date="selectedDate"
             v-model:flexibility="flexibility"
-            v-model:selected-duration="selectedDuration"
+            v-model:selected-durations="selectedDurations"
             @update:flex-state="handleFlexState"
+            @save="closePopup()"
+            @clear="clearWhen"
           />
-          <div class="popup__footer popup__footer--padded">
-            <a href="#" class="popup__clear-link" @click.prevent="clearWhen">{{ t('header.clear') }}</a>
-            <button class="popup__done-btn" @click="closePopup()">{{ t('header.done') }}</button>
-          </div>
         </div>
 
         <!-- WHO POPUP -->
@@ -358,17 +357,9 @@ watch(contactDropdownOpen, (open) => {
   }
 })
 
-function onClickOutside(e: MouseEvent) {
-  if (langSwitcherRef.value && !langSwitcherRef.value.contains(e.target as Node)) {
-    langDropdownOpen.value = false
-  }
-  if (contactDropdownRef.value && !contactDropdownRef.value.contains(e.target as Node)) {
-    contactDropdownOpen.value = false
-  }
-}
-
-onMounted(() => document.addEventListener('click', onClickOutside))
-onUnmounted(() => document.removeEventListener('click', onClickOutside))
+// Click-outside handlers (one per dropdown) — automatically detached on unmount
+useClickOutside(langSwitcherRef, () => { langDropdownOpen.value = false })
+useClickOutside(contactDropdownRef, () => { contactDropdownOpen.value = false })
 
 const activePopup = ref<'destination' | 'when' | 'who' | null>(null)
 
@@ -388,14 +379,15 @@ function clearDestination() {
   selectedDestinations.value = []
   selectedThemes.value = []
   selectedCities.value = []
+  selectionOrder.value = []
   closePopup()
 }
 
 function clearWhen() {
   selectedDate.value = null
   flexibility.value = 0
-  selectedDuration.value = ''
-  flexState.value = { duration: '', months: [] }
+  selectedDurations.value = []
+  flexState.value = { durations: [], months: [] }
   calMonth.value = { year: new Date().getFullYear(), month: new Date().getMonth() }
   closePopup()
 }
@@ -438,23 +430,43 @@ const selectedDestinations = ref<string[]>([])
 const selectedThemes = ref<string[]>([])
 const selectedCities = ref<{ name: string; province: string }[]>([])
 
+// Track insertion order across all types so chips render chronologically (new on the right)
+type SelectionEntry = { type: 'destination' | 'theme' | 'city'; key: string }
+const selectionOrder = ref<SelectionEntry[]>([])
+
 function toggleDestination(id: string) {
   const idx = selectedDestinations.value.indexOf(id)
-  if (idx === -1) selectedDestinations.value.push(id)
-  else selectedDestinations.value.splice(idx, 1)
+  if (idx === -1) {
+    selectedDestinations.value.push(id)
+    selectionOrder.value.push({ type: 'destination', key: id })
+  } else {
+    selectedDestinations.value.splice(idx, 1)
+    selectionOrder.value = selectionOrder.value.filter(e => !(e.type === 'destination' && e.key === id))
+  }
 }
 
 function toggleTheme(id: string) {
   const idx = selectedThemes.value.indexOf(id)
-  if (idx === -1) selectedThemes.value.push(id)
-  else selectedThemes.value.splice(idx, 1)
+  if (idx === -1) {
+    selectedThemes.value.push(id)
+    selectionOrder.value.push({ type: 'theme', key: id })
+  } else {
+    selectedThemes.value.splice(idx, 1)
+    selectionOrder.value = selectionOrder.value.filter(e => !(e.type === 'theme' && e.key === id))
+  }
 }
 
 function handleSelectCity(city: { name: string; province: string }) {
   // Avoid duplicates
   if (!selectedCities.value.find(c => c.name === city.name)) {
     selectedCities.value.push(city)
+    selectionOrder.value.push({ type: 'city', key: city.name })
   }
+}
+
+function handleRemoveCity(cityName: string) {
+  selectedCities.value = selectedCities.value.filter(c => c.name !== cityName)
+  selectionOrder.value = selectionOrder.value.filter(e => !(e.type === 'city' && e.key === cityName))
 }
 
 const destinationLabel = computed(() => {
@@ -474,16 +486,28 @@ const destinationLabel = computed(() => {
   }
 
   if (names.length === 0) return t('header.chooseDestination')
-  if (names.length === 1) return names[0]
-  return `${names[0]} + ${names.length - 1}`
+
+  // Show as many names as fit within MAX_CHARS, then "+ n" for the rest
+  const MAX_CHARS = 32
+  let shown = 1
+  let result = names[0]
+  for (let i = 1; i < names.length; i++) {
+    const next = `${result}, ${names[i]}`
+    if (next.length > MAX_CHARS) break
+    result = next
+    shown++
+  }
+  const hidden = names.length - shown
+  if (hidden > 0) result += ` + ${hidden}`
+  return result
 })
 
 // --- WHEN ---
 const calMonth = ref({ year: new Date().getFullYear(), month: new Date().getMonth() })
 const selectedDate = ref<string | null>(null)
 const flexibility = ref(0)
-const selectedDuration = ref('')
-const flexState = ref<{ duration: string; months: string[] }>({ duration: '', months: [] })
+const selectedDurations = ref<string[]>([])
+const flexState = ref<{ durations: string[]; months: string[] }>({ durations: [], months: [] })
 
 // Sync arrival date to shared composable so sidebar can read it
 const { setArrivalDate, setSearchGroup, setLoading, triggerSearchUpdate } = useSearchState()
@@ -495,11 +519,11 @@ watch(selectedDate, (val) => {
   }
 })
 // Calendar duration clears flex duration
-watch(selectedDuration, (val) => {
-  if (val && flexState.value.duration) {
-    flexState.value = { ...flexState.value, duration: '' }
+watch(selectedDurations, (val) => {
+  if (val.length > 0 && flexState.value.durations.length > 0) {
+    flexState.value = { ...flexState.value, durations: [] }
   }
-})
+}, { deep: true })
 
 const durationOptions = computed(() => [
   { id: '1', label: t('header.duration.1night'), sub: null },
@@ -514,15 +538,15 @@ const durationOptions = computed(() => [
 
 const monthNames = computed(() => Array.from({ length: 12 }, (_, i) => t(`header.months.${i}`)))
 
-function handleFlexState(state: { duration: string; months: string[] }) {
+function handleFlexState(state: { durations: string[]; months: string[] }) {
   flexState.value = state
   // Selecting months replaces the arrival date
   if (state.months.length > 0 && selectedDate.value) {
     selectedDate.value = null
   }
-  // Flex duration replaces calendar duration
-  if (state.duration) {
-    selectedDuration.value = ''
+  // Flex durations replace calendar durations
+  if (state.durations.length > 0) {
+    selectedDurations.value = []
   }
 }
 
@@ -550,23 +574,23 @@ const whenLabel = computed(() => {
   }
 
   // Duration part
-  if (selectedDuration.value) {
-    const dur = durationOptions.value.find(o => o.id === selectedDuration.value)
-    if (dur) durationPart = dur.label
-  } else if (flexState.value.duration) {
-    const flexDur = flexState.value.duration
-    const nightsOpt = durationOptions.value.find(o => o.id === flexDur)
-    if (nightsOpt) {
-      durationPart = nightsOpt.label
-    } else {
-      const typeLabels: Record<string, string> = {
-        'weekend-fri-sun': t('header.flex.weekendFriSun'),
-        'weekend-sat-sun': t('header.flex.weekendSatSun'),
-        'long-weekend': t('header.flex.longWeekend'),
-        'midweek': t('header.flex.midweek'),
-      }
-      durationPart = typeLabels[flexDur] || ''
+  const calDurs = selectedDurations.value
+  const flexDurs = flexState.value.durations
+  if (calDurs.length > 0) {
+    const labels = calDurs.map(id => durationOptions.value.find(o => o.id === id)?.label).filter(Boolean) as string[]
+    durationPart = labels.join(' of ')
+  } else if (flexDurs.length > 0) {
+    const typeLabels: Record<string, string> = {
+      'weekend-fri-sun': t('header.flex.weekendFriSun'),
+      'weekend-sat-sun': t('header.flex.weekendSatSun'),
+      'long-weekend': t('header.flex.longWeekend'),
+      'midweek': t('header.flex.midweek'),
     }
+    const labels = flexDurs.map(id => {
+      const nightsOpt = durationOptions.value.find(o => o.id === id)
+      return nightsOpt ? nightsOpt.label : (typeLabels[id] || '')
+    }).filter(Boolean)
+    durationPart = labels.join(' of ')
   } else {
     durationPart = t('header.anyDuration')
   }
@@ -918,7 +942,8 @@ function handleSelectHotel(slug: string) {
 
 .search-bar__field {
   flex: 1;
-  padding: 12px 24px;
+  margin: 6px 4px;
+  padding: 8px 18px;
   display: flex;
   flex-direction: column;
   gap: 2px;
@@ -926,7 +951,7 @@ function handleSelectHotel(slug: string) {
   border: none;
   background: none;
   text-align: left;
-  border-radius: 999px;
+  border-radius: 10px;
   transition: background var(--transition-fast);
   min-width: 0;
 }
@@ -1010,14 +1035,19 @@ function handleSelectHotel(slug: string) {
 
 .popup--destination {
   padding: 0;
-  max-width: 680px;
+  max-width: 560px;
   width: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .popup--when {
   padding: 0;
   max-width: 660px;
   width: 100%;
+  max-height: none;
+  overflow: visible;
 }
 
 .popup--who {

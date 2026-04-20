@@ -49,13 +49,11 @@
           v-model:cal-month="calMonth"
           v-model:selected-date="selectedDate"
           v-model:flexibility="flexibility"
-          v-model:selected-duration="selectedDuration"
+          v-model:selected-durations="selectedDurations"
           @update:flex-state="handleFlexState"
+          @save="closePopup()"
+          @clear="clearWhen"
         />
-        <div class="hsb-popup__footer">
-          <a href="#" class="hsb-popup__clear" @click.prevent="clearWhen">{{ t('header.clear') }}</a>
-          <button class="hsb-done-btn" @click="closePopup()">{{ t('header.done') }}</button>
-        </div>
       </div>
 
       <!-- WHO POPUP -->
@@ -183,8 +181,8 @@ function closePopup() {
 function clearWhen() {
   selectedDate.value = null
   flexibility.value = 0
-  selectedDuration.value = ''
-  flexState.value = { duration: '', months: [] }
+  selectedDurations.value = []
+  flexState.value = { durations: [], months: [] }
   calMonth.value = { year: new Date().getFullYear(), month: new Date().getMonth() }
   closePopup()
 }
@@ -198,16 +196,16 @@ function clearWho() {
 const calMonth = ref({ year: new Date().getFullYear(), month: new Date().getMonth() })
 const selectedDate = ref<string | null>(null)
 const flexibility = ref(0)
-const selectedDuration = ref('')
-const flexState = ref<{ duration: string; months: string[] }>({ duration: '', months: [] })
+const selectedDurations = ref<string[]>([])
+const flexState = ref<{ durations: string[]; months: string[] }>({ durations: [], months: [] })
 
-function handleFlexState(state: { duration: string; months: string[] }) {
+function handleFlexState(state: { durations: string[]; months: string[] }) {
   flexState.value = state
   if (state.months.length > 0 && selectedDate.value) {
     selectedDate.value = null
   }
-  if (state.duration) {
-    selectedDuration.value = ''
+  if (state.durations.length > 0) {
+    selectedDurations.value = []
   }
 }
 
@@ -242,22 +240,23 @@ const whenLabel = computed(() => {
     whenPart = t('header.flexibleLabel')
   }
 
-  if (selectedDuration.value) {
-    const dur = durationOptions.value.find(o => o.id === selectedDuration.value)
-    if (dur) durationPart = dur.label
-  } else if (flexState.value.duration) {
-    const nightsOpt = durationOptions.value.find(o => o.id === flexState.value.duration)
-    if (nightsOpt) {
-      durationPart = nightsOpt.label
-    } else {
-      const typeLabels: Record<string, string> = {
-        'weekend-fri-sun': t('header.flex.weekendFriSun'),
-        'weekend-sat-sun': t('header.flex.weekendSatSun'),
-        'long-weekend': t('header.flex.longWeekend'),
-        'midweek': t('header.flex.midweek'),
-      }
-      durationPart = typeLabels[flexState.value.duration] || ''
+  const calDurs = selectedDurations.value
+  const flexDurs = flexState.value.durations
+  if (calDurs.length > 0) {
+    const labels = calDurs.map(id => durationOptions.value.find(o => o.id === id)?.label).filter(Boolean) as string[]
+    durationPart = labels.join(' of ')
+  } else if (flexDurs.length > 0) {
+    const typeLabels: Record<string, string> = {
+      'weekend-fri-sun': t('header.flex.weekendFriSun'),
+      'weekend-sat-sun': t('header.flex.weekendSatSun'),
+      'long-weekend': t('header.flex.longWeekend'),
+      'midweek': t('header.flex.midweek'),
     }
+    const labels = flexDurs.map(id => {
+      const nightsOpt = durationOptions.value.find(o => o.id === id)
+      return nightsOpt ? nightsOpt.label : (typeLabels[id] || '')
+    }).filter(Boolean)
+    durationPart = labels.join(' of ')
   } else {
     durationPart = t('header.anyDuration')
   }
@@ -291,10 +290,11 @@ defineExpose({ totalPersons })
 
 function handleChangeSearch() {
   closePopup()
+  const dur = selectedDurations.value[0] || flexState.value.durations[0] || ''
   emit('search', {
     persons: totalPersons.value,
     rooms: group.value.rooms,
-    duration: selectedDuration.value || flexState.value.duration || '',
+    duration: dur,
     flexibility: flexibility.value,
     date: selectedDate.value,
   })

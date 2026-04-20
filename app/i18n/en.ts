@@ -19,7 +19,7 @@ const en: Record<string, string> = {
   // Header - Popups
   'header.popularDestinations': 'Popular destinations',
   'header.themes': 'Themes',
-  'header.searchDestinationPlaceholder': 'Search destination or hotel...',
+  'header.searchDestinationPlaceholder': 'Type destination or hotel...',
   'header.destinations': 'Destinations',
   'header.noResults': 'No results found',
   'header.date': 'Date',
@@ -29,6 +29,7 @@ const en: Record<string, string> = {
   'header.duration': 'Duration',
   'header.flexArrival': 'Flexibility of arrival date',
   'header.done': 'Ready',
+  'header.save': 'Save',
   'header.clear': 'Clear',
   'header.recentSearches': 'Recent searches',
 
@@ -130,13 +131,9 @@ const en: Record<string, string> = {
   'footer.phone': '+31 85 777 3222',
   'footer.phoneHours': 'Mon–Fri, 8:00 AM – 6:00 PM',
   'footer.whatsapp': 'WhatsApp',
-  'footer.whatsappNumber': '+31 85 777 3222',
   'footer.faqLink': 'FAQ',
   'footer.contactForm': 'Contact form',
   'footer.inspiration': 'Inspiration / Most booked',
-  'footer.popularDestinations': 'Popular destinations',
-  'footer.lastMinutes': 'Last minutes',
-  'footer.giftCards': 'Gift cards',
   'footer.shopping': 'Shopping & gift cards',
   'footer.aboutUs': 'About us',
   'footer.faq': 'FAQ',
@@ -157,30 +154,18 @@ const en: Record<string, string> = {
   'vakantieparken.b2bButton': 'Email us',
 
   // Review labels
-  'review.outstanding': 'Outstanding',
-  'review.excellent': 'Excellent',
-  'review.veryGood': 'Fantastic',
-  'review.good': 'Good',
-  'review.sufficient': 'Sufficient',
-  'review.fair': 'Fair',
-  'review.poor': 'Poor',
 
   // Common
-  'common.bookNow': 'Book now',
   'common.checkIn': 'Check-in',
   'common.checkOut': 'Check-out',
-  'common.chooseDate': 'Choose date',
   'common.reviews': 'reviews',
   'common.nights': 'nights',
   'common.night': 'night',
   'common.for': 'for',
-  'common.perPerson': 'p.p.',
   'common.close': 'Close',
   'common.save': 'Save',
   'common.share': 'Share',
-  'common.edit': 'Edit',
   'common.apply': 'Apply',
-  'common.loading': 'Loading...',
   'common.included': 'Included',
   'common.from': 'from',
   'common.adultSingular': 'adult',
@@ -195,19 +180,11 @@ const en: Record<string, string> = {
   'common.childrenShort': 'child.',
   'common.nederland': 'Netherlands',
   'common.viewMap': 'View map',
-  'common.viewOnMap': 'View on map',
   'common.allPhotos': 'All photos',
   'common.hotelPhoto': 'Hotel photo',
-  'common.freeCancel': 'Free cancellation up to 7 days before check-in',
   'common.upgrade': 'UPGRADE',
-  'common.readMore': 'Read more',
 
   // Trust items (sidebar)
-  'trust.reviews': '15,000+ reviews',
-  'trust.flexibleCancel': 'Very flexible cancellation policy',
-  'trust.directDiscount': 'Benefit from high discounts directly',
-  'trust.memberDeals': 'Members enjoy special offers',
-  'trust.flexibleCancellation': 'Flexible cancellation',
 
   // Search page
   'search.deals': 'deals',
@@ -216,8 +193,6 @@ const en: Record<string, string> = {
   'search.arrangements': 'Packages',
   'search.filters': 'Filters',
   'search.arrangement': 'Package',
-  'search.persons': '2 persons',
-  'search.dependsOnPackage': 'Depending on chosen package',
   'search.fromPrice': 'From',
   'search.viewDeals': 'View',
   'search.deal': 'Deal',
@@ -259,12 +234,9 @@ const en: Record<string, string> = {
   'filter.exclusive': 'Exclusive at ViaLuxury',
 
   // Deal page
-  'deal.backToResults': 'Back to results',
   'deal.highlights': 'Highlights',
   'deal.inclusionsHeading': 'This package for',
-  'deal.inclusionsEnd': 'includes the following:',
   'deal.inclusionsEndAlt': 'includes the following',
-  'deal.arrangementCurated': 'ViaLuxury and the hotel have carefully curated a beautiful package.',
   'deal.chooseStay': 'Choose your stay:',
   'deal.availableArrangements': 'Available packages',
   'deal.selectArrangement': 'Select this package',
@@ -287,69 +259,38 @@ const en: Record<string, string> = {
 
   // Hotel page
   'hotel.facilities': 'Hotel facilities',
-  'hotel.viewAllFacilities': 'View all',
-  'hotel.facilitiesWord': 'facilities',
   'hotel.reviews': 'Guest reviews',
-  'hotel.allReviews': 'All reviews',
-  'hotel.writeReview': 'Write a review',
-  'hotel.showAllPhotos': 'photos',
-  'hotel.allReviewsButton': 'All',
-  'hotel.reviewsWord': 'reviews',
   'hotel.faqHeading': 'Have more questions?',
   'hotel.nearbyTips': 'Tips nearby',
   'hotel.nearbySubtitle': 'fun outings near',
   'hotel.previousTip': 'Previous tip',
   'hotel.nextTip': 'Next tip',
-  'hotel.relatedDeals': 'You might also like these',
-  'hotel.relatedDealsEnd': 'packages',
-  'hotel.whereYouStay': 'Where you\'ll stay',
-  'hotel.mapLabel': 'Map -',
 
   // Room
   'room.yourRoom': 'Your room',
-  'room.chooseRoom': 'Choose a room?',
   'room.enterDate': 'Enter your arrival date to see available rooms.',
   'room.moreLuxury': 'More luxury?',
   'room.viewUpgrades': 'View',
   'room.availableUpgrades': 'available room upgrades',
-  'room.paidUpgradeSelected': 'Paid upgrade selected',
-  'room.undo': 'Undo',
   'room.changeRoomChoice': 'Change room choice',
   'room.paidUpgradesSelected': 'Paid upgrade(s) selected.',
-  'room.roomsChosen': 'rooms chosen',
   'room.roomsChosenForPersons': 'rooms selected for {n} persons',
   'room.stillAvailable': '{n} rooms still available',
   'room.editTravelGroup': 'Edit travel group',
-  'room.thisRoomFor': 'This room is for',
   'room.youBook': 'You book',
   'room.roomFor': 'room for',
   'room.roomsFor': 'rooms for',
   'room.yourRooms': 'Your rooms',
   'room.multiRoomTypesSelected': 'You have selected different room types for your travel group.',
-  'room.allocateRooms': 'Allocate your rooms',
-  'room.allocateRoomsSub': 'Choose how many rooms of each type you want.',
-  'room.roomsAllocated': 'rooms allocated',
-  'room.maxAvailable': 'max. {n} available',
   'room.perRoom': 'per room',
-  'room.included': 'Included',
   'room.chooseRoomType': 'Choose your room type',
-  'room.standardIncluded': 'Standard room is included. Upgrade for extra comfort.',
   'room.availableUpgradesTitle': 'Available room upgrades',
-  'room.availableUpgradesForDate': 'Available room upgrades for this date',
-  'room.chooseArrivalDate': 'Choose an arrival date to see which upgrades are available.',
-  'room.chooseArrivalDateBtn': 'Choose arrival date',
-  'room.forArrivalOn': 'For arrival on',
-  'room.viewUpgradesBelow': 'View the available upgrades below.',
-  'room.changeDate': 'Change date',
   'room.selectRoom': 'Select this room',
   'room.currentSelection': 'Current selection',
   'room.upgradeAvailable': 'Room upgrade available',
 
   // Calendar
   'calendar.chooseArrivalDate': 'Choose arrival date',
-  'calendar.priceShownFor': 'Shown price is for',
-  'calendar.startDate': 'Start date',
-  'calendar.endDate': 'End date',
   'calendar.clearDates': 'Clear dates',
 
   // Travel group modal
@@ -361,20 +302,13 @@ const en: Record<string, string> = {
   'travelGroup.years': 'years',
 
   // Deal store
-  'store.extraPerson': 'extra',
   'store.extraRoom': 'Extra room',
   'store.roomUpgrade': 'Room upgrade',
-  'store.childDiscount': 'Children discount',
   'store.roomUnavailable': 'The {room} is not available for this date.',
 
   // Inclusion
-  'inclusion.inThisDealFor': 'This deal for',
-  'inclusion.isIncluded': 'includes the following:',
-  'inclusion.included': 'Included',
 
   // Related deals subtitles
-  'related.breakfastAndDinner': 'breakfast & dinner',
-  'related.breakfast': 'breakfast',
 
   // Home
   'home.searchPrompt': 'Use the search bar to start the demo.',
@@ -391,8 +325,6 @@ const en: Record<string, string> = {
   'search.showFilters': 'Show filters',
 
   // Budget filter
-  'filter.budget': 'Budget',
-  'filter.budgetAll': 'All prices',
 
   // Deal card
   'search.andMore': 'and {n} more extras',
@@ -435,7 +367,6 @@ const en: Record<string, string> = {
 
   // Yvette banner
   'yvette.heading': 'Curated by Yvette from ViaLuxury',
-  'yvette.subheading': '',
   'yvette.text': '\'We were actually just driving past, but turned around immediately. Sometimes you see a place and you just know: this belongs at ViaLuxury. I\'m very happy that we\'ve been able to add this special castle to our collection, and with a great discount too.\'',
 
   // Hotel page

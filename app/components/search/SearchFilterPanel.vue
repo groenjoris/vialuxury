@@ -12,7 +12,7 @@
         <div class="filter-budget__track">
           <div
             class="filter-budget__fill"
-            :style="{ left: ((budgetMin - 100) / 1900 * 100) + '%', right: (100 - (budgetMax - 100) / 1900 * 100) + '%' }"
+            :style="{ '--fill-left': ((budgetMin - 100) / 1900 * 100) + '%', '--fill-right': (100 - (budgetMax - 100) / 1900 * 100) + '%' }"
           ></div>
         </div>
         <input
@@ -220,6 +220,8 @@ function toggleGroup(index: number) {
 .filter-budget__fill {
   position: absolute;
   top: 0;
+  left: var(--fill-left, 0%);
+  right: var(--fill-right, 0%);
   height: 100%;
   background: #1A1A1A;
   border-radius: 2px;

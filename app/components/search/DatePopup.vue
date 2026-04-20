@@ -42,7 +42,8 @@
                 class="mini-cal__cell"
                 :class="{
                   'mini-cal__cell--empty': !cell.day,
-                  'mini-cal__cell--selected': cell.date === selectedDate,
+                  'mini-cal__cell--selected': !!selectedDate && cell.date === selectedDate,
+                  'mini-cal__cell--flex': cell.inFlexRange,
                   'mini-cal__cell--past': cell.past,
                 }"
                 @click="cell.day && !cell.past ? handleSelectDate(cell.date!) : undefined"
@@ -53,7 +54,7 @@
           </div>
         </div>
 
-        <!-- Right: Duration -->
+        <!-- Right: Duration (multi-select) -->
         <div class="date-popup__dur-section">
           <h4 class="date-popup__label">{{ t('header.duration') }}</h4>
           <div class="date-popup__dur-options">
@@ -61,8 +62,8 @@
               v-for="dur in durationOptions"
               :key="dur.id"
               class="dur-option"
-              :class="{ 'dur-option--selected': selectedDuration === dur.id }"
-              @click="$emit('update:selectedDuration', dur.id)"
+              :class="{ 'dur-option--selected': selectedDurations.includes(dur.id) }"
+              @click="toggleDuration(dur.id)"
             >
               {{ dur.label }}
             </button>
@@ -73,19 +74,25 @@
       <!-- Separator -->
       <div class="date-popup__divider"></div>
 
-      <!-- Flexibility row at bottom -->
+      <!-- Flexibility row at bottom, with Klaar/Wis actions on the right -->
       <div class="date-popup__flex-row">
-        <h4 class="date-popup__label">{{ t('header.flexArrival') }}</h4>
-        <div class="date-popup__flex-chips">
-          <button
-            v-for="f in flexOptions"
-            :key="f.value"
-            class="flex-chip"
-            :class="{ 'flex-chip--selected': flexibility === f.value }"
-            @click="$emit('update:flexibility', f.value)"
-          >
-            {{ f.label }}
-          </button>
+        <div class="date-popup__flex-col">
+          <h4 class="date-popup__label">{{ t('header.flexArrival') }}</h4>
+          <div class="date-popup__flex-chips">
+            <button
+              v-for="f in flexOptions"
+              :key="f.value"
+              class="flex-chip"
+              :class="{ 'flex-chip--selected': flexibility === f.value }"
+              @click="$emit('update:flexibility', f.value)"
+            >
+              {{ f.label }}
+            </button>
+          </div>
+        </div>
+        <div class="date-popup__actions">
+          <button type="button" class="date-popup__done" @click="$emit('save')">{{ t('header.done') }}</button>
+          <a href="#" class="date-popup__clear-link" @click.prevent="$emit('clear')">{{ t('header.clear') }}</a>
         </div>
       </div>
     </div>
@@ -109,15 +116,15 @@
         </div>
       </div>
 
-      <!-- Nights -->
+      <!-- Nights (multi-select) -->
       <div class="date-popup__flex-block">
         <div class="date-popup__dur-pills">
           <button
             v-for="opt in flexNightsOptions"
             :key="opt.value"
             class="dur-pill"
-            :class="{ 'dur-pill--selected': flexNights === opt.value }"
-            @click="selectFlexNights(opt.value)"
+            :class="{ 'dur-pill--selected': flexNights.includes(opt.value) }"
+            @click="toggleFlexNights(opt.value)"
           >
             {{ opt.label }}
           </button>
@@ -144,6 +151,14 @@
       <div v-if="flexSummary" class="date-popup__flex-summary">
         {{ flexSummary }}
       </div>
+
+      <!-- Actions: Klaar + Wis, bottom-right -->
+      <div class="date-popup__flex-actions-row">
+        <div class="date-popup__actions">
+          <button type="button" class="date-popup__done" @click="$emit('save')">{{ t('header.done') }}</button>
+          <a href="#" class="date-popup__clear-link" @click.prevent="$emit('clear')">{{ t('header.clear') }}</a>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -155,16 +170,26 @@ const props = defineProps<{
   calMonth: { year: number; month: number }
   selectedDate: string | null
   flexibility: number
-  selectedDuration: string
+  selectedDurations: string[]
 }>()
 
 const emit = defineEmits<{
   'update:calMonth': [val: { year: number; month: number }]
   'update:selectedDate': [val: string | null]
   'update:flexibility': [val: number]
-  'update:selectedDuration': [val: string]
-  'update:flexState': [val: { duration: string; months: string[] }]
+  'update:selectedDurations': [val: string[]]
+  'update:flexState': [val: { durations: string[]; months: string[] }]
+  'save': []
+  'clear': []
 }>()
+
+function toggleDuration(id: string) {
+  const next = [...props.selectedDurations]
+  const idx = next.indexOf(id)
+  if (idx === -1) next.push(id)
+  else next.splice(idx, 1)
+  emit('update:selectedDurations', next)
+}
 
 // --- Tab state ---
 const activeTab = ref<'calendar' | 'flexible'>('calendar')
@@ -198,12 +223,24 @@ const calCells = computed(() => {
   const today = new Date()
   today.setHours(0, 0, 0, 0)
 
-  const cells: { day: number | null; date: string | null; past: boolean }[] = []
-  for (let i = 0; i < offset; i++) cells.push({ day: null, date: null, past: false })
+  // Compute flex range around selectedDate (inclusive of selected day itself)
+  let rangeStart: Date | null = null
+  let rangeEnd: Date | null = null
+  if (props.selectedDate && props.flexibility > 0) {
+    const [y, m, d] = props.selectedDate.split('-').map(Number)
+    const sel = new Date(y, m - 1, d)
+    rangeStart = new Date(sel); rangeStart.setDate(sel.getDate() - props.flexibility)
+    rangeEnd = new Date(sel); rangeEnd.setDate(sel.getDate() + props.flexibility)
+  }
+
+  const cells: { day: number | null; date: string | null; past: boolean; inFlexRange: boolean }[] = []
+  for (let i = 0; i < offset; i++) cells.push({ day: null, date: null, past: false, inFlexRange: false })
   for (let d = 1; d <= daysInMonth; d++) {
     const date = new Date(year, month, d)
     const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`
-    cells.push({ day: d, date: dateStr, past: date < today })
+    const past = date < today
+    const inFlexRange = !!(rangeStart && rangeEnd && date >= rangeStart && date <= rangeEnd && dateStr !== props.selectedDate && !past)
+    cells.push({ day: d, date: dateStr, past, inFlexRange })
   }
   return cells
 })
@@ -230,7 +267,7 @@ const durationOptions = computed(() => [
 
 // --- Flexible tab logic ---
 const flexType = ref<string | null>(null)
-const flexNights = ref<string | null>(null)
+const flexNights = ref<string[]>([])
 const selectedMonths = ref<string[]>([])
 
 const flexTypeOptions = computed(() => [
@@ -250,13 +287,15 @@ const flexNightsOptions = computed(() => [
 
 function selectFlexType(val: string) {
   flexType.value = flexType.value === val ? null : val
-  if (flexType.value) flexNights.value = null
+  if (flexType.value) flexNights.value = []
   emitFlexState()
 }
 
-function selectFlexNights(val: string) {
-  flexNights.value = flexNights.value === val ? null : val
-  if (flexNights.value) flexType.value = null
+function toggleFlexNights(val: string) {
+  const idx = flexNights.value.indexOf(val)
+  if (idx !== -1) flexNights.value.splice(idx, 1)
+  else flexNights.value.push(val)
+  if (flexNights.value.length > 0) flexType.value = null
   emitFlexState()
 }
 
@@ -287,9 +326,12 @@ const flexDurationLabel = computed(() => {
     const opt = flexTypeOptions.value.find(o => o.value === flexType.value)
     return opt ? opt.label : ''
   }
-  if (flexNights.value) {
-    const opt = flexNightsOptions.value.find(o => o.value === flexNights.value)
-    return opt ? opt.label : ''
+  if (flexNights.value.length > 0) {
+    const labels = flexNights.value.map(v => {
+      const opt = flexNightsOptions.value.find(o => o.value === v)
+      return opt ? opt.label : ''
+    }).filter(Boolean)
+    return labels.join(' of ')
   }
   return ''
 })
@@ -310,8 +352,9 @@ const flexSummary = computed(() => {
 })
 
 function emitFlexState() {
+  const durations = flexType.value ? [flexType.value] : [...flexNights.value]
   emit('update:flexState', {
-    duration: flexType.value || flexNights.value || '',
+    durations,
     months: [...selectedMonths.value],
   })
 }
@@ -376,11 +419,11 @@ function emitFlexState() {
 /* ==================== */
 .date-popup__label {
   font-family: var(--font-body);
-  font-size: 11px;
+  font-size: 14px;
   font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-  color: var(--color-text-muted);
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--color-text-primary);
   margin: 0 0 var(--space-md) 0;
 }
 
@@ -492,6 +535,16 @@ function emitFlexState() {
   font-weight: 600;
 }
 
+.mini-cal__cell--flex {
+  background: rgba(251, 134, 45, 0.18);
+  color: var(--color-primary);
+  font-weight: 500;
+}
+
+.mini-cal__cell--flex:hover {
+  background: rgba(251, 134, 45, 0.3) !important;
+}
+
 /* ==================== */
 /* DIVIDER              */
 /* ==================== */
@@ -505,20 +558,72 @@ function emitFlexState() {
 /* FLEXIBILITY ROW      */
 /* ==================== */
 .date-popup__flex-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: var(--space-2xl);
+  align-items: start;
+}
+
+.date-popup__flex-col {
   display: flex;
   flex-direction: column;
 }
 
 .date-popup__flex-chips {
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
+  flex-wrap: nowrap;
+  gap: 6px;
+}
+
+/* Actions column (Klaar + Wis stacked) — shared between calendar + flex tab */
+.date-popup__actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.date-popup__done {
+  padding: 8px 20px;
+  border: none;
+  border-radius: var(--radius-md);
+  background: var(--color-primary);
+  color: #fff;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background var(--transition-fast);
+  font-family: inherit;
+  white-space: nowrap;
+}
+
+.date-popup__done:hover {
+  background: var(--color-primary-hover);
+}
+
+.date-popup__clear-link {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  text-decoration: underline;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.date-popup__clear-link:hover {
+  color: var(--color-text-primary);
+}
+
+/* Flexible tab: right-aligned actions row at bottom */
+.date-popup__flex-actions-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: var(--space-lg);
 }
 
 .flex-chip {
-  padding: 7px 14px;
+  padding: 6px 12px;
   border: 1px solid var(--color-border);
-  border-radius: 999px;
+  border-radius: var(--radius-md);
   background: none;
   font-size: 13px;
   cursor: pointer;

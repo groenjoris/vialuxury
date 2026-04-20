@@ -213,23 +213,17 @@ const teamMembers = [
   },
 ]
 
-// Fake loading state
-const searchLoading = ref(false)
+// Loading state — driven directly by the shared loading flag (no artificial delay)
+const searchLoading = computed(() => loading.value)
 
-function triggerFakeLoad() {
-  searchLoading.value = true
-  setTimeout(() => {
-    searchLoading.value = false
-    setLoading(false)
-  }, 1000)
-}
-
+// Clear loading on mount (handles navigation arriving with loading=true)
 onMounted(() => {
-  if (loading.value) triggerFakeLoad()
+  if (loading.value) setLoading(false)
 })
 
+// Auto-clear after a tick when loading flips to true, so the spinner doesn't get stuck
 watch(loading, (val) => {
-  if (val) triggerFakeLoad()
+  if (val) Promise.resolve().then(() => setLoading(false))
 })
 
 const breadcrumbs = computed(() => [

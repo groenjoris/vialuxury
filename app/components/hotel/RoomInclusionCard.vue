@@ -97,40 +97,11 @@ const carouselImages = computed(() => {
   return images
 })
 
-// Carousel auto-rotation
-const activeSlide = ref(0)
-let carouselTimer: ReturnType<typeof setInterval> | null = null
-
-function goToSlide(idx: number) {
-  activeSlide.value = idx
-  resetTimer()
-}
-
-function resetTimer() {
-  if (carouselTimer) clearInterval(carouselTimer)
-  if (carouselImages.value.length > 1) {
-    carouselTimer = setInterval(() => {
-      activeSlide.value = (activeSlide.value + 1) % carouselImages.value.length
-    }, 3000)
-  }
-}
-
-watch(isMultiRoomType, (val) => {
-  if (val) {
-    activeSlide.value = 0
-    resetTimer()
-  } else {
-    if (carouselTimer) clearInterval(carouselTimer)
-  }
-}, { immediate: true })
-
-onMounted(() => {
-  if (isMultiRoomType.value) resetTimer()
-})
-
-onUnmounted(() => {
-  if (carouselTimer) clearInterval(carouselTimer)
-})
+// Carousel auto-rotation (delegated to composable)
+const { activeIndex: activeSlide, goTo: goToSlide } = useCarousel(
+  carouselImages,
+  { intervalMs: 3000, enabled: isMultiRoomType },
+)
 
 const overnightTitleDisplay = computed(() => {
   const inc = props.deal.inclusions.find((i) => i.id.startsWith('inc-overnight'))

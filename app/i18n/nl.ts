@@ -19,7 +19,7 @@ const nl: Record<string, string> = {
   // Header - Popups
   'header.popularDestinations': 'Populaire bestemmingen',
   'header.themes': 'Thema\'s',
-  'header.searchDestinationPlaceholder': 'Zoek bestemming of hotel...',
+  'header.searchDestinationPlaceholder': 'Type bestemming of hotel...',
   'header.destinations': 'Bestemmingen',
   'header.noResults': 'Geen resultaten gevonden',
   'header.date': 'Datum',
@@ -37,7 +37,8 @@ const nl: Record<string, string> = {
   'header.dog': 'Hond meenemen',
   'header.dogSub': 'Check beschikbaarheid per hotel',
   'header.done': 'Klaar',
-  'header.clear': 'Wissen',
+  'header.save': 'Opslaan',
+  'header.clear': 'Wis',
   'header.recentSearches': 'Recente zoekopdrachten',
 
   // Header - Verticals
@@ -130,13 +131,9 @@ const nl: Record<string, string> = {
   'footer.phone': '+31 85 777 3222',
   'footer.phoneHours': 'Ma t/m vr, 8:00 – 18:00',
   'footer.whatsapp': 'WhatsApp',
-  'footer.whatsappNumber': '+31 85 777 3222',
   'footer.faqLink': 'Veelgestelde vragen',
   'footer.contactForm': 'Contactformulier',
   'footer.inspiration': 'Inspiratie / Best geboekt',
-  'footer.popularDestinations': 'Populaire bestemmingen',
-  'footer.lastMinutes': 'Last minutes',
-  'footer.giftCards': 'Cadeaukaarten',
   'footer.shopping': 'Shopping & cadeaukaarten',
   'footer.aboutUs': 'Over ons',
   'footer.faq': 'Veelgestelde vragen',
@@ -157,30 +154,18 @@ const nl: Record<string, string> = {
   'vakantieparken.b2bButton': 'Mail ons',
 
   // Review labels
-  'review.outstanding': 'Uitmuntend',
-  'review.excellent': 'Geweldig',
-  'review.veryGood': 'Fantastisch',
-  'review.good': 'Goed',
-  'review.sufficient': 'Voldoende',
-  'review.fair': 'Matig',
-  'review.poor': 'Slecht',
 
   // Common
-  'common.bookNow': 'Boek nu',
   'common.checkIn': 'Check-in',
   'common.checkOut': 'Check-out',
-  'common.chooseDate': 'Kies datum',
   'common.reviews': 'beoordelingen',
   'common.nights': 'nachten',
   'common.night': 'nacht',
   'common.for': 'voor',
-  'common.perPerson': 'p.p.',
   'common.close': 'Sluiten',
   'common.save': 'Opslaan',
   'common.share': 'Delen',
-  'common.edit': 'Wijzig',
   'common.apply': 'Toepassen',
-  'common.loading': 'Laden...',
   'common.included': 'Inbegrepen',
   'common.from': 'vanaf',
   'common.adultSingular': 'volwassene',
@@ -195,19 +180,11 @@ const nl: Record<string, string> = {
   'common.childrenShort': 'kind.',
   'common.nederland': 'Nederland',
   'common.viewMap': 'Bekijk kaart',
-  'common.viewOnMap': 'Bekijk op kaart',
   'common.allPhotos': 'Alle foto\'s',
   'common.hotelPhoto': 'Hotel foto',
-  'common.freeCancel': 'Gratis annuleren tot 7 dagen voor check-in',
   'common.upgrade': 'UPGRADE',
-  'common.readMore': 'Lees meer',
 
   // Trust items (sidebar)
-  'trust.reviews': '15.000+ reviews',
-  'trust.flexibleCancel': 'Zeer flexibele annuleringsvoorwaarden',
-  'trust.directDiscount': 'Profiteer direct van hoge kortingen',
-  'trust.memberDeals': 'Members profiteren van speciale aanbiedingen',
-  'trust.flexibleCancellation': 'Flexibele annulering',
 
   // Search page
   'search.deals': 'deals',
@@ -216,8 +193,6 @@ const nl: Record<string, string> = {
   'search.arrangements': 'Arrangementen',
   'search.filters': 'Filters',
   'search.arrangement': 'Arrangement',
-  'search.persons': '2 personen',
-  'search.dependsOnPackage': 'Afhankelijk van gekozen arrangement',
   'search.fromPrice': 'Vanaf',
   'search.viewDeals': 'Bekijk',
   'search.deal': 'Deal',
@@ -259,12 +234,9 @@ const nl: Record<string, string> = {
   'filter.exclusive': 'Exclusief bij ViaLuxury',
 
   // Deal page
-  'deal.backToResults': 'Terug naar resultaten',
   'deal.highlights': 'Highlights',
   'deal.inclusionsHeading': 'In dit arrangement voor',
-  'deal.inclusionsEnd': 'is het volgende inbegrepen:',
   'deal.inclusionsEndAlt': 'is het volgende inbegrepen',
-  'deal.arrangementCurated': 'ViaLuxury en het hotel hebben met zorg een mooi arrangement samengesteld.',
   'deal.chooseStay': 'Kies je verblijf:',
   'deal.availableArrangements': 'Beschikbare arrangementen',
   'deal.selectArrangement': 'Selecteer dit arrangement',
@@ -287,69 +259,38 @@ const nl: Record<string, string> = {
 
   // Hotel page
   'hotel.facilities': 'Hotelfaciliteiten',
-  'hotel.viewAllFacilities': 'Bekijk alle',
-  'hotel.facilitiesWord': 'faciliteiten',
   'hotel.reviews': 'Gastbeoordelingen',
-  'hotel.allReviews': 'Alle beoordelingen',
-  'hotel.writeReview': 'Schrijf een beoordeling',
-  'hotel.showAllPhotos': 'foto\'s weergeven',
-  'hotel.allReviewsButton': 'Alle',
-  'hotel.reviewsWord': 'beoordelingen',
   'hotel.faqHeading': 'Heb je meer vragen?',
   'hotel.nearbyTips': 'Tips in de buurt',
   'hotel.nearbySubtitle': 'leuke uitjes bij',
   'hotel.previousTip': 'Vorige tip',
   'hotel.nextTip': 'Volgende tip',
-  'hotel.relatedDeals': 'Misschien vind je deze',
-  'hotel.relatedDealsEnd': 'arrangementen ook leuk',
-  'hotel.whereYouStay': 'Waar je verblijft',
-  'hotel.mapLabel': 'Kaart -',
 
   // Room
   'room.yourRoom': 'Jouw kamer',
-  'room.chooseRoom': 'Kamer kiezen?',
   'room.enterDate': 'Voer hiernaast je aankomstdatum in om beschikbare kamers te zien.',
   'room.moreLuxury': 'Meer luxe?',
   'room.viewUpgrades': 'Bekijk',
   'room.availableUpgrades': 'beschikbare kamerupgrades',
-  'room.paidUpgradeSelected': 'Betaalde upgrade geselecteerd',
-  'room.undo': 'Ongedaan maken',
   'room.changeRoomChoice': 'Wijzig kamerkeuze',
   'room.paidUpgradesSelected': 'Betaalde upgrade(s) geselecteerd.',
-  'room.roomsChosen': 'kamers gekozen',
   'room.roomsChosenForPersons': 'kamers gekozen voor {n} personen',
   'room.stillAvailable': 'nog {n} kamers beschikbaar',
   'room.editTravelGroup': 'Wijzig reisgezelschap',
-  'room.thisRoomFor': 'Deze kamer is voor',
   'room.youBook': 'U boekt',
   'room.roomFor': 'kamer voor',
   'room.roomsFor': 'kamers voor',
   'room.yourRooms': 'Jouw kamers',
   'room.multiRoomTypesSelected': 'U heeft verschillende kamertypes geselecteerd voor uw reisgezelschap.',
-  'room.allocateRooms': 'Verdeel je kamers',
-  'room.allocateRoomsSub': 'Kies hoeveel kamers je van elk type wilt.',
-  'room.roomsAllocated': 'kamers verdeeld',
-  'room.maxAvailable': 'max. {n} beschikbaar',
   'room.perRoom': 'per kamer',
-  'room.included': 'Inbegrepen',
   'room.chooseRoomType': 'Kies je kamertype',
-  'room.standardIncluded': 'Standaard kamer is inbegrepen. Upgrade voor extra comfort.',
   'room.availableUpgradesTitle': 'Beschikbare kamerupgrades',
-  'room.availableUpgradesForDate': 'Beschikbare kamerupgrades voor deze datum',
-  'room.chooseArrivalDate': 'Kies een aankomstdatum om te zien welke upgrades beschikbaar zijn.',
-  'room.chooseArrivalDateBtn': 'Kies aankomstdatum',
-  'room.forArrivalOn': 'Voor aankomst op',
-  'room.viewUpgradesBelow': 'Bekijk hieronder de beschikbare upgrades.',
-  'room.changeDate': 'Wijzig datum',
   'room.selectRoom': 'Selecteer deze kamer',
   'room.currentSelection': 'Huidige selectie',
   'room.upgradeAvailable': 'Kamerupgrade beschikbaar',
 
   // Calendar
   'calendar.chooseArrivalDate': 'Kies aankomstdatum',
-  'calendar.priceShownFor': 'Getoonde prijs is voor',
-  'calendar.startDate': 'Start datum',
-  'calendar.endDate': 'Eind datum',
   'calendar.clearDates': 'Datums wissen',
 
   // Travel group modal
@@ -361,20 +302,13 @@ const nl: Record<string, string> = {
   'travelGroup.years': 'jaar',
 
   // Deal store
-  'store.extraPerson': 'extra',
   'store.extraRoom': 'Extra kamer',
   'store.roomUpgrade': 'Kamerupgrade',
-  'store.childDiscount': 'Kinderkorting',
   'store.roomUnavailable': 'Voor deze datum is de {room} niet beschikbaar.',
 
   // Inclusion
-  'inclusion.inThisDealFor': 'In deze deal voor',
-  'inclusion.isIncluded': 'is het volgende inbegrepen:',
-  'inclusion.included': 'Inclusief',
 
   // Related deals subtitles
-  'related.breakfastAndDinner': 'ontbijt & diner',
-  'related.breakfast': 'ontbijt',
 
   // Home
   'home.searchPrompt': 'Gebruik de zoekbalk om demo te starten.',
@@ -391,8 +325,6 @@ const nl: Record<string, string> = {
   'search.showFilters': 'Toon filters',
 
   // Budget filter
-  'filter.budget': 'Budget',
-  'filter.budgetAll': 'Alle prijzen',
 
   // Deal card
   'search.andMore': 'en nog {n} andere extra\'s',
@@ -435,7 +367,6 @@ const nl: Record<string, string> = {
 
   // Yvette banner
   'yvette.heading': 'Samengesteld door Yvette van ViaLuxury',
-  'yvette.subheading': '',
   'yvette.text': '\'We reden hier eigenlijk toevallig langs, maar zijn meteen omgekeerd. Soms zie je een plek en weet je het direct: dit hoort bij ViaLuxury. Ik ben heel blij dat we dit bijzondere kasteel nu aan ons aanbod hebben kunnen toevoegen, ook nog eens met een mooie korting.\'',
 
   // Hotel page
