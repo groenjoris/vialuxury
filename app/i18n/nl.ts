@@ -202,11 +202,11 @@ const nl: Record<string, string> = {
 
   // Search filters
   'filter.travelDuration': 'Reisduur',
-  'filter.1day': '1 dag',
-  'filter.2days': '2 dagen',
-  'filter.3days': '3 dagen',
-  'filter.4days': '4 dagen',
-  'filter.5plusDays': '5 of meer dagen',
+  'filter.1day': '1 nacht',
+  'filter.2days': '2 nachten',
+  'filter.3days': '3 nachten',
+  'filter.4days': '4 nachten',
+  'filter.5plusDays': '5 of meer nachten',
   'filter.location': 'Locatie',
   'filter.waterside': 'Aan het water',
   'filter.nearSea': 'Dicht bij zee',
@@ -420,6 +420,20 @@ const nl: Record<string, string> = {
   'sidebar.clear': 'wissen',
   'sidebar.luxeRoomSingular': 'luxe kamer (upgrade)',
   'sidebar.luxeRoomPlural': 'luxe kamers (upgrade)',
+
+  // Mobile filter subpage
+  'search.showResultsPrefix': 'Toon',
+  'search.showResultsSuffix': 'resultaten',
+
+  // Favorite
+  'search.favorite': 'Bewaar als favoriet',
+  'search.unfavorite': 'Verwijder uit favorieten',
+
+  // Mobile deal page
+  'deal.allReviews': 'Alle beoordelingen',
+  'deal.moreQuestions': 'Meer vragen',
+  'common.facilities': 'faciliteiten',
+  'common.tips': 'tips',
 
   // Review score labels
   'review.outstanding': 'Uitzonderlijk',

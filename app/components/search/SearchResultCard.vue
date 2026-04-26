@@ -5,6 +5,18 @@
       <span v-if="lowestDiscount" class="result-card__discount-badge">
         -{{ lowestDiscount }}%
       </span>
+      <button
+        type="button"
+        class="result-card__favorite"
+        :class="{ 'result-card__favorite--active': isFavorite }"
+        :aria-label="isFavorite ? t('search.unfavorite') : t('search.favorite')"
+        :aria-pressed="isFavorite"
+        @click.stop="isFavorite = !isFavorite"
+      >
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+        </svg>
+      </button>
     </div>
     <div class="result-card__content">
       <!-- Hotel info header -->
@@ -19,7 +31,7 @@
             </span>
             <span class="result-card__location">{{ hotel.city }} - {{ t('common.nederland') }}</span>
           </div>
-          <p class="result-card__pitch">{{ localized(hotel.pitch) }}</p>
+          <p class="result-card__pitch">{{ pitchText }}</p>
         </div>
         <div class="result-card__score-wrap">
           <span class="result-card__score">{{ hotel.reviewScore.toFixed(1) }}</span>
@@ -56,12 +68,29 @@
 
         <!-- Right column: pricing + CTA -->
         <div class="result-card__pricing-col">
-          <span class="result-card__price-label">{{ t('search.fromPrice') }}</span>
-          <div class="result-card__price-row">
-            <span v-if="lowestOriginal > lowestPrice" class="result-card__original">
-              {{ formatPrice(lowestOriginal) }}
-            </span>
-            <span class="result-card__price">{{ formatPrice(lowestPrice) }}</span>
+          <div class="result-card__price-block">
+            <div class="result-card__price-row">
+              <!-- LIST: original first (left), price-with-label second (right) -->
+              <template v-if="!gridMode">
+                <span v-if="lowestOriginal > lowestPrice" class="result-card__original">
+                  {{ formatPrice(lowestOriginal) }}
+                </span>
+                <div class="result-card__price-with-label">
+                  <span class="result-card__price-label">{{ t('search.fromPrice') }}</span>
+                  <span class="result-card__price">{{ formatPrice(lowestPrice) }}</span>
+                </div>
+              </template>
+              <!-- GRID: price-with-label first (left), original second (right) -->
+              <template v-else>
+                <div class="result-card__price-with-label">
+                  <span class="result-card__price-label">{{ t('search.fromPrice') }}</span>
+                  <span class="result-card__price">{{ formatPrice(lowestPrice) }}</span>
+                </div>
+                <span v-if="lowestOriginal > lowestPrice" class="result-card__original">
+                  {{ formatPrice(lowestOriginal) }}
+                </span>
+              </template>
+            </div>
           </div>
           <button v-if="isSingleDeal" class="result-card__cta" @click="$emit('view-deal', hotel.deals[0].slug)">
             {{ t('search.viewArrangementSingle') }}
@@ -81,6 +110,9 @@ import { formatPrice } from '~/utils/formatPrice'
 import { getReviewLabelKey } from '~/utils/reviewLabel'
 
 const { t, localized } = useI18n()
+
+// Favorite state — local per-card for prototype
+const isFavorite = ref(false)
 const { persons } = useSearchState()
 
 function adjustPrice(basePrice: number, p: number): number {
@@ -99,6 +131,16 @@ defineEmits<{
 }>()
 
 const isSingleDeal = computed(() => props.hotel.deals.length === 1)
+
+// When a hotel has a single deal (= dedicated package), show the package title
+// instead of the generic hotel pitch.
+const pitchText = computed(() => {
+  if (isSingleDeal.value) {
+    const deal = props.hotel.deals[0]
+    if (deal.title) return localized(deal.title)
+  }
+  return localized(props.hotel.pitch)
+})
 
 const durationLabel = computed(() => {
   const nights = [...new Set(props.hotel.deals.map(d => d.nights))].sort((a, b) => a - b)
@@ -177,7 +219,7 @@ const lowestDiscount = computed(() => {
 
 .result-card__image {
   width: 280px;
-  min-height: 220px;
+  min-height: 224px;
   flex-shrink: 0;
   position: relative;
   overflow: hidden;
@@ -196,7 +238,66 @@ const lowestDiscount = computed(() => {
   left: var(--space-sm);
   background: #1A1A1A;
   color: #fff;
-  font-size: 12px;
+  font-family: var(--font-heading);
+  font-size: 18px;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  letter-spacing: 0.5px;
+}
+
+.result-card__favorite {
+  position: absolute;
+  top: var(--space-sm);
+  right: var(--space-sm);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(4px);
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--transition-fast), color var(--transition-fast), transform var(--transition-fast);
+}
+
+.result-card__favorite:hover {
+  background: rgba(0, 0, 0, 0.55);
+  transform: scale(1.05);
+}
+
+.result-card__favorite svg {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+}
+
+.result-card__favorite--active {
+  background: rgba(255, 255, 255, 0.95);
+  color: #E11D48;
+}
+
+.result-card__favorite--active svg {
+  fill: currentColor;
+  stroke: currentColor;
+}
+
+.result-card__favorite--active:hover {
+  background: #fff;
+  color: #B91C1C;
+}
+
+/* Inline discount (used in grid mode price row) */
+.result-card__inline-discount {
+  flex-shrink: 0;
+  align-self: center;
+  background: var(--color-discount);
+  color: #fff;
+  font-family: var(--font-heading);
+  font-size: 14px;
   font-weight: 700;
   padding: 4px 8px;
   border-radius: var(--radius-sm);
@@ -395,15 +496,30 @@ const lowestDiscount = computed(() => {
 
 .result-card__price-row {
   display: flex;
-  align-items: baseline;
+  align-items: flex-end;
   gap: 8px;
   margin-bottom: var(--space-sm);
 }
 
 .result-card__original {
   font-size: 14px;
-  color: var(--color-text-muted);
+  color: var(--color-error);
   text-decoration: line-through;
+}
+
+.result-card__price-block {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.result-card__price-with-label {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  line-height: 1;
 }
 
 .result-card__price {
@@ -440,8 +556,8 @@ const lowestDiscount = computed(() => {
 
 .result-card--grid .result-card__image {
   width: 100%;
-  min-height: 180px;
-  max-height: 200px;
+  min-height: 224px;
+  max-height: 224px;
 }
 
 .result-card--grid .result-card__content {
@@ -453,7 +569,14 @@ const lowestDiscount = computed(() => {
 }
 
 .result-card--grid .result-card__pitch {
-  display: block;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  white-space: normal;
+  text-overflow: clip;
+  line-height: 1.4;
+  max-height: calc(1.4em * 2);
 }
 
 .result-card--grid .result-card__details {
@@ -468,6 +591,11 @@ const lowestDiscount = computed(() => {
   min-width: 0;
   width: 100%;
   gap: var(--space-sm);
+  padding-top: var(--space-md);
+}
+
+.result-card--grid .result-card__price-block {
+  align-items: flex-start;
 }
 
 .result-card--grid .result-card__price-row {
@@ -480,29 +608,11 @@ const lowestDiscount = computed(() => {
   border-top: none;
 }
 
-/* Responsive */
+/* Responsive: only adjust image height; grid card layout stays the same */
 @media (max-width: 768px) {
-  .result-card {
-    flex-direction: column;
-  }
-
-  .result-card__image {
-    width: 100%;
-    min-height: 180px;
-    max-height: 200px;
-  }
-
-  .result-card__details {
-    flex-direction: column;
-  }
-
-  .result-card__pricing-col {
-    align-items: flex-start;
-  }
-
-  .result-card--single {
-    border-left: none;
-    border-top: none;
+  .result-card--grid .result-card__image {
+    min-height: 224px;
+    max-height: 224px;
   }
 }
 </style>

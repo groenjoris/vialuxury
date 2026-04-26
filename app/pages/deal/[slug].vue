@@ -61,7 +61,7 @@
                   :src="mapTileUrl"
                   :alt="t('deal.mapArea')"
                   class="mini-map__img mini-map__img--map"
-                  @error="($event.target as HTMLImageElement).src = '/images/kasteel/iStock-1189537172.jpg'"
+                  @error="($event.target as HTMLImageElement).src = '/images/kasteel/fietsenzuidlimburg.jpg'"
                 />
                 <div class="mini-map__pin">
                   <svg width="32" height="42" viewBox="0 0 32 42" fill="none">
@@ -111,30 +111,9 @@
                 @open-upgrades="isUpgradePanelOpen = true"
               />
 
-              <!-- Inclusions before Yvette (breakfast, welcome bubbles) -->
+              <!-- All inclusion content blocks (Yvette banner moved to sidebar) -->
               <div
-                v-for="inc in inclusionsBeforeYvette"
-                :key="inc.id"
-                class="content-block"
-              >
-                <div v-if="inc.image" class="content-block__image">
-                  <img :src="inc.image" :alt="localized(inc.title)" loading="lazy" />
-                </div>
-                <div class="content-block__body">
-                  <h3 class="content-block__title">
-                    <span class="content-block__check">✓</span>
-                    {{ localized(inc.title) }}
-                  </h3>
-                  <p class="content-block__desc">{{ localized(inc.description) }}</p>
-                </div>
-              </div>
-
-              <!-- Yvette banner -->
-              <YvetteBanner />
-
-              <!-- Inclusions after Yvette (wellness, pool, dinner) -->
-              <div
-                v-for="inc in inclusionsAfterYvette"
+                v-for="inc in filteredInclusions"
                 :key="inc.id"
                 class="content-block"
               >
@@ -152,8 +131,8 @@
             </div>
           </section>
 
-          <!-- Facilities -->
-          <section class="deal-page__facilities">
+          <!-- Facilities (desktop: full grid; mobile: link row) -->
+          <section v-if="!isMobile" class="deal-page__facilities">
             <h2 class="section-title">{{ t('hotel.facilities') }}</h2>
             <div class="facilities__grid">
               <div v-for="fac in hotel.facilities" :key="fac.label" class="facility-item">
@@ -162,9 +141,16 @@
               </div>
             </div>
           </section>
+          <button v-else type="button" class="deal-page__mobile-row" @click="activeMobileSection = 'facilities'">
+            <div class="deal-page__mobile-row-text">
+              <span class="deal-page__mobile-row-title">{{ t('hotel.facilities') }}</span>
+              <span class="deal-page__mobile-row-meta">{{ hotel.facilities.length }} {{ t('common.facilities') || 'faciliteiten' }}</span>
+            </div>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6" /></svg>
+          </button>
 
-          <!-- Hotel reviews with arrangement indicator -->
-          <section class="deal-page__reviews">
+          <!-- Hotel reviews (desktop: full; mobile: horizontal slider of 5 + more button) -->
+          <section v-if="!isMobile" class="deal-page__reviews">
             <h2 class="section-title">{{ t('hotel.reviews') }}</h2>
             <div class="reviews__score-bar">
               <span class="reviews__score-big">{{ hotel.reviews.overallScore.toFixed(1) }}</span>
@@ -197,13 +183,60 @@
             </div>
           </section>
 
-          <!-- FAQ -->
-          <section class="deal-page__faq">
+          <!-- Mobile reviews mini: score bar + slider of 5 + more button -->
+          <section v-else class="deal-page__mobile-reviews">
+            <div class="deal-page__mobile-reviews-head">
+              <h2 class="section-title">{{ t('hotel.reviews') }}</h2>
+              <div class="reviews__score-bar reviews__score-bar--compact">
+                <span class="reviews__score-big">{{ hotel.reviews.overallScore.toFixed(1) }}</span>
+                <div class="reviews__score-meta">
+                  <span class="reviews__score-verdict">{{ t(getReviewLabelKey(hotel.reviews.overallScore)) }}</span>
+                  <span class="reviews__score-count">{{ hotel.reviews.totalReviews }} {{ t('common.reviews') }}</span>
+                </div>
+              </div>
+            </div>
+            <div class="deal-page__mobile-reviews-slider">
+              <div v-for="rev in hotel.individualReviews.slice(0, 5)" :key="rev.id" class="review-card review-card--mobile">
+                <div class="review-card__header">
+                  <span class="review-card__author">{{ rev.author }}</span>
+                  <span class="review-card__review-score">{{ Number(rev.score).toFixed(1) }}/10</span>
+                </div>
+                <p class="review-card__text">{{ localized(rev.text) }}</p>
+              </div>
+            </div>
+            <button type="button" class="deal-page__mobile-more" @click="activeMobileSection = 'reviews'">
+              {{ t('deal.allReviews') }}
+            </button>
+          </section>
+
+          <!-- FAQ (desktop: full; mobile: 3 questions + more button) -->
+          <section v-if="!isMobile" class="deal-page__faq">
             <FaqSection :faq-items="hotel.faq" />
+          </section>
+          <section v-else class="deal-page__mobile-faq">
+            <h2 class="section-title">{{ t('hotel.faq') || t('hotel.faqHeading') || 'Veelgestelde vragen' }}</h2>
+            <FaqSection :faq-items="hotel.faq.slice(0, 3)" />
+            <button type="button" class="deal-page__mobile-more" @click="activeMobileSection = 'faq'">
+              {{ t('deal.moreQuestions') }}
+            </button>
+          </section>
+
+          <!-- Mobile calendar (last content section) -->
+          <section v-if="isMobile" class="deal-page__mobile-calendar">
+            <h2 class="section-title">{{ t('calendar.chooseArrivalDate') }}</h2>
+            <CalendarMonth
+              :year="calMonth.year" :month="calMonth.month"
+              :availability="calAvailability"
+              :selected-check-in="store.checkInDate" :selected-check-out="store.checkOutDate"
+              :cheapest-price="calCheapestPrice"
+              :show-prev-button="true" :show-next-button="true"
+              @select-date="handleDateSelect" @prev-month="calPrev" @next-month="calNext"
+            />
           </section>
         </div>
 
-        <!-- Booking sidebar -->
+        <!-- Right column wrapper: sidebar card + Yvette banner stacked -->
+        <div v-if="!isMobile" class="deal-page__col-right-stack">
         <div class="deal-page__col-right">
           <!-- Inclusions -->
           <h3 class="sidebar__title">
@@ -298,11 +331,23 @@
             </ul>
             <img src="/images/trustpilot.svg" alt="Trustpilot" class="sidebar__trust-logo" />
           </div>
+
+        </div>
+
+        <!-- Yvette banner — separate block below the booking sidebar -->
+        <YvetteBanner />
         </div>
       </div>
 
-      <!-- Tips in de buurt — full-width carousel -->
-      <NearbyTips :tips="hotel.nearbyTips" :hotel-name="hotel.name" />
+      <!-- Tips in de buurt — full-width carousel (desktop only on mobile it's a link row) -->
+      <NearbyTips v-if="!isMobile" :tips="hotel.nearbyTips" :hotel-name="hotel.name" />
+      <button v-else type="button" class="deal-page__mobile-row deal-page__mobile-row--standalone container" @click="activeMobileSection = 'tips'">
+        <div class="deal-page__mobile-row-text">
+          <span class="deal-page__mobile-row-title">{{ t('hotel.nearbyTips') || t('deal.nearbyTips') || 'Tips in de buurt' }}</span>
+          <span class="deal-page__mobile-row-meta">{{ hotel.nearbyTips.length }} {{ t('common.tips') || 'tips' }}</span>
+        </div>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6" /></svg>
+      </button>
     </main>
 
     <TravelGroupModal />
@@ -339,6 +384,78 @@
     <!-- Auth popup -->
     <AuthPopup :is-open="isAuthPopupOpen" @close="isAuthPopupOpen = false" @login="handleLogin" />
 
+    <!-- Sticky booking bar — top on desktop (after scroll), bottom on mobile -->
+    <div v-if="hotel && currentDeal && (isMobile || ctaBarVisible)" class="deal-page__cta-bar" :class="{ 'deal-page__cta-bar--mobile': isMobile }">
+      <div class="deal-page__cta-bar-inner container">
+        <!-- Right-aligned price + button cluster -->
+        <div class="deal-page__cta-bar-cluster">
+          <div class="deal-page__cta-bar-price-block">
+            <div class="deal-page__cta-bar-price-row">
+              <span class="deal-page__cta-bar-discount">-{{ currentDeal.discountPercentage }}%</span>
+              <span class="deal-page__cta-bar-original">{{ formatPrice(store.pricing.originalPrice) }}</span>
+              <span class="deal-page__cta-bar-amount">{{ formatPrice(store.pricing.totalPrice) }}</span>
+            </div>
+            <span class="deal-page__cta-bar-meta">{{ t('deal.priceFor').replace('{nights}', String(currentDeal.nights)).replace('{persons}', String(store.totalPersons)) }}</span>
+          </div>
+          <button type="button" class="deal-page__cta-bar-btn" @click="handleMobileBook">
+            {{ t('deal.bookNow') }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile subpage modals -->
+    <MobileFullscreen :open="activeMobileSection === 'facilities'" :title="t('hotel.facilities')" @close="activeMobileSection = null">
+      <div class="mobile-subpage">
+        <div class="facilities__grid facilities__grid--mobile">
+          <div v-for="fac in hotel?.facilities || []" :key="fac.label" class="facility-item">
+            <span class="facility-item__check">✓</span>
+            <span>{{ localized(fac.label) }}</span>
+          </div>
+        </div>
+      </div>
+    </MobileFullscreen>
+
+    <MobileFullscreen :open="activeMobileSection === 'reviews'" :title="t('hotel.reviews')" @close="activeMobileSection = null">
+      <div v-if="hotel" class="mobile-subpage">
+        <div class="reviews__score-bar">
+          <span class="reviews__score-big">{{ hotel.reviews.overallScore.toFixed(1) }}</span>
+          <div class="reviews__score-meta">
+            <span class="reviews__score-verdict">{{ t(getReviewLabelKey(hotel.reviews.overallScore)) }}</span>
+            <span class="reviews__score-count">{{ hotel.reviews.totalReviews }} {{ t('common.reviews') }}</span>
+          </div>
+        </div>
+        <div class="reviews__categories">
+          <div v-for="cat in hotel.reviews.categories" :key="localized(cat.name)" class="reviews__cat">
+            <span class="reviews__cat-name">{{ localized(cat.name) }}</span>
+            <div class="reviews__cat-bar"><div class="reviews__cat-fill" :style="{ width: (cat.score / 10 * 100) + '%' }"></div></div>
+            <span class="reviews__cat-score">{{ cat.score.toFixed(1) }}</span>
+          </div>
+        </div>
+        <div class="reviews__grid reviews__grid--mobile">
+          <div v-for="rev in hotel.individualReviews" :key="rev.id" class="review-card">
+            <div class="review-card__header">
+              <span class="review-card__author">{{ rev.author }}</span>
+              <span class="review-card__review-score">{{ Number(rev.score).toFixed(1) }}/10</span>
+            </div>
+            <p class="review-card__text">{{ localized(rev.text) }}</p>
+          </div>
+        </div>
+      </div>
+    </MobileFullscreen>
+
+    <MobileFullscreen :open="activeMobileSection === 'tips'" :title="t('hotel.nearbyTips') || 'Tips in de buurt'" @close="activeMobileSection = null">
+      <div v-if="hotel" class="mobile-subpage mobile-subpage--no-padding">
+        <NearbyTips :tips="hotel.nearbyTips" :hotel-name="hotel.name" />
+      </div>
+    </MobileFullscreen>
+
+    <MobileFullscreen :open="activeMobileSection === 'faq'" :title="t('hotel.faq') || 'Veelgestelde vragen'" @close="activeMobileSection = null">
+      <div v-if="hotel" class="mobile-subpage">
+        <FaqSection :faq-items="hotel.faq" />
+      </div>
+    </MobileFullscreen>
+
     <SiteFooter />
   </div>
 </template>
@@ -358,6 +475,23 @@ import {
 } from '~/data/mock/kasteel-ter-worm'
 
 const { t, localized } = useI18n()
+
+// Mobile detection + active sub-modal
+const isMobile = useIsMobile()
+const activeMobileSection = ref<'facilities' | 'reviews' | 'tips' | 'faq' | null>(null)
+
+// Sticky CTA bar visibility on desktop — only show after scrolling past the nav
+const ctaBarVisible = ref(false)
+function handleScroll() {
+  ctaBarVisible.value = window.scrollY > 200
+}
+onMounted(() => {
+  window.addEventListener('scroll', handleScroll, { passive: true })
+  handleScroll()
+})
+onBeforeUnmount(() => {
+  window.removeEventListener('scroll', handleScroll)
+})
 const route = useRoute()
 const router = useRouter()
 const store = useDealStore()
@@ -393,6 +527,11 @@ function handleFavoriteClick() {
       ? t('toast.addedToFavorites')
       : t('toast.removedFromFavorites')
   })
+}
+
+function handleMobileBook() {
+  // Scroll to top of page / open booking flow (same as sidebar book button)
+  // For now: no-op, mirrors desktop Boek nu behavior
 }
 
 function handleLogin() {
@@ -521,7 +660,7 @@ useHead({ title: `${currentDeal.value?.title ? localized(currentDeal.value.title
 const breadcrumbs = computed(() => [
   { label: t('search.home'), href: '/' },
   { label: t('search.arrangements'), href: '/search' },
-  { label: hotel.value.name },
+  { label: currentDeal.value ? localized(currentDeal.value.title) : hotel.value.name },
 ])
 
 function openGallery() { }
@@ -592,6 +731,7 @@ function openGallery() { }
 .mini-map__link:hover { opacity: 1; }
 
 /* ===== SIDEBAR ===== */
+.deal-page__col-right-stack { display: flex; flex-direction: column; gap: var(--space-lg); min-width: 0; }
 .deal-page__col-right { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: var(--space-lg); }
 
 /* Inclusions */
@@ -643,9 +783,9 @@ function openGallery() { }
 .sidebar__breakdown-row--upgrade { color: var(--color-primary); }
 
 .sidebar__price { display: flex; align-items: baseline; gap: 6px; margin-bottom: 2px; }
-.sidebar__discount { background: var(--color-discount-light); color: var(--color-discount); font-weight: 700; font-size: 13px; padding: 2px 7px; border-radius: var(--radius-sm); }
+.sidebar__discount { background: var(--color-discount); color: #fff; font-family: var(--font-heading); font-weight: 700; font-size: 14px; padding: 4px 8px; border-radius: var(--radius-sm); }
 .sidebar__amount { font-size: 26px; font-weight: 700; font-family: var(--font-heading); }
-.sidebar__original { font-size: 15px; color: var(--color-text-muted); text-decoration: line-through; }
+.sidebar__original { font-size: 15px; color: var(--color-error); text-decoration: line-through; }
 .sidebar__price-meta { font-size: 13px; color: var(--color-text-secondary); margin-bottom: var(--space-md); }
 .sidebar__disclaimer { font-size: 12px; line-height: 1.5; color: var(--color-text-muted); margin-bottom: var(--space-md); }
 .sidebar__summary .sidebar__book { margin-top: 0; }
@@ -841,4 +981,229 @@ function openGallery() { }
 
 .fade-fast-enter-active, .fade-fast-leave-active { transition: opacity 300ms ease; }
 .fade-fast-enter-from, .fade-fast-leave-to { opacity: 0; }
+
+/* ==================== */
+/* MOBILE DEAL PAGE     */
+/* ==================== */
+.deal-page__mobile-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  width: 100%;
+  padding: 16px;
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
+  margin-top: var(--space-lg);
+  margin-bottom: var(--space-md);
+  color: var(--color-text-primary);
+}
+.deal-page__mobile-row:hover {
+  border-color: var(--color-primary);
+}
+.deal-page__mobile-row-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.deal-page__mobile-row-title {
+  font-size: 16px;
+  font-weight: 600;
+}
+.deal-page__mobile-row-meta {
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+.deal-page__mobile-row--standalone {
+  margin-top: var(--space-xl);
+  margin-bottom: var(--space-xl);
+}
+
+/* Mobile reviews mini section */
+.deal-page__mobile-reviews {
+  padding: var(--space-xl) 0;
+  border-top: 1px solid var(--color-border-light);
+}
+.deal-page__mobile-reviews-head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  margin-bottom: var(--space-md);
+}
+.reviews__score-bar--compact {
+  gap: var(--space-sm);
+}
+.deal-page__mobile-reviews-slider {
+  display: flex;
+  gap: var(--space-md);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x mandatory;
+  padding-bottom: var(--space-sm);
+  margin: 0 calc(var(--space-md) * -1);
+  padding-left: var(--space-md);
+  padding-right: var(--space-md);
+}
+.review-card--mobile {
+  flex-shrink: 0;
+  width: 280px;
+  scroll-snap-align: start;
+}
+
+.deal-page__mobile-faq {
+  padding: var(--space-xl) 0;
+  border-top: 1px solid var(--color-border-light);
+}
+
+.deal-page__mobile-more {
+  margin-top: var(--space-md);
+  padding: 10px 16px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: transparent;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 14px;
+}
+.deal-page__mobile-more:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+/* ==================== */
+/* STICKY CTA BAR       */
+/* Desktop: top         */
+/* Mobile: bottom       */
+/* ==================== */
+.deal-page__cta-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;  /* Desktop default: top */
+  z-index: 100;
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+.deal-page__cta-bar--mobile {
+  top: auto;
+  bottom: 0;
+  border-bottom: none;
+  border-top: 1px solid var(--color-border);
+  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.08);
+}
+.deal-page__cta-bar-inner {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 10px 16px;
+}
+.deal-page__cta-bar-cluster {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.deal-page__cta-bar-price-block {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+.deal-page__cta-bar-price-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.deal-page__cta-bar-discount {
+  flex-shrink: 0;
+  align-self: center;
+  font-family: var(--font-heading);
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+  background: var(--color-discount);
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+}
+.deal-page__cta-bar-original {
+  font-size: 13px;
+  color: var(--color-error);
+  text-decoration: line-through;
+}
+.deal-page__cta-bar-amount {
+  font-family: var(--font-heading);
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  line-height: 1.1;
+}
+.deal-page__cta-bar-meta {
+  font-size: 11px;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+.deal-page__cta-bar-btn {
+  flex: 0 0 auto;
+  width: auto;
+  height: 44px;
+  padding: 0 24px;
+  font-size: 15px;
+  font-weight: 600;
+  background: var(--color-primary);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-family: inherit;
+  white-space: nowrap;
+  transition: background var(--transition-fast);
+}
+.deal-page__cta-bar-btn:hover {
+  background: var(--color-primary-hover);
+}
+
+/* Mobile calendar section */
+.deal-page__mobile-calendar {
+  padding: var(--space-xl) 0 var(--space-lg);
+  border-top: 1px solid var(--color-border-light);
+}
+
+.mobile-subpage {
+  padding: var(--space-lg);
+}
+.mobile-subpage--no-padding {
+  padding: 0;
+}
+.facilities__grid--mobile {
+  grid-template-columns: 1fr;
+  gap: var(--space-sm);
+}
+.reviews__grid--mobile {
+  grid-template-columns: 1fr;
+  gap: var(--space-md);
+}
+
+@media (max-width: 768px) {
+  /* Collapse grid to single column (sidebar is already hidden via v-if) */
+  .deal-page__grid {
+    grid-template-columns: 1fr;
+  }
+  /* Reserve space for the bottom-fixed bar */
+  .deal-page__main {
+    padding-bottom: 96px;
+  }
+  /* Tighter padding */
+  .deal-page__breadcrumbs.container,
+  .deal-page__title-section.container,
+  .deal-page__grid.container {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+}
 </style>

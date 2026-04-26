@@ -202,11 +202,11 @@ const en: Record<string, string> = {
 
   // Search filters
   'filter.travelDuration': 'Duration',
-  'filter.1day': '1 day',
-  'filter.2days': '2 days',
-  'filter.3days': '3 days',
-  'filter.4days': '4 days',
-  'filter.5plusDays': '5 or more days',
+  'filter.1day': '1 night',
+  'filter.2days': '2 nights',
+  'filter.3days': '3 nights',
+  'filter.4days': '4 nights',
+  'filter.5plusDays': '5 or more nights',
   'filter.location': 'Location',
   'filter.waterside': 'By the water',
   'filter.nearSea': 'Near the sea',
@@ -420,6 +420,20 @@ const en: Record<string, string> = {
   'sidebar.clear': 'clear',
   'sidebar.luxeRoomSingular': 'luxury room (upgrade)',
   'sidebar.luxeRoomPlural': 'luxury rooms (upgrade)',
+
+  // Mobile filter subpage
+  'search.showResultsPrefix': 'Show',
+  'search.showResultsSuffix': 'results',
+
+  // Favorite
+  'search.favorite': 'Save as favorite',
+  'search.unfavorite': 'Remove from favorites',
+
+  // Mobile deal page
+  'deal.allReviews': 'All reviews',
+  'deal.moreQuestions': 'More questions',
+  'common.facilities': 'facilities',
+  'common.tips': 'tips',
 
   // Review score labels
   'review.outstanding': 'Outstanding',

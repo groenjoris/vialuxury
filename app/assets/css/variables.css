@@ -42,6 +42,10 @@
   --layout-gap: 80px;
   --page-padding: 80px;
 
+  /* Breakpoints (for reference — media queries still need hardcoded px) */
+  --breakpoint-mobile: 768px;
+  --page-padding-mobile: 16px;
+
   /* Spacing */
   --space-xs: 4px;
   --space-sm: 8px;

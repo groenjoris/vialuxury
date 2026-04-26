@@ -8,8 +8,8 @@
           <img src="/images/logo-vialuxury.svg" alt="ViaLuxury" class="site-header__logo-img" />
         </NuxtLink>
 
-        <!-- Verticals switcher -->
-        <nav class="verticals" aria-label="Verticals">
+        <!-- Verticals switcher (desktop only) -->
+        <nav v-if="!isMobile" class="verticals" aria-label="Verticals">
           <NuxtLink
             v-for="v in verticals"
             :key="v.id"
@@ -23,8 +23,8 @@
 
         <!-- Right actions -->
         <div class="site-header__nav-actions">
-          <!-- Contact dropdown -->
-          <div class="contact-dropdown" ref="contactDropdownRef">
+          <!-- Contact dropdown (desktop only) -->
+          <div v-if="!isMobile" class="contact-dropdown" ref="contactDropdownRef">
             <button
               type="button"
               class="contact-trigger"
@@ -93,8 +93,8 @@
             </Teleport>
           </div>
 
-          <!-- Language switcher -->
-          <div class="lang-switcher" ref="langSwitcherRef">
+          <!-- Language switcher (desktop only) -->
+          <div v-if="!isMobile" class="lang-switcher" ref="langSwitcherRef">
             <button
               type="button"
               class="lang-switcher__trigger"
@@ -127,15 +127,15 @@
             </Transition>
           </div>
 
-          <!-- Leden ingang -->
-          <NuxtLink to="/leden" class="vip-btn">
+          <!-- Leden ingang (desktop only) -->
+          <NuxtLink v-if="!isMobile" to="/leden" class="vip-btn">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M12 2 15 8l6 .9-4.5 4.4L17.5 20 12 16.9 6.5 20 8 13.3 3.5 8.9 9.5 8z" />
             </svg>
             <span>{{ t('header.membersEntrance') }}</span>
           </NuxtLink>
 
-          <button type="button" class="hamburger-btn" aria-label="Menu">
+          <button v-if="isMobile" type="button" class="hamburger-btn" aria-label="Menu" @click="mobileMenuOpen = true">
             <span></span>
             <span></span>
             <span></span>
@@ -144,7 +144,18 @@
       </div>
     </div>
 
-    <!-- Search bar dock: overlaps nav + page -->
+    <!-- Mobile search trigger: single full-width button under nav (visible <768px) -->
+    <div class="site-header__mobile-search">
+      <button type="button" class="mobile-search-trigger" @click="mobileSearchOpen = true">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="8" />
+          <path d="M21 21l-4.35-4.35" />
+        </svg>
+        <span class="mobile-search-trigger__label">{{ mobileSearchLabel }}</span>
+      </button>
+    </div>
+
+    <!-- Search bar dock: overlaps nav + page (desktop only) -->
     <div class="site-header__search-dock">
       <div class="container site-header__search-container">
         <div class="search-bar">
@@ -299,6 +310,73 @@
       </div>
     </Transition>
 
+    <!-- Mobile hamburger menu drawer -->
+    <MobileFullscreen :open="mobileMenuOpen" :title="'Menu'" @close="mobileMenuOpen = false">
+      <nav class="mobile-menu">
+        <!-- Verticals -->
+        <div class="mobile-menu__section">
+          <NuxtLink v-for="v in verticals" :key="v.id" :to="v.href" class="mobile-menu__item" @click="mobileMenuOpen = false">
+            {{ v.label }}
+          </NuxtLink>
+        </div>
+        <div class="mobile-menu__divider"></div>
+        <div class="mobile-menu__section">
+          <NuxtLink to="/leden" class="mobile-menu__item" @click="mobileMenuOpen = false">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="currentColor" /></svg>
+            {{ t('header.membersEntrance') }}
+          </NuxtLink>
+          <NuxtLink to="/veelgestelde-vragen" class="mobile-menu__item" @click="mobileMenuOpen = false">
+            {{ t('header.faq') }}
+          </NuxtLink>
+          <NuxtLink to="/contact" class="mobile-menu__item" @click="mobileMenuOpen = false">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            {{ t('header.contact') }}
+          </NuxtLink>
+        </div>
+        <div class="mobile-menu__divider"></div>
+        <!-- Language toggle -->
+        <div class="mobile-menu__section">
+          <div class="mobile-menu__label">{{ selectedLanguage.label }}</div>
+          <button v-for="lang in languages" :key="lang.label" type="button" class="mobile-menu__item" @click="selectLanguage(lang); mobileMenuOpen = false">
+            {{ lang.label }}
+          </button>
+        </div>
+      </nav>
+    </MobileFullscreen>
+
+    <!-- Mobile full-screen search modal -->
+    <MobileSearchModal
+      :open="mobileSearchOpen"
+      :destinations="destinations"
+      :themes="themes"
+      :selected-destinations="selectedDestinations"
+      :selected-themes="selectedThemes"
+      :selected-cities="selectedCities"
+      :selection-order="selectionOrder"
+      :cal-month="calMonth"
+      :selected-date="selectedDate"
+      :flexibility="flexibility"
+      :selected-durations="selectedDurations"
+      :search-group="searchGroup"
+      :destination-label="destinationLabel"
+      :when-label="whenLabel"
+      :who-label="whoLabel"
+      @close="mobileSearchOpen = false"
+      @toggle-destination="toggleDestination"
+      @toggle-theme="toggleTheme"
+      @select-hotel="handleSelectHotel"
+      @select-city="handleSelectCity"
+      @remove-city="handleRemoveCity"
+      @clear-destinations="clearDestination"
+      @update:cal-month="calMonth = $event"
+      @update:selected-date="selectedDate = $event"
+      @update:flexibility="flexibility = $event"
+      @update:selected-durations="selectedDurations = $event"
+      @update:flex-state="handleFlexState"
+      @update:search-group="searchGroup = $event"
+      @search="handleMobileSearch"
+    />
+
   </header>
 </template>
 
@@ -362,6 +440,19 @@ useClickOutside(langSwitcherRef, () => { langDropdownOpen.value = false })
 useClickOutside(contactDropdownRef, () => { contactDropdownOpen.value = false })
 
 const activePopup = ref<'destination' | 'when' | 'who' | null>(null)
+
+// Mobile: single full-screen search modal + hamburger menu
+const isMobile = useIsMobile()
+const mobileSearchOpen = ref(false)
+const mobileMenuOpen = ref(false)
+const mobileSearchLabel = computed(() => {
+  // Compact summary: "Alle bestemmingen · Flexibel · 2 volwassenen"
+  const parts: string[] = []
+  parts.push(destinationLabel.value)
+  parts.push(whenLabel.value)
+  parts.push(whoLabel.value)
+  return parts.join(' · ')
+})
 
 function togglePopup(popup: 'destination' | 'when' | 'who') {
   activePopup.value = activePopup.value === popup ? null : popup
@@ -628,6 +719,14 @@ const whoLabel = computed(() => {
 
 function handleSearch() {
   closePopup()
+  const totalPersons = searchGroup.value.adults + searchGroup.value.children.length
+  setSearchGroup(totalPersons, searchGroup.value.rooms)
+  setLoading(true)
+  navigateTo('/search')
+}
+
+function handleMobileSearch() {
+  mobileSearchOpen.value = false
   const totalPersons = searchGroup.value.adults + searchGroup.value.children.length
   setSearchGroup(totalPersons, searchGroup.value.rooms)
   setLoading(true)
@@ -1356,5 +1455,137 @@ function handleSelectHotel(slug: string) {
 
 .contact-dropdown__link:hover svg {
   color: rgba(255, 255, 255, 0.7);
+}
+
+/* ==================== */
+/* MOBILE SEARCH TRIGGER */
+/* ==================== */
+.site-header__mobile-search {
+  display: none;
+}
+
+.mobile-search-trigger {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  height: 44px;
+  padding: 0 16px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+  font-family: inherit;
+  font-size: 14px;
+  cursor: pointer;
+  text-align: left;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.mobile-search-trigger__label {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--color-text-secondary);
+  font-weight: 500;
+}
+
+/* ==================== */
+/* MOBILE MENU DRAWER   */
+/* ==================== */
+.mobile-menu {
+  padding: var(--space-md) var(--space-lg);
+}
+
+.mobile-menu__section {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: var(--space-sm) 0;
+}
+
+.mobile-menu__item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 4px;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  text-decoration: none;
+  background: none;
+  border: none;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: background 150ms ease;
+}
+.mobile-menu__item:hover {
+  background: var(--color-background-secondary);
+}
+
+.mobile-menu__divider {
+  height: 1px;
+  background: var(--color-border-light);
+  margin: var(--space-sm) 0;
+}
+
+.mobile-menu__label {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  letter-spacing: 0.5px;
+  padding: 8px 4px 4px;
+}
+
+/* ==================== */
+/* MOBILE (< 768px)     */
+/* ==================== */
+@media (max-width: 768px) {
+  /* Site-header: remove padding/margin reserved for floating dock */
+  .site-header {
+    padding-bottom: 0;
+    margin-bottom: 0;
+  }
+  /* Compact nav: smaller height, smaller logo */
+  .site-header__nav {
+    height: 56px;
+  }
+  .site-header__logo-img {
+    height: 36px;
+  }
+  /* Hide verticals + most right actions except hamburger */
+  .verticals,
+  .contact-dropdown,
+  .lang-switcher,
+  .vip-btn {
+    display: none;
+  }
+  /* Hide desktop search dock */
+  .site-header__search-dock {
+    display: none;
+  }
+  /* Show mobile search trigger */
+  .site-header__mobile-search {
+    display: block;
+    padding: 12px 16px;
+    background: #111111;
+  }
+  /* Hamburger visible */
+  .hamburger-btn {
+    display: flex;
+  }
+  /* Container: less horizontal padding */
+  .site-header__nav-inner.container {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  /* Nav actions: tighter gap */
+  .site-header__nav-actions {
+    gap: 0;
+  }
 }
 </style>

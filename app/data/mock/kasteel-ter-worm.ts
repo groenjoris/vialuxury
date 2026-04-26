@@ -59,7 +59,7 @@ export const hotelKasteelTerWorm: Hotel = {
     { id: 'img-2', url: '/images/kasteel/prachthof-junior-suite.jpg', alt: { nl: 'Prachthof Junior Suite met uitzicht op de gracht', en: 'Prachthof Junior Suite with view of the moat' }, position: 'gallery' },
     { id: 'img-3', url: '/images/kasteel/6.jpg', alt: { nl: 'Wellness en sauna faciliteiten', en: 'Wellness and sauna facilities' }, position: 'gallery' },
     { id: 'img-4', url: '/images/kasteel/Van_der_Valk_Hotel_Heerlen-Heerlen-Schwimmbad-1-39961.jpg', alt: { nl: 'Binnenzwembad', en: 'Indoor swimming pool' }, position: 'gallery' },
-    { id: 'img-5', url: '/images/kasteel/iStock-1189537172.jpg', alt: { nl: 'Glooiend landschap Zuid-Limburg', en: 'Rolling landscape of South Limburg' }, position: 'gallery' },
+    { id: 'img-5', url: '/images/kasteel/fietsenzuidlimburg.jpg', alt: { nl: 'Glooiend landschap Zuid-Limburg', en: 'Rolling landscape of South Limburg' }, position: 'gallery' },
   ],
   facilities: [
     { icon: 'spa', label: { nl: 'Gloednieuwe wellness', en: 'Brand-new wellness' } },
@@ -133,7 +133,7 @@ export const hotelKasteelTerWorm: Hotel = {
         nl: 'De combinatie van het kasteel, de omgeving en de faciliteiten is echt uniek. We hebben heerlijk gewandeld in de heuvels en daarna genoten van de sauna.',
         en: 'The combination of the castle, the surroundings and the facilities is truly unique. We had wonderful walks in the hills and then enjoyed the sauna.',
       },
-      images: ['/images/kasteel/iStock-1189537172.jpg'],
+      images: ['/images/kasteel/fietsenzuidlimburg.jpg'],
       arrangement: { nl: '4-daags verblijf met wellness & diner', en: '4-day stay with wellness & dinner' },
       dealId: 'deal-kasteel-4n',
     },

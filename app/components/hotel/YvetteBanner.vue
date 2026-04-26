@@ -18,19 +18,20 @@ const { t } = useI18n()
 
 <style scoped>
 .yvette-banner {
-  grid-column: 1 / -1;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: var(--space-xl);
-  padding: var(--space-lg) var(--space-xl);
+  text-align: center;
+  gap: var(--space-md);
+  padding: var(--space-lg);
   background: #F5F5F5;
   border: 1px solid #E5E5E5;
   border-radius: var(--radius-lg);
 }
 
 .yvette-banner__photo {
-  width: 80px;
-  height: 80px;
+  width: 96px;
+  height: 96px;
   border-radius: 50%;
   overflow: hidden;
   flex-shrink: 0;
@@ -45,45 +46,22 @@ const { t } = useI18n()
 }
 
 .yvette-banner__content {
-  flex: 1;
-  min-width: 0;
+  width: 100%;
 }
 
 .yvette-banner__heading {
   font-family: var(--font-heading);
-  font-size: 18px;
+  font-size: 17px;
   font-weight: 700;
   color: var(--color-text-primary);
-  margin-bottom: 6px;
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.yvette-banner__sub {
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--color-primary);
+  margin: 0 0 var(--space-sm);
 }
 
 .yvette-banner__quote {
   font-size: 14px;
-  line-height: 1.65;
+  line-height: 1.55;
   color: var(--color-text-secondary);
   font-style: italic;
-}
-
-@media (max-width: 768px) {
-  .yvette-banner {
-    flex-direction: column;
-    text-align: center;
-    gap: var(--space-md);
-    padding: var(--space-lg);
-  }
-
-  .yvette-banner__heading {
-    justify-content: center;
-  }
+  margin: 0;
 }
 </style>

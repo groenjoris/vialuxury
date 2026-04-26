@@ -793,4 +793,48 @@ function emitFlexState() {
   font-style: italic;
   color: var(--color-text-muted);
 }
+
+/* ==================== */
+/* MOBILE (<768px)      */
+/* ==================== */
+@media (max-width: 768px) {
+  .date-popup {
+    width: 100%;
+  }
+  .date-popup__body {
+    padding: var(--space-md);
+  }
+  /* Stack calendar + duration vertically */
+  .date-popup__row {
+    grid-template-columns: 1fr;
+    gap: var(--space-xl);
+  }
+  /* Flex row: stack label+chips on top, actions below */
+  .date-popup__flex-row {
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+  }
+  /* Flex chips should wrap on mobile — tight space */
+  .date-popup__flex-chips {
+    flex-wrap: wrap;
+  }
+  /* Actions: align to the right */
+  .date-popup__actions {
+    align-items: flex-end;
+  }
+  /* Mini-calendar: smaller cells */
+  .mini-cal__cell {
+    width: 34px;
+    height: 34px;
+    font-size: 13px;
+  }
+  /* Month grid in flexible tab: 3 cols instead of 4 */
+  .date-popup__month-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  /* Duration pills: wrap to multiple rows */
+  .date-popup__dur-pills {
+    flex-wrap: wrap;
+  }
+}
 </style>

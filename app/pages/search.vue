@@ -56,13 +56,17 @@
 
           <!-- Toolbar: filter toggle, sort, view switch -->
           <div class="search-toolbar">
-            <button class="search-toolbar__filter-toggle" @click="showFilters = !showFilters">
+            <button
+              class="search-toolbar__filter-toggle"
+              @click="handleFilterButtonClick"
+            >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="4" y1="6" x2="20" y2="6" />
                 <line x1="8" y1="12" x2="20" y2="12" />
                 <line x1="12" y1="18" x2="20" y2="18" />
               </svg>
-              {{ showFilters ? t('search.hideFilters') : t('search.showFilters') }}
+              <span v-if="isMobile">{{ t('search.filters') }}</span>
+              <span v-else>{{ showFilters ? t('search.hideFilters') : t('search.showFilters') }}</span>
             </button>
 
             <div class="search-toolbar__right">
@@ -138,15 +142,16 @@
             v-if="!searchLoading"
             class="search-page__result-list"
             :class="{
-              'search-page__result-list--grid': viewMode === 'grid',
-              'search-page__result-list--grid-3': viewMode === 'grid' && !showFilters,
+              'search-page__result-list--grid': effectiveViewMode === 'grid',
+              'search-page__result-list--grid-3': effectiveViewMode === 'grid' && !showFilters,
+              'search-page__result-list--list-wide': effectiveViewMode === 'list' && !showFilters,
             }"
           >
             <SearchResultCard
               v-for="hotel in sortedHotels"
               :key="hotel.id"
               :hotel="hotel"
-              :grid-mode="viewMode === 'grid'"
+              :grid-mode="effectiveViewMode === 'grid'"
               @view-deals="openDealPanel(hotel)"
               @view-deal="navigateToDeal"
             />
@@ -158,6 +163,20 @@
     <SiteFooter />
 
     <!-- Deals side panel -->
+    <!-- Mobile filter subpage -->
+    <FilterSubpage
+      :open="mobileFilterOpen"
+      :budget-min="budgetMin"
+      :budget-max="budgetMax"
+      :persons="persons"
+      :result-count="sortedHotels.length"
+      @close="mobileFilterOpen = false"
+      @apply="mobileFilterOpen = false"
+      @clear="resetFilters"
+      @update:budget-min="budgetMin = $event"
+      @update:budget-max="budgetMax = $event"
+    />
+
     <HotelDealsSidePanel
       :is-open="panelOpen"
       :hotel="activePanelHotel"
@@ -237,9 +256,29 @@ const totalDeals = computed(() => {
 
 // View mode & filter state
 const viewMode = ref<'list' | 'grid'>('list')
+
+// Force grid mode on mobile (list view would be too cramped)
+const isMobile = useIsMobile()
+const effectiveViewMode = computed<'list' | 'grid'>(() => (isMobile.value ? 'grid' : viewMode.value))
 const showFilters = ref(true)
 const budgetMin = ref(100)
 const budgetMax = ref(2000)
+
+// Mobile filter modal
+const mobileFilterOpen = ref(false)
+
+function handleFilterButtonClick() {
+  if (isMobile.value) {
+    mobileFilterOpen.value = true
+  } else {
+    showFilters.value = !showFilters.value
+  }
+}
+
+function resetFilters() {
+  budgetMin.value = 100
+  budgetMax.value = 2000
+}
 
 // Sort
 const sortOpen = ref(false)
@@ -655,6 +694,14 @@ function navigateToDeal(slug: string) {
   transform: translateY(-4px);
 }
 
+/* List view without sidebar — image takes ~2x its normal width and is taller */
+.search-page__result-list--list-wide :deep(.result-card__image) {
+  width: 560px;
+  max-width: 50%;
+  min-height: 300px;
+  max-height: 300px;
+}
+
 /* Responsive */
 @media (max-width: 960px) {
   .search-page__grid {
@@ -665,12 +712,15 @@ function navigateToDeal(slug: string) {
     position: static;
   }
 
-  .search-page__result-list--grid {
+  /* Grid: 3-col without sidebar shrinks to 2 between 768-960 */
+  .search-page__result-list--grid-3 {
     grid-template-columns: repeat(2, 1fr);
   }
 
-  .search-page__result-list--grid-3 {
-    grid-template-columns: repeat(2, 1fr);
+  /* List wide: image cap at 50% so it shrinks proportionally on narrower */
+  .search-page__result-list--list-wide :deep(.result-card__image) {
+    width: 40%;
+    max-width: none;
   }
 }
 
@@ -678,6 +728,41 @@ function navigateToDeal(slug: string) {
   .search-page__result-list--grid,
   .search-page__result-list--grid-3 {
     grid-template-columns: 1fr;
+  }
+}
+
+/* ==================== */
+/* MOBILE (<768px)      */
+/* ==================== */
+@media (max-width: 768px) {
+  /* Hide sidebar entirely; filter moves to FilterSubpage */
+  .search-page__sidebar {
+    display: none !important;
+  }
+  /* Hide team avatars (hover tooltips don't work on touch) */
+  .team-avatars {
+    display: none;
+  }
+  /* Hide list/grid view switch — grid only on mobile */
+  .search-toolbar__view-switch {
+    display: none;
+  }
+  /* Always use grid layout, single column */
+  .search-page__result-list {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: var(--space-md) !important;
+  }
+  /* Reduce page padding */
+  .search-page__main > .container,
+  .search-page__breadcrumbs.container,
+  .search-page__grid.container {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  /* Filter toggle becomes a full-width tappable button */
+  .search-toolbar__filter-toggle {
+    padding: 10px 14px;
   }
 }
 

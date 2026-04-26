@@ -64,7 +64,7 @@
               :src="mapTileUrl"
               :alt="t('deal.mapArea')"
               class="mini-map__img mini-map__img--map"
-              @error="($event.target as HTMLImageElement).src = '/images/kasteel/iStock-1189537172.jpg'"
+              @error="($event.target as HTMLImageElement).src = '/images/kasteel/fietsenzuidlimburg.jpg'"
             />
             <div class="mini-map__pin">
               <svg width="32" height="42" viewBox="0 0 32 42" fill="none">
