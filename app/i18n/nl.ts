@@ -45,7 +45,7 @@ const nl: Record<string, string> = {
   'header.hotels': 'Hotels',
   'header.holidayParks': 'Vakantieparken',
   'header.restaurants': 'Restaurants',
-  'header.membersEntrance': 'Leden ingang',
+  'header.membersEntrance': 'Leden',
   'header.contact': 'Contact',
   'header.contactNeedHelp': 'Hulp nodig?',
   'header.contactPhoneHours': 'Ma t/m vr, 8:00 – 18:00',

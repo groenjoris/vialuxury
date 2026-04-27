@@ -392,7 +392,9 @@ function selectHotel(hotel: { name: string; slug: string }) {
   display: flex;
   flex-direction: column;
   flex: 1 1 auto;
-  min-height: 0;
+  /* Lock the popup at the browse-mode height so typing into the search field
+     swaps the inner content without resizing the dropdown. */
+  min-height: 540px;
 }
 
 /* ==================== */

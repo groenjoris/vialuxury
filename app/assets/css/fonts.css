@@ -57,3 +57,14 @@
   font-style: normal;
   font-display: swap;
 }
+
+/* ── ResotYc (decorative label font) ── */
+
+@font-face {
+  font-family: 'ResotYc';
+  src: url('/fonts/resotyc/ResotYc.woff2') format('woff2'),
+       url('/fonts/resotyc/ResotYc.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}

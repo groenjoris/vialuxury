@@ -45,8 +45,9 @@
       </section>
 
       <!-- Hero Gallery -->
-      <section class="container">
+      <section class="container deal-page__gallery">
         <HeroGallery :images="hotel.images" @open-gallery="openGallery" />
+        <span v-if="savingsAmount > 0" class="deal-page__savings-badge deal-page__savings-badge--gallery">Bespaar €{{ savingsAmount }}</span>
       </section>
 
       <!-- Two-column layout: Content | Booking Sidebar -->
@@ -104,26 +105,15 @@
               {{ t('deal.inclusionsEndAlt') }}
             </h2>
             <div class="content-blocks__grid">
-              <!-- Row 1: overnight card + first room info card -->
-              <RoomInclusionCard :deal="currentDeal" />
-              <RoomInfoCard
-                v-for="(entry, idx) in roomAllocationEntries"
-                :key="entry.room.id"
-                :room="entry.room"
-                :count="entry.count"
-                :is-first="idx === 0"
-                :deal="currentDeal"
-                @open-upgrades="isUpgradePanelOpen = true"
-              />
-
-              <!-- All inclusion content blocks (Yvette banner moved to sidebar) -->
+              <!-- All inclusion content blocks (overnight + upgrade get extra CTAs / sticker) -->
               <div
-                v-for="inc in filteredInclusions"
+                v-for="inc in displayedInclusions"
                 :key="inc.id"
                 class="content-block"
               >
                 <div v-if="inc.image" class="content-block__image">
                   <img :src="inc.image" :alt="localized(inc.title)" loading="lazy" />
+                  <span v-if="isUpgradeInclusion(inc)" class="content-block__upgrade-sticker">UPGRADE</span>
                 </div>
                 <div class="content-block__body">
                   <h3 class="content-block__title">
@@ -132,6 +122,39 @@
                   </h3>
                   <p class="content-block__desc">{{ localized(inc.description) }}</p>
                 </div>
+
+                <!-- Overnight block: 1) reisgezelschap CTA, 2) upgrade hint (only if no upgrade-block in deal) -->
+                <template v-if="isOvernightInclusion(inc)">
+                  <div class="content-block__cta">
+                    <h4 class="content-block__cta-heading">
+                      Je boekt {{ store.travelGroup.rooms }} {{ store.travelGroup.rooms === 1 ? 'kamer' : 'kamers' }} voor {{ store.totalPersons }} {{ store.totalPersons === 1 ? 'persoon' : 'personen' }}
+                    </h4>
+                    <button type="button" class="content-block__cta-action" @click="store.openTravelGroupModal()">
+                      Wijzig aantal kamers of personen
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                    </button>
+                  </div>
+                  <div v-if="!hasUpgradeInclusion" class="content-block__cta">
+                    <template v-if="!dateSelected">
+                      <h4 class="content-block__cta-heading">Nog meer luxe?</h4>
+                      <p class="content-block__cta-text">Voer hiernaast je aankomstdatum in om beschikbare kamerupgrades te zien.</p>
+                    </template>
+                    <template v-else-if="!paidUpgradeSelected">
+                      <h4 class="content-block__cta-heading">Nog meer luxe?</h4>
+                      <button type="button" class="content-block__cta-action" @click="isUpgradePanelOpen = true">
+                        Bekijk beschikbare kamerupgrades
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                      </button>
+                    </template>
+                    <template v-else>
+                      <h4 class="content-block__cta-heading">U heeft een betaalde kamerupgrade</h4>
+                      <button type="button" class="content-block__cta-action" @click="isUpgradePanelOpen = true">
+                        Selecteer andere kamer
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                      </button>
+                    </template>
+                  </div>
+                </template>
               </div>
             </div>
           </section>
@@ -527,6 +550,10 @@ const firstParagraph = computed(() => {
   return m ? m[0] : html.split(/\n\n+/)[0]
 })
 const hasMoreDescription = computed(() => fullDescription.value.length > firstParagraph.value.length + 4)
+const savingsAmount = computed(() => {
+  if (!currentDeal.value) return 0
+  return Math.max(0, Math.round(currentDeal.value.originalPrice - currentDeal.value.basePrice))
+})
 
 // Watch for search bar changes → fake refresh
 const { searchVersion } = useSearchState()
@@ -585,6 +612,50 @@ const currentDeal = computed(() => store.currentDeal)
 const filteredInclusions = computed(() => {
   if (!currentDeal.value) return []
   return currentDeal.value.inclusions
+})
+
+// Detect the overnight + kamerupgrade inclusion blocks by their (NL) title.
+const OVERNIGHT_RE = /\bovernachting\b/i
+const UPGRADE_RE = /(kamerupgrade|upgrade\s+naar)/i
+
+function inclusionTitle(inc: { title: { nl: string; en: string } }): string {
+  return localized(inc.title)
+}
+function isOvernightInclusion(inc: { title: { nl: string; en: string } }): boolean {
+  return OVERNIGHT_RE.test(inclusionTitle(inc))
+}
+function isUpgradeInclusion(inc: { title: { nl: string; en: string } }): boolean {
+  return UPGRADE_RE.test(inclusionTitle(inc))
+}
+const hasUpgradeInclusion = computed(() =>
+  filteredInclusions.value.some(inc => isUpgradeInclusion(inc)),
+)
+
+// Reactive state for the overnight CTA branch + synthetic upgrade block injection
+const dateSelected = computed(() => !!store.checkInDate)
+const paidUpgradeSelected = computed(() => (store.selectedRoom?.priceExtra ?? 0) > 0)
+
+/** filteredInclusions plus a synthetic kamerupgrade block when the user
+ *  picked a paid upgrade via RoomUpgradeSidePanel (only when the deal
+ *  doesn't already ship one). The synthetic block reuses the same
+ *  content-block markup + UPGRADE sticker via isUpgradeInclusion(). */
+const displayedInclusions = computed(() => {
+  const list = [...filteredInclusions.value]
+  if (paidUpgradeSelected.value && !hasUpgradeInclusion.value && store.selectedRoom) {
+    const r = store.selectedRoom
+    const synthetic = {
+      id: 'synthetic-upgrade',
+      icon: '',
+      title: { nl: `Kamerupgrade naar ${localized(r.name)}`, en: `Room upgrade: ${localized(r.name)}` },
+      description: r.upgradeDescription ?? r.description,
+      image: r.image,
+      highlight: false,
+    }
+    const idx = list.findIndex(isOvernightInclusion)
+    if (idx !== -1) list.splice(idx + 1, 0, synthetic)
+    else list.unshift(synthetic)
+  }
+  return list
 })
 
 /** Room allocation entries for rendering separate room cards */
@@ -763,11 +834,38 @@ function openGallery() { }
 .deal-page__divider { color: var(--color-text-muted); }
 .deal-page__title-actions {
   display: flex;
+  align-items: center;
   gap: var(--space-sm);
   flex-shrink: 0;
   position: absolute;
   right: var(--space-lg);
   bottom: var(--space-md);
+}
+.deal-page__savings-badge {
+  display: inline-flex;
+  align-items: center;
+  height: 40px;
+  padding: 5px;
+  background: #70BEB2;
+  color: #fff;
+  font-family: 'ResotYc', var(--font-heading);
+  font-weight: 400;
+  font-size: 22px;
+  letter-spacing: 0.01em;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+/* Gallery wrapper hosts an absolutely-positioned savings badge in the
+   bottom-left corner of the hero gallery. */
+.deal-page__gallery { position: relative; }
+
+.deal-page__savings-badge--gallery {
+  position: absolute;
+  left: calc(var(--space-lg) + 16px);
+  bottom: 16px;
+  z-index: 3;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
 }
 .icon-action { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--color-border); display: flex; align-items: center; justify-content: center; font-size: 18px; background: var(--color-surface); cursor: pointer; }
 .icon-action:hover { border-color: var(--color-primary); }
@@ -978,13 +1076,65 @@ function openGallery() { }
 .inline-edit-link:hover { color: var(--color-primary); }
 .inline-edit-link svg { color: var(--color-primary); }
 .content-blocks__grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-xl); }
-.content-block { border-radius: var(--radius-lg); overflow: hidden; border: 1px solid var(--color-border-light); }
-.content-block__image { aspect-ratio: 16/10; overflow: hidden; background: var(--color-background-secondary); }
+.content-block { border-radius: var(--radius-lg); overflow: hidden; border: 1px solid var(--color-border-light); display: flex; flex-direction: column; }
+.content-block__image { aspect-ratio: 16/10; overflow: hidden; background: var(--color-background-secondary); position: relative; }
 .content-block__image img { width: 100%; height: 100%; object-fit: cover; }
-.content-block__body { padding: var(--space-md) var(--space-lg) var(--space-lg); }
+.content-block__body { padding: var(--space-md) var(--space-lg) var(--space-lg); flex: 1; }
 .content-block__title { font-size: 16px; font-weight: 600; margin-bottom: var(--space-sm); display: flex; align-items: center; gap: var(--space-sm); }
 .content-block__check { color: var(--color-discount); font-weight: 700; }
 .content-block__desc { font-size: 14px; line-height: 1.65; color: var(--color-text-secondary); }
+
+/* "UPGRADE" sticker — overlaid top-left on a kamerupgrade block image */
+.content-block__upgrade-sticker {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: #ECB4CE;
+  color: #fff;
+  font-family: 'ResotYc', var(--font-heading);
+  font-size: 18px;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  padding: 5px;
+  border-radius: 4px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+/* Footer CTA blocks under overnight inclusion (reisgezelschap + upgrade-hint) */
+.content-block__cta {
+  padding: var(--space-md) var(--space-lg);
+  border-top: 1px solid var(--color-border-light);
+  background: var(--color-background-secondary);
+}
+.content-block__cta-heading {
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  margin-bottom: 6px;
+}
+.content-block__cta-text {
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--color-text-secondary);
+}
+.content-block__cta-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-primary);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.content-block__cta-action:hover { opacity: 0.85; }
+.content-block__cta-action svg { flex-shrink: 0; }
 
 /* ===== FACILITIES ===== */
 .deal-page__facilities { padding: var(--space-xl) 0; border-top: 1px solid var(--color-border-light); }

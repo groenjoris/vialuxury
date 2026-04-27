@@ -208,8 +208,10 @@ onUnmounted(() => {
 }
 
 .panel__pitch {
-  font-size: 13px;
-  color: var(--color-text-muted);
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 400;
+  color: var(--color-text-primary);
   line-height: 1.4;
   margin-top: 4px;
 }
@@ -305,7 +307,7 @@ onUnmounted(() => {
 }
 
 .deal-card__nights {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 700;
   font-family: var(--font-heading);
 }
@@ -339,9 +341,9 @@ onUnmounted(() => {
 
 .deal-card__title {
   font-family: var(--font-body);
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 400;
-  color: var(--color-text-muted);
+  color: var(--color-text-primary);
   line-height: 1.4;
   margin-bottom: var(--space-md);
 }

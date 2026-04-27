@@ -14,18 +14,35 @@
 
         <!-- Verticals switcher (desktop only) -->
         <nav v-if="!isMobile" class="verticals" aria-label="Verticals">
-          <NuxtLink
-            v-for="v in verticals"
-            :key="v.id"
-            :to="v.href"
-            class="verticals__item"
-            :class="{ 'verticals__item--active': v.id === activeVertical }"
-          >
-            <template v-if="v.id === 'hotels'">
-              <span>Hotels <span class="verticals__item-accent">+ <span class="verticals__item-more">more</span></span></span>
-            </template>
-            <template v-else>{{ v.label }}</template>
-          </NuxtLink>
+          <template v-for="v in verticals" :key="v.id">
+            <span
+              v-if="v.id === activeVertical"
+              class="verticals__item verticals__item--active verticals__item--inactive-link"
+              aria-current="page"
+            >
+              <template v-if="v.id === 'hotels'">
+                <span>Hotels <span class="verticals__item-accent">+ <span class="verticals__item-more">more</span></span></span>
+              </template>
+              <template v-else>{{ v.label }}</template>
+            </span>
+            <a
+              v-else-if="v.external"
+              :href="v.href"
+              target="_blank"
+              rel="noopener"
+              class="verticals__item"
+            >{{ v.label }}</a>
+            <NuxtLink
+              v-else
+              :to="v.href"
+              class="verticals__item"
+            >
+              <template v-if="v.id === 'hotels'">
+                <span>Hotels <span class="verticals__item-accent">+ <span class="verticals__item-more">more</span></span></span>
+              </template>
+              <template v-else>{{ v.label }}</template>
+            </NuxtLink>
+          </template>
         </nav>
 
         <!-- Right actions -->
@@ -468,11 +485,16 @@ const localeStore = useLocaleStore()
 
 // --- Verticals (computed for reactivity on locale change) ---
 const verticals = computed(() => [
-  { id: 'hotels', label: t('header.hotels'), href: '/' },
-  { id: 'vakantieparken', label: t('header.holidayParks'), href: '/vakantieparken' },
-  { id: 'restaurants', label: t('header.restaurants'), href: '/restaurants' },
+  { id: 'hotels', label: t('header.hotels'), href: '/', external: false },
+  { id: 'vakantieparken', label: t('header.holidayParks'), href: '/vakantieparken', external: false },
+  { id: 'restaurants', label: t('header.restaurants'), href: 'https://restaurants.vialuxury.com/', external: true },
 ])
-const activeVertical = ref('hotels')
+// Route-aware: 'vakantieparken' on /vakantieparken*, otherwise 'hotels' (home/search/deal/hotel)
+const _route = useRoute()
+const activeVertical = computed(() => {
+  if (_route.path.startsWith('/vakantieparken')) return 'vakantieparken'
+  return 'hotels'
+})
 
 // --- Language switcher ---
 const languages = [
@@ -937,6 +959,9 @@ function handleSelectHotel(slug: string) {
    Container provides its own image; we just lift the bar off it. */
 .site-header--overlay {
   background: transparent;
+  /* Reserve TopBar height (34px) above the nav so the home navbar
+     sits at the same Y as the navbar on /search (which has TopBar above). */
+  padding-top: 34px;
   padding-bottom: 0;
   margin-bottom: 0;
 }
@@ -966,9 +991,11 @@ function handleSelectHotel(slug: string) {
 .site-header--overlay .search-bar__field {
   flex: 1 0 0;
   min-width: 0;
-  margin: 0;
-  padding: 10px 22px;
-  border-radius: 4px;
+  /* Match nav-bar (solid) spacing: margin insets the hover/active grey rect
+     from the bar edges; padding/border-radius keep the same internal feel. */
+  margin: 6px 4px;
+  padding: 8px 18px;
+  border-radius: 10px;
   flex-direction: row;
   align-items: center;
   gap: 12px;
@@ -977,7 +1004,9 @@ function handleSelectHotel(slug: string) {
 .site-header--overlay .search-bar__divider {
   background: #e6e3dc;
   width: 1px;
-  align-self: stretch;
+  /* Twice the solid-bar divider height (24 → 48 px). */
+  height: 48px;
+  align-self: center;
   margin: 0;
 }
 
@@ -1133,7 +1162,7 @@ function handleSelectHotel(slug: string) {
 /* Nav bar */
 .site-header__nav {
   background: #111111;
-  height: 88px;
+  height: 72px;
   display: flex;
   align-items: center;
   position: relative;
@@ -1195,6 +1224,15 @@ function handleSelectHotel(slug: string) {
   color: white;
   background: rgba(255, 255, 255, 0.12);
   font-weight: 600;
+}
+
+/* Active vertical is rendered as <span> (no link). Disable hover/cursor. */
+.verticals__item--inactive-link {
+  cursor: default;
+}
+.verticals__item--inactive-link:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: white;
 }
 
 /* Right actions */

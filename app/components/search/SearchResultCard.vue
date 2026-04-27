@@ -103,9 +103,15 @@
               </template>
             </div>
           </div>
-          <button v-if="isSingleDeal" class="result-card__cta" @click="$emit('view-deal', hotel.deals[0].slug)">
+          <NuxtLink
+            v-if="isSingleDeal"
+            :to="`/deal/${hotel.deals[0].slug}`"
+            target="_blank"
+            rel="noopener"
+            class="result-card__cta"
+          >
             {{ t('search.viewArrangementSingle') }}
-          </button>
+          </NuxtLink>
           <button v-else class="result-card__cta" @click="$emit('view-deals')">
             {{ t('search.viewDeals') }} {{ hotel.deals.length }} {{ hotel.deals.length === 1 ? t('search.deal') : t('search.dealPlural') }}
           </button>
@@ -419,11 +425,6 @@ const lowestDiscount = computed(() => {
 }
 
 .result-card__name-link:hover .result-card__name {
-  text-decoration: underline;
-  text-underline-offset: 2px;
-}
-
-.result-card:hover .result-card__name {
   text-decoration: underline;
   text-underline-offset: 2px;
 }

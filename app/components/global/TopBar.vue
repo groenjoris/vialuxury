@@ -59,8 +59,8 @@ onBeforeUnmount(stopRotation)
 
 <style scoped>
 .top-bar {
-  background-color: #3A3A3A;
-  color: #fff;
+  background-color: #1E1E1E;
+  color: rgba(255, 255, 255, 0.55);
   font-size: 13px;
   height: 34px;
   display: flex;

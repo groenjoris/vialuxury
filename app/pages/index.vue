@@ -25,21 +25,24 @@
         </template>
       </SiteHeader>
 
-      <!-- Trust row sits below the search dock, still inside the hero -->
-      <div class="home-hero__trust container">
-        <span class="home-hero__trust-item">
-          <span class="home-hero__trust-star" aria-hidden="true">★</span>
-          <span class="home-hero__trust-text">12.333 gasten waarderen ons met</span>
-          <span class="home-hero__trust-link">4,8/5 op Trustpilot</span>
-        </span>
-        <span class="home-hero__trust-item home-hero__trust-item--soft">
-          <span class="home-hero__trust-check" aria-hidden="true">✓</span>
-          <span class="home-hero__trust-text">Gratis annuleren op de meeste verblijven</span>
-        </span>
-        <span class="home-hero__trust-item home-hero__trust-item--soft">
-          <span class="home-hero__trust-check" aria-hidden="true">✓</span>
-          <span class="home-hero__trust-text">Unieke deals met heul veul korting</span>
-        </span>
+      <!-- Trust row: wrap inside .container exactly like the search-dock so
+           the inner row's edges match the search-bar's visible edges. -->
+      <div class="container home-hero__trust-wrap">
+        <div class="home-hero__trust">
+          <span class="home-hero__trust-item">
+            <span class="home-hero__trust-star" aria-hidden="true">★</span>
+            <span class="home-hero__trust-text">12.333 gasten waarderen ons met</span>
+            <span class="home-hero__trust-link">4,8/5 op Trustpilot</span>
+          </span>
+          <span class="home-hero__trust-item home-hero__trust-item--soft">
+            <span class="home-hero__trust-check" aria-hidden="true">✓</span>
+            <span class="home-hero__trust-text">Gratis annuleren op de meeste verblijven</span>
+          </span>
+          <span class="home-hero__trust-item home-hero__trust-item--soft">
+            <span class="home-hero__trust-check" aria-hidden="true">✓</span>
+            <span class="home-hero__trust-text">Unieke deals met heul veul korting</span>
+          </span>
+        </div>
       </div>
     </section>
 
@@ -71,8 +74,7 @@
             :key="hotel.id"
             :hotel="hotel"
             :grid-mode="true"
-            @view-deals="navigateToFirstDeal(hotel)"
-            @view-deal="navigateToDeal"
+            @view-deals="openDealPanel(hotel)"
           />
         </div>
       </div>
@@ -88,14 +90,20 @@
             :key="hotel.id"
             :hotel="hotel"
             :grid-mode="true"
-            @view-deals="navigateToFirstDeal(hotel)"
-            @view-deal="navigateToDeal"
+            @view-deals="openDealPanel(hotel)"
           />
         </div>
       </div>
     </section>
 
     <SiteFooter />
+
+    <!-- Hotel deals side panel (opens from "Bekijk X deals" CTA) -->
+    <HotelDealsSidePanel
+      :is-open="panelOpen"
+      :hotel="activePanelHotel"
+      @close="panelOpen = false"
+    />
   </div>
 </template>
 
@@ -104,7 +112,6 @@ import { POPULAR_FILTER_ICONS } from '~/utils/popularFilterIcons'
 import { mappedHotels } from '~/data/deals-mapper'
 import type { SearchHotel } from '~/types/searchHotel'
 
-const router = useRouter()
 
 // Super deals: top 3 hotels by star rating (then highest discount within the same tier)
 const superDeals: SearchHotel[] = [...mappedHotels]
@@ -120,12 +127,13 @@ const superDeals: SearchHotel[] = [...mappedHotels]
 const superIds = new Set(superDeals.map(h => h.id))
 const actueleDeals: SearchHotel[] = mappedHotels.filter(h => !superIds.has(h.id)).slice(0, 9)
 
-function navigateToDeal(slug: string) {
-  router.push(`/deal/${slug}`)
-}
+// Side panel — same pattern as /search
+const panelOpen = ref(false)
+const activePanelHotel = ref<SearchHotel | null>(null)
 
-function navigateToFirstDeal(hotel: SearchHotel) {
-  if (hotel.deals.length > 0) router.push(`/deal/${hotel.deals[0].slug}`)
+function openDealPanel(hotel: SearchHotel) {
+  activePanelHotel.value = hotel
+  panelOpen.value = true
 }
 
 interface Filter { label: string; count: number; icon: keyof typeof POPULAR_FILTER_ICONS }
@@ -183,7 +191,7 @@ const filters: Filter[] = [
 /* Hero credit line — right-aligned with the hamburger / nav-actions */
 .home-hero__location {
   position: absolute;
-  top: 100px;
+  top: 124px;
   left: 0;
   right: 0;
   z-index: 5;
@@ -258,15 +266,27 @@ const filters: Filter[] = [
   margin: 0;
 }
 
-/* Trust row under the search bar */
+/* Trust row under the search bar — flex-row inside its own .container wrap.
+   The flex row itself is width:100% so the first/last items pin to the
+   container content edges = the search bar's visible white-card edges. */
+.home-hero__trust-wrap {
+  /* Explicit positioning identical to the search bar's .container wrapper —
+     don't rely on .container alone in case any rule overrides it. */
+  width: 100%;
+  max-width: var(--container-max);
+  margin: 16px auto 0;
+  padding: 0 var(--space-lg) 32px;
+  box-sizing: border-box;
+}
+
 .home-hero__trust {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 40px;
-  padding-bottom: 32px;
-  margin-top: 16px;
-  font-size: 12px;
+  justify-content: space-between;
+  gap: 16px 16px;
+  width: 100%;
+  font-size: 14px;
   letter-spacing: 0.12px;
 }
 
@@ -283,12 +303,12 @@ const filters: Filter[] = [
 
 .home-hero__trust-star {
   color: #00b57e;
-  font-size: 11px;
+  font-size: 13px;
 }
 
 .home-hero__trust-check {
   color: #00b57e;
-  font-size: 11px;
+  font-size: 13px;
 }
 
 .home-hero__trust-link {
@@ -297,8 +317,8 @@ const filters: Filter[] = [
 
 /* ===== POPULAR FILTERS ===== */
 .home-popular {
-  background: #fff;
-  padding: 56px 0;
+  background: var(--color-background-secondary, #faf9f6);
+  padding: 28px 0;
 }
 
 .home-popular__pills {
