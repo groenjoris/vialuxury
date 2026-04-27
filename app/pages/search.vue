@@ -13,6 +13,8 @@
       <div class="search-page__grid container" :class="{ 'search-page__grid--no-sidebar': !showFilters }">
         <Transition name="sidebar-slide">
           <div v-if="showFilters" class="search-page__sidebar">
+            <!-- Map preview (fake door) at the top of sidebar -->
+            <MapPreviewCard class="search-page__map-preview" @click="handleMapClick" />
             <SearchFilterPanel
               :budget-min="budgetMin"
               :budget-max="budgetMax"
@@ -56,18 +58,33 @@
 
           <!-- Toolbar: filter toggle, sort, view switch -->
           <div class="search-toolbar">
-            <button
-              class="search-toolbar__filter-toggle"
-              @click="handleFilterButtonClick"
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="4" y1="6" x2="20" y2="6" />
-                <line x1="8" y1="12" x2="20" y2="12" />
-                <line x1="12" y1="18" x2="20" y2="18" />
-              </svg>
-              <span v-if="isMobile">{{ t('search.filters') }}</span>
-              <span v-else>{{ showFilters ? t('search.hideFilters') : t('search.showFilters') }}</span>
-            </button>
+            <div class="search-toolbar__left">
+              <!-- Map button: only when filter hidden on desktop (sidebar map is otherwise visible) -->
+              <button
+                v-if="!showFilters && !isMobile"
+                type="button"
+                class="search-toolbar__map-btn"
+                @click="handleMapClick"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
+                  <circle cx="12" cy="10" r="3" />
+                </svg>
+                {{ t('search.viewOnMap') }}
+              </button>
+              <button
+                class="search-toolbar__filter-toggle"
+                @click="handleFilterButtonClick"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="4" y1="6" x2="20" y2="6" />
+                  <line x1="8" y1="12" x2="20" y2="12" />
+                  <line x1="12" y1="18" x2="20" y2="18" />
+                </svg>
+                <span v-if="isMobile">{{ t('search.filters') }}</span>
+                <span v-else>{{ showFilters ? t('search.hideFilters') : t('search.showFilters') }}</span>
+              </button>
+            </div>
 
             <div class="search-toolbar__right">
               <!-- Sort dropdown -->
@@ -190,7 +207,7 @@ import type { SearchHotel } from '~/types/searchHotel'
 import { searchHotels } from '~/data/mock/search-hotels'
 
 const { t } = useI18n()
-const { loading, setLoading, persons, rooms } = useSearchState()
+const { loading, setLoading, persons, rooms, selectedNights } = useSearchState()
 
 // Team members for avatar row
 const hoveredMember = ref<string | null>(null)
@@ -232,8 +249,9 @@ const teamMembers = [
   },
 ]
 
-// Loading state — driven directly by the shared loading flag (no artificial delay)
-const searchLoading = computed(() => loading.value)
+// Loading state — local override so we can briefly show a spinner on filter changes
+const localLoading = ref(false)
+const searchLoading = computed(() => loading.value || localLoading.value)
 
 // Clear loading on mount (handles navigation arriving with loading=true)
 onMounted(() => {
@@ -245,13 +263,21 @@ watch(loading, (val) => {
   if (val) Promise.resolve().then(() => setLoading(false))
 })
 
+// Show a brief spinner whenever the nights filter changes (mimics network latency)
+let loaderTimer: ReturnType<typeof setTimeout> | null = null
+watch(() => [...selectedNights.value], () => {
+  localLoading.value = true
+  if (loaderTimer) clearTimeout(loaderTimer)
+  loaderTimer = setTimeout(() => { localLoading.value = false }, 350)
+}, { deep: true })
+
 const breadcrumbs = computed(() => [
   { label: t('search.home'), href: '/' },
   { label: t('search.arrangements'), href: '/search' },
 ])
 
 const totalDeals = computed(() => {
-  return searchHotels.reduce((sum, hotel) => sum + hotel.deals.length, 0)
+  return sortedHotels.value.reduce((sum, hotel) => sum + hotel.deals.length, 0)
 })
 
 // View mode & filter state
@@ -266,6 +292,12 @@ const budgetMax = ref(2000)
 
 // Mobile filter modal
 const mobileFilterOpen = ref(false)
+
+function handleMapClick() {
+  // Fake door — feature coming soon. For now: noop. Replace with router-push when map view exists.
+  // eslint-disable-next-line no-alert
+  if (typeof window !== 'undefined') alert(t('search.viewOnMap') + ' — binnenkort beschikbaar')
+}
 
 function handleFilterButtonClick() {
   if (isMobile.value) {
@@ -292,12 +324,25 @@ const sortOptions = computed(() => [
   { value: 'ratingLow' as const, label: t('search.sort.ratingLow') },
 ])
 
-// Budget-filtered hotels
+// Filtered hotels — applies budget AND nights filter.
+// A hotel only matches if it has at least one deal that satisfies BOTH filters.
+// The hotel's deals[] is also pruned to only the matching deals (used by sidepanel).
 const filteredHotels = computed(() => {
-  return searchHotels.filter((hotel) => {
-    // Hotel passes if ANY deal's price is within range
-    return hotel.deals.some(d => d.basePrice >= budgetMin.value && d.basePrice <= budgetMax.value)
-  })
+  const nightsActive = selectedNights.value.length > 0
+  const out = []
+  for (const hotel of searchHotels) {
+    const matchingDeals = hotel.deals.filter((d) => {
+      const inBudget = d.basePrice >= budgetMin.value && d.basePrice <= budgetMax.value
+      if (!inBudget) return false
+      if (!nightsActive) return true
+      const nightKey = d.nights >= 5 ? '5+' : String(d.nights)
+      return selectedNights.value.includes(nightKey)
+    })
+    if (matchingDeals.length > 0) {
+      out.push({ ...hotel, deals: matchingDeals })
+    }
+  }
+  return out
 })
 
 const sortedHotels = computed(() => {
@@ -373,10 +418,15 @@ function navigateToDeal(slug: string) {
   min-width: 0;
 }
 
+.search-page__map-preview {
+  margin-bottom: var(--space-md);
+}
+
 .search-page__results {
   display: flex;
   flex-direction: column;
   gap: var(--space-lg);
+  min-width: 0;
 }
 
 .search-page__header {
@@ -510,6 +560,8 @@ function navigateToDeal(slug: string) {
   display: flex;
   flex-direction: column;
   gap: var(--space-lg);
+  width: 100%;
+  min-width: 0;
 }
 
 .search-page__result-list--grid {
@@ -532,7 +584,14 @@ function navigateToDeal(slug: string) {
   border-bottom: 1px solid var(--color-border-light);
 }
 
-.search-toolbar__filter-toggle {
+.search-toolbar__left {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.search-toolbar__filter-toggle,
+.search-toolbar__map-btn {
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -545,9 +604,11 @@ function navigateToDeal(slug: string) {
   border-radius: var(--radius-sm);
   cursor: pointer;
   transition: all var(--transition-fast);
+  font-family: inherit;
 }
 
-.search-toolbar__filter-toggle:hover {
+.search-toolbar__filter-toggle:hover,
+.search-toolbar__map-btn:hover {
   border-color: var(--color-primary);
   color: var(--color-primary);
 }
@@ -696,8 +757,9 @@ function navigateToDeal(slug: string) {
 
 /* List view without sidebar — image takes ~2x its normal width and is taller */
 .search-page__result-list--list-wide :deep(.result-card__image) {
-  width: 560px;
-  max-width: 50%;
+  width: 50%;
+  max-width: 560px;
+  flex-shrink: 0;
   min-height: 300px;
   max-height: 300px;
 }

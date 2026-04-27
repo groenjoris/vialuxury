@@ -5,6 +5,16 @@
       <span v-if="lowestDiscount" class="result-card__discount-badge">
         -{{ lowestDiscount }}%
       </span>
+      <div v-if="hotel.labels && hotel.labels.length" class="result-card__labels">
+        <img
+          v-for="label in hotel.labels"
+          :key="label"
+          :src="`/images/labels/${labelFile(label)}`"
+          :alt="label"
+          class="result-card__label"
+          loading="lazy"
+        />
+      </div>
       <button
         type="button"
         class="result-card__favorite"
@@ -61,7 +71,8 @@
           <strong class="result-card__highlights-subtitle">Inclusief</strong>
           <div class="result-card__highlight-list">
             <span v-for="item in inclusionItems" :key="item" class="result-card__highlight">
-              <span class="result-card__highlight-check">✓</span> {{ item }}
+              <span class="result-card__highlight-check">✓</span>
+              <span class="result-card__highlight-text">{{ item }}</span>
             </span>
           </div>
         </div>
@@ -108,12 +119,27 @@
 import type { SearchHotel } from '~/types/searchHotel'
 import { formatPrice } from '~/utils/formatPrice'
 import { getReviewLabelKey } from '~/utils/reviewLabel'
+import { mappedPackagesByPermalink } from '~/data/deals-mapper'
 
 const { t, localized } = useI18n()
 
 // Favorite state — local per-card for prototype
 const isFavorite = ref(false)
 const { persons } = useSearchState()
+
+// Label key → filename in /public/images/labels/. Source filenames have spaces.
+const LABEL_FILES: Record<string, string> = {
+  'wellness': 'WELLNESS.svg',
+  'spa-kamer': 'spa kamer.svg',
+  'super-deal': 'super deal.svg',
+  'exclusief': 'exclusief.svg',
+  'last-minute': 'last minute.svg',
+  'nieuw': 'nieuw.svg',
+}
+
+function labelFile(label: string): string {
+  return LABEL_FILES[label] || `${label}.svg`
+}
 
 function adjustPrice(basePrice: number, p: number): number {
   if (p % 2 === 0) return Math.round(basePrice * (p / 2))
@@ -165,22 +191,54 @@ const singleDealArrangementSuffix = computed(() => {
     .replace('{persons}', String(persons.value))
 })
 
-const firstInclusionOptions = [
-  'Diner', 'Museumkaartjes', 'Welkomstbubbels',
-  'Gebruik wellness', 'Een fiets voor iedereen', 'Royaal ontbijt', 'Super lang uitslapen',
+const roomPhrases = [
+  'Fantastische kamer',
+  'Hele luxe kamer',
+  'Kamer met alles erop en eraan',
+  'Luxe kamer op topniveau',
+  'Stijlvolle premium kamer',
 ]
 
+// Excluded from "common across arrangements" pick: overnight stays + room upgrades
+function isExcludedInclusion(text: string): boolean {
+  const t = text.trim().toLowerCase()
+  if (!t) return true
+  if (/overnacht|night/.test(t)) return true
+  if (/upgrade/.test(t)) return true
+  if (/^kamer\b/.test(t)) return true // "Kamer", "Kamerupgrade naar..." etc.
+  if (/ontbijt|breakfast/.test(t)) return true // too trivial
+  return false
+}
+
+// Pick the inclusion title shared by EVERY deal of this hotel (excluding overnights/upgrades).
+function commonInclusion(hotel: SearchHotel): string {
+  const perDealTitles: string[][] = hotel.deals.map((d) => {
+    const pkg = mappedPackagesByPermalink[d.slug]
+    if (!pkg) return []
+    return pkg.inclusions
+      .map(i => localized(i.title).trim())
+      .filter(t => !isExcludedInclusion(t))
+  })
+  if (perDealTitles.length === 0 || perDealTitles[0].length === 0) return ''
+  // Intersection across all deals (case-insensitive match, preserve original casing of first deal)
+  const [first, ...rest] = perDealTitles
+  const common = first.filter(title =>
+    rest.every(arr => arr.some(t => t.toLowerCase() === title.toLowerCase())),
+  )
+  return common[0] || first[0] || ''
+}
+
+// Stable pseudo-random pick from list using string hash → no shuffle on re-render.
+function pickStable<T>(list: T[], seed: string): T {
+  let h = 0
+  for (let i = 0; i < seed.length; i++) h = (h * 31 + seed.charCodeAt(i)) | 0
+  return list[Math.abs(h) % list.length]
+}
+
 const inclusionItems = computed(() => {
-  const name = props.hotel.name
-  let first: string
-  if (name === 'Hotel Haarhuis' || name === 'Kasteel TerWorm') {
-    first = 'Culinair 3-gangendiner'
-  } else {
-    // Pick a stable option based on hotel name length as a simple hash
-    const index = name.length % firstInclusionOptions.length
-    first = firstInclusionOptions[index]
-  }
-  return [first, 'De beste kamer', 'En andere extra\'s']
+  const first = commonInclusion(props.hotel) || 'Welkomstdrankje'
+  const second = pickStable(roomPhrases, props.hotel.name + props.hotel.slug)
+  return [first, second, 'En andere extra\'s']
 })
 
 const lowestPrice = computed(() => {
@@ -201,6 +259,8 @@ const lowestDiscount = computed(() => {
 <style scoped>
 .result-card {
   display: flex;
+  width: 100%;
+  min-width: 0;
   background: var(--color-surface);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-card);
@@ -230,6 +290,23 @@ const lowestDiscount = computed(() => {
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+/* Special-deal sticker overlay (bottom-left of the hero image) */
+.result-card__labels {
+  position: absolute;
+  left: var(--space-sm);
+  bottom: var(--space-sm);
+  display: flex;
+  gap: 6px;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.result-card__label {
+  height: 56px;
+  width: auto;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.35));
 }
 
 .result-card__discount-badge {
@@ -305,7 +382,7 @@ const lowestDiscount = computed(() => {
 
 .result-card__content {
   flex: 1;
-  padding: var(--space-md) var(--space-xl) var(--space-md) var(--space-lg);
+  padding: var(--space-md) var(--space-md) var(--space-md) var(--space-lg);
   display: flex;
   flex-direction: column;
   min-width: 0;
@@ -446,6 +523,7 @@ const lowestDiscount = computed(() => {
 /* Left column: highlights */
 .result-card__highlights {
   flex: 1;
+  min-width: 0;
 }
 
 .result-card__highlights-subtitle {
@@ -468,6 +546,14 @@ const lowestDiscount = computed(() => {
   display: flex;
   align-items: center;
   gap: 6px;
+  min-width: 0;
+}
+
+.result-card__highlight-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
 }
 
 .result-card__highlight-check {

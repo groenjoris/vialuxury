@@ -1,18 +1,18 @@
 <template>
   <div class="top-bar">
     <div class="top-bar__inner container">
-      <!-- Desktop: all 4 items in one row -->
+      <!-- Desktop: all items in one row -->
       <template v-if="!isMobile">
         <div v-for="(item, idx) in items" :key="idx" class="top-bar__item">
           <span class="top-bar__icon">{{ item.icon }}</span>
-          <span>{{ item.text }}</span>
+          <span v-html="item.text" />
         </div>
       </template>
       <!-- Mobile: single rotating item with fade -->
       <Transition v-else name="top-bar-fade" mode="out-in">
         <div :key="currentIdx" class="top-bar__item top-bar__item--mobile">
           <span class="top-bar__icon">{{ items[currentIdx].icon }}</span>
-          <span>{{ items[currentIdx].text }}</span>
+          <span v-html="items[currentIdx].text" />
         </div>
       </Transition>
     </div>
@@ -25,11 +25,12 @@ const { t } = useI18n()
 const isMobile = useIsMobile()
 
 const items = computed(() => [
-  { icon: '★', text: t('topbar.trustpilot') },
-  { icon: '✓', text: t('topbar.bestDeal') },
-  { icon: '✓', text: t('topbar.easyCancel') },
-  { icon: '✓', text: t('topbar.wideSelection') },
+  { icon: '★', text: '12.333 gasten waarderen ons met 4,8/5 op Trustpilot' },
+  { icon: '✓', text: 'Gratis annuleren op de meeste verblijven' },
+  { icon: '✓', text: 'Unieke deals met heul veul korting' },
 ])
+// keep i18n import noop suppressed in case the translations are removed later
+void t
 
 const currentIdx = ref(0)
 let timer: ReturnType<typeof setInterval> | null = null
@@ -59,7 +60,7 @@ onBeforeUnmount(stopRotation)
 <style scoped>
 .top-bar {
   background-color: #3A3A3A;
-  color: rgba(255, 255, 255, 0.85);
+  color: #fff;
   font-size: 13px;
   height: 34px;
   display: flex;
@@ -86,7 +87,7 @@ onBeforeUnmount(stopRotation)
 
 .top-bar__icon {
   font-size: 12px;
-  color: var(--color-primary);
+  color: #00b57e;
 }
 
 /* Crossfade transition */

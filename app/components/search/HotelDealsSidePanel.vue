@@ -78,8 +78,10 @@
 
 <script setup lang="ts">
 import type { SearchHotel, SearchHotelDeal } from '~/types/searchHotel'
+import type { LocalizedString } from '~/i18n/types'
 import { formatPrice } from '~/utils/formatPrice'
 import { pickSmartInclusions } from '~/utils/smartInclusions'
+import { mappedPackagesByPermalink } from '~/data/deals-mapper'
 
 const { t, localized, locale } = useI18n()
 const { arrivalDate, clearArrivalDate, persons, rooms } = useSearchState()
@@ -98,15 +100,21 @@ defineEmits<{
   (e: 'close'): void
 }>()
 
-// Collect all deals' inclusions for smart selection context
+// Look up the FULL Deal (with rich `inclusions[]` from `includesDetailed`) by package permalink.
+// This matches what the deal-page sidebar shows under "Arrangement voor 2 personen".
+function getDetailedTitles(slug: string): LocalizedString[] {
+  const d = mappedPackagesByPermalink[slug]
+  return d ? d.inclusions.map(i => i.title) : []
+}
+
 const allDealsInclusions = computed(() => {
   if (!props.hotel) return []
-  return props.hotel.deals.map(d => d.inclusions)
+  return props.hotel.deals.map(d => getDetailedTitles(d.slug))
 })
 
 function getSmartInclusions(deal: SearchHotelDeal) {
   return pickSmartInclusions(
-    deal.inclusions,
+    getDetailedTitles(deal.slug),
     allDealsInclusions.value,
     locale.value as 'nl' | 'en',
     3,
@@ -114,7 +122,9 @@ function getSmartInclusions(deal: SearchHotelDeal) {
 }
 
 function getRemainingCount(deal: SearchHotelDeal) {
-  return Math.max(0, deal.inclusions.length - 3)
+  // Use detailed-titles count (matches the data we now show in the smart-pick)
+  const total = getDetailedTitles(deal.slug).filter(t => !/overnachting|night/i.test(t.nl || '')).length
+  return Math.max(0, total - 3)
 }
 
 function formatDisplayDate(dateStr: string) {

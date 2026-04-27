@@ -163,6 +163,7 @@ const nl: Record<string, string> = {
   'common.night': 'nacht',
   'common.for': 'voor',
   'common.close': 'Sluiten',
+  'common.readMore': 'Lees meer',
   'common.save': 'Opslaan',
   'common.share': 'Delen',
   'common.apply': 'Toepassen',
@@ -428,6 +429,9 @@ const nl: Record<string, string> = {
   // Favorite
   'search.favorite': 'Bewaar als favoriet',
   'search.unfavorite': 'Verwijder uit favorieten',
+
+  // Map preview
+  'search.viewOnMap': 'Toon op kaart',
 
   // Mobile deal page
   'deal.allReviews': 'Alle beoordelingen',

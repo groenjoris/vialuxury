@@ -55,11 +55,17 @@
         <div v-if="group.open" class="filter-group__body">
           <label
             v-for="item in group.items"
-            :key="item"
+            :key="item.value || item.label"
             class="filter-item"
           >
-            <input type="checkbox" class="filter-item__checkbox" />
-            <span class="filter-item__label">{{ item }}</span>
+            <input
+              type="checkbox"
+              class="filter-item__checkbox"
+              :checked="group.id === 'travelDuration' ? selectedNights.includes(item.value) : false"
+              :disabled="group.id !== 'travelDuration'"
+              @change="group.id === 'travelDuration' && toggleNight(item.value)"
+            />
+            <span class="filter-item__label">{{ item.label }}</span>
           </label>
         </div>
       </Transition>
@@ -95,11 +101,20 @@ function onMaxChange(e: Event) {
   emit('update:budgetMax', Math.max(val, props.budgetMin + 25))
 }
 
+interface FilterItem {
+  label: string
+  value: string
+}
+
 interface FilterGroup {
+  id: string
   title: string
   open: boolean
-  items: string[]
+  items: FilterItem[]
 }
+
+// Wire travel-duration checkboxes to shared search state
+const { selectedNights, toggleNight } = useSearchState()
 
 const openState = reactive<Record<string, boolean>>({
   travelDuration: true,
@@ -113,39 +128,52 @@ const openState = reactive<Record<string, boolean>>({
 
 const filterGroups = computed<FilterGroup[]>(() => [
   {
+    id: 'travelDuration',
     title: t('filter.travelDuration'),
     open: openState.travelDuration,
-    items: [t('filter.1day'), t('filter.2days'), t('filter.3days'), t('filter.4days'), t('filter.5plusDays')],
+    items: [
+      { label: t('filter.1day'), value: '1' },
+      { label: t('filter.2days'), value: '2' },
+      { label: t('filter.3days'), value: '3' },
+      { label: t('filter.4days'), value: '4' },
+      { label: t('filter.5plusDays'), value: '5+' },
+    ],
   },
   {
+    id: 'location',
     title: t('filter.location'),
     open: openState.location,
-    items: [t('filter.waterside'), t('filter.nearSea'), t('filter.inForest'), t('filter.inNature'), t('filter.cityBreaks')],
+    items: [t('filter.waterside'), t('filter.nearSea'), t('filter.inForest'), t('filter.inNature'), t('filter.cityBreaks')].map(s => ({ label: s, value: s })),
   },
   {
+    id: 'arrangement',
     title: t('filter.arrangement'),
     open: openState.arrangement,
-    items: [t('filter.culinaryHighlights'), t('filter.withDinner'), t('filter.lateCheckout')],
+    items: [t('filter.culinaryHighlights'), t('filter.withDinner'), t('filter.lateCheckout')].map(s => ({ label: s, value: s })),
   },
   {
+    id: 'activities',
     title: t('filter.activities'),
     open: openState.activities,
-    items: [t('filter.cycling'), t('filter.hiking')],
+    items: [t('filter.cycling'), t('filter.hiking')].map(s => ({ label: s, value: s })),
   },
   {
+    id: 'hotelFacilities',
     title: t('filter.hotelFacilities'),
     open: openState.hotelFacilities,
-    items: [t('filter.wellness'), t('filter.pool'), t('filter.dogFriendly'), t('filter.fiveStarLuxury')],
+    items: [t('filter.wellness'), t('filter.pool'), t('filter.dogFriendly'), t('filter.fiveStarLuxury')].map(s => ({ label: s, value: s })),
   },
   {
+    id: 'room',
     title: t('filter.room'),
     open: openState.room,
-    items: [t('filter.jacuzzi'), t('filter.luxeSuite')],
+    items: [t('filter.jacuzzi'), t('filter.luxeSuite')].map(s => ({ label: s, value: s })),
   },
   {
+    id: 'special',
     title: t('filter.special'),
     open: openState.special,
-    items: [t('filter.bestPrice'), t('filter.newHotels'), t('filter.exclusive')],
+    items: [t('filter.bestPrice'), t('filter.newHotels'), t('filter.exclusive')].map(s => ({ label: s, value: s })),
   },
 ])
 

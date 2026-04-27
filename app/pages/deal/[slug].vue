@@ -54,7 +54,10 @@
         <div class="deal-page__col-left">
           <!-- Description + Mini map row -->
           <div class="deal-page__intro">
-            <p class="deal-page__description">{{ localized(hotel.description).split('\n')[0] }}</p>
+            <div class="deal-page__description">
+              <div v-html="firstParagraph"></div>
+              <button v-if="hasMoreDescription" type="button" class="deal-page__read-more" @click="descriptionOpen = true">{{ t('common.readMore') }}</button>
+            </div>
             <div class="mini-map">
               <div class="mini-map__placeholder">
                 <img
@@ -82,7 +85,9 @@
             <h2 class="section-title">{{ t('deal.highlights') }}</h2>
             <div class="highlights__grid">
               <div v-for="hl in highlights" :key="hl.text" class="highlight-item">
-                <span class="highlight-item__icon"><img :src="hl.icon" :alt="hl.text" width="20" height="20" /></span>
+                <span class="highlight-item__icon">
+                  <img :src="hl.icon || '/icons/highlights/special.svg'" :alt="hl.text" width="22" height="22" />
+                </span>
                 <span class="highlight-item__text">{{ hl.text }}</span>
               </div>
             </div>
@@ -135,8 +140,9 @@
           <section v-if="!isMobile" class="deal-page__facilities">
             <h2 class="section-title">{{ t('hotel.facilities') }}</h2>
             <div class="facilities__grid">
-              <div v-for="fac in hotel.facilities" :key="fac.label" class="facility-item">
-                <span class="facility-item__check">✓</span>
+              <div v-for="fac in hotel.facilities" :key="localized(fac.label)" class="facility-item">
+                <img v-if="fac.icon && fac.icon.startsWith('http')" :src="fac.icon" :alt="localized(fac.label)" class="facility-item__icon" width="20" height="20" loading="lazy" />
+                <span v-else class="facility-item__check">✓</span>
                 <span>{{ localized(fac.label) }}</span>
               </div>
             </div>
@@ -408,8 +414,9 @@
     <MobileFullscreen :open="activeMobileSection === 'facilities'" :title="t('hotel.facilities')" @close="activeMobileSection = null">
       <div class="mobile-subpage">
         <div class="facilities__grid facilities__grid--mobile">
-          <div v-for="fac in hotel?.facilities || []" :key="fac.label" class="facility-item">
-            <span class="facility-item__check">✓</span>
+          <div v-for="fac in hotel?.facilities || []" :key="localized(fac.label)" class="facility-item">
+            <img v-if="fac.icon && fac.icon.startsWith('http')" :src="fac.icon" :alt="localized(fac.label)" class="facility-item__icon" width="20" height="20" loading="lazy" />
+            <span v-else class="facility-item__check">✓</span>
             <span>{{ localized(fac.label) }}</span>
           </div>
         </div>
@@ -456,6 +463,19 @@
       </div>
     </MobileFullscreen>
 
+    <!-- Full description popup -->
+    <Teleport to="body">
+      <Transition name="fade">
+        <div v-if="descriptionOpen && hotel" class="desc-modal" @click.self="descriptionOpen = false">
+          <div class="desc-modal__card">
+            <button type="button" class="desc-modal__close" @click="descriptionOpen = false" :aria-label="t('common.close')">×</button>
+            <h2 class="desc-modal__title">{{ hotel.name }}</h2>
+            <div class="desc-modal__body" v-html="fullDescription"></div>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
+
     <SiteFooter />
   </div>
 </template>
@@ -465,14 +485,15 @@ import { useDealStore } from '~/stores/deal'
 import { formatPrice } from '~/utils/formatPrice'
 import { getReviewLabelKey } from '~/utils/reviewLabel'
 import { generateDealAvailability } from '~/data/mock/deal-pricing'
+import { matchIcon } from '~/utils/iconMatcher'
 import {
-  hotelKasteelTerWorm,
-  dealKasteel1Night,
-  dealKasteel2Nights,
-  dealKasteel3Nights,
-  dealVariantsKasteel,
-  dealsMapKasteel,
-} from '~/data/mock/kasteel-ter-worm'
+  mappedPackagesByPermalink,
+  mappedHotelsByPackagePermalink,
+  dealVariantsByPermalink,
+  dealsMapByPermalink,
+  defaultDealPermalink,
+  curatedHighlightsByPermalink,
+} from '~/data/deals-mapper'
 
 const { t, localized } = useI18n()
 
@@ -497,6 +518,15 @@ const router = useRouter()
 const store = useDealStore()
 const calendarRef = ref<HTMLElement | null>(null)
 const isFavorited = ref(false)
+const descriptionOpen = ref(false)
+const fullDescription = computed(() => hotel.value ? localized(hotel.value.description) : '')
+const firstParagraph = computed(() => {
+  const html = fullDescription.value
+  if (!html) return ''
+  const m = html.match(/<p[^>]*>[\s\S]*?<\/p>/i)
+  return m ? m[0] : html.split(/\n\n+/)[0]
+})
+const hasMoreDescription = computed(() => fullDescription.value.length > firstParagraph.value.length + 4)
 
 // Watch for search bar changes → fake refresh
 const { searchVersion } = useSearchState()
@@ -545,20 +575,17 @@ function handleLogin() {
   })
 }
 
-const hotel = ref(hotelKasteelTerWorm)
+// Resolve permalink from route — fallback to first available if invalid
+const routeSlug = computed(() => (route.params.slug as string) || defaultDealPermalink)
+const initialDeal = mappedPackagesByPermalink[routeSlug.value] || mappedPackagesByPermalink[defaultDealPermalink]
+const initialHotel = mappedHotelsByPackagePermalink[routeSlug.value] || mappedHotelsByPackagePermalink[defaultDealPermalink]
+
+const hotel = ref(initialHotel)
 const currentDeal = computed(() => store.currentDeal)
 const filteredInclusions = computed(() => {
   if (!currentDeal.value) return []
-  return currentDeal.value.inclusions.filter((i) => !i.id.startsWith('inc-overnight'))
+  return currentDeal.value.inclusions
 })
-
-/** Split inclusions around Yvette banner: after welcome bubbles, before wellness */
-const inclusionSplitIndex = computed(() => {
-  const idx = filteredInclusions.value.findIndex(i => i.id.startsWith('inc-welcome'))
-  return idx >= 0 ? idx + 1 : 1
-})
-const inclusionsBeforeYvette = computed(() => filteredInclusions.value.slice(0, inclusionSplitIndex.value))
-const inclusionsAfterYvette = computed(() => filteredInclusions.value.slice(inclusionSplitIndex.value))
 
 /** Room allocation entries for rendering separate room cards */
 const roomAllocationEntries = computed(() => {
@@ -575,13 +602,14 @@ const roomAllocationEntries = computed(() => {
   }
   return entries
 })
-const dealVariants = dealVariantsKasteel
+const dealVariants = dealVariantsByPermalink[routeSlug.value] || []
+const dealsMap = dealsMapByPermalink[routeSlug.value] || {}
 
-store.initializeDeal(dealKasteel2Nights, dealVariantsKasteel)
+store.initializeDeal(initialDeal, dealVariants)
 
 const query = route.query as Record<string, string>
 if (Object.keys(query).length > 0) {
-  store.applyFromQuery(query, dealsMapKasteel)
+  store.applyFromQuery(query, dealsMap)
 }
 
 watch(() => store.queryParams, (params) => { router.replace({ query: params }) }, { deep: true })
@@ -620,7 +648,7 @@ function decrementRoom(roomId: string) {
 }
 
 function handlePanelSelect(dealId: string) {
-  const deal = dealsMapKasteel[dealId]
+  const deal = dealsMap[dealId]
   if (deal) { store.switchDeal(deal); isPanelOpen.value = false }
 }
 
@@ -634,7 +662,28 @@ const mapTileUrl = computed(() => {
   return `https://tile.openstreetmap.org/${zoom}/${x}/${y}.png`
 })
 
-const highlights = computed(() => [
+// Highlights are derived from the package's CURATED short list (`pkg.includes[]`,
+// 4-6 items), with a matching icon or emoji fallback. Drops overnight items.
+const highlights = computed(() => {
+  const titles = (curatedHighlightsByPermalink[routeSlug.value] || [])
+    .map(t => localized(t).trim())
+    .filter(Boolean)
+    .filter(t => !/overnachting|night/i.test(t))
+  const seen = new Set<string>()
+  const out: { icon: string | null; emoji: string; text: string }[] = []
+  for (const text of titles) {
+    const key = text.toLowerCase()
+    if (seen.has(key)) continue
+    seen.add(key)
+    const m = matchIcon(text)
+    out.push({ icon: m.iconUrl, emoji: m.emoji, text })
+    if (out.length >= 6) break
+  }
+  return out
+})
+
+// Old static highlights (unused — kept commented for reference)
+const _legacyHighlights = computed(() => [
   { icon: '/icons/highlights/castle.svg', text: t('deal.highlight.castle') },
   { icon: '/icons/highlights/restaurant.svg', text: t('deal.highlight.restaurant') },
   { icon: '/icons/highlights/spa.svg', text: t('deal.highlight.wellness') },
@@ -643,17 +692,24 @@ const highlights = computed(() => [
   { icon: '/icons/highlights/special.svg', text: t('deal.highlight.exclusive') },
 ])
 
-const inclusionsMap = computed(() => ({
-  [dealKasteel1Night.id]: dealKasteel1Night.inclusions.map(i => localized(i.title)),
-  [dealKasteel2Nights.id]: dealKasteel2Nights.inclusions.map(i => localized(i.title)),
-  [dealKasteel3Nights.id]: dealKasteel3Nights.inclusions.map(i => localized(i.title)),
-}))
+// Build maps from the deal variants (sibling packages) for quick lookup
+const inclusionsMap = computed(() => {
+  const out: Record<string, string[]> = {}
+  for (const id in dealsMap) {
+    const d = dealsMap[id]
+    if (d) out[id] = d.inclusions.map(i => localized(i.title))
+  }
+  return out
+})
 
-const titlesMap = computed(() => ({
-  [dealKasteel1Night.id]: localized(dealKasteel1Night.title),
-  [dealKasteel2Nights.id]: localized(dealKasteel2Nights.title),
-  [dealKasteel3Nights.id]: localized(dealKasteel3Nights.title),
-}))
+const titlesMap = computed(() => {
+  const out: Record<string, string> = {}
+  for (const id in dealsMap) {
+    const d = dealsMap[id]
+    if (d) out[id] = localized(d.title)
+  }
+  return out
+})
 
 useHead({ title: `${currentDeal.value?.title ? localized(currentDeal.value.title) : 'Deal'} | ViaLuxury` })
 
@@ -670,9 +726,9 @@ function openGallery() { }
 /* ===== TITLE (above gallery) ===== */
 .deal-page__title-section {
   padding-top: var(--space-lg); padding-bottom: var(--space-md);
-  display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-md);
+  position: relative;
 }
-.deal-page__title-left { flex: 1; min-width: 0; position: relative; }
+.deal-page__title-left { min-width: 0; position: relative; }
 .deal-page__package-title { font-size: 26px; font-weight: 700; line-height: 1.3; margin-bottom: 4px; position: relative; z-index: 1; }
 
 /* Hotel name with stars adjacent on the right */
@@ -688,7 +744,7 @@ function openGallery() { }
   gap: 1px;
 }
 .deal-page__stars-adjacent .star-adj {
-  font-size: 16px;
+  font-size: 24px;
   line-height: 1;
   color: #111111;
   -webkit-font-smoothing: none;
@@ -700,12 +756,19 @@ function openGallery() { }
   color: var(--color-text-primary);
   margin: 0;
 }
-.deal-page__meta { display: flex; align-items: center; gap: var(--space-sm); font-size: 14px; color: var(--color-text-secondary); }
+.deal-page__meta { display: flex; align-items: center; gap: var(--space-sm); font-size: 14px; color: var(--color-text-secondary); padding-right: 110px; }
 .deal-page__score-wrap { display: flex; align-items: center; gap: 6px; }
 .deal-page__score { display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: var(--radius-sm); background: #00B67A; color: #fff; font-size: 13px; font-weight: 700; flex-shrink: 0; }
 .deal-page__score-label { font-size: 13px; font-weight: 600; color: var(--color-text-primary); }
 .deal-page__divider { color: var(--color-text-muted); }
-.deal-page__title-actions { display: flex; gap: var(--space-sm); flex-shrink: 0; }
+.deal-page__title-actions {
+  display: flex;
+  gap: var(--space-sm);
+  flex-shrink: 0;
+  position: absolute;
+  right: var(--space-lg);
+  bottom: var(--space-md);
+}
 .icon-action { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--color-border); display: flex; align-items: center; justify-content: center; font-size: 18px; background: var(--color-surface); cursor: pointer; }
 .icon-action:hover { border-color: var(--color-primary); }
 .icon-action--favorited { color: #e74c3c; border-color: #e74c3c; }
@@ -715,14 +778,73 @@ function openGallery() { }
 .deal-page__grid { display: grid; grid-template-columns: 1fr 340px; gap: var(--space-xl); padding-top: var(--space-lg); align-items: start; }
 .deal-page__col-left { min-width: 0; }
 .deal-page__description { font-size: 15px; line-height: 1.75; color: var(--color-text-secondary); }
+.deal-page__read-more {
+  display: inline-block;
+  margin-top: var(--space-xs);
+  padding: 0;
+  background: none;
+  border: none;
+  color: var(--color-primary);
+  font: inherit;
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.deal-page__read-more:hover { opacity: 0.8; }
+
+/* Full description modal */
+.desc-modal {
+  position: fixed; inset: 0; z-index: 1100;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex; align-items: center; justify-content: center;
+  padding: var(--space-lg);
+}
+.desc-modal__card {
+  position: relative;
+  background: var(--color-surface, #fff);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
+  width: 100%;
+  max-width: 720px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+}
+.desc-modal__close {
+  position: absolute;
+  top: var(--space-md);
+  right: var(--space-md);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface, #fff);
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+.desc-modal__close:hover { border-color: var(--color-primary); }
+.desc-modal__title {
+  font-family: var(--font-heading);
+  font-size: 22px;
+  font-weight: 700;
+  margin: 0 0 var(--space-md);
+  padding-right: 48px;
+  color: var(--color-text-primary);
+}
+.desc-modal__body { font-size: 15px; line-height: 1.75; color: var(--color-text-secondary); }
+.desc-modal__body :deep(p) { margin: 0 0 var(--space-md); }
+.fade-enter-active, .fade-leave-active { transition: opacity 180ms ease; }
+.fade-enter-from, .fade-leave-to { opacity: 0; }
 
 /* Intro row: description + mini map side by side */
-.deal-page__intro { display: grid; grid-template-columns: 1fr 220px; gap: var(--space-xl); margin-bottom: var(--space-xl); }
+.deal-page__intro { display: grid; grid-template-columns: 1fr 220px; gap: var(--space-xl); margin-bottom: var(--space-xl); align-items: start; }
 
 /* Mini map */
-.mini-map { border-radius: var(--radius-lg); overflow: hidden; height: 100%; min-height: 200px; max-height: 280px; }
-.mini-map__placeholder { position: relative; width: 100%; height: 100%; min-height: 200px; max-height: 280px; border-radius: var(--radius-lg); overflow: hidden; }
-.mini-map__img { width: 100%; height: 100%; min-height: 200px; object-fit: cover; }
+.mini-map { border-radius: var(--radius-lg); overflow: hidden; aspect-ratio: 1 / 1; }
+.mini-map__placeholder { position: relative; width: 100%; height: 100%; border-radius: var(--radius-lg); overflow: hidden; }
+.mini-map__img { width: 100%; height: 100%; object-fit: cover; }
 .mini-map__img--map { filter: saturate(0.85) contrast(1.05); }
 .mini-map__pin { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -100%); filter: drop-shadow(0 3px 6px rgba(0,0,0,0.25)); z-index: 2; pointer-events: none; }
 .mini-map__bottom { position: absolute; bottom: 0; left: 0; right: 0; padding: 10px 14px; background: linear-gradient(transparent, rgba(0,0,0,0.6)); display: flex; align-items: center; justify-content: space-between; z-index: 2; }
@@ -848,6 +970,7 @@ function openGallery() { }
 .highlight-item { display: flex; align-items: center; gap: var(--space-md); }
 .highlight-item__icon { width: 40px; height: 40px; border-radius: var(--radius-md); background: #FFFFFF; border: 1px solid #E5E5E5; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .highlight-item__text { font-size: 14px; font-weight: 500; color: var(--color-text-primary); }
+.highlight-item__check { font-size: 18px; line-height: 1; font-weight: 700; color: var(--color-discount, #00B67A); }
 
 /* ===== CONTENT BLOCKS ===== */
 .deal-page__content-blocks { padding: var(--space-xl) 0; border-top: 1px solid var(--color-border-light); }
@@ -866,8 +989,9 @@ function openGallery() { }
 /* ===== FACILITIES ===== */
 .deal-page__facilities { padding: var(--space-xl) 0; border-top: 1px solid var(--color-border-light); }
 .facilities__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-md); }
-.facility-item { display: flex; align-items: center; gap: var(--space-sm); font-size: 14px; }
-.facility-item__check { color: var(--color-primary); font-weight: 700; }
+.facility-item { display: flex; align-items: flex-start; gap: var(--space-sm); font-size: 14px; line-height: 1.4; }
+.facility-item__check { color: var(--color-primary); font-weight: 700; line-height: 1.4; }
+.facility-item__icon { width: 20px; height: 20px; flex-shrink: 0; object-fit: contain; margin-top: 1px; }
 
 /* ===== TIPS ===== */
 
@@ -911,7 +1035,6 @@ function openGallery() { }
   .deal-page__grid { grid-template-columns: 1fr; }
   .deal-page__col-right { position: static; }
   .deal-page__intro { grid-template-columns: 1fr; }
-  .mini-map { max-height: 200px; }
   .mini-map__placeholder { max-height: 200px; }
   .content-blocks__grid { grid-template-columns: 1fr; }
   .reviews__grid { grid-template-columns: 1fr; }
@@ -1205,5 +1328,6 @@ function openGallery() { }
     padding-left: 16px;
     padding-right: 16px;
   }
+  .deal-page__title-actions { right: 16px; }
 }
 </style>

@@ -163,6 +163,7 @@ const en: Record<string, string> = {
   'common.night': 'night',
   'common.for': 'for',
   'common.close': 'Close',
+  'common.readMore': 'Read more',
   'common.save': 'Save',
   'common.share': 'Share',
   'common.apply': 'Apply',
@@ -428,6 +429,9 @@ const en: Record<string, string> = {
   // Favorite
   'search.favorite': 'Save as favorite',
   'search.unfavorite': 'Remove from favorites',
+
+  // Map preview
+  'search.viewOnMap': 'Show on map',
 
   // Mobile deal page
   'deal.allReviews': 'All reviews',

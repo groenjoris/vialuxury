@@ -12,6 +12,9 @@ export interface SearchHotel {
   reviewCount: number
   pitch: LocalizedString
   deals: SearchHotelDeal[]
+  /** Optional special-deal label keys (e.g. 'wellness', 'super-deal').
+   *  Maps to /images/labels/<key>.svg sticker shown over the hero image. */
+  labels?: string[]
 }
 
 export interface SearchHotelDeal {

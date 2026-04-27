@@ -1,13 +1,15 @@
 import type { LocalizedString } from '~/i18n/types'
 
 /**
- * Picks the N most distinguishing inclusions for a deal within a hotel context.
+ * Picks N inclusions for a deal-card preview.
  *
- * Algorithm:
- * 1. Count how often each inclusion appears across all deals of the hotel
- * 2. Skip overnight/room inclusions (already in the title)
- * 3. Score by: uniqueness (appears in fewer deals = higher) + interest (dinner/wellness rank higher)
- * 4. Return top N by score
+ * Rules:
+ * 1. Always skip overnight items ("X x overnachting", "1 night", etc.) — already in title.
+ * 2. Prefer inclusions that OTHER deals of the same hotel don't have (differentiation).
+ * 3. If fewer than N differentiated items exist, pad with the deal's own remaining
+ *    items (cycling/repeating) so we always return exactly N items where possible.
+ *
+ * No keyword/interest scoring — pure uniqueness.
  */
 export function pickSmartInclusions(
   dealInclusions: LocalizedString[],
@@ -15,62 +17,54 @@ export function pickSmartInclusions(
   locale: 'nl' | 'en' = 'nl',
   count: number = 3,
 ): LocalizedString[] {
-  if (dealInclusions.length <= count) return dealInclusions
+  const isOvernight = (text: string): boolean => {
+    const t = text.toLowerCase()
+    return /^\s*\d+\s*x?\s*(overnacht|night)/i.test(text) || t.includes('overnachting')
+  }
 
-  // Count frequency of each inclusion across all deals (by NL text as key)
+  // Step 1: filter out overnight items from this deal
+  const candidates = dealInclusions.filter(inc => !isOvernight(inc[locale] || ''))
+  if (candidates.length === 0) return []
+
+  // Step 2: count occurrences across ALL hotel deals (using NL/locale text as key)
   const freqMap = new Map<string, number>()
   for (const inclusions of allDealsInclusions) {
     for (const inc of inclusions) {
-      const key = inc[locale]
+      if (isOvernight(inc[locale] || '')) continue
+      const key = (inc[locale] || '').trim().toLowerCase()
+      if (!key) continue
       freqMap.set(key, (freqMap.get(key) || 0) + 1)
     }
   }
 
-  const totalDeals = allDealsInclusions.length
+  const totalDeals = allDealsInclusions.length || 1
 
-  // Score each inclusion of THIS deal
-  const scored = dealInclusions.map((inc) => {
-    const text = inc[locale].toLowerCase()
-    let score = 0
-
-    // Skip overnight inclusions (they're already in the card title)
-    if (text.includes('overnacht') || text.match(/^\d+x?\s*(night|nacht)/i)) {
-      return { inc, score: -100 }
-    }
-
-    // Uniqueness: appears in fewer deals = more distinguishing
-    const freq = freqMap.get(inc[locale]) || 1
-    if (freq < totalDeals) {
-      score += (totalDeals - freq) * 10 // Big bonus for unique items
-    } else {
-      score -= 5 // Penalty for appearing in ALL deals
-    }
-
-    // Interest bonus: certain types are more appealing to highlight
-    if (text.includes('diner') || text.includes('dinner') || text.includes('gangenmenu') || text.includes('course')) score += 8
-    if (text.includes('wellness') || text.includes('spa') || text.includes('sauna')) score += 7
-    if (text.includes('zwembad') || text.includes('pool')) score += 6
-    if (text.includes('bubbel') || text.includes('champagne') || text.includes('prosecco')) score += 5
-    if (text.includes('lunch')) score += 4
-    if (text.includes('ontbijt') || text.includes('breakfast')) score += 3
-    if (text.includes('late check') || text.includes('uitslapen')) score += 3
-    if (text.includes('fiets') || text.includes('wandel') || text.includes('bike') || text.includes('hik')) score += 2
-
-    return { inc, score }
-  })
-
-  // Sort by score descending, take top N
-  scored.sort((a, b) => b.score - a.score)
-
-  const result = scored.slice(0, count).map((s) => s.inc)
-
-  // If we got items with very low scores (all common), fall back to first N non-overnight
-  if (result.length < count) {
-    const fallback = dealInclusions.filter(
-      (inc) => !inc[locale].toLowerCase().includes('overnacht') && !inc[locale].match(/^\d+x?\s*(night|nacht)/i),
-    )
-    return fallback.slice(0, count)
+  // Step 3: split candidates into "unique" (freq < totalDeals) and "common"
+  const unique: LocalizedString[] = []
+  const common: LocalizedString[] = []
+  for (const inc of candidates) {
+    const key = (inc[locale] || '').trim().toLowerCase()
+    const freq = freqMap.get(key) || 1
+    if (freq < totalDeals) unique.push(inc)
+    else common.push(inc)
   }
 
-  return result
+  // Step 4: take unique first, then common, then pad by cycling if still short
+  const result: LocalizedString[] = []
+  for (const inc of unique) {
+    if (result.length >= count) break
+    result.push(inc)
+  }
+  for (const inc of common) {
+    if (result.length >= count) break
+    result.push(inc)
+  }
+  // Pad by cycling through candidates if there aren't enough distinct items
+  let i = 0
+  while (result.length < count && candidates.length > 0) {
+    result.push(candidates[i % candidates.length])
+    i++
+  }
+
+  return result.slice(0, count)
 }

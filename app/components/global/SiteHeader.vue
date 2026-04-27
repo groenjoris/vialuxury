@@ -1,11 +1,15 @@
 <template>
-  <header class="site-header">
+  <header class="site-header" :class="{ 'site-header--overlay': variant === 'overlay' }">
     <!-- Main nav bar -->
     <div class="site-header__nav">
       <div class="site-header__nav-inner container">
         <!-- Logo -->
         <NuxtLink to="/" class="site-header__logo">
-          <img src="/images/logo-vialuxury.svg" alt="ViaLuxury" class="site-header__logo-img" />
+          <img
+            src="/images/logo-vialuxury-horizontal.svg"
+            alt="ViaLuxury"
+            class="site-header__logo-img site-header__logo-img--horizontal"
+          />
         </NuxtLink>
 
         <!-- Verticals switcher (desktop only) -->
@@ -17,14 +21,17 @@
             class="verticals__item"
             :class="{ 'verticals__item--active': v.id === activeVertical }"
           >
-            {{ v.label }}
+            <template v-if="v.id === 'hotels'">
+              <span>Hotels <span class="verticals__item-accent">+ <span class="verticals__item-more">more</span></span></span>
+            </template>
+            <template v-else>{{ v.label }}</template>
           </NuxtLink>
         </nav>
 
         <!-- Right actions -->
         <div class="site-header__nav-actions">
-          <!-- Contact dropdown (desktop only) -->
-          <div v-if="!isMobile" class="contact-dropdown" ref="contactDropdownRef">
+          <!-- Contact dropdown removed from main bar — accessible via hamburger. -->
+          <div v-if="false" class="contact-dropdown" ref="contactDropdownRef">
             <button
               type="button"
               class="contact-trigger"
@@ -135,11 +142,48 @@
             <span>{{ t('header.membersEntrance') }}</span>
           </NuxtLink>
 
-          <button v-if="isMobile" type="button" class="hamburger-btn" aria-label="Menu" @click="mobileMenuOpen = true">
-            <span></span>
-            <span></span>
-            <span></span>
-          </button>
+          <div class="hamburger-wrap" ref="hamburgerWrapRef">
+            <button type="button" class="hamburger-btn" aria-label="Menu" @click.stop="onHamburgerClick" :aria-expanded="hamburgerDropdownOpen">
+              <span></span>
+              <span></span>
+              <span></span>
+            </button>
+
+            <!-- Desktop / iPad: compact dropdown (same style as contact dropdown) -->
+            <Teleport to="body">
+              <div v-if="hamburgerDropdownOpen && !isMobile" class="hamburger-dropdown__menu" :style="hamburgerMenuStyle">
+                  <span class="hamburger-dropdown__heading">Menu</span>
+
+                  <NuxtLink v-for="v in verticals" :key="v.id" :to="v.href" class="hamburger-dropdown__link" @click="hamburgerDropdownOpen = false">
+                    <template v-if="v.id === 'hotels'"><span>Hotels <span class="verticals__item-accent">+ <span class="verticals__item-more">more</span></span></span></template>
+                    <template v-else>{{ v.label }}</template>
+                  </NuxtLink>
+
+                  <div class="contact-dropdown__divider"></div>
+
+                  <NuxtLink to="/leden" class="hamburger-dropdown__link" @click="hamburgerDropdownOpen = false">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                    {{ t('header.membersEntrance') }}
+                  </NuxtLink>
+                  <NuxtLink to="/contact" class="hamburger-dropdown__link" @click="hamburgerDropdownOpen = false">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                    {{ t('header.contact') }}
+                  </NuxtLink>
+                  <NuxtLink to="/veelgestelde-vragen" class="hamburger-dropdown__link" @click="hamburgerDropdownOpen = false">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                    {{ t('header.faq') }}
+                  </NuxtLink>
+
+                  <div class="contact-dropdown__divider"></div>
+
+                <div class="hamburger-dropdown__lang">
+                  <button v-for="lang in languages" :key="lang.label" type="button" class="hamburger-dropdown__lang-btn" :class="{ 'hamburger-dropdown__lang-btn--active': lang.label === selectedLanguage.label }" @click="selectLanguage(lang); hamburgerDropdownOpen = false">
+                    {{ lang.code }}
+                  </button>
+                </div>
+              </div>
+            </Teleport>
+          </div>
         </div>
       </div>
     </div>
@@ -155,46 +199,71 @@
       </button>
     </div>
 
+    <!-- Hero content slot (overlay mode only) -->
+    <slot v-if="variant === 'overlay'" name="hero" />
+
     <!-- Search bar dock: overlaps nav + page (desktop only) -->
     <div class="site-header__search-dock">
       <div class="container site-header__search-container">
         <div class="search-bar">
         <!-- 1. Waarheen -->
         <button
+          ref="destField"
           class="search-bar__field search-bar__field--destination"
           :class="{ 'search-bar__field--active': activePopup === 'destination' }"
           @click="togglePopup('destination')"
         >
-          <span class="search-bar__label">{{ t('header.destination') }}</span>
-          <span class="search-bar__value">{{ destinationLabel }}</span>
+          <span v-if="variant === 'overlay'" class="search-bar__field-icon" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+          </span>
+          <span class="search-bar__field-text">
+            <span class="search-bar__label">{{ t('header.destination') }}</span>
+            <span class="search-bar__value">{{ destinationLabel }}</span>
+          </span>
         </button>
 
         <div class="search-bar__divider"></div>
 
         <!-- 2. Wanneer en hoelang -->
         <button
+          ref="whenField"
           class="search-bar__field search-bar__field--when"
           :class="{ 'search-bar__field--active': activePopup === 'when' }"
           @click="togglePopup('when')"
         >
-          <span class="search-bar__label">{{ t('header.whenAndHowLong') }}</span>
-          <span class="search-bar__value">{{ whenLabel }}</span>
+          <span v-if="variant === 'overlay'" class="search-bar__field-icon" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+          </span>
+          <span class="search-bar__field-text">
+            <span class="search-bar__label">{{ t('header.whenAndHowLong') }}</span>
+            <span class="search-bar__value">{{ whenLabel }}</span>
+          </span>
         </button>
 
         <div class="search-bar__divider"></div>
 
         <!-- 3. Wie gaat er mee -->
         <button
+          ref="whoField"
           class="search-bar__field search-bar__field--who"
           :class="{ 'search-bar__field--active': activePopup === 'who' }"
           @click="togglePopup('who')"
         >
-          <span class="search-bar__label">{{ t('header.whosComing') }}</span>
-          <span class="search-bar__value">{{ whoLabel }}</span>
+          <span v-if="variant === 'overlay'" class="search-bar__field-icon" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </span>
+          <span class="search-bar__field-text">
+            <span class="search-bar__label">{{ t('header.whosComing') }}</span>
+            <span class="search-bar__value">{{ whoLabel }}</span>
+          </span>
         </button>
 
-          <!-- Search button -->
-          <button class="search-bar__btn" @click="handleSearch" :aria-label="t('header.search')">
+          <!-- Search button: Find Deals (overlay) or compact icon (default) -->
+          <button v-if="variant === 'overlay'" class="search-bar__btn search-bar__btn--find-deals" @click="handleSearch">
+            <span>Vind deals</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+          </button>
+          <button v-else class="search-bar__btn" @click="handleSearch" :aria-label="t('header.search')">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
               <circle cx="11" cy="11" r="8" />
               <path d="M21 21l-4.35-4.35" />
@@ -204,9 +273,13 @@
       </div>
     </div>
 
-    <!-- Popups -->
+    <!-- Popups: teleported to body so they escape parent overflow/stacking
+         contexts. Positioned via JS so they align with the clicked field
+         and flip above/below depending on viewport space. -->
+    <Teleport to="body">
     <Transition name="popup">
-      <div v-if="activePopup" class="popup-overlay" @click.self="closePopup">
+      <div v-if="activePopup" class="popup-backdrop" @click.self="closePopup">
+        <div class="popup-anchor" :style="popupStyle">
         <!-- DESTINATION POPUP -->
         <div v-if="activePopup === 'destination'" class="popup popup--destination">
           <DestinationPopup
@@ -307,8 +380,10 @@
             <button class="popup__done-btn" @click="closePopup()">{{ t('header.done') }}</button>
           </div>
         </div>
+        </div>
       </div>
     </Transition>
+    </Teleport>
 
     <!-- Mobile hamburger menu drawer -->
     <MobileFullscreen :open="mobileMenuOpen" :title="'Menu'" @close="mobileMenuOpen = false">
@@ -383,6 +458,11 @@
 <script setup lang="ts">
 import { useLocaleStore } from '~/stores/locale'
 
+withDefaults(defineProps<{
+  /** 'solid' = default dark bar; 'overlay' = transparent over a background image (e.g. home hero) */
+  variant?: 'solid' | 'overlay'
+}>(), { variant: 'solid' })
+
 const { t } = useI18n()
 const localeStore = useLocaleStore()
 
@@ -421,6 +501,27 @@ const contactDropdownOpen = ref(false)
 const contactDropdownRef = ref<HTMLElement | null>(null)
 const contactMenuStyle = ref<Record<string, string>>({})
 
+// Hamburger: dropdown on desktop/iPad, full-screen drawer on mobile.
+const hamburgerDropdownOpen = ref(false)
+const hamburgerWrapRef = ref<HTMLElement | null>(null)
+const hamburgerMenuStyle = ref<Record<string, string>>({})
+
+function onHamburgerClick() {
+  if (isMobile.value) {
+    mobileMenuOpen.value = true
+    return
+  }
+  hamburgerDropdownOpen.value = !hamburgerDropdownOpen.value
+  if (hamburgerDropdownOpen.value && hamburgerWrapRef.value) {
+    const rect = hamburgerWrapRef.value.getBoundingClientRect()
+    hamburgerMenuStyle.value = {
+      position: 'fixed',
+      top: `${rect.bottom + 8}px`,
+      right: `${window.innerWidth - rect.right}px`,
+    }
+  }
+}
+
 watch(contactDropdownOpen, (open) => {
   if (open && contactDropdownRef.value) {
     const trigger = contactDropdownRef.value.querySelector('.contact-trigger')
@@ -438,8 +539,62 @@ watch(contactDropdownOpen, (open) => {
 // Click-outside handlers (one per dropdown) — automatically detached on unmount
 useClickOutside(langSwitcherRef, () => { langDropdownOpen.value = false })
 useClickOutside(contactDropdownRef, () => { contactDropdownOpen.value = false })
+useClickOutside(hamburgerWrapRef, () => { hamburgerDropdownOpen.value = false })
 
 const activePopup = ref<'destination' | 'when' | 'who' | null>(null)
+
+// Refs to each search-bar field button → used to position popups
+const destField = ref<HTMLElement | null>(null)
+const whenField = ref<HTMLElement | null>(null)
+const whoField = ref<HTMLElement | null>(null)
+
+// Approximate popup heights (used to decide above/below flip)
+const POPUP_HEIGHTS: Record<'destination' | 'when' | 'who', number> = {
+  destination: 540,
+  when: 620,
+  who: 380,
+}
+
+const popupStyle = ref<Record<string, string>>({})
+
+function fieldRect() {
+  switch (activePopup.value) {
+    case 'destination': return destField.value?.getBoundingClientRect()
+    case 'when':        return whenField.value?.getBoundingClientRect()
+    case 'who':         return whoField.value?.getBoundingClientRect()
+    default:            return undefined
+  }
+}
+
+function computePopupPosition() {
+  const which = activePopup.value
+  if (!which) return
+  const rect = fieldRect()
+  if (!rect) return
+  const margin = 12
+  popupStyle.value = {
+    position: 'fixed',
+    top: (rect.bottom + margin) + 'px',
+    left: Math.max(8, rect.left) + 'px',
+  }
+}
+
+/** If the popup wouldn't fit below the field, scroll the page down so it
+ * does — runs simultaneously with the popup opening so they animate as one.
+ * The popup itself is `position: fixed` and follows the field via the
+ * scroll listener that calls computePopupPosition(). */
+function scrollToFitPopup() {
+  const which = activePopup.value
+  if (!which) return
+  const rect = fieldRect()
+  if (!rect) return
+  const margin = 12
+  const popupHeight = POPUP_HEIGHTS[which]
+  const overflow = (rect.bottom + margin + popupHeight) - window.innerHeight
+  if (overflow > 0) {
+    window.scrollBy({ top: overflow, behavior: 'smooth' })
+  }
+}
 
 // Mobile: single full-screen search modal + hamburger menu
 const isMobile = useIsMobile()
@@ -457,6 +612,24 @@ const mobileSearchLabel = computed(() => {
 function togglePopup(popup: 'destination' | 'when' | 'who') {
   activePopup.value = activePopup.value === popup ? null : popup
 }
+
+watch(activePopup, (val) => {
+  if (val) {
+    nextTick(() => {
+      computePopupPosition()
+      scrollToFitPopup()
+    })
+  }
+})
+
+onMounted(() => {
+  window.addEventListener('resize', computePopupPosition)
+  window.addEventListener('scroll', computePopupPosition, { passive: true, capture: true })
+})
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', computePopupPosition)
+  window.removeEventListener('scroll', computePopupPosition, true as unknown as EventListenerOptions)
+})
 
 function closePopup() {
   // Sync search state when popup closes (for deal page reactivity)
@@ -600,8 +773,14 @@ const flexibility = ref(0)
 const selectedDurations = ref<string[]>([])
 const flexState = ref<{ durations: string[]; months: string[] }>({ durations: [], months: [] })
 
-// Sync arrival date to shared composable so sidebar can read it
-const { setArrivalDate, setSearchGroup, setLoading, triggerSearchUpdate } = useSearchState()
+// Sync arrival date + nights to shared composable so /search filter can read them
+const { setArrivalDate, setSearchGroup, setLoading, setSelectedNights, selectedNights: globalNights, triggerSearchUpdate } = useSearchState()
+
+// Pre-fill local picker from shared state (e.g. on /search page reload)
+if (globalNights.value.length && selectedDurations.value.length === 0) {
+  selectedDurations.value = [...globalNights.value]
+}
+
 watch(selectedDate, (val) => {
   setArrivalDate(val)
   // Selecting an arrival date clears flex months
@@ -609,7 +788,7 @@ watch(selectedDate, (val) => {
     flexState.value = { ...flexState.value, months: [] }
   }
 })
-// Calendar duration clears flex duration
+// Calendar duration clears flex duration. Nights → shared state happens on Search button.
 watch(selectedDurations, (val) => {
   if (val.length > 0 && flexState.value.durations.length > 0) {
     flexState.value = { ...flexState.value, durations: [] }
@@ -717,20 +896,23 @@ const whoLabel = computed(() => {
   return parts.join(', ')
 })
 
-function handleSearch() {
-  closePopup()
+function commitSearch() {
   const totalPersons = searchGroup.value.adults + searchGroup.value.children.length
   setSearchGroup(totalPersons, searchGroup.value.rooms)
+  const numericNights = selectedDurations.value.filter(v => ['1', '2', '3', '4', '5+'].includes(v))
+  setSelectedNights(numericNights)
   setLoading(true)
   navigateTo('/search')
 }
 
+function handleSearch() {
+  closePopup()
+  commitSearch()
+}
+
 function handleMobileSearch() {
   mobileSearchOpen.value = false
-  const totalPersons = searchGroup.value.adults + searchGroup.value.children.length
-  setSearchGroup(totalPersons, searchGroup.value.rooms)
-  setLoading(true)
-  navigateTo('/search')
+  commitSearch()
 }
 
 function handleSelectHotel(slug: string) {
@@ -749,6 +931,203 @@ function handleSelectHotel(slug: string) {
   /* Extra clearance below so following content (breadcrumbs) isn't obscured
      by the search bar that extends half outside the header */
   margin-bottom: 56px;
+}
+
+/* Overlay variant: transparent header on top of a hero background.
+   Container provides its own image; we just lift the bar off it. */
+.site-header--overlay {
+  background: transparent;
+  padding-bottom: 0;
+  margin-bottom: 0;
+}
+
+.site-header--overlay .site-header__nav {
+  background: transparent;
+}
+
+/* Search dock anchored at the bottom of the hero section in overlay mode */
+.site-header--overlay .site-header__search-dock {
+  bottom: 0;
+  transform: none;
+  position: relative;
+  padding-bottom: 32px;
+}
+
+.site-header--overlay .search-bar {
+  max-width: none;
+  height: auto;
+  margin: 0;
+  border-radius: 6px;
+  border: none;
+  padding: 8px;
+  box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.04), 0 24px 60px -16px rgba(0, 0, 0, 0.45);
+}
+
+.site-header--overlay .search-bar__field {
+  flex: 1 0 0;
+  min-width: 0;
+  margin: 0;
+  padding: 10px 22px;
+  border-radius: 4px;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+}
+
+.site-header--overlay .search-bar__divider {
+  background: #e6e3dc;
+  width: 1px;
+  align-self: stretch;
+  margin: 0;
+}
+
+.site-header--overlay .search-bar__field-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #1a1411;
+  flex-shrink: 0;
+}
+
+.search-bar__field-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.site-header--overlay .search-bar__label {
+  font-size: 9.5px;
+  letter-spacing: 0.95px;
+  text-transform: uppercase;
+  color: #5a5a5a;
+}
+
+.site-header--overlay .search-bar__value {
+  font-size: 14px;
+  font-weight: 500;
+  color: #0a0a0a;
+}
+
+.site-header--overlay .search-bar__btn--find-deals {
+  background: #e97132;
+  color: #fff;
+  height: auto;
+  width: auto;
+  padding: 22px 38px;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: -0.07px;
+  margin-left: 16px;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background var(--transition-fast);
+}
+
+.site-header--overlay .search-bar__btn--find-deals:hover {
+  background: #d4621f;
+}
+
+/* Hotel+more accent (active vertical) */
+.verticals__item-accent {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  color: #e97132;
+}
+
+/* "more" word styled one pt bigger than the rest of the nav item */
+.verticals__item-more {
+  font-size: 15px;
+}
+
+/* Hamburger dropdown (desktop / iPad) — same dark style as contact dropdown */
+.hamburger-wrap { position: relative; display: inline-flex; }
+
+.hamburger-dropdown__menu {
+  min-width: 240px;
+  background: #1A1A1A;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+  padding: 12px 8px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+}
+
+.hamburger-dropdown__heading {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.55);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  padding: 4px 8px 8px;
+}
+
+.hamburger-dropdown__link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 8px;
+  border-radius: 6px;
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background 150ms, color 150ms;
+}
+
+.hamburger-dropdown__link:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: #FB862D;
+}
+
+.hamburger-dropdown__link svg {
+  color: rgba(255, 255, 255, 0.6);
+  flex-shrink: 0;
+  transition: color 150ms;
+}
+
+.hamburger-dropdown__link:hover svg {
+  color: #FB862D;
+}
+
+.hamburger-dropdown__lang {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+}
+
+.hamburger-dropdown__lang-btn {
+  flex: 1;
+  padding: 8px 12px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 6px;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: background 150ms, color 150ms, border-color 150ms;
+}
+
+.hamburger-dropdown__lang-btn--active {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.hamburger-dropdown__lang-btn:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
 }
 
 /* Nav bar */
@@ -779,6 +1158,11 @@ function handleSelectHotel(slug: string) {
   height: 68px;
   width: auto;
   display: block;
+}
+
+/* Horizontal logo (overlay variant): shorter height, white art */
+.site-header__logo-img--horizontal {
+  height: 23px;
 }
 
 /* Verticals switcher */
@@ -1113,15 +1497,18 @@ function handleSelectHotel(slug: string) {
 /* ==================== */
 /* POPUP OVERLAY        */
 /* ==================== */
-.popup-overlay {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  display: flex;
-  justify-content: center;
-  padding: var(--space-md);
+/* Full-screen backdrop captures clicks-outside; popup-anchor is positioned
+   in fixed coordinates by JS so it sits next to the clicked search field. */
+.popup-backdrop {
+  position: fixed;
+  inset: 0;
   z-index: 600;
+  background: transparent;
+}
+
+.popup-anchor {
+  /* position/top/left/bottom set inline via :style */
+  z-index: 601;
 }
 
 .popup {

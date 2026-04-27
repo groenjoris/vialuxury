@@ -56,7 +56,7 @@
       <!-- Description + Mini Map -->
       <section class="hotel-page__intro container">
         <div class="hotel-page__description-col">
-          <p v-for="(para, idx) in descriptionParagraphs" :key="idx" class="hotel-page__description">{{ para }}</p>
+          <div class="hotel-page__description" v-html="localized(hotel.description)"></div>
         </div>
         <div class="mini-map">
           <div class="mini-map__placeholder">
@@ -209,56 +209,35 @@
 import { formatPrice } from '~/utils/formatPrice'
 import { getReviewLabelKey } from '~/utils/reviewLabel'
 import {
-  hotelKasteelTerWorm,
-  dealKasteel1Night,
-  dealKasteel2Nights,
-  dealKasteel3Nights,
-} from '~/data/mock/kasteel-ter-worm'
+  mappedHotelsByHotelPermalink,
+  mappedPackagesByPermalink,
+  defaultDealPermalink,
+} from '~/data/deals-mapper'
 
 const { t, localized } = useI18n()
+const route = useRoute()
 
-const hotel = ref(hotelKasteelTerWorm)
-const deals = [dealKasteel1Night, dealKasteel2Nights, dealKasteel3Nights]
+// Resolve hotel by permalink with safe fallback
+const hotelSlug = (route.params.slug as string) || ''
+const fallbackHotel = mappedHotelsByHotelPermalink[Object.keys(mappedHotelsByHotelPermalink)[0]]
+const initialHotel = mappedHotelsByHotelPermalink[hotelSlug] || fallbackHotel
 
-const dealCards = [
-  {
-    deal: dealKasteel1Night,
-    image: '/images/arrangement/wellness.jpg',
-    inclusions: [
-      '1x Overnachting',
-      'Dagelijks uitgebreid ontbijtbuffet',
-      'Welkomstbubbels bij aankomst',
-      'Toegang tot gloednieuwe wellness',
-      'Gebruik van binnenzwembad',
-      'Culinair 3-gangendiner (1 avond)',
-    ],
-  },
-  {
-    deal: dealKasteel2Nights,
-    image: '/images/arrangement/diner.jpg',
-    inclusions: [
-      '2x Overnachting',
-      'Dagelijks uitgebreid ontbijtbuffet',
-      'Welkomstbubbels bij aankomst',
-      'Toegang tot gloednieuwe wellness',
-      'Gebruik van binnenzwembad',
-      'Culinair 3-gangendiner (2 avonden)',
-    ],
-  },
-  {
-    deal: dealKasteel3Nights,
-    image: '/images/arrangement/bike.jpg',
-    inclusions: [
-      '3x Overnachting',
-      'Dagelijks uitgebreid ontbijtbuffet',
-      'Welkomstbubbels bij aankomst',
-      'Toegang tot gloednieuwe wellness',
-      'Gebruik van binnenzwembad',
-      'Culinair 3-gangendiner (2 avonden)',
-      'Gratis fietsverhuur (1 dag)',
-    ],
-  },
-]
+const hotel = ref(initialHotel)
+
+// Find all deals (packages) for this hotel
+import { dealVariantsByPermalink, dealsMapByPermalink } from '~/data/deals-mapper'
+const _firstPkgPermalink = Object.keys(dealsMapByPermalink).find(p => {
+  const pkg = mappedPackagesByPermalink[p]
+  return pkg && p.startsWith(hotelSlug)
+}) || defaultDealPermalink
+const _dealsMap = dealsMapByPermalink[_firstPkgPermalink] || {}
+const deals = Object.values(_dealsMap)
+
+const dealCards = deals.map((deal, idx) => ({
+  deal,
+  image: deal.inclusions?.[0]?.image || hotel.value.images?.[idx + 1]?.url || hotel.value.images?.[0]?.url || '',
+  inclusions: deal.inclusions.map(i => localized(i.title)).slice(0, 6),
+}))
 
 const { setSearchGroup, persons: globalPersons } = useSearchState()
 const searchPersons = ref(globalPersons.value || 2)
