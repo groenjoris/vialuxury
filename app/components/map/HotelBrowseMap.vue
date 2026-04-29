@@ -1,139 +1,262 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
-import type { MapHotel } from '~/types/mapHotel'
+import Supercluster from 'supercluster'
+import type { SearchHotel } from '~/types/searchHotel'
 import { useHotelMap } from '~/composables/useHotelMap'
-import { clusterHtml, pinHtml, pinSize, type PinState } from './pinTemplates'
+import { clusterHtml, pinHtml, pinSize, pinAnchor, type PinState } from './pinTemplates'
 
 /**
- * HotelBrowseMap — Leaflet wrapper that renders ~50 hotel pins with
- * clustering and forwards hover/click events to the parent through the
- * shared `useHotelMap` composable.
+ * HotelBrowseMap — Leaflet wrapper with Supercluster-driven clustering.
+ *
+ * Why Supercluster (instead of leaflet.markercluster): the spec requires a
+ * minimum cluster size of 4 — clusters of 2 or 3 should never form. Plain
+ * markercluster has no `minPoints` option, but Supercluster does.
+ *
+ * On every map move/zoom we ask Supercluster for the visible cluster +
+ * individual marker set, then materialise them as Leaflet markers.
  */
 
 const props = defineProps<{
-  hotels: MapHotel[]
+  hotels: SearchHotel[]
 }>()
 
-const { selectedHotelId, selectHotel, setHover } = useHotelMap()
+const { selectedHotelId, selectHotel, clearSelection, setHover } = useHotelMap()
 
 const mapEl = ref<HTMLDivElement | null>(null)
 let map: import('leaflet').Map | null = null
 let leaflet: typeof import('leaflet') | null = null
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-let cluster: any = null
-const markerById = new Map<string, import('leaflet').Marker>()
 
-function pinStateFor(hotel: MapHotel): PinState {
-  if (hotel.id === selectedHotelId.value) return 'selected'
-  if (hotel.soldOut) return 'soldOut'
+// Layer that holds the rendered hotel + cluster markers (rebuilt on each move).
+let markersLayer: import('leaflet').LayerGroup | null = null
+
+// Supercluster index built once from the hotels prop.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let cluster: Supercluster<any, any> | null = null
+
+// Track current per-hotel hover state so we can refresh icons on selection.
+const hoveredId = ref<string | null>(null)
+
+function pinStateFor(hotelId: string): PinState {
+  const hotel = props.hotels.find((h) => h.id === hotelId)
+  const isSelected = hotelId === selectedHotelId.value
+  const isHovered = hotelId === hoveredId.value
+  const isSoldOut = !!hotel?.soldOut
+  // Hover takes precedence over selected so the orange-hover icon (and the
+  // preview card) appears even when hovering the currently-selected pin
+  // (per spec — hover always works, even on the selected star).
+  if (isSoldOut) {
+    if (isHovered) return 'soldOutHover'
+    if (isSelected) return 'soldOutSelected'
+    return 'soldOut'
+  }
+  if (isHovered) return 'hover'
+  if (isSelected) return 'selected'
   return 'default'
+}
+
+function makeHotelIcon(L: typeof import('leaflet'), hotelId: string) {
+  const state = pinStateFor(hotelId)
+  return L.divIcon({
+    html: pinHtml(state),
+    className: 'hotel-pin-icon',
+    iconSize: pinSize(state),
+    iconAnchor: pinAnchor(state),
+  })
+}
+
+function makeClusterIcon(L: typeof import('leaflet'), count: number) {
+  return L.divIcon({
+    html: clusterHtml(count),
+    className: 'hotel-cluster-icon',
+    iconSize: [38, 38],
+    iconAnchor: [19, 19],
+  })
+}
+
+/** Re-query Supercluster for the current viewport + zoom and re-draw markers. */
+function renderMarkers() {
+  if (!map || !leaflet || !cluster || !markersLayer) return
+  const L = leaflet
+  markersLayer.clearLayers()
+
+  const b = map.getBounds()
+  const bbox: [number, number, number, number] = [
+    b.getWest(),
+    b.getSouth(),
+    b.getEast(),
+    b.getNorth(),
+  ]
+  const zoom = Math.round(map.getZoom())
+  const items = cluster.getClusters(bbox, zoom)
+
+  for (const f of items) {
+    const [lng, lat] = f.geometry.coordinates
+    const props = f.properties
+    if (props.cluster) {
+      // Cluster pin (count ≥ 4)
+      const m = L.marker([lat, lng], { icon: makeClusterIcon(L, props.point_count) })
+      m.on('click', () => {
+        const expansionZoom = Math.min(
+          cluster!.getClusterExpansionZoom(props.cluster_id as number),
+          18,
+        )
+        map!.setView([lat, lng], expansionZoom, { animate: true })
+      })
+      m.addTo(markersLayer)
+    } else {
+      // Individual hotel pin
+      const hotelId = props.hotelId as string
+      const m = L.marker([lat, lng], { icon: makeHotelIcon(L, hotelId), riseOnHover: true })
+      m.on('mouseover', (e: import('leaflet').LeafletMouseEvent) => {
+        hoveredId.value = hotelId
+        m.setIcon(makeHotelIcon(L, hotelId))
+        const rect = mapEl.value!.getBoundingClientRect()
+        setHover(hotelId, {
+          x: e.containerPoint.x + rect.left,
+          y: e.containerPoint.y + rect.top,
+        })
+      })
+      m.on('mouseout', () => {
+        hoveredId.value = null
+        m.setIcon(makeHotelIcon(L, hotelId))
+        setHover(null)
+      })
+      m.on('click', (e: import('leaflet').LeafletMouseEvent) => {
+        L.DomEvent.stopPropagation(e)
+        // Hover preview should disappear on click. Re-appears on a fresh
+        // hover (over any pin, including the just-selected one).
+        hoveredId.value = null
+        setHover(null)
+        selectHotel(hotelId)
+      })
+      m.addTo(markersLayer)
+    }
+  }
+}
+
+function buildClusterIndex() {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const features: any[] = []
+  for (const h of props.hotels) {
+    if (!h.coordinates) continue
+    features.push({
+      type: 'Feature',
+      properties: { hotelId: h.id },
+      geometry: { type: 'Point', coordinates: [h.coordinates.lng, h.coordinates.lat] },
+    })
+  }
+  cluster = new Supercluster({
+    radius: 60,    // px — clustering distance; tuned to current pin size
+    minPoints: 4,  // never form clusters of 2 or 3 (per spec)
+    maxZoom: 16,   // above this everything de-clusters
+  })
+  cluster.load(features)
 }
 
 async function initMap() {
   if (!mapEl.value) return
-  // Leaflet is client-only — load dynamically so SSR doesn't choke.
   const L = (await import('leaflet')).default
-  await import('leaflet.markercluster')
   leaflet = L
 
+  // Initial view: fit the bounds of the northernmost + southernmost hotels
+  // so the whole offer is visible "just within range". Restrict the bounds
+  // calculation to hotels inside the NL bbox so a single foreign outlier
+  // (e.g. Paris) doesn't pull the view far south. Foreign hotels still get
+  // a pin — they're just not allowed to drive zoom.
+  const NL_BBOX = { minLat: 50.7, maxLat: 53.6, minLng: 3.3, maxLng: 7.3 }
+  const inNL = (c: { lat: number; lng: number }) =>
+    c.lat >= NL_BBOX.minLat && c.lat <= NL_BBOX.maxLat &&
+    c.lng >= NL_BBOX.minLng && c.lng <= NL_BBOX.maxLng
+
+  const coords = props.hotels.filter((h) => h.coordinates).map((h) => h.coordinates!)
+  const nlCoords = coords.filter(inNL)
+  let initialCenter: [number, number] = [52.1, 5.3]
+  let initialZoom = 7
+  let initialBounds: import('leaflet').LatLngBoundsExpression | null = null
+  if (nlCoords.length > 1) {
+    const minLat = Math.min(...nlCoords.map((c) => c.lat))
+    const maxLat = Math.max(...nlCoords.map((c) => c.lat))
+    const minLng = Math.min(...nlCoords.map((c) => c.lng))
+    const maxLng = Math.max(...nlCoords.map((c) => c.lng))
+    initialBounds = [[minLat, minLng], [maxLat, maxLng]]
+    initialCenter = [(minLat + maxLat) / 2, (minLng + maxLng) / 2]
+  } else if (coords.length === 1) {
+    initialCenter = [coords[0].lat, coords[0].lng]
+    initialZoom = 11
+  }
+
   map = L.map(mapEl.value, {
-    center: [52.1, 5.3],
-    zoom: 7,
+    center: initialCenter,
+    zoom: initialZoom,
     zoomControl: false,
     attributionControl: true,
     preferCanvas: false,
   })
 
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© OpenStreetMap contributors',
-    maxZoom: 18,
+  // CartoDB Voyager — fresh palette, no wave texture on water bodies.
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+    attribution: '© OpenStreetMap contributors © CARTO',
+    subdomains: 'abcd',
+    maxZoom: 19,
   }).addTo(map)
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  cluster = (L as any).markerClusterGroup({
-    showCoverageOnHover: false,
-    spiderfyOnMaxZoom: false,
-    maxClusterRadius: 45,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    iconCreateFunction: (c: any) => {
-      const count = c.getChildCount()
-      return L.divIcon({
-        html: clusterHtml(count),
-        className: 'hotel-cluster-icon',
-        iconSize: [38, 38],
-        iconAnchor: [19, 19],
-      })
-    },
-  })
+  markersLayer = L.layerGroup().addTo(map)
 
-  for (const hotel of props.hotels) {
-    const state = pinStateFor(hotel)
-    const marker = L.marker([hotel.coordinates.lat, hotel.coordinates.lng], {
-      icon: L.divIcon({
-        html: pinHtml(state),
-        className: 'hotel-pin-icon',
-        iconSize: pinSize(state),
-        iconAnchor: state === 'selected' ? [25, 25] : [16, 16],
-      }),
-      riseOnHover: true,
-    })
-
-    marker.on('mouseover', (e: import('leaflet').LeafletMouseEvent) => {
-      const rect = mapEl.value!.getBoundingClientRect()
-      // Anchor hover card above the marker, in viewport coordinates.
-      setHover(hotel.id, {
-        x: e.containerPoint.x + rect.left,
-        y: e.containerPoint.y + rect.top,
-      })
-    })
-    marker.on('mouseout', () => setHover(null))
-    marker.on('click', (e: import('leaflet').LeafletMouseEvent) => {
-      L.DomEvent.stopPropagation(e)
-      selectHotel(hotel.id)
-    })
-
-    markerById.set(hotel.id, marker)
-    cluster.addLayer(marker)
+  // Snap the view exactly to the hotel bounds so the north/south extremes
+  // sit just inside the viewport. Use 0 padding so the bounds are tight,
+  // ensure the map has measured itself, and pick the smallest zoom that
+  // contains the bbox (fitBounds picks largest zoom with both axes inside,
+  // which can leave a lot of empty space east-west).
+  if (initialBounds) {
+    map.invalidateSize()
+    // Step in one zoom level past "fits both axes" so NL fills the viewport
+    // tightly instead of leaving big slack on the wider axis (the bbox is
+    // 4° lng × 2.9° lat — without the extra step you see lots of Belgium /
+    // Germany on the wide axis).
+    const z = map.getBoundsZoom(L.latLngBounds(initialBounds), false) + 1
+    map.setView(initialCenter, z, { animate: false })
   }
-  map.addLayer(cluster)
 
-  // Click on the map background clears any selection.
+  buildClusterIndex()
+  renderMarkers()
+
+  map.on('moveend', renderMarkers)
+  map.on('zoomend', renderMarkers)
+
+  // Click on the map background clears hover AND closes the side panel.
   map.on('click', () => {
     setHover(null)
+    clearSelection()
   })
 }
 
-function refreshMarkerIcon(hotelId: string) {
-  if (!map || !leaflet) return
-  const hotel = props.hotels.find((h) => h.id === hotelId)
-  const marker = markerById.get(hotelId)
-  if (!hotel || !marker) return
-  const state = pinStateFor(hotel)
-  marker.setIcon(
-    leaflet.divIcon({
-      html: pinHtml(state),
-      className: 'hotel-pin-icon',
-      iconSize: pinSize(state),
-      iconAnchor: state === 'selected' ? [25, 25] : [16, 16],
-    }),
-  )
-}
-
-watch(selectedHotelId, (newId, oldId) => {
-  if (oldId) refreshMarkerIcon(oldId)
-  if (newId) refreshMarkerIcon(newId)
+watch(selectedHotelId, () => {
+  // Re-render so the previously selected and newly selected pins update icons.
+  renderMarkers()
 })
+
+watch(
+  () => props.hotels,
+  () => {
+    if (!cluster) return
+    buildClusterIndex()
+    renderMarkers()
+  },
+  { deep: false },
+)
 
 onMounted(initMap)
 onBeforeUnmount(() => {
   map?.remove()
   map = null
-  markerById.clear()
+  markersLayer = null
+  cluster = null
 })
 
 defineExpose({
   zoomIn: () => map?.zoomIn(),
   zoomOut: () => map?.zoomOut(),
+  invalidateSize: () => map?.invalidateSize(),
 })
 </script>
 

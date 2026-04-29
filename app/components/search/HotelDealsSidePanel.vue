@@ -1,18 +1,32 @@
 <template>
   <Teleport to="body">
     <Transition name="panel">
-      <div v-if="isOpen && hotel" class="panel-overlay" @click.self="$emit('close')">
+      <div
+        v-if="isOpen && hotel"
+        class="panel-overlay"
+        :class="{ 'panel-overlay--map': mapMode }"
+        @click.self="$emit('close')"
+      >
         <aside class="panel" @wheel.stop @touchmove.stop>
           <div class="panel__header">
-            <h2 class="panel__title">{{ t('search.availableDeals') }}</h2>
-            <p class="panel__subtitle">{{ hotel.name }}</p>
-            <div class="panel__hotel-meta">
-              <span class="panel__stars" aria-hidden="true">
-                <span v-for="n in hotel.starRating" :key="n">★</span>
-              </span>
-              <span class="panel__location">{{ hotel.city }}, {{ hotel.region }}</span>
+            <div class="panel__header-info">
+              <h2 class="panel__name-row">
+                <span class="panel__hotel-name">{{ hotel.name }}</span>
+                <span class="panel__stars" aria-hidden="true">
+                  <span v-for="n in hotel.starRating" :key="n">★</span>
+                </span>
+              </h2>
+              <div class="panel__hotel-meta">
+                <span class="panel__score">{{ hotel.reviewScore.toFixed(1) }}</span>
+                <span class="panel__score-label">{{ t(getReviewLabelKey(hotel.reviewScore)) }}</span>
+                <span class="panel__sep" aria-hidden="true">|</span>
+                <svg class="panel__loc-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
+                  <circle cx="12" cy="10" r="3" />
+                </svg>
+                <span class="panel__location">{{ hotel.city }}, {{ hotel.region }}</span>
+              </div>
             </div>
-            <p v-if="hotel.pitch" class="panel__pitch">{{ localized(hotel.pitch) }}</p>
             <button class="panel__close" @click="$emit('close')" :aria-label="t('common.close')">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M18 6L6 18M6 6l12 12" />
@@ -21,53 +35,22 @@
           </div>
 
           <div class="panel__body">
-            <!-- Hotel hero image -->
-            <div class="panel__hero">
-              <img :src="hotel.heroImage" :alt="hotel.name" class="panel__hero-img" />
-            </div>
             <!-- Arrival date bar -->
             <div v-if="arrivalDate" class="panel__arrival-bar">
               <span>{{ t('sidebar.forArrival') }} {{ formatDisplayDate(arrivalDate) }}</span>
               <button class="panel__arrival-clear" @click="clearArrivalDate">{{ t('sidebar.clear') }}</button>
             </div>
 
-            <div v-for="deal in hotel.deals" :key="deal.id" class="deal-card">
-              <div class="deal-card__header">
-                <span class="deal-card__nights">{{ deal.nights }} {{ deal.nights === 1 ? t('common.night') : t('common.nights') }} {{ t('common.for') }} {{ persons }} {{ persons === 1 ? t('common.personSingular') : t('common.personPlural') }}</span>
-                <div class="deal-card__pricing">
-                  <span class="deal-card__discount">-{{ deal.discountPercentage }}%</span>
-                  <span class="deal-card__price">{{ formatPrice(adjustPrice(deal.basePrice, persons)) }}</span>
-                  <span class="deal-card__original">{{ formatPrice(adjustPrice(deal.originalPrice, persons)) }}</span>
-                </div>
-              </div>
-
-              <h3 class="deal-card__title">{{ localized(deal.title) }}</h3>
-
-              <div class="deal-card__inclusions">
-                <div
-                  v-for="inc in getSmartInclusions(deal)"
-                  :key="localized(inc)"
-                  class="deal-card__inc"
-                >
-                  <span class="deal-card__check">✓</span>
-                  <span>{{ localized(inc) }}</span>
-                </div>
-                <div v-if="getRemainingCount(deal) > 0" class="deal-card__inc deal-card__inc--more">
-                  <span class="deal-card__check">✓</span>
-                  <span>{{ getRemainingCount(deal) === 1 ? t('search.andOneMore') : t('search.andMore').replace('{n}', String(getRemainingCount(deal))) }}</span>
-                </div>
-              </div>
-
-              <NuxtLink
-                :to="`/deal/${deal.slug}${persons !== 2 || rooms !== 1 ? '?adults=' + persons + (rooms !== 1 ? '&rooms=' + rooms : '') : ''}`"
-                target="_blank"
-                class="btn btn-primary deal-card__btn"
-              >
-                {{ t('search.viewArrangement') }}
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                  <polyline points="9 18 15 12 9 6" />
-                </svg>
-              </NuxtLink>
+            <div class="panel__deal-list">
+              <DealCard
+                v-for="deal in sortedSiblingDeals"
+                :key="deal.id"
+                :deal="deal"
+                :hotel="hotel"
+                hide-hotel-info
+                hide-labels
+                grid-mode
+              />
             </div>
           </div>
         </aside>
@@ -77,63 +60,39 @@
 </template>
 
 <script setup lang="ts">
-import type { SearchHotel, SearchHotelDeal } from '~/types/searchHotel'
-import type { LocalizedString } from '~/i18n/types'
-import { formatPrice } from '~/utils/formatPrice'
-import { pickSmartInclusions } from '~/utils/smartInclusions'
-import { mappedPackagesByPermalink } from '~/data/deals-mapper'
+import type { SearchHotel } from '~/types/searchHotel'
+import { getReviewLabelKey } from '~/utils/reviewLabel'
 
-const { t, localized, locale } = useI18n()
-const { arrivalDate, clearArrivalDate, persons, rooms } = useSearchState()
-
-function adjustPrice(basePrice: number, p: number): number {
-  if (p % 2 === 0) return Math.round(basePrice * (p / 2))
-  return Math.round(basePrice * ((p + 1) / 2) - 50)
-}
+const { t } = useI18n()
+const { arrivalDate, clearArrivalDate } = useSearchState()
 
 const props = defineProps<{
   isOpen: boolean
   hotel: SearchHotel | null
+  /** When true (used on /kaart): no dim background, no body-scroll lock,
+   *  the rest of the page (the map) stays clickable. */
+  mapMode?: boolean
 }>()
 
 defineEmits<{
   (e: 'close'): void
 }>()
 
-// Look up the FULL Deal (with rich `inclusions[]` from `includesDetailed`) by package permalink.
-// This matches what the deal-page sidebar shows under "Arrangement voor 2 personen".
-function getDetailedTitles(slug: string): LocalizedString[] {
-  const d = mappedPackagesByPermalink[slug]
-  return d ? d.inclusions.map(i => i.title) : []
-}
-
-const allDealsInclusions = computed(() => {
+/** Side-panel deals sorted by basePrice ascending (cheapest first). */
+const sortedSiblingDeals = computed(() => {
   if (!props.hotel) return []
-  return props.hotel.deals.map(d => getDetailedTitles(d.slug))
+  return [...props.hotel.deals].sort((a, b) => a.basePrice - b.basePrice)
 })
-
-function getSmartInclusions(deal: SearchHotelDeal) {
-  return pickSmartInclusions(
-    getDetailedTitles(deal.slug),
-    allDealsInclusions.value,
-    locale.value as 'nl' | 'en',
-    3,
-  )
-}
-
-function getRemainingCount(deal: SearchHotelDeal) {
-  // Use detailed-titles count (matches the data we now show in the smart-pick)
-  const total = getDetailedTitles(deal.slug).filter(t => !/overnachting|night/i.test(t.nl || '')).length
-  return Math.max(0, total - 3)
-}
 
 function formatDisplayDate(dateStr: string) {
   const [y, m, d] = dateStr.split('-')
   return `${d}-${m}-${y}`
 }
 
-// Lock body scroll when panel is open
+// Lock body scroll when panel is open — except on /kaart where the map
+// underneath needs to stay scroll/zoom-able.
 watch(() => props.isOpen, (open) => {
+  if (props.mapMode) return
   if (open) {
     document.body.style.overflow = 'hidden'
   } else {
@@ -142,7 +101,7 @@ watch(() => props.isOpen, (open) => {
 })
 
 onUnmounted(() => {
-  document.body.style.overflow = ''
+  if (!props.mapMode) document.body.style.overflow = ''
 })
 </script>
 
@@ -157,8 +116,20 @@ onUnmounted(() => {
   justify-content: flex-end;
 }
 
+/* Map mode: no dim, and the overlay itself doesn't capture clicks so the
+   map underneath stays clickable. The panel below re-enables pointer events. */
+.panel-overlay--map {
+  background: transparent;
+  pointer-events: none;
+}
+
+.panel-overlay--map .panel {
+  pointer-events: auto;
+}
+
 .panel {
-  width: 480px;
+  /* 16 + 348 (deal card grid width) + 16 = 380 */
+  width: 380px;
   max-width: 95vw;
   background: var(--color-surface);
   height: 100%;
@@ -168,43 +139,104 @@ onUnmounted(() => {
 }
 
 .panel__header {
-  padding: var(--space-lg) var(--space-lg) var(--space-md);
+  padding: var(--space-md);
   border-bottom: 1px solid var(--color-border-light);
   position: relative;
   flex-shrink: 0;
-}
-
-.panel__title {
-  font-family: var(--font-heading);
-  font-size: 22px;
-  font-weight: 600;
-  margin-bottom: 2px;
-}
-
-.panel__subtitle {
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--color-text-primary);
-  margin-bottom: 4px;
-  padding-right: 40px;
-}
-
-.panel__hotel-meta {
   display: flex;
-  align-items: center;
-  gap: var(--space-sm);
+  align-items: flex-start;
+  gap: var(--space-md);
+}
+
+/* Hotel thumbnail in the sticky header */
+.panel__hero-thumb {
+  width: 96px;
+  height: 96px;
+  flex-shrink: 0;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+}
+
+.panel__header-info {
+  flex: 1;
+  min-width: 0;
+  padding-right: 40px; /* leave room for the close button */
+}
+
+/* Line 1: hotel name + stars on the same line */
+.panel__name-row {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin: 0 0 6px;
+  font-family: var(--font-heading);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  line-height: 1.2;
+  min-width: 0;
+}
+
+.panel__hotel-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .panel__stars {
-  color: var(--color-star);
-  font-size: 12px;
+  color: var(--color-text-primary);
+  font-size: 14px;
+  letter-spacing: 1px;
+  display: inline-flex;
+  flex-shrink: 0;
+  font-weight: 400;
+}
+
+/* Line 2: review badge + label | map-pin + location */
+.panel__hotel-meta {
   display: flex;
-  gap: 1px;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+  overflow: hidden;
+  font-size: 14px;
+}
+
+.panel__score {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: #00B67A;
+  color: #fff;
+  font-weight: 700;
+  font-size: 13px;
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+}
+
+.panel__score-label {
+  color: var(--color-text-primary);
+  font-weight: 600;
+}
+
+.panel__sep {
+  color: var(--color-text-muted);
+}
+
+.panel__loc-icon {
+  color: var(--color-text-secondary);
+  flex-shrink: 0;
 }
 
 .panel__location {
-  font-size: 13px;
   color: var(--color-text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .panel__pitch {
@@ -277,11 +309,17 @@ onUnmounted(() => {
 }
 
 /* Scrollable body */
+.panel__deal-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
 .panel__body {
   flex: 1;
   overflow-y: auto;
   overscroll-behavior: contain;
-  padding: var(--space-lg);
+  padding: var(--space-md);
   display: flex;
   flex-direction: column;
   gap: var(--space-md);

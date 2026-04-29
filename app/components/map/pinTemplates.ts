@@ -1,32 +1,57 @@
 /**
- * Plain-HTML templates for Leaflet divIcon markers used on the /kaart map.
+ * Asset-driven pin templates for Leaflet markers on /kaart.
  *
- * These return strings (not Vue components) because Leaflet builds 50+
- * markers and rendering each through Vue would be wasteful. The matching
- * `.hotel-pin` styles live in `app/assets/css/leaflet-overrides.css` …
- * actually no, they live unscoped at the bottom of `kaart.vue` so the
- * markup pulls them in alongside the page.
+ * Six visual variants come from `assets/images/map/`:
+ *   Type=Active   × State={Idle, Hover, Selected}   — available hotels
+ *   Type=Disabled × State={Idle, Hover, Selected}   — sold-out hotels
+ *
+ * Vite-imports resolve at build time to fingerprinted public URLs.
  */
 
-const STAR_SVG_DEFAULT = `<svg viewBox="0 0 24 24" width="14" height="14" fill="white" aria-hidden="true"><path d="M12 2 15 8l6 .9-4.5 4.4L17.5 20 12 16.9 6.5 20 8 13.3 3.5 8.9 9.5 8z"/></svg>`
-const STAR_SVG_SELECTED = `<svg viewBox="0 0 24 24" width="22" height="22" fill="white" aria-hidden="true"><path d="M12 2 15 8l6 .9-4.5 4.4L17.5 20 12 16.9 6.5 20 8 13.3 3.5 8.9 9.5 8z"/></svg>`
+// Active = at least one matching deal is available
+import activeIdle from '~/assets/images/map/active-idle.svg'
+import activeHover from '~/assets/images/map/active-hover.svg'
+import activeSelected from '~/assets/images/map/active-selected.svg'
 
-export type PinState = 'default' | 'selected' | 'soldOut'
+// Disabled = sold-out (no available deals for the chosen filter)
+import disabledIdle from '~/assets/images/map/disabled-idle.svg'
+import disabledHover from '~/assets/images/map/disabled-hover.svg'
+import disabledSelected from '~/assets/images/map/disabled-selected.svg'
+
+export type PinState =
+  | 'default'        // Active idle
+  | 'hover'          // Active hover (desktop only)
+  | 'selected'       // Active selected (panel open)
+  | 'soldOut'        // Disabled idle
+  | 'soldOutHover'   // Disabled hover
+  | 'soldOutSelected'// Disabled selected
+
+const URLS: Record<PinState, string> = {
+  default: activeIdle,
+  hover: activeHover,
+  selected: activeSelected,
+  soldOut: disabledIdle,
+  soldOutHover: disabledHover,
+  soldOutSelected: disabledSelected,
+}
 
 /** HTML for a single hotel pin in a given state. */
 export function pinHtml(state: PinState): string {
-  if (state === 'selected') {
-    return `<div class="hotel-pin hotel-pin--selected">${STAR_SVG_SELECTED}</div>`
-  }
-  if (state === 'soldOut') {
-    return `<div class="hotel-pin hotel-pin--soldOut">${STAR_SVG_DEFAULT}</div>`
-  }
-  return `<div class="hotel-pin hotel-pin--default">${STAR_SVG_DEFAULT}</div>`
+  return `<img class="hotel-pin-img hotel-pin-img--${state}" src="${URLS[state]}" alt="" />`
 }
 
-/** [width, height] for L.divIcon iconSize. */
+/** [width, height] in CSS pixels for L.divIcon iconSize.
+ *  Selected/hover pins are larger so they read as the focused element. */
 export function pinSize(state: PinState): [number, number] {
-  return state === 'selected' ? [50, 50] : [32, 32]
+  if (state === 'selected' || state === 'soldOutSelected') return [48, 48]
+  if (state === 'hover' || state === 'soldOutHover') return [40, 40]
+  return [32, 32]
+}
+
+/** Anchor (px from top-left) so the pin's centre sits on the coordinate. */
+export function pinAnchor(state: PinState): [number, number] {
+  const [w, h] = pinSize(state)
+  return [w / 2, h / 2]
 }
 
 /** HTML for a numbered cluster pin. */

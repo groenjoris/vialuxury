@@ -20,118 +20,58 @@
       </div>
     </div>
 
-    <!-- CALENDAR TAB -->
+    <!-- CALENDAR TAB: only calendar + flexibility chips -->
     <div v-if="activeTab === 'calendar'" class="date-popup__body">
-      <div class="date-popup__row">
-        <!-- Left: Arrival date calendar -->
-        <div class="date-popup__cal-section">
-          <h4 class="date-popup__label">{{ t('header.arrivalDate') }}</h4>
-          <div class="mini-cal">
-            <div class="mini-cal__header">
-              <button class="mini-cal__nav" @click="handleCalPrev" aria-label="Previous month">&#8249;</button>
-              <span class="mini-cal__month">{{ calMonthLabel }}</span>
-              <button class="mini-cal__nav" @click="handleCalNext" aria-label="Next month">&#8250;</button>
-            </div>
-            <div class="mini-cal__days-header">
-              <span v-for="(d, i) in dayHeaders" :key="i">{{ d }}</span>
-            </div>
-            <div class="mini-cal__grid">
-              <span
-                v-for="(cell, i) in calCells"
-                :key="i"
-                class="mini-cal__cell"
-                :class="{
-                  'mini-cal__cell--empty': !cell.day,
-                  'mini-cal__cell--selected': !!selectedDate && cell.date === selectedDate,
-                  'mini-cal__cell--flex': cell.inFlexRange,
-                  'mini-cal__cell--past': cell.past,
-                }"
-                @click="cell.day && !cell.past ? handleSelectDate(cell.date!) : undefined"
-              >
-                {{ cell.day || '' }}
-              </span>
-            </div>
+      <div class="date-popup__cal-section date-popup__cal-section--full">
+        <h4 class="date-popup__label">{{ t('header.arrivalDate') }}</h4>
+        <div class="mini-cal">
+          <div class="mini-cal__header">
+            <button class="mini-cal__nav" @click="handleCalPrev" aria-label="Previous month">&#8249;</button>
+            <span class="mini-cal__month">{{ calMonthLabel }}</span>
+            <button class="mini-cal__nav" @click="handleCalNext" aria-label="Next month">&#8250;</button>
           </div>
-        </div>
-
-        <!-- Right: Duration (multi-select) -->
-        <div class="date-popup__dur-section">
-          <h4 class="date-popup__label">{{ t('header.duration') }}</h4>
-          <div class="date-popup__dur-options">
-            <button
-              v-for="dur in durationOptions"
-              :key="dur.id"
-              class="dur-option"
-              :class="{ 'dur-option--selected': selectedDurations.includes(dur.id) }"
-              @click="toggleDuration(dur.id)"
+          <div class="mini-cal__days-header">
+            <span v-for="(d, i) in dayHeaders" :key="i">{{ d }}</span>
+          </div>
+          <div class="mini-cal__grid">
+            <span
+              v-for="(cell, i) in calCells"
+              :key="i"
+              class="mini-cal__cell"
+              :class="{
+                'mini-cal__cell--empty': !cell.day,
+                'mini-cal__cell--selected': !!selectedDate && cell.date === selectedDate,
+                'mini-cal__cell--flex': cell.inFlexRange,
+                'mini-cal__cell--past': cell.past,
+              }"
+              @click="cell.day && !cell.past ? handleSelectDate(cell.date!) : undefined"
             >
-              {{ dur.label }}
-            </button>
+              {{ cell.day || '' }}
+            </span>
           </div>
         </div>
       </div>
 
-      <!-- Separator -->
       <div class="date-popup__divider"></div>
 
-      <!-- Flexibility row at bottom, with Klaar/Wis actions on the right -->
-      <div class="date-popup__flex-row">
-        <div class="date-popup__flex-col">
-          <h4 class="date-popup__label">{{ t('header.flexArrival') }}</h4>
-          <div class="date-popup__flex-chips">
-            <button
-              v-for="f in flexOptions"
-              :key="f.value"
-              class="flex-chip"
-              :class="{ 'flex-chip--selected': flexibility === f.value }"
-              @click="$emit('update:flexibility', f.value)"
-            >
-              {{ f.label }}
-            </button>
-          </div>
-        </div>
-        <div class="date-popup__actions">
-          <button type="button" class="date-popup__done" @click="$emit('save')">{{ t('header.done') }}</button>
-          <a href="#" class="date-popup__clear-link" @click.prevent="$emit('clear')">{{ t('header.clear') }}</a>
+      <div class="date-popup__flex-col">
+        <h4 class="date-popup__label">{{ t('header.flexArrival') }}</h4>
+        <div class="date-popup__flex-chips">
+          <button
+            v-for="f in flexOptions"
+            :key="f.value"
+            class="flex-chip"
+            :class="{ 'flex-chip--selected': flexibility === f.value }"
+            @click="$emit('update:flexibility', f.value)"
+          >
+            {{ f.label }}
+          </button>
         </div>
       </div>
     </div>
 
-    <!-- FLEXIBLE TAB -->
+    <!-- FLEXIBLE TAB: only month picker -->
     <div v-if="activeTab === 'flexible'" class="date-popup__body">
-      <!-- Weekend / stay type -->
-      <div class="date-popup__flex-block">
-        <h4 class="date-popup__label">{{ t('header.flex.howLong') }}</h4>
-        <div class="date-popup__dur-pills">
-          <button
-            v-for="opt in flexTypeOptions"
-            :key="opt.value"
-            class="dur-pill dur-pill--two-line"
-            :class="{ 'dur-pill--selected': flexType === opt.value }"
-            @click="selectFlexType(opt.value)"
-          >
-            <span class="dur-pill__main">{{ opt.label }}</span>
-            <span class="dur-pill__sub">{{ opt.sub }}</span>
-          </button>
-        </div>
-      </div>
-
-      <!-- Nights (multi-select) -->
-      <div class="date-popup__flex-block">
-        <div class="date-popup__dur-pills">
-          <button
-            v-for="opt in flexNightsOptions"
-            :key="opt.value"
-            class="dur-pill"
-            :class="{ 'dur-pill--selected': flexNights.includes(opt.value) }"
-            @click="toggleFlexNights(opt.value)"
-          >
-            {{ opt.label }}
-          </button>
-        </div>
-      </div>
-
-      <!-- Month selection -->
       <div class="date-popup__flex-block">
         <h4 class="date-popup__label">{{ t('header.flex.whenApprox') }}</h4>
         <div class="date-popup__month-grid">
@@ -144,19 +84,6 @@
           >
             {{ m.label }}
           </button>
-        </div>
-      </div>
-
-      <!-- Summary -->
-      <div v-if="flexSummary" class="date-popup__flex-summary">
-        {{ flexSummary }}
-      </div>
-
-      <!-- Actions: Klaar + Wis, bottom-right -->
-      <div class="date-popup__flex-actions-row">
-        <div class="date-popup__actions">
-          <button type="button" class="date-popup__done" @click="$emit('save')">{{ t('header.done') }}</button>
-          <a href="#" class="date-popup__clear-link" @click.prevent="$emit('clear')">{{ t('header.clear') }}</a>
         </div>
       </div>
     </div>
@@ -364,7 +291,7 @@ function emitFlexState() {
 .date-popup {
   display: flex;
   flex-direction: column;
-  width: 620px;
+  width: 100%;
 }
 
 /* ==================== */

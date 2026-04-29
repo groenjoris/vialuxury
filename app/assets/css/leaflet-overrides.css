@@ -50,45 +50,27 @@
 /* Hotel pin styles — referenced by pinHtml() / clusterHtml() in pinTemplates.ts.
  * Must be unscoped because Leaflet renders divIcon markup outside Vue's
  * scoped CSS boundary. */
-.hotel-pin {
+.hotel-pin-img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.25));
+  cursor: pointer;
+}
+
+.hotel-pin--cluster {
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  background: #1A1A1A;
-  width: 32px;
-  height: 32px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
-  border: 2px solid white;
-  cursor: pointer;
-  transition: transform var(--transition-fast);
-  box-sizing: border-box;
-}
-
-.hotel-pin:hover {
-  transform: scale(1.08);
-}
-
-.hotel-pin--selected {
-  width: 50px;
-  height: 50px;
-  background: var(--color-primary);
-  box-shadow: 0 4px 12px rgba(251, 134, 45, 0.5);
-  border: 3px solid white;
-}
-
-.hotel-pin--soldOut {
-  background: #8a8a8a;
-  opacity: 0.7;
-}
-
-.hotel-pin--cluster {
+  width: 38px;
+  height: 38px;
   background: #1A1A1A;
   color: white;
   font-family: var(--font-body);
   font-weight: 600;
   font-size: 13px;
   border: 2px solid white;
-  width: 38px;
-  height: 38px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
 }

@@ -1,3 +1,8 @@
+<!--
+  Deprecated — use <DealCard> instead. The deal-first refactor replaced this
+  hotel-first card everywhere (search, side panel, home). Kept temporarily for
+  reference; safe to delete once we sweep the codebase.
+-->
 <template>
   <article class="result-card" :class="{ 'result-card--grid': gridMode, 'result-card--single': isSingleDeal }">
     <div class="result-card__image">
@@ -77,44 +82,48 @@
           </div>
         </div>
 
-        <!-- Right column: pricing + CTA -->
+        <!-- Right column: pricing + CTA — replaced by 'unavailable' message
+             when the hotel is pinned-from-deal but doesn't match the filters. -->
         <div class="result-card__pricing-col">
-          <div class="result-card__price-block">
-            <div class="result-card__price-row">
-              <!-- LIST: original first (left), price-with-label second (right) -->
-              <template v-if="!gridMode">
-                <span v-if="lowestOriginal > lowestPrice" class="result-card__original">
-                  {{ formatPrice(lowestOriginal) }}
-                </span>
-                <div class="result-card__price-with-label">
-                  <span class="result-card__price-label">{{ t('search.fromPrice') }}</span>
-                  <span class="result-card__price">{{ formatPrice(lowestPrice) }}</span>
-                </div>
-              </template>
-              <!-- GRID: price-with-label first (left), original second (right) -->
-              <template v-else>
-                <div class="result-card__price-with-label">
-                  <span class="result-card__price-label">{{ t('search.fromPrice') }}</span>
-                  <span class="result-card__price">{{ formatPrice(lowestPrice) }}</span>
-                </div>
-                <span v-if="lowestOriginal > lowestPrice" class="result-card__original">
-                  {{ formatPrice(lowestOriginal) }}
-                </span>
-              </template>
+          <template v-if="unavailable">
+            <p class="result-card__unavailable">Niet beschikbaar voor jouw zoekopdracht</p>
+          </template>
+          <template v-else>
+            <div class="result-card__price-block">
+              <div class="result-card__price-row">
+                <template v-if="!gridMode">
+                  <span v-if="lowestOriginal > lowestPrice" class="result-card__original">
+                    {{ formatPrice(lowestOriginal) }}
+                  </span>
+                  <div class="result-card__price-with-label">
+                    <span class="result-card__price-label">{{ t('search.fromPrice') }}</span>
+                    <span class="result-card__price">{{ formatPrice(lowestPrice) }}</span>
+                  </div>
+                </template>
+                <template v-else>
+                  <div class="result-card__price-with-label">
+                    <span class="result-card__price-label">{{ t('search.fromPrice') }}</span>
+                    <span class="result-card__price">{{ formatPrice(lowestPrice) }}</span>
+                  </div>
+                  <span v-if="lowestOriginal > lowestPrice" class="result-card__original">
+                    {{ formatPrice(lowestOriginal) }}
+                  </span>
+                </template>
+              </div>
             </div>
-          </div>
-          <NuxtLink
-            v-if="isSingleDeal"
-            :to="`/deal/${hotel.deals[0].slug}`"
-            target="_blank"
-            rel="noopener"
-            class="result-card__cta"
-          >
-            {{ t('search.viewArrangementSingle') }}
-          </NuxtLink>
-          <button v-else class="result-card__cta" @click="$emit('view-deals')">
-            {{ t('search.viewDeals') }} {{ hotel.deals.length }} {{ hotel.deals.length === 1 ? t('search.deal') : t('search.dealPlural') }}
-          </button>
+            <NuxtLink
+              v-if="isSingleDeal"
+              :to="`/deal/${hotel.deals[0].slug}`"
+              target="_blank"
+              rel="noopener"
+              class="result-card__cta"
+            >
+              {{ t('search.viewArrangementSingle') }}
+            </NuxtLink>
+            <button v-else class="result-card__cta" @click="$emit('view-deals')">
+              {{ t('search.viewDeals') }} {{ hotel.deals.length }} {{ hotel.deals.length === 1 ? t('search.deal') : t('search.dealPlural') }}
+            </button>
+          </template>
         </div>
       </div>
     </div>
@@ -155,6 +164,9 @@ function adjustPrice(basePrice: number, p: number): number {
 const props = defineProps<{
   hotel: SearchHotel
   gridMode?: boolean
+  /** Mark this card as a pinned "from-deal" card whose deal doesn't match
+   *  the current filters; the price/CTA section is replaced by a notice. */
+  unavailable?: boolean
 }>()
 
 defineEmits<{
@@ -562,6 +574,18 @@ const lowestDiscount = computed(() => {
   font-weight: 700;
   font-size: 14px;
   flex-shrink: 0;
+}
+
+/* Pinned-from-deal card whose deal doesn't match current filters */
+.result-card__unavailable {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-muted, #999);
+  text-align: right;
+  margin: 0;
+  align-self: flex-end;
+  max-width: 200px;
+  line-height: 1.4;
 }
 
 /* Right column: pricing */

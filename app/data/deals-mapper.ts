@@ -8,6 +8,7 @@
  *   from shared-fixtures.ts.
  */
 import dealsRaw from './deals.json'
+import { CITY_COORDS, jitterCoordinates } from './city-coordinates'
 import type { SearchHotel, SearchHotelDeal } from '~/types/searchHotel'
 import type { Hotel, HotelImage, Facility, Review, ReviewSummary, NearbyTip, FaqItem } from '~/types/hotel'
 import type { Deal, DealInclusion, RoomOption } from '~/types/deal'
@@ -167,6 +168,9 @@ function toSearchHotelDeal(pkg: RawPackage): SearchHotelDeal {
     discountPercentage: parsePct(pkg.price.discount),
     highlights: (pkg.highlights || []).slice(0, 3).map((h) => loc(h.title)),
     inclusions: (pkg.includes || []).slice(0, 6).map(loc),
+    heroImage: pkg.imageUrls?.[0] || pkg.photos?.[0]?.full || '',
+    inclusionImage: pkg.includesDetailed?.[0]?.imageUrl || '',
+    hasDinner: pkg.includeLabels?.dinner === true,
   }
 }
 
@@ -305,18 +309,25 @@ for (const [hotelId, pkgs] of packagesByHotelId.entries()) {
   const score = fallbackReviewScore(hotelId, primary.reviewScore)
   const reviewCount = fallbackReviewCount(hotelId)
 
+  const cityName = primary.location || primary.address?.city || ''
+  const baseCoords = CITY_COORDS[cityName]
+  const coordinates = baseCoords
+    ? jitterCoordinates(baseCoords, `hotel-${hotelId}`)
+    : undefined
+
   const searchHotel: SearchHotel = {
     id: `hotel-${hotelId}`,
     slug: primary.permalink,  // first package permalink
     name: primary.hotelName,
     starRating: primary.rating,
-    city: primary.location || primary.address?.city || '',
+    city: cityName,
     region: primary.country || '',
     heroImage: primary.imageUrls?.[0] || primary.photos?.[0]?.full || '',
     reviewScore: score,
     reviewCount,
     pitch: loc(pickHotelPitch(pkgs)),
     deals: pkgs.map(toSearchHotelDeal),
+    coordinates,
   }
   mappedHotels.push(searchHotel)
 

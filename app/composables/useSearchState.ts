@@ -14,6 +14,12 @@ const searchRooms = ref(1)
 const searchLoading = ref(false)
 const searchVersion = ref(0) // increments when search params change
 const selectedNights = ref<string[]>([])
+/** Flex-type radio: weekend-fri-sun | weekend-sat-sun | long-weekend | midweek | null. */
+const selectedFlexType = ref<string | null>(null)
+
+/** Budget range filter — shared so /search and /kaart agree on the active value. */
+const budgetMin = ref(100)
+const budgetMax = ref(2000)
 
 export function useSearchState() {
   function setArrivalDate(date: string | null) {
@@ -35,12 +41,25 @@ export function useSearchState() {
 
   function setSelectedNights(values: string[]) {
     selectedNights.value = [...values]
+    if (values.length > 0) selectedFlexType.value = null
   }
 
   function toggleNight(value: string) {
     const idx = selectedNights.value.indexOf(value)
     if (idx === -1) selectedNights.value.push(value)
     else selectedNights.value.splice(idx, 1)
+    // Selecting a night clears any active weekend/midweek flex-type
+    if (selectedNights.value.length > 0) selectedFlexType.value = null
+  }
+
+  function setFlexType(val: string | null) {
+    selectedFlexType.value = val
+    if (val) selectedNights.value = []
+  }
+
+  function clearDuration() {
+    selectedNights.value = []
+    selectedFlexType.value = null
   }
 
   function clearNights() {
@@ -51,6 +70,10 @@ export function useSearchState() {
     searchVersion.value++
   }
 
+  function setBudgetMin(v: number) { budgetMin.value = v }
+  function setBudgetMax(v: number) { budgetMax.value = v }
+  function resetBudget() { budgetMin.value = 100; budgetMax.value = 2000 }
+
   return {
     arrivalDate: readonly(selectedArrivalDate),
     persons: readonly(searchPersons),
@@ -58,13 +81,21 @@ export function useSearchState() {
     loading: readonly(searchLoading),
     searchVersion: readonly(searchVersion),
     selectedNights: readonly(selectedNights),
+    selectedFlexType: readonly(selectedFlexType),
+    budgetMin: readonly(budgetMin),
+    budgetMax: readonly(budgetMax),
     setArrivalDate,
     clearArrivalDate,
     setSearchGroup,
     setLoading,
     setSelectedNights,
     toggleNight,
+    setFlexType,
+    clearDuration,
     clearNights,
     triggerSearchUpdate,
+    setBudgetMin,
+    setBudgetMax,
+    resetBudget,
   }
 }

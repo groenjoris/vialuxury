@@ -69,12 +69,12 @@
       <div class="container">
         <h2 class="home-deals__title">Super Hotel Deals</h2>
         <div class="home-deals__grid home-deals__grid--3">
-          <SearchResultCard
+          <DealCard
             v-for="hotel in superDeals"
             :key="hotel.id"
             :hotel="hotel"
+            :deal="pickPrimaryDeal(hotel.deals)"
             :grid-mode="true"
-            @view-deals="openDealPanel(hotel)"
           />
         </div>
       </div>
@@ -85,25 +85,18 @@
       <div class="container">
         <h2 class="home-deals__title">Actuele Deals</h2>
         <div class="home-deals__grid home-deals__grid--3">
-          <SearchResultCard
+          <DealCard
             v-for="hotel in actueleDeals"
             :key="hotel.id"
             :hotel="hotel"
+            :deal="pickPrimaryDeal(hotel.deals)"
             :grid-mode="true"
-            @view-deals="openDealPanel(hotel)"
           />
         </div>
       </div>
     </section>
 
     <SiteFooter />
-
-    <!-- Hotel deals side panel (opens from "Bekijk X deals" CTA) -->
-    <HotelDealsSidePanel
-      :is-open="panelOpen"
-      :hotel="activePanelHotel"
-      @close="panelOpen = false"
-    />
   </div>
 </template>
 
@@ -111,6 +104,7 @@
 import { POPULAR_FILTER_ICONS } from '~/utils/popularFilterIcons'
 import { mappedHotels } from '~/data/deals-mapper'
 import type { SearchHotel } from '~/types/searchHotel'
+import { pickPrimaryDeal } from '~/utils/primaryDeal'
 
 
 // Super deals: top 3 hotels by star rating (then highest discount within the same tier)
@@ -127,14 +121,6 @@ const superDeals: SearchHotel[] = [...mappedHotels]
 const superIds = new Set(superDeals.map(h => h.id))
 const actueleDeals: SearchHotel[] = mappedHotels.filter(h => !superIds.has(h.id)).slice(0, 9)
 
-// Side panel — same pattern as /search
-const panelOpen = ref(false)
-const activePanelHotel = ref<SearchHotel | null>(null)
-
-function openDealPanel(hotel: SearchHotel) {
-  activePanelHotel.value = hotel
-  panelOpen.value = true
-}
 
 interface Filter { label: string; count: number; icon: keyof typeof POPULAR_FILTER_ICONS }
 

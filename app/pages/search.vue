@@ -164,13 +164,16 @@
               'search-page__result-list--list-wide': effectiveViewMode === 'list' && !showFilters,
             }"
           >
-            <SearchResultCard
-              v-for="hotel in sortedHotels"
-              :key="hotel.id"
-              :hotel="hotel"
+            <DealCard
+              v-for="row in displayedDeals"
+              :key="row.deal.id"
+              :hotel="row.hotel"
+              :deal="row.deal"
+              :sibling-count="row.siblings.length"
               :grid-mode="effectiveViewMode === 'grid'"
-              @view-deals="openDealPanel(hotel)"
-              @view-deal="navigateToDeal"
+              :wide="!showFilters"
+              :unavailable="row._unavailable"
+              @view-siblings="openDealPanel(row.hotel)"
             />
           </div>
         </div>
@@ -205,6 +208,7 @@
 <script setup lang="ts">
 import type { SearchHotel } from '~/types/searchHotel'
 import { searchHotels } from '~/data/mock/search-hotels'
+import { pickPrimaryDeal } from '~/utils/primaryDeal'
 
 const { t } = useI18n()
 const { loading, setLoading, persons, rooms, selectedNights } = useSearchState()
@@ -287,16 +291,32 @@ const viewMode = ref<'list' | 'grid'>('list')
 const isMobile = useIsMobile()
 const effectiveViewMode = computed<'list' | 'grid'>(() => (isMobile.value ? 'grid' : viewMode.value))
 const showFilters = ref(true)
-const budgetMin = ref(100)
-const budgetMax = ref(2000)
+
+// Budget range — shared with /kaart via useSearchState so toggling between
+// list and map view preserves the user's filter selection.
+const {
+  budgetMin: sharedBudgetMin,
+  budgetMax: sharedBudgetMax,
+  setBudgetMin,
+  setBudgetMax,
+  resetBudget,
+} = useSearchState()
+// Writable computed acts as a ref alias so existing v-model / `.value =`
+// usage in this file still works.
+const budgetMin = computed({
+  get: () => sharedBudgetMin.value,
+  set: (v: number) => setBudgetMin(v),
+})
+const budgetMax = computed({
+  get: () => sharedBudgetMax.value,
+  set: (v: number) => setBudgetMax(v),
+})
 
 // Mobile filter modal
 const mobileFilterOpen = ref(false)
 
 function handleMapClick() {
-  // Fake door — feature coming soon. For now: noop. Replace with router-push when map view exists.
-  // eslint-disable-next-line no-alert
-  if (typeof window !== 'undefined') alert(t('search.viewOnMap') + ' — binnenkort beschikbaar')
+  navigateTo('/kaart')
 }
 
 function handleFilterButtonClick() {
@@ -308,8 +328,7 @@ function handleFilterButtonClick() {
 }
 
 function resetFilters() {
-  budgetMin.value = 100
-  budgetMax.value = 2000
+  resetBudget()
 }
 
 // Sort
@@ -361,6 +380,62 @@ const sortedHotels = computed(() => {
   }
 })
 
+// Pin the originating deal at the top when arriving from /deal/<slug> via the
+// search-bar's "Vind deals" button. The query is `?from=<deal-permalink>`.
+const route = useRoute()
+const pinnedFromSlug = computed(() => {
+  const q = route.query.from
+  return typeof q === 'string' ? q : null
+})
+
+/** Hotel that owns the from-deal (regardless of current filters). */
+const pinnedHotel = computed(() => {
+  const slug = pinnedFromSlug.value
+  if (!slug) return null
+  for (const h of searchHotels) {
+    if (h.deals.some(d => d.slug === slug)) return h
+  }
+  return null
+})
+
+/** True when the from-deal still matches the current filters. */
+const pinnedAvailable = computed(() => {
+  const slug = pinnedFromSlug.value
+  const hotel = pinnedHotel.value
+  if (!slug || !hotel) return true
+  const filtered = filteredHotels.value.find(h => h.id === hotel.id)
+  if (!filtered) return false
+  return filtered.deals.some(d => d.slug === slug)
+})
+
+/** Final list shown in the grid: pinned hotel first (always), then the rest. */
+const displayedHotels = computed(() => {
+  const pinned = pinnedHotel.value
+  if (!pinned) return sortedHotels.value
+  // Use the unfiltered hotel record so its image / pitch render even when
+  // unavailable; mark it via a sentinel so the card knows.
+  const rest = sortedHotels.value.filter(h => h.id !== pinned.id)
+  const unavailable = !pinnedAvailable.value
+  return [{ ...pinned, _pinned: true, _unavailable: unavailable } as SearchHotel & { _pinned: true; _unavailable: boolean }, ...rest]
+})
+
+/** One row per hotel: the primary (most attractive) deal + sibling count.
+ *  For the pinned-from-deal slot, force the deal to be the slug from `?from=`. */
+const displayedDeals = computed(() => {
+  return displayedHotels.value.map((hotel) => {
+    const fromSlug = pinnedHotel.value && hotel.id === pinnedHotel.value.id ? pinnedFromSlug.value : null
+    const fromDeal = fromSlug ? hotel.deals.find(d => d.slug === fromSlug) : null
+    const primary = fromDeal ?? pickPrimaryDeal(hotel.deals)
+    const siblings = hotel.deals.filter(d => d.id !== primary.id)
+    return {
+      hotel,
+      deal: primary,
+      siblings,
+      _unavailable: (hotel as { _unavailable?: boolean })._unavailable === true,
+    }
+  })
+})
+
 // Close sort dropdown on click outside
 onMounted(() => {
   document.addEventListener('click', handleClickOutside)
@@ -407,7 +482,6 @@ function navigateToDeal(slug: string) {
   grid-template-columns: 280px 1fr;
   gap: var(--space-xl);
   align-items: start;
-  transition: grid-template-columns 300ms ease;
 }
 
 .search-page__grid--no-sidebar {
@@ -727,20 +801,14 @@ function navigateToDeal(slug: string) {
 }
 
 /* ===== SIDEBAR TRANSITION ===== */
+/* Sidebar mounts/unmounts instantly — no animation. */
 .sidebar-slide-enter-active,
-.sidebar-slide-leave-active {
-  transition: opacity 250ms ease;
-  min-width: 280px;
-}
-
+.sidebar-slide-leave-active,
 .sidebar-slide-enter-from,
-.sidebar-slide-leave-to {
-  opacity: 0;
-}
-
+.sidebar-slide-leave-to,
 .sidebar-slide-enter-to,
 .sidebar-slide-leave-from {
-  opacity: 1;
+  transition: none;
 }
 
 /* Dropdown transition */

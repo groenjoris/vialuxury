@@ -1,20 +1,76 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { mockMapHotels } from '~/data/mock/hotels-nl'
+import { searchHotels } from '~/data/mock/search-hotels'
 import { useHotelMap } from '~/composables/useHotelMap'
+import { isDealAvailable } from '~/utils/availability'
+import type { SearchHotel } from '~/types/searchHotel'
 import HotelBrowseMap from '~/components/map/HotelBrowseMap.vue'
 import HotelMapHoverCard from '~/components/map/HotelMapHoverCard.vue'
-import HotelMapSidebar from '~/components/map/HotelMapSidebar.vue'
+import HotelDealsSidePanel from '~/components/search/HotelDealsSidePanel.vue'
 import HotelMapZoomControls from '~/components/map/HotelMapZoomControls.vue'
-import HotelMapFilterBar from '~/components/map/HotelMapFilterBar.vue'
+import SearchFilterPanel from '~/components/search/SearchFilterPanel.vue'
 
 const { t } = useI18n()
 
 useHead({ title: 'Kaart — Via Luxury' })
 
 const router = useRouter()
-const hotels = mockMapHotels
+
+const {
+  arrivalDate,
+  selectedNights,
+  budgetMin: sharedBudgetMin,
+  budgetMax: sharedBudgetMax,
+  setBudgetMin,
+  setBudgetMax,
+} = useSearchState()
+
+// Writable computed aliases so SearchFilterPanel's v-model still works.
+const budgetMin = computed({
+  get: () => sharedBudgetMin.value,
+  set: (v: number) => setBudgetMin(v),
+})
+const budgetMax = computed({
+  get: () => sharedBudgetMax.value,
+  set: (v: number) => setBudgetMax(v),
+})
+
+/** Per spec:
+ *  - Duration filter (hard): drop deals whose nights don't match. If a hotel
+ *    has zero matching deals → remove the hotel from the map entirely.
+ *  - Arrival-date filter: when set, deals that are sold out on that date
+ *    are *not* removed — but if every matching deal of a hotel is sold out,
+ *    the hotel renders with the grey "Disabled" pin (still clickable).
+ *  - When no arrival date is set, hotels are never sold out.
+ *  Destination input doesn't filter the map (handled by initial-zoom logic
+ *  in a follow-up — for now we just show everything centred on NL). */
+const mapHotels = computed<SearchHotel[]>(() => {
+  const ns = selectedNights.value
+  const matchesDuration = (n: number) => {
+    if (ns.length === 0) return true
+    if (ns.includes('5+') && n >= 5) return true
+    return ns.includes(String(n))
+  }
+  const inBudget = (price: number) =>
+    price >= sharedBudgetMin.value && price <= sharedBudgetMax.value
+  const result: SearchHotel[] = []
+  for (const h of searchHotels) {
+    const matchingDeals = h.deals.filter(
+      (d) => matchesDuration(d.nights) && inBudget(d.basePrice),
+    )
+    if (matchingDeals.length === 0) continue
+    let soldOut = false
+    if (arrivalDate.value) {
+      const anyAvailable = matchingDeals.some((d) =>
+        isDealAvailable(d.id, arrivalDate.value!),
+      )
+      soldOut = !anyAvailable
+    }
+    result.push({ ...h, deals: matchingDeals, soldOut })
+  }
+  return result
+})
 
 const {
   selectedHotelId,
@@ -24,11 +80,11 @@ const {
 } = useHotelMap()
 
 const selectedHotel = computed(() =>
-  hotels.find((h) => h.id === selectedHotelId.value) ?? null,
+  mapHotels.value.find((h) => h.id === selectedHotelId.value) ?? null,
 )
 
 const hoveredHotel = computed(() =>
-  hotels.find((h) => h.id === hoveredHotelId.value) ?? null,
+  mapHotels.value.find((h) => h.id === hoveredHotelId.value) ?? null,
 )
 
 const mapRef = ref<InstanceType<typeof HotelBrowseMap> | null>(null)
@@ -41,58 +97,27 @@ function closeMap() {
 
 <template>
   <div class="kaart-page">
-    <!-- USP top bar (matches Figma) -->
-    <div class="kaart-topbar">
-      <span><span class="kaart-topbar__check">✓</span> {{ t('topbar.trustpilot') }}</span>
-      <span><span class="kaart-topbar__check">✓</span> {{ t('topbar.bestDeal') }}</span>
-      <span><span class="kaart-topbar__check">✓</span> {{ t('map.freeCancel') }}</span>
-      <span><span class="kaart-topbar__check">✓</span> {{ t('map.moneyBackGuarantee') }}</span>
-    </div>
+    <!-- Sticky filter sidebar (left). Stays in place when the side panel
+         opens; the map slides under it. Filter content scrolls internally
+         when it overflows the viewport height. -->
+    <aside class="kaart-filter">
+      <SearchFilterPanel
+        :budget-min="budgetMin"
+        :budget-max="budgetMax"
+        @update:budget-min="budgetMin = $event"
+        @update:budget-max="budgetMax = $event"
+      />
+    </aside>
 
-    <!-- Map-specific simplified header (matches Figma; differs from
-         the global SiteHeader which is for the main site flow) -->
-    <header class="kaart-header">
-      <NuxtLink to="/" class="kaart-header__logo" aria-label="Via Luxury">
-        <span>via</span>
-        <span class="kaart-header__logo-mid">LUXU</span>
-        <span>RY</span>
-      </NuxtLink>
-
-      <button type="button" class="kaart-header__help">
-        <span class="kaart-header__help-icon" aria-hidden="true">🎧</span>
-        {{ t('map.needHelp') }} <a href="tel:+31207052222">+31 20 705 2222</a>
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9" /></svg>
-      </button>
-
-      <nav class="kaart-header__nav">
-        <a href="#" class="kaart-header__nav-item">
-          <svg width="14" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2" /><line x1="12" y1="18" x2="12" y2="18" /></svg>
-          {{ t('map.customerService') }}
-        </a>
-        <a href="#" class="kaart-header__nav-item">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" /></svg>
-          {{ t('map.favorites') }}
-        </a>
-        <a href="#" class="kaart-header__nav-item">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4" /><path d="M4 21c0-4 4-7 8-7s8 3 8 7" /></svg>
-          {{ t('map.account') }}
-        </a>
-        <button type="button" class="kaart-header__hamburger" :aria-label="t('map.menu')">
-          <span /><span /><span />
-        </button>
-      </nav>
-    </header>
-
-    <HotelMapFilterBar />
-
-    <main class="kaart-stage">
+    <main class="kaart-stage" :class="{ 'kaart-stage--with-panel': !!selectedHotel }">
       <ClientOnly>
-        <HotelBrowseMap ref="mapRef" :hotels="hotels" />
+        <HotelBrowseMap ref="mapRef" :hotels="mapHotels" />
       </ClientOnly>
 
-      <HotelMapSidebar
-        v-if="selectedHotel"
+      <HotelDealsSidePanel
+        :is-open="!!selectedHotel"
         :hotel="selectedHotel"
+        :map-mode="true"
         @close="clearSelection"
       />
 
@@ -100,17 +125,19 @@ function closeMap() {
         v-if="hoveredHotel"
         :hotel="hoveredHotel"
         :position="hoverPosition"
+        :arrival-date="arrivalDate"
+        :sold-out="hoveredHotel.soldOut"
       />
 
       <button
         type="button"
         class="kaart-close"
-        aria-label="Sluit kaart"
         @click="closeMap"
       >
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true">
           <path d="M18 6L6 18M6 6l12 12" />
         </svg>
+        <span>Sluit kaart</span>
       </button>
 
       <HotelMapZoomControls
@@ -131,122 +158,44 @@ function closeMap() {
 .kaart-page {
   position: fixed;
   inset: 0;
-  display: flex;
-  flex-direction: column;
   background: var(--color-surface);
   overflow: hidden;
 }
 
-/* ---------- Top USP bar ---------- */
-.kaart-topbar {
-  flex-shrink: 0;
-  background: #2A2A2A;
-  color: rgba(255, 255, 255, 0.92);
-  font-size: 12px;
-  height: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  padding: 0 var(--space-2xl);
-}
-
-.kaart-topbar__check {
-  color: white;
-  margin-right: 6px;
-}
-
-/* ---------- Header ---------- */
-.kaart-header {
-  flex-shrink: 0;
-  background: #1A1A1A;
-  color: white;
-  height: 70px;
-  display: flex;
-  align-items: center;
-  padding: 0 var(--space-lg);
-  gap: var(--space-lg);
-}
-
-.kaart-header__logo {
-  display: inline-flex;
-  align-items: center;
-  font-family: var(--font-heading);
-  font-weight: 700;
-  font-size: 18px;
-  color: white;
-  text-decoration: none;
-  background: var(--color-primary);
-  padding: 6px 10px;
-  border-radius: var(--radius-xs);
-  letter-spacing: 0.5px;
-}
-
-.kaart-header__logo-mid {
-  margin: 0 1px;
-}
-
-.kaart-header__help {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: #2E2E2E;
-  border: 0;
-  border-radius: 999px;
-  color: white;
-  font-family: var(--font-body);
-  font-size: 13px;
-  padding: 8px 16px;
-  cursor: pointer;
-}
-
-.kaart-header__help a {
-  color: white;
-  text-decoration: underline;
-}
-
-.kaart-header__help-icon {
-  font-size: 14px;
-}
-
-.kaart-header__nav {
-  margin-left: auto;
-  display: flex;
-  align-items: center;
-  gap: var(--space-lg);
-}
-
-.kaart-header__nav-item {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  color: white;
-  text-decoration: none;
-  font-size: 13px;
-  font-family: var(--font-body);
-}
-
-.kaart-header__hamburger {
-  background: transparent;
-  border: 0;
-  display: inline-flex;
-  flex-direction: column;
-  gap: 4px;
-  padding: 6px;
-  cursor: pointer;
-}
-
-.kaart-header__hamburger span {
-  display: block;
-  width: 20px;
-  height: 2px;
-  background: white;
+/* ---------- Filter sidebar (left) ---------- */
+.kaart-filter {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 280px;
+  background: var(--color-surface);
+  border-right: 1px solid var(--color-border-light);
+  z-index: 700; /* above the stage so the map slides UNDER it */
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  /* No outer padding — the SearchFilterPanel manages its own. */
 }
 
 /* ---------- Stage (map area) ---------- */
 .kaart-stage {
-  position: relative;
-  flex: 1;
-  min-height: 0;
+  /* Sits to the right of the sticky filter; the filter overlays the stage's
+     left edge so when the stage translates left on panel open, the map
+     slides UNDER the filter. */
+  position: absolute;
+  top: 0;
+  left: 280px;
+  right: 0;
+  bottom: 0;
+  /* When the side panel slides in, the WHOLE stage (map + close button +
+     zoom controls + pins) slides left by the panel width — same timing
+     and easing as the panel itself, so the two move as if attached. */
+  will-change: transform;
+  transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.kaart-stage--with-panel {
+  transform: translateX(-380px);
 }
 
 .kaart-close {
@@ -254,17 +203,20 @@ function closeMap() {
   top: var(--space-lg);
   right: var(--space-lg);
   z-index: 600;
-  width: 40px;
   height: 40px;
+  padding: 0 var(--space-md);
   background: var(--color-surface);
   border: 0;
-  border-radius: 50%;
+  border-radius: 999px;
   box-shadow: var(--shadow-card);
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
+  gap: 8px;
   cursor: pointer;
   color: var(--color-text-primary);
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
 }
 
 .kaart-close:hover {
@@ -277,10 +229,7 @@ function closeMap() {
 }
 
 @media (max-width: 1023px) {
-  .kaart-topbar,
-  .kaart-header,
-  .kaart-stage,
-  :deep(.map-filter-bar) {
+  .kaart-stage {
     display: none;
   }
   .kaart-mobile-fallback {

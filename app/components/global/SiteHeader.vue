@@ -241,7 +241,7 @@
 
         <div class="search-bar__divider"></div>
 
-        <!-- 2. Wanneer en hoelang -->
+        <!-- 2. Wanneer -->
         <button
           ref="whenField"
           class="search-bar__field search-bar__field--when"
@@ -252,14 +252,32 @@
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
           </span>
           <span class="search-bar__field-text">
-            <span class="search-bar__label">{{ t('header.whenAndHowLong') }}</span>
+            <span class="search-bar__label">Wanneer</span>
             <span class="search-bar__value">{{ whenLabel }}</span>
           </span>
         </button>
 
         <div class="search-bar__divider"></div>
 
-        <!-- 3. Wie gaat er mee -->
+        <!-- 3. Hoelang (reisduur) -->
+        <button
+          ref="hoelangField"
+          class="search-bar__field search-bar__field--hoelang"
+          :class="{ 'search-bar__field--active': activePopup === 'hoelang' }"
+          @click="togglePopup('hoelang')"
+        >
+          <span v-if="variant === 'overlay'" class="search-bar__field-icon" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </span>
+          <span class="search-bar__field-text">
+            <span class="search-bar__label">Hoelang</span>
+            <span class="search-bar__value">{{ hoelangLabel }}</span>
+          </span>
+        </button>
+
+        <div class="search-bar__divider"></div>
+
+        <!-- 4. Wie gaat er mee -->
         <button
           ref="whoField"
           class="search-bar__field search-bar__field--who"
@@ -276,11 +294,11 @@
         </button>
 
           <!-- Search button: Find Deals (overlay) or compact icon (default) -->
-          <button v-if="variant === 'overlay'" class="search-bar__btn search-bar__btn--find-deals" @click="handleSearch">
+          <button v-if="variant === 'overlay'" class="search-bar__btn search-bar__btn--find-deals" :class="{ 'search-bar__btn--pulsing': pulseActive }" @click="handleSearch">
             <span>Vind deals</span>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
           </button>
-          <button v-else class="search-bar__btn" @click="handleSearch" :aria-label="t('header.search')">
+          <button v-else class="search-bar__btn" :class="{ 'search-bar__btn--pulsing': pulseActive }" @click="handleSearch" :aria-label="t('header.search')">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
               <circle cx="11" cy="11" r="8" />
               <path d="M21 21l-4.35-4.35" />
@@ -308,7 +326,7 @@
             :selection-order="selectionOrder"
             @toggle-destination="toggleDestination"
             @toggle-theme="toggleTheme"
-            @select-hotel="handleSelectHotel"
+            @select-hotel="handleSelectHotelInPopup"
             @select-city="handleSelectCity"
             @remove-city="handleRemoveCity"
             @save="closePopup()"
@@ -316,7 +334,7 @@
           />
         </div>
 
-        <!-- WHEN POPUP -->
+        <!-- WHEN POPUP (calendar + flex tabs only — no duration controls) -->
         <div v-if="activePopup === 'when'" class="popup popup--when">
           <DatePopup
             v-model:cal-month="calMonth"
@@ -326,6 +344,18 @@
             @update:flex-state="handleFlexState"
             @save="closePopup()"
             @clear="clearWhen"
+          />
+        </div>
+
+        <!-- HOELANG POPUP (reisduur: nachten checkboxes + weekend/midweek radio) -->
+        <div v-if="activePopup === 'hoelang'" class="popup popup--hoelang">
+          <DurationPopup
+            :nights="localNights"
+            :flex-type="localFlexType"
+            :arrival-date="selectedDate"
+            :flex-months="flexState.months"
+            @toggle-night="toggleLocalNight"
+            @select-flex-type="setLocalFlexType"
           />
         </div>
 
@@ -474,6 +504,7 @@
 
 <script setup lang="ts">
 import { useLocaleStore } from '~/stores/locale'
+import { searchHotels } from '~/data/mock/search-hotels'
 
 withDefaults(defineProps<{
   /** 'solid' = default dark bar; 'overlay' = transparent over a background image (e.g. home hero) */
@@ -563,17 +594,19 @@ useClickOutside(langSwitcherRef, () => { langDropdownOpen.value = false })
 useClickOutside(contactDropdownRef, () => { contactDropdownOpen.value = false })
 useClickOutside(hamburgerWrapRef, () => { hamburgerDropdownOpen.value = false })
 
-const activePopup = ref<'destination' | 'when' | 'who' | null>(null)
+const activePopup = ref<'destination' | 'when' | 'hoelang' | 'who' | null>(null)
 
 // Refs to each search-bar field button → used to position popups
 const destField = ref<HTMLElement | null>(null)
 const whenField = ref<HTMLElement | null>(null)
+const hoelangField = ref<HTMLElement | null>(null)
 const whoField = ref<HTMLElement | null>(null)
 
-// Approximate popup heights (used to decide above/below flip)
-const POPUP_HEIGHTS: Record<'destination' | 'when' | 'who', number> = {
+// Approximate popup heights (used to decide auto-scroll on open)
+const POPUP_HEIGHTS: Record<'destination' | 'when' | 'hoelang' | 'who', number> = {
   destination: 540,
   when: 620,
+  hoelang: 320,
   who: 380,
 }
 
@@ -583,6 +616,7 @@ function fieldRect() {
   switch (activePopup.value) {
     case 'destination': return destField.value?.getBoundingClientRect()
     case 'when':        return whenField.value?.getBoundingClientRect()
+    case 'hoelang':     return hoelangField.value?.getBoundingClientRect()
     case 'who':         return whoField.value?.getBoundingClientRect()
     default:            return undefined
   }
@@ -631,7 +665,7 @@ const mobileSearchLabel = computed(() => {
   return parts.join(' · ')
 })
 
-function togglePopup(popup: 'destination' | 'when' | 'who') {
+function togglePopup(popup: 'destination' | 'when' | 'hoelang' | 'who') {
   activePopup.value = activePopup.value === popup ? null : popup
 }
 
@@ -654,17 +688,16 @@ onBeforeUnmount(() => {
 })
 
 function closePopup() {
-  // Sync search state when popup closes (for deal page reactivity)
-  const totalPersons = searchGroup.value.adults + searchGroup.value.children.length
-  setSearchGroup(totalPersons, searchGroup.value.rooms)
-  triggerSearchUpdate()
+  // Draft-only: do NOT push to shared state. Pickers commit on search click.
   activePopup.value = null
+  schedulePulse()
 }
 
 function clearDestination() {
   selectedDestinations.value = []
   selectedThemes.value = []
   selectedCities.value = []
+  selectedHotels.value = []
   selectionOrder.value = []
   closePopup()
 }
@@ -715,9 +748,10 @@ const themes = computed(() => [
 const selectedDestinations = ref<string[]>([])
 const selectedThemes = ref<string[]>([])
 const selectedCities = ref<{ name: string; province: string }[]>([])
+const selectedHotels = ref<{ name: string; slug: string }[]>([])
 
 // Track insertion order across all types so chips render chronologically (new on the right)
-type SelectionEntry = { type: 'destination' | 'theme' | 'city'; key: string }
+type SelectionEntry = { type: 'destination' | 'theme' | 'city' | 'hotel'; key: string }
 const selectionOrder = ref<SelectionEntry[]>([])
 
 function toggleDestination(id: string) {
@@ -770,6 +804,9 @@ const destinationLabel = computed(() => {
   for (const city of selectedCities.value) {
     names.push(city.name)
   }
+  for (const hotel of selectedHotels.value) {
+    names.push(hotel.name)
+  }
 
   if (names.length === 0) return t('header.chooseDestination')
 
@@ -796,19 +833,100 @@ const selectedDurations = ref<string[]>([])
 const flexState = ref<{ durations: string[]; months: string[] }>({ durations: [], months: [] })
 
 // Sync arrival date + nights to shared composable so /search filter can read them
-const { setArrivalDate, setSearchGroup, setLoading, setSelectedNights, selectedNights: globalNights, triggerSearchUpdate } = useSearchState()
+const {
+  setArrivalDate,
+  setSearchGroup,
+  setLoading,
+  setSelectedNights,
+  selectedNights: globalNights,
+  selectedFlexType: globalFlexType,
+  setFlexType,
+  toggleNight: toggleGlobalNight,
+  clearDuration,
+  triggerSearchUpdate,
+} = useSearchState()
+
+// --- LOCAL DRAFT STATE for the search-bar pickers ---
+// Pickers update only these refs; nothing is pushed to shared state until
+// the user clicks the Vind deals / search button. This keeps the rest of
+// the page (filters, results, deal cards) untouched while the user typesArrange.
+const localNights = ref<string[]>([...globalNights.value])
+const localFlexType = ref<string | null>(globalFlexType.value)
+
+function toggleLocalNight(value: string) {
+  const i = localNights.value.indexOf(value)
+  if (i === -1) localNights.value.push(value)
+  else localNights.value.splice(i, 1)
+  if (localNights.value.length > 0) localFlexType.value = null
+  notePicker()
+}
+
+function setLocalFlexType(val: string | null) {
+  localFlexType.value = val
+  if (val) localNights.value = []
+  notePicker()
+}
+
+// --- Pulse animation logic on the search button ---
+// When date or duration is changed and popups are closed, schedule a 2-pulse
+// nudge after a 2-second pause; cancelled if the user clicks search first.
+const pulseActive = ref(false)
+let pulseTimer: ReturnType<typeof setTimeout> | null = null
+let pulseChangedSinceClose = false
+
+function notePicker() {
+  pulseChangedSinceClose = true
+}
+
+function schedulePulse() {
+  if (!pulseChangedSinceClose) return
+  if (pulseTimer) clearTimeout(pulseTimer)
+  pulseTimer = setTimeout(() => {
+    pulseActive.value = true
+    setTimeout(() => { pulseActive.value = false }, 5200) // 2 pulses, ~2s apart
+  }, 2000)
+}
+
+function cancelPulse() {
+  if (pulseTimer) { clearTimeout(pulseTimer); pulseTimer = null }
+  pulseActive.value = false
+  pulseChangedSinceClose = false
+}
+
+watch(localFlexType, () => notePicker())
+watch(localNights, () => notePicker(), { deep: true })
 
 // Pre-fill local picker from shared state (e.g. on /search page reload)
-if (globalNights.value.length && selectedDurations.value.length === 0) {
+// Pre-fill local pickers from shared on mount (e.g. /search reload)
+if (selectedDurations.value.length === 0 && globalNights.value.length) {
   selectedDurations.value = [...globalNights.value]
 }
 
+/** weekday → required start-day-of-week for each flex-type. */
+const FLEX_TYPE_DOW: Record<string, number> = {
+  'weekend-fri-sun': 5,
+  'weekend-sat-sun': 6,
+  'long-weekend': 5,
+  'midweek': 1,
+}
+
 watch(selectedDate, (val) => {
-  setArrivalDate(val)
-  // Selecting an arrival date clears flex months
+  // No push to shared state here — popups are draft-only until the user
+  // clicks the search button. Just update local UI consistency.
   if (val && flexState.value.months.length > 0) {
     flexState.value = { ...flexState.value, months: [] }
   }
+  // Reset duration to "Elke reisduur" if the arrival weekday doesn't match
+  // the currently chosen weekend/midweek option (operates on LOCAL state).
+  if (val && localFlexType.value) {
+    const required = FLEX_TYPE_DOW[localFlexType.value]
+    const dow = new Date(val).getDay()
+    if (required !== undefined && dow !== required) {
+      localNights.value = []
+      localFlexType.value = null
+    }
+  }
+  notePicker()
 })
 // Calendar duration clears flex duration. Nights → shared state happens on Search button.
 watch(selectedDurations, (val) => {
@@ -843,52 +961,42 @@ function handleFlexState(state: { durations: string[]; months: string[] }) {
 }
 
 const whenLabel = computed(() => {
-  // Format: [when], [duration]
-  // When = arrival date OR flex months OR "Flexibel"
-  // Duration = calendar duration OR flex type/nights OR "elke duur"/"any duration"
-
-  let whenPart = ''
-  let durationPart = ''
-
-  // When part
+  // Date / months only — duration moved to Hoelang field.
   if (selectedDate.value) {
-    const [y, m, d] = selectedDate.value.split('-')
-    whenPart = `${d}/${m}`
-    if (flexibility.value > 0) whenPart += ` \u00B1${flexibility.value}`
-  } else if (flexState.value.months.length > 0) {
+    const [, m, d] = selectedDate.value.split('-')
+    let whenPart = `${d}/${m}`
+    if (flexibility.value > 0) whenPart += ` ±${flexibility.value}`
+    return whenPart
+  }
+  if (flexState.value.months.length > 0) {
     const monthLabels = flexState.value.months.map((key) => {
       const monthIndex = parseInt(key.split('-')[1], 10) - 1
       return monthNames.value[monthIndex]
     })
-    whenPart = monthLabels.join(', ')
-  } else {
-    whenPart = t('header.flexibleLabel')
+    return monthLabels.join(', ')
   }
+  return 'Flexibel'
+})
 
-  // Duration part
-  const calDurs = selectedDurations.value
-  const flexDurs = flexState.value.durations
-  if (calDurs.length > 0) {
-    const labels = calDurs.map(id => durationOptions.value.find(o => o.id === id)?.label).filter(Boolean) as string[]
-    durationPart = labels.join(' of ')
-  } else if (flexDurs.length > 0) {
+const hoelangLabel = computed(() => {
+  if (localFlexType.value) {
     const typeLabels: Record<string, string> = {
-      'weekend-fri-sun': t('header.flex.weekendFriSun'),
-      'weekend-sat-sun': t('header.flex.weekendSatSun'),
-      'long-weekend': t('header.flex.longWeekend'),
-      'midweek': t('header.flex.midweek'),
+      'weekend-fri-sun': 'Weekend (vr-zo)',
+      'weekend-sat-sun': 'Weekend (za-zo)',
+      'long-weekend': 'Lang weekend',
+      'midweek': 'Midweek',
     }
-    const labels = flexDurs.map(id => {
-      const nightsOpt = durationOptions.value.find(o => o.id === id)
-      return nightsOpt ? nightsOpt.label : (typeLabels[id] || '')
-    }).filter(Boolean)
-    durationPart = labels.join(' of ')
-  } else {
-    durationPart = t('header.anyDuration')
+    return typeLabels[localFlexType.value] || 'Elke reisduur'
   }
-
-  const label = `${whenPart}, ${durationPart}`
-  return label.length > 32 ? label.substring(0, 30) + '...' : label
+  if (localNights.value.length === 0) return 'Elke reisduur'
+  if (localNights.value.length === 1) {
+    const v = localNights.value[0]
+    if (v === '1') return '1 nacht'
+    if (v === '5+') return '5+ nachten'
+    return `${v} nachten`
+  }
+  const sorted = [...localNights.value].sort()
+  return `${sorted.join(' of ')} nachten`
 })
 
 // --- WHO ---
@@ -919,20 +1027,35 @@ const whoLabel = computed(() => {
 })
 
 function commitSearch() {
+  // Push draft (local) picker state into the shared composable. Until this
+  // runs, search results / filters / deal pages see the OLD values.
   const totalPersons = searchGroup.value.adults + searchGroup.value.children.length
   setSearchGroup(totalPersons, searchGroup.value.rooms)
-  const numericNights = selectedDurations.value.filter(v => ['1', '2', '3', '4', '5+'].includes(v))
-  setSelectedNights(numericNights)
+  setArrivalDate(selectedDate.value)
+  setSelectedNights(localNights.value.filter(v => ['1', '2', '3', '4', '5+'].includes(v)))
+  setFlexType(localFlexType.value)
+  triggerSearchUpdate()
   setLoading(true)
-  navigateTo('/search')
+  // If the user picked a specific hotel from the destination popup, pin it.
+  // Otherwise fall back to the deal-page slug (when changing search from /deal).
+  const fromSlug = selectedHotels.value[0]?.slug || currentDealSlug()
+  navigateTo(fromSlug ? `/search?from=${encodeURIComponent(fromSlug)}` : '/search')
+}
+
+function currentDealSlug(): string | null {
+  const path = (useRoute().path || '')
+  const m = path.match(/^\/deal\/([^/?#]+)/)
+  return m ? decodeURIComponent(m[1]) : null
 }
 
 function handleSearch() {
-  closePopup()
+  cancelPulse()
+  activePopup.value = null
   commitSearch()
 }
 
 function handleMobileSearch() {
+  cancelPulse()
   mobileSearchOpen.value = false
   commitSearch()
 }
@@ -940,6 +1063,19 @@ function handleMobileSearch() {
 function handleSelectHotel(slug: string) {
   closePopup()
   navigateTo(`/deal/${slug}`)
+}
+
+/** Hotel chosen from the destination popup: store as a selected hotel chip
+ *  (with both display name and slug) — wait for the user to hit the search
+ *  button to navigate to /search?from=<slug>. */
+function handleSelectHotelInPopup(slug: string) {
+  const h = searchHotels.find(x => x.slug === slug)
+  const name = h?.name || slug
+  if (!selectedHotels.value.some(x => x.slug === slug)) {
+    selectedHotels.value.push({ name, slug })
+    selectionOrder.value.push({ type: 'hotel', key: slug })
+  }
+  notePicker()
 }
 </script>
 
@@ -1008,6 +1144,19 @@ function handleSelectHotel(slug: string) {
   height: 48px;
   align-self: center;
   margin: 0;
+}
+
+/* Search-button pulse — used after picker change with no search click */
+@keyframes search-btn-pulse {
+  0%, 100%   { box-shadow: 0 0 0 0 rgba(233, 113, 50, 0.55); }
+  18%        { box-shadow: 0 0 0 14px rgba(233, 113, 50, 0); }
+  36%        { box-shadow: 0 0 0 0 rgba(233, 113, 50, 0); }
+  54%        { box-shadow: 0 0 0 0 rgba(233, 113, 50, 0.55); }
+  72%        { box-shadow: 0 0 0 14px rgba(233, 113, 50, 0); }
+}
+
+.search-bar__btn--pulsing {
+  animation: search-btn-pulse 5.2s ease-out 0s 1;
 }
 
 .site-header--overlay .search-bar__field-icon {
@@ -1559,8 +1708,8 @@ function handleSelectHotel(slug: string) {
 
 .popup--destination {
   padding: 0;
-  max-width: 560px;
-  width: 100%;
+  width: 560px;          /* fixed: don't shrink while user types */
+  max-width: 90vw;
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -1568,7 +1717,7 @@ function handleSelectHotel(slug: string) {
 
 .popup--when {
   padding: 0;
-  max-width: 660px;
+  max-width: 528px;
   width: 100%;
   max-height: none;
   overflow: visible;
