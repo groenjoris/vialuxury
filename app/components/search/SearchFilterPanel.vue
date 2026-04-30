@@ -1,38 +1,48 @@
 <template>
   <aside class="filter-panel">
-    <h2 class="filter-panel__title">{{ t('search.filters') }}</h2>
+    <div class="filter-panel__header">
+      <h2 class="filter-panel__title">{{ t('search.filters') }}</h2>
+      <button
+        v-if="hideable"
+        type="button"
+        class="filter-panel__hide"
+        @click="$emit('hide')"
+      >
+        {{ t('filter.hideFilter') }}
+      </button>
+    </div>
 
-    <!-- Budget slider -->
+    <!-- Budget slider — bounds rescale with the global person count. -->
     <div class="filter-budget">
       <div class="filter-budget__header">
-        <span class="filter-budget__label">Totaalprijs <span class="filter-budget__persons">{{ persons }} personen</span></span>
+        <span class="filter-budget__label">Totaalprijs <span class="filter-budget__persons">{{ persons }} {{ persons === 1 ? 'persoon' : 'personen' }}</span></span>
         <div class="filter-budget__range">{{ formatPrice(budgetMin) }} – {{ formatPrice(budgetMax) }}</div>
       </div>
       <div class="filter-budget__slider">
         <div class="filter-budget__track">
           <div
             class="filter-budget__fill"
-            :style="{ '--fill-left': ((budgetMin - 100) / 1900 * 100) + '%', '--fill-right': (100 - (budgetMax - 100) / 1900 * 100) + '%' }"
+            :style="{ '--fill-left': fillLeftPct + '%', '--fill-right': fillRightPct + '%' }"
           ></div>
         </div>
         <input
           type="range"
           class="filter-budget__input filter-budget__input--min"
-          :min="100" :max="2000" :step="25"
+          :min="sliderMin" :max="sliderMax" :step="25"
           :value="budgetMin"
           @input="onMinChange"
         />
         <input
           type="range"
           class="filter-budget__input filter-budget__input--max"
-          :min="100" :max="2000" :step="25"
+          :min="sliderMin" :max="sliderMax" :step="25"
           :value="budgetMax"
           @input="onMaxChange"
         />
       </div>
       <div class="filter-budget__labels">
-        <span>€100</span>
-        <span>€2000</span>
+        <span>{{ formatPrice(sliderMin) }}</span>
+        <span>{{ formatPrice(sliderMax) }}</span>
       </div>
     </div>
 
@@ -61,9 +71,9 @@
             <input
               type="checkbox"
               class="filter-item__checkbox"
-              :checked="group.id === 'travelDuration' ? selectedNights.includes(item.value) : false"
-              :disabled="group.id !== 'travelDuration'"
-              @change="group.id === 'travelDuration' && toggleNight(item.value)"
+              :checked="isItemChecked(group.id, item.value)"
+              :disabled="!isItemWired(group.id)"
+              @change="onItemToggle(group.id, item.value)"
             />
             <span class="filter-item__label">{{ item.label }}</span>
           </label>
@@ -82,14 +92,37 @@ const props = withDefaults(defineProps<{
   budgetMin: number
   budgetMax: number
   persons?: number
+  /** Show a "Verberg filter" link in the panel header (search page only). */
+  hideable?: boolean
 }>(), {
   persons: 2,
+  hideable: false,
 })
 
 const emit = defineEmits<{
   'update:budgetMin': [value: number]
   'update:budgetMax': [value: number]
+  'hide': []
 }>()
+
+import { adjustPrice } from '~/utils/priceFormula'
+
+/** Slider bounds scale with the global person count. The 2-person spec
+ *  range is €100 – €2000; for other person counts we apply the same
+ *  per-person formula used elsewhere. */
+const sliderMin = computed(() => adjustPrice(100, props.persons))
+const sliderMax = computed(() => adjustPrice(2000, props.persons))
+
+const fillLeftPct = computed(() => {
+  const range = sliderMax.value - sliderMin.value
+  if (range <= 0) return 0
+  return Math.max(0, Math.min(100, ((props.budgetMin - sliderMin.value) / range) * 100))
+})
+const fillRightPct = computed(() => {
+  const range = sliderMax.value - sliderMin.value
+  if (range <= 0) return 0
+  return Math.max(0, Math.min(100, 100 - ((props.budgetMax - sliderMin.value) / range) * 100))
+})
 
 function onMinChange(e: Event) {
   const val = Number((e.target as HTMLInputElement).value)
@@ -100,6 +133,27 @@ function onMaxChange(e: Event) {
   const val = Number((e.target as HTMLInputElement).value)
   emit('update:budgetMax', Math.max(val, props.budgetMin + 25))
 }
+
+/** When the person count changes, clamp the budget into the new bounds and
+ *  pre-stretch the active range to match the new full window so the slider
+ *  feels consistent. */
+watch(() => props.persons, (next, prev) => {
+  if (next === prev) return
+  const newMin = adjustPrice(100, next)
+  const newMax = adjustPrice(2000, next)
+  // Rescale current selection proportionally to the new range.
+  const oldMin = adjustPrice(100, prev || 2)
+  const oldMax = adjustPrice(2000, prev || 2)
+  const oldRange = oldMax - oldMin
+  if (oldRange > 0) {
+    const ratioLo = (props.budgetMin - oldMin) / oldRange
+    const ratioHi = (props.budgetMax - oldMin) / oldRange
+    const wantedMin = Math.round(newMin + ratioLo * (newMax - newMin))
+    const wantedMax = Math.round(newMin + ratioHi * (newMax - newMin))
+    emit('update:budgetMin', Math.max(newMin, Math.min(newMax - 25, wantedMin)))
+    emit('update:budgetMax', Math.min(newMax, Math.max(newMin + 25, wantedMax)))
+  }
+})
 
 interface FilterItem {
   label: string
@@ -113,18 +167,45 @@ interface FilterGroup {
   items: FilterItem[]
 }
 
-// Wire travel-duration checkboxes to shared search state
-const { selectedNights, toggleNight } = useSearchState()
+// Wire travel-duration + filter-tag checkboxes to shared search state
+const {
+  selectedNights, toggleNight,
+  selectedFilterTags, toggleFilterTag,
+} = useSearchState()
+
+function isItemWired(groupId: string): boolean {
+  return groupId === 'travelDuration'
+    || groupId === 'arrangement'
+    || groupId === 'thema'
+    || groupId === 'specials'
+}
+
+function isItemChecked(groupId: string, value: string): boolean {
+  if (groupId === 'travelDuration') return selectedNights.value.includes(value)
+  if (groupId === 'arrangement' || groupId === 'thema' || groupId === 'specials') {
+    return selectedFilterTags.value.includes(value)
+  }
+  return false
+}
+
+function onItemToggle(groupId: string, value: string) {
+  if (groupId === 'travelDuration') toggleNight(value)
+  else if (groupId === 'arrangement' || groupId === 'thema' || groupId === 'specials') {
+    toggleFilterTag(value)
+  }
+}
 
 const openState = reactive<Record<string, boolean>>({
   travelDuration: true,
-  location: true,
   arrangement: true,
-  activities: true,
-  hotelFacilities: true,
-  room: true,
-  special: true,
+  thema: true,
+  specials: true,
 })
+
+import { tagsByCategory } from '~/utils/filterTags'
+
+const tagItems = (cat: 'arrangement' | 'thema' | 'specials') =>
+  tagsByCategory(cat).map(t => ({ label: `${t.emoji} ${t.label}`, value: t.id }))
 
 const filterGroups = computed<FilterGroup[]>(() => [
   {
@@ -139,45 +220,12 @@ const filterGroups = computed<FilterGroup[]>(() => [
       { label: t('filter.5plusDays'), value: '5+' },
     ],
   },
-  {
-    id: 'location',
-    title: t('filter.location'),
-    open: openState.location,
-    items: [t('filter.waterside'), t('filter.nearSea'), t('filter.inForest'), t('filter.inNature'), t('filter.cityBreaks')].map(s => ({ label: s, value: s })),
-  },
-  {
-    id: 'arrangement',
-    title: t('filter.arrangement'),
-    open: openState.arrangement,
-    items: [t('filter.culinaryHighlights'), t('filter.withDinner'), t('filter.lateCheckout')].map(s => ({ label: s, value: s })),
-  },
-  {
-    id: 'activities',
-    title: t('filter.activities'),
-    open: openState.activities,
-    items: [t('filter.cycling'), t('filter.hiking')].map(s => ({ label: s, value: s })),
-  },
-  {
-    id: 'hotelFacilities',
-    title: t('filter.hotelFacilities'),
-    open: openState.hotelFacilities,
-    items: [t('filter.wellness'), t('filter.pool'), t('filter.dogFriendly'), t('filter.fiveStarLuxury')].map(s => ({ label: s, value: s })),
-  },
-  {
-    id: 'room',
-    title: t('filter.room'),
-    open: openState.room,
-    items: [t('filter.jacuzzi'), t('filter.luxeSuite')].map(s => ({ label: s, value: s })),
-  },
-  {
-    id: 'special',
-    title: t('filter.special'),
-    open: openState.special,
-    items: [t('filter.bestPrice'), t('filter.newHotels'), t('filter.exclusive')].map(s => ({ label: s, value: s })),
-  },
+  { id: 'arrangement', title: 'Arrangement', open: openState.arrangement, items: tagItems('arrangement') },
+  { id: 'thema',       title: 'Thema',       open: openState.thema,       items: tagItems('thema') },
+  { id: 'specials',    title: 'Specials',    open: openState.specials,    items: tagItems('specials') },
 ])
 
-const groupKeys = ['travelDuration', 'location', 'arrangement', 'activities', 'hotelFacilities', 'room', 'special'] as const
+const groupKeys = ['travelDuration', 'arrangement', 'thema', 'specials'] as const
 
 function toggleGroup(index: number) {
   const key = groupKeys[index]
@@ -192,12 +240,36 @@ function toggleGroup(index: number) {
   padding: var(--space-lg);
 }
 
+.filter-panel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-lg);
+}
+
 .filter-panel__title {
   font-family: var(--font-heading);
   font-size: 20px;
   font-weight: 700;
-  margin-bottom: var(--space-lg);
   color: var(--color-text-primary);
+  margin: 0;
+}
+
+.filter-panel__hide {
+  background: none;
+  border: 0;
+  padding: 0;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-primary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+
+.filter-panel__hide:hover {
+  color: var(--color-primary-hover);
 }
 
 /* Budget slider */

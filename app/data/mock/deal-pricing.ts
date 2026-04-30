@@ -23,24 +23,15 @@ function strSeed(s: string): number {
   return Math.abs(h | 0)
 }
 
-/**
- * Match the search-results card price formula so calendar's cheapest price
- * equals what we advertise on the search page.
- */
-function adjustPriceForPersons(basePrice: number, persons: number): number {
-  if (persons % 2 === 0) return Math.round(basePrice * (persons / 2))
-  return Math.round(basePrice * ((persons + 1) / 2) - 50)
-}
+import { adjustPrice as adjustPriceForPersons } from '~/utils/priceFormula'
+import { isPremiumDay, CALENDAR_PREMIUM_SURCHARGE } from '~/utils/priceFormula'
+import { isDealAvailable } from '~/utils/availability'
 
 /** Roughly 75% of dates get room upgrades available. */
 function hasUpgrades(dateStr: string): boolean {
   return dateHash(dateStr, 1) < 75
 }
 
-/** Roughly 10% of future dates are sold out. */
-function isSoldOut(dateStr: string): boolean {
-  return dateHash(dateStr, 2) < 10
-}
 
 /**
  * Generate mock date availability for a deal variant.
@@ -58,10 +49,6 @@ export function generateDealAvailability(
   const daysInMonth = startOfMonth.daysInMonth()
   const today = dayjs()
 
-  // Deal-specific seed → each deal gets its own random price calendar.
-  const seed = strSeed(deal.id || '')
-  const cheapestForDeal = adjustPriceForPersons(deal.basePrice, persons)
-
   for (let day = 1; day <= daysInMonth; day++) {
     const date = startOfMonth.date(day)
     const dateStr = date.format('YYYY-MM-DD')
@@ -76,32 +63,37 @@ export function generateDealAvailability(
       continue
     }
 
-    // 20% of dates show the cheapest price (= search-result price).
-    // The remaining 80% add either +25 or +75 (50/50 split).
-    const cheapBucket = dateHash(dateStr, 3 + seed) // mix in deal seed
-    const isCheapDate = cheapBucket < 20
-    let totalPrice = cheapestForDeal
-    if (!isCheapDate) {
-      const upBucket = dateHash(dateStr, 4 + seed)
-      totalPrice += upBucket < 50 ? 25 : 75
+    // Sold-out comes from the shared availability.json so the calendar
+    // matches the search-card / map availability one-to-one.
+    const soldOut = !isDealAvailable(deal.id || '', dateStr)
+
+    if (soldOut) {
+      availability.push({
+        date: dateStr,
+        available: false,
+        soldOut: true,
+        totalPrice: 0,
+      })
+      continue
     }
+
+    // 25% of available days show the base "from" price (matches the search
+    // card "vanaf" amount). The remaining 75% add a +€79 surcharge.
+    // Apply the per-person formula to whichever base we end up with.
+    const surcharge = isPremiumDay(deal.id || '', dateStr) ? CALENDAR_PREMIUM_SURCHARGE : 0
+    const totalPrice = adjustPriceForPersons(deal.basePrice + surcharge, persons)
 
     const originalMultiplier = 1 / (1 - deal.discountPercentage / 100)
     const totalBeforeDiscount = Math.round(totalPrice * originalMultiplier)
 
-    // ~10% of dates are sold out
-    const soldOut = isSoldOut(dateStr)
-
     availability.push({
       date: dateStr,
-      available: !soldOut,
-      soldOut,
+      available: true,
+      soldOut: false,
       totalPrice,
       originalPrice: totalBeforeDiscount,
       discountPercentage: deal.discountPercentage,
-      ...(includeUpgradeAvailability && !soldOut
-        ? { hasRoomUpgrades: hasUpgrades(dateStr) }
-        : {}),
+      ...(includeUpgradeAvailability ? { hasRoomUpgrades: hasUpgrades(dateStr) } : {}),
     })
   }
 

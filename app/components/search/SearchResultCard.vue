@@ -113,7 +113,7 @@
             </div>
             <NuxtLink
               v-if="isSingleDeal"
-              :to="`/deal/${hotel.deals[0].slug}`"
+              :to="singleDealHref"
               target="_blank"
               rel="noopener"
               class="result-card__cta"
@@ -135,12 +135,13 @@ import type { SearchHotel } from '~/types/searchHotel'
 import { formatPrice } from '~/utils/formatPrice'
 import { getReviewLabelKey } from '~/utils/reviewLabel'
 import { mappedPackagesByPermalink } from '~/data/deals-mapper'
+import { priceForArrival } from '~/utils/priceFormula'
 
 const { t, localized } = useI18n()
 
 // Favorite state — local per-card for prototype
 const isFavorite = ref(false)
-const { persons } = useSearchState()
+const { persons, arrivalDate } = useSearchState()
 
 // Label key → filename in /public/images/labels/. Source filenames have spaces.
 const LABEL_FILES: Record<string, string> = {
@@ -259,18 +260,31 @@ const inclusionItems = computed(() => {
   return [first, second, 'En andere extra\'s']
 })
 
-const lowestPrice = computed(() => {
-  return Math.min(...props.hotel.deals.map(d => adjustPrice(d.basePrice, persons.value)))
+/** Pick the deal whose date-adjusted price is cheapest. With a global arrival
+ *  date, that may be a different deal than the basePrice-cheapest one (premium
+ *  vs non-premium days have different surcharges). */
+const cheapestDeal = computed(() => {
+  return props.hotel.deals.reduce((min, d) => {
+    const dPrice = priceForArrival(d.basePrice, d.id, arrivalDate.value, persons.value)
+    const minPrice = priceForArrival(min.basePrice, min.id, arrivalDate.value, persons.value)
+    return dPrice < minPrice ? d : min
+  })
 })
 
-const lowestOriginal = computed(() => {
-  const cheapestDeal = props.hotel.deals.reduce((min, d) => d.basePrice < min.basePrice ? d : min)
-  return adjustPrice(cheapestDeal.originalPrice, persons.value)
-})
+const lowestPrice = computed(() =>
+  priceForArrival(cheapestDeal.value.basePrice, cheapestDeal.value.id, arrivalDate.value, persons.value),
+)
+const lowestOriginal = computed(() =>
+  priceForArrival(cheapestDeal.value.originalPrice, cheapestDeal.value.id, arrivalDate.value, persons.value),
+)
+const lowestDiscount = computed(() => cheapestDeal.value.discountPercentage)
 
-const lowestDiscount = computed(() => {
-  const cheapestDeal = props.hotel.deals.reduce((min, d) => d.basePrice < min.basePrice ? d : min)
-  return cheapestDeal.discountPercentage
+/** Carry the arrival date through the URL so the new-tab deal page lands on
+ *  the right month without relying on cross-tab sessionStorage cloning. */
+const isSingleDealLink = computed(() => props.hotel.deals[0]?.slug || '')
+const singleDealHref = computed(() => {
+  const base = `/deal/${isSingleDealLink.value}`
+  return arrivalDate.value ? `${base}?checkin=${arrivalDate.value}` : base
 })
 </script>
 

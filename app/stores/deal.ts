@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import type { Deal, DealVariant, TravelGroup, TravelGroupPricing, RoomOption } from '~/types/deal'
 import type { DateAvailability } from '~/types/calendar'
+import { isPremiumDay, CALENDAR_PREMIUM_SURCHARGE } from '~/utils/priceFormula'
 import dayjs from 'dayjs'
 
 export const useDealStore = defineStore('deal', () => {
@@ -14,7 +15,14 @@ export const useDealStore = defineStore('deal', () => {
     rooms: 1,
   })
   const selectedRoomId = ref<string>('')
-  const checkInDate = ref<string | null>(null)
+  // Bidirectional sync with the global arrival-date in useSearchState so
+  // every calendar on the site (navbar DatePopup, hotel page, deal page
+  // sidebar) shows the same selection. Initialise from the global state so
+  // a date picked on /search or /kaart pre-fills the deal page calendar.
+  const { arrivalDate: globalArrivalDate, setArrivalDate } = useSearchState()
+  const checkInDate = ref<string | null>(globalArrivalDate.value)
+  watch(globalArrivalDate, (v) => { if (v !== checkInDate.value) checkInDate.value = v })
+  watch(checkInDate, (v) => { if (v !== globalArrivalDate.value) setArrivalDate(v) })
   const checkOutDate = ref<string | null>(null)
   const dateAvailability = ref<DateAvailability[]>([])
   const isTravelGroupModalOpen = ref(false)
@@ -113,8 +121,15 @@ export const useDealStore = defineStore('deal', () => {
     const rooms = travelGroup.value.rooms
     const extraPersons = Math.max(0, persons - 2) // base deal is for 2
 
-    // Base deal price (for 2 persons, 1 room)
-    const baseDealPrice = deal.basePrice
+    // Day-specific surcharge: when the user has picked an arrival date, mirror
+    // the calendar's premium-day pricing so the price shown below the calendar
+    // matches the price shown on the selected day in the calendar.
+    const daySurcharge = checkInDate.value && deal.id && isPremiumDay(deal.id, checkInDate.value)
+      ? CALENDAR_PREMIUM_SURCHARGE
+      : 0
+
+    // Base deal price (for 2 persons, 1 room) + day-specific premium surcharge.
+    const baseDealPrice = deal.basePrice + daySurcharge
 
     // Extra persons cost (per person per night)
     const extraPersonCost = extraPersons * 89 * deal.nights

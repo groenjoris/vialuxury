@@ -1,6 +1,6 @@
 const en: Record<string, string> = {
   // TopBar
-  'topbar.trustpilot': 'Guests rate us 4.5/5 on Trustpilot',
+  'topbar.trustpilot': '15,294 guests rate us 4.5',
   'topbar.bestDeal': 'Always the best deal',
   'topbar.easyCancel': 'Easy cancellation',
   'topbar.wideSelection': 'Wide selection of hotel experiences',
@@ -8,6 +8,7 @@ const en: Record<string, string> = {
   // Header - Search bar
   'header.destination': 'Where to',
   'header.whenAndHowLong': 'When & how long',
+  'header.when': 'When',
   'header.whosComing': 'Who\'s coming',
   'header.chooseDestination': 'All destinations',
   'header.chooseDate': 'Flexible, any duration',
@@ -141,8 +142,8 @@ const en: Record<string, string> = {
   'footer.terms': 'Terms & Conditions',
   'footer.privacy': 'Privacy Policy',
   'footer.allRightsReserved': 'All rights reserved.',
-  'footer.trustpilotScore': '4.5/5',
-  'footer.trustpilotLabel': 'Rated on Trustpilot',
+  'footer.trustpilotScore': '4.5',
+  'footer.trustpilotLabel': '15,294 guests rate us 4.5',
 
   // Vakantieparken page
   'vakantieparken.heading': 'Holiday parks are coming',
@@ -188,8 +189,8 @@ const en: Record<string, string> = {
   // Trust items (sidebar)
 
   // Search page
-  'search.deals': 'deals',
-  'search.usp': 'Unique packages, lovingly curated with discounts negotiated by the ViaLuxury team.',
+  'search.deals': 'packages',
+  'search.usp': 'Unique experiences, hand-picked by the ViaLuxury team',
   'search.home': 'Home',
   'search.arrangements': 'Packages',
   'search.filters': 'Filters',
@@ -215,7 +216,9 @@ const en: Record<string, string> = {
   'filter.inNature': 'In nature',
   'filter.cityBreaks': 'City breaks',
   'filter.arrangement': 'Package',
-  'filter.culinaryHighlights': 'Culinary highlights',
+  'filter.bubbelbadInRoom': 'Jacuzzi in the room',
+  'filter.clearAll': 'Clear filter',
+  'filter.hideFilter': 'Hide filter',
   'filter.withDinner': 'With dinner',
   'filter.lateCheckout': 'Late checkout, sleep in',
   'filter.activities': 'Activities',
@@ -235,6 +238,8 @@ const en: Record<string, string> = {
   'filter.exclusive': 'Exclusive at ViaLuxury',
 
   // Deal page
+  'deal.tabIntro': 'Intro',
+  'deal.tabArrangement': 'Your package',
   'deal.highlights': 'Highlights',
   'deal.inclusionsHeading': 'This package for',
   'deal.inclusionsEndAlt': 'includes the following',
@@ -260,6 +265,8 @@ const en: Record<string, string> = {
 
   // Hotel page
   'hotel.facilities': 'Hotel facilities',
+  'hotel.readMore': 'Read more',
+  'hotel.showAvailableDeals': 'Show available packages',
   'hotel.reviews': 'Guest reviews',
   'hotel.faqHeading': 'Have more questions?',
   'hotel.nearbyTips': 'Tips nearby',
@@ -372,10 +379,12 @@ const en: Record<string, string> = {
 
   // Hotel page
   'hotel.bookedAs': 'Booked:',
-  'hotel.availableDeals': 'Available packages',
+  'hotel.availableDeals': 'Available packages at this hotel.',
+  'hotel.availableDealsSubtitle': 'Unique experiences, hand-picked by the ViaLuxury team',
   'hotel.selectDeal': 'View this package',
   'hotel.houseRules': 'House rules',
   'hotel.houseRulesIntro': 'The following information applies to this hotel.',
+  'deal.houseRulesIntro': 'The following information applies to the hotel for this package.',
   'hotel.tabOverview': 'Overview',
   'hotel.tabDeals': 'Packages',
   'hotel.tabReviews': 'Reviews',

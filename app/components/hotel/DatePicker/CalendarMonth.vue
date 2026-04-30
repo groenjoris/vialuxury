@@ -109,8 +109,8 @@ const days = computed(() => {
 }
 
 .calendar-month__title {
-  font-family: var(--font-heading);
-  font-size: 18px;
+  font-family: var(--font-body);
+  font-size: 16px;
   font-weight: 600;
   text-align: center;
   flex: 1;

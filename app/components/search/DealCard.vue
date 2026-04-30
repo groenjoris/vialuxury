@@ -75,7 +75,7 @@
       <!-- BODY ROW — column in grid; main-col + right-col in list -->
       <div class="deal-card-v2__body-row">
         <div class="deal-card-v2__main-col">
-          <div class="deal-card-v2__includes">
+          <div class="deal-card-v2__includes" :class="{ 'deal-card-v2__includes--full': fullInclusions && fullInclusions.length }">
             <div class="deal-card-v2__includes-list">
               <span v-for="item in includesBullets" :key="item" class="deal-card-v2__include">
                 <span class="deal-card-v2__check">✓</span>
@@ -97,7 +97,7 @@
                   <span class="deal-card-v2__price">{{ formatPrice(price) }}</span>
                   <span v-if="originalPrice > price" class="deal-card-v2__original">{{ formatPrice(originalPrice) }}</span>
                 </p>
-                <NuxtLink :to="`/deal/${deal.slug}`" target="_blank" rel="noopener" class="deal-card-v2__cta">
+                <NuxtLink :to="dealHref" target="_blank" rel="noopener" class="deal-card-v2__cta">
                   Bekijk
                 </NuxtLink>
               </div>
@@ -119,7 +119,7 @@
               <span v-if="originalPrice > price" class="deal-card-v2__original">{{ formatPrice(originalPrice) }}</span>
               <span class="deal-card-v2__price">{{ formatPrice(price) }}</span>
             </p>
-            <NuxtLink :to="`/deal/${deal.slug}`" target="_blank" rel="noopener" class="deal-card-v2__cta deal-card-v2__cta--full">
+            <NuxtLink :to="dealHref" target="_blank" rel="noopener" class="deal-card-v2__cta deal-card-v2__cta--full">
               Bekijk
             </NuxtLink>
           </template>
@@ -147,11 +147,12 @@ import type { SearchHotel, SearchHotelDeal } from '~/types/searchHotel'
 import { formatPrice } from '~/utils/formatPrice'
 import { pickSmartInclusions } from '~/utils/smartInclusions'
 import { getReviewLabelKey } from '~/utils/reviewLabel'
+import { priceForArrival } from '~/utils/priceFormula'
 
 const { t, localized, locale } = useI18n()
 
 const isFavorite = ref(false)
-const { persons } = useSearchState()
+const { persons, arrivalDate } = useSearchState()
 
 const props = defineProps<{
   deal: SearchHotelDeal
@@ -167,6 +168,9 @@ const props = defineProps<{
   hideLabels?: boolean
   /** Wider card variant (filter sidebar collapsed): list image scales to 560 px. */
   wide?: boolean
+  /** When set, render every line in this list (no smartInclusions cap, no
+   *  dedupe-by-popularity). Wrapping is allowed so long items take 2 lines. */
+  fullInclusions?: string[]
 }>()
 
 defineEmits<{ 'view-siblings': [] }>()
@@ -223,15 +227,40 @@ const imageSrc = computed(() => {
   return props.deal.heroImage || props.deal.inclusionImage || props.hotel?.heroImage || ''
 })
 
-function adjustPrice(basePrice: number, p: number): number {
-  if (p % 2 === 0) return Math.round(basePrice * (p / 2))
-  return Math.round(basePrice * ((p + 1) / 2) - 50)
-}
+/** Carry the arrival date through the URL so a new-tab navigation
+ *  (target=_blank with rel=noopener) lands on the right month even if
+ *  Chrome doesn't clone sessionStorage to the new tab. */
+const dealHref = computed(() => {
+  const base = `/deal/${props.deal.slug}`
+  return arrivalDate.value ? `${base}?checkin=${arrivalDate.value}` : base
+})
 
-const price = computed(() => adjustPrice(props.deal.basePrice, persons.value))
-const originalPrice = computed(() => adjustPrice(props.deal.originalPrice, persons.value))
+/** Card price reflects the global arrival date when set — same surcharge
+ *  rule as the deal-page calendar, so the headline price on the card lines
+ *  up with what the user sees in the calendar after clicking through. */
+const price = computed(() =>
+  priceForArrival(props.deal.basePrice, props.deal.id, arrivalDate.value, persons.value),
+)
+const originalPrice = computed(() =>
+  priceForArrival(props.deal.originalPrice, props.deal.id, arrivalDate.value, persons.value),
+)
 
 const includesBullets = computed<string[]>(() => {
+  // Caller-supplied full list wins (used on /hotel/<slug>): show everything,
+  // de-duped, with no smartInclusions trimming.
+  if (props.fullInclusions && props.fullInclusions.length > 0) {
+    const seen = new Set<string>()
+    const out: string[] = []
+    for (const t of props.fullInclusions) {
+      const text = (t || '').trim()
+      if (!text) continue
+      const key = text.toLowerCase()
+      if (seen.has(key)) continue
+      seen.add(key)
+      out.push(text)
+    }
+    return out
+  }
   const dealInc = props.deal.inclusions
   const allInc = props.hotel?.deals.map(d => d.inclusions) ?? [dealInc]
   // Up to 5 unique inclusions. The picker cycles to pad when fewer unique
@@ -321,7 +350,7 @@ function labelFile(label: string): string {
 }
 
 .deal-card-v2__label {
-  height: 45px;
+  height: 36px; /* 80% of 45 */
   width: auto;
   filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.35));
 }
@@ -530,6 +559,21 @@ function labelFile(label: string): string {
   overflow: hidden;
   text-overflow: ellipsis;
   min-width: 0;
+}
+
+/* Full-list mode (hotel page): allow each include to wrap to 2 lines. */
+.deal-card-v2__includes--full .deal-card-v2__include {
+  align-items: flex-start;
+}
+
+.deal-card-v2__includes--full .deal-card-v2__include-text {
+  white-space: normal;
+  text-overflow: clip;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.35;
 }
 
 .deal-card-v2__check {

@@ -4,7 +4,7 @@
     <div class="site-header__nav">
       <div class="site-header__nav-inner container">
         <!-- Logo -->
-        <NuxtLink to="/" class="site-header__logo">
+        <NuxtLink to="/home" class="site-header__logo">
           <img
             src="/images/logo-vialuxury-horizontal.svg"
             alt="ViaLuxury"
@@ -505,8 +505,9 @@
 <script setup lang="ts">
 import { useLocaleStore } from '~/stores/locale'
 import { searchHotels } from '~/data/mock/search-hotels'
+import { tagsByCategory } from '~/utils/filterTags'
 
-withDefaults(defineProps<{
+const props = withDefaults(defineProps<{
   /** 'solid' = default dark bar; 'overlay' = transparent over a background image (e.g. home hero) */
   variant?: 'solid' | 'overlay'
 }>(), { variant: 'solid' })
@@ -673,7 +674,12 @@ watch(activePopup, (val) => {
   if (val) {
     nextTick(() => {
       computePopupPosition()
-      scrollToFitPopup()
+      // Auto-scroll on the home (overlay) variant so the popup's full
+      // height sits above the fold. The default (sticky navbar) variant
+      // already has room below it, so it stays as-is.
+      if (props.variant === 'overlay') {
+        scrollToFitPopup()
+      }
     })
   }
 })
@@ -688,17 +694,21 @@ onBeforeUnmount(() => {
 })
 
 function closePopup() {
-  // Draft-only: do NOT push to shared state. Pickers commit on search click.
+  // Persons/rooms commit on close (Klaar / outside-click / Esc) — they
+  // affect prices site-wide via the per-person formula and the user expects
+  // that to take effect right away. Search-result filters stay gated by the
+  // search-button commit (committedArrivalDate / commitSearch).
+  if (activePopup.value === 'who') {
+    setSearchGroup(searchGroup.value.adults + searchGroup.value.children.length, searchGroup.value.rooms)
+  }
   activePopup.value = null
   schedulePulse()
 }
 
 function clearDestination() {
-  selectedDestinations.value = []
-  selectedThemes.value = []
-  selectedCities.value = []
-  selectedHotels.value = []
-  selectionOrder.value = []
+  clearDestinations()
+  // Also drop any thema-tags (the popup owns those chips).
+  for (const id of [...selectedThemes.value]) toggleFilterTag(id)
   closePopup()
 }
 
@@ -734,59 +744,38 @@ const destinations = [
   { id: 'wallonie', name: 'Walloni\u00EB', country: 'BE', emoji: '\u{1F37A}' },
 ]
 
-const themes = computed(() => [
-  { id: 'aan-zee', name: t('header.theme.beach'), emoji: '\u{1F30A}' },
-  { id: 'natuur', name: t('header.theme.nature'), emoji: '\u{1F33F}' },
-  { id: 'wellness', name: t('header.theme.wellness'), emoji: '\u{1F9D6}' },
-  { id: 'romantisch', name: t('header.theme.romantic'), emoji: '\u2764\u{FE0F}' },
-  { id: 'culinair', name: t('header.theme.culinary'), emoji: '\u{1F37D}\u{FE0F}' },
-  { id: 'actief', name: t('header.theme.active'), emoji: '\u{1F6B4}' },
-  { id: 'steden', name: t('header.theme.city'), emoji: '\u{1F3DB}\u{FE0F}' },
-  { id: 'kasteel', name: t('header.theme.castle'), emoji: '\u{1F3F0}' },
-])
+// Themes shown in the destination popup come from the unified FILTER_TAGS
+// config (category 'thema'). Only those 7 IDs appear here.
+const themes = computed(() =>
+  tagsByCategory('thema').map(t => ({ id: t.id, name: t.label, emoji: t.emoji })),
+)
 
-const selectedDestinations = ref<string[]>([])
-const selectedThemes = ref<string[]>([])
-const selectedCities = ref<{ name: string; province: string }[]>([])
-const selectedHotels = ref<{ name: string; slug: string }[]>([])
+// Destination state lives in useSearchState so /search and /kaart can read
+// it as a filter. Locally we expose the shape the template expects.
+const {
+  selectedDestinations,
+  selectedFilterTags,
+  selectedCities,
+  selectedHotels: sharedSelectedHotels,
+  selectionOrder,
+  toggleDestination,
+  toggleFilterTag,
+  addCity: handleSelectCity,
+  removeCity: handleRemoveCity,
+  addHotel,
+  clearDestinations,
+  clearFilterTags,
+} = useSearchState()
+const selectedHotels = sharedSelectedHotels
 
-// Track insertion order across all types so chips render chronologically (new on the right)
-type SelectionEntry = { type: 'destination' | 'theme' | 'city' | 'hotel'; key: string }
-const selectionOrder = ref<SelectionEntry[]>([])
-
-function toggleDestination(id: string) {
-  const idx = selectedDestinations.value.indexOf(id)
-  if (idx === -1) {
-    selectedDestinations.value.push(id)
-    selectionOrder.value.push({ type: 'destination', key: id })
-  } else {
-    selectedDestinations.value.splice(idx, 1)
-    selectionOrder.value = selectionOrder.value.filter(e => !(e.type === 'destination' && e.key === id))
-  }
-}
-
+/** The popup expects an array of theme IDs that are currently active.
+ *  We filter the global filter-tag list down to the Thema category. */
+const themeIds = ['aan-zee', 'natuur', 'romantisch', 'culinair', 'fiets', 'steden', 'kasteel']
+const selectedThemes = computed(() =>
+  selectedFilterTags.value.filter(id => themeIds.includes(id)),
+)
 function toggleTheme(id: string) {
-  const idx = selectedThemes.value.indexOf(id)
-  if (idx === -1) {
-    selectedThemes.value.push(id)
-    selectionOrder.value.push({ type: 'theme', key: id })
-  } else {
-    selectedThemes.value.splice(idx, 1)
-    selectionOrder.value = selectionOrder.value.filter(e => !(e.type === 'theme' && e.key === id))
-  }
-}
-
-function handleSelectCity(city: { name: string; province: string }) {
-  // Avoid duplicates
-  if (!selectedCities.value.find(c => c.name === city.name)) {
-    selectedCities.value.push(city)
-    selectionOrder.value.push({ type: 'city', key: city.name })
-  }
-}
-
-function handleRemoveCity(cityName: string) {
-  selectedCities.value = selectedCities.value.filter(c => c.name !== cityName)
-  selectionOrder.value = selectionOrder.value.filter(e => !(e.type === 'city' && e.key === cityName))
+  toggleFilterTag(id)
 }
 
 const destinationLabel = computed(() => {
@@ -825,19 +814,15 @@ const destinationLabel = computed(() => {
   return result
 })
 
-// --- WHEN ---
-const calMonth = ref({ year: new Date().getFullYear(), month: new Date().getMonth() })
-const selectedDate = ref<string | null>(null)
-const flexibility = ref(0)
-const selectedDurations = ref<string[]>([])
-const flexState = ref<{ durations: string[]; months: string[] }>({ durations: [], months: [] })
-
 // Sync arrival date + nights to shared composable so /search filter can read them
 const {
+  arrivalDate: globalArrivalDate,
   setArrivalDate,
+  commitArrivalDate,
   setSearchGroup,
   setLoading,
   setSelectedNights,
+  setFlexibility: setGlobalFlexibility,
   selectedNights: globalNights,
   selectedFlexType: globalFlexType,
   setFlexType,
@@ -845,6 +830,15 @@ const {
   clearDuration,
   triggerSearchUpdate,
 } = useSearchState()
+
+// --- WHEN ---
+const calMonth = ref({ year: new Date().getFullYear(), month: new Date().getMonth() })
+/** Arrival date picker — live-synced with the global useSearchState.arrivalDate
+ *  so every calendar on the site shows the same selection. */
+const selectedDate = ref<string | null>(globalArrivalDate.value)
+const flexibility = ref(0)
+const selectedDurations = ref<string[]>([])
+const flexState = ref<{ durations: string[]; months: string[] }>({ durations: [], months: [] })
 
 // --- LOCAL DRAFT STATE for the search-bar pickers ---
 // Pickers update only these refs; nothing is pushed to shared state until
@@ -911,8 +905,11 @@ const FLEX_TYPE_DOW: Record<string, number> = {
 }
 
 watch(selectedDate, (val) => {
-  // No push to shared state here — popups are draft-only until the user
-  // clicks the search button. Just update local UI consistency.
+  // Live-commit to global state so every other calendar on the site (deal
+  // page, hotel page, /search filter pill) reflects the same selection.
+  // Result-list filtering is gated by `committedArrivalDate`, so this does
+  // NOT trigger a re-filter on /search or /kaart.
+  if (val !== globalArrivalDate.value) setArrivalDate(val)
   if (val && flexState.value.months.length > 0) {
     flexState.value = { ...flexState.value, months: [] }
   }
@@ -927,6 +924,23 @@ watch(selectedDate, (val) => {
     }
   }
   notePicker()
+})
+
+/** Mirror global → local: when another calendar changes the arrival date
+ *  (e.g. the deal page sidebar), keep the navbar popup in sync. */
+watch(globalArrivalDate, (val) => {
+  if (val !== selectedDate.value) selectedDate.value = val
+})
+
+/** Mirror global flexibility → local. */
+watch(() => useSearchState().selectedFlexibility.value, (val) => {
+  if (val !== flexibility.value) flexibility.value = val
+})
+
+/** Push live flex changes to global so the pill clearance and other places
+ *  see the matching window. Search filter still uses the committed snapshot. */
+watch(flexibility, (val) => {
+  setGlobalFlexibility(val)
 })
 // Calendar duration clears flex duration. Nights → shared state happens on Search button.
 watch(selectedDurations, (val) => {
@@ -1034,6 +1048,9 @@ function commitSearch() {
   setArrivalDate(selectedDate.value)
   setSelectedNights(localNights.value.filter(v => ['1', '2', '3', '4', '5+'].includes(v)))
   setFlexType(localFlexType.value)
+  setGlobalFlexibility(flexibility.value)
+  // Promote live arrival/flex into the snapshot used by /search and /kaart.
+  commitArrivalDate()
   triggerSearchUpdate()
   setLoading(true)
   // If the user picked a specific hotel from the destination popup, pin it.
@@ -1071,10 +1088,7 @@ function handleSelectHotel(slug: string) {
 function handleSelectHotelInPopup(slug: string) {
   const h = searchHotels.find(x => x.slug === slug)
   const name = h?.name || slug
-  if (!selectedHotels.value.some(x => x.slug === slug)) {
-    selectedHotels.value.push({ name, slug })
-    selectionOrder.value.push({ type: 'hotel', key: slug })
-  }
+  addHotel({ name, slug })
   notePicker()
 }
 </script>

@@ -3,7 +3,7 @@
     <div class="site-footer__inner container">
       <!-- Brand column -->
       <div class="footer-col footer-col--brand">
-        <NuxtLink to="/" class="footer-logo">
+        <NuxtLink to="/home" class="footer-logo">
           <img src="/images/logo-vialuxury.svg" alt="ViaLuxury" class="footer-logo__img" />
         </NuxtLink>
 
@@ -70,8 +70,9 @@
     </div>
 
     <div class="site-footer__bottom">
-      <div class="container">
+      <div class="container site-footer__bottom-inner">
         <p>&copy; {{ new Date().getFullYear() }} ViaLuxury. {{ t('footer.allRightsReserved') }}</p>
+        <NuxtLink to="/" class="site-footer__usertest">user test startscherm</NuxtLink>
       </div>
     </div>
   </footer>
@@ -191,6 +192,24 @@ const { t } = useI18n()
   padding: var(--space-md) 0;
   font-size: 13px;
   color: rgba(255, 255, 255, 0.6);
+}
+
+.site-footer__bottom-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  flex-wrap: wrap;
+}
+
+.site-footer__usertest {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.4);
+  text-decoration: none;
+}
+.site-footer__usertest:hover {
+  color: rgba(255, 255, 255, 0.7);
+  text-decoration: underline;
 }
 
 /* ── Responsive ── */

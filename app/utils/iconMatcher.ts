@@ -28,6 +28,7 @@ const RULES: Array<{ keywords: string[]; concept: HighlightConcept; emoji: strin
   { keywords: ['kind', 'child', 'baby', 'familie', 'family', 'kinder'], concept: 'kids', emoji: '👨‍👩‍👧' },
   { keywords: ['huisdier', 'hond', 'pet'], concept: 'pets', emoji: '🐾' },
   { keywords: ['late check', 'late uitcheck', 'late checkout', 'check-out', 'check-in', 'concierge', 'receptie', 'roomservice', 'kamerservice', 'shuttle', 'bagage'], concept: 'service', emoji: '🛎️' },
+  { keywords: ['strand', 'beach', 'aan zee', 'aan de zee', 'kustlijn', 'kust', 'seaside'], concept: 'beach', emoji: '🏖️' },
 ]
 
 const DEFAULT_EMOJI = '✓'

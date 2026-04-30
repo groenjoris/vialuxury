@@ -3,7 +3,11 @@ import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { searchHotels } from '~/data/mock/search-hotels'
 import { useHotelMap } from '~/composables/useHotelMap'
-import { isDealAvailable } from '~/utils/availability'
+import { dealMatchesAllTags } from '~/utils/filterTags'
+import FilterPills from '~/components/search/FilterPills.vue'
+import { isDealAvailable, isDealAvailableInWindow } from '~/utils/availability'
+import { adjustPrice } from '~/utils/priceFormula'
+import { CITY_COORDS } from '~/data/city-coordinates'
 import type { SearchHotel } from '~/types/searchHotel'
 import HotelBrowseMap from '~/components/map/HotelBrowseMap.vue'
 import HotelMapHoverCard from '~/components/map/HotelMapHoverCard.vue'
@@ -19,7 +23,13 @@ const router = useRouter()
 
 const {
   arrivalDate,
+  committedArrivalDate,
   selectedNights,
+  selectedFilterTags,
+  committedFlexibility,
+  selectedCities,
+  selectedHotels: pickedHotels,
+  persons,
   budgetMin: sharedBudgetMin,
   budgetMax: sharedBudgetMax,
   setBudgetMin,
@@ -47,29 +57,55 @@ const budgetMax = computed({
  *  in a follow-up — for now we just show everything centred on NL). */
 const mapHotels = computed<SearchHotel[]>(() => {
   const ns = selectedNights.value
+  const tags = selectedFilterTags.value
+  const flex = committedFlexibility.value
+  const p = persons.value
   const matchesDuration = (n: number) => {
     if (ns.length === 0) return true
     if (ns.includes('5+') && n >= 5) return true
     return ns.includes(String(n))
   }
-  const inBudget = (price: number) =>
-    price >= sharedBudgetMin.value && price <= sharedBudgetMax.value
+  const inBudget = (basePrice: number) => {
+    const price = adjustPrice(basePrice, p)
+    return price >= sharedBudgetMin.value && price <= sharedBudgetMax.value
+  }
   const result: SearchHotel[] = []
   for (const h of searchHotels) {
+    // Destination is NOT a filter on the map — it only drives initial zoom
+    // (handled separately below). Hotels stay visible regardless.
     const matchingDeals = h.deals.filter(
-      (d) => matchesDuration(d.nights) && inBudget(d.basePrice),
+      (d) =>
+        matchesDuration(d.nights) &&
+        inBudget(d.basePrice) &&
+        dealMatchesAllTags(d, h, tags) &&
+        // Arrival-date filter — drop deals with no availability in the
+        // flex window. Hotels with no matching deals fall out below.
+        (!committedArrivalDate.value || isDealAvailableInWindow(d.id, committedArrivalDate.value, flex)),
     )
     if (matchingDeals.length === 0) continue
-    let soldOut = false
-    if (arrivalDate.value) {
-      const anyAvailable = matchingDeals.some((d) =>
-        isDealAvailable(d.id, arrivalDate.value!),
-      )
-      soldOut = !anyAvailable
-    }
-    result.push({ ...h, deals: matchingDeals, soldOut })
+    // For sold-out badge: with the hard filter above, any surviving deal
+    // already has at least one available date in the flex window — so no
+    // hotel is rendered as sold-out anymore. The flag stays in the data
+    // model in case Phase-X wants to relax the filter later.
+    result.push({ ...h, deals: matchingDeals, soldOut: false })
   }
   return result
+})
+
+/** Initial focus driven by the destination input. If a single hotel or city
+ *  is picked, zoom in to it; otherwise leave the map's NL fit-bounds default. */
+const initialFocus = computed<{ lat: number; lng: number; zoom?: number } | null>(() => {
+  if (pickedHotels.value.length > 0) {
+    const slug = pickedHotels.value[0].slug
+    const hotel = searchHotels.find(h => h.slug === slug)
+    if (hotel?.coordinates) return { ...hotel.coordinates, zoom: 13 }
+  }
+  if (selectedCities.value.length > 0) {
+    const cityName = selectedCities.value[0].name
+    const c = CITY_COORDS[cityName]
+    if (c) return { ...c, zoom: 12 }
+  }
+  return null
 })
 
 const {
@@ -104,14 +140,19 @@ function closeMap() {
       <SearchFilterPanel
         :budget-min="budgetMin"
         :budget-max="budgetMax"
+        :persons="persons"
         @update:budget-min="budgetMin = $event"
         @update:budget-max="budgetMax = $event"
       />
     </aside>
 
+    <!-- Pills float at the top, OUTSIDE the sliding stage so they stay
+         visible (sticky) when the panel slides in. -->
+    <FilterPills class="kaart-pills" />
+
     <main class="kaart-stage" :class="{ 'kaart-stage--with-panel': !!selectedHotel }">
       <ClientOnly>
-        <HotelBrowseMap ref="mapRef" :hotels="mapHotels" />
+        <HotelBrowseMap ref="mapRef" :hotels="mapHotels" :initial-focus="initialFocus" />
       </ClientOnly>
 
       <HotelDealsSidePanel
@@ -149,7 +190,7 @@ function closeMap() {
     <!-- Mobile fallback (locked-in scope: desktop-only) -->
     <div class="kaart-mobile-fallback">
       <p>Open de kaart op een desktop voor de beste ervaring.</p>
-      <NuxtLink to="/">Terug naar home</NuxtLink>
+      <NuxtLink to="/home">Terug naar home</NuxtLink>
     </div>
   </div>
 </template>
@@ -198,6 +239,18 @@ function closeMap() {
   transform: translateX(-380px);
 }
 
+/* Filter pills sit absolutely on the kaart-page so they stay put when the
+   stage (map) slides left on panel open. Anchored just right of the filter
+   sidebar; right-padded to clear the "Sluit kaart" button. */
+.kaart-pills {
+  position: absolute;
+  top: var(--space-md);
+  left: calc(280px + var(--space-md));
+  right: 180px;
+  z-index: 700;
+  pointer-events: auto;
+}
+
 .kaart-close {
   position: absolute;
   top: var(--space-lg);
@@ -207,7 +260,7 @@ function closeMap() {
   padding: 0 var(--space-md);
   background: var(--color-surface);
   border: 0;
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   box-shadow: var(--shadow-card);
   display: inline-flex;
   align-items: center;

@@ -38,4 +38,7 @@ export interface SearchHotelDeal {
   inclusionImage?: string
   /** Identifies "diner inbegrepen" packages — drives primary-deal pick. */
   hasDinner?: boolean
+  /** Raw theme strings from deals.json (e.g. "Beste wellness hotels",
+   *  "Romantisch overnachten") — used by theme filter matching. */
+  themes?: string[]
 }

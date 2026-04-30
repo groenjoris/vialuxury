@@ -24,6 +24,7 @@ export const HIGHLIGHT_ICONS = {
   kids:     CDN + '3170c002-2d68-4e4b-a411-a25f487293e7', // kids / extra bed
   pets:     CDN + '79e438d2-3fcd-4509-a967-242ebf10e4a2', // pets allowed
   service:  CDN + 'fd2f3345-8a40-489f-b16d-79676f5b800e', // reception / shuttle / luggage
+  beach:    '/icons/highlights/beach.svg',                 // local beach icon (no CDN equivalent)
 } as const
 
 export type HighlightConcept = keyof typeof HIGHLIGHT_ICONS

@@ -160,7 +160,7 @@ onUnmounted(() => {
 .panel__header-info {
   flex: 1;
   min-width: 0;
-  padding-right: 40px; /* leave room for the close button */
+  padding-right: 48px; /* leave room for the top-right close button (32 px + 16 px inset) */
 }
 
 /* Line 1: hotel name + stars on the same line */
@@ -180,8 +180,9 @@ onUnmounted(() => {
 .panel__hotel-name {
   min-width: 0;
   overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 }
 
 .panel__stars {
@@ -250,14 +251,14 @@ onUnmounted(() => {
 
 .panel__close {
   position: absolute;
-  top: var(--space-lg);
-  right: var(--space-lg);
-  width: 36px;
-  height: 36px;
+  top: var(--space-md);
+  right: var(--space-md);
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   border: none;
   background: var(--color-background-secondary);
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;

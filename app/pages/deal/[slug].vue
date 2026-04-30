@@ -17,12 +17,24 @@
         <BreadcrumbNav :items="breadcrumbs" />
       </section>
 
+      <!-- Anchor tabs -->
+      <nav class="deal-page__tabs container">
+        <a href="#intro" class="deal-page__tab">{{ t('deal.tabIntro') }}</a>
+        <a href="#arrangement" class="deal-page__tab">{{ t('deal.tabArrangement') }}</a>
+        <a href="#beoordelingen" class="deal-page__tab">{{ t('hotel.tabReviews') }}</a>
+        <a v-if="hotel && hotel.houseRules && hotel.houseRules.length" href="#huisregels" class="deal-page__tab">{{ t('hotel.tabHouseRules') }}</a>
+        <a href="#veelgestelde-vragen" class="deal-page__tab">{{ t('hotel.tabFaq') }}</a>
+        <a href="#tips" class="deal-page__tab">{{ t('hotel.tabNearby') }}</a>
+      </nav>
+
       <!-- Title ABOVE gallery -->
       <section class="deal-page__title-section container">
         <div class="deal-page__title-left">
           <h1 class="deal-page__package-title">{{ localized(currentDeal.title) }}</h1>
           <div class="deal-page__hotel-name-wrap">
-            <p class="deal-page__hotel-subtitle">{{ hotel.name }}</p>
+            <NuxtLink :to="`/hotel/${hotel.slug}`" class="deal-page__hotel-link">
+              <p class="deal-page__hotel-subtitle">{{ hotel.name }}</p>
+            </NuxtLink>
             <div class="deal-page__stars-adjacent" aria-hidden="true">
               <span v-for="n in hotel.starRating" :key="n" class="star-adj">★</span>
             </div>
@@ -54,7 +66,7 @@
       <div class="deal-page__grid container">
         <div class="deal-page__col-left">
           <!-- Description + Mini map row -->
-          <div class="deal-page__intro">
+          <div id="intro" class="deal-page__intro">
             <div class="deal-page__description">
               <div v-html="firstParagraph"></div>
               <button v-if="hasMoreDescription" type="button" class="deal-page__read-more" @click="descriptionOpen = true">{{ t('common.readMore') }}</button>
@@ -95,7 +107,7 @@
           </section>
 
           <!-- Content blocks: What's included -->
-          <section class="deal-page__content-blocks">
+          <section id="arrangement" class="deal-page__content-blocks">
             <h2 class="section-title">
               {{ t('deal.inclusionsHeading') }}
               <button class="inline-edit-link" @click="store.openTravelGroupModal()">
@@ -159,18 +171,8 @@
             </div>
           </section>
 
-          <!-- Facilities (desktop: full grid; mobile: link row) -->
-          <section v-if="!isMobile" class="deal-page__facilities">
-            <h2 class="section-title">{{ t('hotel.facilities') }}</h2>
-            <div class="facilities__grid">
-              <div v-for="fac in hotel.facilities" :key="localized(fac.label)" class="facility-item">
-                <img v-if="fac.icon && fac.icon.startsWith('http')" :src="fac.icon" :alt="localized(fac.label)" class="facility-item__icon" width="20" height="20" loading="lazy" />
-                <span v-else class="facility-item__check">✓</span>
-                <span>{{ localized(fac.label) }}</span>
-              </div>
-            </div>
-          </section>
-          <button v-else type="button" class="deal-page__mobile-row" @click="activeMobileSection = 'facilities'">
+          <!-- Facilities (mobile only here; desktop renders full-width below) -->
+          <button v-if="isMobile" type="button" class="deal-page__mobile-row" @click="activeMobileSection = 'facilities'">
             <div class="deal-page__mobile-row-text">
               <span class="deal-page__mobile-row-title">{{ t('hotel.facilities') }}</span>
               <span class="deal-page__mobile-row-meta">{{ hotel.facilities.length }} {{ t('common.facilities') || 'faciliteiten' }}</span>
@@ -178,42 +180,8 @@
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6" /></svg>
           </button>
 
-          <!-- Hotel reviews (desktop: full; mobile: horizontal slider of 5 + more button) -->
-          <section v-if="!isMobile" class="deal-page__reviews">
-            <h2 class="section-title">{{ t('hotel.reviews') }}</h2>
-            <div class="reviews__score-bar">
-              <span class="reviews__score-big">{{ hotel.reviews.overallScore.toFixed(1) }}</span>
-              <div class="reviews__score-meta">
-                <span class="reviews__score-verdict">{{ t(getReviewLabelKey(hotel.reviews.overallScore)) }}</span>
-                <span class="reviews__score-count">{{ hotel.reviews.totalReviews }} {{ t('common.reviews') }}</span>
-              </div>
-            </div>
-            <div class="reviews__categories">
-              <div v-for="cat in hotel.reviews.categories" :key="localized(cat.name)" class="reviews__cat">
-                <span class="reviews__cat-name">{{ localized(cat.name) }}</span>
-                <div class="reviews__cat-bar"><div class="reviews__cat-fill" :style="{ width: (cat.score / 10 * 100) + '%' }"></div></div>
-                <span class="reviews__cat-score">{{ cat.score.toFixed(1) }}</span>
-              </div>
-            </div>
-            <div class="reviews__grid">
-              <div v-for="rev in hotel.individualReviews" :key="rev.id" class="review-card">
-                <div class="review-card__header">
-                  <span class="review-card__author">{{ rev.author }}</span>
-                  <span class="review-card__review-score">{{ Number(rev.score).toFixed(1) }}/10</span>
-                </div>
-                <p class="review-card__text">{{ localized(rev.text) }}</p>
-                <div v-if="rev.arrangement" class="review-card__arrangement">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M20 7h-3V5a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v2H4a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V8a1 1 0 0 0-1-1zM9 5h6v2H9V5z" />
-                  </svg>
-                  <span>{{ t('hotel.bookedAs') }} {{ localized(rev.arrangement) }}</span>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <!-- Mobile reviews mini: score bar + slider of 5 + more button -->
-          <section v-else class="deal-page__mobile-reviews">
+          <!-- Mobile reviews mini: score bar + slider of 5 + more button (desktop renders full-width below) -->
+          <section v-if="isMobile" class="deal-page__mobile-reviews">
             <div class="deal-page__mobile-reviews-head">
               <h2 class="section-title">{{ t('hotel.reviews') }}</h2>
               <div class="reviews__score-bar reviews__score-bar--compact">
@@ -238,11 +206,8 @@
             </button>
           </section>
 
-          <!-- FAQ (desktop: full; mobile: 3 questions + more button) -->
-          <section v-if="!isMobile" class="deal-page__faq">
-            <FaqSection :faq-items="hotel.faq" />
-          </section>
-          <section v-else class="deal-page__mobile-faq">
+          <!-- FAQ (mobile here; desktop renders full-width below) -->
+          <section v-if="isMobile" class="deal-page__mobile-faq">
             <h2 class="section-title">{{ t('hotel.faq') || t('hotel.faqHeading') || 'Veelgestelde vragen' }}</h2>
             <FaqSection :faq-items="hotel.faq.slice(0, 3)" />
             <button type="button" class="deal-page__mobile-more" @click="activeMobileSection = 'faq'">
@@ -368,8 +333,105 @@
         </div>
       </div>
 
+      <!-- Hotel-level full-width sections (desktop) — facilities / reviews / faq -->
+      <section v-if="!isMobile" class="deal-page__facilities container">
+        <h2 class="section-title">{{ t('hotel.facilities') }}</h2>
+        <div class="facilities__grid">
+          <div v-for="fac in hotel.facilities" :key="localized(fac.label)" class="facility-item">
+            <img v-if="fac.icon && fac.icon.startsWith('http')" :src="fac.icon" :alt="localized(fac.label)" class="facility-item__icon" width="20" height="20" loading="lazy" />
+            <span v-else class="facility-item__check">✓</span>
+            <span>{{ localized(fac.label) }}</span>
+          </div>
+        </div>
+      </section>
+
+      <section v-if="!isMobile" id="beoordelingen" class="deal-page__reviews container">
+        <h2 class="section-title">{{ t('hotel.reviews') }}</h2>
+        <div class="reviews__score-bar">
+          <span class="reviews__score-big">{{ hotel.reviews.overallScore.toFixed(1) }}</span>
+          <div class="reviews__score-meta">
+            <span class="reviews__score-verdict">{{ t(getReviewLabelKey(hotel.reviews.overallScore)) }}</span>
+            <span class="reviews__score-count">{{ hotel.reviews.totalReviews }} {{ t('common.reviews') }}</span>
+          </div>
+        </div>
+        <div class="reviews__categories">
+          <div v-for="cat in hotel.reviews.categories" :key="localized(cat.name)" class="reviews__cat">
+            <span class="reviews__cat-name">{{ localized(cat.name) }}</span>
+            <div class="reviews__cat-bar"><div class="reviews__cat-fill" :style="{ width: (cat.score / 10 * 100) + '%' }"></div></div>
+            <span class="reviews__cat-score">{{ cat.score.toFixed(1) }}</span>
+          </div>
+        </div>
+        <div class="reviews__grid">
+          <div v-for="rev in hotel.individualReviews" :key="rev.id" class="review-card">
+            <div class="review-card__header">
+              <span class="review-card__author">{{ rev.author }}</span>
+              <span class="review-card__review-score">{{ Number(rev.score).toFixed(1) }}/10</span>
+            </div>
+            <p class="review-card__text">{{ localized(rev.text) }}</p>
+            <div v-if="rev.arrangement" class="review-card__arrangement">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 7h-3V5a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v2H4a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V8a1 1 0 0 0-1-1zM9 5h6v2H9V5z" />
+              </svg>
+              <span>{{ t('hotel.bookedAs') }} {{ localized(rev.arrangement) }}</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- House Rules (desktop, full-width) -->
+      <section v-if="!isMobile && hotel.houseRules && hotel.houseRules.length" id="huisregels" class="deal-page__house-rules container">
+        <div class="house-rules__layout">
+          <div class="house-rules__left">
+            <h2 class="section-title">{{ t('hotel.houseRules') }}</h2>
+            <p class="house-rules__intro">{{ t('deal.houseRulesIntro') }}</p>
+          </div>
+          <div class="house-rules__right">
+            <div
+              v-for="rule in hotel.houseRules"
+              :key="rule.id"
+              class="house-rule"
+              :class="{ 'house-rule--open': openRuleId === rule.id }"
+            >
+              <button class="house-rule__title" @click="toggleRule(rule.id)">
+                <span>{{ localized(rule.title) }}</span>
+                <span class="house-rule__arrow">{{ openRuleId === rule.id ? '−' : '+' }}</span>
+              </button>
+              <div v-if="openRuleId === rule.id" class="house-rule__body">
+                <p>{{ localized(rule.description) }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section v-if="!isMobile" id="veelgestelde-vragen" class="deal-page__faq container">
+        <div class="faq__layout">
+          <div class="faq__left">
+            <h2 class="section-title">{{ t('hotel.faqHeading') }}</h2>
+          </div>
+          <div class="faq__right">
+            <div
+              v-for="item in hotel.faq"
+              :key="item.id"
+              class="house-rule"
+              :class="{ 'house-rule--open': openFaqId === item.id }"
+            >
+              <button class="house-rule__title" @click="toggleFaq(item.id)">
+                <span>{{ localized(item.question) }}</span>
+                <span class="house-rule__arrow">{{ openFaqId === item.id ? '−' : '+' }}</span>
+              </button>
+              <div v-if="openFaqId === item.id" class="house-rule__body">
+                <p>{{ localized(item.answer) }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <!-- Tips in de buurt — full-width carousel (desktop only on mobile it's a link row) -->
-      <NearbyTips v-if="!isMobile" :tips="hotel.nearbyTips" :hotel-name="hotel.name" />
+      <div v-if="!isMobile" id="tips">
+        <HotelNearbyTips :tips="hotel.nearbyTips" :hotel-name="hotel.name" />
+      </div>
       <button v-else type="button" class="deal-page__mobile-row deal-page__mobile-row--standalone container" @click="activeMobileSection = 'tips'">
         <div class="deal-page__mobile-row-text">
           <span class="deal-page__mobile-row-title">{{ t('hotel.nearbyTips') || t('deal.nearbyTips') || 'Tips in de buurt' }}</span>
@@ -416,6 +478,15 @@
     <!-- Sticky booking bar — top on desktop (after scroll), bottom on mobile -->
     <div v-if="hotel && currentDeal && (isMobile || ctaBarVisible)" class="deal-page__cta-bar" :class="{ 'deal-page__cta-bar--mobile': isMobile }">
       <div class="deal-page__cta-bar-inner container">
+        <!-- Page nav (desktop only) -->
+        <nav v-if="!isMobile" class="deal-page__tabs deal-page__tabs--in-bar">
+          <a href="#intro" class="deal-page__tab">{{ t('deal.tabIntro') }}</a>
+          <a href="#arrangement" class="deal-page__tab">{{ t('deal.tabArrangement') }}</a>
+          <a href="#beoordelingen" class="deal-page__tab">{{ t('hotel.tabReviews') }}</a>
+          <a v-if="hotel.houseRules && hotel.houseRules.length" href="#huisregels" class="deal-page__tab">{{ t('hotel.tabHouseRules') }}</a>
+          <a href="#veelgestelde-vragen" class="deal-page__tab">{{ t('hotel.tabFaq') }}</a>
+          <a href="#tips" class="deal-page__tab">{{ t('hotel.tabNearby') }}</a>
+        </nav>
         <!-- Right-aligned price + button cluster -->
         <div class="deal-page__cta-bar-cluster">
           <div class="deal-page__cta-bar-price-block">
@@ -476,7 +547,7 @@
 
     <MobileFullscreen :open="activeMobileSection === 'tips'" :title="t('hotel.nearbyTips') || 'Tips in de buurt'" @close="activeMobileSection = null">
       <div v-if="hotel" class="mobile-subpage mobile-subpage--no-padding">
-        <NearbyTips :tips="hotel.nearbyTips" :hotel-name="hotel.name" />
+        <HotelNearbyTips :tips="hotel.nearbyTips" :hotel-name="hotel.name" />
       </div>
     </MobileFullscreen>
 
@@ -542,6 +613,14 @@ const store = useDealStore()
 const calendarRef = ref<HTMLElement | null>(null)
 const isFavorited = ref(false)
 const descriptionOpen = ref(false)
+const openRuleId = ref<string | null>(null)
+function toggleRule(id: string) {
+  openRuleId.value = openRuleId.value === id ? null : id
+}
+const openFaqId = ref<string | null>(null)
+function toggleFaq(id: string) {
+  openFaqId.value = openFaqId.value === id ? null : id
+}
 const fullDescription = computed(() => hotel.value ? localized(hotel.value.description) : '')
 const firstParagraph = computed(() => {
   const html = fullDescription.value
@@ -686,7 +765,25 @@ if (Object.keys(query).length > 0) {
 watch(() => store.queryParams, (params) => { router.replace({ query: params }) }, { deep: true })
 
 // Calendar
-const calMonth = ref({ year: new Date().getFullYear(), month: new Date().getMonth() + 1 })
+/** When a global arrival date is set, open the calendar on that month so the
+ *  selected day is immediately visible. Otherwise default to the current
+ *  month. */
+const calMonth = ref(
+  store.checkInDate
+    ? { year: Number(store.checkInDate.slice(0, 4)), month: Number(store.checkInDate.slice(5, 7)) }
+    : { year: new Date().getFullYear(), month: new Date().getMonth() + 1 },
+)
+// Keep the calendar following the global arrival date if it changes while
+// the deal page is open (e.g. user picks a date in the navbar popup).
+watch(() => store.checkInDate, (val) => {
+  if (val) {
+    const y = Number(val.slice(0, 4))
+    const m = Number(val.slice(5, 7))
+    if (y !== calMonth.value.year || m !== calMonth.value.month) {
+      calMonth.value = { year: y, month: m }
+    }
+  }
+})
 const calAvailability = computed(() => {
   if (!store.currentDeal) return []
   return generateDealAvailability(calMonth.value.year, calMonth.value.month, store.currentDeal, store.totalPersons)
@@ -827,6 +924,8 @@ function openGallery() { }
   color: var(--color-text-primary);
   margin: 0;
 }
+.deal-page__hotel-link { color: inherit; text-decoration: none; }
+.deal-page__hotel-link:hover .deal-page__hotel-subtitle { text-decoration: underline; text-underline-offset: 2px; }
 .deal-page__meta { display: flex; align-items: center; gap: var(--space-sm); font-size: 14px; color: var(--color-text-secondary); padding-right: 110px; }
 .deal-page__score-wrap { display: flex; align-items: center; gap: 6px; }
 .deal-page__score { display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: var(--radius-sm); background: #00B67A; color: #fff; font-size: 13px; font-weight: 700; flex-shrink: 0; }
@@ -1136,17 +1235,144 @@ function openGallery() { }
 .content-block__cta-action:hover { opacity: 0.85; }
 .content-block__cta-action svg { flex-shrink: 0; }
 
+/* ===== ANCHOR TABS ===== */
+.deal-page__tabs {
+  position: relative;
+  display: flex;
+  gap: var(--space-lg);
+  padding-top: var(--space-md);
+  padding-bottom: var(--space-md);
+}
+/* Inset divider — spans inner content width, not container edge-to-edge */
+.deal-page__tabs::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: var(--space-lg);
+  right: var(--space-lg);
+  height: 1px;
+  background: var(--color-border-light);
+}
+.deal-page__tab {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  padding-bottom: var(--space-sm);
+  border-bottom: 2px solid transparent;
+  transition: border-color var(--transition-fast), color var(--transition-fast);
+}
+/* Anchor scroll offset so the sticky CTA bar doesn't cover section titles */
+#intro,
+#arrangement,
+#beoordelingen,
+#huisregels,
+#veelgestelde-vragen,
+#tips {
+  scroll-margin-top: 88px;
+}
+.deal-page__tab:hover {
+  color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
+}
+/* In-bar variant: drop the section padding/border so it fits inside the slim CTA bar */
+.deal-page__tabs--in-bar {
+  padding: 0;
+  border-bottom: none;
+}
+.deal-page__tabs--in-bar .deal-page__tab {
+  padding-bottom: 0;
+  border-bottom: none;
+}
+.deal-page__tabs--in-bar .deal-page__tab:hover {
+  border-bottom: none;
+  color: var(--color-primary);
+}
+
+/* ===== HOUSE RULES ===== */
+.deal-page__house-rules { padding: var(--space-xl) var(--space-lg); position: relative; }
+.house-rules__layout {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: var(--space-2xl);
+}
+.house-rules__left .section-title { margin-bottom: var(--space-sm); }
+.house-rules__intro {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--color-text-secondary);
+}
+.house-rules__right { max-width: 700px; }
+.house-rule { border-top: 1px solid var(--color-border-light); }
+.house-rule:first-child { border-top: none; }
+.house-rule:last-child { border-bottom: 1px solid var(--color-border-light); }
+.house-rule__title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: var(--space-md) 0;
+  font-size: 15px;
+  font-weight: 600;
+  text-align: left;
+  color: var(--color-text-primary);
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+.house-rule__title:hover { color: var(--color-primary); }
+.house-rule__arrow {
+  font-size: 20px;
+  font-weight: 300;
+  flex-shrink: 0;
+  margin-left: var(--space-md);
+}
+.house-rule__body {
+  padding-bottom: var(--space-md);
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--color-text-secondary);
+}
+
 /* ===== FACILITIES ===== */
-.deal-page__facilities { padding: var(--space-xl) 0; border-top: 1px solid var(--color-border-light); }
-.facilities__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-md); }
-.facility-item { display: flex; align-items: flex-start; gap: var(--space-sm); font-size: 14px; line-height: 1.4; }
-.facility-item__check { color: var(--color-primary); font-weight: 700; line-height: 1.4; }
-.facility-item__icon { width: 20px; height: 20px; flex-shrink: 0; object-fit: contain; margin-top: 1px; }
+.deal-page__facilities { padding: var(--space-xl) var(--space-lg); position: relative; }
+.facilities__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  column-gap: var(--space-2xl);
+  row-gap: var(--space-md);
+  margin-top: var(--space-md);
+}
+.facility-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+  font-size: 15px;
+  line-height: 1.4;
+  color: var(--color-text-primary);
+}
+.facility-item__check {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  color: var(--color-primary);
+  font-weight: 700;
+}
+.facility-item__icon {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  object-fit: contain;
+}
 
 /* ===== TIPS ===== */
 
 /* ===== REVIEWS ===== */
-.deal-page__reviews { padding: var(--space-xl) 0; border-top: 1px solid var(--color-border-light); }
+.deal-page__reviews { padding: var(--space-xl) var(--space-lg); position: relative; }
 .reviews__score-bar { display: flex; align-items: center; gap: var(--space-sm); margin-bottom: var(--space-md); }
 .reviews__score-big { font-size: 24px; font-weight: 700; font-family: var(--font-heading); background: #00B67A; color: #fff; padding: 8px 12px; border-radius: var(--radius-sm); }
 .reviews__score-meta { display: flex; flex-direction: column; gap: 1px; }
@@ -1178,7 +1404,26 @@ function openGallery() { }
 .review-card__arrangement svg { color: #00B67A; flex-shrink: 0; }
 
 /* ===== FAQ ===== */
-.deal-page__faq { padding: var(--space-xl) 0; border-top: 1px solid var(--color-border-light); }
+.deal-page__faq { padding: var(--space-xl) var(--space-lg); position: relative; }
+.faq__layout {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: var(--space-2xl);
+}
+.faq__right { max-width: 700px; }
+/* Inset top divider for the lower full-width sections */
+.deal-page__facilities::before,
+.deal-page__reviews::before,
+.deal-page__house-rules::before,
+.deal-page__faq::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: var(--space-lg);
+  right: var(--space-lg);
+  height: 1px;
+  background: var(--color-border-light);
+}
 
 /* ===== RESPONSIVE ===== */
 @media (max-width: 1100px) {
@@ -1374,8 +1619,9 @@ function openGallery() { }
 .deal-page__cta-bar-inner {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  padding: 10px 16px;
+  justify-content: space-between;
+  gap: var(--space-md);
+  padding: 10px var(--space-lg);
 }
 .deal-page__cta-bar-cluster {
   display: flex;

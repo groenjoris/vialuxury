@@ -37,3 +37,37 @@ export function isDealAvailable(dealId: string, isoDate: string): boolean {
   if (!Number.isFinite(day) || day < 1 || day > 31) return true
   return pattern[day - 1] === '1'
 }
+
+/**
+ * Expand a "flexible" arrival date into the candidate window.
+ * `flexibility = 0` → just the date itself.
+ * `flexibility = 3` → 7 dates (date − 3 ... date + 3).
+ * Returns an array of YYYY-MM-DD strings.
+ */
+export function expandFlex(isoDate: string, flexibility: number): string[] {
+  if (!isoDate) return []
+  const flex = Math.max(0, Math.min(14, flexibility | 0))
+  if (flex === 0) return [isoDate]
+  const [y, m, d] = isoDate.split('-').map((s) => parseInt(s, 10))
+  const center = new Date(Date.UTC(y, m - 1, d))
+  const out: string[] = []
+  for (let dx = -flex; dx <= flex; dx++) {
+    const dt = new Date(center.getTime() + dx * 86400000)
+    const ys = dt.getUTCFullYear()
+    const ms = String(dt.getUTCMonth() + 1).padStart(2, '0')
+    const ds = String(dt.getUTCDate()).padStart(2, '0')
+    out.push(`${ys}-${ms}-${ds}`)
+  }
+  return out
+}
+
+/** Does the deal have at least one available date within the flex window? */
+export function isDealAvailableInWindow(
+  dealId: string,
+  isoDate: string,
+  flexibility: number,
+): boolean {
+  if (!isoDate) return true
+  const days = expandFlex(isoDate, flexibility)
+  return days.some((d) => isDealAvailable(dealId, d))
+}

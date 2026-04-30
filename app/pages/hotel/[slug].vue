@@ -38,13 +38,13 @@
             <span>{{ hotel.reviews.totalReviews }} {{ t('common.reviews') }}</span>
             <span class="hotel-page__divider">·</span>
             <span>{{ hotel.location.city }}, {{ hotel.location.region }}</span>
+            <span class="hotel-page__title-actions">
+              <button class="icon-action" :aria-label="t('common.save')">♡</button>
+              <button class="icon-action" :aria-label="t('common.share')">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+              </button>
+            </span>
           </div>
-        </div>
-        <div class="hotel-page__title-actions">
-          <button class="icon-action" :aria-label="t('common.save')">♡</button>
-          <button class="icon-action" :aria-label="t('common.share')">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-          </button>
         </div>
       </section>
 
@@ -56,7 +56,17 @@
       <!-- Description + Mini Map -->
       <section class="hotel-page__intro container">
         <div class="hotel-page__description-col">
-          <div class="hotel-page__description" v-html="localized(hotel.description)"></div>
+          <div class="hotel-page__description">
+            <div v-html="firstDescriptionParagraph"></div>
+            <button
+              v-if="hasMoreDescription"
+              type="button"
+              class="hotel-page__read-more"
+              @click="showFullDescription = true"
+            >
+              {{ t('hotel.readMore') }}
+            </button>
+          </div>
         </div>
         <div class="mini-map">
           <div class="mini-map__placeholder">
@@ -85,7 +95,8 @@
         <h2 class="section-title">{{ t('hotel.facilities') }}</h2>
         <div class="facilities__grid">
           <div v-for="fac in hotel.facilities" :key="localized(fac.label)" class="facility-item">
-            <span class="facility-item__check">✓</span>
+            <img v-if="fac.icon" :src="fac.icon" alt="" class="facility-item__icon" loading="lazy" />
+            <span v-else class="facility-item__check">✓</span>
             <span>{{ localized(fac.label) }}</span>
           </div>
         </div>
@@ -93,17 +104,46 @@
 
       <!-- Deals section -->
       <section id="arrangementen" class="hotel-page__deals container">
-        <h2 class="section-title">{{ dealsHeading }}</h2>
-        <HotelSearchBar ref="searchBarRef" @search="handleSearchChange" />
+        <div class="hotel-page__deals-header">
+          <div>
+            <h2 class="section-title">{{ dealsHeading }}</h2>
+            <p class="hotel-page__deals-subtitle">{{ t('hotel.availableDealsSubtitle') }}</p>
+          </div>
+          <div class="team-avatars">
+            <div
+              v-for="member in teamMembers"
+              :key="member.name"
+              class="team-avatars__item"
+              @mouseenter="hoveredMember = member.name"
+              @mouseleave="hoveredMember = null"
+            >
+              <div class="team-avatars__circle" :class="{ 'team-avatars__circle--photo': member.photo }">
+                <img v-if="member.photo" :src="member.photo" :alt="member.name" />
+                <span v-else class="team-avatars__initials">{{ member.initials }}</span>
+              </div>
+              <Transition name="tooltip-fade">
+                <div v-if="hoveredMember === member.name" class="team-avatars__tooltip">
+                  <strong class="team-avatars__tooltip-name">{{ member.name }}</strong>
+                  <span class="team-avatars__tooltip-role">{{ member.role }}</span>
+                  <span class="team-avatars__tooltip-score">{{ member.score }}</span>
+                </div>
+              </Transition>
+            </div>
+          </div>
+        </div>
+        <div class="hotel-page__deals-search">
+          <HotelSearchBar ref="searchBarRef" @search="handleSearchChange" />
+        </div>
         <div class="deals__grid">
-          <HotelDealCard
-            v-for="card in dealCards"
+          <DealCard
+            v-for="card in filteredDealCards"
             :key="card.deal.id"
             :deal="card.deal"
-            :hotel-slug="hotel.slug"
-            :image="card.image"
-            :inclusion-labels="card.inclusions"
-            :persons="searchPersons"
+            :hotel="searchHotel"
+            :full-inclusions="card.inclusions"
+            hide-hotel-info
+            hide-labels
+            grid-mode
           />
         </div>
       </section>
@@ -199,6 +239,25 @@
       </div>
     </main>
 
+    <!-- Full description modal -->
+    <Teleport to="body">
+      <Transition name="panel">
+        <div
+          v-if="showFullDescription && hotel"
+          class="desc-modal-overlay"
+          @click.self="showFullDescription = false"
+        >
+          <div class="desc-modal">
+            <button class="desc-modal__close" :aria-label="t('common.close')" @click="showFullDescription = false">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12" /></svg>
+            </button>
+            <h3 class="desc-modal__title">{{ hotel.name }}</h3>
+            <div class="desc-modal__body" v-html="localized(hotel.description)"></div>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
+
     <AuthPopup />
     <ToastNotification />
     <SiteFooter />
@@ -213,6 +272,8 @@ import {
   mappedPackagesByPermalink,
   defaultDealPermalink,
 } from '~/data/deals-mapper'
+import { searchHotels } from '~/data/mock/search-hotels'
+import DealCard from '~/components/search/DealCard.vue'
 
 const { t, localized } = useI18n()
 const route = useRoute()
@@ -233,11 +294,28 @@ const _firstPkgPermalink = Object.keys(dealsMapByPermalink).find(p => {
 const _dealsMap = dealsMapByPermalink[_firstPkgPermalink] || {}
 const deals = Object.values(_dealsMap)
 
-const dealCards = deals.map((deal, idx) => ({
-  deal,
-  image: deal.inclusions?.[0]?.image || hotel.value.images?.[idx + 1]?.url || hotel.value.images?.[0]?.url || '',
-  inclusions: deal.inclusions.map(i => localized(i.title)).slice(0, 6),
-}))
+/** SearchHotel record (with .deals as SearchHotelDeal[]) for the unified DealCard. */
+const searchHotel = computed(() =>
+  searchHotels.find(h => h.slug === hotelSlug)
+    || searchHotels.find(h => h.deals.some(d => deals.some(dd => dd.id === d.id)))
+    || null,
+)
+
+/** One card per deal of this hotel — feed the unified DealCard with the
+ *  matching SearchHotelDeal and the full localised include list. */
+const dealCards = computed(() => {
+  const sh = searchHotel.value
+  if (!sh) return []
+  return sh.deals.map((shDeal) => {
+    // Find the original raw Deal (with full .inclusions) so we can pass every
+    // inclusion line, not just the 6 cached on SearchHotelDeal.
+    const raw = deals.find(d => d.id === shDeal.id)
+    const fullList = raw
+      ? raw.inclusions.filter(i => !i.id.startsWith('inc-overnight')).map(i => localized(i.title))
+      : shDeal.inclusions.map(i => localized(i))
+    return { deal: shDeal, inclusions: fullList }
+  })
+})
 
 const { setSearchGroup, persons: globalPersons } = useSearchState()
 const searchPersons = ref(globalPersons.value || 2)
@@ -247,10 +325,41 @@ useHead({ title: `${hotel.value.name} | ViaLuxury` })
 
 const dealsHeading = computed(() => t('hotel.availableDeals'))
 
+// Team members for avatar row (mirrors /search).
+const hoveredMember = ref<string | null>(null)
+const teamMembers = [
+  { name: 'Yvette', initials: 'YV', photo: '/images/yvette.jpeg', role: '15 jaar Experience Maker bij ViaLuxury', score: 'Gemiddelde score voor haar experiences: 9.8' },
+  { name: 'Jan',    initials: 'JN', photo: '',                    role: 'Concierge & curator van bijzondere verblijven', score: 'Gemiddelde score voor zijn experiences: 9.7' },
+  { name: 'Sara',   initials: 'SR', photo: '',                    role: 'Reisexpert wellness & culinaire experiences',   score: 'Gemiddelde score voor haar experiences: 9.6' },
+  { name: 'Lars',   initials: 'LR', photo: '',                    role: 'Specialist kasteelhotels & landgoederen',       score: 'Gemiddelde score voor zijn experiences: 9.6' },
+]
+
+/** Local-only search state — only `persons` propagates to the global state
+ *  (so the rest of the site picks up the change); date / duration are kept
+ *  per-page so the local bar doesn't override the user's main search. */
+const localDuration = ref<string>('')
+const localDate = ref<string | null>(null)
+
 function handleSearchChange(params: { persons: number; rooms: number; duration: string; flexibility: number; date: string | null }) {
   searchPersons.value = params.persons
+  // Persons + rooms ARE shared with the rest of the site (per spec).
   setSearchGroup(params.persons, params.rooms)
+  // Date + duration only affect this page's deal list.
+  localDate.value = params.date
+  localDuration.value = params.duration
 }
+
+/** Filter the deal cards by the local search query (duration only — date
+ *  doesn't change which packages exist, just which dates they apply to). */
+const filteredDealCards = computed(() => {
+  const dur = localDuration.value
+  if (!dur) return dealCards.value
+  return dealCards.value.filter(c => {
+    const n = c.deal.nights
+    if (dur === '5+') return n >= 5
+    return String(n) === dur
+  })
+})
 
 const breadcrumbs = computed(() => [
   { label: t('search.home'), href: '/' },
@@ -261,6 +370,11 @@ const breadcrumbs = computed(() => [
 const descriptionParagraphs = computed(() => {
   return localized(hotel.value.description).split('\n').filter(p => p.trim())
 })
+
+/** Show only the first paragraph; "Lees meer" opens the full description modal. */
+const firstDescriptionParagraph = computed(() => descriptionParagraphs.value[0] ?? '')
+const hasMoreDescription = computed(() => descriptionParagraphs.value.length > 1)
+const showFullDescription = ref(false)
 
 // House rules accordion
 const openRuleId = ref<string | null>(null)
@@ -290,11 +404,20 @@ const mapTileUrl = computed(() => {
 
 /* ===== ANCHOR TABS ===== */
 .hotel-page__tabs {
+  position: relative;
   display: flex;
   gap: var(--space-lg);
   padding-top: var(--space-md);
   padding-bottom: var(--space-md);
-  border-bottom: 1px solid var(--color-border-light);
+}
+.hotel-page__tabs::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: var(--space-lg);
+  right: var(--space-lg);
+  height: 1px;
+  background: var(--color-border-light);
 }
 .hotel-page__tab {
   font-size: 14px;
@@ -350,19 +473,32 @@ const mapTileUrl = computed(() => {
 .hotel-page__score { display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: var(--radius-sm); background: #00B67A; color: #fff; font-size: 13px; font-weight: 700; flex-shrink: 0; }
 .hotel-page__score-label { font-size: 13px; font-weight: 600; color: var(--color-text-primary); }
 .hotel-page__divider { color: var(--color-text-muted); }
-.hotel-page__title-actions { display: flex; gap: var(--space-sm); flex-shrink: 0; }
-.icon-action { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--color-border); display: flex; align-items: center; justify-content: center; font-size: 18px; background: var(--color-surface); cursor: pointer; }
+/* Inline favourite + share icons sit on the score/location row, like the deal page. */
+.hotel-page__title-actions { display: inline-flex; gap: 6px; align-items: center; margin-left: auto; flex-shrink: 0; }
+.icon-action { width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--color-border); display: inline-flex; align-items: center; justify-content: center; font-size: 16px; background: var(--color-surface); cursor: pointer; color: var(--color-text-primary); }
 .icon-action:hover { border-color: var(--color-primary); }
 
 /* ===== INTRO (description + map) ===== */
 .hotel-page__intro { display: grid; grid-template-columns: 1fr 340px; gap: var(--space-xl); padding-top: var(--space-lg); padding-bottom: var(--space-xl); }
 .hotel-page__description-col { display: flex; flex-direction: column; gap: var(--space-md); }
 .hotel-page__description { font-size: 15px; line-height: 1.75; color: var(--color-text-secondary); }
+.hotel-page__description p { margin: 0; }
+.hotel-page__read-more { background: none; border: 0; padding: 0; margin-top: 6px; cursor: pointer; color: var(--color-primary); font-size: 14px; font-weight: 600; text-decoration: underline; text-underline-offset: 2px; }
+.hotel-page__read-more:hover { color: var(--color-primary-hover); }
+
+/* Description modal */
+.desc-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: var(--space-lg); }
+.desc-modal { background: var(--color-surface); border-radius: var(--radius-lg); padding: var(--space-xl); max-width: 720px; width: 100%; max-height: 85vh; overflow-y: auto; position: relative; box-shadow: 0 12px 40px rgba(0,0,0,0.2); }
+.desc-modal__close { position: absolute; top: var(--space-md); right: var(--space-md); width: 36px; height: 36px; border-radius: 50%; border: 0; background: var(--color-background-secondary); display: inline-flex; align-items: center; justify-content: center; cursor: pointer; color: var(--color-text-primary); }
+.desc-modal__close:hover { background: var(--color-border); }
+.desc-modal__title { font-family: var(--font-heading); font-size: 22px; font-weight: 700; margin: 0 0 var(--space-md); padding-right: 40px; }
+.desc-modal__body { font-size: 15px; line-height: 1.75; color: var(--color-text-secondary); }
+.desc-modal__body p { margin: 0 0 var(--space-md); }
 
 /* Mini map */
-.mini-map { border-radius: var(--radius-lg); overflow: hidden; height: 100%; min-height: 200px; }
-.mini-map__placeholder { position: relative; width: 100%; height: 100%; min-height: 200px; border-radius: var(--radius-lg); overflow: hidden; }
-.mini-map__img { width: 100%; height: 100%; min-height: 200px; object-fit: cover; }
+.mini-map { border-radius: var(--radius-lg); overflow: hidden; height: 224px; }
+.mini-map__placeholder { position: relative; width: 100%; height: 224px; border-radius: var(--radius-lg); overflow: hidden; }
+.mini-map__img { width: 100%; height: 224px; object-fit: cover; }
 .mini-map__img--map { filter: saturate(0.85) contrast(1.05); }
 .mini-map__pin { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -100%); filter: drop-shadow(0 3px 6px rgba(0,0,0,0.25)); z-index: 2; pointer-events: none; }
 .mini-map__bottom { position: absolute; bottom: 0; left: 0; right: 0; padding: 10px 14px; background: linear-gradient(transparent, rgba(0,0,0,0.6)); display: flex; align-items: center; justify-content: space-between; z-index: 2; }
@@ -374,18 +510,66 @@ const mapTileUrl = computed(() => {
 .section-title { font-size: 22px; font-weight: 600; margin-bottom: var(--space-lg); }
 
 /* ===== FACILITIES ===== */
-.hotel-page__facilities { padding: var(--space-xl) 0; border-top: 1px solid var(--color-border-light); }
+.hotel-page__facilities { padding: var(--space-xl) var(--space-lg); position: relative; }
 .facilities__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-md); }
 .facility-item { display: flex; align-items: center; gap: var(--space-sm); font-size: 14px; }
+.facility-item__icon { width: 22px; height: 22px; flex-shrink: 0; object-fit: contain; }
 .facility-item__check { color: var(--color-discount); font-weight: 700; }
 
 /* ===== DEALS ===== */
-.hotel-page__deals { padding: var(--space-xl) 0; border-top: 1px solid var(--color-border-light); }
+.hotel-page__deals { padding: var(--space-xl) var(--space-lg); position: relative; }
 .hotel-page__deals .section-title { margin-bottom: var(--space-md); }
-.deals__grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-xl); margin-top: var(--space-lg); }
+.hotel-page__deals-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-lg);
+  margin-bottom: var(--space-md);
+}
+.hotel-page__deals-subtitle {
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  margin: -8px 0 0;
+}
+.hotel-page__deals-search {
+  display: flex;
+  justify-content: flex-start;
+  margin: var(--space-md) 0 var(--space-lg);
+}
+.hotel-page__deals-search .hotel-search-bar { width: 75%; max-width: none; }
+.hotel-page__deals-search .hotel-search-bar__fields { max-width: none; }
+
+/* Team avatars (mirrors /search styles) */
+.team-avatars { display: flex; gap: 0; flex-shrink: 0; }
+.team-avatars__item { position: relative; margin-left: -8px; }
+.team-avatars__item:first-child { margin-left: 0; }
+.team-avatars__circle {
+  width: 40px; height: 40px; border-radius: 50%; background: var(--color-background-secondary);
+  border: 2px solid #fff; display: flex; align-items: center; justify-content: center;
+  overflow: hidden; cursor: pointer; transition: transform 150ms ease, box-shadow 150ms ease;
+  position: relative; z-index: 1;
+}
+.team-avatars__item:hover .team-avatars__circle {
+  transform: scale(1.15); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15); z-index: 5;
+}
+.team-avatars__circle--photo img { width: 100%; height: 100%; object-fit: cover; }
+.team-avatars__initials { font-family: var(--font-body); font-size: 13px; font-weight: 600; color: var(--color-text-secondary); line-height: 1; }
+.team-avatars__tooltip {
+  position: absolute; top: calc(100% + 8px); right: 0; width: 240px; padding: 12px 14px;
+  background: #fff; border: 1px solid var(--color-border); border-radius: var(--radius-md);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12); z-index: 100; pointer-events: none;
+}
+.team-avatars__tooltip-name { display: block; font-family: var(--font-heading); font-size: 15px; font-weight: 700; color: var(--color-text-primary); margin-bottom: 4px; }
+.team-avatars__tooltip-role { display: block; font-size: 13px; line-height: 1.45; color: var(--color-text-secondary); margin-bottom: 6px; }
+.team-avatars__tooltip-score { display: block; font-size: 12px; font-weight: 600; color: var(--color-text-primary); }
+.tooltip-fade-enter-active, .tooltip-fade-leave-active { transition: opacity 150ms ease; }
+.tooltip-fade-enter-from, .tooltip-fade-leave-to { opacity: 0; }
+.deals__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-lg); margin-top: var(--space-lg); }
+@media (max-width: 1023px) { .deals__grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 640px)  { .deals__grid { grid-template-columns: 1fr; } }
 
 /* ===== REVIEWS ===== */
-.hotel-page__reviews { padding: var(--space-xl) 0; border-top: 1px solid var(--color-border-light); }
+.hotel-page__reviews { padding: var(--space-xl) var(--space-lg); position: relative; }
 .reviews__score-bar { display: flex; align-items: center; gap: var(--space-sm); margin-bottom: var(--space-md); }
 .reviews__score-big { font-size: 24px; font-weight: 700; font-family: var(--font-heading); background: #00B67A; color: #fff; padding: 8px 12px; border-radius: var(--radius-sm); }
 .reviews__score-meta { display: flex; flex-direction: column; gap: 1px; }
@@ -417,7 +601,21 @@ const mapTileUrl = computed(() => {
 .review-card__arrangement svg { color: #00B67A; flex-shrink: 0; }
 
 /* ===== HOUSE RULES ===== */
-.hotel-page__house-rules { padding: var(--space-xl) 0; border-top: 1px solid var(--color-border-light); }
+.hotel-page__house-rules { padding: var(--space-xl) var(--space-lg); position: relative; }
+/* Inset top divider for the lower full-width sections */
+.hotel-page__facilities::before,
+.hotel-page__deals::before,
+.hotel-page__reviews::before,
+.hotel-page__house-rules::before,
+.hotel-page__faq::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: var(--space-lg);
+  right: var(--space-lg);
+  height: 1px;
+  background: var(--color-border-light);
+}
 .house-rules__layout {
   display: grid;
   grid-template-columns: 260px 1fr;
@@ -434,6 +632,9 @@ const mapTileUrl = computed(() => {
 }
 .house-rule {
   border-top: 1px solid var(--color-border-light);
+}
+.house-rule:first-child {
+  border-top: none;
 }
 .house-rule:last-child {
   border-bottom: 1px solid var(--color-border-light);
@@ -467,7 +668,7 @@ const mapTileUrl = computed(() => {
 }
 
 /* ===== FAQ ===== */
-.hotel-page__faq { padding: var(--space-xl) 0; }
+.hotel-page__faq { padding: var(--space-xl) var(--space-lg); position: relative; }
 .faq__layout {
   display: grid;
   grid-template-columns: 260px 1fr;

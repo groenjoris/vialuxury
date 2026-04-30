@@ -18,8 +18,11 @@
             <SearchFilterPanel
               :budget-min="budgetMin"
               :budget-max="budgetMax"
+              :persons="persons"
+              hideable
               @update:budget-min="budgetMin = $event"
               @update:budget-max="budgetMax = $event"
+              @hide="showFilters = false"
             />
           </div>
         </Transition>
@@ -31,6 +34,7 @@
               <div>
                 <h1 class="search-page__title">{{ totalDeals }} {{ t('search.deals') }}</h1>
                 <p class="search-page__usp">{{ t('search.usp') }}</p>
+                <FilterPills class="search-page__pills" />
               </div>
               <div class="team-avatars">
                 <div
@@ -73,6 +77,7 @@
                 {{ t('search.viewOnMap') }}
               </button>
               <button
+                v-if="isMobile || !showFilters"
                 class="search-toolbar__filter-toggle"
                 @click="handleFilterButtonClick"
               >
@@ -82,7 +87,7 @@
                   <line x1="12" y1="18" x2="20" y2="18" />
                 </svg>
                 <span v-if="isMobile">{{ t('search.filters') }}</span>
-                <span v-else>{{ showFilters ? t('search.hideFilters') : t('search.showFilters') }}</span>
+                <span v-else>{{ t('search.showFilters') }}</span>
               </button>
             </div>
 
@@ -208,10 +213,20 @@
 <script setup lang="ts">
 import type { SearchHotel } from '~/types/searchHotel'
 import { searchHotels } from '~/data/mock/search-hotels'
+import { dealMatchesAllTags } from '~/utils/filterTags'
+import FilterPills from '~/components/search/FilterPills.vue'
+import { isDealAvailableInWindow } from '~/utils/availability'
+import { adjustPrice } from '~/utils/priceFormula'
+import { hotelMatchesDestination } from '~/utils/destinationMatch'
 import { pickPrimaryDeal } from '~/utils/primaryDeal'
 
 const { t } = useI18n()
-const { loading, setLoading, persons, rooms, selectedNights } = useSearchState()
+const {
+  loading, setLoading, persons, rooms, selectedNights,
+  selectedFilterTags,
+  selectedDestinations, selectedCities, selectedHotels,
+  committedArrivalDate, committedFlexibility,
+} = useSearchState()
 
 // Team members for avatar row
 const hoveredMember = ref<string | null>(null)
@@ -343,19 +358,38 @@ const sortOptions = computed(() => [
   { value: 'ratingLow' as const, label: t('search.sort.ratingLow') },
 ])
 
-// Filtered hotels — applies budget AND nights filter.
-// A hotel only matches if it has at least one deal that satisfies BOTH filters.
-// The hotel's deals[] is also pruned to only the matching deals (used by sidepanel).
+// Filtered hotels — applies budget, nights, arrangement, and destination filters.
+// A hotel only matches if it has at least one deal that satisfies budget +
+// nights + arrangement (deal-level filters), AND the hotel itself satisfies
+// the destination filter (hotel-level). The hotel's deals[] is pruned to
+// the matching set so the side panel only shows relevant packages.
 const filteredHotels = computed(() => {
   const nightsActive = selectedNights.value.length > 0
+  const tags = selectedFilterTags.value
+  const arrivalActive = !!committedArrivalDate.value
+  const flex = committedFlexibility.value
+  const p = persons.value
+  const destFilter = {
+    destinations: [...selectedDestinations.value],
+    cities: [...selectedCities.value],
+    hotels: [...selectedHotels.value],
+  }
   const out = []
   for (const hotel of searchHotels) {
+    if (!hotelMatchesDestination(hotel, destFilter)) continue
     const matchingDeals = hotel.deals.filter((d) => {
-      const inBudget = d.basePrice >= budgetMin.value && d.basePrice <= budgetMax.value
-      if (!inBudget) return false
-      if (!nightsActive) return true
-      const nightKey = d.nights >= 5 ? '5+' : String(d.nights)
-      return selectedNights.value.includes(nightKey)
+      // Budget compares against the price for the CURRENT person count.
+      const priceForPersons = adjustPrice(d.basePrice, p)
+      if (priceForPersons < budgetMin.value || priceForPersons > budgetMax.value) return false
+      if (nightsActive) {
+        const nightKey = d.nights >= 5 ? '5+' : String(d.nights)
+        if (!selectedNights.value.includes(nightKey)) return false
+      }
+      if (!dealMatchesAllTags(d, hotel, tags)) return false
+      // Arrival-date filter — deal must have at least one available date in
+      // the flex window around the chosen date.
+      if (arrivalActive && !isDealAvailableInWindow(d.id, committedArrivalDate.value!, flex)) return false
+      return true
     })
     if (matchingDeals.length > 0) {
       out.push({ ...hotel, deals: matchingDeals })
@@ -614,6 +648,10 @@ function navigateToDeal(slug: string) {
 .tooltip-fade-leave-to {
   opacity: 0;
   transform: translateY(-4px);
+}
+
+.search-page__pills {
+  margin-top: var(--space-md);
 }
 
 .search-page__title {

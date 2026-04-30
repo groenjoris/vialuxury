@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 import type { SearchHotel } from '~/types/searchHotel'
 import { formatPrice } from '~/utils/formatPrice'
+import { priceForArrival } from '~/utils/priceFormula'
 
 /**
  * HotelMapHoverCard — preview card that floats above a hovered hotel pin
@@ -34,10 +35,28 @@ const props = defineProps<{
   soldOut?: boolean
 }>()
 
-/** Cheapest deal — the price + discount source for the preview. */
+const { persons, arrivalDate: globalArrivalDate } = useSearchState()
+/** When an arrival date is locked-in globally, use that for pricing; the
+ *  prop `arrivalDate` is passed by the map for sold-out marking but matches
+ *  the global state for pricing purposes. */
+const activeArrival = computed(() => globalArrivalDate.value || props.arrivalDate || null)
+
+/** Cheapest deal — picked by the date-adjusted price so the preview matches
+ *  what the user sees on the deal/search cards. */
 const cheapest = computed(() => {
-  return [...props.hotel.deals].sort((a, b) => a.basePrice - b.basePrice)[0]
+  return [...props.hotel.deals].reduce((min, d) => {
+    const dPrice = priceForArrival(d.basePrice, d.id, activeArrival.value, persons.value)
+    const minPrice = priceForArrival(min.basePrice, min.id, activeArrival.value, persons.value)
+    return dPrice < minPrice ? d : min
+  })
 })
+
+const cheapestPrice = computed(() =>
+  priceForArrival(cheapest.value.basePrice, cheapest.value.id, activeArrival.value, persons.value),
+)
+const cheapestOriginal = computed(() =>
+  priceForArrival(cheapest.value.originalPrice, cheapest.value.id, activeArrival.value, persons.value),
+)
 
 const nights = computed<number[]>(() => {
   const set = new Set<number>()
@@ -55,18 +74,28 @@ function formatNightList(arr: number[]): string {
   return `${head} of ${arr[arr.length - 1]}`
 }
 
+/** Split into a top line ("Arrangement voor" / "Arrangementen voor" /
+ *  "Uitverkocht voor") and a bottom line ("2-3 nachten" / "1, 2 of 4 nachten"
+ *  / "21-04-2026"). Renders as two lines to fit a 296 px card. */
 const dealsLabel = computed(() => {
   if (props.soldOut) {
-    return props.arrivalDate
-      ? `Uitverkocht voor ${formatDate(props.arrivalDate)}`
-      : 'Uitverkocht voor jouw datum'
+    return {
+      top: 'Uitverkocht voor',
+      bottom: props.arrivalDate ? formatDate(props.arrivalDate) : 'jouw datum',
+    }
   }
   const ns = nights.value
-  if (ns.length === 0) return ''
+  if (ns.length === 0) return { top: '', bottom: '' }
   if (ns.length === 1) {
-    return `Pakket voor ${ns[0]} ${ns[0] === 1 ? 'nacht' : 'nachten'}`
+    return {
+      top: 'Arrangement voor',
+      bottom: `${ns[0]} ${ns[0] === 1 ? 'nacht' : 'nachten'}`,
+    }
   }
-  return `Deals voor ${formatNightList(ns)} nachten`
+  return {
+    top: 'Arrangementen voor',
+    bottom: `${formatNightList(ns)} nachten`,
+  }
 })
 
 function formatDate(iso: string): string {
@@ -111,28 +140,34 @@ const cardStyle = computed(() => {
       :class="{ 'hover-card--soldOut': soldOut, 'hover-card--flipped': flipped }"
       :style="cardStyle"
     >
-      <div class="hover-card__inner">
-        <img :src="hotel.heroImage" :alt="hotel.name" class="hover-card__image" />
-        <div class="hover-card__body">
-          <h4 class="hover-card__title">{{ hotel.name }}</h4>
-          <div class="hover-card__stars" aria-hidden="true">
-            <span v-for="n in hotel.starRating" :key="n">★</span>
-          </div>
-          <p class="hover-card__deals">{{ dealsLabel }}</p>
-          <div v-if="cheapest" class="hover-card__footer">
-            <span class="hover-card__discount">-{{ cheapest.discountPercentage }}%</span>
-            <div class="hover-card__price-block">
-              <svg class="hover-card__persons" width="18" height="14" viewBox="0 0 24 18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <circle cx="7" cy="6" r="3" />
-                <circle cx="17" cy="6" r="3" />
-                <path d="M2 17c0-3 2.2-5 5-5s5 2 5 5" />
-                <path d="M12 17c0-3 2.2-5 5-5s5 2 5 5" />
-              </svg>
-              <span class="hover-card__price-from">Vanaf</span>
-              <span class="hover-card__price-final">{{ formatPrice(cheapest.basePrice) }}</span>
-              <span v-if="cheapest.originalPrice > cheapest.basePrice" class="hover-card__price-old">
-                {{ formatPrice(cheapest.originalPrice) }}
-              </span>
+      <div class="hover-card__box">
+        <div class="hover-card__band" />
+        <div class="hover-card__inner">
+          <img :src="hotel.heroImage" :alt="hotel.name" class="hover-card__image" />
+          <div class="hover-card__body">
+            <h4 class="hover-card__title">{{ hotel.name }}</h4>
+            <div class="hover-card__stars" aria-hidden="true">
+              <span v-for="n in hotel.starRating" :key="n">★</span>
+            </div>
+            <p class="hover-card__deals">
+            <span class="hover-card__deals-top">{{ dealsLabel.top }}</span>
+            <span class="hover-card__deals-bottom">{{ dealsLabel.bottom }}</span>
+          </p>
+            <div v-if="cheapest" class="hover-card__footer">
+              <span class="hover-card__discount">-{{ cheapest.discountPercentage }}%</span>
+              <div class="hover-card__price-block">
+                <svg class="hover-card__persons" width="18" height="14" viewBox="0 0 24 18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <circle cx="7" cy="6" r="3" />
+                  <circle cx="17" cy="6" r="3" />
+                  <path d="M2 17c0-3 2.2-5 5-5s5 2 5 5" />
+                  <path d="M12 17c0-3 2.2-5 5-5s5 2 5 5" />
+                </svg>
+                <span class="hover-card__price-from">Vanaf</span>
+                <span class="hover-card__price-final">{{ formatPrice(cheapestPrice) }}</span>
+                <span v-if="cheapestOriginal > cheapestPrice" class="hover-card__price-old">
+                  {{ formatPrice(cheapestOriginal) }}
+                </span>
+              </div>
             </div>
           </div>
         </div>
@@ -147,41 +182,53 @@ const cardStyle = computed(() => {
   position: fixed;
   z-index: 1000;
   pointer-events: none;
-  filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.18));
-  /* 4 px coloured "border" baked in as a background fill the inner panel
-     sits on top of, so the tail can inherit the same fill at the join. */
-  background: var(--color-primary);
-  border-radius: var(--radius-lg);
-  height: 140px;
-  /* Default orientation: orange bar at TOP, tail at BOTTOM pointing down. */
-  padding-top: 4px;
-}
-
-.hover-card--soldOut {
-  background: var(--color-border);
-}
-
-/* Flipped: orange bar at BOTTOM, tail at TOP pointing up. */
-.hover-card--flipped {
-  padding-top: 0;
-  padding-bottom: 4px;
-}
-
-.hover-card__inner {
+  /* Default 140 px tall; can grow when the hotel name wraps to a 2nd line.
+     Flex column so __box can use `flex: 1` and pass a definite height down
+     to the image (which uses `height: 100%`). */
   display: flex;
-  background: var(--color-surface);
-  border-radius: var(--radius-lg) var(--radius-lg) calc(var(--radius-lg) - 2px) calc(var(--radius-lg) - 2px);
-  height: 136px;
+  flex-direction: column;
+  min-height: 140px;
+  filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.18));
+}
+
+/* Build the card as a plain white rectangle next to a plain 4 px coloured
+   strip, then clip the assembly with rounded corners via this single mask
+   box. The white inner has no border-radius of its own. */
+.hover-card__box {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  border-radius: var(--radius-lg);
   overflow: hidden;
 }
 
-.hover-card--flipped .hover-card__inner {
-  border-radius: calc(var(--radius-lg) - 2px) calc(var(--radius-lg) - 2px) var(--radius-lg) var(--radius-lg);
+.hover-card__band {
+  flex: 0 0 4px;
+  background: var(--color-primary);
+}
+
+.hover-card__inner {
+  flex: 1;
+  display: flex;
+  background: var(--color-surface);
+}
+
+/* Flipped (card rendered below the pin): band moves below the inner. */
+.hover-card--flipped .hover-card__box {
+  flex-direction: column-reverse;
+}
+
+/* Sold-out variant: grey accent. */
+.hover-card--soldOut .hover-card__band {
+  background: var(--color-border);
 }
 
 .hover-card__image {
+  display: block;
   width: 80px;
-  height: 136px;
+  height: auto;
+  align-self: stretch;
+  min-height: 0;
   flex-shrink: 0;
   object-fit: cover;
 }
@@ -217,11 +264,22 @@ const cardStyle = computed(() => {
 }
 
 .hover-card__deals {
+  display: flex;
+  flex-direction: column;
   font-family: var(--font-body);
   font-size: 14px;
   font-weight: 600;
   margin: 4px 0 0;
   color: var(--color-primary);
+  line-height: 1.25;
+}
+
+.hover-card__deals-top,
+.hover-card__deals-bottom {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .hover-card--soldOut .hover-card__deals {

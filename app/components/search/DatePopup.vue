@@ -1,6 +1,6 @@
 <template>
   <div class="date-popup">
-    <!-- Centered tab bar -->
+    <!-- Centered tab bar with top-right Wissen link -->
     <div class="date-popup__tabs">
       <div class="date-popup__tabs-inner">
         <button
@@ -18,6 +18,7 @@
           {{ t('header.tab.flexible') }}
         </button>
       </div>
+      <a href="#" class="date-popup__clear-link" @click.prevent="$emit('clear')">{{ t('header.clear') }}</a>
     </div>
 
     <!-- CALENDAR TAB: only calendar + flexibility chips -->
@@ -298,10 +299,23 @@ function emitFlexState() {
 /* CENTERED TAB BAR     */
 /* ==================== */
 .date-popup__tabs {
+  position: relative;
   display: flex;
   justify-content: center;
   padding: var(--space-md) var(--space-lg) 0;
 }
+
+.date-popup__clear-link {
+  position: absolute;
+  top: var(--space-md);
+  right: var(--space-lg);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  text-decoration: underline;
+  cursor: pointer;
+}
+.date-popup__clear-link:hover { color: var(--color-primary); }
 
 .date-popup__tabs-inner {
   display: inline-flex;

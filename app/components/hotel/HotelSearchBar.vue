@@ -1,7 +1,7 @@
 <template>
   <div class="hotel-search-bar" ref="barRef">
     <div class="hotel-search-bar__fields">
-      <!-- When & How long -->
+      <!-- Wanneer -->
       <button
         ref="whenFieldRef"
         class="hsb-field"
@@ -12,14 +12,32 @@
           <rect x="3" y="4" width="18" height="18" rx="2" ry="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" />
         </svg>
         <div class="hsb-field__text">
-          <span class="hsb-field__label">{{ t('header.whenAndHowLong') }}</span>
-          <span class="hsb-field__value">{{ whenLabel }}</span>
+          <span class="hsb-field__label">{{ t('header.when') }}</span>
+          <span class="hsb-field__value">{{ whenOnlyLabel }}</span>
         </div>
       </button>
 
       <div class="hotel-search-bar__divider"></div>
 
-      <!-- Who's coming -->
+      <!-- Hoelang -->
+      <button
+        ref="howlongFieldRef"
+        class="hsb-field"
+        :class="{ 'hsb-field--active': activePopup === 'howlong' }"
+        @click="togglePopup('howlong')"
+      >
+        <svg class="hsb-field__icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="9" /><polyline points="12 7 12 12 15 14" />
+        </svg>
+        <div class="hsb-field__text">
+          <span class="hsb-field__label">{{ t('header.howLong') }}</span>
+          <span class="hsb-field__value">{{ howLongLabel }}</span>
+        </div>
+      </button>
+
+      <div class="hotel-search-bar__divider"></div>
+
+      <!-- Wie gaat er mee -->
       <button
         ref="whoFieldRef"
         class="hsb-field"
@@ -35,9 +53,12 @@
         </div>
       </button>
 
-      <!-- Change search button -->
-      <button class="hsb-btn" @click="handleChangeSearch">
-        {{ t('hotel.changeSearch') }}
+      <!-- Submit button — orange pill, two-line caption. Always enabled. -->
+      <button
+        class="hsb-submit"
+        @click="handleChangeSearch"
+      >
+        Toon beschikbare<br />arrangementen
       </button>
     </div>
 
@@ -53,6 +74,18 @@
           @update:flex-state="handleFlexState"
           @save="closePopup()"
           @clear="clearWhen"
+        />
+      </div>
+
+      <!-- HOWLONG POPUP -->
+      <div v-if="activePopup === 'howlong'" class="hsb-popup hsb-popup--howlong" :style="popupStyle">
+        <DurationPopup
+          :nights="selectedDurations"
+          :flex-type="localFlexType"
+          :arrival-date="selectedDate"
+          :flex-months="flexState.months"
+          @toggle-night="onToggleNight"
+          @select-flex-type="onSelectFlexType"
         />
       </div>
 
@@ -118,7 +151,12 @@
 
 <script setup lang="ts">
 const { t } = useI18n()
-const { persons, rooms } = useSearchState()
+const {
+  persons, rooms,
+  arrivalDate: globalArrivalDate,
+  setArrivalDate,
+  setSearchGroup,
+} = useSearchState()
 
 const emit = defineEmits<{
   search: [params: { persons: number; rooms: number; duration: string; flexibility: number; date: string | null }]
@@ -126,55 +164,87 @@ const emit = defineEmits<{
 
 const barRef = ref<HTMLElement | null>(null)
 const whenFieldRef = ref<HTMLElement | null>(null)
+const howlongFieldRef = ref<HTMLElement | null>(null)
 const whoFieldRef = ref<HTMLElement | null>(null)
-const activePopup = ref<'when' | 'who' | null>(null)
+type PopupName = 'when' | 'howlong' | 'who'
+const activePopup = ref<PopupName | null>(null)
 const popupStyle = ref<Record<string, string>>({})
 
-function calcPopupPosition(popup: 'when' | 'who') {
-  const bar = barRef.value
-  if (!bar) return {}
-
-  const barRect = bar.getBoundingClientRect()
-  const popupW = popup === 'when' ? 660 : 420
-  const popupH = popup === 'when' ? 520 : 480 // estimated heights
-
-  // Center horizontally relative to bar
-  const barCenter = barRect.left + barRect.width / 2
-  let left = barCenter - popupW / 2
-  left = Math.max(8, Math.min(left, window.innerWidth - popupW - 8))
-
-  // Check if popup would go below viewport — if so, open above
-  const spaceBelow = window.innerHeight - barRect.bottom - 8
-  const openAbove = spaceBelow < popupH && barRect.top > popupH
-
-  const style: Record<string, string> = {
-    position: 'fixed',
-    left: `${left}px`,
-  }
-
-  if (openAbove) {
-    style.bottom = `${window.innerHeight - barRect.top + 8}px`
-  } else {
-    style.top = `${barRect.bottom + 8}px`
-  }
-
-  if (popup === 'when') {
-    style.width = `${popupW}px`
-  }
-
-  return style
+function fieldRefFor(popup: PopupName): HTMLElement | null {
+  if (popup === 'when') return whenFieldRef.value
+  if (popup === 'howlong') return howlongFieldRef.value
+  return whoFieldRef.value
 }
 
-function togglePopup(popup: 'when' | 'who') {
+function calcPopupPosition(popup: PopupName) {
+  const bar = barRef.value
+  const field = fieldRefFor(popup)
+  if (!bar || !field) return {}
+
+  const barRect = bar.getBoundingClientRect()
+  const fieldRect = field.getBoundingClientRect()
+  const popupW = popup === 'when' ? 528 : popup === 'howlong' ? 420 : 420
+
+  // Anchor the popup's HORIZONTAL centre to the field's centre, so the
+  // dropdown sits visually under the field it belongs to.
+  const fieldCenter = fieldRect.left + fieldRect.width / 2
+  let left = fieldCenter - popupW / 2
+  left = Math.max(8, Math.min(left, window.innerWidth - popupW - 8))
+
+  // Always open BELOW the bar (never flipped above). Auto-scroll fills any
+  // bottom-overflow if the popup wouldn't fit otherwise.
+  return {
+    position: 'fixed',
+    left: `${left}px`,
+    top: `${barRect.bottom + 8}px`,
+    width: `${popupW}px`,
+  }
+}
+
+function togglePopup(popup: PopupName) {
   if (activePopup.value === popup) {
     activePopup.value = null
     return
   }
   popupStyle.value = calcPopupPosition(popup)
   activePopup.value = popup
+
+  // Auto-scroll so the popup's full height fits below the bar without going
+  // off the bottom of the viewport. If the popup would clip, scroll the page
+  // down by exactly the missing amount (or, alternatively, scroll the bar
+  // closer to the top so the popup gets max room below it).
+  nextTick(() => {
+    const bar = barRef.value
+    if (!bar) return
+    const barRect = bar.getBoundingClientRect()
+    const NAV_H = 120
+    const POPUP_H = popup === 'when' ? 520 : popup === 'howlong' ? 360 : 480
+    const popupTop = barRect.bottom + 8
+    const popupBottom = popupTop + POPUP_H
+    const overflowBottom = popupBottom - (window.innerHeight - 8)
+    if (overflowBottom > 0) {
+      // Scroll the page so the bar moves up — but never higher than the
+      // sticky navbar (NAV_H from top).
+      const maxScroll = barRect.top - NAV_H - 16
+      const wanted = Math.min(overflowBottom, Math.max(0, maxScroll))
+      if (wanted > 0) {
+        window.scrollBy({ top: wanted, behavior: 'smooth' })
+        // Re-position the popup after the scroll settles so it tracks
+        // the bar's new viewport position.
+        setTimeout(() => {
+          popupStyle.value = calcPopupPosition(popup)
+        }, 320)
+      }
+    }
+  })
 }
 
 function closePopup() {
+  // When the Wie-popup closes (Klaar / outside-click) commit the draft
+  // persons/rooms to the global state so prices update site-wide.
+  if (activePopup.value === 'who') {
+    setSearchGroup(group.value.adults + group.value.children.length, group.value.rooms)
+  }
   activePopup.value = null
 }
 
@@ -194,10 +264,28 @@ function clearWho() {
 
 // --- WHEN state ---
 const calMonth = ref({ year: new Date().getFullYear(), month: new Date().getMonth() })
-const selectedDate = ref<string | null>(null)
+/** Live-synced with the global arrival date so the navbar / deal-page calendar
+ *  see the same selection. Search results are still gated by the search
+ *  button (committedArrivalDate). */
+const selectedDate = ref<string | null>(globalArrivalDate.value)
+watch(selectedDate, (v) => { if (v !== globalArrivalDate.value) setArrivalDate(v) })
+watch(globalArrivalDate, (v) => { if (v !== selectedDate.value) selectedDate.value = v })
 const flexibility = ref(0)
 const selectedDurations = ref<string[]>([])
 const flexState = ref<{ durations: string[]; months: string[] }>({ durations: [], months: [] })
+const localFlexType = ref<string | null>(null)
+
+function onToggleNight(value: string) {
+  const i = selectedDurations.value.indexOf(value)
+  if (i === -1) selectedDurations.value.push(value)
+  else selectedDurations.value.splice(i, 1)
+  if (selectedDurations.value.length > 0) localFlexType.value = null
+}
+
+function onSelectFlexType(value: string | null) {
+  localFlexType.value = value
+  if (value) selectedDurations.value = []
+}
 
 function handleFlexState(state: { durations: string[]; months: string[] }) {
   flexState.value = state
@@ -222,46 +310,39 @@ const durationOptions = computed(() => [
 
 const monthNames = computed(() => Array.from({ length: 12 }, (_, i) => t(`header.months.${i}`)))
 
-const whenLabel = computed(() => {
-  let whenPart = ''
-  let durationPart = ''
-
+/** Just the date / month part \u2014 shown in the Wanneer field. */
+const whenOnlyLabel = computed(() => {
   if (selectedDate.value) {
     const [, m, d] = selectedDate.value.split('-')
-    whenPart = `${d}/${m}`
-    if (flexibility.value > 0) whenPart += ` \u00B1${flexibility.value}`
-  } else if (flexState.value.months.length > 0) {
-    const monthLabels = flexState.value.months.map((key) => {
-      const monthIndex = parseInt(key.split('-')[1], 10) - 1
-      return monthNames.value[monthIndex]
-    })
-    whenPart = monthLabels.join(', ')
-  } else {
-    whenPart = t('header.flexibleLabel')
+    let s = `${d}/${m}`
+    if (flexibility.value > 0) s += ` \u00B1${flexibility.value}`
+    return s
   }
+  if (flexState.value.months.length > 0) {
+    return flexState.value.months
+      .map(key => monthNames.value[parseInt(key.split('-')[1], 10) - 1])
+      .join(', ')
+  }
+  return t('header.flexibleLabel')
+})
 
+/** Just the duration part \u2014 shown in the Hoelang field. */
+const howLongLabel = computed(() => {
   const calDurs = selectedDurations.value
-  const flexDurs = flexState.value.durations
   if (calDurs.length > 0) {
     const labels = calDurs.map(id => durationOptions.value.find(o => o.id === id)?.label).filter(Boolean) as string[]
-    durationPart = labels.join(' of ')
-  } else if (flexDurs.length > 0) {
+    return labels.join(' of ')
+  }
+  if (localFlexType.value) {
     const typeLabels: Record<string, string> = {
       'weekend-fri-sun': t('header.flex.weekendFriSun'),
       'weekend-sat-sun': t('header.flex.weekendSatSun'),
       'long-weekend': t('header.flex.longWeekend'),
       'midweek': t('header.flex.midweek'),
     }
-    const labels = flexDurs.map(id => {
-      const nightsOpt = durationOptions.value.find(o => o.id === id)
-      return nightsOpt ? nightsOpt.label : (typeLabels[id] || '')
-    }).filter(Boolean)
-    durationPart = labels.join(' of ')
-  } else {
-    durationPart = t('header.anyDuration')
+    return typeLabels[localFlexType.value] || t('header.anyDuration')
   }
-
-  return `${whenPart}, ${durationPart}`
+  return t('header.anyDuration')
 })
 
 // --- WHO state ---
@@ -269,6 +350,32 @@ const group = ref({
   adults: persons.value || 2,
   children: [] as { age: number }[],
   rooms: rooms.value || 1,
+})
+
+// Snapshot of the initial values — drives hasChanges so the submit button
+// stays disabled until the user actually changes something.
+const initialState = {
+  date: null as string | null,
+  flexibility: 0,
+  durations: [] as string[],
+  flexType: null as string | null,
+  flexMonths: [] as string[],
+  adults: persons.value || 2,
+  children: 0,
+  rooms: rooms.value || 1,
+}
+
+const hasChanges = computed(() => {
+  if (selectedDate.value !== initialState.date) return true
+  if (flexibility.value !== initialState.flexibility) return true
+  if (selectedDurations.value.length !== initialState.durations.length) return true
+  if (selectedDurations.value.some((v, i) => v !== initialState.durations[i])) return true
+  if (localFlexType.value !== initialState.flexType) return true
+  if (flexState.value.months.length !== initialState.flexMonths.length) return true
+  if (group.value.adults !== initialState.adults) return true
+  if (group.value.children.length !== initialState.children) return true
+  if (group.value.rooms !== initialState.rooms) return true
+  return false
 })
 
 const totalPersons = computed(() => group.value.adults + group.value.children.length)
@@ -302,90 +409,98 @@ function handleChangeSearch() {
 </script>
 
 <style scoped>
+/* Same look as the home page's solid-variant search bar (.search-bar in
+   SiteHeader.vue). Three fields + primary submit button — no Waarheen. */
 .hotel-search-bar {
   position: relative;
+  width: 100%;
+  max-width: 1080px;
 }
 
 .hotel-search-bar__fields {
+  width: 100%;
   display: flex;
-  align-items: stretch;
+  align-items: center;
+  background: white;
+  border-radius: 16px;
+  height: 72px;
+  padding: 0 6px 0 0;
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  background: var(--color-surface);
-  overflow: hidden;
 }
 
 .hotel-search-bar__divider {
   width: 1px;
-  background: var(--color-border);
-  align-self: stretch;
+  height: 24px;
+  background: #ddd;
+  flex-shrink: 0;
 }
 
 .hsb-field {
   flex: 1;
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-  padding: var(--space-md) var(--space-lg);
-  background: none;
-  border: none;
-  cursor: pointer;
-  text-align: left;
-  transition: background var(--transition-fast);
-}
-
-.hsb-field:hover {
-  background: var(--color-background-secondary);
-}
-
-.hsb-field--active {
-  background: var(--color-background-secondary);
-}
-
-.hsb-field__icon {
-  color: var(--color-text-muted);
-  flex-shrink: 0;
-}
-
-.hsb-field__text {
+  margin: 6px 4px;
+  padding: 8px 18px;
   display: flex;
   flex-direction: column;
-  gap: 1px;
+  gap: 2px;
+  cursor: pointer;
+  border: none;
+  background: none;
+  text-align: left;
+  border-radius: 10px;
+  transition: background var(--transition-fast);
   min-width: 0;
+}
+
+.hsb-field:hover { background: #f5f5f5; }
+.hsb-field--active { background: #eeeeee; }
+
+.hsb-field__icon { display: none; }
+
+.hsb-field__text {
+  display: contents; /* lift label + value into the field's flex container */
 }
 
 .hsb-field__label {
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 600;
+  color: #999999;
   text-transform: uppercase;
-  letter-spacing: 0.3px;
-  color: var(--color-text-muted);
+  letter-spacing: 0.5px;
 }
 
 .hsb-field__value {
   font-size: 14px;
-  font-weight: 500;
-  color: var(--color-text-primary);
+  color: #1A1A1A;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.hsb-btn {
+/* Primary submit button — orange pill, two-line caption. */
+.hsb-submit {
   flex-shrink: 0;
-  padding: var(--space-md) var(--space-xl);
+  min-width: 160px;
+  height: 56px;
+  padding: 8px var(--space-md);
   background: var(--color-primary);
   color: #fff;
-  border: none;
+  border: 0;
+  border-radius: 12px;
+  margin-left: 4px;
   font-size: 14px;
   font-weight: 600;
+  line-height: 1.2;
+  white-space: normal;
+  text-align: center;
   cursor: pointer;
-  white-space: nowrap;
   transition: background var(--transition-fast);
 }
 
-.hsb-btn:hover {
-  background: var(--color-primary-hover);
+.hsb-submit:hover:not(:disabled) { background: var(--color-primary-hover); }
+
+.hsb-submit:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
 }
 
 /* ===== POPUPS ===== */

@@ -26,7 +26,7 @@ export const sharedReviewSummary: Pick<ReviewSummary, 'categories'> = {
 export const sharedReviews: Review[] = [
   {
     id: 'rev-1',
-    author: 'MarcoB',
+    author: 'Marco',
     date: '2026-03-15',
     score: 9.5,
     text: {
@@ -36,7 +36,7 @@ export const sharedReviews: Review[] = [
   },
   {
     id: 'rev-2',
-    author: 'LisaV',
+    author: 'Lisa',
     date: '2026-03-10',
     score: 9.2,
     text: {
@@ -46,7 +46,7 @@ export const sharedReviews: Review[] = [
   },
   {
     id: 'rev-3',
-    author: 'PieterJ',
+    author: 'Pieter',
     date: '2026-02-28',
     score: 8.9,
     text: {
@@ -56,7 +56,7 @@ export const sharedReviews: Review[] = [
   },
   {
     id: 'rev-4',
-    author: 'AnoukS',
+    author: 'Anouk',
     date: '2026-02-20',
     score: 9.7,
     text: {
@@ -66,7 +66,7 @@ export const sharedReviews: Review[] = [
   },
   {
     id: 'rev-5',
-    author: 'JeroenT',
+    author: 'Jeroen',
     date: '2026-02-12',
     score: 9.0,
     text: {

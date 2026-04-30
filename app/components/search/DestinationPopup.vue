@@ -82,24 +82,9 @@
 
     <!-- Content area: fixed height -->
     <div class="destination-popup__content">
-      <!-- Browse mode: destinations + themes (when not searching) -->
+      <!-- Browse mode: themes only (per spec — destinations are reached via
+           the search input above). -->
       <div v-if="!isSearching" class="destination-popup__browse">
-        <div class="destination-popup__section destination-popup__section--destinations">
-          <div class="destination-popup__chips">
-            <button
-              v-for="dest in destinations"
-              :key="dest.id"
-              class="dest-chip"
-              :class="{ 'dest-chip--selected': selectedDestinations.includes(dest.id) }"
-              @click="$emit('toggle-destination', dest.id)"
-            >
-              <span class="dest-chip__emoji">{{ dest.emoji }}</span>
-              <span class="dest-chip__name">{{ dest.name }}</span>
-              <span v-if="dest.country" class="dest-chip__country">{{ dest.country }}</span>
-            </button>
-          </div>
-        </div>
-
         <div class="destination-popup__section">
           <h4 class="destination-popup__section-title">{{ t('header.themes') }}</h4>
           <div class="destination-popup__chips">

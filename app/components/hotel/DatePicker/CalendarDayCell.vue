@@ -80,10 +80,13 @@ function handleClick() {
 
 <style scoped>
 .day-cell {
-  display: flex;
-  flex-direction: column;
+  /* Two reserved rows: top = day number, bottom = price (or empty space).
+     Pinning rows keeps the day number at the same y across cells whether or
+     not a price is rendered. */
+  display: grid;
+  grid-template-rows: 22px 16px;
   align-items: center;
-  justify-content: center;
+  justify-items: center;
   padding: 6px 4px;
   min-height: 52px;
   border-radius: var(--radius-sm);
@@ -97,15 +100,26 @@ function handleClick() {
   background: #d4f5e6;
 }
 
-/* Selected check-in / check-out dates: green */
+/* Selected check-in / check-out dates: green; ALL inner text forced white */
 .day-cell--selected {
   background: #00CB8B !important;
-  color: white;
+  color: #fff;
+}
+.day-cell--selected .day-cell__number,
+.day-cell--selected .day-cell__price,
+.day-cell--selected .day-cell__sold {
+  color: #fff !important;
 }
 
-/* In-between range dates: light green */
+/* In-between range dates: light green; ALL inner text forced white */
 .day-cell--in-range {
   background: #9AE3C7;
+  color: #fff;
+}
+.day-cell--in-range .day-cell__number,
+.day-cell--in-range .day-cell__price,
+.day-cell--in-range .day-cell__sold {
+  color: #fff !important;
 }
 
 /* Sold out dates */
@@ -137,15 +151,19 @@ function handleClick() {
 }
 
 .day-cell__number {
+  grid-row: 1;
   font-size: 15px;
   font-weight: 500;
+  line-height: 1;
 }
 
 /* Sold out dash */
 .day-cell__sold {
+  grid-row: 2;
   font-size: 14px;
   font-weight: 600;
   color: var(--color-text-muted);
+  line-height: 1;
 }
 
 /* Sold out dash within a selected range: white */
@@ -155,9 +173,11 @@ function handleClick() {
 
 /* Default price color: green */
 .day-cell__price {
+  grid-row: 2;
   font-size: 12px;
   color: #00CB8B;
   font-weight: 600;
+  line-height: 1;
 }
 
 /* Cheapest price: orange */

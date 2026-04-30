@@ -124,27 +124,21 @@ function hasDayCount(s: string): boolean {
   return DAY_COUNT_RE.test(s || '')
 }
 
-/** "Exclusieve deal: 3-daags luxe verblijf …" → "Luxe verblijf …" */
+/** Strip leading "Exclusieve deal:" + any "X-daags" / "X daagse" prefix
+ *  so deal titles never lead with the day count. The night-count is
+ *  surfaced separately in the UI (e.g. "Arrangement voor 2 nachten"). */
 function stripDayCount(s: string): string {
   if (!s) return s
   let out = s.replace(/^exclusieve deal:\s*/i, '')
   out = out.replace(/^\d+[\s-]?daags?e?[:\s]*/i, '')
+  out = out.replace(/^(\d+)[-\s](nachten?|days?|nights?)[:\s]*/i, '')
   out = out.trim()
   return out.charAt(0).toUpperCase() + out.slice(1)
 }
 
-/** "Verblijf in een prachtig 4* kloosterhotel" → "3-Daags verblijf in een prachtig 4* kloosterhotel" */
-function prefixDayCount(s: string, nights: number): string {
-  if (!s) return s
-  const days = nights + 1
-  const lower = s.charAt(0).toLowerCase() + s.slice(1)
-  return `${days}-Daags ${lower}`
-}
-
 function pickDealTitle(pkg: RawPackage): string {
   const sub = pkg.cardSubtitle || pkg.title || ''
-  if (hasDayCount(sub)) return sub
-  return prefixDayCount(sub, pkg.numberOfNights)
+  return stripDayCount(sub)
 }
 
 function pickHotelPitch(pkgs: RawPackage[]): string {
@@ -171,6 +165,7 @@ function toSearchHotelDeal(pkg: RawPackage): SearchHotelDeal {
     heroImage: pkg.imageUrls?.[0] || pkg.photos?.[0]?.full || '',
     inclusionImage: pkg.includesDetailed?.[0]?.imageUrl || '',
     hasDinner: pkg.includeLabels?.dinner === true,
+    themes: pkg.themes || [],
   }
 }
 
@@ -315,9 +310,16 @@ for (const [hotelId, pkgs] of packagesByHotelId.entries()) {
     ? jitterCoordinates(baseCoords, `hotel-${hotelId}`)
     : undefined
 
+  // Hotel permalink (e.g. 'carlton-beach') — used by /hotel/<slug> lookup.
+  // Falls back to the first package permalink if the JSON lacks a clean
+  // hotelPermalink for this hotelId.
+  const hotelPermalink =
+    (dealsRaw as { hotels: Array<{ hotelId: number; hotelPermalink: string }> })
+      .hotels.find(h => h.hotelId === hotelId)?.hotelPermalink || primary.permalink
+
   const searchHotel: SearchHotel = {
     id: `hotel-${hotelId}`,
-    slug: primary.permalink,  // first package permalink
+    slug: hotelPermalink,
     name: primary.hotelName,
     starRating: primary.rating,
     city: cityName,
@@ -333,8 +335,7 @@ for (const [hotelId, pkgs] of packagesByHotelId.entries()) {
 
   // Hotel record for hotel-page lookup (one per hotel)
   const hotelRec = toHotel(primary)
-  hotelRec.slug = (dealsRaw as { hotels: Array<{ hotelId: number; hotelPermalink: string }> })
-    .hotels.find(h => h.hotelId === hotelId)?.hotelPermalink || primary.permalink
+  hotelRec.slug = hotelPermalink
   hotelRec.pitch = loc(pickHotelPitch(pkgs))
   mappedHotelsByHotelPermalink[hotelRec.slug] = hotelRec
 

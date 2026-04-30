@@ -1,6 +1,6 @@
 const nl: Record<string, string> = {
   // TopBar
-  'topbar.trustpilot': 'Gasten beoordelen ons met een 4.5/5 op Trustpilot',
+  'topbar.trustpilot': '15.294 gasten raten ons met 4.5',
   'topbar.bestDeal': 'Altijd de beste deal',
   'topbar.easyCancel': 'Gemakkelijk annuleren',
   'topbar.wideSelection': 'Uitgebreid aanbod hotel experiences',
@@ -8,6 +8,7 @@ const nl: Record<string, string> = {
   // Header - Search bar
   'header.destination': 'Waarheen',
   'header.whenAndHowLong': 'Wanneer & hoelang',
+  'header.when': 'Wanneer',
   'header.whosComing': 'Wie gaat er mee',
   'header.chooseDestination': 'Alle bestemmingen',
   'header.chooseDate': 'Flexibel, elke duur',
@@ -141,8 +142,8 @@ const nl: Record<string, string> = {
   'footer.terms': 'Algemene voorwaarden',
   'footer.privacy': 'Privacybeleid',
   'footer.allRightsReserved': 'Alle rechten voorbehouden.',
-  'footer.trustpilotScore': '4.5/5',
-  'footer.trustpilotLabel': 'Beoordeeld op Trustpilot',
+  'footer.trustpilotScore': '4.5',
+  'footer.trustpilotLabel': '15.294 gasten raten ons met 4.5',
 
   // Vakantieparken page
   'vakantieparken.heading': 'Vakantieparken komen eraan',
@@ -188,8 +189,8 @@ const nl: Record<string, string> = {
   // Trust items (sidebar)
 
   // Search page
-  'search.deals': 'deals',
-  'search.usp': 'Unieke arrangementen, met liefde samengesteld door het ViaLuxury team.',
+  'search.deals': 'arrangementen',
+  'search.usp': 'Unieke experiences, met liefde samengesteld door het ViaLuxury team',
   'search.home': 'Home',
   'search.arrangements': 'Arrangementen',
   'search.filters': 'Filters',
@@ -215,7 +216,9 @@ const nl: Record<string, string> = {
   'filter.inNature': 'In de natuur',
   'filter.cityBreaks': 'City breaks',
   'filter.arrangement': 'Arrangement',
-  'filter.culinaryHighlights': 'Culinaire hoogstandjes',
+  'filter.bubbelbadInRoom': 'Bubbelbad op de kamer',
+  'filter.clearAll': 'Verwijder filter',
+  'filter.hideFilter': 'Verberg filter',
   'filter.withDinner': 'Met diner',
   'filter.lateCheckout': 'Laat uitchecken, lang uitslapen',
   'filter.activities': 'Activiteiten',
@@ -235,6 +238,8 @@ const nl: Record<string, string> = {
   'filter.exclusive': 'Exclusief bij ViaLuxury',
 
   // Deal page
+  'deal.tabIntro': 'Intro',
+  'deal.tabArrangement': 'Jouw arrangement',
   'deal.highlights': 'Highlights',
   'deal.inclusionsHeading': 'In dit arrangement voor',
   'deal.inclusionsEndAlt': 'is het volgende inbegrepen',
@@ -260,6 +265,8 @@ const nl: Record<string, string> = {
 
   // Hotel page
   'hotel.facilities': 'Hotelfaciliteiten',
+  'hotel.readMore': 'Lees meer',
+  'hotel.showAvailableDeals': 'Toon beschikbare arrangementen',
   'hotel.reviews': 'Gastbeoordelingen',
   'hotel.faqHeading': 'Heb je meer vragen?',
   'hotel.nearbyTips': 'Tips in de buurt',
@@ -372,10 +379,12 @@ const nl: Record<string, string> = {
 
   // Hotel page
   'hotel.bookedAs': 'Geboekt:',
-  'hotel.availableDeals': 'Beschikbare arrangementen',
+  'hotel.availableDeals': 'Beschikbare arrangementen bij dit hotel.',
+  'hotel.availableDealsSubtitle': 'Unieke experiences, met liefde samengesteld door het ViaLuxury team',
   'hotel.selectDeal': 'Bekijk dit arrangement',
   'hotel.houseRules': 'Huisregels',
   'hotel.houseRulesIntro': 'De volgende informatie is van toepassing op dit hotel.',
+  'deal.houseRulesIntro': 'De volgende informatie is van toepassing op het hotel dat hoort bij dit arrangement.',
   'hotel.tabOverview': 'Overzicht',
   'hotel.tabDeals': 'Arrangementen',
   'hotel.tabReviews': 'Beoordelingen',

@@ -18,6 +18,8 @@ import { clusterHtml, pinHtml, pinSize, pinAnchor, type PinState } from './pinTe
 
 const props = defineProps<{
   hotels: SearchHotel[]
+  /** When set, override the NL fit-bounds default and zoom to this point. */
+  initialFocus?: { lat: number; lng: number; zoom?: number } | null
 }>()
 
 const { selectedHotelId, selectHotel, clearSelection, setHover } = useHotelMap()
@@ -207,7 +209,12 @@ async function initMap() {
   // ensure the map has measured itself, and pick the smallest zoom that
   // contains the bbox (fitBounds picks largest zoom with both axes inside,
   // which can leave a lot of empty space east-west).
-  if (initialBounds) {
+  if (props.initialFocus) {
+    // Destination input → zoom to that hotel/city.
+    const f = props.initialFocus
+    map.invalidateSize()
+    map.setView([f.lat, f.lng], f.zoom ?? 12, { animate: false })
+  } else if (initialBounds) {
     map.invalidateSize()
     // Step in one zoom level past "fits both axes" so NL fills the viewport
     // tightly instead of leaving big slack on the wider axis (the bbox is

@@ -15,6 +15,12 @@
           <span v-html="items[currentIdx].text" />
         </div>
       </Transition>
+
+      <!-- Co-branded partner block (only when usePartner() is set) -->
+      <div v-if="partner" class="top-bar__partner">
+        <span class="top-bar__partner-label">in samenwerking met</span>
+        <img src="/images/logos/nu.svg" alt="nu.nl" class="top-bar__partner-logo" />
+      </div>
     </div>
   </div>
 </template>
@@ -24,8 +30,11 @@ const { t } = useI18n()
 
 const isMobile = useIsMobile()
 
+const { partner, restore } = usePartner()
+onMounted(() => restore())
+
 const items = computed(() => [
-  { icon: '★', text: '12.333 gasten waarderen ons met 4,8/5 op Trustpilot' },
+  { icon: '★', text: '15.294 gasten raten ons met 4.5' },
   { icon: '✓', text: 'Gratis annuleren op de meeste verblijven' },
   { icon: '✓', text: 'Unieke deals met heul veul korting' },
 ])
@@ -88,6 +97,28 @@ onBeforeUnmount(stopRotation)
 .top-bar__icon {
   font-size: 12px;
   color: #00b57e;
+}
+
+/* Partner co-branding (right-aligned, e.g. nu.nl during user test) */
+.top-bar__partner {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-left: 16px;
+  border-left: 1px solid rgba(255, 255, 255, 0.18);
+  white-space: nowrap;
+}
+.top-bar__partner-label {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.55);
+}
+.top-bar__partner-logo {
+  height: 16px;
+  width: auto;
+  /* nu.nl logo is dark on white; invert/brighten so it reads on the dark bar */
+  filter: brightness(0) invert(1);
+  opacity: 0.95;
 }
 
 /* Crossfade transition */

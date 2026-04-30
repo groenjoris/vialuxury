@@ -1,11 +1,11 @@
 <template>
-  <section class="tips-section">
-    <div class="tips-section__header container">
+  <section class="tips-section container">
+    <div class="tips-section__header">
       <h2 class="tips-section__title">{{ t('hotel.nearbyTips') }}</h2>
       <p class="tips-section__subtitle">{{ tips.length }} {{ t('hotel.nearbySubtitle') }} {{ hotelName }}</p>
     </div>
 
-    <div class="tips-section__grid container">
+    <div class="tips-section__grid">
       <!-- Row 1: first 3 tips -->
       <div class="tips-row tips-row--top">
         <div
@@ -101,20 +101,33 @@ function toggleBottom(index: number) {
 
 <style scoped>
 .tips-section {
-  padding: var(--space-2xl) 0 var(--space-3xl);
+  /* Match the other deal/hotel-page sections: standard vertical padding,
+     keep the container's horizontal padding so inner content aligns with
+     other sections, subtle inset top divider. */
+  position: relative;
+  padding: var(--space-xl) var(--space-lg);
+}
+.tips-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: var(--space-lg);
+  right: var(--space-lg);
+  height: 1px;
+  background: var(--color-border-light);
 }
 
 .tips-section__header {
   text-align: left;
-  margin-bottom: var(--space-xl);
+  margin-bottom: var(--space-md);
 }
 
 .tips-section__title {
-  font-family: var(--font-heading);
-  font-size: 32px;
-  font-weight: 700;
+  /* Same look as `.section-title` used elsewhere on the page */
+  font-size: 22px;
+  font-weight: 600;
   color: var(--color-text-primary);
-  margin-bottom: var(--space-xs);
+  margin: 0 0 var(--space-xs) 0;
 }
 
 .tips-section__subtitle {
