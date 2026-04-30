@@ -150,6 +150,8 @@
 </template>
 
 <script setup lang="ts">
+import { minRoomsFor } from '~/utils/priceFormula'
+
 const { t } = useI18n()
 const {
   persons, rooms,
@@ -351,6 +353,34 @@ const group = ref({
   children: [] as { age: number }[],
   rooms: rooms.value || 1,
 })
+/** Mirror global persons/rooms back to the local draft when another component
+ *  commits a change (e.g. navbar Wie-popup or deal-page Travel Group modal).
+ *  Skip while this popup is open so we don't yank the user's in-progress draft. */
+watch(persons, (p) => {
+  if (activePopup.value === 'who') return
+  if (p !== group.value.adults + group.value.children.length) {
+    group.value = { ...group.value, adults: Math.max(1, p - group.value.children.length) }
+  }
+})
+watch(rooms, (r) => {
+  if (activePopup.value === 'who') return
+  if (r !== group.value.rooms) {
+    group.value = { ...group.value, rooms: r }
+  }
+})
+
+/** Enforce minimum rooms (ceil(persons / 2)) while the user is in the popup.
+ *  Only bumps rooms UP when persons exceed capacity; user-added extras stay. */
+watch(
+  () => group.value.adults + group.value.children.length,
+  (total) => {
+    if (activePopup.value !== 'who') return
+    const min = minRoomsFor(total)
+    if (group.value.rooms < min) {
+      group.value = { ...group.value, rooms: min }
+    }
+  },
+)
 
 // Snapshot of the initial values — drives hasChanges so the submit button
 // stays disabled until the user actually changes something.

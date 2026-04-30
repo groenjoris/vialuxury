@@ -47,6 +47,27 @@ export function isPremiumDay(dealId: string, dayIso: string): boolean {
 export const CALENDAR_PREMIUM_SURCHARGE = 79
 
 /**
+ * Default occupancy of a hotel room. The deal-page room picker can override
+ * this (e.g. a "3-persoonskamer" / family room takes 3 → ceil(persons/3)).
+ */
+export const DEFAULT_ROOM_CAPACITY = 2
+
+/**
+ * Minimum rooms for a given party size given the per-room capacity.
+ *   1 person  → 1 room
+ *   2 people  → 1 room
+ *   3 people  → 2 rooms
+ *   4 people  → 2 rooms
+ *   5 people  → 3 rooms
+ *   …
+ */
+export function minRoomsFor(persons: number, capacity: number = DEFAULT_ROOM_CAPACITY): number {
+  if (persons <= 0) return 1
+  if (capacity <= 0) capacity = DEFAULT_ROOM_CAPACITY
+  return Math.max(1, Math.ceil(persons / capacity))
+}
+
+/**
  * Price for a specific arrival date — same number the calendar shows on that
  * day. Used by the search/map/hotel-page deal cards so the headline price
  * lines up with what the user sees if they then open the deal page.

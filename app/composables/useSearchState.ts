@@ -17,6 +17,22 @@ const SS_ARRIVAL = 'vl_arrival_date'
 const SS_FLEX = 'vl_arrival_flex'
 const SS_PERSONS = 'vl_search_persons'
 const SS_ROOMS = 'vl_search_rooms'
+const SS_DESTINATIONS = 'vl_destinations'
+const SS_CITIES = 'vl_cities'
+const SS_HOTELS = 'vl_hotels'
+const SS_SELECTION_ORDER = 'vl_selection_order'
+
+function persistDestinations() {
+  if (!import.meta.client) return
+  if (selectedDestinations.value.length) sessionStorage.setItem(SS_DESTINATIONS, JSON.stringify(selectedDestinations.value))
+  else sessionStorage.removeItem(SS_DESTINATIONS)
+  if (selectedCities.value.length) sessionStorage.setItem(SS_CITIES, JSON.stringify(selectedCities.value))
+  else sessionStorage.removeItem(SS_CITIES)
+  if (selectedHotels.value.length) sessionStorage.setItem(SS_HOTELS, JSON.stringify(selectedHotels.value))
+  else sessionStorage.removeItem(SS_HOTELS)
+  if (selectionOrder.value.length) sessionStorage.setItem(SS_SELECTION_ORDER, JSON.stringify(selectionOrder.value))
+  else sessionStorage.removeItem(SS_SELECTION_ORDER)
+}
 
 /**
  * LIVE arrival-date — synced across every calendar/datepicker on the site
@@ -99,6 +115,26 @@ export function useSearchState() {
     if (r !== null) {
       const n = Number(r); if (!Number.isNaN(n) && n > 0) searchRooms.value = n
     }
+    // Destination filters — only repopulate when the live state is empty so
+    // we don't clobber an in-flight selection.
+    try {
+      if (!selectedDestinations.value.length) {
+        const v = sessionStorage.getItem(SS_DESTINATIONS)
+        if (v) selectedDestinations.value = JSON.parse(v)
+      }
+      if (!selectedCities.value.length) {
+        const v = sessionStorage.getItem(SS_CITIES)
+        if (v) selectedCities.value = JSON.parse(v)
+      }
+      if (!selectedHotels.value.length) {
+        const v = sessionStorage.getItem(SS_HOTELS)
+        if (v) selectedHotels.value = JSON.parse(v)
+      }
+      if (!selectionOrder.value.length) {
+        const v = sessionStorage.getItem(SS_SELECTION_ORDER)
+        if (v) selectionOrder.value = JSON.parse(v)
+      }
+    } catch { /* corrupt session storage — ignore */ }
   }
 
   /** Commit the live arrival/flex values into the snapshot used by the search
@@ -193,26 +229,31 @@ export function useSearchState() {
         e => !(e.type === 'destination' && e.key === id),
       )
     }
+    persistDestinations()
   }
   function addCity(city: { name: string; province: string }) {
     if (!selectedCities.value.find(c => c.name === city.name)) {
       selectedCities.value.push(city)
       selectionOrder.value.push({ type: 'city', key: city.name })
     }
+    persistDestinations()
   }
   function removeCity(name: string) {
     selectedCities.value = selectedCities.value.filter(c => c.name !== name)
     selectionOrder.value = selectionOrder.value.filter(e => !(e.type === 'city' && e.key === name))
+    persistDestinations()
   }
   function addHotel(hotel: { name: string; slug: string }) {
     if (!selectedHotels.value.some(h => h.slug === hotel.slug)) {
       selectedHotels.value.push(hotel)
       selectionOrder.value.push({ type: 'hotel', key: hotel.slug })
     }
+    persistDestinations()
   }
   function removeHotel(slug: string) {
     selectedHotels.value = selectedHotels.value.filter(h => h.slug !== slug)
     selectionOrder.value = selectionOrder.value.filter(e => !(e.type === 'hotel' && e.key === slug))
+    persistDestinations()
   }
   function clearDestinations() {
     selectedDestinations.value = []
@@ -225,6 +266,7 @@ export function useSearchState() {
     selectionOrder.value = selectionOrder.value.filter(
       e => e.type !== 'destination' && e.type !== 'city' && e.type !== 'hotel',
     )
+    persistDestinations()
   }
 
   return {

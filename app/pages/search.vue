@@ -213,11 +213,11 @@
 <script setup lang="ts">
 import type { SearchHotel } from '~/types/searchHotel'
 import { searchHotels } from '~/data/mock/search-hotels'
-import { dealMatchesAllTags } from '~/utils/filterTags'
+import { dealMatchesAllTags, getFilterTag } from '~/utils/filterTags'
 import FilterPills from '~/components/search/FilterPills.vue'
 import { isDealAvailableInWindow } from '~/utils/availability'
 import { adjustPrice } from '~/utils/priceFormula'
-import { hotelMatchesDestination } from '~/utils/destinationMatch'
+import { hotelMatchesDestination, hasActiveDestinationFilter } from '~/utils/destinationMatch'
 import { pickPrimaryDeal } from '~/utils/primaryDeal'
 
 const { t } = useI18n()
@@ -365,7 +365,6 @@ const sortOptions = computed(() => [
 // the matching set so the side panel only shows relevant packages.
 const filteredHotels = computed(() => {
   const nightsActive = selectedNights.value.length > 0
-  const tags = selectedFilterTags.value
   const arrivalActive = !!committedArrivalDate.value
   const flex = committedFlexibility.value
   const p = persons.value
@@ -374,9 +373,22 @@ const filteredHotels = computed(() => {
     cities: [...selectedCities.value],
     hotels: [...selectedHotels.value],
   }
+
+  // Split picked tags by category. Themes join the OR-pool with destinations;
+  // arrangement + specials stay AND-gated (a hotel must satisfy them all).
+  const pickedThemes: string[] = []
+  const pickedOther: string[] = []
+  for (const id of selectedFilterTags.value) {
+    const tag = getFilterTag(id)
+    if (tag?.category === 'thema') pickedThemes.push(id)
+    else pickedOther.push(id)
+  }
+
+  const destActive = hasActiveDestinationFilter(destFilter)
+  const themesActive = pickedThemes.length > 0
+
   const out = []
   for (const hotel of searchHotels) {
-    if (!hotelMatchesDestination(hotel, destFilter)) continue
     const matchingDeals = hotel.deals.filter((d) => {
       // Budget compares against the price for the CURRENT person count.
       const priceForPersons = adjustPrice(d.basePrice, p)
@@ -385,10 +397,24 @@ const filteredHotels = computed(() => {
         const nightKey = d.nights >= 5 ? '5+' : String(d.nights)
         if (!selectedNights.value.includes(nightKey)) return false
       }
-      if (!dealMatchesAllTags(d, hotel, tags)) return false
+      // Non-thema tag filters (arrangement + specials) — still AND-gated.
+      if (!dealMatchesAllTags(d, hotel, pickedOther)) return false
       // Arrival-date filter — deal must have at least one available date in
       // the flex window around the chosen date.
       if (arrivalActive && !isDealAvailableInWindow(d.id, committedArrivalDate.value!, flex)) return false
+      // OR-pool: destination match OR theme match. If neither group is active
+      // the gate is skipped. Otherwise the deal must satisfy at least one.
+      if (destActive || themesActive) {
+        const destOk = destActive && hotelMatchesDestination(hotel, destFilter)
+        let themeOk = false
+        if (themesActive) {
+          for (const id of pickedThemes) {
+            const tag = getFilterTag(id)
+            if (tag?.matches(d, hotel)) { themeOk = true; break }
+          }
+        }
+        if (!destOk && !themeOk) return false
+      }
       return true
     })
     if (matchingDeals.length > 0) {

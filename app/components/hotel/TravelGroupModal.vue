@@ -1,11 +1,11 @@
 <template>
   <Teleport to="body">
     <Transition name="modal">
-      <div v-if="store.isTravelGroupModalOpen" class="modal-overlay" @click.self="store.closeTravelGroupModal()">
+      <div v-if="store.isTravelGroupModalOpen" class="modal-overlay" @click.self="commitAndClose()">
         <div class="modal" role="dialog" aria-modal="true" aria-labelledby="travel-group-title">
           <div class="modal__header">
             <h2 id="travel-group-title" class="modal__title">{{ t('travelGroup.title') }}</h2>
-            <button class="modal__close" @click="store.closeTravelGroupModal()" :aria-label="t('common.close')">
+            <button class="modal__close" @click="commitAndClose()" :aria-label="t('common.close')">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M18 6L6 18M6 6l12 12" />
               </svg>
@@ -120,6 +120,7 @@
 <script setup lang="ts">
 import { useDealStore } from '~/stores/deal'
 import type { TravelGroup, ChildEntry } from '~/types/deal'
+import { minRoomsFor } from '~/utils/priceFormula'
 
 const { t } = useI18n()
 const store = useDealStore()
@@ -147,9 +148,11 @@ const totalPersons = computed(() => localGroup.value.adults + localGroup.value.c
 const minRooms = computed(() => Math.ceil(totalPersons.value / 2))
 const maxRooms = 10 // No hard cap — limited by availability per room type
 
-// Auto-adjust rooms when person count changes
+// Enforce minimum rooms when persons change (1p→1, 2p→1, 3p→2, 4p→2,
+// 5p→3, …). User can still manually pick extra rooms via the rooms
+// stepper — those stick because we only bump rooms UP, never down.
 watch(totalPersons, (tp) => {
-  const min = Math.ceil(tp / 2)
+  const min = minRoomsFor(tp)
   if (localGroup.value.rooms < min) localGroup.value.rooms = min
 })
 
@@ -166,10 +169,14 @@ function removeChild() {
   localGroup.value.children.pop()
 }
 
-function apply() {
+/** Commit the local draft to the store on every close path: × button,
+ *  backdrop click, or the Klaar/Apply button. Mirrors the navbar Wie-popup
+ *  behavior — +/- doesn't push live, but closing always does. */
+function commitAndClose() {
   store.setTravelGroup(localGroup.value)
   store.closeTravelGroupModal()
 }
+const apply = commitAndClose
 </script>
 
 <style scoped>

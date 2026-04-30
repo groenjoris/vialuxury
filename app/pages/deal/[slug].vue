@@ -25,6 +25,13 @@
         <a v-if="hotel && hotel.houseRules && hotel.houseRules.length" href="#huisregels" class="deal-page__tab">{{ t('hotel.tabHouseRules') }}</a>
         <a href="#veelgestelde-vragen" class="deal-page__tab">{{ t('hotel.tabFaq') }}</a>
         <a href="#tips" class="deal-page__tab">{{ t('hotel.tabNearby') }}</a>
+        <!-- Co-branded NU shop logo — only on the Hotel des Indes deal page
+             when the user-test partner flag is set. Right-aligned, with
+             "In samenwerking met" caption above. -->
+        <div v-if="showPartnerLogo" class="deal-page__partner-block">
+          <span class="deal-page__partner-caption">In samenwerking met</span>
+          <img src="/images/logos/nushoplogo.svg" alt="NUshop" class="deal-page__partner-logo" />
+        </div>
       </nav>
 
       <!-- Title ABOVE gallery -->
@@ -309,7 +316,7 @@
               <span class="sidebar__amount">{{ formatPrice(store.pricing.totalPrice) }}</span>
               <span class="sidebar__original">{{ formatPrice(store.pricing.originalPrice) }}</span>
             </div>
-            <p class="sidebar__price-meta">{{ t('deal.priceFor').replace('{nights}', String(currentDeal.nights)).replace('{persons}', String(store.totalPersons)) }}</p>
+            <p class="sidebar__price-meta">{{ priceForLabel }}</p>
 
             <p class="sidebar__disclaimer">{{ t('deal.disclaimer') }}</p>
 
@@ -495,7 +502,7 @@
               <span class="deal-page__cta-bar-original">{{ formatPrice(store.pricing.originalPrice) }}</span>
               <span class="deal-page__cta-bar-amount">{{ formatPrice(store.pricing.totalPrice) }}</span>
             </div>
-            <span class="deal-page__cta-bar-meta">{{ t('deal.priceFor').replace('{nights}', String(currentDeal.nights)).replace('{persons}', String(store.totalPersons)) }}</span>
+            <span class="deal-page__cta-bar-meta">{{ priceForLabel }}</span>
           </div>
           <button type="button" class="deal-page__cta-bar-btn" @click="handleMobileBook">
             {{ t('deal.bookNow') }}
@@ -580,6 +587,7 @@ import { formatPrice } from '~/utils/formatPrice'
 import { getReviewLabelKey } from '~/utils/reviewLabel'
 import { generateDealAvailability } from '~/data/mock/deal-pricing'
 import { matchIcon } from '~/utils/iconMatcher'
+import { nightsLabel, personsLabel } from '~/utils/plural'
 import {
   mappedPackagesByPermalink,
   mappedHotelsByPackagePermalink,
@@ -589,7 +597,18 @@ import {
   curatedHighlightsByPermalink,
 } from '~/data/deals-mapper'
 
-const { t, localized } = useI18n()
+const { t, localized, locale } = useI18n()
+const lang = computed<'nl' | 'en'>(() => (locale.value === 'en' ? 'en' : 'nl'))
+
+/** Plural-aware "Voor X nacht(en), Y persoon/personen" used both under the
+ *  calendar (sidebar) and in the sticky CTA bar. */
+const priceForLabel = computed(() => {
+  const deal = currentDeal.value
+  if (!deal) return ''
+  return t('deal.priceFor')
+    .replace('{nightsLabel}', nightsLabel(deal.nights, lang.value))
+    .replace('{personsLabel}', personsLabel(store.totalPersons, lang.value))
+})
 
 // Mobile detection + active sub-modal
 const isMobile = useIsMobile()
@@ -685,6 +704,14 @@ function handleLogin() {
 const routeSlug = computed(() => (route.params.slug as string) || defaultDealPermalink)
 const initialDeal = mappedPackagesByPermalink[routeSlug.value] || mappedPackagesByPermalink[defaultDealPermalink]
 const initialHotel = mappedHotelsByPackagePermalink[routeSlug.value] || mappedHotelsByPackagePermalink[defaultDealPermalink]
+
+/** Show the NU.shop co-branding block in the anchor-tab row only when the
+ *  user-test partner flag is active AND the deal belongs to Hotel Des Indes
+ *  (the only hotel currently in the user-test partner flow). */
+const { partner } = usePartner()
+const showPartnerLogo = computed(
+  () => partner.value === 'nu' && initialHotel?.slug === 'hotel-des-indes',
+)
 
 const hotel = ref(initialHotel)
 const currentDeal = computed(() => store.currentDeal)
@@ -1239,9 +1266,31 @@ function openGallery() { }
 .deal-page__tabs {
   position: relative;
   display: flex;
+  align-items: center;
   gap: var(--space-lg);
   padding-top: var(--space-md);
   padding-bottom: var(--space-md);
+}
+
+/* NU shop co-branding block — right-aligned in the anchor-tab row, only
+   visible on the Hotel Des Indes deal page when the partner flag is set. */
+.deal-page__partner-block {
+  margin-left: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  flex-shrink: 0;
+}
+.deal-page__partner-caption {
+  font-size: 11px;
+  color: var(--color-text-muted);
+  letter-spacing: 0.02em;
+}
+.deal-page__partner-logo {
+  height: 80px;
+  width: auto;
+  display: block;
 }
 /* Inset divider — spans inner content width, not container edge-to-edge */
 .deal-page__tabs::after {
@@ -1272,13 +1321,18 @@ function openGallery() { }
   scroll-margin-top: 88px;
 }
 .deal-page__tab:hover {
+  /* Color-only hover — no underline (the 2 px border stays transparent). */
   color: var(--color-primary);
-  border-bottom-color: var(--color-primary);
 }
 /* In-bar variant: drop the section padding/border so it fits inside the slim CTA bar */
 .deal-page__tabs--in-bar {
   padding: 0;
   border-bottom: none;
+}
+/* Suppress the inset bottom-divider pseudo — the CTA bar already has its
+   own border-bottom, no need for a second hairline below the tabs. */
+.deal-page__tabs--in-bar::after {
+  display: none;
 }
 .deal-page__tabs--in-bar .deal-page__tab {
   padding-bottom: 0;

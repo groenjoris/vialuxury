@@ -25,8 +25,8 @@
                 <span class="package-card__nights">{{ variant.nights }} {{ variant.nights === 1 ? t('common.night') : t('common.nights') }}</span>
                 <div class="package-card__pricing">
                   <span class="package-card__discount">-{{ discountPercentage }}%</span>
-                  <span class="package-card__price">{{ formatPrice(variant.basePrice) }}</span>
-                  <span class="package-card__original">{{ formatPrice(variant.originalPrice) }}</span>
+                  <span class="package-card__price">{{ formatPrice(variantPrice(variant)) }}</span>
+                  <span class="package-card__original">{{ formatPrice(variantOriginal(variant)) }}</span>
                 </div>
               </div>
 
@@ -64,10 +64,21 @@
 <script setup lang="ts">
 import type { DealVariant } from '~/types/deal'
 import { formatPrice } from '~/utils/formatPrice'
+import { priceForArrival } from '~/utils/priceFormula'
 import { useDealStore } from '~/stores/deal'
 
 const { t, localized } = useI18n()
 const store = useDealStore()
+
+/** Wrap variant.basePrice / variant.originalPrice through the same scaling
+ *  helper the calendar + sidebar use, so the "Korter of langer" panel never
+ *  shows 2-person prices when the global persons count is different. */
+function variantPrice(v: DealVariant): number {
+  return priceForArrival(v.basePrice, v.id, store.checkInDate, store.totalPersons)
+}
+function variantOriginal(v: DealVariant): number {
+  return priceForArrival(v.originalPrice, v.id, store.checkInDate, store.totalPersons)
+}
 
 const props = defineProps<{
   isOpen: boolean

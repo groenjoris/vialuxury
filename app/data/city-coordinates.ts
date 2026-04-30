@@ -32,6 +32,31 @@ export const CITY_COORDS: Record<string, { lat: number; lng: number }> = {
   'Utrecht':         { lat: 52.0907, lng: 5.1214 },
 }
 
+/**
+ * Approximate geographic centroids for the destination-popup IDs. Used by
+ * `/kaart` to auto-zoom when a province / region is picked.
+ *  - NL provinces use zoom 9 (a province roughly fills the viewport).
+ *  - BE regions are broader, zoom 8.
+ */
+export const PROVINCE_COORDS: Record<string, { lat: number; lng: number; zoom: number }> = {
+  'noord-holland':  { lat: 52.55, lng: 4.85, zoom: 9 },
+  'zuid-holland':   { lat: 52.00, lng: 4.50, zoom: 9 },
+  'zeeland':        { lat: 51.50, lng: 3.80, zoom: 9 },
+  'brabant':        { lat: 51.55, lng: 5.20, zoom: 9 },
+  'limburg':        { lat: 51.20, lng: 5.95, zoom: 9 },
+  'gelderland':     { lat: 52.05, lng: 5.95, zoom: 9 },
+  'drenthe':        { lat: 52.85, lng: 6.65, zoom: 9 },
+  'friesland':      { lat: 53.10, lng: 5.80, zoom: 9 },
+  'overijssel':     { lat: 52.45, lng: 6.45, zoom: 9 },
+  'flevoland':      { lat: 52.55, lng: 5.50, zoom: 9 },
+  'utrecht':        { lat: 52.10, lng: 5.20, zoom: 9 },
+  'groningen':      { lat: 53.20, lng: 6.65, zoom: 9 },
+  'ardennen':       { lat: 50.20, lng: 5.40, zoom: 8 },
+  'vlaanderen':     { lat: 51.05, lng: 4.40, zoom: 8 },
+  'belgische-kust': { lat: 51.20, lng: 3.00, zoom: 9 },
+  'wallonie':       { lat: 50.40, lng: 4.80, zoom: 8 },
+}
+
 /** Deterministic small offset (≈ ±400 m) so hotels in the same city don't
  *  stack exactly on each other. Hash from a string seed (typically slug). */
 export function jitterCoordinates(

@@ -22,6 +22,32 @@ import {
   sharedBaseRoom,
   sharedRoomUpgrades,
 } from './shared-fixtures'
+import { dutchCities } from './mock/dutch-cities'
+
+// City → province lookup, lower-cased so we can match regardless of how the
+// city was capitalised in deals.json. `dutchCities` covers the bulk of the
+// list; the supplementary table below fills in the smaller hotel-only towns
+// that appear in deals.json but not in the autosuggest set.
+const EXTRA_CITY_PROVINCES: Record<string, string> = {
+  'beetsterzwaag': 'Friesland',
+  'burgh-haamstede': 'Zeeland',
+  'delden': 'Overijssel',
+  'eijsden': 'Limburg',
+  'hilvarenbeek': 'Noord-Brabant',
+  'hoofddorp': 'Noord-Holland',
+  'hulshorst': 'Gelderland',
+  'landgraaf': 'Limburg',
+  'leersum': 'Utrecht',
+  'nieuwkuijk': 'Noord-Brabant',
+  'niftrik': 'Gelderland',
+  'odoorn': 'Drenthe',
+  'ommen': 'Overijssel',
+  'raalte': 'Overijssel',
+}
+const cityToProvince = new Map<string, string>([
+  ...dutchCities.map(c => [c.name.toLowerCase(), c.province] as [string, string]),
+  ...Object.entries(EXTRA_CITY_PROVINCES),
+])
 
 // ===== Helpers =====
 
@@ -317,6 +343,7 @@ for (const [hotelId, pkgs] of packagesByHotelId.entries()) {
     (dealsRaw as { hotels: Array<{ hotelId: number; hotelPermalink: string }> })
       .hotels.find(h => h.hotelId === hotelId)?.hotelPermalink || primary.permalink
 
+  const province = cityToProvince.get(cityName.toLowerCase()) ?? ''
   const searchHotel: SearchHotel = {
     id: `hotel-${hotelId}`,
     slug: hotelPermalink,
@@ -324,6 +351,7 @@ for (const [hotelId, pkgs] of packagesByHotelId.entries()) {
     starRating: primary.rating,
     city: cityName,
     region: primary.country || '',
+    province,
     heroImage: primary.imageUrls?.[0] || primary.photos?.[0]?.full || '',
     reviewScore: score,
     reviewCount,

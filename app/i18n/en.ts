@@ -1,6 +1,6 @@
 const en: Record<string, string> = {
   // TopBar
-  'topbar.trustpilot': '15,294 guests rate us 4.5',
+  'topbar.trustpilot': '15,294 guests rate us 4.5/5',
   'topbar.bestDeal': 'Always the best deal',
   'topbar.easyCancel': 'Easy cancellation',
   'topbar.wideSelection': 'Wide selection of hotel experiences',
@@ -217,7 +217,7 @@ const en: Record<string, string> = {
   'filter.cityBreaks': 'City breaks',
   'filter.arrangement': 'Package',
   'filter.bubbelbadInRoom': 'Jacuzzi in the room',
-  'filter.clearAll': 'Clear filter',
+  'filter.clearAll': 'Clear filters',
   'filter.hideFilter': 'Hide filter',
   'filter.withDinner': 'With dinner',
   'filter.lateCheckout': 'Late checkout, sleep in',
@@ -257,7 +257,7 @@ const en: Record<string, string> = {
   'deal.highlight.estate': 'Stunning estate in South Limburg',
   'deal.highlight.cycling': 'Perfect for cycling and hiking',
   'deal.highlight.exclusive': 'Exclusive package via ViaLuxury',
-  'deal.priceFor': 'For {nights} nights, {persons} persons',
+  'deal.priceFor': 'For {nightsLabel}, {personsLabel}',
   'deal.disclaimer': 'You only need to pay local taxes, any service/administration fees of the hotel and parking costs on-site (if not included in the package).',
   'deal.trust2min': 'It only takes 2 minutes',
   'deal.trustCancel': 'Easy cancellation',
@@ -337,8 +337,8 @@ const en: Record<string, string> = {
   // Deal card
   'search.andMore': 'and {n} more extras',
   'search.andOneMore': 'and 1 more extra',
-  'search.inclArrangement': 'Includes package for {nights} nights for {persons} persons',
-  'search.arrangementSuffix': 'for {nights} nights for {persons} persons.',
+  'search.inclArrangement': 'Includes package for {nightsLabel} for {personsLabel}',
+  'search.arrangementSuffix': 'for {nightsLabel} for {personsLabel}.',
   'search.viewArrangementSingle': 'View package',
 
   // Map page

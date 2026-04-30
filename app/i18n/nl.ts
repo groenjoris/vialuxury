@@ -1,6 +1,6 @@
 const nl: Record<string, string> = {
   // TopBar
-  'topbar.trustpilot': '15.294 gasten raten ons met 4.5',
+  'topbar.trustpilot': '15.294 gasten raten ons met 4.5/5',
   'topbar.bestDeal': 'Altijd de beste deal',
   'topbar.easyCancel': 'Gemakkelijk annuleren',
   'topbar.wideSelection': 'Uitgebreid aanbod hotel experiences',
@@ -217,7 +217,7 @@ const nl: Record<string, string> = {
   'filter.cityBreaks': 'City breaks',
   'filter.arrangement': 'Arrangement',
   'filter.bubbelbadInRoom': 'Bubbelbad op de kamer',
-  'filter.clearAll': 'Verwijder filter',
+  'filter.clearAll': 'Verwijder filters',
   'filter.hideFilter': 'Verberg filter',
   'filter.withDinner': 'Met diner',
   'filter.lateCheckout': 'Laat uitchecken, lang uitslapen',
@@ -257,7 +257,7 @@ const nl: Record<string, string> = {
   'deal.highlight.estate': 'Schitterend landgoed in Zuid-Limburg',
   'deal.highlight.cycling': 'Perfect voor fietsen en wandelen',
   'deal.highlight.exclusive': 'Exclusief arrangement via ViaLuxury',
-  'deal.priceFor': 'Voor {nights} nachten, {persons} personen',
+  'deal.priceFor': 'Voor {nightsLabel}, {personsLabel}',
   'deal.disclaimer': 'Je dient ter plaatse alleen de lokale belastingen, eventuele service-/administratiekosten van het hotel en parkeerkosten te betalen (indien dit niet is inbegrepen in het arrangement).',
   'deal.trust2min': 'Het duurt maar 2 minuten',
   'deal.trustCancel': 'Gemakkelijk annuleren',
@@ -337,8 +337,8 @@ const nl: Record<string, string> = {
   // Deal card
   'search.andMore': 'en nog {n} andere extra\'s',
   'search.andOneMore': 'en nog 1 ander extra',
-  'search.inclArrangement': 'Inclusief arrangement voor {nights} nachten voor {persons} personen',
-  'search.arrangementSuffix': 'voor {nights} nachten voor {persons} personen.',
+  'search.inclArrangement': 'Inclusief arrangement voor {nightsLabel} voor {personsLabel}',
+  'search.arrangementSuffix': 'voor {nightsLabel} voor {personsLabel}.',
   'search.viewArrangementSingle': 'Bekijk arrangement',
 
   // Map page

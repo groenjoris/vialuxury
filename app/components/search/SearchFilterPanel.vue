@@ -262,14 +262,14 @@ function toggleGroup(index: number) {
   font-family: var(--font-body);
   font-size: 13px;
   font-weight: 600;
-  color: var(--color-primary);
+  color: var(--color-text-secondary);
   text-decoration: underline;
   text-underline-offset: 2px;
   cursor: pointer;
 }
 
 .filter-panel__hide:hover {
-  color: var(--color-primary-hover);
+  color: var(--color-primary);
 }
 
 /* Budget slider */

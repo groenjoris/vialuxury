@@ -3,11 +3,11 @@ import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { searchHotels } from '~/data/mock/search-hotels'
 import { useHotelMap } from '~/composables/useHotelMap'
-import { dealMatchesAllTags } from '~/utils/filterTags'
+import { dealMatchesAllTags, getFilterTag } from '~/utils/filterTags'
 import FilterPills from '~/components/search/FilterPills.vue'
 import { isDealAvailable, isDealAvailableInWindow } from '~/utils/availability'
 import { adjustPrice } from '~/utils/priceFormula'
-import { CITY_COORDS } from '~/data/city-coordinates'
+import { CITY_COORDS, PROVINCE_COORDS } from '~/data/city-coordinates'
 import type { SearchHotel } from '~/types/searchHotel'
 import HotelBrowseMap from '~/components/map/HotelBrowseMap.vue'
 import HotelMapHoverCard from '~/components/map/HotelMapHoverCard.vue'
@@ -27,8 +27,10 @@ const {
   selectedNights,
   selectedFilterTags,
   committedFlexibility,
+  selectedDestinations,
   selectedCities,
   selectedHotels: pickedHotels,
+  selectionOrder,
   persons,
   budgetMin: sharedBudgetMin,
   budgetMax: sharedBudgetMax,
@@ -57,9 +59,21 @@ const budgetMax = computed({
  *  in a follow-up — for now we just show everything centred on NL). */
 const mapHotels = computed<SearchHotel[]>(() => {
   const ns = selectedNights.value
-  const tags = selectedFilterTags.value
   const flex = committedFlexibility.value
   const p = persons.value
+
+  // Themes are OR'd within their group, the rest (arrangement/specials) is
+  // still AND-gated. Destinations don't filter the map — they only drive
+  // initial zoom further down in this file.
+  const pickedThemes: string[] = []
+  const pickedOther: string[] = []
+  for (const id of selectedFilterTags.value) {
+    const tag = getFilterTag(id)
+    if (tag?.category === 'thema') pickedThemes.push(id)
+    else pickedOther.push(id)
+  }
+  const themesActive = pickedThemes.length > 0
+
   const matchesDuration = (n: number) => {
     if (ns.length === 0) return true
     if (ns.includes('5+') && n >= 5) return true
@@ -73,15 +87,24 @@ const mapHotels = computed<SearchHotel[]>(() => {
   for (const h of searchHotels) {
     // Destination is NOT a filter on the map — it only drives initial zoom
     // (handled separately below). Hotels stay visible regardless.
-    const matchingDeals = h.deals.filter(
-      (d) =>
-        matchesDuration(d.nights) &&
-        inBudget(d.basePrice) &&
-        dealMatchesAllTags(d, h, tags) &&
-        // Arrival-date filter — drop deals with no availability in the
-        // flex window. Hotels with no matching deals fall out below.
-        (!committedArrivalDate.value || isDealAvailableInWindow(d.id, committedArrivalDate.value, flex)),
-    )
+    const matchingDeals = h.deals.filter((d) => {
+      if (!matchesDuration(d.nights)) return false
+      if (!inBudget(d.basePrice)) return false
+      if (!dealMatchesAllTags(d, h, pickedOther)) return false
+      // Arrival-date filter — drop deals with no availability in the
+      // flex window. Hotels with no matching deals fall out below.
+      if (committedArrivalDate.value && !isDealAvailableInWindow(d.id, committedArrivalDate.value, flex)) return false
+      // Theme OR-pool — at least one picked theme must match.
+      if (themesActive) {
+        let themeOk = false
+        for (const id of pickedThemes) {
+          const tag = getFilterTag(id)
+          if (tag?.matches(d, h)) { themeOk = true; break }
+        }
+        if (!themeOk) return false
+      }
+      return true
+    })
     if (matchingDeals.length === 0) continue
     // For sold-out badge: with the hard filter above, any surviving deal
     // already has at least one available date in the flex window — so no
@@ -92,18 +115,37 @@ const mapHotels = computed<SearchHotel[]>(() => {
   return result
 })
 
-/** Initial focus driven by the destination input. If a single hotel or city
- *  is picked, zoom in to it; otherwise leave the map's NL fit-bounds default. */
+/** Initial focus driven by the destination input. Walks the selectionOrder
+ *  so the FIRST pick wins (matching the order the user added them). Picks
+ *  resolve to: pinned hotel (zoom 13) → city (zoom 12) → province / region
+ *  (zoom from PROVINCE_COORDS, usually 8-9). Falls back to NL fit-bounds. */
 const initialFocus = computed<{ lat: number; lng: number; zoom?: number } | null>(() => {
+  for (const entry of selectionOrder.value) {
+    if (entry.type === 'hotel') {
+      const hotel = searchHotels.find(h => h.slug === entry.key)
+      if (hotel?.coordinates) return { ...hotel.coordinates, zoom: 13 }
+    } else if (entry.type === 'city') {
+      const c = CITY_COORDS[entry.key]
+      if (c) return { ...c, zoom: 12 }
+    } else if (entry.type === 'destination') {
+      const p = PROVINCE_COORDS[entry.key]
+      if (p) return { lat: p.lat, lng: p.lng, zoom: p.zoom }
+    }
+  }
+  // No selectionOrder entries (older sessions / direct page hit) — fall back
+  // to a flat scan with the same priority.
   if (pickedHotels.value.length > 0) {
     const slug = pickedHotels.value[0].slug
     const hotel = searchHotels.find(h => h.slug === slug)
     if (hotel?.coordinates) return { ...hotel.coordinates, zoom: 13 }
   }
   if (selectedCities.value.length > 0) {
-    const cityName = selectedCities.value[0].name
-    const c = CITY_COORDS[cityName]
+    const c = CITY_COORDS[selectedCities.value[0].name]
     if (c) return { ...c, zoom: 12 }
+  }
+  if (selectedDestinations.value.length > 0) {
+    const p = PROVINCE_COORDS[selectedDestinations.value[0]]
+    if (p) return { lat: p.lat, lng: p.lng, zoom: p.zoom }
   }
   return null
 })
@@ -126,8 +168,11 @@ const hoveredHotel = computed(() =>
 const mapRef = ref<InstanceType<typeof HotelBrowseMap> | null>(null)
 
 function closeMap() {
+  // Close the side panel first so the user-test flow doesn't leave a
+  // panel hanging open after navigating away.
+  clearSelection()
   if (window.history.length > 1) router.back()
-  else router.push('/')
+  else router.push('/home')
 }
 </script>
 
@@ -148,7 +193,7 @@ function closeMap() {
 
     <!-- Pills float at the top, OUTSIDE the sliding stage so they stay
          visible (sticky) when the panel slides in. -->
-    <FilterPills class="kaart-pills" />
+    <FilterPills class="kaart-pills" mode="map" />
 
     <main class="kaart-stage" :class="{ 'kaart-stage--with-panel': !!selectedHotel }">
       <ClientOnly>
@@ -250,12 +295,16 @@ function closeMap() {
   z-index: 700;
   pointer-events: auto;
 }
+/* "Verwijder filters" chip on the map uses the same pill style as on
+   /search; no kaart-specific override needed. */
 
 .kaart-close {
-  position: absolute;
+  position: fixed;
   top: var(--space-lg);
   right: var(--space-lg);
-  z-index: 600;
+  /* Above the side panel (z-index: 1000) so it stays clickable when the
+     panel is open — clicking it closes the panel and the map together. */
+  z-index: 1100;
   height: 40px;
   padding: 0 var(--space-md);
   background: var(--color-surface);

@@ -135,9 +135,7 @@
         type="button"
         class="deal-card-v2__siblings-link"
         @click="$emit('view-siblings')"
-      >
-        Bekijk alle {{ (siblingCount ?? 0) + 1 }} arrangementen
-      </button>
+      >Bekijk alle {{ (siblingCount ?? 0) + 1 }} arrangementen, al vanaf <span class="deal-card-v2__siblings-price">{{ formatPrice(cheapestSiblingPrice) }}</span></button>
     </div>
   </article>
 </template>
@@ -152,7 +150,7 @@ import { priceForArrival } from '~/utils/priceFormula'
 const { t, localized, locale } = useI18n()
 
 const isFavorite = ref(false)
-const { persons, arrivalDate } = useSearchState()
+const { persons, rooms, arrivalDate } = useSearchState()
 
 const props = defineProps<{
   deal: SearchHotelDeal
@@ -166,6 +164,9 @@ const props = defineProps<{
   hideHotelInfo?: boolean
   /** Hide the special-deal sticker overlays (used in side panel). */
   hideLabels?: boolean
+  /** Suppress the grey bottom bar entirely (used on the home grids where
+   *  there are no sibling-deal links to follow). */
+  hideBar?: boolean
   /** Wider card variant (filter sidebar collapsed): list image scales to 560 px. */
   wide?: boolean
   /** When set, render every line in this list (no smartInclusions cap, no
@@ -218,6 +219,7 @@ const hasSiblings = computed(() => !!props.siblingCount && props.siblingCount > 
  *  - In list mode only when there are sibling deals to link to
  *  - Never in side-panel cards (hideHotelInfo) */
 const hasBar = computed(() => {
+  if (props.hideBar) return false
   if (hasSiblings.value) return true
   if (props.gridMode && !props.hideHotelInfo) return true
   return false
@@ -227,12 +229,17 @@ const imageSrc = computed(() => {
   return props.deal.heroImage || props.deal.inclusionImage || props.hotel?.heroImage || ''
 })
 
-/** Carry the arrival date through the URL so a new-tab navigation
- *  (target=_blank with rel=noopener) lands on the right month even if
- *  Chrome doesn't clone sessionStorage to the new tab. */
+/** Carry the arrival date AND persons/rooms through the URL so a new-tab
+ *  navigation (target=_blank with rel=noopener) lands on the right month
+ *  with the right group size — even if Chrome doesn't clone sessionStorage
+ *  to the new tab. */
 const dealHref = computed(() => {
-  const base = `/deal/${props.deal.slug}`
-  return arrivalDate.value ? `${base}?checkin=${arrivalDate.value}` : base
+  const params = new URLSearchParams()
+  if (arrivalDate.value) params.set('checkin', arrivalDate.value)
+  if (persons.value !== 2) params.set('persons', String(persons.value))
+  if (rooms.value !== 1) params.set('rooms', String(rooms.value))
+  const q = params.toString()
+  return `/deal/${props.deal.slug}${q ? '?' + q : ''}`
 })
 
 /** Card price reflects the global arrival date when set — same surcharge
@@ -244,6 +251,24 @@ const price = computed(() =>
 const originalPrice = computed(() =>
   priceForArrival(props.deal.originalPrice, props.deal.id, arrivalDate.value, persons.value),
 )
+
+/** Cheapest deal across all sibling arrangements at this hotel — used by
+ *  the "Bekijk alle X arrangementen" footer link as the "vanaf" price.
+ *  Also returns the original (pre-discount) cheapest so the strikethrough
+ *  price line up with the current price. */
+const cheapestSibling = computed(() => {
+  const deals = props.hotel?.deals
+  if (!deals || deals.length === 0) return null
+  return deals.reduce((min, d) => {
+    const dPrice = priceForArrival(d.basePrice, d.id, arrivalDate.value, persons.value)
+    const minPrice = priceForArrival(min.basePrice, min.id, arrivalDate.value, persons.value)
+    return dPrice < minPrice ? d : min
+  })
+})
+const cheapestSiblingPrice = computed(() => {
+  const d = cheapestSibling.value
+  return d ? priceForArrival(d.basePrice, d.id, arrivalDate.value, persons.value) : 0
+})
 
 const includesBullets = computed<string[]>(() => {
   // Caller-supplied full list wins (used on /hotel/<slug>): show everything,
@@ -778,11 +803,24 @@ function labelFile(label: string): string {
   font: inherit;
   font-weight: 600;
   color: var(--color-text-secondary);
-  text-decoration: underline;
-  text-underline-offset: 2px;
   cursor: pointer;
   transition: color var(--transition-fast);
+  /* Block-level so the entire bar's content area is one click target and
+     the underline runs continuously through the prices (no flex gaps). */
+  display: block;
+  width: 100%;
+  text-align: right;
+  text-decoration: underline;
+  text-underline-offset: 2px;
 }
-
-.deal-card-v2__siblings-link:hover { color: var(--color-primary); }
+/* Hover: whole string (text + price) goes orange. */
+.deal-card-v2__siblings-link:hover,
+.deal-card-v2__siblings-link:hover .deal-card-v2__siblings-price {
+  color: var(--color-primary);
+}
+.deal-card-v2__siblings-price {
+  color: var(--color-text-primary);
+  font-weight: 700;
+  font-family: var(--font-heading);
+}
 </style>

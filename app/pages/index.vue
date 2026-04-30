@@ -10,9 +10,9 @@
         <a href="/advertisement/" class="start-btn start-btn--primary">
           Start met advertentie
         </a>
-        <NuxtLink to="/home" class="start-btn start-btn--outline">
+        <button type="button" class="start-btn start-btn--outline" @click="startFromHome">
           Start vanaf homepage
-        </NuxtLink>
+        </button>
       </div>
       <p class="start-screen__note">
         Hiermee start een test-sessie. De partnerschap met nu.nl is alleen
@@ -24,12 +24,36 @@
 
 <script setup lang="ts">
 const { clear } = usePartner()
+const {
+  clearArrivalDate,
+  setSearchGroup,
+  clearDuration,
+  setFlexibility,
+  resetBudget,
+  clearFilterTags,
+  clearDestinations,
+} = useSearchState()
 
 // Landing on the start screen always resets any leftover partner flag, so
 // each user-test run starts clean.
 onMounted(() => {
   clear()
 })
+
+/** "Start vanaf homepage" wipes every search/filter selection so the next
+ *  test run starts with a fresh navbar — no leftover destination, date,
+ *  persons-rooms, nights, themes, budget, etc. Then navigates to /home. */
+function startFromHome() {
+  clear()
+  clearArrivalDate()
+  setSearchGroup(2, 1)
+  clearDuration()
+  setFlexibility(0)
+  resetBudget()
+  clearFilterTags()
+  clearDestinations()
+  navigateTo('/home')
+}
 
 useHead({
   title: 'User test | ViaLuxury',

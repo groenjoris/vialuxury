@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import type { Deal, DealVariant, TravelGroup, TravelGroupPricing, RoomOption } from '~/types/deal'
 import type { DateAvailability } from '~/types/calendar'
-import { isPremiumDay, CALENDAR_PREMIUM_SURCHARGE } from '~/utils/priceFormula'
+import { priceForArrival, minRoomsFor } from '~/utils/priceFormula'
 import dayjs from 'dayjs'
 
 export const useDealStore = defineStore('deal', () => {
@@ -9,20 +9,63 @@ export const useDealStore = defineStore('deal', () => {
   // --- State ---
   const currentDeal = ref<Deal | null>(null)
   const dealVariants = ref<DealVariant[]>([])
+  // Bidirectional sync with the global arrival-date + persons/rooms in
+  // useSearchState so every calendar on the site (navbar DatePopup, hotel
+  // page, deal page sidebar) shows the same selection AND the deal page
+  // pricing reflects the persons/rooms picked on /search.
+  const {
+    arrivalDate: globalArrivalDate, setArrivalDate,
+    persons: globalPersons, rooms: globalRooms, setSearchGroup,
+  } = useSearchState()
   const travelGroup = ref<TravelGroup>({
-    adults: 2,
+    adults: globalPersons.value || 2,
     children: [],
-    rooms: 1,
+    rooms: globalRooms.value || 1,
   })
   const selectedRoomId = ref<string>('')
-  // Bidirectional sync with the global arrival-date in useSearchState so
-  // every calendar on the site (navbar DatePopup, hotel page, deal page
-  // sidebar) shows the same selection. Initialise from the global state so
-  // a date picked on /search or /kaart pre-fills the deal page calendar.
-  const { arrivalDate: globalArrivalDate, setArrivalDate } = useSearchState()
   const checkInDate = ref<string | null>(globalArrivalDate.value)
-  watch(globalArrivalDate, (v) => { if (v !== checkInDate.value) checkInDate.value = v })
+  watch(globalArrivalDate, (v) => {
+    if (v !== checkInDate.value) {
+      checkInDate.value = v
+      // Recompute checkout whenever the arrival date is set from outside
+      // the deal store (navbar When-popup, ?checkin= URL, search-result
+      // link). Without this the checkout sticks to the previous date.
+      updateCheckOut()
+    }
+  })
   watch(checkInDate, (v) => { if (v !== globalArrivalDate.value) setArrivalDate(v) })
+
+  // Mirror global persons/rooms → travelGroup whenever the navbar Wie-popup
+  // commits (Klaar / outside-click / search button). Adults absorb the new
+  // total; children unchanged. Enforce min rooms = ceil(persons/2) so the
+  // sidebar never shows a sub-capacity room count.
+  watch(globalPersons, (p) => {
+    const total = travelGroup.value.adults + travelGroup.value.children.length
+    const newAdults = (p !== total)
+      ? Math.max(1, p - travelGroup.value.children.length)
+      : travelGroup.value.adults
+    const min = minRoomsFor(p)
+    const newRooms = Math.max(travelGroup.value.rooms, min)
+    if (newAdults !== travelGroup.value.adults || newRooms !== travelGroup.value.rooms) {
+      travelGroup.value = { ...travelGroup.value, adults: newAdults, rooms: newRooms }
+    }
+  })
+  watch(globalRooms, (r) => {
+    if (r !== travelGroup.value.rooms) {
+      const total = travelGroup.value.adults + travelGroup.value.children.length
+      travelGroup.value = { ...travelGroup.value, rooms: Math.max(r, minRoomsFor(total)) }
+    }
+  })
+
+  /** Push the deal-page travelGroup back into the global search state so
+   *  /search and the navbar Wie-field stay in sync after the user adjusts
+   *  the Travel Group modal. */
+  function pushSearchGroup() {
+    const total = travelGroup.value.adults + travelGroup.value.children.length
+    if (total !== globalPersons.value || travelGroup.value.rooms !== globalRooms.value) {
+      setSearchGroup(total, travelGroup.value.rooms)
+    }
+  }
   const checkOutDate = ref<string | null>(null)
   const dateAvailability = ref<DateAvailability[]>([])
   const isTravelGroupModalOpen = ref(false)
@@ -119,23 +162,16 @@ export const useDealStore = defineStore('deal', () => {
     const deal = currentDeal.value
     const persons = totalPersons.value
     const rooms = travelGroup.value.rooms
-    const extraPersons = Math.max(0, persons - 2) // base deal is for 2
 
-    // Day-specific surcharge: when the user has picked an arrival date, mirror
-    // the calendar's premium-day pricing so the price shown below the calendar
-    // matches the price shown on the selected day in the calendar.
-    const daySurcharge = checkInDate.value && deal.id && isPremiumDay(deal.id, checkInDate.value)
-      ? CALENDAR_PREMIUM_SURCHARGE
-      : 0
-
-    // Base deal price (for 2 persons, 1 room) + day-specific premium surcharge.
-    const baseDealPrice = deal.basePrice + daySurcharge
-
-    // Extra persons cost (per person per night)
-    const extraPersonCost = extraPersons * 89 * deal.nights
+    // Single source of truth for the headline price: `priceForArrival` applies
+    // both the per-person formula and the calendar's premium-day surcharge,
+    // so the number shown in the sidebar / sticky CTA / side-panel always
+    // matches the calendar cell for the selected day.
+    const arrangementAmount = priceForArrival(deal.basePrice, deal.id, checkInDate.value, persons)
+    const originalArrangementAmount = priceForArrival(deal.originalPrice, deal.id, checkInDate.value, persons)
 
     // Extra rooms: only rooms beyond minRooms are charged
-    const minRooms = Math.ceil(persons / 2)
+    const minRooms = minRoomsFor(persons)
     const extraRooms = Math.max(0, rooms - minRooms)
     const extraRoomsCost = extraRooms * 109 * deal.nights
 
@@ -149,14 +185,12 @@ export const useDealStore = defineStore('deal', () => {
       .filter(c => c.age < 12)
       .length * Math.round(89 * deal.nights * 0.5)
 
-    const totalPrice = baseDealPrice + extraPersonCost + extraRoomsCost + roomUpgrade - childrenDiscount
-    const originalMultiplier = 1 / (1 - deal.discountPercentage / 100)
-    const originalPrice = Math.round(totalPrice * originalMultiplier)
+    const totalPrice = arrangementAmount + extraRoomsCost + roomUpgrade - childrenDiscount
+    const originalPrice = originalArrangementAmount + extraRoomsCost + roomUpgrade
     const pricePerPerson = Math.round(totalPrice / Math.max(1, persons))
 
     // Breakdown
     const arrangementLabel = `${t('sidebar.arrangementFor')} ${persons} ${persons === 1 ? t('common.personSingular') : t('common.personPlural')}`
-    const arrangementAmount = baseDealPrice + extraPersonCost - childrenDiscount
 
     const breakdown: { label: string; amount: number }[] = [
       { label: arrangementLabel, amount: arrangementAmount },
@@ -243,6 +277,11 @@ export const useDealStore = defineStore('deal', () => {
     roomUnavailableMessage.value = null
     previousCheckInDate.value = null
     roomAllocation.value = {}
+    // If an arrival date was already set globally (URL ?checkin= /
+    // sessionStorage / picked on /search before navigating here) we need
+    // to compute the checkout from the new deal's `nights`. Without this
+    // the sidebar shows a stale checkout date or none at all.
+    if (checkInDate.value) updateCheckOut()
   }
 
   /** Switch to a different deal variant (different nights) */
@@ -256,13 +295,17 @@ export const useDealStore = defineStore('deal', () => {
 
   /** Set travel group */
   function setTravelGroup(group: TravelGroup) {
-    // Auto-adjust rooms: minimum ceil(totalPersons / 2)
+    // Auto-adjust rooms: minimum ceil(totalPersons / 2). User-added extras
+    // are preserved (we only bump UP, never down).
     const totalPersons = group.adults + group.children.length
-    const minRooms = Math.ceil(totalPersons / 2)
+    const minRooms = minRoomsFor(totalPersons)
     if (group.rooms < minRooms) {
       group.rooms = minRooms
     }
     travelGroup.value = { ...group }
+    // Propagate to the global search state so the navbar Wie-field, /search
+    // pricing and any other calendars stay in sync.
+    pushSearchGroup()
   }
 
   /** Select a room (single-room mode) */

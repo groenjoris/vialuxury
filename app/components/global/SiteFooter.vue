@@ -72,7 +72,7 @@
     <div class="site-footer__bottom">
       <div class="container site-footer__bottom-inner">
         <p>&copy; {{ new Date().getFullYear() }} ViaLuxury. {{ t('footer.allRightsReserved') }}</p>
-        <NuxtLink to="/" class="site-footer__usertest">user test startscherm</NuxtLink>
+        <NuxtLink to="/" class="site-footer__usertest-btn">Start scherm</NuxtLink>
       </div>
     </div>
   </footer>
@@ -86,7 +86,9 @@ const { t } = useI18n()
 .site-footer {
   background-color: #1A1A1A;
   color: white;
-  margin-top: var(--space-3xl);
+  /* Sits flush against the last page section — its own internal padding
+     provides enough breathing room. */
+  margin-top: 0;
 }
 
 .site-footer__inner {
@@ -202,14 +204,23 @@ const { t } = useI18n()
   flex-wrap: wrap;
 }
 
-.site-footer__usertest {
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.4);
+.site-footer__usertest-btn {
+  display: inline-flex;
+  align-items: center;
+  height: 32px;
+  padding: 0 12px;
+  background: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 13px;
+  font-weight: 600;
   text-decoration: none;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: var(--radius-sm);
+  transition: background var(--transition-fast), color var(--transition-fast);
 }
-.site-footer__usertest:hover {
-  color: rgba(255, 255, 255, 0.7);
-  text-decoration: underline;
+.site-footer__usertest-btn:hover {
+  background: rgba(255, 255, 255, 0.22);
+  color: #fff;
 }
 
 /* ── Responsive ── */

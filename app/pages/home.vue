@@ -32,7 +32,7 @@
           <span class="home-hero__trust-item">
             <span class="home-hero__trust-star" aria-hidden="true">★</span>
             <span class="home-hero__trust-text">15.294 gasten raten ons met</span>
-            <span class="home-hero__trust-link">4.5</span>
+            <span class="home-hero__trust-link">4.5/5</span>
           </span>
           <span class="home-hero__trust-item home-hero__trust-item--soft">
             <span class="home-hero__trust-check" aria-hidden="true">✓</span>
@@ -40,7 +40,7 @@
           </span>
           <span class="home-hero__trust-item home-hero__trust-item--soft">
             <span class="home-hero__trust-check" aria-hidden="true">✓</span>
-            <span class="home-hero__trust-text">Unieke deals met heul veul korting</span>
+            <span class="home-hero__trust-text">Unieke deals met heel veel korting</span>
           </span>
         </div>
       </div>
@@ -75,6 +75,7 @@
             :hotel="hotel"
             :deal="pickPrimaryDeal(hotel.deals)"
             :grid-mode="true"
+            :hide-bar="true"
           />
         </div>
       </div>
@@ -91,6 +92,7 @@
             :hotel="hotel"
             :deal="pickPrimaryDeal(hotel.deals)"
             :grid-mode="true"
+            :hide-bar="true"
           />
         </div>
       </div>

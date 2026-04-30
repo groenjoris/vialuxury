@@ -506,6 +506,7 @@
 import { useLocaleStore } from '~/stores/locale'
 import { searchHotels } from '~/data/mock/search-hotels'
 import { tagsByCategory } from '~/utils/filterTags'
+import { minRoomsFor } from '~/utils/priceFormula'
 
 const props = withDefaults(defineProps<{
   /** 'solid' = default dark bar; 'overlay' = transparent over a background image (e.g. home hero) */
@@ -517,7 +518,7 @@ const localeStore = useLocaleStore()
 
 // --- Verticals (computed for reactivity on locale change) ---
 const verticals = computed(() => [
-  { id: 'hotels', label: t('header.hotels'), href: '/', external: false },
+  { id: 'hotels', label: t('header.hotels'), href: '/home', external: false },
   { id: 'vakantieparken', label: t('header.holidayParks'), href: '/vakantieparken', external: false },
   { id: 'restaurants', label: t('header.restaurants'), href: 'https://restaurants.vialuxury.com/', external: true },
 ])
@@ -819,6 +820,8 @@ const {
   arrivalDate: globalArrivalDate,
   setArrivalDate,
   commitArrivalDate,
+  persons: globalPersons,
+  rooms: globalRooms,
   setSearchGroup,
   setLoading,
   setSelectedNights,
@@ -1014,12 +1017,48 @@ const hoelangLabel = computed(() => {
 })
 
 // --- WHO ---
+/** Local draft for the Wie-popup — initialised from the global persons/rooms
+ *  so a navbar opened on /deal or /search reflects the current group size. */
 const searchGroup = ref({
-  adults: 2,
+  adults: globalPersons.value || 2,
   children: [] as { age: number }[],
-  rooms: 1,
+  rooms: globalRooms.value || 1,
   dog: false,
 })
+
+/** Mirror global persons/rooms back to the local draft when another component
+ *  (e.g. the deal-page Travel Group modal) commits a change. Skip if the
+ *  popup is open so we don't yank the user's in-progress draft. */
+watch(globalPersons, (p) => {
+  if (activePopup.value === 'who') return
+  if (p !== searchGroup.value.adults + searchGroup.value.children.length) {
+    searchGroup.value = {
+      ...searchGroup.value,
+      adults: Math.max(1, p - searchGroup.value.children.length),
+    }
+  }
+})
+watch(globalRooms, (r) => {
+  if (activePopup.value === 'who') return
+  if (r !== searchGroup.value.rooms) {
+    searchGroup.value = { ...searchGroup.value, rooms: r }
+  }
+})
+
+/** Enforce minimum rooms (1p→1, 2p→1, 3p→2, 4p→2, 5p→3 …). Only bumps
+ *  rooms UP when persons exceed the current capacity; manually-added extra
+ *  rooms stick. Only fires while the popup is open so external commits
+ *  (with their own room number) aren't overridden. */
+watch(
+  () => searchGroup.value.adults + searchGroup.value.children.length,
+  (total) => {
+    if (activePopup.value !== 'who') return
+    const min = minRoomsFor(total)
+    if (searchGroup.value.rooms < min) {
+      searchGroup.value = { ...searchGroup.value, rooms: min }
+    }
+  },
+)
 
 function addSearchChild() {
   searchGroup.value.children.push({ age: 4 })

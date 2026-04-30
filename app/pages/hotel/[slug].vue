@@ -429,8 +429,8 @@ const mapTileUrl = computed(() => {
   transition: border-color var(--transition-fast), color var(--transition-fast);
 }
 .hotel-page__tab:hover {
+  /* Color-only hover — no underline. */
   color: var(--color-primary);
-  border-bottom-color: var(--color-primary);
 }
 
 /* ===== TITLE SECTION ===== */

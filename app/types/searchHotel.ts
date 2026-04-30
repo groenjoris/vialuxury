@@ -7,6 +7,9 @@ export interface SearchHotel {
   starRating: number
   city: string
   region: string
+  /** Derived from `city` via dutchCities lookup; empty for hotels in cities
+   *  we don't have a province mapping for (e.g. all BE hotels). */
+  province?: string
   heroImage: string
   reviewScore: number
   reviewCount: number

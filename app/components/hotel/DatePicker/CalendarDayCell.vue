@@ -14,6 +14,10 @@
   >
     <span class="day-cell__number">{{ dayOfMonth }}</span>
 
+    <!-- In / Out badge for selected check-in / check-out days -->
+    <span v-if="isCheckIn" class="day-cell__badge" aria-label="Check-in">In</span>
+    <span v-else-if="isCheckOut" class="day-cell__badge" aria-label="Check-out">Out</span>
+
     <!-- Sold out: show dash -->
     <span v-if="isSoldOut && !isPast" class="day-cell__sold" :class="{ 'day-cell__sold--in-range': isInRange }">-</span>
 
@@ -64,6 +68,9 @@ const isSelected = computed(() => {
 })
 
 const isCheckIn = computed(() => props.date === props.selectedCheckIn)
+const isCheckOut = computed(() =>
+  !!props.selectedCheckOut && props.date === props.selectedCheckOut,
+)
 
 const isInRange = computed(() => {
   if (!props.selectedCheckIn || !props.selectedCheckOut) return false
@@ -155,6 +162,27 @@ function handleClick() {
   font-size: 15px;
   font-weight: 500;
   line-height: 1;
+}
+
+/* "In" / "Out" badge flush in the upper-right corner of selected check-in /
+   check-out cells. 14×14 px, white-on-black, square (no rounded corners),
+   no padding around it — sits tight against the cell edge. */
+.day-cell__badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 14px;
+  height: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #000;
+  color: #fff;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  pointer-events: none;
 }
 
 /* Sold out dash */

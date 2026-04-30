@@ -136,12 +136,14 @@ import { formatPrice } from '~/utils/formatPrice'
 import { getReviewLabelKey } from '~/utils/reviewLabel'
 import { mappedPackagesByPermalink } from '~/data/deals-mapper'
 import { priceForArrival } from '~/utils/priceFormula'
+import { nightsLabel, personsLabel } from '~/utils/plural'
 
-const { t, localized } = useI18n()
+const { t, localized, locale } = useI18n()
+const lang = computed<'nl' | 'en'>(() => (locale.value === 'en' ? 'en' : 'nl'))
 
 // Favorite state — local per-card for prototype
 const isFavorite = ref(false)
-const { persons, arrivalDate } = useSearchState()
+const { persons, rooms, arrivalDate } = useSearchState()
 
 // Label key → filename in /public/images/labels/. Source filenames have spaces.
 const LABEL_FILES: Record<string, string> = {
@@ -198,16 +200,16 @@ const singleDealArrangementText = computed(() => {
   if (!isSingleDeal.value) return ''
   const deal = props.hotel.deals[0]
   return t('search.inclArrangement')
-    .replace('{nights}', String(deal.nights))
-    .replace('{persons}', String(persons.value))
+    .replace('{nightsLabel}', nightsLabel(deal.nights, lang.value))
+    .replace('{personsLabel}', personsLabel(persons.value, lang.value))
 })
 
 const singleDealArrangementSuffix = computed(() => {
   if (!isSingleDeal.value) return ''
   const deal = props.hotel.deals[0]
   return t('search.arrangementSuffix')
-    .replace('{nights}', String(deal.nights))
-    .replace('{persons}', String(persons.value))
+    .replace('{nightsLabel}', nightsLabel(deal.nights, lang.value))
+    .replace('{personsLabel}', personsLabel(persons.value, lang.value))
 })
 
 const roomPhrases = [
@@ -279,12 +281,17 @@ const lowestOriginal = computed(() =>
 )
 const lowestDiscount = computed(() => cheapestDeal.value.discountPercentage)
 
-/** Carry the arrival date through the URL so the new-tab deal page lands on
- *  the right month without relying on cross-tab sessionStorage cloning. */
+/** Carry arrival date AND persons/rooms through the URL so the new-tab deal
+ *  page lands on the right month with the right group size — without
+ *  relying on cross-tab sessionStorage cloning. */
 const isSingleDealLink = computed(() => props.hotel.deals[0]?.slug || '')
 const singleDealHref = computed(() => {
-  const base = `/deal/${isSingleDealLink.value}`
-  return arrivalDate.value ? `${base}?checkin=${arrivalDate.value}` : base
+  const params = new URLSearchParams()
+  if (arrivalDate.value) params.set('checkin', arrivalDate.value)
+  if (persons.value !== 2) params.set('persons', String(persons.value))
+  if (rooms.value !== 1) params.set('rooms', String(rooms.value))
+  const q = params.toString()
+  return `/deal/${isSingleDealLink.value}${q ? '?' + q : ''}`
 })
 </script>
 
