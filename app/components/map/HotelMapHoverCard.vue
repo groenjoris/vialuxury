@@ -33,6 +33,10 @@ const props = defineProps<{
   arrivalDate?: string | null
   /** Hotel is sold out for the active arrival-date filter. */
   soldOut?: boolean
+  /** Hotel has no deals matching the active filters (nights / themes /
+   *  arrangement / specials / budget). The card shows a different copy line
+   *  but the hotel pin remains clickable so the side panel can be opened. */
+  unmatched?: boolean
 }>()
 
 const { persons, arrivalDate: globalArrivalDate } = useSearchState()
@@ -75,9 +79,13 @@ function formatNightList(arr: number[]): string {
 }
 
 /** Split into a top line ("Arrangement voor" / "Arrangementen voor" /
- *  "Uitverkocht voor") and a bottom line ("2-3 nachten" / "1, 2 of 4 nachten"
- *  / "21-04-2026"). Renders as two lines to fit a 296 px card. */
+ *  "Uitverkocht voor" / "Voldoet niet aan…") and a bottom line. */
 const dealsLabel = computed(() => {
+  if (props.unmatched) {
+    // Show on a single visual line; rendered via a top/bottom split so the
+    // card layout stays consistent with the matched/sold-out states.
+    return { top: 'Voldoet niet aan', bottom: 'je zoekwensen' }
+  }
   if (props.soldOut) {
     return {
       top: 'Uitverkocht voor',

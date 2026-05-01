@@ -235,7 +235,7 @@
           </span>
           <span class="search-bar__field-text">
             <span class="search-bar__label">{{ t('header.destination') }}</span>
-            <span class="search-bar__value">{{ destinationLabel }}</span>
+            <span class="search-bar__value" :class="{ 'search-bar__value--placeholder': destinationIsPlaceholder }">{{ destinationLabel }}</span>
           </span>
         </button>
 
@@ -253,7 +253,7 @@
           </span>
           <span class="search-bar__field-text">
             <span class="search-bar__label">Wanneer</span>
-            <span class="search-bar__value">{{ whenLabel }}</span>
+            <span class="search-bar__value" :class="{ 'search-bar__value--placeholder': whenIsPlaceholder }">{{ whenLabel }}</span>
           </span>
         </button>
 
@@ -271,7 +271,7 @@
           </span>
           <span class="search-bar__field-text">
             <span class="search-bar__label">Hoelang</span>
-            <span class="search-bar__value">{{ hoelangLabel }}</span>
+            <span class="search-bar__value" :class="{ 'search-bar__value--placeholder': hoelangIsPlaceholder }">{{ hoelangLabel }}</span>
           </span>
         </button>
 
@@ -405,7 +405,7 @@
             <div class="stepper">
               <button class="stepper__btn" :disabled="searchGroup.rooms <= 1" @click="searchGroup.rooms--">&#8722;</button>
               <span class="stepper__val">{{ searchGroup.rooms }}</span>
-              <button class="stepper__btn" :disabled="searchGroup.rooms >= 4" @click="searchGroup.rooms++">+</button>
+              <button class="stepper__btn" :disabled="searchGroup.rooms >= (searchGroup.adults + searchGroup.children.length)" @click="searchGroup.rooms++">+</button>
             </div>
           </div>
 
@@ -506,7 +506,7 @@
 import { useLocaleStore } from '~/stores/locale'
 import { searchHotels } from '~/data/mock/search-hotels'
 import { tagsByCategory } from '~/utils/filterTags'
-import { minRoomsFor } from '~/utils/priceFormula'
+import { minRoomsFor, maxRoomsFor } from '~/utils/priceFormula'
 
 const props = withDefaults(defineProps<{
   /** 'solid' = default dark bar; 'overlay' = transparent over a background image (e.g. home hero) */
@@ -855,14 +855,33 @@ function toggleLocalNight(value: string) {
   if (i === -1) localNights.value.push(value)
   else localNights.value.splice(i, 1)
   if (localNights.value.length > 0) localFlexType.value = null
+  // Push to shared state so /search filter pills, deal-page heading and
+  // any other open searchbar reflect the change immediately.
+  setSelectedNights(localNights.value.filter(v => ['1', '2', '3', '4', '5+'].includes(v)))
+  setFlexType(localFlexType.value)
   notePicker()
 }
 
 function setLocalFlexType(val: string | null) {
   localFlexType.value = val
   if (val) localNights.value = []
+  setFlexType(val)
+  setSelectedNights(localNights.value.filter(v => ['1', '2', '3', '4', '5+'].includes(v)))
   notePicker()
 }
+
+// External commits (e.g. filter pill removed on /search, the other
+// searchbar popup, mobile modal) flow back into this popup so its UI
+// stays in sync with the global selection.
+watch(globalNights, (g) => {
+  const next = [...g]
+  if (JSON.stringify(next) !== JSON.stringify(localNights.value)) {
+    localNights.value = next
+  }
+})
+watch(globalFlexType, (g) => {
+  if (g !== localFlexType.value) localFlexType.value = g
+})
 
 // --- Pulse animation logic on the search button ---
 // When date or duration is changed and popups are closed, schedule a 2-pulse
@@ -992,8 +1011,14 @@ const whenLabel = computed(() => {
     })
     return monthLabels.join(', ')
   }
-  return 'Flexibel'
+  return 'Kies datum'
 })
+
+/** Empty when the user hasn't chosen a date / month — drives the lighter
+ *  grey "placeholder" styling on the search-bar value. */
+const whenIsPlaceholder = computed(
+  () => !selectedDate.value && flexState.value.months.length === 0,
+)
 
 const hoelangLabel = computed(() => {
   if (localFlexType.value) {
@@ -1003,9 +1028,9 @@ const hoelangLabel = computed(() => {
       'long-weekend': 'Lang weekend',
       'midweek': 'Midweek',
     }
-    return typeLabels[localFlexType.value] || 'Elke reisduur'
+    return typeLabels[localFlexType.value] || 'Kies aantal nachten'
   }
-  if (localNights.value.length === 0) return 'Elke reisduur'
+  if (localNights.value.length === 0) return 'Kies aantal nachten'
   if (localNights.value.length === 1) {
     const v = localNights.value[0]
     if (v === '1') return '1 nacht'
@@ -1015,6 +1040,19 @@ const hoelangLabel = computed(() => {
   const sorted = [...localNights.value].sort()
   return `${sorted.join(' of ')} nachten`
 })
+
+const hoelangIsPlaceholder = computed(
+  () => !localFlexType.value && localNights.value.length === 0,
+)
+
+/** Destination is a placeholder when nothing is picked — same logic the
+ *  destinationLabel already uses to fall back to the t('chooseDestination')
+ *  string. */
+const destinationIsPlaceholder = computed(() => (
+  selectedDestinations.value.length === 0
+  && selectedThemes.value.length === 0
+  && selectedCities.value.length === 0
+))
 
 // --- WHO ---
 /** Local draft for the Wie-popup — initialised from the global persons/rooms
@@ -1054,8 +1092,12 @@ watch(
   (total) => {
     if (activePopup.value !== 'who') return
     const min = minRoomsFor(total)
+    const max = maxRoomsFor(total)
     if (searchGroup.value.rooms < min) {
       searchGroup.value = { ...searchGroup.value, rooms: min }
+    } else if (searchGroup.value.rooms > max) {
+      // Clamp DOWN: rooms can never exceed total guests (no empty rooms).
+      searchGroup.value = { ...searchGroup.value, rooms: max }
     }
   },
 )
@@ -1238,6 +1280,11 @@ function handleSelectHotelInPopup(slug: string) {
   font-size: 14px;
   font-weight: 500;
   color: #0a0a0a;
+}
+
+.site-header--overlay .search-bar__value--placeholder {
+  color: #9A9A93;
+  font-weight: 400;
 }
 
 .site-header--overlay .search-bar__btn--find-deals {
@@ -1705,6 +1752,13 @@ function handleSelectHotelInPopup(slug: string) {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+/* Lighter grey placeholder text when no value is selected — same look as
+   a native input's `::placeholder`. */
+.search-bar__value--placeholder {
+  color: #9A9A93;
+  font-weight: 400;
 }
 
 .search-bar__divider {

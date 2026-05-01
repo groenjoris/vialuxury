@@ -13,7 +13,7 @@
         </svg>
         <div class="hsb-field__text">
           <span class="hsb-field__label">{{ t('header.when') }}</span>
-          <span class="hsb-field__value">{{ whenOnlyLabel }}</span>
+          <span class="hsb-field__value" :class="{ 'hsb-field__value--placeholder': whenIsPlaceholder }">{{ whenOnlyLabel }}</span>
         </div>
       </button>
 
@@ -31,7 +31,7 @@
         </svg>
         <div class="hsb-field__text">
           <span class="hsb-field__label">{{ t('header.howLong') }}</span>
-          <span class="hsb-field__value">{{ howLongLabel }}</span>
+          <span class="hsb-field__value" :class="{ 'hsb-field__value--placeholder': howLongIsPlaceholder }">{{ howLongLabel }}</span>
         </div>
       </button>
 
@@ -135,7 +135,7 @@
           <div class="stepper">
             <button class="stepper__btn" :disabled="group.rooms <= 1" @click="group.rooms--">&#8722;</button>
             <span class="stepper__val">{{ group.rooms }}</span>
-            <button class="stepper__btn" :disabled="group.rooms >= 4" @click="group.rooms++">+</button>
+            <button class="stepper__btn" :disabled="group.rooms >= (group.adults + group.children.length)" @click="group.rooms++">+</button>
           </div>
         </div>
 
@@ -150,7 +150,7 @@
 </template>
 
 <script setup lang="ts">
-import { minRoomsFor } from '~/utils/priceFormula'
+import { minRoomsFor, maxRoomsFor } from '~/utils/priceFormula'
 
 const { t } = useI18n()
 const {
@@ -158,6 +158,10 @@ const {
   arrivalDate: globalArrivalDate,
   setArrivalDate,
   setSearchGroup,
+  selectedNights: globalNights,
+  selectedFlexType: globalFlexType,
+  setSelectedNights,
+  setFlexType,
 } = useSearchState()
 
 const emit = defineEmits<{
@@ -273,21 +277,40 @@ const selectedDate = ref<string | null>(globalArrivalDate.value)
 watch(selectedDate, (v) => { if (v !== globalArrivalDate.value) setArrivalDate(v) })
 watch(globalArrivalDate, (v) => { if (v !== selectedDate.value) selectedDate.value = v })
 const flexibility = ref(0)
-const selectedDurations = ref<string[]>([])
+// Initialise from the shared state so the searchbar pre-fills with the
+// reisduur the user has set elsewhere (filter pill, header popup, /search).
+const selectedDurations = ref<string[]>([...globalNights.value])
 const flexState = ref<{ durations: string[]; months: string[] }>({ durations: [], months: [] })
-const localFlexType = ref<string | null>(null)
+const localFlexType = ref<string | null>(globalFlexType.value)
 
 function onToggleNight(value: string) {
   const i = selectedDurations.value.indexOf(value)
   if (i === -1) selectedDurations.value.push(value)
   else selectedDurations.value.splice(i, 1)
   if (selectedDurations.value.length > 0) localFlexType.value = null
+  // Push to shared state so the change propagates to /search filter pills,
+  // the header popup, deal-page heading, etc.
+  setSelectedNights([...selectedDurations.value])
+  setFlexType(localFlexType.value)
 }
 
 function onSelectFlexType(value: string | null) {
   localFlexType.value = value
   if (value) selectedDurations.value = []
+  setFlexType(value)
+  setSelectedNights([...selectedDurations.value])
 }
+
+// Bidirectional sync — external changes (filter, other searchbar) flow in.
+watch(globalNights, (g) => {
+  const next = [...g]
+  if (JSON.stringify(next) !== JSON.stringify(selectedDurations.value)) {
+    selectedDurations.value = next
+  }
+})
+watch(globalFlexType, (g) => {
+  if (g !== localFlexType.value) localFlexType.value = g
+})
 
 function handleFlexState(state: { durations: string[]; months: string[] }) {
   flexState.value = state
@@ -325,8 +348,14 @@ const whenOnlyLabel = computed(() => {
       .map(key => monthNames.value[parseInt(key.split('-')[1], 10) - 1])
       .join(', ')
   }
-  return t('header.flexibleLabel')
+  return 'Kies datum'
 })
+
+/** Empty when nothing has been picked \u2014 drives the placeholder grey
+ *  styling on the Wanneer value. */
+const whenIsPlaceholder = computed(
+  () => !selectedDate.value && flexState.value.months.length === 0,
+)
 
 /** Just the duration part \u2014 shown in the Hoelang field. */
 const howLongLabel = computed(() => {
@@ -342,10 +371,14 @@ const howLongLabel = computed(() => {
       'long-weekend': t('header.flex.longWeekend'),
       'midweek': t('header.flex.midweek'),
     }
-    return typeLabels[localFlexType.value] || t('header.anyDuration')
+    return typeLabels[localFlexType.value] || 'Kies aantal nachten'
   }
-  return t('header.anyDuration')
+  return 'Kies aantal nachten'
 })
+
+const howLongIsPlaceholder = computed(
+  () => selectedDurations.value.length === 0 && !localFlexType.value,
+)
 
 // --- WHO state ---
 const group = ref({
@@ -376,8 +409,12 @@ watch(
   (total) => {
     if (activePopup.value !== 'who') return
     const min = minRoomsFor(total)
+    const max = maxRoomsFor(total)
     if (group.value.rooms < min) {
       group.value = { ...group.value, rooms: min }
+    } else if (group.value.rooms > max) {
+      // Clamp DOWN when persons drop below the room count — no empty rooms.
+      group.value = { ...group.value, rooms: max }
     }
   },
 )
@@ -504,6 +541,12 @@ function handleChangeSearch() {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+/* Lighter grey placeholder text when no value is selected. */
+.hsb-field__value--placeholder {
+  color: #9A9A93;
+  font-weight: 400;
 }
 
 /* Primary submit button — orange pill, two-line caption. */

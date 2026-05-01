@@ -138,7 +138,7 @@
         <div class="stepper">
           <button class="stepper__btn" :disabled="localGroup.rooms <= 1" @click="update({ rooms: localGroup.rooms - 1 })">&minus;</button>
           <span class="stepper__val">{{ localGroup.rooms }}</span>
-          <button class="stepper__btn" :disabled="localGroup.rooms >= 4" @click="update({ rooms: localGroup.rooms + 1 })">+</button>
+          <button class="stepper__btn" :disabled="localGroup.rooms >= (localGroup.adults + localGroup.children.length)" @click="update({ rooms: localGroup.rooms + 1 })">+</button>
         </div>
       </div>
     </div>
@@ -221,8 +221,15 @@ watch(() => props.searchGroup, (val) => {
   localGroup.value = { ...val, children: [...val.children] }
 }, { deep: true })
 
+/** Clamp rooms ≤ total guests after any group change (no empty rooms). */
+function clampRooms() {
+  const total = localGroup.value.adults + localGroup.value.children.length
+  if (localGroup.value.rooms > total) localGroup.value.rooms = Math.max(1, total)
+}
+
 function update(partial: Partial<typeof localGroup.value>) {
   localGroup.value = { ...localGroup.value, ...partial }
+  clampRooms()
   emit('update:searchGroup', { ...localGroup.value })
 }
 function addChild() {
@@ -231,6 +238,7 @@ function addChild() {
 }
 function removeChild() {
   localGroup.value.children.pop()
+  clampRooms()
   emit('update:searchGroup', { ...localGroup.value })
 }
 function setChildAge(idx: number, age: number) {

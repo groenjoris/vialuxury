@@ -172,6 +172,17 @@ const props = defineProps<{
   /** When set, render every line in this list (no smartInclusions cap, no
    *  dedupe-by-popularity). Wrapping is allowed so long items take 2 lines. */
   fullInclusions?: string[]
+  /** Side-panel "Beschikbaar op andere data" group: ignore the global
+   *  arrival date so prices show the deal's lowest (base) price instead of
+   *  a date-adjusted price the user can't actually book on that date. */
+  ignoreArrival?: boolean
+  /** Override the deal pool used for the bottom-bar siblings link
+   *  ("Bekijk alle X arrangementen, al vanaf €Y"). Defaults to
+   *  `hotel.deals`. The /search page passes the AVAILABLE deals here so
+   *  the count + "vanaf" price match what the side panel groups under
+   *  the first heading; the unavailable group is still shown in the
+   *  panel but doesn't count towards the link. */
+  siblingPool?: SearchHotelDeal[]
 }>()
 
 defineEmits<{ 'view-siblings': [] }>()
@@ -244,12 +255,15 @@ const dealHref = computed(() => {
 
 /** Card price reflects the global arrival date when set — same surcharge
  *  rule as the deal-page calendar, so the headline price on the card lines
- *  up with what the user sees in the calendar after clicking through. */
+ *  up with what the user sees in the calendar after clicking through.
+ *  When `ignoreArrival` is set (side-panel "andere data" group), price is
+ *  computed without the date so the card shows the deal's lowest price. */
+const effectiveArrival = computed(() => (props.ignoreArrival ? null : arrivalDate.value))
 const price = computed(() =>
-  priceForArrival(props.deal.basePrice, props.deal.id, arrivalDate.value, persons.value),
+  priceForArrival(props.deal.basePrice, props.deal.id, effectiveArrival.value, persons.value),
 )
 const originalPrice = computed(() =>
-  priceForArrival(props.deal.originalPrice, props.deal.id, arrivalDate.value, persons.value),
+  priceForArrival(props.deal.originalPrice, props.deal.id, effectiveArrival.value, persons.value),
 )
 
 /** Cheapest deal across all sibling arrangements at this hotel — used by
@@ -257,7 +271,7 @@ const originalPrice = computed(() =>
  *  Also returns the original (pre-discount) cheapest so the strikethrough
  *  price line up with the current price. */
 const cheapestSibling = computed(() => {
-  const deals = props.hotel?.deals
+  const deals = props.siblingPool ?? props.hotel?.deals
   if (!deals || deals.length === 0) return null
   return deals.reduce((min, d) => {
     const dPrice = priceForArrival(d.basePrice, d.id, arrivalDate.value, persons.value)

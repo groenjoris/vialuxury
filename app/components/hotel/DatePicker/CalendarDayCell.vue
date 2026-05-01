@@ -3,7 +3,8 @@
     class="day-cell"
     :class="{
       'day-cell--sold-out': isSoldOut && !isPast,
-      'day-cell--selected': isSelected,
+      'day-cell--selected': isCheckIn,
+      'day-cell--checkout': isCheckOut,
       'day-cell--in-range': isInRange,
       'day-cell--other-month': !isCurrentMonth,
       'day-cell--past': isPast,
@@ -18,10 +19,17 @@
     <span v-if="isCheckIn" class="day-cell__badge" aria-label="Check-in">In</span>
     <span v-else-if="isCheckOut" class="day-cell__badge" aria-label="Check-out">Out</span>
 
+    <!-- Tiny green star in the corner of the cheapest available days. -->
+    <span
+      v-if="isCheapest && availability?.available && !isSelected && !isInRange && !isPast"
+      class="day-cell__star"
+      aria-label="Goedkoopste prijs"
+    >★</span>
+
     <!-- Sold out: show dash -->
     <span v-if="isSoldOut && !isPast" class="day-cell__sold" :class="{ 'day-cell__sold--in-range': isInRange }">-</span>
 
-    <!-- Check-in date: show price -->
+    <!-- Check-in date: show price (white text on dark green) -->
     <span
       v-else-if="isCheckIn && availability?.available && !isPast && availability.totalPrice > 0"
       class="day-cell__price day-cell__price--selected"
@@ -118,14 +126,20 @@ function handleClick() {
   color: #fff !important;
 }
 
-/* In-between range dates: light green; ALL inner text forced white */
-.day-cell--in-range {
+/* In-between range dates AND the check-out cell: light green; ALL inner
+   text forced white. Check-out gets the same flat fill regardless of
+   whether the date has a price — the price is omitted on check-out. */
+.day-cell--in-range,
+.day-cell--checkout {
   background: #9AE3C7;
   color: #fff;
 }
 .day-cell--in-range .day-cell__number,
 .day-cell--in-range .day-cell__price,
-.day-cell--in-range .day-cell__sold {
+.day-cell--in-range .day-cell__sold,
+.day-cell--checkout .day-cell__number,
+.day-cell--checkout .day-cell__price,
+.day-cell--checkout .day-cell__sold {
   color: #fff !important;
 }
 
@@ -199,22 +213,33 @@ function handleClick() {
   color: white;
 }
 
-/* Default price color: green */
+/* Default price color: black */
 .day-cell__price {
   grid-row: 2;
   font-size: 12px;
-  color: #00CB8B;
+  color: var(--color-text-primary);
   font-weight: 600;
   line-height: 1;
 }
 
-/* Cheapest price: orange */
+/* Cheapest price: green */
 .day-cell__price--cheapest {
-  color: var(--color-primary);
+  color: #00CB8B;
 }
 
 /* Selected (check-in) price: white */
 .day-cell__price--selected {
   color: rgba(255, 255, 255, 0.9);
+}
+
+/* Tiny green star in the upper-left corner for the cheapest available day. */
+.day-cell__star {
+  position: absolute;
+  top: 2px;
+  left: 4px;
+  font-size: 10px;
+  line-height: 1;
+  color: #00CB8B;
+  pointer-events: none;
 }
 </style>

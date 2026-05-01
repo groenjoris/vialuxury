@@ -21,6 +21,16 @@ const SS_DESTINATIONS = 'vl_destinations'
 const SS_CITIES = 'vl_cities'
 const SS_HOTELS = 'vl_hotels'
 const SS_SELECTION_ORDER = 'vl_selection_order'
+const SS_NIGHTS = 'vl_selected_nights'
+const SS_FLEX_TYPE = 'vl_flex_type'
+
+function persistNights() {
+  if (!import.meta.client) return
+  if (selectedNights.value.length) sessionStorage.setItem(SS_NIGHTS, JSON.stringify(selectedNights.value))
+  else sessionStorage.removeItem(SS_NIGHTS)
+  if (selectedFlexType.value) sessionStorage.setItem(SS_FLEX_TYPE, selectedFlexType.value)
+  else sessionStorage.removeItem(SS_FLEX_TYPE)
+}
 
 function persistDestinations() {
   if (!import.meta.client) return
@@ -115,6 +125,20 @@ export function useSearchState() {
     if (r !== null) {
       const n = Number(r); if (!Number.isNaN(n) && n > 0) searchRooms.value = n
     }
+    // Reisduur (nights / flex-type) — repopulate when empty.
+    try {
+      if (!selectedNights.value.length) {
+        const v = sessionStorage.getItem(SS_NIGHTS)
+        if (v) {
+          const parsed = JSON.parse(v)
+          if (Array.isArray(parsed)) selectedNights.value = parsed
+        }
+      }
+      if (!selectedFlexType.value) {
+        const v = sessionStorage.getItem(SS_FLEX_TYPE)
+        if (v) selectedFlexType.value = v
+      }
+    } catch { /* ignore */ }
     // Destination filters — only repopulate when the live state is empty so
     // we don't clobber an in-flight selection.
     try {
@@ -161,6 +185,7 @@ export function useSearchState() {
   function setSelectedNights(values: string[]) {
     selectedNights.value = [...values]
     if (values.length > 0) selectedFlexType.value = null
+    persistNights()
   }
 
   function toggleNight(value: string) {
@@ -169,20 +194,24 @@ export function useSearchState() {
     else selectedNights.value.splice(idx, 1)
     // Selecting a night clears any active weekend/midweek flex-type
     if (selectedNights.value.length > 0) selectedFlexType.value = null
+    persistNights()
   }
 
   function setFlexType(val: string | null) {
     selectedFlexType.value = val
     if (val) selectedNights.value = []
+    persistNights()
   }
 
   function clearDuration() {
     selectedNights.value = []
     selectedFlexType.value = null
+    persistNights()
   }
 
   function clearNights() {
     selectedNights.value = []
+    persistNights()
   }
 
   function triggerSearchUpdate() {

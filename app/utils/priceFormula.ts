@@ -67,6 +67,11 @@ export function minRoomsFor(persons: number, capacity: number = DEFAULT_ROOM_CAP
   return Math.max(1, Math.ceil(persons / capacity))
 }
 
+/** Upper bound: rooms can never exceed the number of guests (no empty rooms). */
+export function maxRoomsFor(persons: number): number {
+  return Math.max(1, persons)
+}
+
 /**
  * Price for a specific arrival date — same number the calendar shows on that
  * day. Used by the search/map/hotel-page deal cards so the headline price

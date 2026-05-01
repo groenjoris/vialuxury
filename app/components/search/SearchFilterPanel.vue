@@ -205,7 +205,7 @@ const openState = reactive<Record<string, boolean>>({
 import { tagsByCategory } from '~/utils/filterTags'
 
 const tagItems = (cat: 'arrangement' | 'thema' | 'specials') =>
-  tagsByCategory(cat).map(t => ({ label: `${t.emoji} ${t.label}`, value: t.id }))
+  tagsByCategory(cat).map(t => ({ label: t.label, value: t.id }))
 
 const filterGroups = computed<FilterGroup[]>(() => [
   {

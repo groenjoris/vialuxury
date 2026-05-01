@@ -28,9 +28,11 @@
       />
     </div>
 
-    <div v-if="showLegend" class="calendar-month__legend">
-      <span class="legend-swatch legend-swatch--gold"></span>
-      <span class="legend-label">{{ t('room.upgradeAvailable') }}</span>
+    <div v-if="showLegend && cheapestPrice != null" class="calendar-month__legend">
+      <span class="legend-cheapest">
+        <span class="legend-star" aria-hidden="true">★</span>
+        <span class="legend-label">= laagste prijs</span>
+      </span>
     </div>
   </div>
 </template>
@@ -176,6 +178,24 @@ const days = computed(() => {
 
 .legend-swatch--gold {
   box-shadow: inset 0 0 0 2px var(--color-discount);
+}
+
+.legend-swatch--green {
+  background: #00CB8B;
+}
+
+.legend-cheapest {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+}
+
+.legend-star {
+  font-size: 14px;
+  line-height: 1;
+  color: #00CB8B;
 }
 
 .legend-label {

@@ -42,11 +42,11 @@ function pinStateFor(hotelId: string): PinState {
   const hotel = props.hotels.find((h) => h.id === hotelId)
   const isSelected = hotelId === selectedHotelId.value
   const isHovered = hotelId === hoveredId.value
-  const isSoldOut = !!hotel?.soldOut
-  // Hover takes precedence over selected so the orange-hover icon (and the
-  // preview card) appears even when hovering the currently-selected pin
-  // (per spec — hover always works, even on the selected star).
-  if (isSoldOut) {
+  // Both `soldOut` (no availability for arrival date) and `unmatched`
+  // (deals don't match the active filters) render with the same disabled
+  // visual; the hover-card distinguishes them via different copy.
+  const isDisabled = !!hotel?.soldOut || !!hotel?.unmatched
+  if (isDisabled) {
     if (isHovered) return 'soldOutHover'
     if (isSelected) return 'soldOutSelected'
     return 'soldOut'
@@ -93,13 +93,15 @@ function renderMarkers() {
 
   for (const f of items) {
     const [lng, lat] = f.geometry.coordinates
-    const props = f.properties
-    if (props.cluster) {
+    // Don't name this `props` — it would shadow the component's `props`
+    // and break the hotel lookup below (we use `props.hotels` for that).
+    const featureProps = f.properties
+    if (featureProps.cluster) {
       // Cluster pin (count ≥ 4)
-      const m = L.marker([lat, lng], { icon: makeClusterIcon(L, props.point_count) })
+      const m = L.marker([lat, lng], { icon: makeClusterIcon(L, featureProps.point_count) })
       m.on('click', () => {
         const expansionZoom = Math.min(
-          cluster!.getClusterExpansionZoom(props.cluster_id as number),
+          cluster!.getClusterExpansionZoom(featureProps.cluster_id as number),
           18,
         )
         map!.setView([lat, lng], expansionZoom, { animate: true })
@@ -107,30 +109,42 @@ function renderMarkers() {
       m.addTo(markersLayer)
     } else {
       // Individual hotel pin
-      const hotelId = props.hotelId as string
-      const m = L.marker([lat, lng], { icon: makeHotelIcon(L, hotelId), riseOnHover: true })
-      m.on('mouseover', (e: import('leaflet').LeafletMouseEvent) => {
-        hoveredId.value = hotelId
-        m.setIcon(makeHotelIcon(L, hotelId))
-        const rect = mapEl.value!.getBoundingClientRect()
-        setHover(hotelId, {
-          x: e.containerPoint.x + rect.left,
-          y: e.containerPoint.y + rect.top,
+      const hotelId = featureProps.hotelId as string
+      const hotel = props.hotels.find(h => h.id === hotelId)
+      // Disabled pins (sold-out OR unmatched) render with the grey icon set
+      // but skip every event listener and disable Leaflet pointer-events so
+      // the marker is fully inert: no hover card, no cursor change, no
+      // click → side-panel.
+      const isDisabled = !!hotel?.soldOut || !!hotel?.unmatched
+      const m = L.marker([lat, lng], {
+        icon: makeHotelIcon(L, hotelId),
+        riseOnHover: !isDisabled,
+        interactive: !isDisabled,
+      })
+      if (!isDisabled) {
+        m.on('mouseover', (e: import('leaflet').LeafletMouseEvent) => {
+          hoveredId.value = hotelId
+          m.setIcon(makeHotelIcon(L, hotelId))
+          const rect = mapEl.value!.getBoundingClientRect()
+          setHover(hotelId, {
+            x: e.containerPoint.x + rect.left,
+            y: e.containerPoint.y + rect.top,
+          })
         })
-      })
-      m.on('mouseout', () => {
-        hoveredId.value = null
-        m.setIcon(makeHotelIcon(L, hotelId))
-        setHover(null)
-      })
-      m.on('click', (e: import('leaflet').LeafletMouseEvent) => {
-        L.DomEvent.stopPropagation(e)
-        // Hover preview should disappear on click. Re-appears on a fresh
-        // hover (over any pin, including the just-selected one).
-        hoveredId.value = null
-        setHover(null)
-        selectHotel(hotelId)
-      })
+        m.on('mouseout', () => {
+          hoveredId.value = null
+          m.setIcon(makeHotelIcon(L, hotelId))
+          setHover(null)
+        })
+        m.on('click', (e: import('leaflet').LeafletMouseEvent) => {
+          L.DomEvent.stopPropagation(e)
+          // Hover preview should disappear on click. Re-appears on a fresh
+          // hover (over any pin, including the just-selected one).
+          hoveredId.value = null
+          setHover(null)
+          selectHotel(hotelId)
+        })
+      }
       m.addTo(markersLayer)
     }
   }

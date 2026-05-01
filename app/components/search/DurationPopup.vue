@@ -1,52 +1,83 @@
 <template>
   <div class="duration-popup">
-    <!-- LEFT: night-count CHECKBOXES (multi-select, vertical column) -->
-    <div class="duration-popup__col">
-      <label
-        v-for="opt in nightOptions"
-        :key="opt.value"
-        class="dur-check"
-        :class="{ 'dur-check--selected': nights.includes(opt.value) }"
-      >
-        <input
-          type="checkbox"
-          class="dur-check__input"
-          :checked="nights.includes(opt.value)"
-          @change="onToggleNight(opt.value)"
-        />
-        <span class="dur-check__box" aria-hidden="true">
-          <svg
-            v-if="nights.includes(opt.value)"
-            width="12" height="12" viewBox="0 0 24 24"
-            fill="none" stroke="currentColor" stroke-width="3"
-            stroke-linecap="round" stroke-linejoin="round"
-          >
-            <polyline points="5 12 10 17 19 7" />
-          </svg>
-        </span>
-        <span class="dur-check__label">{{ opt.label }}</span>
-      </label>
+    <!-- 2-tab header — only rendered when both options are available. If
+         the arrival date locks the day-of-week away from every weekend
+         pill, we drop the tab switch entirely and show the nights view. -->
+    <div v-if="hasWeekendOptions" class="duration-popup__tabs">
+      <div class="duration-popup__tabs-inner">
+        <button
+          class="duration-popup__tab"
+          :class="{ 'duration-popup__tab--active': activeTab === 'nights' }"
+          @click="activeTab = 'nights'"
+        >
+          {{ t('header.tab.nights') }}
+        </button>
+        <button
+          class="duration-popup__tab"
+          :class="{ 'duration-popup__tab--active': activeTab === 'weekend' }"
+          @click="activeTab = 'weekend'"
+        >
+          {{ t('header.tab.weekend') }}
+        </button>
+      </div>
     </div>
 
-    <!-- RIGHT: weekend / midweek pills (single-select, only weekday-compatible) -->
-    <div v-if="visibleFlexTypes.length > 0" class="duration-popup__col">
-      <button
-        v-for="opt in visibleFlexTypes"
-        :key="opt.value"
-        type="button"
-        class="flex-chip flex-chip--two-line"
-        :class="{ 'flex-chip--selected': flexType === opt.value }"
-        @click="onSelectFlexType(opt.value)"
-      >
-        <span class="flex-chip__main">{{ opt.label }}</span>
-        <span class="flex-chip__sub">{{ opt.sub }} ({{ opt.nightsText }})</span>
-      </button>
+    <div class="duration-popup__body">
+      <!-- TAB 1: night-count multi-select -->
+      <template v-if="activeTab === 'nights'">
+        <p class="duration-popup__hint">{{ t('header.tab.nightsHint') }}</p>
+        <div class="duration-popup__col">
+          <label
+            v-for="opt in nightOptions"
+            :key="opt.value"
+            class="dur-check"
+            :class="{ 'dur-check--selected': nights.includes(opt.value) }"
+          >
+            <input
+              type="checkbox"
+              class="dur-check__input"
+              :checked="nights.includes(opt.value)"
+              @change="onToggleNight(opt.value)"
+            />
+            <span class="dur-check__box" aria-hidden="true">
+              <svg
+                v-if="nights.includes(opt.value)"
+                width="12" height="12" viewBox="0 0 24 24"
+                fill="none" stroke="currentColor" stroke-width="3"
+                stroke-linecap="round" stroke-linejoin="round"
+              >
+                <polyline points="5 12 10 17 19 7" />
+              </svg>
+            </span>
+            <span class="dur-check__label">{{ opt.label }}</span>
+          </label>
+        </div>
+      </template>
+
+      <!-- TAB 2: weekend / midweek pills -->
+      <template v-else>
+        <div class="duration-popup__col">
+          <button
+            v-for="opt in visibleFlexTypes"
+            :key="opt.value"
+            type="button"
+            class="flex-chip flex-chip--two-line"
+            :class="{ 'flex-chip--selected': flexType === opt.value }"
+            @click="onSelectFlexType(opt.value)"
+          >
+            <span class="flex-chip__main">{{ opt.label }}</span>
+            <span class="flex-chip__sub">{{ opt.sub }} ({{ opt.nightsText }})</span>
+          </button>
+        </div>
+      </template>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import dayjs from 'dayjs'
+
+const { t } = useI18n()
 
 const props = defineProps<{
   /** Currently selected nights ('1' / '2' / '3' / '4' / '5+'). */
@@ -105,11 +136,29 @@ const visibleFlexTypes = computed(() =>
   flexTypeOptions.filter(opt => validStartDows.value.has(opt.startDow)),
 )
 
+/** Whether to show the tab switch at all. If the arrival date constraints
+ *  drop every weekend pill, there's nothing to switch between — collapse
+ *  the popup to just the nights view. */
+const hasWeekendOptions = computed(() => visibleFlexTypes.value.length > 0)
+
+// Active tab — auto-flips to match what the user is interacting with so
+// the visible state always reflects the current selection.
+const activeTab = ref<'nights' | 'weekend'>(
+  props.flexType && hasWeekendOptions.value ? 'weekend' : 'nights',
+)
+// If the weekend tab disappears (date filter changes the day-of-week),
+// snap back to the nights tab so the body has something to render.
+watch(hasWeekendOptions, (has) => {
+  if (!has && activeTab.value === 'weekend') activeTab.value = 'nights'
+})
+
 function onToggleNight(value: string) {
+  activeTab.value = 'nights'
   emit('toggle-night', value)
 }
 
 function onSelectFlexType(value: string) {
+  activeTab.value = 'weekend'
   // Clicking the active pill deselects it
   emit('select-flex-type', props.flexType === value ? null : value)
 }
@@ -117,11 +166,64 @@ function onSelectFlexType(value: string) {
 
 <style scoped>
 .duration-popup {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+/* ===== TAB BAR (matches DatePopup) ===== */
+.duration-popup__tabs {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-md) var(--space-lg) 0;
+}
+
+.duration-popup__tabs-inner {
+  display: flex;
+  gap: 0;
+  background: var(--color-background-secondary);
+  border-radius: 999px;
+  padding: 3px;
+  width: 100%;
+  max-width: 460px;
+}
+
+.duration-popup__tab {
+  flex: 1;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  background: none;
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: color 150ms ease, background 150ms ease;
+  white-space: nowrap;
+}
+
+.duration-popup__tab:hover {
+  color: var(--color-primary);
+}
+
+.duration-popup__tab--active {
+  color: var(--color-text-primary);
+  background: var(--color-surface);
+  font-weight: 600;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.duration-popup__body {
   padding: var(--space-lg);
   display: flex;
-  flex-direction: row;
-  gap: var(--space-xl);
-  min-width: 0;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.duration-popup__hint {
+  margin: 0 0 4px;
+  font-size: 13px;
+  color: var(--color-text-secondary);
 }
 
 .duration-popup__col {

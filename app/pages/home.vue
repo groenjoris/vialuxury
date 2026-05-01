@@ -31,8 +31,8 @@
         <div class="home-hero__trust">
           <span class="home-hero__trust-item">
             <span class="home-hero__trust-star" aria-hidden="true">★</span>
-            <span class="home-hero__trust-text">15.294 gasten raten ons met</span>
-            <span class="home-hero__trust-link">4.5/5</span>
+            <span class="home-hero__trust-text">15.294 gasten beoordelen ons met een</span>
+            <span class="home-hero__trust-link">4.5/5 op Trustpilot</span>
           </span>
           <span class="home-hero__trust-item home-hero__trust-item--soft">
             <span class="home-hero__trust-check" aria-hidden="true">✓</span>
@@ -57,7 +57,7 @@
             class="home-pill"
             @click="pickFilter(f.id)"
           >
-            <span class="home-pill__icon">{{ f.emoji }}</span>
+            <span class="home-pill__icon" v-html="POPULAR_FILTER_ICONS[ICON_FOR[f.id]] || POPULAR_FILTER_ICONS.star" />
             <span class="home-pill__label">{{ f.label }}</span>
           </button>
         </div>
@@ -129,6 +129,29 @@ const actueleDeals: SearchHotel[] = mappedHotels.filter(h => !superIds.has(h.id)
 import { FILTER_TAGS } from '~/utils/filterTags'
 
 const homeFilters = FILTER_TAGS
+
+// Filter id → POPULAR_FILTER_ICONS key. Renders a black Lucide-style SVG
+// in place of the previous emoji glyph.
+const ICON_FOR: Record<string, string> = {
+  wellness: 'bath',
+  'jacuzzi-room': 'bath',
+  pool: 'waves',
+  'with-dinner': 'utensils',
+  'dog-friendly': 'dog',
+  'mini-trip': 'backpack',
+  'aan-zee': 'waves',
+  natuur: 'leaf',
+  romantisch: 'sparkles',
+  culinair: 'wine',
+  fiets: 'bike',
+  steden: 'building',
+  kasteel: 'castle',
+  'unique-stay': 'sparkles',
+  'five-star': 'crown',
+  exclusive: 'crown',
+  'best-price': 'euro',
+  'new-hotels': 'star',
+}
 
 const { toggleFilterTag, selectedFilterTags } = useSearchState()
 

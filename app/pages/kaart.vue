@@ -85,16 +85,16 @@ const mapHotels = computed<SearchHotel[]>(() => {
   }
   const result: SearchHotel[] = []
   for (const h of searchHotels) {
-    // Destination is NOT a filter on the map — it only drives initial zoom
-    // (handled separately below). Hotels stay visible regardless.
+    // Destination is NOT a filter on the map — it only drives initial zoom.
+    // Every hotel stays on the map; we just tag it as `unmatched` when none
+    // of its deals satisfy the active filters so the pin renders disabled
+    // and the hover-card text changes. Clicking still opens the side panel
+    // with the full deal set so the tester can browse them anyway.
     const matchingDeals = h.deals.filter((d) => {
       if (!matchesDuration(d.nights)) return false
       if (!inBudget(d.basePrice)) return false
       if (!dealMatchesAllTags(d, h, pickedOther)) return false
-      // Arrival-date filter — drop deals with no availability in the
-      // flex window. Hotels with no matching deals fall out below.
       if (committedArrivalDate.value && !isDealAvailableInWindow(d.id, committedArrivalDate.value, flex)) return false
-      // Theme OR-pool — at least one picked theme must match.
       if (themesActive) {
         let themeOk = false
         for (const id of pickedThemes) {
@@ -105,12 +105,14 @@ const mapHotels = computed<SearchHotel[]>(() => {
       }
       return true
     })
-    if (matchingDeals.length === 0) continue
-    // For sold-out badge: with the hard filter above, any surviving deal
-    // already has at least one available date in the flex window — so no
-    // hotel is rendered as sold-out anymore. The flag stays in the data
-    // model in case Phase-X wants to relax the filter later.
-    result.push({ ...h, deals: matchingDeals, soldOut: false })
+    result.push({
+      ...h,
+      // Keep ALL deals on the hotel object so the side panel still shows
+      // every arrangement when the user clicks an unmatched pin.
+      deals: h.deals,
+      soldOut: false,
+      unmatched: matchingDeals.length === 0,
+    })
   }
   return result
 })
@@ -213,6 +215,7 @@ function closeMap() {
         :position="hoverPosition"
         :arrival-date="arrivalDate"
         :sold-out="hoveredHotel.soldOut"
+        :unmatched="hoveredHotel.unmatched"
       />
 
       <button

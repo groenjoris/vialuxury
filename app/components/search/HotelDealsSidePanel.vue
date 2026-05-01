@@ -35,23 +35,45 @@
           </div>
 
           <div class="panel__body">
-            <!-- Arrival date bar -->
-            <div v-if="arrivalDate" class="panel__arrival-bar">
-              <span>{{ t('sidebar.forArrival') }} {{ formatDisplayDate(arrivalDate) }}</span>
-              <button class="panel__arrival-clear" @click="clearArrivalDate">{{ t('sidebar.clear') }}</button>
-            </div>
+            <!-- Available section -->
+            <template v-if="availableDeals.length > 0">
+              <div class="panel__group-heading">
+                <span class="panel__group-heading-row1">{{ availableHeading.row1 }}</span>
+                <span v-if="availableHeading.row2" class="panel__group-heading-row2">{{ availableHeading.row2 }}</span>
+              </div>
+              <div class="panel__deal-list">
+                <DealCard
+                  v-for="deal in availableDeals"
+                  :key="deal.id"
+                  :deal="deal"
+                  :hotel="hotel"
+                  hide-hotel-info
+                  hide-labels
+                  grid-mode
+                />
+              </div>
+            </template>
 
-            <div class="panel__deal-list">
-              <DealCard
-                v-for="deal in sortedSiblingDeals"
-                :key="deal.id"
-                :deal="deal"
-                :hotel="hotel"
-                hide-hotel-info
-                hide-labels
-                grid-mode
-              />
-            </div>
+            <!-- Unavailable on the chosen date(s) — only when an arrival
+                 date is set. Without an arrival date all deals fall in the
+                 "available" bucket and there's nothing to show here. -->
+            <template v-if="unavailableDeals.length > 0">
+              <div class="panel__group-heading panel__group-heading--secondary">
+                <span class="panel__group-heading-row1">Beschikbaar op andere datums</span>
+              </div>
+              <div class="panel__deal-list">
+                <DealCard
+                  v-for="deal in unavailableDeals"
+                  :key="deal.id"
+                  :deal="deal"
+                  :hotel="hotel"
+                  hide-hotel-info
+                  hide-labels
+                  grid-mode
+                  ignore-arrival
+                />
+              </div>
+            </template>
           </div>
         </aside>
       </div>
@@ -62,9 +84,18 @@
 <script setup lang="ts">
 import type { SearchHotel } from '~/types/searchHotel'
 import { getReviewLabelKey } from '~/utils/reviewLabel'
+import { isDealAvailableInWindow, expandFlex } from '~/utils/availability'
+import { formatDateShort } from '~/utils/formatDate'
 
 const { t } = useI18n()
-const { arrivalDate, clearArrivalDate } = useSearchState()
+// Use the *selected* (live) arrival date + flex — same source the deal
+// cards use for their pricing — so the heading matches what the user just
+// picked, even when they haven't re-submitted a search.
+const {
+  arrivalDate: activeArrivalDate,
+  selectedFlexibility: activeFlexibility,
+  selectedNights,
+} = useSearchState()
 
 const props = defineProps<{
   isOpen: boolean
@@ -78,16 +109,79 @@ defineEmits<{
   (e: 'close'): void
 }>()
 
-/** Side-panel deals sorted by basePrice ascending (cheapest first). */
+/** All sibling deals, cheapest first by base price. Used for both the
+ *  "available" and "andere data" groups below. */
 const sortedSiblingDeals = computed(() => {
   if (!props.hotel) return []
   return [...props.hotel.deals].sort((a, b) => a.basePrice - b.basePrice)
 })
 
-function formatDisplayDate(dateStr: string) {
-  const [y, m, d] = dateStr.split('-')
-  return `${d}-${m}-${y}`
+/** Match selected nights filter (string array; '5+' covers ≥ 5). When no
+ *  nights are selected, every deal qualifies. */
+function matchesNights(deal: { nights: number }): boolean {
+  const ns = selectedNights.value
+  if (!ns || ns.length === 0) return true
+  if (ns.includes('5+') && deal.nights >= 5) return true
+  return ns.includes(String(deal.nights))
 }
+
+/** A deal is "available" when it has at least one bookable date inside the
+ *  flex window AND its nights match the duration filter. Without an
+ *  arrival date everything is available (single-list fallback). */
+function isAvailable(deal: { id: string; nights: number }): boolean {
+  if (!matchesNights(deal)) return false
+  if (!activeArrivalDate.value) return true
+  return isDealAvailableInWindow(deal.id, activeArrivalDate.value, activeFlexibility.value)
+}
+
+const availableDeals = computed(() => sortedSiblingDeals.value.filter(isAvailable))
+const unavailableDeals = computed(() =>
+  // Everything not in the "available" bucket — regardless of whether the
+  // miss was due to arrival date or duration filter. Renders under the
+  // "Beschikbaar op andere datums" heading.
+  sortedSiblingDeals.value.filter((d) => !isAvailable(d)),
+)
+
+/** Heading for the "available" group, rendered on two lines:
+ *    Row 1: "Beschikbaar op {date}"  /  "Beschikbaar tussen {start} en {end}"
+ *    Row 2: "voor X, Y of Z nachten" — derived from the active duration
+ *           filter when set, otherwise from the unique nights of the
+ *           available deals so the heading still reads naturally. */
+const availableHeading = computed(() => {
+  const arrival = activeArrivalDate.value
+  let row1 = ''
+  if (arrival) {
+    const window = expandFlex(arrival, activeFlexibility.value)
+    if (window.length <= 1) {
+      row1 = `Beschikbaar op ${formatDateShort(arrival)}`
+    } else {
+      const start = window[0]
+      const end = window[window.length - 1]
+      row1 = `Beschikbaar tussen ${formatDateShort(start)} en ${formatDateShort(end)}`
+    }
+  } else {
+    row1 = 'Alle arrangementen'
+  }
+
+  // Row 2 only appears when the user has actually picked a duration filter.
+  // Without an active selection we don't infer / show one — the heading
+  // collapses to just row 1.
+  const ns = selectedNights.value
+  let row2 = ''
+  if (ns && ns.length > 0) {
+    const nightsList = [...ns]
+    let label: string
+    if (nightsList.length === 1) {
+      label = nightsList[0]
+    } else {
+      const head = nightsList.slice(0, -1).join(', ')
+      label = `${head} of ${nightsList[nightsList.length - 1]}`
+    }
+    const onlyOne = nightsList.length === 1 && nightsList[0] === '1'
+    row2 = `voor ${label} ${onlyOne ? 'nacht' : 'nachten'}`
+  }
+  return { row1, row2 }
+})
 
 // Lock body scroll when panel is open — except on /kaart where the map
 // underneath needs to stay scroll/zoom-able.
@@ -307,6 +401,38 @@ onUnmounted(() => {
   font-size: 13px;
   font-weight: 600;
   text-decoration: underline;
+}
+
+/* Group heading inside the scrollable body — sits above each deal list.
+   Two stacked lines: date(s) on row 1, duration on row 2. */
+.panel__group-heading {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  /* Basis Grotesque (mapped to --font-body in tokens). */
+  font-family: var(--font-body);
+  color: var(--color-text-primary);
+}
+
+/* The second group ("andere datums") is separated from the first deal list
+   by a thin grey divider that spans the panel body width. */
+.panel__group-heading--secondary {
+  border-top: 1px solid var(--color-border-light);
+  padding-top: var(--space-md);
+  margin-top: var(--space-sm);
+}
+
+.panel__group-heading-row1 {
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.panel__group-heading-row2 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  line-height: 1.2;
 }
 
 /* Scrollable body */

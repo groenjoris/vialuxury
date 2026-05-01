@@ -204,12 +204,18 @@ function toFacilities(pkg: RawPackage): Facility[] {
 
 function toHotelImages(pkg: RawPackage): HotelImage[] {
   const photos = pkg.photos || []
+  // Vialuxury serves the same asset under different `?key=` query params
+  // (e.g. `?key=card` for hero, `?key=photo-full` for gallery). Compare on
+  // the path so query-only variations of the same image count as a dupe.
+  const stripQuery = (u: string) => u.split('?')[0]
   const heroFromImageUrls = (pkg.imageUrls && pkg.imageUrls[0]) || photos[0]?.full || ''
+  const heroBase = stripQuery(heroFromImageUrls)
   const out: HotelImage[] = []
   if (heroFromImageUrls) {
     out.push({ id: 'img-hero', url: heroFromImageUrls, alt: loc(pkg.hotelName), position: 'hero' })
   }
   photos.forEach((p, i) => {
+    if (stripQuery(p.full) === heroBase) return
     out.push({ id: `img-${i}`, url: p.full, alt: loc(pkg.hotelName), position: 'gallery' })
   })
   return out

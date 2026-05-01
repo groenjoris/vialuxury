@@ -34,7 +34,7 @@ const { partner, restore } = usePartner()
 onMounted(() => restore())
 
 const items = computed(() => [
-  { icon: '★', text: '15.294 gasten raten ons met 4.5/5' },
+  { icon: '★', text: '15.294 gasten beoordelen ons met een 4.5/5 op Trustpilot' },
   { icon: '✓', text: 'Gratis annuleren op de meeste verblijven' },
   { icon: '✓', text: 'Unieke deals met heel veel korting' },
 ])

@@ -1,6 +1,6 @@
 const en: Record<string, string> = {
   // TopBar
-  'topbar.trustpilot': '15,294 guests rate us 4.5/5',
+  'topbar.trustpilot': '15,294 guests rate us 4.5 out of 5 on Trustpilot',
   'topbar.bestDeal': 'Always the best deal',
   'topbar.easyCancel': 'Easy cancellation',
   'topbar.wideSelection': 'Wide selection of hotel experiences',
@@ -10,7 +10,7 @@ const en: Record<string, string> = {
   'header.whenAndHowLong': 'When & how long',
   'header.when': 'When',
   'header.whosComing': 'Who\'s coming',
-  'header.chooseDestination': 'All destinations',
+  'header.chooseDestination': 'Choose a destination',
   'header.chooseDate': 'Flexible, any duration',
   'header.flexibleLabel': 'Flexible',
   'header.anyDuration': 'any travel duration',
@@ -28,7 +28,7 @@ const en: Record<string, string> = {
   'header.howLong': 'How long',
   'header.arrivalDate': 'Arrival date',
   'header.duration': 'Duration',
-  'header.flexArrival': 'Flexibility of arrival date',
+  'header.flexArrival': 'How flexible is this date?',
   'header.done': 'Ready',
   'header.save': 'Save',
   'header.clear': 'Clear',
@@ -63,8 +63,11 @@ const en: Record<string, string> = {
   'header.flex.7days': '\u00b1 7 days',
 
   // Header - Tabs
-  'header.tab.calendar': 'Calendar',
-  'header.tab.flexible': 'Flexible',
+  'header.tab.calendar': 'Pick your arrival date',
+  'header.tab.flexible': 'Pick a period',
+  'header.tab.nights': 'Pick number of nights',
+  'header.tab.nightsHint': 'You can pick multiple',
+  'header.tab.weekend': 'Pick a weekend',
 
   // Header - Flexible tab
   'header.flex.howLong': 'How long do you want to stay?',
@@ -257,7 +260,7 @@ const en: Record<string, string> = {
   'deal.highlight.estate': 'Stunning estate in South Limburg',
   'deal.highlight.cycling': 'Perfect for cycling and hiking',
   'deal.highlight.exclusive': 'Exclusive package via ViaLuxury',
-  'deal.priceFor': 'For {nightsLabel}, {personsLabel}',
+  'deal.priceFor': 'For {nightsLabel}, {personsLabel}, {roomsLabel}',
   'deal.disclaimer': 'You only need to pay local taxes, any service/administration fees of the hotel and parking costs on-site (if not included in the package).',
   'deal.trust2min': 'It only takes 2 minutes',
   'deal.trustCancel': 'Easy cancellation',
@@ -299,7 +302,7 @@ const en: Record<string, string> = {
 
   // Calendar
   'calendar.chooseArrivalDate': 'Choose arrival date',
-  'calendar.clearDates': 'Clear dates',
+  'calendar.clearDates': 'Clear',
 
   // Travel group modal
   'travelGroup.title': 'Travel group',

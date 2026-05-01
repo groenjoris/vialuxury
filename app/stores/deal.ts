@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import type { Deal, DealVariant, TravelGroup, TravelGroupPricing, RoomOption } from '~/types/deal'
 import type { DateAvailability } from '~/types/calendar'
-import { priceForArrival, minRoomsFor } from '~/utils/priceFormula'
+import { priceForArrival, minRoomsFor, maxRoomsFor } from '~/utils/priceFormula'
 import dayjs from 'dayjs'
 
 export const useDealStore = defineStore('deal', () => {
@@ -45,7 +45,10 @@ export const useDealStore = defineStore('deal', () => {
       ? Math.max(1, p - travelGroup.value.children.length)
       : travelGroup.value.adults
     const min = minRoomsFor(p)
-    const newRooms = Math.max(travelGroup.value.rooms, min)
+    const max = maxRoomsFor(p)
+    // Enforce both bounds: rooms ≥ minRooms (no over-stuffed rooms) AND
+    // rooms ≤ persons (no empty rooms).
+    const newRooms = Math.min(max, Math.max(travelGroup.value.rooms, min))
     if (newAdults !== travelGroup.value.adults || newRooms !== travelGroup.value.rooms) {
       travelGroup.value = { ...travelGroup.value, adults: newAdults, rooms: newRooms }
     }
@@ -53,7 +56,8 @@ export const useDealStore = defineStore('deal', () => {
   watch(globalRooms, (r) => {
     if (r !== travelGroup.value.rooms) {
       const total = travelGroup.value.adults + travelGroup.value.children.length
-      travelGroup.value = { ...travelGroup.value, rooms: Math.max(r, minRoomsFor(total)) }
+      const clamped = Math.min(maxRoomsFor(total), Math.max(r, minRoomsFor(total)))
+      travelGroup.value = { ...travelGroup.value, rooms: clamped }
     }
   })
 

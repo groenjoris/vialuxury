@@ -120,7 +120,7 @@
 <script setup lang="ts">
 import { useDealStore } from '~/stores/deal'
 import type { TravelGroup, ChildEntry } from '~/types/deal'
-import { minRoomsFor } from '~/utils/priceFormula'
+import { minRoomsFor, maxRoomsFor } from '~/utils/priceFormula'
 
 const { t } = useI18n()
 const store = useDealStore()
@@ -146,14 +146,17 @@ watch(() => store.isTravelGroupModalOpen, (open) => {
 // Room dependency logic: max 2 persons per room, children count as persons
 const totalPersons = computed(() => localGroup.value.adults + localGroup.value.children.length)
 const minRooms = computed(() => Math.ceil(totalPersons.value / 2))
-const maxRooms = 10 // No hard cap — limited by availability per room type
+// Upper bound: rooms can never exceed total guests (no empty rooms).
+const maxRooms = computed(() => maxRoomsFor(totalPersons.value))
 
-// Enforce minimum rooms when persons change (1p→1, 2p→1, 3p→2, 4p→2,
-// 5p→3, …). User can still manually pick extra rooms via the rooms
-// stepper — those stick because we only bump rooms UP, never down.
+// Clamp rooms when persons change. Bump UP to the minimum if persons grew
+// past current capacity; clamp DOWN to maxRoomsFor when persons shrank
+// below the current room count (no empty rooms allowed).
 watch(totalPersons, (tp) => {
   const min = minRoomsFor(tp)
+  const max = maxRoomsFor(tp)
   if (localGroup.value.rooms < min) localGroup.value.rooms = min
+  if (localGroup.value.rooms > max) localGroup.value.rooms = max
 })
 
 let childIdCounter = 0

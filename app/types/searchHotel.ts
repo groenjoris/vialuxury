@@ -23,6 +23,12 @@ export interface SearchHotel {
   /** Map-only: hotel has zero available deals on the active arrival-date.
    *  Set by the /kaart page after applying date+duration filters. */
   soldOut?: boolean
+  /** Map-only: hotel has deals but none of them match the active filters
+   *  (nights / themes / arrangement / specials / budget / arrival). The
+   *  pin renders in the disabled style and the hover-card text reads
+   *  "Voldoet niet aan je zoekwensen" — clicking still opens the side
+   *  panel with all of the hotel's deals. */
+  unmatched?: boolean
 }
 
 export interface SearchHotelDeal {

@@ -18,13 +18,20 @@
           {{ t('header.tab.flexible') }}
         </button>
       </div>
-      <a href="#" class="date-popup__clear-link" @click.prevent="$emit('clear')">{{ t('header.clear') }}</a>
     </div>
 
     <!-- CALENDAR TAB: only calendar + flexibility chips -->
     <div v-if="activeTab === 'calendar'" class="date-popup__body">
       <div class="date-popup__cal-section date-popup__cal-section--full">
-        <h4 class="date-popup__label">{{ t('header.arrivalDate') }}</h4>
+        <div class="date-popup__label-row">
+          <h4 class="date-popup__label">{{ t('header.arrivalDate') }}</h4>
+          <a
+            v-if="selectedDate"
+            href="#"
+            class="date-popup__clear-link date-popup__clear-link--inline"
+            @click.prevent="$emit('clear')"
+          >{{ t('header.clear') }}</a>
+        </div>
         <div class="mini-cal">
           <div class="mini-cal__header">
             <button class="mini-cal__nav" @click="handleCalPrev" aria-label="Previous month">&#8249;</button>
@@ -53,22 +60,26 @@
         </div>
       </div>
 
-      <div class="date-popup__divider"></div>
+      <!-- Flex chips: only after a date has been picked. Without a date the
+           flexibility question is meaningless, so the chips stay hidden. -->
+      <template v-if="selectedDate">
+        <div class="date-popup__divider"></div>
 
-      <div class="date-popup__flex-col">
-        <h4 class="date-popup__label">{{ t('header.flexArrival') }}</h4>
-        <div class="date-popup__flex-chips">
-          <button
-            v-for="f in flexOptions"
-            :key="f.value"
-            class="flex-chip"
-            :class="{ 'flex-chip--selected': flexibility === f.value }"
-            @click="$emit('update:flexibility', f.value)"
-          >
-            {{ f.label }}
-          </button>
+        <div class="date-popup__flex-col">
+          <h4 class="date-popup__label">{{ t('header.flexArrival') }}</h4>
+          <div class="date-popup__flex-chips">
+            <button
+              v-for="f in flexOptions"
+              :key="f.value"
+              class="flex-chip"
+              :class="{ 'flex-chip--selected': flexibility === f.value }"
+              @click="$emit('update:flexibility', f.value)"
+            >
+              {{ f.label }}
+            </button>
+          </div>
         </div>
-      </div>
+      </template>
     </div>
 
     <!-- FLEXIBLE TAB: only month picker -->
@@ -318,27 +329,32 @@ function emitFlexState() {
 .date-popup__clear-link:hover { color: var(--color-primary); }
 
 .date-popup__tabs-inner {
-  display: inline-flex;
+  display: flex;
   gap: 0;
   background: var(--color-background-secondary);
   border-radius: 999px;
   padding: 3px;
+  width: 100%;
+  max-width: 460px;
 }
 
 .date-popup__tab {
-  padding: 8px 24px;
+  flex: 1;
+  padding: 10px 20px;
   font-size: 14px;
   font-weight: 500;
-  color: var(--color-text-muted);
+  /* Both tabs are equally readable — only the active one is highlighted. */
+  color: var(--color-text-primary);
   background: none;
   border: none;
   border-radius: 999px;
   cursor: pointer;
   transition: color 150ms ease, background 150ms ease;
+  white-space: nowrap;
 }
 
 .date-popup__tab:hover {
-  color: var(--color-text-secondary);
+  color: var(--color-primary);
 }
 
 .date-popup__tab--active {
@@ -366,6 +382,25 @@ function emitFlexState() {
   letter-spacing: 0;
   color: var(--color-text-primary);
   margin: 0 0 var(--space-md) 0;
+}
+
+/* Header row above the calendar — title on the left, optional "Wis" link
+   on the right when a date is selected. */
+.date-popup__label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  margin: 0 0 var(--space-md) 0;
+}
+
+.date-popup__label-row .date-popup__label {
+  margin: 0;
+}
+
+.date-popup__clear-link--inline {
+  position: static;
+  font-size: 14px;
 }
 
 /* ==================== */

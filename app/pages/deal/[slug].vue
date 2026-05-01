@@ -55,6 +55,10 @@
             <span>{{ hotel.reviews.totalReviews }} {{ t('common.reviews') }}</span>
             <span class="deal-page__divider">·</span>
             <span>{{ hotel.location.city }}, {{ hotel.location.region }}</span>
+            <template v-if="chosenReisduurLabel">
+              <span class="deal-page__divider">·</span>
+              <span>Reisduur: {{ chosenReisduurLabel }}</span>
+            </template>
           </div>
         </div>
         <div class="deal-page__title-actions">
@@ -231,6 +235,7 @@
               :selected-check-in="store.checkInDate" :selected-check-out="store.checkOutDate"
               :cheapest-price="calCheapestPrice"
               :show-prev-button="true" :show-next-button="true"
+              :show-legend="true"
               @select-date="handleDateSelect" @prev-month="calPrev" @next-month="calNext"
             />
           </section>
@@ -249,16 +254,10 @@
             >{{ store.totalPersons }} {{ store.totalPersons === 1 ? t('common.personSingular') : t('common.personPlural') }}</button>
           </h3>
           <ul class="sidebar__inc-list">
-            <template v-for="(inc, idx) in currentDeal.inclusions" :key="inc.id">
-              <li>
-                <span class="sidebar__inc-check">✓</span>
-                <span>{{ localized(inc.title) }}</span>
-              </li>
-              <li v-if="idx === 0">
-                <span class="sidebar__inc-check">✓</span>
-                <span>{{ store.travelGroup.rooms }} {{ store.travelGroup.rooms === 1 ? t('sidebar.luxeRoomSingular') : t('sidebar.luxeRoomPlural') }}</span>
-              </li>
-            </template>
+            <li v-for="inc in currentDeal.inclusions" :key="inc.id">
+              <span class="sidebar__inc-check">✓</span>
+              <span>{{ localized(inc.title) }}</span>
+            </li>
           </ul>
 
           <!-- Variant CTA -->
@@ -281,6 +280,7 @@
               :selected-check-in="store.checkInDate" :selected-check-out="store.checkOutDate"
               :cheapest-price="calCheapestPrice"
               :show-prev-button="true" :show-next-button="true"
+              :show-legend="true"
               @select-date="handleDateSelect" @prev-month="calPrev" @next-month="calNext"
             />
           </div>
@@ -587,7 +587,7 @@ import { formatPrice } from '~/utils/formatPrice'
 import { getReviewLabelKey } from '~/utils/reviewLabel'
 import { generateDealAvailability } from '~/data/mock/deal-pricing'
 import { matchIcon } from '~/utils/iconMatcher'
-import { nightsLabel, personsLabel } from '~/utils/plural'
+import { nightsLabel, personsLabel, roomsLabel } from '~/utils/plural'
 import {
   mappedPackagesByPermalink,
   mappedHotelsByPackagePermalink,
@@ -600,6 +600,23 @@ import {
 const { t, localized, locale } = useI18n()
 const lang = computed<'nl' | 'en'>(() => (locale.value === 'en' ? 'en' : 'nl'))
 
+/** Reisduur the user picked on /search (persisted via sessionStorage in
+ *  useSearchState). Shown in the deal-page meta line so the choice is
+ *  visible after navigating in from the search results. Returns null when
+ *  no reisduur was selected (don't show anything). */
+const { selectedNights } = useSearchState()
+const chosenReisduurLabel = computed(() => {
+  const ns = selectedNights.value
+  if (!ns || ns.length === 0) return null
+  const parts = ns.map(n => n === '5+' ? '5+' : n)
+  // "1, 2 of 3 nachten" / "1 nacht" / "5+ nachten"
+  let head: string
+  if (parts.length === 1) head = parts[0]
+  else head = `${parts.slice(0, -1).join(', ')} of ${parts[parts.length - 1]}`
+  const onlyOne = parts.length === 1 && parts[0] === '1'
+  return `${head} ${onlyOne ? 'nacht' : 'nachten'}`
+})
+
 /** Plural-aware "Voor X nacht(en), Y persoon/personen" used both under the
  *  calendar (sidebar) and in the sticky CTA bar. */
 const priceForLabel = computed(() => {
@@ -608,6 +625,7 @@ const priceForLabel = computed(() => {
   return t('deal.priceFor')
     .replace('{nightsLabel}', nightsLabel(deal.nights, lang.value))
     .replace('{personsLabel}', personsLabel(store.totalPersons, lang.value))
+    .replace('{roomsLabel}', roomsLabel(store.travelGroup.rooms, lang.value))
 })
 
 // Mobile detection + active sub-modal
@@ -1121,7 +1139,7 @@ function openGallery() { }
 .sidebar__date-label { font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted); letter-spacing: 0.3px; }
 .sidebar__date-val { font-size: 14px; font-weight: 500; }
 .sidebar__date-arrow { color: var(--color-text-muted); margin: 0 var(--space-xs); }
-.sidebar__date-clear { margin-left: auto; font-size: 12px; color: var(--color-text-muted); text-decoration: underline; cursor: pointer; background: none; border: none; }
+.sidebar__date-clear { margin-left: auto; font-size: 14px; color: var(--color-text-muted); text-decoration: underline; cursor: pointer; background: none; border: none; }
 /* Price breakdown */
 .sidebar__breakdown { margin-bottom: var(--space-md); display: flex; flex-direction: column; gap: 6px; }
 .sidebar__breakdown-row { display: flex; justify-content: space-between; align-items: baseline; font-size: 13px; color: var(--color-text-secondary); }

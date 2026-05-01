@@ -161,7 +161,7 @@
 
           <!-- Results: list or grid -->
           <div
-            v-if="!searchLoading"
+            v-if="!searchLoading && displayedDeals.length > 0"
             class="search-page__result-list"
             :class="{
               'search-page__result-list--grid': effectiveViewMode === 'grid',
@@ -180,6 +180,30 @@
               :unavailable="row._unavailable"
               @view-siblings="openDealPanel(row.hotel)"
             />
+          </div>
+
+          <!-- Empty state: nothing matches the active filters. Friendly
+               illustration + "Bekijk alle deals" link that wipes every
+               active filter and brings the full result set back. -->
+          <div v-else-if="!searchLoading" class="search-page__empty">
+            <div class="search-page__empty-illustration" aria-hidden="true">
+              <svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="54" cy="54" r="32" stroke="currentColor" stroke-width="3" fill="none" />
+                <path d="M78 78L100 100" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
+                <circle cx="48" cy="48" r="3" fill="currentColor" />
+                <circle cx="62" cy="48" r="3" fill="currentColor" />
+                <path d="M44 64 Q 54 56 64 64" stroke="currentColor" stroke-width="3" stroke-linecap="round" fill="none" />
+              </svg>
+            </div>
+            <h2 class="search-page__empty-title">Geen arrangementen gevonden</h2>
+            <p class="search-page__empty-body">
+              Met deze combinatie aan filters hebben we geen passend arrangement
+              voor je. Probeer een filter aan te passen — of bekijk meteen ons
+              hele aanbod.
+            </p>
+            <button type="button" class="search-page__empty-cta" @click="resetFilters">
+              Bekijk alle deals
+            </button>
           </div>
         </div>
       </div>
@@ -315,6 +339,10 @@ const {
   setBudgetMin,
   setBudgetMax,
   resetBudget,
+  clearArrivalDate,
+  clearDuration,
+  clearFilterTags,
+  clearDestinations,
 } = useSearchState()
 // Writable computed acts as a ref alias so existing v-model / `.value =`
 // usage in this file still works.
@@ -343,7 +371,14 @@ function handleFilterButtonClick() {
 }
 
 function resetFilters() {
+  // Used by the mobile filter subpage AND the no-results "Bekijk alle deals"
+  // link — wipes every active selection so the result list goes back to the
+  // full set. Persons/rooms stay (they're a price-formula global, not a filter).
   resetBudget()
+  clearArrivalDate()
+  clearDuration()
+  clearFilterTags()
+  clearDestinations()
 }
 
 // Sort
@@ -514,7 +549,12 @@ const panelOpen = ref(false)
 const activePanelHotel = ref<SearchHotel | null>(null)
 
 function openDealPanel(hotel: SearchHotel) {
-  activePanelHotel.value = hotel
+  // The grid's `hotel` already had its deals pruned to the filter-matching
+  // ("available") set. The side panel needs the FULL deal list so it can
+  // render both the "available" group and the "Beschikbaar op andere
+  // datums" group below it. Look the original hotel up by id.
+  const full = searchHotels.find((h) => h.id === hotel.id) ?? hotel
+  activePanelHotel.value = full
   panelOpen.value = true
 }
 
@@ -555,6 +595,47 @@ function navigateToDeal(slug: string) {
 .search-page__map-preview {
   margin-bottom: var(--space-md);
 }
+
+.search-page__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: var(--space-2xl) var(--space-md);
+  color: var(--color-text-secondary);
+  max-width: 480px;
+  margin: 0 auto;
+}
+.search-page__empty-illustration {
+  color: var(--color-border);
+  margin-bottom: var(--space-md);
+}
+.search-page__empty-title {
+  font-family: var(--font-heading);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0 0 var(--space-sm);
+}
+.search-page__empty-body {
+  font-size: 15px;
+  line-height: 1.55;
+  margin: 0 0 var(--space-lg);
+}
+.search-page__empty-cta {
+  height: 44px;
+  padding: 0 var(--space-lg);
+  background: var(--color-primary);
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 700;
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: filter var(--transition-fast);
+}
+.search-page__empty-cta:hover { filter: brightness(0.95); }
 
 .search-page__results {
   display: flex;

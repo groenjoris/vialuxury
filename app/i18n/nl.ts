@@ -1,6 +1,6 @@
 const nl: Record<string, string> = {
   // TopBar
-  'topbar.trustpilot': '15.294 gasten raten ons met 4.5/5',
+  'topbar.trustpilot': '15.294 gasten beoordelen ons met een 4.5/5 op Trustpilot',
   'topbar.bestDeal': 'Altijd de beste deal',
   'topbar.easyCancel': 'Gemakkelijk annuleren',
   'topbar.wideSelection': 'Uitgebreid aanbod hotel experiences',
@@ -10,7 +10,7 @@ const nl: Record<string, string> = {
   'header.whenAndHowLong': 'Wanneer & hoelang',
   'header.when': 'Wanneer',
   'header.whosComing': 'Wie gaat er mee',
-  'header.chooseDestination': 'Alle bestemmingen',
+  'header.chooseDestination': 'Kies bestemming',
   'header.chooseDate': 'Flexibel, elke duur',
   'header.flexibleLabel': 'Flexibel',
   'header.anyDuration': 'elke reisduur',
@@ -28,7 +28,7 @@ const nl: Record<string, string> = {
   'header.howLong': 'Hoelang',
   'header.arrivalDate': 'Aankomstdatum',
   'header.duration': 'Verblijfsduur',
-  'header.flexArrival': 'Flexibiliteit aankomstdatum',
+  'header.flexArrival': 'Hoe flexibel is deze datum?',
 
   // Header - Travel group
   'header.adults': 'Volwassenen',
@@ -63,8 +63,11 @@ const nl: Record<string, string> = {
   'header.flex.7days': '\u00b1 7 dagen',
 
   // Header - Tabs
-  'header.tab.calendar': 'Kalender',
-  'header.tab.flexible': 'Flexibel',
+  'header.tab.calendar': 'Kies je aankomstdatum',
+  'header.tab.flexible': 'Kies tijdsperiode',
+  'header.tab.nights': 'Kies aantal nachten',
+  'header.tab.nightsHint': 'Je kunt er meerdere kiezen',
+  'header.tab.weekend': 'Kies weekend',
 
   // Header - Flexible tab
   'header.flex.howLong': 'Hoe lang wil je blijven?',
@@ -257,7 +260,7 @@ const nl: Record<string, string> = {
   'deal.highlight.estate': 'Schitterend landgoed in Zuid-Limburg',
   'deal.highlight.cycling': 'Perfect voor fietsen en wandelen',
   'deal.highlight.exclusive': 'Exclusief arrangement via ViaLuxury',
-  'deal.priceFor': 'Voor {nightsLabel}, {personsLabel}',
+  'deal.priceFor': 'Voor {nightsLabel}, {personsLabel}, {roomsLabel}',
   'deal.disclaimer': 'Je dient ter plaatse alleen de lokale belastingen, eventuele service-/administratiekosten van het hotel en parkeerkosten te betalen (indien dit niet is inbegrepen in het arrangement).',
   'deal.trust2min': 'Het duurt maar 2 minuten',
   'deal.trustCancel': 'Gemakkelijk annuleren',
@@ -299,7 +302,7 @@ const nl: Record<string, string> = {
 
   // Calendar
   'calendar.chooseArrivalDate': 'Kies aankomstdatum',
-  'calendar.clearDates': 'Datums wissen',
+  'calendar.clearDates': 'Wis',
 
   // Travel group modal
   'travelGroup.title': 'Reisgezelschap',
