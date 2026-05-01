@@ -9,7 +9,7 @@
  *   - Empty array = no nights filter (show all)
  */
 /**
- * sessionStorage keys — persist the global search state through full page
+ * localStorage keys — persist the global search state through full page
  * reloads (browser refresh, the static /advertisement → /deal redirect, etc.).
  * The data lives only for the tab's lifetime, matching the user-test session.
  */
@@ -26,22 +26,22 @@ const SS_FLEX_TYPE = 'vl_flex_type'
 
 function persistNights() {
   if (!import.meta.client) return
-  if (selectedNights.value.length) sessionStorage.setItem(SS_NIGHTS, JSON.stringify(selectedNights.value))
-  else sessionStorage.removeItem(SS_NIGHTS)
-  if (selectedFlexType.value) sessionStorage.setItem(SS_FLEX_TYPE, selectedFlexType.value)
-  else sessionStorage.removeItem(SS_FLEX_TYPE)
+  if (selectedNights.value.length) localStorage.setItem(SS_NIGHTS, JSON.stringify(selectedNights.value))
+  else localStorage.removeItem(SS_NIGHTS)
+  if (selectedFlexType.value) localStorage.setItem(SS_FLEX_TYPE, selectedFlexType.value)
+  else localStorage.removeItem(SS_FLEX_TYPE)
 }
 
 function persistDestinations() {
   if (!import.meta.client) return
-  if (selectedDestinations.value.length) sessionStorage.setItem(SS_DESTINATIONS, JSON.stringify(selectedDestinations.value))
-  else sessionStorage.removeItem(SS_DESTINATIONS)
-  if (selectedCities.value.length) sessionStorage.setItem(SS_CITIES, JSON.stringify(selectedCities.value))
-  else sessionStorage.removeItem(SS_CITIES)
-  if (selectedHotels.value.length) sessionStorage.setItem(SS_HOTELS, JSON.stringify(selectedHotels.value))
-  else sessionStorage.removeItem(SS_HOTELS)
-  if (selectionOrder.value.length) sessionStorage.setItem(SS_SELECTION_ORDER, JSON.stringify(selectionOrder.value))
-  else sessionStorage.removeItem(SS_SELECTION_ORDER)
+  if (selectedDestinations.value.length) localStorage.setItem(SS_DESTINATIONS, JSON.stringify(selectedDestinations.value))
+  else localStorage.removeItem(SS_DESTINATIONS)
+  if (selectedCities.value.length) localStorage.setItem(SS_CITIES, JSON.stringify(selectedCities.value))
+  else localStorage.removeItem(SS_CITIES)
+  if (selectedHotels.value.length) localStorage.setItem(SS_HOTELS, JSON.stringify(selectedHotels.value))
+  else localStorage.removeItem(SS_HOTELS)
+  if (selectionOrder.value.length) localStorage.setItem(SS_SELECTION_ORDER, JSON.stringify(selectionOrder.value))
+  else localStorage.removeItem(SS_SELECTION_ORDER)
 }
 
 /**
@@ -88,8 +88,8 @@ export function useSearchState() {
   function setArrivalDate(date: string | null) {
     selectedArrivalDate.value = date
     if (import.meta.client) {
-      if (date) sessionStorage.setItem(SS_ARRIVAL, date)
-      else sessionStorage.removeItem(SS_ARRIVAL)
+      if (date) localStorage.setItem(SS_ARRIVAL, date)
+      else localStorage.removeItem(SS_ARRIVAL)
     }
   }
 
@@ -99,43 +99,43 @@ export function useSearchState() {
     selectedArrivalDate.value = null
     committedArrivalDate.value = null
     if (import.meta.client) {
-      sessionStorage.removeItem(SS_ARRIVAL)
-      sessionStorage.removeItem(SS_FLEX)
+      localStorage.removeItem(SS_ARRIVAL)
+      localStorage.removeItem(SS_FLEX)
     }
   }
 
-  /** Restore arrival date / flex / persons-rooms from sessionStorage. Call
+  /** Restore arrival date / flex / persons-rooms from localStorage. Call
    *  once on app mount so the global state survives full-page reloads
    *  (browser refresh, redirects through the static /advertisement page,
    *  external partner navigation). */
   function restoreSearchSession() {
     if (!import.meta.client) return
-    const date = sessionStorage.getItem(SS_ARRIVAL)
+    const date = localStorage.getItem(SS_ARRIVAL)
     if (date && !selectedArrivalDate.value) selectedArrivalDate.value = date
-    const flex = sessionStorage.getItem(SS_FLEX)
+    const flex = localStorage.getItem(SS_FLEX)
     if (flex !== null && !selectedFlexibility.value) {
       const n = Number(flex)
       if (!Number.isNaN(n)) selectedFlexibility.value = Math.max(0, Math.min(14, n | 0))
     }
-    const p = sessionStorage.getItem(SS_PERSONS)
+    const p = localStorage.getItem(SS_PERSONS)
     if (p !== null) {
       const n = Number(p); if (!Number.isNaN(n) && n > 0) searchPersons.value = n
     }
-    const r = sessionStorage.getItem(SS_ROOMS)
+    const r = localStorage.getItem(SS_ROOMS)
     if (r !== null) {
       const n = Number(r); if (!Number.isNaN(n) && n > 0) searchRooms.value = n
     }
     // Reisduur (nights / flex-type) — repopulate when empty.
     try {
       if (!selectedNights.value.length) {
-        const v = sessionStorage.getItem(SS_NIGHTS)
+        const v = localStorage.getItem(SS_NIGHTS)
         if (v) {
           const parsed = JSON.parse(v)
           if (Array.isArray(parsed)) selectedNights.value = parsed
         }
       }
       if (!selectedFlexType.value) {
-        const v = sessionStorage.getItem(SS_FLEX_TYPE)
+        const v = localStorage.getItem(SS_FLEX_TYPE)
         if (v) selectedFlexType.value = v
       }
     } catch { /* ignore */ }
@@ -143,19 +143,19 @@ export function useSearchState() {
     // we don't clobber an in-flight selection.
     try {
       if (!selectedDestinations.value.length) {
-        const v = sessionStorage.getItem(SS_DESTINATIONS)
+        const v = localStorage.getItem(SS_DESTINATIONS)
         if (v) selectedDestinations.value = JSON.parse(v)
       }
       if (!selectedCities.value.length) {
-        const v = sessionStorage.getItem(SS_CITIES)
+        const v = localStorage.getItem(SS_CITIES)
         if (v) selectedCities.value = JSON.parse(v)
       }
       if (!selectedHotels.value.length) {
-        const v = sessionStorage.getItem(SS_HOTELS)
+        const v = localStorage.getItem(SS_HOTELS)
         if (v) selectedHotels.value = JSON.parse(v)
       }
       if (!selectionOrder.value.length) {
-        const v = sessionStorage.getItem(SS_SELECTION_ORDER)
+        const v = localStorage.getItem(SS_SELECTION_ORDER)
         if (v) selectionOrder.value = JSON.parse(v)
       }
     } catch { /* corrupt session storage — ignore */ }
@@ -173,8 +173,8 @@ export function useSearchState() {
     searchPersons.value = persons
     searchRooms.value = rooms
     if (import.meta.client) {
-      sessionStorage.setItem(SS_PERSONS, String(persons))
-      sessionStorage.setItem(SS_ROOMS, String(rooms))
+      localStorage.setItem(SS_PERSONS, String(persons))
+      localStorage.setItem(SS_ROOMS, String(rooms))
     }
   }
 
@@ -223,7 +223,7 @@ export function useSearchState() {
   function resetBudget() { budgetMin.value = 100; budgetMax.value = 2000 }
   function setFlexibility(v: number) {
     selectedFlexibility.value = Math.max(0, Math.min(14, v | 0))
-    if (import.meta.client) sessionStorage.setItem(SS_FLEX, String(selectedFlexibility.value))
+    if (import.meta.client) localStorage.setItem(SS_FLEX, String(selectedFlexibility.value))
   }
 
   // Single unified set of "soft" filter tags (Arrangement + Thema + Specials).

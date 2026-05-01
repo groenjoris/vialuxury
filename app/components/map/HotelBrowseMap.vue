@@ -22,7 +22,13 @@ const props = defineProps<{
   initialFocus?: { lat: number; lng: number; zoom?: number } | null
 }>()
 
-const { selectedHotelId, selectHotel, clearSelection, setHover } = useHotelMap()
+const { selectedHotelId, selectHotel, clearSelection, setHover, scheduleHover } = useHotelMap()
+
+// Safari quirk: a click on a Leaflet marker can also fire `map.click` even
+// after `L.DomEvent.stopPropagation`, which immediately clears the selection
+// the marker just set. Track when a marker click happened and ignore the
+// map-background click that arrives in the same tick.
+let lastMarkerClickAt = 0
 
 const mapEl = ref<HTMLDivElement | null>(null)
 let map: import('leaflet').Map | null = null
@@ -134,10 +140,13 @@ function renderMarkers() {
         m.on('mouseout', () => {
           hoveredId.value = null
           m.setIcon(makeHotelIcon(L, hotelId))
-          setHover(null)
+          // Defer the hide so the user can move the cursor into the
+          // preview card without it vanishing.
+          scheduleHover(null, 150)
         })
         m.on('click', (e: import('leaflet').LeafletMouseEvent) => {
           L.DomEvent.stopPropagation(e)
+          lastMarkerClickAt = Date.now()
           // Hover preview should disappear on click. Re-appears on a fresh
           // hover (over any pin, including the just-selected one).
           hoveredId.value = null
@@ -245,7 +254,11 @@ async function initMap() {
   map.on('zoomend', renderMarkers)
 
   // Click on the map background clears hover AND closes the side panel.
+  // Safari sometimes still fires this even when the click started on a
+  // marker (despite `L.DomEvent.stopPropagation` on the marker handler);
+  // ignore the map click if a marker was just clicked in the same tick.
   map.on('click', () => {
+    if (Date.now() - lastMarkerClickAt < 250) return
     setHover(null)
     clearSelection()
   })

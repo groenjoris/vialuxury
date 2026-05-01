@@ -40,6 +40,27 @@ const props = defineProps<{
 }>()
 
 const { persons, arrivalDate: globalArrivalDate } = useSearchState()
+const { selectHotel, setHover, scheduleHover, keepHover } = useHotelMap()
+
+/** Cancel any pending hide while the cursor is inside the preview. */
+function onCardEnter() {
+  // Disabled hotels don't open the side panel — only signal "still hovering"
+  // when the card itself is clickable.
+  if (props.unmatched || props.soldOut) return
+  keepHover()
+}
+
+/** When the cursor leaves the card, hide immediately (no grace period). */
+function onCardLeave() {
+  setHover(null)
+}
+
+/** Clicking anywhere on the preview opens the side panel for this hotel. */
+function onCardClick() {
+  if (props.unmatched || props.soldOut) return
+  setHover(null)
+  selectHotel(props.hotel.id)
+}
 /** When an arrival date is locked-in globally, use that for pricing; the
  *  prop `arrivalDate` is passed by the map for sold-out marking but matches
  *  the global state for pricing purposes. */
@@ -147,6 +168,9 @@ const cardStyle = computed(() => {
       class="hover-card"
       :class="{ 'hover-card--soldOut': soldOut, 'hover-card--flipped': flipped }"
       :style="cardStyle"
+      @mouseenter="onCardEnter"
+      @mouseleave="onCardLeave"
+      @click="onCardClick"
     >
       <div class="hover-card__box">
         <div class="hover-card__band" />
@@ -189,7 +213,10 @@ const cardStyle = computed(() => {
 .hover-card {
   position: fixed;
   z-index: 1000;
-  pointer-events: none;
+  /* Card is clickable: hovering keeps it open and clicking opens the
+     side panel. Disabled-hotel variants opt out via the JS handlers. */
+  pointer-events: auto;
+  cursor: pointer;
   /* Default 140 px tall; can grow when the hotel name wraps to a 2nd line.
      Flex column so __box can use `flex: 1` and pass a definite height down
      to the image (which uses `height: 100%`). */
@@ -229,6 +256,11 @@ const cardStyle = computed(() => {
 /* Sold-out variant: grey accent. */
 .hover-card--soldOut .hover-card__band {
   background: var(--color-border);
+}
+
+/* Disabled (soldOut / unmatched) cards aren't clickable. */
+.hover-card--soldOut {
+  cursor: default;
 }
 
 .hover-card__image {

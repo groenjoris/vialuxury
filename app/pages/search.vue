@@ -409,8 +409,11 @@ const filteredHotels = computed(() => {
     hotels: [...selectedHotels.value],
   }
 
-  // Split picked tags by category. Themes join the OR-pool with destinations;
-  // arrangement + specials stay AND-gated (a hotel must satisfy them all).
+  // Split picked tags by category. Themes are OR'd among themselves but
+  // AND'd with the destination filter (e.g. "stedentrip + Drenthe" = only
+  // city-trips in Drenthe; "stedentrip + romantisch + Drenthe" = either
+  // stedentrip OR romantisch, in Drenthe). Arrangement + specials stay
+  // AND-gated as before.
   const pickedThemes: string[] = []
   const pickedOther: string[] = []
   for (const id of selectedFilterTags.value) {
@@ -437,18 +440,16 @@ const filteredHotels = computed(() => {
       // Arrival-date filter — deal must have at least one available date in
       // the flex window around the chosen date.
       if (arrivalActive && !isDealAvailableInWindow(d.id, committedArrivalDate.value!, flex)) return false
-      // OR-pool: destination match OR theme match. If neither group is active
-      // the gate is skipped. Otherwise the deal must satisfy at least one.
-      if (destActive || themesActive) {
-        const destOk = destActive && hotelMatchesDestination(hotel, destFilter)
+      // Destination is AND-gated when active.
+      if (destActive && !hotelMatchesDestination(hotel, destFilter)) return false
+      // Themes are OR'd among themselves and AND'd with the destination.
+      if (themesActive) {
         let themeOk = false
-        if (themesActive) {
-          for (const id of pickedThemes) {
-            const tag = getFilterTag(id)
-            if (tag?.matches(d, hotel)) { themeOk = true; break }
-          }
+        for (const id of pickedThemes) {
+          const tag = getFilterTag(id)
+          if (tag?.matches(d, hotel)) { themeOk = true; break }
         }
-        if (!destOk && !themeOk) return false
+        if (!themeOk) return false
       }
       return true
     })

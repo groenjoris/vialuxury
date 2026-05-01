@@ -35,45 +35,24 @@
           </div>
 
           <div class="panel__body">
-            <!-- Available section -->
-            <template v-if="availableDeals.length > 0">
-              <div class="panel__group-heading">
-                <span class="panel__group-heading-row1">{{ availableHeading.row1 }}</span>
-                <span v-if="availableHeading.row2" class="panel__group-heading-row2">{{ availableHeading.row2 }}</span>
-              </div>
-              <div class="panel__deal-list">
-                <DealCard
-                  v-for="deal in availableDeals"
-                  :key="deal.id"
-                  :deal="deal"
-                  :hotel="hotel"
-                  hide-hotel-info
-                  hide-labels
-                  grid-mode
-                />
-              </div>
-            </template>
-
-            <!-- Unavailable on the chosen date(s) — only when an arrival
-                 date is set. Without an arrival date all deals fall in the
-                 "available" bucket and there's nothing to show here. -->
-            <template v-if="unavailableDeals.length > 0">
-              <div class="panel__group-heading panel__group-heading--secondary">
-                <span class="panel__group-heading-row1">Beschikbaar op andere datums</span>
-              </div>
-              <div class="panel__deal-list">
-                <DealCard
-                  v-for="deal in unavailableDeals"
-                  :key="deal.id"
-                  :deal="deal"
-                  :hotel="hotel"
-                  hide-hotel-info
-                  hide-labels
-                  grid-mode
-                  ignore-arrival
-                />
-              </div>
-            </template>
+            <!-- Single flat list — available deals first (cheapest first),
+                 unavailable-on-date deals appended at the bottom. Each
+                 unavailable card carries its own "Niet beschikbaar op …"
+                 status + greyed-out style + fallback price. -->
+            <div class="panel__deal-list">
+              <DealCard
+                v-for="entry in orderedDeals"
+                :key="entry.deal.id"
+                :deal="entry.deal"
+                :hotel="hotel"
+                hide-hotel-info
+                hide-labels
+                grid-mode
+                panel-mode
+                :unavailable-on-date="entry.unavailableOnDate"
+                :ignore-arrival="entry.unavailableOnDate"
+              />
+            </div>
           </div>
         </aside>
       </div>
@@ -84,8 +63,7 @@
 <script setup lang="ts">
 import type { SearchHotel } from '~/types/searchHotel'
 import { getReviewLabelKey } from '~/utils/reviewLabel'
-import { isDealAvailableInWindow, expandFlex } from '~/utils/availability'
-import { formatDateShort } from '~/utils/formatDate'
+import { isDealAvailableInWindow } from '~/utils/availability'
 
 const { t } = useI18n()
 // Use the *selected* (live) arrival date + flex — same source the deal
@@ -138,50 +116,18 @@ const availableDeals = computed(() => sortedSiblingDeals.value.filter(isAvailabl
 const unavailableDeals = computed(() =>
   // Everything not in the "available" bucket — regardless of whether the
   // miss was due to arrival date or duration filter. Renders under the
-  // "Beschikbaar op andere datums" heading.
+  // contextual "Beschikbaar op andere…" heading.
   sortedSiblingDeals.value.filter((d) => !isAvailable(d)),
 )
 
-/** Heading for the "available" group, rendered on two lines:
- *    Row 1: "Beschikbaar op {date}"  /  "Beschikbaar tussen {start} en {end}"
- *    Row 2: "voor X, Y of Z nachten" — derived from the active duration
- *           filter when set, otherwise from the unique nights of the
- *           available deals so the heading still reads naturally. */
-const availableHeading = computed(() => {
-  const arrival = activeArrivalDate.value
-  let row1 = ''
-  if (arrival) {
-    const window = expandFlex(arrival, activeFlexibility.value)
-    if (window.length <= 1) {
-      row1 = `Beschikbaar op ${formatDateShort(arrival)}`
-    } else {
-      const start = window[0]
-      const end = window[window.length - 1]
-      row1 = `Beschikbaar tussen ${formatDateShort(start)} en ${formatDateShort(end)}`
-    }
-  } else {
-    row1 = 'Alle arrangementen'
-  }
+/** Flat ordered list with per-deal availability flag — feeds the single
+ *  render block above. Available deals come first (cheapest first),
+ *  unavailable deals appear at the bottom. */
+const orderedDeals = computed(() => [
+  ...availableDeals.value.map((deal) => ({ deal, unavailableOnDate: false })),
+  ...unavailableDeals.value.map((deal) => ({ deal, unavailableOnDate: true })),
+])
 
-  // Row 2 only appears when the user has actually picked a duration filter.
-  // Without an active selection we don't infer / show one — the heading
-  // collapses to just row 1.
-  const ns = selectedNights.value
-  let row2 = ''
-  if (ns && ns.length > 0) {
-    const nightsList = [...ns]
-    let label: string
-    if (nightsList.length === 1) {
-      label = nightsList[0]
-    } else {
-      const head = nightsList.slice(0, -1).join(', ')
-      label = `${head} of ${nightsList[nightsList.length - 1]}`
-    }
-    const onlyOne = nightsList.length === 1 && nightsList[0] === '1'
-    row2 = `voor ${label} ${onlyOne ? 'nacht' : 'nachten'}`
-  }
-  return { row1, row2 }
-})
 
 // Lock body scroll when panel is open — except on /kaart where the map
 // underneath needs to stay scroll/zoom-able.
@@ -401,38 +347,6 @@ onUnmounted(() => {
   font-size: 13px;
   font-weight: 600;
   text-decoration: underline;
-}
-
-/* Group heading inside the scrollable body — sits above each deal list.
-   Two stacked lines: date(s) on row 1, duration on row 2. */
-.panel__group-heading {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  /* Basis Grotesque (mapped to --font-body in tokens). */
-  font-family: var(--font-body);
-  color: var(--color-text-primary);
-}
-
-/* The second group ("andere datums") is separated from the first deal list
-   by a thin grey divider that spans the panel body width. */
-.panel__group-heading--secondary {
-  border-top: 1px solid var(--color-border-light);
-  padding-top: var(--space-md);
-  margin-top: var(--space-sm);
-}
-
-.panel__group-heading-row1 {
-  font-size: 16px;
-  font-weight: 700;
-  line-height: 1.2;
-}
-
-.panel__group-heading-row2 {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--color-text-secondary);
-  line-height: 1.2;
 }
 
 /* Scrollable body */

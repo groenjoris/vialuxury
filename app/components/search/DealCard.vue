@@ -5,6 +5,7 @@
       'deal-card-v2--grid': gridMode,
       'deal-card-v2--has-bar': hasBar,
       'deal-card-v2--wide': wide,
+      'deal-card-v2--unavailable-on-date': unavailableOnDate,
     }"
   >
     <!-- Image area (top in grid, left in list) -->
@@ -90,6 +91,15 @@
               <p class="deal-card-v2__unavailable">Niet beschikbaar voor jouw zoekopdracht</p>
             </template>
             <template v-else>
+              <!-- Side-panel: extra status / date-range line above the meta. -->
+              <p
+                v-if="unavailableOnDate"
+                class="deal-card-v2__date-line deal-card-v2__date-line--unavailable"
+              >{{ unavailableDateLabel }}</p>
+              <p
+                v-else-if="dateRangeLabel"
+                class="deal-card-v2__date-line"
+              >{{ dateRangeLabel }}</p>
               <p class="deal-card-v2__meta-line">{{ persons }} {{ persons === 1 ? 'persoon' : 'personen' }}, {{ deal.nights }} {{ deal.nights === 1 ? 'nacht' : 'nachten' }}</p>
               <div class="deal-card-v2__grid-price-row">
                 <p class="deal-card-v2__price-line">
@@ -97,8 +107,18 @@
                   <span class="deal-card-v2__price">{{ formatPrice(price) }}</span>
                   <span v-if="originalPrice > price" class="deal-card-v2__original">{{ formatPrice(originalPrice) }}</span>
                 </p>
-                <NuxtLink :to="dealHref" target="_blank" rel="noopener" class="deal-card-v2__cta">
-                  Bekijk
+                <NuxtLink
+                  :to="dealHref"
+                  target="_blank"
+                  rel="noopener"
+                  class="deal-card-v2__cta"
+                  :class="{ 'deal-card-v2__cta--two-line': unavailableOnDate }"
+                >
+                  <template v-if="unavailableOnDate">
+                    <span>Check</span>
+                    <span>beschikbaarheid</span>
+                  </template>
+                  <template v-else>Bekijk</template>
                 </NuxtLink>
               </div>
             </template>
@@ -143,6 +163,8 @@
 <script setup lang="ts">
 import type { SearchHotel, SearchHotelDeal } from '~/types/searchHotel'
 import { formatPrice } from '~/utils/formatPrice'
+import { formatDateShort } from '~/utils/formatDate'
+import dayjs from 'dayjs'
 import { pickSmartInclusions } from '~/utils/smartInclusions'
 import { getReviewLabelKey } from '~/utils/reviewLabel'
 import { priceForArrival } from '~/utils/priceFormula'
@@ -183,6 +205,15 @@ const props = defineProps<{
    *  the first heading; the unavailable group is still shown in the
    *  panel but doesn't count towards the link. */
   siblingPool?: SearchHotelDeal[]
+  /** Card is rendered inside the HotelDealsSidePanel — enables per-card
+   *  date-range / availability lines + the side-panel CTA wording. */
+  panelMode?: boolean
+  /** Side-panel only: this deal is not bookable on the active arrival
+   *  date. Renders a "Niet beschikbaar op …" status line, greys out the
+   *  title / meta / price, and changes the CTA to "Check beschikbaarheid".
+   *  Combine with `ignoreArrival` so the displayed price is the deal's
+   *  cheapest (date-independent). */
+  unavailableOnDate?: boolean
 }>()
 
 defineEmits<{ 'view-siblings': [] }>()
@@ -282,6 +313,23 @@ const cheapestSibling = computed(() => {
 const cheapestSiblingPrice = computed(() => {
   const d = cheapestSibling.value
   return d ? priceForArrival(d.basePrice, d.id, arrivalDate.value, persons.value) : 0
+})
+
+/** Side-panel only: "12 jun - 13 jun" range based on the deal's nights. */
+const dateRangeLabel = computed(() => {
+  if (!props.panelMode || !arrivalDate.value || props.unavailableOnDate) return ''
+  const start = arrivalDate.value
+  const end = dayjs(start).add(props.deal.nights, 'day').format('YYYY-MM-DD')
+  return `${formatDateShort(start)} - ${formatDateShort(end)}`
+})
+
+/** "Niet beschikbaar op 12 juni" — drops the year for compact display. */
+const unavailableDateLabel = computed(() => {
+  if (!arrivalDate.value) return 'Niet beschikbaar'
+  const [, m, d] = arrivalDate.value.split('-')
+  const monthsLong = ['januari', 'februari', 'maart', 'april', 'mei', 'juni', 'juli', 'augustus', 'september', 'oktober', 'november', 'december']
+  const monthName = monthsLong[parseInt(m, 10) - 1] || m
+  return `Niet beschikbaar op ${parseInt(d, 10)} ${monthName}`
 })
 
 const includesBullets = computed<string[]>(() => {
@@ -688,6 +736,17 @@ function labelFile(label: string): string {
   width: 100%;
 }
 
+/* Two-line CTA used by the side-panel "Check beschikbaarheid" button.
+   Stacks "Check" / "beschikbaarheid" on top of each other so the button
+   grows in height instead of pushing the price column. */
+.deal-card-v2__cta--two-line {
+  flex-direction: column;
+  line-height: 1.15;
+  padding: 6px 16px;
+  font-size: 13px;
+  white-space: normal;
+}
+
 /* Grid price row: price left, CTA right.
    Use baseline so the price text aligns visually with the CTA text,
    not the CTA's outer box bottom (which has 8 px button padding). */
@@ -704,6 +763,36 @@ function labelFile(label: string): string {
   color: var(--color-text-muted, #999);
   margin: 0;
   line-height: 1.4;
+}
+
+/* Side-panel: "12 jun - 13 jun" / "Niet beschikbaar op 12 juni" line. */
+.deal-card-v2__date-line {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  margin: 0 0 2px;
+  line-height: 1.2;
+}
+
+.deal-card-v2__date-line--unavailable {
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
+/* Greyed-out card for unavailable-on-date deals. The image and favourite
+   button keep full opacity; only the textual content fades. */
+.deal-card-v2--unavailable-on-date .deal-card-v2__pitch,
+.deal-card-v2--unavailable-on-date .deal-card-v2__meta-line,
+.deal-card-v2--unavailable-on-date .deal-card-v2__price-line,
+.deal-card-v2--unavailable-on-date .deal-card-v2__price,
+.deal-card-v2--unavailable-on-date .deal-card-v2__price-prefix,
+.deal-card-v2--unavailable-on-date .deal-card-v2__includes-list,
+.deal-card-v2--unavailable-on-date .deal-card-v2__include {
+  color: var(--color-text-muted);
+}
+
+.deal-card-v2--unavailable-on-date .deal-card-v2__check {
+  color: var(--color-border);
 }
 
 /* ===== LIST: virtual 180 px right column ===== */
