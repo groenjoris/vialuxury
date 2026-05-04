@@ -5,7 +5,7 @@
       'deal-card-v2--grid': gridMode,
       'deal-card-v2--has-bar': hasBar,
       'deal-card-v2--wide': wide,
-      'deal-card-v2--unavailable-on-date': unavailableOnDate,
+      'deal-card-v2--unavailable-on-date': dateMismatch || nightsMismatch,
     }"
   >
     <!-- Image area (top in grid, left in list) -->
@@ -91,16 +91,33 @@
               <p class="deal-card-v2__unavailable">Niet beschikbaar voor jouw zoekopdracht</p>
             </template>
             <template v-else>
-              <!-- Side-panel: extra status / date-range line above the meta. -->
+              <!-- "Niet beschikbaar op …" only when the chosen date itself
+                   doesn't work for this deal (regardless of nights). -->
               <p
-                v-if="unavailableOnDate"
+                v-if="dateMismatch"
                 class="deal-card-v2__date-line deal-card-v2__date-line--unavailable"
               >{{ unavailableDateLabel }}</p>
               <p
                 v-else-if="dateRangeLabel"
                 class="deal-card-v2__date-line"
               >{{ dateRangeLabel }}</p>
-              <p class="deal-card-v2__meta-line">{{ persons }} {{ persons === 1 ? 'persoon' : 'personen' }}, {{ deal.nights }} {{ deal.nights === 1 ? 'nacht' : 'nachten' }}</p>
+
+              <!-- Meta block: 2-line variant when the nights don't match
+                   the active filter ("Arrangement voor X nachten" /
+                   "X personen"). Otherwise the standard one-liner. -->
+              <template v-if="nightsMismatch">
+                <p class="deal-card-v2__meta-line">
+                  Arrangement voor {{ deal.nights }} {{ deal.nights === 1 ? 'nacht' : 'nachten' }}
+                </p>
+                <p class="deal-card-v2__meta-line deal-card-v2__meta-line--secondary">
+                  {{ persons }} {{ persons === 1 ? 'persoon' : 'personen' }}
+                </p>
+              </template>
+              <p
+                v-else
+                class="deal-card-v2__meta-line"
+              >{{ persons }} {{ persons === 1 ? 'persoon' : 'personen' }}, {{ deal.nights }} {{ deal.nights === 1 ? 'nacht' : 'nachten' }}</p>
+
               <div class="deal-card-v2__grid-price-row">
                 <p class="deal-card-v2__price-line">
                   <span class="deal-card-v2__price-prefix">Vanaf</span>
@@ -112,10 +129,10 @@
                   target="_blank"
                   rel="noopener"
                   class="deal-card-v2__cta"
-                  :class="{ 'deal-card-v2__cta--two-line': unavailableOnDate }"
+                  :class="{ 'deal-card-v2__cta--two-line': dateMismatch }"
                 >
-                  <template v-if="unavailableOnDate">
-                    <span>Check</span>
+                  <template v-if="dateMismatch">
+                    <span>Bekijk</span>
                     <span>beschikbaarheid</span>
                   </template>
                   <template v-else>Bekijk</template>
@@ -208,12 +225,12 @@ const props = defineProps<{
   /** Card is rendered inside the HotelDealsSidePanel — enables per-card
    *  date-range / availability lines + the side-panel CTA wording. */
   panelMode?: boolean
-  /** Side-panel only: this deal is not bookable on the active arrival
-   *  date. Renders a "Niet beschikbaar op …" status line, greys out the
-   *  title / meta / price, and changes the CTA to "Check beschikbaarheid".
-   *  Combine with `ignoreArrival` so the displayed price is the deal's
-   *  cheapest (date-independent). */
-  unavailableOnDate?: boolean
+  /** Side-panel only: this deal can't be booked on the active arrival
+   *  date (the deal's nights may still match the duration filter). */
+  dateMismatch?: boolean
+  /** Side-panel only: this deal's nights don't match the active duration
+   *  filter (the date may still be available). */
+  nightsMismatch?: boolean
 }>()
 
 defineEmits<{ 'view-siblings': [] }>()
@@ -315,9 +332,13 @@ const cheapestSiblingPrice = computed(() => {
   return d ? priceForArrival(d.basePrice, d.id, arrivalDate.value, persons.value) : 0
 })
 
-/** Side-panel only: "12 jun - 13 jun" range based on the deal's nights. */
+/** Any kind of mismatch greys out the card; CTA wording differs per case. */
+const isMismatch = computed(() => !!(props.dateMismatch || props.nightsMismatch))
+
+/** Side-panel only: "12 jun - 13 jun" range based on the deal's nights.
+ *  Only shown for fully-available cards (no mismatch). */
 const dateRangeLabel = computed(() => {
-  if (!props.panelMode || !arrivalDate.value || props.unavailableOnDate) return ''
+  if (!props.panelMode || !arrivalDate.value || isMismatch.value) return ''
   const start = arrivalDate.value
   const end = dayjs(start).add(props.deal.nights, 'day').format('YYYY-MM-DD')
   return `${formatDateShort(start)} - ${formatDateShort(end)}`
@@ -683,6 +704,13 @@ function labelFile(label: string): string {
   font-size: 12px;
   font-weight: 700;
   white-space: nowrap;
+}
+
+/* Second meta line in the side-panel "nights mismatch" variant — sits
+   directly under the nights line, slightly lighter. */
+.deal-card-v2__meta-line--secondary {
+  margin-top: 2px;
+  font-weight: 600;
 }
 
 .deal-card-v2__price-line {

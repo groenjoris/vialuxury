@@ -324,12 +324,12 @@ const totalDeals = computed(() => {
 })
 
 // View mode & filter state
-const viewMode = ref<'list' | 'grid'>('list')
+const viewMode = ref<'list' | 'grid'>('grid')
 
 // Force grid mode on mobile (list view would be too cramped)
 const isMobile = useIsMobile()
 const effectiveViewMode = computed<'list' | 'grid'>(() => (isMobile.value ? 'grid' : viewMode.value))
-const showFilters = ref(true)
+const showFilters = ref(false)
 
 // Budget range — shared with /kaart via useSearchState so toggling between
 // list and map view preserves the user's filter selection.

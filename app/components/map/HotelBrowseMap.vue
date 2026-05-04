@@ -72,9 +72,9 @@ function makeHotelIcon(L: typeof import('leaflet'), hotelId: string) {
   })
 }
 
-function makeClusterIcon(L: typeof import('leaflet'), count: number) {
+function makeClusterIcon(L: typeof import('leaflet'), count: number, disabled = false) {
   return L.divIcon({
-    html: clusterHtml(count),
+    html: clusterHtml(count, disabled),
     className: 'hotel-cluster-icon',
     iconSize: [38, 38],
     iconAnchor: [19, 19],
@@ -103,8 +103,19 @@ function renderMarkers() {
     // and break the hotel lookup below (we use `props.hotels` for that).
     const featureProps = f.properties
     if (featureProps.cluster) {
-      // Cluster pin (count ≥ 4)
-      const m = L.marker([lat, lng], { icon: makeClusterIcon(L, featureProps.point_count) })
+      // Cluster pin (count ≥ 4). If every hotel inside the cluster is
+      // disabled (unmatched / sold-out) render the cluster in the grey
+      // disabled palette so the user sees there's nothing bookable here.
+      const leaves = cluster!.getLeaves(featureProps.cluster_id as number, Infinity)
+      const allDisabled = leaves.length > 0 && leaves.every((leaf) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const lp = leaf.properties as any
+        const h = props.hotels.find((hh) => hh.id === lp.hotelId)
+        return !!h?.soldOut || !!h?.unmatched
+      })
+      const m = L.marker([lat, lng], {
+        icon: makeClusterIcon(L, featureProps.point_count, allDisabled),
+      })
       m.on('click', () => {
         const expansionZoom = Math.min(
           cluster!.getClusterExpansionZoom(featureProps.cluster_id as number),

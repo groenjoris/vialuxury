@@ -54,7 +54,12 @@ export function pinAnchor(state: PinState): [number, number] {
   return [w / 2, h / 2]
 }
 
-/** HTML for a numbered cluster pin. */
-export function clusterHtml(count: number): string {
-  return `<div class="hotel-pin hotel-pin--cluster">${count}</div>`
+/** HTML for a numbered cluster pin. When `disabled` is true (every hotel
+ *  inside the cluster is unmatched / sold-out) the cluster renders in the
+ *  same disabled palette as a single grey pin. */
+export function clusterHtml(count: number, disabled = false): string {
+  const cls = disabled
+    ? 'hotel-pin hotel-pin--cluster hotel-pin--cluster-disabled'
+    : 'hotel-pin hotel-pin--cluster'
+  return `<div class="${cls}">${count}</div>`
 }

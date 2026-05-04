@@ -74,3 +74,10 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
   cursor: pointer;
 }
+
+/* Disabled cluster — every hotel inside the cluster is unmatched/sold-out.
+   Same grey palette as the single disabled pins. */
+.hotel-pin--cluster-disabled {
+  background: #B3B3B3;
+  cursor: default;
+}

@@ -49,8 +49,9 @@
                 hide-labels
                 grid-mode
                 panel-mode
-                :unavailable-on-date="entry.unavailableOnDate"
-                :ignore-arrival="entry.unavailableOnDate"
+                :date-mismatch="entry.dateMismatch"
+                :nights-mismatch="entry.nightsMismatch"
+                :ignore-arrival="entry.dateMismatch"
               />
             </div>
           </div>
@@ -120,12 +121,29 @@ const unavailableDeals = computed(() =>
   sortedSiblingDeals.value.filter((d) => !isAvailable(d)),
 )
 
-/** Flat ordered list with per-deal availability flag — feeds the single
- *  render block above. Available deals come first (cheapest first),
- *  unavailable deals appear at the bottom. */
+/** Per-deal mismatch flags — drives the side-panel card variant copy.
+ *  - dateMismatch  : deal has no bookable date in the active flex window.
+ *  - nightsMismatch: deal's nights don't match the active duration filter.
+ *  Available deals have neither flag set. */
+function dateMismatch(deal: { id: string }): boolean {
+  if (!activeArrivalDate.value) return false
+  return !isDealAvailableInWindow(deal.id, activeArrivalDate.value, activeFlexibility.value)
+}
+function nightsMismatch(deal: { nights: number }): boolean {
+  return !matchesNights(deal)
+}
+
 const orderedDeals = computed(() => [
-  ...availableDeals.value.map((deal) => ({ deal, unavailableOnDate: false })),
-  ...unavailableDeals.value.map((deal) => ({ deal, unavailableOnDate: true })),
+  ...availableDeals.value.map((deal) => ({
+    deal,
+    dateMismatch: false,
+    nightsMismatch: false,
+  })),
+  ...unavailableDeals.value.map((deal) => ({
+    deal,
+    dateMismatch: dateMismatch(deal),
+    nightsMismatch: nightsMismatch(deal),
+  })),
 ])
 
 
