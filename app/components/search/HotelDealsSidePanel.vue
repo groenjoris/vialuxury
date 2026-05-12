@@ -17,8 +17,7 @@
                 </span>
               </h2>
               <div class="panel__hotel-meta">
-                <span class="panel__score">{{ hotel.reviewScore.toFixed(1) }}</span>
-                <span class="panel__score-label">{{ t(getReviewLabelKey(hotel.reviewScore)) }}</span>
+                <ViaLuxuryScoreBadge :hotel="hotel" :all-hotels="mappedHotels" />
                 <span class="panel__sep" aria-hidden="true">|</span>
                 <svg class="panel__loc-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                   <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
@@ -63,7 +62,7 @@
 
 <script setup lang="ts">
 import type { SearchHotel } from '~/types/searchHotel'
-import { getReviewLabelKey } from '~/utils/reviewLabel'
+import { mappedHotels } from '~/data/deals-mapper'
 import { isDealAvailableInWindow } from '~/utils/availability'
 
 const { t } = useI18n()
@@ -114,11 +113,11 @@ function isAvailable(deal: { id: string; nights: number }): boolean {
 }
 
 const availableDeals = computed(() => sortedSiblingDeals.value.filter(isAvailable))
+// Deals that fail ONLY the date filter (nights still match). Deals that
+// don't match the active duration filter are hidden from the panel
+// entirely — there's no point offering arrangements of the wrong length.
 const unavailableDeals = computed(() =>
-  // Everything not in the "available" bucket — regardless of whether the
-  // miss was due to arrival date or duration filter. Renders under the
-  // contextual "Beschikbaar op andere…" heading.
-  sortedSiblingDeals.value.filter((d) => !isAvailable(d)),
+  sortedSiblingDeals.value.filter((d) => matchesNights(d) && !isAvailable(d)),
 )
 
 /** Per-deal mismatch flags — drives the side-panel card variant copy.

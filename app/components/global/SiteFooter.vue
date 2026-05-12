@@ -3,7 +3,7 @@
     <div class="site-footer__inner container">
       <!-- Brand column -->
       <div class="footer-col footer-col--brand">
-        <NuxtLink to="/home" class="footer-logo">
+        <NuxtLink :to="homeHref" class="footer-logo">
           <img src="/images/logo-vialuxury.svg" alt="ViaLuxury" class="footer-logo__img" />
         </NuxtLink>
 
@@ -79,7 +79,9 @@
 </template>
 
 <script setup lang="ts">
+import { useHomeVariant } from '~/composables/useHomeVariant'
 const { t } = useI18n()
+const { homeHref } = useHomeVariant()
 </script>
 
 <style scoped>

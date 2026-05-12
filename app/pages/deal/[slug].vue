@@ -47,10 +47,11 @@
             </div>
           </div>
           <div class="deal-page__meta">
-            <div class="deal-page__score-wrap">
-              <span class="deal-page__score">{{ hotel.reviews.overallScore.toFixed(1) }}</span>
-              <span class="deal-page__score-label">{{ t(getReviewLabelKey(hotel.reviews.overallScore)) }}</span>
-            </div>
+            <ViaLuxuryScoreBadge
+              v-if="searchHotelForBadge"
+              :hotel="searchHotelForBadge"
+              :all-hotels="mappedHotels"
+            />
             <span class="deal-page__divider">|</span>
             <span>{{ hotel.reviews.totalReviews }} {{ t('common.reviews') }}</span>
             <span class="deal-page__divider">·</span>
@@ -595,6 +596,7 @@ import {
   dealsMapByPermalink,
   defaultDealPermalink,
   curatedHighlightsByPermalink,
+  mappedHotels,
 } from '~/data/deals-mapper'
 
 const { t, localized, locale } = useI18n()
@@ -733,6 +735,15 @@ const showPartnerLogo = computed(
 
 const hotel = ref(initialHotel)
 const currentDeal = computed(() => store.currentDeal)
+
+// SearchHotel companion for the ViaLuxury score badge — look it up by
+// slug (the hotel page slug) so the badge has access to deals + price
+// data the helper needs.
+const searchHotelForBadge = computed(() => {
+  const h = hotel.value
+  if (!h) return null
+  return mappedHotels.find(sh => sh.slug === h.slug || sh.name === h.name) ?? null
+})
 const filteredInclusions = computed(() => {
   if (!currentDeal.value) return []
   return currentDeal.value.inclusions

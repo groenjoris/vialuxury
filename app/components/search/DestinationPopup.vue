@@ -40,8 +40,10 @@
       </div>
     </div>
 
-    <!-- Selected items row: minimal pills + Klaar button — only when something is selected -->
-    <div v-if="!isSearching && totalSelectedChips.length > 0" class="destination-popup__selected-row">
+    <!-- Selected items row: minimal pills + Klaar button — only when something is selected.
+         Suppressed in single-select mode: the popup closes immediately on
+         pick so the summary list isn't useful and just adds visual noise. -->
+    <div v-if="!isSearching && !singleSelect && totalSelectedChips.length > 0" class="destination-popup__selected-row">
       <div class="destination-popup__selected-pills">
         <span
           v-for="item in totalSelectedChips"
@@ -187,6 +189,11 @@ const props = defineProps<{
   selectedThemes: string[]
   selectedCities?: Array<{ name: string; province: string }>
   selectionOrder?: Array<{ type: 'destination' | 'theme' | 'city'; key: string }>
+  /** When true the parent treats every selection as a single-select: it
+   *  clears the existing pick before applying the new one and closes the
+   *  popup. The popup itself doesn't enforce single-select internally —
+   *  this prop is here so the parent can wire its handlers accordingly. */
+  singleSelect?: boolean
 }>()
 
 const emit = defineEmits<{

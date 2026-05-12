@@ -4,7 +4,7 @@
     <div class="site-header__nav">
       <div class="site-header__nav-inner container">
         <!-- Logo -->
-        <NuxtLink to="/home" class="site-header__logo">
+        <NuxtLink :to="homeHref" class="site-header__logo">
           <img
             src="/images/logo-vialuxury-horizontal.svg"
             alt="ViaLuxury"
@@ -21,7 +21,7 @@
               aria-current="page"
             >
               <template v-if="v.id === 'hotels'">
-                <span>Hotels <span class="verticals__item-accent">+ <span class="verticals__item-more">more</span></span></span>
+                <span>{{ t('header.hotels') }} <span class="verticals__item-accent">+ <span class="verticals__item-more">more</span></span></span>
               </template>
               <template v-else>{{ v.label }}</template>
             </span>
@@ -38,7 +38,7 @@
               class="verticals__item"
             >
               <template v-if="v.id === 'hotels'">
-                <span>Hotels <span class="verticals__item-accent">+ <span class="verticals__item-more">more</span></span></span>
+                <span>{{ t('header.hotels') }} <span class="verticals__item-accent">+ <span class="verticals__item-more">more</span></span></span>
               </template>
               <template v-else>{{ v.label }}</template>
             </NuxtLink>
@@ -172,8 +172,14 @@
                   <span class="hamburger-dropdown__heading">Menu</span>
 
                   <NuxtLink v-for="v in verticals" :key="v.id" :to="v.href" class="hamburger-dropdown__link" @click="hamburgerDropdownOpen = false">
-                    <template v-if="v.id === 'hotels'"><span>Hotels <span class="verticals__item-accent">+ <span class="verticals__item-more">more</span></span></span></template>
+                    <template v-if="v.id === 'hotels'"><span>{{ t('header.hotels') }} <span class="verticals__item-accent">+ <span class="verticals__item-more">more</span></span></span></template>
                     <template v-else>{{ v.label }}</template>
+                  </NuxtLink>
+
+                  <!-- Vakantieparken moved out of the top-bar verticals; it
+                       still gets a dedicated entry in the hamburger menu. -->
+                  <NuxtLink to="/vakantieparken" class="hamburger-dropdown__link" @click="hamburgerDropdownOpen = false">
+                    {{ t('header.holidayParks') }}
                   </NuxtLink>
 
                   <div class="contact-dropdown__divider"></div>
@@ -219,8 +225,9 @@
     <!-- Hero content slot (overlay mode only) -->
     <slot v-if="variant === 'overlay'" name="hero" />
 
-    <!-- Search bar dock: overlaps nav + page (desktop only) -->
-    <div class="site-header__search-dock">
+    <!-- Search bar dock: overlaps nav + page (desktop only). Hidden by
+         homepage variant 2 which renders its own vertical search card. -->
+    <div v-if="!props.hideSearchDock" class="site-header__search-dock">
       <div class="container site-header__search-container">
         <div class="search-bar">
         <!-- 1. Waarheen -->
@@ -241,7 +248,7 @@
 
         <div class="search-bar__divider"></div>
 
-        <!-- 2. Wanneer -->
+        <!-- 2. Wanneer + Hoelang (combined) -->
         <button
           ref="whenField"
           class="search-bar__field search-bar__field--when"
@@ -252,26 +259,8 @@
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
           </span>
           <span class="search-bar__field-text">
-            <span class="search-bar__label">Wanneer</span>
-            <span class="search-bar__value" :class="{ 'search-bar__value--placeholder': whenIsPlaceholder }">{{ whenLabel }}</span>
-          </span>
-        </button>
-
-        <div class="search-bar__divider"></div>
-
-        <!-- 3. Hoelang (reisduur) -->
-        <button
-          ref="hoelangField"
-          class="search-bar__field search-bar__field--hoelang"
-          :class="{ 'search-bar__field--active': activePopup === 'hoelang' }"
-          @click="togglePopup('hoelang')"
-        >
-          <span v-if="variant === 'overlay'" class="search-bar__field-icon" aria-hidden="true">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-          </span>
-          <span class="search-bar__field-text">
-            <span class="search-bar__label">Hoelang</span>
-            <span class="search-bar__value" :class="{ 'search-bar__value--placeholder': hoelangIsPlaceholder }">{{ hoelangLabel }}</span>
+            <span class="search-bar__label">{{ t('header.whenAndHowLong') }}</span>
+            <span class="search-bar__value" :class="{ 'search-bar__value--placeholder': whenCombinedIsPlaceholder }">{{ whenCombinedLabel }}</span>
           </span>
         </button>
 
@@ -299,10 +288,7 @@
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
           </button>
           <button v-else class="search-bar__btn" :class="{ 'search-bar__btn--pulsing': pulseActive }" @click="handleSearch" :aria-label="t('header.search')">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-              <circle cx="11" cy="11" r="8" />
-              <path d="M21 21l-4.35-4.35" />
-            </svg>
+            <span>Zoek</span>
           </button>
         </div>
       </div>
@@ -324,38 +310,33 @@
             :selected-themes="selectedThemes"
             :selected-cities="selectedCities"
             :selection-order="selectionOrder"
-            @toggle-destination="toggleDestination"
-            @toggle-theme="toggleTheme"
-            @select-hotel="handleSelectHotelInPopup"
-            @select-city="handleSelectCity"
+            single-select
+            @toggle-destination="onSingleDestination"
+            @toggle-theme="onSingleTheme"
+            @select-hotel="onSingleHotel"
+            @select-city="onSingleCity"
             @remove-city="handleRemoveCity"
             @save="closePopup()"
             @clear="clearDestination"
           />
         </div>
 
-        <!-- WHEN POPUP (calendar + flex tabs only — no duration controls) -->
-        <div v-if="activePopup === 'when'" class="popup popup--when">
-          <DatePopup
+        <!-- WHEN + HOELANG (combined popup — calendar + nights checkboxes,
+             no tabs / flex chips / weekend pills). Inline width-style
+             guarantees the popup hits 1200 px even if scoped CSS is
+             swallowed by Teleport / HMR caching. -->
+        <div
+          v-if="activePopup === 'when'"
+          class="popup popup--when"
+          style="width: 100%;"
+        >
+          <DateAndDurationPopup
             v-model:cal-month="calMonth"
             v-model:selected-date="selectedDate"
-            v-model:flexibility="flexibility"
-            v-model:selected-durations="selectedDurations"
-            @update:flex-state="handleFlexState"
-            @save="closePopup()"
-            @clear="clearWhen"
-          />
-        </div>
-
-        <!-- HOELANG POPUP (reisduur: nachten checkboxes + weekend/midweek radio) -->
-        <div v-if="activePopup === 'hoelang'" class="popup popup--hoelang">
-          <DurationPopup
             :nights="localNights"
-            :flex-type="localFlexType"
-            :arrival-date="selectedDate"
-            :flex-months="flexState.months"
             @toggle-night="toggleLocalNight"
-            @select-flex-type="setLocalFlexType"
+            @save="closePopup()"
+            @clear="clearWhenAndDuration"
           />
         </div>
 
@@ -440,6 +421,9 @@
           <NuxtLink v-for="v in verticals" :key="v.id" :to="v.href" class="mobile-menu__item" @click="mobileMenuOpen = false">
             {{ v.label }}
           </NuxtLink>
+          <NuxtLink to="/vakantieparken" class="mobile-menu__item" @click="mobileMenuOpen = false">
+            {{ t('header.holidayParks') }}
+          </NuxtLink>
         </div>
         <div class="mobile-menu__divider"></div>
         <div class="mobile-menu__section">
@@ -507,20 +491,25 @@ import { useLocaleStore } from '~/stores/locale'
 import { searchHotels } from '~/data/mock/search-hotels'
 import { tagsByCategory } from '~/utils/filterTags'
 import { minRoomsFor, maxRoomsFor } from '~/utils/priceFormula'
+import { useHomeVariant } from '~/composables/useHomeVariant'
 
 const props = withDefaults(defineProps<{
   /** 'solid' = default dark bar; 'overlay' = transparent over a background image (e.g. home hero) */
   variant?: 'solid' | 'overlay'
-}>(), { variant: 'solid' })
+  /** Hide the inline horizontal search bar — used by homepage variant 2
+   *  which renders its own vertical search card instead. */
+  hideSearchDock?: boolean
+}>(), { variant: 'solid', hideSearchDock: false })
 
 const { t } = useI18n()
 const localeStore = useLocaleStore()
+const { homeHref } = useHomeVariant()
 
 // --- Verticals (computed for reactivity on locale change) ---
 const verticals = computed(() => [
-  { id: 'hotels', label: t('header.hotels'), href: '/home', external: false },
-  { id: 'vakantieparken', label: t('header.holidayParks'), href: '/vakantieparken', external: false },
+  { id: 'hotels', label: t('header.hotels'), href: homeHref.value, external: false },
   { id: 'restaurants', label: t('header.restaurants'), href: 'https://restaurants.vialuxury.com/', external: true },
+  { id: 'cadeaubon', label: t('header.giftCard'), href: '/cadeaubon', external: false },
 ])
 // Route-aware: 'vakantieparken' on /vakantieparken*, otherwise 'hotels' (home/search/deal/hotel)
 const _route = useRoute()
@@ -596,29 +585,34 @@ useClickOutside(langSwitcherRef, () => { langDropdownOpen.value = false })
 useClickOutside(contactDropdownRef, () => { contactDropdownOpen.value = false })
 useClickOutside(hamburgerWrapRef, () => { hamburgerDropdownOpen.value = false })
 
-const activePopup = ref<'destination' | 'when' | 'hoelang' | 'who' | null>(null)
+const activePopup = ref<'destination' | 'when' | 'who' | null>(null)
 
 // Refs to each search-bar field button → used to position popups
 const destField = ref<HTMLElement | null>(null)
 const whenField = ref<HTMLElement | null>(null)
-const hoelangField = ref<HTMLElement | null>(null)
 const whoField = ref<HTMLElement | null>(null)
 
+// External anchor (variant-2 hero): when set, popup position is computed
+// relative to this element rather than the internal search-dock buttons.
+// Reset on closePopup.
+const externalAnchor = ref<HTMLElement | null>(null)
+
 // Approximate popup heights (used to decide auto-scroll on open)
-const POPUP_HEIGHTS: Record<'destination' | 'when' | 'hoelang' | 'who', number> = {
+const POPUP_HEIGHTS: Record<'destination' | 'when' | 'who', number> = {
   destination: 540,
-  when: 620,
-  hoelang: 320,
+  // Wanneer-popup with a ~400 px square calendar — header (~30) + calendar
+  // (~400) + footer / Verder-button (~60) + padding (~40) = ~580 px.
+  when: 580,
   who: 380,
 }
 
 const popupStyle = ref<Record<string, string>>({})
 
 function fieldRect() {
+  if (externalAnchor.value) return externalAnchor.value.getBoundingClientRect()
   switch (activePopup.value) {
     case 'destination': return destField.value?.getBoundingClientRect()
     case 'when':        return whenField.value?.getBoundingClientRect()
-    case 'hoelang':     return hoelangField.value?.getBoundingClientRect()
     case 'who':         return whoField.value?.getBoundingClientRect()
     default:            return undefined
   }
@@ -630,10 +624,22 @@ function computePopupPosition() {
   const rect = fieldRect()
   if (!rect) return
   const margin = 12
+  // Force a known popup width per type. We pin the width directly on the
+  // popup-anchor (not just the inner .popup) because some browsers fail
+  // to honour `width: 1200px` on the inner element when its fixed-position
+  // grandparent has no width set — the anchor collapses to ~0 and clips
+  // the inner via overflow. Setting the anchor's width guarantees the
+  // popup gets its full canvas.
+  const WIDTHS: Record<string, number> = { destination: 560, when: 780, who: 420 }
+  const popupWidth = Math.min(WIDTHS[which] ?? 600, window.innerWidth - 24)
+  const desired = rect.left
+  const maxLeft = window.innerWidth - popupWidth - 12
+  const left = Math.max(8, Math.min(desired, maxLeft))
   popupStyle.value = {
     position: 'fixed',
     top: (rect.bottom + margin) + 'px',
-    left: Math.max(8, rect.left) + 'px',
+    left: left + 'px',
+    width: popupWidth + 'px',
   }
 }
 
@@ -647,8 +653,11 @@ function scrollToFitPopup() {
   const rect = fieldRect()
   if (!rect) return
   const margin = 12
+  // Add an extra 24 px bottom breathing room so the popup doesn't kiss
+  // the viewport edge after the scroll lands.
+  const bottomBuffer = 24
   const popupHeight = POPUP_HEIGHTS[which]
-  const overflow = (rect.bottom + margin + popupHeight) - window.innerHeight
+  const overflow = (rect.bottom + margin + popupHeight + bottomBuffer) - window.innerHeight
   if (overflow > 0) {
     window.scrollBy({ top: overflow, behavior: 'smooth' })
   }
@@ -667,7 +676,7 @@ const mobileSearchLabel = computed(() => {
   return parts.join(' · ')
 })
 
-function togglePopup(popup: 'destination' | 'when' | 'hoelang' | 'who') {
+function togglePopup(popup: 'destination' | 'when' | 'who') {
   activePopup.value = activePopup.value === popup ? null : popup
 }
 
@@ -675,10 +684,19 @@ watch(activePopup, (val) => {
   if (val) {
     nextTick(() => {
       computePopupPosition()
-      // Auto-scroll on the home (overlay) variant so the popup's full
-      // height sits above the fold. The default (sticky navbar) variant
-      // already has room below it, so it stays as-is.
-      if (props.variant === 'overlay') {
+      // Auto-scroll when:
+      // - overlay variant (variant 1 / 2 home pages — popup opens
+      //   anchored to the nav-bar dock).
+      // - externalAnchor set (variant 2/3/4 home pages call
+      //   openPopupAt with their own search-bar field — popup opens
+      //   wherever the user scrolled to). Without this the popup
+      //   could be partially below the fold on /home-v3 + /home-v4
+      //   where the navbar is solid but the search bar lives below
+      //   the hero photo.
+      // The solid navbar dock (e.g. on /search) keeps its existing
+      // no-scroll behaviour because the dock is fixed in the navbar
+      // and the popup already fits below it.
+      if (props.variant === 'overlay' || externalAnchor.value) {
         scrollToFitPopup()
       }
     })
@@ -703,13 +721,56 @@ function closePopup() {
     setSearchGroup(searchGroup.value.adults + searchGroup.value.children.length, searchGroup.value.rooms)
   }
   activePopup.value = null
+  externalAnchor.value = null
   schedulePulse()
 }
 
+/** Public API: open one of the three popups anchored to an external element
+ *  (used by the variant-2 hero on /home-v2 whose search card lives outside
+ *  the SiteHeader subtree). Passing the same field twice toggles it closed. */
+function openPopupAt(which: 'destination' | 'when' | 'who', el: HTMLElement | null) {
+  if (activePopup.value === which) { closePopup(); return }
+  externalAnchor.value = el
+  activePopup.value = which
+}
+
+defineExpose({ openPopupAt })
+
 function clearDestination() {
+  resetDestinationState()
+  closePopup()
+}
+
+/** Wipe every destination / theme / city / hotel pick — used both by the
+ *  explicit "Wis" link and by single-select mode just before applying a
+ *  new pick. */
+function resetDestinationState() {
   clearDestinations()
-  // Also drop any thema-tags (the popup owns those chips).
   for (const id of [...selectedThemes.value]) toggleFilterTag(id)
+}
+
+/** Single-select handlers (variant 1): clear existing picks first, apply
+ *  the new one, then close the popup. */
+function onSingleDestination(id: string) {
+  const isSame = selectedDestinations.value.length === 1 && selectedDestinations.value[0] === id
+  resetDestinationState()
+  if (!isSame) toggleDestination(id)
+  closePopup()
+}
+function onSingleTheme(id: string) {
+  const isSame = selectedThemes.value.length === 1 && selectedThemes.value[0] === id
+  resetDestinationState()
+  if (!isSame) toggleTheme(id)
+  closePopup()
+}
+function onSingleCity(city: { name: string; province: string }) {
+  resetDestinationState()
+  handleSelectCity(city)
+  closePopup()
+}
+function onSingleHotel(slug: string) {
+  resetDestinationState()
+  handleSelectHotelInPopup(slug)
   closePopup()
 }
 
@@ -720,6 +781,23 @@ function clearWhen() {
   flexState.value = { durations: [], months: [] }
   calMonth.value = { year: new Date().getFullYear(), month: new Date().getMonth() }
   closePopup()
+}
+
+/** Combined wipe used by the merged Wanneer + Hoelang popup. Resets both
+ *  the date side and the duration side. Stays open afterwards — the user
+ *  can keep picking; "Verder" is what dismisses the popup. */
+function clearWhenAndDuration() {
+  selectedDate.value = null
+  flexibility.value = 0
+  selectedDurations.value = []
+  flexState.value = { durations: [], months: [] }
+  localNights.value = []
+  setSelectedNights([])
+  if (localFlexType.value) {
+    localFlexType.value = null
+    setFlexType(null)
+  }
+  calMonth.value = { year: new Date().getFullYear(), month: new Date().getMonth() }
 }
 
 function clearWho() {
@@ -1045,6 +1123,21 @@ const hoelangIsPlaceholder = computed(
   () => !localFlexType.value && localNights.value.length === 0,
 )
 
+/** Combined "Wanneer en hoelang" field label — joins the date and duration
+ *  parts with a ` · ` separator. When neither is set we fall back to the
+ *  placeholder copy and render in lighter grey. */
+const whenCombinedLabel = computed(() => {
+  const parts: string[] = []
+  if (!whenIsPlaceholder.value) parts.push(whenLabel.value)
+  if (!hoelangIsPlaceholder.value) parts.push(hoelangLabel.value)
+  if (parts.length === 0) return t('header.pickDateAndDuration')
+  return parts.join(' · ')
+})
+
+const whenCombinedIsPlaceholder = computed(
+  () => whenIsPlaceholder.value && hoelangIsPlaceholder.value,
+)
+
 /** Destination is a placeholder when nothing is picked — same logic the
  *  destinationLabel already uses to fall back to the t('chooseDestination')
  *  string. */
@@ -1052,6 +1145,7 @@ const destinationIsPlaceholder = computed(() => (
   selectedDestinations.value.length === 0
   && selectedThemes.value.length === 0
   && selectedCities.value.length === 0
+  && selectedHotels.value.length === 0
 ))
 
 // --- WHO ---
@@ -1288,7 +1382,7 @@ function handleSelectHotelInPopup(slug: string) {
 }
 
 .site-header--overlay .search-bar__btn--find-deals {
-  background: #e97132;
+  background: var(--color-primary);
   color: #fff;
   height: auto;
   width: auto;
@@ -1309,7 +1403,7 @@ function handleSelectHotelInPopup(slug: string) {
 }
 
 .site-header--overlay .search-bar__btn--find-deals:hover {
-  background: #d4621f;
+  background: var(--color-primary-hover);
 }
 
 /* Hotel+more accent (active vertical) */
@@ -1411,7 +1505,9 @@ function handleSelectHotelInPopup(slug: string) {
 /* Nav bar */
 .site-header__nav {
   background: #111111;
-  height: 72px;
+  /* Extra breathing room — bumped from 72 to 88 px so the bar reads less
+     cramped (more whitespace around logo / verticals / hamburger). */
+  height: 88px;
   display: flex;
   align-items: center;
   position: relative;
@@ -1456,8 +1552,10 @@ function handleSelectHotelInPopup(slug: string) {
   align-items: center;
   padding: 8px 18px;
   font-size: 14px;
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.72);
+  /* Non-selected verticals now read a touch heavier so Restaurants and
+     Geef cadeaubon don't look like body text against the hero photo. */
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.85);
   text-decoration: none;
   border-radius: 999px;
   transition: background var(--transition-fast), color var(--transition-fast);
@@ -1769,12 +1867,14 @@ function handleSelectHotelInPopup(slug: string) {
 }
 
 .search-bar__btn {
-  width: 56px;
+  /* Width hugs contents ("Zoek" text) with horizontal padding;
+     previously was a fixed 56px square icon button. */
   height: 56px;
+  padding: 0 24px;
   border-radius: 12px;
   background: var(--color-primary);
   border: none;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
@@ -1782,6 +1882,11 @@ function handleSelectHotelInPopup(slug: string) {
   margin-left: 4px;
   transition: background var(--transition-fast);
   color: white;
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  white-space: nowrap;
 }
 
 .search-bar__btn:hover {
@@ -1824,7 +1929,8 @@ function handleSelectHotelInPopup(slug: string) {
 
 .popup--when {
   padding: 0;
-  max-width: 528px;
+  /* Width is now pinned on the .popup-anchor parent (in computePopupPosition).
+     The inner popup just fills that width. */
   width: 100%;
   max-height: none;
   overflow: visible;

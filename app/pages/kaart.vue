@@ -3,6 +3,7 @@ import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { searchHotels } from '~/data/mock/search-hotels'
 import { useHotelMap } from '~/composables/useHotelMap'
+import { useHomeVariant } from '~/composables/useHomeVariant'
 import { dealMatchesAllTags, getFilterTag } from '~/utils/filterTags'
 import FilterPills from '~/components/search/FilterPills.vue'
 import { isDealAvailable, isDealAvailableInWindow } from '~/utils/availability'
@@ -20,6 +21,7 @@ const { t } = useI18n()
 useHead({ title: 'Kaart — Via Luxury' })
 
 const router = useRouter()
+const { homeHref } = useHomeVariant()
 
 const {
   arrivalDate,
@@ -174,7 +176,7 @@ function closeMap() {
   // panel hanging open after navigating away.
   clearSelection()
   if (window.history.length > 1) router.back()
-  else router.push('/home')
+  else router.push(homeHref.value)
 }
 </script>
 

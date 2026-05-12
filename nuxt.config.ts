@@ -10,7 +10,25 @@ export default defineNuxtConfig({
       path: '~/components',
       pathPrefix: false,
     },
+    // Northstar concept — frozen snapshot of the prototype. All
+    // components are auto-imported with a `Northstar` prefix so they
+    // never collide with the active version.
+    {
+      path: '~/components-northstar',
+      prefix: 'Northstar',
+      pathPrefix: false,
+    },
   ],
+
+  // Auto-import the Northstar composables + stores. Their exported
+  // names are renamed (`useNorthstar*`) so they don't collide with the
+  // active version.
+  imports: {
+    dirs: [
+      'composables-northstar/**',
+      'stores-northstar/**',
+    ],
+  },
 
   modules: [
     '@pinia/nuxt',
@@ -25,6 +43,7 @@ export default defineNuxtConfig({
     'leaflet/dist/leaflet.css',
     'leaflet.markercluster/dist/MarkerCluster.css',
     '~/assets/css/leaflet-overrides.css',
+    '~/assets/css/variant-2.css',
   ],
 
   nitro: {

@@ -1,7 +1,9 @@
 :root {
   /* Colors */
-  --color-primary: #FB862D;
-  --color-primary-hover: #E5771F;
+  /* Darker brand orange — matches the homepage "Vind deals" button so
+     every CTA / accent across the site stays in lockstep. */
+  --color-primary: #e97132;
+  --color-primary-hover: #d4621f;
   --color-primary-light: #F5F5F5;
   --color-discount: #00B67A;
   --color-discount-light: #E8F5E9;
@@ -11,7 +13,7 @@
   --color-border: #E5E5E5;
   --color-border-light: #F0F0F0;
   --color-background: #FFFFFF;
-  --color-background-secondary: #F8F8F8;
+  --color-background-secondary: #FBFAF8;
   --color-surface: #FFFFFF;
   --color-top-bar: #1A1A1A;
   --color-star: #FB862D;

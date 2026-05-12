@@ -235,7 +235,8 @@ function toggleGroup(index: number) {
 
 <style scoped>
 .filter-panel {
-  background: var(--color-background-secondary);
+  background: #fff;
+  border: 1px solid var(--color-border-light);
   border-radius: var(--radius-lg);
   padding: var(--space-lg);
 }

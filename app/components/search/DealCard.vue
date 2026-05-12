@@ -8,20 +8,38 @@
       'deal-card-v2--unavailable-on-date': dateMismatch || nightsMismatch,
     }"
   >
-    <!-- Image area (top in grid, left in list) -->
+    <!-- Image area (top in grid, left in list). Grid mode renders a small
+         carousel (up to 5 hotel photos) with prev/next arrows that fade
+         in on hover. List mode keeps the single static image. -->
     <div class="deal-card-v2__image">
-      <img :src="imageSrc" :alt="hotel?.name || localized(deal.title)" loading="lazy" />
+      <img :src="carouselImages[carouselIndex] || imageSrc" :alt="hotel?.name || localized(deal.title)" loading="lazy" />
+      <template v-if="gridMode && carouselImages.length > 1">
+        <button
+          type="button"
+          class="deal-card-v2__carousel-nav deal-card-v2__carousel-nav--prev"
+          aria-label="Vorige foto"
+          @click.stop.prevent="prevImage"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <button
+          type="button"
+          class="deal-card-v2__carousel-nav deal-card-v2__carousel-nav--next"
+          aria-label="Volgende foto"
+          @click.stop.prevent="nextImage"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+      </template>
       <span v-if="deal.discountPercentage" class="deal-card-v2__discount-badge">
         -{{ deal.discountPercentage }}%
       </span>
       <div v-if="hotel?.labels && hotel.labels.length && !hideLabels" class="deal-card-v2__labels">
-        <img
+        <DealLabel
           v-for="label in hotel.labels"
           :key="label"
-          :src="`/images/labels/${labelFile(label)}`"
-          :alt="label"
+          :key-name="label"
           class="deal-card-v2__label"
-          loading="lazy"
         />
       </div>
       <button
@@ -53,8 +71,7 @@
           </h3>
         </NuxtLink>
         <div ref="metaEl" class="deal-card-v2__meta">
-          <span class="deal-card-v2__score">{{ hotel.reviewScore.toFixed(1) }}</span>
-          <span class="deal-card-v2__score-label">{{ t(getReviewLabelKey(hotel.reviewScore)) }}</span>
+          <ViaLuxuryScoreBadge v-if="hotel" :hotel="hotel" :all-hotels="mappedHotels" />
           <span class="deal-card-v2__sep" aria-hidden="true">|</span>
           <svg class="deal-card-v2__loc-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
@@ -135,7 +152,7 @@
                     <span>Bekijk</span>
                     <span>beschikbaarheid</span>
                   </template>
-                  <template v-else>Bekijk</template>
+                  <template v-else>{{ ctaLabel || 'Bekijk' }}</template>
                 </NuxtLink>
               </div>
             </template>
@@ -183,7 +200,7 @@ import { formatPrice } from '~/utils/formatPrice'
 import { formatDateShort } from '~/utils/formatDate'
 import dayjs from 'dayjs'
 import { pickSmartInclusions } from '~/utils/smartInclusions'
-import { getReviewLabelKey } from '~/utils/reviewLabel'
+import { mappedHotels } from '~/data/deals-mapper'
 import { priceForArrival } from '~/utils/priceFormula'
 
 const { t, localized, locale } = useI18n()
@@ -231,6 +248,9 @@ const props = defineProps<{
   /** Side-panel only: this deal's nights don't match the active duration
    *  filter (the date may still be available). */
   nightsMismatch?: boolean
+  /** Override the default "Bekijk" CTA copy. Used for the featured card
+   *  on /home which says "Bekijk arrangement" instead. */
+  ctaLabel?: string
 }>()
 
 defineEmits<{ 'view-siblings': [] }>()
@@ -287,6 +307,26 @@ const hasBar = computed(() => {
 const imageSrc = computed(() => {
   return props.deal.heroImage || props.deal.inclusionImage || props.hotel?.heroImage || ''
 })
+
+/** Up to 5 photos for the grid carousel — uses the hotel's `galleryImages`
+ *  when present, otherwise falls back to a single `imageSrc`. */
+const carouselImages = computed<string[]>(() => {
+  const list = props.hotel?.galleryImages
+  if (list && list.length > 0) return list.slice(0, 5)
+  return imageSrc.value ? [imageSrc.value] : []
+})
+
+const carouselIndex = ref(0)
+function prevImage() {
+  const n = carouselImages.value.length
+  if (n < 2) return
+  carouselIndex.value = (carouselIndex.value - 1 + n) % n
+}
+function nextImage() {
+  const n = carouselImages.value.length
+  if (n < 2) return
+  carouselIndex.value = (carouselIndex.value + 1) % n
+}
 
 /** Carry the arrival date AND persons/rooms through the URL so a new-tab
  *  navigation (target=_blank with rel=noopener) lands on the right month
@@ -388,17 +428,7 @@ const includesBullets = computed<string[]>(() => {
   return out
 })
 
-const LABEL_FILES: Record<string, string> = {
-  'wellness': 'WELLNESS.svg',
-  'spa-kamer': 'spa kamer.svg',
-  'super-deal': 'super deal.svg',
-  'exclusief': 'exclusief.svg',
-  'last-minute': 'last minute.svg',
-  'nieuw': 'nieuw.svg',
-}
-function labelFile(label: string): string {
-  return LABEL_FILES[label] || `${label}.svg`
-}
+// Label rendering moved to <DealLabel>; the old PNG/SVG lookup is gone.
 </script>
 
 <style scoped>
@@ -445,6 +475,44 @@ function labelFile(label: string): string {
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+/* Carousel arrows — fade in only on hover of the image area. White
+   circular buttons matching the example, vertically centred. */
+.deal-card-v2__carousel-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.95);
+  color: #1a1a1a;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
+  opacity: 0;
+  transition: opacity 150ms ease, background 150ms ease;
+  z-index: 2;
+}
+
+.deal-card-v2__image:hover .deal-card-v2__carousel-nav {
+  opacity: 1;
+}
+
+.deal-card-v2__carousel-nav:hover {
+  background: #fff;
+}
+
+.deal-card-v2__carousel-nav--prev {
+  left: 10px;
+}
+
+.deal-card-v2__carousel-nav--next {
+  right: 10px;
 }
 
 .deal-card-v2__labels {

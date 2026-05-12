@@ -4,6 +4,7 @@
 
 <script setup lang="ts">
 import { useLocaleStore } from '~/stores/locale'
+import { useHomeVariant } from '~/composables/useHomeVariant'
 
 const localeStore = useLocaleStore()
 
@@ -24,6 +25,15 @@ const {
   restoreSearchSession, setArrivalDate, arrivalDate,
   setSearchGroup, persons: globalPersons, rooms: globalRooms,
 } = useSearchState()
+// Northstar mirror — separate restore so reloading on /northstar/* keeps
+// its own filter state (independent localStorage namespace).
+const { restore: restoreNs } = useNorthstarPartner()
+const { restoreSearchSession: restoreSearchSessionNs } = useNorthstarSearchState()
+// Homepage variant ('1' / '2' / '3' / '4') — restored from URL first,
+// then localStorage. The active variant is also reflected on <body> as
+// `vl-variant-2` etc., so global CSS (e.g. variant-2.css) can re-style
+// shared components (DealCard, etc.) consistently across all pages.
+const { restoreHomeVariant, homeVariant } = useHomeVariant()
 
 function applyCheckinFromUrl(val: unknown) {
   if (typeof val !== 'string') return
@@ -44,11 +54,26 @@ function applyGroupFromUrl(p: unknown, r: unknown) {
 onMounted(() => {
   restore()
   restoreSearchSession()
+  restoreNs()
+  restoreSearchSessionNs()
+  restoreHomeVariant(route.path)
   const p = route.query.partner
   if (p === 'nu') set('nu')
   applyCheckinFromUrl(route.query.checkin)
   applyGroupFromUrl(route.query.persons, route.query.rooms)
 })
+// Re-evaluate variant when the user navigates between /home and /home-v2.
+watch(() => route.path, (p) => restoreHomeVariant(p))
+
+// Reflect the active variant on <body> so global CSS rules can target
+// it (e.g. variant-2.css restyles deal cards everywhere when v2 is
+// active). Re-runs whenever the active variant changes.
+watch(homeVariant, (v) => {
+  if (!import.meta.client) return
+  const body = document.body
+  body.classList.remove('vl-variant-1', 'vl-variant-2', 'vl-variant-3', 'vl-variant-4', 'vl-variant-5')
+  body.classList.add(`vl-variant-${v}`)
+}, { immediate: true })
 watch(() => route.query.partner, (val) => {
   if (val === 'nu') set('nu')
 })

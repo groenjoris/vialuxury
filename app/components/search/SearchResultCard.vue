@@ -11,13 +11,11 @@
         -{{ lowestDiscount }}%
       </span>
       <div v-if="hotel.labels && hotel.labels.length" class="result-card__labels">
-        <img
+        <DealLabel
           v-for="label in hotel.labels"
           :key="label"
-          :src="`/images/labels/${labelFile(label)}`"
-          :alt="label"
+          :key-name="label"
           class="result-card__label"
-          loading="lazy"
         />
       </div>
       <button
@@ -49,8 +47,7 @@
           <p class="result-card__pitch">{{ pitchText }}</p>
         </div>
         <div class="result-card__score-wrap">
-          <span class="result-card__score">{{ hotel.reviewScore.toFixed(1) }}</span>
-          <span class="result-card__score-label">{{ t(getReviewLabelKey(hotel.reviewScore)) }}</span>
+          <ViaLuxuryScoreBadge :hotel="hotel" :all-hotels="mappedHotels" />
         </div>
       </div>
 
@@ -133,7 +130,7 @@
 <script setup lang="ts">
 import type { SearchHotel } from '~/types/searchHotel'
 import { formatPrice } from '~/utils/formatPrice'
-import { getReviewLabelKey } from '~/utils/reviewLabel'
+import { mappedHotels } from '~/data/deals-mapper'
 import { mappedPackagesByPermalink } from '~/data/deals-mapper'
 import { priceForArrival } from '~/utils/priceFormula'
 import { nightsLabel, personsLabel } from '~/utils/plural'
@@ -145,19 +142,7 @@ const lang = computed<'nl' | 'en'>(() => (locale.value === 'en' ? 'en' : 'nl'))
 const isFavorite = ref(false)
 const { persons, rooms, arrivalDate } = useSearchState()
 
-// Label key → filename in /public/images/labels/. Source filenames have spaces.
-const LABEL_FILES: Record<string, string> = {
-  'wellness': 'WELLNESS.svg',
-  'spa-kamer': 'spa kamer.svg',
-  'super-deal': 'super deal.svg',
-  'exclusief': 'exclusief.svg',
-  'last-minute': 'last minute.svg',
-  'nieuw': 'nieuw.svg',
-}
-
-function labelFile(label: string): string {
-  return LABEL_FILES[label] || `${label}.svg`
-}
+// Label rendering moved to <DealLabel>; PNG/SVG lookup retired.
 
 function adjustPrice(basePrice: number, p: number): number {
   if (p % 2 === 0) return Math.round(basePrice * (p / 2))

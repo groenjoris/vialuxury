@@ -30,10 +30,11 @@
           </div>
           <p v-if="hotel.pitch" class="hotel-page__pitch">{{ localized(hotel.pitch) }}</p>
           <div class="hotel-page__meta">
-            <div class="hotel-page__score-wrap">
-              <span class="hotel-page__score">{{ hotel.reviews.overallScore.toFixed(1) }}</span>
-              <span class="hotel-page__score-label">{{ t(getReviewLabelKey(hotel.reviews.overallScore)) }}</span>
-            </div>
+            <ViaLuxuryScoreBadge
+              v-if="searchHotelForBadge"
+              :hotel="searchHotelForBadge"
+              :all-hotels="mappedHotels"
+            />
             <span class="hotel-page__divider">|</span>
             <span>{{ hotel.reviews.totalReviews }} {{ t('common.reviews') }}</span>
             <span class="hotel-page__divider">·</span>
@@ -266,11 +267,11 @@
 
 <script setup lang="ts">
 import { formatPrice } from '~/utils/formatPrice'
-import { getReviewLabelKey } from '~/utils/reviewLabel'
 import {
   mappedHotelsByHotelPermalink,
   mappedPackagesByPermalink,
   defaultDealPermalink,
+  mappedHotels,
 } from '~/data/deals-mapper'
 import { searchHotels } from '~/data/mock/search-hotels'
 import DealCard from '~/components/search/DealCard.vue'
@@ -284,6 +285,15 @@ const fallbackHotel = mappedHotelsByHotelPermalink[Object.keys(mappedHotelsByHot
 const initialHotel = mappedHotelsByHotelPermalink[hotelSlug] || fallbackHotel
 
 const hotel = ref(initialHotel)
+
+// SearchHotel companion for the ViaLuxury score badge (same hotel,
+// different type — needed for `deals[]` + `starRating` shape the helper
+// expects). Match by slug, fall back to name.
+const searchHotelForBadge = computed(() => {
+  const h = hotel.value
+  if (!h) return null
+  return mappedHotels.find(sh => sh.slug === h.slug || sh.name === h.name) ?? null
+})
 
 // Find all deals (packages) for this hotel
 import { dealVariantsByPermalink, dealsMapByPermalink } from '~/data/deals-mapper'

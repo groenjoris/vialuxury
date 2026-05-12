@@ -359,6 +359,26 @@ for (const [hotelId, pkgs] of packagesByHotelId.entries()) {
     region: primary.country || '',
     province,
     heroImage: primary.imageUrls?.[0] || primary.photos?.[0]?.full || '',
+    // Carousel images: hero first, then unique photos[] entries (deduped
+    // by asset path so we don't repeat the hero), capped at 5 total.
+    galleryImages: (() => {
+      const stripQuery = (u: string) => u.split('?')[0]
+      const hero = primary.imageUrls?.[0] || primary.photos?.[0]?.full || ''
+      const out: string[] = []
+      const seen = new Set<string>()
+      if (hero) {
+        out.push(hero)
+        seen.add(stripQuery(hero))
+      }
+      for (const p of primary.photos || []) {
+        if (out.length >= 5) break
+        const k = stripQuery(p.full)
+        if (seen.has(k)) continue
+        seen.add(k)
+        out.push(p.full)
+      }
+      return out
+    })(),
     reviewScore: score,
     reviewCount,
     pitch: loc(pickHotelPitch(pkgs)),

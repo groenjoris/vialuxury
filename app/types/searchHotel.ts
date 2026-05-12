@@ -11,6 +11,9 @@ export interface SearchHotel {
    *  we don't have a province mapping for (e.g. all BE hotels). */
   province?: string
   heroImage: string
+  /** Up to 5 hotel photos for the deal-card carousel (grid view). Hero
+   *  is the first entry; additional shots from the package's photos. */
+  galleryImages?: string[]
   reviewScore: number
   reviewCount: number
   pitch: LocalizedString

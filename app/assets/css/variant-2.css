@@ -1,0 +1,117 @@
+/* ============================================================
+ * Variant-2 deal-card treatment — applied site-wide when the
+ * active home variant is '2'. Gated by a `vl-variant-2` class
+ * on <body> (set/cleared in app.vue based on useHomeVariant).
+ *
+ * NOTE on specificity: DealCard.vue's scoped CSS attaches a
+ * [data-v-XXXX] attribute to its `.deal-card-v2--grid` and
+ * `.deal-card-v2__content` selectors → specificity (0, 4, 0).
+ * To win the cascade from a non-scoped global file we chain the
+ * class twice (`.deal-card-v2.deal-card-v2--grid`) so the
+ * override lands at (0, 4+, 1).
+ *
+ * Variants 1, 3, and 4 keep the default DealCard look.
+ * ============================================================ */
+
+body.vl-variant-2 .deal-card-v2.deal-card-v2 {
+  background: transparent;
+  border-radius: 0;
+  box-shadow: none;
+  /* Allow the inter-column vertical-stripe pseudo on /home-v2's grid
+     to extend into the gap area. */
+  overflow: visible;
+}
+body.vl-variant-2 .deal-card-v2.deal-card-v2:hover {
+  box-shadow: none;
+}
+
+/* No fixed width — the card fills its grid column so its left and
+   right edges align with the container's padding. Width is driven by
+   the grid layout (1fr columns), not the card itself. */
+
+/* Photo keeps a soft TOP edge — bottom is square so the image flows
+   into the text below it. */
+body.vl-variant-2 .deal-card-v2.deal-card-v2 .deal-card-v2__image {
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+  overflow: hidden;
+}
+
+/* Pull the content text & CTA flush to the image's left and right
+   edges. Vertical padding is preserved. Two `.deal-card-v2--grid`
+   chains so we outweigh DealCard.vue's `.deal-card-v2--grid[data-v-X]
+   .deal-card-v2__content[data-v-X] { padding: var(--space-md) }`. */
+body.vl-variant-2 .deal-card-v2.deal-card-v2--grid .deal-card-v2__content {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+/* Bottom-align CTA button border with price text bottom (default is
+   baseline). `line-height: 1` on the price elements collapses the
+   line-box padding below the glyphs so the button's bottom border
+   sits exactly at the price text's bottom edge. */
+body.vl-variant-2 .deal-card-v2.deal-card-v2 .deal-card-v2__grid-price-row {
+  align-items: flex-end;
+}
+body.vl-variant-2 .deal-card-v2.deal-card-v2 .deal-card-v2__price-line,
+body.vl-variant-2 .deal-card-v2.deal-card-v2 .deal-card-v2__price,
+body.vl-variant-2 .deal-card-v2.deal-card-v2 .deal-card-v2__price-prefix,
+body.vl-variant-2 .deal-card-v2.deal-card-v2 .deal-card-v2__original {
+  line-height: 1;
+}
+
+/* ===== Vertical-stripe dividers between deal cards =====
+ * Same 1px grey stripe at ~25% card height across every grid that
+ * shows deal cards in multiple columns. The negative `left` offset
+ * places the line dead-centre in each layout's column gap. Positioned
+ * via `::before` on every card that isn't first-of-row.
+ *
+ * Layouts covered:
+ *   • /home-v2 "home-deals__grid--3" (3 cols, 54px gap)
+ *   • /search  "search-page__result-list--grid"   (2 cols, 24px gap)
+ *   • /search  "search-page__result-list--grid-3" (3 cols, 24px gap)
+ * ============================================================ */
+
+/* First, explicitly cancel the pseudo on every first-of-row card so
+   no other CSS can accidentally paint a stripe before column 1. */
+body.vl-variant-2 .home-deals__grid--3 > .deal-card-v2:nth-child(3n+1)::before,
+body.vl-variant-2 .search-page__result-list--grid > .deal-card-v2:nth-child(2n+1)::before,
+body.vl-variant-2 .search-page__result-list--grid-3 > .deal-card-v2:nth-child(3n+1)::before {
+  content: none;
+}
+
+/* Shared stripe presentation. `> .deal-card-v2` so the nth-child
+   indexing always counts grid CHILDREN, not nested deal cards. */
+body.vl-variant-2 .home-deals__grid--3 > .deal-card-v2:not(:nth-child(3n+1))::before,
+body.vl-variant-2 .search-page__result-list--grid > .deal-card-v2:not(:nth-child(2n+1))::before,
+body.vl-variant-2 .search-page__result-list--grid-3 > .deal-card-v2:not(:nth-child(3n+1))::before {
+  content: '';
+  position: absolute;
+  top: 37.5%;
+  bottom: 37.5%;
+  width: 1px;
+  background: var(--color-border);
+  pointer-events: none;
+}
+
+/* Standardised 40px gap → stripe at -20px puts it dead-centre between
+   columns. The default /search grids (24px gap) are bumped to 40px so
+   every variant-2 deal grid uses the same gap, no matter the page. */
+body.vl-variant-2 .search-page__result-list--grid,
+body.vl-variant-2 .search-page__result-list--grid-3 {
+  gap: 40px;
+}
+
+body.vl-variant-2 .home-deals__grid--3 > .deal-card-v2:not(:nth-child(3n+1))::before,
+body.vl-variant-2 .search-page__result-list--grid > .deal-card-v2:not(:nth-child(2n+1))::before,
+body.vl-variant-2 .search-page__result-list--grid-3 > .deal-card-v2:not(:nth-child(3n+1))::before {
+  left: -20px; /* 40 / 2 */
+}
+
+/* 1-col breakpoint: drop all stripes (no gap between rows of one). */
+@media (max-width: 600px) {
+  body.vl-variant-2 .home-deals__grid--3 > .deal-card-v2::before,
+  body.vl-variant-2 .search-page__result-list--grid > .deal-card-v2::before,
+  body.vl-variant-2 .search-page__result-list--grid-3 > .deal-card-v2::before {
+    content: none;
+  }
+}

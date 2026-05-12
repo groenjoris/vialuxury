@@ -7,7 +7,6 @@ const nl: Record<string, string> = {
 
   // Header - Search bar
   'header.destination': 'Waarheen',
-  'header.whenAndHowLong': 'Wanneer & hoelang',
   'header.when': 'Wanneer',
   'header.whosComing': 'Wie gaat er mee',
   'header.chooseDestination': 'Kies bestemming',
@@ -43,9 +42,12 @@ const nl: Record<string, string> = {
   'header.recentSearches': 'Recente zoekopdrachten',
 
   // Header - Verticals
-  'header.hotels': 'Hotels',
+  'header.hotels': 'Verblijven',
   'header.holidayParks': 'Vakantieparken',
   'header.restaurants': 'Restaurants',
+  'header.giftCard': 'Geef cadeaubon',
+  'header.whenAndHowLong': 'Wanneer en hoelang?',
+  'header.pickDateAndDuration': 'Kies datum en reisduur',
   'header.membersEntrance': 'Leden',
   'header.contact': 'Contact',
   'header.contactNeedHelp': 'Hulp nodig?',

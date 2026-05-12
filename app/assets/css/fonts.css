@@ -58,6 +58,17 @@
   font-display: swap;
 }
 
+/* ── Biro Script (handwritten pay-off font) ── */
+
+@font-face {
+  font-family: 'Biro Script';
+  src: url('/fonts/biro/Biro_Script_reduced.otf') format('opentype'),
+       url('/fonts/biro/Biro_Script_reduced.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* ── ResotYc (decorative label font) ── */
 
 @font-face {

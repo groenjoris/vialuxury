@@ -7,7 +7,6 @@ const en: Record<string, string> = {
 
   // Header - Search bar
   'header.destination': 'Where to',
-  'header.whenAndHowLong': 'When & how long',
   'header.when': 'When',
   'header.whosComing': 'Who\'s coming',
   'header.chooseDestination': 'Choose a destination',
@@ -43,9 +42,12 @@ const en: Record<string, string> = {
   'header.dogSub': 'Check availability per hotel',
 
   // Header - Verticals
-  'header.hotels': 'Hotels',
+  'header.hotels': 'Stays',
   'header.holidayParks': 'Holiday Parks',
   'header.restaurants': 'Restaurants',
+  'header.giftCard': 'Gift card',
+  'header.whenAndHowLong': 'When & how long?',
+  'header.pickDateAndDuration': 'Pick a date and duration',
   'header.membersEntrance': 'Members',
   'header.contact': 'Contact',
   'header.contactNeedHelp': 'Need help?',
