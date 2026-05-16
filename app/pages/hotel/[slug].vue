@@ -13,6 +13,7 @@
       <nav class="hotel-page__tabs container">
         <a href="#overzicht" class="hotel-page__tab">{{ t('hotel.tabOverview') }}</a>
         <a href="#arrangementen" class="hotel-page__tab">{{ t('hotel.tabDeals') }}</a>
+        <a href="#beoordelingen" class="hotel-page__tab">{{ t('hotel.tabReviews') }}</a>
         <a href="#veelgestelde-vragen" class="hotel-page__tab">{{ t('hotel.tabFaq') }}</a>
         <a href="#huisregels" class="hotel-page__tab">{{ t('hotel.tabHouseRules') }}</a>
         <a href="#tips" class="hotel-page__tab">{{ t('hotel.tabNearby') }}</a>
@@ -29,6 +30,14 @@
           </div>
           <p v-if="hotel.pitch" class="hotel-page__pitch">{{ localized(hotel.pitch) }}</p>
           <div class="hotel-page__meta">
+            <ViaLuxuryScoreBadge
+              v-if="searchHotelForBadge"
+              :hotel="searchHotelForBadge"
+              :all-hotels="mappedHotels"
+            />
+            <span class="hotel-page__divider">|</span>
+            <span>{{ hotel.reviews.totalReviews }} {{ t('common.reviews') }}</span>
+            <span class="hotel-page__divider">·</span>
             <span>{{ hotel.location.city }}, {{ hotel.location.region }}</span>
             <span class="hotel-page__title-actions">
               <button class="icon-action" :aria-label="t('common.save')">♡</button>
@@ -140,6 +149,40 @@
         </div>
       </section>
 
+      <!-- Reviews -->
+      <section id="beoordelingen" class="hotel-page__reviews container">
+        <h2 class="section-title">{{ t('hotel.reviews') }}</h2>
+        <div class="reviews__score-bar">
+          <span class="reviews__score-big">{{ hotel.reviews.overallScore.toFixed(1) }}</span>
+          <div class="reviews__score-meta">
+            <span class="reviews__score-verdict">{{ t(getReviewLabelKey(hotel.reviews.overallScore)) }}</span>
+            <span class="reviews__score-count">{{ hotel.reviews.totalReviews }} {{ t('common.reviews') }}</span>
+          </div>
+        </div>
+        <div class="reviews__categories">
+          <div v-for="cat in hotel.reviews.categories" :key="localized(cat.name)" class="reviews__cat">
+            <span class="reviews__cat-name">{{ localized(cat.name) }}</span>
+            <div class="reviews__cat-bar"><div class="reviews__cat-fill" :style="{ width: (cat.score / 10 * 100) + '%' }"></div></div>
+            <span class="reviews__cat-score">{{ cat.score.toFixed(1) }}</span>
+          </div>
+        </div>
+        <div class="reviews__grid">
+          <div v-for="rev in hotel.individualReviews" :key="rev.id" class="review-card">
+            <div class="review-card__header">
+              <span class="review-card__author">{{ rev.author }}</span>
+              <span class="review-card__review-score">{{ Number(rev.score).toFixed(1) }}/10</span>
+            </div>
+            <p class="review-card__text">{{ localized(rev.text) }}</p>
+            <div v-if="rev.arrangement" class="review-card__arrangement">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 7h-3V5a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v2H4a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V8a1 1 0 0 0-1-1zM9 5h6v2H9V5z" />
+              </svg>
+              <span>{{ t('hotel.bookedAs') }} {{ localized(rev.arrangement) }}</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <!-- House Rules -->
       <section v-if="hotel.houseRules && hotel.houseRules.length" id="huisregels" class="hotel-page__house-rules container">
         <div class="house-rules__layout">
@@ -228,6 +271,7 @@ import {
   mappedHotelsByHotelPermalink,
   mappedPackagesByPermalink,
   defaultDealPermalink,
+  mappedHotels,
 } from '~/data/deals-mapper'
 import { searchHotels } from '~/data/mock/search-hotels'
 import DealCard from '~/components/search/DealCard.vue'
@@ -241,6 +285,15 @@ const fallbackHotel = mappedHotelsByHotelPermalink[Object.keys(mappedHotelsByHot
 const initialHotel = mappedHotelsByHotelPermalink[hotelSlug] || fallbackHotel
 
 const hotel = ref(initialHotel)
+
+// SearchHotel companion for the ViaLuxury score badge (same hotel,
+// different type — needed for `deals[]` + `starRating` shape the helper
+// expects). Match by slug, fall back to name.
+const searchHotelForBadge = computed(() => {
+  const h = hotel.value
+  if (!h) return null
+  return mappedHotels.find(sh => sh.slug === h.slug || sh.name === h.name) ?? null
+})
 
 // Find all deals (packages) for this hotel
 import { dealVariantsByPermalink, dealsMapByPermalink } from '~/data/deals-mapper'
@@ -426,6 +479,7 @@ const mapTileUrl = computed(() => {
   margin-bottom: var(--space-sm);
 }
 .hotel-page__meta { display: flex; align-items: center; gap: var(--space-sm); font-size: 14px; color: var(--color-text-secondary); }
+.hotel-page__score-wrap { display: flex; align-items: center; gap: 6px; }
 .hotel-page__score { display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: var(--radius-sm); background: #00B67A; color: #fff; font-size: 13px; font-weight: 700; flex-shrink: 0; }
 .hotel-page__score-label { font-size: 13px; font-weight: 600; color: var(--color-text-primary); }
 .hotel-page__divider { color: var(--color-text-muted); }
@@ -525,11 +579,43 @@ const mapTileUrl = computed(() => {
 @media (max-width: 640px)  { .deals__grid { grid-template-columns: 1fr; } }
 
 /* ===== REVIEWS ===== */
+.hotel-page__reviews { padding: var(--space-xl) var(--space-lg); position: relative; }
+.reviews__score-bar { display: flex; align-items: center; gap: var(--space-sm); margin-bottom: var(--space-md); }
+.reviews__score-big { font-size: 24px; font-weight: 700; font-family: var(--font-heading); background: #00B67A; color: #fff; padding: 8px 12px; border-radius: var(--radius-sm); }
+.reviews__score-meta { display: flex; flex-direction: column; gap: 1px; }
+.reviews__score-verdict { font-size: 15px; font-weight: 600; color: var(--color-text-primary); }
+.reviews__score-count { font-size: 13px; color: var(--color-text-muted); }
+.reviews__categories { display: grid; grid-template-columns: 1fr 1fr; gap: 6px var(--space-xl); margin-bottom: var(--space-lg); max-width: 720px; }
+.reviews__cat { display: grid; grid-template-columns: 110px 1fr 32px; align-items: center; gap: var(--space-sm); font-size: 13px; }
+.reviews__cat-name { color: var(--color-text-secondary); }
+.reviews__cat-bar { height: 6px; background: var(--color-border-light); border-radius: 3px; overflow: hidden; }
+.reviews__cat-fill { height: 100%; background: #00B67A; border-radius: 3px; }
+.reviews__cat-score { font-weight: 600; text-align: right; }
+.reviews__grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md); }
+.review-card { padding: var(--space-md); background: var(--color-background-secondary); border-radius: var(--radius-md); display: flex; flex-direction: column; }
+.review-card__header { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-sm); }
+.review-card__author { font-size: 14px; font-weight: 600; }
+.review-card__review-score { font-size: 13px; font-weight: 700; color: var(--color-text-primary); }
+.review-card__text { font-size: 13px; line-height: 1.6; color: var(--color-text-secondary); }
+.review-card__arrangement {
+  margin-top: var(--space-sm);
+  padding-top: var(--space-sm);
+  border-top: 1px dashed var(--color-border);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-text-muted);
+}
+.review-card__arrangement svg { color: #00B67A; flex-shrink: 0; }
+
 /* ===== HOUSE RULES ===== */
 .hotel-page__house-rules { padding: var(--space-xl) var(--space-lg); position: relative; }
 /* Inset top divider for the lower full-width sections */
 .hotel-page__facilities::before,
 .hotel-page__deals::before,
+.hotel-page__reviews::before,
 .hotel-page__house-rules::before,
 .hotel-page__faq::before {
   content: '';
@@ -607,6 +693,8 @@ const mapTileUrl = computed(() => {
   .hotel-page__intro { grid-template-columns: 1fr; }
   .mini-map { max-height: 250px; }
   .mini-map__placeholder { max-height: 250px; }
+  .reviews__grid { grid-template-columns: 1fr; }
+  .reviews__categories { grid-template-columns: 1fr; }
   .house-rules__layout { grid-template-columns: 1fr; gap: var(--space-lg); }
   .faq__layout { grid-template-columns: 1fr; gap: var(--space-lg); }
 }

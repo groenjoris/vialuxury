@@ -6,7 +6,7 @@
       <!-- Help / phone block + pay-off both removed — both now live
            inside SiteHeader's row 2. -->
 
-      <SiteHeader variant="overlay">
+      <SiteHeaderHF variant="overlay">
         <template #hero>
           <div class="home-hero__content container">
             <div class="home-hero__eyebrow">
@@ -21,7 +21,7 @@
             </p>
           </div>
         </template>
-      </SiteHeader>
+      </SiteHeaderHF>
 
     </section>
 
@@ -34,7 +34,7 @@
         <div class="home-popular__col home-popular__col--press">
           <h3 class="home-popular__heading">Uitgelicht</h3>
           <div v-if="featuredDesIndes && featuredDesIndesDeal" class="home-popular__featured-wrap">
-            <DealCard
+            <DealCardHF
               class="home-popular__featured"
               :hotel="featuredDesIndes"
               :deal="featuredDesIndesDeal"
@@ -73,7 +73,7 @@
       <div class="container">
         <h2 class="home-deals__title">Hoogste ViaLuxury-score</h2>
         <div class="home-deals__grid home-deals__grid--3">
-          <DealCard
+          <DealCardHF
             v-for="hotel in superDeals"
             :key="hotel.id"
             :hotel="hotel"
@@ -90,7 +90,7 @@
       <div class="container">
         <h2 class="home-deals__title">Laatste beschikbaarheid</h2>
         <div class="home-deals__grid home-deals__grid--3">
-          <DealCard
+          <DealCardHF
             v-for="hotel in actueleDeals"
             :key="hotel.id"
             :hotel="hotel"

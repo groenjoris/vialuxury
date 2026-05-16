@@ -46,6 +46,9 @@
           </div>
           <p class="result-card__pitch">{{ pitchText }}</p>
         </div>
+        <div class="result-card__score-wrap">
+          <ViaLuxuryScoreBadge :hotel="hotel" :all-hotels="mappedHotels" />
+        </div>
       </div>
 
       <!-- Arrangement line -->
@@ -127,6 +130,7 @@
 <script setup lang="ts">
 import type { SearchHotel } from '~/types/searchHotel'
 import { formatPrice } from '~/utils/formatPrice'
+import { mappedHotels } from '~/data/deals-mapper'
 import { mappedPackagesByPermalink } from '~/data/deals-mapper'
 import { priceForArrival } from '~/utils/priceFormula'
 import { nightsLabel, personsLabel } from '~/utils/plural'
@@ -443,6 +447,13 @@ const singleDealHref = computed(() => {
   text-underline-offset: 2px;
 }
 
+.result-card__score-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+  gap: 2px;
+}
 
 .result-card__score {
   display: flex;

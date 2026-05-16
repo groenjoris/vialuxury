@@ -17,6 +17,8 @@
                 </span>
               </h2>
               <div class="panel__hotel-meta">
+                <ViaLuxuryScoreBadge :hotel="hotel" :all-hotels="mappedHotels" />
+                <span class="panel__sep" aria-hidden="true">|</span>
                 <svg class="panel__loc-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                   <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
                   <circle cx="12" cy="10" r="3" />
@@ -60,6 +62,7 @@
 
 <script setup lang="ts">
 import type { SearchHotel } from '~/types/searchHotel'
+import { mappedHotels } from '~/data/deals-mapper'
 import { isDealAvailableInWindow } from '~/utils/availability'
 
 const { t } = useI18n()

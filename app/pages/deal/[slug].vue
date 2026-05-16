@@ -21,6 +21,7 @@
       <nav class="deal-page__tabs container">
         <a href="#intro" class="deal-page__tab">{{ t('deal.tabIntro') }}</a>
         <a href="#arrangement" class="deal-page__tab">{{ t('deal.tabArrangement') }}</a>
+        <a href="#beoordelingen" class="deal-page__tab">{{ t('hotel.tabReviews') }}</a>
         <a v-if="hotel && hotel.houseRules && hotel.houseRules.length" href="#huisregels" class="deal-page__tab">{{ t('hotel.tabHouseRules') }}</a>
         <a href="#veelgestelde-vragen" class="deal-page__tab">{{ t('hotel.tabFaq') }}</a>
         <a href="#tips" class="deal-page__tab">{{ t('hotel.tabNearby') }}</a>
@@ -46,6 +47,14 @@
             </div>
           </div>
           <div class="deal-page__meta">
+            <ViaLuxuryScoreBadge
+              v-if="searchHotelForBadge"
+              :hotel="searchHotelForBadge"
+              :all-hotels="mappedHotels"
+            />
+            <span class="deal-page__divider">|</span>
+            <span>{{ hotel.reviews.totalReviews }} {{ t('common.reviews') }}</span>
+            <span class="deal-page__divider">·</span>
             <span>{{ hotel.location.city }}, {{ hotel.location.region }}</span>
             <template v-if="chosenReisduurLabel">
               <span class="deal-page__divider">·</span>
@@ -183,6 +192,32 @@
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6" /></svg>
           </button>
 
+          <!-- Mobile reviews mini: score bar + slider of 5 + more button (desktop renders full-width below) -->
+          <section v-if="isMobile" class="deal-page__mobile-reviews">
+            <div class="deal-page__mobile-reviews-head">
+              <h2 class="section-title">{{ t('hotel.reviews') }}</h2>
+              <div class="reviews__score-bar reviews__score-bar--compact">
+                <span class="reviews__score-big">{{ hotel.reviews.overallScore.toFixed(1) }}</span>
+                <div class="reviews__score-meta">
+                  <span class="reviews__score-verdict">{{ t(getReviewLabelKey(hotel.reviews.overallScore)) }}</span>
+                  <span class="reviews__score-count">{{ hotel.reviews.totalReviews }} {{ t('common.reviews') }}</span>
+                </div>
+              </div>
+            </div>
+            <div class="deal-page__mobile-reviews-slider">
+              <div v-for="rev in hotel.individualReviews.slice(0, 5)" :key="rev.id" class="review-card review-card--mobile">
+                <div class="review-card__header">
+                  <span class="review-card__author">{{ rev.author }}</span>
+                  <span class="review-card__review-score">{{ Number(rev.score).toFixed(1) }}/10</span>
+                </div>
+                <p class="review-card__text">{{ localized(rev.text) }}</p>
+              </div>
+            </div>
+            <button type="button" class="deal-page__mobile-more" @click="activeMobileSection = 'reviews'">
+              {{ t('deal.allReviews') }}
+            </button>
+          </section>
+
           <!-- FAQ (mobile here; desktop renders full-width below) -->
           <section v-if="isMobile" class="deal-page__mobile-faq">
             <h2 class="section-title">{{ t('hotel.faq') || t('hotel.faqHeading') || 'Veelgestelde vragen' }}</h2>
@@ -318,6 +353,39 @@
         </div>
       </section>
 
+      <section v-if="!isMobile" id="beoordelingen" class="deal-page__reviews container">
+        <h2 class="section-title">{{ t('hotel.reviews') }}</h2>
+        <div class="reviews__score-bar">
+          <span class="reviews__score-big">{{ hotel.reviews.overallScore.toFixed(1) }}</span>
+          <div class="reviews__score-meta">
+            <span class="reviews__score-verdict">{{ t(getReviewLabelKey(hotel.reviews.overallScore)) }}</span>
+            <span class="reviews__score-count">{{ hotel.reviews.totalReviews }} {{ t('common.reviews') }}</span>
+          </div>
+        </div>
+        <div class="reviews__categories">
+          <div v-for="cat in hotel.reviews.categories" :key="localized(cat.name)" class="reviews__cat">
+            <span class="reviews__cat-name">{{ localized(cat.name) }}</span>
+            <div class="reviews__cat-bar"><div class="reviews__cat-fill" :style="{ width: (cat.score / 10 * 100) + '%' }"></div></div>
+            <span class="reviews__cat-score">{{ cat.score.toFixed(1) }}</span>
+          </div>
+        </div>
+        <div class="reviews__grid">
+          <div v-for="rev in hotel.individualReviews" :key="rev.id" class="review-card">
+            <div class="review-card__header">
+              <span class="review-card__author">{{ rev.author }}</span>
+              <span class="review-card__review-score">{{ Number(rev.score).toFixed(1) }}/10</span>
+            </div>
+            <p class="review-card__text">{{ localized(rev.text) }}</p>
+            <div v-if="rev.arrangement" class="review-card__arrangement">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 7h-3V5a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v2H4a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V8a1 1 0 0 0-1-1zM9 5h6v2H9V5z" />
+              </svg>
+              <span>{{ t('hotel.bookedAs') }} {{ localized(rev.arrangement) }}</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <!-- House Rules (desktop, full-width) -->
       <section v-if="!isMobile && hotel.houseRules && hotel.houseRules.length" id="huisregels" class="deal-page__house-rules container">
         <div class="house-rules__layout">
@@ -422,6 +490,7 @@
         <nav v-if="!isMobile" class="deal-page__tabs deal-page__tabs--in-bar">
           <a href="#intro" class="deal-page__tab">{{ t('deal.tabIntro') }}</a>
           <a href="#arrangement" class="deal-page__tab">{{ t('deal.tabArrangement') }}</a>
+          <a href="#beoordelingen" class="deal-page__tab">{{ t('hotel.tabReviews') }}</a>
           <a v-if="hotel.houseRules && hotel.houseRules.length" href="#huisregels" class="deal-page__tab">{{ t('hotel.tabHouseRules') }}</a>
           <a href="#veelgestelde-vragen" class="deal-page__tab">{{ t('hotel.tabFaq') }}</a>
           <a href="#tips" class="deal-page__tab">{{ t('hotel.tabNearby') }}</a>
@@ -451,6 +520,34 @@
             <img v-if="fac.icon && fac.icon.startsWith('http')" :src="fac.icon" :alt="localized(fac.label)" class="facility-item__icon" width="20" height="20" loading="lazy" />
             <span v-else class="facility-item__check">✓</span>
             <span>{{ localized(fac.label) }}</span>
+          </div>
+        </div>
+      </div>
+    </MobileFullscreen>
+
+    <MobileFullscreen :open="activeMobileSection === 'reviews'" :title="t('hotel.reviews')" @close="activeMobileSection = null">
+      <div v-if="hotel" class="mobile-subpage">
+        <div class="reviews__score-bar">
+          <span class="reviews__score-big">{{ hotel.reviews.overallScore.toFixed(1) }}</span>
+          <div class="reviews__score-meta">
+            <span class="reviews__score-verdict">{{ t(getReviewLabelKey(hotel.reviews.overallScore)) }}</span>
+            <span class="reviews__score-count">{{ hotel.reviews.totalReviews }} {{ t('common.reviews') }}</span>
+          </div>
+        </div>
+        <div class="reviews__categories">
+          <div v-for="cat in hotel.reviews.categories" :key="localized(cat.name)" class="reviews__cat">
+            <span class="reviews__cat-name">{{ localized(cat.name) }}</span>
+            <div class="reviews__cat-bar"><div class="reviews__cat-fill" :style="{ width: (cat.score / 10 * 100) + '%' }"></div></div>
+            <span class="reviews__cat-score">{{ cat.score.toFixed(1) }}</span>
+          </div>
+        </div>
+        <div class="reviews__grid reviews__grid--mobile">
+          <div v-for="rev in hotel.individualReviews" :key="rev.id" class="review-card">
+            <div class="review-card__header">
+              <span class="review-card__author">{{ rev.author }}</span>
+              <span class="review-card__review-score">{{ Number(rev.score).toFixed(1) }}/10</span>
+            </div>
+            <p class="review-card__text">{{ localized(rev.text) }}</p>
           </div>
         </div>
       </div>
@@ -488,6 +585,7 @@
 <script setup lang="ts">
 import { useDealStore } from '~/stores/deal'
 import { formatPrice } from '~/utils/formatPrice'
+import { getReviewLabelKey } from '~/utils/reviewLabel'
 import { generateDealAvailability } from '~/data/mock/deal-pricing'
 import { matchIcon } from '~/utils/iconMatcher'
 import { nightsLabel, personsLabel, roomsLabel } from '~/utils/plural'
@@ -498,6 +596,7 @@ import {
   dealsMapByPermalink,
   defaultDealPermalink,
   curatedHighlightsByPermalink,
+  mappedHotels,
 } from '~/data/deals-mapper'
 
 const { t, localized, locale } = useI18n()
@@ -637,6 +736,14 @@ const showPartnerLogo = computed(
 const hotel = ref(initialHotel)
 const currentDeal = computed(() => store.currentDeal)
 
+// SearchHotel companion for the ViaLuxury score badge — look it up by
+// slug (the hotel page slug) so the badge has access to deals + price
+// data the helper needs.
+const searchHotelForBadge = computed(() => {
+  const h = hotel.value
+  if (!h) return null
+  return mappedHotels.find(sh => sh.slug === h.slug || sh.name === h.name) ?? null
+})
 const filteredInclusions = computed(() => {
   if (!currentDeal.value) return []
   return currentDeal.value.inclusions
@@ -876,6 +983,7 @@ function openGallery() { }
 .deal-page__hotel-link { color: inherit; text-decoration: none; }
 .deal-page__hotel-link:hover .deal-page__hotel-subtitle { text-decoration: underline; text-underline-offset: 2px; }
 .deal-page__meta { display: flex; align-items: center; gap: var(--space-sm); font-size: 14px; color: var(--color-text-secondary); padding-right: 110px; }
+.deal-page__score-wrap { display: flex; align-items: center; gap: 6px; }
 .deal-page__score { display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: var(--radius-sm); background: #00B67A; color: #fff; font-size: 13px; font-weight: 700; flex-shrink: 0; }
 .deal-page__score-label { font-size: 13px; font-weight: 600; color: var(--color-text-primary); }
 .deal-page__divider { color: var(--color-text-muted); }
@@ -1235,6 +1343,7 @@ function openGallery() { }
 /* Anchor scroll offset so the sticky CTA bar doesn't cover section titles */
 #intro,
 #arrangement,
+#beoordelingen,
 #huisregels,
 #veelgestelde-vragen,
 #tips {
@@ -1345,6 +1454,38 @@ function openGallery() { }
 
 /* ===== TIPS ===== */
 
+/* ===== REVIEWS ===== */
+.deal-page__reviews { padding: var(--space-xl) var(--space-lg); position: relative; }
+.reviews__score-bar { display: flex; align-items: center; gap: var(--space-sm); margin-bottom: var(--space-md); }
+.reviews__score-big { font-size: 24px; font-weight: 700; font-family: var(--font-heading); background: #00B67A; color: #fff; padding: 8px 12px; border-radius: var(--radius-sm); }
+.reviews__score-meta { display: flex; flex-direction: column; gap: 1px; }
+.reviews__score-verdict { font-size: 15px; font-weight: 600; color: var(--color-text-primary); }
+.reviews__score-count { font-size: 13px; color: var(--color-text-muted); }
+.reviews__categories { display: grid; grid-template-columns: 1fr 1fr; gap: 6px var(--space-xl); margin-bottom: var(--space-lg); max-width: 720px; }
+.reviews__cat { display: grid; grid-template-columns: 110px 1fr 32px; align-items: center; gap: var(--space-sm); font-size: 13px; }
+.reviews__cat-name { color: var(--color-text-secondary); }
+.reviews__cat-bar { height: 6px; background: var(--color-border-light); border-radius: 3px; overflow: hidden; }
+.reviews__cat-fill { height: 100%; background: #00B67A; border-radius: 3px; }
+.reviews__cat-score { font-weight: 600; text-align: right; }
+.reviews__grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md); }
+.review-card { padding: var(--space-md); background: var(--color-background-secondary); border-radius: var(--radius-md); display: flex; flex-direction: column; }
+.review-card__header { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-sm); }
+.review-card__author { font-size: 14px; font-weight: 600; }
+.review-card__review-score { font-size: 13px; font-weight: 700; color: var(--color-text-primary); }
+.review-card__text { font-size: 13px; line-height: 1.6; color: var(--color-text-secondary); }
+.review-card__arrangement {
+  margin-top: var(--space-sm);
+  padding-top: var(--space-sm);
+  border-top: 1px dashed var(--color-border);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-text-muted);
+}
+.review-card__arrangement svg { color: #00B67A; flex-shrink: 0; }
+
 /* ===== FAQ ===== */
 .deal-page__faq { padding: var(--space-xl) var(--space-lg); position: relative; }
 .faq__layout {
@@ -1355,6 +1496,7 @@ function openGallery() { }
 .faq__right { max-width: 700px; }
 /* Inset top divider for the lower full-width sections */
 .deal-page__facilities::before,
+.deal-page__reviews::before,
 .deal-page__house-rules::before,
 .deal-page__faq::before {
   content: '';
@@ -1373,6 +1515,8 @@ function openGallery() { }
   .deal-page__intro { grid-template-columns: 1fr; }
   .mini-map__placeholder { max-height: 200px; }
   .content-blocks__grid { grid-template-columns: 1fr; }
+  .reviews__grid { grid-template-columns: 1fr; }
+  .reviews__categories { grid-template-columns: 1fr; }
 }
 @media (max-width: 768px) {
   .deal-page__package-title { font-size: 22px; }
@@ -1478,6 +1622,37 @@ function openGallery() { }
 .deal-page__mobile-row--standalone {
   margin-top: var(--space-xl);
   margin-bottom: var(--space-xl);
+}
+
+/* Mobile reviews mini section */
+.deal-page__mobile-reviews {
+  padding: var(--space-xl) 0;
+  border-top: 1px solid var(--color-border-light);
+}
+.deal-page__mobile-reviews-head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  margin-bottom: var(--space-md);
+}
+.reviews__score-bar--compact {
+  gap: var(--space-sm);
+}
+.deal-page__mobile-reviews-slider {
+  display: flex;
+  gap: var(--space-md);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x mandatory;
+  padding-bottom: var(--space-sm);
+  margin: 0 calc(var(--space-md) * -1);
+  padding-left: var(--space-md);
+  padding-right: var(--space-md);
+}
+.review-card--mobile {
+  flex-shrink: 0;
+  width: 280px;
+  scroll-snap-align: start;
 }
 
 .deal-page__mobile-faq {
@@ -1611,6 +1786,11 @@ function openGallery() { }
   grid-template-columns: 1fr;
   gap: var(--space-sm);
 }
+.reviews__grid--mobile {
+  grid-template-columns: 1fr;
+  gap: var(--space-md);
+}
+
 @media (max-width: 768px) {
   /* Collapse grid to single column (sidebar is already hidden via v-if) */
   .deal-page__grid {

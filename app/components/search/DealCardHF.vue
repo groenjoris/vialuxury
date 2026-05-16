@@ -60,7 +60,7 @@
     <!-- Content: column flex with top hotel-row + full-width divider + body-row -->
     <div class="deal-card-v2__content">
       <!-- TOP ROW — full content width: hotel name + stars on line 1,
-           score + label + location on line 2 -->
+           location on line 2 -->
       <div v-if="showHotelInfo && hotel" class="deal-card-v2__hotel-info">
         <NuxtLink :to="`/hotel/${hotel.slug}`" target="_blank" class="deal-card-v2__name-link" @click.stop>
           <h3 class="deal-card-v2__name-row">
@@ -71,8 +71,6 @@
           </h3>
         </NuxtLink>
         <div ref="metaEl" class="deal-card-v2__meta">
-          <ViaLuxuryScoreBadge v-if="hotel" :hotel="hotel" :all-hotels="mappedHotels" />
-          <span class="deal-card-v2__sep" aria-hidden="true">|</span>
           <svg class="deal-card-v2__loc-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
             <circle cx="12" cy="10" r="3" />
@@ -200,7 +198,6 @@ import { formatPrice } from '~/utils/formatPrice'
 import { formatDateShort } from '~/utils/formatDate'
 import dayjs from 'dayjs'
 import { pickSmartInclusions } from '~/utils/smartInclusions'
-import { mappedHotels } from '~/data/deals-mapper'
 import { priceForArrival } from '~/utils/priceFormula'
 
 const { t, localized, locale } = useI18n()
