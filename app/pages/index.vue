@@ -5,43 +5,69 @@
 
       <h1 class="start-screen__title">Hotel First &amp; Variabel Reisgezelschap</h1>
 
-      <!-- Nieuwe huisstijl — actively developed prototype. Four homepage
-           variants live next to each other; the chosen variant persists
-           in localStorage so navigating back to "home" returns to the
-           same layout. -->
+      <!-- First release — the production-bound "Hotel First" build the
+           client has picked to pursue. No homepage-variant switcher. -->
       <section class="start-section">
-        <h2 class="start-section__title">Nieuwe huisstijl</h2>
+        <h2 class="start-section__title">First release: hotel first</h2>
+        <p class="start-section__lead">
+          <a
+            href="https://docs.google.com/spreadsheets/d/1II0u8mkbtFpg16CWzlYGMD2yO4QR9dtOI6bDxPRREqo/edit?gid=379133869#gid=379133869"
+            target="_blank"
+            rel="noopener"
+            class="start-section__link"
+          >Scope sheet (Google Spreadsheets) ↗</a>
+        </p>
+        <div class="start-section__buttons">
+          <button
+            type="button"
+            class="start-btn start-btn--primary"
+            @click="startHotelFirstFromHome"
+          >Homepage</button>
+          <button
+            type="button"
+            class="start-btn"
+            @click="startHotelFirstFromAd"
+          >Start met advertentie</button>
+        </div>
+      </section>
+
+      <!-- Huisstijl varianten — experimental homepage-variant prototypes
+           frozen on 13 May. Five homepage variants live next to each
+           other; the chosen variant persists in localStorage so
+           navigating back to "home" returns to the same layout. -->
+      <section class="start-section">
+        <h2 class="start-section__title">Huisstijl varianten (afgerond 13 mei)</h2>
         <div class="start-section__buttons">
           <button
             type="button"
             class="start-btn"
             @click="startFirstReleaseFromHome('1')"
-          >Variant 1 (full-bleed hero, zoekbalk in foto)</button>
+          >Variant 1</button>
           <button
             type="button"
             class="start-btn"
             @click="startFirstReleaseFromHome('2')"
-          >Variant 2 (verticale zoekkaart rechts, USP-kolom onder)</button>
+          >Variant 2</button>
           <button
             type="button"
             class="start-btn"
             @click="startFirstReleaseFromHome('3')"
-          >Variant 3 (afgeronde foto, zoekbalk eronder)</button>
+          >Variant 3</button>
           <button
             type="button"
             class="start-btn"
             @click="startFirstReleaseFromHome('4')"
-          >Variant 4 (variant 3 + Trustpilot &amp; Klarna)</button>
+          >Variant 4</button>
           <button
             type="button"
             class="start-btn"
             @click="startFirstReleaseFromHome('5')"
-          >Variant 5 (variant 4 met full-bleed hero foto)</button>
-          <a
-            href="/advertisement/"
+          >Variant 5</button>
+          <button
+            type="button"
             class="start-btn"
-            @click="resetAll"
-          >Start met advertentie (partner-flow met co-branding)</a>
+            @click="startVariantFromAd"
+          >Start met advertentie</button>
         </div>
       </section>
 
@@ -53,12 +79,12 @@
             type="button"
             class="start-btn"
             @click="startNorthstarFromHome"
-          >Homepage (start vanaf de Northstar homepage)</button>
+          >Homepage</button>
           <button
             type="button"
             class="start-btn"
             @click="startNorthstarFromAd"
-          >Start met advertentie (start direct op een Northstar deal-pagina)</button>
+          >Start met advertentie</button>
         </div>
       </section>
     </div>
@@ -129,6 +155,42 @@ function startFirstReleaseFromHome(variant: '1' | '2' | '3' | '4' | '5' = '1') {
     : variant === '2' ? '/home-v2'
     : '/home'
   navigateTo(path)
+}
+
+/** First-release "Hotel First" — start on the dedicated /hotel-first
+ *  page (copy of variant 1 without the variant carousel). Sets the
+ *  home variant to 'hf' so any in-app "home" link (logo, footer,
+ *  /kaart close button) returns to /hotel-first. */
+function startHotelFirstFromHome() {
+  resetAll()
+  setHomeVariant('hf')
+  navigateTo('/hotel-first')
+}
+
+/** First-release "Hotel First" — start on the partner advertisement
+ *  flow. Same /advertisement page as the variant flow, but with the
+ *  home variant pre-set to 'hf' so subsequent navigation returns to
+ *  /hotel-first rather than /home.
+ *
+ *  Uses `window.location.href` rather than `navigateTo()` because the
+ *  advertisement is a static HTML file at `public/advertisement/index.html`
+ *  served by Nitro — Vue Router doesn't know about it and would 404. */
+function startHotelFirstFromAd() {
+  resetAll()
+  setHomeVariant('hf')
+  if (import.meta.client) {
+    window.location.href = '/advertisement/'
+  }
+}
+
+/** "Start with ad" for the experimental homepage variants. Same static
+ *  HTML page, but doesn't touch homeVariant so subsequent "home" links
+ *  go back to whichever variant was active before. */
+function startVariantFromAd() {
+  resetAll()
+  if (import.meta.client) {
+    window.location.href = '/advertisement/'
+  }
 }
 
 function startNorthstarFromHome() {
@@ -222,6 +284,26 @@ definePageMeta({ layout: false })
   color: var(--color-text-primary);
 }
 
+/* Lead line under the section title — used by the "First release"
+   block to surface the Google Sheets scope link. */
+.start-section__lead {
+  margin: 0 0 var(--space-md);
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  text-align: left;
+}
+
+.start-section__link {
+  color: var(--color-primary);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.start-section__link:hover,
+.start-section__link:focus-visible {
+  text-decoration: underline;
+}
+
 .start-section__buttons {
   display: flex;
   flex-direction: column;
@@ -248,6 +330,21 @@ definePageMeta({ layout: false })
 .start-btn:hover {
   border-color: var(--color-primary);
   color: var(--color-primary);
+}
+
+/* Orange primary variant — used on the "Hotel First" homepage button
+   to signal it as the production-bound CTA. */
+.start-btn--primary {
+  background: var(--color-primary);
+  color: #fff;
+  border-color: var(--color-primary);
+  font-weight: 700;
+}
+
+.start-btn--primary:hover {
+  background: var(--color-primary-hover);
+  border-color: var(--color-primary-hover);
+  color: #fff;
 }
 
 </style>

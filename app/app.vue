@@ -71,7 +71,7 @@ watch(() => route.path, (p) => restoreHomeVariant(p))
 watch(homeVariant, (v) => {
   if (!import.meta.client) return
   const body = document.body
-  body.classList.remove('vl-variant-1', 'vl-variant-2', 'vl-variant-3', 'vl-variant-4', 'vl-variant-5')
+  body.classList.remove('vl-variant-1', 'vl-variant-2', 'vl-variant-3', 'vl-variant-4', 'vl-variant-5', 'vl-variant-hf')
   body.classList.add(`vl-variant-${v}`)
 }, { immediate: true })
 watch(() => route.query.partner, (val) => {

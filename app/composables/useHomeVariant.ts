@@ -10,7 +10,14 @@
  * variant. URL wins on direct page loads.
  */
 
-type HomeVariant = '1' | '2' | '3' | '4' | '5'
+/**
+ * Variant values:
+ *  - '1' / '2' / '3' / '4' / '5'  — experimental "nieuwe huisstijl" homepages
+ *    that share the right-edge carousel switcher
+ *  - 'hf'                         — first-release "Hotel First" page
+ *    (production-bound, no switcher)
+ */
+type HomeVariant = '1' | '2' | '3' | '4' | '5' | 'hf'
 
 const STORAGE_KEY = 'vl_home_variant'
 const homeVariant = ref<HomeVariant>('1')
@@ -29,23 +36,25 @@ export function useHomeVariant() {
    */
   function restoreHomeVariant(routePath?: string) {
     if (!import.meta.client) return
-    if (routePath && routePath.startsWith('/home-v5')) { setHomeVariant('5'); return }
-    if (routePath && routePath.startsWith('/home-v4')) { setHomeVariant('4'); return }
-    if (routePath && routePath.startsWith('/home-v3')) { setHomeVariant('3'); return }
-    if (routePath && routePath.startsWith('/home-v2')) { setHomeVariant('2'); return }
-    if (routePath === '/home')                        { setHomeVariant('1'); return }
+    if (routePath && routePath.startsWith('/hotel-first')) { setHomeVariant('hf'); return }
+    if (routePath && routePath.startsWith('/home-v5'))     { setHomeVariant('5'); return }
+    if (routePath && routePath.startsWith('/home-v4'))     { setHomeVariant('4'); return }
+    if (routePath && routePath.startsWith('/home-v3'))     { setHomeVariant('3'); return }
+    if (routePath && routePath.startsWith('/home-v2'))     { setHomeVariant('2'); return }
+    if (routePath === '/home')                             { setHomeVariant('1'); return }
     try {
       const stored = localStorage.getItem(STORAGE_KEY) as HomeVariant | null
-      if (stored === '1' || stored === '2' || stored === '3' || stored === '4' || stored === '5') homeVariant.value = stored
+      if (stored === '1' || stored === '2' || stored === '3' || stored === '4' || stored === '5' || stored === 'hf') homeVariant.value = stored
     } catch { /* ignore */ }
   }
 
   /** Computed href that points at the user's active home variant. */
   const homeHref = computed(() => {
-    if (homeVariant.value === '5') return '/home-v5'
-    if (homeVariant.value === '4') return '/home-v4'
-    if (homeVariant.value === '3') return '/home-v3'
-    if (homeVariant.value === '2') return '/home-v2'
+    if (homeVariant.value === 'hf') return '/hotel-first'
+    if (homeVariant.value === '5')  return '/home-v5'
+    if (homeVariant.value === '4')  return '/home-v4'
+    if (homeVariant.value === '3')  return '/home-v3'
+    if (homeVariant.value === '2')  return '/home-v2'
     return '/home'
   })
 

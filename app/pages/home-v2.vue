@@ -39,7 +39,7 @@
         </div>
       </div>
 
-      <SiteHeader ref="siteHeaderRef" variant="overlay" hide-search-dock>
+      <SiteHeaderArchive ref="siteHeaderRef" variant="overlay" hide-search-dock>
         <template #hero>
           <div class="home-hero__v2 container">
             <div class="home-hero__v2-left">
@@ -94,7 +94,7 @@
             </aside>
           </div>
         </template>
-      </SiteHeader>
+      </SiteHeaderArchive>
 
     </section>
 
@@ -170,7 +170,7 @@
       <div class="container">
         <h2 class="home-deals__title">Hoogste ViaLuxury-score</h2>
         <div class="home-deals__grid home-deals__grid--3">
-          <DealCard
+          <DealCardArchive
             v-for="hotel in superDeals"
             :key="hotel.id"
             :hotel="hotel"
@@ -187,7 +187,7 @@
       <div class="container">
         <h2 class="home-deals__title">Laatste beschikbaarheid</h2>
         <div class="home-deals__grid home-deals__grid--3">
-          <DealCard
+          <DealCardArchive
             v-for="hotel in actueleDeals"
             :key="hotel.id"
             :hotel="hotel"

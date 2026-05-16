@@ -3,32 +3,10 @@
     <!-- Hero with full-bleed background image -->
     <section class="home-hero">
       <div class="home-hero__bg" />
-      <div class="home-hero__help container">
-        <svg class="home-hero__help-icon" width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-          <path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24 11.36 11.36 0 003.58.57 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1 11.36 11.36 0 00.57 3.58 1 1 0 01-.24 1.01l-2.21 2.21z" />
-        </svg>
-        <span class="home-hero__help-label">Hulp nodig?</span>
-        <button
-          type="button"
-          ref="helpPhoneRef"
-          class="home-hero__help-phone"
-          @click.stop="helpOpen = !helpOpen"
-        >+31 20 705 2222</button>
-        <Teleport to="body">
-          <div
-            v-if="helpOpen"
-            class="home-hero__help-popover"
-            :style="helpPopoverStyle"
-            @click.stop
-          >
-            <p class="home-hero__help-popover-title">Openingstijden</p>
-            <p class="home-hero__help-popover-row">Ma t/m vr</p>
-            <p class="home-hero__help-popover-row home-hero__help-popover-row--bold">8:00 — 18:00</p>
-          </div>
-        </Teleport>
-      </div>
+      <!-- Help / phone block + pay-off both removed — both now live
+           inside SiteHeader's row 2. -->
 
-      <SiteHeaderArchive variant="overlay">
+      <SiteHeader variant="overlay">
         <template #hero>
           <div class="home-hero__content container">
             <div class="home-hero__eyebrow">
@@ -43,40 +21,11 @@
             </p>
           </div>
         </template>
-      </SiteHeaderArchive>
+      </SiteHeader>
 
     </section>
 
-    <!-- Persuasion block — three short claims directly below the hero
-         photo. Trustpilot on the left, social-proof in the middle,
-         flexibility on the right. -->
-    <section class="home-persuasion">
-      <div class="container home-persuasion__inner">
-        <div class="home-persuasion__col home-persuasion__col--trust">
-          <img src="/images/trustpilot.svg" alt="Trustpilot" class="home-persuasion__trustpilot" />
-          <p class="home-persuasion__text">15.294 gasten beoordelen ons met een 9 uit 10</p>
-        </div>
-        <div class="home-persuasion__col">
-          <span class="home-persuasion__award" aria-hidden="true">
-            <!-- Award / medal icon (Lucide-style). Same visual height as
-                 the Trustpilot logo so the three columns sit on a line. -->
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="8" r="6" />
-              <path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11" />
-              <!-- "1M" centred inside the medal disc. Font-size 6 fits
-                   comfortably inside the r=6 circle; stroke is removed
-                   so the letters render as solid currentColor fill. -->
-              <text x="12" y="8" text-anchor="middle" dominant-baseline="central" font-size="6" font-weight="700" font-family="var(--font-heading)" stroke="none" fill="currentColor">1M</text>
-            </svg>
-          </span>
-          <p class="home-persuasion__text">Al meer dan 1 miljoen arrangementen geboekt.</p>
-        </div>
-        <div class="home-persuasion__col">
-          <img src="/images/logos/klarna.webp" alt="Klarna" class="home-persuasion__klarna" />
-          <p class="home-persuasion__text">Achteraf betalen mogelijk</p>
-        </div>
-      </div>
-    </section>
+    <!-- Persuasion / USP bar removed. -->
 
     <!-- Two-column band: press logos on the left, quick-pick filters on
          the right (in a 2-column grid). -->
@@ -85,7 +34,7 @@
         <div class="home-popular__col home-popular__col--press">
           <h3 class="home-popular__heading">Uitgelicht</h3>
           <div v-if="featuredDesIndes && featuredDesIndesDeal" class="home-popular__featured-wrap">
-            <DealCardArchive
+            <DealCard
               class="home-popular__featured"
               :hotel="featuredDesIndes"
               :deal="featuredDesIndesDeal"
@@ -124,7 +73,7 @@
       <div class="container">
         <h2 class="home-deals__title">Hoogste ViaLuxury-score</h2>
         <div class="home-deals__grid home-deals__grid--3">
-          <DealCardArchive
+          <DealCard
             v-for="hotel in superDeals"
             :key="hotel.id"
             :hotel="hotel"
@@ -141,7 +90,7 @@
       <div class="container">
         <h2 class="home-deals__title">Laatste beschikbaarheid</h2>
         <div class="home-deals__grid home-deals__grid--3">
-          <DealCardArchive
+          <DealCard
             v-for="hotel in actueleDeals"
             :key="hotel.id"
             :hotel="hotel"
@@ -154,9 +103,6 @@
     </section>
 
     <SiteFooter />
-
-    <!-- Subtle right-edge carousel control for variant-hopping. -->
-    <HomeVariantSwitcher current="1" />
   </div>
 </template>
 
@@ -187,46 +133,6 @@ const actueleDeals: SearchHotel[] = mappedHotels.filter(h => !superIds.has(h.id)
 import { FILTER_TAGS } from '~/utils/filterTags'
 
 const homeFilters = FILTER_TAGS
-
-// Hero "Hulp nodig?" phone-number popover with opening hours.
-const helpOpen = ref(false)
-const helpPhoneRef = ref<HTMLElement | null>(null)
-const helpPopoverStyle = ref<Record<string, string>>({})
-
-function placeHelpPopover() {
-  const el = helpPhoneRef.value
-  if (!el) return
-  const rect = el.getBoundingClientRect()
-  helpPopoverStyle.value = {
-    position: 'fixed',
-    top: (rect.bottom + 8) + 'px',
-    // Right-anchor so it doesn't fall off the screen edge.
-    right: Math.max(8, window.innerWidth - rect.right) + 'px',
-    zIndex: '1500',
-  }
-}
-
-watch(helpOpen, (open) => {
-  if (open) nextTick(placeHelpPopover)
-})
-
-function closeHelpOnOutside(e: MouseEvent) {
-  if (!helpOpen.value) return
-  const target = e.target as Node
-  if (helpPhoneRef.value && helpPhoneRef.value.contains(target)) return
-  helpOpen.value = false
-}
-
-onMounted(() => {
-  document.addEventListener('click', closeHelpOnOutside)
-  window.addEventListener('resize', placeHelpPopover)
-  window.addEventListener('scroll', placeHelpPopover, { passive: true })
-})
-onBeforeUnmount(() => {
-  document.removeEventListener('click', closeHelpOnOutside)
-  window.removeEventListener('resize', placeHelpPopover)
-  window.removeEventListener('scroll', placeHelpPopover)
-})
 
 // Featured Hotel Des Indes "culinair verblijf" card for the "Gezien in"
 // column on /home. Pick the specific culinair deal so the hero pic + price
@@ -270,6 +176,29 @@ function pickFilter(tagId: string) {
 <style scoped>
 .home {
   background: #fff;
+}
+
+/* Pay-off below the logo (matches /home-v2). Absolutely positioned
+   inside .home-hero so it overlays the navbar without disrupting the
+   flex flow. top:100 = 34 (overlay padding-top) + 56 (logo bottom
+   centred in 88px nav) + 10 gap. */
+.hotel-first__tagline {
+  position: absolute;
+  top: 100px;
+  left: 0;
+  right: 0;
+  z-index: 600;
+  pointer-events: none;
+}
+
+.hotel-first__tagline-text {
+  font-family: 'Biro Script', cursive;
+  font-size: 22px;
+  font-weight: 400;
+  color: #fff;
+  letter-spacing: 0.2px;
+  line-height: 1;
+  white-space: nowrap;
 }
 
 /* ===== HERO ===== */

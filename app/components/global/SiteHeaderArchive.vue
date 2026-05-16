@@ -1,13 +1,9 @@
 <template>
   <header class="site-header" :class="{ 'site-header--overlay': variant === 'overlay' }">
-    <!-- Main nav bar — laid out across TWO rows via CSS grid:
-           row 1: logo (left)              | _                | actions (right)
-           row 2: pay-off (under logo)     | verticals (mid)  | phone (right)
-         The HTML order is logo → tagline → verticals → phone → actions;
-         `.site-header__nav-inner` (a 3-col / 2-row grid) places each. -->
+    <!-- Main nav bar -->
     <div class="site-header__nav">
       <div class="site-header__nav-inner container">
-        <!-- Logo (grid row 1, col 1) -->
+        <!-- Logo -->
         <NuxtLink :to="homeHref" class="site-header__logo">
           <img
             src="/images/logo-vialuxury-horizontal.svg"
@@ -16,11 +12,7 @@
           />
         </NuxtLink>
 
-        <!-- Pay-off (grid row 2, col 1) — handwritten Biro Script,
-             same on every page. -->
-        <span v-if="!isMobile" class="site-header__tagline">Personally Curated Experiences</span>
-
-        <!-- Verticals switcher (grid row 2, col 2 — desktop only) -->
+        <!-- Verticals switcher (desktop only) -->
         <nav v-if="!isMobile" class="verticals" aria-label="Verticals">
           <template v-for="v in verticals" :key="v.id">
             <span
@@ -53,16 +45,7 @@
           </template>
         </nav>
 
-        <!-- Phone (grid row 2, col 3 — desktop only) -->
-        <a v-if="!isMobile" href="tel:+31207052222" class="site-header__phone">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-            <path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24 11.36 11.36 0 003.58.57 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1 11.36 11.36 0 00.57 3.58 1 1 0 01-.24 1.01l-2.21 2.21z"/>
-          </svg>
-          <span class="site-header__phone-label">Hulp nodig?</span>
-          <span class="site-header__phone-number">+31 20 705 2222</span>
-        </a>
-
-        <!-- Right actions (grid row 1, col 3 — desktop only positioned via grid) -->
+        <!-- Right actions -->
         <div class="site-header__nav-actions">
           <!-- Contact dropdown removed from main bar — accessible via hamburger. -->
           <div v-if="false" class="contact-dropdown" ref="contactDropdownRef">
@@ -1289,24 +1272,35 @@ function handleSelectHotelInPopup(slug: string) {
 .site-header {
   position: relative;
   z-index: 500;
+  /* Reserve space for the search bar that hangs below the nav */
+  padding-bottom: 36px;
   background: #111111;
+  /* Extra clearance below so following content (breadcrumbs) isn't obscured
+     by the search bar that extends half outside the header */
+  margin-bottom: 56px;
 }
 
-/* Overlay variant: transparent header on top of a hero background. */
+/* Overlay variant: transparent header on top of a hero background.
+   Container provides its own image; we just lift the bar off it. */
 .site-header--overlay {
   background: transparent;
+  /* Reserve TopBar height (34px) above the nav so the home navbar
+     sits at the same Y as the navbar on /search (which has TopBar above). */
+  padding-top: 34px;
+  padding-bottom: 0;
+  margin-bottom: 0;
 }
 
 .site-header--overlay .site-header__nav {
   background: transparent;
 }
 
-/* Overlay variant (home / hotel-first): the search bar uses the OLD
-   variant-1 design — wider, no border, soft drop-shadow, row-direction
-   fields with icons, taller divider. Kept distinct from the solid-
-   variant nav-dock design used on /search /deal /hotel. */
+/* Search dock anchored at the bottom of the hero section in overlay mode */
 .site-header--overlay .site-header__search-dock {
-  padding: 0 0 32px;
+  bottom: 0;
+  transform: none;
+  position: relative;
+  padding-bottom: 32px;
 }
 
 .site-header--overlay .search-bar {
@@ -1316,86 +1310,29 @@ function handleSelectHotelInPopup(slug: string) {
   border-radius: 6px;
   border: none;
   padding: 8px;
-  background: #fff;
   box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.04), 0 24px 60px -16px rgba(0, 0, 0, 0.45);
-  gap: 0;
 }
 
 .site-header--overlay .search-bar__field {
   flex: 1 0 0;
   min-width: 0;
-  background: transparent;
-  border: none;
+  /* Match nav-bar (solid) spacing: margin insets the hover/active grey rect
+     from the bar edges; padding/border-radius keep the same internal feel. */
   margin: 6px 4px;
   padding: 8px 18px;
   border-radius: 10px;
   flex-direction: row;
   align-items: center;
   gap: 12px;
-  height: auto;
-}
-
-.site-header--overlay .search-bar__field:hover {
-  background: #f5f5f5;
-  border-color: transparent;
-}
-
-.site-header--overlay .search-bar__field--active {
-  background: #eeeeee;
-  border-color: transparent;
-  box-shadow: none;
 }
 
 .site-header--overlay .search-bar__divider {
   background: #e6e3dc;
   width: 1px;
+  /* Twice the solid-bar divider height (24 → 48 px). */
   height: 48px;
   align-self: center;
   margin: 0;
-}
-
-.site-header--overlay .search-bar__label {
-  font-size: 9.5px;
-  letter-spacing: 0.95px;
-  text-transform: uppercase;
-  color: #5a5a5a;
-  font-weight: 600;
-}
-
-.site-header--overlay .search-bar__value {
-  font-size: 14px;
-  font-weight: 500;
-  color: #0a0a0a;
-}
-
-.site-header--overlay .search-bar__value--placeholder {
-  color: #9A9A93;
-  font-weight: 400;
-}
-
-.site-header--overlay .search-bar__btn--find-deals {
-  background: var(--color-primary);
-  color: #fff;
-  height: auto;
-  width: auto;
-  padding: 22px 38px;
-  border-radius: 4px;
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  font-family: var(--font-body);
-  font-size: 14px;
-  font-weight: 700;
-  letter-spacing: -0.07px;
-  margin-left: 16px;
-  border: none;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: background var(--transition-fast);
-}
-
-.site-header--overlay .search-bar__btn--find-deals:hover {
-  background: var(--color-primary-hover);
 }
 
 /* Search-button pulse — used after picker change with no search click */
@@ -1415,7 +1352,7 @@ function handleSelectHotelInPopup(slug: string) {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: var(--color-text-primary);
+  color: #1a1411;
   flex-shrink: 0;
 }
 
@@ -1424,6 +1361,24 @@ function handleSelectHotelInPopup(slug: string) {
   flex-direction: column;
   gap: 2px;
   min-width: 0;
+}
+
+.site-header--overlay .search-bar__label {
+  font-size: 9.5px;
+  letter-spacing: 0.95px;
+  text-transform: uppercase;
+  color: #5a5a5a;
+}
+
+.site-header--overlay .search-bar__value {
+  font-size: 14px;
+  font-weight: 500;
+  color: #0a0a0a;
+}
+
+.site-header--overlay .search-bar__value--placeholder {
+  color: #9A9A93;
+  font-weight: 400;
 }
 
 .site-header--overlay .search-bar__btn--find-deals {
@@ -1547,117 +1502,56 @@ function handleSelectHotelInPopup(slug: string) {
   color: #fff;
 }
 
-/* Nav bar — two-row layout via CSS grid.
-   Row 1: logo (col 1)            …  (col 2 empty / spans verticals later) … actions (col 3)
-   Row 2: pay-off (col 1)         …  verticals (col 2, centred)            … phone (col 3)
-   20 px top margin per design; row gap of 20 px so the pay-off sits exactly
-   20 px below the logo. */
+/* Nav bar */
 .site-header__nav {
   background: #111111;
+  /* Extra breathing room — bumped from 72 to 88 px so the bar reads less
+     cramped (more whitespace around logo / verticals / hamburger). */
+  height: 88px;
   display: flex;
-  align-items: stretch;
+  align-items: center;
   position: relative;
   z-index: 10;
-  padding: 20px 0;
 }
 
 .site-header__nav-inner {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  grid-template-rows: auto auto;
-  /* Row 2 sits 8 px below row 1 per design. */
-  row-gap: 8px;
-  column-gap: var(--space-xl);
-  width: 100%;
+  display: flex;
   align-items: center;
+  gap: var(--space-xl);
+  width: 100%;
 }
 
-/* Logo (grid row 1, col 1) — width pinned to 244 px per design. */
+/* Logo */
 .site-header__logo {
-  grid-row: 1;
-  grid-column: 1;
   flex-shrink: 0;
   display: flex;
   align-items: center;
 }
 
 .site-header__logo-img {
+  height: 68px;
+  width: auto;
   display: block;
 }
 
+/* Horizontal logo (overlay variant): shorter height, white art */
 .site-header__logo-img--horizontal {
-  width: 244px;
-  height: auto;
-}
-
-/* Pay-off (grid row 2, col 1) — handwritten Biro Script, white. */
-.site-header__tagline {
-  grid-row: 2;
-  grid-column: 1;
-  font-family: 'Biro Script', cursive;
-  font-size: 22px;
-  font-weight: 400;
-  color: #fff;
-  letter-spacing: 0.2px;
-  line-height: 1;
-  white-space: nowrap;
-  align-self: center;
-}
-
-/* Phone (grid row 2, col 3) — right-aligned within its column so its
-   right edge lines up with the hamburger above it. */
-.site-header__phone {
-  grid-row: 2;
-  grid-column: 3;
-  justify-self: end;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  color: #fff;
-  text-decoration: none;
-  font-family: var(--font-body);
-  font-size: 16px;
-  font-weight: 600;
-  letter-spacing: 0.2px;
-  transition: color 150ms ease;
-}
-
-.site-header__phone svg {
-  color: var(--color-primary);
-  flex-shrink: 0;
-}
-
-.site-header__phone-label {
-  color: rgba(255, 255, 255, 0.85);
-  font-weight: 500;
-}
-
-.site-header__phone-number {
-  font-weight: 700;
-}
-
-.site-header__phone:hover,
-.site-header__phone:focus-visible {
-  color: var(--color-primary);
+  height: 23px;
 }
 
 /* Verticals switcher */
 .verticals {
-  grid-row: 2;
-  grid-column: 2;
-  justify-self: center;
   display: flex;
   align-items: center;
   gap: 28px;
-  margin-left: 0;
+  margin-left: 24px;
 }
 
 .verticals__item {
   display: inline-flex;
   align-items: center;
   padding: 8px 18px;
-  /* +2 from the previous 14 → 16 per design. */
-  font-size: 16px;
+  font-size: 14px;
   /* Non-selected verticals now read a touch heavier so Restaurants and
      Geef cadeaubon don't look like body text against the hero photo. */
   font-weight: 600;
@@ -1688,19 +1582,13 @@ function handleSelectHotelInPopup(slug: string) {
   color: white;
 }
 
-/* Right actions (grid row 1, col 3) — right-aligned inside its grid
-   cell so the hamburger button's right edge lines up with the phone's
-   right edge in row 2. Without `justify-self: end` the actions div
-   stretches and the hamburger drifts to the left when the phone row
-   below is wider. */
+/* Right actions */
 .site-header__nav-actions {
-  grid-row: 1;
-  grid-column: 3;
-  justify-self: end;
-  display: inline-flex;
+  display: flex;
   align-items: center;
   gap: var(--space-md);
   flex-shrink: 0;
+  margin-left: auto;
 }
 
 /* VIP button — ghost / outline */
@@ -1886,65 +1774,62 @@ function handleSelectHotelInPopup(slug: string) {
 }
 
 /* Search dock: overlaps nav & page below */
-/* Search dock — now sits below the two-row nav in regular flow (was
-   absolutely positioned and overlapped the hero). Shown only on pages
-   that don't pass `hide-search-dock` (i.e., /search, /deal, /hotel). */
 .site-header__search-dock {
-  position: relative;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  transform: translateY(50%);
   z-index: 2;
-  padding: 24px 0 28px;
-  background: inherit;
+  pointer-events: none;
+}
+
+.site-header__search-container {
+  pointer-events: none;
+}
+
+.site-header__search-container > .search-bar {
+  pointer-events: auto;
 }
 
 /* Search bar */
-/* ===== SEARCH BAR =====
-   Prominent treatment per design:
-   - 2 px orange stroke around the bar
-   - Warm grey background (the bar chrome) — so the white fields pop
-   - White individual field buttons with subtle border
-   - Darker labels + placeholder text so they read as real form copy
-   - Strong shadow to lift the bar off the page */
 .search-bar {
   width: 100%;
-  max-width: 940px;
+  max-width: 860px;
   margin: 0 auto;
   display: flex;
   align-items: center;
-  background: var(--color-background-secondary, #faf7f0);
-  border-radius: 18px;
-  height: 80px;
-  padding: 8px;
+  background: white;
+  border-radius: 16px;
+  height: 72px;
+  padding: 0 6px 0 0;
   position: relative;
-  border: 2px solid var(--color-primary);
-  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.22), 0 2px 8px rgba(0, 0, 0, 0.08);
-  gap: 8px;
+  border: 2px solid var(--color-border);
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.22), 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .search-bar__field {
   flex: 1;
-  margin: 0;
-  padding: 10px 18px;
+  margin: 6px 4px;
+  padding: 8px 18px;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   gap: 2px;
   cursor: pointer;
-  border: 1px solid transparent;
-  background: #fff;
+  border: none;
+  background: none;
   text-align: left;
-  border-radius: 12px;
-  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  border-radius: 10px;
+  transition: background var(--transition-fast);
   min-width: 0;
-  height: 100%;
 }
 
 .search-bar__field:hover {
-  border-color: var(--color-primary);
+  background: #f5f5f5;
 }
 
 .search-bar__field--active {
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(233, 113, 50, 0.18);
+  background: #eeeeee;
 }
 
 .search-bar__field--destination {
@@ -1953,32 +1838,31 @@ function handleSelectHotelInPopup(slug: string) {
 
 .search-bar__label {
   font-size: 11px;
-  font-weight: 700;
-  color: var(--color-text-primary);
+  font-weight: 600;
+  color: #999999;
   text-transform: uppercase;
-  letter-spacing: 0.6px;
+  letter-spacing: 0.5px;
 }
 
 .search-bar__value {
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--color-text-primary);
+  font-size: 14px;
+  color: #1A1A1A;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-/* Darker placeholder text (was light grey) so the helper copy reads as
-   meaningful body text. */
+/* Lighter grey placeholder text when no value is selected — same look as
+   a native input's `::placeholder`. */
 .search-bar__value--placeholder {
-  color: var(--color-text-secondary);
-  font-weight: 500;
+  color: #9A9A93;
+  font-weight: 400;
 }
 
 .search-bar__divider {
   width: 1px;
-  height: 0;
-  background: transparent;
+  height: 24px;
+  background: #ddd;
   flex-shrink: 0;
 }
 
