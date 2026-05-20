@@ -69,6 +69,16 @@
   font-display: swap;
 }
 
+/* ── Oooh Baby (current handwritten pay-off font) ── */
+
+@font-face {
+  font-family: 'Oooh Baby';
+  src: url('/fonts/oooh-baby/OoohBaby-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* ── ResotYc (decorative label font) ── */
 
 @font-face {

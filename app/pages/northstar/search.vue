@@ -316,7 +316,7 @@ watch(() => [...selectedNights.value], () => {
 
 const breadcrumbs = computed(() => [
   { label: t('search.home'), href: '/' },
-  { label: t('search.arrangements'), href: '/search' },
+  { label: t('search.arrangements'), href: '/northstar/search' },
 ])
 
 const totalDeals = computed(() => {
@@ -359,7 +359,7 @@ const budgetMax = computed({
 const mobileFilterOpen = ref(false)
 
 function handleMapClick() {
-  navigateTo('/kaart')
+  navigateTo('/northstar/kaart')
 }
 
 function handleFilterButtonClick() {
@@ -564,7 +564,7 @@ function navigateToDeal(slug: string) {
   if (persons.value !== 2) params.set('adults', String(persons.value))
   if (rooms.value !== 1) params.set('rooms', String(rooms.value))
   const qs = params.toString()
-  window.open(`/deal/${slug}${qs ? '?' + qs : ''}`, '_blank')
+  window.open(`/northstar/deal/${slug}${qs ? '?' + qs : ''}`, '_blank')
 }
 </script>
 

@@ -157,7 +157,7 @@ const { toggleFilterTag, selectedFilterTags } = useNorthstarSearchState()
 
 function pickFilter(tagId: string) {
   if (!selectedFilterTags.value.includes(tagId)) toggleFilterTag(tagId)
-  navigateTo('/search')
+  navigateTo('/northstar/search')
 }
 </script>
 

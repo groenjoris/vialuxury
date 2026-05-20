@@ -39,7 +39,7 @@
         <div class="deal-page__title-left">
           <h1 class="deal-page__package-title">{{ localized(currentDeal.title) }}</h1>
           <div class="deal-page__hotel-name-wrap">
-            <NuxtLink :to="`/hotel/${hotel.slug}`" class="deal-page__hotel-link">
+            <NuxtLink :to="`/northstar/hotel/${hotel.slug}`" class="deal-page__hotel-link">
               <p class="deal-page__hotel-subtitle">{{ hotel.name }}</p>
             </NuxtLink>
             <div class="deal-page__stars-adjacent" aria-hidden="true">
@@ -928,7 +928,7 @@ useHead({ title: `${currentDeal.value?.title ? localized(currentDeal.value.title
 
 const breadcrumbs = computed(() => [
   { label: t('search.home'), href: '/' },
-  { label: t('search.arrangements'), href: '/search' },
+  { label: t('search.arrangements'), href: '/northstar/search' },
   { label: currentDeal.value ? localized(currentDeal.value.title) : hotel.value.name },
 ])
 

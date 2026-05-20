@@ -27,7 +27,7 @@
           </li>
         </template>
       </ul>
-      <NuxtLink :to="`/deal/${hotelSlug}?deal=${deal.id}`" target="_blank" class="btn btn-primary hotel-deal-card__btn">
+      <NuxtLink :to="`/northstar/deal/${hotelSlug}?deal=${deal.id}`" target="_blank" class="btn btn-primary hotel-deal-card__btn">
         {{ t('hotel.selectDeal') }}
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="9 18 15 12 9 6" />

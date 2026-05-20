@@ -363,7 +363,7 @@ const filteredDealCards = computed(() => {
 
 const breadcrumbs = computed(() => [
   { label: t('search.home'), href: '/' },
-  { label: t('search.arrangements'), href: '/search' },
+  { label: t('search.arrangements'), href: '/northstar/search' },
   { label: hotel.value.name },
 ])
 

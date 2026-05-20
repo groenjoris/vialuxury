@@ -64,7 +64,7 @@
       <!-- TOP ROW — full content width: hotel name + stars on line 1,
            score + label + location on line 2 -->
       <div v-if="showHotelInfo && hotel" class="deal-card-v2__hotel-info">
-        <NuxtLink :to="`/hotel/${hotel.slug}`" target="_blank" class="deal-card-v2__name-link" @click.stop>
+        <NuxtLink :to="`/northstar/hotel/${hotel.slug}`" target="_blank" class="deal-card-v2__name-link" @click.stop>
           <h3 class="deal-card-v2__name-row">
             <span class="deal-card-v2__name">{{ hotel.name }}</span>
             <span class="deal-card-v2__stars" aria-hidden="true">
@@ -338,7 +338,7 @@ const dealHref = computed(() => {
   if (persons.value !== 2) params.set('persons', String(persons.value))
   if (rooms.value !== 1) params.set('rooms', String(rooms.value))
   const q = params.toString()
-  return `/deal/${props.deal.slug}${q ? '?' + q : ''}`
+  return `/northstar/deal/${props.deal.slug}${q ? '?' + q : ''}`
 })
 
 /** Card price reflects the global arrival date when set — same surcharge

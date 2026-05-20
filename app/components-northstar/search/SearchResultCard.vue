@@ -37,7 +37,7 @@
       <!-- Hotel info header -->
       <div class="result-card__hotel-header">
         <div class="result-card__hotel-info">
-          <NuxtLink :to="`/hotel/${hotel.slug}`" target="_blank" class="result-card__name-link" @click.stop>
+          <NuxtLink :to="`/northstar/hotel/${hotel.slug}`" target="_blank" class="result-card__name-link" @click.stop>
             <h3 class="result-card__name">{{ hotel.name }}</h3>
           </NuxtLink>
           <div class="result-card__meta">
@@ -291,7 +291,7 @@ const singleDealHref = computed(() => {
   if (persons.value !== 2) params.set('persons', String(persons.value))
   if (rooms.value !== 1) params.set('rooms', String(rooms.value))
   const q = params.toString()
-  return `/deal/${isSingleDealLink.value}${q ? '?' + q : ''}`
+  return `/northstar/deal/${isSingleDealLink.value}${q ? '?' + q : ''}`
 })
 </script>
 

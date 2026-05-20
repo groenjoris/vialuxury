@@ -3,7 +3,7 @@
     <div class="site-footer__inner container">
       <!-- Brand column -->
       <div class="footer-col footer-col--brand">
-        <NuxtLink to="/home" class="footer-logo">
+        <NuxtLink to="/northstar/home" class="footer-logo">
           <img src="/images/logo-vialuxury.svg" alt="ViaLuxury" class="footer-logo__img" />
         </NuxtLink>
 
@@ -46,11 +46,11 @@
       <div class="footer-col">
         <h4 class="footer-heading">{{ t('footer.inspiration') }}</h4>
         <ul class="footer-links">
-          <li><NuxtLink to="/search?city=amsterdam">Amsterdam</NuxtLink></li>
-          <li><NuxtLink to="/search?city=antwerpen">Antwerpen</NuxtLink></li>
-          <li><NuxtLink to="/search?city=maastricht">Maastricht</NuxtLink></li>
-          <li><NuxtLink to="/search?city=rotterdam">Rotterdam</NuxtLink></li>
-          <li><NuxtLink to="/search?city=utrecht">Utrecht</NuxtLink></li>
+          <li><NuxtLink to="/northstar/search?city=amsterdam">Amsterdam</NuxtLink></li>
+          <li><NuxtLink to="/northstar/search?city=antwerpen">Antwerpen</NuxtLink></li>
+          <li><NuxtLink to="/northstar/search?city=maastricht">Maastricht</NuxtLink></li>
+          <li><NuxtLink to="/northstar/search?city=rotterdam">Rotterdam</NuxtLink></li>
+          <li><NuxtLink to="/northstar/search?city=utrecht">Utrecht</NuxtLink></li>
           <li class="footer-links__divider"></li>
           <li><NuxtLink to="/shopping">{{ t('footer.shopping') }}</NuxtLink></li>
         </ul>

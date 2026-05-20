@@ -174,7 +174,7 @@ function closeMap() {
   // panel hanging open after navigating away.
   clearSelection()
   if (window.history.length > 1) router.back()
-  else router.push('/home')
+  else router.push('/northstar/home')
 }
 </script>
 
@@ -238,7 +238,7 @@ function closeMap() {
     <!-- Mobile fallback (locked-in scope: desktop-only) -->
     <div class="kaart-mobile-fallback">
       <p>Open de kaart op een desktop voor de beste ervaring.</p>
-      <NuxtLink to="/home">Terug naar home</NuxtLink>
+      <NuxtLink to="/northstar/home">Terug naar home</NuxtLink>
     </div>
   </div>
 </template>

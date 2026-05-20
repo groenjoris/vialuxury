@@ -137,7 +137,7 @@
       <div class="container members-cta__inner">
         <h2 class="members-cta__heading">{{ t('members.ctaHeading') }}</h2>
         <p class="members-cta__text">{{ t('members.ctaText') }}</p>
-        <NuxtLink to="/search" class="members-cta__button">
+        <NuxtLink to="/northstar/search" class="members-cta__button">
           {{ t('members.ctaButton') }}
         </NuxtLink>
       </div>

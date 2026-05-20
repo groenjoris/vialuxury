@@ -149,22 +149,22 @@ function resetAllNorthstar() {
 function startFirstReleaseFromHome(variant: '1' | '2' | '3' | '4' | '5' = '1') {
   resetAll()
   setHomeVariant(variant)
-  const path = variant === '5' ? '/home-v5'
-    : variant === '4' ? '/home-v4'
-    : variant === '3' ? '/home-v3'
-    : variant === '2' ? '/home-v2'
-    : '/home'
+  const path = variant === '5' ? '/huisstijl/home-v5'
+    : variant === '4' ? '/huisstijl/home-v4'
+    : variant === '3' ? '/huisstijl/home-v3'
+    : variant === '2' ? '/huisstijl/home-v2'
+    : '/huisstijl/home'
   navigateTo(path)
 }
 
-/** First-release "Hotel First" — start on the dedicated /hotel-first
- *  page (copy of variant 1 without the variant carousel). Sets the
- *  home variant to 'hf' so any in-app "home" link (logo, footer,
- *  /kaart close button) returns to /hotel-first. */
+/** First-release "Hotel First" — start on the dedicated
+ *  /first-release/home page. Sets the variant flag to 'hf' so any
+ *  in-app "home" link returns to first-release/home while the
+ *  prototype is active. */
 function startHotelFirstFromHome() {
   resetAll()
   setHomeVariant('hf')
-  navigateTo('/hotel-first')
+  navigateTo('/first-release/home')
 }
 
 /** First-release "Hotel First" — start on the partner advertisement

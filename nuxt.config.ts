@@ -10,9 +10,20 @@ export default defineNuxtConfig({
       path: '~/components',
       pathPrefix: false,
     },
-    // Northstar concept — frozen snapshot of the prototype. All
-    // components are auto-imported with a `Northstar` prefix so they
-    // never collide with the active version.
+    // First Release prototype — actively developed. All components
+    // auto-imported with a `FirstRelease` prefix.
+    {
+      path: '~/components-first-release',
+      prefix: 'FirstRelease',
+      pathPrefix: false,
+    },
+    // Huisstijl variants — frozen snapshot of the 5-homepage prototype.
+    {
+      path: '~/components-huisstijl',
+      prefix: 'Huisstijl',
+      pathPrefix: false,
+    },
+    // Northstar concept — frozen snapshot of the user-test prototype.
     {
       path: '~/components-northstar',
       prefix: 'Northstar',
@@ -20,12 +31,16 @@ export default defineNuxtConfig({
     },
   ],
 
-  // Auto-import the Northstar composables + stores. Their exported
-  // names are renamed (`useNorthstar*`) so they don't collide with the
-  // active version.
+  // Auto-import each prototype's composables + stores. Function names
+  // are renamed per-prototype (`useFirstRelease*`, `useHuisstijl*`,
+  // `useNorthstar*`) so they never collide.
   imports: {
     dirs: [
+      'composables-first-release/**',
+      'composables-huisstijl/**',
       'composables-northstar/**',
+      'stores-first-release/**',
+      'stores-huisstijl/**',
       'stores-northstar/**',
     ],
   },

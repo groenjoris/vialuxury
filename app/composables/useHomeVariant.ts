@@ -36,12 +36,12 @@ export function useHomeVariant() {
    */
   function restoreHomeVariant(routePath?: string) {
     if (!import.meta.client) return
-    if (routePath && routePath.startsWith('/hotel-first')) { setHomeVariant('hf'); return }
-    if (routePath && routePath.startsWith('/home-v5'))     { setHomeVariant('5'); return }
-    if (routePath && routePath.startsWith('/home-v4'))     { setHomeVariant('4'); return }
-    if (routePath && routePath.startsWith('/home-v3'))     { setHomeVariant('3'); return }
-    if (routePath && routePath.startsWith('/home-v2'))     { setHomeVariant('2'); return }
-    if (routePath === '/home')                             { setHomeVariant('1'); return }
+    if (routePath && routePath.startsWith('/first-release'))      { setHomeVariant('hf'); return }
+    if (routePath && routePath.startsWith('/huisstijl/home-v5'))  { setHomeVariant('5'); return }
+    if (routePath && routePath.startsWith('/huisstijl/home-v4'))  { setHomeVariant('4'); return }
+    if (routePath && routePath.startsWith('/huisstijl/home-v3'))  { setHomeVariant('3'); return }
+    if (routePath && routePath.startsWith('/huisstijl/home-v2'))  { setHomeVariant('2'); return }
+    if (routePath === '/huisstijl/home')                          { setHomeVariant('1'); return }
     try {
       const stored = localStorage.getItem(STORAGE_KEY) as HomeVariant | null
       if (stored === '1' || stored === '2' || stored === '3' || stored === '4' || stored === '5' || stored === 'hf') homeVariant.value = stored
@@ -50,12 +50,12 @@ export function useHomeVariant() {
 
   /** Computed href that points at the user's active home variant. */
   const homeHref = computed(() => {
-    if (homeVariant.value === 'hf') return '/hotel-first'
-    if (homeVariant.value === '5')  return '/home-v5'
-    if (homeVariant.value === '4')  return '/home-v4'
-    if (homeVariant.value === '3')  return '/home-v3'
-    if (homeVariant.value === '2')  return '/home-v2'
-    return '/home'
+    if (homeVariant.value === 'hf') return '/first-release/home'
+    if (homeVariant.value === '5')  return '/huisstijl/home-v5'
+    if (homeVariant.value === '4')  return '/huisstijl/home-v4'
+    if (homeVariant.value === '3')  return '/huisstijl/home-v3'
+    if (homeVariant.value === '2')  return '/huisstijl/home-v2'
+    return '/huisstijl/home'
   })
 
   return { homeVariant, setHomeVariant, restoreHomeVariant, homeHref }

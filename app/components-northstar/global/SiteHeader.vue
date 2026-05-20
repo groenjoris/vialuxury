@@ -4,7 +4,7 @@
     <div class="site-header__nav">
       <div class="site-header__nav-inner container">
         <!-- Logo -->
-        <NuxtLink to="/home" class="site-header__logo">
+        <NuxtLink to="/northstar/home" class="site-header__logo">
           <img
             src="/images/logo-vialuxury-horizontal.svg"
             alt="ViaLuxury"
@@ -152,7 +152,7 @@
           </div>
 
           <!-- Leden ingang (desktop only) -->
-          <NuxtLink v-if="!isMobile" to="/leden" class="vip-btn">
+          <NuxtLink v-if="!isMobile" to="/northstar/leden" class="vip-btn">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M12 2 15 8l6 .9-4.5 4.4L17.5 20 12 16.9 6.5 20 8 13.3 3.5 8.9 9.5 8z" />
             </svg>
@@ -178,7 +178,7 @@
 
                   <div class="contact-dropdown__divider"></div>
 
-                  <NuxtLink to="/leden" class="hamburger-dropdown__link" @click="hamburgerDropdownOpen = false">
+                  <NuxtLink to="/northstar/leden" class="hamburger-dropdown__link" @click="hamburgerDropdownOpen = false">
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
                     {{ t('header.membersEntrance') }}
                   </NuxtLink>
@@ -443,7 +443,7 @@
         </div>
         <div class="mobile-menu__divider"></div>
         <div class="mobile-menu__section">
-          <NuxtLink to="/leden" class="mobile-menu__item" @click="mobileMenuOpen = false">
+          <NuxtLink to="/northstar/leden" class="mobile-menu__item" @click="mobileMenuOpen = false">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="currentColor" /></svg>
             {{ t('header.membersEntrance') }}
           </NuxtLink>
@@ -518,14 +518,14 @@ const localeStore = useNorthstarLocaleStore()
 
 // --- Verticals (computed for reactivity on locale change) ---
 const verticals = computed(() => [
-  { id: 'hotels', label: t('header.hotels'), href: '/home', external: false },
-  { id: 'vakantieparken', label: t('header.holidayParks'), href: '/vakantieparken', external: false },
+  { id: 'hotels', label: t('header.hotels'), href: '/northstar/home', external: false },
+  { id: 'vakantieparken', label: t('header.holidayParks'), href: '/northstar/vakantieparken', external: false },
   { id: 'restaurants', label: t('header.restaurants'), href: 'https://restaurants.vialuxury.com/', external: true },
 ])
 // Route-aware: 'vakantieparken' on /vakantieparken*, otherwise 'hotels' (home/search/deal/hotel)
 const _route = useRoute()
 const activeVertical = computed(() => {
-  if (_route.path.startsWith('/vakantieparken')) return 'vakantieparken'
+  if (_route.path.startsWith('/northstar/vakantieparken')) return 'vakantieparken'
   return 'hotels'
 })
 
@@ -1137,7 +1137,7 @@ function commitSearch() {
   // If the user picked a specific hotel from the destination popup, pin it.
   // Otherwise fall back to the deal-page slug (when changing search from /deal).
   const fromSlug = selectedHotels.value[0]?.slug || currentDealSlug()
-  navigateTo(fromSlug ? `/search?from=${encodeURIComponent(fromSlug)}` : '/search')
+  navigateTo(fromSlug ? `/northstar/search?from=${encodeURIComponent(fromSlug)}` : '/northstar/search')
 }
 
 function currentDealSlug(): string | null {
@@ -1160,7 +1160,7 @@ function handleMobileSearch() {
 
 function handleSelectHotel(slug: string) {
   closePopup()
-  navigateTo(`/deal/${slug}`)
+  navigateTo(`/northstar/deal/${slug}`)
 }
 
 /** Hotel chosen from the destination popup: store as a selected hotel chip

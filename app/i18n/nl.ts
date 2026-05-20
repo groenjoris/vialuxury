@@ -6,9 +6,9 @@ const nl: Record<string, string> = {
   'topbar.wideSelection': 'Uitgebreid aanbod hotel experiences',
 
   // Header - Search bar
-  'header.destination': 'Waarheen',
+  'header.destination': 'Waarheen?',
   'header.when': 'Wanneer',
-  'header.whosComing': 'Wie gaat er mee',
+  'header.whosComing': 'Wie gaat er mee?',
   'header.chooseDestination': 'Kies bestemming',
   'header.chooseDate': 'Flexibel, elke duur',
   'header.flexibleLabel': 'Flexibel',
@@ -47,7 +47,7 @@ const nl: Record<string, string> = {
   'header.restaurants': 'Restaurants',
   'header.giftCard': 'Geef cadeaubon',
   'header.whenAndHowLong': 'Wanneer en hoelang?',
-  'header.pickDateAndDuration': 'Kies datum en reisduur',
+  'header.pickDateAndDuration': 'Kies aankomstdatum en reisduur',
   'header.membersEntrance': 'Leden',
   'header.contact': 'Contact',
   'header.contactNeedHelp': 'Hulp nodig?',
@@ -195,7 +195,7 @@ const nl: Record<string, string> = {
 
   // Search page
   'search.deals': 'arrangementen',
-  'search.usp': 'Unieke experiences, met liefde samengesteld door het ViaLuxury team',
+  'search.usp': 'Samengesteld door het ViaLuxury Team',
   'search.home': 'Home',
   'search.arrangements': 'Arrangementen',
   'search.filters': 'Filters',

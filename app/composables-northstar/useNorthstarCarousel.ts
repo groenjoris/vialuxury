@@ -1,6 +1,6 @@
 import { ref, watch, onUnmounted, type Ref, type ComputedRef } from 'vue'
 
-export interface UseCarouselOptions {
+export interface UseNorthstarCarouselOptions {
   /** Milliseconds between auto-advances. Defaults to 3000. */
   intervalMs?: number
   /** Reactive flag controlling whether the auto-advance timer runs. Defaults to always on. */
@@ -17,7 +17,7 @@ export interface UseCarouselOptions {
  */
 export function useNorthstarCarousel<T>(
   items: Ref<T[]> | ComputedRef<T[]>,
-  options: UseCarouselOptions = {},
+  options: UseNorthstarCarouselOptions = {},
 ) {
   const { intervalMs = 3000, enabled } = options
   const activeIndex = ref(0)
