@@ -60,6 +60,7 @@ export default defineNuxtConfig({
     '~/assets/css/leaflet-overrides.css',
     '~/assets/css/variant-2.css',
     '~/assets/css/fr-variant-6.css',
+    '~/assets/css/home-categories.css',
   ],
 
   nitro: {
@@ -72,7 +73,11 @@ export default defineNuxtConfig({
 
   app: {
     head: {
-      htmlAttrs: { lang: 'nl' },
+      // `data-fr-variant="6"` is set during SSR so the v6 design CSS
+      // (1200 px container etc.) applies on first paint — without it,
+      // the page briefly renders at the legacy 1137 px width and then
+      // jumps to 1200 px once the client-side watcher mounts.
+      htmlAttrs: { lang: 'nl', 'data-fr-variant': '6' },
       title: 'Via Luxury - Luxe Hotel Arrangementen',
       link: [
         { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },

@@ -61,6 +61,7 @@
                 hide-labels
                 grid-mode
                 panel-mode
+                :map-mode="mapMode"
                 :date-mismatch="entry.dateMismatch"
                 :nights-mismatch="entry.nightsMismatch"
                 :ignore-arrival="entry.dateMismatch"

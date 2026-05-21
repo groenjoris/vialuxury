@@ -1701,7 +1701,9 @@ function handleSelectHotelInPopup(slug: string) {
 }
 
 .site-header .search-bar__field:hover {
-  background: #f5f5f5;
+  /* Warm off-grey from the homepage palette — same `--color-background-secondary`
+     used by the persuasion / popular bands on the homepage. */
+  background: var(--color-background-secondary, #faf9f6);
   border-color: transparent;
 }
 
@@ -2177,6 +2179,21 @@ function handleSelectHotelInPopup(slug: string) {
    phone block that's now in col 5 on row 2. */
 .site-header--nav-v3 .verticals {
   grid-column: 1 / span 3;
+}
+
+/* ─── Variant 3 — rounded-rectangle buttons instead of pills ───
+ *  v3 keeps v2's layout but swaps every 999-px pill (verticals
+ *  items / active state, VIP members button, language switcher
+ *  trigger, hamburger) for a rounded-rectangle 8 px corner so the
+ *  nav reads as a row of crisp buttons rather than capsules. */
+.site-header--nav-v3 .verticals__item,
+.site-header--nav-v3 .vip-btn,
+.site-header--nav-v3 .lang-switcher__trigger {
+  border-radius: 8px;
+}
+
+.site-header--nav-v3 .hamburger-btn {
+  border-radius: 8px;
 }
 
 /* Variant 4 uses the base defaults (stroke visible, 22 px payoff,
@@ -2664,10 +2681,12 @@ function handleSelectHotelInPopup(slug: string) {
   height: 100%;
 }
 
-/* HOVER — fill the entire field card (label + value rows). */
+/* HOVER — fill the entire field card (label + value rows). Same warm
+   off-grey used by the homepage persuasion / popular bands so the
+   search bar hover reads as a known surface across the site. */
 .search-bar__field:hover {
-  background: var(--color-background-secondary-hover, #f3efe5);
-  border-color: var(--color-primary);
+  background: var(--color-background-secondary, #faf9f6);
+  border-color: transparent;
 }
 
 .search-bar__field--active {

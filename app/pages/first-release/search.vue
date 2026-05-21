@@ -15,13 +15,13 @@
             <!-- Map preview (fake door) at the top of sidebar -->
             <FirstReleaseMapPreviewCard class="search-page__map-preview" @click="handleMapClick" />
             <FirstReleaseSearchFilterPanel
-              :budget-min="budgetMin"
-              :budget-max="budgetMax"
+              :budget-min="budgetMinDraft"
+              :budget-max="budgetMaxDraft"
               :persons="persons"
               :counts="filterCounts"
               hideable
-              @update:budget-min="budgetMin = $event"
-              @update:budget-max="budgetMax = $event"
+              @update:budget-min="budgetMinDraft = $event"
+              @update:budget-max="budgetMaxDraft = $event"
               @hide="showFilters = false"
             />
             <!-- Sentinel: when this scrolls past the top of the
@@ -39,13 +39,13 @@
           <FirstReleaseSearchFilterPanel
             v-if="showFilters && stickyFilterVisible"
             class="search-page__sticky-filter"
-            :budget-min="budgetMin"
-            :budget-max="budgetMax"
+            :budget-min="budgetMinDraft"
+            :budget-max="budgetMaxDraft"
             :persons="persons"
             :counts="filterCounts"
             compact
-            @update:budget-min="budgetMin = $event"
-            @update:budget-max="budgetMax = $event"
+            @update:budget-min="budgetMinDraft = $event"
+            @update:budget-max="budgetMaxDraft = $event"
           />
         </Transition>
 
@@ -94,8 +94,9 @@
                   class="search-page__usp"
                   :key="singleThemeTagId ? `themed-sub-${singleThemeTagId}` : 'default-sub'"
                 >{{ singleThemeTagId ? themedSubtitle : t('search.usp') }}</p>
-                <!-- Avatars moved beneath the subtitle. -->
-                <div class="team-avatars">
+                <!-- Avatars only on the default header; themed views drop
+                     them so the handwritten subtitle carries the focus. -->
+                <div v-if="!singleThemeTagId" class="team-avatars">
                   <div
                     v-for="member in teamMembers"
                     :key="member.name"
@@ -295,15 +296,15 @@
     <!-- Mobile filter subpage -->
     <FirstReleaseFilterSubpage
       :open="mobileFilterOpen"
-      :budget-min="budgetMin"
-      :budget-max="budgetMax"
+      :budget-min="budgetMinDraft"
+      :budget-max="budgetMaxDraft"
       :persons="persons"
       :result-count="sortedHotels.length"
       @close="mobileFilterOpen = false"
       @apply="mobileFilterOpen = false"
       @clear="resetFilters"
-      @update:budget-min="budgetMin = $event"
-      @update:budget-max="budgetMax = $event"
+      @update:budget-min="budgetMinDraft = $event"
+      @update:budget-max="budgetMaxDraft = $event"
     />
 
     <FirstReleaseHotelDealsSidePanel
@@ -446,7 +447,9 @@ const {
   clearDestinations,
 } = useFirstReleaseSearchState()
 // Writable computed acts as a ref alias so existing v-model / `.value =`
-// usage in this file still works.
+// usage in this file still works. Reads/writes go through the shared
+// composable — every filter consumer (filteredHotels, filterCounts, …)
+// reads from here.
 const budgetMin = computed({
   get: () => sharedBudgetMin.value,
   set: (v: number) => setBudgetMin(v),
@@ -454,6 +457,37 @@ const budgetMin = computed({
 const budgetMax = computed({
   get: () => sharedBudgetMax.value,
   set: (v: number) => setBudgetMax(v),
+})
+
+/* ─── Budget slider debounce ──────────────────────────────────────
+ * Dragging the slider used to write to shared state on every input
+ * event, causing the result list to re-render mid-drag and shift the
+ * layout under the user's cursor. Solution: the slider binds to
+ * separate "draft" refs that update instantly (so the thumb tracks
+ * the user's drag), and a debounced watcher pushes the draft value
+ * into shared state once the slider has been idle for 600ms.
+ */
+const budgetMinDraft = ref(sharedBudgetMin.value)
+const budgetMaxDraft = ref(sharedBudgetMax.value)
+
+let budgetCommitTimer: ReturnType<typeof setTimeout> | null = null
+function scheduleBudgetCommit() {
+  if (budgetCommitTimer) clearTimeout(budgetCommitTimer)
+  budgetCommitTimer = setTimeout(() => {
+    if (budgetMinDraft.value !== sharedBudgetMin.value) setBudgetMin(budgetMinDraft.value)
+    if (budgetMaxDraft.value !== sharedBudgetMax.value) setBudgetMax(budgetMaxDraft.value)
+    budgetCommitTimer = null
+  }, 600)
+}
+
+watch([budgetMinDraft, budgetMaxDraft], scheduleBudgetCommit)
+
+// External resets (resetFilters / resetBudget / cross-page sync) →
+// pull the drafts back in line with the shared state so the slider
+// thumb reflects the new bounds.
+watch([sharedBudgetMin, sharedBudgetMax], ([mn, mx]) => {
+  if (mn !== budgetMinDraft.value) budgetMinDraft.value = mn
+  if (mx !== budgetMaxDraft.value) budgetMaxDraft.value = mx
 })
 
 // Budget slider also triggers the loader + scroll. Debounced via the same
@@ -567,6 +601,7 @@ const THEME_TITLES: Record<string, { title: string; subtitle: string }> = {
   'dog-friendly':  { title: 'Hond mee',                   subtitle: 'Onze selectie van de beste deals waar je hond mee kan' },
   'aan-zee':       { title: 'Luxe hotels aan zee',        subtitle: 'Boek snel voor de mooiste kamers en de beste beschikbaarheid' },
   natuur:          { title: 'Hotels in de natuur',        subtitle: 'Onze selectie van de mooiste hotels in de natuur.' },
+  romantisch:      { title: 'Romantische locaties',       subtitle: 'Speciaal geselecteerd om romantische herinneringen te creëren.' },
   culinair:        { title: 'Culinair genieten',          subtitle: 'Onze selectie van de beste deals van luxe hotels met top restaurants' },
   fiets:           { title: 'Fietsarrangement',           subtitle: 'Onze selectie van luxe hotels met fietsarrangement' },
   steden:          { title: 'Luxe stedentrips',           subtitle: 'Onze selectie van de beste deals van luxe stedentrips' },
@@ -577,18 +612,15 @@ const THEME_TITLES: Record<string, { title: string; subtitle: string }> = {
   'best-price':    { title: 'Super Deals',                subtitle: 'De leukste hotelarrangementen voor een spotprijsje!' },
 }
 
-/** The single active tag id when no other filter is set; null
- *  otherwise. Drives whether the themed title takes over. */
+/** The single active tag id when no destination-popup pick is set;
+ *  null otherwise. Arrival date, nights and budget are allowed to be
+ *  set in parallel — they don't change the theme of the search, just
+ *  narrow it. Drives whether the themed title takes over. */
 const singleThemeTagId = computed<string | null>(() => {
   if (selectedFilterTags.value.length !== 1) return null
-  if (selectedNights.value.length > 0) return null
-  if (committedArrivalDate.value) return null
   if (selectedDestinations.value.length > 0) return null
   if (selectedCities.value.length > 0) return null
   if (selectedHotels.value.length > 0) return null
-  // Budget at its untouched default range (100..2000 from
-  // useFirstReleaseSearchState.resetBudget()).
-  if (budgetMin.value !== 100 || budgetMax.value !== 2000) return null
   const id = selectedFilterTags.value[0]
   return THEME_TITLES[id] ? id : null
 })
@@ -1322,7 +1354,9 @@ onMounted(() => {
      written by hand. Translate-y pulls the text 4 px closer to the
      title visually WITHOUT shifting siblings (the avatars stay put). */
   font-family: 'Oooh Baby', cursive;
-  font-size: 20px;
+  /* No bold weight exists for Oooh Baby — bumping the size by ~2 pt
+     instead so the subtitle reads a touch heavier. */
+  font-size: 23px;
   font-weight: 400;
   color: var(--color-text-secondary);
   line-height: 1;
@@ -1332,11 +1366,19 @@ onMounted(() => {
   margin: 0;
   transform: translateY(-4px);
   animation: search-usp-write 1.2s ease-out 0.2s both;
+  /* Oooh Baby's terminal glyphs (final "d", "j", "g", etc.) have
+     cursive flourishes that extend past the glyph's advance-width.
+     The `clip-path` inset is anchored to the element's box, so
+     without breathing room the trailing flourish gets clipped. A
+     tiny padding-right widens the box, and the keyframe's "to"
+     state pulls the right inset slightly negative so the flourish
+     stays fully visible. */
+  padding-right: 6px;
 }
 
 @keyframes search-usp-write {
-  from { clip-path: inset(0 100% 0 0); }
-  to   { clip-path: inset(0 0     0 0); }
+  from { clip-path: inset(0 100% 0 -6px); }
+  to   { clip-path: inset(0 -6px  0 -6px); }
 }
 
 /* ===== RESULT LIST / GRID ===== */

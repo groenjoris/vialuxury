@@ -20,23 +20,15 @@
       <nav class="deal-page__tabs container">
         <a href="#intro" class="deal-page__tab">{{ t('deal.tabIntro') }}</a>
         <a href="#arrangement" class="deal-page__tab">{{ t('deal.tabArrangement') }}</a>
-        <a v-if="frNavVariant !== '6'" href="#beoordelingen" class="deal-page__tab">{{ t('hotel.tabReviews') }}</a>
         <a v-if="hotel && hotel.houseRules && hotel.houseRules.length" href="#huisregels" class="deal-page__tab">{{ t('hotel.tabHouseRules') }}</a>
         <a href="#veelgestelde-vragen" class="deal-page__tab">{{ t('hotel.tabFaq') }}</a>
         <a href="#tips" class="deal-page__tab">{{ t('hotel.tabNearby') }}</a>
-        <!-- v6 only: heart + share live in the anchor-nav row, right-aligned,
-             so they sit at the same height as the tabs and above the grey
+        <!-- Heart + share live in the anchor-nav row, right-aligned, so
+             they sit at the same height as the tabs and above the grey
              divider between this row and the title section. -->
-        <div v-if="frNavVariant === '6'" class="deal-page__tabs-actions">
+        <div class="deal-page__tabs-actions">
           <button class="icon-action" :class="{ 'icon-action--favorited': isFavorited }" :aria-label="t('common.save')" @click="handleFavoriteClick">{{ isFavorited ? '♥' : '♡' }}</button>
           <button class="icon-action" :aria-label="t('common.share')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg></button>
-        </div>
-        <!-- Co-branded NU shop logo — only on the Hotel des Indes deal page
-             when the user-test partner flag is set. Right-aligned, with
-             "In samenwerking met" caption above. -->
-        <div v-if="showPartnerLogo" class="deal-page__partner-block">
-          <span class="deal-page__partner-caption">In samenwerking met</span>
-          <img src="/images/logos/nushoplogo.svg" alt="NUshop" class="deal-page__partner-logo" />
         </div>
       </nav>
 
@@ -53,19 +45,6 @@
             </div>
           </div>
           <div class="deal-page__meta">
-            <!-- Score badge + review count are hidden on v6 (backlog: drop
-                 reviews/scores from the deal page); the location + Reisduur
-                 entries below stay for every variant. -->
-            <template v-if="frNavVariant !== '6'">
-              <FirstReleaseViaLuxuryScoreBadge
-                v-if="searchHotelForBadge"
-                :hotel="searchHotelForBadge"
-                :all-hotels="mappedHotels"
-              />
-              <span class="deal-page__divider">|</span>
-              <span>{{ hotel.reviews.totalReviews }} {{ t('common.reviews') }}</span>
-              <span class="deal-page__divider">·</span>
-            </template>
             <span>{{ hotel.location.city }}, {{ hotel.location.region }}</span>
             <template v-if="chosenReisduurLabel">
               <span class="deal-page__divider">·</span>
@@ -73,15 +52,16 @@
             </template>
           </div>
         </div>
-        <!-- v6 only: Experience Creator business card, right-aligned beside
-             the title. Photo + name + role of the team member who
-             "curated" this deal (picked deterministically from the slug). -->
-        <div v-if="frNavVariant === '6'" class="deal-page__title-right">
-          <FirstReleaseExperienceCreatorCard :creator="creator" />
-        </div>
-        <div class="deal-page__title-actions">
-          <button class="icon-action" :class="{ 'icon-action--favorited': isFavorited }" :aria-label="t('common.save')" @click="handleFavoriteClick">{{ isFavorited ? '♥' : '♡' }}</button>
-          <button class="icon-action" :aria-label="t('common.share')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg></button>
+        <!-- Right column: shows the NU shop partner logo when the user
+             arrives via the advertisement flow (`?partner=nu` on Hotel
+             des Indes), otherwise the Experience Creator business card.
+             Same position either way. -->
+        <div class="deal-page__title-right">
+          <div v-if="showPartnerLogo" class="deal-page__partner-card">
+            <span class="deal-page__partner-card-caption">In samenwerking met</span>
+            <img src="/images/logos/nushoplogo.svg" alt="NUshop" class="deal-page__partner-card-logo" />
+          </div>
+          <FirstReleaseExperienceCreatorCard v-else :creator="creator" />
         </div>
       </section>
 
@@ -139,12 +119,8 @@
           <section id="arrangement" class="deal-page__content-blocks">
             <h2 class="section-title">
               {{ t('deal.inclusionsHeading') }}
-              <!-- v6 fixes persons at 2 and renders it as plain text (no popup trigger). -->
-              <span v-if="frNavVariant === '6'">2 personen</span>
-              <button v-else class="inline-edit-link" @click="store.openTravelGroupModal()">
-                {{ store.totalPersons }} {{ store.totalPersons === 1 ? t('common.personSingular') : t('common.personPlural') }}
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-              </button>
+              <!-- Persons fixed at 2 — plain text, no popup trigger. -->
+              <span>2 personen</span>
               {{ t('deal.inclusionsEndAlt') }}
             </h2>
             <div class="content-blocks__grid">
@@ -166,39 +142,6 @@
                   <p class="content-block__desc">{{ localized(inc.description) }}</p>
                 </div>
 
-                <!-- Overnight block: 1) reisgezelschap CTA, 2) upgrade hint (only if no upgrade-block in deal).
-                     Both are hidden on v6 — persons fixed at 2, no room upgrades. -->
-                <template v-if="isOvernightInclusion(inc) && frNavVariant !== '6'">
-                  <div class="content-block__cta">
-                    <h4 class="content-block__cta-heading">
-                      Je boekt {{ store.travelGroup.rooms }} {{ store.travelGroup.rooms === 1 ? 'kamer' : 'kamers' }} voor {{ store.totalPersons }} {{ store.totalPersons === 1 ? 'persoon' : 'personen' }}
-                    </h4>
-                    <button type="button" class="content-block__cta-action" @click="store.openTravelGroupModal()">
-                      Wijzig aantal kamers of personen
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-                    </button>
-                  </div>
-                  <div v-if="!hasUpgradeInclusion" class="content-block__cta">
-                    <template v-if="!dateSelected">
-                      <h4 class="content-block__cta-heading">Nog meer luxe?</h4>
-                      <p class="content-block__cta-text">Voer hiernaast je aankomstdatum in om beschikbare kamerupgrades te zien.</p>
-                    </template>
-                    <template v-else-if="!paidUpgradeSelected">
-                      <h4 class="content-block__cta-heading">Nog meer luxe?</h4>
-                      <button type="button" class="content-block__cta-action" @click="isUpgradePanelOpen = true">
-                        Bekijk beschikbare kamerupgrades
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-                      </button>
-                    </template>
-                    <template v-else>
-                      <h4 class="content-block__cta-heading">U heeft een betaalde kamerupgrade</h4>
-                      <button type="button" class="content-block__cta-action" @click="isUpgradePanelOpen = true">
-                        Selecteer andere kamer
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-                      </button>
-                    </template>
-                  </div>
-                </template>
               </div>
             </div>
           </section>
@@ -266,16 +209,8 @@
         <div v-if="!isMobile" class="deal-page__col-right-stack">
         <div class="deal-page__col-right">
           <!-- Inclusions -->
-          <h3 v-if="frNavVariant === '6'" class="sidebar__title">
+          <h3 class="sidebar__title">
             {{ t('sidebar.arrangementFullTitle') }}
-          </h3>
-          <h3 v-else class="sidebar__title">
-            {{ t('sidebar.arrangementFor') }}
-            <button
-              type="button"
-              class="sidebar__title-link"
-              @click="store.openTravelGroupModal()"
-            >{{ store.totalPersons }} {{ store.totalPersons === 1 ? t('common.personSingular') : t('common.personPlural') }}</button>
           </h3>
           <ul class="sidebar__inc-list">
             <li v-for="inc in currentDeal.inclusions" :key="inc.id">
@@ -284,37 +219,22 @@
             </li>
           </ul>
 
-          <!-- Variant CTA — hidden on v6; replaced by the new arrival-date
-               block inside the calendar wrapper below. -->
-          <div v-if="frNavVariant !== '6'" class="sidebar__variant-cta">
-            <h4 class="sidebar__variant-heading">{{ t('deal.shorterOrLonger') }}</h4>
-            <button class="sidebar__variant-btn" @click="isPanelOpen = true">
-              {{ t('deal.viewOptions') }}
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="9 18 15 12 9 6" />
-              </svg>
-            </button>
-          </div>
-
           <!-- Calendar -->
           <div class="sidebar__calendar" ref="calendarRef">
-            <template v-if="frNavVariant === '6'">
-              <h4 class="sidebar__cal-title sidebar__cal-title--big">{{ t('calendar.chooseArrivalDateLong') }}</h4>
-              <p v-if="currentDeal" class="sidebar__nights-line">
-                {{ t('deal.thisArrangementIsFor') }} {{ nightsWord(currentDeal.nights, false) }}
-              </p>
-              <template v-if="hasOtherArrangements">
-                <h4 class="sidebar__variant-heading sidebar__variant-heading--v6">{{ t('deal.shorterOrLongerStay') }}</h4>
-                <a
-                  href="#"
-                  class="sidebar__other-arrangements"
-                  @click.prevent="arrangementsPanelOpen = true"
-                >
-                  {{ t('deal.viewOtherArrangements') }}
-                </a>
-              </template>
+            <h4 class="sidebar__cal-title sidebar__cal-title--big">{{ t('calendar.chooseArrivalDateLong') }}</h4>
+            <p v-if="currentDeal" class="sidebar__nights-line">
+              {{ t('deal.thisArrangementIsFor') }} {{ nightsWord(currentDeal.nights, false) }}
+            </p>
+            <template v-if="hasOtherArrangements">
+              <h4 class="sidebar__variant-heading sidebar__variant-heading--v6">{{ t('deal.shorterOrLongerStay') }}</h4>
+              <a
+                href="#"
+                class="sidebar__other-arrangements"
+                @click.prevent="arrangementsPanelOpen = true"
+              >
+                {{ t('deal.viewOtherArrangements') }}
+              </a>
             </template>
-            <h4 v-else class="sidebar__cal-title">{{ t('calendar.chooseArrivalDate') }}</h4>
             <FirstReleaseCalendarMonth
               :year="calMonth.year" :month="calMonth.month"
               :availability="calAvailability"
@@ -371,26 +291,19 @@
               <li><span class="sidebar__trust-check">✓</span> {{ t('deal.trustCancel') }}</li>
               <li><span class="sidebar__trust-check">✓</span> {{ t('deal.trustTrustpilot') }}</li>
             </ul>
-            <!-- v6 only: Trustpilot + Klarna logos each get a centred caption
-                 underneath, with extra space between the two blocks. v1-v5
-                 keep the bare Trustpilot logo (no caption, no Klarna). -->
-            <template v-if="frNavVariant === '6'">
-              <div class="sidebar__trust-block">
-                <img src="/images/trustpilot.svg" alt="Trustpilot" class="sidebar__trust-logo" />
-                <span class="sidebar__trust-caption">15.294 beoordelingen</span>
-              </div>
-              <div class="sidebar__trust-block sidebar__trust-block--klarna">
-                <img src="/images/logos/klarna.webp" alt="Klarna" class="sidebar__trust-logo sidebar__trust-logo--klarna" />
-                <span class="sidebar__trust-caption">Achteraf betalen mogelijk</span>
-              </div>
-            </template>
-            <img v-else src="/images/trustpilot.svg" alt="Trustpilot" class="sidebar__trust-logo" />
+            <!-- Trustpilot + Klarna logos each get a centred caption
+                 underneath, with extra space between the two blocks. -->
+            <div class="sidebar__trust-block">
+              <img src="/images/trustpilot.svg" alt="Trustpilot" class="sidebar__trust-logo" />
+              <span class="sidebar__trust-caption">15.294 beoordelingen</span>
+            </div>
+            <div class="sidebar__trust-block sidebar__trust-block--klarna">
+              <img src="/images/logos/klarna.webp" alt="Klarna" class="sidebar__trust-logo sidebar__trust-logo--klarna" />
+              <span class="sidebar__trust-caption">Achteraf betalen mogelijk</span>
+            </div>
           </div>
 
         </div>
-
-        <!-- Yvette banner — separate block below the booking sidebar -->
-        <FirstReleaseYvetteBanner v-if="frNavVariant !== '6'" />
         </div>
       </div>
 
@@ -406,9 +319,8 @@
         </div>
       </section>
 
-      <!-- v6 only: "Waarom ViaLuxury" replaces the reviews section
-           (which is hidden by fr-variant-6.css). -->
-      <FirstReleaseWhyViaLuxury v-if="frNavVariant === '6'" />
+      <!-- "Waarom ViaLuxury" replaces the reviews section. -->
+      <FirstReleaseWhyViaLuxury />
 
       <section v-if="!isMobile" id="beoordelingen" class="deal-page__reviews container">
         <h2 class="section-title">{{ t('hotel.reviews') }}</h2>
@@ -505,21 +417,18 @@
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6" /></svg>
       </button>
 
-      <!-- v6 only: "Anderen bekeken ook" at the bottom of the deal page.
+      <!-- "Anderen bekeken ook" at the bottom of the deal page.
            Fills 3 cards: same hotel first, then nearby. -->
       <FirstReleaseOthersAlsoViewed
-        v-if="frNavVariant === '6'"
         :current-hotel="searchHotelForBadge"
         :current-deal-id="currentDeal?.id || ''"
       />
     </main>
 
-    <FirstReleaseTravelGroupModal v-if="frNavVariant !== '6'" />
-    <!-- v6 only: "Andere arrangementen bij dit hotel" side panel. Reuses
-         the same component the /search results page uses, with a custom
-         sticky title + filter that hides the current deal. -->
+    <!-- "Andere arrangementen bij dit hotel" side panel. Reuses the same
+         component the /search results page uses, with a custom sticky
+         title + filter that hides the current deal. -->
     <FirstReleaseHotelDealsSidePanel
-      v-if="frNavVariant === '6'"
       :is-open="arrangementsPanelOpen"
       :hotel="searchHotelForBadge"
       :panel-title="t('deal.availableArrangements')"
@@ -533,13 +442,6 @@
       :inclusions-map="inclusionsMap"
       :titles-map="titlesMap"
       @close="isPanelOpen = false" @select="handlePanelSelect"
-    />
-    <FirstReleaseRoomUpgradeSidePanel
-      v-if="currentDeal && frNavVariant !== '6'"
-      :is-open="isUpgradePanelOpen"
-      :deal="currentDeal"
-      :hotel-name="hotel?.name || ''"
-      @close="isUpgradePanelOpen = false"
     />
     <!-- Room unavailable popup -->
     <Teleport to="body">
@@ -566,7 +468,6 @@
         <nav v-if="!isMobile" class="deal-page__tabs deal-page__tabs--in-bar">
           <a href="#intro" class="deal-page__tab">{{ t('deal.tabIntro') }}</a>
           <a href="#arrangement" class="deal-page__tab">{{ t('deal.tabArrangement') }}</a>
-          <a v-if="frNavVariant !== '6'" href="#beoordelingen" class="deal-page__tab">{{ t('hotel.tabReviews') }}</a>
           <a v-if="hotel.houseRules && hotel.houseRules.length" href="#huisregels" class="deal-page__tab">{{ t('hotel.tabHouseRules') }}</a>
           <a href="#veelgestelde-vragen" class="deal-page__tab">{{ t('hotel.tabFaq') }}</a>
           <a href="#tips" class="deal-page__tab">{{ t('hotel.tabNearby') }}</a>
@@ -646,10 +547,10 @@
       <Transition name="fade">
         <div v-if="descriptionOpen && hotel" class="desc-modal" @click.self="descriptionOpen = false">
           <div class="desc-modal__card">
-            <!-- v6 only: hotel photo on the left, text scrolls on the right.
-                 The v6 stylesheet flips the card to a 2-column grid and pins
+            <!-- Hotel photo on the left, text scrolls on the right.
+                 The stylesheet flips the card to a 2-column grid and pins
                  the ✕ button to the top of the text column. -->
-            <div v-if="frNavVariant === '6' && hotel.images && hotel.images.length" class="desc-modal__photo">
+            <div v-if="hotel.images && hotel.images.length" class="desc-modal__photo">
               <img :src="hotel.images[0].url" :alt="hotel.name" />
             </div>
             <div class="desc-modal__text">
@@ -1052,9 +953,9 @@ function openGallery() { }
 // Sync FR nav-bar variant with the user's last homepage pick so the
 // SiteHeader on this internal page matches the chosen variant. Reads
 // localStorage (or the URL if it matches a known variant path).
-// `frNavVariant` is hoisted to setup scope so the template can gate
-// v6-only blocks (Experience Creator card, hidden reviews, …).
-const { restoreFrNavVariant, frNavVariant } = useFirstReleaseHomeVariant()
+// `restoreFrNavVariant` runs on mount so localStorage drives the nav
+// chrome variant for direct-link visits.
+const { restoreFrNavVariant } = useFirstReleaseHomeVariant()
 onMounted(() => {
   restoreFrNavVariant(window.location.pathname)
 })

@@ -64,10 +64,13 @@ const heroPhotoIndex = ref(0)
  *  internals) picks it up automatically whenever the user picks v6.
  */
 if (import.meta.client) {
-  watch(frNavVariant, (v) => {
+  // All variants (1-6) now share v6's body design (wider 1200 px grid,
+  // refreshed search + deal pages). Variants only differ in nav-bar
+  // chrome and hero/USP arrangement on the home page. We therefore
+  // unconditionally apply the v6 design attribute on every FR page.
+  watch(frNavVariant, () => {
     if (typeof document === 'undefined') return
-    if (v === '6') document.documentElement.dataset.frVariant = '6'
-    else delete document.documentElement.dataset.frVariant
+    document.documentElement.dataset.frVariant = '6'
   }, { immediate: true })
 }
 

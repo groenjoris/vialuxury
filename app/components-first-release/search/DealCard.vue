@@ -13,9 +13,10 @@
          in on hover. List mode keeps the single static image. -->
     <div class="deal-card-v2__image">
       <img :src="displayedImage" :alt="hotel?.name || localized(deal.title)" loading="lazy" />
-      <!-- v6 sidepanel cards lock to a single deterministic photo, so
-           the prev/next chevrons are suppressed there. -->
-      <template v-if="gridMode && carouselImages.length > 1 && !(panelMode && frNavVariant === '6')">
+      <!-- Deal-page sidepanel cards lock to a single deterministic
+           photo and suppress the carousel arrows. Map sidepanel keeps
+           the carousel + arrows. -->
+      <template v-if="gridMode && carouselImages.length > 1 && !(panelMode && !mapMode)">
         <button
           type="button"
           class="deal-card-v2__carousel-nav deal-card-v2__carousel-nav--prev"
@@ -246,6 +247,11 @@ const props = defineProps<{
   /** Card is rendered inside the HotelDealsSidePanel — enables per-card
    *  date-range / availability lines + the side-panel CTA wording. */
   panelMode?: boolean
+  /** Card is rendered inside the /kaart map sidepanel. When true the v6
+   *  deal-page tweaks (special "X nachten met Y" title, single
+   *  deterministic photo, hidden carousel arrows, full-inclusion list)
+   *  are skipped so the map shows full original titles + photo carousel. */
+  mapMode?: boolean
   /** Side-panel only: this deal can't be booked on the active arrival
    *  date (the deal's nights may still match the duration filter). */
   dateMismatch?: boolean
@@ -259,17 +265,16 @@ const props = defineProps<{
 
 defineEmits<{ 'view-siblings': [] }>()
 
-const { frNavVariant } = useFirstReleaseHomeVariant()
-
 /** Card title — v6 sidepanel uses the priority-rule format based on
  *  the deal's highlights ("Twee nachten met cruise" / "Drie nachten
  *  met diner en wellness" / fallback "Twee nachten luxe
  *  hotel-arrangement"). Every other context shows the legacy
  *  localised title. */
 const panelTitle = computed(() => {
-  if (props.panelMode && frNavVariant.value === '6') {
+  // Map sidepanel keeps the original localised title — only the deal
+  // page sidepanel uses the "X nachten met Y" compact format.
+  if (props.panelMode && !props.mapMode) {
     const suffix = arrangementSuffixFromHighlights(props.deal.highlights)
-    // Digit form per spec ("1 nacht" / "2 nachten") instead of word form.
     const nights = nightsLabel(props.deal.nights, 'nl')
     return `${nights} ${suffix}`
   }
@@ -288,7 +293,9 @@ function dealHash(id: string): number {
  *  panel mode each card picks a deterministic starting frame from the
  *  hotel's gallery so adjacent cards don't share the same photo. */
 const displayedImage = computed(() => {
-  if (props.panelMode && frNavVariant.value === '6' && carouselImages.value.length > 1) {
+  // Deal-page sidepanel: deterministic single photo per deal (no
+  // carousel). Map sidepanel keeps the carousel (live `carouselIndex`).
+  if (props.panelMode && !props.mapMode && carouselImages.value.length > 1) {
     const i = dealHash(props.deal.id) % carouselImages.value.length
     return carouselImages.value[i] || imageSrc.value
   }
@@ -447,11 +454,9 @@ const includesBullets = computed<string[]>(() => {
     }
     return out
   }
-  // v6 sidepanel mode: bypass the smart-picker / 5-cap and show every
-  // inclusion the deal carries. Prefer `detailedInclusions` (the
-  // long-form titles the deal-page sidebar shows) when present; fall
-  // back to the compact `inclusions` set otherwise.
-  if (props.panelMode && frNavVariant.value === '6') {
+  // Deal-page sidepanel only: bypass the smart-picker / 5-cap and
+  // show every inclusion. Map sidepanel keeps the legacy 5-pick.
+  if (props.panelMode && !props.mapMode) {
     const source = (props.deal.detailedInclusions && props.deal.detailedInclusions.length > 0)
       ? props.deal.detailedInclusions
       : props.deal.inclusions
