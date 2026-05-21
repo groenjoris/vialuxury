@@ -10,19 +10,34 @@
         <aside class="panel" @wheel.stop @touchmove.stop>
           <div class="panel__header">
             <div class="panel__header-info">
-              <h2 class="panel__name-row">
-                <span class="panel__hotel-name">{{ hotel.name }}</span>
-                <span class="panel__stars" aria-hidden="true">
-                  <span v-for="n in hotel.starRating" :key="n">★</span>
-                </span>
-              </h2>
-              <div class="panel__hotel-meta">
-                <svg class="panel__loc-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
-                  <circle cx="12" cy="10" r="3" />
-                </svg>
-                <span class="panel__location">{{ hotel.city }}, {{ hotel.region }}</span>
-              </div>
+              <!-- When `panelTitle` is provided (v6 deal page), it leads
+                   with that label and pushes the hotel name + stars to a
+                   subtitle. Other callers (search/kaart) get the legacy
+                   header with hotel name on top + location below. -->
+              <template v-if="panelTitle">
+                <h2 class="panel__title-lead">{{ panelTitle }}</h2>
+                <div class="panel__name-row panel__name-row--sub">
+                  <span class="panel__hotel-name">{{ hotel.name }}</span>
+                  <span class="panel__stars" aria-hidden="true">
+                    <span v-for="n in hotel.starRating" :key="n">★</span>
+                  </span>
+                </div>
+              </template>
+              <template v-else>
+                <h2 class="panel__name-row">
+                  <span class="panel__hotel-name">{{ hotel.name }}</span>
+                  <span class="panel__stars" aria-hidden="true">
+                    <span v-for="n in hotel.starRating" :key="n">★</span>
+                  </span>
+                </h2>
+                <div class="panel__hotel-meta">
+                  <svg class="panel__loc-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
+                    <circle cx="12" cy="10" r="3" />
+                  </svg>
+                  <span class="panel__location">{{ hotel.city }}, {{ hotel.region }}</span>
+                </div>
+              </template>
             </div>
             <button class="panel__close" @click="$emit('close')" :aria-label="t('common.close')">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -79,6 +94,13 @@ const props = defineProps<{
   /** When true (used on /kaart): no dim background, no body-scroll lock,
    *  the rest of the page (the map) stays clickable. */
   mapMode?: boolean
+  /** Optional lead title (e.g. "Beschikbare arrangementen") shown above
+   *  the hotel name + stars subtitle. Used by the v6 deal page. */
+  panelTitle?: string
+  /** Optional id of the currently-open deal to exclude from the list
+   *  (so the user doesn't see their own arrangement among the
+   *  alternatives). Used by the v6 deal page. */
+  currentDealId?: string
 }>()
 
 defineEmits<{
@@ -86,10 +108,14 @@ defineEmits<{
 }>()
 
 /** All sibling deals, cheapest first by base price. Used for both the
- *  "available" and "andere data" groups below. */
+ *  "available" and "andere data" groups below. When `currentDealId` is
+ *  provided (v6 deal page), the active deal is filtered out so the
+ *  user only sees alternatives. */
 const sortedSiblingDeals = computed(() => {
   if (!props.hotel) return []
-  return [...props.hotel.deals].sort((a, b) => a.basePrice - b.basePrice)
+  return [...props.hotel.deals]
+    .filter(d => !props.currentDealId || d.id !== props.currentDealId)
+    .sort((a, b) => a.basePrice - b.basePrice)
 })
 
 /** Match selected nights filter (string array; '5+' covers ≥ 5). When no
@@ -218,6 +244,17 @@ onUnmounted(() => {
   padding-right: 48px; /* leave room for the top-right close button (32 px + 16 px inset) */
 }
 
+/* Lead title (e.g. "Beschikbare arrangementen") — only when the
+   parent passes the `panelTitle` prop. */
+.panel__title-lead {
+  margin: 0 0 4px;
+  font-family: var(--font-heading);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  line-height: 1.2;
+}
+
 /* Line 1: hotel name + stars on the same line */
 .panel__name-row {
   display: flex;
@@ -230,6 +267,14 @@ onUnmounted(() => {
   color: var(--color-text-primary);
   line-height: 1.2;
   min-width: 0;
+}
+
+/* Subtitle variant — hotel name + stars sit below the lead title. */
+.panel__name-row--sub {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  margin: 0;
 }
 
 .panel__hotel-name {

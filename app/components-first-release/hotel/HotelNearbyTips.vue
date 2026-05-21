@@ -40,8 +40,9 @@
         </div>
       </div>
 
-      <!-- Row 2: last 2 tips -->
-      <div class="tips-row tips-row--bottom">
+      <!-- Row 2: last 2 tips — hidden when there are none, otherwise the
+           fixed 280 px row height leaves a ghost empty band below. -->
+      <div v-if="bottomRow.length > 0" class="tips-row tips-row--bottom">
         <div
           v-for="(tip, index) in bottomRow"
           :key="tip.id"

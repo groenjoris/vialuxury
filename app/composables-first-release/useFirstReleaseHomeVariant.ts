@@ -32,7 +32,7 @@ const homeVariant = ref<HomeVariant>('1')
  * - '2' → single-row centred-logo nav (slimmer).
  * - '3' → 2-row reorganised (logo+verticals on top, payoff+phone below).
  */
-type FrNavVariant = '1' | '2' | '3' | '4' | '5'
+type FrNavVariant = '1' | '2' | '3' | '4' | '5' | '6'
 
 const STORAGE_KEY_NAV = 'vl_fr_nav_variant'
 const frNavVariant = ref<FrNavVariant>('1')
@@ -54,6 +54,22 @@ const HERO_PHOTOS: readonly string[] = [
 
 const STORAGE_KEY_HERO = 'vl_fr_hero_photo'
 const heroPhotoIndex = ref(0)
+
+/* ─────────── Variant 6 — wider 1200 px content grid ───────────
+ *  Variant 6 swaps the shared `--container-max` from 1137 px to
+ *  1200 px and grows the deal-page sidebar to 400 px. Both
+ *  overrides live in `app/assets/css/fr-variant-6.css`, gated on a
+ *  `data-fr-variant="6"` attribute on `<html>`. We toggle that
+ *  attribute here, in module scope, so every FR page (home +
+ *  internals) picks it up automatically whenever the user picks v6.
+ */
+if (import.meta.client) {
+  watch(frNavVariant, (v) => {
+    if (typeof document === 'undefined') return
+    if (v === '6') document.documentElement.dataset.frVariant = '6'
+    else delete document.documentElement.dataset.frVariant
+  }, { immediate: true })
+}
 
 export function useFirstReleaseHomeVariant() {
   function setHomeVariant(v: HomeVariant) {
@@ -85,6 +101,7 @@ export function useFirstReleaseHomeVariant() {
    *  Tracks the new `frNavVariant` carousel so the SiteHeader logo
    *  routes to the matching home from any FR page. */
   const homeHref = computed(() => {
+    if (frNavVariant.value === '6') return '/first-release/home-v6'
     if (frNavVariant.value === '5') return '/first-release/home-v5'
     if (frNavVariant.value === '4') return '/first-release/home-v4'
     if (frNavVariant.value === '3') return '/first-release/home-v3'
@@ -109,6 +126,7 @@ export function useFirstReleaseHomeVariant() {
    */
   function restoreFrNavVariant(routePath?: string) {
     if (!import.meta.client) return
+    if (routePath && routePath.startsWith('/first-release/home-v6')) { setFrNavVariant('6'); return }
     if (routePath && routePath.startsWith('/first-release/home-v5')) { setFrNavVariant('5'); return }
     if (routePath && routePath.startsWith('/first-release/home-v4')) { setFrNavVariant('4'); return }
     if (routePath && routePath.startsWith('/first-release/home-v3')) { setFrNavVariant('3'); return }
@@ -116,7 +134,7 @@ export function useFirstReleaseHomeVariant() {
     if (routePath === '/first-release/home')                         { setFrNavVariant('1'); return }
     try {
       const stored = localStorage.getItem(STORAGE_KEY_NAV) as FrNavVariant | null
-      if (stored === '1' || stored === '2' || stored === '3' || stored === '4' || stored === '5') frNavVariant.value = stored
+      if (stored === '1' || stored === '2' || stored === '3' || stored === '4' || stored === '5' || stored === '6') frNavVariant.value = stored
     } catch { /* ignore */ }
   }
 

@@ -1,6 +1,5 @@
 <template>
   <div class="members">
-    <FirstReleaseTopBar />
     <FirstReleaseSiteHeader />
 
     <!-- Hero / Login Section -->

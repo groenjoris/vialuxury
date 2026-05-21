@@ -187,7 +187,14 @@ function toSearchHotelDeal(pkg: RawPackage): SearchHotelDeal {
     originalPrice: parseEuro(pkg.price.original),
     discountPercentage: parsePct(pkg.price.discount),
     highlights: (pkg.highlights || []).slice(0, 3).map((h) => loc(h.title)),
-    inclusions: (pkg.includes || []).slice(0, 6).map(loc),
+    // Cap kept generous so v6 sidepanel cards can render the full
+    // inclusion set ("In dit arrangement … is het volgende inbegrepen").
+    // Other DealCard contexts still trim via pickSmartInclusions (5).
+    inclusions: (pkg.includes || []).slice(0, 20).map(loc),
+    // The long-form titles shown on the deal-page sidebar. Sourced from
+    // `pkg.includesDetailed[*].title` so the v6 sidepanel cards can show
+    // the SAME wording the sidebar uses.
+    detailedInclusions: (pkg.includesDetailed || []).slice(0, 20).map(i => loc(i.title)),
     heroImage: pkg.imageUrls?.[0] || pkg.photos?.[0]?.full || '',
     inclusionImage: pkg.includesDetailed?.[0]?.imageUrl || '',
     hasDinner: pkg.includeLabels?.dinner === true,

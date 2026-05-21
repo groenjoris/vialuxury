@@ -86,7 +86,7 @@
     <div class="destination-popup__content">
       <!-- Browse mode: provincies (no label) on top, themes below. -->
       <div v-if="!isSearching" class="destination-popup__browse">
-        <!-- Provincies / regio's — first section, deliberately no heading. -->
+        <!-- Provincies / regio's — first section, no heading. -->
         <div class="destination-popup__section destination-popup__section--destinations">
           <div class="destination-popup__chips">
             <button
@@ -96,7 +96,17 @@
               :class="{ 'dest-chip--selected': selectedDestinations.includes(dest.id) }"
               @click="$emit('toggle-destination', dest.id)"
             >
-              <span class="dest-chip__emoji">{{ dest.emoji }}</span>
+              <span
+                class="dest-chip__icon"
+                :style="{ background: destinationTint(dest.id) }"
+                aria-hidden="true"
+              >
+                <img
+                  :src="`/images/destinations/${dest.id}.svg`"
+                  :alt="dest.name"
+                  class="dest-chip__icon-img"
+                />
+              </span>
               <span class="dest-chip__name">{{ dest.name }}</span>
               <span class="dest-chip__country">{{ dest.country }}</span>
             </button>
@@ -105,7 +115,7 @@
 
         <div class="destination-popup__section">
           <h4 class="destination-popup__section-title">{{ t('header.themes') }}</h4>
-          <div class="destination-popup__chips">
+          <div class="destination-popup__chips destination-popup__chips--themes">
             <button
               v-for="theme in themes"
               :key="theme.id"
@@ -113,7 +123,17 @@
               :class="{ 'dest-chip--selected': selectedThemes.includes(theme.id) }"
               @click="$emit('toggle-theme', theme.id)"
             >
-              <span class="dest-chip__emoji">{{ theme.emoji }}</span>
+              <span
+                class="dest-chip__icon"
+                :style="{ background: themeTint(theme.id) }"
+                aria-hidden="true"
+              >
+                <img
+                  :src="`/images/destinations/${theme.id}.svg`"
+                  :alt="theme.name"
+                  class="dest-chip__icon-img"
+                />
+              </span>
               <span class="dest-chip__name">{{ theme.name }}</span>
             </button>
           </div>
@@ -387,6 +407,44 @@ function selectSuggestion(item: { name: string; province: string; isProvince: bo
   searchQuery.value = ''
 }
 
+/** Per-destination / per-theme icon-tile tints. Pulled from the Figma
+ *  spec — each region gets a soft regional colour so the chip grid
+ *  reads as a "deck" rather than a uniform list. */
+const DESTINATION_TINTS: Record<string, string> = {
+  zeeland: '#f0e3c6',
+  brabant: '#cfe0c8',
+  limburg: '#d8dccb',
+  gelderland: '#c4d3c0',
+  drenthe: '#e1cfd9',
+  friesland: '#c8d8e2',
+  overijssel: '#ead2c0',
+  flevoland: '#f3ccae',
+  'noord-holland': '#f0c8cf',
+  'zuid-holland': '#cdd2dc',
+  ardennen: '#c2cec5',
+  vlaanderen: '#ead8b5',
+  'belgische-kust': '#ead9d0',
+  wallonie: '#ecc98a',
+}
+
+const THEME_TINTS: Record<string, string> = {
+  'aan-zee': '#c8d8e2',
+  natuur: '#cfe0c8',
+  romantisch: '#f0c8cf',
+  culinair: '#ead2c0',
+  fiets: '#f3ccae',
+  steden: '#cdd2dc',
+  kasteel: '#ead8b5',
+}
+
+function destinationTint(id: string): string {
+  return DESTINATION_TINTS[id] ?? '#e5e2da'
+}
+
+function themeTint(id: string): string {
+  return THEME_TINTS[id] ?? '#e5e2da'
+}
+
 function selectHotel(hotel: { name: string; slug: string }) {
   emit('select-hotel', hotel.slug)
   addToHistory({ name: hotel.name, type: 'hotel', id: hotel.slug })
@@ -545,32 +603,33 @@ function selectHotel(hotel: { name: string; slug: string }) {
 /* BROWSE MODE          */
 /* ==================== */
 .destination-popup__browse {
-  padding: var(--space-md) var(--space-lg) var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px 24px;
 }
 
 .destination-popup__section {
-  margin-bottom: var(--space-md);
+  display: flex;
+  flex-direction: column;
 }
 
-.destination-popup__section:last-child {
-  margin-bottom: 0;
-}
-
-/* Divider between destinations and themes sections */
+/* Divider between destinations and themes sections — full-width 1px
+   line matching the Figma spec. */
 .destination-popup__section--destinations {
-  padding-bottom: var(--space-md);
-  margin-bottom: var(--space-md);
-  border-bottom: 1px solid var(--color-border-light);
+  padding-bottom: 16px;
+  border-bottom: 1px solid #f0f0f0;
 }
 
 .destination-popup__section-title {
   font-family: var(--font-body);
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 700;
   text-transform: none;
   letter-spacing: 0;
-  color: var(--color-text-primary);
-  margin: 0 0 var(--space-sm);
+  color: #0e0e0c;
+  margin: 0 0 12px;
+  line-height: 1;
 }
 
 .destination-popup__section-title--results {
@@ -581,7 +640,12 @@ function selectHotel(hotel: { name: string; slug: string }) {
 .destination-popup__chips {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-sm);
+  gap: 8px;
+}
+
+/* Themes wrap to 3 chips per row when space allows. */
+.destination-popup__chips--themes {
+  max-width: 445px;
 }
 
 /* ==================== */
@@ -591,41 +655,57 @@ function selectHotel(hotel: { name: string; slug: string }) {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 8px 14px;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  background: var(--color-surface);
+  height: 40px;
+  padding: 9px 17px;
+  border: 1px solid #e5e2da;
+  border-radius: 4px;
+  background: #fff;
   cursor: pointer;
-  transition: border-color 150ms ease, background-color 150ms ease;
-  font-size: 13px;
-  font-family: inherit;
+  transition: border-color 150ms ease, background-color 150ms ease, box-shadow 150ms ease;
+  font-size: 14px;
+  font-family: var(--font-body);
+  font-weight: 400;
   line-height: 1;
+  color: #1a1612;
 }
 
 .dest-chip:hover {
-  border-color: var(--color-primary);
-  background: rgba(251, 134, 45, 0.06);
+  border-color: #1a1612;
 }
 
 .dest-chip--selected {
   border-color: var(--color-primary);
-  background: rgba(251, 134, 45, 0.1);
-  font-weight: 600;
+  box-shadow: inset 0 0 0 1px var(--color-primary);
+  background: rgba(233, 113, 50, 0.08);
 }
 
-.dest-chip__emoji {
-  font-size: 15px;
-  line-height: 1;
+.dest-chip__icon {
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.dest-chip__icon-img {
+  width: 22px;
+  height: 22px;
+  display: block;
 }
 
 .dest-chip__name {
-  color: var(--color-text-primary);
+  color: #1a1612;
 }
 
 .dest-chip__country {
-  font-size: 11px;
-  color: var(--color-text-muted);
-  font-weight: 500;
+  font-size: 14px;
+  color: #6b6357;
+  font-weight: 400;
+  letter-spacing: 0.88px;
+  text-transform: uppercase;
 }
 
 /* History chip variant */

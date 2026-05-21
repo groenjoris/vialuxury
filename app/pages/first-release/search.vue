@@ -1,6 +1,5 @@
 <template>
   <div class="search-page">
-    <FirstReleaseTopBar />
     <FirstReleaseSiteHeader />
 
     <main class="search-page__main">
@@ -12,19 +11,42 @@
       <!-- Grid: Filter Sidebar + Results -->
       <div class="search-page__grid container" :class="{ 'search-page__grid--no-sidebar': !showFilters }">
         <Transition name="sidebar-slide">
-          <div v-if="showFilters" class="search-page__sidebar">
+          <div v-if="showFilters" class="search-page__sidebar" ref="sidebarRef">
             <!-- Map preview (fake door) at the top of sidebar -->
             <FirstReleaseMapPreviewCard class="search-page__map-preview" @click="handleMapClick" />
             <FirstReleaseSearchFilterPanel
               :budget-min="budgetMin"
               :budget-max="budgetMax"
               :persons="persons"
+              :counts="filterCounts"
               hideable
               @update:budget-min="budgetMin = $event"
               @update:budget-max="budgetMax = $event"
               @hide="showFilters = false"
             />
+            <!-- Sentinel: when this scrolls past the top of the
+                 viewport, swap the regular sidebar for the compact
+                 sticky version above. -->
+            <div ref="filterSentinelRef" class="search-page__filter-sentinel" aria-hidden="true" />
           </div>
+        </Transition>
+
+        <!-- Compact sticky filter (only on /search). Shown when the
+             main sidebar's bottom sentinel has scrolled past the top
+             of the viewport. Limited to Arrangement / Thema / Reisduur
+             — no Totaalprijs, no Specials, no "Verberg filter" button. -->
+        <Transition name="sticky-filter-fade">
+          <FirstReleaseSearchFilterPanel
+            v-if="showFilters && stickyFilterVisible"
+            class="search-page__sticky-filter"
+            :budget-min="budgetMin"
+            :budget-max="budgetMax"
+            :persons="persons"
+            :counts="filterCounts"
+            compact
+            @update:budget-min="budgetMin = $event"
+            @update:budget-max="budgetMax = $event"
+          />
         </Transition>
 
         <div class="search-page__results">
@@ -40,8 +62,38 @@
           <div class="search-page__header">
             <div class="search-page__header-row">
               <div class="search-page__header-text">
-                <h1 class="search-page__title">{{ totalDeals }} {{ t('search.deals') }}</h1>
-                <p class="search-page__usp">{{ t('search.usp') }}</p>
+                <h1 v-if="hasNoResults" class="search-page__title search-page__title--no-results">
+                  {{
+                    noResultsReason === 'date-only'
+                      ? 'Geen deals gevonden bij jouw aankomstdatum'
+                      : 'Geen deals gevonden die voldoen aan je wensen'
+                  }}
+                </h1>
+                <h1 v-else-if="singleThemeTagId" :key="`themed-${singleThemeTagId}`" class="search-page__title">
+                  {{ themedTitleText }}
+                </h1>
+                <h1 v-else class="search-page__title">{{ totalDeals }} {{ t('search.deals') }}</h1>
+                <!-- "Laat alle deals zien" secondary button — only when no
+                     results so the user can wipe filters in one click. -->
+                <button
+                  v-if="hasNoResults"
+                  type="button"
+                  class="search-page__reset-link"
+                  @click="resetFilters"
+                >
+                  Laat alle deals zien
+                </button>
+                <!-- USP + team-avatars hidden in the no-results state — they
+                     read as celebratory content that doesn't fit the empty
+                     state. -->
+                <template v-if="!hasNoResults">
+                <!-- :key forces the clip-path animation to replay when the
+                     themed subtitle text swaps (e.g. user picks another
+                     theme without leaving the page). -->
+                <p
+                  class="search-page__usp"
+                  :key="singleThemeTagId ? `themed-sub-${singleThemeTagId}` : 'default-sub'"
+                >{{ singleThemeTagId ? themedSubtitle : t('search.usp') }}</p>
                 <!-- Avatars moved beneath the subtitle. -->
                 <div class="team-avatars">
                   <div
@@ -64,6 +116,7 @@
                     </Transition>
                   </div>
                 </div>
+                </template>
               </div>
 
               <!-- Right column: Trustpilot logo + count of reviews,
@@ -210,25 +263,27 @@
           <!-- Empty state: nothing matches the active filters. Friendly
                illustration + "Bekijk alle deals" link that wipes every
                active filter and brings the full result set back. -->
-          <div v-else-if="!searchLoading" class="search-page__empty">
-            <div class="search-page__empty-illustration" aria-hidden="true">
-              <svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="54" cy="54" r="32" stroke="currentColor" stroke-width="3" fill="none" />
-                <path d="M78 78L100 100" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
-                <circle cx="48" cy="48" r="3" fill="currentColor" />
-                <circle cx="62" cy="48" r="3" fill="currentColor" />
-                <path d="M44 64 Q 54 56 64 64" stroke="currentColor" stroke-width="3" stroke-linecap="round" fill="none" />
-              </svg>
+          <!-- No-results state: title + reset moved into the page header
+               above; here we just surface the suggestion title + grid
+               directly below the toolbar's grey divider (no extra divider
+               of our own). -->
+          <div v-else-if="!searchLoading && suggestionDeals.length > 0" class="search-page__no-results-suggestions">
+            <h3 class="search-page__no-results-suggest-title">
+              {{
+                noResultsReason === 'date-only'
+                  ? 'Deze deals zijn beschikbaar op andere datums'
+                  : 'Deze deals zijn ook heel bijzonder'
+              }}
+            </h3>
+            <div class="search-page__no-results-suggest-grid">
+              <FirstReleaseDealCard
+                v-for="entry in suggestionDeals"
+                :key="entry.deal.id"
+                :deal="entry.deal"
+                :hotel="entry.hotel"
+                grid-mode
+              />
             </div>
-            <h2 class="search-page__empty-title">Geen arrangementen gevonden</h2>
-            <p class="search-page__empty-body">
-              Met deze combinatie aan filters hebben we geen passend arrangement
-              voor je. Probeer een filter aan te passen — of bekijk meteen ons
-              hele aanbod.
-            </p>
-            <button type="button" class="search-page__empty-cta" @click="resetFilters">
-              Bekijk alle deals
-            </button>
           </div>
         </div>
       </div>
@@ -267,7 +322,7 @@ import FilterPills from '~/components-first-release/search/FilterPills.vue'
 import { isDealAvailableInWindow } from '~/utils-first-release/availability'
 import { adjustPrice } from '~/utils-first-release/priceFormula'
 import { hotelMatchesDestination, hasActiveDestinationFilter } from '~/utils-first-release/destinationMatch'
-import { pickPrimaryDeal } from '~/utils-first-release/primaryDeal'
+import { computeFilterCounts } from '~/utils-first-release/filterCounts'
 
 const { t } = useFirstReleaseI18n()
 const {
@@ -279,43 +334,7 @@ const {
 
 // Team members for avatar row
 const hoveredMember = ref<string | null>(null)
-const teamMembers = [
-  {
-    name: 'Yvette',
-    initials: 'YV',
-    photo: '/images/yvette.jpeg',
-    role: '15 jaar Experience Maker bij ViaLuxury',
-    score: 'Gemiddelde score voor haar experiences: 9.8',
-  },
-  {
-    name: 'Jan',
-    initials: 'JA',
-    photo: '/images/team/jan.avif',
-    role: 'Gespecialiseerd in oude kastelen en landgoederen',
-    score: 'Gemiddelde score voor zijn experiences: 9.6',
-  },
-  {
-    name: 'Anoeska',
-    initials: 'AN',
-    photo: '/images/team/anoeska.jpeg',
-    role: 'Onze België-kenner — van de Ardennen tot de kust',
-    score: 'Gemiddelde score voor haar experiences: 9.7',
-  },
-  {
-    name: 'Alyssa',
-    initials: 'AL',
-    photo: '/images/team/alyssa.jpeg',
-    role: 'Specialist wellness & romantische weekendjes',
-    score: 'Gemiddelde score voor haar experiences: 9.5',
-  },
-  {
-    name: 'Esther',
-    initials: 'ES',
-    photo: '/images/team/esther.jpeg',
-    role: 'Culinaire hotspots en stedentrips',
-    score: 'Gemiddelde score voor haar experiences: 9.4',
-  },
-]
+import { teamMembers } from '~/data/team-members'
 
 // Loading state — local override so we can briefly show a spinner on filter changes
 const localLoading = ref(false)
@@ -383,6 +402,36 @@ const isMobile = useFirstReleaseIsMobile()
 const effectiveViewMode = computed<'list' | 'grid'>(() => (isMobile.value ? 'grid' : viewMode.value))
 const showFilters = ref(true)   /* Default: filter sidebar visible on /search */
 
+/* Sticky compact filter — appears once the regular sidebar has
+   scrolled past the top of the viewport. */
+const sidebarRef = ref<HTMLElement | null>(null)
+const filterSentinelRef = ref<HTMLElement | null>(null)
+const stickyFilterVisible = ref(false)
+let filterObserver: IntersectionObserver | null = null
+
+onMounted(() => {
+  if (!import.meta.client) return
+  if (!filterSentinelRef.value) return
+  filterObserver = new IntersectionObserver(
+    (entries) => {
+      const entry = entries[0]
+      if (!entry) return
+      // Sentinel goes ABOVE the viewport when user has scrolled past
+      // the main filter. `boundingClientRect.top < 0` confirms it's
+      // out-of-view (not just initially hidden below the fold).
+      const scrolledPast = !entry.isIntersecting && entry.boundingClientRect.top < 0
+      stickyFilterVisible.value = scrolledPast
+    },
+    { threshold: 0 }
+  )
+  filterObserver.observe(filterSentinelRef.value)
+})
+
+onUnmounted(() => {
+  filterObserver?.disconnect()
+  filterObserver = null
+})
+
 // Budget range — shared with /kaart via useFirstReleaseSearchState so toggling between
 // list and map view preserves the user's filter selection.
 const {
@@ -428,9 +477,10 @@ function handleFilterButtonClick() {
 }
 
 function resetFilters() {
-  // Used by the mobile filter subpage AND the no-results "Bekijk alle deals"
-  // link — wipes every active selection so the result list goes back to the
-  // full set. Persons/rooms stay (they're a price-formula global, not a filter).
+  // Used by the mobile filter subpage AND the no-results "Laat alle deals
+  // zien" link — wipes every active selection so the result list goes back
+  // to the full set. Persons/rooms stay (they're a price-formula global,
+  // not a filter).
   resetBudget()
   clearArrivalDate()
   clearDuration()
@@ -438,17 +488,204 @@ function resetFilters() {
   clearDestinations()
 }
 
+/* ─── No-results state (suggestions + reasoned copy) ─────────────
+ *  When the active filter set returns 0 hotels we show one of two
+ *  empty banners:
+ *    - "Geen deals gevonden bij jouw aankomstdatum"  ← arrival date
+ *      is the ONLY blocker (everything else still matches deals).
+ *    - "Geen deals gevonden die voldoen aan je wensen" ← filters
+ *      (alone or combined with the date) are blocking.
+ *  Below the banner we surface 3 suggestion cards.
+ */
+
+/** Same filtering as `filteredHotels`, but the arrival-date constraint
+ *  is skipped. Lets us detect "only the date was the blocker" cases
+ *  AND surface relevant suggestions ("Deze deals zijn beschikbaar op
+ *  andere datums"). */
+const filteredHotelsIgnoringDate = computed(() => {
+  const nightsActive = selectedNights.value.length > 0
+  const p = persons.value
+  const destFilter = {
+    destinations: [...selectedDestinations.value],
+    cities: [...selectedCities.value],
+    hotels: [...selectedHotels.value],
+  }
+  const pickedThemes: string[] = []
+  const pickedOther: string[] = []
+  for (const id of selectedFilterTags.value) {
+    const tag = getFilterTag(id)
+    if (tag?.category === 'thema') pickedThemes.push(id)
+    else pickedOther.push(id)
+  }
+  const destActive = hasActiveDestinationFilter(destFilter)
+  const themesActive = pickedThemes.length > 0
+
+  const out = []
+  for (const hotel of searchHotels) {
+    const matchingDeals = hotel.deals.filter((d) => {
+      const priceForPersons = adjustPrice(d.basePrice, p)
+      if (priceForPersons < budgetMin.value || priceForPersons > budgetMax.value) return false
+      if (nightsActive) {
+        const nightKey = d.nights >= 5 ? '5+' : String(d.nights)
+        if (!selectedNights.value.includes(nightKey)) return false
+      }
+      if (!dealMatchesAllTags(d, hotel, pickedOther)) return false
+      if (destActive && !hotelMatchesDestination(hotel, destFilter)) return false
+      if (themesActive) {
+        let themeOk = false
+        for (const id of pickedThemes) {
+          const tag = getFilterTag(id)
+          if (tag?.matches(d, hotel)) { themeOk = true; break }
+        }
+        if (!themeOk) return false
+      }
+      return true
+    })
+    if (matchingDeals.length > 0) {
+      out.push({ ...hotel, deals: matchingDeals })
+    }
+  }
+  return out
+})
+
+/** True when the current filter combination yields zero deal cards. */
+const hasNoResults = computed(() => displayedDeals.value.length === 0)
+
+/* ─── Themed title (single-tag mode) ─────────────────────────────
+ *  When the user arrives via a single filter-tag click (homepage
+ *  theme chip / destination-popup theme chip) and NO other filter
+ *  is active, the page header swaps to a tag-specific title +
+ *  handwritten subtitle. Any other filter (date, nights, budget,
+ *  destination, extra tag) returns the default "x arrangementen"
+ *  / "Samengesteld door …" header.
+ */
+const THEME_TITLES: Record<string, { title: string; subtitle: string }> = {
+  wellness:        { title: 'Beste wellness hotels',     subtitle: 'Onze selectie van de beste hotels met wellness' },
+  'jacuzzi-room':  { title: 'Bubbelbad op de kamer',     subtitle: 'Onze selectie van de beste deals van luxe hotels met een bubbelbad op de kamer' },
+  pool:            { title: 'Met zwembad',                subtitle: 'Onze selectie van de beste deals voor een hotel met zwembad' },
+  'with-dinner':   { title: 'Met diner',                  subtitle: 'Onze selectie van de beste deals van luxe hotels inclusief diner' },
+  'dog-friendly':  { title: 'Hond mee',                   subtitle: 'Onze selectie van de beste deals waar je hond mee kan' },
+  'aan-zee':       { title: 'Luxe hotels aan zee',        subtitle: 'Boek snel voor de mooiste kamers en de beste beschikbaarheid' },
+  natuur:          { title: 'Hotels in de natuur',        subtitle: 'Onze selectie van de mooiste hotels in de natuur.' },
+  culinair:        { title: 'Culinair genieten',          subtitle: 'Onze selectie van de beste deals van luxe hotels met top restaurants' },
+  fiets:           { title: 'Fietsarrangement',           subtitle: 'Onze selectie van luxe hotels met fietsarrangement' },
+  steden:          { title: 'Luxe stedentrips',           subtitle: 'Onze selectie van de beste deals van luxe stedentrips' },
+  kasteel:         { title: 'Kastelen en landgoederen',   subtitle: 'Onze selectie van de beste deals van kasteel en landgoed overnachtingen' },
+  'unique-stay':   { title: 'Bijzondere overnachtingen',  subtitle: 'Exclusief bij ViaLuxury' },
+  'five-star':     { title: '5-sterren luxe',             subtitle: 'Onze selectie van de beste deals van luxe hotels met 5 sterren' },
+  'new-hotels':    { title: 'Nieuwe hotels',              subtitle: 'Onze selectie van de nieuwste luxe hoteldeals' },
+  'best-price':    { title: 'Super Deals',                subtitle: 'De leukste hotelarrangementen voor een spotprijsje!' },
+}
+
+/** The single active tag id when no other filter is set; null
+ *  otherwise. Drives whether the themed title takes over. */
+const singleThemeTagId = computed<string | null>(() => {
+  if (selectedFilterTags.value.length !== 1) return null
+  if (selectedNights.value.length > 0) return null
+  if (committedArrivalDate.value) return null
+  if (selectedDestinations.value.length > 0) return null
+  if (selectedCities.value.length > 0) return null
+  if (selectedHotels.value.length > 0) return null
+  // Budget at its untouched default range (100..2000 from
+  // useFirstReleaseSearchState.resetBudget()).
+  if (budgetMin.value !== 100 || budgetMax.value !== 2000) return null
+  const id = selectedFilterTags.value[0]
+  return THEME_TITLES[id] ? id : null
+})
+
+/** Title string rendered when a themed view is active. Most themes
+ *  read "[Name] (X deals)"; `best-price` flips that to "X Super
+ *  Deals" per the copy deck. */
+const themedTitleText = computed(() => {
+  const id = singleThemeTagId.value
+  if (!id) return ''
+  const entry = THEME_TITLES[id]
+  if (id === 'best-price') return `${totalDeals.value} ${entry.title}`
+  return `${entry.title} (${totalDeals.value} deals)`
+})
+
+/** Subtitle for the themed view — rendered in the handwritten font. */
+const themedSubtitle = computed(() => {
+  const id = singleThemeTagId.value
+  return id ? THEME_TITLES[id].subtitle : ''
+})
+
+/** 'date-only'  → only the arrival date was the blocker.
+ *  'filters'    → other filters (alone or combined with date). */
+const noResultsReason = computed<'date-only' | 'filters'>(() => {
+  if (committedArrivalDate.value && filteredHotelsIgnoringDate.value.length > 0) {
+    return 'date-only'
+  }
+  return 'filters'
+})
+
+/** Up to 3 suggestion deals.
+ *  - In `date-only` mode: from filteredHotelsIgnoringDate (deals that
+ *    only fail the date filter — bookable on OTHER dates).
+ *  - In `filters` mode: cheapest deals across all hotels, as a "ook
+ *    heel bijzonder" curated set.
+ */
+const suggestionDeals = computed(() => {
+  const out: Array<{ hotel: typeof searchHotels[0]; deal: typeof searchHotels[0]['deals'][0] }> = []
+  if (noResultsReason.value === 'date-only') {
+    for (const h of filteredHotelsIgnoringDate.value) {
+      const cheapest = [...h.deals].sort((a, b) => a.basePrice - b.basePrice)[0]
+      if (cheapest) out.push({ hotel: h, deal: cheapest })
+      if (out.length >= 3) break
+    }
+  } else {
+    // Across all hotels — pick the cheapest deal per hotel, then take top 3.
+    const ranked = searchHotels
+      .map((h) => {
+        const cheapest = [...h.deals].sort((a, b) => a.basePrice - b.basePrice)[0]
+        return cheapest ? { hotel: h, deal: cheapest } : null
+      })
+      .filter((x): x is NonNullable<typeof x> => x !== null)
+      .sort((a, b) => a.deal.basePrice - b.deal.basePrice)
+    for (const entry of ranked.slice(0, 3)) out.push(entry)
+  }
+  return out
+})
+
 // Sort
 const sortOpen = ref(false)
-const sortBy = ref<'priceLow' | 'priceHigh' | 'ratingHigh' | 'ratingLow'>('priceLow')
+const sortBy = ref<'recommended' | 'priceLow' | 'priceHigh' | 'ratingHigh' | 'ratingLow'>('recommended')
 const sortRef = ref<HTMLElement | null>(null)
 
 const sortOptions = computed(() => [
+  { value: 'recommended' as const, label: t('search.sort.recommended') },
   { value: 'priceLow' as const, label: t('search.sort.priceLow') },
   { value: 'priceHigh' as const, label: t('search.sort.priceHigh') },
   { value: 'ratingHigh' as const, label: t('search.sort.ratingHigh') },
   { value: 'ratingLow' as const, label: t('search.sort.ratingLow') },
 ])
+
+/** Per-filter-item deal counts shown as `(N)` in the panel. Recomputes
+ *  whenever budget / persons / arrival / destinations / tag picks
+ *  change. Budget + arrival + destination always apply; the tag/night
+ *  override logic lives inside the util. */
+const filterCounts = computed(() => {
+  const p = persons.value
+  const flex = committedFlexibility.value
+  const arrival = committedArrivalDate.value
+  const destFilter = {
+    destinations: [...selectedDestinations.value],
+    cities: [...selectedCities.value],
+    hotels: [...selectedHotels.value],
+  }
+  const destActive = hasActiveDestinationFilter(destFilter)
+  return computeFilterCounts({
+    hotels: searchHotels,
+    inBudget: (d) => {
+      const price = adjustPrice(d.basePrice, p)
+      return price >= budgetMin.value && price <= budgetMax.value
+    },
+    isAvailableOnDate: arrival ? (d) => isDealAvailableInWindow(d.id, arrival, flex) : undefined,
+    matchesDestination: destActive ? (h) => hotelMatchesDestination(h, destFilter) : undefined,
+    selectedNights: selectedNights.value,
+    selectedTagIds: selectedFilterTags.value,
+  })
+})
 
 // Filtered hotels — applies budget, nights, arrangement, and destination filters.
 // A hotel only matches if it has at least one deal that satisfies budget +
@@ -572,21 +809,128 @@ const displayedHotels = computed(() => {
   return [{ ...pinned, _pinned: true, _unavailable: unavailable } as SearchHotel & { _pinned: true; _unavailable: boolean }, ...rest]
 })
 
-/** One row per hotel: the primary (most attractive) deal + sibling count.
- *  For the pinned-from-deal slot, force the deal to be the slug from `?from=`. */
+/** Stable per-session seed so the "Aanbevolen" shuffle stays consistent
+ *  while the user navigates around. Re-rolled on full page reload. */
+const recommendedSeed = Math.floor(Math.random() * 2 ** 31)
+
+/** Tiny seeded PRNG (mulberry32) — deterministic given the seed above. */
+function seededRng(seed: number) {
+  let t = seed >>> 0
+  return () => {
+    t = (t + 0x6D2B79F5) >>> 0
+    let r = t
+    r = Math.imul(r ^ (r >>> 15), r | 1)
+    r ^= r + Math.imul(r ^ (r >>> 7), r | 61)
+    return ((r ^ (r >>> 14)) >>> 0) / 4294967296
+  }
+}
+
+/** One row PER DEAL — bundling disabled: every deal renders as its own
+ *  card. The "Bekijk alle X arrangementen" sibling bar is suppressed by
+ *  passing `sibling-count: 0`. The hotel-detail side panel code is kept
+ *  intact in case we re-enable bundling later (still wired on kaart).
+ *
+ *  When sortBy === 'recommended': deals are interleaved via round-robin
+ *  across hotels (hotel order itself shuffled) so the same hotel does
+ *  NOT appear in adjacent cards (as long as #hotels > 1). The pinned
+ *  hotel's pinned-from deal is always kept at index 0. */
 const displayedDeals = computed(() => {
-  return displayedHotels.value.map((hotel) => {
+  type Row = { hotel: SearchHotel; deal: SearchHotelDeal; siblings: SearchHotelDeal[]; _unavailable: boolean }
+
+  // First: build per-hotel deal lists, honouring pinned-from ordering.
+  const perHotel: Array<{ hotel: SearchHotel; deals: SearchHotelDeal[]; unavailable: boolean; pinnedFirst: boolean }> = []
+  for (const hotel of displayedHotels.value) {
     const fromSlug = pinnedHotel.value && hotel.id === pinnedHotel.value.id ? pinnedFromSlug.value : null
-    const fromDeal = fromSlug ? hotel.deals.find(d => d.slug === fromSlug) : null
-    const primary = fromDeal ?? pickPrimaryDeal(hotel.deals)
-    const siblings = hotel.deals.filter(d => d.id !== primary.id)
-    return {
-      hotel,
-      deal: primary,
-      siblings,
-      _unavailable: (hotel as { _unavailable?: boolean })._unavailable === true,
+    const unavailable = (hotel as { _unavailable?: boolean })._unavailable === true
+    const deals = hotel.deals.slice()
+    if (fromSlug) {
+      const idx = deals.findIndex(d => d.slug === fromSlug)
+      if (idx > 0) {
+        const [pinnedDeal] = deals.splice(idx, 1)
+        if (pinnedDeal) deals.unshift(pinnedDeal)
+      }
     }
-  })
+    perHotel.push({ hotel, deals, unavailable, pinnedFirst: !!fromSlug })
+  }
+
+  const rows: Row[] = []
+
+  if (sortBy.value === 'recommended') {
+    // Pop the pinned hotel (if any) so we can keep its first deal at idx 0.
+    const pinnedIdx = perHotel.findIndex(h => h.pinnedFirst)
+    let pinnedFirstRow: Row | null = null
+    let pinnedRest: Row[] = []
+    if (pinnedIdx >= 0) {
+      const [p] = perHotel.splice(pinnedIdx, 1)
+      if (p && p.deals.length) {
+        const [first, ...rest] = p.deals
+        if (first) {
+          pinnedFirstRow = {
+            hotel: p.hotel,
+            deal: first,
+            siblings: [],
+            _unavailable: p.unavailable,
+          }
+        }
+        pinnedRest = rest.map(d => ({ hotel: p.hotel, deal: d, siblings: [], _unavailable: false }))
+      }
+    }
+
+    // Seeded shuffle of remaining hotels for varied ordering.
+    const rng = seededRng(recommendedSeed)
+    const buckets = perHotel.map(h => h.deals.map(d => ({
+      hotel: h.hotel,
+      deal: d,
+      siblings: [] as SearchHotelDeal[],
+      _unavailable: false,
+    } as Row)))
+    // Fisher-Yates on bucket order
+    for (let i = buckets.length - 1; i > 0; i--) {
+      const j = Math.floor(rng() * (i + 1))
+      const tmp = buckets[i]!; buckets[i] = buckets[j]!; buckets[j] = tmp
+    }
+    // Re-insert the pinned hotel's leftover deals as one more bucket so
+    // they get interleaved alongside the rest.
+    if (pinnedRest.length) buckets.push(pinnedRest)
+
+    // Round-robin pop: take one deal at a time from each non-empty bucket,
+    // randomising the bucket visit order per round so it doesn't look
+    // perfectly cyclic.
+    while (buckets.some(b => b.length > 0)) {
+      const order = buckets.map((_, i) => i)
+      for (let i = order.length - 1; i > 0; i--) {
+        const j = Math.floor(rng() * (i + 1))
+        const tmp = order[i]!; order[i] = order[j]!; order[j] = tmp
+      }
+      for (const idx of order) {
+        const bucket = buckets[idx]
+        if (!bucket || bucket.length === 0) continue
+        // Skip adjacency with previous row's hotel when possible.
+        const last = rows[rows.length - 1]
+        if (last && bucket[0]!.hotel.id === last.hotel.id) {
+          // try to defer this bucket — pick another non-empty bucket first
+          const altIdx = order.find(o => o !== idx && buckets[o] && buckets[o]!.length > 0 && buckets[o]![0]!.hotel.id !== last.hotel.id)
+          if (altIdx != null) continue
+        }
+        rows.push(bucket.shift()!)
+      }
+    }
+
+    return pinnedFirstRow ? [pinnedFirstRow, ...rows] : rows
+  }
+
+  // Non-recommended sort modes: keep the hotel-sorted order, flatten deals.
+  for (const h of perHotel) {
+    for (const deal of h.deals) {
+      rows.push({
+        hotel: h.hotel,
+        deal,
+        siblings: [],
+        _unavailable: h.unavailable && h.pinnedFirst && deal.slug === pinnedFromSlug.value,
+      })
+    }
+  }
+  return rows
 })
 
 // Close sort dropdown on click outside
@@ -658,6 +1002,44 @@ onMounted(() => {
   min-width: 0;
 }
 
+/* Invisible 1-px marker at the bottom of the sidebar — the
+   IntersectionObserver flips `stickyFilterVisible` when this scrolls
+   above the viewport. */
+.search-page__filter-sentinel {
+  height: 1px;
+  width: 100%;
+}
+
+/* Compact sticky filter — appears once the main sidebar has scrolled
+   out of view. Fixed at the top of the viewport with the SAME left
+   X-position as the regular sidebar (= `container` left edge):
+   `(viewport_width - container_max) / 2 + var(--space-lg)`. The
+   `max()` falls back to plain `var(--space-lg)` on viewports
+   narrower than the container, matching `.container`'s real-world
+   left edge. */
+.search-page__sticky-filter {
+  position: fixed;
+  top: var(--space-md);
+  left: max(
+    var(--space-lg),
+    calc((100vw - var(--container-max)) / 2 + var(--space-lg))
+  );
+  width: 280px;
+  max-height: calc(100vh - var(--space-md) * 2);
+  overflow-y: auto;
+  z-index: 800;
+}
+
+.sticky-filter-fade-enter-from,
+.sticky-filter-fade-leave-to {
+  opacity: 0;
+  transform: translateY(-8px);
+}
+.sticky-filter-fade-enter-active,
+.sticky-filter-fade-leave-active {
+  transition: opacity 160ms ease, transform 160ms ease;
+}
+
 .search-page__map-preview {
   margin-bottom: var(--space-md);
   /* Vue merges `.search-page__map-preview` onto MapPreviewCard's root
@@ -717,6 +1099,62 @@ onMounted(() => {
   transition: filter var(--transition-fast);
 }
 .search-page__empty-cta:hover { filter: brightness(0.95); }
+
+/* ─── No-results state ─── */
+/* Title in the search-page header takes over the "x arrangementen" spot
+   when there are no results. Slightly trimmed so the longer string fits. */
+.search-page__title--no-results {
+  max-width: 720px;
+  line-height: 1.25;
+}
+
+/* Secondary-style reset button — text link with underline, NOT the
+   primary orange CTA. Sits directly under the no-results title. */
+.search-page__reset-link {
+  align-self: flex-start;
+  margin-top: var(--space-sm);
+  padding: 0;
+  background: none;
+  border: none;
+  color: var(--color-text-primary);
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 500;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.search-page__reset-link:hover {
+  color: var(--color-primary);
+}
+
+.search-page__no-results-suggest-title {
+  margin: 0 0 var(--space-lg);
+  font-family: var(--font-heading);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  line-height: 1.3;
+}
+
+.search-page__no-results-suggest-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: var(--space-lg);
+}
+
+@media (max-width: 1023px) {
+  .search-page__no-results-suggest-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .search-page__no-results-suggest-grid {
+    grid-template-columns: 1fr;
+  }
+}
 
 .search-page__results {
   display: flex;
@@ -1029,6 +1467,11 @@ onMounted(() => {
   display: flex;
   align-items: center;
   gap: var(--space-sm);
+  /* Always pin to the right edge — `justify-content: space-between`
+     on the toolbar collapses to "start" when the left + pills siblings
+     are empty/hidden, which would otherwise pull the Sort group to
+     the left. */
+  margin-left: auto;
 }
 
 /* Sort */

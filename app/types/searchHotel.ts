@@ -44,6 +44,12 @@ export interface SearchHotelDeal {
   discountPercentage: number
   highlights: LocalizedString[]
   inclusions: LocalizedString[]
+  /** Long-form inclusion titles (`pkg.includesDetailed[i].title`) — same
+   *  strings the deal-page sidebar lists under "In dit arrangement …
+   *  is het volgende inbegrepen". Used by the v6 sidepanel cards which
+   *  want the full, fully-formulated list rather than the compact
+   *  `inclusions` set. */
+  detailedInclusions?: LocalizedString[]
   /** Per-deal hero image (pkg.imageUrls[0]). */
   heroImage?: string
   /** Fallback image: first detailed inclusion's imageUrl. */

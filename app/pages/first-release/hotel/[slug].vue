@@ -1,6 +1,5 @@
 <template>
   <div class="hotel-page">
-    <FirstReleaseTopBar />
     <FirstReleaseSiteHeader />
 
     <main v-if="hotel" class="hotel-page__main">

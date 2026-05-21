@@ -3,7 +3,7 @@
     <div class="filter-panel__header">
       <h2 class="filter-panel__title">{{ t('search.filters') }}</h2>
       <button
-        v-if="hideable"
+        v-if="hideable && !compact"
         type="button"
         class="filter-panel__hide"
         @click="$emit('hide')"
@@ -12,41 +12,44 @@
       </button>
     </div>
 
-    <!-- Budget slider — bounds rescale with the global person count. -->
-    <div class="filter-budget">
-      <div class="filter-budget__header">
-        <span class="filter-budget__label">Totaalprijs <span class="filter-budget__persons">{{ persons }} {{ persons === 1 ? 'persoon' : 'personen' }}</span></span>
-        <div class="filter-budget__range">{{ formatPrice(budgetMin) }} – {{ formatPrice(budgetMax) }}</div>
-      </div>
-      <div class="filter-budget__slider">
-        <div class="filter-budget__track">
-          <div
-            class="filter-budget__fill"
-            :style="{ '--fill-left': fillLeftPct + '%', '--fill-right': fillRightPct + '%' }"
-          ></div>
+    <template v-for="(group, index) in visibleFilterGroups" :key="group.title">
+      <!-- Budget slider rendered between Reisduur and Specials so the
+           sections read top-to-bottom: Arrangement, Thema, Reisduur,
+           Totaalprijs, Specials. Hidden in compact (sticky) mode. -->
+      <div v-if="group.id === 'specials' && !compact" class="filter-budget">
+        <div class="filter-budget__header">
+          <span class="filter-budget__label">Totaalprijs <span class="filter-budget__persons">{{ persons }} {{ persons === 1 ? 'persoon' : 'personen' }}</span></span>
+          <div class="filter-budget__range">{{ formatPrice(budgetMin) }} – {{ formatPrice(budgetMax) }}</div>
         </div>
-        <input
-          type="range"
-          class="filter-budget__input filter-budget__input--min"
-          :min="sliderMin" :max="sliderMax" :step="25"
-          :value="budgetMin"
-          @input="onMinChange"
-        />
-        <input
-          type="range"
-          class="filter-budget__input filter-budget__input--max"
-          :min="sliderMin" :max="sliderMax" :step="25"
-          :value="budgetMax"
-          @input="onMaxChange"
-        />
+        <div class="filter-budget__slider">
+          <div class="filter-budget__track">
+            <div
+              class="filter-budget__fill"
+              :style="{ '--fill-left': fillLeftPct + '%', '--fill-right': fillRightPct + '%' }"
+            ></div>
+          </div>
+          <input
+            type="range"
+            class="filter-budget__input filter-budget__input--min"
+            :min="sliderMin" :max="sliderMax" :step="25"
+            :value="budgetMin"
+            @input="onMinChange"
+          />
+          <input
+            type="range"
+            class="filter-budget__input filter-budget__input--max"
+            :min="sliderMin" :max="sliderMax" :step="25"
+            :value="budgetMax"
+            @input="onMaxChange"
+          />
+        </div>
+        <div class="filter-budget__labels">
+          <span>{{ formatPrice(sliderMin) }}</span>
+          <span>{{ formatPrice(sliderMax) }}</span>
+        </div>
       </div>
-      <div class="filter-budget__labels">
-        <span>{{ formatPrice(sliderMin) }}</span>
-        <span>{{ formatPrice(sliderMax) }}</span>
-      </div>
-    </div>
 
-    <div v-for="(group, index) in filterGroups" :key="group.title" class="filter-group">
+      <div class="filter-group">
       <button
         class="filter-group__toggle"
         @click="toggleGroup(index)"
@@ -67,19 +70,22 @@
             v-for="item in group.items"
             :key="item.value || item.label"
             class="filter-item"
+            :class="{ 'filter-item--disabled': itemCount(item.value) === 0 && !isItemChecked(group.id, item.value) }"
           >
             <input
               type="checkbox"
               class="filter-item__checkbox"
               :checked="isItemChecked(group.id, item.value)"
-              :disabled="!isItemWired(group.id)"
+              :disabled="!isItemWired(group.id) || (itemCount(item.value) === 0 && !isItemChecked(group.id, item.value))"
               @change="onItemToggle(group.id, item.value)"
             />
             <span class="filter-item__label">{{ item.label }}</span>
+            <span v-if="counts" class="filter-item__count">({{ itemCount(item.value) }})</span>
           </label>
         </div>
       </Transition>
-    </div>
+      </div>
+    </template>
   </aside>
 </template>
 
@@ -94,9 +100,19 @@ const props = withDefaults(defineProps<{
   persons?: number
   /** Show a "Verberg filter" link in the panel header (search page only). */
   hideable?: boolean
+  /** Compact mode for the sticky scroll-past variant on /search:
+   *  shows only Arrangement / Thema / Reisduur (no Totaalprijs, no
+   *  Specials, no Verberg-filter button). */
+  compact?: boolean
+  /** Optional `{ itemValue → number }` map. When provided, each
+   *  checkbox shows `(N)` after its label and items with N=0 are
+   *  greyed out + disabled (unless they're currently checked). */
+  counts?: Record<string, number>
 }>(), {
   persons: 2,
   hideable: false,
+  compact: false,
+  counts: undefined,
 })
 
 const emit = defineEmits<{
@@ -208,6 +224,8 @@ const tagItems = (cat: 'arrangement' | 'thema' | 'specials') =>
   tagsByCategory(cat).map(t => ({ label: t.label, value: t.id }))
 
 const filterGroups = computed<FilterGroup[]>(() => [
+  { id: 'arrangement', title: 'Arrangement', open: openState.arrangement, items: tagItems('arrangement') },
+  { id: 'thema',       title: 'Thema',       open: openState.thema,       items: tagItems('thema') },
   {
     id: 'travelDuration',
     title: t('filter.travelDuration'),
@@ -220,16 +238,31 @@ const filterGroups = computed<FilterGroup[]>(() => [
       { label: t('filter.5plusDays'), value: '5+' },
     ],
   },
-  { id: 'arrangement', title: 'Arrangement', open: openState.arrangement, items: tagItems('arrangement') },
-  { id: 'thema',       title: 'Thema',       open: openState.thema,       items: tagItems('thema') },
+  // Budget / Totaalprijs slider is rendered inline before the
+  // 'specials' group via a `v-if` in the template, so the visible
+  // order matches: Arrangement → Thema → Reisduur → Totaalprijs →
+  // Specials.
   { id: 'specials',    title: 'Specials',    open: openState.specials,    items: tagItems('specials') },
 ])
 
-const groupKeys = ['travelDuration', 'arrangement', 'thema', 'specials'] as const
+const groupKeys = ['arrangement', 'thema', 'travelDuration', 'specials'] as const
+
+/** Filter groups actually rendered. In compact mode the Specials
+ *  group is hidden so only Arrangement / Thema / Reisduur remain. */
+const visibleFilterGroups = computed(() =>
+  props.compact
+    ? filterGroups.value.filter(g => g.id !== 'specials')
+    : filterGroups.value
+)
 
 function toggleGroup(index: number) {
   const key = groupKeys[index]
   openState[key] = !openState[key]
+}
+
+function itemCount(value: string): number {
+  if (!props.counts) return 0
+  return props.counts[value] ?? 0
 }
 </script>
 
@@ -275,8 +308,14 @@ function toggleGroup(index: number) {
 
 /* Budget slider */
 .filter-budget {
+  /* Symmetric divider + padding on both sides so the slider sits in
+     its own breathing band between Reisduur (above) and Specials
+     (below). */
+  padding-top: var(--space-md);
   padding-bottom: var(--space-md);
+  margin-top: var(--space-md);
   margin-bottom: var(--space-md);
+  border-top: 1px solid var(--color-border-light);
   border-bottom: 1px solid var(--color-border-light);
 }
 
@@ -463,6 +502,24 @@ function toggleGroup(index: number) {
 
 .filter-item__label {
   flex: 1;
+}
+
+.filter-item__count {
+  flex-shrink: 0;
+  margin-left: 4px;
+  font-size: 12px;
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.filter-item--disabled {
+  color: var(--color-text-muted);
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.filter-item--disabled .filter-item__checkbox {
+  cursor: not-allowed;
 }
 
 /* Expand transition */

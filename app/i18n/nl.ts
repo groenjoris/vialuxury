@@ -65,7 +65,10 @@ const nl: Record<string, string> = {
   'header.flex.7days': '\u00b1 7 dagen',
 
   // Header - Tabs
+  'header.tab.arrivalDate': 'Kies aankomstdatum',
   'header.tab.calendar': 'Kies je aankomstdatum',
+  'header.flexible': 'Ik ben flexibel',
+  'header.ready': 'Klaar',
   'header.tab.flexible': 'Kies tijdsperiode',
   'header.tab.nights': 'Kies aantal nachten',
   'header.tab.nightsHint': 'Je kunt er meerdere kiezen',
@@ -245,6 +248,8 @@ const nl: Record<string, string> = {
   // Deal page
   'deal.tabIntro': 'Intro',
   'deal.tabArrangement': 'Jouw arrangement',
+  'deal.curatedBy': 'Samengesteld door',
+  'deal.specialisation': 'Specialisatie',
   'deal.highlights': 'Highlights',
   'deal.inclusionsHeading': 'In dit arrangement voor',
   'deal.inclusionsEndAlt': 'is het volgende inbegrepen',
@@ -305,6 +310,17 @@ const nl: Record<string, string> = {
   // Calendar
   'calendar.chooseArrivalDate': 'Kies aankomstdatum',
   'calendar.clearDates': 'Wis',
+  'calendar.checkIn': 'In',
+  'calendar.checkOut': 'Uit',
+  'calendar.checkInLabel': 'Aankomst',
+  'calendar.checkOutLabel': 'Vertrek',
+  'calendar.chooseArrivalDateLong': 'Kies je aankomstdatum',
+  'deal.thisArrangementIsFor': 'Dit arrangement is voor',
+  'deal.shorterOrLongerStay': 'Korter of langer verblijf?',
+  'deal.viewOtherArrangements': 'Bekijk andere arrangementen bij dit hotel',
+  'deal.availableArrangements': 'Beschikbare arrangementen:',
+  'calendar.cheapestPrice': 'Laagste prijs',
+  'calendar.unavailable': 'Niet beschikbaar',
 
   // Travel group modal
   'travelGroup.title': 'Reisgezelschap',
@@ -330,6 +346,7 @@ const nl: Record<string, string> = {
   'search.listView': 'Lijst',
   'search.gridView': 'Grid',
   'search.sort': 'Sorteren',
+  'search.sort.recommended': 'Aanbevolen',
   'search.sort.priceLow': 'Prijs laagste eerst',
   'search.sort.priceHigh': 'Prijs hoogste eerst',
   'search.sort.ratingHigh': 'Rating hoog naar laag',
@@ -431,6 +448,7 @@ const nl: Record<string, string> = {
   'deal.refreshing': 'Beschikbaarheid wordt bijgewerkt...',
 
   'sidebar.arrangementFor': 'Arrangement voor',
+  'sidebar.arrangementFullTitle': 'In dit arrangement voor 2 personen is het volgende inbegrepen:',
   'sidebar.forArrival': 'Voor aankomstdatum',
   'sidebar.clear': 'wissen',
   'sidebar.luxeRoomSingular': 'luxe kamer (upgrade)',

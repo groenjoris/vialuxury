@@ -5,6 +5,7 @@ import { searchHotels } from '~/data/mock/search-hotels'
 import { useFirstReleaseHotelMap } from '~/composables-first-release/useFirstReleaseHotelMap'
 import { useFirstReleaseHomeVariant } from '~/composables-first-release/useFirstReleaseHomeVariant'
 import { dealMatchesAllTags, getFilterTag } from '~/utils-first-release/filterTags'
+import { computeFilterCounts } from '~/utils-first-release/filterCounts'
 import FilterPills from '~/components-first-release/search/FilterPills.vue'
 import { isDealAvailable, isDealAvailableInWindow } from '~/utils-first-release/availability'
 import { adjustPrice } from '~/utils-first-release/priceFormula'
@@ -107,16 +108,40 @@ const mapHotels = computed<SearchHotel[]>(() => {
       }
       return true
     })
+    // Hide hotels that have zero deals matching the active filters — the
+    // greyed-out "unmatched" pins are no longer rendered. Drop the hotel
+    // from the map entirely.
+    if (matchingDeals.length === 0) continue
     result.push({
       ...h,
       // Keep ALL deals on the hotel object so the side panel still shows
-      // every arrangement when the user clicks an unmatched pin.
+      // every arrangement when the user clicks the pin.
       deals: h.deals,
       soldOut: false,
-      unmatched: matchingDeals.length === 0,
+      unmatched: false,
     })
   }
   return result
+})
+
+/** Per-filter-item deal counts shown as `(N)` in the panel. Destinations
+ *  intentionally don't filter the map data, so they're not part of the
+ *  count predicate either — the count reflects everything else (budget,
+ *  arrival date, nights, tags). */
+const filterCounts = computed(() => {
+  const p = persons.value
+  const flex = committedFlexibility.value
+  const arrival = committedArrivalDate.value
+  return computeFilterCounts({
+    hotels: searchHotels,
+    inBudget: (d) => {
+      const price = adjustPrice(d.basePrice, p)
+      return price >= sharedBudgetMin.value && price <= sharedBudgetMax.value
+    },
+    isAvailableOnDate: arrival ? (d) => isDealAvailableInWindow(d.id, arrival, flex) : undefined,
+    selectedNights: selectedNights.value,
+    selectedTagIds: selectedFilterTags.value,
+  })
 })
 
 /** Initial focus driven by the destination input. Walks the selectionOrder
@@ -206,6 +231,7 @@ onMounted(() => {
         :budget-min="budgetMin"
         :budget-max="budgetMax"
         :persons="persons"
+        :counts="filterCounts"
         @update:budget-min="budgetMin = $event"
         @update:budget-max="budgetMax = $event"
       />
@@ -348,7 +374,7 @@ onMounted(() => {
   z-index: 1100;
   height: 40px;
   padding: 0 var(--space-md);
-  background: var(--color-surface);
+  background: #000;
   border: 0;
   border-radius: var(--radius-sm);
   box-shadow: var(--shadow-card);
@@ -356,14 +382,14 @@ onMounted(() => {
   align-items: center;
   gap: 8px;
   cursor: pointer;
-  color: var(--color-text-primary);
+  color: #fff;
   font-family: var(--font-body);
   font-size: 14px;
   font-weight: 600;
 }
 
 .kaart-close:hover {
-  background: var(--color-background-secondary);
+  background: #1a1a1a;
 }
 
 /* ---------- Mobile fallback ---------- */

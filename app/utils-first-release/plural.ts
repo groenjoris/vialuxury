@@ -17,6 +17,24 @@ export function nightsLabel(n: number, lang: Lang = 'nl'): string {
   return `${n} ${n === 1 ? 'nacht' : 'nachten'}`
 }
 
+/**
+ * Dutch word-form nights label: "één nacht" / "twee nachten" / "drie
+ * nachten" / "vier nachten" / "vijf nachten" / "zes nachten" / "zeven
+ * nachten". Falls back to the digit form for n > 7.
+ *
+ * Capitalised first letter so it can lead a sentence (e.g. "Twee
+ * nachten wellnessarrangement"). Pass `capitalise: false` for
+ * mid-sentence use.
+ */
+const NL_NIGHT_WORDS = ['nul', 'één', 'twee', 'drie', 'vier', 'vijf', 'zes', 'zeven']
+
+export function nightsWord(n: number, capitalise = true): string {
+  const word = NL_NIGHT_WORDS[n]
+  if (!word) return nightsLabel(n, 'nl')
+  const head = capitalise ? word.charAt(0).toUpperCase() + word.slice(1) : word
+  return `${head} ${n === 1 ? 'nacht' : 'nachten'}`
+}
+
 export function personsLabel(p: number, lang: Lang = 'nl'): string {
   if (lang === 'en') return `${p} ${p === 1 ? 'person' : 'persons'}`
   return `${p} ${p === 1 ? 'persoon' : 'personen'}`

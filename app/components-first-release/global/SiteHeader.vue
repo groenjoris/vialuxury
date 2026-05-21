@@ -398,16 +398,16 @@
           <FirstReleaseDestinationPopup
             :destinations="destinations"
             :themes="themes"
-            :selected-destinations="selectedDestinations"
-            :selected-themes="selectedThemes"
-            :selected-cities="selectedCities"
-            :selection-order="selectionOrder"
+            :selected-destinations="localDestDestinations"
+            :selected-themes="localDestThemes"
+            :selected-cities="localDestCities"
+            :selection-order="localDestSelectionOrder"
             single-select
             @toggle-destination="onSingleDestination"
             @toggle-theme="onSingleTheme"
             @select-hotel="onSingleHotel"
             @select-city="onSingleCity"
-            @remove-city="handleRemoveCity"
+            @remove-city="handleRemoveCityLocal"
             @save="closePopup()"
             @clear="clearDestination"
           />
@@ -426,14 +426,45 @@
             v-model:cal-month="calMonth"
             v-model:selected-date="selectedDate"
             :nights="localNights"
+            :any-duration="localAnyDuration"
+            :flexible="localFlexible"
             @toggle-night="toggleLocalNight"
+            @set-any-duration="setAnyDuration"
+            @update:flexible="setLocalFlexible"
             @save="closePopup()"
             @clear="clearWhenAndDuration"
           />
         </div>
 
-        <!-- WHO POPUP -->
-        <div v-if="activePopup === 'who'" class="popup popup--who">
+        <!-- WHO POPUP — MVP single-select list. Picks one preset (N personen
+             + N kamers), closes the popup, fills the field. The full
+             adults/children/rooms/dog stepper UI below is kept (gated on
+             `false`) so it can be revived when the MVP is done. -->
+        <div v-if="activePopup === 'who'" class="popup popup--who popup--who-mvp">
+          <ul class="who-mvp__list" role="listbox" aria-label="Aantal personen">
+            <li
+              v-for="opt in whoMvpOptions"
+              :key="`${opt.adults}-${opt.rooms}`"
+              role="option"
+              :aria-selected="whoMvpSelectedKey === `${opt.adults}-${opt.rooms}`"
+              class="who-mvp__item"
+              :class="{ 'who-mvp__item--selected': whoMvpSelectedKey === `${opt.adults}-${opt.rooms}` }"
+              @click="pickWhoMvp(opt)"
+            >
+              <span>{{ opt.adults }} personen / {{ opt.rooms }} {{ opt.rooms === 1 ? 'kamer' : 'kamers' }}</span>
+              <svg
+                v-if="whoMvpSelectedKey === `${opt.adults}-${opt.rooms}`"
+                width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"
+              >
+                <polyline points="5 12 10 17 19 7" />
+              </svg>
+            </li>
+          </ul>
+        </div>
+
+        <!-- LEGACY WHO POPUP — adults/children/rooms/dog steppers. Hidden
+             behind v-if="false" while the MVP version above is live. -->
+        <div v-if="false" class="popup popup--who">
           <!-- Adults -->
           <div class="who-row">
             <div class="who-row__info">
@@ -547,10 +578,10 @@
       :open="mobileSearchOpen"
       :destinations="destinations"
       :themes="themes"
-      :selected-destinations="selectedDestinations"
-      :selected-themes="selectedThemes"
-      :selected-cities="selectedCities"
-      :selection-order="selectionOrder"
+      :selected-destinations="localDestDestinations"
+      :selected-themes="localDestThemes"
+      :selected-cities="localDestCities"
+      :selection-order="localDestSelectionOrder"
       :cal-month="calMonth"
       :selected-date="selectedDate"
       :flexibility="flexibility"
@@ -560,11 +591,11 @@
       :when-label="whenLabel"
       :who-label="whoLabel"
       @close="mobileSearchOpen = false"
-      @toggle-destination="toggleDestination"
-      @toggle-theme="toggleTheme"
-      @select-hotel="handleSelectHotel"
-      @select-city="handleSelectCity"
-      @remove-city="handleRemoveCity"
+      @toggle-destination="toggleDestinationLocal"
+      @toggle-theme="toggleThemeLocal"
+      @select-hotel="handleSelectHotelInPopupLocal"
+      @select-city="handleSelectCityLocal"
+      @remove-city="handleRemoveCityLocal"
       @clear-destinations="clearDestination"
       @update:cal-month="calMonth = $event"
       @update:selected-date="selectedDate = $event"
@@ -713,6 +744,7 @@ const POPUP_HEIGHTS: Record<'destination' | 'when' | 'who', number> = {
   // Wanneer-popup with a ~400 px square calendar — header (~30) + calendar
   // (~400) + footer / Verder-button (~60) + padding (~40) = ~580 px.
   when: 580,
+  // MVP list: 8 rows × ~44 px + 8 px top/bottom = ~368.
   who: 380,
 }
 
@@ -740,7 +772,7 @@ function computePopupPosition() {
   // grandparent has no width set — the anchor collapses to ~0 and clips
   // the inner via overflow. Setting the anchor's width guarantees the
   // popup gets its full canvas.
-  const WIDTHS: Record<string, number> = { destination: 560, when: 780, who: 420 }
+  const WIDTHS: Record<string, number> = { destination: 560, when: 581, who: 420 }
   const popupWidth = Math.min(WIDTHS[which] ?? 600, window.innerWidth - 24)
   const desired = rect.left
   const maxLeft = window.innerWidth - popupWidth - 12
@@ -847,40 +879,46 @@ function openPopupAt(which: 'destination' | 'when' | 'who', el: HTMLElement | nu
 defineExpose({ openPopupAt })
 
 function clearDestination() {
-  resetDestinationState()
+  // Rule #3: wipe the LOCAL drafts only. Shared state stays put until
+  // the user presses Find Deals.
+  resetLocalDestinationState()
   closePopup()
 }
 
-/** Wipe every destination / theme / city / hotel pick — used both by the
- *  explicit "Wis" link and by single-select mode just before applying a
- *  new pick. */
-function resetDestinationState() {
-  clearDestinations()
-  for (const id of [...selectedThemes.value]) toggleFilterTag(id)
-}
-
-/** Single-select handlers (variant 1): clear existing picks first, apply
- *  the new one, then close the popup. */
+/** Single-select handlers (variant 1): clear existing draft picks first,
+ *  apply the new one to the local draft, then close the popup. Shared
+ *  state is untouched until `commitSearch()` runs. */
 function onSingleDestination(id: string) {
-  const isSame = selectedDestinations.value.length === 1 && selectedDestinations.value[0] === id
-  resetDestinationState()
-  if (!isSame) toggleDestination(id)
+  const isSame = localDestDestinations.value.length === 1 && localDestDestinations.value[0] === id
+  resetLocalDestinationState()
+  if (!isSame) {
+    localDestDestinations.value = [id]
+    localDestSelectionOrder.value = [{ type: 'destination', key: id }]
+  }
   closePopup()
 }
 function onSingleTheme(id: string) {
-  const isSame = selectedThemes.value.length === 1 && selectedThemes.value[0] === id
-  resetDestinationState()
-  if (!isSame) toggleTheme(id)
+  const isSame = localDestThemes.value.length === 1 && localDestThemes.value[0] === id
+  resetLocalDestinationState()
+  if (!isSame) {
+    localDestThemes.value = [id]
+    localDestSelectionOrder.value = [{ type: 'theme', key: id }]
+  }
   closePopup()
 }
 function onSingleCity(city: { name: string; province: string }) {
-  resetDestinationState()
-  handleSelectCity(city)
+  resetLocalDestinationState()
+  localDestCities.value = [city]
+  localDestSelectionOrder.value = [{ type: 'city', key: city.name }]
   closePopup()
 }
 function onSingleHotel(slug: string) {
-  resetDestinationState()
-  handleSelectHotelInPopup(slug)
+  resetLocalDestinationState()
+  const h = searchHotels.find(x => x.slug === slug)
+  const name = h?.name || slug
+  localDestHotels.value = [{ slug, name }]
+  localDestSelectionOrder.value = [{ type: 'hotel', key: slug }]
+  notePicker()
   closePopup()
 }
 
@@ -902,6 +940,8 @@ function clearWhenAndDuration() {
   selectedDurations.value = []
   flexState.value = { durations: [], months: [] }
   localNights.value = []
+  localAnyDuration.value = false
+  localFlexible.value = false
   setSelectedNights([])
   if (localFlexType.value) {
     localFlexType.value = null
@@ -963,26 +1003,112 @@ const themeIds = ['aan-zee', 'natuur', 'romantisch', 'culinair', 'fiets', 'stede
 const selectedThemes = computed(() =>
   selectedFilterTags.value.filter(id => themeIds.includes(id)),
 )
+
+/* ─── Local destination drafts (rule #3) ───
+ * The destination popup writes to these local refs while the user is
+ * editing the search bar. Only `commitSearch()` (Find Deals button)
+ * pushes them to the shared composable — same draft pattern the When/
+ * Who popups already use. Seeded from shared state at setup so
+ * URL-param picks and the home theme-button reset both surface in the
+ * search bar fields. */
+type LocalSelectionEntry = { type: 'destination' | 'theme' | 'city' | 'hotel'; key: string }
+const localDestDestinations = ref<string[]>([...selectedDestinations.value])
+const localDestThemes = ref<string[]>([
+  ...selectedFilterTags.value.filter(id => themeIds.includes(id)),
+])
+const localDestCities = ref<{ name: string; province: string }[]>([...selectedCities.value])
+const localDestHotels = ref<{ slug: string; name: string }[]>(
+  sharedSelectedHotels.value.map(h => ({ slug: h.slug, name: h.name })),
+)
+const localDestSelectionOrder = ref<LocalSelectionEntry[]>([...selectionOrder.value])
+
+function resetLocalDestinationState() {
+  localDestDestinations.value = []
+  localDestThemes.value = []
+  localDestCities.value = []
+  localDestHotels.value = []
+  localDestSelectionOrder.value = []
+}
+
+/** Re-seed locals from shared — call after `commitSearch()` so subsequent
+ *  edits start from the just-committed snapshot. */
+function syncLocalDestFromShared() {
+  localDestDestinations.value = [...selectedDestinations.value]
+  localDestThemes.value = [...selectedFilterTags.value.filter(id => themeIds.includes(id))]
+  localDestCities.value = [...selectedCities.value]
+  localDestHotels.value = sharedSelectedHotels.value.map(h => ({ slug: h.slug, name: h.name }))
+  localDestSelectionOrder.value = [...selectionOrder.value]
+}
+
+/** Multi-select toggles used by the mobile search modal. They mutate
+ *  ONLY the local drafts; nothing reaches shared state until commit. */
+function toggleDestinationLocal(id: string) {
+  const i = localDestDestinations.value.indexOf(id)
+  if (i === -1) {
+    localDestDestinations.value.push(id)
+    localDestSelectionOrder.value.push({ type: 'destination', key: id })
+  } else {
+    localDestDestinations.value.splice(i, 1)
+    localDestSelectionOrder.value = localDestSelectionOrder.value.filter(
+      e => !(e.type === 'destination' && e.key === id),
+    )
+  }
+}
+function toggleThemeLocal(id: string) {
+  const i = localDestThemes.value.indexOf(id)
+  if (i === -1) {
+    localDestThemes.value.push(id)
+    localDestSelectionOrder.value.push({ type: 'theme', key: id })
+  } else {
+    localDestThemes.value.splice(i, 1)
+    localDestSelectionOrder.value = localDestSelectionOrder.value.filter(
+      e => !(e.type === 'theme' && e.key === id),
+    )
+  }
+}
+function handleSelectCityLocal(city: { name: string; province: string }) {
+  if (localDestCities.value.some(c => c.name === city.name)) return
+  localDestCities.value.push(city)
+  localDestSelectionOrder.value.push({ type: 'city', key: city.name })
+}
+function handleRemoveCityLocal(name: string) {
+  localDestCities.value = localDestCities.value.filter(c => c.name !== name)
+  localDestSelectionOrder.value = localDestSelectionOrder.value.filter(
+    e => !(e.type === 'city' && e.key === name),
+  )
+}
+function handleSelectHotelInPopupLocal(slug: string) {
+  if (localDestHotels.value.some(h => h.slug === slug)) return
+  const h = searchHotels.find(x => x.slug === slug)
+  const name = h?.name || slug
+  localDestHotels.value.push({ slug, name })
+  localDestSelectionOrder.value.push({ type: 'hotel', key: slug })
+  notePicker()
+}
+
 function toggleTheme(id: string) {
-  toggleFilterTag(id)
+  // Multi-select route — write to local draft only.
+  toggleThemeLocal(id)
 }
 
 const destinationLabel = computed(() => {
-  // Collect all selected names in order
+  // Read from local drafts (rule #3) so the search-bar field reflects
+  // what the user has currently picked in the popup, even before they
+  // press Find Deals.
   const names: string[] = []
 
-  for (const id of selectedDestinations.value) {
+  for (const id of localDestDestinations.value) {
     const d = destinations.find(d => d.id === id)
     if (d) names.push(d.name)
   }
-  for (const id of selectedThemes.value) {
+  for (const id of localDestThemes.value) {
     const th = themes.value.find(th => th.id === id)
     if (th) names.push(th.name)
   }
-  for (const city of selectedCities.value) {
+  for (const city of localDestCities.value) {
     names.push(city.name)
   }
-  for (const hotel of selectedHotels.value) {
+  for (const hotel of localDestHotels.value) {
     names.push(hotel.name)
   }
 
@@ -1020,6 +1146,9 @@ const {
   toggleNight: toggleGlobalNight,
   clearDuration,
   triggerSearchUpdate,
+  // For Find Deals' full reset (rule #2).
+  resetBudget,
+  clearArrivalDate,
 } = useFirstReleaseSearchState()
 
 // --- WHEN ---
@@ -1037,16 +1166,51 @@ const flexState = ref<{ durations: string[]; months: string[] }>({ durations: []
 // the page (filters, results, deal cards) untouched while the user typesArrange.
 const localNights = ref<string[]>([...globalNights.value])
 const localFlexType = ref<string | null>(globalFlexType.value)
+/** "Maakt niet uit" — user has explicitly opted out of picking a
+ *  specific number of nights. Drives the "Elke reisduur" label on
+ *  the search-bar field; cleared as soon as the user picks any
+ *  specific night-count again. */
+const localAnyDuration = ref(false)
+
+/** "Ik ben flexibel" — user has opted out of picking a specific
+ *  arrival date. Drives the "Flexibel" label on the search-bar
+ *  field's date half and disables the calendar inside the popup. */
+const localFlexible = ref(false)
+
+function setLocalFlexible(next: boolean) {
+  localFlexible.value = next
+  if (next) {
+    // Wipe any date/month picks so "Flexibel" stands alone.
+    selectedDate.value = null
+    flexibility.value = 0
+    flexState.value = { durations: [], months: [] }
+  }
+  notePicker()
+}
 
 function toggleLocalNight(value: string) {
   const i = localNights.value.indexOf(value)
   if (i === -1) localNights.value.push(value)
   else localNights.value.splice(i, 1)
-  if (localNights.value.length > 0) localFlexType.value = null
+  if (localNights.value.length > 0) {
+    localFlexType.value = null
+    localAnyDuration.value = false
+  }
   // Push to shared state so /search filter pills, deal-page heading and
   // any other open searchbar reflect the change immediately.
   setSelectedNights(localNights.value.filter(v => ['1', '2', '3', '4', '5+'].includes(v)))
   setFlexType(localFlexType.value)
+  notePicker()
+}
+
+function setAnyDuration(next: boolean) {
+  localAnyDuration.value = next
+  if (next) {
+    localNights.value = []
+    localFlexType.value = null
+    setSelectedNights([])
+    setFlexType(null)
+  }
   notePicker()
 }
 
@@ -1185,6 +1349,8 @@ function handleFlexState(state: { durations: string[]; months: string[] }) {
 }
 
 const whenLabel = computed(() => {
+  // "Ik ben flexibel" wins over any date / month state.
+  if (localFlexible.value) return 'Flexibel'
   // Date / months only — duration moved to Hoelang field.
   if (selectedDate.value) {
     const [, m, d] = selectedDate.value.split('-')
@@ -1205,7 +1371,7 @@ const whenLabel = computed(() => {
 /** Empty when the user hasn't chosen a date / month — drives the lighter
  *  grey "placeholder" styling on the search-bar value. */
 const whenIsPlaceholder = computed(
-  () => !selectedDate.value && flexState.value.months.length === 0,
+  () => !localFlexible.value && !selectedDate.value && flexState.value.months.length === 0,
 )
 
 const hoelangLabel = computed(() => {
@@ -1218,6 +1384,7 @@ const hoelangLabel = computed(() => {
     }
     return typeLabels[localFlexType.value] || 'Kies aantal nachten'
   }
+  if (localAnyDuration.value) return 'Elke reisduur'
   if (localNights.value.length === 0) return 'Kies aantal nachten'
   if (localNights.value.length === 1) {
     const v = localNights.value[0]
@@ -1230,7 +1397,7 @@ const hoelangLabel = computed(() => {
 })
 
 const hoelangIsPlaceholder = computed(
-  () => !localFlexType.value && localNights.value.length === 0,
+  () => !localFlexType.value && !localAnyDuration.value && localNights.value.length === 0,
 )
 
 /** Combined "Wanneer en hoelang" field label — joins the date and duration
@@ -1252,10 +1419,10 @@ const whenCombinedIsPlaceholder = computed(
  *  destinationLabel already uses to fall back to the t('chooseDestination')
  *  string. */
 const destinationIsPlaceholder = computed(() => (
-  selectedDestinations.value.length === 0
-  && selectedThemes.value.length === 0
-  && selectedCities.value.length === 0
-  && selectedHotels.value.length === 0
+  localDestDestinations.value.length === 0
+  && localDestThemes.value.length === 0
+  && localDestCities.value.length === 0
+  && localDestHotels.value.length === 0
 ))
 
 // --- WHO ---
@@ -1323,6 +1490,28 @@ const whoIsPlaceholder = computed(() => (
   !searchGroup.value.dog
 ))
 
+/** MVP "wie reist er mee" presets — pairs (2N personen / N kamers) up to
+ *  16 personen / 8 kamers. Clicking one option sets the search group and
+ *  closes the popup; the full stepper UI is retained behind v-if="false". */
+const whoMvpOptions = computed(() => {
+  const out: { adults: number; rooms: number }[] = []
+  for (let rooms = 1; rooms <= 8; rooms++) {
+    out.push({ adults: rooms * 2, rooms })
+  }
+  return out
+})
+
+const whoMvpSelectedKey = computed(() => {
+  if (searchGroup.value.children.length > 0) return null
+  if (searchGroup.value.dog) return null
+  return `${searchGroup.value.adults}-${searchGroup.value.rooms}`
+})
+
+function pickWhoMvp(opt: { adults: number; rooms: number }) {
+  searchGroup.value = { adults: opt.adults, children: [], rooms: opt.rooms, dog: false }
+  closePopup()
+}
+
 const whoLabel = computed(() => {
   const parts: string[] = []
   parts.push(`${searchGroup.value.adults} ${searchGroup.value.adults === 1 ? t('common.adultSingular') : t('common.adultPlural')}`)
@@ -1335,21 +1524,43 @@ const whoLabel = computed(() => {
 })
 
 function commitSearch() {
-  // Push draft (local) picker state into the shared composable. Until this
-  // runs, search results / filters / deal pages see the OLD values.
+  // Rule #2: a fresh Find Deals starts from a clean slate — every
+  // existing filter (panel side + previous search-bar commits) is
+  // wiped first; only the current search-bar drafts are applied.
+  clearFilterTags()
+  resetBudget()
+  setSelectedNights([])
+  setFlexType(null)
+  clearArrivalDate()
+  clearDestinations()
+
+  // Apply destination drafts.
+  for (const id of localDestDestinations.value) toggleDestination(id)
+  for (const id of localDestThemes.value) toggleFilterTag(id)
+  for (const city of localDestCities.value) handleSelectCity(city)
+  for (const hotel of localDestHotels.value) addHotel({ name: hotel.name, slug: hotel.slug })
+
+  // Apply When + Who drafts.
   const totalPersons = searchGroup.value.adults + searchGroup.value.children.length
   setSearchGroup(totalPersons, searchGroup.value.rooms)
   setArrivalDate(selectedDate.value)
   setSelectedNights(localNights.value.filter(v => ['1', '2', '3', '4', '5+'].includes(v)))
   setFlexType(localFlexType.value)
   setGlobalFlexibility(flexibility.value)
+
   // Promote live arrival/flex into the snapshot used by /search and /kaart.
   commitArrivalDate()
   triggerSearchUpdate()
   setLoading(true)
+
+  // After commit shared = drafts; resync the local drafts (no-op
+  // semantically, but cleans up `selectionOrder` to match how shared
+  // ordered the entries).
+  syncLocalDestFromShared()
+
   // If the user picked a specific hotel from the destination popup, pin it.
   // Otherwise fall back to the deal-page slug (when changing search from /deal).
-  const fromSlug = selectedHotels.value[0]?.slug || currentDealSlug()
+  const fromSlug = localDestHotels.value[0]?.slug || currentDealSlug()
   navigateTo(fromSlug ? `/first-release/search?from=${encodeURIComponent(fromSlug)}` : '/first-release/search')
 }
 
@@ -1823,7 +2034,8 @@ function handleSelectHotelInPopup(slug: string) {
  *   • payoff font is 5 % smaller (22 → 21 px)
  *   • the handwritten underline stroke is hidden
  *  Verticals / phone / actions placement stays identical to defaults. ─── */
-.site-header--nav-v1 .site-header__tagline-block {
+.site-header--nav-v1 .site-header__tagline-block,
+.site-header--nav-v6 .site-header__tagline-block {
   /* Stretch to fill row 2 so the orange balance-dash can bottom-align
      with the row bottom (= phone-number bottom). Payoff stays at the
      top via flex-start. Negative top-margin pulls it 8 px closer to
@@ -1839,7 +2051,8 @@ function handleSelectHotelInPopup(slug: string) {
    with the row-2 bottom edge. Shown ONLY on the home (overlay) bar,
    not on the internal nav-bar pages — another v1 home/internal
    differentiator. */
-.site-header--nav-v1.site-header--overlay .site-header__tagline-block::after {
+.site-header--nav-v1.site-header--overlay .site-header__tagline-block::after,
+.site-header--nav-v6.site-header--overlay .site-header__tagline-block::after {
   content: '';
   position: absolute;
   left: 0;
@@ -1848,26 +2061,30 @@ function handleSelectHotelInPopup(slug: string) {
   height: 1px;
   background: #fff;
 }
-.site-header--nav-v1 .site-header__tagline {
+.site-header--nav-v1 .site-header__tagline,
+.site-header--nav-v6 .site-header__tagline {
   font-size: 20px;          /* original size restored */
 }
-.site-header--nav-v1 .site-header__tagline-stroke {
+.site-header--nav-v1 .site-header__tagline-stroke,
+.site-header--nav-v6 .site-header__tagline-stroke {
   display: none;
 }
 /* Verticals nav (Verblijven / Vakantieparken / Restaurants / Geef cadeaubon)
    moves from row 2 to row 1 so it sits next to the logo. */
-.site-header--nav-v1 .verticals {
+.site-header--nav-v1 .verticals,
+.site-header--nav-v6 .verticals {
   grid-row: 1;
   grid-column: 2;
   align-self: center;
 }
 
-/* ─── Equal-height row for v1 and v2 ───
+/* ─── Equal-height row for v1 / v6 and v2 ───
  *  Logo, verticals pill, members "vip-btn", language switcher trigger
  *  and hamburger button all snap to one shared height. Single source of
  *  truth lives in --fr-nav-row-h so it's tweakable from one line. */
 .site-header--nav-v1,
-.site-header--nav-v2 {
+.site-header--nav-v2,
+.site-header--nav-v6 {
   --fr-nav-row-h: 44px;
 }
 
@@ -1894,33 +2111,38 @@ function handleSelectHotelInPopup(slug: string) {
 }
 
 .site-header--nav-v1 .vip-btn,
-.site-header--nav-v2 .vip-btn {
+.site-header--nav-v2 .vip-btn,
+.site-header--nav-v6 .vip-btn {
   height: var(--fr-nav-row-h);
   padding: 0 18px;
 }
 
 .site-header--nav-v1 .lang-switcher__trigger,
-.site-header--nav-v2 .lang-switcher__trigger {
+.site-header--nav-v2 .lang-switcher__trigger,
+.site-header--nav-v6 .lang-switcher__trigger {
   height: var(--fr-nav-row-h);
   padding: 0 14px;
 }
 
 .site-header--nav-v1 .hamburger-btn,
-.site-header--nav-v2 .hamburger-btn {
+.site-header--nav-v2 .hamburger-btn,
+.site-header--nav-v6 .hamburger-btn {
   width: var(--fr-nav-row-h);
   height: var(--fr-nav-row-h);
 }
 
-/* ─── Variant 1 — top-align the logo with the row-1 buttons (which
+/* ─── Variant 1 / 6 — top-align the logo with the row-1 buttons (which
  *  define row 1 height at --fr-nav-row-h). The logo is shorter than the
  *  buttons so without this it would centre. ─── */
-.site-header--nav-v1 .site-header__logo {
+.site-header--nav-v1 .site-header__logo,
+.site-header--nav-v6 .site-header__logo {
   align-self: start;
 }
 
 /* The three actions (language / members / menu) span the same 256-px
  *  width as the phone-number block below them, evenly spaced. */
-.site-header--nav-v1 .site-header__nav-actions {
+.site-header--nav-v1 .site-header__nav-actions,
+.site-header--nav-v6 .site-header__nav-actions {
   width: 256px;
   justify-content: space-between;
   gap: 0;
@@ -1981,19 +2203,17 @@ function handleSelectHotelInPopup(slug: string) {
   align-items: center;
   /* Folder shape: rounded top, flat bottom. */
   border-radius: 8px 8px 0 0;
-  /* Each tab carries its own 1-px outline; bottom omitted so the tab
-     "opens" into the search bar below. */
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  border-bottom: none;
-  /* Unselected default = the old hover style (a touch brighter). */
-  background: rgba(255, 255, 255, 0.22);
-  color: rgba(255, 255, 255, 0.9);
+  /* No outline — the tab silhouette comes from its fill alone. */
+  border: none;
+  /* Unselected default = no fill, mirroring v4's resting state. */
+  background: transparent;
+  color: rgba(255, 255, 255, 0.85);
   margin: 0;
 }
 
-/* Hover only on INACTIVE tabs — even lighter than the new default. */
+/* Hover only on INACTIVE tabs — mirrors v4's hover fill. */
 .site-header--nav-v5 .verticals__item:not(.verticals__item--active):hover {
-  background: rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.08);
   color: #fff;
 }
 
@@ -2004,7 +2224,7 @@ function handleSelectHotelInPopup(slug: string) {
   background: rgba(255, 255, 255, 0.12);
   color: #fff;
   font-weight: 600;
-  border-color: rgba(255, 255, 255, 0.25);
+  border: none;
 }
 
 /* v5 — global connection between tabs and search bar. Applies to BOTH
@@ -2533,12 +2753,15 @@ function handleSelectHotelInPopup(slug: string) {
    the right of the auto-growing body column. */
 .search-bar__clear {
   flex-shrink: 0;
-  align-self: center;
+  /* Bottom-align with the field — the ✕ rides on the value-text row
+     instead of floating between the label and value (which read as
+     "too high" because the button was nearly the field's full height). */
+  align-self: flex-end;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 48px;
-  height: 48px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   border: none;
   background: transparent;
@@ -2549,6 +2772,10 @@ function handleSelectHotelInPopup(slug: string) {
      edge: the field has padding-right: 18 px, so a -9 px pull moves the
      button 9 px to the right (= 9 px gap instead of 18). */
   margin-right: -9px;
+  /* Sit on the value-row baseline: body has padding-bottom: 8 px and
+     the value text is ~16 px tall. A 28×28 button flush at the field
+     bottom centres at y ≈ 46 — within a pixel of the value line. */
+  margin-bottom: 4px;
 }
 
 .search-bar__clear:hover,
@@ -2632,6 +2859,45 @@ function handleSelectHotelInPopup(slug: string) {
   padding: var(--space-lg);
   max-width: 420px;
   width: 100%;
+}
+
+/* MVP who popup — borderless padding so the list rows go edge-to-edge. */
+.popup--who-mvp {
+  padding: 8px 0;
+}
+
+.who-mvp__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.who-mvp__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 20px;
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 400;
+  color: #0e0e0c;
+  line-height: 1.2;
+  cursor: pointer;
+  transition: background 120ms ease, color 120ms ease;
+}
+
+.who-mvp__item:hover {
+  background: rgba(233, 113, 50, 0.08);
+  color: var(--color-primary);
+}
+
+.who-mvp__item--selected {
+  font-weight: 600;
+  color: var(--color-primary);
+  background: rgba(233, 113, 50, 0.08);
 }
 
 /* ==================== */

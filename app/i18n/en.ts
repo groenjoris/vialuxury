@@ -65,7 +65,10 @@ const en: Record<string, string> = {
   'header.flex.7days': '\u00b1 7 days',
 
   // Header - Tabs
+  'header.tab.arrivalDate': 'Choose arrival date',
   'header.tab.calendar': 'Pick your arrival date',
+  'header.flexible': "I'm flexible",
+  'header.ready': 'Ready',
   'header.tab.flexible': 'Pick a period',
   'header.tab.nights': 'Pick number of nights',
   'header.tab.nightsHint': 'You can pick multiple',
@@ -245,6 +248,8 @@ const en: Record<string, string> = {
   // Deal page
   'deal.tabIntro': 'Intro',
   'deal.tabArrangement': 'Your package',
+  'deal.curatedBy': 'Curated by',
+  'deal.specialisation': 'Specialisation',
   'deal.highlights': 'Highlights',
   'deal.inclusionsHeading': 'This package for',
   'deal.inclusionsEndAlt': 'includes the following',
@@ -305,6 +310,17 @@ const en: Record<string, string> = {
   // Calendar
   'calendar.chooseArrivalDate': 'Choose arrival date',
   'calendar.clearDates': 'Clear',
+  'calendar.checkIn': 'In',
+  'calendar.checkOut': 'Out',
+  'calendar.checkInLabel': 'Check-in',
+  'calendar.checkOutLabel': 'Check-out',
+  'calendar.chooseArrivalDateLong': 'Choose your arrival date',
+  'deal.thisArrangementIsFor': 'This arrangement is for',
+  'deal.shorterOrLongerStay': 'Shorter or longer stay?',
+  'deal.viewOtherArrangements': 'View other arrangements at this hotel',
+  'deal.availableArrangements': 'Available arrangements:',
+  'calendar.cheapestPrice': 'Lowest price',
+  'calendar.unavailable': 'Not available',
 
   // Travel group modal
   'travelGroup.title': 'Travel group',
@@ -330,6 +346,7 @@ const en: Record<string, string> = {
   'search.listView': 'List',
   'search.gridView': 'Grid',
   'search.sort': 'Sort',
+  'search.sort.recommended': 'Recommended',
   'search.sort.priceLow': 'Price low to high',
   'search.sort.priceHigh': 'Price high to low',
   'search.sort.ratingHigh': 'Rating high to low',
@@ -431,6 +448,7 @@ const en: Record<string, string> = {
   'deal.refreshing': 'Updating availability...',
 
   'sidebar.arrangementFor': 'Package for',
+  'sidebar.arrangementFullTitle': 'This arrangement for 2 people includes:',
   'sidebar.forArrival': 'For arrival date',
   'sidebar.clear': 'clear',
   'sidebar.luxeRoomSingular': 'luxury room (upgrade)',

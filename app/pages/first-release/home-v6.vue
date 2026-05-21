@@ -2,18 +2,11 @@
   <div class="home">
     <!-- Hero with full-bleed background image -->
     <section class="home-hero">
-      <div
-        class="home-hero__bg"
-        :class="{
-          'home-hero__bg--shift-up': heroPhotoIndex === 1 || heroPhotoIndex === 2,
-          'home-hero__bg--shift-up-400': heroPhotoIndex === 6,
-        }"
-        :style="{ backgroundImage: `url(${heroPhotoUrl})` }"
-      />
+      <div class="home-hero__bg" :style="{ backgroundImage: `url(${heroPhotoUrl})` }" />
       <!-- Help / phone block + pay-off both removed — both now live
            inside SiteHeader's row 2. -->
 
-      <FirstReleaseSiteHeader variant="overlay" nav-variant="4">
+      <FirstReleaseSiteHeader variant="overlay">
         <template #hero>
           <div class="home-hero__content container">
             <div class="home-hero__eyebrow">
@@ -43,29 +36,15 @@
         </div>
         <div class="home-persuasion__col">
           <span class="home-persuasion__award" aria-hidden="true">
-            <!-- v4 — original briefcase icon (Lucide-style) with
-                 "1M" centred inside. Wider body (x=1 → x=23) so the
-                 wordmark sits in a clear, readable band. Same visual
-                 height as the Trustpilot logo so the three USP
-                 columns line up. -->
+            <!-- Award / medal icon (Lucide-style). Same visual height as
+                 the Trustpilot logo so the three columns sit on a line. -->
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-              <!-- Bag body — widened to span almost the full viewBox. -->
-              <rect x="1" y="7" width="22" height="14" rx="2" />
-              <!-- Compact top handle. -->
-              <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
-              <!-- "1M" wordmark inside the bag body. Larger font-size +
-                   heavier weight + 1-px white halo via paint-order so
-                   the bag's strokes don't blur the digits. -->
-              <text x="12" y="14.5"
-                    text-anchor="middle"
-                    dominant-baseline="central"
-                    font-size="8"
-                    font-weight="800"
-                    font-family="var(--font-body)"
-                    stroke="#fff"
-                    stroke-width="1.2"
-                    paint-order="stroke fill"
-                    fill="currentColor">1M</text>
+              <circle cx="12" cy="8" r="6" />
+              <path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11" />
+              <!-- "1M" centred inside the medal disc. Font-size 6 fits
+                   comfortably inside the r=6 circle; stroke is removed
+                   so the letters render as solid currentColor fill. -->
+              <text x="12" y="8" text-anchor="middle" dominant-baseline="central" font-size="6" font-weight="700" font-family="var(--font-heading)" stroke="none" fill="currentColor">1M</text>
             </svg>
           </span>
           <p class="home-persuasion__text">Al meer dan 1 miljoen arrangementen geboekt.</p>
@@ -240,8 +219,8 @@ function pickFilter(tagId: string) {
 
 // Persist this home's nav variant so internal pages render the same nav.
 import { useFirstReleaseHomeVariant } from '~/composables-first-release/useFirstReleaseHomeVariant'
-const { setFrNavVariant, heroPhotoUrl, heroPhotoIndex, restoreHeroPhotoIndex } = useFirstReleaseHomeVariant()
-onMounted(() => { setFrNavVariant('4'); restoreHeroPhotoIndex() })
+const { setFrNavVariant, heroPhotoUrl, restoreHeroPhotoIndex } = useFirstReleaseHomeVariant()
+onMounted(() => { setFrNavVariant('6'); restoreHeroPhotoIndex() })
 </script>
 
 <style scoped>
@@ -284,12 +263,8 @@ onMounted(() => { setFrNavVariant('4'); restoreHeroPhotoIndex() })
   display: flex;
   flex-direction: column;
 }
-/* v4 SWAPS the hero text and the search bar:
-   - search bar at the TOP, right after the nav (no auto margin)
-   - hero text (.home-hero__content) anchored to the BOTTOM of the
-     hero, see the `.home-hero__content` override block lower down. */
 .home-hero :deep(.site-header--overlay .site-header__search-dock) {
-  margin-top: 0;
+  margin-top: auto;
 }
 
 .home-hero {
@@ -305,25 +280,10 @@ onMounted(() => { setFrNavVariant('4'); restoreHeroPhotoIndex() })
   position: absolute;
   inset: 0;
   z-index: -2;
-  /* v4 shifts the photo down by 200 px within the same 708-px crop
-     window — reveals more of the upper portion of the image. */
   background-image: url('/images/hero/1242188419.jpg');
-  background-position: center calc(100% + 200px);
+  background-position: center bottom;
   background-size: cover;
   background-repeat: no-repeat;
-}
-
-/* hotelexperiencepackages + seapackages (pills 2 & 3) shift 200 px
-   UP within the same crop window — reveals more of the image's lower
-   portion. */
-.home-hero__bg.home-hero__bg--shift-up {
-  background-position: center -200px;
-}
-
-/* prd.lil.the.big.© (pill 7) — use v1/v2/v3's default crop instead
-   of v4/v5's `calc(100% + 200px)` shift. */
-.home-hero__bg.home-hero__bg--shift-up-400 {
-  background-position: center bottom;
 }
 
 .home-hero__bg::after {
@@ -455,11 +415,11 @@ onMounted(() => { setFrNavVariant('4'); restoreHeroPhotoIndex() })
   align-items: flex-start;
   gap: 28px;
   padding-bottom: 32px;
-  /* v4 inverts v2: the hero text sits at the BOTTOM of the hero
-     (anchored via `bottom`) so the search bar can sit at the top. */
+  /* Anchor the slot's TOP edge to a fixed Y from the top of the hero
+     (= browser top). Independent of nav height so v1 and v2 line up
+     pixel-perfectly. */
   position: absolute;
-  bottom: 32px;
-  top: auto;
+  top: 300px;
   left: 0;
   right: 0;
   z-index: 1;
@@ -624,20 +584,6 @@ onMounted(() => { setFrNavVariant('4'); restoreHeroPhotoIndex() })
 .home-persuasion__award svg {
   height: 56px;
   width: auto;
-}
-
-/* v2 wordmark "1M+" replacing the medal SVG. Same visual height as the
-   Trustpilot logo (56 px) so the three USP columns align. */
-.home-persuasion__count {
-  display: inline-flex;
-  align-items: center;
-  height: 56px;
-  font-family: var(--font-body);
-  font-size: 56px;
-  font-weight: 700;
-  line-height: 1;
-  letter-spacing: -1.5px;
-  color: var(--color-text-primary);
 }
 
 .home-persuasion__text {

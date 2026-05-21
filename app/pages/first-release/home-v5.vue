@@ -4,7 +4,10 @@
     <section class="home-hero">
       <div
         class="home-hero__bg"
-        :class="{ 'home-hero__bg--shift-up': heroPhotoIndex === 1 || heroPhotoIndex === 2 }"
+        :class="{
+          'home-hero__bg--shift-up': heroPhotoIndex === 1 || heroPhotoIndex === 2,
+          'home-hero__bg--shift-up-400': heroPhotoIndex === 6,
+        }"
         :style="{ backgroundImage: `url(${heroPhotoUrl})` }"
       />
       <!-- Help / phone block + pay-off both removed — both now live
@@ -197,10 +200,24 @@ const ICON_FOR: Record<string, string> = {
   'new-hotels': 'star',
 }
 
-const { toggleFilterTag, selectedFilterTags } = useFirstReleaseSearchState()
+const {
+  toggleFilterTag,
+  clearFilterTags,
+  clearDestinations,
+  clearArrivalDate,
+  clearDuration,
+  resetBudget,
+} = useFirstReleaseSearchState()
 
 function pickFilter(tagId: string) {
-  if (!selectedFilterTags.value.includes(tagId)) toggleFilterTag(tagId)
+  // Rule #1: arriving on /search via a home theme button starts with a
+  // clean slate — every other filter wiped, only the picked tag applied.
+  clearFilterTags()
+  clearDestinations()
+  clearArrivalDate()
+  clearDuration()
+  resetBudget()
+  toggleFilterTag(tagId)
   navigateTo('/first-release/search')
 }
 
@@ -305,11 +322,17 @@ onMounted(() => { setFrNavVariant('5'); restoreHeroPhotoIndex() })
   background-repeat: no-repeat;
 }
 
-/* Photos 4 and 5 (hotelexperiencepackages + seapackages) shift 200 px
+/* hotelexperiencepackages + seapackages (pills 2 & 3) shift 200 px
    UP within the same crop window — reveals more of the image's lower
    portion. */
 .home-hero__bg.home-hero__bg--shift-up {
   background-position: center -200px;
+}
+
+/* prd.lil.the.big.© (pill 7) — use v1/v2/v3's default crop instead
+   of v4/v5's `calc(100% + 200px)` shift. */
+.home-hero__bg.home-hero__bg--shift-up-400 {
+  background-position: center bottom;
 }
 
 .home-hero__bg::after {

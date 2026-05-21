@@ -15,9 +15,9 @@
   >
     <span class="day-cell__number">{{ dayOfMonth }}</span>
 
-    <!-- In / Out badge for selected check-in / check-out days -->
-    <span v-if="isCheckIn" class="day-cell__badge" aria-label="Check-in">In</span>
-    <span v-else-if="isCheckOut" class="day-cell__badge" aria-label="Check-out">Out</span>
+    <!-- In / Uit badge for selected check-in / check-out days -->
+    <span v-if="isCheckIn" class="day-cell__badge" aria-label="Check-in">{{ t('calendar.checkIn') }}</span>
+    <span v-else-if="isCheckOut" class="day-cell__badge" aria-label="Check-out">{{ t('calendar.checkOut') }}</span>
 
     <!-- Tiny green star in the corner of the cheapest available days. -->
     <span
@@ -52,6 +52,8 @@
 import type { DateAvailability } from '~/types/calendar'
 import { formatPrice } from '~/utils-first-release/formatPrice'
 import dayjs from 'dayjs'
+
+const { t } = useFirstReleaseI18n()
 
 const props = defineProps<{
   date: string

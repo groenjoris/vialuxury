@@ -12,8 +12,10 @@
          carousel (up to 5 hotel photos) with prev/next arrows that fade
          in on hover. List mode keeps the single static image. -->
     <div class="deal-card-v2__image">
-      <img :src="carouselImages[carouselIndex] || imageSrc" :alt="hotel?.name || localized(deal.title)" loading="lazy" />
-      <template v-if="gridMode && carouselImages.length > 1">
+      <img :src="displayedImage" :alt="hotel?.name || localized(deal.title)" loading="lazy" />
+      <!-- v6 sidepanel cards lock to a single deterministic photo, so
+           the prev/next chevrons are suppressed there. -->
+      <template v-if="gridMode && carouselImages.length > 1 && !(panelMode && frNavVariant === '6')">
         <button
           type="button"
           class="deal-card-v2__carousel-nav deal-card-v2__carousel-nav--prev"
@@ -85,8 +87,10 @@
       <!-- Full-width divider (spans both cols in list view) -->
       <hr v-if="showHotelInfo && hotel" class="deal-card-v2__divider" />
 
-      <!-- Deal pitch (full content width — spans both cols in list) -->
-      <h2 class="deal-card-v2__pitch">{{ localized(deal.title) }}</h2>
+      <!-- Deal pitch (full content width — spans both cols in list).
+           v6 panel mode swaps the localised title for the compact
+           "[Twee nachten] [type]arrangement" format (item 13). -->
+      <h2 class="deal-card-v2__pitch">{{ panelTitle }}</h2>
 
       <!-- BODY ROW — column in grid; main-col + right-col in list -->
       <div class="deal-card-v2__body-row">
@@ -199,6 +203,9 @@ import { formatDateShort } from '~/utils-first-release/formatDate'
 import dayjs from 'dayjs'
 import { pickSmartInclusions } from '~/utils-first-release/smartInclusions'
 import { priceForArrival } from '~/utils-first-release/priceFormula'
+import { nightsLabel } from '~/utils-first-release/plural'
+import { arrangementSuffixFromHighlights } from '~/utils-first-release/arrangementType'
+import { useFirstReleaseHomeVariant } from '~/composables-first-release/useFirstReleaseHomeVariant'
 
 const { t, localized, locale } = useFirstReleaseI18n()
 
@@ -252,6 +259,42 @@ const props = defineProps<{
 
 defineEmits<{ 'view-siblings': [] }>()
 
+const { frNavVariant } = useFirstReleaseHomeVariant()
+
+/** Card title — v6 sidepanel uses the priority-rule format based on
+ *  the deal's highlights ("Twee nachten met cruise" / "Drie nachten
+ *  met diner en wellness" / fallback "Twee nachten luxe
+ *  hotel-arrangement"). Every other context shows the legacy
+ *  localised title. */
+const panelTitle = computed(() => {
+  if (props.panelMode && frNavVariant.value === '6') {
+    const suffix = arrangementSuffixFromHighlights(props.deal.highlights)
+    // Digit form per spec ("1 nacht" / "2 nachten") instead of word form.
+    const nights = nightsLabel(props.deal.nights, 'nl')
+    return `${nights} ${suffix}`
+  }
+  return localized(props.deal.title)
+})
+
+/** Stable per-deal hash → guarantees the same deal always starts on
+ *  the same image even after reloads. */
+function dealHash(id: string): number {
+  let h = 0
+  for (let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) | 0
+  return Math.abs(h)
+}
+
+/** Displayed image — defaults to the carousel's current frame; on v6
+ *  panel mode each card picks a deterministic starting frame from the
+ *  hotel's gallery so adjacent cards don't share the same photo. */
+const displayedImage = computed(() => {
+  if (props.panelMode && frNavVariant.value === '6' && carouselImages.value.length > 1) {
+    const i = dealHash(props.deal.id) % carouselImages.value.length
+    return carouselImages.value[i] || imageSrc.value
+  }
+  return carouselImages.value[carouselIndex.value] || imageSrc.value
+})
+
 const metaEl = ref<HTMLElement | null>(null)
 const hideRegion = ref(false)
 
@@ -290,15 +333,13 @@ onBeforeUnmount(() => {
 
 const showHotelInfo = computed(() => !!props.hotel && !props.hideHotelInfo)
 const hasSiblings = computed(() => !!props.siblingCount && props.siblingCount > 0)
-/** Whether to render the grey bottom bar.
- *  - Always in grid mode for regular cards (empty bar = equal-height visual)
- *  - In list mode only when there are sibling deals to link to
- *  - Never in side-panel cards (hideHotelInfo) */
+/** Whether to render the grey bottom bar — only when there are
+ *  sibling deals to link to. Bundling is currently disabled on the
+ *  search page so this resolves to `false` in practice, hiding the
+ *  empty grey strip the grid mode used to render for visual parity. */
 const hasBar = computed(() => {
   if (props.hideBar) return false
-  if (hasSiblings.value) return true
-  if (props.gridMode && !props.hideHotelInfo) return true
-  return false
+  return hasSiblings.value
 })
 
 const imageSrc = computed(() => {
@@ -398,6 +439,26 @@ const includesBullets = computed<string[]>(() => {
     const out: string[] = []
     for (const t of props.fullInclusions) {
       const text = (t || '').trim()
+      if (!text) continue
+      const key = text.toLowerCase()
+      if (seen.has(key)) continue
+      seen.add(key)
+      out.push(text)
+    }
+    return out
+  }
+  // v6 sidepanel mode: bypass the smart-picker / 5-cap and show every
+  // inclusion the deal carries. Prefer `detailedInclusions` (the
+  // long-form titles the deal-page sidebar shows) when present; fall
+  // back to the compact `inclusions` set otherwise.
+  if (props.panelMode && frNavVariant.value === '6') {
+    const source = (props.deal.detailedInclusions && props.deal.detailedInclusions.length > 0)
+      ? props.deal.detailedInclusions
+      : props.deal.inclusions
+    const seen = new Set<string>()
+    const out: string[] = []
+    for (const inc of source) {
+      const text = localized(inc).trim()
       if (!text) continue
       const key = text.toLowerCase()
       if (seen.has(key)) continue

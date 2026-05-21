@@ -28,10 +28,14 @@
       />
     </div>
 
-    <div v-if="showLegend && cheapestPrice != null" class="calendar-month__legend">
-      <span class="legend-cheapest">
+    <div v-if="showLegend" class="calendar-month__legend">
+      <span v-if="cheapestPrice != null" class="legend-cheapest">
         <span class="legend-star" aria-hidden="true">★</span>
-        <span class="legend-label">= laagste prijs</span>
+        <span class="legend-label">{{ t('calendar.cheapestPrice') }}</span>
+      </span>
+      <span class="legend-unavailable">
+        <span class="legend-swatch legend-swatch--unavailable" aria-hidden="true"></span>
+        <span class="legend-label">{{ t('calendar.unavailable') }}</span>
       </span>
     </div>
   </div>
@@ -161,7 +165,8 @@ const days = computed(() => {
 .calendar-month__legend {
   display: flex;
   align-items: center;
-  gap: var(--space-sm);
+  flex-wrap: wrap;
+  gap: var(--space-md);
   margin-top: var(--space-md);
   padding-top: var(--space-md);
   border-top: 1px solid var(--color-border-light);
@@ -184,10 +189,11 @@ const days = computed(() => {
   background: #00CB8B;
 }
 
-.legend-cheapest {
+.legend-cheapest,
+.legend-unavailable {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
   font-size: 13px;
   color: var(--color-text-secondary);
 }
@@ -196,6 +202,13 @@ const days = computed(() => {
   font-size: 14px;
   line-height: 1;
   color: #00CB8B;
+}
+
+.legend-swatch--unavailable {
+  width: 14px;
+  height: 14px;
+  background: #dbdbdb;
+  opacity: 0.7;
 }
 
 .legend-label {

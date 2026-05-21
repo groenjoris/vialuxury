@@ -59,6 +59,7 @@ export default defineNuxtConfig({
     'leaflet.markercluster/dist/MarkerCluster.css',
     '~/assets/css/leaflet-overrides.css',
     '~/assets/css/variant-2.css',
+    '~/assets/css/fr-variant-6.css',
   ],
 
   nitro: {

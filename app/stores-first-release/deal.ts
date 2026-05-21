@@ -5,7 +5,7 @@ import { priceForArrival, minRoomsFor, maxRoomsFor } from '~/utils-first-release
 import dayjs from 'dayjs'
 
 export const useFirstReleaseDealStore = defineStore('first-release-deal', () => {
-  const { t, localized } = useFirstReleaseI18n()
+  const { t, localized, locale } = useFirstReleaseI18n()
   // --- State ---
   const currentDeal = ref<Deal | null>(null)
   const dealVariants = ref<DealVariant[]>([])
@@ -223,16 +223,26 @@ export const useFirstReleaseDealStore = defineStore('first-release-deal', () => 
     return { totalPrice, originalPrice, pricePerPerson, breakdown }
   })
 
+  /** Locale-aware date formatter — "24 mrt 2026" in NL, "24 Mar 2026"
+   *  in EN. Uses Intl so no extra dayjs locale file needs to be loaded. */
+  function formatDateForLocale(iso: string): string {
+    return new Intl.DateTimeFormat(locale.value === 'en' ? 'en-GB' : 'nl-NL', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+    }).format(new Date(iso))
+  }
+
   /** Formatted check-in */
   const formattedCheckIn = computed(() => {
     if (!checkInDate.value) return null
-    return dayjs(checkInDate.value).format('DD MMM YYYY')
+    return formatDateForLocale(checkInDate.value)
   })
 
   /** Formatted check-out */
   const formattedCheckOut = computed(() => {
     if (!checkOutDate.value) return null
-    return dayjs(checkOutDate.value).format('DD MMM YYYY')
+    return formatDateForLocale(checkOutDate.value)
   })
 
   /** Is booking ready? */

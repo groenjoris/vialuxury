@@ -196,10 +196,24 @@ const ICON_FOR: Record<string, string> = {
   'new-hotels': 'star',
 }
 
-const { toggleFilterTag, selectedFilterTags } = useFirstReleaseSearchState()
+const {
+  toggleFilterTag,
+  clearFilterTags,
+  clearDestinations,
+  clearArrivalDate,
+  clearDuration,
+  resetBudget,
+} = useFirstReleaseSearchState()
 
 function pickFilter(tagId: string) {
-  if (!selectedFilterTags.value.includes(tagId)) toggleFilterTag(tagId)
+  // Rule #1: arriving on /search via a home theme button starts with a
+  // clean slate — every other filter wiped, only the picked tag applied.
+  clearFilterTags()
+  clearDestinations()
+  clearArrivalDate()
+  clearDuration()
+  resetBudget()
+  toggleFilterTag(tagId)
   navigateTo('/first-release/search')
 }
 

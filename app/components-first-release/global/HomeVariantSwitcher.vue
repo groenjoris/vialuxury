@@ -27,9 +27,9 @@
 <script setup lang="ts">
 import { useFirstReleaseHomeVariant } from '~/composables-first-release/useFirstReleaseHomeVariant'
 
-type Variant = '1' | '2' | '3' | '4' | '5'
+type Variant = '1' | '2' | '3' | '4' | '5' | '6'
 
-const VARIANTS: Variant[] = ['1', '2', '3', '4', '5']
+const VARIANTS: Variant[] = ['1', '2', '3', '4', '5', '6']
 // Switcher reads the active variant directly from the composable —
 // no `current` prop needed, so it can be mounted anywhere (e.g. inside
 // SiteHeader for global presence) without parent wiring.
@@ -53,7 +53,7 @@ function goto(v: Variant) {
   setFrNavVariant(v)
   if (!import.meta.client) return
   const path = window.location.pathname
-  const homePaths = ['/first-release/home', '/first-release/home-v2', '/first-release/home-v3', '/first-release/home-v4', '/first-release/home-v5']
+  const homePaths = ['/first-release/home', '/first-release/home-v2', '/first-release/home-v3', '/first-release/home-v4', '/first-release/home-v5', '/first-release/home-v6']
   if (homePaths.includes(path)) {
     navigateTo(pathFor(v))
   }

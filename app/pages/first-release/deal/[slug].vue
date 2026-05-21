@@ -1,6 +1,5 @@
 <template>
   <div class="deal-page">
-    <FirstReleaseTopBar />
     <FirstReleaseSiteHeader />
 
     <!-- Search refresh overlay -->
@@ -21,10 +20,17 @@
       <nav class="deal-page__tabs container">
         <a href="#intro" class="deal-page__tab">{{ t('deal.tabIntro') }}</a>
         <a href="#arrangement" class="deal-page__tab">{{ t('deal.tabArrangement') }}</a>
-        <a href="#beoordelingen" class="deal-page__tab">{{ t('hotel.tabReviews') }}</a>
+        <a v-if="frNavVariant !== '6'" href="#beoordelingen" class="deal-page__tab">{{ t('hotel.tabReviews') }}</a>
         <a v-if="hotel && hotel.houseRules && hotel.houseRules.length" href="#huisregels" class="deal-page__tab">{{ t('hotel.tabHouseRules') }}</a>
         <a href="#veelgestelde-vragen" class="deal-page__tab">{{ t('hotel.tabFaq') }}</a>
         <a href="#tips" class="deal-page__tab">{{ t('hotel.tabNearby') }}</a>
+        <!-- v6 only: heart + share live in the anchor-nav row, right-aligned,
+             so they sit at the same height as the tabs and above the grey
+             divider between this row and the title section. -->
+        <div v-if="frNavVariant === '6'" class="deal-page__tabs-actions">
+          <button class="icon-action" :class="{ 'icon-action--favorited': isFavorited }" :aria-label="t('common.save')" @click="handleFavoriteClick">{{ isFavorited ? '♥' : '♡' }}</button>
+          <button class="icon-action" :aria-label="t('common.share')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg></button>
+        </div>
         <!-- Co-branded NU shop logo — only on the Hotel des Indes deal page
              when the user-test partner flag is set. Right-aligned, with
              "In samenwerking met" caption above. -->
@@ -47,20 +53,31 @@
             </div>
           </div>
           <div class="deal-page__meta">
-            <FirstReleaseViaLuxuryScoreBadge
-              v-if="searchHotelForBadge"
-              :hotel="searchHotelForBadge"
-              :all-hotels="mappedHotels"
-            />
-            <span class="deal-page__divider">|</span>
-            <span>{{ hotel.reviews.totalReviews }} {{ t('common.reviews') }}</span>
-            <span class="deal-page__divider">·</span>
+            <!-- Score badge + review count are hidden on v6 (backlog: drop
+                 reviews/scores from the deal page); the location + Reisduur
+                 entries below stay for every variant. -->
+            <template v-if="frNavVariant !== '6'">
+              <FirstReleaseViaLuxuryScoreBadge
+                v-if="searchHotelForBadge"
+                :hotel="searchHotelForBadge"
+                :all-hotels="mappedHotels"
+              />
+              <span class="deal-page__divider">|</span>
+              <span>{{ hotel.reviews.totalReviews }} {{ t('common.reviews') }}</span>
+              <span class="deal-page__divider">·</span>
+            </template>
             <span>{{ hotel.location.city }}, {{ hotel.location.region }}</span>
             <template v-if="chosenReisduurLabel">
               <span class="deal-page__divider">·</span>
               <span>Reisduur: {{ chosenReisduurLabel }}</span>
             </template>
           </div>
+        </div>
+        <!-- v6 only: Experience Creator business card, right-aligned beside
+             the title. Photo + name + role of the team member who
+             "curated" this deal (picked deterministically from the slug). -->
+        <div v-if="frNavVariant === '6'" class="deal-page__title-right">
+          <FirstReleaseExperienceCreatorCard :creator="creator" />
         </div>
         <div class="deal-page__title-actions">
           <button class="icon-action" :class="{ 'icon-action--favorited': isFavorited }" :aria-label="t('common.save')" @click="handleFavoriteClick">{{ isFavorited ? '♥' : '♡' }}</button>
@@ -122,7 +139,9 @@
           <section id="arrangement" class="deal-page__content-blocks">
             <h2 class="section-title">
               {{ t('deal.inclusionsHeading') }}
-              <button class="inline-edit-link" @click="store.openTravelGroupModal()">
+              <!-- v6 fixes persons at 2 and renders it as plain text (no popup trigger). -->
+              <span v-if="frNavVariant === '6'">2 personen</span>
+              <button v-else class="inline-edit-link" @click="store.openTravelGroupModal()">
                 {{ store.totalPersons }} {{ store.totalPersons === 1 ? t('common.personSingular') : t('common.personPlural') }}
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
               </button>
@@ -147,8 +166,9 @@
                   <p class="content-block__desc">{{ localized(inc.description) }}</p>
                 </div>
 
-                <!-- Overnight block: 1) reisgezelschap CTA, 2) upgrade hint (only if no upgrade-block in deal) -->
-                <template v-if="isOvernightInclusion(inc)">
+                <!-- Overnight block: 1) reisgezelschap CTA, 2) upgrade hint (only if no upgrade-block in deal).
+                     Both are hidden on v6 — persons fixed at 2, no room upgrades. -->
+                <template v-if="isOvernightInclusion(inc) && frNavVariant !== '6'">
                   <div class="content-block__cta">
                     <h4 class="content-block__cta-heading">
                       Je boekt {{ store.travelGroup.rooms }} {{ store.travelGroup.rooms === 1 ? 'kamer' : 'kamers' }} voor {{ store.totalPersons }} {{ store.totalPersons === 1 ? 'persoon' : 'personen' }}
@@ -246,7 +266,10 @@
         <div v-if="!isMobile" class="deal-page__col-right-stack">
         <div class="deal-page__col-right">
           <!-- Inclusions -->
-          <h3 class="sidebar__title">
+          <h3 v-if="frNavVariant === '6'" class="sidebar__title">
+            {{ t('sidebar.arrangementFullTitle') }}
+          </h3>
+          <h3 v-else class="sidebar__title">
             {{ t('sidebar.arrangementFor') }}
             <button
               type="button"
@@ -261,8 +284,9 @@
             </li>
           </ul>
 
-          <!-- Variant CTA -->
-          <div class="sidebar__variant-cta">
+          <!-- Variant CTA — hidden on v6; replaced by the new arrival-date
+               block inside the calendar wrapper below. -->
+          <div v-if="frNavVariant !== '6'" class="sidebar__variant-cta">
             <h4 class="sidebar__variant-heading">{{ t('deal.shorterOrLonger') }}</h4>
             <button class="sidebar__variant-btn" @click="isPanelOpen = true">
               {{ t('deal.viewOptions') }}
@@ -274,7 +298,23 @@
 
           <!-- Calendar -->
           <div class="sidebar__calendar" ref="calendarRef">
-            <h4 class="sidebar__cal-title">{{ t('calendar.chooseArrivalDate') }}</h4>
+            <template v-if="frNavVariant === '6'">
+              <h4 class="sidebar__cal-title sidebar__cal-title--big">{{ t('calendar.chooseArrivalDateLong') }}</h4>
+              <p v-if="currentDeal" class="sidebar__nights-line">
+                {{ t('deal.thisArrangementIsFor') }} {{ nightsWord(currentDeal.nights, false) }}
+              </p>
+              <template v-if="hasOtherArrangements">
+                <h4 class="sidebar__variant-heading sidebar__variant-heading--v6">{{ t('deal.shorterOrLongerStay') }}</h4>
+                <a
+                  href="#"
+                  class="sidebar__other-arrangements"
+                  @click.prevent="arrangementsPanelOpen = true"
+                >
+                  {{ t('deal.viewOtherArrangements') }}
+                </a>
+              </template>
+            </template>
+            <h4 v-else class="sidebar__cal-title">{{ t('calendar.chooseArrivalDate') }}</h4>
             <FirstReleaseCalendarMonth
               :year="calMonth.year" :month="calMonth.month"
               :availability="calAvailability"
@@ -293,12 +333,12 @@
           <div v-if="store.checkInDate" class="sidebar__summary">
             <div class="sidebar__dates">
               <div class="sidebar__date">
-                <span class="sidebar__date-label">Check-in</span>
+                <span class="sidebar__date-label">{{ t('calendar.checkInLabel') }}</span>
                 <span class="sidebar__date-val">{{ store.formattedCheckIn }}</span>
               </div>
               <span class="sidebar__date-arrow">→</span>
               <div class="sidebar__date">
-                <span class="sidebar__date-label">Check-out</span>
+                <span class="sidebar__date-label">{{ t('calendar.checkOutLabel') }}</span>
                 <span class="sidebar__date-val">{{ store.formattedCheckOut }}</span>
               </div>
               <button class="sidebar__date-clear" @click="store.clearDates()">{{ t('calendar.clearDates') }}</button>
@@ -331,13 +371,26 @@
               <li><span class="sidebar__trust-check">✓</span> {{ t('deal.trustCancel') }}</li>
               <li><span class="sidebar__trust-check">✓</span> {{ t('deal.trustTrustpilot') }}</li>
             </ul>
-            <img src="/images/trustpilot.svg" alt="Trustpilot" class="sidebar__trust-logo" />
+            <!-- v6 only: Trustpilot + Klarna logos each get a centred caption
+                 underneath, with extra space between the two blocks. v1-v5
+                 keep the bare Trustpilot logo (no caption, no Klarna). -->
+            <template v-if="frNavVariant === '6'">
+              <div class="sidebar__trust-block">
+                <img src="/images/trustpilot.svg" alt="Trustpilot" class="sidebar__trust-logo" />
+                <span class="sidebar__trust-caption">15.294 beoordelingen</span>
+              </div>
+              <div class="sidebar__trust-block sidebar__trust-block--klarna">
+                <img src="/images/logos/klarna.webp" alt="Klarna" class="sidebar__trust-logo sidebar__trust-logo--klarna" />
+                <span class="sidebar__trust-caption">Achteraf betalen mogelijk</span>
+              </div>
+            </template>
+            <img v-else src="/images/trustpilot.svg" alt="Trustpilot" class="sidebar__trust-logo" />
           </div>
 
         </div>
 
         <!-- Yvette banner — separate block below the booking sidebar -->
-        <FirstReleaseYvetteBanner />
+        <FirstReleaseYvetteBanner v-if="frNavVariant !== '6'" />
         </div>
       </div>
 
@@ -352,6 +405,10 @@
           </div>
         </div>
       </section>
+
+      <!-- v6 only: "Waarom ViaLuxury" replaces the reviews section
+           (which is hidden by fr-variant-6.css). -->
+      <FirstReleaseWhyViaLuxury v-if="frNavVariant === '6'" />
 
       <section v-if="!isMobile" id="beoordelingen" class="deal-page__reviews container">
         <h2 class="section-title">{{ t('hotel.reviews') }}</h2>
@@ -447,9 +504,28 @@
         </div>
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6" /></svg>
       </button>
+
+      <!-- v6 only: "Anderen bekeken ook" at the bottom of the deal page.
+           Fills 3 cards: same hotel first, then nearby. -->
+      <FirstReleaseOthersAlsoViewed
+        v-if="frNavVariant === '6'"
+        :current-hotel="searchHotelForBadge"
+        :current-deal-id="currentDeal?.id || ''"
+      />
     </main>
 
-    <FirstReleaseTravelGroupModal />
+    <FirstReleaseTravelGroupModal v-if="frNavVariant !== '6'" />
+    <!-- v6 only: "Andere arrangementen bij dit hotel" side panel. Reuses
+         the same component the /search results page uses, with a custom
+         sticky title + filter that hides the current deal. -->
+    <FirstReleaseHotelDealsSidePanel
+      v-if="frNavVariant === '6'"
+      :is-open="arrangementsPanelOpen"
+      :hotel="searchHotelForBadge"
+      :panel-title="t('deal.availableArrangements')"
+      :current-deal-id="currentDeal?.id || ''"
+      @close="arrangementsPanelOpen = false"
+    />
     <FirstReleasePackageSidePanel
       :is-open="isPanelOpen" :variants="dealVariants"
       :current-deal-id="currentDeal?.id || ''" :hotel-name="hotel?.name || ''"
@@ -459,7 +535,7 @@
       @close="isPanelOpen = false" @select="handlePanelSelect"
     />
     <FirstReleaseRoomUpgradeSidePanel
-      v-if="currentDeal"
+      v-if="currentDeal && frNavVariant !== '6'"
       :is-open="isUpgradePanelOpen"
       :deal="currentDeal"
       :hotel-name="hotel?.name || ''"
@@ -490,7 +566,7 @@
         <nav v-if="!isMobile" class="deal-page__tabs deal-page__tabs--in-bar">
           <a href="#intro" class="deal-page__tab">{{ t('deal.tabIntro') }}</a>
           <a href="#arrangement" class="deal-page__tab">{{ t('deal.tabArrangement') }}</a>
-          <a href="#beoordelingen" class="deal-page__tab">{{ t('hotel.tabReviews') }}</a>
+          <a v-if="frNavVariant !== '6'" href="#beoordelingen" class="deal-page__tab">{{ t('hotel.tabReviews') }}</a>
           <a v-if="hotel.houseRules && hotel.houseRules.length" href="#huisregels" class="deal-page__tab">{{ t('hotel.tabHouseRules') }}</a>
           <a href="#veelgestelde-vragen" class="deal-page__tab">{{ t('hotel.tabFaq') }}</a>
           <a href="#tips" class="deal-page__tab">{{ t('hotel.tabNearby') }}</a>
@@ -570,9 +646,17 @@
       <Transition name="fade">
         <div v-if="descriptionOpen && hotel" class="desc-modal" @click.self="descriptionOpen = false">
           <div class="desc-modal__card">
-            <button type="button" class="desc-modal__close" @click="descriptionOpen = false" :aria-label="t('common.close')">×</button>
-            <h2 class="desc-modal__title">{{ hotel.name }}</h2>
-            <div class="desc-modal__body" v-html="fullDescription"></div>
+            <!-- v6 only: hotel photo on the left, text scrolls on the right.
+                 The v6 stylesheet flips the card to a 2-column grid and pins
+                 the ✕ button to the top of the text column. -->
+            <div v-if="frNavVariant === '6' && hotel.images && hotel.images.length" class="desc-modal__photo">
+              <img :src="hotel.images[0].url" :alt="hotel.name" />
+            </div>
+            <div class="desc-modal__text">
+              <button type="button" class="desc-modal__close" @click="descriptionOpen = false" :aria-label="t('common.close')">×</button>
+              <h2 class="desc-modal__title">{{ hotel.name }}</h2>
+              <div class="desc-modal__body" v-html="fullDescription"></div>
+            </div>
           </div>
         </div>
       </Transition>
@@ -584,11 +668,15 @@
 
 <script setup lang="ts">
 import { useFirstReleaseDealStore } from '~/stores-first-release/deal'
+import { creatorForSlug } from '~/data/team-members'
+import FirstReleaseExperienceCreatorCard from '~/components-first-release/deal/ExperienceCreatorCard.vue'
+import FirstReleaseWhyViaLuxury from '~/components-first-release/deal/WhyViaLuxury.vue'
+import FirstReleaseOthersAlsoViewed from '~/components-first-release/deal/OthersAlsoViewed.vue'
 import { formatPrice } from '~/utils-first-release/formatPrice'
 import { getReviewLabelKey } from '~/utils-first-release/reviewLabel'
 import { generateDealAvailability } from '~/data/mock/deal-pricing'
 import { matchIcon } from '~/utils-first-release/iconMatcher'
-import { nightsLabel, personsLabel, roomsLabel } from '~/utils-first-release/plural'
+import { nightsLabel, nightsWord, personsLabel, roomsLabel } from '~/utils-first-release/plural'
 import {
   mappedPackagesByPermalink,
   mappedHotelsByPackagePermalink,
@@ -686,6 +774,17 @@ watch(searchVersion, () => {
 const isLoggedIn = ref(false)
 const isPanelOpen = ref(false)
 const isUpgradePanelOpen = ref(false)
+/** v6 only — opens the "Andere arrangementen bij dit hotel" sidepanel. */
+const arrangementsPanelOpen = ref(false)
+
+/** True when the current hotel has ≥ 1 deal OTHER than the active one
+ *  — drives whether the "Korter of langer verblijf?" link is rendered
+ *  on v6. */
+const hasOtherArrangements = computed(() => {
+  const sh = searchHotelForBadge.value
+  if (!sh || !currentDeal.value) return false
+  return sh.deals.some(d => d.id !== currentDeal.value!.id)
+})
 const isAuthPopupOpen = ref(false)
 const toastMessage = ref('')
 
@@ -722,6 +821,11 @@ function handleLogin() {
 
 // Resolve permalink from route — fallback to first available if invalid
 const routeSlug = computed(() => (route.params.slug as string) || defaultDealPermalink)
+
+/** Deterministic Experience Creator pick — same slug always returns the
+ *  same team member, so the v6 business card stays stable across reloads
+ *  while different deals show different creators. */
+const creator = computed(() => creatorForSlug(routeSlug.value))
 const initialDeal = mappedPackagesByPermalink[routeSlug.value] || mappedPackagesByPermalink[defaultDealPermalink]
 const initialHotel = mappedHotelsByPackagePermalink[routeSlug.value] || mappedHotelsByPackagePermalink[defaultDealPermalink]
 
@@ -948,8 +1052,10 @@ function openGallery() { }
 // Sync FR nav-bar variant with the user's last homepage pick so the
 // SiteHeader on this internal page matches the chosen variant. Reads
 // localStorage (or the URL if it matches a known variant path).
+// `frNavVariant` is hoisted to setup scope so the template can gate
+// v6-only blocks (Experience Creator card, hidden reviews, …).
+const { restoreFrNavVariant, frNavVariant } = useFirstReleaseHomeVariant()
 onMounted(() => {
-  const { restoreFrNavVariant } = useFirstReleaseHomeVariant()
   restoreFrNavVariant(window.location.pathname)
 })
 </script>
@@ -1036,7 +1142,7 @@ onMounted(() => {
 .deal-page__breadcrumbs { padding-top: var(--space-md); }
 
 /* ===== 2-COLUMN GRID ===== */
-.deal-page__grid { display: grid; grid-template-columns: 1fr 340px; gap: var(--space-xl); padding-top: var(--space-lg); align-items: start; }
+.deal-page__grid { display: grid; grid-template-columns: 1fr var(--fr-deal-sidebar-width, 340px); gap: var(--space-xl); padding-top: var(--space-lg); align-items: start; }
 .deal-page__col-left { min-width: 0; }
 .deal-page__description { font-size: 15px; line-height: 1.75; color: var(--color-text-secondary); }
 .deal-page__read-more {
