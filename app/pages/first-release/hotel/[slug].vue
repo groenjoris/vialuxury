@@ -12,10 +12,18 @@
       <nav class="hotel-page__tabs container">
         <a href="#overzicht" class="hotel-page__tab">{{ t('hotel.tabOverview') }}</a>
         <a href="#arrangementen" class="hotel-page__tab">{{ t('hotel.tabDeals') }}</a>
-        <a href="#beoordelingen" class="hotel-page__tab">{{ t('hotel.tabReviews') }}</a>
         <a href="#veelgestelde-vragen" class="hotel-page__tab">{{ t('hotel.tabFaq') }}</a>
         <a href="#huisregels" class="hotel-page__tab">{{ t('hotel.tabHouseRules') }}</a>
         <a href="#tips" class="hotel-page__tab">{{ t('hotel.tabNearby') }}</a>
+        <!-- Heart + share — right-aligned in the tabs row, above the grey
+             divider. Mirrors the deal-page `.deal-page__tabs-actions`
+             pattern for cross-page consistency. -->
+        <div class="hotel-page__tabs-actions">
+          <button class="icon-action" :aria-label="t('common.save')">♡</button>
+          <button class="icon-action" :aria-label="t('common.share')">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+          </button>
+        </div>
       </nav>
 
       <!-- Title section -->
@@ -29,21 +37,7 @@
           </div>
           <p v-if="hotel.pitch" class="hotel-page__pitch">{{ localized(hotel.pitch) }}</p>
           <div class="hotel-page__meta">
-            <FirstReleaseViaLuxuryScoreBadge
-              v-if="searchHotelForBadge"
-              :hotel="searchHotelForBadge"
-              :all-hotels="mappedHotels"
-            />
-            <span class="hotel-page__divider">|</span>
-            <span>{{ hotel.reviews.totalReviews }} {{ t('common.reviews') }}</span>
-            <span class="hotel-page__divider">·</span>
             <span>{{ hotel.location.city }}, {{ hotel.location.region }}</span>
-            <span class="hotel-page__title-actions">
-              <button class="icon-action" :aria-label="t('common.save')">♡</button>
-              <button class="icon-action" :aria-label="t('common.share')">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-              </button>
-            </span>
           </div>
         </div>
       </section>
@@ -104,11 +98,15 @@
 
       <!-- Deals section -->
       <section id="arrangementen" class="hotel-page__deals container">
+        <!-- Search-page style header: bold title, handwritten subtitle,
+             team avatars below. Mirrors `.search-page__header` styling. -->
         <div class="hotel-page__deals-header">
-          <div>
-            <h2 class="section-title">{{ dealsHeading }}</h2>
-            <p class="hotel-page__deals-subtitle">{{ t('hotel.availableDealsSubtitle') }}</p>
-          </div>
+          <h2 class="hotel-page__deals-title">
+            {{ filteredDealCards.length }} beschikbare arrangementen bij dit hotel
+          </h2>
+          <p class="hotel-page__deals-handwritten">
+            Samengesteld door het ViaLuxury Team
+          </p>
           <div class="team-avatars">
             <div
               v-for="member in teamMembers"
@@ -145,40 +143,6 @@
             hide-labels
             grid-mode
           />
-        </div>
-      </section>
-
-      <!-- Reviews -->
-      <section id="beoordelingen" class="hotel-page__reviews container">
-        <h2 class="section-title">{{ t('hotel.reviews') }}</h2>
-        <div class="reviews__score-bar">
-          <span class="reviews__score-big">{{ hotel.reviews.overallScore.toFixed(1) }}</span>
-          <div class="reviews__score-meta">
-            <span class="reviews__score-verdict">{{ t(getReviewLabelKey(hotel.reviews.overallScore)) }}</span>
-            <span class="reviews__score-count">{{ hotel.reviews.totalReviews }} {{ t('common.reviews') }}</span>
-          </div>
-        </div>
-        <div class="reviews__categories">
-          <div v-for="cat in hotel.reviews.categories" :key="localized(cat.name)" class="reviews__cat">
-            <span class="reviews__cat-name">{{ localized(cat.name) }}</span>
-            <div class="reviews__cat-bar"><div class="reviews__cat-fill" :style="{ width: (cat.score / 10 * 100) + '%' }"></div></div>
-            <span class="reviews__cat-score">{{ cat.score.toFixed(1) }}</span>
-          </div>
-        </div>
-        <div class="reviews__grid">
-          <div v-for="rev in hotel.individualReviews" :key="rev.id" class="review-card">
-            <div class="review-card__header">
-              <span class="review-card__author">{{ rev.author }}</span>
-              <span class="review-card__review-score">{{ Number(rev.score).toFixed(1) }}/10</span>
-            </div>
-            <p class="review-card__text">{{ localized(rev.text) }}</p>
-            <div v-if="rev.arrangement" class="review-card__arrangement">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M20 7h-3V5a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v2H4a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V8a1 1 0 0 0-1-1zM9 5h6v2H9V5z" />
-              </svg>
-              <span>{{ t('hotel.bookedAs') }} {{ localized(rev.arrangement) }}</span>
-            </div>
-          </div>
         </div>
       </section>
 
@@ -239,6 +203,38 @@
       </div>
     </main>
 
+    <!-- Sticky top anchor nav — same chrome as the deal page CTA bar.
+         Shows the cheapest price across all this hotel's deals and a
+         "Bekijk arrangementen" button that smooth-scrolls to the
+         arrangementen section. -->
+    <div v-if="hotel && ctaBarVisible" class="hotel-page__cta-bar">
+      <div class="hotel-page__cta-bar-inner container">
+        <nav class="hotel-page__tabs hotel-page__tabs--in-bar">
+          <a href="#overzicht" class="hotel-page__tab">{{ t('hotel.tabOverview') }}</a>
+          <a href="#arrangementen" class="hotel-page__tab">{{ t('hotel.tabDeals') }}</a>
+          <a href="#veelgestelde-vragen" class="hotel-page__tab">{{ t('hotel.tabFaq') }}</a>
+          <a v-if="hotel.houseRules && hotel.houseRules.length" href="#huisregels" class="hotel-page__tab">{{ t('hotel.tabHouseRules') }}</a>
+          <a href="#tips" class="hotel-page__tab">{{ t('hotel.tabNearby') }}</a>
+        </nav>
+        <div class="hotel-page__cta-bar-cluster">
+          <div v-if="cheapestDeal" class="hotel-page__cta-bar-price-block">
+            <div class="hotel-page__cta-bar-price-row">
+              <!-- "Vanaf" chip — hotel page never has a specific picked
+                   date, so the price is always a starting-from estimate. -->
+              <span class="hotel-page__cta-bar-discount hotel-page__cta-bar-discount--vanaf">Vanaf</span>
+              <span class="hotel-page__cta-bar-original">{{ formatPrice(cheapestDeal.originalPrice) }}</span>
+              <span class="hotel-page__cta-bar-amount">{{ formatPrice(cheapestDeal.basePrice) }}</span>
+              <FirstReleasePriceInfoTooltip variant="deal" />
+            </div>
+            <span class="hotel-page__cta-bar-meta">{{ cheapestPriceForLabel }}</span>
+          </div>
+          <button type="button" class="hotel-page__cta-bar-btn" @click="scrollToArrangements">
+            Bekijk arrangementen
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- Full description modal -->
     <Teleport to="body">
       <Transition name="panel">
@@ -266,11 +262,12 @@
 
 <script setup lang="ts">
 import { formatPrice } from '~/utils-first-release/formatPrice'
+import { nightsLabel, personsLabel, roomsLabel } from '~/utils-first-release/plural'
+import { teamMembers } from '~/data/team-members'
 import {
   mappedHotelsByHotelPermalink,
   mappedPackagesByPermalink,
   defaultDealPermalink,
-  mappedHotels,
 } from '~/data/deals-mapper'
 import { searchHotels } from '~/data/mock/search-hotels'
 import DealCard from '~/components-first-release/search/DealCard.vue'
@@ -284,15 +281,6 @@ const fallbackHotel = mappedHotelsByHotelPermalink[Object.keys(mappedHotelsByHot
 const initialHotel = mappedHotelsByHotelPermalink[hotelSlug] || fallbackHotel
 
 const hotel = ref(initialHotel)
-
-// SearchHotel companion for the ViaLuxury score badge (same hotel,
-// different type — needed for `deals[]` + `starRating` shape the helper
-// expects). Match by slug, fall back to name.
-const searchHotelForBadge = computed(() => {
-  const h = hotel.value
-  if (!h) return null
-  return mappedHotels.find(sh => sh.slug === h.slug || sh.name === h.name) ?? null
-})
 
 // Find all deals (packages) for this hotel
 import { dealVariantsByPermalink, dealsMapByPermalink } from '~/data/deals-mapper'
@@ -326,7 +314,7 @@ const dealCards = computed(() => {
   })
 })
 
-const { setSearchGroup, persons: globalPersons } = useFirstReleaseSearchState()
+const { setSearchGroup, persons: globalPersons, rooms: globalRooms } = useFirstReleaseSearchState()
 const searchPersons = ref(globalPersons.value || 2)
 const searchBarRef = ref<InstanceType<typeof import('~/components/hotel/HotelSearchBar.vue').default> | null>(null)
 
@@ -334,14 +322,10 @@ useHead({ title: `${hotel.value.name} | ViaLuxury` })
 
 const dealsHeading = computed(() => t('hotel.availableDeals'))
 
-// Team members for avatar row (mirrors /search).
+// Team members for avatar row — shared with /search via the
+// `~/data/team-members.ts` module so the hover-tooltip widget shows
+// the same five Experience Makers (each with a real photo).
 const hoveredMember = ref<string | null>(null)
-const teamMembers = [
-  { name: 'Yvette', initials: 'YV', photo: '/images/yvette.jpeg', role: '15 jaar Experience Maker bij ViaLuxury', score: 'Gemiddelde score voor haar experiences: 9.8' },
-  { name: 'Jan',    initials: 'JN', photo: '',                    role: 'Concierge & curator van bijzondere verblijven', score: 'Gemiddelde score voor zijn experiences: 9.7' },
-  { name: 'Sara',   initials: 'SR', photo: '',                    role: 'Reisexpert wellness & culinaire experiences',   score: 'Gemiddelde score voor haar experiences: 9.6' },
-  { name: 'Lars',   initials: 'LR', photo: '',                    role: 'Specialist kasteelhotels & landgoederen',       score: 'Gemiddelde score voor zijn experiences: 9.6' },
-]
 
 /** Local-only search state — only `persons` propagates to the global state
  *  (so the rest of the site picks up the change); date / duration are kept
@@ -406,12 +390,49 @@ const mapTileUrl = computed(() => {
   return `https://tile.openstreetmap.org/${zoom}/${x}/${y}.png`
 })
 
+/** Cheapest available deal of this hotel — drives the sticky CTA bar's
+ *  price block (discount %, original strikethrough, total, "Voor X
+ *  nacht(en), Y personen, Z kamer(s)"). */
+const cheapestDeal = computed(() => {
+  const sh = searchHotel.value
+  if (!sh || sh.deals.length === 0) return null
+  return [...sh.deals].sort((a, b) => a.basePrice - b.basePrice)[0]
+})
+
+/** Plural-aware "Voor X nacht(en), Y personen, Z kamer(s)" — matches
+ *  the deal-page sticky bar's wording. */
+const cheapestPriceForLabel = computed(() => {
+  const d = cheapestDeal.value
+  if (!d) return ''
+  return t('deal.priceFor')
+    .replace('{nightsLabel}', nightsLabel(d.nights, 'nl'))
+    .replace('{personsLabel}', personsLabel(globalPersons.value || 2, 'nl'))
+    .replace('{roomsLabel}', roomsLabel(globalRooms.value || 1, 'nl'))
+})
+
+/** Sticky CTA bar visibility — same scroll threshold as the deal page. */
+const ctaBarVisible = ref(false)
+function handleScroll() {
+  ctaBarVisible.value = window.scrollY > 200
+}
+
+/** Smooth-scroll to the arrangements section. */
+function scrollToArrangements() {
+  const el = document.getElementById('arrangementen')
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+}
+
 // Sync FR nav-bar variant with the user's last homepage pick so the
 // SiteHeader on this internal page matches the chosen variant. Reads
 // localStorage (or the URL if it matches a known variant path).
 onMounted(() => {
   const { restoreFrNavVariant } = useFirstReleaseHomeVariant()
   restoreFrNavVariant(window.location.pathname)
+  window.addEventListener('scroll', handleScroll, { passive: true })
+  handleScroll()
+})
+onBeforeUnmount(() => {
+  if (typeof window !== 'undefined') window.removeEventListener('scroll', handleScroll)
 })
 </script>
 
@@ -490,8 +511,10 @@ onMounted(() => {
 .hotel-page__score { display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: var(--radius-sm); background: #00B67A; color: #fff; font-size: 13px; font-weight: 700; flex-shrink: 0; }
 .hotel-page__score-label { font-size: 13px; font-weight: 600; color: var(--color-text-primary); }
 .hotel-page__divider { color: var(--color-text-muted); }
-/* Inline favourite + share icons sit on the score/location row, like the deal page. */
-.hotel-page__title-actions { display: inline-flex; gap: 6px; align-items: center; margin-left: auto; flex-shrink: 0; }
+/* Heart + share live inside `.hotel-page__tabs` (right-aligned via
+   `.hotel-page__tabs-actions` in fr-variant-6.css), same row as the
+   anchor links and above the section's grey divider — mirrors the
+   deal page. */
 .icon-action { width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--color-border); display: inline-flex; align-items: center; justify-content: center; font-size: 16px; background: var(--color-surface); cursor: pointer; color: var(--color-text-primary); }
 .icon-action:hover { border-color: var(--color-primary); }
 
@@ -536,17 +559,32 @@ onMounted(() => {
 /* ===== DEALS ===== */
 .hotel-page__deals { padding: var(--space-xl) var(--space-lg); position: relative; }
 .hotel-page__deals .section-title { margin-bottom: var(--space-md); }
+
+/* Search-page style header: bold title + handwritten subtitle +
+   team avatars stacked below. Mirrors `.search-page__header` so the
+   two pages share the same celebratory typography. */
 .hotel-page__deals-header {
   display: flex;
+  flex-direction: column;
   align-items: flex-start;
-  justify-content: space-between;
-  gap: var(--space-lg);
-  margin-bottom: var(--space-md);
+  gap: 6px;
+  margin-bottom: var(--space-lg);
 }
-.hotel-page__deals-subtitle {
-  font-size: 14px;
-  color: var(--color-text-secondary);
-  margin: -8px 0 0;
+.hotel-page__deals-title {
+  font-family: var(--font-heading);
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+.hotel-page__deals-handwritten {
+  font-family: 'Oooh Baby', cursive;
+  font-size: 23px;
+  line-height: 1.1;
+  color: var(--color-text-primary);
+  margin: 4px 0 8px;
+  padding-right: 6px;
 }
 .hotel-page__deals-search {
   display: flex;
@@ -709,7 +747,114 @@ onMounted(() => {
   .hotel-page__name { font-size: 22px; }
   .hotel-page__name-wrap { flex-wrap: wrap; }
   .hotel-page__tabs { gap: var(--space-md); overflow-x: auto; white-space: nowrap; }
+  .hotel-page__deals-title { font-size: 22px; }
   .facilities__grid { grid-template-columns: 1fr 1fr; }
   .deals__grid { grid-template-columns: 1fr; }
+}
+
+/* ===== STICKY CTA BAR (top, after scroll) =====
+   Mirrors `.deal-page__cta-bar` so both pages share one visual
+   language. The button smooth-scrolls to #arrangementen. */
+.hotel-page__cta-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  z-index: 100;
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+.hotel-page__cta-bar-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  padding: 10px var(--space-lg);
+}
+.hotel-page__tabs--in-bar {
+  padding: 0;
+  border: 0;
+}
+.hotel-page__tabs--in-bar::after { display: none; }
+.hotel-page__cta-bar-cluster {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.hotel-page__cta-bar-price-block {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+.hotel-page__cta-bar-price-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.hotel-page__cta-bar-discount {
+  flex-shrink: 0;
+  align-self: center;
+  font-family: var(--font-heading);
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+  background: var(--color-discount);
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+}
+/* "Vanaf" variant — same italic muted text style as the deal-card
+   "Vanaf" prefix (no chip background, Basis Grotesque, smaller).
+   Hotel page is always a starting-from estimate. */
+.hotel-page__cta-bar-discount--vanaf {
+  background: transparent;
+  color: var(--color-text-muted);
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 400;
+  font-style: italic;
+  padding: 0;
+  border-radius: 0;
+}
+.hotel-page__cta-bar-original {
+  font-size: 13px;
+  color: var(--color-error);
+  text-decoration: line-through;
+}
+.hotel-page__cta-bar-amount {
+  font-family: var(--font-heading);
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  line-height: 1.1;
+}
+.hotel-page__cta-bar-meta {
+  font-size: 11px;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+.hotel-page__cta-bar-btn {
+  flex: 0 0 auto;
+  height: 44px;
+  padding: 0 24px;
+  font-size: 15px;
+  font-weight: 600;
+  background: var(--color-primary);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-family: inherit;
+  white-space: nowrap;
+  transition: background var(--transition-fast);
+}
+.hotel-page__cta-bar-btn:hover {
+  background: var(--color-primary-hover);
+}
+@media (max-width: 768px) {
+  .hotel-page__cta-bar-inner { padding: 8px var(--space-md); }
+  .hotel-page__tabs--in-bar { display: none; }
+  .hotel-page__cta-bar-cluster { flex: 1; justify-content: space-between; }
 }
 </style>

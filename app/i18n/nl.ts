@@ -67,7 +67,7 @@ const nl: Record<string, string> = {
   // Header - Tabs
   'header.tab.arrivalDate': 'Kies aankomstdatum',
   'header.tab.calendar': 'Kies je aankomstdatum',
-  'header.flexible': 'Ik ben flexibel',
+  'header.flexible': 'Ik ben flexibel qua aankomstdatum',
   'header.ready': 'Klaar',
   'header.tab.flexible': 'Kies tijdsperiode',
   'header.tab.nights': 'Kies aantal nachten',

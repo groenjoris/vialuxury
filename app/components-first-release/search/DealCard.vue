@@ -143,6 +143,7 @@
                   <span class="deal-card-v2__price-prefix">Vanaf</span>
                   <span class="deal-card-v2__price">{{ formatPrice(price) }}</span>
                   <span v-if="originalPrice > price" class="deal-card-v2__original">{{ formatPrice(originalPrice) }}</span>
+                  <FirstReleasePriceInfoTooltip variant="card" />
                 </p>
                 <NuxtLink
                   :to="dealHref"
@@ -175,6 +176,7 @@
               <span class="deal-card-v2__price-prefix">Vanaf</span>
               <span v-if="originalPrice > price" class="deal-card-v2__original">{{ formatPrice(originalPrice) }}</span>
               <span class="deal-card-v2__price">{{ formatPrice(price) }}</span>
+              <FirstReleasePriceInfoTooltip variant="card" />
             </p>
             <NuxtLink :to="dealHref" target="_blank" rel="noopener" class="deal-card-v2__cta deal-card-v2__cta--full">
               Bekijk

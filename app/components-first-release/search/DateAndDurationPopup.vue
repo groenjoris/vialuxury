@@ -1,30 +1,11 @@
 <template>
-  <div class="when-pop">
+  <div class="when-pop" :class="{ 'when-pop--single': mode !== 'both' }">
     <!-- ────────── Content row: calendar (left) + nights (right) ────────── -->
     <div class="when-pop__content">
       <!-- LEFT — calendar -->
-      <section class="when-pop__cal-section">
+      <section v-if="mode !== 'duration'" class="when-pop__cal-section">
         <header class="when-pop__cal-header">
           <h4 class="when-pop__title">{{ t('header.tab.arrivalDate') }}</h4>
-          <label class="when-pop__flex">
-            <input
-              type="checkbox"
-              class="when-pop__flex-input"
-              :checked="flexible"
-              @change="toggleFlexible(($event.target as HTMLInputElement).checked)"
-            />
-            <span class="when-pop__flex-box" aria-hidden="true">
-              <svg
-                v-if="flexible"
-                width="12" height="12" viewBox="0 0 24 24"
-                fill="none" stroke="currentColor" stroke-width="3"
-                stroke-linecap="round" stroke-linejoin="round"
-              >
-                <polyline points="5 12 10 17 19 7" />
-              </svg>
-            </span>
-            <span class="when-pop__flex-label">{{ t('header.flexible') }}</span>
-          </label>
         </header>
 
         <!-- Calendar body — grey-out + lock interactions when "Ik ben flexibel"
@@ -78,13 +59,36 @@
           </button>
         </div>
         </div>
+
+        <!-- "Ik ben flexibel" checkbox now sits BELOW the calendar so the
+             header reads with just the section title; users find it next to
+             where their eyes land after scanning dates. -->
+        <label class="when-pop__flex when-pop__flex--below">
+          <input
+            type="checkbox"
+            class="when-pop__flex-input"
+            :checked="flexible"
+            @change="toggleFlexible(($event.target as HTMLInputElement).checked)"
+          />
+          <span class="when-pop__flex-box" aria-hidden="true">
+            <svg
+              v-if="flexible"
+              width="12" height="12" viewBox="0 0 24 24"
+              fill="none" stroke="currentColor" stroke-width="3"
+              stroke-linecap="round" stroke-linejoin="round"
+            >
+              <polyline points="5 12 10 17 19 7" />
+            </svg>
+          </span>
+          <span class="when-pop__flex-label">{{ t('header.flexible') }}</span>
+        </label>
       </section>
 
-      <!-- Vertical divider -->
-      <div class="when-pop__divider" aria-hidden="true"></div>
+      <!-- Vertical divider — only when both columns are visible -->
+      <div v-if="mode === 'both'" class="when-pop__divider" aria-hidden="true"></div>
 
       <!-- RIGHT — nights -->
-      <section class="when-pop__nights-section">
+      <section v-if="mode !== 'date'" class="when-pop__nights-section">
         <h4 class="when-pop__title">Kies reisduur</h4>
         <p class="when-pop__hint">{{ t('header.tab.nightsHint') }}</p>
 
@@ -142,27 +146,13 @@
       </section>
     </div>
 
-    <!-- ────────── Footer: Clear + Ready, divider above ────────── -->
-    <footer class="when-pop__footer">
-      <a
-        href="#"
-        class="when-pop__clear"
-        :class="{ 'when-pop__clear--disabled': !hasSelection }"
-        @click.prevent="hasSelection && $emit('clear')"
-      >{{ t('header.clear') }}</a>
-      <button
-        type="button"
-        class="when-pop__done"
-        @click="$emit('save')"
-      >{{ t('header.ready') }}</button>
-    </footer>
   </div>
 </template>
 
 <script setup lang="ts">
 const { t } = useFirstReleaseI18n()
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   calMonth: { year: number; month: number }
   selectedDate: string | null
   nights: readonly string[]
@@ -173,7 +163,14 @@ const props = defineProps<{
    *  reflects an empty selection. Toggled by the parent in response to
    *  the `set-any-duration` event. */
   anyDuration?: boolean
-}>()
+  /** Which sections to render. 'both' = calendar + nights (default,
+   *  used by the SiteHeader combined popup). 'date' = calendar only.
+   *  'duration' = nights list only. Used by the hotel-page mid-page
+   *  searchbar where the two are split into separate triggers. */
+  mode?: 'both' | 'date' | 'duration'
+}>(), {
+  mode: 'both',
+})
 
 const emit = defineEmits<{
   'update:calMonth': [val: { year: number; month: number }]
@@ -276,6 +273,13 @@ const hasSelection = computed(() => !!props.selectedDate || props.nights.length 
   align-items: stretch;
 }
 
+/* When the popup renders only one section (mode = 'date' | 'duration')
+   collapse the grid to that single column and let it size to its
+   natural width. Used by the hotel mid-page searchbar. */
+.when-pop--single .when-pop__content {
+  grid-template-columns: auto;
+}
+
 /* ────────── Left: calendar column ────────── */
 .when-pop__cal-section {
   padding: 24px;
@@ -364,6 +368,15 @@ const hasSelection = computed(() => !!props.selectedDate || props.nights.length 
   font-weight: 400;
   color: #0e0e0c;
   line-height: 1;
+}
+
+/* "Ik ben flexibel" placement below the calendar — sits with the same
+   left-padding as the calendar grid so the checkbox aligns with the
+   first date column. */
+.when-pop__flex--below {
+  margin-top: 4px;
+  padding: 4px 0;
+  align-self: flex-start;
 }
 
 /* ────────── Vertical divider ────────── */

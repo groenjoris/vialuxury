@@ -112,7 +112,8 @@
 /* Heart + share row inside the anchor-nav tabs, right-aligned so
    they sit at the same height as the anchor links and just above
    the section's grey divider. */
-[data-fr-variant="6"] .deal-page__tabs .deal-page__tabs-actions {
+[data-fr-variant="6"] .deal-page__tabs .deal-page__tabs-actions,
+[data-fr-variant="6"] .hotel-page__tabs .hotel-page__tabs-actions {
   margin-left: auto;
   display: inline-flex;
   align-items: center;
@@ -393,17 +394,17 @@
   top: 1px !important;
   right: 1px !important;
   left: auto !important;
-  width: 16px;
-  height: 16px;
+  width: auto;
+  height: auto;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: #ff6d00;
-  color: #fff !important;
-  font-size: 9px;
+  background: transparent;          /* drop the orange circle */
+  color: #ff6d00 !important;        /* orange ★ glyph */
+  font-size: 14px;
   line-height: 1;
-  border-radius: 999px;
-  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+  border-radius: 0;
+  box-shadow: none;
 }
 
 /* Cheapest-day price — colour-match the orange badge. The !important
@@ -434,24 +435,79 @@
   pointer-events: none;
 }
 
-/* Legend (under the calendar) — re-skin the cheapest-price marker
-   into the same orange chip with a white ★ that the calendar cell
-   uses, and make sure the "niet beschikbaar" swatch matches the
-   flat grey unavailable tile. */
+/* Legend (under the calendar) — naked orange ★ matching the day-cell
+   marker. The "niet beschikbaar" swatch matches the flat grey
+   unavailable tile. */
 [data-fr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar) .legend-star {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 16px;
-  height: 16px;
-  background: #ff6d00;
-  color: #fff !important;          /* beats scoped #00CB8B in CalendarMonth.vue */
-  font-size: 9px;
-  border-radius: 999px;
-  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+  width: auto;
+  height: auto;
+  background: transparent;
+  color: #ff6d00 !important;       /* beats scoped #00CB8B in CalendarMonth.vue */
+  font-size: 14px;
+  border-radius: 0;
+  box-shadow: none;
 }
 
 [data-fr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar) .legend-swatch--unavailable {
   background: #dbdbdb;
   opacity: 0.4;
+}
+
+/* (Nav-variant 6's rounded-rectangle button chrome lives inside
+   SiteHeader.vue's scoped block, joined to variant 3's existing rule
+   — Vue scoped CSS appends a data-v-* attribute selector that boosts
+   specificity over any external override, so the rule has to sit in
+   the same scoped block as the base pill declaration.) */
+
+/* ─────────── "Gezien in:" press-logos banner ───────────
+   Standalone credibility band, decoupled from the Uitgelicht deal
+   card. Sits between the quick-filter pills and "Eerder bekeken".
+   Subtle warm-grey background so it reads as its own section but
+   doesn't compete with the cards above/below. */
+.home-press-banner {
+  padding: var(--space-lg) 0;
+  background: var(--color-background-secondary, #faf9f6);
+  border-top: 1px solid var(--color-border-light);
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.home-press-banner__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-xl);
+  flex-wrap: wrap;
+}
+
+.home-press-banner__label {
+  font-family: var(--font-heading);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  flex-shrink: 0;
+}
+
+.home-press-banner__logos {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  gap: var(--space-lg);
+  flex-wrap: wrap;
+}
+
+.home-press-banner__logo {
+  height: 26px;
+  width: auto;
+  object-fit: contain;
+  display: block;
+}
+
+@media (max-width: 640px) {
+  .home-press-banner__inner { justify-content: center; }
+  .home-press-banner__logos { justify-content: center; gap: var(--space-md); }
+  .home-press-banner__logo { height: 22px; }
 }

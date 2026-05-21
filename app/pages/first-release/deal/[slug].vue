@@ -276,6 +276,7 @@
               <span class="sidebar__discount">-{{ currentDeal.discountPercentage }}%</span>
               <span class="sidebar__amount">{{ formatPrice(store.pricing.totalPrice) }}</span>
               <span class="sidebar__original">{{ formatPrice(store.pricing.originalPrice) }}</span>
+              <FirstReleasePriceInfoTooltip variant="deal" />
             </div>
             <p class="sidebar__price-meta">{{ priceForLabel }}</p>
 
@@ -476,9 +477,16 @@
         <div class="deal-page__cta-bar-cluster">
           <div class="deal-page__cta-bar-price-block">
             <div class="deal-page__cta-bar-price-row">
-              <span class="deal-page__cta-bar-discount">-{{ currentDeal.discountPercentage }}%</span>
+              <!-- With dates: real booked-night price, show the discount %.
+                   Without dates: this is a starting-from estimate, swap the
+                   discount chip for a neutral "Vanaf" pill. -->
+              <span
+                class="deal-page__cta-bar-discount"
+                :class="{ 'deal-page__cta-bar-discount--vanaf': !dateSelected }"
+              >{{ dateSelected ? `-${currentDeal.discountPercentage}%` : 'Vanaf' }}</span>
               <span class="deal-page__cta-bar-original">{{ formatPrice(store.pricing.originalPrice) }}</span>
               <span class="deal-page__cta-bar-amount">{{ formatPrice(store.pricing.totalPrice) }}</span>
+              <FirstReleasePriceInfoTooltip variant="deal" />
             </div>
             <span class="deal-page__cta-bar-meta">{{ priceForLabel }}</span>
           </div>
@@ -1747,6 +1755,19 @@ onMounted(() => {
   background: var(--color-discount);
   padding: 4px 8px;
   border-radius: var(--radius-sm);
+}
+/* "Vanaf" variant — same italic muted text style as the deal-card
+   "Vanaf" prefix (no chip background, Basis Grotesque, smaller).
+   Used when no dates are selected. */
+.deal-page__cta-bar-discount--vanaf {
+  background: transparent;
+  color: var(--color-text-muted);
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 400;
+  font-style: italic;
+  padding: 0;
+  border-radius: 0;
 }
 .deal-page__cta-bar-original {
   font-size: 13px;

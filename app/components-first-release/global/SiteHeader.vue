@@ -214,45 +214,176 @@
               <span></span>
             </button>
 
-            <!-- Desktop / iPad: compact dropdown (same style as contact dropdown) -->
+            <!-- Side panel — slides in from the right when the hamburger is
+                 clicked. Mirrors the Figma design (440 px wide, two
+                 sections: Explore + Account & help, coloured icon tiles,
+                 chevron-right per row). Backdrop dims the rest of the
+                 page; clicking it closes the panel. -->
             <Teleport to="body">
-              <div v-if="hamburgerDropdownOpen && !isMobile" class="hamburger-dropdown__menu" :style="hamburgerMenuStyle">
-                  <span class="hamburger-dropdown__heading">Menu</span>
+              <Transition name="menu-fade">
+                <div
+                  v-if="hamburgerDropdownOpen && !isMobile"
+                  class="menu-panel__backdrop"
+                  @click="hamburgerDropdownOpen = false"
+                  aria-hidden="true"
+                ></div>
+              </Transition>
+              <Transition name="menu-slide">
+                <aside
+                  v-if="hamburgerDropdownOpen && !isMobile"
+                  class="menu-panel"
+                  role="dialog"
+                  aria-label="Menu"
+                >
+                  <!-- Panel header: MENU eyebrow + ViaLuxury wordmark + close ✕ -->
+                  <header class="menu-panel__header">
+                    <span class="menu-panel__eyebrow">Menu</span>
+                    <img src="/images/logo-vialuxury-horizontal.svg" alt="ViaLuxury" class="menu-panel__logo" />
+                    <button
+                      type="button"
+                      class="menu-panel__close"
+                      :aria-label="t('common.close') || 'Sluit menu'"
+                      @click="hamburgerDropdownOpen = false"
+                    >
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M18 6 6 18M6 6l12 12"/>
+                      </svg>
+                    </button>
+                  </header>
 
-                  <NuxtLink v-for="v in verticals" :key="v.id" :to="v.href" class="hamburger-dropdown__link" @click="hamburgerDropdownOpen = false">
-                    <template v-if="v.id === 'hotels'"><span>{{ t('header.hotels') }} <span class="verticals__item-accent">+ <span class="verticals__item-more">more</span></span></span></template>
-                    <template v-else>{{ v.label }}</template>
-                  </NuxtLink>
+                  <!-- Scrollable body -->
+                  <div class="menu-panel__body">
+                    <!-- EXPLORE section -->
+                    <span class="menu-panel__section-label">Explore</span>
+                    <NuxtLink
+                      :to="homeHref"
+                      class="menu-panel__row menu-panel__row--lg"
+                      @click="hamburgerDropdownOpen = false"
+                    >
+                      <span class="menu-panel__icon-tile" style="background:#ead8b5">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7a5a2e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 18v-6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v6"/><path d="M3 14h18"/><path d="M5 18v2M19 18v2"/><path d="M7 10V8a3 3 0 0 1 3-3h4a3 3 0 0 1 3 3v2"/></svg>
+                      </span>
+                      <span class="menu-panel__row-text">
+                        <span class="menu-panel__row-title">
+                          {{ t('header.hotels') }}
+                          <span class="menu-panel__row-title-accent">+ more</span>
+                        </span>
+                        <span class="menu-panel__row-sub">Complete arrangementen met luxe extra's</span>
+                      </span>
+                      <svg class="menu-panel__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+                    </NuxtLink>
 
-                  <!-- Vakantieparken moved out of the top-bar verticals; it
-                       still gets a dedicated entry in the hamburger menu. -->
-                  <NuxtLink to="/first-release/vakantieparken" class="hamburger-dropdown__link" @click="hamburgerDropdownOpen = false">
-                    {{ t('header.holidayParks') }}
-                  </NuxtLink>
+                    <a
+                      href="https://restaurants.vialuxury.com/"
+                      target="_blank"
+                      rel="noopener"
+                      class="menu-panel__row menu-panel__row--lg"
+                      @click="hamburgerDropdownOpen = false"
+                    >
+                      <span class="menu-panel__icon-tile" style="background:#ead2c0">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7a4a26" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 2v7a3 3 0 0 0 3 3h0a3 3 0 0 0 3-3V2"/><path d="M6 12v10"/><path d="M17 2v20"/><path d="M21 2c0 5-2 6-4 6"/></svg>
+                      </span>
+                      <span class="menu-panel__row-text">
+                        <span class="menu-panel__row-title">{{ t('header.restaurants') }}</span>
+                        <span class="menu-panel__row-sub">Culinaire ontdekkingen</span>
+                      </span>
+                      <svg class="menu-panel__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+                    </a>
 
-                  <div class="contact-dropdown__divider"></div>
+                    <NuxtLink
+                      to="/cadeaubon"
+                      class="menu-panel__row menu-panel__row--lg"
+                      @click="hamburgerDropdownOpen = false"
+                    >
+                      <span class="menu-panel__icon-tile" style="background:#f0c8cf">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8a3a4a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
+                      </span>
+                      <span class="menu-panel__row-text">
+                        <span class="menu-panel__row-title">{{ t('header.giftCard') }}</span>
+                        <span class="menu-panel__row-sub">Geef een ervaring cadeau</span>
+                      </span>
+                      <svg class="menu-panel__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+                    </NuxtLink>
 
-                  <NuxtLink to="/first-release/leden" class="hamburger-dropdown__link" @click="hamburgerDropdownOpen = false">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                    {{ t('header.membersEntrance') }}
-                  </NuxtLink>
-                  <NuxtLink to="/contact" class="hamburger-dropdown__link" @click="hamburgerDropdownOpen = false">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-                    {{ t('header.contact') }}
-                  </NuxtLink>
-                  <NuxtLink to="/veelgestelde-vragen" class="hamburger-dropdown__link" @click="hamburgerDropdownOpen = false">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-                    {{ t('header.faq') }}
-                  </NuxtLink>
+                    <NuxtLink
+                      to="/first-release/vakantieparken"
+                      class="menu-panel__row menu-panel__row--lg"
+                      @click="hamburgerDropdownOpen = false"
+                    >
+                      <span class="menu-panel__icon-tile" style="background:#cfe0c8">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3a6a3a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h18"/><path d="M12 3 4 13h16L12 3z"/><path d="M9 21v-6h6v6"/></svg>
+                      </span>
+                      <span class="menu-panel__row-text">
+                        <span class="menu-panel__row-title">{{ t('header.holidayParks') }}</span>
+                        <span class="menu-panel__row-sub">Natuur, familie &amp; langere verblijven</span>
+                      </span>
+                      <svg class="menu-panel__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+                    </NuxtLink>
 
-                  <div class="contact-dropdown__divider"></div>
+                    <!-- ACCOUNT & HELP section -->
+                    <span class="menu-panel__section-label menu-panel__section-label--later">Account &amp; help</span>
 
-                <div class="hamburger-dropdown__lang">
-                  <button v-for="lang in languages" :key="lang.label" type="button" class="hamburger-dropdown__lang-btn" :class="{ 'hamburger-dropdown__lang-btn--active': lang.label === selectedLanguage.label }" @click="selectLanguage(lang); hamburgerDropdownOpen = false">
-                    {{ lang.code }}
-                  </button>
-                </div>
-              </div>
+                    <NuxtLink
+                      to="/first-release/leden"
+                      class="menu-panel__row menu-panel__row--sm"
+                      @click="hamburgerDropdownOpen = false"
+                    >
+                      <span class="menu-panel__icon-tile menu-panel__icon-tile--sm">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0e0e0c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                      </span>
+                      <span class="menu-panel__row-text">
+                        <span class="menu-panel__row-title menu-panel__row-title--sm">{{ t('header.membersEntrance') }}</span>
+                        <span class="menu-panel__row-sub">Inloggen of lid worden</span>
+                      </span>
+                      <svg class="menu-panel__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+                    </NuxtLink>
+
+                    <NuxtLink
+                      to="/contact"
+                      class="menu-panel__row menu-panel__row--sm"
+                      @click="hamburgerDropdownOpen = false"
+                    >
+                      <span class="menu-panel__icon-tile menu-panel__icon-tile--sm">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0e0e0c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16v12H5.17L4 17.17V4z"/></svg>
+                      </span>
+                      <span class="menu-panel__row-text">
+                        <span class="menu-panel__row-title menu-panel__row-title--sm">{{ t('header.contact') }}</span>
+                        <span class="menu-panel__row-sub">Bereik onze concierge</span>
+                      </span>
+                      <svg class="menu-panel__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+                    </NuxtLink>
+
+                    <NuxtLink
+                      to="/veelgestelde-vragen"
+                      class="menu-panel__row menu-panel__row--sm"
+                      @click="hamburgerDropdownOpen = false"
+                    >
+                      <span class="menu-panel__icon-tile menu-panel__icon-tile--sm">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0e0e0c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                      </span>
+                      <span class="menu-panel__row-text">
+                        <span class="menu-panel__row-title menu-panel__row-title--sm">{{ t('header.faq') }}</span>
+                        <span class="menu-panel__row-sub">Veelgestelde vragen</span>
+                      </span>
+                      <svg class="menu-panel__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+                    </NuxtLink>
+
+                    <!-- Language switch at the bottom -->
+                    <div class="menu-panel__lang">
+                      <button
+                        v-for="lang in languages"
+                        :key="lang.label"
+                        type="button"
+                        class="menu-panel__lang-btn"
+                        :class="{ 'menu-panel__lang-btn--active': lang.label === selectedLanguage.label }"
+                        @click="selectLanguage(lang); hamburgerDropdownOpen = false"
+                      >
+                        {{ lang.code }}
+                      </button>
+                    </div>
+                  </div>
+                </aside>
+              </Transition>
             </Teleport>
           </div>
         </div>
@@ -696,15 +827,9 @@ function onHamburgerClick() {
     mobileMenuOpen.value = true
     return
   }
+  // Side panel is fixed to the viewport's right edge — no anchor
+  // positioning needed; toggling the flag is enough.
   hamburgerDropdownOpen.value = !hamburgerDropdownOpen.value
-  if (hamburgerDropdownOpen.value && hamburgerWrapRef.value) {
-    const rect = hamburgerWrapRef.value.getBoundingClientRect()
-    hamburgerMenuStyle.value = {
-      position: 'fixed',
-      top: `${rect.bottom + 8}px`,
-      right: `${window.innerWidth - rect.right}px`,
-    }
-  }
 }
 
 watch(contactDropdownOpen, (open) => {
@@ -724,7 +849,9 @@ watch(contactDropdownOpen, (open) => {
 // Click-outside handlers (one per dropdown) — automatically detached on unmount
 useFirstReleaseClickOutside(langSwitcherRef, () => { langDropdownOpen.value = false })
 useFirstReleaseClickOutside(contactDropdownRef, () => { contactDropdownOpen.value = false })
-useFirstReleaseClickOutside(hamburgerWrapRef, () => { hamburgerDropdownOpen.value = false })
+// Hamburger panel closes via its backdrop click + ✕ button; click-outside
+// on the hamburger wrap would also close on clicks INSIDE the teleported
+// panel itself, breaking row clicks. We don't bind it.
 
 const activePopup = ref<'destination' | 'when' | 'who' | null>(null)
 
@@ -1513,14 +1640,19 @@ function pickWhoMvp(opt: { adults: number; rooms: number }) {
 }
 
 const whoLabel = computed(() => {
-  const parts: string[] = []
-  parts.push(`${searchGroup.value.adults} ${searchGroup.value.adults === 1 ? t('common.adultSingular') : t('common.adultPlural')}`)
+  // Compact "personen / kamer(s)" format — mirrors the popup options
+  // exactly so the field value reads the same as what the user picks.
+  // Children + dog fall back to the old comma-joined form.
+  const adults = searchGroup.value.adults
+  const rooms = searchGroup.value.rooms
+  const roomWord = rooms === 1 ? t('common.roomSingular') : t('common.roomPlural')
+  const head = `${adults} personen / ${rooms} ${roomWord}`
+  const extras: string[] = []
   if (searchGroup.value.children.length > 0) {
-    parts.push(`${searchGroup.value.children.length} ${searchGroup.value.children.length === 1 ? t('common.childSingular') : t('common.childPlural')}`)
+    extras.push(`${searchGroup.value.children.length} ${searchGroup.value.children.length === 1 ? t('common.childSingular') : t('common.childPlural')}`)
   }
-  parts.push(`${searchGroup.value.rooms} ${searchGroup.value.rooms === 1 ? t('common.roomSingular') : t('common.roomPlural')}`)
-  if (searchGroup.value.dog) parts.push('\u{1F415}')
-  return parts.join(', ')
+  if (searchGroup.value.dog) extras.push('\u{1F415}')
+  return extras.length > 0 ? `${head}, ${extras.join(', ')}` : head
 })
 
 function commitSearch() {
@@ -1751,6 +1883,13 @@ function handleSelectHotelInPopup(slug: string) {
   font-weight: 500;
   color: var(--color-text-primary);
   line-height: 1.2;
+  /* Don't truncate the value with an ellipsis — labels are deliberately
+     compact ("Kies datum", "2 personen / 1 kamer", "Maakt niet uit") so
+     they should fit; on the rare narrow viewport let the field grow
+     instead of dropping characters. */
+  overflow: visible;
+  text-overflow: clip;
+  white-space: nowrap;
 }
 
 .site-header .search-bar__value--placeholder {
@@ -2188,11 +2327,17 @@ function handleSelectHotelInPopup(slug: string) {
  *  nav reads as a row of crisp buttons rather than capsules. */
 .site-header--nav-v3 .verticals__item,
 .site-header--nav-v3 .vip-btn,
-.site-header--nav-v3 .lang-switcher__trigger {
+.site-header--nav-v3 .lang-switcher__trigger,
+.site-header--nav-v3 .contact-trigger,
+.site-header--nav-v6 .verticals__item,
+.site-header--nav-v6 .vip-btn,
+.site-header--nav-v6 .lang-switcher__trigger,
+.site-header--nav-v6 .contact-trigger {
   border-radius: 8px;
 }
 
-.site-header--nav-v3 .hamburger-btn {
+.site-header--nav-v3 .hamburger-btn,
+.site-header--nav-v6 .hamburger-btn {
   border-radius: 8px;
 }
 
@@ -3119,6 +3264,16 @@ function handleSelectHotelInPopup(slug: string) {
   opacity: 0;
   transform: translateY(-8px);
 }
+
+/* ============================================================
+   HAMBURGER MENU SIDE PANEL — based on Figma "Menu_Side panel"
+   Right-anchored 440 px panel + dim backdrop. Slides in from the
+   right when the hamburger is clicked.
+   ============================================================ */
+
+/* These rules are TELEPORTED to <body>, so Vue's scoped data-v-*
+   attribute won't match the rendered markup. Declare them in a
+   global style block below. */
 </style>
 
 <style>
@@ -3351,5 +3506,222 @@ function handleSelectHotelInPopup(slug: string) {
   .site-header__nav-actions {
     gap: 0;
   }
+}
+</style>
+
+<!-- Global styles for the side-panel menu — the panel is teleported
+     to <body>, so scoped CSS would never match it. -->
+<style>
+/* Dim backdrop behind the panel. */
+.menu-panel__backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 2147483600;
+}
+
+.menu-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 440px;
+  max-width: 100vw;
+  background: #ffffff;
+  border-left: 1px solid #f0f0f0;
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.18);
+  display: flex;
+  flex-direction: column;
+  z-index: 2147483601;
+}
+
+/* Panel header — 89 px row with MENU eyebrow, centred logo, close ✕. */
+.menu-panel__header {
+  position: relative;
+  height: 89px;
+  border-bottom: 1px solid rgba(240, 240, 240, 0.94);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.menu-panel__eyebrow {
+  position: absolute;
+  left: 24px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: var(--font-body);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 1.47px;
+  text-transform: uppercase;
+  color: #6a6a6a;
+}
+.menu-panel__logo {
+  height: 22px;
+  width: auto;
+  display: block;
+}
+.menu-panel__close {
+  position: absolute;
+  right: 24px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 38px;
+  height: 38px;
+  border-radius: 999px;
+  border: 1px solid #f0f0f0;
+  background: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #0e0e0c;
+  transition: background 120ms ease, border-color 120ms ease;
+}
+.menu-panel__close:hover {
+  background: #f7f7f7;
+  border-color: #e2e2e2;
+}
+
+/* Scrollable body */
+.menu-panel__body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px 0 32px;
+}
+
+.menu-panel__section-label {
+  display: block;
+  margin: 12px 28px 8px;
+  font-family: var(--font-body);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  color: #6a6a6a;
+}
+.menu-panel__section-label--later {
+  margin-top: 28px;
+}
+
+.menu-panel__row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 0 16px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  transition: background 120ms ease;
+}
+.menu-panel__row:hover {
+  background: #faf9f6;
+}
+
+.menu-panel__row--lg { min-height: 68px; }
+.menu-panel__row--sm { min-height: 58px; }
+
+.menu-panel__icon-tile {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.menu-panel__icon-tile--sm {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  background: #ece7df;
+}
+
+.menu-panel__row-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.menu-panel__row-title {
+  font-family: var(--font-body);
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.08px;
+  color: #0e0e0c;
+  line-height: 1.2;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+}
+.menu-panel__row-title--sm {
+  font-size: 14.5px;
+  font-weight: 500;
+  letter-spacing: -0.072px;
+}
+.menu-panel__row-title-accent {
+  font-weight: 400;
+  color: #e26a2c;
+}
+
+.menu-panel__row-sub {
+  font-family: var(--font-body);
+  font-size: 12.5px;
+  font-weight: 400;
+  color: #9a9a93;
+  line-height: 1.3;
+}
+
+.menu-panel__chevron {
+  flex-shrink: 0;
+  color: #9a9a93;
+}
+
+.menu-panel__lang {
+  display: flex;
+  gap: 8px;
+  margin: 24px 32px 0;
+  padding-top: 16px;
+  border-top: 1px solid #f0f0f0;
+}
+.menu-panel__lang-btn {
+  flex: 1;
+  height: 38px;
+  border-radius: 8px;
+  border: 1px solid #e5e5e5;
+  background: #ffffff;
+  color: #6a6a6a;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  cursor: pointer;
+  transition: background 120ms ease, border-color 120ms ease, color 120ms ease;
+}
+.menu-panel__lang-btn:hover { border-color: #c8c8c8; color: #0e0e0c; }
+.menu-panel__lang-btn--active {
+  background: #0e0e0c;
+  border-color: #0e0e0c;
+  color: #ffffff;
+}
+
+/* Transitions */
+.menu-fade-enter-active,
+.menu-fade-leave-active { transition: opacity 200ms ease; }
+.menu-fade-enter-from,
+.menu-fade-leave-to { opacity: 0; }
+
+.menu-slide-enter-active,
+.menu-slide-leave-active { transition: transform 260ms cubic-bezier(0.22, 1, 0.36, 1); }
+.menu-slide-enter-from,
+.menu-slide-leave-to { transform: translateX(100%); }
+
+@media (max-width: 640px) {
+  .menu-panel { width: 100vw; }
 }
 </style>

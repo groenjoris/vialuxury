@@ -2,7 +2,10 @@
   <div class="home">
     <!-- Hero with full-bleed background image -->
     <section class="home-hero">
-      <div class="home-hero__bg" :style="{ backgroundImage: `url(${heroPhotoUrl})` }" />
+      <!-- <img> + object-fit for consistent cropping across browsers. -->
+      <div class="home-hero__bg">
+        <img class="home-hero__bg-img" :src="heroPhotoUrl" alt="" />
+      </div>
       <!-- Help / phone block + pay-off both removed — both now live
            inside SiteHeader's row 2. -->
 
@@ -68,12 +71,6 @@
               :hide-bar="true"
               cta-label="Bekijk arrangement"
             />
-            <div class="home-popular__featured-press">
-              <span class="home-popular__featured-press-label">Gezien in:</span>
-              <img src="/images/logos/nrc.png" alt="NRC" class="home-popular__logo" />
-              <img src="/images/logos/telegraaf.png" alt="De Telegraaf" class="home-popular__logo" />
-              <img src="/images/logos/nushoplogo.svg" alt="NU shop" class="home-popular__logo" />
-            </div>
           </div>
         </div>
         <div class="home-popular__col home-popular__col--quick">
@@ -90,6 +87,20 @@
               <span class="home-pill__label">{{ f.label }}</span>
             </button>
           </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- "Gezien in:" press-logos band — decoupled from the Uitgelicht
+         card so it reads as its own credibility row beneath the
+         quick-filter pills. -->
+    <section class="home-press-banner">
+      <div class="container home-press-banner__inner">
+        <span class="home-press-banner__label">Gezien in:</span>
+        <div class="home-press-banner__logos">
+          <img src="/images/logos/nrc.png" alt="NRC" class="home-press-banner__logo" />
+          <img src="/images/logos/telegraaf.png" alt="De Telegraaf" class="home-press-banner__logo" />
+          <img src="/images/logos/nushoplogo.svg" alt="NU shop" class="home-press-banner__logo" />
         </div>
       </div>
     </section>
@@ -297,10 +308,17 @@ onMounted(() => { setFrNavVariant('2'); restoreHeroPhotoIndex() })
   position: absolute;
   inset: 0;
   z-index: -2;
-  background-image: url('/images/hero/1242188419.jpg');
-  background-position: center bottom;
-  background-size: cover;
-  background-repeat: no-repeat;
+  overflow: hidden;
+}
+
+.home-hero__bg-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center bottom;
+  display: block;
 }
 
 .home-hero__bg::after {

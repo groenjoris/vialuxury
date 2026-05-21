@@ -67,7 +67,7 @@ const en: Record<string, string> = {
   // Header - Tabs
   'header.tab.arrivalDate': 'Choose arrival date',
   'header.tab.calendar': 'Pick your arrival date',
-  'header.flexible': "I'm flexible",
+  'header.flexible': "I'm flexible on the arrival date",
   'header.ready': 'Ready',
   'header.tab.flexible': 'Pick a period',
   'header.tab.nights': 'Pick number of nights',

@@ -20,10 +20,15 @@
       class="filter-pills__pill filter-pills__pill--reset"
       @click="resetAll"
     >
-      <span class="filter-pills__label">{{ t('filter.clearAll') }}</span>
-      <svg class="filter-pills__close" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true">
-        <path d="M18 6L6 18M6 6l12 12" />
+      <!-- Trashcan icon, left of the label (reset = wipe, not close).
+           Icon-first ordering: glyph, then text. -->
+      <svg class="filter-pills__trash" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <polyline points="3 6 5 6 21 6" />
+        <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+        <path d="M10 11v6M14 11v6" />
+        <path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2" />
       </svg>
+      <span class="filter-pills__label">{{ t('filter.clearAll') }}</span>
     </button>
   </div>
 </template>

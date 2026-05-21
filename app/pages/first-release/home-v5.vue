@@ -2,14 +2,16 @@
   <div class="home">
     <!-- Hero with full-bleed background image -->
     <section class="home-hero">
+      <!-- <img> + object-fit for consistent cropping across browsers. -->
       <div
         class="home-hero__bg"
         :class="{
           'home-hero__bg--shift-up': heroPhotoIndex === 1 || heroPhotoIndex === 2,
           'home-hero__bg--shift-up-400': heroPhotoIndex === 6,
         }"
-        :style="{ backgroundImage: `url(${heroPhotoUrl})` }"
-      />
+      >
+        <img class="home-hero__bg-img" :src="heroPhotoUrl" alt="" />
+      </div>
       <!-- Help / phone block + pay-off both removed — both now live
            inside SiteHeader's row 2. -->
 
@@ -75,12 +77,6 @@
               :hide-bar="true"
               cta-label="Bekijk arrangement"
             />
-            <div class="home-popular__featured-press">
-              <span class="home-popular__featured-press-label">Gezien in:</span>
-              <img src="/images/logos/nrc.png" alt="NRC" class="home-popular__logo" />
-              <img src="/images/logos/telegraaf.png" alt="De Telegraaf" class="home-popular__logo" />
-              <img src="/images/logos/nushoplogo.svg" alt="NU shop" class="home-popular__logo" />
-            </div>
           </div>
         </div>
         <div class="home-popular__col home-popular__col--quick">
@@ -97,6 +93,20 @@
               <span class="home-pill__label">{{ f.label }}</span>
             </button>
           </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- "Gezien in:" press-logos band — decoupled from the Uitgelicht
+         card so it reads as its own credibility row beneath the
+         quick-filter pills. -->
+    <section class="home-press-banner">
+      <div class="container home-press-banner__inner">
+        <span class="home-press-banner__label">Gezien in:</span>
+        <div class="home-press-banner__logos">
+          <img src="/images/logos/nrc.png" alt="NRC" class="home-press-banner__logo" />
+          <img src="/images/logos/telegraaf.png" alt="De Telegraaf" class="home-press-banner__logo" />
+          <img src="/images/logos/nushoplogo.svg" alt="NU shop" class="home-press-banner__logo" />
         </div>
       </div>
     </section>
@@ -334,25 +344,29 @@ onMounted(() => { setFrNavVariant('5'); restoreHeroPhotoIndex() })
   position: absolute;
   inset: 0;
   z-index: -2;
-  /* v5 uses v4's photo position: shifted 200 px DOWN within the same
-     708-px crop window, revealing more of the image's upper portion. */
-  background-image: url('/images/hero/1242188419.jpg');
-  background-position: center calc(100% + 200px);
-  background-size: cover;
-  background-repeat: no-repeat;
+  overflow: hidden;
 }
 
-/* hotelexperiencepackages + seapackages (pills 2 & 3) shift 200 px
-   UP within the same crop window — reveals more of the image's lower
-   portion. */
-.home-hero__bg.home-hero__bg--shift-up {
-  background-position: center -200px;
+/* v5 default crop: shift the photo down by ~20 % within the crop
+   window so more of the upper portion is visible. */
+.home-hero__bg-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 120%;
+  display: block;
 }
 
-/* prd.lil.the.big.© (pill 7) — use v1/v2/v3's default crop instead
-   of v4/v5's `calc(100% + 200px)` shift. */
-.home-hero__bg.home-hero__bg--shift-up-400 {
-  background-position: center bottom;
+/* hotelexperiencepackages + seapackages (pills 2 & 3) shift UP. */
+.home-hero__bg--shift-up .home-hero__bg-img {
+  object-position: center -20%;
+}
+
+/* prd.lil.the.big.© (pill 7) — use v1/v2/v3's default crop. */
+.home-hero__bg--shift-up-400 .home-hero__bg-img {
+  object-position: center bottom;
 }
 
 .home-hero__bg::after {

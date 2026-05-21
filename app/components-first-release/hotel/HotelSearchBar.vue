@@ -1,149 +1,154 @@
 <template>
   <div class="hotel-search-bar" ref="barRef">
-    <div class="hotel-search-bar__fields">
-      <!-- Wanneer -->
+    <div class="search-bar">
+      <!-- 1. Wanneer -->
       <button
         ref="whenFieldRef"
-        class="hsb-field"
-        :class="{ 'hsb-field--active': activePopup === 'when' }"
+        class="search-bar__field search-bar__field--when"
+        :class="{ 'search-bar__field--active': activePopup === 'when' }"
         @click="togglePopup('when')"
       >
-        <svg class="hsb-field__icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="3" y="4" width="18" height="18" rx="2" ry="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" />
-        </svg>
-        <div class="hsb-field__text">
-          <span class="hsb-field__label">{{ t('header.when') }}</span>
-          <span class="hsb-field__value" :class="{ 'hsb-field__value--placeholder': whenIsPlaceholder }">{{ whenOnlyLabel }}</span>
-        </div>
+        <span class="search-bar__field-body">
+          <span class="search-bar__field-row">
+            <span class="search-bar__field-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+            </span>
+            <span class="search-bar__label">{{ t('header.when') }}</span>
+          </span>
+          <span class="search-bar__value" :class="{ 'search-bar__value--placeholder': whenIsPlaceholder }">{{ whenOnlyLabel }}</span>
+        </span>
+        <span
+          v-if="!whenIsPlaceholder"
+          class="search-bar__clear"
+          role="button"
+          tabindex="0"
+          :aria-label="t('header.clear')"
+          @click.stop="clearWhen"
+          @keydown.enter.stop.prevent="clearWhen"
+          @keydown.space.stop.prevent="clearWhen"
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+        </span>
       </button>
 
-      <div class="hotel-search-bar__divider"></div>
+      <div class="search-bar__divider"></div>
 
-      <!-- Hoelang -->
+      <!-- 2. Hoelang -->
       <button
         ref="howlongFieldRef"
-        class="hsb-field"
-        :class="{ 'hsb-field--active': activePopup === 'howlong' }"
+        class="search-bar__field search-bar__field--howlong"
+        :class="{ 'search-bar__field--active': activePopup === 'howlong' }"
         @click="togglePopup('howlong')"
       >
-        <svg class="hsb-field__icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="9" /><polyline points="12 7 12 12 15 14" />
-        </svg>
-        <div class="hsb-field__text">
-          <span class="hsb-field__label">{{ t('header.howLong') }}</span>
-          <span class="hsb-field__value" :class="{ 'hsb-field__value--placeholder': howLongIsPlaceholder }">{{ howLongLabel }}</span>
-        </div>
+        <span class="search-bar__field-body">
+          <span class="search-bar__field-row">
+            <span class="search-bar__field-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>
+            </span>
+            <span class="search-bar__label">{{ t('header.howLong') }}</span>
+          </span>
+          <span class="search-bar__value" :class="{ 'search-bar__value--placeholder': howLongIsPlaceholder }">{{ howLongLabel }}</span>
+        </span>
+        <span
+          v-if="!howLongIsPlaceholder"
+          class="search-bar__clear"
+          role="button"
+          tabindex="0"
+          :aria-label="t('header.clear')"
+          @click.stop="clearHowLong"
+          @keydown.enter.stop.prevent="clearHowLong"
+          @keydown.space.stop.prevent="clearHowLong"
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+        </span>
       </button>
 
-      <div class="hotel-search-bar__divider"></div>
+      <div class="search-bar__divider"></div>
 
-      <!-- Wie gaat er mee -->
+      <!-- 3. Wie gaat er mee -->
       <button
         ref="whoFieldRef"
-        class="hsb-field"
-        :class="{ 'hsb-field--active': activePopup === 'who' }"
+        class="search-bar__field search-bar__field--who"
+        :class="{ 'search-bar__field--active': activePopup === 'who' }"
         @click="togglePopup('who')"
       >
-        <svg class="hsb-field__icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" />
-        </svg>
-        <div class="hsb-field__text">
-          <span class="hsb-field__label">{{ t('header.whosComing') }}</span>
-          <span class="hsb-field__value">{{ whoLabel }}</span>
-        </div>
+        <span class="search-bar__field-body">
+          <span class="search-bar__field-row">
+            <span class="search-bar__field-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </span>
+            <span class="search-bar__label">{{ t('header.whosComing') }}</span>
+          </span>
+          <span class="search-bar__value">{{ whoLabel }}</span>
+        </span>
       </button>
 
-      <!-- Submit button — orange pill, two-line caption. Always enabled. -->
+      <!-- Submit button — two-line copy so the fields can be wider. -->
       <button
-        class="hsb-submit"
+        class="search-bar__btn search-bar__btn--find-deals"
         @click="handleChangeSearch"
       >
-        Toon beschikbare<br />arrangementen
+        <span class="search-bar__btn-text">Toon beschikbare<br />arrangementen</span>
       </button>
     </div>
 
     <!-- Popups — positioned relative to bar -->
     <div v-if="activePopup" class="hsb-overlay" @click.self="closePopup">
-      <!-- WHEN POPUP -->
-      <div v-if="activePopup === 'when'" class="hsb-popup hsb-popup--when" :style="popupStyle">
-        <FirstReleaseDatePopup
+      <!-- WHEN POPUP — calendar half of the combined search-bar popup -->
+      <div v-if="activePopup === 'when'" class="popup popup--when" :style="popupStyle">
+        <FirstReleaseDateAndDurationPopup
+          mode="date"
           v-model:cal-month="calMonth"
           v-model:selected-date="selectedDate"
-          v-model:flexibility="flexibility"
-          v-model:selected-durations="selectedDurations"
-          @update:flex-state="handleFlexState"
+          :nights="selectedDurations"
+          :any-duration="anyDuration"
+          :flexible="localFlexible"
+          @toggle-night="onToggleNight"
+          @set-any-duration="setAnyDuration"
+          @update:flexible="setLocalFlexible"
           @save="closePopup()"
           @clear="clearWhen"
         />
       </div>
 
-      <!-- HOWLONG POPUP -->
-      <div v-if="activePopup === 'howlong'" class="hsb-popup hsb-popup--howlong" :style="popupStyle">
-        <FirstReleaseDurationPopup
+      <!-- HOWLONG POPUP — duration half of the combined search-bar popup -->
+      <div v-if="activePopup === 'howlong'" class="popup popup--howlong" :style="popupStyle">
+        <FirstReleaseDateAndDurationPopup
+          mode="duration"
+          v-model:cal-month="calMonth"
+          v-model:selected-date="selectedDate"
           :nights="selectedDurations"
-          :flex-type="localFlexType"
-          :arrival-date="selectedDate"
-          :flex-months="flexState.months"
+          :any-duration="anyDuration"
+          :flexible="localFlexible"
           @toggle-night="onToggleNight"
-          @select-flex-type="onSelectFlexType"
+          @set-any-duration="setAnyDuration"
+          @update:flexible="setLocalFlexible"
+          @save="closePopup()"
+          @clear="clearHowLong"
         />
       </div>
 
-      <!-- WHO POPUP -->
-      <div v-if="activePopup === 'who'" class="hsb-popup hsb-popup--who" :style="popupStyle">
-        <!-- Adults -->
-        <div class="who-row">
-          <div class="who-row__info">
-            <span class="who-row__label">{{ t('header.adults') }}</span>
-            <span class="who-row__sub">{{ t('header.adultsAge') }}</span>
-          </div>
-          <div class="stepper">
-            <button class="stepper__btn" :disabled="group.adults <= 1" @click="group.adults--">&#8722;</button>
-            <span class="stepper__val">{{ group.adults }}</span>
-            <button class="stepper__btn" :disabled="group.adults >= 8" @click="group.adults++">+</button>
-          </div>
-        </div>
-
-        <!-- Children -->
-        <div class="who-row">
-          <div class="who-row__info">
-            <span class="who-row__label">{{ t('header.children') }}</span>
-            <span class="who-row__sub">{{ t('header.childrenAge') }}</span>
-          </div>
-          <div class="stepper">
-            <button class="stepper__btn" :disabled="group.children.length <= 0" @click="group.children.pop()">&#8722;</button>
-            <span class="stepper__val">{{ group.children.length }}</span>
-            <button class="stepper__btn" :disabled="group.children.length >= 4" @click="group.children.push({ age: 4 })">+</button>
-          </div>
-        </div>
-
-        <!-- Child ages -->
-        <div v-if="group.children.length > 0" class="who-children-ages">
-          <div v-for="(child, idx) in group.children" :key="idx" class="who-child-age">
-            <label>{{ t('travelGroup.childAge') }} {{ idx + 1 }}</label>
-            <select v-model.number="child.age">
-              <option v-for="a in 18" :key="a - 1" :value="a - 1">{{ a - 1 }} {{ t('travelGroup.years') }}</option>
-            </select>
-          </div>
-        </div>
-
-        <!-- Rooms -->
-        <div class="who-row">
-          <div class="who-row__info">
-            <span class="who-row__label">{{ t('travelGroup.rooms') }}</span>
-          </div>
-          <div class="stepper">
-            <button class="stepper__btn" :disabled="group.rooms <= 1" @click="group.rooms--">&#8722;</button>
-            <span class="stepper__val">{{ group.rooms }}</span>
-            <button class="stepper__btn" :disabled="group.rooms >= (group.adults + group.children.length)" @click="group.rooms++">+</button>
-          </div>
-        </div>
-
-        <!-- Done button -->
-        <div class="hsb-popup__footer">
-          <a href="#" class="hsb-popup__clear" @click.prevent="clearWho">{{ t('header.clear') }}</a>
-          <button class="hsb-done-btn" @click="closePopup()">{{ t('header.done') }}</button>
-        </div>
+      <!-- WHO POPUP — MVP list. Same UI as SiteHeader. -->
+      <div v-if="activePopup === 'who'" class="popup popup--who popup--who-mvp" :style="popupStyle">
+        <ul class="who-mvp__list" role="listbox" aria-label="Aantal personen">
+          <li
+            v-for="opt in whoMvpOptions"
+            :key="`${opt.adults}-${opt.rooms}`"
+            role="option"
+            :aria-selected="whoMvpSelectedKey === `${opt.adults}-${opt.rooms}`"
+            class="who-mvp__item"
+            :class="{ 'who-mvp__item--selected': whoMvpSelectedKey === `${opt.adults}-${opt.rooms}` }"
+            @click="pickWhoMvp(opt)"
+          >
+            <span>{{ opt.adults }} personen / {{ opt.rooms }} {{ opt.rooms === 1 ? 'kamer' : 'kamers' }}</span>
+            <svg
+              v-if="whoMvpSelectedKey === `${opt.adults}-${opt.rooms}`"
+              width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"
+            >
+              <polyline points="5 12 10 17 19 7" />
+            </svg>
+          </li>
+        </ul>
       </div>
     </div>
   </div>
@@ -159,9 +164,7 @@ const {
   setArrivalDate,
   setSearchGroup,
   selectedNights: globalNights,
-  selectedFlexType: globalFlexType,
   setSelectedNights,
-  setFlexType,
 } = useFirstReleaseSearchState()
 
 const emit = defineEmits<{
@@ -189,16 +192,14 @@ function calcPopupPosition(popup: PopupName) {
 
   const barRect = bar.getBoundingClientRect()
   const fieldRect = field.getBoundingClientRect()
-  const popupW = popup === 'when' ? 528 : popup === 'howlong' ? 420 : 420
+  // Calendar half is ~404 px (356 calendar + 24 + 24 padding); nights half
+  // is ~272 px; who is ~360 px.
+  const popupW = popup === 'when' ? 420 : popup === 'howlong' ? 320 : 360
 
-  // Anchor the popup's HORIZONTAL centre to the field's centre, so the
-  // dropdown sits visually under the field it belongs to.
   const fieldCenter = fieldRect.left + fieldRect.width / 2
   let left = fieldCenter - popupW / 2
   left = Math.max(8, Math.min(left, window.innerWidth - popupW - 8))
 
-  // Always open BELOW the bar (never flipped above). Auto-scroll fills any
-  // bottom-overflow if the popup wouldn't fit otherwise.
   return {
     position: 'fixed',
     left: `${left}px`,
@@ -215,28 +216,20 @@ function togglePopup(popup: PopupName) {
   popupStyle.value = calcPopupPosition(popup)
   activePopup.value = popup
 
-  // Auto-scroll so the popup's full height fits below the bar without going
-  // off the bottom of the viewport. If the popup would clip, scroll the page
-  // down by exactly the missing amount (or, alternatively, scroll the bar
-  // closer to the top so the popup gets max room below it).
   nextTick(() => {
     const bar = barRef.value
     if (!bar) return
     const barRect = bar.getBoundingClientRect()
     const NAV_H = 120
-    const POPUP_H = popup === 'when' ? 520 : popup === 'howlong' ? 360 : 480
+    const POPUP_H = popup === 'when' ? 480 : popup === 'howlong' ? 380 : 480
     const popupTop = barRect.bottom + 8
     const popupBottom = popupTop + POPUP_H
     const overflowBottom = popupBottom - (window.innerHeight - 8)
     if (overflowBottom > 0) {
-      // Scroll the page so the bar moves up — but never higher than the
-      // sticky navbar (NAV_H from top).
       const maxScroll = barRect.top - NAV_H - 16
       const wanted = Math.min(overflowBottom, Math.max(0, maxScroll))
       if (wanted > 0) {
         window.scrollBy({ top: wanted, behavior: 'smooth' })
-        // Re-position the popup after the scroll settles so it tracks
-        // the bar's new viewport position.
         setTimeout(() => {
           popupStyle.value = calcPopupPosition(popup)
         }, 320)
@@ -246,8 +239,6 @@ function togglePopup(popup: PopupName) {
 }
 
 function closePopup() {
-  // When the Wie-popup closes (Klaar / outside-click) commit the draft
-  // persons/rooms to the global state so prices update site-wide.
   if (activePopup.value === 'who') {
     setSearchGroup(group.value.adults + group.value.children.length, group.value.rooms)
   }
@@ -256,71 +247,54 @@ function closePopup() {
 
 function clearWhen() {
   selectedDate.value = null
-  flexibility.value = 0
+  localFlexible.value = false
+}
+
+function clearHowLong() {
   selectedDurations.value = []
-  flexState.value = { durations: [], months: [] }
-  calMonth.value = { year: new Date().getFullYear(), month: new Date().getMonth() }
-  closePopup()
+  anyDuration.value = false
+  setSelectedNights([])
 }
 
-function clearWho() {
-  group.value = { adults: 2, children: [], rooms: 1, dog: false }
-  closePopup()
-}
-
-// --- WHEN state ---
+// --- WHEN / DURATION state ---
 const calMonth = ref({ year: new Date().getFullYear(), month: new Date().getMonth() })
-/** Live-synced with the global arrival date so the navbar / deal-page calendar
- *  see the same selection. Search results are still gated by the search
- *  button (committedArrivalDate). */
 const selectedDate = ref<string | null>(globalArrivalDate.value)
 watch(selectedDate, (v) => { if (v !== globalArrivalDate.value) setArrivalDate(v) })
 watch(globalArrivalDate, (v) => { if (v !== selectedDate.value) selectedDate.value = v })
-const flexibility = ref(0)
-// Initialise from the shared state so the searchbar pre-fills with the
-// reisduur the user has set elsewhere (filter pill, header popup, /search).
 const selectedDurations = ref<string[]>([...globalNights.value])
-const flexState = ref<{ durations: string[]; months: string[] }>({ durations: [], months: [] })
-const localFlexType = ref<string | null>(globalFlexType.value)
+/** "Ik ben flexibel" tickbox inside the date popup. Local-only here —
+ *  the hotel page doesn't push flexibility back into shared state. */
+const localFlexible = ref(false)
+/** "Maakt niet uit" tickbox inside the duration popup. */
+const anyDuration = ref(globalNights.value.length === 0 ? false : false)
+
+function setLocalFlexible(next: boolean) {
+  localFlexible.value = next
+  if (next) selectedDate.value = null
+}
 
 function onToggleNight(value: string) {
   const i = selectedDurations.value.indexOf(value)
   if (i === -1) selectedDurations.value.push(value)
   else selectedDurations.value.splice(i, 1)
-  if (selectedDurations.value.length > 0) localFlexType.value = null
-  // Push to shared state so the change propagates to /search filter pills,
-  // the header popup, deal-page heading, etc.
-  setSelectedNights([...selectedDurations.value])
-  setFlexType(localFlexType.value)
-}
-
-function onSelectFlexType(value: string | null) {
-  localFlexType.value = value
-  if (value) selectedDurations.value = []
-  setFlexType(value)
+  if (selectedDurations.value.length > 0) anyDuration.value = false
   setSelectedNights([...selectedDurations.value])
 }
 
-// Bidirectional sync — external changes (filter, other searchbar) flow in.
+function setAnyDuration(next: boolean) {
+  anyDuration.value = next
+  if (next) {
+    selectedDurations.value = []
+    setSelectedNights([])
+  }
+}
+
 watch(globalNights, (g) => {
   const next = [...g]
   if (JSON.stringify(next) !== JSON.stringify(selectedDurations.value)) {
     selectedDurations.value = next
   }
 })
-watch(globalFlexType, (g) => {
-  if (g !== localFlexType.value) localFlexType.value = g
-})
-
-function handleFlexState(state: { durations: string[]; months: string[] }) {
-  flexState.value = state
-  if (state.months.length > 0 && selectedDate.value) {
-    selectedDate.value = null
-  }
-  if (state.durations.length > 0) {
-    selectedDurations.value = []
-  }
-}
 
 const durationOptions = computed(() => [
   { id: '1', label: t('header.duration.1night') },
@@ -328,56 +302,38 @@ const durationOptions = computed(() => [
   { id: '3', label: t('header.duration.3nights') },
   { id: '4', label: t('header.duration.4nights') },
   { id: '5+', label: t('header.duration.5nights') },
-  { id: 'weekend-short', label: t('header.duration.weekendShort') },
-  { id: 'weekend-long', label: t('header.duration.weekendLong') },
-  { id: 'long-weekend', label: t('header.duration.longWeekend') },
 ])
 
 const monthNames = computed(() => Array.from({ length: 12 }, (_, i) => t(`header.months.${i}`)))
 
-/** Just the date / month part \u2014 shown in the Wanneer field. */
 const whenOnlyLabel = computed(() => {
   if (selectedDate.value) {
     const [, m, d] = selectedDate.value.split('-')
-    let s = `${d}/${m}`
-    if (flexibility.value > 0) s += ` \u00B1${flexibility.value}`
-    return s
+    const monthName = monthNames.value[parseInt(m, 10) - 1]
+    return `${parseInt(d, 10)} ${monthName}`
   }
-  if (flexState.value.months.length > 0) {
-    return flexState.value.months
-      .map(key => monthNames.value[parseInt(key.split('-')[1], 10) - 1])
-      .join(', ')
-  }
+  if (localFlexible.value) return 'Ik ben flexibel'
   return 'Kies datum'
 })
 
-/** Empty when nothing has been picked \u2014 drives the placeholder grey
- *  styling on the Wanneer value. */
 const whenIsPlaceholder = computed(
-  () => !selectedDate.value && flexState.value.months.length === 0,
+  () => !selectedDate.value && !localFlexible.value,
 )
 
-/** Just the duration part \u2014 shown in the Hoelang field. */
 const howLongLabel = computed(() => {
+  if (anyDuration.value) return 'Maakt niet uit'
   const calDurs = selectedDurations.value
   if (calDurs.length > 0) {
-    const labels = calDurs.map(id => durationOptions.value.find(o => o.id === id)?.label).filter(Boolean) as string[]
+    const labels = calDurs
+      .map(id => durationOptions.value.find(o => o.id === id)?.label)
+      .filter(Boolean) as string[]
     return labels.join(' of ')
   }
-  if (localFlexType.value) {
-    const typeLabels: Record<string, string> = {
-      'weekend-fri-sun': t('header.flex.weekendFriSun'),
-      'weekend-sat-sun': t('header.flex.weekendSatSun'),
-      'long-weekend': t('header.flex.longWeekend'),
-      'midweek': t('header.flex.midweek'),
-    }
-    return typeLabels[localFlexType.value] || 'Kies aantal nachten'
-  }
-  return 'Kies aantal nachten'
+  return 'Kies reisduur'
 })
 
 const howLongIsPlaceholder = computed(
-  () => selectedDurations.value.length === 0 && !localFlexType.value,
+  () => selectedDurations.value.length === 0 && !anyDuration.value,
 )
 
 // --- WHO state ---
@@ -386,9 +342,6 @@ const group = ref({
   children: [] as { age: number }[],
   rooms: rooms.value || 1,
 })
-/** Mirror global persons/rooms back to the local draft when another component
- *  commits a change (e.g. navbar Wie-popup or deal-page Travel Group modal).
- *  Skip while this popup is open so we don't yank the user's in-progress draft. */
 watch(persons, (p) => {
   if (activePopup.value === 'who') return
   if (p !== group.value.adults + group.value.children.length) {
@@ -402,8 +355,6 @@ watch(rooms, (r) => {
   }
 })
 
-/** Enforce minimum rooms (ceil(persons / 2)) while the user is in the popup.
- *  Only bumps rooms UP when persons exceed capacity; user-added extras stay. */
 watch(
   () => group.value.adults + group.value.children.length,
   (total) => {
@@ -413,37 +364,10 @@ watch(
     if (group.value.rooms < min) {
       group.value = { ...group.value, rooms: min }
     } else if (group.value.rooms > max) {
-      // Clamp DOWN when persons drop below the room count — no empty rooms.
       group.value = { ...group.value, rooms: max }
     }
   },
 )
-
-// Snapshot of the initial values — drives hasChanges so the submit button
-// stays disabled until the user actually changes something.
-const initialState = {
-  date: null as string | null,
-  flexibility: 0,
-  durations: [] as string[],
-  flexType: null as string | null,
-  flexMonths: [] as string[],
-  adults: persons.value || 2,
-  children: 0,
-  rooms: rooms.value || 1,
-}
-
-const hasChanges = computed(() => {
-  if (selectedDate.value !== initialState.date) return true
-  if (flexibility.value !== initialState.flexibility) return true
-  if (selectedDurations.value.length !== initialState.durations.length) return true
-  if (selectedDurations.value.some((v, i) => v !== initialState.durations[i])) return true
-  if (localFlexType.value !== initialState.flexType) return true
-  if (flexState.value.months.length !== initialState.flexMonths.length) return true
-  if (group.value.adults !== initialState.adults) return true
-  if (group.value.children.length !== initialState.children) return true
-  if (group.value.rooms !== initialState.rooms) return true
-  return false
-})
 
 const totalPersons = computed(() => group.value.adults + group.value.children.length)
 
@@ -459,121 +383,213 @@ const whoLabel = computed(() => {
   return parts.join(', ')
 })
 
-// Expose totalPersons so parent can use it
+const whoMvpOptions = computed(() => {
+  const out: { adults: number; rooms: number }[] = []
+  for (let r = 1; r <= 8; r++) {
+    out.push({ adults: r * 2, rooms: r })
+  }
+  return out
+})
+
+const whoMvpSelectedKey = computed(() => {
+  if (group.value.children.length > 0) return null
+  return `${group.value.adults}-${group.value.rooms}`
+})
+
+function pickWhoMvp(opt: { adults: number; rooms: number }) {
+  group.value = { adults: opt.adults, children: [], rooms: opt.rooms }
+  closePopup()
+}
+
 defineExpose({ totalPersons })
 
 function handleChangeSearch() {
   closePopup()
-  const dur = selectedDurations.value[0] || flexState.value.durations[0] || ''
+  const dur = selectedDurations.value[0] || ''
   emit('search', {
     persons: totalPersons.value,
     rooms: group.value.rooms,
     duration: dur,
-    flexibility: flexibility.value,
+    flexibility: 0,
     date: selectedDate.value,
   })
 }
 </script>
 
 <style scoped>
-/* Same look as the home page's solid-variant search bar (.search-bar in
-   SiteHeader.vue). Three fields + primary submit button — no Waarheen. */
+/* ===== HOTEL MID-PAGE SEARCH BAR =====
+   Mirrors SiteHeader's internal-page `.search-bar` (white background, grey
+   inset stroke, light-grey dividers, uppercase 12 px labels, orange
+   find-deals pill). Self-contained — no `.site-header` parent selector
+   here, so the same look works inside the deals section. */
 .hotel-search-bar {
   position: relative;
   width: 100%;
-  max-width: 1080px;
 }
 
-.hotel-search-bar__fields {
+.search-bar {
   width: 100%;
   display: flex;
   align-items: center;
-  background: white;
-  border-radius: 16px;
-  height: 72px;
-  padding: 0 6px 0 0;
-  border: 1px solid var(--color-border);
+  background: #fff;
+  border-radius: 6px;
+  height: auto;
+  padding: 8px;
+  position: relative;
+  /* Grey inset stroke + soft drop shadow, identical to SiteHeader's
+     `.site-header:not(.site-header--overlay) .search-bar` rule. */
+  box-shadow: inset 0 0 0 2px var(--color-border, #d4d4d4),
+              0 10px 24px rgba(0, 0, 0, 0.18);
+  gap: 0;
 }
 
-.hotel-search-bar__divider {
-  width: 1px;
-  height: 24px;
-  background: #ddd;
-  flex-shrink: 0;
-}
-
-.hsb-field {
-  flex: 1;
-  margin: 6px 4px;
-  padding: 8px 18px;
+.search-bar__field {
+  flex: 1 0 0;
+  min-width: 0;
+  margin: 0;
+  padding: 0 18px;
+  height: 60px;
   display: flex;
-  flex-direction: column;
-  gap: 2px;
+  align-items: stretch;
+  gap: 12px;
   cursor: pointer;
   border: none;
-  background: none;
+  background: transparent;
   text-align: left;
-  border-radius: 10px;
+  border-radius: 0;
   transition: background var(--transition-fast);
+}
+
+.search-bar__field--when {
+  border-radius: 4px 0 0 4px;
+}
+.search-bar__field--who {
+  border-radius: 0 4px 4px 0;
+}
+
+.search-bar__field:hover {
+  background: var(--color-background-secondary, #faf9f6);
+}
+
+.search-bar__field--active {
+  background: #eeeeee;
+}
+
+.search-bar__field-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 8px 0;
   min-width: 0;
+  height: 100%;
 }
 
-.hsb-field:hover { background: #f5f5f5; }
-.hsb-field--active { background: #eeeeee; }
-
-.hsb-field__icon { display: none; }
-
-.hsb-field__text {
-  display: contents; /* lift label + value into the field's flex container */
+.search-bar__field-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  line-height: 1;
 }
 
-.hsb-field__label {
-  font-size: 11px;
-  font-weight: 600;
-  color: #999999;
+.search-bar__field-icon {
+  font-size: 12px;
+  display: inline-flex;
+  align-items: center;
+  color: var(--color-text-primary);
+}
+
+.search-bar__field-icon svg {
+  display: block;
+  width: 1em;
+  height: 1em;
+}
+
+.search-bar__label {
+  font-size: 12px;
+  letter-spacing: 1.3px;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  color: var(--color-text-secondary);
+  font-weight: 400;
+  line-height: 1;
 }
 
-.hsb-field__value {
-  font-size: 14px;
-  color: #1A1A1A;
+.search-bar__value {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  line-height: 1.2;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  max-width: 100%;
 }
 
-/* Lighter grey placeholder text when no value is selected. */
-.hsb-field__value--placeholder {
-  color: #9A9A93;
+.search-bar__value--placeholder {
+  color: var(--color-text-secondary);
   font-weight: 400;
 }
 
-/* Primary submit button — orange pill, two-line caption. */
-.hsb-submit {
+.search-bar__divider {
+  width: 1px;
+  height: 60px;
+  align-self: center;
+  background: var(--color-border);
   flex-shrink: 0;
-  min-width: 160px;
-  height: 56px;
-  padding: 8px var(--space-md);
+}
+
+.search-bar__clear {
+  flex-shrink: 0;
+  align-self: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.search-bar__clear:hover,
+.search-bar__clear:focus-visible {
+  background: var(--color-border-light, #ececec);
+  color: var(--color-text-primary);
+  outline: none;
+}
+
+/* Two-line orange pill — narrower than the homepage's single-line button
+   so the fields next to it can breathe. */
+.search-bar__btn--find-deals {
   background: var(--color-primary);
   color: #fff;
-  border: 0;
-  border-radius: 12px;
-  margin-left: 4px;
-  font-size: 14px;
-  font-weight: 600;
+  height: 60px;
+  width: auto;
+  padding: 0 20px;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 700;
   line-height: 1.2;
-  white-space: normal;
-  text-align: center;
+  letter-spacing: -0.07px;
+  margin-left: 12px;
+  border: none;
   cursor: pointer;
+  text-align: center;
   transition: background var(--transition-fast);
 }
 
-.hsb-submit:hover:not(:disabled) { background: var(--color-primary-hover); }
+.search-bar__btn-text { display: inline-block; }
 
-.hsb-submit:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
+.search-bar__btn--find-deals:hover {
+  background: var(--color-primary-hover);
 }
 
 /* ===== POPUPS ===== */
@@ -583,182 +599,70 @@ function handleChangeSearch() {
   z-index: 500;
 }
 
-.hsb-popup {
+.popup {
   background: var(--color-surface);
-  border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
-  padding: var(--space-lg);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18), 0 2px 8px rgba(0, 0, 0, 0.08);
+  max-height: 70vh;
+  overflow-y: auto;
   z-index: 501;
 }
 
-.hsb-popup--when {
-  max-width: 95vw;
+.popup--when,
+.popup--howlong {
+  padding: 0;
+  max-height: none;
+  overflow: visible;
 }
 
-.hsb-popup--who {
-  width: 420px;
-  max-width: 95vw;
+.popup--who {
+  padding: var(--space-lg);
+  max-width: 420px;
 }
 
-.hsb-popup__footer {
+.popup--who-mvp {
+  padding: 8px 0;
+}
+
+.who-mvp__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
   display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: var(--space-md);
-  padding: var(--space-sm) var(--space-lg) var(--space-lg);
+  flex-direction: column;
 }
 
-.hsb-popup__clear {
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--color-text-muted);
-  text-decoration: underline;
-  cursor: pointer;
-  transition: color var(--transition-fast);
-}
-
-.hsb-popup__clear:hover {
-  color: var(--color-text-primary);
-}
-
-.hsb-done-btn {
-  padding: 10px 24px;
-  border: none;
-  border-radius: var(--radius-md);
-  background: var(--color-primary);
-  color: white;
-  font-size: 14px;
-  font-weight: 600;
-  font-family: inherit;
-  cursor: pointer;
-  transition: background var(--transition-fast);
-  white-space: nowrap;
-}
-
-.hsb-done-btn:hover {
-  background: var(--color-primary-hover);
-}
-
-/* Who rows */
-.who-row {
+.who-mvp__item {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--space-md) 0;
-  border-bottom: 1px solid var(--color-border-light);
-}
-
-.who-row:last-of-type {
-  border-bottom: none;
-}
-
-.who-row__info {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-}
-
-.who-row__label {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--color-text-primary);
-}
-
-.who-row__sub {
-  font-size: 12px;
-  color: var(--color-text-muted);
-}
-
-.stepper {
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-}
-
-.stepper__btn {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  border: 1px solid var(--color-border);
-  background: var(--color-surface);
-  font-size: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  gap: 12px;
+  padding: 12px 20px;
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 400;
+  color: #0e0e0c;
+  line-height: 1.2;
   cursor: pointer;
-  transition: border-color var(--transition-fast);
+  transition: background 120ms ease, color 120ms ease;
 }
 
-.stepper__btn:hover:not(:disabled) {
-  border-color: var(--color-primary);
+.who-mvp__item:hover {
+  background: rgba(233, 113, 50, 0.08);
+  color: var(--color-primary);
 }
 
-.stepper__btn:disabled {
-  opacity: 0.3;
-  cursor: not-allowed;
-}
-
-.stepper__val {
-  min-width: 20px;
-  text-align: center;
-  font-size: 14px;
+.who-mvp__item--selected {
   font-weight: 600;
-}
-
-.who-children-ages {
-  display: flex;
-  gap: var(--space-sm);
-  flex-wrap: wrap;
-  padding: var(--space-sm) 0 var(--space-md);
-}
-
-.who-child-age {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.who-child-age label {
-  font-size: 11px;
-  color: var(--color-text-muted);
-}
-
-.who-child-age select {
-  padding: 4px 8px;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  font-size: 13px;
-}
-
-.hsb-popup__done {
-  width: 100%;
-  margin-top: var(--space-md);
-  padding: 10px;
-  background: var(--color-primary);
-  color: #fff;
-  border: none;
-  border-radius: var(--radius-sm);
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.hsb-popup__done:hover {
-  background: var(--color-primary-hover);
+  color: var(--color-primary);
+  background: rgba(233, 113, 50, 0.08);
 }
 
 /* Responsive */
 @media (max-width: 768px) {
-  .hotel-search-bar__fields {
-    flex-direction: column;
-  }
-  .hotel-search-bar__divider {
-    width: 100%;
-    height: 1px;
-  }
-  .hsb-btn {
-    border-radius: 0;
-  }
+  .search-bar { flex-direction: column; height: auto; padding: 6px; }
+  .search-bar__field { width: 100%; height: 56px; padding: 0 14px; }
+  .search-bar__divider { width: 100%; height: 1px; }
+  .search-bar__btn--find-deals { margin-left: 0; width: 100%; margin-top: 6px; }
 }
 </style>
