@@ -6,16 +6,7 @@
            (Edge / Firefox / Safari handle background-size: cover with
            subtly different subpixel rounding). The wrapper keeps the
            ::after gradient overlay. -->
-      <div
-        class="home-hero__bg"
-        :class="{
-          /* Pills 1 and 8 sit a bit too high in the default
-             `object-position: center bottom` crop — push them 200 px
-             DOWN within the same crop window so more of the upper
-             portion shows. */
-          'home-hero__bg--shift-down': heroPhotoIndex === 0 || heroPhotoIndex === 7,
-        }"
-      >
+      <div class="home-hero__bg">
         <img class="home-hero__bg-img" :src="heroPhotoUrl" alt="" />
       </div>
       <!-- Help / phone block + pay-off both removed — both now live
@@ -65,18 +56,8 @@
           <p class="home-persuasion__text">Al meer dan 1 miljoen arrangementen geboekt.</p>
         </div>
         <div class="home-persuasion__col">
-          <!-- "Flexibel annuleren" — Lucide `arrow-left-right` icon
-               (two parallel arrows, top → right, bottom → left). Common
-               glyph for reversibility / "swap / undo your booking". -->
-          <span class="home-persuasion__award" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-              <path d="m16 3 4 4-4 4"/>
-              <path d="M20 7H4"/>
-              <path d="m8 21-4-4 4-4"/>
-              <path d="M4 17h16"/>
-            </svg>
-          </span>
-          <p class="home-persuasion__text">Flexibel annuleren</p>
+          <img src="/images/logos/klarna.webp" alt="Klarna" class="home-persuasion__klarna" />
+          <p class="home-persuasion__text">Achteraf betalen mogelijk</p>
         </div>
       </div>
     </section>
@@ -272,8 +253,8 @@ function pickFilter(tagId: string) {
 
 // Persist this home's nav variant so internal pages render the same nav.
 import { useFirstReleaseHomeVariant } from '~/composables-first-release/useFirstReleaseHomeVariant'
-const { setFrNavVariant, heroPhotoUrl, heroPhotoIndex, restoreHeroPhotoIndex } = useFirstReleaseHomeVariant()
-onMounted(() => { setFrNavVariant('1'); restoreHeroPhotoIndex() })
+const { setFrNavVariant, heroPhotoUrl, restoreHeroPhotoIndex } = useFirstReleaseHomeVariant()
+onMounted(() => { setFrNavVariant('7'); restoreHeroPhotoIndex() })
 </script>
 
 <style scoped>
@@ -305,37 +286,25 @@ onMounted(() => { setFrNavVariant('1'); restoreHeroPhotoIndex() })
 }
 
 /* ===== HERO ===== */
-/* Don't stretch the SiteHeader to fill the hero — let it size to its
-   natural nav+padding height (same as on /search) so the absolute-
-   positioned search dock lands at the SAME Y on every page. */
+/* Stretch the SiteHeader inside the hero to the hero's full height so
+   we can absolute-anchor the slot's TOP (eyebrow at 300 px) AND push
+   the search dock to the BOTTOM (margin-top: auto). With both ends
+   anchored, neither the eyebrow nor the search bar shifts when the
+   nav row gets taller or shorter (v2 has an extra row of verticals). */
 .home-hero :deep(.site-header) {
-  flex: 0 0 auto;
+  flex: 1 1 auto;
   align-self: stretch;
-  display: block;
-  position: relative;
-  /* Match internal pages' padding-bottom so the half-protrude trick
-     puts the bar's vertical centre at the SiteHeader's bottom edge —
-     i.e. exactly where the bar sits on /search, /deal, /hotel. */
-  padding-bottom: 38px;
+  display: flex;
+  flex-direction: column;
 }
-/* Use the same absolute-anchored / half-overlap dock that internal
-   pages use. Replaces the previous overlay rule (`position: relative;
-   margin-top: auto; padding: 0 0 32px`) which pinned the bar to the
-   bottom of the hero. */
 .home-hero :deep(.site-header--overlay .site-header__search-dock) {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  margin-top: 0;
-  padding: 0;
-  transform: translateY(50%);
+  margin-top: auto;
 }
 
 .home-hero {
   position: relative;
   isolation: isolate;
-  height: 640px;  /* v1: crop 68 px off the bottom; the search bar half-overlaps the nav so the hero stays balanced */
+  height: 708px;  /* 60 px cropped off; fixed so v1/v2 share the exact same hero crop */
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -356,15 +325,6 @@ onMounted(() => { setFrNavVariant('1'); restoreHeroPhotoIndex() })
   object-fit: cover;
   object-position: center bottom;
   display: block;
-}
-
-/* Pills 1 and 8 — shift the cover-fit image 200 px DOWN within the
-   same 708-px crop window so more of the upper portion of the photo
-   shows. Same trick v4/v5 used with `background-position` — adapted
-   to `object-position` (the post-cover image's bottom edge is pushed
-   200 px below the container's bottom edge). */
-.home-hero__bg--shift-down .home-hero__bg-img {
-  object-position: center calc(100% + 200px);
 }
 
 .home-hero__bg::after {
@@ -619,9 +579,19 @@ onMounted(() => { setFrNavVariant('1'); restoreHeroPhotoIndex() })
   position: relative;
 }
 
-/* All three columns center their icon over the caption text for a
-   tidy, symmetrical USP bar — no edge-hugging overrides on first /
-   last child anymore. */
+/* First column hugs the left edge of the container; last column hugs
+   the right edge so they line up with the search-bar's outer margins. */
+.home-persuasion__col:first-child {
+  align-items: flex-start;
+  text-align: left;
+  padding-left: 0;
+}
+
+.home-persuasion__col:last-child {
+  align-items: flex-end;
+  text-align: right;
+  padding-right: 0;
+}
 
 /* Vertical divider between columns (skip first). */
 .home-persuasion__col + .home-persuasion__col::before {
@@ -636,7 +606,8 @@ onMounted(() => { setFrNavVariant('1'); restoreHeroPhotoIndex() })
 
 /* All three logos in the USP bar share the same visual height so the
    row reads as a tidy band. */
-.home-persuasion__trustpilot {
+.home-persuasion__trustpilot,
+.home-persuasion__klarna {
   height: 56px;
   width: auto;
   display: block;
@@ -665,15 +636,12 @@ onMounted(() => { setFrNavVariant('1'); restoreHeroPhotoIndex() })
   max-width: 320px;
 }
 
-@media (max-width: 800px) {
+@media (max-width: 768px) {
   .home-persuasion__inner {
     grid-template-columns: 1fr;
     gap: var(--space-md);
   }
   .home-persuasion__col + .home-persuasion__col::before { display: none; }
-  /* Drop the medal "1M arrangementen" + "Flexibel annuleren" columns —
-     only the Trustpilot block stays on mobile. */
-  .home-persuasion__col + .home-persuasion__col { display: none; }
 }
 
 /* ===== POPULAR FILTERS BAND ===== */
@@ -800,13 +768,14 @@ onMounted(() => { setFrNavVariant('1'); restoreHeroPhotoIndex() })
   gap: 8px;
 }
 
-@media (max-width: 800px) {
+@media (max-width: 768px) {
   .home-popular__inner {
     grid-template-columns: 1fr;
     gap: var(--space-lg);
   }
-  /* Pills override moved into the larger mobile block below — flex-
-     wrap there fits more pills per row than a forced 1-col grid. */
+  .home-popular__pills {
+    grid-template-columns: 1fr;
+  }
 }
 
 .home-pill {
@@ -897,54 +866,21 @@ onMounted(() => { setFrNavVariant('1'); restoreHeroPhotoIndex() })
 @media (max-width: 1024px) {
   .home-deals__grid--3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
-@media (max-width: 640px) {
-  /* Slightly earlier collapse to 1 col so the cards have room on
-     small-tablet portrait too. */
+@media (max-width: 600px) {
   .home-deals__grid--3 { grid-template-columns: 1fr; }
 }
 
-/* ==========================================================
-   Mobile tweaks (< 800 px) — matches the breakpoint used by
-   the SiteHeader compact searchbar swap.
-   ========================================================== */
-@media (max-width: 800px) {
-  /* Hero — keep the photo visible (top-aligned), but let the hero
-     section grow to fit the searchbar + content below. */
+/* Mobile tweaks */
+@media (max-width: 768px) {
   .home-hero {
-    /* Height becomes content-driven; min-height ensures the photo
-       still has presence on tall phones. */
-    height: auto;
-    min-height: 480px;
-  }
-  /* Photo top-aligned so the upper part of every hero shot stays in
-     view on phones (where the bottom would otherwise dominate). */
-  .home-hero__bg-img,
-  .home-hero__bg--shift-down .home-hero__bg-img {
-    object-position: center top;
-  }
-
-  /* Hero copy: flow naturally below the SiteHeader's mobile search
-     trigger instead of absolute-positioned at top: 300 px. */
-  .home-hero__content {
-    position: static;
-    top: auto;
-    left: auto;
-    right: auto;
-    padding: 24px 16px 32px;
-    gap: 16px;
-  }
-  .home-hero__title {
-    font-size: clamp(40px, 12vw, 64px);
-    line-height: 1;
-    letter-spacing: -1.5px;
-  }
-  .home-hero__tagline {
-    font-size: 16px;
-    line-height: 1.45;
+    min-height: 504px;
   }
   .home-hero__location {
     top: 60px;
     right: 16px;
+  }
+  .home-hero__title {
+    letter-spacing: -1.5px;
   }
   .home-hero__trust {
     gap: 16px;
@@ -952,19 +888,6 @@ onMounted(() => { setFrNavVariant('1'); restoreHeroPhotoIndex() })
   }
   .home-popular {
     padding: 30px 0;  /* −10 px top padding: 40px 0; bottom */
-  }
-
-  /* Quick filter pills: wrap naturally — pills size to content so
-     more fit per row. Drops the 1-col grid. */
-  .home-popular__pills {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    grid-template-columns: none;
-  }
-  .home-pill {
-    width: auto;
-    flex: 0 0 auto;
   }
 }
 </style>

@@ -20,6 +20,12 @@ const props = defineProps<{
   hotels: SearchHotel[]
   /** When set, override the NL fit-bounds default and zoom to this point. */
   initialFocus?: { lat: number; lng: number; zoom?: number } | null
+  /** ID of the hotel the user came from via /deal — its marker stays
+   *  rendered as the big teardrop "location" pin regardless of which
+   *  hotel is currently selected (so the user can still recognise their
+   *  anchor after clicking another marker). Hovering it shows the
+   *  orange teardrop variant. */
+  focusedHotelId?: string | null
 }>()
 
 const { selectedHotelId, selectHotel, clearSelection, setHover, scheduleHover } = useFirstReleaseHotelMap()
@@ -48,6 +54,7 @@ function pinStateFor(hotelId: string): PinState {
   const hotel = props.hotels.find((h) => h.id === hotelId)
   const isSelected = hotelId === selectedHotelId.value
   const isHovered = hotelId === hoveredId.value
+  const isFocused = !!props.focusedHotelId && hotelId === props.focusedHotelId
   // Both `soldOut` (no availability for arrival date) and `unmatched`
   // (deals don't match the active filters) render with the same disabled
   // visual; the hover-card distinguishes them via different copy.
@@ -56,6 +63,13 @@ function pinStateFor(hotelId: string): PinState {
     if (isHovered) return 'soldOutHover'
     if (isSelected) return 'soldOutSelected'
     return 'soldOut'
+  }
+  // Focused hotel (came-from-deal) — always a teardrop. Hover OR an
+  // open sidepanel for this hotel both swap the black teardrop for
+  // the orange variant. Closing the sidepanel reverts it to black.
+  if (isFocused) {
+    if (isHovered || isSelected) return 'focusedHover'
+    return 'focused'
   }
   if (isHovered) return 'hover'
   if (isSelected) return 'selected'
@@ -143,10 +157,29 @@ function renderMarkers() {
           hoveredId.value = hotelId
           m.setIcon(makeHotelIcon(L, hotelId))
           const rect = mapEl.value!.getBoundingClientRect()
+          // Anchor the hover-card to the marker's GEOGRAPHIC point (the
+          // tip of the teardrop / the centre of the dot), not the
+          // cursor — that way a tall focused-pin doesn't get covered
+          // by the card.
+          const state = pinStateFor(hotelId)
+          const [iconW, iconH] = pinSize(state)
+          const [, iconAnchorY] = pinAnchor(state)
+          const anchorPx = map!.latLngToContainerPoint([lat, lng])
+          const anchorX = anchorPx.x + rect.left
+          const anchorY = anchorPx.y + rect.top
+          // anchorOffsetY = how far the anchor is from the TOP of the icon.
+          // iconTopY    = top of the visible icon on screen.
+          // iconBottomY = bottom of the visible icon on screen.
+          const iconTopY = anchorY - iconAnchorY
+          const iconBottomY = iconTopY + iconH
           setHover(hotelId, {
-            x: e.containerPoint.x + rect.left,
-            y: e.containerPoint.y + rect.top,
+            x: anchorX,
+            y: anchorY,
+            iconTopY,
+            iconBottomY,
           })
+          // iconW deliberately unused — width is centred via anchorX.
+          void iconW
         })
         m.on('mouseout', () => {
           hoveredId.value = null
@@ -277,6 +310,13 @@ async function initMap() {
 
 watch(selectedHotelId, () => {
   // Re-render so the previously selected and newly selected pins update icons.
+  renderMarkers()
+})
+
+// Same trick for the focused-from-deal hotel — when it changes (or
+// is cleared), rebuild the relevant marker icons so the teardrop
+// switches to / from the default star.
+watch(() => props.focusedHotelId, () => {
   renderMarkers()
 })
 

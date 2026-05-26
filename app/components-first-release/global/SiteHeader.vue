@@ -28,13 +28,16 @@
           />
         </NuxtLink>
 
-        <!-- Pay-off block (grid row 2, col 1) — payoff on top, handwritten
-             underline-stroke on the bottom. The wrapper stretches to the
-             full row height so the stroke bottom-aligns with the
-             verticals button row's bottom. -->
-        <div v-if="!isMobile" class="site-header__tagline-block">
+        <!-- Pay-off block (grid row 2, col 1 on desktop; flows under the
+             logo on mobile). Handwritten tagline + optional wavy stroke. -->
+        <div class="site-header__tagline-block">
           <span class="site-header__tagline">Personally Curated Experiences</span>
+          <!-- Wavy underline-stroke under the handwritten tagline. v1 and
+               v6 are intentionally stroke-less (cleaner row); we don't
+               mount the SVG at all so there's no chance a CSS-specificity
+               quirk leaves it visible. -->
           <svg
+            v-if="!['1', '6'].includes(effectiveNavVariant)"
             class="site-header__tagline-stroke"
             viewBox="0 0 320 12"
             preserveAspectRatio="none"
@@ -84,14 +87,71 @@
           </template>
         </nav>
 
-        <!-- Phone (grid row 2, col 3 — desktop only) -->
-        <a v-if="!isMobile" href="tel:+31207052222" class="site-header__phone">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-            <path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24 11.36 11.36 0 003.58.57 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1 11.36 11.36 0 00.57 3.58 1 1 0 01-.24 1.01l-2.21 2.21z"/>
-          </svg>
-          <span class="site-header__phone-label">Hulp nodig?</span>
-          <span class="site-header__phone-number">+31 20 705 2222</span>
-        </a>
+        <!-- Phone (grid row 2, col 3 on desktop; pushed into the mobile
+             actions row at <800 px via media query). Clicking the
+             trigger opens the opening-hours / contact popover. -->
+        <div class="site-header__phone-wrap" ref="phoneWrapRef">
+          <button
+            type="button"
+            class="site-header__phone site-header__phone--button"
+            :aria-expanded="phoneHoursOpen"
+            @click.stop="phoneHoursOpen = !phoneHoursOpen"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24 11.36 11.36 0 003.58.57 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1 11.36 11.36 0 00.57 3.58 1 1 0 01-.24 1.01l-2.21 2.21z"/>
+            </svg>
+            <span class="site-header__phone-label">Hulp nodig?</span>
+            <span class="site-header__phone-number">+31 20 705 2222</span>
+          </button>
+          <Transition name="dropdown">
+            <div v-if="phoneHoursOpen" class="site-header__phone-popover" role="dialog" aria-label="Openingstijden">
+              <!-- Block 1: opening hours -->
+              <div class="site-header__phone-popover-block">
+                <span class="site-header__phone-popover-title">Openingstijden</span>
+                <span class="site-header__phone-popover-row">Ma t/m Vr: 8:00 — 18:00</span>
+              </div>
+
+              <div class="site-header__phone-popover-divider" aria-hidden="true"></div>
+
+              <!-- Block 2: contact methods + helpful links -->
+              <a href="tel:+31207052222" class="site-header__phone-popover-item">
+                <svg class="site-header__phone-popover-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
+                </svg>
+                <span class="site-header__phone-popover-item-label">+31 20 705 2222</span>
+                <span class="site-header__phone-popover-item-sub">Phone</span>
+              </a>
+
+              <a href="https://wa.me/31208088809" target="_blank" rel="noopener" class="site-header__phone-popover-item">
+                <svg class="site-header__phone-popover-icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 2.1.65 4.06 1.77 5.69L2 22l4.55-1.86a9.9 9.9 0 0 0 5.49 1.66h0c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.02A9.87 9.87 0 0 0 12.04 2zm0 18.13h-.01a8.22 8.22 0 0 1-4.19-1.15l-.3-.18-3.11 1.27 1.03-3.03-.2-.31a8.18 8.18 0 0 1-1.26-4.42c0-4.54 3.7-8.24 8.24-8.24 2.2 0 4.27.86 5.82 2.41a8.18 8.18 0 0 1 2.41 5.83c0 4.54-3.7 8.24-8.24 8.24zm4.52-6.18c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.25-.64.81-.79.97-.14.17-.29.18-.54.06-.25-.12-1.05-.39-2-1.23-.74-.66-1.24-1.47-1.38-1.72-.14-.25-.02-.39.11-.51.11-.11.25-.29.37-.43.12-.14.16-.25.25-.42.08-.17.04-.31-.02-.43-.06-.12-.55-1.33-.76-1.82-.2-.48-.4-.42-.55-.42-.14-.01-.31-.01-.47-.01s-.43.06-.66.31c-.23.25-.87.85-.87 2.07s.89 2.4 1.01 2.57c.12.17 1.74 2.65 4.21 3.71.59.25 1.05.41 1.41.52.59.19 1.13.16 1.56.1.48-.07 1.47-.6 1.68-1.18.21-.58.21-1.08.14-1.18-.06-.1-.22-.16-.47-.28z"/>
+                </svg>
+                <span class="site-header__phone-popover-item-label">+31 20 808 8809</span>
+                <span class="site-header__phone-popover-item-sub">WhatsApp</span>
+              </a>
+
+              <NuxtLink to="/contact" class="site-header__phone-popover-item" @click="phoneHoursOpen = false">
+                <svg class="site-header__phone-popover-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M4 4h16v12H5.17L4 17.17V4z"/>
+                </svg>
+                <span class="site-header__phone-popover-item-label">Contactformulier</span>
+              </NuxtLink>
+
+              <NuxtLink to="/veelgestelde-vragen" class="site-header__phone-popover-item" @click="phoneHoursOpen = false">
+                <svg class="site-header__phone-popover-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <circle cx="12" cy="12" r="10"/>
+                  <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+                  <line x1="12" y1="17" x2="12.01" y2="17"/>
+                </svg>
+                <span class="site-header__phone-popover-item-label">Veelgestelde vragen</span>
+              </NuxtLink>
+
+              <div class="site-header__phone-popover-divider" aria-hidden="true"></div>
+
+              <a href="tel:+31207052222" class="site-header__phone-popover-cta">Nu bellen</a>
+            </div>
+          </Transition>
+        </div>
 
         <!-- Right actions (grid row 1, col 3 — desktop only positioned via grid) -->
         <div class="site-header__nav-actions">
@@ -165,8 +225,8 @@
             </Teleport>
           </div>
 
-          <!-- Language switcher (desktop only) -->
-          <div v-if="!isMobile" class="lang-switcher" ref="langSwitcherRef">
+          <!-- Language switcher (desktop + mobile) -->
+          <div class="lang-switcher" ref="langSwitcherRef">
             <button
               type="button"
               class="lang-switcher__trigger"
@@ -185,9 +245,9 @@
               <ul v-if="langDropdownOpen" class="lang-switcher__menu" role="listbox">
                 <li
                   v-for="lang in languages"
-                  :key="lang.label"
+                  :key="lang.code"
                   class="lang-switcher__option"
-                  :class="{ 'lang-switcher__option--active': lang.label === selectedLanguage.label }"
+                  :class="{ 'lang-switcher__option--active': lang.code === selectedLanguage.code }"
                   role="option"
                   @click="selectLanguage(lang)"
                 >
@@ -199,12 +259,13 @@
             </Transition>
           </div>
 
-          <!-- Leden ingang (desktop only) -->
-          <NuxtLink v-if="!isMobile" to="/first-release/leden" class="vip-btn">
+          <!-- Leden ingang — single "Inloggen" label across desktop +
+               mobile (the old "Inloggen leden" wording dropped). -->
+          <NuxtLink to="/first-release/leden" class="vip-btn">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M12 2 15 8l6 .9-4.5 4.4L17.5 20 12 16.9 6.5 20 8 13.3 3.5 8.9 9.5 8z" />
             </svg>
-            <span>{{ t('header.membersEntrance') }}</span>
+            <span>Inloggen</span>
           </NuxtLink>
 
           <div class="hamburger-wrap" ref="hamburgerWrapRef">
@@ -222,7 +283,7 @@
             <Teleport to="body">
               <Transition name="menu-fade">
                 <div
-                  v-if="hamburgerDropdownOpen && !isMobile"
+                  v-if="hamburgerDropdownOpen"
                   class="menu-panel__backdrop"
                   @click="hamburgerDropdownOpen = false"
                   aria-hidden="true"
@@ -230,7 +291,7 @@
               </Transition>
               <Transition name="menu-slide">
                 <aside
-                  v-if="hamburgerDropdownOpen && !isMobile"
+                  v-if="hamburgerDropdownOpen"
                   class="menu-panel"
                   role="dialog"
                   aria-label="Menu"
@@ -253,15 +314,15 @@
 
                   <!-- Scrollable body -->
                   <div class="menu-panel__body">
-                    <!-- EXPLORE section -->
-                    <span class="menu-panel__section-label">Explore</span>
+                    <!-- ONTDEK section -->
+                    <span class="menu-panel__section-label">Ontdek</span>
                     <NuxtLink
                       :to="homeHref"
                       class="menu-panel__row menu-panel__row--lg"
                       @click="hamburgerDropdownOpen = false"
                     >
-                      <span class="menu-panel__icon-tile" style="background:#ead8b5">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7a5a2e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 18v-6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v6"/><path d="M3 14h18"/><path d="M5 18v2M19 18v2"/><path d="M7 10V8a3 3 0 0 1 3-3h4a3 3 0 0 1 3 3v2"/></svg>
+                      <span class="menu-panel__icon-tile">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0e0e0c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 18v-6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v6"/><path d="M3 14h18"/><path d="M5 18v2M19 18v2"/><path d="M7 10V8a3 3 0 0 1 3-3h4a3 3 0 0 1 3 3v2"/></svg>
                       </span>
                       <span class="menu-panel__row-text">
                         <span class="menu-panel__row-title">
@@ -274,14 +335,15 @@
                     </NuxtLink>
 
                     <a
+                      v-if="effectiveNavVariant !== '1'"
                       href="https://restaurants.vialuxury.com/"
                       target="_blank"
                       rel="noopener"
                       class="menu-panel__row menu-panel__row--lg"
                       @click="hamburgerDropdownOpen = false"
                     >
-                      <span class="menu-panel__icon-tile" style="background:#ead2c0">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7a4a26" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 2v7a3 3 0 0 0 3 3h0a3 3 0 0 0 3-3V2"/><path d="M6 12v10"/><path d="M17 2v20"/><path d="M21 2c0 5-2 6-4 6"/></svg>
+                      <span class="menu-panel__icon-tile">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0e0e0c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 2v7a3 3 0 0 0 3 3h0a3 3 0 0 0 3-3V2"/><path d="M6 12v10"/><path d="M17 2v20"/><path d="M21 2c0 5-2 6-4 6"/></svg>
                       </span>
                       <span class="menu-panel__row-text">
                         <span class="menu-panel__row-title">{{ t('header.restaurants') }}</span>
@@ -290,28 +352,31 @@
                       <svg class="menu-panel__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
                     </a>
 
-                    <NuxtLink
-                      to="/cadeaubon"
+                    <a
+                      href="https://cadeaukaart.vialuxury.com/Product/Products"
+                      target="_blank"
+                      rel="noopener"
                       class="menu-panel__row menu-panel__row--lg"
                       @click="hamburgerDropdownOpen = false"
                     >
-                      <span class="menu-panel__icon-tile" style="background:#f0c8cf">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8a3a4a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
+                      <span class="menu-panel__icon-tile">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0e0e0c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
                       </span>
                       <span class="menu-panel__row-text">
                         <span class="menu-panel__row-title">{{ t('header.giftCard') }}</span>
                         <span class="menu-panel__row-sub">Geef een ervaring cadeau</span>
                       </span>
                       <svg class="menu-panel__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
-                    </NuxtLink>
+                    </a>
 
                     <NuxtLink
+                      v-if="effectiveNavVariant !== '1'"
                       to="/first-release/vakantieparken"
                       class="menu-panel__row menu-panel__row--lg"
                       @click="hamburgerDropdownOpen = false"
                     >
-                      <span class="menu-panel__icon-tile" style="background:#cfe0c8">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3a6a3a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h18"/><path d="M12 3 4 13h16L12 3z"/><path d="M9 21v-6h6v6"/></svg>
+                      <span class="menu-panel__icon-tile">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0e0e0c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h18"/><path d="M12 3 4 13h16L12 3z"/><path d="M9 21v-6h6v6"/></svg>
                       </span>
                       <span class="menu-panel__row-text">
                         <span class="menu-panel__row-title">{{ t('header.holidayParks') }}</span>
@@ -332,8 +397,28 @@
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0e0e0c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
                       </span>
                       <span class="menu-panel__row-text">
-                        <span class="menu-panel__row-title menu-panel__row-title--sm">{{ t('header.membersEntrance') }}</span>
-                        <span class="menu-panel__row-sub">Inloggen of lid worden</span>
+                        <span class="menu-panel__row-title menu-panel__row-title--sm">Inloggen leden</span>
+                        <span class="menu-panel__row-sub">Toegang tot de mijn-omgeving</span>
+                      </span>
+                      <svg class="menu-panel__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+                    </NuxtLink>
+
+                    <!-- "Gratis aanmelden" — companion to the login row,
+                         points at the same membership funnel. v1 only
+                         per request. -->
+                    <NuxtLink
+                      v-if="effectiveNavVariant === '1'"
+                      to="/first-release/leden#aanmelden"
+                      class="menu-panel__row menu-panel__row--sm"
+                      @click="hamburgerDropdownOpen = false"
+                    >
+                      <span class="menu-panel__icon-tile menu-panel__icon-tile--sm">
+                        <!-- user-plus glyph (Lucide) -->
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0e0e0c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+                      </span>
+                      <span class="menu-panel__row-text">
+                        <span class="menu-panel__row-title menu-panel__row-title--sm">Gratis aanmelden</span>
+                        <span class="menu-panel__row-sub">Profiteer van exclusieve voordelen</span>
                       </span>
                       <svg class="menu-panel__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
                     </NuxtLink>
@@ -348,7 +433,7 @@
                       </span>
                       <span class="menu-panel__row-text">
                         <span class="menu-panel__row-title menu-panel__row-title--sm">{{ t('header.contact') }}</span>
-                        <span class="menu-panel__row-sub">Bereik onze concierge</span>
+                        <span class="menu-panel__row-sub">Stuur ons een bericht</span>
                       </span>
                       <svg class="menu-panel__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
                     </NuxtLink>
@@ -368,19 +453,25 @@
                       <svg class="menu-panel__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
                     </NuxtLink>
 
-                    <!-- Language switch at the bottom -->
-                    <div class="menu-panel__lang">
-                      <button
-                        v-for="lang in languages"
-                        :key="lang.label"
-                        type="button"
-                        class="menu-panel__lang-btn"
-                        :class="{ 'menu-panel__lang-btn--active': lang.label === selectedLanguage.label }"
-                        @click="selectLanguage(lang); hamburgerDropdownOpen = false"
-                      >
-                        {{ lang.code }}
-                      </button>
-                    </div>
+                    <!-- PARTNERS section -->
+                    <span class="menu-panel__section-label menu-panel__section-label--later">Partners</span>
+
+                    <NuxtLink
+                      to="/partners/aanmelden"
+                      class="menu-panel__row menu-panel__row--sm"
+                      @click="hamburgerDropdownOpen = false"
+                    >
+                      <span class="menu-panel__icon-tile menu-panel__icon-tile--sm">
+                        <!-- Hotel / building glyph -->
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0e0e0c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 21V9h6v12"/><path d="M3 9h18"/></svg>
+                      </span>
+                      <span class="menu-panel__row-text">
+                        <span class="menu-panel__row-title menu-panel__row-title--sm">Aanmelden als hotel</span>
+                        <span class="menu-panel__row-sub">Word partner van ViaLuxury</span>
+                      </span>
+                      <svg class="menu-panel__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+                    </NuxtLink>
+
                   </div>
                 </aside>
               </Transition>
@@ -390,14 +481,13 @@
       </div>
     </div>
 
-    <!-- Mobile search trigger: single full-width button under nav (visible <768px) -->
+    <!-- Mobile search trigger (visible < 800 px) — rounded-rectangle
+         white card floating over the hero photo with a rounded-rectangle
+         orange "Vind deals" CTA on the right. -->
     <div class="site-header__mobile-search">
       <button type="button" class="mobile-search-trigger" @click="mobileSearchOpen = true">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <circle cx="11" cy="11" r="8" />
-          <path d="M21 21l-4.35-4.35" />
-        </svg>
         <span class="mobile-search-trigger__label">{{ mobileSearchLabel }}</span>
+        <span class="mobile-search-trigger__cta">Vind deals</span>
       </button>
     </div>
 
@@ -697,7 +787,7 @@
         <!-- Language toggle -->
         <div class="mobile-menu__section">
           <div class="mobile-menu__label">{{ selectedLanguage.label }}</div>
-          <button v-for="lang in languages" :key="lang.label" type="button" class="mobile-menu__item" @click="selectLanguage(lang); mobileMenuOpen = false">
+          <button v-for="lang in languages" :key="lang.code" type="button" class="mobile-menu__item" @click="selectLanguage(lang); mobileMenuOpen = false">
             {{ lang.label }}
           </button>
         </div>
@@ -707,6 +797,7 @@
     <!-- Mobile full-screen search modal -->
     <FirstReleaseMobileSearchModal
       :open="mobileSearchOpen"
+      :total-arrangements="totalArrangementCount"
       :destinations="destinations"
       :themes="themes"
       :selected-destinations="localDestDestinations"
@@ -753,6 +844,7 @@
 <script setup lang="ts">
 import { useFirstReleaseLocaleStore } from '~/stores-first-release/locale'
 import { searchHotels } from '~/data/mock/search-hotels'
+import { mappedHotels } from '~/data/deals-mapper'
 import { tagsByCategory } from '~/utils-first-release/filterTags'
 import { minRoomsFor, maxRoomsFor } from '~/utils-first-release/priceFormula'
 import { useFirstReleaseHomeVariant } from '~/composables-first-release/useFirstReleaseHomeVariant'
@@ -778,11 +870,19 @@ const { homeHref, frNavVariant } = useFirstReleaseHomeVariant()
 const effectiveNavVariant = computed(() => props.navVariant ?? frNavVariant.value)
 
 // --- Verticals (computed for reactivity on locale change) ---
-const verticals = computed(() => [
-  { id: 'hotels', label: t('header.hotels'), href: homeHref.value, external: false },
-  { id: 'restaurants', label: t('header.restaurants'), href: 'https://restaurants.vialuxury.com/', external: true },
-  { id: 'cadeaubon', label: t('header.giftCard'), href: '/cadeaubon', external: false },
-])
+const verticals = computed(() => {
+  const all = [
+    { id: 'hotels', label: t('header.hotels'), href: homeHref.value, external: false },
+    { id: 'restaurants', label: t('header.restaurants'), href: 'https://restaurants.vialuxury.com/', external: true },
+    { id: 'cadeaubon', label: t('header.giftCard'), href: 'https://cadeaukaart.vialuxury.com/Product/Products', external: true },
+  ]
+  // Variant 1 hides "Restaurants" from the top-nav verticals (and the
+  // side-panel menu) per request — leaves Verblijven + Cadeaubon.
+  if (effectiveNavVariant.value === '1') {
+    return all.filter(v => v.id !== 'restaurants')
+  }
+  return all
+})
 // Route-aware: 'vakantieparken' on /vakantieparken*, otherwise 'hotels' (home/search/deal/hotel)
 const _route = useRoute()
 const activeVertical = computed(() => {
@@ -791,16 +891,27 @@ const activeVertical = computed(() => {
 })
 
 // --- Language switcher ---
+// Order is fixed (NL → EN → FR-BE → FR-FR → DE). Each entry carries a
+// region-aware `code` so French shows up twice with distinct labels
+// (Belgium vs France). Only NL + EN actually drive the i18n locale;
+// the other entries are display-only for now.
 const languages = [
-  { code: 'EN', label: 'English', flag: '\u{1F1EC}\u{1F1E7}' },
   { code: 'NL', label: 'Nederlands', flag: '\u{1F1F3}\u{1F1F1}' },
+  { code: 'EN', label: 'English', flag: '\u{1F1EC}\u{1F1E7}' },
+  { code: 'BE', label: 'Français', flag: '\u{1F1E7}\u{1F1EA}' },
+  { code: 'FR', label: 'Français', flag: '\u{1F1EB}\u{1F1F7}' },
+  { code: 'DE', label: 'Deutsch', flag: '\u{1F1E9}\u{1F1EA}' },
 ]
 
 const selectedLanguage = ref(
-  localeStore.locale === 'en' ? languages[0] : languages[1]
+  languages.find(l => l.code === (localeStore.locale === 'en' ? 'EN' : 'NL')) ?? languages[0],
 )
 const langDropdownOpen = ref(false)
 const langSwitcherRef = ref<HTMLElement | null>(null)
+
+// Phone-hours popover (anchored under the desktop phone block).
+const phoneHoursOpen = ref(false)
+const phoneWrapRef = ref<HTMLElement | null>(null)
 
 function selectLanguage(lang: typeof languages[number]) {
   selectedLanguage.value = lang
@@ -823,12 +934,9 @@ const hamburgerWrapRef = ref<HTMLElement | null>(null)
 const hamburgerMenuStyle = ref<Record<string, string>>({})
 
 function onHamburgerClick() {
-  if (isMobile.value) {
-    mobileMenuOpen.value = true
-    return
-  }
-  // Side panel is fixed to the viewport's right edge — no anchor
-  // positioning needed; toggling the flag is enough.
+  // Side panel renders on every viewport now (was a separate
+  // FirstReleaseMobileFullscreen drawer on mobile). Toggling the flag
+  // is enough — the panel is fixed to the viewport's right edge.
   hamburgerDropdownOpen.value = !hamburgerDropdownOpen.value
 }
 
@@ -848,6 +956,7 @@ watch(contactDropdownOpen, (open) => {
 
 // Click-outside handlers (one per dropdown) — automatically detached on unmount
 useFirstReleaseClickOutside(langSwitcherRef, () => { langDropdownOpen.value = false })
+useFirstReleaseClickOutside(phoneWrapRef, () => { phoneHoursOpen.value = false })
 useFirstReleaseClickOutside(contactDropdownRef, () => { contactDropdownOpen.value = false })
 // Hamburger panel closes via its backdrop click + ✕ button; click-outside
 // on the hamburger wrap would also close on clicks INSIDE the teleported
@@ -936,14 +1045,16 @@ function scrollToFitPopup() {
 const isMobile = useFirstReleaseIsMobile()
 const mobileSearchOpen = ref(false)
 const mobileMenuOpen = ref(false)
-const mobileSearchLabel = computed(() => {
-  // Compact summary: "Alle bestemmingen · Flexibel · 2 volwassenen"
-  const parts: string[] = []
-  parts.push(destinationLabel.value)
-  parts.push(whenLabel.value)
-  parts.push(whoLabel.value)
-  return parts.join(' · ')
+/** Total number of arrangements (= deals) across all mocked hotels.
+ *  Rendered as "Doorzoek N arrangementen" in the compact mobile
+ *  searchbar so the user has a clear hint of catalogue size. */
+const totalArrangementCount = computed(() => {
+  let n = 0
+  for (const h of mappedHotels) n += h.deals.length
+  return n
 })
+
+const mobileSearchLabel = computed(() => `Doorzoek ${totalArrangementCount.value} arrangementen`)
 
 function togglePopup(popup: 'destination' | 'when' | 'who') {
   activePopup.value = activePopup.value === popup ? null : popup
@@ -982,13 +1093,12 @@ onBeforeUnmount(() => {
 })
 
 function closePopup() {
-  // Persons/rooms commit on close (Klaar / outside-click / Esc) — they
-  // affect prices site-wide via the per-person formula and the user expects
-  // that to take effect right away. Search-result filters stay gated by the
-  // search-button commit (committedArrivalDate / commitSearch).
-  if (activePopup.value === 'who') {
-    setSearchGroup(searchGroup.value.adults + searchGroup.value.children.length, searchGroup.value.rooms)
-  }
+  // Persons/rooms NO LONGER commit on close — every searchbar field
+  // (date, duration, persons, destinations) is now treated as a draft
+  // until "Vind deals" runs. The local `searchGroup` keeps the user's
+  // pick; `commitSearch()` is what pushes it to shared state. The only
+  // exception is the live date preview, which `setArrivalDate(...)`
+  // already pipes through on selection so the deal page can update.
   activePopup.value = null
   externalAnchor.value = null
   schedulePulse()
@@ -1062,6 +1172,10 @@ function clearWhen() {
  *  the date side and the duration side. Stays open afterwards — the user
  *  can keep picking; "Verder" is what dismisses the popup. */
 function clearWhenAndDuration() {
+  // Wipe the local drafts only; shared `selectedNights` / `flexType`
+  // are committed by `commitSearch()` (Find Deals). The live
+  // `arrivalDate` is the one exception we DO clear immediately, since
+  // the deal page mirrors it for its sidebar calendar preview.
   selectedDate.value = null
   flexibility.value = 0
   selectedDurations.value = []
@@ -1069,11 +1183,7 @@ function clearWhenAndDuration() {
   localNights.value = []
   localAnyDuration.value = false
   localFlexible.value = false
-  setSelectedNights([])
-  if (localFlexType.value) {
-    localFlexType.value = null
-    setFlexType(null)
-  }
+  localFlexType.value = null
   calMonth.value = { year: new Date().getFullYear(), month: new Date().getMonth() }
 }
 
@@ -1297,7 +1407,10 @@ const localFlexType = ref<string | null>(globalFlexType.value)
  *  specific number of nights. Drives the "Elke reisduur" label on
  *  the search-bar field; cleared as soon as the user picks any
  *  specific night-count again. */
-const localAnyDuration = ref(false)
+/** Default "Maakt niet uit" to CHECKED when no specific nights are
+ *  picked — so a fresh user sees the neutral "any duration" choice
+ *  pre-selected. Cleared the moment the user picks a specific night. */
+const localAnyDuration = ref(globalNights.value.length === 0)
 
 /** "Ik ben flexibel" — user has opted out of picking a specific
  *  arrival date. Drives the "Flexibel" label on the search-bar
@@ -1316,6 +1429,8 @@ function setLocalFlexible(next: boolean) {
 }
 
 function toggleLocalNight(value: string) {
+  // Local-only — shared `selectedNights` only changes when the user
+  // hits "Vind deals" via `commitSearch()`.
   const i = localNights.value.indexOf(value)
   if (i === -1) localNights.value.push(value)
   else localNights.value.splice(i, 1)
@@ -1323,29 +1438,23 @@ function toggleLocalNight(value: string) {
     localFlexType.value = null
     localAnyDuration.value = false
   }
-  // Push to shared state so /search filter pills, deal-page heading and
-  // any other open searchbar reflect the change immediately.
-  setSelectedNights(localNights.value.filter(v => ['1', '2', '3', '4', '5+'].includes(v)))
-  setFlexType(localFlexType.value)
   notePicker()
 }
 
 function setAnyDuration(next: boolean) {
+  // Local-only — same draft pattern as `toggleLocalNight`.
   localAnyDuration.value = next
   if (next) {
     localNights.value = []
     localFlexType.value = null
-    setSelectedNights([])
-    setFlexType(null)
   }
   notePicker()
 }
 
 function setLocalFlexType(val: string | null) {
+  // Local-only — committed in `commitSearch()`.
   localFlexType.value = val
   if (val) localNights.value = []
-  setFlexType(val)
-  setSelectedNights(localNights.value.filter(v => ['1', '2', '3', '4', '5+'].includes(v)))
   notePicker()
 }
 
@@ -1357,6 +1466,9 @@ watch(globalNights, (g) => {
   if (JSON.stringify(next) !== JSON.stringify(localNights.value)) {
     localNights.value = next
   }
+  // Keep "Maakt niet uit" pre-checked whenever no specific nights are
+  // picked; clears the moment a night is added.
+  localAnyDuration.value = next.length === 0 && !localFlexType.value
 })
 watch(globalFlexType, (g) => {
   if (g !== localFlexType.value) localFlexType.value = g
@@ -2188,11 +2300,12 @@ function handleSelectHotelInPopup(slug: string) {
   position: relative;
 }
 
-/* Small orange dash under the payoff — left-aligned, bottom-aligned
-   with the row-2 bottom edge. Shown ONLY on the home (overlay) bar,
-   not on the internal nav-bar pages — another v1 home/internal
-   differentiator. */
-.site-header--nav-v1.site-header--overlay .site-header__tagline-block::after,
+/* Small white dash under the payoff — left-aligned, bottom-aligned
+   with the row-2 bottom edge. v6 only (v1 dropped at the user's
+   request — with the v1 home search bar now half-overlapping the
+   SiteHeader's bottom edge, the dash visually collided with the
+   bar's top stroke). Shown only on the home (overlay) bar, not on
+   internal pages. */
 .site-header--nav-v6.site-header--overlay .site-header__tagline-block::after {
   content: '';
   position: absolute;
@@ -2417,7 +2530,6 @@ function handleSelectHotelInPopup(slug: string) {
    `.site-header__nav { padding-bottom: 0 }`, the verticals' bottom
    edge lands at `nav_height = header_bottom - 38px = bar's top`,
    which is exactly where the tabs need to touch the bar. */
-
 /* Logo (grid row 1, col 1) — width pinned to 244 px per design. */
 .site-header__logo {
   grid-row: 1;
@@ -2477,12 +2589,18 @@ function handleSelectHotelInPopup(slug: string) {
   opacity: 0.9;
 }
 
-/* Phone (grid row 2, col 3) — right-aligned within its column so its
-   right edge lines up with the hamburger above it. */
-.site-header__phone {
+/* Phone wrapper (grid row 2, col 3) — anchors the opening-hours popover
+   right under the phone button. */
+.site-header__phone-wrap {
   grid-row: 2;
   grid-column: 3;
   justify-self: end;
+  position: relative;
+}
+
+/* Phone trigger — right-aligned within its column so its right edge
+   lines up with the hamburger above it. */
+.site-header__phone {
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -2493,6 +2611,115 @@ function handleSelectHotelInPopup(slug: string) {
   font-weight: 600;
   letter-spacing: 0.2px;
   transition: color 150ms ease;
+}
+/* Button reset so the `<button>` trigger inherits the same look as
+   the original `<a>` link. */
+.site-header__phone--button {
+  background: none;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  font: inherit;
+  text-align: inherit;
+}
+
+/* Opening-hours popover */
+.site-header__phone-popover {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 280px;
+  padding: 16px 16px 14px;
+  background: #fff;
+  border: 1px solid var(--color-border-light, #ececec);
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  z-index: 600;
+  color: var(--color-text-primary);
+}
+.site-header__phone-popover-block {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 4px;
+}
+.site-header__phone-popover-title {
+  font-family: var(--font-heading);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+.site-header__phone-popover-row {
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--color-text-secondary);
+  line-height: 1.4;
+}
+.site-header__phone-popover-divider {
+  height: 1px;
+  background: var(--color-border-light, #ececec);
+  margin: 8px -16px;
+}
+.site-header__phone-popover-item {
+  display: grid;
+  grid-template-columns: 20px 1fr auto;
+  align-items: center;
+  gap: 0 12px;
+  padding: 8px 4px;
+  margin: 0 -4px;
+  border-radius: 8px;
+  text-decoration: none;
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: background 120ms ease, color 120ms ease;
+}
+.site-header__phone-popover-item:hover {
+  background: var(--color-background-secondary, #faf9f6);
+}
+.site-header__phone-popover-icon {
+  grid-column: 1;
+  grid-row: 1 / span 2;
+  align-self: center;
+  color: var(--color-text-secondary);
+  flex-shrink: 0;
+}
+.site-header__phone-popover-item:hover .site-header__phone-popover-icon {
+  color: var(--color-primary);
+}
+.site-header__phone-popover-item-label {
+  grid-column: 2;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  line-height: 1.3;
+}
+.site-header__phone-popover-item-sub {
+  grid-column: 3;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--color-text-muted, #9a9a9a);
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+}
+.site-header__phone-popover-cta {
+  margin-top: 6px;
+  align-self: flex-start;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-primary);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.site-header__phone-popover-cta:hover {
+  color: var(--color-primary-hover);
 }
 
 .site-header__phone svg {
@@ -3383,31 +3610,57 @@ function handleSelectHotelInPopup(slug: string) {
   display: none;
 }
 
+/* Rounded-rectangle white card floating over the hero photo, with a
+   compact "Vind deals" rounded-rectangle CTA on the right. */
 .mobile-search-trigger {
   display: flex;
-  align-items: center;
-  gap: 10px;
+  align-items: stretch;
+  gap: 0;
   width: 100%;
-  height: 44px;
-  padding: 0 16px;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  background: var(--color-surface);
+  height: 52px;
+  padding: 4px 4px 4px 18px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 10px;            /* rounded rectangle, NOT pill */
+  background: rgba(255, 255, 255, 0.97);
   color: var(--color-text-primary);
   font-family: inherit;
   font-size: 14px;
   cursor: pointer;
   text-align: left;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
 }
 
 .mobile-search-trigger__label {
   flex: 1;
+  display: flex;
+  align-items: center;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   color: var(--color-text-secondary);
   font-weight: 500;
+  font-size: 14px;
+}
+
+.mobile-search-trigger__cta {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 0 18px;
+  border-radius: 6px;             /* rounded rectangle, NOT circle */
+  background: var(--color-primary);
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: -0.07px;
+  transition: background var(--transition-fast);
+  white-space: nowrap;
+}
+.mobile-search-trigger:hover .mobile-search-trigger__cta {
+  background: var(--color-primary-hover);
 }
 
 /* ==================== */
@@ -3461,50 +3714,172 @@ function handleSelectHotelInPopup(slug: string) {
 }
 
 /* ==================== */
-/* MOBILE (< 768px)     */
+/* MOBILE (< 800px)     */
+/* Breakpoint bumped from 768 → 800 so small tablets also get the
+/* compact mobile chrome + search trigger. */
 /* ==================== */
-@media (max-width: 768px) {
-  /* Site-header: remove padding/margin reserved for floating dock */
-  .site-header {
+@media (max-width: 800px) {
+  /* Every rule in this block is prefixed with `.site-header` so its
+     specificity (0,2,0) ties or beats the per-variant rules like
+     `.site-header--nav-v1 .vip-btn` that would otherwise win the
+     cascade and leave the mobile layout looking like desktop. */
+  .site-header.site-header {
     padding-bottom: 0;
     margin-bottom: 0;
   }
   /* Compact nav: smaller height, smaller logo */
-  .site-header__nav {
+  .site-header .site-header__nav {
     height: 56px;
   }
-  .site-header__logo-img {
+  .site-header .site-header__logo-img {
     height: 36px;
   }
-  /* Hide verticals + most right actions except hamburger */
-  .verticals,
-  .contact-dropdown,
-  .lang-switcher,
-  .vip-btn {
+  /* Hide verticals + contact-dropdown (Verblijven+more, Geef
+     cadeaubon, Restaurants live in the hamburger menu instead). */
+  .site-header .verticals,
+  .site-header .contact-dropdown {
     display: none;
   }
+  /* Compact lang switcher chrome — same desktop styling, just a
+     slightly tighter padding + font size. */
+  .site-header .lang-switcher__trigger {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+  /* Inloggen lives in the hamburger menu on mobile — hidden from the
+     header chrome so the actions row (lang + hamburger) always fits. */
+  .site-header .vip-btn { display: none; }
+
+  /* Logo + tagline scale together via viewport-based units, mirroring
+     the desktop ratio (logo ~244 × 25 px + tagline ~20 px font). The
+     logo is height-driven (width follows its natural aspect), the
+     tagline matches the logo's width via a CSS variable so they
+     stay locked together as the viewport changes. */
+  .site-header {
+    /* Logo SVG aspect is roughly 9.76:1 — so width = height × 9.76.
+       Sized to leave room for the absolute-positioned actions cluster
+       (~130 px wide) on the right at small viewports. At 320 px we want
+       logo ≤ ~170 px → height ≤ ~17 px. At 500 px+ logo can reach the
+       desktop-feel 244 px → height 25 px. */
+    --fr-mobile-logo-h: clamp(16px, 4.5vw, 25px);
+    /* Hardcoded multiplied vw range — `calc()` can't mix clamp args
+       cleanly. Tagline width tracks the logo's width: at any viewport
+       the tagline-block ends at exactly the logo's right edge. */
+    --fr-mobile-logo-w: clamp(156px, 43.9vw, 244px);
+  }
+  .site-header .site-header__logo {
+    grid-row: 1;
+    grid-column: 1;
+    width: auto;
+    align-self: start;
+  }
+  .site-header .site-header__logo-img {
+    width: auto;
+    height: var(--fr-mobile-logo-h);
+  }
+
+  /* Tagline-block: pinned to the logo's exact width AND placed
+     directly under it. The whole block hugs its top to row 2's start
+     so the gap between logo bottom and tagline top is just the
+     `margin-top` value below. */
+  .site-header .site-header__tagline-block {
+    grid-row: 2;
+    grid-column: 1;
+    width: var(--fr-mobile-logo-w);
+    max-width: 100%;
+    justify-self: start;
+    align-self: start !important;
+    text-align: left;
+    margin-top: 2px !important;
+    gap: 0 !important;
+  }
+  .site-header .site-header__tagline {
+    font-size: clamp(10px, 2.6vw, 13px);
+    line-height: 1.05;
+    white-space: nowrap;          /* keep "Personally Curated Experiences" on one line */
+    overflow: hidden;
+    text-overflow: clip;
+  }
+  .site-header .site-header__tagline-stroke { display: none; }
+
+  /* Phone — row 3, LEFT-aligned in col 1 so it visually decouples
+     from the lang switcher + hamburger cluster (no shared right
+     edge). Spans only col 1 — the actions sit far to the right
+     above it. */
+  .site-header .site-header__phone-wrap {
+    grid-row: 3;
+    grid-column: 1;
+    align-self: center;
+    justify-self: start;
+    margin-top: 4px;
+  }
+  .site-header .site-header__phone {
+    gap: 8px;
+    font-size: 15px;
+  }
+  .site-header .site-header__phone-label {
+    display: inline;
+    font-size: 15px;
+    font-weight: 500;
+    margin-right: 4px;
+  }
+  .site-header .site-header__phone svg { width: 15px; height: 15px; }
+  .site-header .site-header__phone-number { font-size: 16px; font-weight: 700; }
+
+  /* Nav grid: 2 cols × 3 rows.
+       row 1 (col 1) = logo
+       row 2 (col 1) = tagline
+       row 3 (cols 1-2) = phone
+     The actions cluster (col 2) SPANS rows 1+2 so lang switcher +
+     hamburger vertically centre against the logo+tagline stack —
+     reads as a tidy single-row header. */
+  .site-header .site-header__nav-inner {
+    position: relative;          /* anchor for absolute-positioned actions */
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto auto;
+    column-gap: var(--space-md);
+    row-gap: 0;
+  }
+  /* Actions cluster is taken OUT of the grid via absolute positioning.
+     Why: the lang switcher + hamburger together are ~44 px tall, much
+     taller than the ~24 px logo. If they shared row 1, the grid would
+     size row 1 to 44 px and the tagline (row 2) would land with a big
+     empty band above it. Floating the cluster top-right lets row 1's
+     height be driven purely by the logo, so the tagline sits flush
+     beneath at ~2 px — matching the desktop logo+payoff feel. */
+  .site-header .site-header__nav-actions {
+    position: absolute;
+    top: 10px;
+    right: 16px;
+    gap: 6px;
+    /* `!important` defends against the v1 / v6 desktop rule
+       (`.site-header--nav-v1 .site-header__nav-actions`) that would
+       otherwise impose a 256-px fixed width + space-between layout. */
+    width: auto !important;
+    justify-content: flex-end !important;
+  }
+  /* Compact nav height — content-driven, comfortable padding. */
+  .site-header .site-header__nav { height: auto; min-height: 56px; padding-top: 10px; padding-bottom: 10px; }
   /* Hide desktop search dock */
-  .site-header__search-dock {
+  .site-header .site-header__search-dock {
     display: none;
   }
-  /* Show mobile search trigger */
-  .site-header__mobile-search {
+  /* Show mobile search trigger — no black container, the pill itself
+     paints the chrome and floats over the hero photo. */
+  .site-header .site-header__mobile-search {
     display: block;
-    padding: 12px 16px;
-    background: #111111;
+    padding: 12px 16px 16px;
+    background: transparent;
   }
-  /* Hamburger visible */
-  .hamburger-btn {
+  /* Hamburger — same translucent-white chrome as desktop, just
+     ensured visible via `display: flex`. */
+  .site-header .hamburger-btn {
     display: flex;
   }
   /* Container: less horizontal padding */
-  .site-header__nav-inner.container {
+  .site-header .site-header__nav-inner.container {
     padding-left: 16px;
     padding-right: 16px;
-  }
-  /* Nav actions: tighter gap */
-  .site-header__nav-actions {
-    gap: 0;
   }
 }
 </style>
@@ -3632,12 +4007,15 @@ function handleSelectHotelInPopup(slug: string) {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  /* Warmer off-grey from the homepage palette — same surface as
+     `--color-background-secondary` (used by the persuasion / popular
+     bands), so the menu icons read as the same fill the home uses. */
+  background: var(--color-background-secondary, #faf9f6);
 }
 .menu-panel__icon-tile--sm {
   width: 32px;
   height: 32px;
   border-radius: 6px;
-  background: #ece7df;
 }
 
 .menu-panel__row-text {
@@ -3665,7 +4043,10 @@ function handleSelectHotelInPopup(slug: string) {
   letter-spacing: -0.072px;
 }
 .menu-panel__row-title-accent {
-  font-weight: 400;
+  /* Recoleta, bold — visually pops the "+ more" qualifier next to
+     the heading-styled Verblijven label. */
+  font-family: var(--font-heading);
+  font-weight: 700;
   color: #e26a2c;
 }
 
@@ -3680,34 +4061,6 @@ function handleSelectHotelInPopup(slug: string) {
 .menu-panel__chevron {
   flex-shrink: 0;
   color: #9a9a93;
-}
-
-.menu-panel__lang {
-  display: flex;
-  gap: 8px;
-  margin: 24px 32px 0;
-  padding-top: 16px;
-  border-top: 1px solid #f0f0f0;
-}
-.menu-panel__lang-btn {
-  flex: 1;
-  height: 38px;
-  border-radius: 8px;
-  border: 1px solid #e5e5e5;
-  background: #ffffff;
-  color: #6a6a6a;
-  font-family: var(--font-body);
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0.4px;
-  cursor: pointer;
-  transition: background 120ms ease, border-color 120ms ease, color 120ms ease;
-}
-.menu-panel__lang-btn:hover { border-color: #c8c8c8; color: #0e0e0c; }
-.menu-panel__lang-btn--active {
-  background: #0e0e0c;
-  border-color: #0e0e0c;
-  color: #ffffff;
 }
 
 /* Transitions */

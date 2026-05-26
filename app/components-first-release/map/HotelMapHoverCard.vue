@@ -28,7 +28,18 @@ import { priceForArrival } from '~/utils-first-release/priceFormula'
 
 const props = defineProps<{
   hotel: SearchHotel
-  position: { x: number; y: number } | null
+  /** `x`/`y` = marker's geographic anchor on screen. Optional
+   *  `iconTopY` / `iconBottomY` describe where the icon's TOP / BOTTOM
+   *  edge actually sit (varies between the 32 px dot pin and the
+   *  48 × 64 teardrop pin used for the focused-from-deal hotel). When
+   *  present, the card positions clear of those edges so the pin
+   *  stays fully visible. */
+  position: {
+    x: number
+    y: number
+    iconTopY?: number
+    iconBottomY?: number
+  } | null
   /** YYYY-MM-DD selected arrival date, or null when none. */
   arrivalDate?: string | null
   /** Hotel is sold out for the active arrival-date filter. */
@@ -132,27 +143,44 @@ function formatDate(iso: string): string {
   return `${d}-${m}-${y}`
 }
 
+const CARD_W = 296
+const CARD_H = 140
+const SAFE_TOP = 24
+/** Gap between the card and the icon. The teardrop "location" pin is
+ *  twice as tall as the regular star, so we use a generous 20 px so
+ *  there's clear breathing room regardless of which pin is hovered. */
+const ICON_GAP = 20
+/** Fallback when the parent didn't supply icon edges (legacy callers). */
+const FALLBACK_PIN_HALF = 28
+
+/** Top edge of the icon on screen — used as the card's lower bound
+ *  when sitting ABOVE the pin. */
+function iconTopY(): number {
+  if (!props.position) return 0
+  return props.position.iconTopY ?? props.position.y - FALLBACK_PIN_HALF
+}
+/** Bottom edge of the icon on screen — used as the card's upper bound
+ *  when flipped BELOW the pin. */
+function iconBottomY(): number {
+  if (!props.position) return 0
+  return props.position.iconBottomY ?? props.position.y + FALLBACK_PIN_HALF
+}
+
 /** Card sits ABOVE the pin by default. If that would push it within
  *  SAFE_TOP px of the viewport edge (where chrome / floating controls
  *  obscure it), flip and render BELOW the pin (orange bar + tail mirror). */
 const flipped = computed(() => {
   if (!props.position) return false
-  const CARD_H = 140
-  const PIN_OFFSET = 28
-  const SAFE_TOP = 24
-  return props.position.y - CARD_H - PIN_OFFSET < SAFE_TOP
+  return iconTopY() - ICON_GAP - CARD_H < SAFE_TOP
 })
 
 const cardStyle = computed(() => {
   if (!props.position) return { display: 'none' }
-  const CARD_W = 296
-  const CARD_H = 140
-  const PIN_OFFSET = 28
-  // Pin marker centre sits on the coordinate; offset the card by half the
-  // pin height + a touch of breathing room.
+  // Anchor the card BELOW the icon's bottom (flipped) or ABOVE its
+  // top, so the icon itself stays fully visible above/below the card.
   const top = flipped.value
-    ? props.position.y + PIN_OFFSET
-    : props.position.y - CARD_H - PIN_OFFSET
+    ? iconBottomY() + ICON_GAP
+    : iconTopY() - ICON_GAP - CARD_H
   return {
     left: `${props.position.x - CARD_W / 2}px`,
     top: `${top}px`,

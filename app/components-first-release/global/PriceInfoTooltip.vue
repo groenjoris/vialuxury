@@ -172,7 +172,11 @@ const disclaimer = computed(() => {
   justify-content: center;
   position: relative;
   vertical-align: middle;
-  margin-left: 4px;
+  /* Sits flush against the price; parent flex `gap` (6–8 px in every
+     usage today) provides the only spacing. The extra +4 px nudge
+     this rule used to apply made the icon read as drifting away from
+     the price — now total spacing reads as 6–8 px everywhere. */
+  margin-left: 0;
   cursor: help;
   outline: none;
 }

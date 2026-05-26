@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { searchHotels } from '~/data/mock/search-hotels'
 import { useFirstReleaseHotelMap } from '~/composables-first-release/useFirstReleaseHotelMap'
 import { useFirstReleaseHomeVariant } from '~/composables-first-release/useFirstReleaseHomeVariant'
@@ -22,7 +22,22 @@ const { t } = useFirstReleaseI18n()
 useHead({ title: 'Kaart — Via Luxury' })
 
 const router = useRouter()
+const route = useRoute()
 const { homeHref } = useFirstReleaseHomeVariant()
+
+/** When the user arrives from a deal page via "Bekijk kaart", the
+ *  query string carries the hotel's slug in `?focus=<slug>`. We
+ *  resolve it to the actual SearchHotel so we can:
+ *   - centre the map on it at zoom 14 (overrides destination zoom)
+ *   - keep it visible even when the active filters would otherwise
+ *     hide it (this hotel is the user's anchor)
+ *   - auto-open the sidepanel for it when `?open=1` is also present
+ *  Lives as a computed (not a ref) so navigating away wipes it. */
+const focusedHotel = computed<SearchHotel | null>(() => {
+  const slug = (route.query.focus as string | undefined) || ''
+  if (!slug) return null
+  return searchHotels.find(h => h.slug === slug) ?? null
+})
 
 const {
   arrivalDate,
@@ -110,8 +125,11 @@ const mapHotels = computed<SearchHotel[]>(() => {
     })
     // Hide hotels that have zero deals matching the active filters — the
     // greyed-out "unmatched" pins are no longer rendered. Drop the hotel
-    // from the map entirely.
-    if (matchingDeals.length === 0) continue
+    // from the map entirely. EXCEPTION: when arrived via `?focus=<slug>`
+    // from a deal page, the focused hotel is the user's anchor and must
+    // always render (even if the current filters would otherwise hide
+    // it). Other hotels still respect the filter.
+    if (matchingDeals.length === 0 && h.id !== focusedHotel.value?.id) continue
     result.push({
       ...h,
       // Keep ALL deals on the hotel object so the side panel still shows
@@ -147,8 +165,14 @@ const filterCounts = computed(() => {
 /** Initial focus driven by the destination input. Walks the selectionOrder
  *  so the FIRST pick wins (matching the order the user added them). Picks
  *  resolve to: pinned hotel (zoom 13) → city (zoom 12) → province / region
- *  (zoom from PROVINCE_COORDS, usually 8-9). Falls back to NL fit-bounds. */
+ *  (zoom from PROVINCE_COORDS, usually 8-9). Falls back to NL fit-bounds.
+ *
+ *  `?focus=<slug>` (from a deal page) takes priority over destinations —
+ *  centre on the focused hotel at zoom 14. */
 const initialFocus = computed<{ lat: number; lng: number; zoom?: number } | null>(() => {
+  if (focusedHotel.value?.coordinates) {
+    return { ...focusedHotel.value.coordinates, zoom: 14 }
+  }
   for (const entry of selectionOrder.value) {
     if (entry.type === 'hotel') {
       const hotel = searchHotels.find(h => h.slug === entry.key)
@@ -210,6 +234,13 @@ function closeMap() {
 onMounted(() => {
   const { restoreFrNavVariant } = useFirstReleaseHomeVariant()
   restoreFrNavVariant(window.location.pathname)
+
+  // Deal-page → kaart hand-off: auto-open the sidepanel for the
+  // focused hotel so the user lands with both the marker centred AND
+  // the arrangements panel slid in.
+  if (focusedHotel.value && route.query.open === '1') {
+    selectedHotelId.value = focusedHotel.value.id
+  }
 })
 </script>
 
@@ -243,7 +274,12 @@ onMounted(() => {
 
     <main class="kaart-stage" :class="{ 'kaart-stage--with-panel': !!selectedHotel }">
       <ClientOnly>
-        <FirstReleaseHotelBrowseMap ref="mapRef" :hotels="mapHotels" :initial-focus="initialFocus" />
+        <FirstReleaseHotelBrowseMap
+          ref="mapRef"
+          :hotels="mapHotels"
+          :initial-focus="initialFocus"
+          :focused-hotel-id="focusedHotel?.id ?? null"
+        />
       </ClientOnly>
 
       <FirstReleaseHotelDealsSidePanel

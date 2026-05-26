@@ -331,6 +331,7 @@ const {
   selectedFilterTags,
   selectedDestinations, selectedCities, selectedHotels,
   committedArrivalDate, committedFlexibility,
+  setArrivalDate,
 } = useFirstReleaseSearchState()
 
 // Team members for avatar row
@@ -344,6 +345,11 @@ const searchLoading = computed(() => loading.value || localLoading.value)
 // Clear loading on mount (handles navigation arriving with loading=true)
 onMounted(() => {
   if (loading.value) setLoading(false)
+  // Drop any un-committed preview date that may have been written by
+  // the searchbar while the user was on /deal — landing back on
+  // /search should reflect the *committed* search state. The deal
+  // page's calendar will mirror this on its next visit.
+  setArrivalDate(committedArrivalDate.value)
 })
 
 // Auto-clear after a tick when loading flips to true, so the spinner doesn't get stuck
@@ -1408,38 +1414,13 @@ onMounted(() => {
 }
 
 /* ===== TOOLBAR ===== */
-/* Reserved zone above the result cards. Min-height matches the map
-   preview's height + bottom margin so the toolbar's bottom border
-   (the grey divider above the result list) lands at the same Y as
-   the filter panel's top on the left column.
-   The toolbar uses `margin-top: auto` to stick to the bottom of this
-   zone; when pills wrap and grow the toolbar, the toolbar's TOP moves
-   up into the empty space without affecting its bottom (= the
-   divider stays put). Once the toolbar outgrows the empty space, the
-   zone expands past its min-height and the divider (+ deal cards
-   below) shift down. */
+/* No fixed height — the header (title + avatars) sizes to its
+   natural content, the toolbar flows directly underneath, and the
+   first card sits right below the toolbar's grey divider. This
+   means the results column starts as high on the page as it can,
+   independent of the filter sidebar's height. */
 .search-page__above-cards {
   position: relative;
-  /* Locked to the map's height so the toolbar's bottom border
-     (= grey divider) sits exactly at the map's bottom edge.
-     Block-flow + absolute toolbar (below) decouples the divider
-     from the header content height, so it can't drift even if the
-     header content unexpectedly grows. */
-  height: 200px;
-  /* Reserve room at the bottom for the absolute-positioned toolbar
-     so header content doesn't slide under it. */
-  padding-bottom: 53px;
-  box-sizing: border-box;
-}
-
-/* Toolbar anchored at the bottom of the 200-px wrapper. Its bottom
-   border (the grey divider) lands at exactly Y = 200, the same Y
-   as the map's bottom edge on the sidebar. */
-.search-page__above-cards .search-toolbar {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
 }
 
 .search-toolbar {

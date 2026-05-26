@@ -92,54 +92,58 @@
       </button>
     </div>
 
-    <!-- Popups — positioned relative to bar -->
-    <div v-if="activePopup" class="hsb-overlay" @click.self="closePopup">
-      <!-- WHEN POPUP — calendar half of the combined search-bar popup -->
-      <div v-if="activePopup === 'when'" class="popup popup--when" :style="popupStyle">
-        <FirstReleaseDateAndDurationPopup
-          mode="date"
-          v-model:cal-month="calMonth"
-          v-model:selected-date="selectedDate"
-          :nights="selectedDurations"
-          :any-duration="anyDuration"
-          :flexible="localFlexible"
-          @toggle-night="onToggleNight"
-          @set-any-duration="setAnyDuration"
-          @update:flexible="setLocalFlexible"
-          @save="closePopup()"
-          @clear="clearWhen"
-        />
-      </div>
+    <!-- Click-outside catcher (full-viewport). Doesn't host the popup
+         anymore — popups sit as siblings below so they're absolute-
+         positioned relative to `.hotel-search-bar` and scroll with it
+         (same visual behaviour as the home searchbar). -->
+    <div v-if="activePopup" class="hsb-overlay" @click.self="closePopup"></div>
 
-      <!-- HOWLONG POPUP — duration half of the combined search-bar popup -->
-      <div v-if="activePopup === 'howlong'" class="popup popup--howlong" :style="popupStyle">
-        <FirstReleaseDateAndDurationPopup
-          mode="duration"
-          v-model:cal-month="calMonth"
-          v-model:selected-date="selectedDate"
-          :nights="selectedDurations"
-          :any-duration="anyDuration"
-          :flexible="localFlexible"
-          @toggle-night="onToggleNight"
-          @set-any-duration="setAnyDuration"
-          @update:flexible="setLocalFlexible"
-          @save="closePopup()"
-          @clear="clearHowLong"
-        />
-      </div>
+    <!-- WHEN POPUP — calendar half of the combined search-bar popup -->
+    <div v-if="activePopup === 'when'" class="popup popup--when" :style="popupStyle">
+      <FirstReleaseDateAndDurationPopup
+        mode="date"
+        v-model:cal-month="calMonth"
+        v-model:selected-date="selectedDate"
+        :nights="selectedDurations"
+        :any-duration="anyDuration"
+        :flexible="localFlexible"
+        @toggle-night="onToggleNight"
+        @set-any-duration="setAnyDuration"
+        @update:flexible="setLocalFlexible"
+        @save="closePopup()"
+        @clear="clearWhen"
+      />
+    </div>
 
-      <!-- WHO POPUP — MVP list. Same UI as SiteHeader. -->
-      <div v-if="activePopup === 'who'" class="popup popup--who popup--who-mvp" :style="popupStyle">
-        <ul class="who-mvp__list" role="listbox" aria-label="Aantal personen">
-          <li
-            v-for="opt in whoMvpOptions"
-            :key="`${opt.adults}-${opt.rooms}`"
-            role="option"
-            :aria-selected="whoMvpSelectedKey === `${opt.adults}-${opt.rooms}`"
-            class="who-mvp__item"
-            :class="{ 'who-mvp__item--selected': whoMvpSelectedKey === `${opt.adults}-${opt.rooms}` }"
-            @click="pickWhoMvp(opt)"
-          >
+    <!-- HOWLONG POPUP — duration half of the combined search-bar popup -->
+    <div v-if="activePopup === 'howlong'" class="popup popup--howlong" :style="popupStyle">
+      <FirstReleaseDateAndDurationPopup
+        mode="duration"
+        v-model:cal-month="calMonth"
+        v-model:selected-date="selectedDate"
+        :nights="selectedDurations"
+        :any-duration="anyDuration"
+        :flexible="localFlexible"
+        @toggle-night="onToggleNight"
+        @set-any-duration="setAnyDuration"
+        @update:flexible="setLocalFlexible"
+        @save="closePopup()"
+        @clear="clearHowLong"
+      />
+    </div>
+
+    <!-- WHO POPUP — MVP list. Same UI as SiteHeader. -->
+    <div v-if="activePopup === 'who'" class="popup popup--who popup--who-mvp" :style="popupStyle">
+      <ul class="who-mvp__list" role="listbox" aria-label="Aantal personen">
+        <li
+          v-for="opt in whoMvpOptions"
+          :key="`${opt.adults}-${opt.rooms}`"
+          role="option"
+          :aria-selected="whoMvpSelectedKey === `${opt.adults}-${opt.rooms}`"
+          class="who-mvp__item"
+          :class="{ 'who-mvp__item--selected': whoMvpSelectedKey === `${opt.adults}-${opt.rooms}` }"
+          @click="pickWhoMvp(opt)"
+        >
             <span>{{ opt.adults }} personen / {{ opt.rooms }} {{ opt.rooms === 1 ? 'kamer' : 'kamers' }}</span>
             <svg
               v-if="whoMvpSelectedKey === `${opt.adults}-${opt.rooms}`"
@@ -150,7 +154,6 @@
           </li>
         </ul>
       </div>
-    </div>
   </div>
 </template>
 
@@ -196,15 +199,20 @@ function calcPopupPosition(popup: PopupName) {
   // is ~272 px; who is ~360 px.
   const popupW = popup === 'when' ? 420 : popup === 'howlong' ? 320 : 360
 
-  const fieldCenter = fieldRect.left + fieldRect.width / 2
+  // Anchor the popup to the bar (absolute, not fixed) so it scrolls
+  // with it. `left` is in bar-relative coordinates; `top` is just the
+  // bar's height + 8 px.
+  const fieldCenter = fieldRect.left - barRect.left + fieldRect.width / 2
   let left = fieldCenter - popupW / 2
-  left = Math.max(8, Math.min(left, window.innerWidth - popupW - 8))
+  const maxLeft = barRect.width - popupW
+  left = Math.max(0, Math.min(left, maxLeft))
 
   return {
-    position: 'fixed',
+    position: 'absolute',
     left: `${left}px`,
-    top: `${barRect.bottom + 8}px`,
+    top: `${barRect.height + 8}px`,
     width: `${popupW}px`,
+    zIndex: '501',
   }
 }
 

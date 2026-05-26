@@ -10,7 +10,21 @@ import { ref } from 'vue'
 
 const selectedHotelId = ref<string | null>(null)
 const hoveredHotelId = ref<string | null>(null)
-const hoverPosition = ref<{ x: number; y: number } | null>(null)
+/**
+ * Hover position for the preview card. `x` / `y` carry the marker's
+ * geographic anchor in viewport coords. The optional `iconTopY` /
+ * `iconBottomY` describe where the icon's TOP / BOTTOM edge sits on
+ * screen — used by `HotelMapHoverCard` so it can sit cleanly above
+ * (or below, when flipped) the visible pin instead of overlapping it.
+ * Falls back to `y ± PIN_OFFSET` when omitted.
+ */
+type HoverPosition = {
+  x: number
+  y: number
+  iconTopY?: number
+  iconBottomY?: number
+}
+const hoverPosition = ref<HoverPosition | null>(null)
 
 // Deferred-hide timer. When the mouse leaves a pin we don't hide the
 // preview immediately — we wait briefly so the user has time to move the
@@ -33,7 +47,7 @@ export function useFirstReleaseHotelMap() {
     }
   }
 
-  function setHover(id: string | null, pos?: { x: number; y: number }) {
+  function setHover(id: string | null, pos?: HoverPosition) {
     clearHideTimer()
     hoveredHotelId.value = id
     hoverPosition.value = id && pos ? pos : null

@@ -32,7 +32,7 @@ const homeVariant = ref<HomeVariant>('1')
  * - '2' → single-row centred-logo nav (slimmer).
  * - '3' → 2-row reorganised (logo+verticals on top, payoff+phone below).
  */
-type FrNavVariant = '1' | '2' | '3' | '4' | '5' | '6'
+type FrNavVariant = '1' | '2' | '3' | '4' | '5' | '6' | '7'
 
 const STORAGE_KEY_NAV = 'vl_fr_nav_variant'
 const frNavVariant = ref<FrNavVariant>('1')
@@ -104,6 +104,7 @@ export function useFirstReleaseHomeVariant() {
    *  Tracks the new `frNavVariant` carousel so the SiteHeader logo
    *  routes to the matching home from any FR page. */
   const homeHref = computed(() => {
+    if (frNavVariant.value === '7') return '/first-release/home-v7'
     if (frNavVariant.value === '6') return '/first-release/home-v6'
     if (frNavVariant.value === '5') return '/first-release/home-v5'
     if (frNavVariant.value === '4') return '/first-release/home-v4'
@@ -129,6 +130,7 @@ export function useFirstReleaseHomeVariant() {
    */
   function restoreFrNavVariant(routePath?: string) {
     if (!import.meta.client) return
+    if (routePath && routePath.startsWith('/first-release/home-v7')) { setFrNavVariant('7'); return }
     if (routePath && routePath.startsWith('/first-release/home-v6')) { setFrNavVariant('6'); return }
     if (routePath && routePath.startsWith('/first-release/home-v5')) { setFrNavVariant('5'); return }
     if (routePath && routePath.startsWith('/first-release/home-v4')) { setFrNavVariant('4'); return }
@@ -137,7 +139,7 @@ export function useFirstReleaseHomeVariant() {
     if (routePath === '/first-release/home')                         { setFrNavVariant('1'); return }
     try {
       const stored = localStorage.getItem(STORAGE_KEY_NAV) as FrNavVariant | null
-      if (stored === '1' || stored === '2' || stored === '3' || stored === '4' || stored === '5' || stored === '6') frNavVariant.value = stored
+      if (stored === '1' || stored === '2' || stored === '3' || stored === '4' || stored === '5' || stored === '6' || stored === '7') frNavVariant.value = stored
     } catch { /* ignore */ }
   }
 

@@ -1,8 +1,11 @@
 /**
- * SSR-safe reactive media query for mobile viewport (< 768px).
+ * SSR-safe reactive media query for mobile viewport (< 800px).
  * Starts at `false` on SSR and hydrates to the actual match on mount.
+ * The 800 px breakpoint (bumped from the earlier 768 px) keeps the
+ * desktop dock visible right up to small-tablet width, then swaps it
+ * for the compact mobile search trigger.
  */
-export function useFirstReleaseIsMobile(query = '(max-width: 768px)') {
+export function useFirstReleaseIsMobile(query = '(max-width: 800px)') {
   const isMobile = ref(false)
 
   const update = () => {

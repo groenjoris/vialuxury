@@ -1,5 +1,5 @@
 <template>
-  <div class="destination-popup">
+  <div class="destination-popup" :class="{ 'destination-popup--inline': inline }">
     <!-- Top bar: grey row with white input field -->
     <div class="destination-popup__topbar">
       <div class="destination-popup__search">
@@ -214,6 +214,15 @@ const props = defineProps<{
    *  popup. The popup itself doesn't enforce single-select internally —
    *  this prop is here so the parent can wire its handlers accordingly. */
   singleSelect?: boolean
+  /** When mounted inline (e.g. inside the mobile search modal), drop the
+   *  inner `max-height` + scroll so the popup grows naturally and lets
+   *  its parent (the modal body) do the scrolling instead. */
+  inline?: boolean
+  /** Optional v-model:query — when provided, the popup is filtered by
+   *  this externally-controlled string instead of its own input. Used
+   *  by the mobile modal so the Waarheen field itself is the typing
+   *  surface; the popup's own input is hidden. */
+  query?: string
 }>()
 
 const emit = defineEmits<{
@@ -224,6 +233,7 @@ const emit = defineEmits<{
   'remove-city': [cityName: string]
   'save': []
   'clear': []
+  'update:query': [val: string]
 }>()
 
 type ChipKind = 'destination' | 'theme' | 'city' | 'history'
@@ -335,7 +345,19 @@ function reSelectHistory(item: { name: string; type: string; id?: string; provin
   }
 }
 
-const searchQuery = ref('')
+/** Local fallback ref — used when no `query` prop is supplied. */
+const localSearchQuery = ref('')
+/** Writable proxy: when the parent supplies `query`, writes emit
+ *  `update:query`; otherwise we just mutate the local ref. */
+const searchQuery = computed<string>({
+  get() {
+    return props.query !== undefined ? props.query : localSearchQuery.value
+  },
+  set(val: string) {
+    if (props.query !== undefined) emit('update:query', val)
+    else localSearchQuery.value = val
+  },
+})
 const searchInputRef = ref<HTMLInputElement | null>(null)
 
 const isSearching = computed(() => searchQuery.value.trim().length > 0)
@@ -597,6 +619,13 @@ function selectHotel(hotel: { name: string; slug: string }) {
   flex: 1 1 auto;
   min-height: 0;
   overflow-y: auto;
+}
+
+/* Inline mode (mobile search modal): drop the internal scroll cap so
+   the popup grows naturally; the modal body does the scrolling. */
+.destination-popup--inline .destination-popup__content {
+  overflow-y: visible;
+  flex: 0 1 auto;
 }
 
 /* ==================== */

@@ -146,6 +146,17 @@
       </section>
     </div>
 
+    <!-- Footer: single "Klaar" CTA, right-aligned. Confirms the
+         selection and closes the popup. Hidden when `hideFooter` is
+         passed (date-only inside the mobile modal — picking a date is
+         self-confirming so no extra button is needed). -->
+    <footer v-if="!hideFooter" class="when-pop__footer">
+      <button
+        type="button"
+        class="when-pop__done"
+        @click="$emit('save')"
+      >{{ t('header.ready') }}</button>
+    </footer>
   </div>
 </template>
 
@@ -168,6 +179,10 @@ const props = withDefaults(defineProps<{
    *  'duration' = nights list only. Used by the hotel-page mid-page
    *  searchbar where the two are split into separate triggers. */
   mode?: 'both' | 'date' | 'duration'
+  /** Hide the "Klaar" footer — useful when the parent handles its
+   *  own confirm flow (e.g. the mobile modal's Wanneer field, where
+   *  picking a date is self-confirming). */
+  hideFooter?: boolean
 }>(), {
   mode: 'both',
 })
@@ -364,10 +379,10 @@ const hasSelection = computed(() => !!props.selectedDate || props.nights.length 
 
 .when-pop__flex-label {
   font-family: var(--font-body);
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 400;
   color: #0e0e0c;
-  line-height: 1;
+  line-height: 1.2;
 }
 
 /* "Ik ben flexibel" placement below the calendar — sits with the same
@@ -417,10 +432,10 @@ const hasSelection = computed(() => !!props.selectedDate || props.nights.length 
   cursor: pointer;
   user-select: none;
   font-family: var(--font-body);
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 400;
   color: #0e0e0c;
-  line-height: 1;
+  line-height: 1.2;
   transition: color 150ms ease;
 }
 

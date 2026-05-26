@@ -245,11 +245,6 @@
   text-align: center;
 }
 
-[data-fr-variant="6"] .sidebar__trust-logo--klarna {
-  height: 24px;
-  width: auto;
-}
-
 /* ─── Deal-page calendar (v6 only) ───
  * Restyles every `.day-cell` inside the deal page's sidebar calendar
  * AND the page's mobile-calendar section. Available dates become

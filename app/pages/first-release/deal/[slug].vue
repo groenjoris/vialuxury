@@ -81,7 +81,13 @@
               <button v-if="hasMoreDescription" type="button" class="deal-page__read-more" @click="descriptionOpen = true">{{ t('common.readMore') }}</button>
             </div>
             <div class="mini-map">
-              <div class="mini-map__placeholder">
+              <!-- The entire map preview (photo + pin) is a click-through
+                   to the full-screen kaart, not just the text link below. -->
+              <NuxtLink
+                :to="`/first-release/kaart?focus=${hotel.slug}&open=1`"
+                class="mini-map__placeholder"
+                :aria-label="t('common.viewMap')"
+              >
                 <img
                   :src="mapTileUrl"
                   :alt="t('deal.mapArea')"
@@ -89,15 +95,23 @@
                   @error="($event.target as HTMLImageElement).src = '/images/kasteel/fietsenzuidlimburg.jpg'"
                 />
                 <div class="mini-map__pin">
+                  <!-- Black teardrop pin — matches the bigger selected
+                       marker on the full-screen kaart page. -->
                   <svg width="32" height="42" viewBox="0 0 32 42" fill="none">
-                    <path d="M16 0C7.16 0 0 7.16 0 16c0 12 16 26 16 26s16-14 16-26C32 7.16 24.84 0 16 0z" fill="#00B67A"/>
+                    <path d="M16 0C7.16 0 0 7.16 0 16c0 12 16 26 16 26s16-14 16-26C32 7.16 24.84 0 16 0z" fill="#0e0e0c"/>
                     <circle cx="16" cy="16" r="6" fill="#fff"/>
                   </svg>
                 </div>
-                <div class="mini-map__bottom">
-                  <span class="mini-map__label">{{ hotel.location.city }}</span>
-                  <a href="#location" class="mini-map__link">{{ t('common.viewMap') }}</a>
-                </div>
+              </NuxtLink>
+              <!-- Footer row under the map: street + city on the left,
+                   "Bekijk kaart" link on the right (same destination as
+                   the click-through map above). -->
+              <div class="mini-map__footer">
+                <span class="mini-map__address">{{ hotelStreetCity }}</span>
+                <NuxtLink
+                  :to="`/first-release/kaart?focus=${hotel.slug}&open=1`"
+                  class="mini-map__view-link"
+                >{{ t('common.viewMap') }}</NuxtLink>
               </div>
             </div>
           </div>
@@ -292,15 +306,12 @@
               <li><span class="sidebar__trust-check">✓</span> {{ t('deal.trustCancel') }}</li>
               <li><span class="sidebar__trust-check">✓</span> {{ t('deal.trustTrustpilot') }}</li>
             </ul>
-            <!-- Trustpilot + Klarna logos each get a centred caption
-                 underneath, with extra space between the two blocks. -->
+            <!-- Trustpilot block — the "Flexibel annuleren" companion
+                 was removed at the user's request; the homepage
+                 persuasion band still carries that message. -->
             <div class="sidebar__trust-block">
               <img src="/images/trustpilot.svg" alt="Trustpilot" class="sidebar__trust-logo" />
               <span class="sidebar__trust-caption">15.294 beoordelingen</span>
-            </div>
-            <div class="sidebar__trust-block sidebar__trust-block--klarna">
-              <img src="/images/logos/klarna.webp" alt="Klarna" class="sidebar__trust-logo sidebar__trust-logo--klarna" />
-              <span class="sidebar__trust-caption">Achteraf betalen mogelijk</span>
             </div>
           </div>
 
@@ -889,10 +900,20 @@ function handlePanelSelect(dealId: string) {
   if (deal) { store.switchDeal(deal); isPanelOpen.value = false }
 }
 
-// Static map tile URL (OpenStreetMap)
+/** Street + city only — no postcode / country — shown under the
+ *  mini map. `hotel.location.address` is already street-level in the
+ *  type. */
+const hotelStreetCity = computed(() => {
+  const loc = hotel.value.location
+  return loc.address ? `${loc.address}, ${loc.city}` : loc.city
+})
+
+// Static map tile URL (OpenStreetMap) — zoom 11 gives a more
+// zoomed-out, region-context view (the previous 13 was too tight
+// for a glanceable "where is this" preview).
 const mapTileUrl = computed(() => {
   const { lat, lng } = hotel.value.location.coordinates
-  const zoom = 13
+  const zoom = 11
   const x = Math.floor(((lng + 180) / 360) * Math.pow(2, zoom))
   const latRad = (lat * Math.PI) / 180
   const y = Math.floor((1 - Math.log(Math.tan(latRad) + 1 / Math.cos(latRad)) / Math.PI) / 2 * Math.pow(2, zoom))
@@ -1118,15 +1139,17 @@ onMounted(() => {
 .deal-page__intro { display: grid; grid-template-columns: 1fr 220px; gap: var(--space-xl); margin-bottom: var(--space-xl); align-items: start; }
 
 /* Mini map */
-.mini-map { border-radius: var(--radius-lg); overflow: hidden; aspect-ratio: 1 / 1; }
-.mini-map__placeholder { position: relative; width: 100%; height: 100%; border-radius: var(--radius-lg); overflow: hidden; }
+/* Map preview + below-the-map footer (address left, "Bekijk kaart"
+   right) — no more gradient overlay on the photo. */
+.mini-map { display: flex; flex-direction: column; gap: 8px; }
+.mini-map__placeholder { position: relative; display: block; width: 100%; aspect-ratio: 1 / 1; border-radius: var(--radius-lg); overflow: hidden; cursor: pointer; }
 .mini-map__img { width: 100%; height: 100%; object-fit: cover; }
 .mini-map__img--map { filter: saturate(0.85) contrast(1.05); }
 .mini-map__pin { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -100%); filter: drop-shadow(0 3px 6px rgba(0,0,0,0.25)); z-index: 2; pointer-events: none; }
-.mini-map__bottom { position: absolute; bottom: 0; left: 0; right: 0; padding: 10px 14px; background: linear-gradient(transparent, rgba(0,0,0,0.6)); display: flex; align-items: center; justify-content: space-between; z-index: 2; }
-.mini-map__label { font-size: 14px; font-weight: 600; color: #fff; }
-.mini-map__link { font-size: 13px; color: #fff; text-decoration: underline; text-underline-offset: 2px; opacity: 0.85; }
-.mini-map__link:hover { opacity: 1; }
+.mini-map__footer { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-md); }
+.mini-map__address { font-family: var(--font-body); font-size: 13px; color: var(--color-text-secondary); line-height: 1.4; }
+.mini-map__view-link { font-family: var(--font-body); font-size: 13px; font-weight: 600; color: var(--color-primary); text-decoration: underline; text-underline-offset: 3px; flex-shrink: 0; }
+.mini-map__view-link:hover { color: var(--color-primary-hover); }
 
 /* ===== SIDEBAR ===== */
 .deal-page__col-right-stack { display: flex; flex-direction: column; gap: var(--space-lg); min-width: 0; }
@@ -1219,6 +1242,20 @@ onMounted(() => {
 .sidebar__trust-logo {
   height: 72px;
 }
+/* "Flexibel annuleren" Lucide-style icon (calendar with X). Sized to
+   sit alongside the Trustpilot block at a similar visual weight, and
+   coloured ViaLuxury-green to match the medal icon used on the
+   homepage persuasion band. */
+.sidebar__trust-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #00B67A;
+}
+.sidebar__trust-icon svg {
+  width: 30px;
+  height: 30px;
+}
 
 /* Room allocation */
 .sidebar__room-allocation { margin-bottom: var(--space-md); padding: var(--space-md); background: var(--color-background-secondary); border-radius: var(--radius-md); }
@@ -1244,7 +1281,9 @@ onMounted(() => {
 .deal-page__highlights { padding: var(--space-xl) 0; border-top: 1px solid var(--color-border-light); }
 .highlights__grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md) var(--space-xl); }
 .highlight-item { display: flex; align-items: center; gap: var(--space-md); }
-.highlight-item__icon { width: 40px; height: 40px; border-radius: var(--radius-md); background: #FFFFFF; border: 1px solid #E5E5E5; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+/* Match the menu side-panel icon tile — warmer-grey homepage surface,
+   8 px rounded corners, no border. */
+.highlight-item__icon { width: 40px; height: 40px; border-radius: 8px; background: var(--color-background-secondary, #faf9f6); border: 0; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .highlight-item__text { font-size: 14px; font-weight: 500; color: var(--color-text-primary); }
 .highlight-item__check { font-size: 18px; line-height: 1; font-weight: 700; color: var(--color-discount, #00B67A); }
 
