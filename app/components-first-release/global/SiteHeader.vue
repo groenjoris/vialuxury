@@ -3912,12 +3912,10 @@ function handleSelectHotelInPopup(slug: string) {
     text-align: center;
     width: auto;
   }
-  /* /search renders the taller orange-bordered summary card
-     (margin-top: -45 px overlap) — keep the phone lower so the
-     card has room to straddle the nav without covering it. */
-  .site-header:has(.site-header__mobile-search--summary) .site-header__phone-wrap {
-    margin-top: 26px;
-  }
+  /* Phone uses the SAME margin-top (12 px) across all four
+     pages now — the summary card's top sits at the same Y as
+     the pill's, so the phone doesn't need extra clearance on
+     /search. */
   .site-header .site-header__phone-wrap .site-header__phone {
     margin-left: auto;
     margin-right: auto;                 /* centre the inline-flex button */
@@ -3989,14 +3987,11 @@ function handleSelectHotelInPopup(slug: string) {
     padding-top: 20px;
     /* Pill straddles the nav's bottom with its top half (34 px)
        sitting INSIDE this padding. 32 px clearance below the
-       phone-number row on home / deal / hotel keeps the search
-       bar visibly below the phone (no overlap) while the black
-       nav still stops halfway through the bar. /search keeps
-       the wider 56 px clearance for the taller summary card. */
+       phone-number row keeps the search bar visibly below the
+       phone (no overlap) while the black nav still stops
+       halfway through the bar. SAME value on every page so the
+       search-bar's top sits at an identical Y everywhere. */
     padding-bottom: 32px;
-  }
-  .site-header:has(.site-header__mobile-search--summary) .site-header__nav {
-    padding-bottom: 56px;
   }
   /* Hide desktop search dock */
   .site-header .site-header__search-dock {
@@ -4027,7 +4022,12 @@ function handleSelectHotelInPopup(slug: string) {
   .site-header .site-header__mobile-search--on-solid {
     position: relative;
     background: #ffffff;
-    padding: 0 16px 16px;
+    /* Inherit the base slot's padding (12 top / 16 sides / 16
+       bottom) so the pill / summary card sits at the SAME Y as
+       on the overlay home — previously the --on-solid override
+       zeroed padding-top, putting the bar 12 px higher on
+       deal / hotel / search than on home. */
+    padding: 12px 16px 16px;
     margin-top: 0;
     z-index: auto;
     isolation: auto;
@@ -4045,10 +4045,15 @@ function handleSelectHotelInPopup(slug: string) {
     margin-top: -34px;
     z-index: 11;
   }
-  /* Summary card (search page) — ≈ 90 px tall, half is 45. */
+  /* Summary card (search page) — top sits at the SAME Y as the
+     pill on home / deal / hotel. Same negative top-margin as
+     the pill (-34) so the card's top edge aligns; the card
+     just extends further down because it's taller (≈ 90 px).
+     Was -45 (centred on boundary) — replaced so the top is
+     locked across all four pages. */
   .site-header__mobile-search--on-solid .mss {
     position: relative;
-    margin-top: -45px;
+    margin-top: -34px;
     z-index: 11;
   }
 
