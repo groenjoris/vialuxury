@@ -62,6 +62,7 @@
 </template>
 
 <script setup lang="ts">
+import { useBodyScrollLock } from '~/composables-first-release/useBodyScrollLock'
 import type { DealVariant } from '~/types/deal'
 import { formatPrice } from '~/utils-first-release/formatPrice'
 import { priceForArrival } from '~/utils-first-release/priceFormula'

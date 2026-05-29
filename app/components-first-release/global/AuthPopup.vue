@@ -85,6 +85,8 @@
 </template>
 
 <script setup lang="ts">
+import { useBodyScrollLock } from '~/composables-first-release/useBodyScrollLock'
+
 const { t } = useFirstReleaseI18n()
 
 const props = defineProps<{

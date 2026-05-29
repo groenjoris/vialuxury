@@ -118,6 +118,7 @@
 </template>
 
 <script setup lang="ts">
+import { useBodyScrollLock } from '~/composables-first-release/useBodyScrollLock'
 import { useFirstReleaseDealStore } from '~/stores-first-release/deal'
 import type { TravelGroup, ChildEntry } from '~/types/deal'
 import { minRoomsFor, maxRoomsFor } from '~/utils-first-release/priceFormula'

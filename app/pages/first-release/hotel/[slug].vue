@@ -296,6 +296,7 @@
 <script setup lang="ts">
 import { formatPrice } from '~/utils-first-release/formatPrice'
 import { nightsLabel, personsLabel, roomsLabel } from '~/utils-first-release/plural'
+import { useBodyScrollLock } from '~/composables-first-release/useBodyScrollLock'
 import { isDealAvailableInWindow } from '~/utils-first-release/availability'
 import { teamMembers } from '~/data/team-members'
 import {

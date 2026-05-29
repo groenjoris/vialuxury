@@ -909,6 +909,7 @@
 <script setup lang="ts">
 import { useFirstReleaseDealStore } from '~/stores-first-release/deal'
 import { useSearchNavLock } from '~/composables-first-release/useMobileSearchModalControl'
+import { useBodyScrollLock } from '~/composables-first-release/useBodyScrollLock'
 import { creatorForSlug } from '~/data/team-members'
 import FirstReleaseExperienceCreatorCard from '~/components-first-release/deal/ExperienceCreatorCard.vue'
 import FirstReleaseWhyViaLuxury from '~/components-first-release/deal/WhyViaLuxury.vue'

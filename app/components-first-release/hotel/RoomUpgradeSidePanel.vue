@@ -154,6 +154,7 @@
 </template>
 
 <script setup lang="ts">
+import { useBodyScrollLock } from '~/composables-first-release/useBodyScrollLock'
 import type { Deal } from '~/types/deal'
 import { useFirstReleaseDealStore } from '~/stores-first-release/deal'
 import { formatPrice } from '~/utils-first-release/formatPrice'

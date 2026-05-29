@@ -75,6 +75,7 @@
 </template>
 
 <script setup lang="ts">
+import { useBodyScrollLock } from '~/composables-first-release/useBodyScrollLock'
 import type { SearchHotel } from '~/types/searchHotel'
 import { mappedHotels } from '~/data/deals-mapper'
 import { isDealAvailableInWindow } from '~/utils-first-release/availability'

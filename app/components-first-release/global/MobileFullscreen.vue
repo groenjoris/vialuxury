@@ -37,6 +37,8 @@
 </template>
 
 <script setup lang="ts">
+import { useBodyScrollLock } from '~/composables-first-release/useBodyScrollLock'
+
 const props = withDefaults(defineProps<{
   open: boolean
   title: string
