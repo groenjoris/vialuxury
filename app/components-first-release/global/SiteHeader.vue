@@ -3872,14 +3872,20 @@ function handleSelectHotelInPopup(slug: string) {
     gap: 0 !important;
   }
   .site-header .site-header__tagline {
-    /* Sized so "Personally Curated Experiences" (~30 chars) fills
-       the 204 px logo width on a single line. 13 × 0.85 ≈ 11 px so
-       the tagline's right edge matches the (smaller) logo's right
-       edge. */
+    /* Root cause: the tagline uses a script font (Oooh Baby) which
+       renders ~40 % wider per px than a sans-serif. Shrinking
+       font-size alone keeps the tagline wider than the 204 px logo
+       column. Use a 3-knob combo — font-size + tighter tracking +
+       a small horizontal scale — to land the right edge flush
+       with the logo's right edge at a still-readable size. */
     font-size: 11px;
     line-height: 1.1;
-    white-space: nowrap;          /* keep "Personally Curated Experiences" on one line */
-    overflow: visible;            /* don't truncate — font is sized to fit instead */
+    white-space: nowrap;
+    overflow: visible;
+    letter-spacing: -0.3px;
+    display: inline-block;
+    transform: scaleX(0.88);
+    transform-origin: left center;
   }
   .site-header .site-header__tagline-stroke { display: none; }
 
@@ -3999,7 +4005,22 @@ function handleSelectHotelInPopup(slug: string) {
     background: #ffffff;
     margin-top: -34px;
     padding-bottom: 0;
-    z-index: 5;
+    /* Keep the slot BELOW the nav (z:10) so the nav's black bg
+       covers the slot's white in the 34 px overlap region. That
+       leaves a single clean horizontal nav-bottom line where
+       black gives way to white. The pill inside lifts itself
+       above the nav via its own z-index — see rule below. */
+    z-index: 1;
+  }
+  /* Pill sits on TOP of everything (nav z:10) so neither half of
+     the pill is obscured by the nav's black. Visual result: black
+     ends at the nav's bottom border, white starts directly below;
+     the pill straddles that boundary with its top half on black,
+     bottom half on white. Matches the desktop search dock. */
+  .site-header .mobile-search-trigger,
+  .site-header .mss {
+    position: relative;
+    z-index: 11;
   }
   /* Hamburger — same translucent-white chrome as desktop, just
      ensured visible via `display: flex`. */
