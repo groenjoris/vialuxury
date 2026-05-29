@@ -1991,10 +1991,13 @@ onMounted(() => {
   }
   /* Defensive: ensure no stray top border / shadow renders
      between the SiteHeader summary block and the breadcrumb
-     section on mobile. */
+     section on mobile. Also tighten the gap between the summary
+     card and the breadcrumb (was ~32 px) to roughly a third. */
   .search-page__breadcrumbs {
     border-top: 0;
     box-shadow: none;
+    padding-top: 6px;
+    padding-bottom: 4px;
   }
   .search-page__header,
   .search-page__header-row,

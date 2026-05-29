@@ -940,16 +940,17 @@ onMounted(() => { setFrNavVariant('1'); restoreHeroPhotoIndex() })
   /* Hero — keep the photo visible (top-aligned), but let the hero
      section grow to fit the searchbar + content below. */
   .home-hero {
-    /* Height becomes content-driven; min-height ensures the photo
-       still has presence on tall phones. */
+    /* Height becomes content-driven; min-height trimmed by 30 px
+       (480 → 450) so the hero feels less tall on phones. */
     height: auto;
-    min-height: 480px;
+    min-height: 450px;
   }
-  /* Photo top-aligned so the upper part of every hero shot stays in
-     view on phones (where the bottom would otherwise dominate). */
+  /* Photo top-aligned but shifted up by 50 px so the visible
+     window reveals content slightly lower than the very top of
+     the image (= the woman's face on the default hero photo). */
   .home-hero__bg-img,
   .home-hero__bg--shift-down .home-hero__bg-img {
-    object-position: center top;
+    object-position: center -50px;
   }
 
   /* Hero copy: flow naturally below the SiteHeader's mobile search

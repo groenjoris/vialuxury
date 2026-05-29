@@ -146,7 +146,9 @@
 
               <!-- Meta block: 2-line variant when the nights don't match
                    the active filter ("Arrangement voor X nachten" /
-                   "X personen"). Otherwise the standard one-liner. -->
+                   "X personen"). The single-line variant lives INSIDE
+                   the price-stack below so it bottom-aligns with the
+                   CTA next to the price. -->
               <template v-if="nightsMismatch">
                 <p class="deal-card-v2__meta-line">
                   Arrangement voor {{ deal.nights }} {{ deal.nights === 1 ? 'nacht' : 'nachten' }}
@@ -155,18 +157,20 @@
                   {{ persons }} {{ persons === 1 ? 'persoon' : 'personen' }}
                 </p>
               </template>
-              <p
-                v-else
-                class="deal-card-v2__meta-line"
-              >{{ persons }} {{ persons === 1 ? 'persoon' : 'personen' }}, {{ deal.nights }} {{ deal.nights === 1 ? 'nacht' : 'nachten' }}</p>
 
               <div class="deal-card-v2__grid-price-row">
-                <p class="deal-card-v2__price-line">
-                  <span class="deal-card-v2__price-prefix">Vanaf</span>
-                  <span class="deal-card-v2__price">{{ formatPrice(price) }}</span>
-                  <span v-if="originalPrice > price" class="deal-card-v2__original">{{ formatPrice(originalPrice) }}</span>
-                  <FirstReleasePriceInfoTooltip variant="card" />
-                </p>
+                <div class="deal-card-v2__price-stack">
+                  <p
+                    v-if="!nightsMismatch"
+                    class="deal-card-v2__meta-line"
+                  >{{ persons }} {{ persons === 1 ? 'persoon' : 'personen' }}, {{ deal.nights }} {{ deal.nights === 1 ? 'nacht' : 'nachten' }}</p>
+                  <p class="deal-card-v2__price-line">
+                    <span class="deal-card-v2__price-prefix">Vanaf</span>
+                    <span class="deal-card-v2__price">{{ formatPrice(price) }}</span>
+                    <span v-if="originalPrice > price" class="deal-card-v2__original">{{ formatPrice(originalPrice) }}</span>
+                    <FirstReleasePriceInfoTooltip variant="card" />
+                  </p>
+                </div>
                 <NuxtLink
                   :to="dealHref"
                   :target="linkTarget"
@@ -1011,14 +1015,27 @@ const includesBullets = computed<string[]>(() => {
 }
 
 
-/* Grid price row: price left, CTA right.
-   Use baseline so the price text aligns visually with the CTA text,
-   not the CTA's outer box bottom (which has 8 px button padding). */
+/* Grid price row: price-stack on the left (meta + price line
+   stacked vertically), CTA on the right.
+   Use baseline alignment so the price text baseline aligns with
+   the CTA text baseline on desktop. Mobile bumps to flex-end so
+   the price-stack's bottom edge meets the CTA's bottom edge. */
 .deal-card-v2__grid-price-row {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
   gap: var(--space-md);
+}
+
+/* Vertical stack of "X personen, Y nachten" meta + price line.
+   Sits in the grid row; the meta sits 2 px above the price text
+   so they read as one block. */
+.deal-card-v2__price-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  min-width: 0;
 }
 
 .deal-card-v2__unavailable {
