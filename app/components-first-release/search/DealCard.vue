@@ -34,9 +34,31 @@
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
         </button>
       </template>
-      <span v-if="deal.discountPercentage" class="deal-card-v2__discount-badge">
+      <!-- Deal-page sidepanel: drop the discount % chip to free up
+           room for the overlay stickers below. Every other context
+           still shows the chip. -->
+      <span
+        v-if="deal.discountPercentage && !(panelMode && !mapMode)"
+        class="deal-card-v2__discount-badge"
+      >
         -{{ deal.discountPercentage }}%
       </span>
+      <!-- Deal-page sidepanel: photo overlay with nights label +
+           up to 3 amenity stickers (Entreekaarten / Diner / Bubbelbad
+           / Fiets / Wellness / Zwembad — priority order). Recoleta on
+           transparent-black tile, smaller than the search-card
+           action-sticker chips. -->
+      <div
+        v-if="panelMode && !mapMode"
+        class="deal-card-v2__panel-stickers"
+      >
+        <span class="deal-card-v2__panel-sticker">{{ nightsStickerLabel }}</span>
+        <span
+          v-for="s in panelAmenityStickers"
+          :key="s"
+          class="deal-card-v2__panel-sticker"
+        >{{ s }}</span>
+      </div>
       <div v-if="hotel?.labels && hotel.labels.length && !hideLabels" class="deal-card-v2__labels">
         <FirstReleaseDealLabel
           v-for="label in hotel.labels"
@@ -159,6 +181,11 @@
                   <template v-else>{{ ctaLabel || 'Bekijk' }}</template>
                 </NuxtLink>
               </div>
+              <!-- German-only microcopy below the price + button row.
+                   Card grows ~16 px taller when the locale is `de`. -->
+              <p v-if="isGerman" class="deal-card-v2__max-discount">
+                {{ t('deal.cardMaxDiscount') }}
+              </p>
             </template>
           </div>
         </div>
@@ -181,6 +208,10 @@
             <NuxtLink :to="dealHref" target="_blank" rel="noopener" class="deal-card-v2__cta deal-card-v2__cta--full">
               Bekijk
             </NuxtLink>
+            <!-- German-only microcopy below the price + button row. -->
+            <p v-if="isGerman" class="deal-card-v2__max-discount">
+              {{ t('deal.cardMaxDiscount') }}
+            </p>
           </template>
         </div>
       </div>
@@ -211,6 +242,8 @@ import { arrangementSuffixFromHighlights } from '~/utils-first-release/arrangeme
 import { useFirstReleaseHomeVariant } from '~/composables-first-release/useFirstReleaseHomeVariant'
 
 const { t, localized, locale } = useFirstReleaseI18n()
+/** German-only extra microcopy row sits below the CTA. */
+const isGerman = computed(() => locale.value === 'de')
 
 const isFavorite = ref(false)
 const { persons, rooms, arrivalDate } = useFirstReleaseSearchState()
@@ -267,20 +300,52 @@ const props = defineProps<{
 
 defineEmits<{ 'view-siblings': [] }>()
 
-/** Card title — v6 sidepanel uses the priority-rule format based on
- *  the deal's highlights ("Twee nachten met cruise" / "Drie nachten
- *  met diner en wellness" / fallback "Twee nachten luxe
- *  hotel-arrangement"). Every other context shows the legacy
- *  localised title. */
-const panelTitle = computed(() => {
-  // Map sidepanel keeps the original localised title — only the deal
-  // page sidepanel uses the "X nachten met Y" compact format.
-  if (props.panelMode && !props.mapMode) {
-    const suffix = arrangementSuffixFromHighlights(props.deal.highlights)
-    const nights = nightsLabel(props.deal.nights, 'nl')
-    return `${nights} ${suffix}`
+/** Card title — every context (search card, deal-page sidepanel, map
+ *  sidepanel) renders the full localised deal title, identical to
+ *  what shows up in the page header. The compact "X nachten met Y"
+ *  format used in earlier iterations has been replaced by the
+ *  overlay-stickers below (deal-page sidepanel only). */
+const panelTitle = computed(() => localized(props.deal.title))
+
+/** "1 nacht" / "2 nachten" overlay sticker. Locale-aware via the
+ *  shared plural helper. */
+const nightsStickerLabel = computed<string>(() =>
+  nightsLabel(props.deal.nights, (locale.value as 'nl' | 'en' | 'de'))
+)
+
+/** Up to 3 amenity-sticker labels (in priority order) detected by
+ *  scanning the deal's inclusion titles for keywords. Renders only
+ *  on the deal-page sidepanel via `panelMode && !mapMode`. */
+const panelAmenityStickers = computed<string[]>(() => {
+  const inclusionsSource = [
+    ...(props.deal.detailedInclusions || []),
+    ...(props.deal.inclusions || []),
+  ]
+  // Lowercased blob of every inclusion title, in any locale we have
+  // — covers NL primary copy + EN/DE translations when present.
+  const haystack = inclusionsSource
+    .map(i => {
+      const v = i as { nl?: string; en?: string; de?: string }
+      return [v.nl, v.en, v.de].filter(Boolean).join(' ').toLowerCase()
+    })
+    .join(' ')
+
+  // Priority order matches the user spec. Each entry: visible label
+  // + keyword list. First match wins per row; we cap at 3 stickers.
+  const candidates: Array<{ label: string; keys: string[] }> = [
+    { label: 'Entreekaarten', keys: ['entreekaart', 'entree-kaart', 'tickets', 'eintritt', 'entrance ticket'] },
+    { label: 'Diner', keys: ['diner', 'dinner', 'abendessen', '3-gangen', '4-gangen', '5-gangen', 'gangen menu'] },
+    { label: 'Bubbelbad', keys: ['bubbelbad', 'jacuzzi', 'whirlpool', 'hot tub', 'spabad'] },
+    { label: 'Fiets', keys: ['fiets', 'bicycle', 'bike', 'fahrrad'] },
+    { label: 'Wellness', keys: ['wellness', 'spa-toegang', 'spa toegang', 'spa entry'] },
+    { label: 'Zwembad', keys: ['zwembad', 'pool', 'schwimmbad'] },
+  ]
+  const out: string[] = []
+  for (const c of candidates) {
+    if (out.length >= 3) break
+    if (c.keys.some(k => haystack.includes(k))) out.push(c.label)
   }
-  return localized(props.deal.title)
+  return out
 })
 
 /** Stable per-deal hash → guarantees the same deal always starts on
@@ -608,6 +673,36 @@ const includesBullets = computed<string[]>(() => {
   padding: 6px 12px;
   border-radius: var(--radius-sm);
   letter-spacing: 0.5px;
+}
+
+/* Deal-page sidepanel overlay stickers. Sit on the photo (top-left),
+   transparent-black chip + white Recoleta text. Up to 4 chips: 1×
+   nights + ≤3 amenities; chips wrap to a second row when the row
+   runs out of horizontal room. Roughly 2× the original size: font
+   18 vs 11, padding 8×14 vs 3×8, radius 8 vs 4. */
+.deal-card-v2__panel-stickers {
+  position: absolute;
+  top: var(--space-md);
+  left: var(--space-md);
+  right: var(--space-md);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  z-index: 2;
+  pointer-events: none;
+}
+.deal-card-v2__panel-sticker {
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  font-family: var(--font-heading);
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.2;
+  padding: 8px 14px;
+  border-radius: 8px;
+  letter-spacing: 0.2px;
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
 }
 
 .deal-card-v2__favorite {
@@ -1086,5 +1181,17 @@ const includesBullets = computed<string[]>(() => {
   color: var(--color-text-primary);
   font-weight: 700;
   font-family: var(--font-heading);
+}
+
+/* German-only microcopy line below the price + CTA row. Full-width,
+   left-aligned, small secondary-grey type. The card grows ~16 px
+   taller when this line renders (German locale only). */
+.deal-card-v2__max-discount {
+  width: 100%;
+  margin: 8px 0 0;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--color-text-secondary);
+  text-align: left;
 }
 </style>

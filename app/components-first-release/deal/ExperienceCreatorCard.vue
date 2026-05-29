@@ -69,6 +69,15 @@ const pronounCapitalised = computed(() =>
   outline: none;
 }
 
+/* Mobile: span the full content width of the deal-page section
+   (still 110 px tall — photo on the left, text column flexes). */
+@media (max-width: 800px) {
+  .creator-card {
+    width: 100%;
+    height: 110px;
+  }
+}
+
 .creator-card:focus-visible {
   outline: 2px solid var(--color-primary);
   outline-offset: 4px;
@@ -103,19 +112,19 @@ const pronounCapitalised = computed(() =>
 /* ── Front face — horizontal: photo left, text right ── */
 .creator-card__face--front {
   display: flex;
-  align-items: stretch;
-  padding: 0;
+  align-items: center;
+  padding: 0 0 0 12px;
+  gap: 12px;
 }
 
 .creator-card__avatar {
-  /* Full-height photo on the left. The 14 px corner-radius hugs the
-     card's outer radius on the left side. */
-  width: 110px;
-  height: 100%;
+  /* Big round avatar on the left — circular crop, inset from the card
+     edges so the card padding wraps the circle. */
+  width: 86px;
+  height: 86px;
+  border-radius: 50%;
   object-fit: cover;
   flex-shrink: 0;
-  border-top-left-radius: 14px;
-  border-bottom-left-radius: 14px;
   display: block;
 }
 

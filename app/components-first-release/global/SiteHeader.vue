@@ -30,7 +30,7 @@
 
         <!-- Pay-off block (grid row 2, col 1 on desktop; flows under the
              logo on mobile). Handwritten tagline + optional wavy stroke. -->
-        <div class="site-header__tagline-block">
+        <NuxtLink :to="homeHref" class="site-header__tagline-block">
           <span class="site-header__tagline">Personally Curated Experiences</span>
           <!-- Wavy underline-stroke under the handwritten tagline. v1 and
                v6 are intentionally stroke-less (cleaner row); we don't
@@ -52,7 +52,7 @@
               stroke-linecap="round"
             />
           </svg>
-        </div>
+        </NuxtLink>
 
         <!-- Verticals switcher (grid row 2, col 2 — desktop only) -->
         <nav v-if="!isMobile" class="verticals" aria-label="Verticals">
@@ -385,6 +385,21 @@
                       <svg class="menu-panel__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
                     </NuxtLink>
 
+                    <NuxtLink
+                      to="/first-release/favorieten"
+                      class="menu-panel__row menu-panel__row--lg"
+                      @click="hamburgerDropdownOpen = false"
+                    >
+                      <span class="menu-panel__icon-tile">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0e0e0c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                      </span>
+                      <span class="menu-panel__row-text">
+                        <span class="menu-panel__row-title">Jouw favorieten</span>
+                        <span class="menu-panel__row-sub">Door jou bewaarde deals</span>
+                      </span>
+                      <svg class="menu-panel__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+                    </NuxtLink>
+
                     <!-- ACCOUNT & HELP section -->
                     <span class="menu-panel__section-label menu-panel__section-label--later">Account &amp; help</span>
 
@@ -481,11 +496,23 @@
       </div>
     </div>
 
-    <!-- Mobile search trigger (visible < 800 px) — rounded-rectangle
-         white card floating over the hero photo with a rounded-rectangle
-         orange "Vind deals" CTA on the right. -->
-    <div class="site-header__mobile-search">
-      <button type="button" class="mobile-search-trigger" @click="mobileSearchOpen = true">
+    <!-- Mobile search slot (visible < 800 px). On most pages it
+         shows the rounded "Vind deals" trigger pill. On the search
+         results page it renders the compact summary bar instead, so
+         the user always has one persistent "tap-to-edit-search"
+         affordance inside the header chrome. -->
+    <div
+      class="site-header__mobile-search"
+      :class="{
+        'site-header__mobile-search--summary': _route.path === '/first-release/search',
+        'site-header__mobile-search--on-solid': variant !== 'overlay',
+      }"
+    >
+      <FirstReleaseMobileSearchSummary
+        v-if="_route.path === '/first-release/search'"
+        @open="mobileSearchOpen = true"
+      />
+      <button v-else type="button" class="mobile-search-trigger" @click="mobileSearchOpen = true">
         <span class="mobile-search-trigger__label">{{ mobileSearchLabel }}</span>
         <span class="mobile-search-trigger__cta">Vind deals</span>
       </button>
@@ -848,6 +875,7 @@ import { mappedHotels } from '~/data/deals-mapper'
 import { tagsByCategory } from '~/utils-first-release/filterTags'
 import { minRoomsFor, maxRoomsFor } from '~/utils-first-release/priceFormula'
 import { useFirstReleaseHomeVariant } from '~/composables-first-release/useFirstReleaseHomeVariant'
+import { useMobileSearchModalControl, useSearchNavLock } from '~/composables-first-release/useMobileSearchModalControl'
 
 const props = withDefaults(defineProps<{
   /** 'solid' = default dark bar; 'overlay' = transparent over a background image (e.g. home hero) */
@@ -893,8 +921,8 @@ const activeVertical = computed(() => {
 // --- Language switcher ---
 // Order is fixed (NL → EN → FR-BE → FR-FR → DE). Each entry carries a
 // region-aware `code` so French shows up twice with distinct labels
-// (Belgium vs France). Only NL + EN actually drive the i18n locale;
-// the other entries are display-only for now.
+// (Belgium vs France). NL, EN and DE drive the i18n locale; BE/FR
+// fall back to NL until those locales exist.
 const languages = [
   { code: 'NL', label: 'Nederlands', flag: '\u{1F1F3}\u{1F1F1}' },
   { code: 'EN', label: 'English', flag: '\u{1F1EC}\u{1F1E7}' },
@@ -903,8 +931,15 @@ const languages = [
   { code: 'DE', label: 'Deutsch', flag: '\u{1F1E9}\u{1F1EA}' },
 ]
 
+/** Map persisted locale → switcher entry code so the trigger label
+ *  matches what the store has restored from localStorage. */
+const localeCode = localeStore.locale === 'en'
+  ? 'EN'
+  : localeStore.locale === 'de'
+    ? 'DE'
+    : 'NL'
 const selectedLanguage = ref(
-  languages.find(l => l.code === (localeStore.locale === 'en' ? 'EN' : 'NL')) ?? languages[0],
+  languages.find(l => l.code === localeCode) ?? languages[0],
 )
 const langDropdownOpen = ref(false)
 const langSwitcherRef = ref<HTMLElement | null>(null)
@@ -918,7 +953,10 @@ function selectLanguage(lang: typeof languages[number]) {
   langDropdownOpen.value = false
   if (lang.code === 'EN') {
     localeStore.setLocale('en')
+  } else if (lang.code === 'DE') {
+    localeStore.setLocale('de')
   } else {
+    // BE/FR not yet translated → fall back to NL.
     localeStore.setLocale('nl')
   }
 }
@@ -1041,9 +1079,14 @@ function scrollToFitPopup() {
   }
 }
 
-// Mobile: single full-screen search modal + hamburger menu
+// Mobile: single full-screen search modal + hamburger menu.
+// The modal's open state lives in a module-level singleton so the
+// search page's summary bar can trigger it without remounting a
+// second modal instance.
 const isMobile = useFirstReleaseIsMobile()
-const mobileSearchOpen = ref(false)
+const mobileSearchControl = useMobileSearchModalControl()
+const searchNavLock = useSearchNavLock()
+const mobileSearchOpen = mobileSearchControl.isOpen
 const mobileMenuOpen = ref(false)
 /** Total number of arrangements (= deals) across all mocked hotels.
  *  Rendered as "Doorzoek N arrangementen" in the compact mobile
@@ -1767,7 +1810,7 @@ const whoLabel = computed(() => {
   return extras.length > 0 ? `${head}, ${extras.join(', ')}` : head
 })
 
-function commitSearch() {
+async function commitSearch() {
   // Rule #2: a fresh Find Deals starts from a clean slate — every
   // existing filter (panel side + previous search-bar commits) is
   // wiped first; only the current search-bar drafts are applied.
@@ -1805,25 +1848,45 @@ function commitSearch() {
   // If the user picked a specific hotel from the destination popup, pin it.
   // Otherwise fall back to the deal-page slug (when changing search from /deal).
   const fromSlug = localDestHotels.value[0]?.slug || currentDealSlug()
-  navigateTo(fromSlug ? `/first-release/search?from=${encodeURIComponent(fromSlug)}` : '/first-release/search')
+  const target = fromSlug
+    ? `/first-release/search?from=${encodeURIComponent(fromSlug)}`
+    : '/first-release/search'
+  // Take the search-nav lock BEFORE navigating so the deal
+  // page's `store.queryParams` watcher (which would otherwise
+  // race and call `router.replace`, cancelling our nav) skips
+  // its callback during the in-flight navigation. The lock is
+  // released after a tick — the watcher's competing flush
+  // happens immediately after the state mutations above.
+  searchNavLock.begin()
+  try {
+    await navigateTo(target)
+  } finally {
+    // Release the lock on the next microtask so any straggler
+    // watcher callback queued by the state mutations also skips.
+    setTimeout(() => searchNavLock.end(), 0)
+  }
 }
 
 function currentDealSlug(): string | null {
-  const path = (useRoute().path || '')
-  const m = path.match(/^\/deal\/([^/?#]+)/)
+  // Use the setup-level `_route` ref so we don't call `useRoute()`
+  // outside of setup (which can throw and abort commitSearch before
+  // it reaches `navigateTo`). Match both `/deal/<slug>` and the
+  // prefixed `/first-release/deal/<slug>` path layouts.
+  const path = (_route.path || '')
+  const m = path.match(/\/deal\/([^/?#]+)/)
   return m ? decodeURIComponent(m[1]) : null
 }
 
 function handleSearch() {
   cancelPulse()
   activePopup.value = null
-  commitSearch()
+  void commitSearch()
 }
 
 function handleMobileSearch() {
   cancelPulse()
   mobileSearchOpen.value = false
-  commitSearch()
+  void commitSearch()
 }
 
 function handleSelectHotel(slug: string) {
@@ -2562,7 +2625,12 @@ function handleSelectHotelInPopup(slug: string) {
      stroke; the stroke still bottom-aligns with the verticals row. */
   justify-content: flex-end;
   gap: 2px;
+  /* Tagline block is a NuxtLink to home — strip default link chrome
+     so the handwritten payoff still reads as plain text. */
+  text-decoration: none;
+  color: inherit;
 }
+.site-header__tagline-block:hover { text-decoration: none; }
 
 /* Pay-off — handwritten Oooh Baby, white. */
 .site-header__tagline {
@@ -3790,28 +3858,46 @@ function handleSelectHotelInPopup(slug: string) {
     justify-self: start;
     align-self: start !important;
     text-align: left;
-    margin-top: 2px !important;
+    /* Tagline bottom aligns with the hamburger button's bottom edge
+       (button is 42 px tall, pinned at top: 0). With logo h ≈ 16–25 px
+       and tagline text ≈ 10–15 px, a ~8 px gap places the tagline's
+       baseline near the hamburger's bottom edge at typical mobile
+       viewports. */
+    margin-top: 5px !important;
     gap: 0 !important;
   }
   .site-header .site-header__tagline {
-    font-size: clamp(10px, 2.6vw, 13px);
-    line-height: 1.05;
+    /* Font sized so "Personally Curated Experiences" (~29 chars) fits
+       inside the logo's width on one line at every viewport — see
+       --fr-mobile-logo-w. Empirical: ~logo_w / 16 keeps it on one line
+       with a smidge of breathing room. */
+    font-size: clamp(9px, 2.4vw, 14px);
+    line-height: 1.1;
     white-space: nowrap;          /* keep "Personally Curated Experiences" on one line */
-    overflow: hidden;
-    text-overflow: clip;
+    overflow: visible;            /* don't truncate — font is sized to fit instead */
   }
   .site-header .site-header__tagline-stroke { display: none; }
 
-  /* Phone — row 3, LEFT-aligned in col 1 so it visually decouples
-     from the lang switcher + hamburger cluster (no shared right
-     edge). Spans only col 1 — the actions sit far to the right
-     above it. */
+  /* Phone — row 3, RIGHT-aligned so it sits directly beneath the
+     lang switcher + hamburger cluster (which is absolute-positioned
+     top-right). Spans the full grid width and justifies to the right
+     edge. Margin-top is generous enough that on the smallest
+     viewports the phone clears the bottom of the ~44 px tall actions
+     cluster sitting at top: 20 px. */
   .site-header .site-header__phone-wrap {
     grid-row: 3;
-    grid-column: 1;
+    grid-column: 1 / -1;
     align-self: center;
-    justify-self: start;
-    margin-top: 4px;
+    justify-self: center !important;    /* centre the wrap in its grid track */
+    margin-top: 26px;
+    /* Belt + suspenders: ensure inline content also centres if the
+       wrap ends up wider than its inner button. */
+    text-align: center;
+    width: auto;
+  }
+  .site-header .site-header__phone-wrap .site-header__phone {
+    margin-left: auto;
+    margin-right: auto;                 /* centre the inline-flex button */
   }
   .site-header .site-header__phone {
     gap: 8px;
@@ -3849,27 +3935,61 @@ function handleSelectHotelInPopup(slug: string) {
      beneath at ~2 px — matching the desktop logo+payoff feel. */
   .site-header .site-header__nav-actions {
     position: absolute;
-    top: 10px;
+    /* `top: 0` aligns the cluster's top with the logo's top. The nav's
+       `padding-top: 20px` already spaces the WHOLE nav-inner block
+       down from the viewport — the absolute offset is measured from
+       nav-inner's top edge (which sits inside that padding), so adding
+       any further top offset here double-counts the spacing and shoves
+       the buttons below the logo's top edge. */
+    top: 0;
     right: 16px;
-    gap: 6px;
+    /* `!important` here defeats the v1 / v6 desktop rule below
+       (`.site-header--nav-v1 .site-header__nav-actions { gap: 0 }`),
+       which has higher specificity than this single-class
+       mobile rule and otherwise collapses the gap to 0. */
+    gap: 16px !important;
+    align-items: flex-start !important;
     /* `!important` defends against the v1 / v6 desktop rule
        (`.site-header--nav-v1 .site-header__nav-actions`) that would
        otherwise impose a 256-px fixed width + space-between layout. */
     width: auto !important;
     justify-content: flex-end !important;
   }
-  /* Compact nav height — content-driven, comfortable padding. */
-  .site-header .site-header__nav { height: auto; min-height: 56px; padding-top: 10px; padding-bottom: 10px; }
+  /* Nav height + top margin: 20 px padding-top gives the header room
+     to breathe below the browser chrome / status bar — was 10 px,
+     which felt cramped against the viewport top. */
+  .site-header .site-header__nav { height: auto; min-height: 56px; padding-top: 20px; padding-bottom: 12px; }
   /* Hide desktop search dock */
   .site-header .site-header__search-dock {
     display: none;
   }
-  /* Show mobile search trigger — no black container, the pill itself
-     paints the chrome and floats over the hero photo. */
+  /* Mobile search trigger: transparent by default so the pill simply
+     overlaps the hero photo (home + deal etc.). The black/white
+     two-tone backdrop is only applied on the search results page
+     via the `--summary` modifier, where the summary bar needs the
+     contrast against page chrome instead of a photo. */
   .site-header .site-header__mobile-search {
     display: block;
     padding: 12px 16px 16px;
     background: transparent;
+  }
+  /* Two-tone backdrop — black top half (visually continues the
+     nav above), white bottom half (matches the page body). The
+     trigger pill / summary card sits across the 50/50 boundary,
+     so the bar reads as half-inside-nav, half-inside-page —
+     mirroring how the desktop search dock straddles the nav.
+     Applied on every page that uses the solid SiteHeader
+     variant (deal, search, hotel, etc.). On the overlay home
+     the pill stays directly on the hero photo (transparent). */
+  .site-header .site-header__mobile-search--on-solid {
+    background: linear-gradient(
+      to bottom,
+      #0e0e0c 0,
+      #0e0e0c 50%,
+      #ffffff 51%,
+      #ffffff 100%
+    );
+    padding-bottom: 0;
   }
   /* Hamburger — same translucent-white chrome as desktop, just
      ensured visible via `display: flex`. */

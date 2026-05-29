@@ -38,6 +38,38 @@ export const DESTINATION_LABEL_BY_ID: Record<string, string> = {
   'wallonie': 'Wallonië',
 }
 
+/**
+ * Province-level adjacency map. Used by the no-results state on
+ * /search to suggest "Deze deals zijn dichtbij <Locatie>" when
+ * the selected destination has zero matching hotels.
+ *
+ * Values are destination IDs (same keys as NL_PROVINCE_BY_ID).
+ * BE destinations fall back to a "rest of BE" neighbour set via
+ * `neighboursOf()` below.
+ */
+export const NL_NEIGHBOURS: Record<string, string[]> = {
+  'noord-holland': ['zuid-holland', 'utrecht', 'flevoland', 'friesland'],
+  'zuid-holland': ['noord-holland', 'utrecht', 'gelderland', 'brabant', 'zeeland'],
+  'zeeland':      ['zuid-holland', 'brabant'],
+  'brabant':      ['zuid-holland', 'zeeland', 'gelderland', 'limburg'],
+  'limburg':      ['brabant', 'gelderland'],
+  'gelderland':   ['utrecht', 'flevoland', 'overijssel', 'brabant', 'limburg'],
+  'utrecht':      ['noord-holland', 'zuid-holland', 'gelderland', 'flevoland'],
+  'flevoland':    ['noord-holland', 'friesland', 'overijssel', 'gelderland', 'utrecht'],
+  'overijssel':   ['gelderland', 'drenthe', 'flevoland'],
+  'drenthe':      ['friesland', 'groningen', 'overijssel'],
+  'friesland':    ['groningen', 'drenthe', 'flevoland', 'noord-holland'],
+  'groningen':    ['friesland', 'drenthe'],
+}
+
+export function neighboursOf(id: string): string[] {
+  if (NL_NEIGHBOURS[id]) return NL_NEIGHBOURS[id]
+  if (BE_DESTINATION_IDS.has(id)) {
+    return [...BE_DESTINATION_IDS].filter(x => x !== id)
+  }
+  return []
+}
+
 export function hasActiveDestinationFilter(f: DestinationFilter): boolean {
   return f.destinations.length + f.cities.length + f.hotels.length > 0
 }

@@ -82,10 +82,45 @@
       </div>
     </div>
 
-    <!-- Content area: fixed height -->
-    <div class="destination-popup__content">
+    <!-- Content area — scrolls internally only while the user is
+         typing (so the autosuggest list stays anchored under the
+         input). In the click-only default state the popup grows
+         naturally and the page scrolls if it doesn't fit. -->
+    <div
+      class="destination-popup__content"
+      :class="{ 'destination-popup__content--searching': isSearching }"
+    >
+      <!-- Inline (mobile modal): ONE rendering path for both states.
+           Click-only (no query) shows destinations + themes; typing
+           shows filtered cities/provinces + hotels. Identical row
+           markup either way — no icons, no section headings, no
+           separators. The data is the only difference. -->
+      <div v-if="inline" class="destination-popup__results destination-popup__results--inline">
+        <template v-if="inlineHasRows">
+          <template v-for="(section, idx) in inlineSections" :key="section.key">
+            <!-- Divider between sections (skip before the first one). -->
+            <div v-if="idx > 0" class="destination-popup__separator"></div>
+            <h4 class="destination-popup__section-title destination-popup__section-title--results">{{ section.title }}</h4>
+            <ul class="destination-popup__list">
+              <li
+                v-for="row in section.rows"
+                :key="row.key"
+                class="destination-popup__list-item"
+                @click="row.pick()"
+              >
+                <div class="destination-popup__list-text">
+                  <span class="destination-popup__list-name">{{ row.name }}</span>
+                  <span v-if="row.sublabel" class="destination-popup__list-province">{{ row.sublabel }}</span>
+                </div>
+              </li>
+            </ul>
+          </template>
+        </template>
+        <div v-else class="destination-popup__empty">{{ t('header.noResults') }}</div>
+      </div>
+
       <!-- Browse mode: provincies (no label) on top, themes below. -->
-      <div v-if="!isSearching" class="destination-popup__browse">
+      <div v-else-if="!isSearching" class="destination-popup__browse">
         <!-- Provincies / regio's — first section, no heading. -->
         <div class="destination-popup__section destination-popup__section--destinations">
           <div class="destination-popup__chips">
@@ -154,8 +189,10 @@
               <circle cx="12" cy="10" r="3" />
             </svg>
             <div class="destination-popup__list-text">
+              <!-- Province / city rows show only the name — no
+                   sublabel (no "Nederland" beneath provinces, no
+                   province beneath cities). -->
               <span class="destination-popup__list-name">{{ item.name }}</span>
-              <span class="destination-popup__list-province">{{ item.province }}</span>
             </div>
           </li>
         </ul>
@@ -178,9 +215,8 @@
               </svg>
               <div class="destination-popup__list-text">
                 <span class="destination-popup__list-name">{{ hotel.name }}</span>
-                <span class="destination-popup__list-stars">
-                  <template v-for="n in hotel.starRating" :key="n">&#9733;</template>
-                </span>
+                <!-- Hotels: name + city only — stars block removed. -->
+                <span class="destination-popup__list-province">{{ hotel.city }}</span>
               </div>
             </li>
           </ul>
@@ -397,8 +433,12 @@ const allSuggestions = computed(() => {
 const filteredSuggestions = computed(() => {
   const q = searchQuery.value.trim().toLowerCase()
   if (!q) return []
+  // Match on the city / province NAME only — don't also match the
+  // sub-label (the parent province). Typing "noord" shouldn't surface
+  // every city in Noord-Holland; the user expects name-prefix-style
+  // behaviour against the primary label.
   return allSuggestions.value
-    .filter(s => s.name.toLowerCase().includes(q) || s.province.toLowerCase().includes(q))
+    .filter(s => s.name.toLowerCase().includes(q))
     .slice(0, 10) // limit to 10 results
 })
 
@@ -410,6 +450,95 @@ const filteredHotels = computed(() => {
     .filter(h => h.name.toLowerCase().includes(q) || h.city.toLowerCase().includes(q))
     .slice(0, 5) // limit to 5 hotel results
 })
+
+/** Unified, sectioned rows for inline (mobile-modal) rendering. The
+ *  popup uses ONE template path in inline mode — initial (click-only)
+ *  and typing states share identical row markup. Only the data
+ *  changes. Rows are grouped into three sections separated by a
+ *  heading: Bestemmingen, Hotels, Thema's. */
+type InlineRow = {
+  key: string
+  name: string
+  sublabel: string
+  pick: () => void
+}
+type InlineSection = {
+  key: string
+  title: string
+  rows: InlineRow[]
+}
+const inlineSections = computed<InlineSection[]>(() => {
+  if (!isSearching.value) {
+    // Click-only default: provinces + themes. Provinces show only
+    // their name (no country sublabel). Themes keep their "Thema's"
+    // sublabel since the user only asked to simplify city/province/
+    // hotel rows.
+    return [
+      {
+        key: 'destinations',
+        title: 'Bestemmingen',
+        rows: props.destinations.map(d => ({
+          key: `d-${d.id}`,
+          name: d.name,
+          sublabel: '',
+          pick: () => emit('toggle-destination', d.id),
+        })),
+      },
+      {
+        key: 'themes',
+        title: "Thema's",
+        rows: props.themes.map(th => ({
+          key: `t-${th.id}`,
+          name: th.name,
+          sublabel: t('header.themes'),
+          pick: () => emit('toggle-theme', th.id),
+        })),
+      },
+    ].filter(s => s.rows.length > 0)
+  }
+  // Typing state: filtered cities/provinces + hotels + theme matches.
+  // Cities/provinces: name only, no province sublabel. Hotels: name +
+  // city (no stars).
+  const q = searchQuery.value.trim().toLowerCase()
+  const themeMatches = props.themes.filter(th => th.name.toLowerCase().includes(q))
+  return [
+    {
+      key: 'destinations',
+      title: 'Bestemmingen',
+      rows: filteredSuggestions.value.map(s => ({
+        key: `s-${s.name}`,
+        name: s.name,
+        sublabel: '',
+        pick: () => selectSuggestion(s),
+      })),
+    },
+    {
+      key: 'hotels',
+      title: 'Hotels',
+      rows: filteredHotels.value.map(h => ({
+        key: `h-${h.slug}`,
+        name: h.name,
+        sublabel: h.city,
+        pick: () => selectHotel(h),
+      })),
+    },
+    {
+      key: 'themes',
+      title: "Thema's",
+      rows: themeMatches.map(th => ({
+        key: `t-${th.id}`,
+        name: th.name,
+        sublabel: t('header.themes'),
+        pick: () => emit('toggle-theme', th.id),
+      })),
+    },
+  ].filter(s => s.rows.length > 0)
+})
+/** Convenience: total row count across all sections — drives the
+ *  "no results" empty state. */
+const inlineHasRows = computed(() =>
+  inlineSections.value.some(s => s.rows.length > 0),
+)
 
 function selectSuggestion(item: { name: string; province: string; isProvince: boolean }) {
   // If it's a province that matches one of our destination chips, toggle that
@@ -615,17 +744,36 @@ function selectHotel(hotel: { name: string; slug: string }) {
 /* ==================== */
 /* CONTENT (SCROLLABLE) */
 /* ==================== */
+/* Default (initial / click-only browse): no internal scroll — the
+   popup grows naturally and the page scrolls if it doesn't fit. */
 .destination-popup__content {
-  flex: 1 1 auto;
+  flex: 0 1 auto;
   min-height: 0;
+  overflow-y: visible;
+  max-height: none;
+}
+/* Typing state on desktop: re-enable internal scroll so the
+   autosuggest list stays anchored under the input rather than
+   pushing the page down. */
+.destination-popup__content--searching {
   overflow-y: auto;
+  max-height: 60vh;
 }
 
-/* Inline mode (mobile search modal): drop the internal scroll cap so
-   the popup grows naturally; the modal body does the scrolling. */
-.destination-popup--inline .destination-popup__content {
+/* Inline mode (mobile search modal): no internal scroll cap in
+   either state — the modal body always handles scrolling. */
+.destination-popup--inline .destination-popup__content,
+.destination-popup--inline .destination-popup__content--searching {
   overflow-y: visible;
+  max-height: none;
   flex: 0 1 auto;
+}
+
+/* Inline mode: the autosuggest list (typing OR the default click-only
+   view) shows no leading icons — keeps the mobile dropdown to one
+   plain text suggestion per line. */
+.destination-popup--inline .destination-popup__list-icon {
+  display: none;
 }
 
 /* ==================== */

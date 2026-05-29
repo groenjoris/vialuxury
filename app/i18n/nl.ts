@@ -42,7 +42,7 @@ const nl: Record<string, string> = {
   'header.recentSearches': 'Recente zoekopdrachten',
 
   // Header - Verticals
-  'header.hotels': 'Verblijven',
+  'header.hotels': 'Hotels',
   'header.holidayParks': 'Vakantieparken',
   'header.restaurants': 'Restaurants',
   'header.giftCard': 'Geef cadeaubon',
@@ -152,6 +152,7 @@ const nl: Record<string, string> = {
   'footer.allRightsReserved': 'Alle rechten voorbehouden.',
   'footer.trustpilotScore': '4.5',
   'footer.trustpilotLabel': '15.294 gasten raten ons met 4.5',
+  'footer.trustpilotSentence': '15.294 gasten beoordelen ons met een 9 uit 10',
 
   // Vakantieparken page
   'vakantieparken.heading': 'Vakantieparken komen eraan',
@@ -449,6 +450,7 @@ const nl: Record<string, string> = {
 
   'sidebar.arrangementFor': 'Arrangement voor',
   'sidebar.arrangementFullTitle': 'In dit arrangement voor 2 personen is het volgende inbegrepen:',
+  'sidebar.viewDetails': 'Bekijk details',
   'sidebar.forArrival': 'Voor aankomstdatum',
   'sidebar.clear': 'wissen',
   'sidebar.luxeRoomSingular': 'luxe kamer (upgrade)',

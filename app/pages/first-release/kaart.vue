@@ -228,6 +228,11 @@ function closeMap() {
   else router.push(homeHref.value)
 }
 
+// Filter sidebar visibility — collapsed by default when the user
+// arrived from a deal page (?focus=<slug>) so the map gets the
+// full width. The user can re-open it via the floating chip.
+const showFilter = ref(!route.query.focus)
+
 // Sync FR nav-bar variant with the user's last homepage pick so the
 // SiteHeader on this internal page matches the chosen variant. Reads
 // localStorage (or the URL if it matches a known variant path).
@@ -245,11 +250,28 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="kaart-page">
+  <div class="kaart-page" :class="{ 'kaart-page--no-filter': !showFilter }">
+    <!-- Floating "show filters" chip — only when the sidebar is
+         collapsed (deal-page hand-off via ?focus=<slug>). -->
+    <button
+      v-if="!showFilter"
+      type="button"
+      class="kaart-show-filter"
+      @click="showFilter = true"
+      :aria-label="t('search.filters') || 'Filters'"
+    >
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="4" y1="6" x2="20" y2="6" />
+        <line x1="8" y1="12" x2="20" y2="12" />
+        <line x1="12" y1="18" x2="20" y2="18" />
+      </svg>
+      <span>{{ t('search.filters') || 'Filters' }}</span>
+    </button>
+
     <!-- Sticky filter sidebar (left). Stays in place when the side panel
          opens; the map slides under it. Filter content scrolls internally
          when it overflows the viewport height. -->
-    <aside class="kaart-filter">
+    <aside v-if="showFilter" class="kaart-filter">
       <!-- Black ViaLuxury wordmark on top of the filter bar — same on
            every nav variant. -->
       <NuxtLink :to="homeHref" class="kaart-filter__logo">
@@ -366,6 +388,32 @@ onMounted(() => {
   border-radius: 0;
 }
 
+/* "Show filters" chip — only rendered when the sidebar is
+   collapsed (deal-page hand-off). Floats top-left over the map. */
+.kaart-show-filter {
+  position: absolute;
+  top: var(--space-md);
+  left: var(--space-md);
+  z-index: 701;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 16px;
+  background: #fff;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+.kaart-show-filter:hover {
+  background: var(--color-background-secondary);
+}
+
 /* ---------- Stage (map area) ---------- */
 .kaart-stage {
   /* Sits to the right of the sticky filter; the filter overlays the stage's
@@ -385,6 +433,16 @@ onMounted(() => {
 
 .kaart-stage--with-panel {
   transform: translateX(-380px);
+}
+
+/* Collapsed-filter layout: stage spans the full width, pills shift
+   left to clear only the show-filters chip. */
+.kaart-page--no-filter .kaart-stage {
+  left: 0;
+}
+.kaart-page--no-filter .kaart-pills {
+  /* 16 px page padding + ~120 px chip + 16 px gap. */
+  left: calc(var(--space-md) + 120px + var(--space-md));
 }
 
 /* Filter pills sit absolutely on the kaart-page so they stay put when the

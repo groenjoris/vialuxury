@@ -153,7 +153,7 @@
               @keydown.enter.prevent="toggle('howlong')"
               @keydown.space.prevent="toggle('howlong')"
             >
-              <span class="msm-field__value" :class="{ 'msm-field__value--placeholder': selectedDurations.length === 0 }">
+              <span class="msm-field__value">
                 {{ howLongSummary }}
               </span>
               <button
@@ -398,7 +398,10 @@ const whenSummary = computed(() => {
 })
 
 const howLongSummary = computed(() => {
-  if (props.selectedDurations.length === 0) return 'Kies reisduur'
+  // Empty selection = "any duration" default → mirror that in the
+  // collapsed field so the box visibly reads "Maakt niet uit" when
+  // the user hasn't picked specific nights yet.
+  if (props.selectedDurations.length === 0) return 'Maakt niet uit'
   return props.selectedDurations.join(' of ') + ' nachten'
 })
 

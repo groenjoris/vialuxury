@@ -2,18 +2,22 @@ import { useFirstReleaseLocaleStore } from '~/stores-first-release/locale'
 import type { LocalizedString } from '~/i18n/types'
 import nl from '~/i18n/nl'
 import en from '~/i18n/en'
+import de from '~/i18n/de'
 
-const maps = { nl, en } as const
+const maps = { nl, en, de } as const
 
 export function useFirstReleaseI18n() {
   const store = useFirstReleaseLocaleStore()
 
   /**
    * Translate a UI string by key.
-   * Returns the key itself as fallback if not found.
+   * Falls back to the NL string when a key is missing in the active
+   * locale (defence against partial translations — DE is the most
+   * recent addition and may be incomplete). Returns the key itself
+   * as final fallback if not found in any locale.
    */
   function t(key: string): string {
-    return maps[store.locale][key] ?? key
+    return maps[store.locale][key] ?? maps.nl[key] ?? key
   }
 
   /**

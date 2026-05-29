@@ -105,8 +105,8 @@
         <span class="home-press-banner__label">Gezien in:</span>
         <div class="home-press-banner__logos">
           <img src="/images/logos/nrc.png" alt="NRC" class="home-press-banner__logo" />
-          <img src="/images/logos/telegraaf.png" alt="De Telegraaf" class="home-press-banner__logo" />
-          <img src="/images/logos/nushoplogo.svg" alt="NU shop" class="home-press-banner__logo" />
+          <img src="/images/logos/volkskrant.svg" alt="de Volkskrant" class="home-press-banner__logo" />
+          <img src="/images/logos/nu.svg" alt="NU.nl" class="home-press-banner__logo" />
         </div>
       </div>
     </section>
@@ -151,7 +151,7 @@ EXPERIENCES</span>
     <!-- Actuele Deals: 3x3 grid of current hotel cards -->
     <section class="home-deals home-deals--alt">
       <div class="container">
-        <h2 class="home-deals__title">Laatste beschikbaarheid</h2>
+        <h2 class="home-deals__title">Actuele deals</h2>
         <div class="home-deals__grid home-deals__grid--3">
           <FirstReleaseDealCard
             v-for="hotel in actueleDeals"

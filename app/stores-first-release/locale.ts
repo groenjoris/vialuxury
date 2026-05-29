@@ -7,7 +7,7 @@ export const useFirstReleaseLocaleStore = defineStore('first-release-locale', ()
   // Restore from localStorage on client
   if (import.meta.client) {
     const saved = localStorage.getItem('vialuxury-locale') as Locale | null
-    if (saved === 'en' || saved === 'nl') {
+    if (saved === 'en' || saved === 'nl' || saved === 'de') {
       locale.value = saved
     }
   }

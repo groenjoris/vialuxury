@@ -16,11 +16,6 @@
         </div>
       </Transition>
 
-      <!-- Co-branded partner block (only when usePartner() is set) -->
-      <div v-if="partner" class="top-bar__partner">
-        <span class="top-bar__partner-label">in samenwerking met</span>
-        <img src="/images/logos/nu.svg" alt="nu.nl" class="top-bar__partner-logo" />
-      </div>
     </div>
   </div>
 </template>

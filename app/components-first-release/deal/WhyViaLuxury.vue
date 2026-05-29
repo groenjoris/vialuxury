@@ -184,12 +184,25 @@ const points = [
   line-height: 1.45;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 800px) {
   .why-vialuxury__grid {
     grid-template-columns: 1fr;
   }
+  /* Photo renders FIRST on mobile (above the body copy) — desktop
+     keeps the side-by-side body-left / photo-right layout.
+     Drop the desktop min-height + grey background so there's no
+     empty grey band visible under the image on narrow viewports. */
   .why-vialuxury__photo {
+    order: -1;
     max-width: 100%;
+    min-height: 0;
+    height: auto;
+    background: transparent;
+  }
+  .why-vialuxury__photo img {
+    aspect-ratio: 16 / 9;
+    height: auto;
+    object-fit: cover;
   }
 }
 </style>

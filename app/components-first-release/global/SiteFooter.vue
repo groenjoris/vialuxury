@@ -7,15 +7,10 @@
           <img src="/images/logo-vialuxury.svg" alt="ViaLuxury" class="footer-logo__img" />
         </NuxtLink>
 
-        <!-- Trustpilot -->
+        <!-- Trustpilot logo + sentence -->
         <div class="footer-trustpilot">
-          <div class="footer-trustpilot__stars">
-            <svg v-for="n in 5" :key="n" width="20" height="20" viewBox="0 0 24 24" :fill="n <= 4 ? '#00B67A' : '#DCE3DF'" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.27 5.82 22 7 14.14l-5-4.87 6.91-1.01z" />
-            </svg>
-          </div>
-          <span class="footer-trustpilot__score">{{ t('footer.trustpilotScore') }}</span>
-          <span class="footer-trustpilot__label">{{ t('footer.trustpilotLabel') }}</span>
+          <img src="/images/trustpilot.svg" alt="Trustpilot" class="footer-trustpilot__logo" />
+          <span class="footer-trustpilot__sentence">{{ t('footer.trustpilotSentence') }}</span>
         </div>
       </div>
 
@@ -36,9 +31,6 @@
               {{ t('footer.whatsapp') }}
             </a>
           </li>
-          <li class="footer-links__divider"></li>
-          <li><NuxtLink to="/faq">{{ t('footer.faqLink') }}</NuxtLink></li>
-          <li><NuxtLink to="/contact">{{ t('footer.contactForm') }}</NuxtLink></li>
         </ul>
       </div>
 
@@ -112,32 +104,25 @@ const { homeHref } = useFirstReleaseHomeVariant()
   filter: brightness(0) invert(1);
 }
 
-/* ── Trustpilot ── */
+/* ── Trustpilot — logo + single sentence (replaces stars + score) ── */
 .footer-trustpilot {
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 6px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
 }
 
-.footer-trustpilot__stars {
-  display: flex;
-  gap: 2px;
+.footer-trustpilot__logo {
+  width: 110px;
+  height: auto;
+  display: block;
 }
 
-.footer-trustpilot__score {
-  font-family: var(--font-body);
-  font-size: 15px;
-  font-weight: 700;
-  color: white;
-  margin-left: 4px;
-}
-
-.footer-trustpilot__label {
+.footer-trustpilot__sentence {
   font-family: var(--font-body);
   font-size: 13px;
-  color: rgba(255, 255, 255, 0.6);
-  width: 100%;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.7);
 }
 
 /* ── Headings ── */

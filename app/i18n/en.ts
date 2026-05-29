@@ -42,7 +42,7 @@ const en: Record<string, string> = {
   'header.dogSub': 'Check availability per hotel',
 
   // Header - Verticals
-  'header.hotels': 'Stays',
+  'header.hotels': 'Hotels',
   'header.holidayParks': 'Holiday Parks',
   'header.restaurants': 'Restaurants',
   'header.giftCard': 'Gift card',
@@ -152,6 +152,7 @@ const en: Record<string, string> = {
   'footer.allRightsReserved': 'All rights reserved.',
   'footer.trustpilotScore': '4.5',
   'footer.trustpilotLabel': '15,294 guests rate us 4.5',
+  'footer.trustpilotSentence': '15,294 guests rate us 9 out of 10',
 
   // Vakantieparken page
   'vakantieparken.heading': 'Holiday parks are coming',
@@ -448,6 +449,7 @@ const en: Record<string, string> = {
   'deal.refreshing': 'Updating availability...',
 
   'sidebar.arrangementFor': 'Package for',
+  'sidebar.viewDetails': 'View details',
   'sidebar.arrangementFullTitle': 'This arrangement for 2 people includes:',
   'sidebar.forArrival': 'For arrival date',
   'sidebar.clear': 'clear',

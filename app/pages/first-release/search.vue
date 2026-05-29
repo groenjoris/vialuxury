@@ -62,17 +62,17 @@
           <div class="search-page__header">
             <div class="search-page__header-row">
               <div class="search-page__header-text">
-                <h1 v-if="hasNoResults" class="search-page__title search-page__title--no-results">
+                <h1 v-if="hasNoResults" ref="titleRef" class="search-page__title search-page__title--no-results">
                   {{
                     noResultsReason === 'date-only'
                       ? 'Geen deals gevonden bij jouw aankomstdatum'
                       : 'Geen deals gevonden die voldoen aan je wensen'
                   }}
                 </h1>
-                <h1 v-else-if="singleThemeTagId" :key="`themed-${singleThemeTagId}`" class="search-page__title">
+                <h1 v-else-if="singleThemeTagId" ref="titleRef" :key="`themed-${singleThemeTagId}`" class="search-page__title">
                   {{ themedTitleText }}
                 </h1>
-                <h1 v-else class="search-page__title">{{ totalDeals }} {{ t('search.deals') }}</h1>
+                <h1 v-else ref="titleRef" class="search-page__title">{{ totalDeals }} {{ t('search.deals') }}</h1>
                 <!-- "Laat alle deals zien" secondary button — only when no
                      results so the user can wipe filters in one click. -->
                 <button
@@ -121,16 +121,104 @@
               </div>
 
               <!-- Right column: Trustpilot logo + count of reviews,
-                   replacing the team-avatars that lived here before. -->
-              <div class="search-trust">
+                   replacing the team-avatars that lived here before.
+                   Hidden on mobile per spec — the page header runs
+                   tighter on small viewports and Trustpilot lives
+                   in the footer instead. -->
+              <div v-if="!isMobile" class="search-trust">
                 <img src="/images/trustpilot.svg" alt="Trustpilot" class="search-trust__logo" />
                 <span class="search-trust__text">15.294 beoordelingen</span>
               </div>
             </div>
           </div>
 
-          <!-- Toolbar: filter toggle, sort, view switch -->
-          <div class="search-toolbar">
+          <!-- ============================================================
+               MOBILE: sticky filter/kaart/sorteren toolbar + pills.
+               The search-summary moved into SiteHeader (above the
+               title); the desktop toolbar below renders for ≥ 800 px.
+               ============================================================ -->
+          <template v-if="isMobile">
+            <!-- Sentinel: when this scrolls above the viewport top, the
+                 toolbar below pins to the top via .--sticky modifier. -->
+            <div ref="mobileToolbarSentinelRef" class="search-page__mobile-toolbar-sentinel"></div>
+
+            <!-- Spacer reserves the toolbar's natural height once the
+                 toolbar pins (fixed) so the rest of the page doesn't
+                 jump up by ~64 px. -->
+            <div v-if="mobileToolbarStuck" class="search-page__mobile-toolbar-spacer" aria-hidden="true"></div>
+
+            <section
+              class="search-page__mobile-toolbar"
+              :class="{ 'search-page__mobile-toolbar--sticky': mobileToolbarStuck }"
+            >
+              <button
+                class="m-toolbar-btn"
+                :class="{ 'm-toolbar-btn--has-dot': hasActiveFilters }"
+                @click="handleFilterButtonClick"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="4" y1="6" x2="20" y2="6" />
+                  <line x1="8" y1="12" x2="20" y2="12" />
+                  <line x1="12" y1="18" x2="20" y2="18" />
+                </svg>
+                Filter
+                <span v-if="hasActiveFilters" class="m-toolbar-btn__dot" aria-hidden="true"></span>
+              </button>
+              <button class="m-toolbar-btn" @click="handleMapClick">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
+                  <circle cx="12" cy="10" r="3" />
+                </svg>
+                Kaart
+              </button>
+              <div class="search-toolbar__sort m-toolbar-btn--sort-wrap" ref="sortRef">
+                <button class="m-toolbar-btn m-toolbar-btn--sort" @click="sortOpen = !sortOpen">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M11 5h10M11 9h7M11 13h4M3 17l4 4 4-4M7 3v18" />
+                  </svg>
+                  Sorteren
+                </button>
+                <Transition name="dropdown-fade">
+                  <div v-if="sortOpen" class="search-toolbar__sort-dropdown">
+                    <button
+                      v-for="option in sortOptions"
+                      :key="option.value"
+                      class="search-toolbar__sort-option"
+                      :class="{ 'search-toolbar__sort-option--active': sortBy === option.value }"
+                      @click="sortBy = option.value; sortOpen = false"
+                    >
+                      {{ option.label }}
+                    </button>
+                  </div>
+                </Transition>
+              </div>
+              <!-- Sticky-only re-open-search button at the far right.
+                   Mirrors the summary bar that scrolled out of view. -->
+              <button
+                v-if="mobileToolbarStuck"
+                type="button"
+                class="m-toolbar-btn m-toolbar-btn--search-icon"
+                aria-label="Wijzig zoekopdracht"
+                @click="openMobileSearch"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="11" cy="11" r="8" />
+                  <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                </svg>
+              </button>
+            </section>
+
+            <!-- Filter pills below the sticky toolbar — same chip style as
+                 the desktop toolbar. -->
+            <section class="search-page__mobile-pills">
+              <FirstReleaseFilterPills />
+            </section>
+          </template>
+
+          <!-- ============================================================
+               DESKTOP toolbar: filter toggle, sort, view switch
+               ============================================================ -->
+          <div v-if="!isMobile" class="search-toolbar">
             <div class="search-toolbar__left">
               <!-- Map button: only when filter hidden on desktop (sidebar map is otherwise visible) -->
               <button
@@ -240,7 +328,7 @@
 
           <!-- Results: list or grid -->
           <div
-            v-if="!searchLoading && displayedDeals.length > 0"
+            v-if="!searchLoading && !hasNoResults && displayedDeals.length > 0"
             class="search-page__result-list"
             :class="{
               'search-page__result-list--grid': effectiveViewMode === 'grid',
@@ -269,13 +357,7 @@
                directly below the toolbar's grey divider (no extra divider
                of our own). -->
           <div v-else-if="!searchLoading && suggestionDeals.length > 0" class="search-page__no-results-suggestions">
-            <h3 class="search-page__no-results-suggest-title">
-              {{
-                noResultsReason === 'date-only'
-                  ? 'Deze deals zijn beschikbaar op andere datums'
-                  : 'Deze deals zijn ook heel bijzonder'
-              }}
-            </h3>
+            <h3 class="search-page__no-results-suggest-title">{{ suggestionTitle }}</h3>
             <div class="search-page__no-results-suggest-grid">
               <FirstReleaseDealCard
                 v-for="entry in suggestionDeals"
@@ -300,6 +382,7 @@
       :budget-max="budgetMaxDraft"
       :persons="persons"
       :result-count="sortedHotels.length"
+      :counts="filterCounts"
       @close="mobileFilterOpen = false"
       @apply="mobileFilterOpen = false"
       @clear="resetFilters"
@@ -322,8 +405,14 @@ import { dealMatchesAllTags, getFilterTag } from '~/utils-first-release/filterTa
 import FilterPills from '~/components-first-release/search/FilterPills.vue'
 import { isDealAvailableInWindow } from '~/utils-first-release/availability'
 import { adjustPrice } from '~/utils-first-release/priceFormula'
-import { hotelMatchesDestination, hasActiveDestinationFilter } from '~/utils-first-release/destinationMatch'
+import {
+  hotelMatchesDestination,
+  hasActiveDestinationFilter,
+  neighboursOf,
+  DESTINATION_LABEL_BY_ID,
+} from '~/utils-first-release/destinationMatch'
 import { computeFilterCounts } from '~/utils-first-release/filterCounts'
+import { useMobileSearchModalControl } from '~/composables-first-release/useMobileSearchModalControl'
 
 const { t } = useFirstReleaseI18n()
 const {
@@ -416,6 +505,35 @@ const filterSentinelRef = ref<HTMLElement | null>(null)
 const stickyFilterVisible = ref(false)
 let filterObserver: IntersectionObserver | null = null
 
+// Autoscroll: on a fresh entry from the home page or a deal page,
+// drop the user right at the "X arrangementen" title so the result
+// cards are immediately in view. Skip when scroll-restoration
+// already put the user somewhere (e.g. browser back from a deal
+// page). Re-runs after the next animation frame + a short delay so
+// late-loading images / fonts that shift the layout don't leave the
+// title peeking below the top of the viewport.
+const titleRef = ref<HTMLElement | null>(null)
+function scrollTitleToTop() {
+  const el = titleRef.value
+  if (!el) return
+  const y = el.getBoundingClientRect().top + window.scrollY
+  window.scrollTo({ top: Math.max(0, y), behavior: 'auto' })
+}
+onMounted(() => {
+  if (!import.meta.client) return
+  if (window.scrollY !== 0) return
+  // Three passes — initial after layout, again after rAF (catches
+  // synchronous layout flushes), and once more after 200 ms (catches
+  // image / font loads that have shifted the title down).
+  nextTick(() => {
+    scrollTitleToTop()
+    requestAnimationFrame(() => {
+      scrollTitleToTop()
+      setTimeout(scrollTitleToTop, 200)
+    })
+  })
+})
+
 onMounted(() => {
   if (!import.meta.client) return
   if (!filterSentinelRef.value) return
@@ -432,6 +550,89 @@ onMounted(() => {
     { threshold: 0 }
   )
   filterObserver.observe(filterSentinelRef.value)
+})
+
+// ---------------------------------------------------------------------------
+// Mobile toolbar sticky behaviour + search-modal control
+// ---------------------------------------------------------------------------
+// Same IntersectionObserver pattern as the desktop sticky filter above —
+// a zero-height sentinel sits between the summary bar and the toolbar;
+// when it scrolls above the viewport top, the toolbar pins.
+const mobileToolbarSentinelRef = ref<HTMLElement | null>(null)
+const mobileToolbarStuck = ref(false)
+let mobileToolbarObserver: IntersectionObserver | null = null
+
+// IntersectionObserver alone wasn't firing reliably — the sentinel
+// is rendered only when `isMobile` flips to true (post-hydration),
+// so the original `onMounted` ran BEFORE the sentinel existed and
+// silently bailed. Use a watch on the ref + a scroll fallback so
+// the sticky state activates as soon as the sentinel mounts AND
+// reacts even when IO misses fast scrolls.
+function attachMobileToolbarObserver() {
+  if (!import.meta.client) return
+  const el = mobileToolbarSentinelRef.value
+  if (!el) return
+  mobileToolbarObserver?.disconnect()
+  mobileToolbarObserver = new IntersectionObserver(
+    (entries) => {
+      const entry = entries[0]
+      if (!entry) return
+      const scrolledPast = !entry.isIntersecting && entry.boundingClientRect.top < 0
+      mobileToolbarStuck.value = scrolledPast
+    },
+    { threshold: 0 },
+  )
+  mobileToolbarObserver.observe(el)
+}
+
+function handleMobileToolbarScroll() {
+  const el = mobileToolbarSentinelRef.value
+  if (!el) return
+  mobileToolbarStuck.value = el.getBoundingClientRect().top < 0
+}
+
+watch(mobileToolbarSentinelRef, (el) => {
+  if (el) {
+    attachMobileToolbarObserver()
+    handleMobileToolbarScroll()
+  }
+})
+
+onMounted(() => {
+  if (!import.meta.client) return
+  attachMobileToolbarObserver()
+  handleMobileToolbarScroll()
+  window.addEventListener('scroll', handleMobileToolbarScroll, { passive: true })
+})
+onUnmounted(() => {
+  mobileToolbarObserver?.disconnect()
+  mobileToolbarObserver = null
+  if (import.meta.client) {
+    window.removeEventListener('scroll', handleMobileToolbarScroll)
+  }
+})
+
+// Modal control — opens the shared MobileSearchModal that lives in SiteHeader.
+const mobileSearchControl = useMobileSearchModalControl()
+function openMobileSearch() {
+  mobileSearchControl.open()
+}
+
+// "Any filter active?" — drives the red dot on the Filter button.
+// True when ANY of the user-applied filters are non-default. All refs
+// referenced here are already destructured at the top of <script setup>
+// from useFirstReleaseSearchState.
+const hasActiveFilters = computed(() => {
+  return (
+    selectedDestinations.value.length > 0
+    || selectedCities.value.length > 0
+    || selectedHotels.value.length > 0
+    || selectedNights.value.length > 0
+    || selectedFilterTags.value.length > 0
+    || committedFlexibility.value > 0
+    || sharedBudgetMin.value > 0
+    || sharedBudgetMax.value < 5000
+  )
 })
 
 onUnmounted(() => {
@@ -588,8 +789,11 @@ const filteredHotelsIgnoringDate = computed(() => {
   return out
 })
 
-/** True when the current filter combination yields zero deal cards. */
-const hasNoResults = computed(() => displayedDeals.value.length === 0)
+/** True when the current filter combination yields zero hotels.
+ *  Use `sortedHotels.length` (not `displayedDeals.length`) so the
+ *  pinned-from deal (preserved by `displayedHotels` for "deal page →
+ *  search" hand-offs) can't mask an otherwise empty result set. */
+const hasNoResults = computed(() => sortedHotels.value.length === 0)
 
 /* ─── Themed title (single-tag mode) ─────────────────────────────
  *  When the user arrives via a single filter-tag click (homepage
@@ -657,32 +861,91 @@ const noResultsReason = computed<'date-only' | 'filters'>(() => {
   return 'filters'
 })
 
-/** Up to 3 suggestion deals.
- *  - In `date-only` mode: from filteredHotelsIgnoringDate (deals that
- *    only fail the date filter — bookable on OTHER dates).
- *  - In `filters` mode: cheapest deals across all hotels, as a "ook
- *    heel bijzonder" curated set.
- */
-const suggestionDeals = computed(() => {
-  const out: Array<{ hotel: typeof searchHotels[0]; deal: typeof searchHotels[0]['deals'][0] }> = []
-  if (noResultsReason.value === 'date-only') {
-    for (const h of filteredHotelsIgnoringDate.value) {
-      const cheapest = [...h.deals].sort((a, b) => a.basePrice - b.basePrice)[0]
-      if (cheapest) out.push({ hotel: h, deal: cheapest })
-      if (out.length >= 3) break
-    }
-  } else {
-    // Across all hotels — pick the cheapest deal per hotel, then take top 3.
-    const ranked = searchHotels
-      .map((h) => {
-        const cheapest = [...h.deals].sort((a, b) => a.basePrice - b.basePrice)[0]
-        return cheapest ? { hotel: h, deal: cheapest } : null
-      })
-      .filter((x): x is NonNullable<typeof x> => x !== null)
-      .sort((a, b) => a.deal.basePrice - b.deal.basePrice)
-    for (const entry of ranked.slice(0, 3)) out.push(entry)
+/** Discriminator for the no-results suggestion strip. Each mode picks
+ *  a different pool of fallback hotels AND a different subtitle. The
+ *  H1 above the strip still uses `noResultsReason` for its copy. */
+type SuggestionMode = 'date-only' | 'same-destination' | 'nearby' | 'generic'
+
+const currentDestFilter = computed(() => ({
+  destinations: [...selectedDestinations.value],
+  cities: [...selectedCities.value],
+  hotels: [...selectedHotels.value],
+}))
+
+/** Every hotel in the selected destination, regardless of any other
+ *  filter. Used when the destination itself has deals but none match
+ *  the other active filters (price / nights / tags / date). */
+const hotelsInSelectedDestination = computed(() => {
+  const f = currentDestFilter.value
+  if (!hasActiveDestinationFilter(f)) return []
+  return searchHotels.filter(h => hotelMatchesDestination(h, f))
+})
+
+/** Every hotel in a province adjacent to the selected destination(s).
+ *  Used when the destination has zero hotels at all — suggest nearby. */
+const hotelsInNeighbouringDestinations = computed(() => {
+  if (selectedDestinations.value.length === 0) return []
+  const ids = new Set<string>()
+  for (const id of selectedDestinations.value) {
+    for (const n of neighboursOf(id)) ids.add(n)
   }
-  return out
+  if (!ids.size) return []
+  return searchHotels.filter(h => hotelMatchesDestination(h, {
+    destinations: [...ids],
+    cities: [],
+    hotels: [],
+  }))
+})
+
+const suggestionMode = computed<SuggestionMode>(() => {
+  if (committedArrivalDate.value && filteredHotelsIgnoringDate.value.length > 0) {
+    return 'date-only'
+  }
+  if (hasActiveDestinationFilter(currentDestFilter.value)) {
+    if (hotelsInSelectedDestination.value.length > 0) return 'same-destination'
+    if (hotelsInNeighbouringDestinations.value.length > 0) return 'nearby'
+  }
+  return 'generic'
+})
+
+/** Up to 3 suggestion deals — pool depends on `suggestionMode`. */
+const suggestionDeals = computed(() => {
+  let pool: typeof searchHotels
+  if (suggestionMode.value === 'date-only') pool = filteredHotelsIgnoringDate.value
+  else if (suggestionMode.value === 'same-destination') pool = hotelsInSelectedDestination.value
+  else if (suggestionMode.value === 'nearby') pool = hotelsInNeighbouringDestinations.value
+  else pool = [...searchHotels]
+  return pool
+    .map(h => {
+      const cheapest = [...h.deals].sort((a, b) => a.basePrice - b.basePrice)[0]
+      return cheapest ? { hotel: h, deal: cheapest } : null
+    })
+    .filter((x): x is NonNullable<typeof x> => x !== null)
+    .sort((a, b) => a.deal.basePrice - b.deal.basePrice)
+    .slice(0, 3)
+})
+
+/** Human-readable label of the first selected destination (province
+ *  > city > pinned hotel name). Used in the destination-aware
+ *  suggestion subtitles ("…ook in Flevoland…", "dichtbij Flevoland"). */
+const selectedDestinationLabel = computed(() => {
+  const d = selectedDestinations.value[0]
+  if (d) return DESTINATION_LABEL_BY_ID[d] || d
+  const c = selectedCities.value[0]
+  if (c) return c.name
+  const h = selectedHotels.value[0]
+  if (h) return h.name
+  return ''
+})
+
+const suggestionTitle = computed(() => {
+  const loc = selectedDestinationLabel.value
+  switch (suggestionMode.value) {
+    case 'date-only':        return 'Deze deals zijn beschikbaar op andere datums'
+    case 'same-destination': return `Deze deals zijn ook in ${loc}, maar voldoen niet aan een of meer van je wensen`
+    case 'nearby':           return `Deze deals zijn dichtbij ${loc}`
+    default:                 return 'Deze deals zijn ook heel bijzonder'
+  }
 })
 
 // Sort
@@ -1694,6 +1957,36 @@ onMounted(() => {
     padding-left: 16px;
     padding-right: 16px;
   }
+  /* Left-align toolbar + filter-pills with the page title at the
+     same 16 px column edge. The above-cards / header containers
+     use their own padding internally; here we normalise the
+     mobile-specific siblings (toolbar + pills) to match. */
+  .search-page__above-cards {
+    padding-left: 0;
+    padding-right: 0;
+  }
+  .search-page__mobile-toolbar,
+  .search-page__mobile-pills {
+    /* Container already supplies 16 px horizontal padding via
+       `.search-page__grid.container` — duplicate padding here
+       was offsetting the toolbar by another 16 px, leaving it
+       visibly indented from the page title. */
+    padding-left: 0;
+    padding-right: 0;
+  }
+  /* Defensive: ensure no stray top border / shadow renders
+     between the SiteHeader summary block and the breadcrumb
+     section on mobile. */
+  .search-page__breadcrumbs {
+    border-top: 0;
+    box-shadow: none;
+  }
+  .search-page__header,
+  .search-page__header-row,
+  .search-page__header-text {
+    padding-left: 0;
+    padding-right: 0;
+  }
   /* Filter toggle becomes a full-width tappable button */
   .search-toolbar__filter-toggle {
     padding: 10px 14px;
@@ -1729,5 +2022,164 @@ onMounted(() => {
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
+}
+
+/* =====================================================================
+   MOBILE search page — summary bar + sticky filter/map/sort toolbar
+   Visuals from Figma 5120:10483 (Mobile Painpoints — Joris).
+   ===================================================================== */
+/* `.search-page__mobile-summary` was retired — the summary bar
+   moved into the SiteHeader slot above the title section. */
+.search-page__mobile-toolbar-sentinel {
+  height: 1px;
+  pointer-events: none;
+}
+/* Row: white background, 16 px gap between buttons, 8 px vertical /
+   16 px horizontal padding. No bottom border — the divider that
+   used to live here visually disconnected the toolbar from the
+   header/breadcrumb. */
+.search-page__mobile-toolbar {
+  display: flex;
+  gap: 16px;
+  /* No horizontal padding — the grid container already supplies
+     16 px to the left/right. Adding more here pushes the Filter
+     button 16 px to the right of the page title. */
+  padding: 8px 0;
+  background: #fff;
+  /* No `overflow: hidden` — that clipped the Sort dropdown to
+     the 64 px toolbar height, hiding the options. The four
+     toolbar buttons comfortably fit a 360 px viewport without
+     wrapping. */
+}
+/* When the toolbar pins, we use `fixed` instead of `sticky` because
+   ancestor flex/grid containers can break `position: sticky`. A
+   same-height spacer below prevents the rest of the page from
+   jumping when the toolbar leaves the document flow. */
+.search-page__mobile-toolbar--sticky {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  /* Sticky variant lives outside the container, so it must
+     supply its own 16 px horizontal padding to stay aligned
+     with the page title underneath. */
+  padding: 8px 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+.search-page__mobile-toolbar-spacer {
+  height: 64px;            /* matches the toolbar's natural height */
+}
+/* Black rectangular buttons: 48 px high, 8 / 16 px padding, 4 px gap
+   between icon and label, white text + icon. NO border-radius. */
+.m-toolbar-btn {
+  position: relative;
+  flex: 0 0 auto;
+  min-width: 0;
+  height: 48px;
+  padding: 8px 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  border: 0;
+  background: #000;
+  font-family: var(--font-body, 'Basis Grotesque', sans-serif);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.4;
+  color: #fff;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.m-toolbar-btn svg {
+  stroke: #fff;
+  flex-shrink: 0;
+}
+.m-toolbar-btn:hover {
+  background: #1f1f1f;
+}
+.m-toolbar-btn--sort-wrap {
+  flex: 0 0 auto;
+  min-width: 0;
+  position: relative;
+}
+/* Sticky-only icon button at the far right of the toolbar — re-opens
+   the search modal so the user can edit their query without
+   scrolling back up to the (now scrolled-out) summary bar.
+   Styled white-bg + black border + black icon so it visually
+   stands out from the dark Filter / Kaart / Sorteren buttons. */
+.m-toolbar-btn--search-icon {
+  margin-left: auto;
+  flex: 0 0 48px;
+  width: 48px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  border: 1px solid #000;
+  color: #000;
+}
+.m-toolbar-btn--search-icon:hover { background: #f5f5f5; }
+.m-toolbar-btn--search-icon svg { stroke: #000; }
+/* Sort dropdown — mobile rules. Anchored under the Sort button,
+   widened so the options sit comfortably; z-index above the
+   sticky toolbar so a pinned bar above doesn't clip it. */
+.search-page__mobile-toolbar .search-toolbar__sort-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  left: auto;
+  min-width: 240px;
+  max-width: calc(100vw - 32px);
+  z-index: 60;
+  background: #fff;
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-md);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+}
+.search-page__mobile-toolbar .search-toolbar__sort-option {
+  display: block;
+  width: 100%;
+  padding: 12px 16px;
+  text-align: left;
+  font-size: 14px;
+  font-family: inherit;
+  background: #fff;
+  border: 0;
+  border-bottom: 1px solid var(--color-border-light);
+  cursor: pointer;
+}
+.search-page__mobile-toolbar .search-toolbar__sort-option:last-child {
+  border-bottom: 0;
+}
+.search-page__mobile-toolbar .search-toolbar__sort-option:hover {
+  background: var(--color-background-secondary);
+}
+.search-page__mobile-toolbar .search-toolbar__sort-option--active {
+  font-weight: 700;
+  color: var(--color-primary);
+}
+/* Red dot when one or more filters are active. Sits top-right inside
+   the Filter button (Figma "New" indicator, 10 × 10 px, 4 px inset). */
+.m-toolbar-btn__dot {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #e53935;
+}
+/* Drop the Sort button when horizontal room runs out. */
+@media (max-width: 360px) {
+  .m-toolbar-btn--sort-wrap { display: none; }
+}
+.search-page__mobile-pills {
+  /* No horizontal padding — the grid container already supplies
+     16 px, identical to the title, breadcrumb and toolbar. */
+  padding: 8px 0;
 }
 </style>

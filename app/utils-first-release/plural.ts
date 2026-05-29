@@ -10,10 +10,11 @@
  *   personsLabel(2, 'en') → '2 persons'
  */
 
-type Lang = 'nl' | 'en'
+type Lang = 'nl' | 'en' | 'de'
 
 export function nightsLabel(n: number, lang: Lang = 'nl'): string {
   if (lang === 'en') return `${n} ${n === 1 ? 'night' : 'nights'}`
+  if (lang === 'de') return `${n} ${n === 1 ? 'Nacht' : 'Nächte'}`
   return `${n} ${n === 1 ? 'nacht' : 'nachten'}`
 }
 
@@ -37,10 +38,12 @@ export function nightsWord(n: number, capitalise = true): string {
 
 export function personsLabel(p: number, lang: Lang = 'nl'): string {
   if (lang === 'en') return `${p} ${p === 1 ? 'person' : 'persons'}`
+  if (lang === 'de') return `${p} ${p === 1 ? 'Person' : 'Personen'}`
   return `${p} ${p === 1 ? 'persoon' : 'personen'}`
 }
 
 export function roomsLabel(r: number, lang: Lang = 'nl'): string {
   if (lang === 'en') return `${r} ${r === 1 ? 'room' : 'rooms'}`
+  if (lang === 'de') return `${r} Zimmer`
   return `${r} ${r === 1 ? 'kamer' : 'kamers'}`
 }

@@ -11,6 +11,278 @@
     </Transition>
 
     <main v-if="hotel && currentDeal" class="deal-page__main">
+      <!-- ============================================================
+           MOBILE BRANCH — content ordered to spec § 1..16
+           ============================================================ -->
+      <template v-if="isMobile">
+        <!-- 2. Breadcrumb -->
+        <section class="deal-page__breadcrumbs container">
+          <FirstReleaseBreadcrumbNav :items="breadcrumbs" />
+        </section>
+
+        <!-- 3. Deal intro: title + hotel + location + "Bekijk op kaart" -->
+        <section class="deal-page__title-section deal-page__title-section--mobile container">
+          <h1 class="deal-page__package-title">{{ localized(currentDeal.title) }}</h1>
+          <div class="deal-page__hotel-name-wrap">
+            <NuxtLink :to="`/first-release/hotel/${hotel.slug}`" class="deal-page__hotel-link">
+              <span class="deal-page__hotel-subtitle">{{ hotel.name }}</span>
+            </NuxtLink>
+            <div class="deal-page__stars-adjacent" aria-hidden="true">
+              <span v-for="n in hotel.starRating" :key="n" class="star-adj">★</span>
+            </div>
+          </div>
+          <div class="deal-page__meta">
+            <svg class="deal-page__meta-pin" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+              <circle cx="12" cy="10" r="3" />
+            </svg>
+            <span>{{ hotel.location.city }}, {{ hotel.location.region }}</span>
+            <a href="#mini-map" class="deal-page__view-map-link" @click.prevent="scrollToMiniMap">{{ t('common.viewMap') || 'Bekijk op kaart' }}</a>
+          </div>
+        </section>
+
+        <!-- 5. Photo carousel -->
+        <section class="container deal-page__gallery">
+          <FirstReleaseHeroGallery :images="hotel.images" @open-gallery="openGallery" />
+          <span v-if="savingsAmount > 0" class="deal-page__savings-badge deal-page__savings-badge--gallery">Bespaar €{{ savingsAmount }}</span>
+        </section>
+
+        <!-- 6a. Partner co-brand card — only on the advertisement flow.
+             Sits as its own row BETWEEN the gallery and the creator
+             card on mobile. -->
+        <section v-if="showPartnerLogo" class="container deal-page__partner-mobile">
+          <div class="deal-page__partner-card deal-page__partner-card--mobile">
+            <span class="deal-page__partner-card-caption">In samenwerking met:</span>
+            <img src="/images/logos/nushoplogo.svg" alt="NUshop" class="deal-page__partner-card-logo" />
+          </div>
+        </section>
+
+        <!-- 6b. Samengesteld door — always shown if a creator is set. -->
+        <section v-if="creator" class="container deal-page__creator-mobile">
+          <FirstReleaseExperienceCreatorCard :creator="creator" />
+        </section>
+
+        <!-- 7. Arrangement / sidebar content. Anchor `#arrangement`
+             lives on the include-cards section below, not here (so
+             "Bekijk details" actually scrolls past this block). -->
+        <section class="deal-page__sidebar-mobile container">
+          <div class="deal-page__col-right deal-page__col-right--mobile">
+            <!-- Inclusions -->
+            <h3 class="sidebar__title">{{ t('sidebar.arrangementFullTitle') }}</h3>
+            <ul class="sidebar__inc-list">
+              <li v-for="inc in currentDeal.inclusions" :key="inc.id">
+                <span class="sidebar__inc-check">✓</span>
+                <span>{{ localized(inc.title) }}</span>
+              </li>
+            </ul>
+            <!-- Anchor link → scrolls to the full include-cards section. -->
+            <a href="#arrangement" class="sidebar__details-link" @click.prevent="scrollToArrangement">
+              {{ t('sidebar.viewDetails') }}
+            </a>
+
+            <!-- Calendar -->
+            <div class="sidebar__calendar">
+              <h4 class="sidebar__cal-title sidebar__cal-title--big">{{ t('calendar.chooseArrivalDateLong') }}</h4>
+              <p v-if="currentDeal" class="sidebar__nights-line">
+                {{ t('deal.thisArrangementIsFor') }} {{ nightsWord(currentDeal.nights, false) }}
+              </p>
+              <template v-if="hasOtherArrangements">
+                <h4 class="sidebar__variant-heading sidebar__variant-heading--v6">{{ t('deal.shorterOrLongerStay') }}</h4>
+                <a href="#" class="sidebar__other-arrangements" @click.prevent="arrangementsPanelOpen = true">{{ t('deal.viewOtherArrangements') }}</a>
+              </template>
+              <FirstReleaseCalendarMonth
+                :year="calMonth.year" :month="calMonth.month"
+                :availability="calAvailability"
+                :selected-check-in="store.checkInDate" :selected-check-out="store.checkOutDate"
+                :cheapest-price="calCheapestPrice"
+                :show-prev-button="true" :show-next-button="true"
+                :show-legend="true"
+                @select-date="handleDateSelect" @prev-month="calPrev" @next-month="calNext"
+              />
+            </div>
+
+            <!-- Before date selection: disabled button -->
+            <template v-if="!store.checkInDate">
+              <button class="btn btn-primary sidebar__book" disabled>{{ t('deal.bookNow') }}</button>
+              <FirstReleaseSidebarPaymentLogos />
+            </template>
+
+            <!-- After date selection: price summary + active button -->
+            <div v-if="store.checkInDate" class="sidebar__summary">
+              <div class="sidebar__dates">
+                <div class="sidebar__date">
+                  <span class="sidebar__date-label">{{ t('calendar.checkInLabel') }}</span>
+                  <span class="sidebar__date-val">{{ store.formattedCheckIn }}</span>
+                </div>
+                <span class="sidebar__date-arrow">→</span>
+                <div class="sidebar__date">
+                  <span class="sidebar__date-label">{{ t('calendar.checkOutLabel') }}</span>
+                  <span class="sidebar__date-val">{{ store.formattedCheckOut }}</span>
+                </div>
+                <button class="sidebar__date-clear" @click="store.clearDates()">{{ t('calendar.clearDates') }}</button>
+              </div>
+              <div v-if="store.pricing.breakdown.length > 1" class="sidebar__breakdown">
+                <div v-for="(item, idx) in store.pricing.breakdown" :key="idx" class="sidebar__breakdown-row" :class="{ 'sidebar__breakdown-row--upgrade': item.amount > 0 && idx > 0, 'sidebar__breakdown-row--discount': item.amount < 0 }">
+                  <span>{{ item.label }}</span>
+                  <span>{{ item.amount < 0 ? '- ' : '' }}{{ formatPrice(Math.abs(item.amount)) }}</span>
+                </div>
+              </div>
+              <div class="sidebar__price">
+                <span class="sidebar__discount">-{{ currentDeal.discountPercentage }}%</span>
+                <span class="sidebar__original">{{ formatPrice(store.pricing.originalPrice) }}</span>
+                <span class="sidebar__amount">{{ formatPrice(store.pricing.totalPrice) }}</span>
+                <FirstReleasePriceInfoTooltip v-if="!isGerman" variant="deal" />
+              </div>
+              <p class="sidebar__price-meta">{{ priceForLabel }}</p>
+              <!-- German: structured extra-costs block replaces the long
+                   NL/EN disclaimer. All other locales render the disclaimer. -->
+              <div v-if="isGerman" class="sidebar__extra-costs">
+                <p class="sidebar__extra-costs-title">{{ t('deal.extraCostsTitle') }}</p>
+                <p class="sidebar__extra-costs-line">{{ t('deal.extraCostsKurtaxe') }}</p>
+                <p class="sidebar__extra-costs-line">{{ t('deal.extraCostsVerwaltung') }}</p>
+              </div>
+              <p v-else class="sidebar__disclaimer">{{ t('deal.disclaimer') }}</p>
+              <button class="btn btn-primary sidebar__book" @click="() => {}">{{ t('deal.bookNow') }}</button>
+              <FirstReleaseSidebarPaymentLogos />
+            </div>
+
+            <!-- Trust + Trustpilot -->
+            <div class="sidebar__trust">
+              <ul class="sidebar__trust-list">
+                <li><span class="sidebar__trust-check">✓</span> {{ t('deal.trust2min') }}</li>
+                <li><span class="sidebar__trust-check">✓</span> {{ t('deal.trustCancel') }}</li>
+                <li><span class="sidebar__trust-check">✓</span> {{ t('deal.trustTrustpilot') }}</li>
+              </ul>
+              <div class="sidebar__trust-block">
+                <img src="/images/trustpilot.svg" alt="Trustpilot" class="sidebar__trust-logo" />
+                <span class="sidebar__trust-caption">15.294 beoordelingen</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 8. Description + Lees meer -->
+        <section id="intro" class="container deal-page__description-mobile">
+          <div class="deal-page__description">
+            <div v-html="firstParagraph"></div>
+            <button v-if="hasMoreDescription" type="button" class="deal-page__read-more" @click="descriptionOpen = true">{{ t('common.readMore') }}</button>
+          </div>
+        </section>
+
+        <!-- 9. Highlights -->
+        <section class="container deal-page__highlights deal-page__highlights--mobile">
+          <h2 class="section-title">{{ t('deal.highlights') }}</h2>
+          <div class="highlights__grid">
+            <div v-for="hl in highlights" :key="hl.text" class="highlight-item">
+              <span class="highlight-item__icon">
+                <img :src="hl.icon || '/icons/highlights/special.svg'" :alt="hl.text" width="22" height="22" />
+              </span>
+              <span class="highlight-item__text">{{ hl.text }}</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- 10. Mini map -->
+        <section id="mini-map" class="container deal-page__mini-map-mobile">
+          <div class="mini-map">
+            <NuxtLink :to="`/first-release/kaart?focus=${hotel.slug}`" class="mini-map__placeholder" :aria-label="t('common.viewMap')">
+              <img :src="mapTileUrl" :alt="t('deal.mapArea')" class="mini-map__img mini-map__img--map" @error="($event.target as HTMLImageElement).src = '/images/kasteel/fietsenzuidlimburg.jpg'" />
+              <div class="mini-map__pin">
+                <svg width="32" height="42" viewBox="0 0 32 42" fill="none">
+                  <path d="M16 0C7.16 0 0 7.16 0 16c0 12 16 26 16 26s16-14 16-26C32 7.16 24.84 0 16 0z" fill="#0e0e0c"/>
+                  <circle cx="16" cy="16" r="6" fill="#fff"/>
+                </svg>
+              </div>
+            </NuxtLink>
+            <div class="mini-map__footer">
+              <span class="mini-map__address">{{ hotelStreetCity }}</span>
+              <NuxtLink :to="`/first-release/kaart?focus=${hotel.slug}`" class="mini-map__view-link">{{ t('common.viewMap') }}</NuxtLink>
+            </div>
+          </div>
+        </section>
+
+        <!-- 11. Included cards (repeat full include section). Anchor
+             target for the "Bekijk details" link in the sidebar. -->
+        <section id="arrangement" class="container deal-page__content-blocks deal-page__content-blocks--mobile">
+          <h2 class="section-title">
+            {{ t('deal.inclusionsHeading') }}
+            <span>2 personen</span>
+            {{ t('deal.inclusionsEndAlt') }}
+          </h2>
+          <div class="content-blocks__grid content-blocks__grid--mobile">
+            <div v-for="inc in displayedInclusions" :key="inc.id" class="content-block">
+              <div v-if="inc.image" class="content-block__image">
+                <img :src="inc.image" :alt="localized(inc.title)" loading="lazy" />
+                <span v-if="isUpgradeInclusion(inc)" class="content-block__upgrade-sticker">UPGRADE</span>
+              </div>
+              <div class="content-block__body">
+                <h3 class="content-block__title">
+                  <span class="content-block__check">✓</span>
+                  {{ localized(inc.title) }}
+                </h3>
+                <p class="content-block__desc">{{ localized(inc.description) }}</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 12. Hotel facilities — stacked -->
+        <section class="container deal-page__facilities deal-page__facilities--mobile">
+          <h2 class="section-title">{{ t('hotel.facilities') }}</h2>
+          <div class="facilities__grid facilities__grid--mobile">
+            <div v-for="fac in hotel.facilities" :key="localized(fac.label)" class="facility-item">
+              <img v-if="fac.icon && fac.icon.startsWith('http')" :src="fac.icon" :alt="localized(fac.label)" class="facility-item__icon" width="20" height="20" loading="lazy" />
+              <span v-else class="facility-item__check">✓</span>
+              <span>{{ localized(fac.label) }}</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- 13. Huisregels (moved up — Tips + WhyViaLuxury now sit
+             AFTER the FAQ block; see below.) -->
+        <section v-if="hotel.houseRules && hotel.houseRules.length" id="huisregels" class="container deal-page__house-rules deal-page__house-rules--mobile">
+          <h2 class="section-title">{{ t('hotel.houseRules') }}</h2>
+          <p class="house-rules__intro">{{ t('deal.houseRulesIntro') }}</p>
+          <div class="house-rules__right">
+            <div v-for="rule in hotel.houseRules" :key="rule.id" class="house-rule" :class="{ 'house-rule--open': openRuleId === rule.id }">
+              <button class="house-rule__title" @click="toggleRule(rule.id)">
+                <span>{{ localized(rule.title) }}</span>
+                <span class="house-rule__arrow">{{ openRuleId === rule.id ? '−' : '+' }}</span>
+              </button>
+              <div v-if="openRuleId === rule.id" class="house-rule__body">
+                <p>{{ localized(rule.description) }}</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 14. FAQ — heading lives inside FaqSection; the outer
+             wrapper used to render its own duplicate <h2>, removed. -->
+        <section id="veelgestelde-vragen" class="container deal-page__faq deal-page__faq--mobile">
+          <FirstReleaseFaqSection :faq-items="hotel.faq" />
+        </section>
+
+        <!-- 15. Tips in de buurt — horizontal swipe carousel on mobile.
+             Sits AFTER the FAQ block per the latest spec. -->
+        <div id="tips" class="deal-page__nearby-mobile">
+          <FirstReleaseHotelNearbyTips :tips="hotel.nearbyTips" :hotel-name="hotel.name" />
+        </div>
+
+        <!-- 16. "Waarom ViaLuxury" — directly beneath Tips on mobile. -->
+        <FirstReleaseWhyViaLuxury />
+
+        <!-- 17. Anderen bekeken ook -->
+        <FirstReleaseOthersAlsoViewed
+          :current-hotel="searchHotelForBadge"
+          :current-deal-id="currentDeal?.id || ''"
+          class="deal-page__others-mobile"
+        />
+      </template>
+
+      <!-- ============================================================
+           DESKTOP BRANCH — original layout, unchanged
+           ============================================================ -->
+      <template v-else>
       <!-- Back link + Breadcrumbs -->
       <section class="deal-page__breadcrumbs container">
         <FirstReleaseBreadcrumbNav :items="breadcrumbs" />
@@ -34,34 +306,45 @@
 
       <!-- Title ABOVE gallery -->
       <section class="deal-page__title-section container">
-        <div class="deal-page__title-left">
+        <div
+          class="deal-page__title-left"
+          :class="{ 'deal-page__title-left--with-partner': showPartnerLogo }"
+        >
           <h1 class="deal-page__package-title">{{ localized(currentDeal.title) }}</h1>
           <div class="deal-page__hotel-name-wrap">
             <NuxtLink :to="`/first-release/hotel/${hotel.slug}`" class="deal-page__hotel-link">
-              <p class="deal-page__hotel-subtitle">{{ hotel.name }}</p>
+              <span class="deal-page__hotel-subtitle">{{ hotel.name }}</span>
             </NuxtLink>
             <div class="deal-page__stars-adjacent" aria-hidden="true">
               <span v-for="n in hotel.starRating" :key="n" class="star-adj">★</span>
             </div>
           </div>
           <div class="deal-page__meta">
+            <svg class="deal-page__meta-pin" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+              <circle cx="12" cy="10" r="3" />
+            </svg>
             <span>{{ hotel.location.city }}, {{ hotel.location.region }}</span>
             <template v-if="chosenReisduurLabel">
               <span class="deal-page__divider">·</span>
               <span>Reisduur: {{ chosenReisduurLabel }}</span>
             </template>
+            <a href="#mini-map" class="deal-page__view-map-link" @click.prevent="scrollToMiniMap">{{ t('common.viewMap') || 'Bekijk op kaart' }}</a>
           </div>
         </div>
-        <!-- Right column: shows the NU shop partner logo when the user
-             arrives via the advertisement flow (`?partner=nu` on Hotel
-             des Indes), otherwise the Experience Creator business card.
-             Same position either way. -->
-        <div class="deal-page__title-right">
+        <!-- Right column: Experience Creator business card on every
+             deal. When the user arrives via the advertisement flow
+             (`?partner=nu` on Hotel des Indes), an extra NuShop
+             partner card sits to the LEFT of the creator card. -->
+        <div
+          class="deal-page__title-right"
+          :class="{ 'deal-page__title-right--with-partner': showPartnerLogo }"
+        >
           <div v-if="showPartnerLogo" class="deal-page__partner-card">
-            <span class="deal-page__partner-card-caption">In samenwerking met</span>
+            <span class="deal-page__partner-card-caption">In samenwerking met:</span>
             <img src="/images/logos/nushoplogo.svg" alt="NUshop" class="deal-page__partner-card-logo" />
           </div>
-          <FirstReleaseExperienceCreatorCard v-else :creator="creator" />
+          <FirstReleaseExperienceCreatorCard :creator="creator" />
         </div>
       </section>
 
@@ -84,7 +367,7 @@
               <!-- The entire map preview (photo + pin) is a click-through
                    to the full-screen kaart, not just the text link below. -->
               <NuxtLink
-                :to="`/first-release/kaart?focus=${hotel.slug}&open=1`"
+                :to="`/first-release/kaart?focus=${hotel.slug}`"
                 class="mini-map__placeholder"
                 :aria-label="t('common.viewMap')"
               >
@@ -109,7 +392,7 @@
               <div class="mini-map__footer">
                 <span class="mini-map__address">{{ hotelStreetCity }}</span>
                 <NuxtLink
-                  :to="`/first-release/kaart?focus=${hotel.slug}&open=1`"
+                  :to="`/first-release/kaart?focus=${hotel.slug}`"
                   class="mini-map__view-link"
                 >{{ t('common.viewMap') }}</NuxtLink>
               </div>
@@ -232,6 +515,10 @@
               <span>{{ localized(inc.title) }}</span>
             </li>
           </ul>
+          <!-- Anchor link → scrolls to the full include-cards section. -->
+          <a href="#arrangement" class="sidebar__details-link" @click.prevent="scrollToArrangement">
+            {{ t('sidebar.viewDetails') }}
+          </a>
 
           <!-- Calendar -->
           <div class="sidebar__calendar" ref="calendarRef">
@@ -261,7 +548,10 @@
           </div>
 
           <!-- Before date selection: disabled button -->
-          <button v-if="!store.checkInDate" class="btn btn-primary sidebar__book" disabled>{{ t('deal.bookNow') }}</button>
+          <template v-if="!store.checkInDate">
+            <button class="btn btn-primary sidebar__book" disabled>{{ t('deal.bookNow') }}</button>
+            <FirstReleaseSidebarPaymentLogos />
+          </template>
 
           <!-- After date selection: price summary + active button -->
           <div v-if="store.checkInDate" class="sidebar__summary">
@@ -290,13 +580,21 @@
               <span class="sidebar__discount">-{{ currentDeal.discountPercentage }}%</span>
               <span class="sidebar__amount">{{ formatPrice(store.pricing.totalPrice) }}</span>
               <span class="sidebar__original">{{ formatPrice(store.pricing.originalPrice) }}</span>
-              <FirstReleasePriceInfoTooltip variant="deal" />
+              <FirstReleasePriceInfoTooltip v-if="!isGerman" variant="deal" />
             </div>
             <p class="sidebar__price-meta">{{ priceForLabel }}</p>
 
-            <p class="sidebar__disclaimer">{{ t('deal.disclaimer') }}</p>
+            <!-- German: structured extra-costs block replaces the long
+                 NL/EN disclaimer. All other locales render the disclaimer. -->
+            <div v-if="isGerman" class="sidebar__extra-costs">
+              <p class="sidebar__extra-costs-title">{{ t('deal.extraCostsTitle') }}</p>
+              <p class="sidebar__extra-costs-line">{{ t('deal.extraCostsKurtaxe') }}</p>
+              <p class="sidebar__extra-costs-line">{{ t('deal.extraCostsVerwaltung') }}</p>
+            </div>
+            <p v-else class="sidebar__disclaimer">{{ t('deal.disclaimer') }}</p>
 
             <button class="btn btn-primary sidebar__book" @click="() => {}">{{ t('deal.bookNow') }}</button>
+            <FirstReleaseSidebarPaymentLogos />
           </div>
 
           <!-- Trust USPs + Trustpilot logo -->
@@ -330,9 +628,6 @@
           </div>
         </div>
       </section>
-
-      <!-- "Waarom ViaLuxury" replaces the reviews section. -->
-      <FirstReleaseWhyViaLuxury />
 
       <section v-if="!isMobile" id="beoordelingen" class="deal-page__reviews container">
         <h2 class="section-title">{{ t('hotel.reviews') }}</h2>
@@ -429,12 +724,16 @@
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6" /></svg>
       </button>
 
+      <!-- "Waarom ViaLuxury" sits below Tips in de buurt per spec. -->
+      <FirstReleaseWhyViaLuxury />
+
       <!-- "Anderen bekeken ook" at the bottom of the deal page.
            Fills 3 cards: same hotel first, then nearby. -->
       <FirstReleaseOthersAlsoViewed
         :current-hotel="searchHotelForBadge"
         :current-deal-id="currentDeal?.id || ''"
       />
+      </template>
     </main>
 
     <!-- "Andere arrangementen bij dit hotel" side panel. Reuses the same
@@ -476,30 +775,51 @@
     <!-- Sticky booking bar — top on desktop (after scroll), bottom on mobile -->
     <div v-if="hotel && currentDeal && (isMobile || ctaBarVisible)" class="deal-page__cta-bar" :class="{ 'deal-page__cta-bar--mobile': isMobile }">
       <div class="deal-page__cta-bar-inner container">
-        <!-- Page nav (desktop only) -->
+        <!-- Page nav (desktop only).  `--active` modifier is applied to
+             the tab matching the section currently scrolled into view,
+             driven by the IntersectionObserver in <script setup>. -->
         <nav v-if="!isMobile" class="deal-page__tabs deal-page__tabs--in-bar">
-          <a href="#intro" class="deal-page__tab">{{ t('deal.tabIntro') }}</a>
-          <a href="#arrangement" class="deal-page__tab">{{ t('deal.tabArrangement') }}</a>
-          <a v-if="hotel.houseRules && hotel.houseRules.length" href="#huisregels" class="deal-page__tab">{{ t('hotel.tabHouseRules') }}</a>
-          <a href="#veelgestelde-vragen" class="deal-page__tab">{{ t('hotel.tabFaq') }}</a>
-          <a href="#tips" class="deal-page__tab">{{ t('hotel.tabNearby') }}</a>
+          <a href="#intro" class="deal-page__tab" :class="{ 'deal-page__tab--active': activeAnchor === 'intro' }">{{ t('deal.tabIntro') }}</a>
+          <a href="#arrangement" class="deal-page__tab" :class="{ 'deal-page__tab--active': activeAnchor === 'arrangement' }">{{ t('deal.tabArrangement') }}</a>
+          <a v-if="hotel.houseRules && hotel.houseRules.length" href="#huisregels" class="deal-page__tab" :class="{ 'deal-page__tab--active': activeAnchor === 'huisregels' }">{{ t('hotel.tabHouseRules') }}</a>
+          <a href="#veelgestelde-vragen" class="deal-page__tab" :class="{ 'deal-page__tab--active': activeAnchor === 'veelgestelde-vragen' }">{{ t('hotel.tabFaq') }}</a>
+          <a href="#tips" class="deal-page__tab" :class="{ 'deal-page__tab--active': activeAnchor === 'tips' }">{{ t('hotel.tabNearby') }}</a>
         </nav>
         <!-- Right-aligned price + button cluster -->
         <div class="deal-page__cta-bar-cluster">
           <div class="deal-page__cta-bar-price-block">
-            <div class="deal-page__cta-bar-price-row">
+            <div
+              class="deal-page__cta-bar-price-row"
+              :class="{ 'deal-page__cta-bar-price-row--de-no-date': isGerman && !dateSelected }"
+            >
               <!-- With dates: real booked-night price, show the discount %.
-                   Without dates: this is a starting-from estimate, swap the
-                   discount chip for a neutral "Vanaf" pill. -->
+                   Without dates: starting-from estimate.
+                   German no-date variant: "Ab" prefix + red strikethrough
+                   original + bigger bold amount. -->
               <span
                 class="deal-page__cta-bar-discount"
                 :class="{ 'deal-page__cta-bar-discount--vanaf': !dateSelected }"
-              >{{ dateSelected ? `-${currentDeal.discountPercentage}%` : 'Vanaf' }}</span>
-              <span class="deal-page__cta-bar-original">{{ formatPrice(store.pricing.originalPrice) }}</span>
-              <span class="deal-page__cta-bar-amount">{{ formatPrice(store.pricing.totalPrice) }}</span>
-              <FirstReleasePriceInfoTooltip variant="deal" />
+              >{{
+                isGerman && !dateSelected
+                  ? t('deal.stickyFromPrefix')
+                  : (dateSelected ? `-${currentDeal.discountPercentage}%` : 'Vanaf')
+              }}</span>
+              <span
+                class="deal-page__cta-bar-original"
+                :class="{ 'deal-page__cta-bar-original--red': isGerman && !dateSelected }"
+              >{{ formatPrice(store.pricing.originalPrice) }}</span>
+              <span
+                class="deal-page__cta-bar-amount"
+                :class="{ 'deal-page__cta-bar-amount--big': isGerman && !dateSelected }"
+              >{{ formatPrice(store.pricing.totalPrice) }}</span>
+              <!-- Info tooltip hidden in German per spec. -->
+              <FirstReleasePriceInfoTooltip v-if="!isGerman" variant="deal" />
             </div>
-            <span class="deal-page__cta-bar-meta">{{ priceForLabel }}</span>
+            <span v-if="isGerman" class="deal-page__cta-bar-meta deal-page__cta-bar-meta--de">
+              <span>{{ stickyDeLine1 }}</span>
+              <span>{{ stickyDeLine2 }}</span>
+            </span>
+            <span v-else class="deal-page__cta-bar-meta">{{ priceForLabel }}</span>
           </div>
           <button type="button" class="deal-page__cta-bar-btn" @click="handleMobileBook">
             {{ t('deal.bookNow') }}
@@ -588,6 +908,7 @@
 
 <script setup lang="ts">
 import { useFirstReleaseDealStore } from '~/stores-first-release/deal'
+import { useSearchNavLock } from '~/composables-first-release/useMobileSearchModalControl'
 import { creatorForSlug } from '~/data/team-members'
 import FirstReleaseExperienceCreatorCard from '~/components-first-release/deal/ExperienceCreatorCard.vue'
 import FirstReleaseWhyViaLuxury from '~/components-first-release/deal/WhyViaLuxury.vue'
@@ -608,7 +929,11 @@ import {
 } from '~/data/deals-mapper'
 
 const { t, localized, locale } = useFirstReleaseI18n()
-const lang = computed<'nl' | 'en'>(() => (locale.value === 'en' ? 'en' : 'nl'))
+const lang = computed<'nl' | 'en' | 'de'>(() => {
+  if (locale.value === 'en') return 'en'
+  if (locale.value === 'de') return 'de'
+  return 'nl'
+})
 
 /** Reisduur the user picked on /search (persisted via sessionStorage in
  *  useFirstReleaseSearchState). Shown in the deal-page meta line so the choice is
@@ -638,6 +963,65 @@ const priceForLabel = computed(() => {
     .replace('{roomsLabel}', roomsLabel(store.travelGroup.rooms, lang.value))
 })
 
+// ---------------------------------------------------------------------------
+// German-only price-area copy (sticky CTA bar + sidebar). When the active
+// locale is `de`, the page swaps the existing one-line priceForLabel for a
+// two-line tax block, and replaces the NL/EN sidebar disclaimer with a
+// "Zusätzliche Kosten" block. All other locales use the original layout.
+// ---------------------------------------------------------------------------
+const isGerman = computed(() => locale.value === 'de')
+
+/** First line of the sticky CTA bar in German.
+ *  No date:   "Preis für 2 Personen, pro Zimmer/Suite"
+ *  Date set:  "17 Juni - 19 Juni, Preis für 2 Nächte" */
+const stickyDeLine1 = computed(() => {
+  const deal = currentDeal.value
+  if (!deal) return ''
+  if (!dateSelected.value) {
+    return t('deal.stickyNoDatePrice').replace('{persons}', String(store.totalPersons || 2))
+  }
+  return t('deal.stickyDatePrice')
+    .replace('{startDate}', formatDeDayMonth(store.checkInDate))
+    .replace('{endDate}', formatDeDayMonth(store.checkOutDate))
+    .replace('{nights}', String(deal.nights))
+    .replace('{persons}', String(store.totalPersons || 2))
+    .replace('{rooms}', String(store.travelGroup.rooms || 1))
+})
+
+/** Second line of the sticky CTA bar in German — the tax/admin note. */
+const stickyDeLine2 = computed(() =>
+  dateSelected.value
+    ? t('deal.stickyTaxWithDate')
+    : t('deal.stickyTaxNoDate'),
+)
+
+/** Sidebar "Bekijk details" link → smooth-scrolls to the full
+ *  inclusion-cards section. The target carries `scroll-margin-top:
+ *  88px` (same offset the other anchor targets use) so the section
+ *  lands just below the sticky CTA bar. */
+function scrollToArrangement() {
+  if (!import.meta.client) return
+  const el = document.getElementById('arrangement')
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+}
+
+/** "Bekijk kaart" link in the meta line under the hotel name → smooth-
+ *  scrolls to the mini-map block (mobile + desktop both have one). */
+function scrollToMiniMap() {
+  if (!import.meta.client) return
+  const el = document.getElementById('mini-map')
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+}
+
+/** German date formatter — "17 Juni". Uses the browser's Intl so the
+ *  month names stay correct without expanding `formatDate.ts`. */
+function formatDeDayMonth(iso: string | null): string {
+  if (!iso) return ''
+  const d = new Date(iso)
+  if (Number.isNaN(d.getTime())) return ''
+  return new Intl.DateTimeFormat('de-DE', { day: 'numeric', month: 'long' }).format(d)
+}
+
 // Mobile detection + active sub-modal
 const isMobile = useFirstReleaseIsMobile()
 const activeMobileSection = ref<'facilities' | 'reviews' | 'tips' | 'faq' | null>(null)
@@ -650,9 +1034,58 @@ function handleScroll() {
 onMounted(() => {
   window.addEventListener('scroll', handleScroll, { passive: true })
   handleScroll()
+  // Autoscroll: on a fresh entry (Y=0), land just past the 200 px
+  // sticky-CTA threshold so the bar is visible from the first paint.
+  // Skip when scroll-restoration already placed the user somewhere
+  // (e.g. browser back from a sub-page).
+  if (import.meta.client && window.scrollY === 0) {
+    nextTick(() => window.scrollTo({ top: 220, behavior: 'auto' }))
+  }
 })
 onBeforeUnmount(() => {
   window.removeEventListener('scroll', handleScroll)
+})
+
+// ---------------------------------------------------------------------------
+// Anchor scroll-spy — tracks which section is currently scrolled into
+// view, drives the `.--active` modifier on the sticky-bar's anchor
+// tabs (so the current section's tab loses its underline).
+// ---------------------------------------------------------------------------
+const ANCHOR_IDS = ['intro', 'arrangement', 'huisregels', 'veelgestelde-vragen', 'tips'] as const
+const activeAnchor = ref<typeof ANCHOR_IDS[number] | null>(null)
+let anchorObserver: IntersectionObserver | null = null
+
+onMounted(() => {
+  if (!import.meta.client) return
+  // Sticky CTA bar sits ~88 px from the top — use that as the
+  // "intersection line" so the section in view at the top of the
+  // visible content is the one marked active.
+  anchorObserver = new IntersectionObserver(
+    (entries) => {
+      // Pick the entry closest to the top-of-content line that is
+      // currently intersecting.
+      let pick: { id: string; top: number } | null = null
+      for (const e of entries) {
+        if (!e.isIntersecting) continue
+        const top = e.boundingClientRect.top
+        if (!pick || Math.abs(top - 88) < Math.abs(pick.top - 88)) {
+          pick = { id: (e.target as HTMLElement).id, top }
+        }
+      }
+      if (pick) activeAnchor.value = pick.id as typeof ANCHOR_IDS[number]
+    },
+    // Bias the observer so a section is "intersecting" when its top
+    // edge is in the upper third of the viewport — feels natural.
+    { rootMargin: '-88px 0px -60% 0px', threshold: 0 },
+  )
+  for (const id of ANCHOR_IDS) {
+    const el = document.getElementById(id)
+    if (el) anchorObserver.observe(el)
+  }
+})
+onBeforeUnmount(() => {
+  anchorObserver?.disconnect()
+  anchorObserver = null
 })
 const route = useRoute()
 const router = useRouter()
@@ -753,9 +1186,16 @@ const initialHotel = mappedHotelsByPackagePermalink[routeSlug.value] || mappedHo
  *  user-test partner flag is active AND the deal belongs to Hotel Des Indes
  *  (the only hotel currently in the user-test partner flow). */
 const { partner } = useFirstReleasePartner()
-const showPartnerLogo = computed(
-  () => partner.value === 'nu' && initialHotel?.slug === 'hotel-des-indes',
-)
+/** True when the user arrived via the NuShop advertisement flow on
+ *  the Hotel Des Indes deal. Reads two sources:
+ *   1. the shared `partner` state (written by `app.vue` from
+ *      `?partner=nu` on every navigation), and
+ *   2. the route's own `?partner=` query — defensive fallback for
+ *      the first paint, before `app.vue`'s `onMounted` has run. */
+const showPartnerLogo = computed(() => {
+  const isNuPartner = partner.value === 'nu' || route.query.partner === 'nu'
+  return isNuPartner && initialHotel?.slug === 'hotel-des-indes'
+})
 
 const hotel = ref(initialHotel)
 const currentDeal = computed(() => store.currentDeal)
@@ -842,7 +1282,26 @@ if (Object.keys(query).length > 0) {
   store.applyFromQuery(query, dealsMap)
 }
 
-watch(() => store.queryParams, (params) => { router.replace({ query: params }) }, { deep: true })
+// Capture the deal route path at setup so the watcher below can
+// reliably tell when we've navigated away. The dealStore's
+// `queryParams` keeps reacting to global state changes after a
+// navigateTo() in the navbar's "Vind deals" handler; without this
+// guard the watcher would race the navigation and call
+// router.replace({ query }) which (lacking an explicit `path`)
+// re-asserts the deal page URL, cancelling the navigation. See
+// SiteHeader.vue → commitSearch().
+const dealRoutePath = route.path
+const { searchNavInProgress } = useSearchNavLock()
+watch(() => store.queryParams, (params) => {
+  // Don't fire while SiteHeader.commitSearch() is navigating us
+  // away — otherwise this `router.replace` re-asserts the deal
+  // URL and cancels the search-results navigation.
+  if (searchNavInProgress.value) return
+  // Defence-in-depth: also skip if we've already left the deal
+  // path for any other reason.
+  if (route.path !== dealRoutePath) return
+  router.replace({ path: dealRoutePath, query: params })
+}, { deep: true })
 
 // Calendar
 /** When a global arrival date is set, open the calendar on that month so the
@@ -1024,9 +1483,14 @@ onMounted(() => {
   color: var(--color-text-primary);
   margin: 0;
 }
-.deal-page__hotel-link { color: inherit; text-decoration: none; }
+/* `display: inline-block` makes the whole hotel-name span a real
+   click target (a bare inline `<a>` wrapping text can be flaky on
+   mobile when nested inside flex containers). */
+.deal-page__hotel-link { display: inline-block; color: inherit; text-decoration: none; }
 .deal-page__hotel-link:hover .deal-page__hotel-subtitle { text-decoration: underline; text-underline-offset: 2px; }
-.deal-page__meta { display: flex; align-items: center; gap: var(--space-sm); font-size: 14px; color: var(--color-text-secondary); padding-right: 110px; }
+.deal-page__meta { display: flex; align-items: center; gap: var(--space-sm); font-size: 14px; color: var(--color-text-secondary); padding-right: 110px; flex-wrap: wrap; }
+.deal-page__meta-pin { flex-shrink: 0; color: var(--color-text-secondary); }
+.deal-page__meta .deal-page__view-map-link { margin-left: 8px; color: var(--color-primary, #c9a85c); font-weight: 600; text-decoration: underline; }
 .deal-page__score-wrap { display: flex; align-items: center; gap: 6px; }
 .deal-page__score { display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: var(--radius-sm); background: #00B67A; color: #fff; font-size: 13px; font-weight: 700; flex-shrink: 0; }
 .deal-page__score-label { font-size: 13px; font-weight: 600; color: var(--color-text-primary); }
@@ -1075,6 +1539,10 @@ onMounted(() => {
 .deal-page__grid { display: grid; grid-template-columns: 1fr var(--fr-deal-sidebar-width, 340px); gap: var(--space-xl); padding-top: var(--space-lg); align-items: start; }
 .deal-page__col-left { min-width: 0; }
 .deal-page__description { font-size: 15px; line-height: 1.75; color: var(--color-text-secondary); }
+/* Shared "orange underlined link" style — used by Lees meer / Bekijk
+   details / Bekijk kaart / Bekijk andere arrangementen so they all
+   read as the same kind of CTA.  Underline stays on hover; only the
+   colour brightens. */
 .deal-page__read-more {
   display: inline-block;
   margin-top: var(--space-xs);
@@ -1082,12 +1550,17 @@ onMounted(() => {
   background: none;
   border: none;
   color: var(--color-primary);
-  font: inherit;
+  font-family: var(--font-body);
+  font-size: 14px;
   font-weight: 600;
   text-decoration: underline;
+  text-underline-offset: 3px;
   cursor: pointer;
 }
-.deal-page__read-more:hover { opacity: 0.8; }
+.deal-page__read-more:hover {
+  color: var(--color-primary-hover);
+  text-decoration: underline;
+}
 
 /* Full description modal */
 .desc-modal {
@@ -1101,9 +1574,12 @@ onMounted(() => {
   background: var(--color-surface, #fff);
   border-radius: var(--radius-lg);
   padding: var(--space-xl);
-  width: 100%;
-  max-width: 720px;
-  max-height: 80vh;
+  /* Wider + square: side = the smaller of 92 vw / 92 vh so the card
+     always fits both axes; aspect-ratio locks the result to 1 : 1. */
+  width: min(92vh, 92vw);
+  aspect-ratio: 1 / 1;
+  max-width: none;
+  max-height: none;
   overflow-y: auto;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
 }
@@ -1148,8 +1624,19 @@ onMounted(() => {
 .mini-map__pin { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -100%); filter: drop-shadow(0 3px 6px rgba(0,0,0,0.25)); z-index: 2; pointer-events: none; }
 .mini-map__footer { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-md); }
 .mini-map__address { font-family: var(--font-body); font-size: 13px; color: var(--color-text-secondary); line-height: 1.4; }
-.mini-map__view-link { font-family: var(--font-body); font-size: 13px; font-weight: 600; color: var(--color-primary); text-decoration: underline; text-underline-offset: 3px; flex-shrink: 0; }
-.mini-map__view-link:hover { color: var(--color-primary-hover); }
+.mini-map__view-link {
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-primary);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  flex-shrink: 0;
+}
+.mini-map__view-link:hover {
+  color: var(--color-primary-hover);
+  text-decoration: underline;
+}
 
 /* ===== SIDEBAR ===== */
 .deal-page__col-right-stack { display: flex; flex-direction: column; gap: var(--space-lg); min-width: 0; }
@@ -1170,9 +1657,41 @@ onMounted(() => {
   text-underline-offset: 3px;
 }
 .sidebar__title-link:hover { color: var(--color-primary); }
-.sidebar__inc-list { display: flex; flex-direction: column; gap: 6px; margin-bottom: var(--space-lg); padding-bottom: var(--space-lg); border-bottom: 1px solid var(--color-border-light); }
+.sidebar__inc-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 8px;
+  /* Border-bottom moved to .sidebar__details-link below so the link
+     sits ABOVE the divider (inside the inclusion block). */
+}
 .sidebar__inc-list li { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--color-text-secondary); }
 .sidebar__inc-check { color: var(--color-discount); font-weight: 700; flex-shrink: 0; }
+
+/* "Bekijk details" — plain orange-underlined text link beneath the
+   inclusions list. The link's box owns the bottom border so the
+   divider sits BELOW the link, completing the inclusions section. */
+.sidebar__details-link {
+  display: block;
+  width: 100%;
+  margin: 0 0 var(--space-lg);
+  padding: 0 0 var(--space-lg);
+  border: 0;
+  border-bottom: 1px solid var(--color-border-light);
+  background: none;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-primary);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+  transition: color var(--transition-fast);
+}
+.sidebar__details-link:hover {
+  color: var(--color-primary-hover);
+  text-decoration: underline;
+}
 
 /* Variant CTA */
 .sidebar__variant-cta { display: flex; flex-direction: column; align-items: flex-start; padding: var(--space-md) var(--space-lg); background: var(--color-background-secondary); border-radius: var(--radius-md); margin-bottom: var(--space-lg); }
@@ -1203,12 +1722,76 @@ onMounted(() => {
 .sidebar__breakdown-row span:last-child { font-weight: 600; white-space: nowrap; }
 .sidebar__breakdown-row--upgrade { color: var(--color-primary); }
 
-.sidebar__price { display: flex; align-items: baseline; gap: 6px; margin-bottom: 2px; }
-.sidebar__discount { background: var(--color-discount); color: #fff; font-family: var(--font-heading); font-weight: 700; font-size: 14px; padding: 4px 8px; border-radius: var(--radius-sm); }
-.sidebar__amount { font-size: 26px; font-weight: 700; font-family: var(--font-heading); }
-.sidebar__original { font-size: 15px; color: var(--color-error); text-decoration: line-through; }
+/* Sidebar price row — flex-end aligns BOX bottoms. To make the
+   visible BOTTOMS of the discount chip + original + amount + i-icon
+   all coincide, the chip's padding-bottom is zeroed (see
+   `.sidebar__discount` below) so its box bottom rests on the same
+   text baseline the other items use. */
+.sidebar__price { display: flex; align-items: flex-end; gap: 6px; margin-bottom: 2px; }
+/* Each text item uses `text-box-trim: trim-both` to collapse its
+   line-box to the actual glyph bounds (cap-height to alphabetic
+   baseline). With the parent flex row using `align-items: flex-end`,
+   the trimmed boxes' bottoms = the visible digit bottoms, so the
+   chip / original / amount / i-icon line up cleanly — no more
+   "big amount floats higher" artefact from the heading-font's
+   built-in descender empty-space. */
+/* Discount chip — its box (green rectangle) bottom-aligns with the
+   price glyphs via the parent's `align-items: flex-end`. The "-X%"
+   text is vertically CENTERED inside the chip box via inner flex.
+   NO `text-box-trim` here — we want the box to keep its padding so
+   the percentage sits in the middle of the chip rather than at the
+   baseline. */
+.sidebar__discount {
+  background: var(--color-discount);
+  color: #fff;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 1;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.sidebar__amount {
+  font-size: 26px;
+  font-weight: 700;
+  font-family: var(--font-heading);
+  line-height: 1;
+  text-box-trim: trim-both;
+  text-box-edge: cap alphabetic;
+}
+/* Original uses the heading font too so all three text spans share
+   the same metrics — `text-box-trim` works most consistently when
+   adjacent items have matching ascender / baseline ratios. */
+.sidebar__original {
+  font-size: 15px;
+  font-family: var(--font-heading);
+  font-weight: 500;
+  color: var(--color-error);
+  text-decoration: line-through;
+  line-height: 1;
+  text-box-trim: trim-both;
+  text-box-edge: cap alphabetic;
+}
 .sidebar__price-meta { font-size: 13px; color: var(--color-text-secondary); margin-bottom: var(--space-md); }
 .sidebar__disclaimer { font-size: 12px; line-height: 1.5; color: var(--color-text-muted); margin-bottom: var(--space-md); }
+/* German "Zusätzliche Kosten" block — replaces the long NL/EN
+   disclaimer in the sidebar. Bold title + two indented lines. */
+.sidebar__extra-costs { margin-bottom: var(--space-md); }
+.sidebar__extra-costs-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0 0 4px;
+}
+.sidebar__extra-costs-line {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--color-text-secondary);
+  margin: 0;
+}
 .sidebar__summary .sidebar__book { margin-top: 0; }
 
 /* Trust section below sidebar */
@@ -1288,7 +1871,7 @@ onMounted(() => {
 .highlight-item__check { font-size: 18px; line-height: 1; font-weight: 700; color: var(--color-discount, #00B67A); }
 
 /* ===== CONTENT BLOCKS ===== */
-.deal-page__content-blocks { padding: var(--space-xl) 0; border-top: 1px solid var(--color-border-light); }
+.deal-page__content-blocks { padding: var(--space-xl) 0; border-top: 1px solid var(--color-border-light); scroll-margin-top: 88px; }
 .inline-edit-link { display: inline-flex; align-items: center; gap: 3px; padding: 0; border: none; background: none; cursor: pointer; font-size: inherit; font-weight: 700; font-family: inherit; color: var(--color-text-primary); text-decoration: underline; text-decoration-color: var(--color-primary); text-underline-offset: 2px; }
 .inline-edit-link:hover { color: var(--color-primary); }
 .inline-edit-link svg { color: var(--color-primary); }
@@ -1306,7 +1889,9 @@ onMounted(() => {
   position: absolute;
   top: 12px;
   right: 12px;
-  background: #ECB4CE;
+  /* Match the "Bespaar €X" gallery badge green — NOT the
+     discount-percentage Trustpilot green. */
+  background: #70BEB2;
   color: #fff;
   font-family: 'ResotYc', var(--font-heading);
   font-size: 18px;
@@ -1397,10 +1982,14 @@ onMounted(() => {
   font-size: 14px;
   font-weight: 500;
   color: var(--color-text-secondary);
-  text-decoration: none;
+  /* Read as links — underlined by default. Not orange (the spec
+     reserves orange for the "Lees meer / Bekijk details / Bekijk
+     kaart / Bekijk andere arrangementen" CTA set). */
+  text-decoration: underline;
+  text-underline-offset: 3px;
   padding-bottom: var(--space-sm);
-  border-bottom: 2px solid transparent;
-  transition: border-color var(--transition-fast), color var(--transition-fast);
+  border-bottom: none;
+  transition: color var(--transition-fast);
 }
 /* Anchor scroll offset so the sticky CTA bar doesn't cover section titles */
 #intro,
@@ -1412,8 +2001,11 @@ onMounted(() => {
   scroll-margin-top: 88px;
 }
 .deal-page__tab:hover {
-  /* Color-only hover — no underline (the 2 px border stays transparent). */
-  color: var(--color-primary);
+  /* Hover deepens the text colour, keeps the underline. No orange
+     (per spec) so anchor links stay visually distinct from the CTA
+     links. */
+  color: var(--color-text-primary);
+  text-decoration: underline;
 }
 /* In-bar variant: drop the section padding/border so it fits inside the slim CTA bar */
 .deal-page__tabs--in-bar {
@@ -1428,10 +2020,19 @@ onMounted(() => {
 .deal-page__tabs--in-bar .deal-page__tab {
   padding-bottom: 0;
   border-bottom: none;
+  text-decoration: underline;
 }
 .deal-page__tabs--in-bar .deal-page__tab:hover {
   border-bottom: none;
-  color: var(--color-primary);
+  color: var(--color-text-primary);
+  text-decoration: underline;
+}
+/* Sticky bar: the tab matching the section currently in view drops
+   its underline + bumps weight, so users can see where they are. */
+.deal-page__tabs--in-bar .deal-page__tab--active {
+  text-decoration: none;
+  color: var(--color-text-primary);
+  font-weight: 700;
 }
 
 /* ===== HOUSE RULES ===== */
@@ -1450,7 +2051,9 @@ onMounted(() => {
 .house-rules__right { max-width: 700px; }
 .house-rule { border-top: 1px solid var(--color-border-light); }
 .house-rule:first-child { border-top: none; }
-.house-rule:last-child { border-bottom: 1px solid var(--color-border-light); }
+/* No trailing border on the last rule — the next section
+   below (FAQ on mobile, others on desktop) supplies its own
+   divider, so leaving one here renders two adjacent lines. */
 .house-rule__title {
   display: flex;
   justify-content: space-between;
@@ -1779,51 +2382,101 @@ onMounted(() => {
   align-items: flex-end;
   gap: 2px;
 }
+/* Sticky CTA bar price row — flex-end aligns BOX bottoms; the
+   discount chip uses `padding: 8px 8px 0` (see below) so its box
+   bottom rests on the same text baseline the other items use. */
 .deal-page__cta-bar-price-row {
   display: flex;
-  align-items: baseline;
+  align-items: flex-end;
   gap: 8px;
 }
 .deal-page__cta-bar-discount {
   flex-shrink: 0;
-  align-self: center;
+  align-self: flex-end;
   font-family: var(--font-heading);
   font-size: 14px;
   font-weight: 700;
+  line-height: 1;
   color: #fff;
   background: var(--color-discount);
   padding: 4px 8px;
   border-radius: var(--radius-sm);
+  /* The chip's BOX (green rectangle) bottom-aligns with the prices.
+     The "-X%" text is vertically centred inside the chip via inner
+     flex — no `text-box-trim` here. See `.sidebar__discount`. */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
-/* "Vanaf" variant — same italic muted text style as the deal-card
-   "Vanaf" prefix (no chip background, Basis Grotesque, smaller).
-   Used when no dates are selected. */
+/* "Vanaf" / "Ab" variant — plain black text, no chip background.
+   Bottom-aligns with the two price spans (the parent row uses
+   `align-items: baseline`; overriding `align-self` to `baseline` —
+   instead of the chip's `center` — pulls the prefix down to the
+   same baseline as the prices). */
+/* "Vanaf" / "Ab" variant — plain inline text, no chip background.
+   Resets the centered-flex layout the base chip rule applies, and
+   uses `text-box-trim` so its glyph bottom lines up with the price
+   glyphs next to it (which are also trimmed). */
 .deal-page__cta-bar-discount--vanaf {
   background: transparent;
-  color: var(--color-text-muted);
+  color: var(--color-text-primary);
   font-family: var(--font-body);
   font-size: 13px;
   font-weight: 400;
-  font-style: italic;
+  font-style: normal;
   padding: 0;
   border-radius: 0;
+  display: inline;
+  align-self: flex-end;
+  line-height: 1;
+  text-box-trim: trim-both;
+  text-box-edge: cap alphabetic;
 }
 .deal-page__cta-bar-original {
+  font-family: var(--font-heading);
+  font-weight: 500;
   font-size: 13px;
   color: var(--color-error);
   text-decoration: line-through;
+  line-height: 1;
+  text-box-trim: trim-both;
+  text-box-edge: cap alphabetic;
 }
 .deal-page__cta-bar-amount {
   font-family: var(--font-heading);
   font-size: 22px;
   font-weight: 600;
   color: var(--color-text-primary);
-  line-height: 1.1;
+  line-height: 1;
+  text-box-trim: trim-both;
+  text-box-edge: cap alphabetic;
 }
 .deal-page__cta-bar-meta {
   font-size: 11px;
   color: var(--color-text-muted);
   white-space: nowrap;
+}
+/* German: stack the two tax-info lines vertically, right-aligned so
+   the first ("17 Juni - 19 Juni, für 2 Nächte, 2 Pers, 1 Zimmer")
+   aligns with the tax line beneath it. */
+.deal-page__cta-bar-meta--de {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  white-space: normal;
+  line-height: 1.3;
+  text-align: right;
+  align-items: flex-end;
+}
+/* German no-date price row: keep the amount at the same size as NL.
+   The `--big` and `--red` modifiers are kept as no-ops in case we
+   want to re-introduce a German-specific bump later. */
+.deal-page__cta-bar-amount--big {
+  /* intentionally inherits .deal-page__cta-bar-amount */
+}
+.deal-page__cta-bar-original--red {
+  color: var(--color-error);
+  text-decoration: line-through;
 }
 .deal-page__cta-bar-btn {
   flex: 0 0 auto;
@@ -1883,5 +2536,109 @@ onMounted(() => {
     padding-right: 16px;
   }
   .deal-page__title-actions { right: 16px; }
+}
+
+/* ====================================================================
+   MOBILE BRANCH styles — only the bits that aren't covered by the
+   existing classes already reused above.
+   ==================================================================== */
+@media (max-width: 800px) {
+  /* Stack title block on its own (no right-column on mobile). */
+  .deal-page__title-section--mobile {
+    display: block;
+    padding-top: 12px;
+  }
+  /* "Bekijk op kaart" link sits inline next to the city/region meta. */
+  .deal-page__view-map-link {
+    display: inline-block;
+    color: var(--color-primary, #c9a85c);
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: underline;
+  }
+  /* Samengesteld-door card sits below the gallery; small breathing room. */
+  .deal-page__creator-mobile {
+    margin-top: 16px;
+    margin-bottom: 8px;
+  }
+  /* Sidebar block inline on mobile — drop the desktop sticky/width
+     constraints, let it flow with the page body. */
+  .deal-page__sidebar-mobile {
+    margin-top: 16px;
+    margin-bottom: 24px;
+  }
+  .deal-page__col-right--mobile {
+    position: static;
+    width: 100%;
+    max-width: 100%;
+  }
+  /* Description appears AFTER the sidebar on mobile (not paired with
+     the mini-map like on desktop). */
+  .deal-page__description-mobile {
+    margin-top: 16px;
+  }
+  /* Mini-map gets its own section; offset the anchor target so the
+     sticky CTA bar doesn't cover it on jump. */
+  .deal-page__mini-map-mobile {
+    scroll-margin-top: 88px;
+    margin-top: 16px;
+  }
+  /* Stack include cards as a single column on mobile + give them
+     a 16 px vertical gap so they don't sit flush against each other. */
+  .content-blocks__grid--mobile {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+  /* Highlights grid keeps 2 columns on most phones, gets 12 px gap
+     between cards on mobile (was using the desktop space-md/space-xl). */
+  .deal-page__highlights--mobile .highlights__grid {
+    gap: 12px;
+  }
+  /* Sticky footer on mobile: price-block sits LEFT, "Ik ga boeken"
+     button sits RIGHT, meta-line below the price reads left-aligned. */
+  .deal-page__cta-bar--mobile .deal-page__cta-bar-cluster {
+    flex: 1 1 auto;
+    justify-content: space-between;
+    width: 100%;
+  }
+  .deal-page__cta-bar--mobile .deal-page__cta-bar-price-block {
+    align-items: flex-start;
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+  .deal-page__cta-bar--mobile .deal-page__cta-bar-btn {
+    margin-left: auto;
+    flex: 0 0 auto;
+  }
+  .deal-page__cta-bar--mobile .deal-page__cta-bar-meta {
+    text-align: left;
+  }
+  .deal-page__cta-bar--mobile .deal-page__cta-bar-meta--de {
+    align-items: flex-start;
+    text-align: left;
+  }
+  /* Tighter section padding throughout the mobile branch. Restore
+     16 px horizontal padding too — the desktop base rule on
+     `.deal-page__highlights` / `.deal-page__content-blocks` sets
+     `padding: var(--space-xl) 0`, nuking the inherited
+     `.container` horizontal padding on small viewports. */
+  .deal-page__highlights--mobile,
+  .deal-page__content-blocks--mobile,
+  .deal-page__facilities--mobile,
+  .deal-page__house-rules--mobile,
+  .deal-page__faq--mobile {
+    padding-top: 24px;
+    padding-bottom: 24px;
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  /* Anderen-bekeken-ook on mobile: let card slides peek the next
+     item (~85 % of viewport width with snap-scroll). The component's
+     own horizontal carousel respects child widths. */
+  .deal-page__others-mobile :deep(.others-also-viewed__slide),
+  .deal-page__others-mobile :deep(.others-also-viewed__card) {
+    flex: 0 0 85% !important;
+    max-width: 85% !important;
+  }
 }
 </style>

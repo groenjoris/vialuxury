@@ -316,7 +316,9 @@ function itemCount(value: string): number {
   margin-top: var(--space-md);
   margin-bottom: var(--space-md);
   border-top: 1px solid var(--color-border-light);
-  border-bottom: 1px solid var(--color-border-light);
+  /* `border-bottom` removed — the next `.filter-group`'s own
+     `border-top` was stacking against it, creating a 2-px-looking
+     double divider beneath the price block. */
 }
 
 .filter-budget__header {

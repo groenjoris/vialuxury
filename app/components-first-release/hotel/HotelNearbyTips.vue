@@ -13,8 +13,8 @@
           :key="tip.id"
           class="tip-card"
           :class="{
-            'tip-card--active': activeTop === index,
-            'tip-card--inactive': activeTop !== null && activeTop !== index,
+            'tip-card--active': isMobile || activeTop === index,
+            'tip-card--inactive': !isMobile && activeTop !== null && activeTop !== index,
           }"
           @click="toggleTop(index)"
         >
@@ -48,8 +48,8 @@
           :key="tip.id"
           class="tip-card"
           :class="{
-            'tip-card--active': activeBottom === index,
-            'tip-card--inactive': activeBottom !== null && activeBottom !== index,
+            'tip-card--active': isMobile || activeBottom === index,
+            'tip-card--inactive': !isMobile && activeBottom !== null && activeBottom !== index,
           }"
           @click="toggleBottom(index)"
         >
@@ -79,6 +79,7 @@
 import type { NearbyTip } from '~/types/hotel'
 
 const { t, localized } = useFirstReleaseI18n()
+const isMobile = useFirstReleaseIsMobile()
 
 const props = defineProps<{
   tips: NearbyTip[]
@@ -91,11 +92,16 @@ const bottomRow = computed(() => props.tips.slice(3, 5))
 const activeTop = ref<number | null>(null)
 const activeBottom = ref<number | null>(null)
 
+/** Mobile turns the component into a horizontal swipe carousel with
+ *  every card always expanded — no toggle. Click handlers no-op so
+ *  the text panel stays visible on tap. */
 function toggleTop(index: number) {
+  if (isMobile.value) return
   activeTop.value = activeTop.value === index ? null : index
 }
 
 function toggleBottom(index: number) {
+  if (isMobile.value) return
   activeBottom.value = activeBottom.value === index ? null : index
 }
 </script>
@@ -312,38 +318,58 @@ function toggleBottom(index: number) {
   }
 }
 
-@media (max-width: 768px) {
-  .tips-row {
-    flex-direction: column;
-    height: auto;
+@media (max-width: 800px) {
+  /* Mobile: convert the two-row grid into horizontal scroll
+     carousels. Each card is 80 vw wide; ~20 vw of the next card
+     peeks at the right edge so the user knows it's swipeable.
+     Every card is forced into its expanded `--active` state via
+     the template binding above, so the text panel is always
+     visible. */
+  /* Restore 16 px horizontal section padding so the Tips block
+     aligns with the other mobile sections; the scroll row inside
+     keeps its own 16 px padding so the next-card peek remains. */
+  .tips-section {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  .tips-section__header {
+    padding-left: 0;
+    padding-right: 0;
+  }
+  .tips-section__grid {
     gap: 12px;
   }
-
+  .tips-row {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    height: auto;
+    gap: 12px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+    padding: 0 16px 8px;
+  }
   .tips-row--bottom {
     height: auto;
   }
-
   .tip-card {
-    flex: none !important;
+    flex: 0 0 80vw !important;
+    max-width: 80vw;
     height: 220px;
+    scroll-snap-align: start;
   }
-
   .tip-card__panel {
     width: 55%;
   }
-
+  /* Overlay (number + tiny title) is hidden on mobile — the
+     expanded text panel covers the same info and looks better
+     full-width. */
   .tip-card__overlay {
-    opacity: 1 !important;
-  }
-
-  .tip-card--active .tip-card__overlay {
     opacity: 0 !important;
   }
-
   .tip-card__panel-inner {
     padding: var(--space-md) var(--space-lg);
   }
-
   .tip-card__panel-title {
     font-size: 17px;
   }
