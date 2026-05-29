@@ -2487,7 +2487,10 @@ onMounted(() => {
 .deal-page__cta-bar-btn {
   flex: 0 0 auto;
   width: auto;
-  height: 44px;
+  /* 1.25 × the previous 44 px = 55 px for a taller tap target;
+     applies on both the desktop sticky header and the mobile
+     sticky footer. */
+  height: 55px;
   padding: 0 24px;
   font-size: 15px;
   font-weight: 600;
@@ -2530,9 +2533,10 @@ onMounted(() => {
   .deal-page__grid {
     grid-template-columns: 1fr;
   }
-  /* Reserve space for the bottom-fixed bar */
+  /* Reserve space for the bottom-fixed bar (bar = 12 + 55 + 12
+     padding/button/padding = 79 px after the 1.25× height bump). */
   .deal-page__main {
-    padding-bottom: 96px;
+    padding-bottom: 112px;
   }
   /* Tighter padding */
   .deal-page__breadcrumbs.container,

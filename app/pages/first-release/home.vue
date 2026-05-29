@@ -94,7 +94,7 @@
               :deal="featuredDesIndesDeal"
               :grid-mode="true"
               :hide-bar="true"
-              cta-label="Bekijk arrangement"
+              cta-label="Bekijk"
             />
           </div>
         </div>

@@ -979,7 +979,8 @@ const includesBullets = computed<string[]>(() => {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 8px 24px;
+  /* 1.25 × the previous 8 px vertical padding — taller tap target. */
+  padding: 10px 24px;
   font-size: 14px;
   font-weight: 600;
   white-space: nowrap;
