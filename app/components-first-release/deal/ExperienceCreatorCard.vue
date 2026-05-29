@@ -85,16 +85,16 @@ const pronounCapitalised = computed(() =>
   .creator-card__lede,
   .creator-card__field-label,
   .creator-card__score-line {
-    font-size: 15px;
+    font-size: 17px;
   }
   .creator-card__name {
-    font-size: 30px;
+    font-size: 32px;
   }
   .creator-card__field-value {
-    font-size: 16px;
+    font-size: 18px;
   }
   .creator-card__score {
-    font-size: 17px;
+    font-size: 19px;
   }
 }
 
