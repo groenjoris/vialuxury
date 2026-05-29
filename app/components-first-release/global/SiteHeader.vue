@@ -3900,11 +3900,21 @@ function handleSelectHotelInPopup(slug: string) {
     grid-column: 1 / -1;
     align-self: center;
     justify-self: center !important;    /* centre the wrap in its grid track */
-    margin-top: 26px;
+    /* Phone sits roughly in the MIDDLE of the gap between the
+       tagline's bottom and the search-pill's top (which now
+       reaches 34 px into the nav). 6 px keeps the phone visually
+       centred in that strip on home / deal / hotel. */
+    margin-top: 6px;
     /* Belt + suspenders: ensure inline content also centres if the
        wrap ends up wider than its inner button. */
     text-align: center;
     width: auto;
+  }
+  /* /search renders the taller orange-bordered summary card
+     (margin-top: -45 px overlap) — keep the phone lower so the
+     card has room to straddle the nav without covering it. */
+  .site-header:has(.site-header__mobile-search--summary) .site-header__phone-wrap {
+    margin-top: 26px;
   }
   .site-header .site-header__phone-wrap .site-header__phone {
     margin-left: auto;
@@ -3975,10 +3985,15 @@ function handleSelectHotelInPopup(slug: string) {
     height: auto;
     min-height: 56px;
     padding-top: 20px;
-    /* Pill straddles the nav's bottom with its top half (40 px)
-       sitting INSIDE this padding. Bump padding-bottom so the
-       phone-number row (grid row 3) clears that overlap zone
-       and stays fully on black. */
+    /* Pill straddles the nav's bottom with its top half (34 px)
+       sitting INSIDE this padding. Padding-bottom is tight (20 px)
+       on home / deal / hotel so the search bar sits higher; on
+       /search where the orange-bordered summary card is bigger
+       (margin-top: -45 px overlap), the override below keeps the
+       nav taller so the card has room to straddle properly. */
+    padding-bottom: 20px;
+  }
+  .site-header:has(.site-header__mobile-search--summary) .site-header__nav {
     padding-bottom: 56px;
   }
   /* Hide desktop search dock */
