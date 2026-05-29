@@ -61,8 +61,9 @@ const destinationLine = computed<string>(() => {
  *     count via " · "; empty fallback "Kies datum + duur".
  *   - Who = "<persons> personen / <rooms> kamer(s)". */
 const whenCombinedLabel = computed<string>(() => {
-  // Date part — per-field fallback "Flexibel"
-  let datePart = 'Flexibel'
+  // Date part — empty fallback "Alle datums" per spec (was
+  // "Flexibel"). When a date is picked we show dd/mm + optional ±flex.
+  let datePart = 'Alle datums'
   const iso = search.committedArrivalDate.value
   if (iso) {
     const [, m, d] = iso.split('-')
@@ -88,10 +89,12 @@ const whenCombinedLabel = computed<string>(() => {
 })
 
 const whoLabel = computed<string>(() => {
+  // Abbreviated form ("12 pers. / 6 kamers") so the row stays on
+  // one line even at large group sizes on a narrow mobile viewport.
   const persons = search.persons.value
   const rooms = search.rooms.value
   const roomWord = rooms === 1 ? 'kamer' : 'kamers'
-  return `${persons} personen / ${rooms} ${roomWord}`
+  return `${persons} pers. / ${rooms} ${roomWord}`
 })
 
 /** Cosmetic: destination IDs like "noord-holland" → "Noord-Holland". */
@@ -144,7 +147,7 @@ function prettyHotelSlug(slug: string): string {
   flex: 1 1 0;
   min-width: 0;
   font-family: var(--font-body, 'Basis Grotesque', sans-serif);
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 700;
   line-height: 1.4;
   color: #000;
@@ -171,7 +174,7 @@ function prettyHotelSlug(slug: string): string {
 }
 .mss__chunk {
   font-family: var(--font-body, 'Basis Grotesque', sans-serif);
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 700;
   line-height: 1.4;
   color: #000;

@@ -1,46 +1,24 @@
 /**
- * Tracks which homepage variant is active for the current visitor.
+ * First Release home variant + hero-photo carousel state.
  *
- * - Variant 1: `/home` (full-bleed hero + bottom search-dock).
- * - Variant 2: `/home-v2` (vertical search-card top-right).
- * - Variant 3: `/home-v3` (contained rounded hero + below-hero search bar).
+ * The variant-switcher carousel (variants 2-7) has been removed.
+ * The prototype now ships a single homepage at `/first-release/home`
+ * that always renders as "variant 1". `frNavVariant` is kept as a
+ * read-only ref locked to '1' so existing CSS selectors
+ * (`.site-header--nav-v1`, `.site-header--nav-v6`, etc.) and any
+ * legacy call-sites continue to work without changes.
  *
- * Persisted in localStorage under `vl_home_variant` so navigating back
- * to "home" from anywhere in the site lands the user on their chosen
- * variant. URL wins on direct page loads.
+ * The hero-photo switcher (cycles 8 background photos behind the
+ * homepage hero) is preserved — that's a different control.
  */
 
-/**
- * Variant values:
- *  - '1' / '2' / '3' / '4' / '5'  — experimental "nieuwe huisstijl" homepages
- *    that share the right-edge carousel switcher
- *  - 'hf'                         — first-release "Hotel First" page
- *    (production-bound, no switcher)
- */
-type HomeVariant = '1' | '2' | '3' | '4' | '5' | 'hf'
-
-const STORAGE_KEY = 'vl_home_variant'
-const homeVariant = ref<HomeVariant>('1')
-
-/**
- * Independent nav-bar variant for the First Release tree. Picks one of
- * three SiteHeader layouts that the homepage carousel toggles between.
- * Persisted separately from the (legacy) `homeVariant` above so the two
- * don't collide.
- *
- * - '1' → today's 2-row dark nav (logo + payoff+stroke + verticals + phone).
- * - '2' → single-row centred-logo nav (slimmer).
- * - '3' → 2-row reorganised (logo+verticals on top, payoff+phone below).
- */
+type HomeVariant = '1' | 'hf'
 type FrNavVariant = '1' | '2' | '3' | '4' | '5' | '6' | '7'
 
-const STORAGE_KEY_NAV = 'vl_fr_nav_variant'
+const homeVariant = ref<HomeVariant>('1')
 const frNavVariant = ref<FrNavVariant>('1')
 
-/* ─────────── Hero photo carousel ───────────
- *  Independent of the nav-variant carousel — switches the background
- *  image of the home page's hero section. The four starter photos
- *  come from `assets/images/hero/` (copied to `public/images/hero/`). */
+/* ─────────── Hero photo carousel ─────────── */
 const HERO_PHOTOS: readonly string[] = [
   '/images/home-hero.jpg',                            // 1 — original hero
   '/images/hero/hotelexperiencepackages.jpeg',        // 2
@@ -55,19 +33,10 @@ const HERO_PHOTOS: readonly string[] = [
 const STORAGE_KEY_HERO = 'vl_fr_hero_photo'
 const heroPhotoIndex = ref(0)
 
-/* ─────────── Variant 6 — wider 1200 px content grid ───────────
- *  Variant 6 swaps the shared `--container-max` from 1137 px to
- *  1200 px and grows the deal-page sidebar to 400 px. Both
- *  overrides live in `app/assets/css/fr-variant-6.css`, gated on a
- *  `data-fr-variant="6"` attribute on `<html>`. We toggle that
- *  attribute here, in module scope, so every FR page (home +
- *  internals) picks it up automatically whenever the user picks v6.
- */
+/* All FR pages share the v6 design (1200 px grid + refreshed
+ * search / deal pages). Apply the data attribute unconditionally so
+ * the relevant CSS overrides fire on every FR page. */
 if (import.meta.client) {
-  // All variants (1-6) now share v6's body design (wider 1200 px grid,
-  // refreshed search + deal pages). Variants only differ in nav-bar
-  // chrome and hero/USP arrangement on the home page. We therefore
-  // unconditionally apply the v6 design attribute on every FR page.
   watch(frNavVariant, () => {
     if (typeof document === 'undefined') return
     document.documentElement.dataset.frVariant = '6'
@@ -75,76 +44,32 @@ if (import.meta.client) {
 }
 
 export function useFirstReleaseHomeVariant() {
+  /* ─────────── Home variant (legacy; locked to '1' / 'hf') ─────────── */
   function setHomeVariant(v: HomeVariant) {
     homeVariant.value = v
-    if (import.meta.client) {
-      try { localStorage.setItem(STORAGE_KEY, v) } catch { /* ignore */ }
-    }
   }
 
-  /**
-   * Restore the variant on app mount. URL wins → localStorage falls
-   * back → default '1'. Pass `route.path` from a page component.
-   */
   function restoreHomeVariant(routePath?: string) {
     if (!import.meta.client) return
     if (routePath && routePath.startsWith('/hotel-first')) { setHomeVariant('hf'); return }
-    if (routePath && routePath.startsWith('/home-v5'))     { setHomeVariant('5'); return }
-    if (routePath && routePath.startsWith('/home-v4'))     { setHomeVariant('4'); return }
-    if (routePath && routePath.startsWith('/home-v3'))     { setHomeVariant('3'); return }
-    if (routePath && routePath.startsWith('/home-v2'))     { setHomeVariant('2'); return }
-    if (routePath === '/home')                             { setHomeVariant('1'); return }
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY) as HomeVariant | null
-      if (stored === '1' || stored === '2' || stored === '3' || stored === '4' || stored === '5' || stored === 'hf') homeVariant.value = stored
-    } catch { /* ignore */ }
+    setHomeVariant('1')
   }
 
-  /** Computed href that points at the user's active home variant.
-   *  Tracks the new `frNavVariant` carousel so the SiteHeader logo
-   *  routes to the matching home from any FR page. */
-  const homeHref = computed(() => {
-    if (frNavVariant.value === '7') return '/first-release/home-v7'
-    if (frNavVariant.value === '6') return '/first-release/home-v6'
-    if (frNavVariant.value === '5') return '/first-release/home-v5'
-    if (frNavVariant.value === '4') return '/first-release/home-v4'
-    if (frNavVariant.value === '3') return '/first-release/home-v3'
-    if (frNavVariant.value === '2') return '/first-release/home-v2'
-    return '/first-release/home'
-  })
+  /** Logo / nav home link — single canonical home page. */
+  const homeHref = computed(() => '/first-release/home')
 
-  /* ─────────── Nav-variant API (carousel) ─────────── */
-
-  function setFrNavVariant(v: FrNavVariant) {
-    frNavVariant.value = v
-    if (import.meta.client) {
-      try { localStorage.setItem(STORAGE_KEY_NAV, v) } catch { /* ignore */ }
-    }
+  /* ─────────── Nav-variant API (no-op; locked to '1') ─────────── */
+  function setFrNavVariant(_v: FrNavVariant) {
+    // Variant switcher removed — value is permanently '1'. Kept as a
+    // no-op so existing call-sites (`setFrNavVariant('1')` in
+    // onMounted hooks) compile without changes.
   }
 
-  /**
-   * Restore the nav variant on mount. URL wins → localStorage falls
-   * back → default '1'. Pass `route.path` from any FR page; pages that
-   * don't match a `/home`, `/home-v2`, `/home-v3` route simply pick up
-   * whatever was previously stored.
-   */
-  function restoreFrNavVariant(routePath?: string) {
-    if (!import.meta.client) return
-    if (routePath && routePath.startsWith('/first-release/home-v7')) { setFrNavVariant('7'); return }
-    if (routePath && routePath.startsWith('/first-release/home-v6')) { setFrNavVariant('6'); return }
-    if (routePath && routePath.startsWith('/first-release/home-v5')) { setFrNavVariant('5'); return }
-    if (routePath && routePath.startsWith('/first-release/home-v4')) { setFrNavVariant('4'); return }
-    if (routePath && routePath.startsWith('/first-release/home-v3')) { setFrNavVariant('3'); return }
-    if (routePath && routePath.startsWith('/first-release/home-v2')) { setFrNavVariant('2'); return }
-    if (routePath === '/first-release/home')                         { setFrNavVariant('1'); return }
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY_NAV) as FrNavVariant | null
-      if (stored === '1' || stored === '2' || stored === '3' || stored === '4' || stored === '5' || stored === '6' || stored === '7') frNavVariant.value = stored
-    } catch { /* ignore */ }
+  function restoreFrNavVariant(_routePath?: string) {
+    // No-op — see setFrNavVariant.
   }
 
   /* ─────────── Hero photo carousel API ─────────── */
-
   const heroPhotos = HERO_PHOTOS
   const heroPhotoUrl = computed(() => HERO_PHOTOS[heroPhotoIndex.value] ?? HERO_PHOTOS[0])
 
@@ -170,7 +95,7 @@ export function useFirstReleaseHomeVariant() {
     setHomeVariant,
     restoreHomeVariant,
     homeHref,
-    // Nav-variant carousel
+    // Nav-variant (no-op stubs)
     frNavVariant,
     setFrNavVariant,
     restoreFrNavVariant,

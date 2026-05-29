@@ -522,6 +522,11 @@ function scrollTitleToTop() {
 onMounted(() => {
   if (!import.meta.client) return
   if (window.scrollY !== 0) return
+  // Desktop-only — on mobile the user already lands close enough to
+  // the title via the mobile chrome above, and an additional auto-
+  // scroll feels jarring (and can land mid-toolbar after the sticky
+  // observer fires).
+  if (isMobile.value) return
   // Three passes — initial after layout, again after rAF (catches
   // synchronous layout flushes), and once more after 200 ms (catches
   // image / font loads that have shifted the title down).
@@ -1099,14 +1104,20 @@ const pinnedAvailable = computed(() => {
   return filtered.deals.some(d => d.slug === slug)
 })
 
-/** Final list shown in the grid: pinned hotel first (always), then the rest. */
+/** Final list shown in the grid: pinned hotel first (always), then the rest.
+ *  On mobile we suppress the "unavailable" pinned card entirely — it
+ *  reads as confusing noise ("Hotel X · niet beschikbaar voor jouw
+ *  zoekopdracht") on a narrow viewport. Desktop keeps the pin so the
+ *  origin hotel is visible at-a-glance alongside the rest of the
+ *  matching deals. */
 const displayedHotels = computed(() => {
   const pinned = pinnedHotel.value
   if (!pinned) return sortedHotels.value
-  // Use the unfiltered hotel record so its image / pitch render even when
-  // unavailable; mark it via a sentinel so the card knows.
   const rest = sortedHotels.value.filter(h => h.id !== pinned.id)
   const unavailable = !pinnedAvailable.value
+  if (unavailable && isMobile.value) return rest
+  // Use the unfiltered hotel record so its image / pitch render even when
+  // unavailable; mark it via a sentinel so the card knows.
   return [{ ...pinned, _pinned: true, _unavailable: unavailable } as SearchHotel & { _pinned: true; _unavailable: boolean }, ...rest]
 })
 
@@ -2070,8 +2081,8 @@ onMounted(() => {
 .search-page__mobile-toolbar-spacer {
   height: 64px;            /* matches the toolbar's natural height */
 }
-/* Black rectangular buttons: 48 px high, 8 / 16 px padding, 4 px gap
-   between icon and label, white text + icon. NO border-radius. */
+/* Black pill-shaped buttons: 48 px high, 8 / 16 px padding, 4 px
+   gap between icon and label, white text + icon, rounded corners. */
 .m-toolbar-btn {
   position: relative;
   flex: 0 0 auto;
@@ -2083,6 +2094,7 @@ onMounted(() => {
   justify-content: center;
   gap: 4px;
   border: 0;
+  border-radius: 10px;
   background: #000;
   font-family: var(--font-body, 'Basis Grotesque', sans-serif);
   font-size: 14px;

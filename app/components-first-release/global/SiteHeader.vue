@@ -514,7 +514,12 @@
       />
       <button v-else type="button" class="mobile-search-trigger" @click="mobileSearchOpen = true">
         <span class="mobile-search-trigger__label">{{ mobileSearchLabel }}</span>
-        <span class="mobile-search-trigger__cta">Vind deals</span>
+        <span class="mobile-search-trigger__cta" aria-label="Vind deals">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="11" cy="11" r="8" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          </svg>
+        </span>
       </button>
     </div>
 
@@ -854,12 +859,6 @@
       @update:search-group="searchGroup = $event"
       @search="handleMobileSearch"
     />
-
-    <!-- Right-edge floating variant switcher — reads `frNavVariant`
-         from the composable so it can be mounted globally without any
-         per-page prop wiring. Renders on every FR page that uses the
-         SiteHeader (home + all internal pages). -->
-    <FirstReleaseHomeVariantSwitcher />
 
     <!-- Bottom-right floating hero-photo switcher. Only on the home
          page (overlay variant) since internal pages don't render a
@@ -1647,7 +1646,7 @@ const whenLabel = computed(() => {
     })
     return monthLabels.join(', ')
   }
-  return 'Kies datum'
+  return 'Alle datums'
 })
 
 /** Empty when the user hasn't chosen a date / month — drives the lighter
@@ -1686,11 +1685,11 @@ const hoelangIsPlaceholder = computed(
  *  parts with a ` · ` separator. When neither is set we fall back to the
  *  placeholder copy and render in lighter grey. */
 const whenCombinedLabel = computed(() => {
-  const parts: string[] = []
-  if (!whenIsPlaceholder.value) parts.push(whenLabel.value)
-  if (!hoelangIsPlaceholder.value) parts.push(hoelangLabel.value)
-  if (parts.length === 0) return t('header.pickDateAndDuration')
-  return parts.join(' · ')
+  // Always include both halves so the empty state reads as
+  // "Alle datums · Elke reisduur" (user spec). Individual halves
+  // fall back to their own friendly placeholders via `whenLabel` /
+  // `hoelangLabel` rather than the joined "Kies datum + duur" copy.
+  return `${whenLabel.value} · ${hoelangLabel.value}`
 })
 
 const whenCombinedIsPlaceholder = computed(
@@ -3685,14 +3684,15 @@ function handleSelectHotelInPopup(slug: string) {
   align-items: stretch;
   gap: 0;
   width: 100%;
-  height: 52px;
-  padding: 4px 4px 4px 18px;
+  /* Bar is 1.3 × the previous 52 px → 68 px tall (button included). */
+  height: 68px;
+  padding: 6px 6px 6px 18px;
   border: 1px solid rgba(255, 255, 255, 0.5);
   border-radius: 10px;            /* rounded rectangle, NOT pill */
   background: rgba(255, 255, 255, 0.97);
   color: var(--color-text-primary);
   font-family: inherit;
-  font-size: 14px;
+  font-size: 16px;
   cursor: pointer;
   text-align: left;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
@@ -3707,7 +3707,8 @@ function handleSelectHotelInPopup(slug: string) {
   text-overflow: ellipsis;
   color: var(--color-text-secondary);
   font-weight: 500;
-  font-size: 14px;
+  /* +2 pt vs the previous 14 px copy. */
+  font-size: 16px;
 }
 
 .mobile-search-trigger__cta {
@@ -3715,17 +3716,16 @@ function handleSelectHotelInPopup(slug: string) {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  /* Narrow square button — replaces the "Vind deals" text with a
+     magnifying-glass icon. Width matches the bar's inner height so
+     the button reads as a clean square. */
   height: 100%;
-  padding: 0 18px;
+  width: 56px;
+  padding: 0;
   border-radius: 6px;             /* rounded rectangle, NOT circle */
   background: var(--color-primary);
   color: #fff;
-  font-family: var(--font-body);
-  font-size: 14px;
-  font-weight: 700;
-  letter-spacing: -0.07px;
   transition: background var(--transition-fast);
-  white-space: nowrap;
 }
 .mobile-search-trigger:hover .mobile-search-trigger__cta {
   background: var(--color-primary-hover);
@@ -3842,8 +3842,11 @@ function handleSelectHotelInPopup(slug: string) {
     align-self: start;
   }
   .site-header .site-header__logo-img {
-    width: auto;
-    height: var(--fr-mobile-logo-h);
+    /* Logo and tagline are pinned to the same 240 px width — see
+       the tagline-block rule + font-size below. Height follows the
+       SVG's natural aspect ratio (~9.76:1 → ~24.6 px). */
+    width: 240px;
+    height: auto;
   }
 
   /* Tagline-block: pinned to the logo's exact width AND placed
@@ -3853,7 +3856,9 @@ function handleSelectHotelInPopup(slug: string) {
   .site-header .site-header__tagline-block {
     grid-row: 2;
     grid-column: 1;
-    width: var(--fr-mobile-logo-w);
+    /* Locked to the logo's 240 px width so the two stack as a
+       perfect vertical pair. */
+    width: 240px;
     max-width: 100%;
     justify-self: start;
     align-self: start !important;
@@ -3867,11 +3872,11 @@ function handleSelectHotelInPopup(slug: string) {
     gap: 0 !important;
   }
   .site-header .site-header__tagline {
-    /* Font sized so "Personally Curated Experiences" (~29 chars) fits
-       inside the logo's width on one line at every viewport — see
-       --fr-mobile-logo-w. Empirical: ~logo_w / 16 keeps it on one line
-       with a smidge of breathing room. */
-    font-size: clamp(9px, 2.4vw, 14px);
+    /* Sized so "Personally Curated Experiences" (~30 chars) fills
+       the 240 px logo width on a single line. Slightly smaller than
+       the previous clamp so the tagline's right edge matches the
+       logo's right edge exactly. */
+    font-size: 13px;
     line-height: 1.1;
     white-space: nowrap;          /* keep "Personally Curated Experiences" on one line */
     overflow: visible;            /* don't truncate — font is sized to fit instead */
@@ -3904,9 +3909,11 @@ function handleSelectHotelInPopup(slug: string) {
     font-size: 15px;
   }
   .site-header .site-header__phone-label {
+    /* Match phone-number weight + size so the row reads as one
+       solid string ("Hulp nodig? +31 …"). */
     display: inline;
-    font-size: 15px;
-    font-weight: 500;
+    font-size: 16px;
+    font-weight: 700;
     margin-right: 4px;
   }
   .site-header .site-header__phone svg { width: 15px; height: 15px; }
@@ -3947,7 +3954,7 @@ function handleSelectHotelInPopup(slug: string) {
        (`.site-header--nav-v1 .site-header__nav-actions { gap: 0 }`),
        which has higher specificity than this single-class
        mobile rule and otherwise collapses the gap to 0. */
-    gap: 16px !important;
+    gap: 12px !important;
     align-items: flex-start !important;
     /* `!important` defends against the v1 / v6 desktop rule
        (`.site-header--nav-v1 .site-header__nav-actions`) that would

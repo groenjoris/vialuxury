@@ -1003,6 +1003,21 @@ const includesBullets = computed<string[]>(() => {
   white-space: normal;
 }
 
+/* Mobile: enlarge the CTA by 1.5 × (padding + font). Makes the
+   tap target comfortable on touch and the button visually
+   dominant inside the card. */
+@media (max-width: 800px) {
+  .deal-card-v2__cta {
+    padding: 12px 36px;
+    font-size: 21px;
+    border-radius: var(--radius-md);
+  }
+  .deal-card-v2__cta--two-line {
+    padding: 9px 24px;
+    font-size: 19px;
+  }
+}
+
 /* Grid price row: price left, CTA right.
    Use baseline so the price text aligns visually with the CTA text,
    not the CTA's outer box bottom (which has 8 px button padding). */

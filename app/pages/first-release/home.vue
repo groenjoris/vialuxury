@@ -908,6 +908,35 @@ onMounted(() => { setFrNavVariant('1'); restoreHeroPhotoIndex() })
    the SiteHeader compact searchbar swap.
    ========================================================== */
 @media (max-width: 800px) {
+  /* "Gezien in" press-banner — hidden on mobile per spec. */
+  .home-press-banner { display: none; }
+
+  /* "Eerder bekeken" + "Actuele deals" — convert the 3-column grid
+     into a horizontal swipe carousel. Each card spans 80 % of the
+     viewport width with ~20 vw of the next card peeking at the
+     right edge so the user knows it's scrollable. */
+  .home-deals__grid--3 {
+    display: flex !important;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    grid-template-columns: none;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+    gap: 12px;
+    /* Negative inline margin escapes the .container's 16 px padding
+       so the first card aligns flush-left at 16 px AND the row
+       bleeds to the right edge. */
+    margin-left: -16px;
+    margin-right: -16px;
+    padding: 0 16px 8px;
+  }
+  .home-deals__grid--3 > * {
+    flex: 0 0 80vw;
+    max-width: 80vw;
+    scroll-snap-align: start;
+  }
+
   /* Hero — keep the photo visible (top-aligned), but let the hero
      section grow to fit the searchbar + content below. */
   .home-hero {

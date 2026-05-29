@@ -569,7 +569,8 @@ function pickWho(opt: { adults: number; rooms: number }) {
   font-family: var(--font-body);
   font-size: 13px;
   font-weight: 700;
-  letter-spacing: 0.6px;
+  /* Match the desktop search-bar's label tracking (1.3 px). */
+  letter-spacing: 1.3px;
   text-transform: uppercase;
   /* Dark enough to remain legible on the light warm-grey modal bg. */
   color: var(--color-text-secondary, #6a6a6a);
@@ -579,16 +580,18 @@ function pickWho(opt: { adults: number; rooms: number }) {
   background: #fff;
   border-radius: 12px;
   overflow: hidden;
-  /* 2 px solid stroke instead of a soft drop shadow — gives a clearer
-     "form field" feel on the warm-grey modal surface. */
-  border: 2px solid var(--color-border-light, #ececec);
+  /* Darker 2 px stroke — was the muted `--color-border-light`,
+     which read as a barely-there ghost on the warm-grey surface.
+     Bump to `--color-border` so the form-field outline is clearly
+     visible. */
+  border: 2px solid var(--color-border, #c8c8c8);
   box-shadow: none;
   transition: border-color 120ms ease;
 }
 /* Active state keeps the same neutral stroke colour (no orange ring).
    The inline panel below the card provides the affordance instead. */
 .msm-field__card--active {
-  border-color: var(--color-border-light, #ececec);
+  border-color: var(--color-border, #c8c8c8);
 }
 
 /* Button variant — used by Wanneer / Hoelang / Wie. Form-field look. */
@@ -686,7 +689,7 @@ function pickWho(opt: { adults: number; rooms: number }) {
   border-radius: 0 0 12px 12px;
   padding: 0;
   margin-top: -2px;             /* overlap the field card's 2 px border */
-  border: 2px solid var(--color-border-light, #ececec);
+  border: 2px solid var(--color-border, #c8c8c8);
   border-top: none;
   overflow: hidden;
 }
