@@ -316,6 +316,10 @@ function toggle(name: 'where' | 'when' | 'howlong' | 'who') {
 // Reset section state whenever the modal opens / closes, AND
 // lock the body scroll behind the modal so the underlying page
 // can't be panned while the modal is up.
+// NOTE: this watcher references `destinationQuery` which is
+// declared below — running with `immediate: true` would hit the
+// temporal-dead-zone and throw. Modal starts closed by default
+// so we only need to react to subsequent toggles.
 const _scrollLock = useBodyScrollLock()
 let _scrollLockAcquired = false
 watch(() => props.open, (isOpen) => {
@@ -326,7 +330,7 @@ watch(() => props.open, (isOpen) => {
   }
   if (isOpen && !_scrollLockAcquired) { _scrollLock.acquire(); _scrollLockAcquired = true }
   else if (!isOpen && _scrollLockAcquired) { _scrollLock.release(); _scrollLockAcquired = false }
-}, { immediate: true })
+})
 onBeforeUnmount(() => {
   if (_scrollLockAcquired) { _scrollLock.release(); _scrollLockAcquired = false }
 })
