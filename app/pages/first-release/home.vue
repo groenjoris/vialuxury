@@ -953,13 +953,16 @@ onMounted(() => { setFrNavVariant('1'); restoreHeroPhotoIndex() })
   }
 
   /* Hero copy: flow naturally below the SiteHeader's mobile search
-     trigger instead of absolute-positioned at top: 300 px. */
+     trigger instead of absolute-positioned at top: 300 px. Extra
+     left padding (24 px vs the standard 16 px content edge) gives
+     "SPRING 2026 / Experience more / tagline" some breathing room
+     from the viewport edge so the headline doesn't feel pinched. */
   .home-hero__content {
     position: static;
     top: auto;
     left: auto;
     right: auto;
-    padding: 24px 16px 32px;
+    padding: 24px 16px 32px 28px;
     gap: 16px;
   }
   .home-hero__title {

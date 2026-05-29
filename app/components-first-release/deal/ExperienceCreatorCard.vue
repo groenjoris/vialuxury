@@ -69,12 +69,32 @@ const pronounCapitalised = computed(() =>
   outline: none;
 }
 
-/* Mobile: span the full content width of the deal-page section
-   (still 110 px tall — photo on the left, text column flexes). */
+/* Mobile: span the full content width of the deal-page section,
+   a touch taller (130 px) and every text element +2 pt so it
+   reads comfortably on a phone — photo on the left, text column
+   flexes. */
 @media (max-width: 800px) {
   .creator-card {
     width: 100%;
-    height: 110px;
+    height: 130px;
+  }
+  .creator-card__avatar {
+    width: 100px;
+    height: 100px;
+  }
+  .creator-card__lede,
+  .creator-card__field-label,
+  .creator-card__score-line {
+    font-size: 13px;
+  }
+  .creator-card__name {
+    font-size: 28px;
+  }
+  .creator-card__field-value {
+    font-size: 14px;
+  }
+  .creator-card__score {
+    font-size: 15px;
   }
 }
 

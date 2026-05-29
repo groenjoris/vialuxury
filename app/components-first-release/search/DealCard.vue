@@ -1003,20 +1003,6 @@ const includesBullets = computed<string[]>(() => {
   white-space: normal;
 }
 
-/* Mobile: enlarge the CTA by 1.5 × (padding + font). Makes the
-   tap target comfortable on touch and the button visually
-   dominant inside the card. */
-@media (max-width: 800px) {
-  .deal-card-v2__cta {
-    padding: 12px 36px;
-    font-size: 21px;
-    border-radius: var(--radius-md);
-  }
-  .deal-card-v2__cta--two-line {
-    padding: 9px 24px;
-    font-size: 19px;
-  }
-}
 
 /* Grid price row: price left, CTA right.
    Use baseline so the price text aligns visually with the CTA text,
@@ -1208,5 +1194,13 @@ const includesBullets = computed<string[]>(() => {
   line-height: 1.4;
   color: var(--color-text-secondary);
   text-align: left;
+}
+
+/* Mobile: bump the deal title + includes copy by 1 pt each so the
+   card reads more comfortably on a phone where the card spans
+   ~80 vw. CTA size stays unchanged. */
+@media (max-width: 800px) {
+  .deal-card-v2__pitch { font-size: 19px; }
+  .deal-card-v2__include { font-size: 14px; }
 }
 </style>

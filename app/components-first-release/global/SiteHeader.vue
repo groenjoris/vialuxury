@@ -3842,10 +3842,10 @@ function handleSelectHotelInPopup(slug: string) {
     align-self: start;
   }
   .site-header .site-header__logo-img {
-    /* Logo and tagline are pinned to the same 240 px width — see
-       the tagline-block rule + font-size below. Height follows the
-       SVG's natural aspect ratio (~9.76:1 → ~24.6 px). */
-    width: 240px;
+    /* Logo and tagline are pinned to the same 204 px width
+       (15 % smaller than the previous 240 px). Height follows the
+       SVG's natural aspect ratio (~9.76:1 → ~20.9 px). */
+    width: 204px;
     height: auto;
   }
 
@@ -3856,9 +3856,9 @@ function handleSelectHotelInPopup(slug: string) {
   .site-header .site-header__tagline-block {
     grid-row: 2;
     grid-column: 1;
-    /* Locked to the logo's 240 px width so the two stack as a
-       perfect vertical pair. */
-    width: 240px;
+    /* Locked to the logo's 204 px width so the two stack as a
+       perfect vertical pair (15 % smaller combo). */
+    width: 204px;
     max-width: 100%;
     justify-self: start;
     align-self: start !important;
@@ -3873,10 +3873,10 @@ function handleSelectHotelInPopup(slug: string) {
   }
   .site-header .site-header__tagline {
     /* Sized so "Personally Curated Experiences" (~30 chars) fills
-       the 240 px logo width on a single line. Slightly smaller than
-       the previous clamp so the tagline's right edge matches the
-       logo's right edge exactly. */
-    font-size: 13px;
+       the 204 px logo width on a single line. 13 × 0.85 ≈ 11 px so
+       the tagline's right edge matches the (smaller) logo's right
+       edge. */
+    font-size: 11px;
     line-height: 1.1;
     white-space: nowrap;          /* keep "Personally Curated Experiences" on one line */
     overflow: visible;            /* don't truncate — font is sized to fit instead */

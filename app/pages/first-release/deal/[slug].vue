@@ -2364,6 +2364,12 @@ onMounted(() => {
   border-top: 1px solid var(--color-border);
   box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.08);
 }
+/* Mobile-only: bump the sticky footer's vertical padding by 20 %
+   so price + button get more breathing room above safe-area. */
+.deal-page__cta-bar--mobile .deal-page__cta-bar-inner {
+  padding-top: 12px;
+  padding-bottom: 12px;
+}
 .deal-page__cta-bar-inner {
   display: flex;
   align-items: center;
@@ -2543,6 +2549,31 @@ onMounted(() => {
    existing classes already reused above.
    ==================================================================== */
 @media (max-width: 800px) {
+  /* Defensive: no top border / shadow between the SiteHeader's
+     mobile search trigger and the breadcrumb section on the deal
+     page (mirror of the rule on /search). */
+  .deal-page__breadcrumbs {
+    border-top: 0;
+    box-shadow: none;
+  }
+  /* "In dit arrangement is het volgende inbegrepen" heading +1 pt,
+     individual inclusion titles + body copy each +1 pt. */
+  .deal-page__content-blocks--mobile .section-title { font-size: 23px; }
+  .deal-page__content-blocks--mobile .content-block__title { font-size: 17px; }
+  .deal-page__content-blocks--mobile .content-block__desc  { font-size: 15px; }
+
+  /* Mobile sidebar: bump every text element BEFORE the calendar by
+     1 pt — sidebar title, inclusion list, "Bekijk details" link,
+     "Kies je aankomstdatum" heading, "Dit arrangement is voor X
+     nachten" line, and the other-arrangements heading + link. */
+  .deal-page__sidebar-mobile .sidebar__title { font-size: 17px; }
+  .deal-page__sidebar-mobile .sidebar__inc-list li { font-size: 15px; }
+  .deal-page__sidebar-mobile .sidebar__details-link { font-size: 15px; }
+  .deal-page__sidebar-mobile .sidebar__cal-title,
+  .deal-page__sidebar-mobile .sidebar__cal-title--big { font-size: 19px; }
+  .deal-page__sidebar-mobile .sidebar__nights-line { font-size: 15px; }
+  .deal-page__sidebar-mobile .sidebar__variant-heading { font-size: 15px; }
+  .deal-page__sidebar-mobile .sidebar__other-arrangements { font-size: 15px; }
   /* Stack title block on its own (no right-column on mobile). */
   .deal-page__title-section--mobile {
     display: block;

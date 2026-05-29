@@ -168,15 +168,11 @@
             </div>
             <Transition name="msm-fade">
               <div v-if="active === 'howlong'" class="msm-field__panel msm-field__panel--howlong">
-                <!-- Top row: "Kies reisduur" title (left) + Klaar
-                     button (right). Multi-select needs an explicit
-                     confirm; the popup's own h4 / hint / footer are
-                     hidden via the panel-specific CSS below. -->
+                <!-- "Kies reisduur" title only — the explicit Klaar
+                     button was removed; tapping the field header again
+                     (or any other field) collapses this panel. -->
                 <div class="msm-field__panel-toolbar">
                   <h4 class="msm-field__panel-title">Kies reisduur</h4>
-                  <button type="button" class="msm-field__done" @click="active = null">
-                    {{ t('header.ready') }}
-                  </button>
                 </div>
                 <FirstReleaseDateAndDurationPopup
                   mode="duration"
