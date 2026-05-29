@@ -3998,6 +3998,19 @@ function handleSelectHotelInPopup(slug: string) {
     );
     padding-bottom: 0;
   }
+  /* Search page (--summary) keeps the hard 50/50 cut so the
+     summary CARD straddles a clean boundary. Every OTHER solid
+     page (deal, hotel, …) gets a soft fade: the 50/50 line read
+     as a "divider below the search bar" on plain-pill pages.
+     Override the gradient with a smooth black→white ramp. */
+  .site-header .site-header__mobile-search--on-solid:not(.site-header__mobile-search--summary) {
+    background: linear-gradient(
+      to bottom,
+      #0e0e0c 0,
+      #0e0e0c 30%,
+      #ffffff 100%
+    );
+  }
   /* Hamburger — same translucent-white chrome as desktop, just
      ensured visible via `display: flex`. */
   .site-header .hamburger-btn {
