@@ -2396,12 +2396,13 @@ onMounted(() => {
   align-items: flex-end;
   gap: 2px;
 }
-/* Sticky CTA bar price row — flex-end aligns BOX bottoms; the
-   discount chip uses `padding: 8px 8px 0` (see below) so its box
-   bottom rests on the same text baseline the other items use. */
+/* Sticky CTA bar price row — baseline alignment makes vanaf /
+   from-price / price / i-icon share their TEXT BASELINE, which
+   is browser-supported everywhere (unlike text-box-trim which
+   skips older browsers). */
 .deal-page__cta-bar-price-row {
   display: flex;
-  align-items: flex-end;
+  align-items: baseline;
   gap: 8px;
 }
 .deal-page__cta-bar-discount {

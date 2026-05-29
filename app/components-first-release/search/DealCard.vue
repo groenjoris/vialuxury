@@ -1028,14 +1028,20 @@ const includesBullets = computed<string[]>(() => {
 }
 
 /* Vertical stack of "X personen, Y nachten" meta + price line.
-   Sits in the grid row; the meta sits 2 px above the price text
-   so they read as one block. */
+   Sits in the grid row; gap 0 and tight line-height on both
+   children so the meta sits visually directly above the price
+   (touching the price's cap-height) — reads as one block. */
 .deal-card-v2__price-stack {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 2px;
+  gap: 0;
   min-width: 0;
+  line-height: 1.1;
+}
+.deal-card-v2__price-stack .deal-card-v2__meta-line {
+  line-height: 1.1;
+  margin: 0 0 -2px;
 }
 
 .deal-card-v2__unavailable {

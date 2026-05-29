@@ -2263,7 +2263,11 @@ function handleSelectHotelInPopup(slug: string) {
   display: flex;
   align-items: stretch;
   position: relative;
-  z-index: 10;
+  /* No `z-index` here on purpose — assigning one would create a
+     stacking context that traps the lang-switcher dropdown
+     (z:100) inside the nav's z. The search-bar pill on mobile
+     sits above the nav with `z-index: 11`, so we want the
+     dropdown to escape the nav's context and beat the pill. */
   padding: 20px 0;
 }
 

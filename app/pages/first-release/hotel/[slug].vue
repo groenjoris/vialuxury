@@ -986,14 +986,15 @@ onBeforeUnmount(() => {
   align-items: flex-end;
   gap: 2px;
 }
-/* Sticky CTA price row — mirrors the deal-page sticky bar EXACTLY
-   so the two pages render identically. flex-end aligns box
-   bottoms; the text spans use `text-box-trim` to collapse to
-   their visible glyph bounds so vanaf / original / amount all
-   bottom-align on the same line. */
+/* Sticky CTA price row — baseline alignment matches the deal
+   page exactly. All text spans (vanaf, original, amount) share
+   their text baseline → letters bottom-align across all browsers
+   (text-box-trim isn't supported everywhere). The i-icon falls
+   back to its content baseline = its bottom edge, so it sits at
+   the same Y as the text glyph bottoms. */
 .hotel-page__cta-bar-price-row {
   display: flex;
-  align-items: flex-end;
+  align-items: baseline;
   gap: 8px;
 }
 .hotel-page__cta-bar-discount {
