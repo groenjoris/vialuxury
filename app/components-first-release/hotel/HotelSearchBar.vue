@@ -98,18 +98,21 @@
          (same visual behaviour as the home searchbar). -->
     <div v-if="activePopup" class="hsb-overlay" @click.self="closePopup"></div>
 
-    <!-- WHEN POPUP — calendar half of the combined search-bar popup -->
+    <!-- WHEN POPUP — calendar half of the combined search-bar popup.
+         No Klaar footer: picking a date auto-closes the popup. -->
     <div v-if="activePopup === 'when'" class="popup popup--when" :style="popupStyle">
       <FirstReleaseDateAndDurationPopup
         mode="date"
+        hide-footer
         v-model:cal-month="calMonth"
-        v-model:selected-date="selectedDate"
+        :selected-date="selectedDate"
         :nights="selectedDurations"
         :any-duration="anyDuration"
         :flexible="localFlexible"
         @toggle-night="onToggleNight"
         @set-any-duration="setAnyDuration"
         @update:flexible="setLocalFlexible"
+        @update:selected-date="onDatePicked"
         @save="closePopup()"
         @clear="clearWhen"
       />
@@ -256,6 +259,14 @@ function closePopup() {
 function clearWhen() {
   selectedDate.value = null
   localFlexible.value = false
+}
+
+/** Date picked from the When popup — save AND close in one tap.
+ *  Mid-page calendar treats selection as self-confirming; no
+ *  explicit Klaar button needed. */
+function onDatePicked(val: string | null) {
+  selectedDate.value = val
+  if (val) closePopup()
 }
 
 function clearHowLong() {

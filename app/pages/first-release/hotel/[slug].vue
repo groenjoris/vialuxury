@@ -38,7 +38,12 @@
           </div>
           <p v-if="hotel.pitch" class="hotel-page__pitch">{{ localized(hotel.pitch) }}</p>
           <div class="hotel-page__meta">
+            <svg class="hotel-page__meta-pin" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+              <circle cx="12" cy="10" r="3" />
+            </svg>
             <span>{{ hotel.location.city }}, {{ hotel.location.region }}</span>
+            <a href="#location" class="hotel-page__view-map-link" @click.prevent="scrollToMiniMap">{{ t('common.viewMap') || 'Bekijk op kaart' }}</a>
           </div>
         </div>
       </section>
@@ -63,8 +68,12 @@
             </button>
           </div>
         </div>
-        <div class="mini-map">
-          <div class="mini-map__placeholder">
+        <div id="location" class="mini-map">
+          <NuxtLink
+            :to="`/first-release/kaart?focus=${hotel.slug}`"
+            class="mini-map__placeholder"
+            :aria-label="t('common.viewMap')"
+          >
             <img
               :src="mapTileUrl"
               :alt="t('deal.mapArea')"
@@ -73,14 +82,17 @@
             />
             <div class="mini-map__pin">
               <svg width="32" height="42" viewBox="0 0 32 42" fill="none">
-                <path d="M16 0C7.16 0 0 7.16 0 16c0 12 16 26 16 26s16-14 16-26C32 7.16 24.84 0 16 0z" fill="#00B67A"/>
+                <path d="M16 0C7.16 0 0 7.16 0 16c0 12 16 26 16 26s16-14 16-26C32 7.16 24.84 0 16 0z" fill="#0e0e0c"/>
                 <circle cx="16" cy="16" r="6" fill="#fff"/>
               </svg>
             </div>
-            <div class="mini-map__bottom">
-              <span class="mini-map__label">{{ hotel.location.city }}</span>
-              <a href="#location" class="mini-map__link">{{ t('common.viewMap') }}</a>
-            </div>
+          </NuxtLink>
+          <div class="mini-map__footer">
+            <span class="mini-map__address">{{ hotelStreetCity }}</span>
+            <NuxtLink
+              :to="`/first-release/kaart?focus=${hotel.slug}`"
+              class="mini-map__view-link"
+            >{{ t('common.viewMap') }}</NuxtLink>
           </div>
         </div>
       </section>
@@ -219,11 +231,11 @@
       <div class="hotel-page__cta-bar-inner container">
         <!-- Anchor tabs — desktop only. -->
         <nav v-if="!isMobile" class="hotel-page__tabs hotel-page__tabs--in-bar">
-          <a href="#overzicht" class="hotel-page__tab">{{ t('hotel.tabOverview') }}</a>
-          <a href="#arrangementen" class="hotel-page__tab">{{ t('hotel.tabDeals') }}</a>
-          <a href="#veelgestelde-vragen" class="hotel-page__tab">{{ t('hotel.tabFaq') }}</a>
-          <a v-if="hotel.houseRules && hotel.houseRules.length" href="#huisregels" class="hotel-page__tab">{{ t('hotel.tabHouseRules') }}</a>
-          <a href="#tips" class="hotel-page__tab">{{ t('hotel.tabNearby') }}</a>
+          <a href="#overzicht" class="hotel-page__tab" :class="{ 'hotel-page__tab--active': activeAnchor === 'overzicht' }">{{ t('hotel.tabOverview') }}</a>
+          <a href="#arrangementen" class="hotel-page__tab" :class="{ 'hotel-page__tab--active': activeAnchor === 'arrangementen' }">{{ t('hotel.tabDeals') }}</a>
+          <a href="#veelgestelde-vragen" class="hotel-page__tab" :class="{ 'hotel-page__tab--active': activeAnchor === 'veelgestelde-vragen' }">{{ t('hotel.tabFaq') }}</a>
+          <a v-if="hotel.houseRules && hotel.houseRules.length" href="#huisregels" class="hotel-page__tab" :class="{ 'hotel-page__tab--active': activeAnchor === 'huisregels' }">{{ t('hotel.tabHouseRules') }}</a>
+          <a href="#tips" class="hotel-page__tab" :class="{ 'hotel-page__tab--active': activeAnchor === 'tips' }">{{ t('hotel.tabNearby') }}</a>
         </nav>
         <div class="hotel-page__cta-bar-cluster">
           <div v-if="cheapestDeal" class="hotel-page__cta-bar-price-block">
@@ -239,10 +251,11 @@
                    Verwaltungskosten" line below the price meta. -->
               <FirstReleasePriceInfoTooltip v-if="!isGerman" variant="deal" />
             </div>
-            <span class="hotel-page__cta-bar-meta">{{ cheapestPriceForLabel }}</span>
             <span v-if="isGerman" class="hotel-page__cta-bar-meta hotel-page__cta-bar-meta--de">
-              Exkl. Kurtaxe und Verwaltungskosten
+              <span>{{ stickyDeLine1 }}</span>
+              <span>{{ stickyDeLine2 }}</span>
             </span>
+            <span v-else class="hotel-page__cta-bar-meta">{{ cheapestPriceForLabel }}</span>
           </div>
           <button type="button" class="hotel-page__cta-bar-btn" @click="scrollToArrangements">
             Bekijk arrangementen
@@ -251,20 +264,24 @@
       </div>
     </div>
 
-    <!-- Full description modal -->
+    <!-- Full description modal — same card layout as the deal page
+         (square 2-col card, hotel photo left, scrolling text right). -->
     <Teleport to="body">
-      <Transition name="panel">
+      <Transition name="fade">
         <div
           v-if="showFullDescription && hotel"
-          class="desc-modal-overlay"
+          class="desc-modal"
           @click.self="showFullDescription = false"
         >
-          <div class="desc-modal">
-            <button class="desc-modal__close" :aria-label="t('common.close')" @click="showFullDescription = false">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12" /></svg>
-            </button>
-            <h3 class="desc-modal__title">{{ hotel.name }}</h3>
-            <div class="desc-modal__body" v-html="localized(hotel.description)"></div>
+          <div class="desc-modal__card">
+            <div v-if="hotel.images && hotel.images.length" class="desc-modal__photo">
+              <img :src="hotel.images[0].url" :alt="hotel.name" />
+            </div>
+            <div class="desc-modal__text">
+              <button type="button" class="desc-modal__close" @click="showFullDescription = false" :aria-label="t('common.close')">×</button>
+              <h2 class="desc-modal__title">{{ hotel.name }}</h2>
+              <div class="desc-modal__body" v-html="localized(hotel.description)"></div>
+            </div>
           </div>
         </div>
       </Transition>
@@ -455,6 +472,55 @@ function scrollToArrangements() {
   if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
 }
 
+/** Smooth-scroll to the mini-map block — wired to the "Bekijk
+ *  kaart" link in the title meta line. */
+function scrollToMiniMap() {
+  if (!import.meta.client) return
+  const el = document.getElementById('location')
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+}
+
+/** Street + city for the mini-map footer, mirrors the deal page. */
+const hotelStreetCity = computed(() => {
+  const loc = hotel.value.location
+  const street = (loc as { street?: string }).street
+  return street ? `${street}, ${loc.city}` : loc.city
+})
+
+/** Sticky CTA bar — German two-line meta (matches deal page). */
+const stickyDeLine1 = computed(() => {
+  const d = cheapestDeal.value
+  if (!d) return ''
+  return t('deal.stickyNoDatePrice').replace('{persons}', String(globalPersons.value || 2))
+})
+const stickyDeLine2 = computed(() =>
+  globalArrivalDate.value ? t('deal.stickyTaxWithDate') : t('deal.stickyTaxNoDate'),
+)
+
+/** Active anchor for the sticky-bar nav — IntersectionObserver
+ *  flips this to the section ID closest to the top of the viewport.
+ *  Drives the bold/underline-off treatment on the matching tab. */
+const activeAnchor = ref<string>('overzicht')
+let anchorObserver: IntersectionObserver | null = null
+function setupAnchorObserver() {
+  if (!import.meta.client) return
+  const ids = ['overzicht', 'arrangementen', 'veelgestelde-vragen', 'huisregels', 'tips', 'location']
+  const targets = ids.map(id => document.getElementById(id)).filter((el): el is HTMLElement => !!el)
+  if (!targets.length) return
+  anchorObserver?.disconnect()
+  anchorObserver = new IntersectionObserver(
+    (entries) => {
+      // Pick the topmost intersecting section (smallest top offset).
+      const visible = entries
+        .filter(e => e.isIntersecting)
+        .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)
+      if (visible.length && visible[0].target.id) activeAnchor.value = visible[0].target.id
+    },
+    { rootMargin: '-100px 0px -60% 0px', threshold: 0 },
+  )
+  for (const el of targets) anchorObserver.observe(el)
+}
+
 // Sync FR nav-bar variant with the user's last homepage pick so the
 // SiteHeader on this internal page matches the chosen variant. Reads
 // localStorage (or the URL if it matches a known variant path).
@@ -463,9 +529,12 @@ onMounted(() => {
   restoreFrNavVariant(window.location.pathname)
   window.addEventListener('scroll', handleScroll, { passive: true })
   handleScroll()
+  nextTick(setupAnchorObserver)
 })
 onBeforeUnmount(() => {
   if (typeof window !== 'undefined') window.removeEventListener('scroll', handleScroll)
+  anchorObserver?.disconnect()
+  anchorObserver = null
 })
 </script>
 
@@ -490,18 +559,34 @@ onBeforeUnmount(() => {
   height: 1px;
   background: var(--color-border-light);
 }
+/* Anchor tabs — underlined deal-page style. Default underlined,
+   hover deepens text. In-bar variant drops underline on the
+   active tab and bumps to bold. */
 .hotel-page__tab {
   font-size: 14px;
   font-weight: 500;
-  color: var(--color-text-primary);
-  text-decoration: none;
+  color: var(--color-text-secondary);
+  text-decoration: underline;
+  text-underline-offset: 3px;
   padding-bottom: var(--space-sm);
-  border-bottom: 2px solid transparent;
-  transition: border-color var(--transition-fast), color var(--transition-fast);
+  border-bottom: none;
+  transition: color var(--transition-fast);
 }
 .hotel-page__tab:hover {
-  /* Color-only hover — no underline. */
-  color: var(--color-primary);
+  color: var(--color-text-primary);
+  text-decoration: underline;
+}
+.hotel-page__tabs--in-bar { padding: 0; border-bottom: none; }
+.hotel-page__tabs--in-bar::after { display: none; }
+.hotel-page__tabs--in-bar .hotel-page__tab {
+  padding-bottom: 0;
+  border-bottom: none;
+  text-decoration: underline;
+}
+.hotel-page__tabs--in-bar .hotel-page__tab--active {
+  text-decoration: none;
+  color: var(--color-text-primary);
+  font-weight: 700;
 }
 
 /* ===== TITLE SECTION ===== */
@@ -539,7 +624,9 @@ onBeforeUnmount(() => {
   color: var(--color-text-secondary);
   margin-bottom: var(--space-sm);
 }
-.hotel-page__meta { display: flex; align-items: center; gap: var(--space-sm); font-size: 14px; color: var(--color-text-secondary); }
+.hotel-page__meta { display: flex; align-items: center; gap: var(--space-sm); font-size: 14px; color: var(--color-text-secondary); flex-wrap: wrap; }
+.hotel-page__meta-pin { flex-shrink: 0; color: var(--color-text-secondary); }
+.hotel-page__meta .hotel-page__view-map-link { margin-left: 8px; color: var(--color-primary, #c9a85c); font-weight: 600; text-decoration: underline; }
 .hotel-page__score-wrap { display: flex; align-items: center; gap: 6px; }
 .hotel-page__score { display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: var(--radius-sm); background: #00B67A; color: #fff; font-size: 13px; font-weight: 700; flex-shrink: 0; }
 .hotel-page__score-label { font-size: 13px; font-weight: 600; color: var(--color-text-primary); }
@@ -560,24 +647,56 @@ onBeforeUnmount(() => {
 .hotel-page__read-more:hover { color: var(--color-primary-hover); }
 
 /* Description modal */
-.desc-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: var(--space-lg); }
-.desc-modal { background: var(--color-surface); border-radius: var(--radius-lg); padding: var(--space-xl); max-width: 720px; width: 100%; max-height: 85vh; overflow-y: auto; position: relative; box-shadow: 0 12px 40px rgba(0,0,0,0.2); }
-.desc-modal__close { position: absolute; top: var(--space-md); right: var(--space-md); width: 36px; height: 36px; border-radius: 50%; border: 0; background: var(--color-background-secondary); display: inline-flex; align-items: center; justify-content: center; cursor: pointer; color: var(--color-text-primary); }
-.desc-modal__close:hover { background: var(--color-border); }
+/* Full description modal — same look as the deal page. Overlay
+   + close button styles are local; the card layout (2-col grid,
+   photo left, scrolling text right) lives in fr-variant-6.css
+   keyed on `.desc-modal__card`. */
+.desc-modal {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 1000;
+  display: flex; align-items: center; justify-content: center;
+  padding: var(--space-lg);
+}
+.desc-modal__close {
+  position: absolute;
+  top: var(--space-md); right: var(--space-md);
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--color-border);
+  background: #fff;
+  display: inline-flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  color: var(--color-text-primary);
+  font-size: 22px; line-height: 1;
+}
+.desc-modal__close:hover { border-color: var(--color-primary); }
 .desc-modal__title { font-family: var(--font-heading); font-size: 22px; font-weight: 700; margin: 0 0 var(--space-md); padding-right: 40px; }
 .desc-modal__body { font-size: 15px; line-height: 1.75; color: var(--color-text-secondary); }
 .desc-modal__body p { margin: 0 0 var(--space-md); }
 
 /* Mini map */
-.mini-map { border-radius: var(--radius-lg); overflow: hidden; height: 224px; }
-.mini-map__placeholder { position: relative; width: 100%; height: 224px; border-radius: var(--radius-lg); overflow: hidden; }
-.mini-map__img { width: 100%; height: 224px; object-fit: cover; }
+/* Mini map — match the deal-page layout. Photo wrapped in a
+   NuxtLink that navigates to the full kaart; a separate footer
+   row below the photo carries the street + city and a
+   "Bekijk kaart" link (no overlay strip on the image). */
+.mini-map { display: flex; flex-direction: column; gap: 8px; scroll-margin-top: 88px; }
+.mini-map__placeholder { position: relative; display: block; width: 100%; aspect-ratio: 1 / 1; border-radius: var(--radius-lg); overflow: hidden; cursor: pointer; }
+.mini-map__img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .mini-map__img--map { filter: saturate(0.85) contrast(1.05); }
 .mini-map__pin { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -100%); filter: drop-shadow(0 3px 6px rgba(0,0,0,0.25)); z-index: 2; pointer-events: none; }
-.mini-map__bottom { position: absolute; bottom: 0; left: 0; right: 0; padding: 10px 14px; background: linear-gradient(transparent, rgba(0,0,0,0.6)); display: flex; align-items: center; justify-content: space-between; z-index: 2; }
-.mini-map__label { font-size: 14px; font-weight: 600; color: #fff; }
-.mini-map__link { font-size: 13px; color: #fff; text-decoration: underline; text-underline-offset: 2px; opacity: 0.85; }
-.mini-map__link:hover { opacity: 1; }
+.mini-map__footer { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-md); }
+.mini-map__address { font-family: var(--font-body); font-size: 13px; color: var(--color-text-secondary); line-height: 1.4; }
+.mini-map__view-link {
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-primary, #c9a85c);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  white-space: nowrap;
+}
+.mini-map__view-link:hover { color: var(--color-primary-hover, #b08a40); }
 
 /* ===== SECTION TITLES ===== */
 .section-title { font-size: 22px; font-weight: 600; margin-bottom: var(--space-lg); }
@@ -833,6 +952,7 @@ onBeforeUnmount(() => {
   text-align: left;
 }
 .hotel-page__cta-bar--mobile .hotel-page__cta-bar-meta--de {
+  align-items: flex-start;
   font-size: 11px;
   color: var(--color-text-muted);
   line-height: 1.3;
@@ -904,6 +1024,15 @@ onBeforeUnmount(() => {
 .hotel-page__cta-bar-meta {
   font-size: 11px;
   color: var(--color-text-muted);
+  white-space: nowrap;
+}
+/* German two-line meta — stacks "Preis für …" + "Exkl. Kurtaxe
+   und Verwaltungskosten" right-aligned, matching deal page. */
+.hotel-page__cta-bar-meta--de {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  line-height: 1.3;
   white-space: nowrap;
 }
 .hotel-page__cta-bar-btn {
