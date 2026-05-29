@@ -38,18 +38,21 @@
            room for the overlay stickers below. Every other context
            still shows the chip. -->
       <span
-        v-if="deal.discountPercentage && !(panelMode && !mapMode)"
+        v-if="deal.discountPercentage && !panelMode"
         class="deal-card-v2__discount-badge"
       >
         -{{ deal.discountPercentage }}%
       </span>
-      <!-- Deal-page sidepanel: photo overlay with nights label +
-           up to 3 amenity stickers (Entreekaarten / Diner / Bubbelbad
-           / Fiets / Wellness / Zwembad — priority order). Recoleta on
-           transparent-black tile, smaller than the search-card
-           action-sticker chips. -->
+      <!-- Sidepanel overlay: photo gets the nights label + up to 3
+           amenity stickers (entreekaarten / diner / bubbelbad /
+           fiets / wellness / zwembad — priority order, lowercase).
+           Recoleta on transparent-black tile, smaller than the
+           search-card action-sticker chips. Renders on BOTH the
+           deal-page sidepanel AND the map-page sidepanel (same
+           rules — discount badge is hidden in both contexts to
+           keep room for the stickers). -->
       <div
-        v-if="panelMode && !mapMode"
+        v-if="panelMode"
         class="deal-card-v2__panel-stickers"
       >
         <span class="deal-card-v2__panel-sticker">{{ nightsStickerLabel }}</span>
@@ -347,12 +350,12 @@ const panelAmenityStickers = computed<string[]>(() => {
   // Priority order matches the user spec. Each entry: visible label
   // + keyword list. First match wins per row; we cap at 3 stickers.
   const candidates: Array<{ label: string; keys: string[] }> = [
-    { label: 'Entreekaarten', keys: ['entreekaart', 'entree-kaart', 'tickets', 'eintritt', 'entrance ticket'] },
-    { label: 'Diner', keys: ['diner', 'dinner', 'abendessen', '3-gangen', '4-gangen', '5-gangen', 'gangen menu'] },
-    { label: 'Bubbelbad', keys: ['bubbelbad', 'jacuzzi', 'whirlpool', 'hot tub', 'spabad'] },
-    { label: 'Fiets', keys: ['fiets', 'bicycle', 'bike', 'fahrrad'] },
-    { label: 'Wellness', keys: ['wellness', 'spa-toegang', 'spa toegang', 'spa entry'] },
-    { label: 'Zwembad', keys: ['zwembad', 'pool', 'schwimmbad'] },
+    { label: 'entreekaarten', keys: ['entreekaart', 'entree-kaart', 'tickets', 'eintritt', 'entrance ticket'] },
+    { label: 'diner', keys: ['diner', 'dinner', 'abendessen', '3-gangen', '4-gangen', '5-gangen', 'gangen menu'] },
+    { label: 'bubbelbad', keys: ['bubbelbad', 'jacuzzi', 'whirlpool', 'hot tub', 'spabad'] },
+    { label: 'fiets', keys: ['fiets', 'bicycle', 'bike', 'fahrrad'] },
+    { label: 'wellness', keys: ['wellness', 'spa-toegang', 'spa toegang', 'spa entry'] },
+    { label: 'zwembad', keys: ['zwembad', 'pool', 'schwimmbad'] },
   ]
   const out: string[] = []
   for (const c of candidates) {
