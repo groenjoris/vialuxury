@@ -1277,7 +1277,11 @@ function navigateToDeal(slug: string) {
   if (persons.value !== 2) params.set('adults', String(persons.value))
   if (rooms.value !== 1) params.set('rooms', String(rooms.value))
   const qs = params.toString()
-  window.open(`/first-release/deal/${slug}${qs ? '?' + qs : ''}`, '_blank')
+  const url = `/first-release/deal/${slug}${qs ? '?' + qs : ''}`
+  // Desktop opens a new tab so the search panel stays put; mobile
+  // navigates in the same tab.
+  if (isMobile.value) navigateTo(url)
+  else window.open(url, '_blank')
 }
 
 // Sync FR nav-bar variant with the user's last homepage pick so the

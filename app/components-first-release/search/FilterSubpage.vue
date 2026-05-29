@@ -100,4 +100,18 @@ defineEmits<{
 .filter-subpage__apply:hover {
   background: var(--color-primary-hover);
 }
+
+/* +2 pt across every text element inside the mobile filter subpage —
+   group headings, checkbox labels, count suffixes, budget chrome.
+   The "Verwijder filters" reset chip and the apply button keep
+   their own sizes; everything else nested under SearchFilterPanel
+   inherits the bump via the `:deep()` selector. */
+.filter-subpage__body :deep(.filter-panel__title) { font-size: 22px; }
+.filter-subpage__body :deep(.filter-group__label) { font-size: 16px; }
+.filter-subpage__body :deep(.filter-item__label),
+.filter-subpage__body :deep(.filter-item__count) { font-size: 16px; }
+.filter-subpage__body :deep(.filter-budget__label) { font-size: 16px; }
+.filter-subpage__body :deep(.filter-budget__range) { font-size: 16px; }
+.filter-subpage__body :deep(.filter-budget__persons) { font-size: 14px; }
+.filter-subpage__body :deep(.filter-budget__labels) { font-size: 14px; }
 </style>

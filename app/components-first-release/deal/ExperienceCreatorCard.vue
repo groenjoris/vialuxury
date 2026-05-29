@@ -76,25 +76,25 @@ const pronounCapitalised = computed(() =>
 @media (max-width: 800px) {
   .creator-card {
     width: 100%;
-    height: 130px;
+    height: 150px;
   }
   .creator-card__avatar {
-    width: 100px;
-    height: 100px;
+    width: 116px;
+    height: 116px;
   }
   .creator-card__lede,
   .creator-card__field-label,
   .creator-card__score-line {
-    font-size: 13px;
+    font-size: 15px;
   }
   .creator-card__name {
-    font-size: 28px;
+    font-size: 30px;
   }
   .creator-card__field-value {
-    font-size: 14px;
+    font-size: 16px;
   }
   .creator-card__score {
-    font-size: 15px;
+    font-size: 17px;
   }
 }
 

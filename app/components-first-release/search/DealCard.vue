@@ -87,7 +87,7 @@
       <!-- TOP ROW — full content width: hotel name + stars on line 1,
            location on line 2 -->
       <div v-if="showHotelInfo && hotel" class="deal-card-v2__hotel-info">
-        <NuxtLink :to="`/first-release/hotel/${hotel.slug}`" target="_blank" class="deal-card-v2__name-link" @click.stop>
+        <NuxtLink :to="`/first-release/hotel/${hotel.slug}`" :target="linkTarget" class="deal-card-v2__name-link" @click.stop>
           <h3 class="deal-card-v2__name-row">
             <span class="deal-card-v2__name">{{ hotel.name }}</span>
             <span class="deal-card-v2__stars" aria-hidden="true">
@@ -169,7 +169,7 @@
                 </p>
                 <NuxtLink
                   :to="dealHref"
-                  target="_blank"
+                  :target="linkTarget"
                   rel="noopener"
                   class="deal-card-v2__cta"
                   :class="{ 'deal-card-v2__cta--two-line': dateMismatch }"
@@ -205,7 +205,7 @@
               <span class="deal-card-v2__price">{{ formatPrice(price) }}</span>
               <FirstReleasePriceInfoTooltip variant="card" />
             </p>
-            <NuxtLink :to="dealHref" target="_blank" rel="noopener" class="deal-card-v2__cta deal-card-v2__cta--full">
+            <NuxtLink :to="dealHref" :target="linkTarget" rel="noopener" class="deal-card-v2__cta deal-card-v2__cta--full">
               Bekijk
             </NuxtLink>
             <!-- German-only microcopy below the price + button row. -->
@@ -242,6 +242,12 @@ import { arrangementSuffixFromHighlights } from '~/utils-first-release/arrangeme
 import { useFirstReleaseHomeVariant } from '~/composables-first-release/useFirstReleaseHomeVariant'
 
 const { t, localized, locale } = useFirstReleaseI18n()
+const isMobile = useFirstReleaseIsMobile()
+/** Open deal / hotel pages in a new tab on desktop (so the search
+ *  result list stays put), but in the SAME tab on mobile — mobile
+ *  browsers handle multi-tab badly and a same-tab nav matches the
+ *  user's mental model of "tap card → see deal". */
+const linkTarget = computed(() => (isMobile.value ? '_self' : '_blank'))
 /** German-only extra microcopy row sits below the CTA. */
 const isGerman = computed(() => locale.value === 'de')
 
