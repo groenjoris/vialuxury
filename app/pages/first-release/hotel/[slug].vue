@@ -930,6 +930,10 @@ onBeforeUnmount(() => {
   border-bottom: none;
   border-top: 1px solid var(--color-border);
   box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.08);
+  /* Extend the bar's white bg into the safe-area inset at the
+     bottom (iPhone home-indicator strip, Chrome dynamic bottom
+     bar). Mirrors the deal-page sticky footer. */
+  padding-bottom: env(safe-area-inset-bottom, 0);
 }
 .hotel-page__cta-bar--mobile .hotel-page__cta-bar-inner {
   padding-top: 12px;

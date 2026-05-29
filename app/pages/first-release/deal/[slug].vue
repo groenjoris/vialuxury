@@ -2363,6 +2363,12 @@ onMounted(() => {
   border-bottom: none;
   border-top: 1px solid var(--color-border);
   box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.08);
+  /* Extend the bar's white bg INTO the safe-area inset at the
+     bottom (iPhone home-indicator strip, Chrome dynamic bottom
+     bar). Without this the bar sits flush with the viewport's
+     visible bottom and shows a thin white strip below when the
+     browser chrome hides on scroll. */
+  padding-bottom: env(safe-area-inset-bottom, 0);
 }
 /* Mobile-only: bump the sticky footer's vertical padding by 20 %
    so price + button get more breathing room above safe-area. */
@@ -2419,10 +2425,10 @@ onMounted(() => {
    `align-items: baseline`; overriding `align-self` to `baseline` —
    instead of the chip's `center` — pulls the prefix down to the
    same baseline as the prices). */
-/* "Vanaf" / "Ab" variant — plain inline text, no chip background.
-   Resets the centered-flex layout the base chip rule applies, and
-   uses `text-box-trim` so its glyph bottom lines up with the price
-   glyphs next to it (which are also trimmed). */
+/* "Vanaf" / "Ab" variant — plain inline-flex text, no chip
+   background. Matches the sidebar `.sidebar__discount` shape
+   (display: inline-flex, align-items: center) so it bottom-
+   aligns identically with the price text via text-box-trim. */
 .deal-page__cta-bar-discount--vanaf {
   background: transparent;
   color: var(--color-text-primary);
@@ -2432,11 +2438,21 @@ onMounted(() => {
   font-style: normal;
   padding: 0;
   border-radius: 0;
-  display: inline;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   align-self: flex-end;
   line-height: 1;
   text-box-trim: trim-both;
   text-box-edge: cap alphabetic;
+}
+/* Info-tooltip icon — drop the icon's box-bottom onto the
+   amount's trimmed glyph bottom. Without explicit alignment
+   the 14 px circle drifts a px or two below the price
+   baseline. */
+.deal-page__cta-bar-price-row .price-info {
+  align-self: flex-end;
+  margin-bottom: 2px;
 }
 .deal-page__cta-bar-original {
   font-family: var(--font-heading);
