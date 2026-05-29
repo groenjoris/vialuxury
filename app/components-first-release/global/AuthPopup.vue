@@ -2,7 +2,7 @@
   <Teleport to="body">
     <Transition name="fade">
       <div v-if="isOpen" class="auth-overlay" @click.self="emit('close')">
-        <div class="auth-popup">
+        <div class="auth-popup" data-scroll-lock-allow="true">
           <button class="auth-popup__close" @click="emit('close')">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
@@ -87,7 +87,7 @@
 <script setup lang="ts">
 const { t } = useFirstReleaseI18n()
 
-defineProps<{
+const props = defineProps<{
   isOpen: boolean
 }>()
 
@@ -97,6 +97,17 @@ const emit = defineEmits<{
 }>()
 
 const activeTab = ref<'login' | 'register'>('register')
+
+// Body scroll lock while the popup is open.
+const _scrollLock = useBodyScrollLock()
+let _scrollLockAcquired = false
+watch(() => props.isOpen, (open) => {
+  if (open && !_scrollLockAcquired) { _scrollLock.acquire(); _scrollLockAcquired = true }
+  else if (!open && _scrollLockAcquired) { _scrollLock.release(); _scrollLockAcquired = false }
+}, { immediate: true })
+onBeforeUnmount(() => {
+  if (_scrollLockAcquired) { _scrollLock.release(); _scrollLockAcquired = false }
+})
 </script>
 
 <style scoped>

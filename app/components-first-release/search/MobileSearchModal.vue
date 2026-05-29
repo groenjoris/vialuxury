@@ -19,7 +19,7 @@
           </button>
         </header>
 
-        <div class="msm__body">
+        <div class="msm__body" data-scroll-lock-allow="true">
           <!-- Waarheen — the field itself is the typing surface. Tapping
                focuses the input, suggestions appear below. The
                DestinationPopup's own input is hidden via CSS; its
@@ -313,13 +313,22 @@ function toggle(name: 'where' | 'when' | 'howlong' | 'who') {
   }
 }
 
-// Reset section state whenever the modal opens / closes.
+// Reset section state whenever the modal opens / closes, AND
+// lock the body scroll behind the modal so the underlying page
+// can't be panned while the modal is up.
+const _scrollLock = useBodyScrollLock()
+let _scrollLockAcquired = false
 watch(() => props.open, (isOpen) => {
   if (!isOpen) {
     active.value = null
     destinationQuery.value = ''
     whenFlexible.value = false
   }
+  if (isOpen && !_scrollLockAcquired) { _scrollLock.acquire(); _scrollLockAcquired = true }
+  else if (!isOpen && _scrollLockAcquired) { _scrollLock.release(); _scrollLockAcquired = false }
+}, { immediate: true })
+onBeforeUnmount(() => {
+  if (_scrollLockAcquired) { _scrollLock.release(); _scrollLockAcquired = false }
 })
 
 // ─── Waarheen typing surface ────────────────────────────────────────────────
@@ -489,6 +498,9 @@ function pickWho(opt: { adults: number; rooms: number }) {
 .msm {
   position: fixed;
   inset: 0;
+  /* Dynamic viewport height — covers the full visible area on
+     iOS Safari with collapsing chrome. */
+  height: 100dvh;
   /* Warm off-white grey — same surface as the homepage persuasion /
      popular bands so the modal feels like part of the same chrome.
      Field cards stay white for contrast. */

@@ -32,7 +32,7 @@
             <span class="panel__room-counter">{{ totalAllocated }} {{ t('room.roomsChosenForPersons').replace('{n}', String(store.totalPersons)) }}</span>
           </div>
 
-          <div class="panel__body">
+          <div class="panel__body" data-scroll-lock-allow="true">
             <!-- Base room -->
             <div
               class="room-card"
@@ -205,7 +205,11 @@ const totalAllocated = computed(() => {
 // Minimum rooms: 1 room per 1-2 persons, 2 rooms for 3-4, etc.
 const minRooms = computed(() => Math.ceil(store.totalPersons / 2))
 
-// Sync local allocation when panel opens
+// Sync local allocation when panel opens + lock body scroll
+// via the shared refcounted lock so concurrent modals don't
+// fight each other for the body's overflow style.
+const _scrollLock = useBodyScrollLock()
+let _scrollLockAcquired = false
 watch(() => props.isOpen, (open) => {
   if (open) {
     // Capture mode at open time — stays fixed for this session
@@ -215,10 +219,13 @@ watch(() => props.isOpen, (open) => {
       const alloc = { ...store.effectiveAllocation }
       localAllocation.value = alloc
     }
-    document.body.style.overflow = 'hidden'
-  } else {
-    document.body.style.overflow = ''
+    if (!_scrollLockAcquired) { _scrollLock.acquire(); _scrollLockAcquired = true }
+  } else if (_scrollLockAcquired) {
+    _scrollLock.release(); _scrollLockAcquired = false
   }
+}, { immediate: true })
+onBeforeUnmount(() => {
+  if (_scrollLockAcquired) { _scrollLock.release(); _scrollLockAcquired = false }
 })
 
 // Write back to store whenever local allocation changes (in multi-room mode)

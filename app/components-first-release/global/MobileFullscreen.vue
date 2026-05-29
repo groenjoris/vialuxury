@@ -21,8 +21,9 @@
           </div>
         </header>
 
-        <!-- Body -->
-        <div class="mobile-fs__body">
+        <!-- Body — opt-in scrollable surface for the touchmove
+             scroll-lock listener. -->
+        <div class="mobile-fs__body" data-scroll-lock-allow="true">
           <slot />
         </div>
 
@@ -50,15 +51,18 @@ defineEmits<{
   close: []
 }>()
 
-// Body-scroll lock while open
+// Body scroll lock — uses the shared refcounted lock so the
+// underlying page can't scroll while this fullscreen is open.
+// Lock is also released on unmount so an orphaned `open=true`
+// can't leave the body permanently frozen.
+const scrollLock = useBodyScrollLock()
+let acquired = false
 watch(() => props.open, (isOpen) => {
-  if (typeof document === 'undefined') return
-  if (isOpen) document.body.style.overflow = 'hidden'
-  else document.body.style.overflow = ''
+  if (isOpen && !acquired) { scrollLock.acquire(); acquired = true }
+  else if (!isOpen && acquired) { scrollLock.release(); acquired = false }
 }, { immediate: true })
-
 onBeforeUnmount(() => {
-  if (typeof document !== 'undefined') document.body.style.overflow = ''
+  if (acquired) { scrollLock.release(); acquired = false }
 })
 </script>
 
@@ -66,6 +70,10 @@ onBeforeUnmount(() => {
 .mobile-fs {
   position: fixed;
   inset: 0;
+  /* Cover the full dynamic viewport (handles iOS Safari's
+     collapsing chrome). Falls back to inset:0 above for older
+     browsers that don't support `dvh`. */
+  height: 100dvh;
   z-index: 1100;
   background: var(--color-surface, #fff);
   display: flex;

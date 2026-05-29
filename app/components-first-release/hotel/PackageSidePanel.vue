@@ -14,7 +14,7 @@
             </button>
           </div>
 
-          <div class="panel__body">
+          <div class="panel__body" data-scroll-lock-allow="true">
             <div
               v-for="variant in variants"
               :key="variant.id"
@@ -94,6 +94,17 @@ defineEmits<{
   (e: 'close'): void
   (e: 'select', dealId: string): void
 }>()
+
+// Body scroll lock while the side panel is open.
+const _scrollLock = useBodyScrollLock()
+let _scrollLockAcquired = false
+watch(() => props.isOpen, (open) => {
+  if (open && !_scrollLockAcquired) { _scrollLock.acquire(); _scrollLockAcquired = true }
+  else if (!open && _scrollLockAcquired) { _scrollLock.release(); _scrollLockAcquired = false }
+}, { immediate: true })
+onBeforeUnmount(() => {
+  if (_scrollLockAcquired) { _scrollLock.release(); _scrollLockAcquired = false }
+})
 
 function getInclusions(dealId: string): string[] {
   return props.inclusionsMap[dealId] || []

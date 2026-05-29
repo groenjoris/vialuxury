@@ -277,7 +277,7 @@
             <div v-if="hotel.images && hotel.images.length" class="desc-modal__photo">
               <img :src="hotel.images[0].url" :alt="hotel.name" />
             </div>
-            <div class="desc-modal__text">
+            <div class="desc-modal__text" data-scroll-lock-allow="true">
               <button type="button" class="desc-modal__close" @click="showFullDescription = false" :aria-label="t('common.close')">×</button>
               <h2 class="desc-modal__title">{{ hotel.name }}</h2>
               <div class="desc-modal__body" v-html="localized(hotel.description)"></div>
@@ -410,6 +410,8 @@ const descriptionParagraphs = computed(() => {
 const firstDescriptionParagraph = computed(() => descriptionParagraphs.value[0] ?? '')
 const hasMoreDescription = computed(() => descriptionParagraphs.value.length > 1)
 const showFullDescription = ref(false)
+// Lock the underlying page while the description modal is open.
+useBodyScrollLock().bindTo(showFullDescription)
 
 // House rules accordion
 const openRuleId = ref<string | null>(null)

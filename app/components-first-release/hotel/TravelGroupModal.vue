@@ -12,7 +12,7 @@
             </button>
           </div>
 
-          <div class="modal__body">
+          <div class="modal__body" data-scroll-lock-allow="true">
             <!-- Adults -->
             <div class="modal__row">
               <div class="modal__row-info">
@@ -132,7 +132,10 @@ const localGroup = ref<TravelGroup>({
   rooms: 1,
 })
 
-// Sync local state when modal opens
+// Sync local state when modal opens + lock body scroll behind
+// the modal.
+const _scrollLock = useBodyScrollLock()
+let _scrollLockAcquired = false
 watch(() => store.isTravelGroupModalOpen, (open) => {
   if (open) {
     localGroup.value = {
@@ -140,7 +143,13 @@ watch(() => store.isTravelGroupModalOpen, (open) => {
       children: store.travelGroup.children.map(c => ({ ...c })),
       rooms: store.travelGroup.rooms,
     }
+    if (!_scrollLockAcquired) { _scrollLock.acquire(); _scrollLockAcquired = true }
+  } else if (_scrollLockAcquired) {
+    _scrollLock.release(); _scrollLockAcquired = false
   }
+}, { immediate: true })
+onBeforeUnmount(() => {
+  if (_scrollLockAcquired) { _scrollLock.release(); _scrollLockAcquired = false }
 })
 
 // Room dependency logic: max 2 persons per room, children count as persons

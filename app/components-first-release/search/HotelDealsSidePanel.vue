@@ -46,7 +46,7 @@
             </button>
           </div>
 
-          <div class="panel__body">
+          <div class="panel__body" data-scroll-lock-allow="true">
             <!-- Single flat list — available deals first (cheapest first),
                  unavailable-on-date deals appended at the bottom. Each
                  unavailable card carries its own "Niet beschikbaar op …"
@@ -107,6 +107,20 @@ const props = defineProps<{
 defineEmits<{
   (e: 'close'): void
 }>()
+
+// Lock the underlying page while the side panel is open
+// (skipped in mapMode — the kaart page deliberately leaves the
+// map pannable behind the panel).
+const _scrollLock = useBodyScrollLock()
+let _scrollLockAcquired = false
+watch(() => props.isOpen, (open) => {
+  if (props.mapMode) return
+  if (open && !_scrollLockAcquired) { _scrollLock.acquire(); _scrollLockAcquired = true }
+  else if (!open && _scrollLockAcquired) { _scrollLock.release(); _scrollLockAcquired = false }
+}, { immediate: true })
+onBeforeUnmount(() => {
+  if (_scrollLockAcquired) { _scrollLock.release(); _scrollLockAcquired = false }
+})
 
 /** All sibling deals, cheapest first by base price. Used for both the
  *  "available" and "andere data" groups below. When `currentDealId` is
