@@ -8,8 +8,9 @@
         <FirstReleaseBreadcrumbNav :items="breadcrumbs" />
       </section>
 
-      <!-- Anchor tabs -->
-      <nav class="hotel-page__tabs container">
+      <!-- Anchor tabs — desktop only. Mobile uses the sticky footer
+           CTA instead of a top anchor nav. -->
+      <nav v-if="!isMobile" class="hotel-page__tabs container">
         <a href="#overzicht" class="hotel-page__tab">{{ t('hotel.tabOverview') }}</a>
         <a href="#arrangementen" class="hotel-page__tab">{{ t('hotel.tabDeals') }}</a>
         <a href="#veelgestelde-vragen" class="hotel-page__tab">{{ t('hotel.tabFaq') }}</a>
@@ -129,7 +130,9 @@
             </div>
           </div>
         </div>
-        <div class="hotel-page__deals-search">
+        <!-- Mid-page search bar — desktop only. Mobile users edit
+             persons / arrival via the SiteHeader's search modal. -->
+        <div v-if="!isMobile" class="hotel-page__deals-search">
           <FirstReleaseHotelSearchBar ref="searchBarRef" @search="handleSearchChange" />
         </div>
         <div class="deals__grid">
@@ -203,13 +206,19 @@
       </div>
     </main>
 
-    <!-- Sticky top anchor nav — same chrome as the deal page CTA bar.
-         Shows the cheapest price across all this hotel's deals and a
-         "Bekijk arrangementen" button that smooth-scrolls to the
-         arrangementen section. -->
-    <div v-if="hotel && ctaBarVisible" class="hotel-page__cta-bar">
+    <!-- Sticky CTA — desktop renders a TOP anchor-nav bar that appears
+         once the user scrolls past 200 px (ctaBarVisible). Mobile
+         renders a BOTTOM sticky footer that's always visible (no
+         top anchor nav). Same price-block + "Bekijk arrangementen"
+         CTA in both flavours. -->
+    <div
+      v-if="hotel && (isMobile || ctaBarVisible)"
+      class="hotel-page__cta-bar"
+      :class="{ 'hotel-page__cta-bar--mobile': isMobile }"
+    >
       <div class="hotel-page__cta-bar-inner container">
-        <nav class="hotel-page__tabs hotel-page__tabs--in-bar">
+        <!-- Anchor tabs — desktop only. -->
+        <nav v-if="!isMobile" class="hotel-page__tabs hotel-page__tabs--in-bar">
           <a href="#overzicht" class="hotel-page__tab">{{ t('hotel.tabOverview') }}</a>
           <a href="#arrangementen" class="hotel-page__tab">{{ t('hotel.tabDeals') }}</a>
           <a href="#veelgestelde-vragen" class="hotel-page__tab">{{ t('hotel.tabFaq') }}</a>
@@ -219,14 +228,21 @@
         <div class="hotel-page__cta-bar-cluster">
           <div v-if="cheapestDeal" class="hotel-page__cta-bar-price-block">
             <div class="hotel-page__cta-bar-price-row">
-              <!-- "Vanaf" chip — hotel page never has a specific picked
-                   date, so the price is always a starting-from estimate. -->
+              <!-- "Vanaf" chip — hotel page price is always a
+                   starting-from estimate (cheapest available deal,
+                   matching arrival date when set). -->
               <span class="hotel-page__cta-bar-discount hotel-page__cta-bar-discount--vanaf">Vanaf</span>
               <span class="hotel-page__cta-bar-original">{{ formatPrice(cheapestDeal.originalPrice) }}</span>
               <span class="hotel-page__cta-bar-amount">{{ formatPrice(cheapestDeal.basePrice) }}</span>
-              <FirstReleasePriceInfoTooltip variant="deal" />
+              <!-- Info tooltip hidden in German per spec; replaced
+                   by the regulatory "Exkl. Kurtaxe und
+                   Verwaltungskosten" line below the price meta. -->
+              <FirstReleasePriceInfoTooltip v-if="!isGerman" variant="deal" />
             </div>
             <span class="hotel-page__cta-bar-meta">{{ cheapestPriceForLabel }}</span>
+            <span v-if="isGerman" class="hotel-page__cta-bar-meta hotel-page__cta-bar-meta--de">
+              Exkl. Kurtaxe und Verwaltungskosten
+            </span>
           </div>
           <button type="button" class="hotel-page__cta-bar-btn" @click="scrollToArrangements">
             Bekijk arrangementen
@@ -263,6 +279,7 @@
 <script setup lang="ts">
 import { formatPrice } from '~/utils-first-release/formatPrice'
 import { nightsLabel, personsLabel, roomsLabel } from '~/utils-first-release/plural'
+import { isDealAvailableInWindow } from '~/utils-first-release/availability'
 import { teamMembers } from '~/data/team-members'
 import {
   mappedHotelsByHotelPermalink,
@@ -272,7 +289,9 @@ import {
 import { searchHotels } from '~/data/mock/search-hotels'
 import DealCard from '~/components-first-release/search/DealCard.vue'
 
-const { t, localized } = useFirstReleaseI18n()
+const { t, localized, locale } = useFirstReleaseI18n()
+const isMobile = useFirstReleaseIsMobile()
+const isGerman = computed(() => locale.value === 'de')
 const route = useRoute()
 
 // Resolve hotel by permalink with safe fallback
@@ -314,7 +333,13 @@ const dealCards = computed(() => {
   })
 })
 
-const { setSearchGroup, persons: globalPersons, rooms: globalRooms } = useFirstReleaseSearchState()
+const {
+  setSearchGroup,
+  persons: globalPersons,
+  rooms: globalRooms,
+  committedArrivalDate: globalArrivalDate,
+  committedFlexibility: globalFlexibility,
+} = useFirstReleaseSearchState()
 const searchPersons = ref(globalPersons.value || 2)
 const searchBarRef = ref<InstanceType<typeof import('~/components/hotel/HotelSearchBar.vue').default> | null>(null)
 
@@ -390,13 +415,21 @@ const mapTileUrl = computed(() => {
   return `https://tile.openstreetmap.org/${zoom}/${x}/${y}.png`
 })
 
-/** Cheapest available deal of this hotel — drives the sticky CTA bar's
- *  price block (discount %, original strikethrough, total, "Voor X
- *  nacht(en), Y personen, Z kamer(s)"). */
+/** Cheapest deal of this hotel — drives the sticky CTA bar's price
+ *  block. When a global arrival date is set, prefer the cheapest
+ *  deal that's actually AVAILABLE in the flex-window around that
+ *  date; fall back to the cheapest overall if nothing's available. */
 const cheapestDeal = computed(() => {
   const sh = searchHotel.value
   if (!sh || sh.deals.length === 0) return null
-  return [...sh.deals].sort((a, b) => a.basePrice - b.basePrice)[0]
+  const sorted = [...sh.deals].sort((a, b) => a.basePrice - b.basePrice)
+  const arrival = globalArrivalDate.value
+  if (arrival) {
+    const flex = globalFlexibility.value || 0
+    const bookable = sorted.find(d => isDealAvailableInWindow(d.id, arrival, flex))
+    if (bookable) return bookable
+  }
+  return sorted[0]
 })
 
 /** Plural-aware "Voor X nacht(en), Y personen, Z kamer(s)" — matches
@@ -750,6 +783,10 @@ onBeforeUnmount(() => {
   .hotel-page__deals-title { font-size: 22px; }
   .facilities__grid { grid-template-columns: 1fr 1fr; }
   .deals__grid { grid-template-columns: 1fr; }
+  /* Reserve space for the mobile sticky footer (12 + 55 + 12 px =
+     79 px, + small breathing margin) so the FAQ / Tips sections at
+     the bottom of the page don't slide under the fixed bar. */
+  .hotel-page__main { padding-bottom: 112px; }
 }
 
 /* ===== STICKY CTA BAR (top, after scroll) =====
@@ -764,6 +801,41 @@ onBeforeUnmount(() => {
   background: var(--color-surface);
   border-bottom: 1px solid var(--color-border);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+/* Mobile variant: anchored to the BOTTOM of the viewport, always
+   visible (no scroll trigger). Mirrors the deal page's mobile
+   sticky footer chrome. */
+.hotel-page__cta-bar--mobile {
+  top: auto;
+  bottom: 0;
+  border-bottom: none;
+  border-top: 1px solid var(--color-border);
+  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.08);
+}
+.hotel-page__cta-bar--mobile .hotel-page__cta-bar-inner {
+  padding-top: 12px;
+  padding-bottom: 12px;
+}
+.hotel-page__cta-bar--mobile .hotel-page__cta-bar-cluster {
+  flex: 1 1 auto;
+  justify-content: space-between;
+}
+.hotel-page__cta-bar--mobile .hotel-page__cta-bar-price-block {
+  align-items: flex-start;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.hotel-page__cta-bar--mobile .hotel-page__cta-bar-btn {
+  margin-left: auto;
+  flex: 0 0 auto;
+}
+.hotel-page__cta-bar--mobile .hotel-page__cta-bar-meta {
+  text-align: left;
+}
+.hotel-page__cta-bar--mobile .hotel-page__cta-bar-meta--de {
+  font-size: 11px;
+  color: var(--color-text-muted);
+  line-height: 1.3;
 }
 .hotel-page__cta-bar-inner {
   display: flex;
@@ -836,7 +908,8 @@ onBeforeUnmount(() => {
 }
 .hotel-page__cta-bar-btn {
   flex: 0 0 auto;
-  height: 44px;
+  /* 1.25× the previous 44 px — matches the deal-page sticky bar. */
+  height: 55px;
   padding: 0 24px;
   font-size: 15px;
   font-weight: 600;
