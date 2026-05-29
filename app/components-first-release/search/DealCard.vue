@@ -147,8 +147,8 @@
               <!-- Meta block: 2-line variant when the nights don't match
                    the active filter ("Arrangement voor X nachten" /
                    "X personen"). The single-line variant lives INSIDE
-                   the price-stack below so it bottom-aligns with the
-                   CTA next to the price. -->
+                   the grid below in the "meta" row, sitting directly
+                   above the price line. -->
               <template v-if="nightsMismatch">
                 <p class="deal-card-v2__meta-line">
                   Arrangement voor {{ deal.nights }} {{ deal.nights === 1 ? 'nacht' : 'nachten' }}
@@ -158,19 +158,23 @@
                 </p>
               </template>
 
+              <!-- STRUCTURAL: 2x2 CSS Grid. Meta in row 1 (left),
+                   price in row 2 (left), CTA spans both rows (right).
+                   `align-self: end` on every item pins their BOX
+                   bottoms to the grid's bottom edge — CTA bottom
+                   ALWAYS matches price bottom. See CSS rule for the
+                   full structural-rule note. -->
               <div class="deal-card-v2__grid-price-row">
-                <div class="deal-card-v2__price-stack">
-                  <p
-                    v-if="!nightsMismatch"
-                    class="deal-card-v2__meta-line"
-                  >{{ persons }} {{ persons === 1 ? 'persoon' : 'personen' }}, {{ deal.nights }} {{ deal.nights === 1 ? 'nacht' : 'nachten' }}</p>
-                  <p class="deal-card-v2__price-line">
-                    <span class="deal-card-v2__price-prefix">Vanaf</span>
-                    <span class="deal-card-v2__price">{{ formatPrice(price) }}</span>
-                    <span v-if="originalPrice > price" class="deal-card-v2__original">{{ formatPrice(originalPrice) }}</span>
-                    <FirstReleasePriceInfoTooltip variant="card" />
-                  </p>
-                </div>
+                <p
+                  v-if="!nightsMismatch"
+                  class="deal-card-v2__meta-line"
+                >{{ persons }} {{ persons === 1 ? 'persoon' : 'personen' }}, {{ deal.nights }} {{ deal.nights === 1 ? 'nacht' : 'nachten' }}</p>
+                <p class="deal-card-v2__price-line">
+                  <span class="deal-card-v2__price-prefix">Vanaf</span>
+                  <span class="deal-card-v2__price">{{ formatPrice(price) }}</span>
+                  <span v-if="originalPrice > price" class="deal-card-v2__original">{{ formatPrice(originalPrice) }}</span>
+                  <FirstReleasePriceInfoTooltip variant="card" />
+                </p>
                 <NuxtLink
                   :to="dealHref"
                   :target="linkTarget"
@@ -1015,33 +1019,50 @@ const includesBullets = computed<string[]>(() => {
 }
 
 
-/* Grid price row: price-stack on the left (meta + price line
-   stacked vertically), CTA on the right.
-   Use baseline alignment so the price text baseline aligns with
-   the CTA text baseline on desktop. Mobile bumps to flex-end so
-   the price-stack's bottom edge meets the CTA's bottom edge. */
+/* ──────────────────────────────────────────────────────────────
+   STRUCTURAL RULE — DO NOT BREAK
+   The CTA button's BOX BOTTOM must always align with the
+   price-line's BOX BOTTOM. The meta line ("X personen, Y
+   nachten") sits ABOVE the price with a fixed ~4 px gap
+   (≤ 8 px max per spec).
+
+   Implemented with CSS Grid (2 cols × 2 rows). The CTA spans
+   BOTH rows; `align-self: end` on the CTA + price-line pins
+   their bottoms to the bottom row's bottom edge. The grid is
+   immune to baseline / line-height drift because positions are
+   determined by grid cells, not by intrinsic content baselines.
+   Mobile and desktop use the SAME grid — no media-query
+   override. Future changes to CTA padding / font / size do NOT
+   break alignment because the grid cells pin BOX bottoms.
+   ────────────────────────────────────────────────────────── */
 .deal-card-v2__grid-price-row {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: var(--space-md);
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-areas:
+    "meta  cta"
+    "price cta";
+  grid-template-rows: auto auto;
+  column-gap: var(--space-md);
+  row-gap: 4px;
 }
 
-/* Vertical stack of "X personen, Y nachten" meta + price line.
-   Sits in the grid row; gap 0 and tight line-height on both
-   children so the meta sits visually directly above the price
-   (touching the price's cap-height) — reads as one block. */
-.deal-card-v2__price-stack {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0;
-  min-width: 0;
-  line-height: 1.1;
+.deal-card-v2__grid-price-row > .deal-card-v2__meta-line {
+  grid-area: meta;
+  align-self: end;
+  line-height: 1;
+  margin: 0;
 }
-.deal-card-v2__price-stack .deal-card-v2__meta-line {
-  line-height: 1.1;
-  margin: 0 0 -2px;
+
+.deal-card-v2__grid-price-row > .deal-card-v2__price-line {
+  grid-area: price;
+  align-self: end;
+  line-height: 1;
+  margin: 0;
+}
+
+.deal-card-v2__grid-price-row > .deal-card-v2__cta {
+  grid-area: cta;
+  align-self: end;
 }
 
 .deal-card-v2__unavailable {
@@ -1231,7 +1252,9 @@ const includesBullets = computed<string[]>(() => {
 @media (max-width: 800px) {
   .deal-card-v2__pitch { font-size: 19px; }
   .deal-card-v2__include { font-size: 15px; }
-  .deal-card-v2__grid-price-row { align-items: flex-end; }
+  /* NOTE: no .deal-card-v2__grid-price-row override here.
+     The CSS Grid layout (see structural-rule note above)
+     handles alignment identically on mobile and desktop. */
   .deal-card-v2__cta { padding: 11px 24px; }
 }
 </style>
