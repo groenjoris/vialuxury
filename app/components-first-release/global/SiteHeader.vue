@@ -3902,9 +3902,11 @@ function handleSelectHotelInPopup(slug: string) {
     justify-self: center !important;    /* centre the wrap in its grid track */
     /* Phone sits roughly in the MIDDLE of the gap between the
        tagline's bottom and the search-pill's top (which now
-       reaches 34 px into the nav). 6 px keeps the phone visually
-       centred in that strip on home / deal / hotel. */
-    margin-top: 6px;
+       reaches 34 px into the nav). 12 px keeps the phone
+       visually centred in that strip on home / deal / hotel
+       with the search bar 12 px lower than before — and clears
+       the pill's top half so the bar never obscures it. */
+    margin-top: 12px;
     /* Belt + suspenders: ensure inline content also centres if the
        wrap ends up wider than its inner button. */
     text-align: center;
@@ -3986,12 +3988,12 @@ function handleSelectHotelInPopup(slug: string) {
     min-height: 56px;
     padding-top: 20px;
     /* Pill straddles the nav's bottom with its top half (34 px)
-       sitting INSIDE this padding. Padding-bottom is tight (20 px)
-       on home / deal / hotel so the search bar sits higher; on
-       /search where the orange-bordered summary card is bigger
-       (margin-top: -45 px overlap), the override below keeps the
-       nav taller so the card has room to straddle properly. */
-    padding-bottom: 20px;
+       sitting INSIDE this padding. 32 px clearance below the
+       phone-number row on home / deal / hotel keeps the search
+       bar visibly below the phone (no overlap) while the black
+       nav still stops halfway through the bar. /search keeps
+       the wider 56 px clearance for the taller summary card. */
+    padding-bottom: 32px;
   }
   .site-header:has(.site-header__mobile-search--summary) .site-header__nav {
     padding-bottom: 56px;
