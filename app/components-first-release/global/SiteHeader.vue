@@ -4015,17 +4015,17 @@ function handleSelectHotelInPopup(slug: string) {
     z-index: auto;
     isolation: auto;
   }
-  /* Pill (home / deal / hotel) — 80 px tall, pulled UP by half
-     its own height (40 px) so its vertical centre lands on the
-     nav's black/white boundary. Top half on black (nav), bottom
-     half on white (page body). z:11 keeps the pill above the
-     nav's z:10 so neither half is obscured. The slot's z-index
-     stays unset to avoid creating a stacking context that would
-     trap the pill's z-index. */
-  .site-header__mobile-search--on-solid .mobile-search-trigger {
+  /* Pill — universal 68 px tall (base rule), pulled UP by half
+     its own height (34 px) so its vertical centre sits on the
+     nav's bottom border. On solid-variant pages (deal / hotel
+     / search) the top half lands on the nav's black bg and the
+     bottom half on the page's white. On the overlay home the
+     pill straddles the same Y position over the hero photo —
+     same vertical placement as the other pages. z:11 keeps the
+     pill above the nav's z:10 so neither half is obscured. */
+  .site-header .mobile-search-trigger {
     position: relative;
-    height: 80px;
-    margin-top: -40px;
+    margin-top: -34px;
     z-index: 11;
   }
   /* Summary card (search page) — ≈ 90 px tall, half is 45. */
