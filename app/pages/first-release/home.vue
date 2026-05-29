@@ -945,13 +945,13 @@ onMounted(() => { setFrNavVariant('1'); restoreHeroPhotoIndex() })
     height: auto;
     min-height: 450px;
   }
-  /* Photo shifted DOWN by 50 px (was -50 = wrong direction).
-     Positive offset moves the image content DOWN within the
-     container, revealing more of the photo's TOP — which is
-     where the woman's face sits on the default hero shot. */
+  /* Photo top-aligned with container — `center top` (= 0 offset)
+     keeps the image fully covering the section with no grey
+     strip at the top, while still showing the top portion of
+     the photo where the woman's face sits. */
   .home-hero__bg-img,
   .home-hero__bg--shift-down .home-hero__bg-img {
-    object-position: center 50px;
+    object-position: center top;
   }
 
   /* Hero copy: flow naturally below the SiteHeader's mobile search
