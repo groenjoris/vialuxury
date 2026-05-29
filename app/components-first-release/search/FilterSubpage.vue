@@ -114,4 +114,15 @@ defineEmits<{
 .filter-subpage__body :deep(.filter-budget__range) { font-size: 16px; }
 .filter-subpage__body :deep(.filter-budget__persons) { font-size: 14px; }
 .filter-subpage__body :deep(.filter-budget__labels) { font-size: 14px; }
+
+/* Only ONE "Filters" title — promote the MobileFullscreen
+   header title to deal-page-style 22 px, and hide the
+   SearchFilterPanel's own h2 inside the body. */
+:deep(.mobile-fs__title) {
+  font-size: 22px;
+  font-weight: 700;
+}
+.filter-subpage__body :deep(.filter-panel__header) {
+  display: none;
+}
 </style>

@@ -123,7 +123,9 @@ function prettyHotelSlug(slug: string): string {
   padding: 16px;
   background: #fff;
   border: 4px solid var(--color-primary, #fb862d);
-  border-radius: 6px;
+  /* 14 − 4 px border = 10 px inner curve, so the white interior
+     reads as rounded too (not just the orange outer). */
+  border-radius: 14px;
   text-align: left;
   cursor: pointer;
 }

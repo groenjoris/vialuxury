@@ -1203,11 +1203,12 @@ const includesBullets = computed<string[]>(() => {
   text-align: left;
 }
 
-/* Mobile: bump the deal title + includes copy by 1 pt each so the
-   card reads more comfortably on a phone where the card spans
-   ~80 vw. CTA size stays unchanged. */
+/* Mobile: bump the deal title + includes copy, align price row
+   on the BOTTOM edge of the CTA button, and grow the CTA ~10 %. */
 @media (max-width: 800px) {
   .deal-card-v2__pitch { font-size: 19px; }
-  .deal-card-v2__include { font-size: 14px; }
+  .deal-card-v2__include { font-size: 15px; }
+  .deal-card-v2__grid-price-row { align-items: flex-end; }
+  .deal-card-v2__cta { padding: 11px 24px; }
 }
 </style>

@@ -496,6 +496,28 @@
       </div>
     </div>
 
+    <!-- Mobile-only "Hulp nodig? +31 …" row. Sits OUTSIDE the
+         black nav so the search-bar pill doesn't cover it. On
+         the overlay home the pill stays on the photo (no row
+         needed); on every solid-variant page (search / deal /
+         hotel) this row sits between nav and pill on white. -->
+    <div
+      v-if="isMobile && variant !== 'overlay'"
+      class="site-header__mobile-phone-row"
+    >
+      <a
+        href="tel:+31207052222"
+        class="site-header__phone site-header__phone--mobile-row"
+        :aria-label="t('header.phoneAria') || 'Bel +31 20 705 2222'"
+      >
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+        </svg>
+        <span class="site-header__phone-label">Hulp nodig?</span>
+        <span class="site-header__phone-number">+31 20 705 2222</span>
+      </a>
+    </div>
+
     <!-- Mobile search slot (visible < 800 px). On most pages it
          shows the rounded "Vind deals" trigger pill. On the search
          results page it renders the compact summary bar instead, so
@@ -4006,21 +4028,64 @@ function handleSelectHotelInPopup(slug: string) {
     z-index: auto;
     isolation: auto;
   }
-  /* Pill (home / deal / hotel) — 80 px tall, half is 40. The
-     extra height (was 68) adds breathing room between the nav's
-     phone-number row above and the visible pill content below. */
+  /* Pill (home / deal / hotel) — 80 px tall. No negative margin
+     anymore — the new `.site-header__mobile-phone-row` sits
+     between the nav and the search slot, so the pill rests
+     cleanly on white instead of straddling the nav. */
   .site-header__mobile-search--on-solid .mobile-search-trigger {
     position: relative;
     height: 80px;
-    margin-top: -40px;
+    margin-top: 0;
     z-index: 11;
   }
-  /* Summary card (search page) — ≈ 90 px tall, half is 45. */
+  /* Summary card (search page) — same deal, no overlap. */
   .site-header__mobile-search--on-solid .mss {
     position: relative;
-    margin-top: -45px;
+    margin-top: 0;
     z-index: 11;
   }
+
+  /* "Hulp nodig? +31 …" row on mobile — sits between the nav
+     and the search-bar pill, on the page's white bg. The
+     original in-nav phone (`.site-header__phone-wrap`) is
+     hidden on mobile (rule below). */
+  .site-header__mobile-phone-row {
+    background: #fff;
+    text-align: center;
+    padding: 14px 16px 0;
+  }
+  .site-header__phone--mobile-row {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--color-text-primary);
+    background: transparent;
+    border: 0;
+    padding: 0;
+    text-decoration: none;
+    font-family: inherit;
+    cursor: pointer;
+  }
+  .site-header__phone--mobile-row .site-header__phone-label,
+  .site-header__phone--mobile-row .site-header__phone-number {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--color-text-primary);
+  }
+  .site-header__phone--mobile-row svg {
+    color: var(--color-text-primary);
+  }
+  /* Hide the in-nav phone block on mobile so it doesn't render
+     twice (once inside the dark nav grid, once in the new row). */
+  .site-header .site-header__nav-inner .site-header__phone-wrap {
+    display: none;
+  }
+
+  /* Language-switcher dropdown — bigger options on touch. */
+  .site-header .lang-switcher__option { font-size: 15px; padding: 12px 18px; gap: 12px; }
+  .site-header .lang-switcher__flag { font-size: 20px; }
+  .site-header .lang-switcher__label { font-size: 15px; }
+  .site-header .lang-switcher__code { font-size: 14px; }
   /* Hamburger — same translucent-white chrome as desktop, just
      ensured visible via `display: flex`. */
   .site-header .hamburger-btn {
