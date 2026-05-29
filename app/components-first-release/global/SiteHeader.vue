@@ -4034,27 +4034,41 @@ function handleSelectHotelInPopup(slug: string) {
   }
   /* Pill — universal 68 px tall (base rule), pulled UP by half
      its own height (34 px) so its vertical centre sits on the
-     nav's bottom border. On solid-variant pages (deal / hotel
-     / search) the top half lands on the nav's black bg and the
-     bottom half on the page's white. On the overlay home the
-     pill straddles the same Y position over the hero photo —
-     same vertical placement as the other pages. z:11 keeps the
+     nav's bottom border. On the overlay home the pill straddles
+     this same Y position over the hero photo. z:11 keeps the
      pill above the nav's z:10 so neither half is obscured. */
   .site-header .mobile-search-trigger {
     position: relative;
     margin-top: -34px;
     z-index: 11;
   }
-  /* Summary card (search page) — top sits at the SAME Y as the
-     pill on home / deal / hotel. Same negative top-margin as
-     the pill (-34) so the card's top edge aligns; the card
-     just extends further down because it's taller (≈ 90 px).
-     Was -45 (centred on boundary) — replaced so the top is
-     locked across all four pages. */
+  /* Deal / hotel: the user wants the pill a touch LOWER than
+     the home page (where the surrounding hero layout shifts
+     the bar up a little). Nudge the pill down 8 px and grow
+     the nav's black bg by the same amount so the halfway
+     boundary still cuts the pill through its centre. */
+  .site-header__mobile-search--on-solid:not(.site-header__mobile-search--summary) .mobile-search-trigger {
+    margin-top: -26px;
+  }
+  .site-header:has(.site-header__mobile-search--on-solid:not(.site-header__mobile-search--summary)) .site-header__nav {
+    padding-bottom: 40px;
+  }
+  /* Summary card (search page) — pulled up by half its own
+     height (≈ 45 of 90) so its VERTICAL CENTRE lands at the
+     same Y as the pill's centre on home / deal / hotel.
+     Aligning centres (instead of tops) makes the card and the
+     pill read as "at the same place" on the page since the
+     card is ~22 px taller than the pill. */
   .site-header__mobile-search--on-solid .mss {
     position: relative;
-    margin-top: -34px;
+    margin-top: -45px;
     z-index: 11;
+  }
+  /* Search-results header sat noticeably lower than home; shrink
+     the nav's black padding-bottom on /search so the WHOLE stack
+     (phone + summary card) rises ~16 px on the page. */
+  .site-header:has(.site-header__mobile-search--summary) .site-header__nav {
+    padding-bottom: 16px;
   }
 
   /* Language-switcher dropdown — bigger options on touch. */
