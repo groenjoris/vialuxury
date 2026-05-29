@@ -3992,22 +3992,27 @@ function handleSelectHotelInPopup(slug: string) {
      just provides a white backdrop; the pill / card inside
      supplies a negative top-margin sized to HALF its own height
      so its vertical centre lands on the nav's bottom edge.
-     Result: top half on black, bottom half on white, clean
-     horizontal cut at the boundary across the full row width.
-     z:11 on each lifts them above the nav's z:10 black bg. */
+
+     CRITICAL: the slot must NOT set `z-index` — that would
+     create a stacking context and trap the pill's `z-index: 11`
+     inside, leaving the nav (z:10) on top. Use `isolation: auto`
+     and leave z-index unset so the pill's 11 is evaluated
+     against the document root (and beats the nav at 10). */
   .site-header .site-header__mobile-search--on-solid {
     position: relative;
     background: #ffffff;
-    /* No top padding — pill / card itself supplies the pull-up
-       via margin-top. No slot-level negative margin. */
     padding: 0 16px 16px;
     margin-top: 0;
-    z-index: 1;
+    z-index: auto;
+    isolation: auto;
   }
-  /* Pill (home / deal / hotel) — 68 px tall, half is 34. */
+  /* Pill (home / deal / hotel) — 80 px tall, half is 40. The
+     extra height (was 68) adds breathing room between the nav's
+     phone-number row above and the visible pill content below. */
   .site-header__mobile-search--on-solid .mobile-search-trigger {
     position: relative;
-    margin-top: -34px;
+    height: 80px;
+    margin-top: -40px;
     z-index: 11;
   }
   /* Summary card (search page) — ≈ 90 px tall, half is 45. */
