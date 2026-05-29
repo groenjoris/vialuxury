@@ -3980,36 +3980,26 @@ function handleSelectHotelInPopup(slug: string) {
     padding: 12px 16px 16px;
     background: transparent;
   }
-  /* Two-tone backdrop — black top half (visually continues the
-     nav above), white bottom half (matches the page body). The
-     trigger pill / summary card sits across the 50/50 boundary,
-     so the bar reads as half-inside-nav, half-inside-page —
-     mirroring how the desktop search dock straddles the nav.
+  /* Black ends at a CLEAN horizontal line at the pill's
+     midpoint — same as the desktop search dock straddling the
+     nav's bottom border. Implemented by pulling the slot up
+     into the nav with a negative margin so the pill's top half
+     overlaps the nav's black area; the slot's own background
+     is white so the bottom half reads as "on the page body".
      Applied on every page that uses the solid SiteHeader
      variant (deal, search, hotel, etc.). On the overlay home
-     the pill stays directly on the hero photo (transparent). */
+     the pill stays directly on the hero photo (transparent).
+
+     Numbers: pill is 68 px tall + 12 px slot top-padding = top
+     edge at y=12 in the slot. Pulling the slot up by 34 px
+     (half the pill) places the pill's vertical centre exactly
+     at the nav/slot boundary. */
   .site-header .site-header__mobile-search--on-solid {
-    background: linear-gradient(
-      to bottom,
-      #0e0e0c 0,
-      #0e0e0c 50%,
-      #ffffff 51%,
-      #ffffff 100%
-    );
+    position: relative;
+    background: #ffffff;
+    margin-top: -34px;
     padding-bottom: 0;
-  }
-  /* Search page (--summary) keeps the hard 50/50 cut so the
-     summary CARD straddles a clean boundary. Every OTHER solid
-     page (deal, hotel, …) gets a soft fade: the 50/50 line read
-     as a "divider below the search bar" on plain-pill pages.
-     Override the gradient with a smooth black→white ramp. */
-  .site-header .site-header__mobile-search--on-solid:not(.site-header__mobile-search--summary) {
-    background: linear-gradient(
-      to bottom,
-      #0e0e0c 0,
-      #0e0e0c 30%,
-      #ffffff 100%
-    );
+    z-index: 5;
   }
   /* Hamburger — same translucent-white chrome as desktop, just
      ensured visible via `display: flex`. */
