@@ -986,46 +986,76 @@ onBeforeUnmount(() => {
   align-items: flex-end;
   gap: 2px;
 }
+/* Sticky CTA price row — mirrors the deal-page sticky bar EXACTLY
+   so the two pages render identically. flex-end aligns box
+   bottoms; the text spans use `text-box-trim` to collapse to
+   their visible glyph bounds so vanaf / original / amount all
+   bottom-align on the same line. */
 .hotel-page__cta-bar-price-row {
   display: flex;
-  align-items: baseline;
+  align-items: flex-end;
   gap: 8px;
 }
 .hotel-page__cta-bar-discount {
   flex-shrink: 0;
-  align-self: center;
+  align-self: flex-end;
   font-family: var(--font-heading);
   font-size: 14px;
   font-weight: 700;
+  line-height: 1;
   color: #fff;
   background: var(--color-discount);
   padding: 4px 8px;
   border-radius: var(--radius-sm);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
-/* "Vanaf" variant — same italic muted text style as the deal-card
-   "Vanaf" prefix (no chip background, Basis Grotesque, smaller).
-   Hotel page is always a starting-from estimate. */
+/* "Vanaf" / "Ab" variant — plain inline-flex text, no chip
+   background. Matches the deal page's vanaf treatment: black
+   text, regular weight, no italic, text-box-trim so the glyph
+   bottom lines up with the price glyphs next to it. */
 .hotel-page__cta-bar-discount--vanaf {
   background: transparent;
-  color: var(--color-text-muted);
+  color: var(--color-text-primary);
   font-family: var(--font-body);
   font-size: 13px;
   font-weight: 400;
-  font-style: italic;
+  font-style: normal;
   padding: 0;
   border-radius: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-self: flex-end;
+  line-height: 1;
+  text-box-trim: trim-both;
+  text-box-edge: cap alphabetic;
 }
 .hotel-page__cta-bar-original {
+  font-family: var(--font-heading);
+  font-weight: 500;
   font-size: 13px;
   color: var(--color-error);
   text-decoration: line-through;
+  line-height: 1;
+  text-box-trim: trim-both;
+  text-box-edge: cap alphabetic;
 }
 .hotel-page__cta-bar-amount {
   font-family: var(--font-heading);
   font-size: 22px;
   font-weight: 600;
   color: var(--color-text-primary);
-  line-height: 1.1;
+  line-height: 1;
+  text-box-trim: trim-both;
+  text-box-edge: cap alphabetic;
+}
+/* Info-tooltip icon — drop the icon's box-bottom onto the
+   amount's trimmed glyph bottom, mirroring the deal-page rule. */
+.hotel-page__cta-bar-price-row .price-info {
+  align-self: flex-end;
+  margin-bottom: 2px;
 }
 .hotel-page__cta-bar-meta {
   font-size: 11px;
