@@ -496,28 +496,6 @@
       </div>
     </div>
 
-    <!-- Mobile-only "Hulp nodig? +31 …" row. Sits OUTSIDE the
-         black nav so the search-bar pill doesn't cover it. On
-         the overlay home the pill stays on the photo (no row
-         needed); on every solid-variant page (search / deal /
-         hotel) this row sits between nav and pill on white. -->
-    <div
-      v-if="isMobile && variant !== 'overlay'"
-      class="site-header__mobile-phone-row"
-    >
-      <a
-        href="tel:+31207052222"
-        class="site-header__phone site-header__phone--mobile-row"
-        :aria-label="t('header.phoneAria') || 'Bel +31 20 705 2222'"
-      >
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
-        </svg>
-        <span class="site-header__phone-label">Hulp nodig?</span>
-        <span class="site-header__phone-number">+31 20 705 2222</span>
-      </a>
-    </div>
-
     <!-- Mobile search slot (visible < 800 px). On most pages it
          shows the rounded "Vind deals" trigger pill. On the search
          results page it renders the compact summary bar instead, so
@@ -3993,7 +3971,16 @@ function handleSelectHotelInPopup(slug: string) {
   /* Nav height + top margin: 20 px padding-top gives the header room
      to breathe below the browser chrome / status bar — was 10 px,
      which felt cramped against the viewport top. */
-  .site-header .site-header__nav { height: auto; min-height: 56px; padding-top: 20px; padding-bottom: 12px; }
+  .site-header .site-header__nav {
+    height: auto;
+    min-height: 56px;
+    padding-top: 20px;
+    /* Pill straddles the nav's bottom with its top half (40 px)
+       sitting INSIDE this padding. Bump padding-bottom so the
+       phone-number row (grid row 3) clears that overlap zone
+       and stays fully on black. */
+    padding-bottom: 56px;
+  }
   /* Hide desktop search dock */
   .site-header .site-header__search-dock {
     display: none;
@@ -4028,57 +4015,24 @@ function handleSelectHotelInPopup(slug: string) {
     z-index: auto;
     isolation: auto;
   }
-  /* Pill (home / deal / hotel) — 80 px tall. No negative margin
-     anymore — the new `.site-header__mobile-phone-row` sits
-     between the nav and the search slot, so the pill rests
-     cleanly on white instead of straddling the nav. */
+  /* Pill (home / deal / hotel) — 80 px tall, pulled UP by half
+     its own height (40 px) so its vertical centre lands on the
+     nav's black/white boundary. Top half on black (nav), bottom
+     half on white (page body). z:11 keeps the pill above the
+     nav's z:10 so neither half is obscured. The slot's z-index
+     stays unset to avoid creating a stacking context that would
+     trap the pill's z-index. */
   .site-header__mobile-search--on-solid .mobile-search-trigger {
     position: relative;
     height: 80px;
-    margin-top: 0;
+    margin-top: -40px;
     z-index: 11;
   }
-  /* Summary card (search page) — same deal, no overlap. */
+  /* Summary card (search page) — ≈ 90 px tall, half is 45. */
   .site-header__mobile-search--on-solid .mss {
     position: relative;
-    margin-top: 0;
+    margin-top: -45px;
     z-index: 11;
-  }
-
-  /* "Hulp nodig? +31 …" row on mobile — sits between the nav
-     and the search-bar pill, on the page's white bg. The
-     original in-nav phone (`.site-header__phone-wrap`) is
-     hidden on mobile (rule below). */
-  .site-header__mobile-phone-row {
-    background: #fff;
-    text-align: center;
-    padding: 14px 16px 0;
-  }
-  .site-header__phone--mobile-row {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    color: var(--color-text-primary);
-    background: transparent;
-    border: 0;
-    padding: 0;
-    text-decoration: none;
-    font-family: inherit;
-    cursor: pointer;
-  }
-  .site-header__phone--mobile-row .site-header__phone-label,
-  .site-header__phone--mobile-row .site-header__phone-number {
-    font-size: 16px;
-    font-weight: 700;
-    color: var(--color-text-primary);
-  }
-  .site-header__phone--mobile-row svg {
-    color: var(--color-text-primary);
-  }
-  /* Hide the in-nav phone block on mobile so it doesn't render
-     twice (once inside the dark nav grid, once in the new row). */
-  .site-header .site-header__nav-inner .site-header__phone-wrap {
-    display: none;
   }
 
   /* Language-switcher dropdown — bigger options on touch. */
