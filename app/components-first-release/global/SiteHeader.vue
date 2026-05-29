@@ -4046,33 +4046,27 @@ function handleSelectHotelInPopup(slug: string) {
     margin-top: -34px;
     z-index: 11;
   }
-  /* Deal / hotel: the user wants the pill a touch LOWER than
-     the home page (where the surrounding hero layout shifts
-     the bar up a little). Nudge the pill down 8 px and grow
-     the nav's black bg by the same amount so the halfway
-     boundary still cuts the pill through its centre. */
-  .site-header__mobile-search--on-solid:not(.site-header__mobile-search--summary) .mobile-search-trigger {
-    margin-top: -26px;
-  }
-  .site-header:has(.site-header__mobile-search--on-solid:not(.site-header__mobile-search--summary)) .site-header__nav {
-    padding-bottom: 40px;
-  }
-  /* Summary card (search page) — pulled up by half its own
-     height (≈ 45 of 90) so its VERTICAL CENTRE lands at the
-     same Y as the pill's centre on home / deal / hotel.
-     Aligning centres (instead of tops) makes the card and the
-     pill read as "at the same place" on the page since the
-     card is ~22 px taller than the pill. */
+  /* ──────────────────────────────────────────────────────────
+     STRUCTURAL RULE — DO NOT BREAK
+     EVERY mobile page (home / deal / hotel / search) must
+     render the phone-number row and the search bar at an
+     IDENTICAL Y position. To guarantee that, the nav uses
+     ONE set of values everywhere:
+       - nav padding-bottom: 32 (set above)
+       - pill margin-top:    -34 (set above)
+       - summary card top:   -45 (below)
+
+     Do NOT add page-scoped overrides (no :has(--summary), no
+     :not(--summary)). If a page renders the summary card
+     instead of the pill, the summary's -45 margin lands its
+     vertical CENTRE at the same Y as the pill's centre on
+     home — because the card is ~22 px taller than the pill
+     (90 vs 68), so 45 px > 34 px by exactly half that delta.
+     ────────────────────────────────────────────────────── */
   .site-header__mobile-search--on-solid .mss {
     position: relative;
     margin-top: -45px;
     z-index: 11;
-  }
-  /* Search-results header sat noticeably lower than home; shrink
-     the nav's black padding-bottom on /search so the WHOLE stack
-     (phone + summary card) rises ~16 px on the page. */
-  .site-header:has(.site-header__mobile-search--summary) .site-header__nav {
-    padding-bottom: 16px;
   }
 
   /* Language-switcher dropdown — bigger options on touch. */
