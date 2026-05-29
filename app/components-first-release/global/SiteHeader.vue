@@ -3986,40 +3986,34 @@ function handleSelectHotelInPopup(slug: string) {
     padding: 12px 16px 16px;
     background: transparent;
   }
-  /* Black ends at a CLEAN horizontal line at the pill's
-     midpoint — same as the desktop search dock straddling the
-     nav's bottom border. Implemented by pulling the slot up
-     into the nav with a negative margin so the pill's top half
-     overlaps the nav's black area; the slot's own background
-     is white so the bottom half reads as "on the page body".
-     Applied on every page that uses the solid SiteHeader
-     variant (deal, search, hotel, etc.). On the overlay home
-     the pill stays directly on the hero photo (transparent).
-
-     Numbers: pill is 68 px tall + 12 px slot top-padding = top
-     edge at y=12 in the slot. Pulling the slot up by 34 px
-     (half the pill) places the pill's vertical centre exactly
-     at the nav/slot boundary. */
+  /* Mobile pill / summary card straddles the nav's black/white
+     boundary, exactly like the desktop search dock. Slot itself
+     sits at its natural position immediately below the nav and
+     just provides a white backdrop; the pill / card inside
+     supplies a negative top-margin sized to HALF its own height
+     so its vertical centre lands on the nav's bottom edge.
+     Result: top half on black, bottom half on white, clean
+     horizontal cut at the boundary across the full row width.
+     z:11 on each lifts them above the nav's z:10 black bg. */
   .site-header .site-header__mobile-search--on-solid {
     position: relative;
     background: #ffffff;
-    margin-top: -34px;
-    padding-bottom: 0;
-    /* Keep the slot BELOW the nav (z:10) so the nav's black bg
-       covers the slot's white in the 34 px overlap region. That
-       leaves a single clean horizontal nav-bottom line where
-       black gives way to white. The pill inside lifts itself
-       above the nav via its own z-index — see rule below. */
+    /* No top padding — pill / card itself supplies the pull-up
+       via margin-top. No slot-level negative margin. */
+    padding: 0 16px 16px;
+    margin-top: 0;
     z-index: 1;
   }
-  /* Pill sits on TOP of everything (nav z:10) so neither half of
-     the pill is obscured by the nav's black. Visual result: black
-     ends at the nav's bottom border, white starts directly below;
-     the pill straddles that boundary with its top half on black,
-     bottom half on white. Matches the desktop search dock. */
-  .site-header .mobile-search-trigger,
-  .site-header .mss {
+  /* Pill (home / deal / hotel) — 68 px tall, half is 34. */
+  .site-header__mobile-search--on-solid .mobile-search-trigger {
     position: relative;
+    margin-top: -34px;
+    z-index: 11;
+  }
+  /* Summary card (search page) — ≈ 90 px tall, half is 45. */
+  .site-header__mobile-search--on-solid .mss {
+    position: relative;
+    margin-top: -45px;
     z-index: 11;
   }
   /* Hamburger — same translucent-white chrome as desktop, just
