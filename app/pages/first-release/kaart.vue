@@ -233,6 +233,11 @@ const selectedHotel = computed(() =>
   mapHotels.value.find((h) => h.id === selectedHotelId.value) ?? null,
 )
 
+// Live height (px) of the open mobile bottom-sheet, reported by
+// HotelMapMobileCard. Drives the map's upward slide so the panel
+// "pushes" the map by exactly its own height (no grey gap).
+const cardHeight = ref(0)
+
 const hoveredHotel = computed(() =>
   mapHotels.value.find((h) => h.id === hoveredHotelId.value) ?? null,
 )
@@ -315,7 +320,11 @@ onMounted(() => {
 
     <main
       class="kaart-stage"
-      :class="{ 'kaart-stage--with-panel': !isMobile && !!selectedHotel }"
+      :class="{
+        'kaart-stage--with-panel': !isMobile && !!selectedHotel,
+        'kaart-stage--with-card': isMobile && !!selectedHotel,
+      }"
+      :style="isMobile ? { '--card-h': cardHeight + 'px' } : undefined"
     >
       <ClientOnly>
         <FirstReleaseHotelBrowseMap
@@ -383,11 +392,13 @@ onMounted(() => {
         <span>{{ t('search.filters') || 'Filters' }}</span>
       </button>
 
-      <!-- Bottom sheet: hotel info + horizontal deal carousel. -->
+      <!-- Bottom sheet: hotel info + horizontal deal carousel. Emits
+           its live height so the map slides up by exactly that much. -->
       <HotelMapMobileCard
         :is-open="!!selectedHotel"
         :hotel="selectedHotel"
         @close="clearSelection"
+        @height="cardHeight = $event"
       />
 
       <!-- Full-screen filters modal (same component as /search). -->
@@ -551,11 +562,17 @@ onMounted(() => {
 
 /* ═══════════ MOBILE map ═══════════ */
 /* Full-screen map — no filter sidebar; the stage spans the whole
-   viewport. The map stays full-bleed when the sheet opens (no
-   translate): the bottom sheet simply overlays the bottom edge, so
-   there's never a grey strip between map and panel. */
+   viewport. */
 .kaart-page--mobile .kaart-stage {
   left: 0;
+}
+/* When the bottom-sheet opens, slide the map UP by EXACTLY the
+   sheet's height (`--card-h`, measured + reported by the card). The
+   sheet covers the equal-height area it vacates at the bottom, so
+   the map and panel move as one — no grey gap (mirrors the desktop
+   slide-left). `--card-h` is 0 when closed → no translate. */
+.kaart-page--mobile .kaart-stage--with-card {
+  transform: translateY(calc(-1 * var(--card-h, 0px)));
 }
 
 /* Kill the desktop-chrome flash on mobile: `isMobile` is false

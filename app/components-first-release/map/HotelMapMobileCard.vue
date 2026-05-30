@@ -3,6 +3,7 @@
     <Transition name="mapcard">
       <section
         v-if="isOpen && hotel"
+        ref="cardRef"
         class="mapcard"
         role="dialog"
         aria-label="Hotel"
@@ -38,8 +39,13 @@
           </button>
         </header>
 
-        <!-- Part 2 — horizontal carousel of deal cards -->
-        <div class="mapcard__rail" data-scroll-lock-allow="true">
+        <!-- Part 2 — horizontal carousel of deal cards. A single deal
+             fills the full width instead of a 290px carousel card. -->
+        <div
+          class="mapcard__rail"
+          :class="{ 'mapcard__rail--single': dealViews.length === 1 }"
+          data-scroll-lock-allow="true"
+        >
           <article
             v-for="d in dealViews"
             :key="d.deal.id"
@@ -102,7 +108,35 @@ const props = defineProps<{
   hotel: SearchHotel | null
 }>()
 
-defineEmits<{ (e: 'close'): void }>()
+const emit = defineEmits<{
+  (e: 'close'): void
+  /** Live pixel height of the open sheet (0 when closed). The kaart
+   *  page uses this to slide the map up by EXACTLY this much, so the
+   *  panel stays "connected" to the map with no grey gap. */
+  (e: 'height', px: number): void
+}>()
+
+const cardRef = ref<HTMLElement | null>(null)
+let ro: ResizeObserver | null = null
+
+function emitHeight() {
+  emit('height', props.isOpen && cardRef.value ? Math.round(cardRef.value.getBoundingClientRect().height) : 0)
+}
+
+watch(() => props.isOpen, async (open) => {
+  if (open) {
+    await nextTick()
+    emitHeight()
+    if (cardRef.value && typeof ResizeObserver !== 'undefined') {
+      ro = new ResizeObserver(emitHeight)
+      ro.observe(cardRef.value)
+    }
+  } else {
+    ro?.disconnect(); ro = null
+    emit('height', 0)
+  }
+})
+onBeforeUnmount(() => { ro?.disconnect(); ro = null })
 
 /** Locale-aware "from price" prefix (Vanaf / From / Ab). */
 const fromLabel = computed(() =>
@@ -190,7 +224,7 @@ const dealViews = computed(() => {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  justify-content: center;
+  justify-content: flex-start; /* hotel name aligns to the top */
 }
 .mapcard__name {
   margin: 0;
@@ -238,6 +272,12 @@ const dealViews = computed(() => {
   padding: 4px;
 }
 .mapcard__rail::-webkit-scrollbar { display: none; }
+
+/* Single deal → fill the full width (no carousel). */
+.mapcard__rail--single .mdeal {
+  flex: 1 1 auto;
+  width: auto;
+}
 
 .mdeal {
   scroll-snap-align: start;
