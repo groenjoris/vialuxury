@@ -224,6 +224,7 @@
          top anchor nav). Same price-block + "Bekijk arrangementen"
          CTA in both flavours. -->
     <div
+      ref="ctaBarRef"
       v-if="hotel && (isMobile || ctaBarVisible)"
       class="hotel-page__cta-bar"
       :class="{ 'hotel-page__cta-bar--mobile': isMobile }"
@@ -297,6 +298,7 @@
 import { formatPrice } from '~/utils-first-release/formatPrice'
 import { nightsLabel, personsLabel, roomsLabel } from '~/utils-first-release/plural'
 import { useBodyScrollLock } from '~/composables-first-release/useBodyScrollLock'
+import { usePinToViewportBottom } from '~/composables-first-release/usePinToViewportBottom'
 import { isDealAvailableInWindow } from '~/utils-first-release/availability'
 import { teamMembers } from '~/data/team-members'
 import {
@@ -462,6 +464,14 @@ const cheapestPriceForLabel = computed(() => {
     .replace('{personsLabel}', personsLabel(globalPersons.value || 2, 'nl'))
     .replace('{roomsLabel}', roomsLabel(globalRooms.value || 1, 'nl'))
 })
+
+/** Sticky CTA bar element + viewport-bottom pin. Gated by
+ *  `isMobile` so the desktop top-sticky-header variant of the
+ *  bar stays untouched (no inline `bottom` written). On mobile,
+ *  the pin tracks `visualViewport` and keeps the bar flush with
+ *  the VISIBLE bottom edge as the browser chrome animates. */
+const ctaBarRef = ref<HTMLElement | null>(null)
+usePinToViewportBottom(ctaBarRef, isMobile)
 
 /** Sticky CTA bar visibility — same scroll threshold as the deal page. */
 const ctaBarVisible = ref(false)
