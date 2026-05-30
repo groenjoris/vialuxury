@@ -26,6 +26,12 @@ const props = defineProps<{
    *  anchor after clicking another marker). Hovering it shows the
    *  orange teardrop variant. */
   focusedHotelId?: string | null
+  /** Touch devices: skip the marker hover handlers. They call
+   *  `setIcon` on `mouseover`, which swaps the marker's DOM element
+   *  mid-tap and makes iOS drop the synthetic `click` — so tapping a
+   *  pin never fires `selectHotel`. With hover off, the element stays
+   *  stable through the tap and `click` fires on the first tap. */
+  disableHover?: boolean
 }>()
 
 const { selectedHotelId, selectHotel, clearSelection, setHover, scheduleHover } = useFirstReleaseHotelMap()
@@ -153,41 +159,47 @@ function renderMarkers() {
         interactive: !isDisabled,
       })
       if (!isDisabled) {
-        m.on('mouseover', (e: import('leaflet').LeafletMouseEvent) => {
-          hoveredId.value = hotelId
-          m.setIcon(makeHotelIcon(L, hotelId))
-          const rect = mapEl.value!.getBoundingClientRect()
-          // Anchor the hover-card to the marker's GEOGRAPHIC point (the
-          // tip of the teardrop / the centre of the dot), not the
-          // cursor — that way a tall focused-pin doesn't get covered
-          // by the card.
-          const state = pinStateFor(hotelId)
-          const [iconW, iconH] = pinSize(state)
-          const [, iconAnchorY] = pinAnchor(state)
-          const anchorPx = map!.latLngToContainerPoint([lat, lng])
-          const anchorX = anchorPx.x + rect.left
-          const anchorY = anchorPx.y + rect.top
-          // anchorOffsetY = how far the anchor is from the TOP of the icon.
-          // iconTopY    = top of the visible icon on screen.
-          // iconBottomY = bottom of the visible icon on screen.
-          const iconTopY = anchorY - iconAnchorY
-          const iconBottomY = iconTopY + iconH
-          setHover(hotelId, {
-            x: anchorX,
-            y: anchorY,
-            iconTopY,
-            iconBottomY,
+        // Hover handlers are DESKTOP-only. On touch they break tapping:
+        // `mouseover` (synthesised before `click` on iOS) calls
+        // `setIcon`, swapping the marker's DOM element so iOS drops the
+        // subsequent synthetic `click`. Skip them when `disableHover`.
+        if (!props.disableHover) {
+          m.on('mouseover', (e: import('leaflet').LeafletMouseEvent) => {
+            hoveredId.value = hotelId
+            m.setIcon(makeHotelIcon(L, hotelId))
+            const rect = mapEl.value!.getBoundingClientRect()
+            // Anchor the hover-card to the marker's GEOGRAPHIC point (the
+            // tip of the teardrop / the centre of the dot), not the
+            // cursor — that way a tall focused-pin doesn't get covered
+            // by the card.
+            const state = pinStateFor(hotelId)
+            const [iconW, iconH] = pinSize(state)
+            const [, iconAnchorY] = pinAnchor(state)
+            const anchorPx = map!.latLngToContainerPoint([lat, lng])
+            const anchorX = anchorPx.x + rect.left
+            const anchorY = anchorPx.y + rect.top
+            // anchorOffsetY = how far the anchor is from the TOP of the icon.
+            // iconTopY    = top of the visible icon on screen.
+            // iconBottomY = bottom of the visible icon on screen.
+            const iconTopY = anchorY - iconAnchorY
+            const iconBottomY = iconTopY + iconH
+            setHover(hotelId, {
+              x: anchorX,
+              y: anchorY,
+              iconTopY,
+              iconBottomY,
+            })
+            // iconW deliberately unused — width is centred via anchorX.
+            void iconW
           })
-          // iconW deliberately unused — width is centred via anchorX.
-          void iconW
-        })
-        m.on('mouseout', () => {
-          hoveredId.value = null
-          m.setIcon(makeHotelIcon(L, hotelId))
-          // Defer the hide so the user can move the cursor into the
-          // preview card without it vanishing.
-          scheduleHover(null, 150)
-        })
+          m.on('mouseout', () => {
+            hoveredId.value = null
+            m.setIcon(makeHotelIcon(L, hotelId))
+            // Defer the hide so the user can move the cursor into the
+            // preview card without it vanishing.
+            scheduleHover(null, 150)
+          })
+        }
         m.on('click', (e: import('leaflet').LeafletMouseEvent) => {
           L.DomEvent.stopPropagation(e)
           lastMarkerClickAt = Date.now()

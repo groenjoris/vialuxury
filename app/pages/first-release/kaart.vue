@@ -326,6 +326,7 @@ onMounted(() => {
           :hotels="mapHotels"
           :initial-focus="initialFocus"
           :focused-hotel-id="focusedHotel?.id ?? null"
+          :disable-hover="isMobile"
         />
       </ClientOnly>
 
