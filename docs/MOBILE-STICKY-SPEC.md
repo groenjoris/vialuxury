@@ -75,18 +75,20 @@ toolbar's position/layout.
 - Desktop: the SAME element is a TOP sticky header — the mobile
   pin must never affect desktop layout.
 
-### Correct mechanism — `position: fixed; bottom: 0` + `usePinToViewportBottom`
+### Correct mechanism — `position: fixed` + `usePinToViewportBottom` (top-based)
 - CSS: `.deal-page__cta-bar--mobile { position: fixed; bottom: 0;
   padding-bottom: env(safe-area-inset-bottom) }`.
-- `usePinToViewportBottom(barRef, isMobile)` rewrites inline
-  `bottom` from the `visualViewport` so the bar tracks the visible
-  bottom as the chrome animates.
-- Reference "full" (chrome-hidden) height = the MAX of a running
-  `visualViewport.height` max, `window.innerHeight`, and
-  `documentElement.clientHeight` — because iOS Safari and iOS
-  Chrome disagree on which of those tracks the chrome. Offset =
-  `fullH − (vv.offsetTop + vv.height)`; 0 when chrome hidden.
-- Gated by `isMobile`: when false it CLEARS the inline `bottom`
+- `usePinToViewportBottom(barRef, isMobile)` positions the bar via
+  inline **`top`** (`bottom: auto`) so its BOTTOM edge lands exactly
+  on the live visible bottom: `top = vv.offsetTop + vv.height −
+  barHeight`. The bar stays glued to the bottom toolbar when chrome
+  shows and drops to the screen bottom when chrome hides.
+- Do NOT compute a "full / chrome-hidden viewport height" and
+  subtract it (the old approach): `window.innerHeight` is
+  inconsistent across iOS Safari/Chrome and a momentum/overscroll
+  bounce inflated the running max → the bar floated ~⅓ up the
+  screen on scroll-up. Pin to the visible bottom DIRECTLY instead.
+- Gated by `isMobile`: when false it CLEARS the inline `top`/`bottom`
   so the desktop top-sticky header is untouched. Recomputes on
   `visualViewport` resize/scroll AND `window` scroll.
 
