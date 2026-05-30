@@ -773,7 +773,7 @@
     <FirstReleaseAuthPopup :is-open="isAuthPopupOpen" @close="isAuthPopupOpen = false" @login="handleLogin" />
 
     <!-- Sticky booking bar — top on desktop (after scroll), bottom on mobile -->
-    <div ref="ctaBarRef" v-if="hotel && currentDeal && (isMobile || ctaBarVisible)" class="deal-page__cta-bar" :class="{ 'deal-page__cta-bar--mobile': isMobile }">
+    <div v-if="hotel && currentDeal && (isMobile || ctaBarVisible)" class="deal-page__cta-bar" :class="{ 'deal-page__cta-bar--mobile': isMobile }">
       <div class="deal-page__cta-bar-inner container">
         <!-- Page nav (desktop only).  `--active` modifier is applied to
              the tab matching the section currently scrolled into view,
@@ -910,7 +910,6 @@
 import { useFirstReleaseDealStore } from '~/stores-first-release/deal'
 import { useSearchNavLock } from '~/composables-first-release/useMobileSearchModalControl'
 import { useBodyScrollLock } from '~/composables-first-release/useBodyScrollLock'
-import { usePinToViewportBottom } from '~/composables-first-release/usePinToViewportBottom'
 import { creatorForSlug } from '~/data/team-members'
 import FirstReleaseExperienceCreatorCard from '~/components-first-release/deal/ExperienceCreatorCard.vue'
 import FirstReleaseWhyViaLuxury from '~/components-first-release/deal/WhyViaLuxury.vue'
@@ -1027,14 +1026,6 @@ function formatDeDayMonth(iso: string | null): string {
 // Mobile detection + active sub-modal
 const isMobile = useFirstReleaseIsMobile()
 const activeMobileSection = ref<'facilities' | 'reviews' | 'tips' | 'faq' | null>(null)
-
-// Sticky CTA bar element + viewport-bottom pin. The bar uses
-// `position: fixed; bottom: 0` in CSS; this composable overrides
-// `bottom` based on `visualViewport` so the bar always sits flush
-// with the VISIBLE viewport bottom — no "bridge" gap when the
-// mobile browser chrome animates in/out.
-const ctaBarRef = ref<HTMLElement | null>(null)
-usePinToViewportBottom(ctaBarRef)
 
 // Sticky CTA bar visibility on desktop — only show after scrolling past the nav
 const ctaBarVisible = ref(false)

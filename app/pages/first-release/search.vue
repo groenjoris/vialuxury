@@ -539,18 +539,6 @@ onMounted(() => {
   })
 })
 
-// Scroll-based fallback for the desktop sticky filter — fast
-// scrolls can outrun IntersectionObserver callbacks, leaving the
-// sticky filter hidden until the user scrolls back up. Reading
-// the sentinel's bounding rect on every scroll guarantees the
-// sticky shows the MOMENT the sentinel passes above the viewport
-// top, in either direction.
-function handleFilterScroll() {
-  const el = filterSentinelRef.value
-  if (!el) return
-  stickyFilterVisible.value = el.getBoundingClientRect().top < 0
-}
-
 onMounted(() => {
   if (!import.meta.client) return
   if (!filterSentinelRef.value) return
@@ -567,10 +555,7 @@ onMounted(() => {
     { threshold: 0 }
   )
   filterObserver.observe(filterSentinelRef.value)
-  handleFilterScroll()
-  window.addEventListener('scroll', handleFilterScroll, { passive: true })
 })
-
 
 // ---------------------------------------------------------------------------
 // Mobile toolbar sticky behaviour + search-modal control
@@ -658,9 +643,6 @@ const hasActiveFilters = computed(() => {
 onUnmounted(() => {
   filterObserver?.disconnect()
   filterObserver = null
-  if (import.meta.client) {
-    window.removeEventListener('scroll', handleFilterScroll)
-  }
 })
 
 // Budget range — shared with /kaart via useFirstReleaseSearchState so toggling between
