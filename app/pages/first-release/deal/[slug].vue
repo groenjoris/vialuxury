@@ -772,34 +772,29 @@
     <!-- Auth popup -->
     <FirstReleaseAuthPopup :is-open="isAuthPopupOpen" @close="isAuthPopupOpen = false" @login="handleLogin" />
 
-    <!-- Sticky booking bar — MOBILE ONLY. The bar renders ONLY when
-         `isMobile` is true so it never appears on desktop (where it
-         was overlapping page content and reading as a "white-out"
-         when triggered after scroll). Desktop users get the inline
-         sidebar booking card instead. -->
-    <div ref="ctaBarRef" v-if="hotel && currentDeal && isMobile" class="deal-page__cta-bar deal-page__cta-bar--mobile">
+    <!-- Sticky booking bar — TWO SEPARATE BRANCHES.
+         MOBILE: bottom sticky footer, gets `ref="ctaBarRef"` so the
+                 visualViewport-pin composable can keep it flush
+                 with the visible bottom.
+         DESKTOP: top sticky header, appears after scrolling past
+                  200 px (ctaBarVisible). NO ref, NO composable —
+                  pure CSS `position: fixed; top: 0`. Splitting the
+                  template guarantees the composable can never
+                  write an inline `bottom` on the desktop element
+                  (which would stretch it top↔bottom = "white-out").
+    -->
+    <div
+      v-if="hotel && currentDeal && isMobile"
+      ref="ctaBarRef"
+      class="deal-page__cta-bar deal-page__cta-bar--mobile"
+    >
       <div class="deal-page__cta-bar-inner container">
-        <!-- Page nav (desktop only).  `--active` modifier is applied to
-             the tab matching the section currently scrolled into view,
-             driven by the IntersectionObserver in <script setup>. -->
-        <nav v-if="!isMobile" class="deal-page__tabs deal-page__tabs--in-bar">
-          <a href="#intro" class="deal-page__tab" :class="{ 'deal-page__tab--active': activeAnchor === 'intro' }">{{ t('deal.tabIntro') }}</a>
-          <a href="#arrangement" class="deal-page__tab" :class="{ 'deal-page__tab--active': activeAnchor === 'arrangement' }">{{ t('deal.tabArrangement') }}</a>
-          <a v-if="hotel.houseRules && hotel.houseRules.length" href="#huisregels" class="deal-page__tab" :class="{ 'deal-page__tab--active': activeAnchor === 'huisregels' }">{{ t('hotel.tabHouseRules') }}</a>
-          <a href="#veelgestelde-vragen" class="deal-page__tab" :class="{ 'deal-page__tab--active': activeAnchor === 'veelgestelde-vragen' }">{{ t('hotel.tabFaq') }}</a>
-          <a href="#tips" class="deal-page__tab" :class="{ 'deal-page__tab--active': activeAnchor === 'tips' }">{{ t('hotel.tabNearby') }}</a>
-        </nav>
-        <!-- Right-aligned price + button cluster -->
         <div class="deal-page__cta-bar-cluster">
           <div class="deal-page__cta-bar-price-block">
             <div
               class="deal-page__cta-bar-price-row"
               :class="{ 'deal-page__cta-bar-price-row--de-no-date': isGerman && !dateSelected }"
             >
-              <!-- With dates: real booked-night price, show the discount %.
-                   Without dates: starting-from estimate.
-                   German no-date variant: "Ab" prefix + red strikethrough
-                   original + bigger bold amount. -->
               <span
                 class="deal-page__cta-bar-discount"
                 :class="{ 'deal-page__cta-bar-discount--vanaf': !dateSelected }"
@@ -816,7 +811,55 @@
                 class="deal-page__cta-bar-amount"
                 :class="{ 'deal-page__cta-bar-amount--big': isGerman && !dateSelected }"
               >{{ formatPrice(store.pricing.totalPrice) }}</span>
-              <!-- Info tooltip hidden in German per spec. -->
+              <FirstReleasePriceInfoTooltip v-if="!isGerman" variant="deal" />
+            </div>
+            <span v-if="isGerman" class="deal-page__cta-bar-meta deal-page__cta-bar-meta--de">
+              <span>{{ stickyDeLine1 }}</span>
+              <span>{{ stickyDeLine2 }}</span>
+            </span>
+            <span v-else class="deal-page__cta-bar-meta">{{ priceForLabel }}</span>
+          </div>
+          <button type="button" class="deal-page__cta-bar-btn" @click="handleMobileBook">
+            {{ t('deal.bookNow') }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div
+      v-else-if="hotel && currentDeal && ctaBarVisible"
+      class="deal-page__cta-bar"
+    >
+      <div class="deal-page__cta-bar-inner container">
+        <nav class="deal-page__tabs deal-page__tabs--in-bar">
+          <a href="#intro" class="deal-page__tab" :class="{ 'deal-page__tab--active': activeAnchor === 'intro' }">{{ t('deal.tabIntro') }}</a>
+          <a href="#arrangement" class="deal-page__tab" :class="{ 'deal-page__tab--active': activeAnchor === 'arrangement' }">{{ t('deal.tabArrangement') }}</a>
+          <a v-if="hotel.houseRules && hotel.houseRules.length" href="#huisregels" class="deal-page__tab" :class="{ 'deal-page__tab--active': activeAnchor === 'huisregels' }">{{ t('hotel.tabHouseRules') }}</a>
+          <a href="#veelgestelde-vragen" class="deal-page__tab" :class="{ 'deal-page__tab--active': activeAnchor === 'veelgestelde-vragen' }">{{ t('hotel.tabFaq') }}</a>
+          <a href="#tips" class="deal-page__tab" :class="{ 'deal-page__tab--active': activeAnchor === 'tips' }">{{ t('hotel.tabNearby') }}</a>
+        </nav>
+        <div class="deal-page__cta-bar-cluster">
+          <div class="deal-page__cta-bar-price-block">
+            <div
+              class="deal-page__cta-bar-price-row"
+              :class="{ 'deal-page__cta-bar-price-row--de-no-date': isGerman && !dateSelected }"
+            >
+              <span
+                class="deal-page__cta-bar-discount"
+                :class="{ 'deal-page__cta-bar-discount--vanaf': !dateSelected }"
+              >{{
+                isGerman && !dateSelected
+                  ? t('deal.stickyFromPrefix')
+                  : (dateSelected ? `-${currentDeal.discountPercentage}%` : 'Vanaf')
+              }}</span>
+              <span
+                class="deal-page__cta-bar-original"
+                :class="{ 'deal-page__cta-bar-original--red': isGerman && !dateSelected }"
+              >{{ formatPrice(store.pricing.originalPrice) }}</span>
+              <span
+                class="deal-page__cta-bar-amount"
+                :class="{ 'deal-page__cta-bar-amount--big': isGerman && !dateSelected }"
+              >{{ formatPrice(store.pricing.totalPrice) }}</span>
               <FirstReleasePriceInfoTooltip v-if="!isGerman" variant="deal" />
             </div>
             <span v-if="isGerman" class="deal-page__cta-bar-meta deal-page__cta-bar-meta--de">

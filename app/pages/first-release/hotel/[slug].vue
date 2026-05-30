@@ -218,18 +218,48 @@
       </div>
     </main>
 
-    <!-- Sticky CTA — MOBILE ONLY. Renders the bottom sticky footer
-         with price block + "Bekijk arrangementen" CTA. Desktop
-         users get the inline sidebar booking card; no top sticky
-         header on desktop. -->
+    <!-- Sticky CTA — TWO SEPARATE BRANCHES.
+         MOBILE: bottom sticky footer with `ref="ctaBarRef"` so the
+                 visualViewport-pin composable can keep it flush
+                 with the visible bottom.
+         DESKTOP: top sticky header that appears once scrolled
+                  past 200 px (ctaBarVisible). NO ref, NO
+                  composable — pure CSS `position: fixed; top: 0`.
+                  Splitting prevents the composable from ever
+                  writing inline `bottom` on the desktop element. -->
     <div
-      ref="ctaBarRef"
       v-if="hotel && isMobile"
+      ref="ctaBarRef"
       class="hotel-page__cta-bar hotel-page__cta-bar--mobile"
     >
       <div class="hotel-page__cta-bar-inner container">
-        <!-- Anchor tabs — desktop only. -->
-        <nav v-if="!isMobile" class="hotel-page__tabs hotel-page__tabs--in-bar">
+        <div class="hotel-page__cta-bar-cluster">
+          <div v-if="cheapestDeal" class="hotel-page__cta-bar-price-block">
+            <div class="hotel-page__cta-bar-price-row">
+              <span class="hotel-page__cta-bar-discount hotel-page__cta-bar-discount--vanaf">Vanaf</span>
+              <span class="hotel-page__cta-bar-original">{{ formatPrice(cheapestDeal.originalPrice) }}</span>
+              <span class="hotel-page__cta-bar-amount">{{ formatPrice(cheapestDeal.basePrice) }}</span>
+              <FirstReleasePriceInfoTooltip v-if="!isGerman" variant="deal" />
+            </div>
+            <span v-if="isGerman" class="hotel-page__cta-bar-meta hotel-page__cta-bar-meta--de">
+              <span>{{ stickyDeLine1 }}</span>
+              <span>{{ stickyDeLine2 }}</span>
+            </span>
+            <span v-else class="hotel-page__cta-bar-meta">{{ cheapestPriceForLabel }}</span>
+          </div>
+          <button type="button" class="hotel-page__cta-bar-btn" @click="scrollToArrangements">
+            Bekijk arrangementen
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div
+      v-else-if="hotel && ctaBarVisible"
+      class="hotel-page__cta-bar"
+    >
+      <div class="hotel-page__cta-bar-inner container">
+        <nav class="hotel-page__tabs hotel-page__tabs--in-bar">
           <a href="#overzicht" class="hotel-page__tab" :class="{ 'hotel-page__tab--active': activeAnchor === 'overzicht' }">{{ t('hotel.tabOverview') }}</a>
           <a href="#arrangementen" class="hotel-page__tab" :class="{ 'hotel-page__tab--active': activeAnchor === 'arrangementen' }">{{ t('hotel.tabDeals') }}</a>
           <a href="#veelgestelde-vragen" class="hotel-page__tab" :class="{ 'hotel-page__tab--active': activeAnchor === 'veelgestelde-vragen' }">{{ t('hotel.tabFaq') }}</a>
@@ -239,15 +269,9 @@
         <div class="hotel-page__cta-bar-cluster">
           <div v-if="cheapestDeal" class="hotel-page__cta-bar-price-block">
             <div class="hotel-page__cta-bar-price-row">
-              <!-- "Vanaf" chip — hotel page price is always a
-                   starting-from estimate (cheapest available deal,
-                   matching arrival date when set). -->
               <span class="hotel-page__cta-bar-discount hotel-page__cta-bar-discount--vanaf">Vanaf</span>
               <span class="hotel-page__cta-bar-original">{{ formatPrice(cheapestDeal.originalPrice) }}</span>
               <span class="hotel-page__cta-bar-amount">{{ formatPrice(cheapestDeal.basePrice) }}</span>
-              <!-- Info tooltip hidden in German per spec; replaced
-                   by the regulatory "Exkl. Kurtaxe und
-                   Verwaltungskosten" line below the price meta. -->
               <FirstReleasePriceInfoTooltip v-if="!isGerman" variant="deal" />
             </div>
             <span v-if="isGerman" class="hotel-page__cta-bar-meta hotel-page__cta-bar-meta--de">

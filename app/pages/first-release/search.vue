@@ -132,85 +132,11 @@
             </div>
           </div>
 
-          <!-- ============================================================
-               MOBILE: sticky filter/kaart/sorteren toolbar + pills.
-               The search-summary moved into SiteHeader (above the
-               title); the desktop toolbar below renders for ≥ 800 px.
-               ============================================================ -->
-          <template v-if="isMobile">
-            <!-- Mobile toolbar uses CSS `position: sticky; top: 0`
-                 (see stylesheet). It pins automatically when scrolled
-                 past — no IntersectionObserver / scroll-listener
-                 needed, so it stays visible the moment the user
-                 scrolls in either direction past its natural
-                 position, including during iOS momentum scroll. -->
-
-            <section
-              class="search-page__mobile-toolbar"
-            >
-              <button
-                class="m-toolbar-btn"
-                :class="{ 'm-toolbar-btn--has-dot': hasActiveFilters }"
-                @click="handleFilterButtonClick"
-              >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <line x1="4" y1="6" x2="20" y2="6" />
-                  <line x1="8" y1="12" x2="20" y2="12" />
-                  <line x1="12" y1="18" x2="20" y2="18" />
-                </svg>
-                Filter
-                <span v-if="hasActiveFilters" class="m-toolbar-btn__dot" aria-hidden="true"></span>
-              </button>
-              <button class="m-toolbar-btn" @click="handleMapClick">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
-                  <circle cx="12" cy="10" r="3" />
-                </svg>
-                Kaart
-              </button>
-              <div class="search-toolbar__sort m-toolbar-btn--sort-wrap" ref="sortRef">
-                <button class="m-toolbar-btn m-toolbar-btn--sort" @click="sortOpen = !sortOpen">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M11 5h10M11 9h7M11 13h4M3 17l4 4 4-4M7 3v18" />
-                  </svg>
-                  Sorteren
-                </button>
-                <Transition name="dropdown-fade">
-                  <div v-if="sortOpen" class="search-toolbar__sort-dropdown">
-                    <button
-                      v-for="option in sortOptions"
-                      :key="option.value"
-                      class="search-toolbar__sort-option"
-                      :class="{ 'search-toolbar__sort-option--active': sortBy === option.value }"
-                      @click="sortBy = option.value; sortOpen = false"
-                    >
-                      {{ option.label }}
-                    </button>
-                  </div>
-                </Transition>
-              </div>
-              <!-- Sticky-only re-open-search button at the far right.
-                   Mirrors the summary bar that scrolled out of view. -->
-              <button
-                v-if="mobileToolbarStuck"
-                type="button"
-                class="m-toolbar-btn m-toolbar-btn--search-icon"
-                aria-label="Wijzig zoekopdracht"
-                @click="openMobileSearch"
-              >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <circle cx="11" cy="11" r="8" />
-                  <line x1="21" y1="21" x2="16.65" y2="16.65" />
-                </svg>
-              </button>
-            </section>
-
-            <!-- Filter pills below the sticky toolbar — same chip style as
-                 the desktop toolbar. -->
-            <section class="search-page__mobile-pills">
-              <FirstReleaseFilterPills />
-            </section>
-          </template>
+          <!-- Mobile toolbar + pills moved OUT of .search-page__above-
+               cards to be direct children of .search-page__results
+               (below this block). That makes the toolbar's containing
+               block tall enough for `position: sticky; top: 0` to
+               keep it pinned through the entire result-list scroll. -->
 
           <!-- ============================================================
                DESKTOP toolbar: filter toggle, sort, view switch
@@ -315,6 +241,79 @@
             </div>
           </div>
           </div><!-- /.search-page__above-cards -->
+
+          <!-- ============================================================
+               MOBILE: sticky filter/kaart/sorteren toolbar + pills.
+               Direct children of .search-page__results so the
+               toolbar's `position: sticky; top: 0` pins it for the
+               entire result-list scroll (the parent flex column is
+               as tall as the cards list, not the short header zone).
+               The search-summary lives in SiteHeader; the desktop
+               toolbar inside above-cards above renders for ≥ 800 px.
+               ============================================================ -->
+          <template v-if="isMobile">
+            <section class="search-page__mobile-toolbar">
+              <button
+                class="m-toolbar-btn"
+                :class="{ 'm-toolbar-btn--has-dot': hasActiveFilters }"
+                @click="handleFilterButtonClick"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="4" y1="6" x2="20" y2="6" />
+                  <line x1="8" y1="12" x2="20" y2="12" />
+                  <line x1="12" y1="18" x2="20" y2="18" />
+                </svg>
+                Filter
+                <span v-if="hasActiveFilters" class="m-toolbar-btn__dot" aria-hidden="true"></span>
+              </button>
+              <button class="m-toolbar-btn" @click="handleMapClick">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
+                  <circle cx="12" cy="10" r="3" />
+                </svg>
+                Kaart
+              </button>
+              <div class="search-toolbar__sort m-toolbar-btn--sort-wrap" ref="sortRef">
+                <button class="m-toolbar-btn m-toolbar-btn--sort" @click="sortOpen = !sortOpen">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M11 5h10M11 9h7M11 13h4M3 17l4 4 4-4M7 3v18" />
+                  </svg>
+                  Sorteren
+                </button>
+                <Transition name="dropdown-fade">
+                  <div v-if="sortOpen" class="search-toolbar__sort-dropdown">
+                    <button
+                      v-for="option in sortOptions"
+                      :key="option.value"
+                      class="search-toolbar__sort-option"
+                      :class="{ 'search-toolbar__sort-option--active': sortBy === option.value }"
+                      @click="sortBy = option.value; sortOpen = false"
+                    >
+                      {{ option.label }}
+                    </button>
+                  </div>
+                </Transition>
+              </div>
+              <!-- Re-open-search button — shows after the user has
+                   scrolled away from the summary bar at the top. -->
+              <button
+                v-if="mobileToolbarStuck"
+                type="button"
+                class="m-toolbar-btn m-toolbar-btn--search-icon"
+                aria-label="Wijzig zoekopdracht"
+                @click="openMobileSearch"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="11" cy="11" r="8" />
+                  <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                </svg>
+              </button>
+            </section>
+
+            <section class="search-page__mobile-pills">
+              <FirstReleaseFilterPills />
+            </section>
+          </template>
 
           <!-- Loading overlay -->
           <Transition name="fade">
