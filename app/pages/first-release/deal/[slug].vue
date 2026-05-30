@@ -772,8 +772,12 @@
     <!-- Auth popup -->
     <FirstReleaseAuthPopup :is-open="isAuthPopupOpen" @close="isAuthPopupOpen = false" @login="handleLogin" />
 
-    <!-- Sticky booking bar — top on desktop (after scroll), bottom on mobile -->
-    <div ref="ctaBarRef" v-if="hotel && currentDeal && (isMobile || ctaBarVisible)" class="deal-page__cta-bar" :class="{ 'deal-page__cta-bar--mobile': isMobile }">
+    <!-- Sticky booking bar — MOBILE ONLY. The bar renders ONLY when
+         `isMobile` is true so it never appears on desktop (where it
+         was overlapping page content and reading as a "white-out"
+         when triggered after scroll). Desktop users get the inline
+         sidebar booking card instead. -->
+    <div ref="ctaBarRef" v-if="hotel && currentDeal && isMobile" class="deal-page__cta-bar deal-page__cta-bar--mobile">
       <div class="deal-page__cta-bar-inner container">
         <!-- Page nav (desktop only).  `--active` modifier is applied to
              the tab matching the section currently scrolled into view,

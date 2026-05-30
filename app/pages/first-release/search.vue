@@ -138,18 +138,15 @@
                title); the desktop toolbar below renders for ≥ 800 px.
                ============================================================ -->
           <template v-if="isMobile">
-            <!-- Sentinel: when this scrolls above the viewport top, the
-                 toolbar below pins to the top via .--sticky modifier. -->
-            <div ref="mobileToolbarSentinelRef" class="search-page__mobile-toolbar-sentinel"></div>
-
-            <!-- Spacer reserves the toolbar's natural height once the
-                 toolbar pins (fixed) so the rest of the page doesn't
-                 jump up by ~64 px. -->
-            <div v-if="mobileToolbarStuck" class="search-page__mobile-toolbar-spacer" aria-hidden="true"></div>
+            <!-- Mobile toolbar uses CSS `position: sticky; top: 0`
+                 (see stylesheet). It pins automatically when scrolled
+                 past — no IntersectionObserver / scroll-listener
+                 needed, so it stays visible the moment the user
+                 scrolls in either direction past its natural
+                 position, including during iOS momentum scroll. -->
 
             <section
               class="search-page__mobile-toolbar"
-              :class="{ 'search-page__mobile-toolbar--sticky': mobileToolbarStuck }"
             >
               <button
                 class="m-toolbar-btn"
@@ -572,60 +569,22 @@ onMounted(() => {
 })
 
 // ---------------------------------------------------------------------------
-// Mobile toolbar sticky behaviour + search-modal control
+// Mobile toolbar: CSS `position: sticky; top: 0` handles the pinning.
+// We only need a `mobileToolbarStuck` flag to toggle the inline
+// "re-open search" icon button on the right (which mirrors the
+// SiteHeader summary bar after it scrolls out). Simple scroll-past
+// threshold is enough — no IO / spacer / sentinel needed.
 // ---------------------------------------------------------------------------
-// Same IntersectionObserver pattern as the desktop sticky filter above —
-// a zero-height sentinel sits between the summary bar and the toolbar;
-// when it scrolls above the viewport top, the toolbar pins.
-const mobileToolbarSentinelRef = ref<HTMLElement | null>(null)
 const mobileToolbarStuck = ref(false)
-let mobileToolbarObserver: IntersectionObserver | null = null
-
-// IntersectionObserver alone wasn't firing reliably — the sentinel
-// is rendered only when `isMobile` flips to true (post-hydration),
-// so the original `onMounted` ran BEFORE the sentinel existed and
-// silently bailed. Use a watch on the ref + a scroll fallback so
-// the sticky state activates as soon as the sentinel mounts AND
-// reacts even when IO misses fast scrolls.
-function attachMobileToolbarObserver() {
-  if (!import.meta.client) return
-  const el = mobileToolbarSentinelRef.value
-  if (!el) return
-  mobileToolbarObserver?.disconnect()
-  mobileToolbarObserver = new IntersectionObserver(
-    (entries) => {
-      const entry = entries[0]
-      if (!entry) return
-      const scrolledPast = !entry.isIntersecting && entry.boundingClientRect.top < 0
-      mobileToolbarStuck.value = scrolledPast
-    },
-    { threshold: 0 },
-  )
-  mobileToolbarObserver.observe(el)
-}
-
 function handleMobileToolbarScroll() {
-  const el = mobileToolbarSentinelRef.value
-  if (!el) return
-  mobileToolbarStuck.value = el.getBoundingClientRect().top < 0
+  mobileToolbarStuck.value = window.scrollY > 80
 }
-
-watch(mobileToolbarSentinelRef, (el) => {
-  if (el) {
-    attachMobileToolbarObserver()
-    handleMobileToolbarScroll()
-  }
-})
-
 onMounted(() => {
   if (!import.meta.client) return
-  attachMobileToolbarObserver()
   handleMobileToolbarScroll()
   window.addEventListener('scroll', handleMobileToolbarScroll, { passive: true })
 })
 onUnmounted(() => {
-  mobileToolbarObserver?.disconnect()
-  mobileToolbarObserver = null
   if (import.meta.client) {
     window.removeEventListener('scroll', handleMobileToolbarScroll)
   }
@@ -2065,45 +2024,31 @@ onMounted(() => {
    ===================================================================== */
 /* `.search-page__mobile-summary` was retired — the summary bar
    moved into the SiteHeader slot above the title section. */
-.search-page__mobile-toolbar-sentinel {
-  height: 1px;
-  pointer-events: none;
-}
-/* Row: white background, 16 px gap between buttons, 8 px vertical /
-   16 px horizontal padding. No bottom border — the divider that
-   used to live here visually disconnected the toolbar from the
-   header/breadcrumb. */
+
+/* Mobile sticky toolbar — Filter / Kaart / Sorteren row.
+
+   ROBUST STICKY: `position: sticky; top: 0` makes the browser
+   pin the toolbar automatically the moment the user scrolls past
+   its natural position. No IntersectionObserver, no scroll
+   listener, no spacer needed — the element stays in document
+   flow when scrolled to the top, and pins to the viewport's top
+   edge when scrolled past. Stays visible regardless of scroll
+   direction (up / down / iOS momentum).
+
+   White bg + box-shadow appear when pinned so the toolbar reads
+   as a header. 16 px horizontal padding keeps the row inset; the
+   parent grid container already supplies its own padding but
+   it's removed for mobile (see .search-page__above-cards block),
+   so we add it here. */
 .search-page__mobile-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
   display: flex;
   gap: 16px;
-  /* No horizontal padding — the grid container already supplies
-     16 px to the left/right. Adding more here pushes the Filter
-     button 16 px to the right of the page title. */
-  padding: 8px 0;
-  background: #fff;
-  /* No `overflow: hidden` — that clipped the Sort dropdown to
-     the 64 px toolbar height, hiding the options. The four
-     toolbar buttons comfortably fit a 360 px viewport without
-     wrapping. */
-}
-/* When the toolbar pins, we use `fixed` instead of `sticky` because
-   ancestor flex/grid containers can break `position: sticky`. A
-   same-height spacer below prevents the rest of the page from
-   jumping when the toolbar leaves the document flow. */
-.search-page__mobile-toolbar--sticky {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 50;
-  /* Sticky variant lives outside the container, so it must
-     supply its own 16 px horizontal padding to stay aligned
-     with the page title underneath. */
   padding: 8px 16px;
+  background: #fff;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-}
-.search-page__mobile-toolbar-spacer {
-  height: 64px;            /* matches the toolbar's natural height */
 }
 /* Black pill-shaped buttons: 48 px high, 8 / 16 px padding, 4 px
    gap between icon and label, white text + icon, rounded corners. */

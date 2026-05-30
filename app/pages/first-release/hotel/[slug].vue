@@ -218,16 +218,14 @@
       </div>
     </main>
 
-    <!-- Sticky CTA — desktop renders a TOP anchor-nav bar that appears
-         once the user scrolls past 200 px (ctaBarVisible). Mobile
-         renders a BOTTOM sticky footer that's always visible (no
-         top anchor nav). Same price-block + "Bekijk arrangementen"
-         CTA in both flavours. -->
+    <!-- Sticky CTA — MOBILE ONLY. Renders the bottom sticky footer
+         with price block + "Bekijk arrangementen" CTA. Desktop
+         users get the inline sidebar booking card; no top sticky
+         header on desktop. -->
     <div
       ref="ctaBarRef"
-      v-if="hotel && (isMobile || ctaBarVisible)"
-      class="hotel-page__cta-bar"
-      :class="{ 'hotel-page__cta-bar--mobile': isMobile }"
+      v-if="hotel && isMobile"
+      class="hotel-page__cta-bar hotel-page__cta-bar--mobile"
     >
       <div class="hotel-page__cta-bar-inner container">
         <!-- Anchor tabs — desktop only. -->
