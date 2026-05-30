@@ -9,7 +9,10 @@
         @click.stop
         @touchmove.stop
       >
-        <!-- Part 1 — hotel info: photo + name + stars -->
+        <!-- Orange accent bar -->
+        <div class="mapcard__bar" aria-hidden="true"></div>
+
+        <!-- Part 1 — hotel info: landscape photo + name + stars -->
         <header class="mapcard__head">
           <img
             v-if="hotel.heroImage"
@@ -29,13 +32,13 @@
             :aria-label="t('common.close')"
             @click="$emit('close')"
           >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
               <path d="M18 6L6 18M6 6l12 12" />
             </svg>
           </button>
         </header>
 
-        <!-- Part 2 — horizontal carousel of small deal cards -->
+        <!-- Part 2 — horizontal carousel of deal cards -->
         <div class="mapcard__rail" data-scroll-lock-allow="true">
           <article
             v-for="d in dealViews"
@@ -43,42 +46,45 @@
             class="mdeal"
             :class="{ 'mdeal--sold-out': d.soldOut }"
           >
-            <p class="mdeal__title">
-              Arrangement voor {{ nightsLabel(d.deal.nights, locale as 'nl' | 'en' | 'de') }}
-            </p>
-
-            <FirstReleaseStickyPriceRow
-              class="mdeal__price"
-              :lead="''"
-              :lead-is-chip="false"
-              :original="d.originalPrice > d.price ? formatPrice(d.originalPrice) : ''"
-              :amount="formatPrice(d.price)"
-              :show-info="true"
-              info-variant="card"
-            />
+            <!-- First row: title + stacked price -->
+            <div class="mdeal__top">
+              <p class="mdeal__title">
+                <span class="mdeal__lead">Arrangement</span>{{ ' ' }}<span class="mdeal__title-rest">{{ nightsLabel(d.deal.nights, locale as 'nl' | 'en' | 'de') }}, {{ personsLabel(persons, locale as 'nl' | 'en' | 'de') }}</span>
+              </p>
+              <div class="mdeal__price">
+                <div class="mdeal__price-top">
+                  <span class="mdeal__from">{{ fromLabel }}</span>
+                  <span v-if="d.originalPrice > d.price" class="mdeal__original">{{ formatPrice(d.originalPrice) }}</span>
+                </div>
+                <div class="mdeal__price-bot">
+                  <span class="mdeal__amount">{{ priceNum(d.price) }}</span>
+                  <FirstReleasePriceInfoTooltip variant="card" />
+                </div>
+              </div>
+            </div>
 
             <!-- Scarcity (≤ 5 rooms) — only when NOT sold out. -->
             <p v-if="!d.soldOut && d.roomsLeft <= 5" class="mdeal__scarcity">
               {{ t('mapCard.roomsLeft').replace('{n}', String(d.roomsLeft)) }}
             </p>
 
-            <!-- Includes (first 2) OR sold-out notice. -->
-            <p v-if="d.soldOut" class="mdeal__soldout">
-              {{ t('mapCard.soldOutForDates') }}
-            </p>
-            <ul v-else class="mdeal__includes">
-              <li v-for="(inc, i) in d.includes" :key="i">
-                <span class="mdeal__check">✓</span>
-                <span class="mdeal__inc-text">{{ inc }}</span>
-              </li>
-            </ul>
+            <!-- Bottom row: includes (or sold-out notice) + arrow button -->
+            <div class="mdeal__bottom">
+              <p v-if="d.soldOut" class="mdeal__soldout">{{ t('mapCard.soldOutForDates') }}</p>
+              <ul v-else class="mdeal__includes">
+                <li v-for="(inc, i) in d.includes" :key="i">
+                  <span class="mdeal__check" aria-hidden="true">✓</span>
+                  <span class="mdeal__inc-text">{{ inc }}</span>
+                </li>
+              </ul>
 
-            <NuxtLink :to="d.href" class="mdeal__btn" :class="{ 'mdeal__btn--text': d.soldOut }">
-              <template v-if="d.soldOut">{{ t('mapCard.seeAvailableDates') }}</template>
-              <svg v-else width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M5 12h14" /><path d="m13 6 6 6-6 6" />
-              </svg>
-            </NuxtLink>
+              <NuxtLink :to="d.href" class="mdeal__btn" :class="{ 'mdeal__btn--text': d.soldOut }">
+                <template v-if="d.soldOut">{{ t('mapCard.seeAvailableDates') }}</template>
+                <svg v-else width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M5 12h14" /><path d="m13 6 6 6-6 6" />
+                </svg>
+              </NuxtLink>
+            </div>
           </article>
         </div>
       </section>
@@ -89,7 +95,7 @@
 <script setup lang="ts">
 import type { SearchHotel, SearchHotelDeal } from '~/types/searchHotel'
 import { formatPrice } from '~/utils-first-release/formatPrice'
-import { nightsLabel } from '~/utils-first-release/plural'
+import { nightsLabel, personsLabel } from '~/utils-first-release/plural'
 import { priceForArrival } from '~/utils-first-release/priceFormula'
 import { isDealAvailableInWindow } from '~/utils-first-release/availability'
 
@@ -102,6 +108,17 @@ const props = defineProps<{
 }>()
 
 defineEmits<{ (e: 'close'): void }>()
+
+/** Locale-aware "from price" prefix (Vanaf / From / Ab). */
+const fromLabel = computed(() =>
+  locale.value === 'en' ? 'From' : locale.value === 'de' ? 'Ab' : 'Vanaf',
+)
+
+/** Big final price without a currency symbol, matching the Figma
+ *  ("Vanaf €614" carries the €; the large "229" does not). */
+function priceNum(n: number): string {
+  return new Intl.NumberFormat('nl-NL').format(Math.round(n))
+}
 
 /** Stable pseudo "rooms left" (1–8) per deal so the scarcity badge is
  *  deterministic across renders (no live stock field exists on the deal). */
@@ -128,7 +145,6 @@ const dealViews = computed(() => {
     .map((deal) => {
       const soldOut = !!arrivalDate.value
         && !isDealAvailableInWindow(deal.id, arrivalDate.value, selectedFlexibility.value)
-      // Sold-out cards show the deal's lowest price (ignore the date).
       const effArrival = soldOut ? null : arrivalDate.value
       return {
         deal,
@@ -150,43 +166,53 @@ const dealViews = computed(() => {
   right: 0;
   bottom: 0;
   z-index: 1000;
-  background: var(--color-surface);
-  border-top-left-radius: var(--radius-lg);
-  border-top-right-radius: var(--radius-lg);
-  box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.18);
-  padding: var(--space-md) 0 calc(var(--space-md) + env(safe-area-inset-bottom, 0));
+  background: #fff;
+  box-shadow: 0 -6px 20px rgba(0, 0, 0, 0.18);
+  padding-bottom: env(safe-area-inset-bottom, 0);
   display: flex;
   flex-direction: column;
-  gap: var(--space-md);
 }
 
-/* ── Part 1: hotel info ── */
+/* Orange accent bar across the top edge. */
+.mapcard__bar {
+  height: 4px;
+  width: 100%;
+  background: var(--color-primary);
+}
+
+/* ── Part 1: hotel info row (white) ── */
 .mapcard__head {
   display: flex;
-  align-items: center;
-  gap: var(--space-md);
-  padding: 0 var(--space-md);
+  align-items: stretch;
+  gap: 10px;
+  height: 80px;
+  background: #fff;
+  padding-right: 10px;
   position: relative;
 }
 .mapcard__photo {
-  width: 64px;
-  height: 64px;
+  width: 150px;
+  height: 80px;
   flex-shrink: 0;
   object-fit: cover;
-  border-radius: var(--radius-md);
 }
 .mapcard__head-text {
   min-width: 0;
   flex: 1;
-  padding-right: 40px; /* clear the close button */
+  padding: 6px 0;
+  padding-right: 28px; /* clear the close button */
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  justify-content: center;
 }
 .mapcard__name {
-  margin: 0 0 2px;
+  margin: 0;
   font-family: var(--font-heading);
-  font-size: 17px;
+  font-size: 16px;
   font-weight: 700;
-  color: var(--color-text-primary);
-  line-height: 1.2;
+  color: #1a1e1e;
+  line-height: 1.175;
   overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -194,15 +220,16 @@ const dealViews = computed(() => {
 }
 .mapcard__stars {
   color: var(--color-text-primary);
-  font-size: 13px;
+  font-size: 14px;
   letter-spacing: 1px;
+  line-height: 1;
 }
 .mapcard__close {
   position: absolute;
-  top: 0;
-  right: var(--space-md);
-  width: 32px;
-  height: 32px;
+  top: 6px;
+  right: 8px;
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
   border: none;
   background: var(--color-background-secondary);
@@ -213,98 +240,165 @@ const dealViews = computed(() => {
   color: var(--color-text-primary);
 }
 
-/* ── Part 2: horizontal deal-card carousel ── */
+/* ── Part 2: cream rail + deal cards ── */
 .mapcard__rail {
   display: flex;
-  gap: var(--space-md);
+  gap: 4px;
+  background: #fff3ea;
   overflow-x: auto;
   overscroll-behavior-x: contain;
-  scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
-  padding: 0 var(--space-md) 2px;
+  scroll-snap-type: x mandatory;
+  padding: 4px;
 }
 .mapcard__rail::-webkit-scrollbar { display: none; }
 
 .mdeal {
   scroll-snap-align: start;
-  flex: 0 0 260px;
-  width: 260px;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  padding: var(--space-md);
+  flex: 0 0 290px;
+  width: 290px;
+  background: #fff;
+  border: 1px solid #f5f5f5;
+  border-radius: 4px;
+  box-shadow: 0 4px 2px rgba(0, 0, 0, 0.1);
+  padding: 10px;
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
-.mdeal__title {
-  margin: 0;
-  font-family: var(--font-body);
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--color-text-primary);
-  line-height: 1.3;
+
+/* First row: title (left) + stacked price (right) */
+.mdeal__top {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
 }
-.mdeal__price { margin: 0; }
+.mdeal__title {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.25;
+}
+.mdeal__lead {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  color: var(--color-primary);
+}
+.mdeal__title-rest {
+  font-family: var(--font-body);
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.mdeal__price {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+.mdeal__price-top {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+}
+.mdeal__from {
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 10px;
+  color: #222;
+}
+.mdeal__original {
+  font-family: var(--font-heading);
+  font-weight: 400;
+  font-size: 11px;
+  color: var(--color-error);
+  text-decoration: line-through;
+}
+.mdeal__price-bot {
+  display: flex;
+  align-items: flex-end;
+  gap: 5px;
+}
+.mdeal__amount {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 1;
+  color: #222;
+}
+.mdeal__price-bot :deep(.price-info) { align-self: flex-end; margin-bottom: 1px; }
 
 .mdeal__scarcity {
   margin: 0;
   font-size: 12px;
   font-weight: 600;
-  color: var(--color-discount, #d6492f);
+  color: var(--color-primary);
 }
 
+/* Bottom row: includes (left) + arrow button (right) */
+.mdeal__bottom {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+}
 .mdeal__includes {
+  flex: 1;
+  min-width: 0;
   list-style: none;
   margin: 0;
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
 }
 .mdeal__includes li {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 6px;
-  font-size: 13px;
-  color: var(--color-text-secondary);
-  line-height: 1.3;
+  font-family: var(--font-body);
+  font-size: 12px;
+  color: #222;
+  line-height: 1.2;
 }
-.mdeal__check { color: var(--color-discount); font-weight: 700; flex-shrink: 0; }
+.mdeal__check { color: var(--color-discount, #1a7d4b); font-weight: 700; flex-shrink: 0; }
 .mdeal__inc-text {
   overflow: hidden;
-  display: -webkit-box;
-  -webkit-line-clamp: 1;
-  -webkit-box-orient: vertical;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
-
 .mdeal__soldout {
+  flex: 1;
   margin: 0;
-  font-size: 13px;
+  font-family: var(--font-body);
+  font-size: 12px;
   font-weight: 600;
   color: var(--color-text-muted);
 }
 
 .mdeal__btn {
-  margin-top: auto;
-  align-self: flex-end;
+  flex-shrink: 0;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  height: 44px;
-  min-width: 44px;
-  padding: 0 14px;
-  border-radius: var(--radius-md);
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
   background: var(--color-primary);
   color: #fff;
   text-decoration: none;
+}
+.mdeal__btn--text {
+  width: auto;
+  padding: 0 12px;
+  height: 36px;
   font-family: var(--font-body);
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
 }
-.mdeal__btn--text { align-self: stretch; width: 100%; }
 .mdeal__btn:hover { background: var(--color-primary-hover); }
 
-/* Greyed-out sold-out card body (button stays active). */
 .mdeal--sold-out .mdeal__title,
 .mdeal--sold-out .mdeal__price { opacity: 0.6; }
 
