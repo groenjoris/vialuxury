@@ -4023,50 +4023,74 @@ function handleSelectHotelInPopup(slug: string) {
      inside, leaving the nav (z:10) on top. Use `isolation: auto`
      and leave z-index unset so the pill's 11 is evaluated
      against the document root (and beats the nav at 10). */
+  /* ──────────────────────────────────────────────────────────
+     STRUCTURAL RULE — DO NOT BREAK
+
+     A) BAR TOP Y must be identical on every on-solid page.
+        Achieved by giving EVERY bar variant the SAME
+        `margin-top` (-34) inside a slot with the SAME
+        `padding-top` (12). Resulting bar top = nav-bottom - 22.
+
+     B) BLACK BG must end at each bar's midline (= "halfway
+        through the bar"). The nav's #111 black extends DOWN
+        into the slot via a linear-gradient on the slot bg —
+        the slot's top STRIP is painted #111, the rest #fff.
+        Strip height = (bar-height / 2) - 22 px:
+          - 68-px pill   → strip 12 px (default rule)
+          - 92-px summary → strip 24 px (--summary override)
+
+        If a future bar variant is added, EITHER pin it to one
+        of these two heights, OR introduce a new gradient
+        override with strip = bar-half - 22.
+
+     Do NOT touch nav `padding-bottom` or per-page CSS to fix
+     this — moving the nav-bottom moves every bar with it and
+     breaks invariant A.
+     ────────────────────────────────────────────────────── */
   .site-header .site-header__mobile-search--on-solid {
     position: relative;
-    background: #ffffff;
-    /* Inherit the base slot's padding (12 top / 16 sides / 16
-       bottom) so the pill / summary card sits at the SAME Y as
-       on the overlay home — previously the --on-solid override
-       zeroed padding-top, putting the bar 12 px higher on
-       deal / hotel / search than on home. */
+    /* Default (pill case): slot's TOP 12 px is painted #111
+       so the nav's black bg visually extends DOWN into the
+       slot, reaching the pill's midline. White below. */
+    background: linear-gradient(to bottom, #111 12px, #fff 12px);
+    /* Slot padding-top = 12 is part of invariant A — DO NOT
+       change without recomputing every bar's margin-top. */
     padding: 12px 16px 16px;
     margin-top: 0;
     z-index: auto;
     isolation: auto;
   }
-  /* Pill — universal 68 px tall (base rule), pulled UP by half
-     its own height (34 px) so its vertical centre sits on the
-     nav's bottom border. On the overlay home the pill straddles
-     this same Y position over the hero photo. z:11 keeps the
-     pill above the nav's z:10 so neither half is obscured. */
+  /* Search page (taller summary card): override only the
+     gradient stop so the strip reaches the summary card's
+     midline. Bar margin-top stays -34, so tops still align. */
+  .site-header .site-header__mobile-search--on-solid.site-header__mobile-search--summary {
+    background: linear-gradient(to bottom, #111 24px, #fff 24px);
+  }
+  /* Pill — 68 px tall (height in base rule). margin-top -34
+     pulls it up half its own height. With slot-padding-top 12,
+     pill top lands at nav-bottom - 22. z:11 keeps the pill
+     above the nav so neither half is obscured. */
   .site-header .mobile-search-trigger {
     position: relative;
     margin-top: -34px;
     z-index: 11;
   }
-  /* ──────────────────────────────────────────────────────────
-     STRUCTURAL RULE — DO NOT BREAK
-     EVERY mobile page (home / deal / hotel / search) must
-     render the phone-number row and the search bar at an
-     IDENTICAL Y position. To guarantee that, the nav uses
-     ONE set of values everywhere:
-       - nav padding-bottom: 32 (set above)
-       - pill margin-top:    -34 (set above)
-       - summary card top:   -45 (below)
-
-     Do NOT add page-scoped overrides (no :has(--summary), no
-     :not(--summary)). If a page renders the summary card
-     instead of the pill, the summary's -45 margin lands its
-     vertical CENTRE at the same Y as the pill's centre on
-     home — because the card is ~22 px taller than the pill
-     (90 vs 68), so 45 px > 34 px by exactly half that delta.
-     ────────────────────────────────────────────────────── */
+  /* Summary card — same margin-top as the pill so their TOPS
+     align (invariant A). The card is ~24 px taller than the
+     pill; the extra 24 px hangs below the midline (in the
+     white slot region — see the --summary gradient above). */
   .site-header__mobile-search--on-solid .mss {
     position: relative;
-    margin-top: -45px;
+    margin-top: -34px;
     z-index: 11;
+  }
+  /* Pin the summary card's height to 92 px so the gradient
+     strip (24 px) lands at exactly the card's midline even if
+     a copy tweak shifts the content height by a pixel or two.
+     92 = current measured height (16 padding + 4 border × 2 +
+     two rows ~24 + 20 + 8 gap). */
+  .site-header__mobile-search--summary .mss {
+    min-height: 92px;
   }
 
   /* Language-switcher dropdown — bigger options on touch. */
