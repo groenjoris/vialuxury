@@ -235,12 +235,14 @@
       <div class="hotel-page__cta-bar-inner container">
         <div class="hotel-page__cta-bar-cluster">
           <div v-if="cheapestDeal" class="hotel-page__cta-bar-price-block">
-            <div class="hotel-page__cta-bar-price-row">
-              <span class="hotel-page__cta-bar-discount hotel-page__cta-bar-discount--vanaf">Vanaf</span>
-              <span class="hotel-page__cta-bar-original">{{ formatPrice(cheapestDeal.originalPrice) }}</span>
-              <span class="hotel-page__cta-bar-amount">{{ formatPrice(cheapestDeal.basePrice) }}</span>
-              <FirstReleasePriceInfoTooltip v-if="!isGerman" variant="deal" />
-            </div>
+            <FirstReleaseStickyPriceRow
+              lead="Vanaf"
+              :lead-is-chip="false"
+              :original="formatPrice(cheapestDeal.originalPrice)"
+              :amount="formatPrice(cheapestDeal.basePrice)"
+              :show-info="!isGerman"
+              info-variant="deal"
+            />
             <span v-if="isGerman" class="hotel-page__cta-bar-meta hotel-page__cta-bar-meta--de">
               <span>{{ stickyDeLine1 }}</span>
               <span>{{ stickyDeLine2 }}</span>
@@ -268,12 +270,14 @@
         </nav>
         <div class="hotel-page__cta-bar-cluster">
           <div v-if="cheapestDeal" class="hotel-page__cta-bar-price-block">
-            <div class="hotel-page__cta-bar-price-row">
-              <span class="hotel-page__cta-bar-discount hotel-page__cta-bar-discount--vanaf">Vanaf</span>
-              <span class="hotel-page__cta-bar-original">{{ formatPrice(cheapestDeal.originalPrice) }}</span>
-              <span class="hotel-page__cta-bar-amount">{{ formatPrice(cheapestDeal.basePrice) }}</span>
-              <FirstReleasePriceInfoTooltip v-if="!isGerman" variant="deal" />
-            </div>
+            <FirstReleaseStickyPriceRow
+              lead="Vanaf"
+              :lead-is-chip="false"
+              :original="formatPrice(cheapestDeal.originalPrice)"
+              :amount="formatPrice(cheapestDeal.basePrice)"
+              :show-info="!isGerman"
+              info-variant="deal"
+            />
             <span v-if="isGerman" class="hotel-page__cta-bar-meta hotel-page__cta-bar-meta--de">
               <span>{{ stickyDeLine1 }}</span>
               <span>{{ stickyDeLine2 }}</span>
@@ -1019,78 +1023,10 @@ onBeforeUnmount(() => {
   align-items: flex-end;
   gap: 2px;
 }
-/* Sticky CTA price row — baseline alignment matches the deal
-   page exactly. All text spans (vanaf, original, amount) share
-   their text baseline → letters bottom-align across all browsers
-   (text-box-trim isn't supported everywhere). The i-icon falls
-   back to its content baseline = its bottom edge, so it sits at
-   the same Y as the text glyph bottoms. */
-.hotel-page__cta-bar-price-row {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-}
-.hotel-page__cta-bar-discount {
-  flex-shrink: 0;
-  align-self: flex-end;
-  font-family: var(--font-heading);
-  font-size: 14px;
-  font-weight: 700;
-  line-height: 1;
-  color: #fff;
-  background: var(--color-discount);
-  padding: 4px 8px;
-  border-radius: var(--radius-sm);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-/* "Vanaf" / "Ab" variant — plain inline-flex text, no chip
-   background. Matches the deal page's vanaf treatment: black
-   text, regular weight, no italic, text-box-trim so the glyph
-   bottom lines up with the price glyphs next to it. */
-.hotel-page__cta-bar-discount--vanaf {
-  background: transparent;
-  color: var(--color-text-primary);
-  font-family: var(--font-body);
-  font-size: 13px;
-  font-weight: 400;
-  font-style: normal;
-  padding: 0;
-  border-radius: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  align-self: flex-end;
-  line-height: 1;
-  text-box-trim: trim-both;
-  text-box-edge: cap alphabetic;
-}
-.hotel-page__cta-bar-original {
-  font-family: var(--font-heading);
-  font-weight: 500;
-  font-size: 13px;
-  color: var(--color-error);
-  text-decoration: line-through;
-  line-height: 1;
-  text-box-trim: trim-both;
-  text-box-edge: cap alphabetic;
-}
-.hotel-page__cta-bar-amount {
-  font-family: var(--font-heading);
-  font-size: 22px;
-  font-weight: 600;
-  color: var(--color-text-primary);
-  line-height: 1;
-  text-box-trim: trim-both;
-  text-box-edge: cap alphabetic;
-}
-/* Info-tooltip icon — drop the icon's box-bottom onto the
-   amount's trimmed glyph bottom, mirroring the deal-page rule. */
-.hotel-page__cta-bar-price-row .price-info {
-  align-self: flex-end;
-  margin-bottom: 2px;
-}
+/* NOTE: the price ROW (vanaf/chip · original · amount · icon) and
+   its bottom-alignment live in the shared
+   `FirstReleaseStickyPriceRow` component — single source of truth,
+   do NOT re-add price-row CSS here. */
 .hotel-page__cta-bar-meta {
   font-size: 11px;
   color: var(--color-text-muted);

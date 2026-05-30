@@ -791,28 +791,14 @@
       <div class="deal-page__cta-bar-inner container">
         <div class="deal-page__cta-bar-cluster">
           <div class="deal-page__cta-bar-price-block">
-            <div
-              class="deal-page__cta-bar-price-row"
-              :class="{ 'deal-page__cta-bar-price-row--de-no-date': isGerman && !dateSelected }"
-            >
-              <span
-                class="deal-page__cta-bar-discount"
-                :class="{ 'deal-page__cta-bar-discount--vanaf': !dateSelected }"
-              >{{
-                isGerman && !dateSelected
-                  ? t('deal.stickyFromPrefix')
-                  : (dateSelected ? `-${currentDeal.discountPercentage}%` : 'Vanaf')
-              }}</span>
-              <span
-                class="deal-page__cta-bar-original"
-                :class="{ 'deal-page__cta-bar-original--red': isGerman && !dateSelected }"
-              >{{ formatPrice(store.pricing.originalPrice) }}</span>
-              <span
-                class="deal-page__cta-bar-amount"
-                :class="{ 'deal-page__cta-bar-amount--big': isGerman && !dateSelected }"
-              >{{ formatPrice(store.pricing.totalPrice) }}</span>
-              <FirstReleasePriceInfoTooltip v-if="!isGerman" variant="deal" />
-            </div>
+            <FirstReleaseStickyPriceRow
+              :lead="dateSelected ? `-${currentDeal.discountPercentage}%` : (isGerman ? t('deal.stickyFromPrefix') : 'Vanaf')"
+              :lead-is-chip="dateSelected"
+              :original="formatPrice(store.pricing.originalPrice)"
+              :amount="formatPrice(store.pricing.totalPrice)"
+              :show-info="!isGerman"
+              info-variant="deal"
+            />
             <span v-if="isGerman" class="deal-page__cta-bar-meta deal-page__cta-bar-meta--de">
               <span>{{ stickyDeLine1 }}</span>
               <span>{{ stickyDeLine2 }}</span>
@@ -840,28 +826,14 @@
         </nav>
         <div class="deal-page__cta-bar-cluster">
           <div class="deal-page__cta-bar-price-block">
-            <div
-              class="deal-page__cta-bar-price-row"
-              :class="{ 'deal-page__cta-bar-price-row--de-no-date': isGerman && !dateSelected }"
-            >
-              <span
-                class="deal-page__cta-bar-discount"
-                :class="{ 'deal-page__cta-bar-discount--vanaf': !dateSelected }"
-              >{{
-                isGerman && !dateSelected
-                  ? t('deal.stickyFromPrefix')
-                  : (dateSelected ? `-${currentDeal.discountPercentage}%` : 'Vanaf')
-              }}</span>
-              <span
-                class="deal-page__cta-bar-original"
-                :class="{ 'deal-page__cta-bar-original--red': isGerman && !dateSelected }"
-              >{{ formatPrice(store.pricing.originalPrice) }}</span>
-              <span
-                class="deal-page__cta-bar-amount"
-                :class="{ 'deal-page__cta-bar-amount--big': isGerman && !dateSelected }"
-              >{{ formatPrice(store.pricing.totalPrice) }}</span>
-              <FirstReleasePriceInfoTooltip v-if="!isGerman" variant="deal" />
-            </div>
+            <FirstReleaseStickyPriceRow
+              :lead="dateSelected ? `-${currentDeal.discountPercentage}%` : (isGerman ? t('deal.stickyFromPrefix') : 'Vanaf')"
+              :lead-is-chip="dateSelected"
+              :original="formatPrice(store.pricing.originalPrice)"
+              :amount="formatPrice(store.pricing.totalPrice)"
+              :show-info="!isGerman"
+              info-variant="deal"
+            />
             <span v-if="isGerman" class="deal-page__cta-bar-meta deal-page__cta-bar-meta--de">
               <span>{{ stickyDeLine1 }}</span>
               <span>{{ stickyDeLine2 }}</span>
@@ -2454,86 +2426,10 @@ onMounted(() => {
   align-items: flex-end;
   gap: 2px;
 }
-/* Sticky CTA bar price row — baseline alignment makes vanaf /
-   from-price / price / i-icon share their TEXT BASELINE, which
-   is browser-supported everywhere (unlike text-box-trim which
-   skips older browsers). */
-.deal-page__cta-bar-price-row {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-}
-.deal-page__cta-bar-discount {
-  flex-shrink: 0;
-  align-self: flex-end;
-  font-family: var(--font-heading);
-  font-size: 14px;
-  font-weight: 700;
-  line-height: 1;
-  color: #fff;
-  background: var(--color-discount);
-  padding: 4px 8px;
-  border-radius: var(--radius-sm);
-  /* The chip's BOX (green rectangle) bottom-aligns with the prices.
-     The "-X%" text is vertically centred inside the chip via inner
-     flex — no `text-box-trim` here. See `.sidebar__discount`. */
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-/* "Vanaf" / "Ab" variant — plain black text, no chip background.
-   Bottom-aligns with the two price spans (the parent row uses
-   `align-items: baseline`; overriding `align-self` to `baseline` —
-   instead of the chip's `center` — pulls the prefix down to the
-   same baseline as the prices). */
-/* "Vanaf" / "Ab" variant — plain inline-flex text, no chip
-   background. Matches the sidebar `.sidebar__discount` shape
-   (display: inline-flex, align-items: center) so it bottom-
-   aligns identically with the price text via text-box-trim. */
-.deal-page__cta-bar-discount--vanaf {
-  background: transparent;
-  color: var(--color-text-primary);
-  font-family: var(--font-body);
-  font-size: 13px;
-  font-weight: 400;
-  font-style: normal;
-  padding: 0;
-  border-radius: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  align-self: flex-end;
-  line-height: 1;
-  text-box-trim: trim-both;
-  text-box-edge: cap alphabetic;
-}
-/* Info-tooltip icon — drop the icon's box-bottom onto the
-   amount's trimmed glyph bottom. Without explicit alignment
-   the 14 px circle drifts a px or two below the price
-   baseline. */
-.deal-page__cta-bar-price-row .price-info {
-  align-self: flex-end;
-  margin-bottom: 2px;
-}
-.deal-page__cta-bar-original {
-  font-family: var(--font-heading);
-  font-weight: 500;
-  font-size: 13px;
-  color: var(--color-error);
-  text-decoration: line-through;
-  line-height: 1;
-  text-box-trim: trim-both;
-  text-box-edge: cap alphabetic;
-}
-.deal-page__cta-bar-amount {
-  font-family: var(--font-heading);
-  font-size: 22px;
-  font-weight: 600;
-  color: var(--color-text-primary);
-  line-height: 1;
-  text-box-trim: trim-both;
-  text-box-edge: cap alphabetic;
-}
+/* NOTE: the price ROW (vanaf/chip · original · amount · icon) and
+   its bottom-alignment live in the shared
+   `FirstReleaseStickyPriceRow` component — single source of truth,
+   do NOT re-add price-row CSS here. */
 .deal-page__cta-bar-meta {
   font-size: 11px;
   color: var(--color-text-muted);
@@ -2550,16 +2446,6 @@ onMounted(() => {
   line-height: 1.3;
   text-align: right;
   align-items: flex-end;
-}
-/* German no-date price row: keep the amount at the same size as NL.
-   The `--big` and `--red` modifiers are kept as no-ops in case we
-   want to re-introduce a German-specific bump later. */
-.deal-page__cta-bar-amount--big {
-  /* intentionally inherits .deal-page__cta-bar-amount */
-}
-.deal-page__cta-bar-original--red {
-  color: var(--color-error);
-  text-decoration: line-through;
 }
 .deal-page__cta-bar-btn {
   flex: 0 0 auto;
