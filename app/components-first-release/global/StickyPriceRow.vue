@@ -73,7 +73,9 @@ defineProps<{
   color: var(--color-text-primary);
 }
 
-/* Green % chip — a padded box; its bottom edge sits on the line. */
+/* Green % chip — a padded box; its bottom edge sits on the line.
+   `margin-bottom: -1px` nudges the chip 1 px DOWN so its box
+   bottom lines up exactly with the price digits' visual bottom. */
 .sticky-price-row__lead--chip {
   flex-shrink: 0;
   font-family: var(--font-heading);
@@ -87,6 +89,7 @@ defineProps<{
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  margin-bottom: -1px;
 }
 
 .sticky-price-row__original {
@@ -104,8 +107,11 @@ defineProps<{
   color: var(--color-text-primary);
 }
 
-/* Icon box bottom on the same line — NO margin nudge. */
+/* Icon box bottom on the same line. `margin-left: -4px` pulls it
+   closer to the price — the row gap is 8 px, so the visible gap
+   becomes ~4 px. */
 .sticky-price-row :deep(.price-info) {
   align-self: flex-end;
+  margin-left: -4px;
 }
 </style>

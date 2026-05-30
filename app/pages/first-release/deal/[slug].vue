@@ -127,12 +127,15 @@
                   <span>{{ item.amount < 0 ? '- ' : '' }}{{ formatPrice(Math.abs(item.amount)) }}</span>
                 </div>
               </div>
-              <div class="sidebar__price">
-                <span class="sidebar__discount">-{{ currentDeal.discountPercentage }}%</span>
-                <span class="sidebar__original">{{ formatPrice(store.pricing.originalPrice) }}</span>
-                <span class="sidebar__amount">{{ formatPrice(store.pricing.totalPrice) }}</span>
-                <FirstReleasePriceInfoTooltip v-if="!isGerman" variant="deal" />
-              </div>
+              <FirstReleaseStickyPriceRow
+                class="sidebar__price-row"
+                :lead="`-${currentDeal.discountPercentage}%`"
+                :lead-is-chip="true"
+                :original="formatPrice(store.pricing.originalPrice)"
+                :amount="formatPrice(store.pricing.totalPrice)"
+                :show-info="!isGerman"
+                info-variant="deal"
+              />
               <p class="sidebar__price-meta">{{ priceForLabel }}</p>
               <!-- German: structured extra-costs block replaces the long
                    NL/EN disclaimer. All other locales render the disclaimer. -->
@@ -576,12 +579,15 @@
               </div>
             </div>
 
-            <div class="sidebar__price">
-              <span class="sidebar__discount">-{{ currentDeal.discountPercentage }}%</span>
-              <span class="sidebar__amount">{{ formatPrice(store.pricing.totalPrice) }}</span>
-              <span class="sidebar__original">{{ formatPrice(store.pricing.originalPrice) }}</span>
-              <FirstReleasePriceInfoTooltip v-if="!isGerman" variant="deal" />
-            </div>
+            <FirstReleaseStickyPriceRow
+              class="sidebar__price-row"
+              :lead="`-${currentDeal.discountPercentage}%`"
+              :lead-is-chip="true"
+              :original="formatPrice(store.pricing.originalPrice)"
+              :amount="formatPrice(store.pricing.totalPrice)"
+              :show-info="!isGerman"
+              info-variant="deal"
+            />
             <p class="sidebar__price-meta">{{ priceForLabel }}</p>
 
             <!-- German: structured extra-costs block replaces the long
@@ -1754,59 +1760,12 @@ onMounted(() => {
 .sidebar__breakdown-row span:last-child { font-weight: 600; white-space: nowrap; }
 .sidebar__breakdown-row--upgrade { color: var(--color-primary); }
 
-/* Sidebar price row — flex-end aligns BOX bottoms. To make the
-   visible BOTTOMS of the discount chip + original + amount + i-icon
-   all coincide, the chip's padding-bottom is zeroed (see
-   `.sidebar__discount` below) so its box bottom rests on the same
-   text baseline the other items use. */
-.sidebar__price { display: flex; align-items: flex-end; gap: 6px; margin-bottom: 2px; }
-/* Each text item uses `text-box-trim: trim-both` to collapse its
-   line-box to the actual glyph bounds (cap-height to alphabetic
-   baseline). With the parent flex row using `align-items: flex-end`,
-   the trimmed boxes' bottoms = the visible digit bottoms, so the
-   chip / original / amount / i-icon line up cleanly — no more
-   "big amount floats higher" artefact from the heading-font's
-   built-in descender empty-space. */
-/* Discount chip — its box (green rectangle) bottom-aligns with the
-   price glyphs via the parent's `align-items: flex-end`. The "-X%"
-   text is vertically CENTERED inside the chip box via inner flex.
-   NO `text-box-trim` here — we want the box to keep its padding so
-   the percentage sits in the middle of the chip rather than at the
-   baseline. */
-.sidebar__discount {
-  background: var(--color-discount);
-  color: #fff;
-  font-family: var(--font-heading);
-  font-weight: 700;
-  font-size: 14px;
-  line-height: 1;
-  padding: 4px 8px;
-  border-radius: var(--radius-sm);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-.sidebar__amount {
-  font-size: 26px;
-  font-weight: 700;
-  font-family: var(--font-heading);
-  line-height: 1;
-  text-box-trim: trim-both;
-  text-box-edge: cap alphabetic;
-}
-/* Original uses the heading font too so all three text spans share
-   the same metrics — `text-box-trim` works most consistently when
-   adjacent items have matching ascender / baseline ratios. */
-.sidebar__original {
-  font-size: 15px;
-  font-family: var(--font-heading);
-  font-weight: 500;
-  color: var(--color-error);
-  text-decoration: line-through;
-  line-height: 1;
-  text-box-trim: trim-both;
-  text-box-edge: cap alphabetic;
-}
+/* Sidebar price ROW uses the shared FirstReleaseStickyPriceRow
+   component (single source of truth — identical to the sticky
+   header). Only the small bottom spacing before the meta line is
+   set here; the row's order / sizing / alignment all live in the
+   component. */
+.sidebar__price-row { margin-bottom: 2px; }
 .sidebar__price-meta { font-size: 13px; color: var(--color-text-secondary); margin-bottom: var(--space-md); }
 .sidebar__disclaimer { font-size: 12px; line-height: 1.5; color: var(--color-text-muted); margin-bottom: var(--space-md); }
 /* German "Zusätzliche Kosten" block — replaces the long NL/EN
