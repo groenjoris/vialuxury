@@ -133,9 +133,9 @@
           </div>
 
           <!-- Mobile toolbar + pills render below this block as
-               direct children of .search-page__results. The toolbar
-               is in-flow by default and pins via JS `position: fixed`
-               (`--stuck`) on scroll — see the template below. -->
+               direct children of .search-page__results, where the tall
+               parent lets `position: sticky` pin the toolbar through
+               the whole results scroll — see the template below. -->
 
           <!-- ============================================================
                DESKTOP toolbar: filter toggle, sort, view switch
@@ -240,27 +240,20 @@
             </div>
           </div>
 
+          </div><!-- /.search-page__above-cards -->
+
           <!-- ============================================================
                MOBILE: filter/kaart/sorteren toolbar + pills.
-               Lives INSIDE .search-page__above-cards (block flow) so it
-               left-aligns with the title and has no big flex gap. It's
-               in-flow by default (always visible) and pins to the
-               viewport top via JS `position: fixed` (`--stuck`) once
-               scrolled past the sentinel. The search-summary lives in
-               SiteHeader; the desktop toolbar above renders for ≥ 800 px.
+               Direct child of .search-page__results (a tall block) so
+               `position: sticky; top: 0` pins it through the whole
+               results scroll. Sticky repaints during iOS momentum
+               scroll (unlike position:fixed) and stays in normal
+               horizontal flow, so the buttons keep their left-alignment
+               with the title and never jump. Desktop toolbar above
+               renders for ≥ 800 px.
                ============================================================ -->
           <template v-if="isMobile">
-            <!-- Sentinel marks the toolbar's natural position; the
-                 scroll listener flips `mobileToolbarStuck` once it
-                 reaches the viewport top. Spacer reserves the
-                 toolbar's height while it's pinned (fixed) so the
-                 page doesn't jump. -->
-            <div ref="mobileToolbarSentinelRef" class="search-page__mobile-toolbar-sentinel" aria-hidden="true"></div>
-            <div v-if="mobileToolbarStuck" class="search-page__mobile-toolbar-spacer" aria-hidden="true"></div>
-            <section
-              class="search-page__mobile-toolbar"
-              :class="{ 'search-page__mobile-toolbar--stuck': mobileToolbarStuck }"
-            >
+            <section class="search-page__mobile-toolbar">
               <button
                 class="m-toolbar-btn"
                 :class="{ 'm-toolbar-btn--has-dot': hasActiveFilters }"
@@ -305,7 +298,7 @@
               <!-- Re-open-search button — shows after the user has
                    scrolled away from the summary bar at the top. -->
               <button
-                v-if="mobileToolbarStuck"
+                v-if="scrolledPast"
                 type="button"
                 class="m-toolbar-btn m-toolbar-btn--search-icon"
                 aria-label="Wijzig zoekopdracht"
@@ -322,7 +315,6 @@
               <FirstReleaseFilterPills />
             </section>
           </template>
-          </div><!-- /.search-page__above-cards -->
 
           <!-- Loading overlay -->
           <Transition name="fade">
@@ -577,23 +569,19 @@ onMounted(() => {
 })
 
 // ---------------------------------------------------------------------------
-// Mobile toolbar pin. The toolbar is a normal in-flow block (always
-// visible); when the user scrolls past its natural position it
-// switches to `position: fixed; top: 0` via the `--stuck` modifier.
-// `position: fixed` (not sticky) is immune to the grid/flex
-// containing-block + overflow quirks that previously hid the bar.
-// A 0-height sentinel marks the natural position; reading its live
-// bounding rect on EVERY scroll event recomputes the flag in both
-// directions (fixes the old "only pins on scroll-up" bug).
+// Mobile toolbar pinning is pure CSS (`position: sticky; top: 0` on
+// .search-page__mobile-toolbar, a child of the tall
+// .search-page__results). Sticky repaints during iOS momentum scroll
+// (position:fixed does not) and never leaves horizontal flow, so the
+// buttons stay left-aligned with the title with no jump.
+//
+// The only JS we need: a `scrolledPast` flag (scrollY past the header)
+// that toggles the inline "re-open search" icon button — purely
+// cosmetic, no layout/position impact.
 // ---------------------------------------------------------------------------
-const mobileToolbarSentinelRef = ref<HTMLElement | null>(null)
-const mobileToolbarStuck = ref(false)
+const scrolledPast = ref(false)
 function handleMobileToolbarScroll() {
-  const el = mobileToolbarSentinelRef.value
-  if (!el) return
-  // SiteHeader is not fixed on mobile (it scrolls away), so the pin
-  // line is the viewport top.
-  mobileToolbarStuck.value = el.getBoundingClientRect().top <= 0
+  scrolledPast.value = window.scrollY > 150
 }
 onMounted(() => {
   if (!import.meta.client) return
@@ -2045,48 +2033,29 @@ onMounted(() => {
 
 /* Mobile toolbar — Filter / Kaart / Sorteren row.
 
-   In-flow by DEFAULT (a plain flex row) so it is ALWAYS visible —
-   no sticky/containing-block edge case can hide it. When the user
-   scrolls past its natural position the JS scroll listener adds
-   `--stuck`, switching it to `position: fixed; top: 0`. `fixed`
-   pins against the viewport directly, immune to the grid/flex
-   containing-block + ancestor `overflow` quirks that broke
-   `position: sticky` here. The sibling spacer reserves its height
-   while pinned so the page doesn't jump.
+   PINNING IS PURE CSS: `position: sticky; top: 0`. The toolbar is a
+   direct child of the tall `.search-page__results`, so it stays
+   pinned through the whole results scroll. Sticky repaints during
+   iOS momentum scrolling (unlike `position: fixed`, which can stop
+   updating until the scroll settles → "only shows on scroll up")
+   AND never leaves horizontal flow, so the buttons keep their 16 px
+   left edge (aligned with the title) and never jump.
 
-   16 px horizontal padding keeps the row inset (the mobile grid
-   container's own padding is zeroed for the toolbar — see the
-   .search-page__mobile-toolbar @media block). */
+   `padding: 8px 0` (no horizontal padding) + the grid container's
+   16 px inset puts the buttons at 16 px — same as the title. The
+   negative margin-top tightens the flex gap above the toolbar so it
+   sits ~8 px below the header instead of the column's 24 px gap. */
 .search-page__mobile-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
   display: flex;
   gap: 16px;
-  /* No horizontal padding — the toolbar sits inside above-cards
-     (within the grid container's 16 px inset), so this aligns the
-     buttons' left edge with the page title. */
   padding: 8px 0;
+  margin-top: calc(var(--space-sm) - var(--space-lg)); /* −16px → 8px gap */
   background: #fff;
   /* Grey divider under the Filter / Kaart / Sorteren row. */
   border-bottom: 1px solid var(--color-border-light);
-}
-.search-page__mobile-toolbar--stuck {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 50;
-  /* Pinned bar spans the full viewport, so re-add the 16 px inset
-     here — keeps the buttons at the SAME 16 px left edge as in flow
-     (no horizontal jump when pinning). */
-  padding: 8px 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-}
-.search-page__mobile-toolbar-sentinel {
-  height: 0;
-  width: 100%;
-  pointer-events: none;
-}
-.search-page__mobile-toolbar-spacer {
-  height: 64px;   /* ≈ toolbar height (48 px button + 2×8 px padding) */
 }
 /* Black pill-shaped buttons: 48 px high, 8 / 16 px padding, 4 px
    gap between icon and label, white text + icon, rounded corners. */
