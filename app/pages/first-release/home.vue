@@ -94,7 +94,7 @@
               :deal="featuredDesIndesDeal"
               :grid-mode="true"
               :hide-bar="true"
-              cta-label="Bekijk"
+              :cta-label="isMobile ? 'Bekijk' : 'Bekijk arrangement'"
             />
           </div>
         </div>
@@ -195,6 +195,11 @@ import { POPULAR_FILTER_ICONS } from '~/utils-first-release/popularFilterIcons'
 import { mappedHotels } from '~/data/deals-mapper'
 import type { SearchHotel } from '~/types/searchHotel'
 import { pickPrimaryDeal } from '~/utils-first-release/primaryDeal'
+import { useFirstReleaseIsMobile } from '~/composables-first-release/useFirstReleaseIsMobile'
+
+// Uitgelicht CTA: "Bekijk arrangement" on desktop (more room),
+// "Bekijk" on mobile (compact).
+const isMobile = useFirstReleaseIsMobile()
 
 
 // Super deals: top 3 hotels by star rating (then highest discount within the same tier)
