@@ -4108,6 +4108,28 @@ function handleSelectHotelInPopup(slug: string) {
     padding-left: 16px;
     padding-right: 16px;
   }
+
+  /* Phone popover on mobile — match desktop layout:
+     - Icon (col 1) + label (col 2, left-aligned) + sub label
+       "PHONE" / "WHATSAPP" (col 3, right-aligned).
+     - "Nu bellen" link bumped +2 pt (13 → 15) for touch. */
+  .site-header .site-header__phone-popover-item {
+    display: grid;
+    grid-template-columns: 20px 1fr auto;
+    align-items: center;
+    gap: 0 12px;
+  }
+  .site-header .site-header__phone-popover-item-label {
+    grid-column: 2;
+    text-align: left;
+  }
+  .site-header .site-header__phone-popover-item-sub {
+    grid-column: 3;
+    text-align: right;
+  }
+  .site-header .site-header__phone-popover-cta {
+    font-size: 15px;
+  }
 }
 </style>
 
