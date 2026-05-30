@@ -315,10 +315,7 @@ onMounted(() => {
 
     <main
       class="kaart-stage"
-      :class="{
-        'kaart-stage--with-panel': !isMobile && !!selectedHotel,
-        'kaart-stage--with-card': isMobile && !!selectedHotel,
-      }"
+      :class="{ 'kaart-stage--with-panel': !isMobile && !!selectedHotel }"
     >
       <ClientOnly>
         <FirstReleaseHotelBrowseMap
@@ -554,14 +551,11 @@ onMounted(() => {
 
 /* ═══════════ MOBILE map ═══════════ */
 /* Full-screen map — no filter sidebar; the stage spans the whole
-   viewport. */
+   viewport. The map stays full-bleed when the sheet opens (no
+   translate): the bottom sheet simply overlays the bottom edge, so
+   there's never a grey strip between map and panel. */
 .kaart-page--mobile .kaart-stage {
   left: 0;
-}
-/* When the bottom-sheet card opens, slide the whole map UP (mirrors
-   the desktop slide-left) so the selected pin clears the sheet. */
-.kaart-page--mobile .kaart-stage--with-card {
-  transform: translateY(-30vh);
 }
 
 /* Top-left close-map icon button. */
