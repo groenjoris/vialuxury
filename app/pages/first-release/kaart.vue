@@ -558,11 +558,54 @@ onMounted(() => {
   left: 0;
 }
 
-/* Top-left close-map icon button. */
-.kaart-m-close {
+/* Kill the desktop-chrome flash on mobile: `isMobile` is false
+   during SSR/first paint, so the desktop filter sidebar (and pills /
+   close button) would render for a frame before hydration flips
+   `isMobile` true. Hide them on small viewports via a media query
+   (independent of the JS flag) and force the map full-width, so the
+   first paint is already the clean full-screen map. */
+@media (max-width: 800px) {
+  .kaart-filter,
+  .kaart-pills,
+  .kaart-close,
+  .kaart-show-filter {
+    display: none !important;
+  }
+  .kaart-stage {
+    left: 0;
+  }
+}
+
+/* Top-LEFT Filters button — black pill, same style as the mobile
+   /search toolbar buttons. */
+.kaart-m-filter {
   position: fixed;
   top: calc(var(--space-md) + env(safe-area-inset-top, 0));
   left: var(--space-md);
+  z-index: 1100;
+  height: 48px;
+  padding: 8px 16px;
+  border-radius: 10px;
+  border: 0;
+  background: #000;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 400;
+  color: #fff;
+  cursor: pointer;
+}
+.kaart-m-filter svg { stroke: #fff; }
+.kaart-m-filter:hover { background: #1f1f1f; }
+
+/* Top-RIGHT close-map icon button (white circle). */
+.kaart-m-close {
+  position: fixed;
+  top: calc(var(--space-md) + env(safe-area-inset-top, 0));
+  right: var(--space-md);
   z-index: 1100;
   width: 40px;
   height: 40px;
@@ -573,28 +616,6 @@ onMounted(() => {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: var(--color-text-primary);
-  cursor: pointer;
-}
-
-/* Top-right Filters button. */
-.kaart-m-filter {
-  position: fixed;
-  top: calc(var(--space-md) + env(safe-area-inset-top, 0));
-  right: var(--space-md);
-  z-index: 1100;
-  height: 40px;
-  padding: 0 16px;
-  border-radius: 20px;
-  border: 0;
-  background: #fff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-family: var(--font-body);
-  font-size: 14px;
-  font-weight: 600;
   color: var(--color-text-primary);
   cursor: pointer;
 }

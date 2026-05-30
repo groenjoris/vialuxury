@@ -2065,6 +2065,8 @@ onMounted(() => {
      buttons' left edge with the page title. */
   padding: 8px 0;
   background: #fff;
+  /* Grey divider under the Filter / Kaart / Sorteren row. */
+  border-bottom: 1px solid var(--color-border-light);
 }
 .search-page__mobile-toolbar--stuck {
   position: fixed;

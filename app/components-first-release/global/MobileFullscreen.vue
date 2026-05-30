@@ -3,7 +3,7 @@
     <Transition name="mobile-fs">
       <div v-if="open" class="mobile-fs" role="dialog" aria-modal="true">
         <!-- Header -->
-        <header class="mobile-fs__header">
+        <header class="mobile-fs__header" :class="{ 'mobile-fs__header--no-divider': !headerDivider }">
           <button
             v-if="showBack"
             type="button"
@@ -44,9 +44,13 @@ const props = withDefaults(defineProps<{
   title: string
   showBack?: boolean
   backLabel?: string
+  /** Show the 1px divider under the header. Off for the filter
+   *  modal (the modal IS the container — no inner divider). */
+  headerDivider?: boolean
 }>(), {
   showBack: true,
   backLabel: 'Terug',
+  headerDivider: true,
 })
 
 defineEmits<{
@@ -91,6 +95,9 @@ onBeforeUnmount(() => {
   padding: 0 var(--space-md, 16px);
   border-bottom: 1px solid var(--color-border-light, #f0f0f0);
   background: var(--color-surface, #fff);
+}
+.mobile-fs__header--no-divider {
+  border-bottom: none;
 }
 
 .mobile-fs__back {

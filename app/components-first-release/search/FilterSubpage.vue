@@ -1,5 +1,5 @@
 <template>
-  <FirstReleaseMobileFullscreen :open="open" :title="t('search.filters')" @close="$emit('close')">
+  <FirstReleaseMobileFullscreen :open="open" :title="t('search.filters')" :header-divider="false" @close="$emit('close')">
     <template #header-right>
       <button type="button" class="filter-subpage__reset" @click="$emit('clear')">
         <svg class="filter-subpage__reset-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -124,5 +124,15 @@ defineEmits<{
 }
 .filter-subpage__body :deep(.filter-panel__header) {
   display: none;
+}
+
+/* The fullscreen modal IS the container — drop the inner
+   filter-panel's border/radius so we don't get a "container inside
+   a container" look on mobile. (The header divider is removed via
+   the MobileFullscreen `:header-divider="false"` prop, since that
+   header is teleported outside this component's scope.) */
+.filter-subpage__body :deep(.filter-panel) {
+  border: none;
+  border-radius: 0;
 }
 </style>
