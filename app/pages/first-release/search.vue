@@ -239,15 +239,15 @@
               </div>
             </div>
           </div>
-          </div><!-- /.search-page__above-cards -->
 
           <!-- ============================================================
                MOBILE: filter/kaart/sorteren toolbar + pills.
-               In-flow by default (always visible); pins to the
+               Lives INSIDE .search-page__above-cards (block flow) so it
+               left-aligns with the title and has no big flex gap. It's
+               in-flow by default (always visible) and pins to the
                viewport top via JS `position: fixed` (`--stuck`) once
                scrolled past the sentinel. The search-summary lives in
-               SiteHeader; the desktop toolbar inside above-cards
-               above renders for ≥ 800 px.
+               SiteHeader; the desktop toolbar above renders for ≥ 800 px.
                ============================================================ -->
           <template v-if="isMobile">
             <!-- Sentinel marks the toolbar's natural position; the
@@ -322,6 +322,7 @@
               <FirstReleaseFilterPills />
             </section>
           </template>
+          </div><!-- /.search-page__above-cards -->
 
           <!-- Loading overlay -->
           <Transition name="fade">
@@ -2059,7 +2060,10 @@ onMounted(() => {
 .search-page__mobile-toolbar {
   display: flex;
   gap: 16px;
-  padding: 8px 16px;
+  /* No horizontal padding — the toolbar sits inside above-cards
+     (within the grid container's 16 px inset), so this aligns the
+     buttons' left edge with the page title. */
+  padding: 8px 0;
   background: #fff;
 }
 .search-page__mobile-toolbar--stuck {
@@ -2068,6 +2072,10 @@ onMounted(() => {
   left: 0;
   right: 0;
   z-index: 50;
+  /* Pinned bar spans the full viewport, so re-add the 16 px inset
+     here — keeps the buttons at the SAME 16 px left edge as in flow
+     (no horizontal jump when pinning). */
+  padding: 8px 16px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 .search-page__mobile-toolbar-sentinel {
