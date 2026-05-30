@@ -614,8 +614,11 @@ const hasActiveFilters = computed(() => {
     || selectedNights.value.length > 0
     || selectedFilterTags.value.length > 0
     || committedFlexibility.value > 0
-    || sharedBudgetMin.value > 0
-    || sharedBudgetMax.value < 5000
+    // Budget counts as "active" only when moved off its defaults
+    // (100–2000). The old `> 0 / < 5000` test was always true, so
+    // the red dot showed even with no filters selected.
+    || sharedBudgetMin.value !== 100
+    || sharedBudgetMax.value !== 2000
   )
 })
 
@@ -2055,7 +2058,7 @@ onMounted(() => {
   margin-top: calc(var(--space-sm) - var(--space-lg)); /* −16px → 8px gap */
   background: #fff;
   /* Grey divider under the Filter / Kaart / Sorteren row. */
-  border-bottom: 1px solid var(--color-border-light);
+  border-bottom: 1px solid var(--color-border);
 }
 /* Black pill-shaped buttons: 48 px high, 8 / 16 px padding, 4 px
    gap between icon and label, white text + icon, rounded corners. */

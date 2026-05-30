@@ -56,7 +56,9 @@ defineEmits<{
 
 <style scoped>
 .filter-subpage__body {
-  padding: var(--space-md) var(--space-lg);
+  /* No top padding — the modal header sits directly above, so the
+     first filter group starts right under it (no white gap). */
+  padding: 0 var(--space-lg) var(--space-md);
 }
 
 /* Mirror the desktop FilterPills reset pill — neutral grey background,
@@ -134,5 +136,17 @@ defineEmits<{
 .filter-subpage__body :deep(.filter-panel) {
   border: none;
   border-radius: 0;
+  /* Drop the panel's own padding — the modal body supplies the
+     horizontal inset and we want zero top gap. */
+  padding: 0;
+}
+/* The first filter group (right after the hidden panel header) keeps
+   its top margin/padding/border, which collapses up through the
+   zero-padding body and re-creates a gap under the modal header.
+   Zero it so the first group starts flush. */
+.filter-subpage__body :deep(.filter-panel__header + .filter-group) {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: 0;
 }
 </style>
