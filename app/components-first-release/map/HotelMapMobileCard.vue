@@ -63,11 +63,6 @@
               </div>
             </div>
 
-            <!-- Scarcity (≤ 5 rooms) — only when NOT sold out. -->
-            <p v-if="!d.soldOut && d.roomsLeft <= 5" class="mdeal__scarcity">
-              {{ t('mapCard.roomsLeft').replace('{n}', String(d.roomsLeft)) }}
-            </p>
-
             <!-- Bottom row: includes (or sold-out notice) + arrow button -->
             <div class="mdeal__bottom">
               <p v-if="d.soldOut" class="mdeal__soldout">{{ t('mapCard.soldOutForDates') }}</p>
@@ -120,14 +115,6 @@ function priceNum(n: number): string {
   return new Intl.NumberFormat('nl-NL').format(Math.round(n))
 }
 
-/** Stable pseudo "rooms left" (1–8) per deal so the scarcity badge is
- *  deterministic across renders (no live stock field exists on the deal). */
-function roomsLeftFor(id: string): number {
-  let h = 0
-  for (let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) | 0
-  return (Math.abs(h) % 8) + 1
-}
-
 /** Carry arrival date + group size into the deal-page link. */
 function hrefFor(deal: SearchHotelDeal): string {
   const params = new URLSearchParams()
@@ -151,7 +138,6 @@ const dealViews = computed(() => {
         soldOut,
         price: priceForArrival(deal.basePrice, deal.id, effArrival, persons.value),
         originalPrice: priceForArrival(deal.originalPrice, deal.id, effArrival, persons.value),
-        roomsLeft: roomsLeftFor(deal.id),
         includes: (deal.inclusions || []).slice(0, 2).map(i => localized(i)),
         href: hrefFor(deal),
       }
@@ -329,13 +315,6 @@ const dealViews = computed(() => {
   color: #222;
 }
 .mdeal__price-bot :deep(.price-info) { align-self: flex-end; margin-bottom: 1px; }
-
-.mdeal__scarcity {
-  margin: 0;
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--color-primary);
-}
 
 /* Bottom row: includes (left) + arrow button (right) */
 .mdeal__bottom {
