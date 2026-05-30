@@ -2769,6 +2769,10 @@ function handleSelectHotelInPopup(slug: string) {
   font-weight: 600;
   color: var(--color-text-primary);
   line-height: 1.3;
+  /* Explicit: number / "Contactformulier" / "Veelgestelde
+     vragen" labels sit at the LEFT edge of the middle grid
+     column. */
+  text-align: left;
 }
 .site-header__phone-popover-item-sub {
   grid-column: 3;
@@ -2778,6 +2782,12 @@ function handleSelectHotelInPopup(slug: string) {
   color: var(--color-text-muted, #9a9a9a);
   letter-spacing: 0.4px;
   text-transform: uppercase;
+  /* Explicit: "PHONE" / "WHATSAPP" align RIGHT inside the
+     auto-width third column. On desktop the column is content-
+     sized so this is a no-op; on mobile the popover is wider
+     than the content and `text-align: right` keeps the sub
+     flush with the popover's right padding. */
+  text-align: right;
 }
 .site-header__phone-popover-cta {
   margin-top: 6px;
@@ -4107,6 +4117,23 @@ function handleSelectHotelInPopup(slug: string) {
   .site-header .site-header__nav-inner.container {
     padding-left: 16px;
     padding-right: 16px;
+  }
+
+  /* Phone popover on mobile — desktop pins it to `right: 0` of
+     the phone-wrap, but on mobile the wrap is centred and only
+     ~200 px wide so the popover (min-width: 280) overflows
+     leftward past the viewport edge or clips its right column
+     under the viewport boundary. CENTRE the popover under the
+     button instead, and cap its width to the viewport. */
+  .site-header .site-header__phone-wrap .site-header__phone-popover {
+    right: auto;
+    left: 50%;
+    transform: translateX(-50%);
+    max-width: calc(100vw - 32px);
+  }
+  /* "Nu bellen" link — bump 13 → 15 for easier touch. */
+  .site-header .site-header__phone-popover-cta {
+    font-size: 15px;
   }
 }
 </style>
