@@ -2199,4 +2199,11 @@ onMounted(() => {
      16 px, identical to the title, breadcrumb and toolbar. */
   padding: 8px 0;
 }
+/* When no filters are active, FilterPills collapses itself
+   (`.filter-pills--empty { display: none }`). Drop the section's
+   own vertical padding too so it adds NO extra gap between the
+   toolbar and the first result card. */
+.search-page__mobile-pills:has(.filter-pills--empty) {
+  padding: 0;
+}
 </style>
