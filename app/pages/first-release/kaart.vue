@@ -16,8 +16,12 @@ import HotelMapHoverCard from '~/components-first-release/map/HotelMapHoverCard.
 import HotelDealsSidePanel from '~/components-first-release/search/HotelDealsSidePanel.vue'
 import HotelMapZoomControls from '~/components-first-release/map/HotelMapZoomControls.vue'
 import SearchFilterPanel from '~/components-first-release/search/SearchFilterPanel.vue'
+import HotelMapMobileCard from '~/components-first-release/map/HotelMapMobileCard.vue'
+import FilterSubpage from '~/components-first-release/search/FilterSubpage.vue'
+import { useFirstReleaseIsMobile } from '~/composables-first-release/useFirstReleaseIsMobile'
 
 const { t } = useFirstReleaseI18n()
+const isMobile = useFirstReleaseIsMobile()
 
 useHead({ title: 'Kaart — Via Luxury' })
 
@@ -54,7 +58,22 @@ const {
   budgetMax: sharedBudgetMax,
   setBudgetMin,
   setBudgetMax,
+  resetBudget,
+  clearArrivalDate,
+  clearDuration,
+  clearFilterTags,
+  clearDestinations,
 } = useFirstReleaseSearchState()
+
+// Mobile filter modal (full-screen subpage, same as /search).
+const mobileFilterOpen = ref(false)
+function resetFilters() {
+  resetBudget()
+  clearArrivalDate()
+  clearDuration()
+  clearFilterTags()
+  clearDestinations()
+}
 
 // Writable computed aliases so SearchFilterPanel's v-model still works.
 const budgetMin = computed({
@@ -250,11 +269,11 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="kaart-page" :class="{ 'kaart-page--no-filter': !showFilter }">
+  <div class="kaart-page" :class="{ 'kaart-page--no-filter': !showFilter, 'kaart-page--mobile': isMobile }">
     <!-- Floating "show filters" chip — only when the sidebar is
-         collapsed (deal-page hand-off via ?focus=<slug>). -->
+         collapsed (deal-page hand-off via ?focus=<slug>). Desktop only. -->
     <button
-      v-if="!showFilter"
+      v-if="!showFilter && !isMobile"
       type="button"
       class="kaart-show-filter"
       @click="showFilter = true"
@@ -271,7 +290,7 @@ onMounted(() => {
     <!-- Sticky filter sidebar (left). Stays in place when the side panel
          opens; the map slides under it. Filter content scrolls internally
          when it overflows the viewport height. -->
-    <aside v-if="showFilter" class="kaart-filter">
+    <aside v-if="showFilter && !isMobile" class="kaart-filter">
       <!-- Black ViaLuxury wordmark on top of the filter bar — same on
            every nav variant. -->
       <NuxtLink :to="homeHref" class="kaart-filter__logo">
@@ -291,10 +310,16 @@ onMounted(() => {
     </aside>
 
     <!-- Pills float at the top, OUTSIDE the sliding stage so they stay
-         visible (sticky) when the panel slides in. -->
-    <FirstReleaseFilterPills class="kaart-pills" mode="map" />
+         visible (sticky) when the panel slides in. Desktop only. -->
+    <FirstReleaseFilterPills v-if="!isMobile" class="kaart-pills" mode="map" />
 
-    <main class="kaart-stage" :class="{ 'kaart-stage--with-panel': !!selectedHotel }">
+    <main
+      class="kaart-stage"
+      :class="{
+        'kaart-stage--with-panel': !isMobile && !!selectedHotel,
+        'kaart-stage--with-card': isMobile && !!selectedHotel,
+      }"
+    >
       <ClientOnly>
         <FirstReleaseHotelBrowseMap
           ref="mapRef"
@@ -304,15 +329,18 @@ onMounted(() => {
         />
       </ClientOnly>
 
+      <!-- Desktop: right-sliding deal panel. Mobile: bottom-sheet card. -->
       <FirstReleaseHotelDealsSidePanel
+        v-if="!isMobile"
         :is-open="!!selectedHotel"
         :hotel="selectedHotel"
         :map-mode="true"
         @close="clearSelection"
       />
 
+      <!-- Hover preview — desktop only (no hover on touch). -->
       <FirstReleaseHotelMapHoverCard
-        v-if="hoveredHotel"
+        v-if="!isMobile && hoveredHotel"
         :hotel="hoveredHotel"
         :position="hoverPosition"
         :arrival-date="arrivalDate"
@@ -320,7 +348,9 @@ onMounted(() => {
         :unmatched="hoveredHotel.unmatched"
       />
 
+      <!-- Desktop close-map button (text). -->
       <button
+        v-if="!isMobile"
         type="button"
         class="kaart-close"
         @click="closeMap"
@@ -332,16 +362,51 @@ onMounted(() => {
       </button>
 
       <FirstReleaseHotelMapZoomControls
+        v-if="!isMobile"
         @zoom-in="mapRef?.zoomIn()"
         @zoom-out="mapRef?.zoomOut()"
       />
     </main>
 
-    <!-- Mobile fallback (locked-in scope: desktop-only) -->
-    <div class="kaart-mobile-fallback">
-      <p>Open de kaart op een desktop voor de beste ervaring.</p>
-      <NuxtLink to="/first-release/home">Terug naar home</NuxtLink>
-    </div>
+    <!-- ═══════════ MOBILE map chrome ═══════════ -->
+    <template v-if="isMobile">
+      <!-- Top-left: close-map (icon). -->
+      <button type="button" class="kaart-m-close" :aria-label="t('common.close')" @click="closeMap">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true">
+          <path d="M18 6L6 18M6 6l12 12" />
+        </svg>
+      </button>
+
+      <!-- Top-right: Filters (opens the full-screen filter modal). -->
+      <button type="button" class="kaart-m-filter" @click="mobileFilterOpen = true">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="4" y1="6" x2="20" y2="6" /><line x1="8" y1="12" x2="20" y2="12" /><line x1="12" y1="18" x2="20" y2="18" />
+        </svg>
+        <span>{{ t('search.filters') || 'Filters' }}</span>
+      </button>
+
+      <!-- Bottom sheet: hotel info + horizontal deal carousel. -->
+      <HotelMapMobileCard
+        :is-open="!!selectedHotel"
+        :hotel="selectedHotel"
+        @close="clearSelection"
+      />
+
+      <!-- Full-screen filters modal (same component as /search). -->
+      <FilterSubpage
+        :open="mobileFilterOpen"
+        :budget-min="budgetMin"
+        :budget-max="budgetMax"
+        :persons="persons"
+        :result-count="mapHotels.length"
+        :counts="filterCounts"
+        @close="mobileFilterOpen = false"
+        @apply="mobileFilterOpen = false"
+        @clear="resetFilters"
+        @update:budget-min="budgetMin = $event"
+        @update:budget-max="budgetMax = $event"
+      />
+    </template>
   </div>
 </template>
 
@@ -486,25 +551,56 @@ onMounted(() => {
   background: #1a1a1a;
 }
 
-/* ---------- Mobile fallback ---------- */
-.kaart-mobile-fallback {
-  display: none;
+/* ═══════════ MOBILE map ═══════════ */
+/* Full-screen map — no filter sidebar; the stage spans the whole
+   viewport. */
+.kaart-page--mobile .kaart-stage {
+  left: 0;
+}
+/* When the bottom-sheet card opens, slide the whole map UP (mirrors
+   the desktop slide-left) so the selected pin clears the sheet. */
+.kaart-page--mobile .kaart-stage--with-card {
+  transform: translateY(-30vh);
 }
 
-@media (max-width: 1023px) {
-  .kaart-stage {
-    display: none;
-  }
-  .kaart-mobile-fallback {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    text-align: center;
-    padding: var(--space-2xl);
-    gap: var(--space-md);
-    color: var(--color-text-primary);
-  }
+/* Top-left close-map icon button. */
+.kaart-m-close {
+  position: fixed;
+  top: calc(var(--space-md) + env(safe-area-inset-top, 0));
+  left: var(--space-md);
+  z-index: 1100;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 0;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-primary);
+  cursor: pointer;
+}
+
+/* Top-right Filters button. */
+.kaart-m-filter {
+  position: fixed;
+  top: calc(var(--space-md) + env(safe-area-inset-top, 0));
+  right: var(--space-md);
+  z-index: 1100;
+  height: 40px;
+  padding: 0 16px;
+  border-radius: 20px;
+  border: 0;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  cursor: pointer;
 }
 </style>
