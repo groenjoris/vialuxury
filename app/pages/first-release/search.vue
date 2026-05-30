@@ -2035,6 +2035,8 @@ onMounted(() => {
    moved into the SiteHeader slot above the title section. */
 
 /* Mobile toolbar — Filter / Kaart / Sorteren row.
+   SPEC: docs/MOBILE-STICKY-SPEC.md §1 — do NOT switch to
+   position:fixed and do NOT move this out of .search-page__results.
 
    PINNING IS PURE CSS: `position: sticky; top: 0`. The toolbar is a
    direct child of the tall `.search-page__results`, so it stays

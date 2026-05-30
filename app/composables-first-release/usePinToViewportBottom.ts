@@ -1,4 +1,8 @@
 /**
+ * SPEC: docs/MOBILE-STICKY-SPEC.md §2 — the deal/hotel BOTTOM
+ * footer pin. This is NOT for the /search top toolbar (that's
+ * position: sticky; see §1). Keep the two separate.
+ *
  * Pin an element to the BOTTOM of the VISUAL viewport (not the
  * layout viewport). On mobile browsers, `position: fixed; bottom: 0`
  * can desync from the visual viewport bottom when the browser
