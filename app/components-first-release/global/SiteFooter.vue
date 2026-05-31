@@ -130,6 +130,10 @@ const { homeHref } = useFirstReleaseHomeVariant()
   font-family: var(--font-body);
   font-size: 16px;
   font-weight: 600;
+  /* Explicit white — the global `h1..h6 { color: var(--color-text-primary) }`
+     rule (typography.css) otherwise painted these headings #1A1A1A,
+     i.e. invisible on the #1A1A1A footer (read as "empty gaps"). */
+  color: #fff;
   margin-bottom: var(--space-md);
 }
 
