@@ -264,6 +264,14 @@ onMounted(() => {
   const { restoreFrNavVariant } = useFirstReleaseHomeVariant()
   restoreFrNavVariant(window.location.pathname)
 
+  // Opening the map FROM a hotel/deal page (?focus=<slug>) clears all
+  // active filters so the map shows every hotel with no filter pills —
+  // the user is exploring around the focused hotel, not continuing a
+  // filtered search. (Persisted query stays intact for /search.)
+  if (route.query.focus) {
+    resetFilters()
+  }
+
   // Deal-page → kaart hand-off: auto-open the sidepanel for the
   // focused hotel so the user lands with both the marker centred AND
   // the arrangements panel slid in.
