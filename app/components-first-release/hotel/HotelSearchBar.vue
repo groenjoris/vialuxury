@@ -171,6 +171,7 @@ const {
   setSearchGroup,
   selectedNights: globalNights,
   setSelectedNights,
+  commitArrivalDate,
 } = useFirstReleaseSearchState()
 
 const emit = defineEmits<{
@@ -424,6 +425,10 @@ defineExpose({ totalPersons })
 
 function handleChangeSearch() {
   closePopup()
+  // Date + nights are already written to the global LIVE state as the user
+  // edits; commit the date so the snapshot read by /search & /kaart filters
+  // and the MobileSearchSummary reflects the hotel-page search too.
+  commitArrivalDate()
   const dur = selectedDurations.value[0] || ''
   emit('search', {
     persons: totalPersons.value,

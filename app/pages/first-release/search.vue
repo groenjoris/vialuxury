@@ -417,7 +417,7 @@ const {
   selectedFilterTags,
   selectedDestinations, selectedCities, selectedHotels,
   committedArrivalDate, committedFlexibility,
-  setArrivalDate,
+  setArrivalDate, restoreSearchSession,
 } = useFirstReleaseSearchState()
 
 // Team members for avatar row
@@ -431,6 +431,10 @@ const searchLoading = computed(() => loading.value || localLoading.value)
 // Clear loading on mount (handles navigation arriving with loading=true)
 onMounted(() => {
   if (loading.value) setLoading(false)
+  // Restore the persisted search query FIRST. The page's onMounted runs
+  // before app.vue's, so without this the next line would read an empty
+  // (not-yet-restored) committed date and wipe the saved date on reload.
+  restoreSearchSession()
   // Drop any un-committed preview date that may have been written by
   // the searchbar while the user was on /deal — landing back on
   // /search should reflect the *committed* search state. The deal

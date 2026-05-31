@@ -159,6 +159,18 @@ export function useFirstReleaseSearchState() {
         if (v) selectionOrder.value = JSON.parse(v)
       }
     } catch { /* corrupt session storage — ignore */ }
+    // A restored saved query is already "committed" — mirror the live
+    // arrival/flex into the committed snapshot so the /search & /kaart
+    // filters and the MobileSearchSummary (which read the committed
+    // values) show the saved date instead of "Alle datums" after a
+    // reload. Only when committed is still empty so we never clobber an
+    // in-flight commit.
+    if (!committedArrivalDate.value && selectedArrivalDate.value) {
+      committedArrivalDate.value = selectedArrivalDate.value
+    }
+    if (!committedFlexibility.value && selectedFlexibility.value) {
+      committedFlexibility.value = selectedFlexibility.value
+    }
   }
 
   /** Commit the live arrival/flex values into the snapshot used by the search

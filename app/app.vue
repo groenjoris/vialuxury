@@ -29,6 +29,10 @@ const {
 // its own filter state (independent localStorage namespace).
 const { restore: restoreNs } = useNorthstarPartner()
 const { restoreSearchSession: restoreSearchSessionNs } = useNorthstarSearchState()
+// First Release mirror — its own localStorage namespace. Without this the
+// First Release search query (destination/date/duration/persons) is lost on
+// every full reload / fresh entry / new-tab deal link.
+const { restoreSearchSession: restoreSearchSessionFr } = useFirstReleaseSearchState()
 // Homepage variant ('1' / '2' / '3' / '4') — restored from URL first,
 // then localStorage. The active variant is also reflected on <body> as
 // `vl-variant-2` etc., so global CSS (e.g. variant-2.css) can re-style
@@ -56,6 +60,7 @@ onMounted(() => {
   restoreSearchSession()
   restoreNs()
   restoreSearchSessionNs()
+  restoreSearchSessionFr()
   restoreHomeVariant(route.path)
   const p = route.query.partner
   if (p === 'nu') set('nu')

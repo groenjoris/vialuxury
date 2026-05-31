@@ -1515,6 +1515,19 @@ watch(globalNights, (g) => {
 watch(globalFlexType, (g) => {
   if (g !== localFlexType.value) localFlexType.value = g
 })
+// Re-seed the local destination drafts whenever the shared destination
+// state changes (e.g. restoreSearchSession on a reload, or an edit made
+// on another screen) so the Bestemming field reflects the global query.
+// Guard against clobbering an in-flight pick while the destination popup
+// is open. (Nights/date/persons already have their own watchers above.)
+watch(
+  [selectedDestinations, selectedCities, sharedSelectedHotels, selectedFilterTags, selectionOrder],
+  () => {
+    if (activePopup.value === 'destination') return
+    syncLocalDestFromShared()
+  },
+  { deep: true },
+)
 
 // --- Pulse animation logic on the search button ---
 // When date or duration is changed and popups are closed, schedule a 2-pulse
