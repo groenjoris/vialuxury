@@ -740,17 +740,15 @@ const includesBullets = computed<string[]>(() => {
   bottom: var(--space-md);
   z-index: 2;
   pointer-events: none;
-  background: rgba(0, 0, 0, 0.55);
+  background: #000;
   color: #fff;
-  font-family: var(--font-heading);
-  font-size: 11px;
+  font-family: var(--font-body);
+  font-size: 13px;
   font-weight: 600;
   line-height: 1.2;
   padding: 4px 8px;
   border-radius: 5px;
   letter-spacing: 0.2px;
-  backdrop-filter: blur(2px);
-  -webkit-backdrop-filter: blur(2px);
 }
 
 .deal-card-v2__favorite {
