@@ -12,6 +12,20 @@
           <img src="/images/trustpilot-white.svg" alt="Trustpilot" class="footer-trustpilot__logo" />
           <span class="footer-trustpilot__sentence">{{ t('footer.trustpilotSentence') }}</span>
         </div>
+
+        <!-- Newsletter / VIP-member CTA -->
+        <form class="footer-newsletter" @submit.prevent>
+          <p class="footer-newsletter__title">{{ t('footer.newsletterTitle') }}</p>
+          <div class="footer-newsletter__row">
+            <input
+              type="email"
+              class="footer-newsletter__input"
+              :placeholder="t('footer.newsletterPlaceholder')"
+              aria-label="E-mailadres"
+            />
+            <button type="submit" class="footer-newsletter__btn">{{ t('footer.newsletterCta') }}</button>
+          </div>
+        </form>
       </div>
 
       <!-- Hulp nodig? -->
@@ -57,6 +71,8 @@
           <li><NuxtLink to="/contact">{{ t('footer.contact') }}</NuxtLink></li>
           <li><a href="#">{{ t('footer.terms') }}</a></li>
           <li><a href="#">{{ t('footer.privacy') }}</a></li>
+          <li><a href="#">{{ t('footer.cookies') }}</a></li>
+          <li><a href="#">{{ t('footer.promoTerms') }}</a></li>
         </ul>
       </div>
     </div>
@@ -123,6 +139,69 @@ const { homeHref } = useFirstReleaseHomeVariant()
   font-size: 13px;
   line-height: 1.4;
   color: rgba(255, 255, 255, 0.7);
+}
+
+/* ── Newsletter / VIP-member CTA ── */
+.footer-newsletter {
+  margin-top: var(--space-lg);
+  max-width: 360px;
+}
+
+.footer-newsletter__title {
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: #fff;
+  margin: 0 0 10px;
+}
+
+.footer-newsletter__row {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+}
+
+.footer-newsletter__input {
+  flex: 1;
+  min-width: 0;
+  height: 42px;
+  padding: 0 14px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 14px;
+}
+
+.footer-newsletter__input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.footer-newsletter__input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+.footer-newsletter__btn {
+  flex-shrink: 0;
+  height: 42px;
+  padding: 0 18px;
+  border: none;
+  border-radius: 6px;
+  background: var(--color-primary);
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.footer-newsletter__btn:hover {
+  background: var(--color-primary-hover);
 }
 
 /* ── Headings ── */
