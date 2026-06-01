@@ -2087,6 +2087,11 @@ onMounted(() => {
    negative margin-top tightens the flex gap above the toolbar so it
    sits ~8 px below the header instead of the column's 24 px gap. */
 .search-page__mobile-toolbar {
+  /* `-webkit-sticky` MUST come first: iOS WebKit (Safari + iOS Chrome)
+     can ignore the unprefixed value, leaving the bar in normal flow so
+     it "doesn't stick on scroll-down" on device while working fine in
+     desktop Chrome. Keep both — see docs/MOBILE-STICKY-SPEC.md §1. */
+  position: -webkit-sticky;
   position: sticky;
   top: 0;
   z-index: 50;
