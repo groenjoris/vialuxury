@@ -3,6 +3,7 @@ import { computed } from 'vue'
 import type { SearchHotel } from '~/types/searchHotel'
 import { formatPrice } from '~/utils-first-release/formatPrice'
 import { priceForArrival } from '~/utils-first-release/priceFormula'
+import { dealHasScarcity } from '~/utils-first-release/scarcity'
 
 /**
  * HotelMapHoverCard — preview card that floats above a hovered hotel pin
@@ -100,15 +101,40 @@ const nights = computed<number[]>(() => {
   return [...set].sort((a, b) => a - b)
 })
 
-const isConsecutive = (arr: number[]) =>
-  arr.length > 1 && arr.every((n, i) => i === 0 || n === arr[i - 1] + 1)
-
-function formatNightList(arr: number[]): string {
-  if (arr.length === 1) return String(arr[0])
-  if (isConsecutive(arr)) return `${arr[0]}-${arr[arr.length - 1]}`
-  const head = arr.slice(0, -1).join(', ')
-  return `${head} of ${arr[arr.length - 1]}`
+/** Format a sorted distinct-nights list into a label fragment:
+ *   {1,2}     → "1 of 2"
+ *   {1,2,3}   → "1-3"        (runs of ≥3 consecutive collapse to a range)
+ *   {1,2,4}   → "1, 2 of 4"  (runs of 1–2 stay as individual numbers)
+ *   {1,2,3,6} → "1-3 of 5+"  (any value ≥5 collapses to a trailing "5+")
+ */
+function formatNights(sorted: number[]): string {
+  const below = sorted.filter(n => n < 5)
+  const hasFivePlus = sorted.some(n => n >= 5)
+  const tokens: string[] = []
+  let i = 0
+  while (i < below.length) {
+    let j = i
+    while (j + 1 < below.length && below[j + 1] === below[j] + 1) j++
+    const runLen = j - i + 1
+    if (runLen >= 3) {
+      tokens.push(`${below[i]}-${below[j]}`)
+    } else {
+      for (let k = i; k <= j; k++) tokens.push(String(below[k]))
+    }
+    i = j + 1
+  }
+  if (hasFivePlus) tokens.push('5+')
+  if (tokens.length === 0) return ''
+  if (tokens.length === 1) return tokens[0]
+  if (tokens.length === 2) return `${tokens[0]} of ${tokens[1]}`
+  return `${tokens.slice(0, -1).join(', ')} of ${tokens[tokens.length - 1]}`
 }
+
+/** Whether any of the hotel's arrangements is scarce (<4 left). Hidden in
+ *  the sold-out / unmatched states. */
+const showScarcity = computed(() =>
+  !props.soldOut && !props.unmatched && props.hotel.deals.some(d => dealHasScarcity(d.id)),
+)
 
 /** Split into a top line ("Arrangement voor" / "Arrangementen voor" /
  *  "Uitverkocht voor" / "Voldoet niet aan…") and a bottom line. */
@@ -126,15 +152,21 @@ const dealsLabel = computed(() => {
   }
   const ns = nights.value
   if (ns.length === 0) return { top: '', bottom: '' }
-  if (ns.length === 1) {
+  // Single arrangement → singular, including the persons count.
+  if (props.hotel.deals.length === 1) {
+    const n = props.hotel.deals[0].nights
+    const p = persons.value
     return {
       top: 'Arrangement voor',
-      bottom: `${ns[0]} ${ns[0] === 1 ? 'nacht' : 'nachten'}`,
+      bottom: `${n} ${n === 1 ? 'nacht' : 'nachten'}, ${p} ${p === 1 ? 'persoon' : 'personen'}`,
     }
   }
+  // Multiple arrangements → nights range/list. Suffix is singular only
+  // when the sole distinct night is 1 ("Arrangementen voor 1 nacht").
+  const suffix = ns.length === 1 && ns[0] === 1 ? 'nacht' : 'nachten'
   return {
     top: 'Arrangementen voor',
-    bottom: `${formatNightList(ns)} nachten`,
+    bottom: `${formatNights(ns)} ${suffix}`,
   }
 })
 
@@ -144,7 +176,11 @@ function formatDate(iso: string): string {
 }
 
 const CARD_W = 296
-const CARD_H = 140
+const CARD_BASE_H = 140
+const SCARCITY_H = 24
+/** Approximate card height for flip-positioning — grows by the scarcity
+ *  bar height so the card still clears the pin when the bar is shown. */
+const cardHeight = computed(() => CARD_BASE_H + (showScarcity.value ? SCARCITY_H : 0))
 const SAFE_TOP = 24
 /** Gap between the card and the icon. The teardrop "location" pin is
  *  twice as tall as the regular star, so we use a generous 20 px so
@@ -171,7 +207,7 @@ function iconBottomY(): number {
  *  obscure it), flip and render BELOW the pin (orange bar + tail mirror). */
 const flipped = computed(() => {
   if (!props.position) return false
-  return iconTopY() - ICON_GAP - CARD_H < SAFE_TOP
+  return iconTopY() - ICON_GAP - cardHeight.value < SAFE_TOP
 })
 
 const cardStyle = computed(() => {
@@ -180,7 +216,7 @@ const cardStyle = computed(() => {
   // top, so the icon itself stays fully visible above/below the card.
   const top = flipped.value
     ? iconBottomY() + ICON_GAP
-    : iconTopY() - ICON_GAP - CARD_H
+    : iconTopY() - ICON_GAP - cardHeight.value
   return {
     left: `${props.position.x - CARD_W / 2}px`,
     top: `${top}px`,
@@ -231,6 +267,9 @@ const cardStyle = computed(() => {
             </div>
           </div>
         </div>
+        <!-- Scarcity layer (Figma 3987:5012) — full-width black bar at the
+             bottom; rounded bottom corners come from the box's clip. -->
+        <div v-if="showScarcity" class="hover-card__scarcity">Beperkte beschikbaarheid</div>
       </div>
       <div class="hover-card__tail" />
     </div>
@@ -352,6 +391,26 @@ const cardStyle = computed(() => {
 
 .hover-card--soldOut .hover-card__deals {
   color: var(--color-error);
+}
+
+/* Scarcity layer — full-width black bar at the bottom of the card
+   (Figma 3987:5012/5013). Rounded bottom corners inherited from the
+   box's `overflow: hidden` + radius. */
+.hover-card__scarcity {
+  width: 100%;
+  height: 24px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  background: #1A1E1E;
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 16px;
+  white-space: nowrap;
 }
 
 .hover-card__footer {

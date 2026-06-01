@@ -254,6 +254,7 @@ import { pickSmartInclusions } from '~/utils-first-release/smartInclusions'
 import { priceForArrival } from '~/utils-first-release/priceFormula'
 import { nightsLabel } from '~/utils-first-release/plural'
 import { arrangementSuffixFromHighlights } from '~/utils-first-release/arrangementType'
+import { dealHash, roomsLeftForDeal } from '~/utils-first-release/scarcity'
 import { useFirstReleaseHomeVariant } from '~/composables-first-release/useFirstReleaseHomeVariant'
 
 const { t, localized, locale } = useFirstReleaseI18n()
@@ -369,18 +370,9 @@ const panelAmenityStickers = computed<string[]>(() => {
   return out
 })
 
-/** Stable per-deal hash → guarantees the same deal always starts on
- *  the same image even after reloads. */
-function dealHash(id: string): number {
-  let h = 0
-  for (let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) | 0
-  return Math.abs(h)
-}
-
-/** Scarcity count for the "Nog X beschikbaar" sticker. No real inventory
- *  data exists, so derive a stable small number (2–9) per deal from its
- *  id — the same deal always shows the same count across reloads/pages. */
-const roomsLeft = computed<number>(() => 2 + (dealHash(props.deal.id) % 8))
+/** Scarcity count for the "Nog X beschikbaar" sticker — shared with the
+ *  map hover card via the scarcity util (single source of truth). */
+const roomsLeft = computed<number>(() => roomsLeftForDeal(props.deal.id))
 
 /** Displayed image — defaults to the carousel's current frame; on v6
  *  panel mode each card picks a deterministic starting frame from the
