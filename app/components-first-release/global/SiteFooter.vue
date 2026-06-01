@@ -19,9 +19,12 @@
           <div class="footer-newsletter__row">
             <input
               type="email"
+              required
               class="footer-newsletter__input"
               :placeholder="t('footer.newsletterPlaceholder')"
               aria-label="E-mailadres"
+              @invalid="onNewsletterInvalid"
+              @input="onNewsletterInput"
             />
             <button type="submit" class="footer-newsletter__btn">{{ t('footer.newsletterCta') }}</button>
           </div>
@@ -90,6 +93,24 @@
 import { useFirstReleaseHomeVariant } from '~/composables-first-release/useFirstReleaseHomeVariant'
 const { t } = useFirstReleaseI18n()
 const { homeHref } = useFirstReleaseHomeVariant()
+
+/** Force a Dutch native-validation bubble on the newsletter email field
+ *  (browsers otherwise show the message in the browser's own locale). */
+function onNewsletterInvalid(e: Event) {
+  const input = e.target as HTMLInputElement
+  if (input.validity.valueMissing) {
+    input.setCustomValidity('Vul je e-mailadres in.')
+  } else if (input.validity.typeMismatch) {
+    input.setCustomValidity('Vul een geldig e-mailadres in.')
+  } else {
+    input.setCustomValidity('')
+  }
+}
+function onNewsletterInput(e: Event) {
+  // Clear the custom message as soon as the user edits the field, so the
+  // validity is re-evaluated cleanly on the next submit.
+  ;(e.target as HTMLInputElement).setCustomValidity('')
+}
 </script>
 
 <style scoped>
@@ -144,7 +165,7 @@ const { homeHref } = useFirstReleaseHomeVariant()
 /* ── Newsletter / VIP-member CTA ── */
 .footer-newsletter {
   margin-top: var(--space-lg);
-  max-width: 360px;
+  max-width: 440px;
 }
 
 .footer-newsletter__title {
@@ -167,42 +188,46 @@ const { homeHref } = useFirstReleaseHomeVariant()
   min-width: 0;
   height: 42px;
   padding: 0 14px;
-  border: 1px solid rgba(255, 255, 255, 0.25);
+  border: 1px solid transparent;
   border-radius: 6px;
-  background: rgba(255, 255, 255, 0.06);
-  color: #fff;
+  background: #fff;
+  color: #1A1A1A;
   font-family: var(--font-body);
   font-size: 14px;
 }
 
 .footer-newsletter__input::placeholder {
-  color: rgba(255, 255, 255, 0.5);
+  color: #9a9a9a;
 }
 
 .footer-newsletter__input:focus {
   outline: none;
-  border-color: var(--color-primary);
+  /* No orange ring on the active field — keep a neutral dark border. */
+  border-color: rgba(26, 26, 26, 0.35);
 }
 
+/* Same style as the top-nav "Inloggen" (.vip-btn) button: translucent
+   white fill + subtle border, brightening on hover. */
 .footer-newsletter__btn {
   flex-shrink: 0;
   height: 42px;
   padding: 0 18px;
-  border: 1px solid rgba(255, 255, 255, 0.55);
-  border-radius: 6px;
-  background: #1A1A1A;
-  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.85);
   font-family: var(--font-body);
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
   white-space: nowrap;
   cursor: pointer;
   transition: background var(--transition-fast), border-color var(--transition-fast);
 }
 
 .footer-newsletter__btn:hover {
-  background: #000;
-  border-color: #fff;
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.3);
 }
 
 /* ── Headings ── */
