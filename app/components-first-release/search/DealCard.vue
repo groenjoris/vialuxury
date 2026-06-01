@@ -71,9 +71,9 @@
         />
       </div>
       <!-- Scarcity sticker — bottom-right of the photo. Same chip look as
-           the amenity stickers (transparent-black tile, Recoleta white
-           text) but ~half the size. Shown on every deal card site-wide. -->
-      <span class="deal-card-v2__rooms-sticker">Nog {{ roomsLeft }} beschikbaar</span>
+           the amenity stickers (solid black tile, Basis Grotesque white
+           text) but ~half the size. Only shown when fewer than 4 left. -->
+      <span v-if="roomsLeft < 4" class="deal-card-v2__rooms-sticker">Nog {{ roomsLeft }} beschikbaar</span>
       <button
         type="button"
         class="deal-card-v2__favorite"

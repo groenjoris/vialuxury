@@ -39,6 +39,7 @@
           <FirstReleaseSearchFilterPanel
             v-if="showFilters && stickyFilterVisible"
             class="search-page__sticky-filter"
+            :style="stickyFilterStyle"
             :budget-min="budgetMinDraft"
             :budget-max="budgetMaxDraft"
             :persons="persons"
@@ -546,10 +547,41 @@ onMounted(() => {
 // the sentinel's bounding rect on every scroll guarantees the
 // sticky shows the MOMENT the sentinel passes above the viewport
 // top, in either direction.
+// Top offset (in px) for the fixed compact filter. Normally pinned at
+// `--space-md` from the top; once the footer scrolls up into the
+// viewport the filter is pushed upward so it never overlaps the footer
+// — past a point its top scrolls out of view entirely.
+const stickyFilterTop = ref(16)
+const stickyFilterStyle = computed(() => ({ top: `${stickyFilterTop.value}px` }))
+
+function updateStickyFilterTop() {
+  if (!import.meta.client) return
+  const BASE = 16 // matches --space-md
+  const GAP = 16
+  const footer = document.querySelector('.site-footer') as HTMLElement | null
+  const panel = document.querySelector('.search-page__sticky-filter') as HTMLElement | null
+  if (!footer || !panel) {
+    stickyFilterTop.value = BASE
+    return
+  }
+  const footerTop = footer.getBoundingClientRect().top
+  const panelH = panel.offsetHeight
+  // Highest the panel's top may sit so its bottom stays GAP above the
+  // footer. When the footer is far down this exceeds BASE, so we clamp
+  // back to BASE (normal pinned position).
+  const maxTop = footerTop - GAP - panelH
+  stickyFilterTop.value = Math.min(BASE, maxTop)
+}
+
 function handleFilterScroll() {
   const el = filterSentinelRef.value
   if (!el) return
   stickyFilterVisible.value = el.getBoundingClientRect().top < 0
+  // Re-clamp on the next frame so the panel element (rendered only when
+  // visible) is in the DOM and measurable.
+  if (stickyFilterVisible.value) {
+    requestAnimationFrame(updateStickyFilterTop)
+  }
 }
 
 onMounted(() => {
