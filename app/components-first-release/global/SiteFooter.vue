@@ -188,20 +188,21 @@ const { homeHref } = useFirstReleaseHomeVariant()
   flex-shrink: 0;
   height: 42px;
   padding: 0 18px;
-  border: none;
+  border: 1px solid rgba(255, 255, 255, 0.55);
   border-radius: 6px;
-  background: var(--color-primary);
+  background: #1A1A1A;
   color: #fff;
   font-family: var(--font-body);
   font-size: 14px;
   font-weight: 600;
   white-space: nowrap;
   cursor: pointer;
-  transition: background var(--transition-fast);
+  transition: background var(--transition-fast), border-color var(--transition-fast);
 }
 
 .footer-newsletter__btn:hover {
-  background: var(--color-primary-hover);
+  background: #000;
+  border-color: #fff;
 }
 
 /* ── Headings ── */
