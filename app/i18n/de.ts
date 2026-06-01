@@ -143,6 +143,7 @@ const de: Record<string, string> = {
   'footer.faqLink': 'Häufig gestellte Fragen',
   'footer.contactForm': 'Kontaktformular',
   'footer.inspiration': 'Inspiration / Bestseller',
+  'footer.popularDestinations': 'Beliebte Reiseziele',
   'footer.shopping': 'Shopping & Geschenkkarten',
   'footer.aboutUs': 'Über uns',
   'footer.faq': 'Häufig gestellte Fragen',

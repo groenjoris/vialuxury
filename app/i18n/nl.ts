@@ -143,6 +143,7 @@ const nl: Record<string, string> = {
   'footer.faqLink': 'Veelgestelde vragen',
   'footer.contactForm': 'Contactformulier',
   'footer.inspiration': 'Inspiratie / Best geboekt',
+  'footer.popularDestinations': 'Populaire bestemmingen',
   'footer.shopping': 'Shopping & cadeaukaarten',
   'footer.aboutUs': 'Over ons',
   'footer.faq': 'Veelgestelde vragen',

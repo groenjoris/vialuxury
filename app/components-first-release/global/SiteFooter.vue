@@ -9,7 +9,7 @@
 
         <!-- Trustpilot logo + sentence -->
         <div class="footer-trustpilot">
-          <img src="/images/trustpilot.svg" alt="Trustpilot" class="footer-trustpilot__logo" />
+          <img src="/images/trustpilot-white.svg" alt="Trustpilot" class="footer-trustpilot__logo" />
           <span class="footer-trustpilot__sentence">{{ t('footer.trustpilotSentence') }}</span>
         </div>
       </div>
@@ -34,9 +34,9 @@
         </ul>
       </div>
 
-      <!-- Inspiratie / Best geboekt -->
+      <!-- Populaire bestemmingen -->
       <div class="footer-col">
-        <h4 class="footer-heading">{{ t('footer.inspiration') }}</h4>
+        <h4 class="footer-heading">{{ t('footer.popularDestinations') }}</h4>
         <ul class="footer-links">
           <li><NuxtLink to="/first-release/search?city=amsterdam">Amsterdam</NuxtLink></li>
           <li><NuxtLink to="/first-release/search?city=antwerpen">Antwerpen</NuxtLink></li>

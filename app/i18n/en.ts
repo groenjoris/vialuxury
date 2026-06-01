@@ -143,6 +143,7 @@ const en: Record<string, string> = {
   'footer.faqLink': 'FAQ',
   'footer.contactForm': 'Contact form',
   'footer.inspiration': 'Inspiration / Most booked',
+  'footer.popularDestinations': 'Popular destinations',
   'footer.shopping': 'Shopping & gift cards',
   'footer.aboutUs': 'About us',
   'footer.faq': 'FAQ',
