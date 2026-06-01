@@ -70,6 +70,10 @@
           class="deal-card-v2__label"
         />
       </div>
+      <!-- Scarcity sticker — bottom-right of the photo. Same chip look as
+           the amenity stickers (transparent-black tile, Recoleta white
+           text) but ~half the size. Shown on every deal card site-wide. -->
+      <span class="deal-card-v2__rooms-sticker">Nog {{ roomsLeft }} beschikbaar</span>
       <button
         type="button"
         class="deal-card-v2__favorite"
@@ -372,6 +376,11 @@ function dealHash(id: string): number {
   for (let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) | 0
   return Math.abs(h)
 }
+
+/** Scarcity count for the "Nog X beschikbaar" sticker. No real inventory
+ *  data exists, so derive a stable small number (2–9) per deal from its
+ *  id — the same deal always shows the same count across reloads/pages. */
+const roomsLeft = computed<number>(() => 2 + (dealHash(props.deal.id) % 8))
 
 /** Displayed image — defaults to the carousel's current frame; on v6
  *  panel mode each card picks a deterministic starting frame from the
@@ -717,6 +726,28 @@ const includesBullets = computed<string[]>(() => {
   line-height: 1.2;
   padding: 8px 14px;
   border-radius: 8px;
+  letter-spacing: 0.2px;
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+
+/* Scarcity sticker — bottom-right of the photo. Mirrors the amenity
+   panel-sticker look (transparent-black tile, Recoleta white text) but
+   ~2× smaller: font 11 vs 18, padding 4×8 vs 8×14, radius 5 vs 8. */
+.deal-card-v2__rooms-sticker {
+  position: absolute;
+  right: var(--space-md);
+  bottom: var(--space-md);
+  z-index: 2;
+  pointer-events: none;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  font-family: var(--font-heading);
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.2;
+  padding: 4px 8px;
+  border-radius: 5px;
   letter-spacing: 0.2px;
   backdrop-filter: blur(2px);
   -webkit-backdrop-filter: blur(2px);
