@@ -1817,8 +1817,8 @@ onMounted(() => {
 }
 
 .search-toolbar__sort-btn:hover {
-  border-color: var(--color-primary);
-  color: var(--color-primary);
+  /* Consistent neutral hover: fill darkens, no orange stroke. */
+  background: var(--color-border);
 }
 
 .search-toolbar__sort-chevron {

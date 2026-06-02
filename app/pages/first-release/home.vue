@@ -833,8 +833,9 @@ onMounted(() => { setFrNavVariant('1'); restoreHeroPhotoIndex() })
 }
 
 .home-pill:hover {
-  border-color: #1a1411;
-  background: #fafaf6;
+  /* Consistent neutral hover: the fill darkens (clearly darker than the
+     white base), no stroke change. */
+  background: var(--color-border);
 }
 
 .home-pill__icon {

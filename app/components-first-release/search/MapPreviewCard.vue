@@ -67,18 +67,19 @@ const mapImage = computed(() => {
   background: var(--color-primary);
   color: #fff;
   border: none;
-  border-radius: var(--radius-md);
+  /* Match the standard small radius used by Bekijk / Vind deals. */
+  border-radius: var(--radius-sm);
   font-family: inherit;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
   white-space: nowrap;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  transition: background var(--transition-fast), transform var(--transition-fast);
+  transition: background var(--transition-fast);
 }
 
 .map-preview__btn:hover {
+  /* Colour-only hover — no grow. */
   background: var(--color-primary-hover);
-  transform: translate(-50%, -50%) scale(1.04);
 }
 </style>
