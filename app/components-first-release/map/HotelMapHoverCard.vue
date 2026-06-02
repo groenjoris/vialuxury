@@ -230,7 +230,7 @@ const cardStyle = computed(() => {
     <div
       v-if="position"
       class="hover-card"
-      :class="{ 'hover-card--soldOut': soldOut, 'hover-card--flipped': flipped }"
+      :class="{ 'hover-card--soldOut': soldOut, 'hover-card--flipped': flipped, 'hover-card--scarcity': showScarcity }"
       :style="cardStyle"
       @mouseenter="onCardEnter"
       @mouseleave="onCardLeave"
@@ -499,5 +499,12 @@ const cardStyle = computed(() => {
 .hover-card--flipped .hover-card__tail {
   bottom: auto;
   top: -7px;
+}
+
+/* With the scarcity bar shown, the tail sits against the black bar
+   (bottom by default, top when flipped) — match its colour so the seam
+   disappears. */
+.hover-card--scarcity .hover-card__tail {
+  background: #1A1E1E;
 }
 </style>
