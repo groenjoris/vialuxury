@@ -1097,12 +1097,15 @@ const includesBullets = computed<string[]>(() => {
   line-height: 1.4;
 }
 
-/* Side-panel: "12 jun - 13 jun" / "Niet beschikbaar op 12 juni" line. */
+/* Side-panel: "12 jun - 13 jun" / "Niet beschikbaar op 12 juni" line.
+   Bottom margin gives the date a clear gap to the persons/nights line —
+   matched to the persons↔price gap below it (the grid-price-row's −4px
+   margin-top eats most of this, so 8px nets ~5px visible). */
 .deal-card-v2__date-line {
   font-size: 13px;
   font-weight: 600;
   color: var(--color-text-secondary);
-  margin: 0 0 2px;
+  margin: 0 0 8px;
   line-height: 1.2;
 }
 
