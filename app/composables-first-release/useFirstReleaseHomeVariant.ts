@@ -20,14 +20,14 @@ const frNavVariant = ref<FrNavVariant>('1')
 
 /* ─────────── Hero photo carousel ─────────── */
 const HERO_PHOTOS: readonly string[] = [
-  '/images/home-hero.jpg',                            // 1 — original hero
+  '/images/hero/spa-van-oys.jpg',                     // 1 — default hero (swapped from 8)
   '/images/hero/hotelexperiencepackages.jpeg',        // 2
   '/images/hero/seapackages.png',                     // 3
   '/images/hero/Haarlem%201.jpg',                     // 4
   '/images/hero/Wellness.png',                        // 5
   '/images/hero/iStock-1302699365.jpg',               // 6
   '/images/hero/prd.lil.the.big.%C2%A9..jpg',         // 7  (© URL-encoded)
-  '/images/hero/spa-van-oys.jpg',                     // 8
+  '/images/home-hero.jpg',                            // 8 — original hero (swapped from 1)
 ] as const
 
 const STORAGE_KEY_HERO = 'vl_fr_hero_photo'

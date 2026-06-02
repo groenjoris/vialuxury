@@ -95,6 +95,9 @@
 import { useHomeVariant } from '~/composables/useHomeVariant'
 const { clear } = usePartner()
 const { setHomeVariant } = useHomeVariant()
+// First Release hero-photo carousel — reset to picture 1 on every fresh
+// start-screen launch so the home always opens on the default photo.
+const { setHeroPhotoIndex } = useFirstReleaseHomeVariant()
 const {
   clearArrivalDate,
   setSearchGroup,
@@ -164,6 +167,7 @@ function startFirstReleaseFromHome(variant: '1' | '2' | '3' | '4' | '5' = '1') {
 function startHotelFirstFromHome() {
   resetAll()
   setHomeVariant('hf')
+  setHeroPhotoIndex(0)   // always open on picture 1 (the default hero)
   navigateTo('/first-release/home')
 }
 
@@ -178,6 +182,7 @@ function startHotelFirstFromHome() {
 function startHotelFirstFromAd() {
   resetAll()
   setHomeVariant('hf')
+  setHeroPhotoIndex(0)   // always open on picture 1 (the default hero)
   if (import.meta.client) {
     window.location.href = '/advertisement/'
   }
