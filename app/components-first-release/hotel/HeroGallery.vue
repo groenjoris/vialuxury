@@ -11,9 +11,37 @@
         <img :src="image.url" :alt="localized(image.alt)" class="hero-gallery__slide-img" />
       </div>
     </div>
+
+    <!-- Prev / next arrows -->
+    <button
+      v-if="carouselImages.length > 1 && activeIndex > 0"
+      type="button"
+      class="hero-gallery__nav hero-gallery__nav--prev"
+      aria-label="Vorige foto"
+      @click="prevSlide"
+    >
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6" /></svg>
+    </button>
+    <button
+      v-if="carouselImages.length > 1 && activeIndex < carouselImages.length - 1"
+      type="button"
+      class="hero-gallery__nav hero-gallery__nav--next"
+      aria-label="Volgende foto"
+      @click="nextSlide"
+    >
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6" /></svg>
+    </button>
+
+    <!-- Counter, top-right -->
     <span v-if="carouselImages.length > 1" class="hero-gallery__counter">
       {{ activeIndex + 1 }} / {{ carouselImages.length }}
     </span>
+
+    <!-- All-photos button, lower-left -->
+    <button type="button" class="hero-gallery__all-btn hero-gallery__all-btn--mobile" @click="$emit('openGallery')">
+      <span class="all-btn-icon">⊞</span>
+      {{ t('common.allPhotos') }}
+    </button>
   </div>
 
   <div v-else class="hero-gallery">
@@ -76,6 +104,14 @@ function onScroll() {
   const el = trackRef.value
   if (!el || el.clientWidth === 0) return
   activeIndex.value = Math.round(el.scrollLeft / el.clientWidth)
+}
+function prevSlide() {
+  const el = trackRef.value
+  if (el) el.scrollBy({ left: -el.clientWidth, behavior: 'smooth' })
+}
+function nextSlide() {
+  const el = trackRef.value
+  if (el) el.scrollBy({ left: el.clientWidth, behavior: 'smooth' })
 }
 </script>
 
@@ -149,7 +185,13 @@ function onScroll() {
   display: block;
   position: relative;
   height: auto;
-  border-radius: var(--radius-lg);
+  /* Full-bleed: cancel the page container's horizontal padding
+     (var(--space-lg)) so the carousel spans edge-to-edge. Negative
+     margins (not 100vw) avoid the scrollbar-width horizontal overflow.
+     Square corners. */
+  margin-left: calc(-1 * var(--space-lg));
+  margin-right: calc(-1 * var(--space-lg));
+  border-radius: 0;
   overflow: hidden;
 }
 
@@ -178,10 +220,10 @@ function onScroll() {
   display: block;
 }
 
-/* "1 / 8" photo counter pill, bottom-right. */
+/* "1 / 8" photo counter pill, top-right. */
 .hero-gallery__counter {
   position: absolute;
-  bottom: 12px;
+  top: 12px;
   right: 12px;
   background: rgba(0, 0, 0, 0.7);
   color: #fff;
@@ -191,5 +233,35 @@ function onScroll() {
   font-weight: 600;
   backdrop-filter: blur(4px);
   pointer-events: none;
+}
+
+/* Prev / next arrows — white circular buttons, vertically centred. */
+.hero-gallery__nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.95);
+  color: #1a1a1a;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  z-index: 2;
+}
+.hero-gallery__nav--prev { left: 10px; }
+.hero-gallery__nav--next { right: 10px; }
+
+/* All-photos button on the mobile carousel — lower-left. */
+.hero-gallery__all-btn--mobile {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  right: auto;
+  z-index: 2;
 }
 </style>

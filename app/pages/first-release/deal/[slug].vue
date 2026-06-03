@@ -2482,6 +2482,14 @@ onMounted(() => {
     border-top: 0;
     box-shadow: none;
   }
+  /* Gallery is a full-bleed carousel on mobile with an "all photos"
+     button in the lower-left. Move the savings badge to the TOP-LEFT
+     (counter is top-right) so the two don't collide. */
+  .deal-page__savings-badge--gallery {
+    left: 16px;
+    top: 16px;
+    bottom: auto;
+  }
   /* "In dit arrangement is het volgende inbegrepen" heading +1 pt,
      individual inclusion titles + body copy each +1 pt. */
   .deal-page__content-blocks--mobile .section-title { font-size: 23px; }
