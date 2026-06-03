@@ -6,7 +6,7 @@
     <Transition name="msm-slide">
       <div v-if="open" class="msm" role="dialog" aria-label="Zoeken">
         <header class="msm__header">
-          <h2 class="msm__title">Doorzoek {{ totalArrangements }} arrangementen</h2>
+          <h2 class="msm__title">Doorzoek {{ totalArrangements }} hotelarrangementen</h2>
           <button
             type="button"
             class="msm__close"

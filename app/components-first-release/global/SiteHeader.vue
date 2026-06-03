@@ -1096,7 +1096,7 @@ const totalArrangementCount = computed(() => {
   return n
 })
 
-const mobileSearchLabel = computed(() => `Doorzoek ${totalArrangementCount.value} arrangementen`)
+const mobileSearchLabel = computed(() => `Doorzoek ${totalArrangementCount.value} hotelarrangementen`)
 
 function togglePopup(popup: 'destination' | 'when' | 'who') {
   activePopup.value = activePopup.value === popup ? null : popup
