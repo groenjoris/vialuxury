@@ -43,8 +43,12 @@
 
         <!-- 5. Photo carousel -->
         <section class="container deal-page__gallery">
-          <FirstReleaseHeroGallery :images="hotel.images" @open-gallery="openGallery" />
-          <span v-if="savingsAmount > 0" class="deal-page__savings-badge deal-page__savings-badge--gallery">Bespaar €{{ savingsAmount }}</span>
+          <FirstReleaseHeroGallery
+            :images="hotel.images"
+            :labels="galleryLabels"
+            :rooms-left="dealRoomsLeft"
+            @open-gallery="openGallery"
+          />
         </section>
 
         <!-- 6a. Partner co-brand card — only on the advertisement flow.
@@ -357,8 +361,12 @@
 
       <!-- Hero Gallery -->
       <section class="container deal-page__gallery">
-        <FirstReleaseHeroGallery :images="hotel.images" @open-gallery="openGallery" />
-        <span v-if="savingsAmount > 0" class="deal-page__savings-badge deal-page__savings-badge--gallery">Bespaar €{{ savingsAmount }}</span>
+        <FirstReleaseHeroGallery
+          :images="hotel.images"
+          :labels="galleryLabels"
+          :rooms-left="dealRoomsLeft"
+          @open-gallery="openGallery"
+        />
       </section>
 
       <!-- Two-column layout: Content | Booking Sidebar -->
@@ -947,6 +955,7 @@ import { formatPrice } from '~/utils-first-release/formatPrice'
 import { getReviewLabelKey } from '~/utils-first-release/reviewLabel'
 import { generateDealAvailability } from '~/data/mock/deal-pricing'
 import { matchIcon } from '~/utils-first-release/iconMatcher'
+import { roomsLeftForDeal } from '~/utils-first-release/scarcity'
 import { nightsLabel, nightsWord, personsLabel, roomsLabel } from '~/utils-first-release/plural'
 import {
   mappedPackagesByPermalink,
@@ -1238,6 +1247,21 @@ const showPartnerLogo = computed(() => {
 
 const hotel = ref(initialHotel)
 const currentDeal = computed(() => store.currentDeal)
+// The SearchHotel + SearchHotelDeal that back this deal page — looked up
+// by the route's deal permalink, i.e. the exact card the user came from.
+// Drives the gallery stickers so they match the search card.
+const dealSearchHotel = computed(() =>
+  mappedHotels.find(h => h.deals.some(d => d.slug === routeSlug.value)) ?? null,
+)
+const dealSearchDeal = computed(() =>
+  dealSearchHotel.value?.deals.find(d => d.slug === routeSlug.value) ?? null,
+)
+// Special-deal labels (same as the search card).
+const galleryLabels = computed(() => dealSearchHotel.value?.labels ?? [])
+// Limited-supply sticker count (same id → same number as the search card).
+const dealRoomsLeft = computed<number | null>(() =>
+  dealSearchDeal.value ? roomsLeftForDeal(dealSearchDeal.value.id) : null,
+)
 
 // SearchHotel companion for the ViaLuxury score badge — look it up by
 // slug (the hotel page slug) so the badge has access to deals + price

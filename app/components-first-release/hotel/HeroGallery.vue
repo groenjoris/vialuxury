@@ -51,6 +51,19 @@
         :alt="heroImage?.alt ? localized(heroImage.alt) : t('common.hotelPhoto')"
         class="hero-gallery__hero-img"
       />
+      <!-- Same stickers as the search card: special labels bottom-left,
+           limited-supply bottom-right. Desktop hero only. -->
+      <div v-if="labels && labels.length" class="hero-gallery__labels">
+        <FirstReleaseDealLabel
+          v-for="label in labels"
+          :key="label"
+          :key-name="label"
+          class="hero-gallery__label"
+        />
+      </div>
+      <span v-if="roomsLeft != null && roomsLeft < 4" class="hero-gallery__rooms-sticker">
+        Nog {{ roomsLeft }} beschikbaar
+      </span>
     </div>
     <div class="hero-gallery__grid">
       <div
@@ -81,6 +94,10 @@ const isMobile = useFirstReleaseIsMobile()
 
 const props = defineProps<{
   images: HotelImage[]
+  /** Special-deal label keys (same as the search card). Desktop hero only. */
+  labels?: string[]
+  /** Rooms-left count; the limited-supply sticker shows when < 4. */
+  roomsLeft?: number | null
 }>()
 
 defineEmits<{
@@ -128,6 +145,7 @@ function nextSlide() {
 
 .hero-gallery__main {
   grid-row: 1 / -1;
+  position: relative;
 }
 
 .hero-gallery__hero-img {
@@ -135,6 +153,41 @@ function nextSlide() {
   height: 100%;
   object-fit: cover;
   display: block;
+}
+
+/* Special-deal labels — bottom-left of the hero, matching the search card. */
+.hero-gallery__labels {
+  position: absolute;
+  left: var(--space-md);
+  bottom: var(--space-md);
+  display: flex;
+  gap: 6px;
+  z-index: 2;
+  pointer-events: none;
+}
+.hero-gallery__label {
+  height: 36px;
+  width: auto;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.35));
+}
+
+/* Limited-supply sticker — bottom-right of the hero, matching the search
+   card (solid black, Basis Grotesque, 13px). */
+.hero-gallery__rooms-sticker {
+  position: absolute;
+  right: var(--space-md);
+  bottom: var(--space-md);
+  z-index: 2;
+  pointer-events: none;
+  background: #000;
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.2;
+  padding: 4px 8px;
+  border-radius: 5px;
+  letter-spacing: 0.2px;
 }
 
 .hero-gallery__grid {
