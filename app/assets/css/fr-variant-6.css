@@ -347,15 +347,16 @@
   border: 1px solid #e5e7eb;
   box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
   border-radius: 0;
-  min-height: 60px !important;       /* beats scoped 52px so the centred date keeps a clear gap to the bottom price */
+  min-height: 60px !important;
   padding: 5px;
-  /* Date number centred in the middle of the tile; the price is taken
-     out of flow (absolute, pinned bottom-centre) so the number can sit
-     dead-centre with a clear gap above the price. !important beats the
-     scoped `display: grid` in CalendarDayCell.vue. */
+  /* Day number + price stacked and vertically centred as a group, so the
+     margin above the day equals the margin below the price. !important
+     beats the scoped `display: grid` in CalendarDayCell.vue. */
   display: flex !important;
+  flex-direction: column !important;
   align-items: center !important;
   justify-content: center !important;
+  gap: 4px;
 }
 
 [data-fr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar) .day-cell:hover:not(:disabled) {
@@ -373,10 +374,9 @@
 
 [data-fr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar) .day-cell__price,
 [data-fr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar) .day-cell__sold {
-  position: absolute;
-  bottom: 5px;
-  left: 0;
-  right: 0;
+  /* In flow, directly under the day number (the cell's flex gap provides
+     the spacing) so the day+price group stays balanced. */
+  position: static !important;
   text-align: center;
   font-size: 10px;
   font-weight: 400;
@@ -432,6 +432,11 @@
 [data-fr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar) :where(.day-cell--selected, .day-cell--checkout, .day-cell--in-range) .day-cell__price,
 [data-fr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar) :where(.day-cell--selected, .day-cell--checkout, .day-cell--in-range) .day-cell__sold {
   color: #fff !important;
+}
+
+/* Selected check-in / check-out: bold day number. */
+[data-fr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar) :where(.day-cell--selected, .day-cell--checkout) .day-cell__number {
+  font-weight: 700 !important;
 }
 
 /* In / Out pill — translucent white, rounded only on the bottom-left
@@ -494,11 +499,7 @@
    half-empty. Purely visual; the underlying template is untouched. */
 [data-fr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar) .day-cell--checkout::after {
   content: '-';
-  position: absolute;
-  left: 0;
-  right: 0;
   text-align: center;
-  bottom: 5px;
   color: #fff;
   font-size: 10px;
   font-weight: 700;
