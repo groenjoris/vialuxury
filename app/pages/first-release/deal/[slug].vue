@@ -191,22 +191,13 @@
 
         <!-- 10. Mini map -->
         <section id="mini-map" class="container deal-page__mini-map-mobile">
-          <div class="mini-map">
-            <NuxtLink :to="`/first-release/kaart?focus=${hotel.slug}`" class="mini-map__placeholder" :aria-label="t('common.viewMap')">
-              <FirstReleaseStaticMiniMap
-                :lat="hotel.location.coordinates.lat"
-                :lng="hotel.location.coordinates.lng"
-                :zoom="10"
-              />
-              <div class="mini-map__pin">
-                <FirstReleaseMapPin />
-              </div>
-            </NuxtLink>
-            <div class="mini-map__footer">
-              <span class="mini-map__address">{{ hotelStreetCity }}</span>
-              <NuxtLink :to="`/first-release/kaart?focus=${hotel.slug}`" class="mini-map__view-link">{{ t('common.viewMap') }}</NuxtLink>
-            </div>
-          </div>
+          <FirstReleaseMiniMapCard
+            class="deal-page__minimap"
+            :slug="hotel.slug"
+            :lat="hotel.location.coordinates.lat"
+            :lng="hotel.location.coordinates.lng"
+            :address="hotelStreetCity"
+          />
         </section>
 
         <!-- 11. Included cards (repeat full include section). Anchor
@@ -375,34 +366,13 @@
               <div v-html="firstParagraph"></div>
               <button v-if="hasMoreDescription" type="button" class="deal-page__read-more" @click="descriptionOpen = true">{{ t('common.readMore') }}</button>
             </div>
-            <div class="mini-map">
-              <!-- The entire map preview (photo + pin) is a click-through
-                   to the full-screen kaart, not just the text link below. -->
-              <NuxtLink
-                :to="`/first-release/kaart?focus=${hotel.slug}`"
-                class="mini-map__placeholder"
-                :aria-label="t('common.viewMap')"
-              >
-                <FirstReleaseStaticMiniMap
-                  :lat="hotel.location.coordinates.lat"
-                  :lng="hotel.location.coordinates.lng"
-                  :zoom="10"
-                />
-                <div class="mini-map__pin">
-                  <FirstReleaseMapPin />
-                </div>
-              </NuxtLink>
-              <!-- Footer row under the map: street + city on the left,
-                   "Bekijk kaart" link on the right (same destination as
-                   the click-through map above). -->
-              <div class="mini-map__footer">
-                <span class="mini-map__address">{{ hotelStreetCity }}</span>
-                <NuxtLink
-                  :to="`/first-release/kaart?focus=${hotel.slug}`"
-                  class="mini-map__view-link"
-                >{{ t('common.viewMap') }}</NuxtLink>
-              </div>
-            </div>
+            <FirstReleaseMiniMapCard
+              class="deal-page__minimap"
+              :slug="hotel.slug"
+              :lat="hotel.location.coordinates.lat"
+              :lng="hotel.location.coordinates.lng"
+              :address="hotelStreetCity"
+            />
           </div>
 
           <!-- Highlights -->
@@ -1622,25 +1592,6 @@ onMounted(() => {
 /* Mini map */
 /* Map preview + below-the-map footer (address left, "Bekijk kaart"
    right) — no more gradient overlay on the photo. */
-.mini-map { display: flex; flex-direction: column; gap: 8px; }
-.mini-map__placeholder { position: relative; display: block; width: 100%; aspect-ratio: 1 / 1; border-radius: var(--radius-lg); overflow: hidden; cursor: pointer; }
-.mini-map__pin { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -100%); filter: drop-shadow(0 3px 6px rgba(0,0,0,0.25)); z-index: 2; pointer-events: none; }
-.mini-map__footer { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-md); }
-.mini-map__address { font-family: var(--font-body); font-size: 13px; color: var(--color-text-secondary); line-height: 1.4; }
-.mini-map__view-link {
-  font-family: var(--font-body);
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--color-primary);
-  text-decoration: underline;
-  text-underline-offset: 3px;
-  flex-shrink: 0;
-}
-.mini-map__view-link:hover {
-  color: var(--color-primary-hover);
-  text-decoration: underline;
-}
-
 /* ===== SIDEBAR ===== */
 .deal-page__col-right-stack { display: flex; flex-direction: column; gap: var(--space-lg); min-width: 0; }
 .deal-page__col-right { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: var(--space-lg); }
@@ -2134,7 +2085,7 @@ onMounted(() => {
   .deal-page__grid { grid-template-columns: 1fr; }
   .deal-page__col-right { position: static; }
   .deal-page__intro { grid-template-columns: 1fr; }
-  .mini-map__placeholder { max-height: 200px; }
+  .deal-page__minimap { --vl-minimap-max-h: 200px; }
   .content-blocks__grid { grid-template-columns: 1fr; }
   .reviews__grid { grid-template-columns: 1fr; }
   .reviews__categories { grid-template-columns: 1fr; }

@@ -73,29 +73,14 @@
             </button>
           </div>
         </div>
-        <div id="location" class="mini-map">
-          <NuxtLink
-            :to="`/first-release/kaart?focus=${hotel.slug}`"
-            class="mini-map__placeholder"
-            :aria-label="t('common.viewMap')"
-          >
-            <FirstReleaseStaticMiniMap
-              :lat="hotel.location.coordinates.lat"
-              :lng="hotel.location.coordinates.lng"
-              :zoom="10"
-            />
-            <div class="mini-map__pin">
-              <FirstReleaseMapPin />
-            </div>
-          </NuxtLink>
-          <div class="mini-map__footer">
-            <span class="mini-map__address">{{ hotelStreetCity }}</span>
-            <NuxtLink
-              :to="`/first-release/kaart?focus=${hotel.slug}`"
-              class="mini-map__view-link"
-            >{{ t('common.viewMap') }}</NuxtLink>
-          </div>
-        </div>
+        <FirstReleaseMiniMapCard
+          id="location"
+          class="hotel-page__minimap"
+          :slug="hotel.slug"
+          :lat="hotel.location.coordinates.lat"
+          :lng="hotel.location.coordinates.lng"
+          :address="hotelStreetCity"
+        />
       </section>
 
       <!-- Facilities -->
@@ -715,22 +700,6 @@ onBeforeUnmount(() => {
    NuxtLink that navigates to the full kaart; a separate footer
    row below the photo carries the street + city and a
    "Bekijk kaart" link (no overlay strip on the image). */
-.mini-map { display: flex; flex-direction: column; gap: 8px; scroll-margin-top: 88px; }
-.mini-map__placeholder { position: relative; display: block; width: 100%; aspect-ratio: 1 / 1; border-radius: var(--radius-lg); overflow: hidden; cursor: pointer; }
-.mini-map__pin { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -100%); filter: drop-shadow(0 3px 6px rgba(0,0,0,0.25)); z-index: 2; pointer-events: none; }
-.mini-map__footer { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-md); }
-.mini-map__address { font-family: var(--font-body); font-size: 13px; color: var(--color-text-secondary); line-height: 1.4; }
-.mini-map__view-link {
-  font-family: var(--font-body);
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--color-primary, #c9a85c);
-  text-decoration: underline;
-  text-underline-offset: 2px;
-  white-space: nowrap;
-}
-.mini-map__view-link:hover { color: var(--color-primary-hover, #b08a40); }
-
 /* ===== SECTION TITLES ===== */
 .section-title { font-size: 22px; font-weight: 600; margin-bottom: var(--space-lg); }
 
@@ -921,8 +890,7 @@ onBeforeUnmount(() => {
 /* ===== RESPONSIVE ===== */
 @media (max-width: 1100px) {
   .hotel-page__intro { grid-template-columns: 1fr; }
-  .mini-map { max-height: 250px; }
-  .mini-map__placeholder { max-height: 250px; }
+  .hotel-page__minimap { --vl-minimap-max-h: 250px; }
   .reviews__grid { grid-template-columns: 1fr; }
   .reviews__categories { grid-template-columns: 1fr; }
   .house-rules__layout { grid-template-columns: 1fr; gap: var(--space-lg); }
