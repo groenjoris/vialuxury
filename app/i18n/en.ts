@@ -328,6 +328,7 @@ const en: Record<string, string> = {
   'deal.thisArrangementIsFor': 'This arrangement is for',
   'deal.shorterOrLongerStay': 'Shorter or longer stay?',
   'deal.viewOtherArrangements': 'View other arrangements at this hotel',
+  'deal.otherArrangements': 'Other arrangements',
   'deal.availableArrangements': 'Available arrangements:',
   'calendar.cheapestPrice': 'Lowest price',
   'calendar.unavailable': 'Not available',

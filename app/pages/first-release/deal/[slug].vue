@@ -721,7 +721,7 @@
     <FirstReleaseHotelDealsSidePanel
       :is-open="arrangementsPanelOpen"
       :hotel="searchHotelForBadge"
-      :panel-title="t('deal.availableArrangements')"
+      :panel-title="t('deal.otherArrangements')"
       :current-deal-id="currentDeal?.id || ''"
       @close="arrangementsPanelOpen = false"
     />
