@@ -62,7 +62,7 @@
               <text x="12" y="8" text-anchor="middle" dominant-baseline="central" font-size="6" font-weight="700" font-family="var(--font-heading)" stroke="none" fill="currentColor">1M</text>
             </svg>
           </span>
-          <p class="home-persuasion__text">Al meer dan 1 miljoen arrangementen geboekt.</p>
+          <p class="home-persuasion__text">Al meer dan 1 miljoen gasten verwelkomt</p>
         </div>
         <div class="home-persuasion__col">
           <!-- "Flexibel annuleren" — Lucide `arrow-left-right` icon
