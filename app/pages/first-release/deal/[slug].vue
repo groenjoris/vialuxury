@@ -237,8 +237,11 @@
           </div>
         </section>
 
-        <!-- 13. Huisregels (moved up — Tips + WhyViaLuxury now sit
-             AFTER the FAQ block; see below.) -->
+        <!-- Tips in de buurt — directly below Hotel faciliteiten. -->
+        <div id="tips" class="deal-page__nearby-mobile">
+          <FirstReleaseHotelNearbyTips :tips="hotel.nearbyTips" :hotel-name="hotel.name" />
+        </div>
+
         <section v-if="hotel.houseRules && hotel.houseRules.length" id="huisregels" class="container deal-page__house-rules deal-page__house-rules--mobile">
           <h2 class="section-title">{{ t('hotel.houseRules') }}</h2>
           <p class="house-rules__intro">{{ t('deal.houseRulesIntro') }}</p>
@@ -261,13 +264,7 @@
           <FirstReleaseFaqSection :faq-items="hotel.faq" />
         </section>
 
-        <!-- 15. Tips in de buurt — horizontal swipe carousel on mobile.
-             Sits AFTER the FAQ block per the latest spec. -->
-        <div id="tips" class="deal-page__nearby-mobile">
-          <FirstReleaseHotelNearbyTips :tips="hotel.nearbyTips" :hotel-name="hotel.name" />
-        </div>
-
-        <!-- 16. "Waarom ViaLuxury" — directly beneath Tips on mobile. -->
+        <!-- "Waarom ViaLuxury" (Tips moved up under Hotel faciliteiten). -->
         <FirstReleaseWhyViaLuxury />
 
         <!-- 17. Anderen bekeken ook -->
@@ -291,9 +288,9 @@
       <nav class="deal-page__tabs container">
         <a href="#intro" class="deal-page__tab">{{ t('deal.tabIntro') }}</a>
         <a href="#arrangement" class="deal-page__tab">{{ t('deal.tabArrangement') }}</a>
+        <a href="#tips" class="deal-page__tab">{{ t('hotel.tabNearby') }}</a>
         <a v-if="hotel && hotel.houseRules && hotel.houseRules.length" href="#huisregels" class="deal-page__tab">{{ t('hotel.tabHouseRules') }}</a>
         <a href="#veelgestelde-vragen" class="deal-page__tab">{{ t('hotel.tabFaq') }}</a>
-        <a href="#tips" class="deal-page__tab">{{ t('hotel.tabNearby') }}</a>
         <!-- Heart + share live in the anchor-nav row, right-aligned, so
              they sit at the same height as the tabs and above the grey
              divider between this row and the title section. -->
@@ -608,6 +605,11 @@
         </div>
       </section>
 
+      <!-- Tips in de buurt — directly below Hotel faciliteiten. -->
+      <div v-if="!isMobile" id="tips">
+        <FirstReleaseHotelNearbyTips :tips="hotel.nearbyTips" :hotel-name="hotel.name" />
+      </div>
+
       <section v-if="!isMobile" id="beoordelingen" class="deal-page__reviews container">
         <h2 class="section-title">{{ t('hotel.reviews') }}</h2>
         <div class="reviews__score-bar">
@@ -691,19 +693,7 @@
         </div>
       </section>
 
-      <!-- Tips in de buurt — full-width carousel (desktop only on mobile it's a link row) -->
-      <div v-if="!isMobile" id="tips">
-        <FirstReleaseHotelNearbyTips :tips="hotel.nearbyTips" :hotel-name="hotel.name" />
-      </div>
-      <button v-else type="button" class="deal-page__mobile-row deal-page__mobile-row--standalone container" @click="activeMobileSection = 'tips'">
-        <div class="deal-page__mobile-row-text">
-          <span class="deal-page__mobile-row-title">{{ t('hotel.nearbyTips') || t('deal.nearbyTips') || 'Tips in de buurt' }}</span>
-          <span class="deal-page__mobile-row-meta">{{ hotel.nearbyTips.length }} {{ t('common.tips') || 'tips' }}</span>
-        </div>
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6" /></svg>
-      </button>
-
-      <!-- "Waarom ViaLuxury" sits below Tips in de buurt per spec. -->
+      <!-- "Waarom ViaLuxury" (Tips moved up under Hotel faciliteiten). -->
       <FirstReleaseWhyViaLuxury />
 
       <!-- "Anderen bekeken ook" at the bottom of the deal page.
@@ -798,9 +788,9 @@
         <nav class="deal-page__tabs deal-page__tabs--in-bar">
           <a href="#intro" class="deal-page__tab" :class="{ 'deal-page__tab--active': activeAnchor === 'intro' }">{{ t('deal.tabIntro') }}</a>
           <a href="#arrangement" class="deal-page__tab" :class="{ 'deal-page__tab--active': activeAnchor === 'arrangement' }">{{ t('deal.tabArrangement') }}</a>
+          <a href="#tips" class="deal-page__tab" :class="{ 'deal-page__tab--active': activeAnchor === 'tips' }">{{ t('hotel.tabNearby') }}</a>
           <a v-if="hotel.houseRules && hotel.houseRules.length" href="#huisregels" class="deal-page__tab" :class="{ 'deal-page__tab--active': activeAnchor === 'huisregels' }">{{ t('hotel.tabHouseRules') }}</a>
           <a href="#veelgestelde-vragen" class="deal-page__tab" :class="{ 'deal-page__tab--active': activeAnchor === 'veelgestelde-vragen' }">{{ t('hotel.tabFaq') }}</a>
-          <a href="#tips" class="deal-page__tab" :class="{ 'deal-page__tab--active': activeAnchor === 'tips' }">{{ t('hotel.tabNearby') }}</a>
         </nav>
         <div class="deal-page__cta-bar-cluster">
           <div class="deal-page__cta-bar-price-block">
@@ -1060,7 +1050,7 @@ onBeforeUnmount(() => {
 // view, drives the `.--active` modifier on the sticky-bar's anchor
 // tabs (so the current section's tab loses its underline).
 // ---------------------------------------------------------------------------
-const ANCHOR_IDS = ['intro', 'arrangement', 'huisregels', 'veelgestelde-vragen', 'tips'] as const
+const ANCHOR_IDS = ['intro', 'arrangement', 'tips', 'huisregels', 'veelgestelde-vragen'] as const
 const activeAnchor = ref<typeof ANCHOR_IDS[number] | null>(null)
 let anchorObserver: IntersectionObserver | null = null
 
