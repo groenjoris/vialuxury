@@ -80,7 +80,7 @@
         :class="{ 'deal-card-v2__favorite--active': isFavorite }"
         :aria-label="isFavorite ? 'Verwijder uit favorieten' : 'Voeg toe aan favorieten'"
         :aria-pressed="isFavorite"
-        @click.stop="isFavorite = !isFavorite"
+        @click.stop="toggleFav(favKey)"
       >
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
@@ -267,8 +267,12 @@ const linkTarget = computed(() => (isMobile.value ? '_self' : '_blank'))
 /** German-only extra microcopy row sits below the CTA. */
 const isGerman = computed(() => locale.value === 'de')
 
-const isFavorite = ref(false)
 const { persons, rooms, arrivalDate } = useFirstReleaseSearchState()
+// Session-wide favourites (no login popup). Keyed by hotel slug when
+// present, else the deal slug.
+const { isFavorite: isFav, toggle: toggleFav } = useFirstReleaseFavorites()
+const favKey = computed(() => props.hotel?.slug || props.deal.slug)
+const isFavorite = computed(() => isFav(favKey.value))
 
 const props = defineProps<{
   deal: SearchHotelDeal

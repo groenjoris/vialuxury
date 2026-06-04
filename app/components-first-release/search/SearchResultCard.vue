@@ -24,7 +24,7 @@
         :class="{ 'result-card__favorite--active': isFavorite }"
         :aria-label="isFavorite ? t('search.unfavorite') : t('search.favorite')"
         :aria-pressed="isFavorite"
-        @click.stop="isFavorite = !isFavorite"
+        @click.stop="toggleFav(props.hotel.slug)"
       >
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
@@ -138,8 +138,9 @@ import { nightsLabel, personsLabel } from '~/utils-first-release/plural'
 const { t, localized, locale } = useFirstReleaseI18n()
 const lang = computed<'nl' | 'en'>(() => (locale.value === 'en' ? 'en' : 'nl'))
 
-// Favorite state — local per-card for prototype
-const isFavorite = ref(false)
+// Favorite state — session-wide store (no login popup), keyed by hotel slug.
+const { isFavorite: isFav, toggle: toggleFav } = useFirstReleaseFavorites()
+const isFavorite = computed(() => isFav(props.hotel.slug))
 const { persons, rooms, arrivalDate } = useFirstReleaseSearchState()
 
 // Label rendering moved to <FirstReleaseDealLabel>; PNG/SVG lookup retired.

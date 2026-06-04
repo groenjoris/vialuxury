@@ -1130,7 +1130,9 @@ const route = useRoute()
 const router = useRouter()
 const store = useFirstReleaseDealStore()
 const calendarRef = ref<HTMLElement | null>(null)
-const isFavorited = ref(false)
+// Session-wide favourites (no login popup), keyed by hotel slug.
+const { isFavorite: isFav, toggle: toggleFav } = useFirstReleaseFavorites()
+const isFavorited = computed(() => isFav(hotel.value?.slug))
 const descriptionOpen = ref(false)
 // Lock the underlying page while the description modal is open.
 useBodyScrollLock().bindTo(descriptionOpen)
@@ -1183,12 +1185,8 @@ const isAuthPopupOpen = ref(false)
 const toastMessage = ref('')
 
 function handleFavoriteClick() {
-  if (!isLoggedIn.value) {
-    isAuthPopupOpen.value = true
-    return
-  }
-  isFavorited.value = !isFavorited.value
-  // Reset toast to re-trigger the watcher
+  // No login popup — just toggle the session favourite and confirm via toast.
+  toggleFav(hotel.value?.slug)
   toastMessage.value = ''
   nextTick(() => {
     toastMessage.value = isFavorited.value
@@ -1206,7 +1204,7 @@ function handleLogin() {
   isLoggedIn.value = true
   isAuthPopupOpen.value = false
   // Auto-favorite after login
-  isFavorited.value = true
+  if (hotel.value?.slug && !isFav(hotel.value.slug)) toggleFav(hotel.value.slug)
   toastMessage.value = ''
   nextTick(() => {
     toastMessage.value = t('toast.addedToFavorites')

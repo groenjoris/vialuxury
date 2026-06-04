@@ -20,7 +20,12 @@
              divider. Mirrors the deal-page `.deal-page__tabs-actions`
              pattern for cross-page consistency. -->
         <div class="hotel-page__tabs-actions">
-          <button class="icon-action" :aria-label="t('common.save')">♡</button>
+          <button
+            class="icon-action"
+            :class="{ 'icon-action--favorited': isFavorited }"
+            :aria-label="t('common.save')"
+            @click="toggleFav(hotel.slug)"
+          >{{ isFavorited ? '♥' : '♡' }}</button>
           <button class="icon-action" :aria-label="t('common.share')">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
           </button>
@@ -346,6 +351,10 @@ const initialHotel = mappedHotelsByHotelPermalink[hotelSlug] || fallbackHotel
 
 const hotel = ref(initialHotel)
 
+// Session-wide favourites (no login popup), keyed by hotel slug.
+const { isFavorite: isFav, toggle: toggleFav } = useFirstReleaseFavorites()
+const isFavorited = computed(() => isFav(hotel.value?.slug))
+
 // Find all deals (packages) for this hotel
 import { dealVariantsByPermalink, dealsMapByPermalink } from '~/data/deals-mapper'
 const _firstPkgPermalink = Object.keys(dealsMapByPermalink).find(p => {
@@ -666,6 +675,7 @@ onBeforeUnmount(() => {
    deal page. */
 .icon-action { width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--color-border); display: inline-flex; align-items: center; justify-content: center; font-size: 16px; background: var(--color-surface); cursor: pointer; color: var(--color-text-primary); }
 .icon-action:hover { border-color: var(--color-primary); }
+.icon-action--favorited { color: #e74c3c; border-color: #e74c3c; }
 
 /* ===== INTRO (description + map) ===== */
 .hotel-page__intro { display: grid; grid-template-columns: 1fr 340px; gap: var(--space-xl); padding-top: var(--space-lg); padding-bottom: var(--space-xl); }
