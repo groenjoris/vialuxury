@@ -256,12 +256,12 @@ function nextSlide() {
 .hero-gallery__nav--prev { left: 10px; }
 .hero-gallery__nav--next { right: 10px; }
 
-/* All-photos button on the mobile carousel — lower-left. */
+/* All-photos button on the mobile carousel — lower-right. */
 .hero-gallery__all-btn--mobile {
   position: absolute;
   bottom: 12px;
-  left: 12px;
-  right: auto;
+  right: 12px;
+  left: auto;
   z-index: 2;
 }
 </style>
