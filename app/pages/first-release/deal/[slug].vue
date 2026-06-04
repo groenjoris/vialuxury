@@ -2434,6 +2434,12 @@ onMounted(() => {
     position: static;
     width: 100%;
     max-width: 100%;
+    /* Drop the grey box (border + inner padding) so the includes /
+       calendar / price / trustpilot use the full container width. */
+    border: none;
+    border-radius: 0;
+    padding: 0;
+    background: transparent;
   }
   /* Description appears AFTER the sidebar on mobile (not paired with
      the mini-map like on desktop). */

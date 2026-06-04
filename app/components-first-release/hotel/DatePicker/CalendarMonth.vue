@@ -106,6 +106,14 @@ const days = computed(() => {
   min-width: 300px;
 }
 
+/* Mobile: drop the min-width so the calendar shrinks to fit the screen
+   instead of overflowing the page margins on small viewports. */
+@media (max-width: 800px) {
+  .calendar-month {
+    min-width: 0;
+  }
+}
+
 .calendar-month__header {
   display: flex;
   align-items: center;

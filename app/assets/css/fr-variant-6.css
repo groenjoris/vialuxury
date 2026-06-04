@@ -336,11 +336,9 @@
   font-size: 14px;
   font-weight: 700;
   color: #888;
-  /* Match the date cell's `padding: 5px` and left-align so each weekday
-     label sits exactly above its column's date number (the date number
-     uses `justify-self: start` with the same 5 px left padding). */
-  padding: 0 0 0 5px;
-  text-align: left;
+  /* Centred above each column's centred date number. */
+  padding: 0;
+  text-align: center;
 }
 
 /* Available date tile — white card with hairline border + 1-px shadow. */
@@ -349,11 +347,15 @@
   border: 1px solid #e5e7eb;
   box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
   border-radius: 0;
-  min-height: 60px;
+  min-height: 60px !important;       /* beats scoped 52px so the centred date keeps a clear gap to the bottom price */
   padding: 5px;
-  align-items: stretch;
-  justify-items: stretch;
-  grid-template-rows: 22px 1fr;
+  /* Date number centred in the middle of the tile; the price is taken
+     out of flow (absolute, pinned bottom-centre) so the number can sit
+     dead-centre with a clear gap above the price. !important beats the
+     scoped `display: grid` in CalendarDayCell.vue. */
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
 }
 
 [data-fr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar) .day-cell:hover:not(:disabled) {
@@ -361,18 +363,21 @@
 }
 
 [data-fr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar) .day-cell__number {
-  justify-self: start;
-  align-self: start;
+  justify-self: center;
+  align-self: center;
   font-size: 14px;
   font-weight: 400;
   line-height: 1.4;
-  color: #1a1d24;
+  color: #1a1d24 !important;          /* beats scoped white selected-text */
 }
 
 [data-fr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar) .day-cell__price,
 [data-fr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar) .day-cell__sold {
-  justify-self: start;
-  align-self: end;
+  position: absolute;
+  bottom: 5px;
+  left: 0;
+  right: 0;
+  text-align: center;
   font-size: 10px;
   font-weight: 400;
   color: #00CB8B !important;          /* beats scoped --color-text-primary */
@@ -399,35 +404,22 @@
    background / box-shadow / opacity guard against scoped legacy rules
    (e.g. `.day-cell--past { opacity: 0.3 }` and
    `.day-cell--checkout { background: #9AE3C7 }`) sneaking through. */
+/* Selected check-in & check-out: black border (stroke), white tile, no
+   fill — text keeps its normal colour. */
 [data-fr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar) .day-cell--selected,
 [data-fr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar) .day-cell--checkout {
-  background: #00CB8B !important;
+  background: #fff !important;
   border-color: transparent !important;
   opacity: 1 !important;
-  box-shadow:
-    0 0 0 2px #fff,
-    0 0 0 4px #00CB8B,
-    0 4px 6px -1px rgba(0, 0, 0, 0.10),
-    0 2px 4px -2px rgba(0, 0, 0, 0.10) !important;
+  box-shadow: inset 0 0 0 2px #1A1A1A !important;
   z-index: 1;
 }
 
-/* In-range nights: light green tile with a softer ring shadow. */
+/* In-range nights: neutral light-grey tile (no green, no ring). */
 [data-fr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar) .day-cell--in-range:not(.day-cell--selected):not(.day-cell--checkout) {
-  background: #9AE3C7 !important;
+  background: #EDEDEA !important;
   border-color: transparent;
-  box-shadow:
-    0 0 0 2px #fff,
-    0 0 0 4px rgba(54, 200, 144, 0.5),
-    0 4px 6px -1px rgba(0, 0, 0, 0.10),
-    0 2px 4px -2px rgba(0, 0, 0, 0.10);
-}
-
-/* Inside any selected tile: every glyph reads white. */
-[data-fr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar) :where(.day-cell--selected, .day-cell--checkout, .day-cell--in-range) .day-cell__number,
-[data-fr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar) :where(.day-cell--selected, .day-cell--checkout, .day-cell--in-range) .day-cell__price,
-[data-fr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar) :where(.day-cell--selected, .day-cell--checkout, .day-cell--in-range) .day-cell__sold {
-  color: #fff !important;
+  box-shadow: none;
 }
 
 /* In / Out pill — translucent white, rounded only on the bottom-left
@@ -439,7 +431,9 @@
   height: auto;
   min-width: 18px;
   padding: 2px 4px;
-  background: rgba(255, 255, 255, 0.2);
+  /* Dark pill so it stays visible on the white, black-bordered
+     selected tile. */
+  background: #1A1A1A;
   color: #fff;
   border-radius: 0 0 0 8px;
   font-size: 8px;
@@ -488,9 +482,11 @@
 [data-fr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar) .day-cell--checkout::after {
   content: '-';
   position: absolute;
-  left: 5px;
+  left: 0;
+  right: 0;
+  text-align: center;
   bottom: 5px;
-  color: #fff;
+  color: #999;
   font-size: 10px;
   font-weight: 700;
   line-height: 1.4;
@@ -511,6 +507,31 @@
   font-size: 14px;
   border-radius: 0;
   box-shadow: none;
+}
+
+/* Mobile: shrink the tiles, gaps + font so the 7-column grid never
+   overflows the page margins on small screens. */
+@media (max-width: 800px) {
+  [data-fr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar) .calendar-month__grid,
+  [data-fr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar) .calendar-month__day-headers {
+    gap: 4px;
+  }
+  [data-fr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar) .day-cell {
+    /* Shrink horizontally (padding + font below) to fit the 7 columns;
+       keep the height for a clear gap between the centred date and the
+       bottom price. */
+    padding: 5px 2px;
+  }
+  [data-fr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar) .day-cell__number {
+    font-size: 13px;
+  }
+  [data-fr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar) .day-cell__price,
+  [data-fr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar) .day-cell__sold {
+    font-size: 9px;
+  }
+  [data-fr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar) .day-header {
+    font-size: 12px;
+  }
 }
 
 [data-fr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar) .legend-swatch--unavailable {

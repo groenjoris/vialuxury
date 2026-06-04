@@ -119,13 +119,13 @@ function handleClick() {
 
 /* Selected check-in / check-out dates: green; ALL inner text forced white */
 .day-cell--selected {
-  background: #00CB8B !important;
+  background: #00CB8B;
   color: #fff;
 }
 .day-cell--selected .day-cell__number,
 .day-cell--selected .day-cell__price,
 .day-cell--selected .day-cell__sold {
-  color: #fff !important;
+  color: #fff;
 }
 
 /* In-between range dates AND the check-out cell: light green; ALL inner
@@ -142,7 +142,7 @@ function handleClick() {
 .day-cell--checkout .day-cell__number,
 .day-cell--checkout .day-cell__price,
 .day-cell--checkout .day-cell__sold {
-  color: #fff !important;
+  color: #fff;
 }
 
 /* Sold out dates */
