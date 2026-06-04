@@ -419,15 +419,11 @@
   z-index: 1;
 }
 
-/* In-range nights: light-green tile (same as before) with a soft ring. */
+/* In-range nights: light-green tile, NO border/ring. */
 [data-fr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar) .day-cell--in-range:not(.day-cell--selected):not(.day-cell--checkout) {
   background: #9AE3C7 !important;
   border-color: transparent;
-  box-shadow:
-    0 0 0 2px #fff,
-    0 0 0 4px rgba(54, 200, 144, 0.5),
-    0 4px 6px -1px rgba(0, 0, 0, 0.10),
-    0 2px 4px -2px rgba(0, 0, 0, 0.10);
+  box-shadow: none !important;
 }
 
 /* Inside any selected / range tile: every glyph reads white (beats the
@@ -441,8 +437,11 @@
 /* In / Out pill — translucent white, rounded only on the bottom-left
    corner so it sits flush with the cell's top-right edge. */
 [data-fr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar) .day-cell__badge {
-  top: 0;
-  right: 0;
+  /* Pull 1px out over the (transparent) border so the pill butts straight
+     against the black outer stroke — no green sliver between them.
+     !important beats the scoped `.day-cell__badge { top:0; right:0 }`. */
+  top: -1px !important;
+  right: -1px !important;
   width: auto;
   height: auto;
   min-width: 18px;
@@ -450,7 +449,7 @@
   background: rgba(255, 255, 255, 0.2);
   color: #fff;
   border-radius: 0 0 0 8px;
-  font-size: 8px;
+  font-size: 9px !important;
   font-weight: 400;
   letter-spacing: 0;
 }
