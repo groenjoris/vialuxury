@@ -21,7 +21,7 @@
              pattern for cross-page consistency. -->
         <div class="hotel-page__tabs-actions">
           <div class="hotel-page__share-wrap">
-            <button class="hotel-page__action" :aria-label="t('common.share')" @click.stop="shareMenuOpen = !shareMenuOpen">
+            <button class="hotel-page__action" :aria-label="t('common.share')" @click.stop="handleShare">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
               <span class="hotel-page__action-label">Delen</span>
             </button>
@@ -342,8 +342,21 @@ const hotel = ref(initialHotel)
 // Session-wide favourites (no login popup), keyed by hotel slug.
 const { isFavorite: isFav, toggle: toggleFav } = useFirstReleaseFavorites()
 const isFavorited = computed(() => isFav(hotel.value?.slug))
-/** macOS-style share popover under the "Delen" button. */
+/** Native OS share sheet (Web Share API). Falls back to the custom
+ *  popover when the browser doesn't support navigator.share. */
 const shareMenuOpen = ref(false)
+function handleShare() {
+  const data = {
+    title: 'Ik heb een mooi luxe hotel gevonden',
+    text: hotel.value ? `Ik heb een mooi luxe hotel gevonden: ${hotel.value.name}` : 'Ik heb een mooi luxe hotel gevonden',
+    url: import.meta.client ? window.location.href : '',
+  }
+  if (import.meta.client && navigator.share) {
+    navigator.share(data).catch(() => { /* user cancelled — ignore */ })
+  } else {
+    shareMenuOpen.value = true
+  }
+}
 
 // Find all deals (packages) for this hotel
 import { dealVariantsByPermalink, dealsMapByPermalink } from '~/data/deals-mapper'

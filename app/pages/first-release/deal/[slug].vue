@@ -296,7 +296,7 @@
              divider between this row and the title section. -->
         <div class="deal-page__tabs-actions">
           <div class="deal-page__share-wrap">
-            <button class="deal-page__action" :aria-label="t('common.share')" @click.stop="shareMenuOpen = !shareMenuOpen">
+            <button class="deal-page__action" :aria-label="t('common.share')" @click.stop="handleShare">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
               <span class="deal-page__action-label">Delen</span>
             </button>
@@ -1136,8 +1136,21 @@ const isPanelOpen = ref(false)
 const isUpgradePanelOpen = ref(false)
 /** v6 only — opens the "Andere arrangementen bij dit hotel" sidepanel. */
 const arrangementsPanelOpen = ref(false)
-/** macOS-style share popover under the "Delen" button. */
+/** Native OS share sheet (Web Share API). Falls back to the custom
+ *  popover when the browser doesn't support navigator.share. */
 const shareMenuOpen = ref(false)
+function handleShare() {
+  const data = {
+    title: 'Ik heb een mooi luxe hotel gevonden',
+    text: hotel.value ? `Ik heb een mooi luxe hotel gevonden: ${hotel.value.name}` : 'Ik heb een mooi luxe hotel gevonden',
+    url: import.meta.client ? window.location.href : '',
+  }
+  if (import.meta.client && navigator.share) {
+    navigator.share(data).catch(() => { /* user cancelled — ignore */ })
+  } else {
+    shareMenuOpen.value = true
+  }
+}
 
 /** True when the current hotel has ≥ 1 deal OTHER than the active one
  *  — drives whether the "Korter of langer verblijf?" link is rendered
