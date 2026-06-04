@@ -85,10 +85,7 @@
               :zoom="10"
             />
             <div class="mini-map__pin">
-              <svg width="32" height="42" viewBox="0 0 32 42" fill="none">
-                <path d="M16 0C7.16 0 0 7.16 0 16c0 12 16 26 16 26s16-14 16-26C32 7.16 24.84 0 16 0z" fill="#0e0e0c"/>
-                <circle cx="16" cy="16" r="6" fill="#fff"/>
-              </svg>
+              <FirstReleaseMapPin />
             </div>
           </NuxtLink>
           <div class="mini-map__footer">
@@ -318,7 +315,6 @@
       </Transition>
     </Teleport>
 
-    <FirstReleaseAuthPopup />
     <FirstReleaseToastNotification />
     <FirstReleaseSiteFooter />
   </div>
@@ -721,8 +717,6 @@ onBeforeUnmount(() => {
    "Bekijk kaart" link (no overlay strip on the image). */
 .mini-map { display: flex; flex-direction: column; gap: 8px; scroll-margin-top: 88px; }
 .mini-map__placeholder { position: relative; display: block; width: 100%; aspect-ratio: 1 / 1; border-radius: var(--radius-lg); overflow: hidden; cursor: pointer; }
-.mini-map__img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.mini-map__img--map { filter: saturate(0.85) contrast(1.05); }
 .mini-map__pin { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -100%); filter: drop-shadow(0 3px 6px rgba(0,0,0,0.25)); z-index: 2; pointer-events: none; }
 .mini-map__footer { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-md); }
 .mini-map__address { font-family: var(--font-body); font-size: 13px; color: var(--color-text-secondary); line-height: 1.4; }

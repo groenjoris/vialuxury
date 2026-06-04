@@ -199,10 +199,7 @@
                 :zoom="10"
               />
               <div class="mini-map__pin">
-                <svg width="32" height="42" viewBox="0 0 32 42" fill="none">
-                  <path d="M16 0C7.16 0 0 7.16 0 16c0 12 16 26 16 26s16-14 16-26C32 7.16 24.84 0 16 0z" fill="#0e0e0c"/>
-                  <circle cx="16" cy="16" r="6" fill="#fff"/>
-                </svg>
+                <FirstReleaseMapPin />
               </div>
             </NuxtLink>
             <div class="mini-map__footer">
@@ -392,12 +389,7 @@
                   :zoom="10"
                 />
                 <div class="mini-map__pin">
-                  <!-- Black teardrop pin — matches the bigger selected
-                       marker on the full-screen kaart page. -->
-                  <svg width="32" height="42" viewBox="0 0 32 42" fill="none">
-                    <path d="M16 0C7.16 0 0 7.16 0 16c0 12 16 26 16 26s16-14 16-26C32 7.16 24.84 0 16 0z" fill="#0e0e0c"/>
-                    <circle cx="16" cy="16" r="6" fill="#fff"/>
-                  </svg>
+                  <FirstReleaseMapPin />
                 </div>
               </NuxtLink>
               <!-- Footer row under the map: street + city on the left,
@@ -787,7 +779,6 @@
     <FirstReleaseToastNotification :message="toastMessage" type="success" />
 
     <!-- Auth popup -->
-    <FirstReleaseAuthPopup :is-open="isAuthPopupOpen" @close="isAuthPopupOpen = false" @login="handleLogin" />
 
     <!-- Sticky booking bar — TWO SEPARATE BRANCHES.
          MOBILE: bottom sticky footer, gets `ref="ctaBarRef"` so the
@@ -1161,10 +1152,6 @@ const firstParagraph = computed(() => {
   return m ? m[0] : html.split(/\n\n+/)[0]
 })
 const hasMoreDescription = computed(() => fullDescription.value.length > firstParagraph.value.length + 4)
-const savingsAmount = computed(() => {
-  if (!currentDeal.value) return 0
-  return Math.max(0, Math.round(currentDeal.value.originalPrice - currentDeal.value.basePrice))
-})
 
 // Watch for search bar changes → fake refresh
 const { searchVersion } = useFirstReleaseSearchState()
@@ -1176,7 +1163,6 @@ watch(searchVersion, () => {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }, 800)
 })
-const isLoggedIn = ref(false)
 const isPanelOpen = ref(false)
 const isUpgradePanelOpen = ref(false)
 /** v6 only — opens the "Andere arrangementen bij dit hotel" sidepanel. */
@@ -1190,7 +1176,6 @@ const hasOtherArrangements = computed(() => {
   if (!sh || !currentDeal.value) return false
   return sh.deals.some(d => d.id !== currentDeal.value!.id)
 })
-const isAuthPopupOpen = ref(false)
 const toastMessage = ref('')
 
 function handleFavoriteClick() {
@@ -1207,17 +1192,6 @@ function handleFavoriteClick() {
 function handleMobileBook() {
   // Scroll to top of page / open booking flow (same as sidebar book button)
   // For now: no-op, mirrors desktop Boek nu behavior
-}
-
-function handleLogin() {
-  isLoggedIn.value = true
-  isAuthPopupOpen.value = false
-  // Auto-favorite after login
-  if (hotel.value?.slug && !isFav(hotel.value.slug)) toggleFav(hotel.value.slug)
-  toastMessage.value = ''
-  nextTick(() => {
-    toastMessage.value = t('toast.addedToFavorites')
-  })
 }
 
 // Resolve permalink from route — fallback to first available if invalid
@@ -1559,32 +1533,8 @@ onMounted(() => {
   right: var(--space-lg);
   bottom: var(--space-md);
 }
-.deal-page__savings-badge {
-  display: inline-flex;
-  align-items: center;
-  height: 40px;
-  padding: 5px;
-  background: #70BEB2;
-  color: #fff;
-  font-family: 'ResotYc', var(--font-heading);
-  font-weight: 400;
-  font-size: 22px;
-  letter-spacing: 0.01em;
-  border-radius: 6px;
-  white-space: nowrap;
-}
-
-/* Gallery wrapper hosts an absolutely-positioned savings badge in the
-   bottom-left corner of the hero gallery. */
 .deal-page__gallery { position: relative; }
 
-.deal-page__savings-badge--gallery {
-  position: absolute;
-  left: calc(var(--space-lg) + 16px);
-  bottom: 16px;
-  z-index: 3;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
-}
 .icon-action { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--color-border); display: flex; align-items: center; justify-content: center; font-size: 18px; background: var(--color-surface); cursor: pointer; }
 .icon-action:hover { border-color: var(--color-primary); }
 .icon-action--favorited { color: #e74c3c; border-color: #e74c3c; }
@@ -1674,8 +1624,6 @@ onMounted(() => {
    right) — no more gradient overlay on the photo. */
 .mini-map { display: flex; flex-direction: column; gap: 8px; }
 .mini-map__placeholder { position: relative; display: block; width: 100%; aspect-ratio: 1 / 1; border-radius: var(--radius-lg); overflow: hidden; cursor: pointer; }
-.mini-map__img { width: 100%; height: 100%; object-fit: cover; }
-.mini-map__img--map { filter: saturate(0.85) contrast(1.05); }
 .mini-map__pin { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -100%); filter: drop-shadow(0 3px 6px rgba(0,0,0,0.25)); z-index: 2; pointer-events: none; }
 .mini-map__footer { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-md); }
 .mini-map__address { font-family: var(--font-body); font-size: 13px; color: var(--color-text-secondary); line-height: 1.4; }
@@ -2498,14 +2446,6 @@ onMounted(() => {
   .deal-page__breadcrumbs {
     border-top: 0;
     box-shadow: none;
-  }
-  /* Gallery is a full-bleed carousel on mobile: the "all photos" button
-     sits in the lower-right and the counter top-right, so the savings
-     badge sticker goes in the lower-LEFT. */
-  .deal-page__savings-badge--gallery {
-    left: 16px;
-    bottom: 16px;
-    top: auto;
   }
   /* "In dit arrangement is het volgende inbegrepen" heading +1 pt,
      individual inclusion titles + body copy each +1 pt. */

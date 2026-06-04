@@ -30,19 +30,13 @@ const props = withDefaults(defineProps<{
   zoom: 9,
 })
 
+import { lngToTileX, latToTileY } from '~/utils-first-release/osmTiles'
+
 const TILE = 256
 /** Tiles each side of the centre tile. R=2 → 5×5 grid (1280px canvas),
  *  enough to fully cover containers up to ~1024px with the centre kept on
  *  the marker. */
 const R = 2
-
-function lngToTileX(lng: number, z: number): number {
-  return ((lng + 180) / 360) * 2 ** z
-}
-function latToTileY(lat: number, z: number): number {
-  const rad = (lat * Math.PI) / 180
-  return ((1 - Math.log(Math.tan(rad) + 1 / Math.cos(rad)) / Math.PI) / 2) * 2 ** z
-}
 
 const geom = computed(() => {
   const z = props.zoom
