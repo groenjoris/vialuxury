@@ -2049,11 +2049,6 @@ function handleSelectHotelInPopup(slug: string) {
               0 10px 24px rgba(0, 0, 0, 0.18);
 }
 
-/* Variant 4 opts out of the drop shadow (keeps the inner stroke). */
-.site-header--nav-v4:not(.site-header--overlay) .search-bar {
-  box-shadow: inset 0 0 0 2px var(--color-border, #d4d4d4);
-}
-
 .site-header .search-bar__label {
   /* Old-style label: ALL CAPS, lighter colour, regular weight at 12 px
      with 1.3 px tracking. */
@@ -2300,66 +2295,6 @@ function handleSelectHotelInPopup(slug: string) {
  *  selected grid placements via modifier classes on the .site-header
  *  root (set by the navVariant prop / composable). */
 
-/* ─── Variant 2 — 2-row layout:
- *  row 1: logo + payoff inline (left)             …  actions (right)
- *  row 2: verticals nav (left)                    …  phone (right)
- *  The payoff matches the logo's visual height (so its font-size is
- *  much larger than v1's). Stroke hidden. ─── */
-.site-header--nav-v2 .site-header__nav-inner {
-  /* 5 columns: logo · payoff · spacer · phone · actions
-     The extra col lets phone sit on row 1 next to actions. */
-  grid-template-columns: auto auto 1fr auto auto;
-  grid-template-rows: auto auto;
-  /* Match v1's row-gap so the total nav height — and the Y of the hero
-     content (eyebrow / title / pitch / search bar) — matches v1. */
-  row-gap: 8px;
-  /* Halve the default column-gap (32 → 16) so the payoff hugs the logo. */
-  column-gap: 16px;
-}
-.site-header--nav-v2 .site-header__logo {
-  grid-row: 1;
-  grid-column: 1;
-  /* Top-align (same as v1) so the logo's top edge is flush with the nav
-     padding-top — gives both variants identical logo top padding. */
-  align-self: start;
-}
-.site-header--nav-v2 .site-header__tagline-block {
-  display: flex;             /* override the legacy v2 hide rule */
-  grid-row: 1;
-  grid-column: 2;
-  align-self: center;
-  justify-self: start;
-  flex-direction: row;
-  align-items: center;
-  gap: 0;
-  margin-top: 0;
-}
-.site-header--nav-v2 .site-header__tagline {
-  /* Halved from 40 px — smaller handwritten payoff next to the logo. */
-  font-size: 20px;
-  line-height: 1;
-  white-space: nowrap;
-}
-.site-header--nav-v2 .site-header__tagline-stroke {
-  display: none;
-}
-.site-header--nav-v2 .verticals {
-  grid-row: 2;
-  grid-column: 1 / span 5;   /* spans the whole width so it sits flush left */
-  justify-self: start;
-}
-.site-header--nav-v2 .site-header__phone {
-  /* Row 1, just LEFT of the actions cluster. */
-  grid-row: 1;
-  grid-column: 4;
-  justify-self: end;
-}
-.site-header--nav-v2 .site-header__nav-actions {
-  grid-row: 1;
-  grid-column: 5;
-  justify-self: end;
-}
-
 /* ─── Variant 1 — verticals move up to row 1 (top-aligned with logo);
  *  same layout as v4 but with four tweaks:
  *   • payoff sits TIGHT under the logo (top of row 2, not bottom)
@@ -2385,15 +2320,6 @@ function handleSelectHotelInPopup(slug: string) {
    SiteHeader's bottom edge, the dash visually collided with the
    bar's top stroke). Shown only on the home (overlay) bar, not on
    internal pages. */
-.site-header--nav-v6.site-header--overlay .site-header__tagline-block::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  bottom: 4px;
-  width: 18px;
-  height: 1px;
-  background: #fff;
-}
 .site-header--nav-v1 .site-header__tagline,
 .site-header--nav-v6 .site-header__tagline {
   font-size: 20px;          /* original size restored */
@@ -2424,24 +2350,6 @@ function handleSelectHotelInPopup(slug: string) {
 /* Logo: keep its original 244-px width / ~25-px height in both
  *  variants. Only the buttons / pills / icon controls share
  *  --fr-nav-row-h. */
-
-/* v1 verticals pills keep their natural sizing (the base
-   `.verticals__item` rule — padding 8 18, font 16). The v2-only rule
-   below scales them up. */
-.site-header--nav-v2 .verticals__item {
-  /* Slightly larger than the default 40-px pills — 48 px tall, 18 px
-     font, default 18 px horizontal padding. */
-  height: 48px;
-  padding: 0 18px;
-  font-size: 18px;
-  display: inline-flex;
-  align-items: center;
-}
-/* Keep "+ more" 1 px smaller than the base label (matches the
-   default 15 vs 16 relationship). */
-.site-header--nav-v2 .verticals__item-more {
-  font-size: 17px;
-}
 
 .site-header--nav-v1 .vip-btn,
 .site-header--nav-v2 .vip-btn,
@@ -2481,134 +2389,6 @@ function handleSelectHotelInPopup(slug: string) {
   gap: 0;
 }
 
-/* ─── Variant 2 — middle-align row 1 ─── */
-/* All row-1 items centre vertically inside the row (default grid
- *  alignment via `.site-header__nav-inner { align-items: center }`).
- *  Action-pill heights drop from 44 → 40 px so language / members /
- *  hamburger sit a little smaller than the verticals pill on row 2. */
-.site-header--nav-v2 .vip-btn,
-.site-header--nav-v2 .lang-switcher__trigger {
-  height: 40px;
-}
-.site-header--nav-v2 .hamburger-btn {
-  width: 40px;
-  height: 40px;
-}
-
-/* ─── Variant 3 — same as variant 2, but the phone moves from row 1
- *  to row 2 and right-aligns there. Because the SiteHeader applies
- *  BOTH the `nav-v2` and `nav-v3` classes when navVariant is '3',
- *  every v2 rule above still applies; the two rules below override
- *  what v3 changes. ─── */
-.site-header--nav-v3 .site-header__phone {
-  grid-row: 2;
-  grid-column: 5;          /* far-right column of v2's 5-col grid */
-  justify-self: end;
-  align-self: center;       /* line up vertically with verticals on row 2 */
-}
-/* Verticals span only cols 1-3 in v3 so they don't collide with the
-   phone block that's now in col 5 on row 2. */
-.site-header--nav-v3 .verticals {
-  grid-column: 1 / span 3;
-}
-
-/* ─── Variant 3 — rounded-rectangle buttons instead of pills ───
- *  v3 keeps v2's layout but swaps every 999-px pill (verticals
- *  items / active state, VIP members button, language switcher
- *  trigger, hamburger) for a rounded-rectangle 8 px corner so the
- *  nav reads as a row of crisp buttons rather than capsules. */
-.site-header--nav-v3 .verticals__item,
-.site-header--nav-v3 .vip-btn,
-.site-header--nav-v3 .lang-switcher__trigger,
-.site-header--nav-v3 .contact-trigger,
-.site-header--nav-v6 .verticals__item,
-.site-header--nav-v6 .vip-btn,
-.site-header--nav-v6 .lang-switcher__trigger,
-.site-header--nav-v6 .contact-trigger {
-  border-radius: 8px;
-}
-
-.site-header--nav-v3 .hamburger-btn,
-.site-header--nav-v6 .hamburger-btn {
-  border-radius: 8px;
-}
-
-/* Variant 4 uses the base defaults (stroke visible, 22 px payoff,
- *  bottom-aligned with verticals). v4 specifically opts OUT of the
- *  drop-shadow that other variants now get on internal pages — that
- *  exception lives in the earlier "Internal-page bar" rule block. */
-
-/* ─── Variant 5 — folder-tab verticals connected to the search bar.
- *  Inherits v2's nav layout via the dual `nav-v2 nav-v5` class on the
- *  header root. Only the verticals' visual treatment changes here;
- *  the home page (home-v5.vue) absolute-positions the strip so its
- *  bottom edge touches the search bar's top edge (0 px gap). ─── */
-.site-header--nav-v5 .verticals {
-  display: flex;
-  gap: 0;
-  z-index: 3;
-}
-
-.site-header--nav-v5 .verticals__item {
-  height: 44px;
-  padding: 0 18px;
-  font-size: 16px;
-  display: inline-flex;
-  align-items: center;
-  /* Folder shape: rounded top, flat bottom. */
-  border-radius: 8px 8px 0 0;
-  /* No outline — the tab silhouette comes from its fill alone. */
-  border: none;
-  /* Unselected default = no fill, mirroring v4's resting state. */
-  background: transparent;
-  color: rgba(255, 255, 255, 0.85);
-  margin: 0;
-}
-
-/* Hover only on INACTIVE tabs — mirrors v4's hover fill. */
-.site-header--nav-v5 .verticals__item:not(.verticals__item--active):hover {
-  background: rgba(255, 255, 255, 0.08);
-  color: #fff;
-}
-
-.site-header--nav-v5 .verticals__item--active {
-  /* Active tab adopts the OLD unselected look — sits a little darker
-     than the new inactive default so the active is subtly distinct
-     without being a different colour. */
-  background: rgba(255, 255, 255, 0.12);
-  color: #fff;
-  font-weight: 600;
-  border: none;
-}
-
-/* v5 — global connection between tabs and search bar. Applies to BOTH
-   home (overlay) and internal pages (solid). */
-.site-header--nav-v5 .site-header__nav { padding-bottom: 0; }
-.site-header--nav-v5 .search-bar { border-top-left-radius: 0; }
-
-/* Tabs align with the search bar's outer left edge. The verticals live
-   inside `.site-header__nav-inner.container`, which already applies
-   the same max-width + `padding: 0 var(--space-lg)` as the search
-   dock's container. So NO extra padding/max-width here — that would
-   double the indent and push the tabs to the right of the bar. */
-.site-header--nav-v5 .verticals {
-  /* +20 px restores the vertical space that v5 removed by setting
-     `nav { padding-bottom: 0 }`. Net effect: the search bar (which
-     sits right after the nav) lands at the SAME Y on every page, so
-     home, search, deal, hotel, kaart, etc. all line up. */
-  margin-top: 20px;
-  margin-bottom: -1px;          /* overlap the bar's top by 1 px */
-  display: flex;
-  justify-content: flex-start;
-}
-
-/* v5 internal pages keep the default half-protrude (`.site-header
-   { padding-bottom: 38px }` + dock `position: absolute; bottom: 0;
-   transform: translateY(50%)`) so the black background stops exactly
-   half-way through the search bar. Because v5 also has
-   `.site-header__nav { padding-bottom: 0 }`, the verticals' bottom
-   edge lands at `nav_height = header_bottom - 38px = bar's top`,
-   which is exactly where the tabs need to touch the bar. */
 /* Logo (grid row 1, col 1) — width pinned to 244 px per design. */
 .site-header__logo {
   grid-row: 1;
