@@ -20,14 +20,21 @@
              divider. Mirrors the deal-page `.deal-page__tabs-actions`
              pattern for cross-page consistency. -->
         <div class="hotel-page__tabs-actions">
+          <div class="hotel-page__share-wrap">
+            <button class="hotel-page__action" :aria-label="t('common.share')" @click.stop="shareMenuOpen = !shareMenuOpen">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+              <span class="hotel-page__action-label">Delen</span>
+            </button>
+            <FirstReleaseShareMenu :open="shareMenuOpen" @close="shareMenuOpen = false" />
+          </div>
           <button
-            class="icon-action"
-            :class="{ 'icon-action--favorited': isFavorited }"
+            class="hotel-page__action"
+            :class="{ 'hotel-page__action--favorited': isFavorited }"
             :aria-label="t('common.save')"
             @click="toggleFav(hotel.slug)"
-          >{{ isFavorited ? '♥' : '♡' }}</button>
-          <button class="icon-action" :aria-label="t('common.share')">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+          >
+            <span class="hotel-page__action-heart">{{ isFavorited ? '♥' : '♡' }}</span>
+            <span class="hotel-page__action-label">Opslaan</span>
           </button>
         </div>
       </nav>
@@ -335,6 +342,8 @@ const hotel = ref(initialHotel)
 // Session-wide favourites (no login popup), keyed by hotel slug.
 const { isFavorite: isFav, toggle: toggleFav } = useFirstReleaseFavorites()
 const isFavorited = computed(() => isFav(hotel.value?.slug))
+/** macOS-style share popover under the "Delen" button. */
+const shareMenuOpen = ref(false)
 
 // Find all deals (packages) for this hotel
 import { dealVariantsByPermalink, dealsMapByPermalink } from '~/data/deals-mapper'
@@ -657,6 +666,25 @@ onBeforeUnmount(() => {
 .icon-action { width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--color-border); display: inline-flex; align-items: center; justify-content: center; font-size: 16px; background: var(--color-surface); cursor: pointer; color: var(--color-text-primary); }
 .icon-action:hover { border-color: var(--color-primary); }
 .icon-action--favorited { color: #e74c3c; border-color: #e74c3c; }
+
+/* Icon + label actions (Delen / Opslaan). */
+.hotel-page__share-wrap { position: relative; }
+.hotel-page__action {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 4px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: 16px;
+  color: var(--color-text-primary);
+}
+.hotel-page__action:hover { color: var(--color-primary); }
+.hotel-page__action-heart { font-size: 19px; line-height: 1; }
+.hotel-page__action--favorited .hotel-page__action-heart { color: #e74c3c; }
+.hotel-page__action-label { font-size: 16px; }
 
 /* ===== INTRO (description + map) ===== */
 .hotel-page__intro { display: grid; grid-template-columns: 1fr 340px; gap: var(--space-xl); padding-top: var(--space-lg); padding-bottom: var(--space-xl); }

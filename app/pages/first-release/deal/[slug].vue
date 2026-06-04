@@ -295,8 +295,17 @@
              they sit at the same height as the tabs and above the grey
              divider between this row and the title section. -->
         <div class="deal-page__tabs-actions">
-          <button class="icon-action" :class="{ 'icon-action--favorited': isFavorited }" :aria-label="t('common.save')" @click="handleFavoriteClick">{{ isFavorited ? '♥' : '♡' }}</button>
-          <button class="icon-action" :aria-label="t('common.share')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg></button>
+          <div class="deal-page__share-wrap">
+            <button class="deal-page__action" :aria-label="t('common.share')" @click.stop="shareMenuOpen = !shareMenuOpen">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+              <span class="deal-page__action-label">Delen</span>
+            </button>
+            <FirstReleaseShareMenu :open="shareMenuOpen" @close="shareMenuOpen = false" />
+          </div>
+          <button class="deal-page__action" :class="{ 'deal-page__action--favorited': isFavorited }" :aria-label="t('common.save')" @click="handleFavoriteClick">
+            <span class="deal-page__action-heart">{{ isFavorited ? '♥' : '♡' }}</span>
+            <span class="deal-page__action-label">Opslaan</span>
+          </button>
         </div>
       </nav>
 
@@ -1127,6 +1136,8 @@ const isPanelOpen = ref(false)
 const isUpgradePanelOpen = ref(false)
 /** v6 only — opens the "Andere arrangementen bij dit hotel" sidepanel. */
 const arrangementsPanelOpen = ref(false)
+/** macOS-style share popover under the "Delen" button. */
+const shareMenuOpen = ref(false)
 
 /** True when the current hotel has ≥ 1 deal OTHER than the active one
  *  — drives whether the "Korter of langer verblijf?" link is rendered
@@ -1498,6 +1509,25 @@ onMounted(() => {
 .icon-action { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--color-border); display: flex; align-items: center; justify-content: center; font-size: 18px; background: var(--color-surface); cursor: pointer; }
 .icon-action:hover { border-color: var(--color-primary); }
 .icon-action--favorited { color: #e74c3c; border-color: #e74c3c; }
+
+/* Icon + label actions (Delen / Opslaan) in the anchor-nav row. */
+.deal-page__share-wrap { position: relative; }
+.deal-page__action {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 4px 4px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: 16px;
+  color: var(--color-text-primary);
+}
+.deal-page__action:hover { color: var(--color-primary); }
+.deal-page__action-heart { font-size: 19px; line-height: 1; }
+.deal-page__action--favorited .deal-page__action-heart { color: #e74c3c; }
+.deal-page__action-label { font-size: 16px; }
 .deal-page__breadcrumbs { padding-top: var(--space-md); }
 
 /* ===== 2-COLUMN GRID ===== */
