@@ -189,7 +189,11 @@
         <section id="mini-map" class="container deal-page__mini-map-mobile">
           <div class="mini-map">
             <NuxtLink :to="`/first-release/kaart?focus=${hotel.slug}`" class="mini-map__placeholder" :aria-label="t('common.viewMap')">
-              <img :src="mapTileUrl" :alt="t('deal.mapArea')" class="mini-map__img mini-map__img--map" @error="($event.target as HTMLImageElement).src = '/images/kasteel/fietsenzuidlimburg.jpg'" />
+              <FirstReleaseStaticMiniMap
+                :lat="hotel.location.coordinates.lat"
+                :lng="hotel.location.coordinates.lng"
+                :zoom="10"
+              />
               <div class="mini-map__pin">
                 <svg width="32" height="42" viewBox="0 0 32 42" fill="none">
                   <path d="M16 0C7.16 0 0 7.16 0 16c0 12 16 26 16 26s16-14 16-26C32 7.16 24.84 0 16 0z" fill="#0e0e0c"/>
@@ -374,11 +378,10 @@
                 class="mini-map__placeholder"
                 :aria-label="t('common.viewMap')"
               >
-                <img
-                  :src="mapTileUrl"
-                  :alt="t('deal.mapArea')"
-                  class="mini-map__img mini-map__img--map"
-                  @error="($event.target as HTMLImageElement).src = '/images/kasteel/fietsenzuidlimburg.jpg'"
+                <FirstReleaseStaticMiniMap
+                  :lat="hotel.location.coordinates.lat"
+                  :lng="hotel.location.coordinates.lng"
+                  :zoom="10"
                 />
                 <div class="mini-map__pin">
                   <!-- Black teardrop pin — matches the bigger selected
@@ -1408,14 +1411,6 @@ const hotelStreetCity = computed(() => {
 // Static map tile URL (OpenStreetMap) — zoom 11 gives a more
 // zoomed-out, region-context view (the previous 13 was too tight
 // for a glanceable "where is this" preview).
-const mapTileUrl = computed(() => {
-  const { lat, lng } = hotel.value.location.coordinates
-  const zoom = 8   // province-level overview
-  const x = Math.floor(((lng + 180) / 360) * Math.pow(2, zoom))
-  const latRad = (lat * Math.PI) / 180
-  const y = Math.floor((1 - Math.log(Math.tan(latRad) + 1 / Math.cos(latRad)) / Math.PI) / 2 * Math.pow(2, zoom))
-  return `https://tile.openstreetmap.org/${zoom}/${x}/${y}.png`
-})
 
 // Highlights are derived from the package's CURATED short list (`pkg.includes[]`,
 // 4-6 items), with a matching icon or emoji fallback. Drops overnight items.
