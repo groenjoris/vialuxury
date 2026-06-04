@@ -368,7 +368,7 @@
   font-size: 14px;
   font-weight: 400;
   line-height: 1.4;
-  color: #1a1d24 !important;          /* beats scoped white selected-text */
+  color: #1a1d24;
 }
 
 [data-fr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar) .day-cell__price,
@@ -404,22 +404,38 @@
    background / box-shadow / opacity guard against scoped legacy rules
    (e.g. `.day-cell--past { opacity: 0.3 }` and
    `.day-cell--checkout { background: #9AE3C7 }`) sneaking through. */
-/* Selected check-in & check-out: black border (stroke), white tile, no
-   fill — text keeps its normal colour. */
+/* Selected check-in & check-out: green tile (white text via the scoped
+   rule) with a BLACK OUTER stroke. The stroke is an outer box-shadow
+   (not inset) so it never overlaps the price inside the tile. */
 [data-fr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar) .day-cell--selected,
 [data-fr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar) .day-cell--checkout {
-  background: #fff !important;
+  background: #00CB8B !important;
   border-color: transparent !important;
   opacity: 1 !important;
-  box-shadow: inset 0 0 0 2px #1A1A1A !important;
+  box-shadow:
+    0 0 0 2px #1A1A1A,
+    0 4px 6px -1px rgba(0, 0, 0, 0.10),
+    0 2px 4px -2px rgba(0, 0, 0, 0.10) !important;
   z-index: 1;
 }
 
-/* In-range nights: neutral light-grey tile (no green, no ring). */
+/* In-range nights: light-green tile (same as before) with a soft ring. */
 [data-fr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar) .day-cell--in-range:not(.day-cell--selected):not(.day-cell--checkout) {
-  background: #EDEDEA !important;
+  background: #9AE3C7 !important;
   border-color: transparent;
-  box-shadow: none;
+  box-shadow:
+    0 0 0 2px #fff,
+    0 0 0 4px rgba(54, 200, 144, 0.5),
+    0 4px 6px -1px rgba(0, 0, 0, 0.10),
+    0 2px 4px -2px rgba(0, 0, 0, 0.10);
+}
+
+/* Inside any selected / range tile: every glyph reads white (beats the
+   variant-6 green price + dark number rules above). */
+[data-fr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar) :where(.day-cell--selected, .day-cell--checkout, .day-cell--in-range) .day-cell__number,
+[data-fr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar) :where(.day-cell--selected, .day-cell--checkout, .day-cell--in-range) .day-cell__price,
+[data-fr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar) :where(.day-cell--selected, .day-cell--checkout, .day-cell--in-range) .day-cell__sold {
+  color: #fff !important;
 }
 
 /* In / Out pill — translucent white, rounded only on the bottom-left
@@ -431,9 +447,7 @@
   height: auto;
   min-width: 18px;
   padding: 2px 4px;
-  /* Dark pill so it stays visible on the white, black-bordered
-     selected tile. */
-  background: #1A1A1A;
+  background: rgba(255, 255, 255, 0.2);
   color: #fff;
   border-radius: 0 0 0 8px;
   font-size: 8px;
@@ -486,7 +500,7 @@
   right: 0;
   text-align: center;
   bottom: 5px;
-  color: #999;
+  color: #fff;
   font-size: 10px;
   font-weight: 700;
   line-height: 1.4;
