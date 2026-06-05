@@ -110,13 +110,14 @@
   }
   [data-fr-home-variant="4"] :is(.home, .search-page, .deal-page, .hotel-page) .site-header__logo-img--vertical {
     display: block !important;
-    height: 40px;
+    height: 48px;   /* 20% larger than the original 40px */
     width: auto;
   }
   [data-fr-home-variant="4"] :is(.home, .search-page, .deal-page, .hotel-page) .site-header__tagline-block {
     display: none;
   }
-  /* Phone next to the logo, stacked over two lines (no icon). */
+  /* Phone next to the logo: icon on the left, "Hulp nodig?" + number stacked
+     to its right (the icon spans both text lines). */
   [data-fr-home-variant="4"] :is(.home, .search-page, .deal-page, .hotel-page) .site-header__phone-wrap {
     margin: 0 !important;
     width: auto !important;
@@ -124,20 +125,32 @@
     align-self: center;
   }
   [data-fr-home-variant="4"] :is(.home, .search-page, .deal-page, .hotel-page) .site-header__phone {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0;
+    display: grid;
+    grid-template-columns: auto auto;
+    grid-template-areas:
+      "icon label"
+      "icon number";
+    align-items: center;
+    justify-content: start;
+    column-gap: 7px;
+    row-gap: 0;
   }
   [data-fr-home-variant="4"] :is(.home, .search-page, .deal-page, .hotel-page) .site-header__phone svg {
-    display: none;
+    display: block;
+    grid-area: icon;
+    width: 16px;
+    height: 16px;
+    align-self: center;
   }
   [data-fr-home-variant="4"] :is(.home, .search-page, .deal-page, .hotel-page) .site-header__phone-label {
+    grid-area: label;
     display: inline;
     font-size: 13px;
     line-height: 1.25;
     margin: 0;
   }
   [data-fr-home-variant="4"] :is(.home, .search-page, .deal-page, .hotel-page) .site-header__phone-number {
+    grid-area: number;
     font-size: 14px;
     font-weight: 700;
     line-height: 1.25;
