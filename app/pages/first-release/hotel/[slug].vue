@@ -62,7 +62,11 @@
 
       <!-- Hero Gallery -->
       <section class="container">
-        <FirstReleaseHeroGallery :images="hotel.images" />
+        <FirstReleaseHeroGallery
+          :images="hotel.images"
+          @open-gallery="openGallery"
+          @open-photo="openGalleryPhoto"
+        />
       </section>
 
       <!-- Description + Mini Map -->
@@ -312,6 +316,21 @@
       </Transition>
     </Teleport>
 
+    <!-- Photo gallery / lightbox -->
+    <FirstReleasePhotoGalleryModal
+      v-if="hotel"
+      :open="galleryOpen"
+      :images="hotel.images"
+      :title="hotel.name"
+      :view="galleryView"
+      :index="galleryIndex"
+      :came-direct="galleryCameDirect"
+      @update:view="galleryView = $event"
+      @update:index="galleryIndex = $event"
+      @close="galleryOpen = false"
+      @book="handleGalleryBook"
+    />
+
     <FirstReleaseToastNotification />
     <FirstReleaseSiteFooter />
   </div>
@@ -516,6 +535,30 @@ function handleScroll() {
 function scrollToArrangements() {
   const el = document.getElementById('arrangementen')
   if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+}
+
+/* ── Photo gallery / lightbox ── */
+const galleryOpen = ref(false)
+const galleryView = ref<'grid' | 'photo'>('grid')
+const galleryIndex = ref(0)
+const galleryCameDirect = ref(false)
+
+function openGallery() {
+  galleryView.value = 'grid'
+  galleryCameDirect.value = false
+  galleryIndex.value = 0
+  galleryOpen.value = true
+}
+function openGalleryPhoto(i: number) {
+  galleryView.value = 'photo'
+  galleryCameDirect.value = true
+  galleryIndex.value = i
+  galleryOpen.value = true
+}
+/** Mobile footer "Ik ga boeken" → close + scroll to the arrangements. */
+function handleGalleryBook() {
+  galleryOpen.value = false
+  nextTick(() => scrollToArrangements())
 }
 
 /** Smooth-scroll to the mini-map block — wired to the "Bekijk

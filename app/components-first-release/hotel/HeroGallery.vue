@@ -4,9 +4,10 @@
   <div v-if="isMobile" class="hero-gallery hero-gallery--mobile">
     <div ref="trackRef" class="hero-gallery__track" @scroll.passive="onScroll">
       <div
-        v-for="image in carouselImages"
+        v-for="(image, i) in carouselImages"
         :key="image.id"
         class="hero-gallery__slide"
+        @click="$emit('openPhoto', i)"
       >
         <img :src="image.url" :alt="localized(image.alt)" class="hero-gallery__slide-img" />
       </div>
@@ -45,7 +46,7 @@
   </div>
 
   <div v-else class="hero-gallery">
-    <div class="hero-gallery__main">
+    <div class="hero-gallery__main" @click="$emit('openPhoto', 0)">
       <img
         :src="heroImage?.url || '/images/placeholder.jpg'"
         :alt="heroImage?.alt ? localized(heroImage.alt) : t('common.hotelPhoto')"
@@ -70,12 +71,13 @@
         v-for="(image, index) in galleryImages"
         :key="image.id"
         class="hero-gallery__cell"
+        @click="$emit('openPhoto', index + 1)"
       >
         <img :src="image.url" :alt="localized(image.alt)" class="hero-gallery__img" />
         <button
           v-if="index === galleryImages.length - 1"
           class="hero-gallery__all-btn"
-          @click="$emit('openGallery')"
+          @click.stop="$emit('openGallery')"
         >
           <span class="all-btn-icon">⊞</span>
           {{ t('common.allPhotos') }}
@@ -102,6 +104,9 @@ const props = defineProps<{
 
 defineEmits<{
   openGallery: []
+  /** Open the full-photo viewer at this index in the ordered list
+   *  (hero first, then gallery). */
+  openPhoto: [index: number]
 }>()
 
 const heroImage = computed(() => props.images.find((img) => img.position === 'hero'))
@@ -146,7 +151,10 @@ function nextSlide() {
 .hero-gallery__main {
   grid-row: 1 / -1;
   position: relative;
+  cursor: pointer;
 }
+.hero-gallery__cell { cursor: pointer; }
+.hero-gallery__slide { cursor: pointer; }
 
 .hero-gallery__hero-img {
   width: 100%;

@@ -199,6 +199,7 @@ const de: Record<string, string> = {
   'common.nederland': 'Niederlande',
   'common.viewMap': 'Karte ansehen',
   'common.allPhotos': 'Alle Fotos',
+  'gallery.back': 'Zurück',
   'common.hotelPhoto': 'Hotelfoto',
   'common.upgrade': 'UPGRADE',
 

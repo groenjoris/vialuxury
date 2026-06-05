@@ -201,6 +201,7 @@ const en: Record<string, string> = {
   'common.nederland': 'Netherlands',
   'common.viewMap': 'View map',
   'common.allPhotos': 'All photos',
+  'gallery.back': 'Back',
   'common.hotelPhoto': 'Hotel photo',
   'common.upgrade': 'UPGRADE',
 

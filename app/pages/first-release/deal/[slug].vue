@@ -48,6 +48,7 @@
             :labels="galleryLabels"
             :rooms-left="dealRoomsLeft"
             @open-gallery="openGallery"
+            @open-photo="openGalleryPhoto"
           />
         </section>
 
@@ -361,6 +362,7 @@
           :labels="galleryLabels"
           :rooms-left="dealRoomsLeft"
           @open-gallery="openGallery"
+          @open-photo="openGalleryPhoto"
         />
       </section>
 
@@ -900,6 +902,21 @@
         </div>
       </Transition>
     </Teleport>
+
+    <!-- Photo gallery / lightbox -->
+    <FirstReleasePhotoGalleryModal
+      v-if="hotel && currentDeal"
+      :open="galleryOpen"
+      :images="hotel.images"
+      :title="localized(currentDeal.title)"
+      :view="galleryView"
+      :index="galleryIndex"
+      :came-direct="galleryCameDirect"
+      @update:view="galleryView = $event"
+      @update:index="galleryIndex = $event"
+      @close="galleryOpen = false"
+      @book="handleGalleryBook"
+    />
 
     <FirstReleaseSiteFooter />
   </div>
@@ -1475,7 +1492,31 @@ const breadcrumbs = computed(() => [
   { label: currentDeal.value ? localized(currentDeal.value.title) : hotel.value.name },
 ])
 
-function openGallery() { }
+/* ── Photo gallery / lightbox ── */
+const galleryOpen = ref(false)
+const galleryView = ref<'grid' | 'photo'>('grid')
+const galleryIndex = ref(0)
+const galleryCameDirect = ref(false)
+
+/** "Alle foto's" → thumbnail overview. */
+function openGallery() {
+  galleryView.value = 'grid'
+  galleryCameDirect.value = false
+  galleryIndex.value = 0
+  galleryOpen.value = true
+}
+/** Clicking a page photo → straight into the full-photo viewer at that index. */
+function openGalleryPhoto(i: number) {
+  galleryView.value = 'photo'
+  galleryCameDirect.value = true
+  galleryIndex.value = i
+  galleryOpen.value = true
+}
+/** Mobile footer "Ik ga boeken" → close + jump to the booking area. */
+function handleGalleryBook() {
+  galleryOpen.value = false
+  nextTick(() => scrollToArrangement())
+}
 
 // Sync FR nav-bar variant with the user's last homepage pick so the
 // SiteHeader on this internal page matches the chosen variant. Reads

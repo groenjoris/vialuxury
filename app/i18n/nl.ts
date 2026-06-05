@@ -201,6 +201,7 @@ const nl: Record<string, string> = {
   'common.nederland': 'Nederland',
   'common.viewMap': 'Bekijk kaart',
   'common.allPhotos': 'Alle foto\'s',
+  'gallery.back': 'Terug',
   'common.hotelPhoto': 'Hotel foto',
   'common.upgrade': 'UPGRADE',
 
