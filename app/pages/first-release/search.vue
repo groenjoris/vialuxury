@@ -423,8 +423,22 @@ const {
   selectedFilterTags,
   selectedDestinations, selectedCities, selectedHotels,
   committedArrivalDate, committedFlexibility,
+  // LIVE arrival/flex — used (instead of committed) for the result filter on
+  // /search so the search bar updates results immediately (see activeArrival).
+  arrivalDate: liveArrivalDate, selectedFlexibility: liveFlexibility,
   setArrivalDate, restoreSearchSession,
 } = useFirstReleaseSearchState()
+
+/** On /search the result filter reads LIVE arrival/flex so editing the search
+ *  bar updates results instantly; everywhere else it reads the committed
+ *  snapshot (home/deal/hotel only change on "Vind deals"). `route` is declared
+ *  below — both computeds are lazy so they resolve after setup completes. */
+const activeArrival = computed(() =>
+  route.path === '/first-release/search' ? liveArrivalDate.value : committedArrivalDate.value,
+)
+const activeFlex = computed(() =>
+  route.path === '/first-release/search' ? liveFlexibility.value : committedFlexibility.value,
+)
 
 // Team members for avatar row
 const hoveredMember = ref<string | null>(null)
@@ -1026,8 +1040,9 @@ const filterCounts = computed(() => {
 // the matching set so the side panel only shows relevant packages.
 const filteredHotels = computed(() => {
   const nightsActive = selectedNights.value.length > 0
-  const arrivalActive = !!committedArrivalDate.value
-  const flex = committedFlexibility.value
+  const arrival = activeArrival.value
+  const arrivalActive = !!arrival
+  const flex = activeFlex.value
   const p = persons.value
   const destFilter = {
     destinations: [...selectedDestinations.value],
@@ -1065,7 +1080,7 @@ const filteredHotels = computed(() => {
       if (!dealMatchesAllTags(d, hotel, pickedOther)) return false
       // Arrival-date filter — deal must have at least one available date in
       // the flex window around the chosen date.
-      if (arrivalActive && !isDealAvailableInWindow(d.id, committedArrivalDate.value!, flex)) return false
+      if (arrivalActive && !isDealAvailableInWindow(d.id, arrival!, flex)) return false
       // Destination is AND-gated when active.
       if (destActive && !hotelMatchesDestination(hotel, destFilter)) return false
       // Themes are OR'd among themselves and AND'd with the destination.

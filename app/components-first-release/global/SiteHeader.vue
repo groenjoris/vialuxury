@@ -589,8 +589,12 @@
 
         <div class="search-bar__divider"></div>
 
-        <!-- 2. Wanneer + Hoelang (combined) -->
+        <!-- 2. Date + duration. VARIANT 1 = combined "Wanneer + Hoelang"
+             (kept behind the flag — set `searchBarV2 = false` to revive it).
+             VARIANT 2 (default) = two separate fields: Aankomstdatum +
+             Reisduur, reusing the date/duration popups from HotelSearchBar. -->
         <button
+          v-if="!searchBarV2"
           ref="whenField"
           class="search-bar__field search-bar__field--when"
           :class="{ 'search-bar__field--active': activePopup === 'when' }"
@@ -614,6 +618,70 @@
             @click.stop="clearWhenAndDuration"
             @keydown.enter.stop.prevent="clearWhenAndDuration"
             @keydown.space.stop.prevent="clearWhenAndDuration"
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+          </span>
+        </button>
+
+        <!-- Variant 2: Aankomstdatum -->
+        <button
+          v-if="searchBarV2"
+          ref="whenField"
+          class="search-bar__field search-bar__field--when"
+          :class="{ 'search-bar__field--active': activePopup === 'date' }"
+          @click="togglePopup('date')"
+        >
+          <span class="search-bar__field-body">
+            <span class="search-bar__field-row">
+              <span class="search-bar__field-icon" aria-hidden="true">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+              </span>
+              <span class="search-bar__label">{{ t('header.arrivalDate') }}</span>
+            </span>
+            <span class="search-bar__value" :class="{ 'search-bar__value--placeholder': whenIsPlaceholder }">{{ whenLabel }}</span>
+          </span>
+          <span
+            v-if="!whenIsPlaceholder"
+            class="search-bar__clear"
+            role="button"
+            tabindex="0"
+            :aria-label="t('header.clear')"
+            @click.stop="clearDate"
+            @keydown.enter.stop.prevent="clearDate"
+            @keydown.space.stop.prevent="clearDate"
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+          </span>
+        </button>
+
+        <div v-if="searchBarV2" class="search-bar__divider"></div>
+
+        <!-- Variant 2: Reisduur -->
+        <button
+          v-if="searchBarV2"
+          ref="durationField"
+          class="search-bar__field search-bar__field--duration"
+          :class="{ 'search-bar__field--active': activePopup === 'duration' }"
+          @click="togglePopup('duration')"
+        >
+          <span class="search-bar__field-body">
+            <span class="search-bar__field-row">
+              <span class="search-bar__field-icon" aria-hidden="true">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>
+              </span>
+              <span class="search-bar__label">{{ t('header.duration') }}</span>
+            </span>
+            <span class="search-bar__value" :class="{ 'search-bar__value--placeholder': hoelangIsPlaceholder }">{{ hoelangLabel }}</span>
+          </span>
+          <span
+            v-if="!hoelangIsPlaceholder"
+            class="search-bar__clear"
+            role="button"
+            tabindex="0"
+            :aria-label="t('header.clear')"
+            @click.stop="clearDurationOnly"
+            @keydown.enter.stop.prevent="clearDurationOnly"
+            @keydown.space.stop.prevent="clearDurationOnly"
           >
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
           </span>
@@ -712,6 +780,51 @@
             @update:flexible="setLocalFlexible"
             @save="closePopup()"
             @clear="clearWhenAndDuration"
+          />
+        </div>
+
+        <!-- Variant 2: AANKOMSTDATUM popup (calendar only). Auto-closes on
+             pick like the mid-page HotelSearchBar. -->
+        <div
+          v-if="activePopup === 'date'"
+          class="popup popup--when"
+          style="width: 100%;"
+        >
+          <FirstReleaseDateAndDurationPopup
+            mode="date"
+            hide-footer
+            v-model:cal-month="calMonth"
+            :selected-date="selectedDate"
+            :nights="localNights"
+            :any-duration="localAnyDuration"
+            :flexible="localFlexible"
+            @toggle-night="toggleLocalNight"
+            @set-any-duration="setAnyDuration"
+            @update:flexible="setLocalFlexible"
+            @update:selected-date="onDatePicked"
+            @save="closePopup()"
+            @clear="clearDate"
+          />
+        </div>
+
+        <!-- Variant 2: REISDUUR popup (nights list, keeps "Klaar"). -->
+        <div
+          v-if="activePopup === 'duration'"
+          class="popup popup--when"
+          style="width: 100%;"
+        >
+          <FirstReleaseDateAndDurationPopup
+            mode="duration"
+            v-model:cal-month="calMonth"
+            v-model:selected-date="selectedDate"
+            :nights="localNights"
+            :any-duration="localAnyDuration"
+            :flexible="localFlexible"
+            @toggle-night="toggleLocalNight"
+            @set-any-duration="setAnyDuration"
+            @update:flexible="setLocalFlexible"
+            @save="closePopup()"
+            @clear="clearDurationOnly"
           />
         </div>
 
@@ -1025,11 +1138,18 @@ useFirstReleaseClickOutside(contactDropdownRef, () => { contactDropdownOpen.valu
 // on the hamburger wrap would also close on clicks INSIDE the teleported
 // panel itself, breaking row clicks. We don't bind it.
 
-const activePopup = ref<'destination' | 'when' | 'who' | null>(null)
+/** Search-bar layout. Variant 2 (default) splits the combined "Wanneer +
+ *  Hoelang" field into two separate fields (Aankomstdatum + Reisduur).
+ *  Set to `false` to revive Variant 1 (the combined field) — it's kept in
+ *  the template behind this flag. */
+const searchBarV2 = true
+
+const activePopup = ref<'destination' | 'when' | 'who' | 'date' | 'duration' | null>(null)
 
 // Refs to each search-bar field button → used to position popups
 const destField = ref<HTMLElement | null>(null)
 const whenField = ref<HTMLElement | null>(null)
+const durationField = ref<HTMLElement | null>(null)
 const whoField = ref<HTMLElement | null>(null)
 
 // External anchor (variant-2 hero): when set, popup position is computed
@@ -1038,11 +1158,14 @@ const whoField = ref<HTMLElement | null>(null)
 const externalAnchor = ref<HTMLElement | null>(null)
 
 // Approximate popup heights (used to decide auto-scroll on open)
-const POPUP_HEIGHTS: Record<'destination' | 'when' | 'who', number> = {
+const POPUP_HEIGHTS: Record<string, number> = {
   destination: 540,
   // Wanneer-popup with a ~400 px square calendar — header (~30) + calendar
   // (~400) + footer / Verder-button (~60) + padding (~40) = ~580 px.
   when: 580,
+  // Variant 2: date popup = calendar only; duration = nights list.
+  date: 540,
+  duration: 380,
   // MVP list: 8 rows × ~44 px + 8 px top/bottom = ~368.
   who: 380,
 }
@@ -1054,6 +1177,8 @@ function fieldRect() {
   switch (activePopup.value) {
     case 'destination': return destField.value?.getBoundingClientRect()
     case 'when':        return whenField.value?.getBoundingClientRect()
+    case 'date':        return whenField.value?.getBoundingClientRect()
+    case 'duration':    return durationField.value?.getBoundingClientRect()
     case 'who':         return whoField.value?.getBoundingClientRect()
     default:            return undefined
   }
@@ -1071,7 +1196,7 @@ function computePopupPosition() {
   // grandparent has no width set — the anchor collapses to ~0 and clips
   // the inner via overflow. Setting the anchor's width guarantees the
   // popup gets its full canvas.
-  const WIDTHS: Record<string, number> = { destination: 560, when: 581, who: 420 }
+  const WIDTHS: Record<string, number> = { destination: 560, when: 581, date: 420, duration: 360, who: 420 }
   const popupWidth = Math.min(WIDTHS[which] ?? 600, window.innerWidth - 24)
   const desired = rect.left
   const maxLeft = window.innerWidth - popupWidth - 12
@@ -1124,7 +1249,7 @@ const totalArrangementCount = computed(() => {
 
 const mobileSearchLabel = computed(() => `Doorzoek ${totalArrangementCount.value} hotelarrangementen`)
 
-function togglePopup(popup: 'destination' | 'when' | 'who') {
+function togglePopup(popup: 'destination' | 'when' | 'who' | 'date' | 'duration') {
   activePopup.value = activePopup.value === popup ? null : popup
 }
 
@@ -1185,8 +1310,9 @@ defineExpose({ openPopupAt })
 
 function clearDestination() {
   // Rule #3: wipe the LOCAL drafts only. Shared state stays put until
-  // the user presses Find Deals.
+  // the user presses Find Deals — except on /search, where it applies live.
   resetLocalDestinationState()
+  applyLiveDestination()
   closePopup()
 }
 
@@ -1200,6 +1326,7 @@ function onSingleDestination(id: string) {
     localDestDestinations.value = [id]
     localDestSelectionOrder.value = [{ type: 'destination', key: id }]
   }
+  applyLiveDestination()
   closePopup()
 }
 function onSingleTheme(id: string) {
@@ -1215,6 +1342,7 @@ function onSingleCity(city: { name: string; province: string }) {
   resetLocalDestinationState()
   localDestCities.value = [city]
   localDestSelectionOrder.value = [{ type: 'city', key: city.name }]
+  applyLiveDestination()
   closePopup()
 }
 function onSingleHotel(slug: string) {
@@ -1224,6 +1352,7 @@ function onSingleHotel(slug: string) {
   localDestHotels.value = [{ slug, name }]
   localDestSelectionOrder.value = [{ type: 'hotel', key: slug }]
   notePicker()
+  applyLiveDestination()
   closePopup()
 }
 
@@ -1258,6 +1387,37 @@ function clearWhenAndDuration() {
 function clearWho() {
   searchGroup.value = { adults: 2, children: [], rooms: 1, dog: false }
   closePopup()
+}
+
+/* ── Variant 2: separate Aankomstdatum / Reisduur fields ── */
+/** Date popup picked a day (Variant 2). Mirror it into the draft, drop any
+ *  "flexibel"/month state, live-apply on /search, and auto-close the popup. */
+function onDatePicked(date: string | null) {
+  selectedDate.value = date
+  if (date) {
+    localFlexible.value = false
+    flexState.value = { durations: flexState.value.durations, months: [] }
+  }
+  notePicker()
+  applyLiveCriteria()
+  closePopup()
+}
+/** Clear only the arrival-date side (keep the chosen duration). */
+function clearDate() {
+  selectedDate.value = null
+  flexibility.value = 0
+  localFlexible.value = false
+  flexState.value = { durations: flexState.value.durations, months: [] }
+  calMonth.value = { year: new Date().getFullYear(), month: new Date().getMonth() }
+  applyLiveCriteria()
+}
+/** Clear only the duration side (keep the chosen date). */
+function clearDurationOnly() {
+  localNights.value = []
+  localAnyDuration.value = false
+  localFlexType.value = null
+  selectedDurations.value = []
+  applyLiveCriteria()
 }
 
 // --- DESTINATION ---
@@ -1381,6 +1541,7 @@ function handleRemoveCityLocal(name: string) {
   localDestSelectionOrder.value = localDestSelectionOrder.value.filter(
     e => !(e.type === 'city' && e.key === name),
   )
+  applyLiveDestination()
 }
 function handleSelectHotelInPopupLocal(slug: string) {
   if (localDestHotels.value.some(h => h.slug === slug)) return
@@ -1494,11 +1655,12 @@ function setLocalFlexible(next: boolean) {
     flexState.value = { durations: [], months: [] }
   }
   notePicker()
+  applyLiveCriteria()
 }
 
 function toggleLocalNight(value: string) {
   // Local-only — shared `selectedNights` only changes when the user
-  // hits "Vind deals" via `commitSearch()`.
+  // hits "Vind deals" via `commitSearch()` (or live on /search).
   const i = localNights.value.indexOf(value)
   if (i === -1) localNights.value.push(value)
   else localNights.value.splice(i, 1)
@@ -1507,6 +1669,7 @@ function toggleLocalNight(value: string) {
     localAnyDuration.value = false
   }
   notePicker()
+  applyLiveCriteria()
 }
 
 function setAnyDuration(next: boolean) {
@@ -1517,13 +1680,15 @@ function setAnyDuration(next: boolean) {
     localFlexType.value = null
   }
   notePicker()
+  applyLiveCriteria()
 }
 
 function setLocalFlexType(val: string | null) {
-  // Local-only — committed in `commitSearch()`.
+  // Local-only — committed in `commitSearch()` (or live on /search).
   localFlexType.value = val
   if (val) localNights.value = []
   notePicker()
+  applyLiveCriteria()
 }
 
 // External commits (e.g. filter pill removed on /search, the other
@@ -1829,6 +1994,7 @@ const whoMvpSelectedKey = computed(() => {
 
 function pickWhoMvp(opt: { adults: number; rooms: number }) {
   searchGroup.value = { adults: opt.adults, children: [], rooms: opt.rooms, dog: false }
+  applyLiveCriteria()
   closePopup()
 }
 
@@ -1903,6 +2069,38 @@ async function commitSearch() {
     // watcher callback queued by the state mutations also skips.
     setTimeout(() => searchNavLock.end(), 0)
   }
+}
+
+/* ── Live search on /search ONLY ──
+ * On the results page, editing the search bar applies immediately (no "Vind
+ * deals" press). Home and deal/hotel keep buffering drafts until commit.
+ * Destination and criteria are split so that, e.g., changing the date never
+ * re-adds a destination the user removed via a filter pill. */
+const liveMode = computed(() => _route.path === '/first-release/search')
+
+/** Push the bar's destination draft to shared state live (single-select:
+ *  clear then re-add). Does not touch tags/budget. */
+function applyLiveDestination() {
+  if (!liveMode.value) return
+  clearDestinations()
+  for (const id of localDestDestinations.value) toggleDestination(id)
+  for (const city of localDestCities.value) handleSelectCity(city)
+  for (const hotel of localDestHotels.value) addHotel({ name: hotel.name, slug: hotel.slug })
+  triggerSearchUpdate()
+}
+
+/** Push the bar's date / duration / people drafts to shared state live.
+ *  Never touches destinations, filter tags or budget. */
+function applyLiveCriteria() {
+  if (!liveMode.value) return
+  const totalPersons = searchGroup.value.adults + searchGroup.value.children.length
+  setSearchGroup(totalPersons, searchGroup.value.rooms)
+  setArrivalDate(selectedDate.value)
+  setSelectedNights(localNights.value.filter(v => ['1', '2', '3', '4', '5+'].includes(v)))
+  setFlexType(localFlexType.value)
+  setGlobalFlexibility(flexibility.value)
+  commitArrivalDate()
+  triggerSearchUpdate()
 }
 
 function currentDealSlug(): string | null {
