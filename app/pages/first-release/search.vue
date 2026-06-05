@@ -313,7 +313,9 @@
             </section>
 
             <section class="search-page__mobile-pills">
-              <FirstReleaseFilterPills />
+              <!-- Destination + arrival date live in the search summary bar on
+                   mobile, so don't repeat them as filter chips here. -->
+              <FirstReleaseFilterPills :hide-location-date="true" />
             </section>
           </template>
 
@@ -2029,6 +2031,21 @@ onMounted(() => {
   /* Filter toggle becomes a full-width tappable button */
   .search-toolbar__filter-toggle {
     padding: 10px 14px;
+  }
+
+  /* Mobile search header tidy-up:
+     - no breadcrumb
+     - Filter / Kaart / Sorteren toolbar moves ABOVE the title (order:-1 in
+       the .search-page__results flex column)
+     - no grey divider directly under the search bar (the toolbar's
+       border-bottom). */
+  .search-page__breadcrumbs {
+    display: none;
+  }
+  .search-page__mobile-toolbar {
+    order: -1;
+    margin-top: 0;          /* it now sits at the very top — drop the negative pull */
+    border-bottom: 0;       /* remove the divider below the search bar */
   }
 }
 

@@ -56,7 +56,15 @@ const { t } = useFirstReleaseI18n()
  * and the reset chip leaves the destination state alone — picking provinces
  * still drives the map's initial zoom on the next visit.
  */
-const props = withDefaults(defineProps<{ mode?: 'search' | 'map' }>(), { mode: 'search' })
+const props = withDefaults(
+  defineProps<{
+    mode?: 'search' | 'map'
+    /** Hide the destination + arrival-date chips (used by the mobile search
+     *  pill row — those criteria live in the search summary bar there). */
+    hideLocationDate?: boolean
+  }>(),
+  { mode: 'search', hideLocationDate: false },
+)
 
 const {
   selectedNights, toggleNight, clearNights,
@@ -85,7 +93,7 @@ const pills = computed<Pill[]>(() => {
   const out: Pill[] = []
   // Destination chips — only rendered on /search. /kaart shows all hotels
   // regardless of destination, so chips would be misleading there.
-  if (props.mode !== 'map') {
+  if (props.mode !== 'map' && !props.hideLocationDate) {
     for (const id of selectedDestinations.value) {
       out.push({
         key: `dest-${id}`,
@@ -109,7 +117,7 @@ const pills = computed<Pill[]>(() => {
     }
   }
   // Arrival date (and flex window) pill — clears every calendar on the site
-  if (arrivalDate.value) {
+  if (arrivalDate.value && !props.hideLocationDate) {
     out.push({
       key: 'arrival',
       label: formatArrival(arrivalDate.value, selectedFlexibility.value),
