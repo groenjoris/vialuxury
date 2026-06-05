@@ -1068,4 +1068,30 @@ onBeforeUnmount(() => {
   .hotel-page__tabs--in-bar { display: none; }
   .hotel-page__cta-bar-cluster { flex: 1; justify-content: space-between; }
 }
+
+/* Equal margin above every mobile section title (≈48px = 24px below the
+   previous section's content + 24px above the title), matching the deal page.
+   The sections default to 32px padding and the nested faq/tips components add
+   their own 32px on top, which inflated the gaps above FAQ / Tips. */
+@media (max-width: 800px) {
+  .hotel-page__intro,
+  .hotel-page__facilities,
+  .hotel-page__deals,
+  .hotel-page__house-rules,
+  .hotel-page__faq {
+    padding-top: 24px !important;
+    padding-bottom: 24px !important;
+  }
+  .hotel-page__faq :deep(.faq-section) {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+  }
+  #tips :deep(.tips-section) {
+    padding-top: 24px !important;
+    padding-bottom: 24px !important;
+  }
+  #tips :deep(.tips-row) {
+    padding-bottom: 0 !important;
+  }
+}
 </style>

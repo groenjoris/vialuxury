@@ -2511,8 +2511,9 @@ onMounted(() => {
      the mini-map like on desktop). */
   .deal-page__description-mobile {
     margin-top: 16px;
-    /* Breathing room between "Lees meer" and the next section's divider. */
-    margin-bottom: 16px;
+    /* 24px so the gap above the Highlights title matches the other sections
+       (24px below content + 24px above title = a consistent 48px). */
+    margin-bottom: 24px;
   }
   /* "Lees meer" link +2pt on mobile. */
   .deal-page__description-mobile .deal-page__read-more {
@@ -2595,11 +2596,28 @@ onMounted(() => {
   .deal-page__faq--mobile :deep(.faq-section) {
     border-top: 0 !important;
   }
-  /* Tighten the gap between the FAQ block and "Waarom boeken bij ViaLuxury".
-     The class lands on the component's root (which IS .why-vialuxury), so
-     target it directly; !important beats the component's own scoped padding. */
-  .deal-page__why-mobile {
+  /* Equal margin above every section title (~48px = 24px below the previous
+     section's content + 24px above the title). The nested tips-section and
+     faq-section components add their OWN 32px vertical padding on top of the
+     wrapper's 24px, which inflated the gaps above Tips / Huisregels / FAQ /
+     Waarom — normalise them here so every title sits the same distance below
+     the element above it. */
+  .deal-page__nearby-mobile :deep(.tips-section) {
+    padding-top: 24px !important;
+    padding-bottom: 24px !important;
+  }
+  .deal-page__nearby-mobile :deep(.tips-row) {
+    padding-bottom: 0 !important;
+  }
+  .deal-page__faq--mobile :deep(.faq-section) {
     padding-top: 0 !important;
+    padding-bottom: 0 !important;
+  }
+  /* "Waarom boeken bij ViaLuxury" — the class IS the component root, so target
+     it directly. 24px top so its gap matches the rest (was 0, which combined
+     with the faq-section's old 32px padding read as too big). */
+  .deal-page__why-mobile {
+    padding-top: 24px !important;
   }
 
   /* Partner (NUshop) co-brand card: breathing room above it so it doesn't
