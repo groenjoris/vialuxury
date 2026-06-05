@@ -306,7 +306,7 @@ const en: Record<string, string> = {
   'room.stillAvailable': '{n} rooms still available',
   'mapCard.roomsLeft': 'Only {n} rooms left',
   'mapCard.soldOutForDates': 'Sold out for your dates',
-  'mapCard.seeAvailableDates': 'See available dates',
+  'mapCard.seeAvailableDates': 'Available dates',
   'room.editTravelGroup': 'Edit travel group',
   'room.youBook': 'You book',
   'room.roomFor': 'room for',

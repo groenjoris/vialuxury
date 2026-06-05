@@ -84,7 +84,7 @@
       <!-- Scarcity sticker — bottom-right of the photo. Same chip look as
            the amenity stickers (solid black tile, Basis Grotesque white
            text) but ~half the size. Only shown when fewer than 4 left. -->
-      <span v-if="roomsLeft < 4" class="deal-card-v2__rooms-sticker">Nog {{ roomsLeft }} beschikbaar</span>
+      <span v-if="roomsLeft < 4 && !isMismatch && !unavailable" class="deal-card-v2__rooms-sticker">Nog {{ roomsLeft }} beschikbaar</span>
       <button
         type="button"
         class="deal-card-v2__favorite"
@@ -194,15 +194,15 @@
                   <FirstReleasePriceInfoTooltip variant="card" />
                 </p>
                 <NuxtLink
-                  :to="dealHref"
+                  :to="dateMismatch ? mismatchHref : dealHref"
                   :target="linkTarget"
                   rel="noopener"
                   class="deal-card-v2__cta"
                   :class="{ 'deal-card-v2__cta--two-line': dateMismatch }"
                 >
                   <template v-if="dateMismatch">
-                    <span>Bekijk</span>
-                    <span>beschikbaarheid</span>
+                    <span>beschikbare</span>
+                    <span>datums</span>
                   </template>
                   <template v-else>{{ ctaLabel || 'Bekijk' }}</template>
                 </NuxtLink>
@@ -484,6 +484,19 @@ const dealHref = computed(() => {
   if (rooms.value !== 1) params.set('rooms', String(rooms.value))
   const q = params.toString()
   return `/first-release/deal/${props.deal.slug}${q ? '?' + q : ''}`
+})
+
+/** Href for the "beschikbare datums" CTA on an unavailable deal. Tells the
+ *  deal page to scroll to the calendar on arrival (`cal=1`) and deliberately
+ *  OMITS `checkin` — the deal page applies `?checkin` to the booking store, so
+ *  carrying the unavailable date would pre-select it. The calendar opens empty
+ *  so the user picks an available date. */
+const mismatchHref = computed(() => {
+  const params = new URLSearchParams()
+  if (persons.value !== 2) params.set('persons', String(persons.value))
+  if (rooms.value !== 1) params.set('rooms', String(rooms.value))
+  params.set('cal', '1')
+  return `/first-release/deal/${props.deal.slug}?${params.toString()}`
 })
 
 /** Card price reflects the global arrival date when set — same surcharge
@@ -1063,7 +1076,9 @@ const includesBullets = computed<string[]>(() => {
 .deal-card-v2__cta--two-line {
   flex-direction: column;
   line-height: 1.15;
-  padding: 6px 16px;
+  /* Halved padding (was 6px 16px) so the unavailable CTA is more compact and
+     leaves room for the price info (ⓘ) icon beside it. */
+  padding: 3px 8px;
   font-size: 13px;
   white-space: normal;
 }

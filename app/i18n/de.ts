@@ -319,7 +319,7 @@ const de: Record<string, string> = {
   'room.stillAvailable': 'noch {n} Zimmer verfügbar',
   'mapCard.roomsLeft': 'Nur noch {n} Zimmer verfügbar',
   'mapCard.soldOutForDates': 'Ausverkauft für deine Daten',
-  'mapCard.seeAvailableDates': 'Verfügbare Daten ansehen',
+  'mapCard.seeAvailableDates': 'Verfügbare Daten',
   'room.editTravelGroup': 'Reisegruppe bearbeiten',
   'room.youBook': 'Du buchst',
   'room.roomFor': 'Zimmer für',

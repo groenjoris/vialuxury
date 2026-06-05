@@ -167,13 +167,25 @@ const dealViews = computed(() => {
       const soldOut = !!arrivalDate.value
         && !isDealAvailableInWindow(deal.id, arrivalDate.value, selectedFlexibility.value)
       const effArrival = soldOut ? null : arrivalDate.value
+      // Sold-out → "beschikbare datums": land on the deal page's calendar
+      // (cal=1) WITHOUT a checkin (the page applies ?checkin to the store, so
+      // carrying the unavailable date would pre-select it). Empty calendar.
+      let href: string
+      if (soldOut) {
+        const p = new URLSearchParams()
+        if (persons.value !== 2) p.set('persons', String(persons.value))
+        p.set('cal', '1')
+        href = `/first-release/deal/${deal.slug}?${p.toString()}`
+      } else {
+        href = hrefFor(deal)
+      }
       return {
         deal,
         soldOut,
         price: priceForArrival(deal.basePrice, deal.id, effArrival, persons.value),
         originalPrice: priceForArrival(deal.originalPrice, deal.id, effArrival, persons.value),
         includes: (deal.inclusions || []).slice(0, 2).map(i => localized(i)),
-        href: hrefFor(deal),
+        href,
       }
     })
 })
@@ -409,12 +421,19 @@ const dealViews = computed(() => {
   text-decoration: none;
 }
 .mdeal__btn--text {
+  /* "Beschikbare datums" wraps onto 2 lines so the button stays compact and
+     sits neatly beside the price info (ⓘ). Halved horizontal padding. */
   width: auto;
-  padding: 0 12px;
-  height: 36px;
+  max-width: 96px;
+  padding: 4px 6px;
+  height: auto;
+  min-height: 36px;
   font-family: var(--font-body);
   font-size: 13px;
   font-weight: 600;
+  line-height: 1.1;
+  text-align: center;
+  white-space: normal;
 }
 .mdeal__btn:hover { background: var(--color-primary-hover); }
 

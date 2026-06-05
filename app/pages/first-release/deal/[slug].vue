@@ -1042,11 +1042,30 @@ function handleScroll() {
 onMounted(() => {
   window.addEventListener('scroll', handleScroll, { passive: true })
   handleScroll()
+  // Arriving via an unavailable deal's "beschikbare datums" CTA: scroll to the
+  // calendar (the date was already cleared in setup, so it opens empty for the
+  // user to pick an available date). `cameFromCalCta` is captured in setup
+  // because the URL-sync watcher strips the `cal` query param by mount time.
+  if (import.meta.client && cameFromCalCta) {
+    // Clear here (after the global arrival date has been restored from
+    // localStorage) so the unavailable date isn't re-seeded into the calendar.
+    store.clearDates()
+    const scrollToCal = () => {
+      store.clearDates()
+      const cals = [...document.querySelectorAll('.sidebar__calendar')] as HTMLElement[]
+      const target = cals.find(el => el.offsetParent !== null) || cals[0]
+      // Mirror scrollToArrangement()'s proven pattern on this page.
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+    // Retry as layout/images settle (the deal page reflows on mount).
+    setTimeout(scrollToCal, 400)
+    setTimeout(scrollToCal, 900)
+  }
   // Autoscroll: on a fresh entry (Y=0), land just past the 200 px
   // sticky-CTA threshold so the bar is visible from the first paint.
   // Skip when scroll-restoration already placed the user somewhere
-  // (e.g. browser back from a sub-page).
-  if (import.meta.client && window.scrollY === 0) {
+  // (e.g. browser back from a sub-page) or when we're scrolling to the calendar.
+  else if (import.meta.client && window.scrollY === 0) {
     nextTick(() => window.scrollTo({ top: 220, behavior: 'auto' }))
   }
 })
@@ -1299,6 +1318,10 @@ const dealsMap = dealsMapByPermalink[routeSlug.value] || {}
 store.initializeDeal(initialDeal, dealVariants)
 
 const query = route.query as Record<string, string>
+// Captured here (setup) because the URL-sync watcher below strips `cal` from
+// the URL by the time onMounted runs. `cal=1` means we arrived from an
+// unavailable deal's "beschikbare datums" CTA → open the calendar empty.
+const cameFromCalCta = query.cal === '1'
 if (Object.keys(query).length > 0) {
   store.applyFromQuery(query, dealsMap)
 }
@@ -1534,13 +1557,14 @@ onMounted(() => {
   background: none;
   cursor: pointer;
   font-family: var(--font-body);
-  font-size: 16px;
+  /* Match the anchor-navigation tabs (.deal-page__tab = 14px). */
+  font-size: 14px;
   color: var(--color-text-primary);
 }
 .deal-page__action:hover { color: var(--color-primary); }
-.deal-page__action-heart { font-size: 19px; line-height: 1; }
+.deal-page__action-heart { font-size: 17px; line-height: 1; }
 .deal-page__action--favorited .deal-page__action-heart { color: #e74c3c; }
-.deal-page__action-label { font-size: 16px; }
+.deal-page__action-label { font-size: 14px; }
 .deal-page__breadcrumbs { padding-top: var(--space-md); }
 
 /* ===== 2-COLUMN GRID ===== */

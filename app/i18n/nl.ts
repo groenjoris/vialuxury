@@ -306,7 +306,7 @@ const nl: Record<string, string> = {
   'room.stillAvailable': 'nog {n} kamers beschikbaar',
   'mapCard.roomsLeft': 'Nog maar {n} kamers beschikbaar',
   'mapCard.soldOutForDates': 'Uitverkocht voor je data',
-  'mapCard.seeAvailableDates': 'Bekijk beschikbare data',
+  'mapCard.seeAvailableDates': 'Beschikbare datums',
   'room.editTravelGroup': 'Wijzig reisgezelschap',
   'room.youBook': 'U boekt',
   'room.roomFor': 'kamer voor',
