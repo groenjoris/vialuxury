@@ -37,7 +37,7 @@ const heroPhotoIndex = ref(0)
  * Independent of the legacy frNavVariant / data-fr-variant=6. Drives the
  * mobile-only home-hero + header layouts via `data-fr-home-variant` on
  * <html>; all variant CSS lives in app/assets/css/fr-home-variants.css. */
-type HomeLayoutVariant = '1' | '2' | '3' | '4'
+type HomeLayoutVariant = '1' | '2' | '3' | '4' | '5'
 const STORAGE_KEY_HOME_VARIANT = 'vl_fr_home_variant'
 const homeLayoutVariant = ref<HomeLayoutVariant>('1')
 
@@ -117,7 +117,7 @@ export function useFirstReleaseHomeVariant() {
     if (!import.meta.client) return
     try {
       const stored = localStorage.getItem(STORAGE_KEY_HOME_VARIANT)
-      if (stored === '1' || stored === '2' || stored === '3' || stored === '4') {
+      if (stored === '1' || stored === '2' || stored === '3' || stored === '4' || stored === '5') {
         homeLayoutVariant.value = stored
       }
     } catch { /* ignore */ }

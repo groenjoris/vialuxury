@@ -502,7 +502,7 @@
                     <span class="menu-panel__section-label menu-panel__section-label--later">Layout-variant</span>
                     <div class="menu-panel__variants">
                       <button
-                        v-for="v in (['1','2','3','4'] as const)"
+                        v-for="v in (['1','2','3','4','5'] as const)"
                         :key="v"
                         type="button"
                         class="menu-panel__variant"
@@ -547,6 +547,11 @@
           </svg>
         </span>
       </button>
+
+      <!-- Handwritten payoff under the search bar — shown ONLY in home
+           layout variant 5 (gated in fr-home-variants.css), where it sits
+           over the hero photo at the same width as the search bar. -->
+      <span class="mobile-search-payoff" aria-hidden="true">Personally Curated Experiences</span>
     </div>
 
     <!-- Hero content slot (overlay mode only) -->
@@ -3712,6 +3717,12 @@ function handleSelectHotelInPopup(slug: string) {
 /* MOBILE SEARCH TRIGGER */
 /* ==================== */
 .site-header__mobile-search {
+  display: none;
+}
+
+/* Handwritten payoff under the mobile search bar. Hidden everywhere by
+   default; home layout variant 5 reveals it (see fr-home-variants.css). */
+.mobile-search-payoff {
   display: none;
 }
 

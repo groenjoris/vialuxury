@@ -277,8 +277,8 @@ function pickFilter(tagId: string) {
 
 // Persist this home's nav variant so internal pages render the same nav.
 import { useFirstReleaseHomeVariant } from '~/composables-first-release/useFirstReleaseHomeVariant'
-const { setFrNavVariant, heroPhotoUrl, heroPhotoIndex, restoreHeroPhotoIndex } = useFirstReleaseHomeVariant()
-onMounted(() => { setFrNavVariant('1'); restoreHeroPhotoIndex() })
+const { setFrNavVariant, heroPhotoUrl, heroPhotoIndex, restoreHeroPhotoIndex, restoreHomeLayoutVariant } = useFirstReleaseHomeVariant()
+onMounted(() => { setFrNavVariant('1'); restoreHeroPhotoIndex(); restoreHomeLayoutVariant() })
 </script>
 
 <style scoped>
@@ -1055,6 +1055,9 @@ onMounted(() => { setFrNavVariant('1'); restoreHeroPhotoIndex() })
     grid-auto-flow: column;
     grid-template-rows: repeat(3, auto);
     grid-auto-columns: max-content;
+    /* Don't stretch each pill to its column's width — let every pill hug
+       its own label so the chips get their natural, varying widths. */
+    justify-items: start;
     gap: 8px;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
@@ -1065,6 +1068,7 @@ onMounted(() => { setFrNavVariant('1'); restoreHeroPhotoIndex() })
   .home-pill {
     width: auto;
     flex: 0 0 auto;
+    justify-self: start;   /* hug the label, don't fill the grid column */
     white-space: nowrap;
     scroll-snap-align: start;
   }

@@ -180,4 +180,43 @@
   [data-fr-home-variant="4"] .search-page .site-header__mobile-search--on-solid.site-header__mobile-search--summary {
     background: linear-gradient(to bottom, #111 34px, #fff 34px) !important;
   }
+
+  /* ── V5: bare hero like V3 (search bar dropped to the bottom of the photo,
+        no eyebrow / "Experience more" / pitch), PLUS a handwritten
+        "Personally Curated Experiences" payoff directly under the search bar,
+        matched to the bar's width. Home only. ── */
+  [data-fr-home-variant="5"] .home-hero .site-header--overlay {
+    display: flex !important;
+    flex-direction: column !important;
+    min-height: 450px;
+    padding-bottom: 0 !important;
+  }
+  [data-fr-home-variant="5"] .home-hero .site-header--overlay .site-header__nav { order: 1 !important; }
+  /* Drop the whole hero copy (eyebrow + title + pitch). */
+  [data-fr-home-variant="5"] .home-hero__eyebrow,
+  [data-fr-home-variant="5"] .home-hero__title,
+  [data-fr-home-variant="5"] .home-hero__tagline,
+  [data-fr-home-variant="5"] .home-hero__content { display: none !important; }
+  /* The search slot carries margin-top:auto to fall to the bottom of the
+     photo; padding-bottom leaves room below the payoff. */
+  [data-fr-home-variant="5"] .home-hero .site-header--overlay .site-header__mobile-search {
+    order: 3 !important;
+    margin-top: auto !important;
+    padding-bottom: 28px !important;
+  }
+  /* Reveal the handwritten payoff. It is a block sibling inside the same
+     16px-padded slot as the search pill, so width:100% == the bar's width. */
+  [data-fr-home-variant="5"] .home-hero .mobile-search-payoff {
+    display: block !important;
+    width: 100%;
+    margin-top: 14px;
+    font-family: 'Oooh Baby', cursive;
+    font-weight: 400;
+    font-size: 30px;
+    line-height: 1;
+    text-align: center;
+    color: #fff;
+    text-shadow: 0 2px 14px rgba(0, 0, 0, 0.5);
+    white-space: nowrap;
+  }
 }
