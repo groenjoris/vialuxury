@@ -61,27 +61,26 @@ defineEmits<{
   padding: 0 var(--space-lg) var(--space-md);
 }
 
-/* Mirror the desktop FilterPills reset pill — neutral grey background,
-   trashcan icon + "Verwijder filters" label. */
+/* "Verwijder filters" is a plain text link (matches the desktop FilterPills
+   reset): no background/border, dark grey, going black on hover. */
 .filter-subpage__reset {
   display: inline-flex;
   align-items: center;
   gap: 6px;
   height: 32px;
-  padding: 0 12px;
-  background: var(--color-background-secondary);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
+  padding: 0 2px;
+  background: none;
+  border: 0;
+  border-radius: 0;
   font-family: var(--font-body);
   font-size: 13px;
   font-weight: 600;
-  color: var(--color-text-primary);
+  color: var(--color-text-secondary);
   cursor: pointer;
-  transition: background var(--transition-fast), border-color var(--transition-fast);
+  transition: color var(--transition-fast);
 }
 .filter-subpage__reset:hover {
-  background: var(--color-border-light);
-  border-color: var(--color-border);
+  color: var(--color-text-primary);
 }
 .filter-subpage__reset-icon {
   flex-shrink: 0;

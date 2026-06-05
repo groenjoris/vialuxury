@@ -1808,6 +1808,14 @@ watch(flexibility, (val) => {
 })
 // Calendar duration clears flex duration. Nights → shared state happens on Search button.
 watch(selectedDurations, (val) => {
+  // The MOBILE search modal drives `selectedDurations`; the desktop popups
+  // drive `localNights`. `commitSearch()` / `applyLiveCriteria()` only read
+  // `localNights`, so without this mirror a nights pick made in the mobile
+  // modal never reached the filter ("aantal nachten wordt niet meegenomen").
+  const nights = val.filter(v => ['1', '2', '3', '4', '5+'].includes(v))
+  if (JSON.stringify(nights) !== JSON.stringify(localNights.value)) {
+    localNights.value = nights
+  }
   if (val.length > 0 && flexState.value.durations.length > 0) {
     flexState.value = { ...flexState.value, durations: [] }
   }

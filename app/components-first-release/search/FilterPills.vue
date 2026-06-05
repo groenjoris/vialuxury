@@ -210,10 +210,24 @@ function resetAll() {
   flex-shrink: 0;
 }
 
-/* Reset chip uses exactly the same neutral pill shape as the other chips —
-   no orange accent. The × icon and "Verwijder filters" label sit side-by-side
-   just like every other chip in the row. */
-.filter-pills__pill--reset .filter-pills__close {
+/* "Verwijder filters" is NOT a chip — it's a plain text link: no pill
+   background/border, dark grey, going black on hover. */
+.filter-pills__pill--reset {
+  background: none;
+  border: 0;
+  border-radius: 0;
+  padding: 0 2px;
+  height: 32px;
+  color: var(--color-text-secondary);
+  transition: color var(--transition-fast);
+}
+.filter-pills__pill--reset:hover {
+  background: none;
+  border-color: transparent;
+  color: var(--color-text-primary);
+}
+.filter-pills__pill--reset .filter-pills__close,
+.filter-pills__pill--reset .filter-pills__trash {
   color: inherit;
 }
 </style>
