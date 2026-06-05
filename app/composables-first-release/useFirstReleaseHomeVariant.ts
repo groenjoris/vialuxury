@@ -33,6 +33,21 @@ const HERO_PHOTOS: readonly string[] = [
 const STORAGE_KEY_HERO = 'vl_fr_hero_photo'
 const heroPhotoIndex = ref(0)
 
+/* ─────────── Mobile home/nav LAYOUT variant (1–4) ───────────
+ * Independent of the legacy frNavVariant / data-fr-variant=6. Drives the
+ * mobile-only home-hero + header layouts via `data-fr-home-variant` on
+ * <html>; all variant CSS lives in app/assets/css/fr-home-variants.css. */
+type HomeLayoutVariant = '1' | '2' | '3' | '4'
+const STORAGE_KEY_HOME_VARIANT = 'vl_fr_home_variant'
+const homeLayoutVariant = ref<HomeLayoutVariant>('1')
+
+if (import.meta.client) {
+  watch(homeLayoutVariant, (v) => {
+    if (typeof document === 'undefined') return
+    document.documentElement.dataset.frHomeVariant = v
+  }, { immediate: true })
+}
+
 /* All FR pages share the v6 design (1200 px grid + refreshed
  * search / deal pages). Apply the data attribute unconditionally so
  * the relevant CSS overrides fire on every FR page. */
@@ -90,7 +105,28 @@ export function useFirstReleaseHomeVariant() {
     } catch { /* ignore */ }
   }
 
+  /* ─────────── Mobile home/nav layout variant API ─────────── */
+  function setHomeLayoutVariant(v: HomeLayoutVariant) {
+    homeLayoutVariant.value = v
+    if (import.meta.client) {
+      try { localStorage.setItem(STORAGE_KEY_HOME_VARIANT, v) } catch { /* ignore */ }
+    }
+  }
+
+  function restoreHomeLayoutVariant() {
+    if (!import.meta.client) return
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY_HOME_VARIANT)
+      if (stored === '1' || stored === '2' || stored === '3' || stored === '4') {
+        homeLayoutVariant.value = stored
+      }
+    } catch { /* ignore */ }
+  }
+
   return {
+    homeLayoutVariant,
+    setHomeLayoutVariant,
+    restoreHomeLayoutVariant,
     homeVariant,
     setHomeVariant,
     restoreHomeVariant,

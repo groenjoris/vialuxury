@@ -1,0 +1,97 @@
+/* ──────────────────────────────────────────────────────────────────
+ * First Release — MOBILE home/nav layout variants (1–4).
+ * Driven by `data-fr-home-variant` on <html> (set by
+ * useFirstReleaseHomeVariant). Mobile only; desktop is untouched.
+ *
+ *  V1 — original: search pill in the nav chrome (same Y as the deal
+ *       page), hero copy below. Eyebrow shown. = the natural DOM order,
+ *       so V1 needs NO overrides.
+ *  V2 — search bar below the hero copy; eyebrow hidden.
+ *  V3 — like V2 but only "Experience more" + search bar (hide eyebrow,
+ *       pitch and the nav phone); 30px under the bar to the photo edge.
+ *  V4 — minimal header (vertical logo + 2-line phone + language +
+ *       hamburger) on home + search + deal + hotel; search below pitch.
+ * ────────────────────────────────────────────────────────────────── */
+
+@media (max-width: 800px) {
+  /* ── V2 / V3 / V4 (home): reorder so the search pill sits BELOW the
+        hero copy. (V1 keeps the natural nav → pill → copy order.) ── */
+  [data-fr-home-variant="2"] .home-hero .site-header--overlay,
+  [data-fr-home-variant="3"] .home-hero .site-header--overlay,
+  [data-fr-home-variant="4"] .home-hero .site-header--overlay {
+    display: flex !important;   /* beats the scoped .home-hero .site-header{display:block} */
+    flex-direction: column !important;
+  }
+  [data-fr-home-variant="2"] .home-hero .site-header--overlay .site-header__nav,
+  [data-fr-home-variant="3"] .home-hero .site-header--overlay .site-header__nav,
+  [data-fr-home-variant="4"] .home-hero .site-header--overlay .site-header__nav { order: 1 !important; }
+
+  [data-fr-home-variant="2"] .home-hero .site-header--overlay .home-hero__content,
+  [data-fr-home-variant="3"] .home-hero .site-header--overlay .home-hero__content,
+  [data-fr-home-variant="4"] .home-hero .site-header--overlay .home-hero__content { order: 2 !important; }
+
+  [data-fr-home-variant="2"] .home-hero .site-header--overlay .site-header__mobile-search,
+  [data-fr-home-variant="3"] .home-hero .site-header--overlay .site-header__mobile-search,
+  [data-fr-home-variant="4"] .home-hero .site-header--overlay .site-header__mobile-search {
+    order: 3 !important;
+    padding-bottom: 30px;   /* gap below the search bar */
+  }
+
+  /* Eyebrow ("SPRING 2026") only in V1. */
+  [data-fr-home-variant="2"] .home-hero__eyebrow,
+  [data-fr-home-variant="3"] .home-hero__eyebrow,
+  [data-fr-home-variant="4"] .home-hero__eyebrow { display: none !important; }
+
+  /* ── V3: only "Experience more" + search. Hide pitch + nav phone; the
+        photo ends ~30px under the bar (reorder already adds that gap). ── */
+  [data-fr-home-variant="3"] .home-hero__tagline { display: none !important; }
+  [data-fr-home-variant="3"] .home .site-header__phone-wrap { display: none !important; }
+  [data-fr-home-variant="3"] .home-hero { min-height: 0 !important; }
+
+  /* ── V4: minimal header on home + search + deal + hotel. ── */
+  [data-fr-home-variant="4"] :is(.home, .search-page, .deal-page, .hotel-page) .site-header__nav-inner {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  /* Swap the horizontal logo for the compact vertical (stacked) one and
+     drop the payoff tagline. Both logos are always in the DOM; we toggle
+     visibility here so the swap stays scoped to these four pages. */
+  [data-fr-home-variant="4"] :is(.home, .search-page, .deal-page, .hotel-page) .site-header__logo-img--horizontal {
+    display: none !important;
+  }
+  [data-fr-home-variant="4"] :is(.home, .search-page, .deal-page, .hotel-page) .site-header__logo-img--vertical {
+    display: block !important;
+    height: 40px;
+    width: auto;
+  }
+  [data-fr-home-variant="4"] :is(.home, .search-page, .deal-page, .hotel-page) .site-header__tagline-block {
+    display: none;
+  }
+  /* Phone next to the logo, stacked over two lines (no icon). */
+  [data-fr-home-variant="4"] :is(.home, .search-page, .deal-page, .hotel-page) .site-header__phone-wrap {
+    margin: 0 !important;
+    width: auto !important;
+    justify-self: start !important;
+    align-self: center;
+  }
+  [data-fr-home-variant="4"] :is(.home, .search-page, .deal-page, .hotel-page) .site-header__phone {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+  }
+  [data-fr-home-variant="4"] :is(.home, .search-page, .deal-page, .hotel-page) .site-header__phone svg {
+    display: none;
+  }
+  [data-fr-home-variant="4"] :is(.home, .search-page, .deal-page, .hotel-page) .site-header__phone-label {
+    display: inline;
+    font-size: 13px;
+    line-height: 1.25;
+    margin: 0;
+  }
+  [data-fr-home-variant="4"] :is(.home, .search-page, .deal-page, .hotel-page) .site-header__phone-number {
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.25;
+  }
+}

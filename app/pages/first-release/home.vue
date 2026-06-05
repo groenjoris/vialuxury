@@ -974,21 +974,9 @@ onMounted(() => { setFrNavVariant('1'); restoreHeroPhotoIndex() })
     gap: 16px;
   }
 
-  /* Mobile home: the search bar sits BELOW the hero copy (which moves up
-     onto the photo). Make the overlay header a flex column and reorder
-     its in-flow children: nav → hero copy → search pill. The hero-photo
-     switcher is position:fixed, so it stays out of this flow. */
-  .home-hero :deep(.site-header--overlay) {
-    display: flex;
-    flex-direction: column;
-  }
-  .home-hero :deep(.site-header--overlay .site-header__nav) { order: 1; }
-  .home-hero__content { order: 2; }
-  .home-hero :deep(.site-header--overlay .site-header__mobile-search) {
-    order: 3;
-    /* 30 px gap below the search bar. */
-    padding-bottom: 30px;
-  }
+  /* Mobile home layout reorder (search bar below the hero copy) is
+     variant-gated in app/assets/css/fr-home-variants.css — variant 1
+     keeps the natural order (search pill in the nav, copy below). */
   .home-hero__title {
     font-size: clamp(40px, 12vw, 64px);
     line-height: 1;

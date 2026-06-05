@@ -19,8 +19,18 @@
          `.site-header__nav-inner` (a 3-col / 2-row grid) places each. -->
     <div class="site-header__nav">
       <div class="site-header__nav-inner container">
-        <!-- Logo (grid row 1, col 1) -->
+        <!-- Logo (grid row 1, col 1). Variant 4 (mobile) swaps the
+             horizontal logo for the compact vertical one. -->
         <NuxtLink :to="homeHref" class="site-header__logo">
+          <!-- Both logos are always rendered; which one shows is decided by
+               CSS so the swap can be scoped per-page (V4 minimal header only
+               applies on home/search/deal/hotel — see fr-home-variants.css).
+               Default: horizontal visible, vertical hidden. -->
+          <img
+            src="/images/logo-vialuxury.svg"
+            alt="ViaLuxury"
+            class="site-header__logo-img site-header__logo-img--vertical"
+          />
           <img
             src="/images/logo-vialuxury-horizontal.svg"
             alt="ViaLuxury"
@@ -864,6 +874,8 @@
          page (overlay variant) since internal pages don't render a
          photo hero. -->
     <FirstReleaseHeroPhotoSwitcher v-if="variant === 'overlay'" />
+    <!-- Mobile-only layout-variant switcher — on every FR page. -->
+    <FirstReleaseHomeVariantSwitcher />
   </header>
 </template>
 
@@ -890,7 +902,7 @@ const props = withDefaults(defineProps<{
 
 const { t } = useFirstReleaseI18n()
 const localeStore = useFirstReleaseLocaleStore()
-const { homeHref, frNavVariant } = useFirstReleaseHomeVariant()
+const { homeHref, frNavVariant, homeLayoutVariant } = useFirstReleaseHomeVariant()
 
 /** Effective nav-bar layout — prop wins, otherwise read from the
  *  composable (which is restored from URL/localStorage on mount). */
@@ -2405,6 +2417,13 @@ function handleSelectHotelInPopup(slug: string) {
 .site-header__logo-img--horizontal {
   width: 244px;
   height: auto;
+}
+
+/* The vertical (stacked) logo is only used by the V4 minimal mobile header
+   — hidden everywhere by default; fr-home-variants.css reveals it (and hides
+   the horizontal one) for V4 on home/search/deal/hotel. */
+.site-header__logo-img--vertical {
+  display: none;
 }
 
 /* Pay-off block (grid row 2, col 1) — vertical stack: main tagline on

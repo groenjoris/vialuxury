@@ -60,6 +60,7 @@ export default defineNuxtConfig({
     '~/assets/css/leaflet-overrides.css',
     '~/assets/css/variant-2.css',
     '~/assets/css/fr-variant-6.css',
+    '~/assets/css/fr-home-variants.css',
     '~/assets/css/home-categories.css',
   ],
 
