@@ -581,7 +581,10 @@
 /* Check-out cell carries no price (the night isn't spent at the hotel)
    — render a small dash in the price slot so the cell doesn't look
    half-empty. Purely visual; the underlying template is untouched. */
-[data-fr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar) .day-cell--checkout::after {
+/* Only on an AVAILABLE check-out (empty price slot). A sold-out check-out
+   already renders the `.day-cell__sold` dash, so excluding it here prevents
+   two stacked dashes. */
+[data-fr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar) .day-cell--checkout:not(.day-cell--sold-out)::after {
   content: '-';
   /* Absolute so the dash sits in the price slot WITHOUT adding a flex item
      that would make the check-out cell taller than its row. */
