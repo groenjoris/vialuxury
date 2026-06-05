@@ -1389,7 +1389,9 @@ watch(() => store.checkInDate, (val) => {
 })
 const calAvailability = computed(() => {
   if (!store.currentDeal) return []
-  return generateDealAvailability(calMonth.value.year, calMonth.value.month, store.currentDeal, store.totalPersons)
+  // Prototype: calendar prices always show the 2-person / 1-room price,
+  // independent of the party-size picker (which only filters availability).
+  return generateDealAvailability(calMonth.value.year, calMonth.value.month, store.currentDeal, 2)
 })
 const calCheapestPrice = computed(() => {
   const prices = calAvailability.value.filter(a => a.available && a.totalPrice > 0).map(a => a.totalPrice)

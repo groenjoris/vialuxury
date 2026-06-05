@@ -182,8 +182,9 @@ const dealViews = computed(() => {
       return {
         deal,
         soldOut,
-        price: priceForArrival(deal.basePrice, deal.id, effArrival, persons.value),
-        originalPrice: priceForArrival(deal.originalPrice, deal.id, effArrival, persons.value),
+        // Prototype: always the 2-person / 1-room price (party size doesn't scale it).
+        price: priceForArrival(deal.basePrice, deal.id, effArrival, 2),
+        originalPrice: priceForArrival(deal.originalPrice, deal.id, effArrival, 2),
         includes: (deal.inclusions || []).slice(0, 2).map(i => localized(i)),
         href,
       }

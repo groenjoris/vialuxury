@@ -164,8 +164,13 @@ export const useFirstReleaseDealStore = defineStore('first-release-deal', () => 
     }
 
     const deal = currentDeal.value
-    const persons = totalPersons.value
-    const rooms = travelGroup.value.rooms
+    // Prototype: the headline price always reflects 2 people / 1 room,
+    // regardless of how many people are picked. The "Wie gaat er mee?"
+    // selector only (later) filters arrangements with enough rooms and
+    // drives the checkout — neither of which is in the prototype data — so
+    // it must never scale the price shown here.
+    const persons = 2
+    const rooms = 1
 
     // Single source of truth for the headline price: `priceForArrival` applies
     // both the per-person formula and the calendar's premium-day surcharge,
@@ -174,50 +179,23 @@ export const useFirstReleaseDealStore = defineStore('first-release-deal', () => 
     const arrangementAmount = priceForArrival(deal.basePrice, deal.id, checkInDate.value, persons)
     const originalArrangementAmount = priceForArrival(deal.originalPrice, deal.id, checkInDate.value, persons)
 
-    // Extra rooms: only rooms beyond minRooms are charged
-    const minRooms = minRoomsFor(persons)
-    const extraRooms = Math.max(0, rooms - minRooms)
-    const extraRoomsCost = extraRooms * 109 * deal.nights
+    // One room → no extra-room charges. A selected room-type upgrade (suite
+    // etc.) still applies — that's independent of party size.
+    const roomUpgrade = roomUpgradeCost.value
 
-    // Room upgrade — use allocation-based cost in multi-room mode
-    const roomUpgrade = isRoomAllocationActive.value
-      ? allocationUpgradeCost.value
-      : roomUpgradeCost.value * rooms
-
-    // Children discount: 50% for children under 12
-    const childrenDiscount = travelGroup.value.children
-      .filter(c => c.age < 12)
-      .length * Math.round(89 * deal.nights * 0.5)
-
-    const totalPrice = arrangementAmount + extraRoomsCost + roomUpgrade - childrenDiscount
-    const originalPrice = originalArrangementAmount + extraRoomsCost + roomUpgrade
-    const pricePerPerson = Math.round(totalPrice / Math.max(1, persons))
+    const totalPrice = arrangementAmount + roomUpgrade
+    const originalPrice = originalArrangementAmount + roomUpgrade
+    const pricePerPerson = Math.round(totalPrice / persons)
 
     // Breakdown
-    const arrangementLabel = `${t('sidebar.arrangementFor')} ${persons} ${persons === 1 ? t('common.personSingular') : t('common.personPlural')}`
+    const arrangementLabel = `${t('sidebar.arrangementFor')} ${persons} ${t('common.personPlural')}`
 
     const breakdown: { label: string; amount: number }[] = [
       { label: arrangementLabel, amount: arrangementAmount },
     ]
 
-    if (extraRooms > 0) {
-      breakdown.push({ label: `${extraRooms}x ${t('store.extraRoom')}`, amount: extraRoomsCost })
-    }
-
     if (roomUpgrade > 0) {
-      // Count rooms with paid upgrades
-      let upgradeRoomCount = 0
-      if (isRoomAllocationActive.value) {
-        for (const [roomId, count] of Object.entries(effectiveAllocation.value)) {
-          const room = allRoomTypes.value.find(r => r.id === roomId)
-          if (room && room.priceExtra > 0 && count > 0) {
-            upgradeRoomCount += count
-          }
-        }
-      } else {
-        upgradeRoomCount = rooms
-      }
-      breakdown.push({ label: `${upgradeRoomCount}x ${t('store.roomUpgrade')}`, amount: roomUpgrade })
+      breakdown.push({ label: `1x ${t('store.roomUpgrade')}`, amount: roomUpgrade })
     }
 
     return { totalPrice, originalPrice, pricePerPerson, breakdown }

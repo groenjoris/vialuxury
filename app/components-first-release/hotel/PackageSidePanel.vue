@@ -71,14 +71,14 @@ import { useFirstReleaseDealStore } from '~/stores-first-release/deal'
 const { t, localized } = useFirstReleaseI18n()
 const store = useFirstReleaseDealStore()
 
-/** Wrap variant.basePrice / variant.originalPrice through the same scaling
- *  helper the calendar + sidebar use, so the "Korter of langer" panel never
- *  shows 2-person prices when the global persons count is different. */
+/** Prototype: every price shows the 2-person / 1-room figure, matching the
+ *  calendar + sidebar. The party-size picker doesn't scale prices (it only
+ *  filters availability + drives the not-yet-built checkout). */
 function variantPrice(v: DealVariant): number {
-  return priceForArrival(v.basePrice, v.id, store.checkInDate, store.totalPersons)
+  return priceForArrival(v.basePrice, v.id, store.checkInDate, 2)
 }
 function variantOriginal(v: DealVariant): number {
-  return priceForArrival(v.originalPrice, v.id, store.checkInDate, store.totalPersons)
+  return priceForArrival(v.originalPrice, v.id, store.checkInDate, 2)
 }
 
 const props = defineProps<{

@@ -505,11 +505,14 @@ const mismatchHref = computed(() => {
  *  When `ignoreArrival` is set (side-panel "andere data" group), price is
  *  computed without the date so the card shows the deal's lowest price. */
 const effectiveArrival = computed(() => (props.ignoreArrival ? null : arrivalDate.value))
+// Prototype: card prices always show the 2-person / 1-room figure. The
+// party-size picker only filters availability + drives the future checkout,
+// so it must not scale the displayed price.
 const price = computed(() =>
-  priceForArrival(props.deal.basePrice, props.deal.id, effectiveArrival.value, persons.value),
+  priceForArrival(props.deal.basePrice, props.deal.id, effectiveArrival.value, 2),
 )
 const originalPrice = computed(() =>
-  priceForArrival(props.deal.originalPrice, props.deal.id, effectiveArrival.value, persons.value),
+  priceForArrival(props.deal.originalPrice, props.deal.id, effectiveArrival.value, 2),
 )
 
 /** Cheapest deal across all sibling arrangements at this hotel — used by
@@ -520,14 +523,14 @@ const cheapestSibling = computed(() => {
   const deals = props.siblingPool ?? props.hotel?.deals
   if (!deals || deals.length === 0) return null
   return deals.reduce((min, d) => {
-    const dPrice = priceForArrival(d.basePrice, d.id, arrivalDate.value, persons.value)
-    const minPrice = priceForArrival(min.basePrice, min.id, arrivalDate.value, persons.value)
+    const dPrice = priceForArrival(d.basePrice, d.id, arrivalDate.value, 2)
+    const minPrice = priceForArrival(min.basePrice, min.id, arrivalDate.value, 2)
     return dPrice < minPrice ? d : min
   })
 })
 const cheapestSiblingPrice = computed(() => {
   const d = cheapestSibling.value
-  return d ? priceForArrival(d.basePrice, d.id, arrivalDate.value, persons.value) : 0
+  return d ? priceForArrival(d.basePrice, d.id, arrivalDate.value, 2) : 0
 })
 
 /** Any kind of mismatch greys out the card; CTA wording differs per case. */

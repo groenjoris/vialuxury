@@ -82,17 +82,18 @@ const activeArrival = computed(() => globalArrivalDate.value || props.arrivalDat
  *  what the user sees on the deal/search cards. */
 const cheapest = computed(() => {
   return [...props.hotel.deals].reduce((min, d) => {
-    const dPrice = priceForArrival(d.basePrice, d.id, activeArrival.value, persons.value)
-    const minPrice = priceForArrival(min.basePrice, min.id, activeArrival.value, persons.value)
+    const dPrice = priceForArrival(d.basePrice, d.id, activeArrival.value, 2)
+    const minPrice = priceForArrival(min.basePrice, min.id, activeArrival.value, 2)
     return dPrice < minPrice ? d : min
   })
 })
 
+// Prototype: always the 2-person / 1-room price (party size doesn't scale it).
 const cheapestPrice = computed(() =>
-  priceForArrival(cheapest.value.basePrice, cheapest.value.id, activeArrival.value, persons.value),
+  priceForArrival(cheapest.value.basePrice, cheapest.value.id, activeArrival.value, 2),
 )
 const cheapestOriginal = computed(() =>
-  priceForArrival(cheapest.value.originalPrice, cheapest.value.id, activeArrival.value, persons.value),
+  priceForArrival(cheapest.value.originalPrice, cheapest.value.id, activeArrival.value, 2),
 )
 
 const nights = computed<number[]>(() => {
