@@ -189,18 +189,18 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-template-rows: auto 1fr;
-  /* Square-ish: 70vh tall, equal width, capped to the viewport. */
-  height: 70vh;
-  width: 70vh;
+  /* 80% of the 1200px content width; height a touch shorter than the width. */
+  width: min(960px, calc(100vw - 32px));
+  height: 72vh;
   max-width: calc(100vw - 32px);
-  max-height: 70vh;
+  max-height: 72vh;
   overflow: hidden;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
 }
-/* Photo: left column, full height, fixed — only the body scrolls. */
+/* Photo: left column, BELOW the full-width header; fixed (only body scrolls). */
 [data-fr-variant="6"] .desc-modal__photo {
   grid-column: 1;
-  grid-row: 1 / 3;
+  grid-row: 2;
   overflow: hidden;
   background: #f5f5f5;
 }
@@ -210,10 +210,14 @@
   object-fit: cover;
   display: block;
 }
-/* Header: title + close, top of the right column. */
+/* Header: title + close, FULL width across the top; the photo begins
+   underneath it. Sticky so it stays put while the body scrolls. */
 [data-fr-variant="6"] .desc-modal__header {
-  grid-column: 2;
+  grid-column: 1 / -1;
   grid-row: 1;
+  position: sticky;
+  top: 0;
+  z-index: 5;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -221,6 +225,7 @@
   padding: 14px var(--space-lg);
   background: #fff;
   border-bottom: 1px solid var(--color-border-light);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
 }
 [data-fr-variant="6"] .desc-modal__title {
   font-family: var(--font-heading);

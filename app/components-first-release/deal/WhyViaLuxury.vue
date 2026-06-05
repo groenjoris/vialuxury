@@ -116,13 +116,11 @@ const points = [
 .why-vialuxury__body {
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  /* Plain text on white (no grey card): top-aligned with the photo and
+     left-aligned with the section title (no padding, so it sits at the
+     column's left edge). */
+  justify-content: flex-start;
   gap: var(--space-md);
-  /* Soft warm-grey panel (homepage palette) so the text block reads
-     as its own card next to the photo. */
-  background: var(--color-background-secondary, #faf9f6);
-  border-radius: var(--radius-lg);
-  padding: var(--space-xl);
 }
 
 .why-vialuxury__intro {
