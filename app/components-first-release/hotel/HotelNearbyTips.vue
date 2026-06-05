@@ -319,15 +319,10 @@ function toggleBottom(index: number) {
 }
 
 @media (max-width: 800px) {
-  /* Mobile: convert the two-row grid into horizontal scroll
-     carousels. Each card is 80 vw wide; ~20 vw of the next card
-     peeks at the right edge so the user knows it's swipeable.
-     Every card is forced into its expanded `--active` state via
-     the template binding above, so the text panel is always
-     visible. */
-  /* Restore 16 px horizontal section padding so the Tips block
-     aligns with the other mobile sections; the scroll row inside
-     keeps its own 16 px padding so the next-card peek remains. */
+  /* Mobile: a different card shape — image on top, text BELOW it — so the
+     full title + description always fit (the overlaid 55%-width panel cut
+     long text off). Cards are 80vw wide and swipe horizontally; there is no
+     tap/expand interaction. */
   .tips-section {
     padding-left: 16px;
     padding-right: 16px;
@@ -337,16 +332,20 @@ function toggleBottom(index: number) {
     padding-right: 0;
   }
   .tips-section__grid {
-    gap: 12px;
+    gap: 16px;
   }
   .tips-row {
     flex-direction: row;
     flex-wrap: nowrap;
+    align-items: stretch;   /* all cards in a row share the tallest height */
     height: auto;
     gap: 12px;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     scroll-snap-type: x mandatory;
+    /* Bleed past the section's 16px padding so the first card sits at 16px
+       and the row scrolls edge-to-edge with the next card peeking. */
+    margin: 0 -16px;
     padding: 0 16px 8px;
   }
   .tips-row--bottom {
@@ -355,23 +354,49 @@ function toggleBottom(index: number) {
   .tip-card {
     flex: 0 0 80vw !important;
     max-width: 80vw;
-    height: 220px;
+    height: auto !important;
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    border: 1px solid var(--color-border-light);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    cursor: default;          /* no interaction */
     scroll-snap-align: start;
   }
-  .tip-card__panel {
-    width: 55%;
+  /* Image sits in normal flow at the top of the card (was absolute-filled). */
+  .tip-card__image {
+    position: static !important;
+    height: 160px;
+    flex: 0 0 auto;
   }
-  /* Overlay (number + tiny title) is hidden on mobile — the
-     expanded text panel covers the same info and looks better
-     full-width. */
+  .tip-card .tip-card__image img {
+    transform: none !important;   /* no hover zoom on touch */
+  }
+  /* Drop the dark gradient overlay (number + title over the image). */
   .tip-card__overlay {
-    opacity: 0 !important;
+    display: none !important;
+  }
+  /* The text "panel" becomes a normal white block below the image, always
+     visible (no slide-in), full width, growing to fit the description. */
+  .tip-card__panel {
+    position: static !important;
+    width: 100% !important;
+    opacity: 1 !important;
+    transform: none !important;
+    pointer-events: auto;
+    background: #fff;
+    display: block;
+    flex: 1 1 auto;
   }
   .tip-card__panel-inner {
-    padding: var(--space-md) var(--space-lg);
+    padding: var(--space-md) var(--space-lg) var(--space-lg);
   }
   .tip-card__panel-title {
     font-size: 17px;
+  }
+  .tip-card__desc {
+    font-size: 14px;
   }
 }
 </style>
