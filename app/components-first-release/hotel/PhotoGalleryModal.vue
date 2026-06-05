@@ -310,6 +310,10 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 }
 .pg-mgrid__body {
   flex: 1;
+  /* min-height:0 lets this flex child shrink below its content height so the
+     overflow actually scrolls — without it iOS Safari clips the grid (bottom
+     photos cut off, no scroll). */
+  min-height: 0;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   /* 2 columns, natural-height rows — photos aren't cropped and the list
@@ -367,19 +371,20 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   z-index: 2;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
+  gap: 8px;
+  padding: 10px 16px;
   border: none;
   border-radius: var(--radius-sm);
   background: rgba(0, 0, 0, 0.7);
   color: #fff;
   font-family: var(--font-body);
-  font-size: 13px;
+  font-size: 15px;
+  font-weight: 600;
   cursor: pointer;
   backdrop-filter: blur(4px);
 }
 .pg-mphoto__back:hover { background: rgba(0, 0, 0, 0.85); }
-.pg-mphoto__back .all-btn-icon { font-size: 16px; }
+.pg-mphoto__back .all-btn-icon { font-size: 20px; }
 .pg-mphoto__track {
   flex: 1;
   display: flex;
@@ -462,6 +467,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 .pg-d__header .pg-iconbtn { margin-left: auto; }
 .pg-d__grid {
   flex: 1;
+  min-height: 0;
   overflow-y: auto;
   /* 2 columns, natural-height rows — photos aren't cropped and the panel
      scrolls vertically. */
