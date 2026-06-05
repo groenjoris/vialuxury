@@ -154,6 +154,11 @@
         </div>
       </section>
 
+      <!-- Nearby Tips — directly below Arrangementen. -->
+      <div id="tips">
+        <FirstReleaseHotelNearbyTips :tips="hotel.nearbyTips" :hotel-name="hotel.name" />
+      </div>
+
       <!-- House Rules -->
       <section v-if="hotel.houseRules && hotel.houseRules.length" id="huisregels" class="hotel-page__house-rules container">
         <div class="house-rules__layout">
@@ -204,11 +209,6 @@
           </div>
         </div>
       </section>
-
-      <!-- Nearby Tips -->
-      <div id="tips">
-        <FirstReleaseHotelNearbyTips :tips="hotel.nearbyTips" :hotel-name="hotel.name" />
-      </div>
     </main>
 
     <!-- Sticky CTA — TWO SEPARATE BRANCHES.
@@ -983,19 +983,32 @@ onBeforeUnmount(() => {
 }
 .hotel-page__cta-bar--mobile .hotel-page__cta-bar-cluster {
   flex: 1 1 auto;
+  /* Let the cluster shrink to the inner width (default min-width:auto would
+     keep it at price-block + one-line-button width and overflow the bar). */
+  min-width: 0;
   justify-content: space-between;
 }
 .hotel-page__cta-bar--mobile .hotel-page__cta-bar-price-block {
   align-items: flex-start;
-  flex: 1 1 auto;
+  /* Shrinkable so it yields width to the button on narrow screens (its meta
+     line wraps — see below — letting the block get narrower). */
+  flex: 0 1 auto;
   min-width: 0;
 }
 .hotel-page__cta-bar--mobile .hotel-page__cta-bar-btn {
   margin-left: auto;
-  flex: 0 0 auto;
+  /* Allow the button to shrink below its one-line content width so the
+     label wraps to 2 lines instead of overflowing next to the price block.
+     Tighter horizontal padding so the longest word ("arrangementen") fits. */
+  flex: 0 1 auto;
+  min-width: 0;
+  padding: 6px 16px;
 }
 .hotel-page__cta-bar--mobile .hotel-page__cta-bar-meta {
   text-align: left;
+  /* Let the price meta wrap so the price block can shrink and free room for
+     the button on narrow screens (the bar grows in height to suit). */
+  white-space: normal;
 }
 .hotel-page__cta-bar--mobile .hotel-page__cta-bar-meta--de {
   align-items: flex-start;
@@ -1046,18 +1059,23 @@ onBeforeUnmount(() => {
 }
 .hotel-page__cta-bar-btn {
   flex: 0 0 auto;
-  /* 1.25× the previous 44 px — matches the deal-page sticky bar. */
-  height: 55px;
-  padding: 0 24px;
+  /* 1.25× the previous 44 px — matches the deal-page sticky bar. On narrow
+     screens the label may wrap to 2 lines (see mobile override below); the
+     min-height keeps single-line buttons at 55px and lets a taller wrapped
+     button grow, and the content-sized bar grows with it. */
+  min-height: 55px;
+  padding: 6px 24px;
   font-size: 15px;
   font-weight: 600;
+  line-height: 1.15;
+  text-align: center;
   background: var(--color-primary);
   color: #fff;
   border: none;
   border-radius: var(--radius-md);
   cursor: pointer;
   font-family: inherit;
-  white-space: nowrap;
+  white-space: normal;
   transition: background var(--transition-fast);
 }
 .hotel-page__cta-bar-btn:hover {
