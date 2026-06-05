@@ -2,12 +2,6 @@
   <FirstReleaseMobileFullscreen :open="open" :title="t('search.filters')" :header-divider="false" @close="$emit('close')">
     <template #header-right>
       <button type="button" class="filter-subpage__reset" @click="$emit('clear')">
-        <svg class="filter-subpage__reset-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <polyline points="3 6 5 6 21 6" />
-          <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
-          <path d="M10 11v6M14 11v6" />
-          <path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2" />
-        </svg>
         <span>{{ t('filter.clearAll') }}</span>
       </button>
     </template>
@@ -76,14 +70,13 @@ defineEmits<{
   font-size: 13px;
   font-weight: 600;
   color: var(--color-text-secondary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
   cursor: pointer;
   transition: color var(--transition-fast);
 }
 .filter-subpage__reset:hover {
   color: var(--color-text-primary);
-}
-.filter-subpage__reset-icon {
-  flex-shrink: 0;
 }
 
 .filter-subpage__apply {
