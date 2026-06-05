@@ -287,7 +287,7 @@ function toggleBottom(index: number) {
 /* ── Tablet ── */
 @media (max-width: 1024px) {
   .tip-card__image { height: 170px; }
-  .tip-card__panel-title { font-size: 17px; }
+  .tip-card__panel-title { font-size: 18px; }
   .tip-card__desc { font-size: 13px; }
 }
 
@@ -368,7 +368,7 @@ function toggleBottom(index: number) {
     padding: var(--space-md) var(--space-lg) var(--space-lg);
   }
   .tip-card__panel-title {
-    font-size: 17px;
+    font-size: 18px;
   }
   .tip-card__desc {
     font-size: 14px;

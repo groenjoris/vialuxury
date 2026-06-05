@@ -196,7 +196,7 @@ const days = computed(() => {
 }
 
 .legend-swatch--green {
-  background: #00CB8B;
+  background: var(--color-discount);
 }
 
 .legend-cheapest,
@@ -211,7 +211,7 @@ const days = computed(() => {
 .legend-star {
   font-size: 14px;
   line-height: 1;
-  color: #00CB8B;
+  color: var(--color-primary);
 }
 
 .legend-swatch--unavailable {

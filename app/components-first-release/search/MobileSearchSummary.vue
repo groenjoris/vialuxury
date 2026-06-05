@@ -122,7 +122,7 @@ function prettyHotelSlug(slug: string): string {
   width: 100%;
   padding: 16px;
   background: #fff;
-  border: 4px solid var(--color-primary, #fb862d);
+  border: 4px solid var(--color-primary, #e97132);
   /* 14 − 4 px border = 10 px inner curve, so the white interior
      reads as rounded too (not just the orange outer). */
   border-radius: 14px;
@@ -164,7 +164,7 @@ function prettyHotelSlug(slug: string): string {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: var(--color-primary, #fb862d);
+  color: var(--color-primary, #e97132);
 }
 /* Row 2: bold 12 px chunks separated by 4 px orange round dots, gap 4 px. */
 .mss__detail {
@@ -186,7 +186,7 @@ function prettyHotelSlug(slug: string): string {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: var(--color-primary, #fb862d);
+  background: var(--color-primary, #e97132);
   flex-shrink: 0;
 }
 </style>

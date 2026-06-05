@@ -63,9 +63,9 @@
         <div class="members-usp__visual">
           <div class="members-usp__icon-block">
             <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" class="members-usp__icon">
-              <circle cx="40" cy="40" r="38" stroke="#FB862D" stroke-width="2.5" fill="none"/>
-              <path d="M40 18l5.5 11.2 12.3 1.8-8.9 8.7 2.1 12.3L40 46.3l-11 5.7 2.1-12.3-8.9-8.7 12.3-1.8z" fill="#FB862D" opacity="0.15"/>
-              <path d="M40 22l4.2 8.5 9.4 1.4-6.8 6.6 1.6 9.4L40 43.5l-8.4 4.4 1.6-9.4-6.8-6.6 9.4-1.4z" fill="#FB862D"/>
+              <circle cx="40" cy="40" r="38" stroke="#e97132" stroke-width="2.5" fill="none"/>
+              <path d="M40 18l5.5 11.2 12.3 1.8-8.9 8.7 2.1 12.3L40 46.3l-11 5.7 2.1-12.3-8.9-8.7 12.3-1.8z" fill="#e97132" opacity="0.15"/>
+              <path d="M40 22l4.2 8.5 9.4 1.4-6.8 6.6 1.6 9.4L40 43.5l-8.4 4.4 1.6-9.4-6.8-6.6 9.4-1.4z" fill="#e97132"/>
             </svg>
           </div>
         </div>
@@ -86,7 +86,7 @@
               <rect x="26" y="24" width="28" height="32" rx="3" fill="#00B67A" opacity="0.12"/>
               <rect x="29" y="27" width="22" height="26" rx="2" fill="none" stroke="#00B67A" stroke-width="2"/>
               <path d="M34 36h12M34 41h8" stroke="#00B67A" stroke-width="2" stroke-linecap="round"/>
-              <circle cx="54" cy="28" r="8" fill="#FB862D"/>
+              <circle cx="54" cy="28" r="8" fill="#e97132"/>
               <path d="M51.5 28l2 2 3.5-3.5" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </div>
@@ -108,7 +108,7 @@
               <path d="M28 34a12 12 0 0124 0v4H28v-4z" fill="#00B67A" opacity="0.12"/>
               <rect x="26" y="38" width="28" height="18" rx="2" fill="#00B67A" opacity="0.15"/>
               <rect x="28" y="40" width="24" height="14" rx="1.5" fill="none" stroke="#00B67A" stroke-width="2"/>
-              <circle cx="40" cy="47" r="3" fill="#FB862D"/>
+              <circle cx="40" cy="47" r="3" fill="#e97132"/>
               <path d="M36 38v-4a4 4 0 018 0v4" stroke="#00B67A" stroke-width="2" stroke-linecap="round"/>
             </svg>
           </div>

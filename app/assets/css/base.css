@@ -40,6 +40,20 @@ button {
   font-size: inherit;
 }
 
+/* Keyboard-only focus ring. :focus-visible only matches keyboard/AT
+   navigation, so mouse clicks show no outline. Applied globally so every
+   interactive element has an accessible focus state. */
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Suppress the legacy outline for pointer-driven focus (browsers that
+   support :focus-visible). */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
 ul, ol {
   list-style: none;
 }

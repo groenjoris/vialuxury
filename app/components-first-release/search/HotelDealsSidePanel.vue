@@ -385,6 +385,14 @@ onUnmounted(() => {
   background: var(--color-border);
 }
 
+/* Mobile: enlarge the close to a 44px touch target. */
+@media (max-width: 800px) {
+  .panel__close {
+    width: 44px;
+    height: 44px;
+  }
+}
+
 /* Hotel hero image */
 .panel__hero {
   height: 200px;

@@ -2454,7 +2454,7 @@ function handleSelectHotelInPopup(slug: string) {
 
 .hamburger-dropdown__link:hover {
   background: rgba(255, 255, 255, 0.06);
-  color: #FB862D;
+  color: var(--color-primary);
 }
 
 .hamburger-dropdown__link svg {
@@ -2464,7 +2464,7 @@ function handleSelectHotelInPopup(slug: string) {
 }
 
 .hamburger-dropdown__link:hover svg {
-  color: #FB862D;
+  color: var(--color-primary);
 }
 
 .hamburger-dropdown__lang {
@@ -3654,7 +3654,7 @@ function handleSelectHotelInPopup(slug: string) {
 }
 
 .contact-dropdown__item:hover {
-  color: #FB862D;
+  color: var(--color-primary);
 }
 
 .contact-dropdown__item svg {
@@ -3664,7 +3664,7 @@ function handleSelectHotelInPopup(slug: string) {
 }
 
 .contact-dropdown__item:hover svg {
-  color: #FB862D;
+  color: var(--color-primary);
 }
 
 .contact-dropdown__item--urgent {

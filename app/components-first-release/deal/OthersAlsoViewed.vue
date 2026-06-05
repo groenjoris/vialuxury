@@ -126,8 +126,8 @@ const formattedArrival = computed(() => {
 
 .others__title {
   font-family: var(--font-heading);
-  font-size: 28px;
-  font-weight: 700;
+  font-size: 22px;
+  font-weight: 600;
   color: var(--color-text-primary);
   margin: 0;
   line-height: 1.2;

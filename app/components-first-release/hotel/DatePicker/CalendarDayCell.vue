@@ -122,7 +122,7 @@ function handleClick() {
 
 /* Selected check-in / check-out dates: green; ALL inner text forced white */
 .day-cell--selected {
-  background: #00CB8B;
+  background: var(--color-discount);
   color: #fff;
 }
 .day-cell--selected .day-cell__number,
@@ -136,7 +136,7 @@ function handleClick() {
    whether the date has a price — the price is omitted on check-out. */
 .day-cell--in-range,
 .day-cell--checkout {
-  background: #9AE3C7;
+  background: color-mix(in srgb, var(--color-discount) 45%, #fff);
   color: #fff;
 }
 .day-cell--in-range .day-cell__number,
@@ -195,7 +195,7 @@ function handleClick() {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: #000;
+  background: var(--color-text-primary);
   color: #fff;
   font-size: 8px;
   font-weight: 700;
@@ -229,7 +229,7 @@ function handleClick() {
 
 /* Cheapest price: green */
 .day-cell__price--cheapest {
-  color: #00CB8B;
+  color: var(--color-discount);
 }
 
 /* Selected (check-in) price: white */
@@ -244,7 +244,7 @@ function handleClick() {
   left: 4px;
   font-size: 10px;
   line-height: 1;
-  color: #00CB8B;
+  color: var(--color-discount);
   pointer-events: none;
 }
 </style>

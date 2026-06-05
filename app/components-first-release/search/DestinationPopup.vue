@@ -804,7 +804,7 @@ function selectHotel(hotel: { name: string; slug: string }) {
   font-weight: 700;
   text-transform: none;
   letter-spacing: 0;
-  color: #0e0e0c;
+  color: #1A1A1A;
   margin: 0 0 12px;
   line-height: 1;
 }

@@ -222,8 +222,8 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 /* Shared icon button (circle, grey, black glyph). */
 .pg-iconbtn {
   flex-shrink: 0;
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   border: none;
   background: var(--color-background-secondary);

@@ -180,6 +180,14 @@ function getTitle(dealId: string): string {
   background: var(--color-border);
 }
 
+/* Mobile: enlarge the close to a 44px touch target. */
+@media (max-width: 800px) {
+  .panel__close {
+    width: 44px;
+    height: 44px;
+  }
+}
+
 .panel__body {
   flex: 1;
   overflow-y: auto;
@@ -199,6 +207,7 @@ function getTitle(dealId: string): string {
 
 .package-card:hover {
   border-color: var(--color-primary);
+  box-shadow: var(--shadow-hover);
 }
 
 .package-card--active {

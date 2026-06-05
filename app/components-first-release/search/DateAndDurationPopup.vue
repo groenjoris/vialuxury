@@ -338,7 +338,7 @@ const hasSelection = computed(() => !!props.selectedDate || props.nights.length 
   font-size: 16px;
   font-weight: 700;
   line-height: 1;
-  color: #0e0e0c;
+  color: #1A1A1A;
 }
 
 /* "I'm flexible" checkbox row */
@@ -381,7 +381,7 @@ const hasSelection = computed(() => !!props.selectedDate || props.nights.length 
   font-family: var(--font-body);
   font-size: 16px;
   font-weight: 400;
-  color: #0e0e0c;
+  color: #1A1A1A;
   line-height: 1.2;
 }
 
@@ -414,7 +414,7 @@ const hasSelection = computed(() => !!props.selectedDate || props.nights.length 
   font-family: var(--font-body);
   font-size: 14px;
   font-weight: 400;
-  color: #9a9a93;
+  color: #999999;
   line-height: 1;
 }
 
@@ -434,7 +434,7 @@ const hasSelection = computed(() => !!props.selectedDate || props.nights.length 
   font-family: var(--font-body);
   font-size: 16px;
   font-weight: 400;
-  color: #0e0e0c;
+  color: #1A1A1A;
   line-height: 1.2;
   transition: color 150ms ease;
 }
@@ -491,7 +491,7 @@ const hasSelection = computed(() => !!props.selectedDate || props.nights.length 
   font-family: var(--font-body);
   font-size: 16px;
   font-weight: 600;
-  color: #0e0e0c;
+  color: #1A1A1A;
   line-height: 1;
 }
 
@@ -514,7 +514,7 @@ const hasSelection = computed(() => !!props.selectedDate || props.nights.length 
 
 .mini-cal__nav:hover {
   background: #e6e6e6;
-  color: #0e0e0c;
+  color: #1A1A1A;
 }
 
 .mini-cal__days-header {
@@ -524,7 +524,7 @@ const hasSelection = computed(() => !!props.selectedDate || props.nights.length 
   font-family: var(--font-body);
   font-size: 11px;
   font-weight: 500;
-  color: #9a9a93;
+  color: #999999;
   text-transform: uppercase;
   letter-spacing: 0;
   line-height: 1;
@@ -556,7 +556,7 @@ const hasSelection = computed(() => !!props.selectedDate || props.nights.length 
   font-family: var(--font-body);
   font-size: 14px;
   font-weight: 400;
-  color: #0e0e0c;
+  color: #1A1A1A;
   background: none;
   border: 0;
   padding: 0;

@@ -2173,7 +2173,7 @@ onMounted(() => {
   text-align: center; box-shadow: 0 12px 40px rgba(0, 0, 0, 0.14);
 }
 .room-unavailable-popup__text {
-  font-size: 16px; line-height: 1.5; color: #1a1a1a;
+  font-size: 16px; line-height: 1.5; color: var(--color-text-primary);
   margin-bottom: var(--space-xl);
 }
 .room-unavailable-popup__btn {
@@ -2181,7 +2181,7 @@ onMounted(() => {
   background: var(--color-discount); color: #fff; font-size: 14px; font-weight: 600;
   border: none; cursor: pointer; transition: background 150ms ease-out;
 }
-.room-unavailable-popup__btn:hover { background: #009e6a; }
+.room-unavailable-popup__btn:hover { background: color-mix(in srgb, var(--color-discount) 88%, #000); }
 .fade-enter-active, .fade-leave-active { transition: opacity 200ms ease; }
 .fade-enter-from, .fade-leave-to { opacity: 0; }
 

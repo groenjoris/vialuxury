@@ -56,8 +56,8 @@ const teardropHtml = (cls: string, fill: string) => `
  *  focused-hover (orange) variants use the inline teardrop SVG; every
  *  other state uses the corresponding star asset. */
 export function pinHtml(state: PinState): string {
-  if (state === 'focused') return teardropHtml('focused', '#0e0e0c')
-  if (state === 'focusedHover') return teardropHtml('focused-hover', '#ee7126')
+  if (state === 'focused') return teardropHtml('focused', '#1A1A1A')
+  if (state === 'focusedHover') return teardropHtml('focused-hover', '#e97132')
   return `<img class="hotel-pin-img hotel-pin-img--${state}" src="${URLS[state]}" alt="" />`
 }
 

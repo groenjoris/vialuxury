@@ -254,6 +254,13 @@
 [data-fr-variant="6"] .desc-modal__close:hover {
   background: var(--color-border);
 }
+/* Mobile: enlarge the close to a 44px touch target. */
+@media (max-width: 800px) {
+  [data-fr-variant="6"] .desc-modal__close {
+    width: 44px;
+    height: 44px;
+  }
+}
 /* Body: right column, the ONLY scrolling area on desktop. */
 [data-fr-variant="6"] .desc-modal__body {
   grid-column: 2;
@@ -417,7 +424,7 @@
 [data-fr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar) .day-header {
   font-size: 14px;
   font-weight: 700;
-  color: #888;
+  color: var(--color-text-muted);
   /* Centred above each column's centred date number. */
   padding: 0;
   text-align: center;
@@ -426,7 +433,7 @@
 /* Available date tile — white card with hairline border + 1-px shadow. */
 [data-fr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar) .day-cell {
   background: #fff;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--color-border);
   box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
   border-radius: 0;
   /* Fixed height (not min-height) + overflow:hidden so no cell can ever grow
@@ -455,7 +462,7 @@
   font-size: 14px;
   font-weight: 400;
   line-height: 1.4;
-  color: #1a1d24;
+  color: var(--color-text-primary);
 }
 
 [data-fr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar) .day-cell__price,
@@ -466,7 +473,7 @@
   text-align: center;
   font-size: 10px;
   font-weight: 400;
-  color: #00CB8B !important;          /* beats scoped --color-text-primary */
+  color: var(--color-discount) !important;   /* beats scoped --color-text-primary */
   line-height: 1.4;
 }
 
@@ -497,8 +504,8 @@
    selecting a day does NOT shift the calendar grid. */
 [data-fr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar) .day-cell--selected,
 [data-fr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar) .day-cell--checkout {
-  background: #00CB8B !important;
-  border: 1px solid #1A1A1A !important;
+  background: var(--color-discount) !important;
+  border: 1px solid var(--color-text-primary) !important;
   opacity: 1 !important;
   box-shadow: none !important;
   z-index: 1;
@@ -506,7 +513,7 @@
 
 /* In-range nights: light-green tile, NO border/ring. */
 [data-fr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar) .day-cell--in-range:not(.day-cell--selected):not(.day-cell--checkout) {
-  background: #9AE3C7 !important;
+  background: color-mix(in srgb, var(--color-discount) 45%, #fff) !important;
   border-color: transparent;
   box-shadow: none !important;
 }
@@ -559,7 +566,7 @@
   align-items: center;
   justify-content: center;
   background: transparent;          /* drop the orange circle */
-  color: #ff6d00 !important;        /* orange ★ glyph */
+  color: var(--color-primary) !important;  /* orange ★ glyph */
   font-size: 14px;
   line-height: 1;
   border-radius: 0;
@@ -570,7 +577,7 @@
    flag beats the scoped `.day-cell__price--cheapest { color: #00CB8B }`
    in CalendarDayCell.vue. */
 [data-fr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar) .day-cell__price--cheapest {
-  color: #ee7126 !important;
+  color: var(--color-primary) !important;
 }
 
 /* Match the placeholder cell height so the first-week offset doesn't
@@ -609,7 +616,7 @@
   width: auto;
   height: auto;
   background: transparent;
-  color: #ff6d00 !important;       /* beats scoped #00CB8B in CalendarMonth.vue */
+  color: var(--color-primary) !important;  /* beats scoped #00CB8B in CalendarMonth.vue */
   font-size: 14px;
   border-radius: 0;
   box-shadow: none;

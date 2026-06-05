@@ -181,7 +181,7 @@ const disclaimer = computed(() => {
   outline: none;
 }
 .price-info:focus-visible .price-info__icon {
-  box-shadow: 0 0 0 2px var(--color-primary, #ee7126);
+  box-shadow: 0 0 0 2px var(--color-primary, #e97132);
 }
 .price-info__icon {
   display: inline-flex;
@@ -191,8 +191,8 @@ const disclaimer = computed(() => {
   height: 14px;
   border-radius: 50%;
   background: transparent;
-  border: 1px solid var(--color-text-muted, #9a9a9a);
-  color: var(--color-text-muted, #9a9a9a);
+  border: 1px solid var(--color-text-muted, #999999);
+  color: var(--color-text-muted, #999999);
   font-family: var(--font-body);
   font-style: italic;
   font-size: 10px;
@@ -203,8 +203,8 @@ const disclaimer = computed(() => {
 }
 .price-info:hover .price-info__icon,
 .price-info[aria-expanded="true"] .price-info__icon {
-  color: var(--color-text-primary, #0e0e0c);
-  border-color: var(--color-text-primary, #0e0e0c);
+  color: var(--color-text-primary, #1A1A1A);
+  border-color: var(--color-text-primary, #1A1A1A);
 }
 </style>
 

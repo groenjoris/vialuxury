@@ -393,7 +393,7 @@ const dealViews = computed(() => {
   color: #222;
   line-height: 1.2;
 }
-.mdeal__check { color: var(--color-discount, #1a7d4b); font-weight: 700; flex-shrink: 0; }
+.mdeal__check { color: var(--color-discount, #00B67A); font-weight: 700; flex-shrink: 0; }
 .mdeal__inc-text {
   overflow: hidden;
   white-space: nowrap;
