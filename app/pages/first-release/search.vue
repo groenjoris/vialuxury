@@ -317,6 +317,9 @@
                    mobile, so don't repeat them as filter chips here. -->
               <FirstReleaseFilterPills :hide-location-date="true" />
             </section>
+            <!-- Divider between the pills and the result cards (always shown,
+                 even when no pills are active). -->
+            <div class="search-page__mobile-divider" aria-hidden="true"></div>
           </template>
 
           <!-- Loading overlay -->
@@ -2033,19 +2036,27 @@ onMounted(() => {
     padding: 10px 14px;
   }
 
-  /* Mobile search header tidy-up:
-     - no breadcrumb
-     - Filter / Kaart / Sorteren toolbar moves ABOVE the title (order:-1 in
-       the .search-page__results flex column)
-     - no grey divider directly under the search bar (the toolbar's
-       border-bottom). */
+  /* Mobile search header tidy-up. No breadcrumb. The Filter / Kaart /
+     Sorteren toolbar's order/margin/border live on its base rule (it only
+     renders on mobile). Here we just control the per-section spacing:
+     buttons → 12px → title/subtitle → 8px → pills → divider → cards. */
   .search-page__breadcrumbs {
     display: none;
   }
-  .search-page__mobile-toolbar {
-    order: -1;
-    margin-top: 0;          /* it now sits at the very top — drop the negative pull */
-    border-bottom: 0;       /* remove the divider below the search bar */
+  /* Drop the column's uniform 24px gap; spacing is set per section instead. */
+  .search-page__results {
+    gap: 0;
+  }
+  .search-page__above-cards {
+    margin-bottom: 4px;     /* small gap: title/subtitle → pills */
+  }
+  .search-page__header {
+    margin-bottom: 0;       /* the small gap is owned by above-cards above */
+  }
+  /* Divider between the pills and the first result card. */
+  .search-page__mobile-divider {
+    border-top: 1px solid var(--color-border);
+    margin: 4px 0 16px;
   }
 }
 
@@ -2115,10 +2126,13 @@ onMounted(() => {
   display: flex;
   gap: 16px;
   padding: 8px 0;
-  margin-top: calc(var(--space-sm) - var(--space-lg)); /* −16px → 8px gap */
+  /* order:-1 puts this at the TOP of the results column (above the title).
+     No negative top margin — that previously dragged the bar up under the
+     header's white search-summary slot. 12px bottom gap to the title (half
+     the column's old 24px gap). No divider under the buttons. */
+  order: -1;
+  margin: 0 0 12px;
   background: #fff;
-  /* Grey divider under the Filter / Kaart / Sorteren row. */
-  border-bottom: 1px solid var(--color-border);
 }
 /* Black pill-shaped buttons: 48 px high, 8 / 16 px padding, 4 px
    gap between icon and label, white text + icon, rounded corners. */

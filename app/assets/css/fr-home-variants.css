@@ -133,7 +133,7 @@
   }
   [data-fr-home-variant="4"] :is(.home, .search-page, .deal-page, .hotel-page) .site-header__phone {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: wrap !important;   /* beats the scoped SiteHeader nowrap layout */
     align-items: center;
     column-gap: 7px;
     row-gap: 0;
@@ -154,7 +154,7 @@
     margin: 0;
   }
   [data-fr-home-variant="4"] :is(.home, .search-page, .deal-page, .hotel-page) .site-header__phone-number {
-    flex-basis: 100%;   /* drop to line 2, left-aligned under the icon */
+    flex-basis: 100% !important;   /* force the number onto its own line (line 2) */
     font-size: 14px;
     font-weight: 700;
     line-height: 1.25;
