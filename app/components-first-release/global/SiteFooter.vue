@@ -4,8 +4,12 @@
       <!-- Brand column -->
       <div class="footer-col footer-col--brand">
         <NuxtLink :to="homeHref" class="footer-logo">
-          <img src="/images/logo-vialuxury.svg" alt="ViaLuxury" class="footer-logo__img" />
+          <!-- Desktop keeps the stacked logo; mobile uses the horizontal
+               wordmark + handwritten tagline (toggled via CSS). -->
+          <img src="/images/logo-vialuxury.svg" alt="ViaLuxury" class="footer-logo__img footer-logo__img--vertical" />
+          <img src="/images/logo-vialuxury-horizontal.svg" alt="ViaLuxury" class="footer-logo__img footer-logo__img--horizontal" />
         </NuxtLink>
+        <p class="footer-tagline">Personally Curated Experiences</p>
 
         <!-- Trustpilot logo + sentence -->
         <div class="footer-trustpilot">
@@ -139,6 +143,21 @@ function onNewsletterInput(e: Event) {
   height: 56px;
   width: auto;
   filter: brightness(0) invert(1);
+}
+/* Desktop shows the stacked logo; the horizontal wordmark + tagline are
+   mobile-only (revealed in the @media block). */
+.footer-logo__img--horizontal {
+  display: none;
+}
+.footer-tagline {
+  display: none;
+  font-family: 'Oooh Baby', cursive;
+  font-size: 22px;
+  font-weight: 400;
+  line-height: 1;
+  color: #fff;
+  letter-spacing: 0.2px;
+  margin: -8px 0 0;
 }
 
 /* ── Trustpilot — logo + single sentence (replaces stars + score) ── */
@@ -323,7 +342,21 @@ function onNewsletterInput(e: Event) {
 @media (max-width: 768px) {
   .site-footer__inner {
     grid-template-columns: 1fr;
-    gap: var(--space-xl);
+    /* The gap above each divider; matched by the columns' padding-top below
+       so every divider has equal space above and below it. */
+    gap: var(--space-lg);
+  }
+  /* Brand: horizontal wordmark + handwritten tagline instead of the stack. */
+  .footer-logo__img--vertical { display: none; }
+  .footer-logo__img--horizontal { display: block; height: 34px; }
+  .footer-tagline { display: block; }
+  /* Divider between every stacked section (email→Hulp, WhatsApp→Populaire,
+     Populaire→ViaLuxury). Border sits at the section's top; the grid gap
+     above it and the padding-top below it are both var(--space-lg) so the
+     margins around every divider are consistent. */
+  .footer-col + .footer-col {
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+    padding-top: var(--space-lg);
   }
 }
 </style>

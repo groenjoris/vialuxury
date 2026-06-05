@@ -2678,5 +2678,13 @@ onMounted(() => {
   .deal-page__others-mobile {
     padding-bottom: 0 !important;
   }
+
+  /* The sticky bottom CTA bar (≈80px) floats over the page, so when scrolled
+     all the way down it would cover the footer's bottom rows. Add bottom
+     padding to the footer (its own dark bg) so all footer content clears the
+     bar. */
+  :deep(.site-footer) {
+    padding-bottom: 96px;
+  }
 }
 </style>

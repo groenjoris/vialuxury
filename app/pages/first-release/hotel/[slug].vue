@@ -1093,5 +1093,10 @@ onBeforeUnmount(() => {
   #tips :deep(.tips-row) {
     padding-bottom: 0 !important;
   }
+  /* Clear the sticky bottom CTA bar (≈80px) so all footer content stays
+     visible when scrolled to the bottom. */
+  :deep(.site-footer) {
+    padding-bottom: 96px;
+  }
 }
 </style>
