@@ -268,37 +268,38 @@
   margin: 0 0 var(--space-md);
 }
 
-/* Mobile: single column — sticky header on top, photo + body scroll under. */
+/* Mobile: plain vertical scroll — only the header is sticky; the photo AND
+   the text scroll together underneath it. (Drop the desktop grid; a grid with
+   a 1fr body at a fixed height squeezed the photo row to nothing, so the photo
+   appeared to be missing.) */
 @media (max-width: 800px) {
   [data-fr-variant="6"] .desc-modal {
     padding: var(--space-md);
   }
   [data-fr-variant="6"] .desc-modal__card {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto auto 1fr;
+    display: block;
     width: 100%;
-    height: 88vh;
+    height: auto;
     max-height: 88vh;
     overflow-y: auto;
   }
   [data-fr-variant="6"] .desc-modal__header {
-    grid-column: 1;
-    grid-row: 1;
     position: sticky;
     top: 0;
     z-index: 5;
     border-radius: var(--radius-lg) var(--radius-lg) 0 0;
   }
   [data-fr-variant="6"] .desc-modal__photo {
-    grid-column: 1;
-    grid-row: 2;
-  }
-  [data-fr-variant="6"] .desc-modal__photo img {
+    display: block;
+    width: 100%;
     height: auto;
   }
+  [data-fr-variant="6"] .desc-modal__photo img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
   [data-fr-variant="6"] .desc-modal__body {
-    grid-column: 1;
-    grid-row: 3;
     overflow: visible;
     padding: var(--space-lg);
   }
