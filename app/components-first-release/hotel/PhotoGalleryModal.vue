@@ -26,12 +26,10 @@
       <!-- Full-photo viewer -->
       <Transition name="pg-fade">
         <div v-if="open && view === 'photo'" class="pg-mphoto" role="dialog" aria-modal="true">
-          <!-- "Alle foto's" → open the thumbnail overview. The ← chevron is
-               shown only when we came FROM the grid (real back action); when
-               opened directly from a page photo it reads as a label without
-               the back chevron. -->
+          <!-- "Alle foto's" → open the thumbnail overview. Styled as the dark
+               pill from the hero photo (same shape + ⊞ icon) for consistency. -->
           <button type="button" class="pg-mphoto__back" @click="$emit('update:view', 'grid')">
-            <svg v-if="cameFromGrid" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6" /></svg>
+            <span class="all-btn-icon" aria-hidden="true">⊞</span>
             {{ t('common.allPhotos') }}
           </button>
           <button type="button" class="pg-iconbtn pg-mphoto__close" :aria-label="t('common.close')" @click="closePhoto">
@@ -360,6 +358,8 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   z-index: 2;
 }
 /* "Alle foto's" back-to-grid pill, upper-left, over the dark photo bg. */
+/* Matches the hero photo's "Alle foto's" pill: dark translucent rounded
+   rectangle with the ⊞ grid glyph. */
 .pg-mphoto__back {
   position: absolute;
   top: calc(10px + env(safe-area-inset-top, 0));
@@ -368,18 +368,18 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  height: 40px;
-  padding: 0 14px;
+  padding: 6px 12px;
   border: none;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.92);
-  color: #1a1a1a;
+  border-radius: var(--radius-sm);
+  background: rgba(0, 0, 0, 0.7);
+  color: #fff;
   font-family: var(--font-body);
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 13px;
   cursor: pointer;
+  backdrop-filter: blur(4px);
 }
-.pg-mphoto__back:hover { background: #fff; }
+.pg-mphoto__back:hover { background: rgba(0, 0, 0, 0.85); }
+.pg-mphoto__back .all-btn-icon { font-size: 16px; }
 .pg-mphoto__track {
   flex: 1;
   display: flex;
