@@ -2411,7 +2411,10 @@ onMounted(() => {
   /* Reserve space for the bottom-fixed bar (bar = 12 + 55 + 12
      padding/button/padding = 79 px after the 1.25× height bump). */
   .deal-page__main {
-    padding-bottom: 112px;
+    /* Was 112px, which left a big empty gap before the footer. The sticky
+       CTA bar still floats over the footer (it's fixed); the footer below
+       gives enough scroll room for the last content to clear the bar. */
+    padding-bottom: 24px;
   }
   /* Tighter padding */
   .deal-page__breadcrumbs.container,
@@ -2447,12 +2450,12 @@ onMounted(() => {
      nachten" line, and the other-arrangements heading + link. */
   .deal-page__sidebar-mobile .sidebar__title { font-size: 17px; }
   .deal-page__sidebar-mobile .sidebar__inc-list li { font-size: 15px; }
-  .deal-page__sidebar-mobile .sidebar__details-link { font-size: 15px; }
+  .deal-page__sidebar-mobile .sidebar__details-link { font-size: 16px; }
   .deal-page__sidebar-mobile .sidebar__cal-title,
   .deal-page__sidebar-mobile .sidebar__cal-title--big { font-size: 19px; }
   .deal-page__sidebar-mobile .sidebar__nights-line { font-size: 15px; }
   .deal-page__sidebar-mobile .sidebar__variant-heading { font-size: 15px; }
-  .deal-page__sidebar-mobile .sidebar__other-arrangements { font-size: 15px; }
+  .deal-page__sidebar-mobile .sidebar__other-arrangements { font-size: 16px; }
   /* Stack title block on its own (no right-column on mobile). */
   .deal-page__title-section--mobile {
     display: block;
@@ -2581,6 +2584,59 @@ onMounted(() => {
      target it directly; !important beats the component's own scoped padding. */
   .deal-page__why-mobile {
     padding-top: 0 !important;
+  }
+
+  /* Partner (NUshop) co-brand card: breathing room above it so it doesn't
+     touch the gallery on the advertisement flow. */
+  .deal-page__partner-mobile {
+    margin-top: 16px;
+  }
+
+  /* "Bekijk kaart" under the mini-map +1pt to match the header link (16px). */
+  .deal-page__mini-map-mobile :deep(.mini-map__view-link) {
+    font-size: 16px;
+  }
+
+  /* Beschrijving→Highlights and Mini-map→Arrangement dividers were full-width
+     (a top border). Replace them with the SAME inset divider used by the other
+     sections (facilities / huisregels / faq) so all dividers match. */
+  .deal-page__highlights--mobile,
+  .deal-page__content-blocks--mobile {
+    position: relative;
+    border-top: 0;
+  }
+  .deal-page__highlights--mobile::before,
+  .deal-page__content-blocks--mobile::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: var(--space-lg);
+    right: var(--space-lg);
+    height: 1px;
+    background: var(--color-border-light);
+  }
+  /* Extra space above the arrangement divider (between the mini-map's
+     "Bekijk kaart" and the divider). */
+  .deal-page__content-blocks--mobile {
+    margin-top: 16px;
+  }
+
+  /* No divider between the last include block and Hotelfaciliteiten. */
+  .deal-page__facilities--mobile::before {
+    display: none;
+  }
+
+  /* Close off the huisregels list with a divider below the last rule
+     ("Kinderen"). */
+  .deal-page__house-rules--mobile .house-rule:last-child {
+    border-bottom: 1px solid var(--color-border-light);
+  }
+
+  /* "Anderen bekeken ook" → footer: match the section spacing. The class is
+     on the component root (which IS .others), so target it directly; the
+     24px clearance to the footer comes from .deal-page__main's padding. */
+  .deal-page__others-mobile {
+    padding-bottom: 0 !important;
   }
 }
 </style>
