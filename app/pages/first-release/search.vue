@@ -361,13 +361,17 @@
                of our own). -->
           <div v-else-if="!searchLoading && suggestionDeals.length > 0" class="search-page__no-results-suggestions">
             <h3 class="search-page__no-results-suggest-title">{{ suggestionTitle }}</h3>
-            <div class="search-page__no-results-suggest-grid">
+            <div
+              class="search-page__no-results-suggest-grid"
+              :class="{ 'search-page__no-results-suggest-grid--narrow': showFilters }"
+            >
               <FirstReleaseDealCard
                 v-for="entry in suggestionDeals"
                 :key="entry.deal.id"
                 :deal="entry.deal"
                 :hotel="entry.hotel"
                 grid-mode
+                :wide="!showFilters"
               />
             </div>
           </div>
@@ -1497,8 +1501,14 @@ onMounted(() => {
 
 .search-page__no-results-suggest-grid {
   display: grid;
+  /* Match the normal result grid: 3 cols when the filter panel is hidden
+     (cards are `wide`), 2 cols when it's open (`--narrow`), so suggestion
+     cards are the same size as regular result cards. */
   grid-template-columns: 1fr 1fr 1fr;
   gap: var(--space-lg);
+}
+.search-page__no-results-suggest-grid--narrow {
+  grid-template-columns: 1fr 1fr;
 }
 
 @media (max-width: 1023px) {
