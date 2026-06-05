@@ -405,17 +405,16 @@
    (e.g. `.day-cell--past { opacity: 0.3 }` and
    `.day-cell--checkout { background: #9AE3C7 }`) sneaking through. */
 /* Selected check-in & check-out: green tile (white text via the scoped
-   rule) with a BLACK OUTER stroke. The stroke is an outer box-shadow
-   (not inset) so it never overlaps the price inside the tile. */
+   rule). The tile keeps its OWN 1px border — we just recolour it black
+   instead of adding an outer/inner ring. Because the border width is
+   unchanged (grey 1px → black 1px) the tile's box never changes size, so
+   selecting a day does NOT shift the calendar grid. */
 [data-fr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar) .day-cell--selected,
 [data-fr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar) .day-cell--checkout {
   background: #00CB8B !important;
-  border-color: transparent !important;
+  border: 1px solid #1A1A1A !important;
   opacity: 1 !important;
-  box-shadow:
-    0 0 0 2px #1A1A1A,
-    0 4px 6px -1px rgba(0, 0, 0, 0.10),
-    0 2px 4px -2px rgba(0, 0, 0, 0.10) !important;
+  box-shadow: none !important;
   z-index: 1;
 }
 
