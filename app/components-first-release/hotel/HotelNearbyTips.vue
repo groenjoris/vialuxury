@@ -254,10 +254,10 @@ function toggleBottom(index: number) {
   line-height: 1.7;
   color: var(--color-text-secondary);
   margin: 0;
-  /* Collapsed: show only the first ~2 lines ("eerste alinea") with the rest
+  /* Collapsed: show a larger first paragraph (~6 lines) with the rest
      revealed via "Lees meer". */
   display: -webkit-box;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 6;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }

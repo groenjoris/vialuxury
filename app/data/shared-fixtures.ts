@@ -124,8 +124,8 @@ export const sharedNearbyTips: NearbyTip[] = [
     id: 'tip-1',
     title: { nl: 'Wandelen langs het strand', en: 'Walk along the beach' },
     description: {
-      nl: 'Trek je wandelschoenen aan en geniet van de frisse zeelucht tijdens een wandeling over het strand of door de duinen.',
-      en: 'Put on your hiking shoes and enjoy the fresh sea air during a walk on the beach or through the dunes.',
+      nl: 'Trek je wandelschoenen aan en geniet van de frisse zeelucht tijdens een wandeling over het strand of door de duinen. De kustlijn strekt zich kilometerslang uit, dus je kunt eindeloos doorlopen langs de vloedlijn en onderweg de mooiste schelpen zoeken. Bij zonsopkomst kleurt de hemel in zachte pasteltinten en heb je het strand vaak nog helemaal voor jezelf. Onderweg passeer je gezellige strandpaviljoens waar je even kunt uitrusten met een warme chocolademelk of een verse kop koffie. Liefhebbers van langere tochten volgen het duinpad landinwaarts, waar je met een beetje geluk reeën en allerlei bijzondere kustvogels spot.',
+      en: 'Put on your hiking shoes and enjoy the fresh sea air during a walk on the beach or through the dunes. The coastline stretches for miles, so you can keep strolling along the waterline and hunt for the prettiest shells along the way. At sunrise the sky turns soft pastel shades and you often have the beach all to yourself. Along the route you pass cosy beach pavilions where you can rest for a moment with a hot chocolate or a fresh cup of coffee. Those who love longer treks follow the dune path inland, where with a bit of luck you will spot deer and all sorts of special coastal birds.',
     },
     image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&auto=format&fit=crop',
   },
@@ -133,8 +133,8 @@ export const sharedNearbyTips: NearbyTip[] = [
     id: 'tip-2',
     title: { nl: 'Bezoek een lokaal museum', en: 'Visit a local museum' },
     description: {
-      nl: 'Ontdek de cultuur en geschiedenis van de regio in een van de gerenommeerde musea in de buurt.',
-      en: 'Discover the culture and history of the region in one of the renowned museums nearby.',
+      nl: 'Ontdek de cultuur en geschiedenis van de regio in een van de gerenommeerde musea in de buurt. De vaste collecties nemen je mee door eeuwen lokale ambachten, zeevaart en kunst, terwijl wisselende tentoonstellingen het hele jaar door verrassende thema\'s belichten. Veel musea hebben een sfeervol café waar je na je bezoek kunt natafelen met een gebakje en regionale lekkernijen. Voor gezinnen zijn er interactieve doe-tentoonstellingen die kinderen spelenderwijs laten kennismaken met het verleden. Vraag bij de receptie naar de gecombineerde toegangskaart, waarmee je meerdere musea in de stad voordelig op één dag bezoekt.',
+      en: 'Discover the culture and history of the region in one of the renowned museums nearby. The permanent collections take you through centuries of local crafts, seafaring and art, while rotating exhibitions highlight surprising themes throughout the year. Many museums have an atmospheric café where you can linger after your visit over a pastry and regional treats. For families there are interactive hands-on exhibits that introduce children to the past in a playful way. Ask at the reception about the combined ticket, which lets you visit several museums in the city at a discount on a single day.',
     },
     image: 'https://images.unsplash.com/photo-1554907984-15263bfd63bd?w=800&auto=format&fit=crop',
   },
@@ -142,8 +142,8 @@ export const sharedNearbyTips: NearbyTip[] = [
     id: 'tip-3',
     title: { nl: 'Culinair uit eten', en: 'Culinary dining out' },
     description: {
-      nl: 'De omgeving biedt een breed scala aan restaurants — van knusse bistro tot Michelin-bekroonde keukens.',
-      en: 'The area offers a wide range of restaurants — from cozy bistros to Michelin-starred kitchens.',
+      nl: 'De omgeving biedt een breed scala aan restaurants — van knusse bistro tot Michelin-bekroonde keukens. Lokale chefs werken graag met dagverse vis en streekproducten, zodat de menukaart met de seizoenen meebeweegt. Reserveer een tafel bij het raam en geniet van het uitzicht terwijl de zon langzaam ondergaat boven het water. Wie van proeven houdt kiest een meergangen verrassingsmenu, vaak met een bijpassend wijnarrangement van kleine, ambachtelijke wijnhuizen. Ook voor een ongedwongen lunch of een borrel met bittergarnituur op het zonnige terras ben je hier aan het juiste adres.',
+      en: 'The area offers a wide range of restaurants — from cozy bistros to Michelin-starred kitchens. Local chefs love working with fish caught that day and regional produce, so the menu moves with the seasons. Book a table by the window and enjoy the view as the sun slowly sets over the water. If you love tasting, choose a multi-course surprise menu, often with a matching wine pairing from small, artisanal wineries. For a relaxed lunch or drinks with snacks on the sunny terrace, this is also exactly the right place.',
     },
     image: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&auto=format&fit=crop',
   },
