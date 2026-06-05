@@ -706,7 +706,9 @@ const includesBullets = computed<string[]>(() => {
   position: absolute;
   top: var(--space-md);
   left: var(--space-md);
-  right: var(--space-md);
+  /* Reserve room for the favourite heart (36px) at the top-right so the
+     stickers wrap onto the next line instead of running under / over it. */
+  right: calc(var(--space-md) + 44px);
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
@@ -751,6 +753,8 @@ const includesBullets = computed<string[]>(() => {
   position: absolute;
   top: var(--space-md);
   right: var(--space-md);
+  /* Above the sticker overlays so it's never covered. */
+  z-index: 3;
   width: 36px;
   height: 36px;
   border-radius: 50%;
