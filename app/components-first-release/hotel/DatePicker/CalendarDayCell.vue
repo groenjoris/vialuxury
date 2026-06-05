@@ -105,7 +105,10 @@ function handleClick() {
   align-items: center;
   justify-items: center;
   padding: 6px 4px;
-  min-height: 52px;
+  /* Fixed height (not min-height) + clip so a cell never grows its row. */
+  height: 52px;
+  min-height: 0;
+  overflow: hidden;
   border-radius: var(--radius-sm);
   transition: all var(--transition-fast);
   background: none;

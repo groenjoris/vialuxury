@@ -325,6 +325,12 @@
  */
 [data-fr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar) .calendar-month__grid {
   gap: 8px;
+  /* Fixed row tracks so a selected / in-range / check-out cell can NEVER grow
+     its row and shift the rows below ("wobble"). Every cell is the same 60px
+     (see .day-cell height below); rows resize only via media query.
+     `!important` beats the base CalendarMonth `grid-auto-rows:52px` (the
+     `:where()` wrapper here otherwise loses the equal-specificity tie). */
+  grid-auto-rows: 60px !important;
 }
 
 [data-fr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar) .calendar-month__day-headers {
@@ -347,7 +353,11 @@
   border: 1px solid #e5e7eb;
   box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
   border-radius: 0;
-  min-height: 60px !important;
+  /* Fixed height (not min-height) + overflow:hidden so no cell can ever grow
+     past one row, regardless of selection / extra content. */
+  height: 60px !important;
+  min-height: 0;
+  overflow: hidden;
   padding: 5px;
   /* Day number + price stacked and vertically centred as a group, so the
      margin above the day equals the margin below the price. !important
@@ -490,7 +500,7 @@
 /* Match the placeholder cell height so the first-week offset doesn't
    collapse the row. */
 [data-fr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar) .day-placeholder {
-  min-height: 60px;
+  height: 60px;
 }
 
 /* Check-out cell carries no price (the night isn't spent at the hotel)
@@ -498,6 +508,12 @@
    half-empty. Purely visual; the underlying template is untouched. */
 [data-fr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar) .day-cell--checkout::after {
   content: '-';
+  /* Absolute so the dash sits in the price slot WITHOUT adding a flex item
+     that would make the check-out cell taller than its row. */
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 6px;
   text-align: center;
   color: #fff;
   font-size: 10px;

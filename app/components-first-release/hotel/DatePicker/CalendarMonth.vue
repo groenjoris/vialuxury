@@ -164,10 +164,12 @@ const days = computed(() => {
 .calendar-month__grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
+  /* Fixed row tracks so a selected cell can't grow its row ("wobble"). */
+  grid-auto-rows: 52px;
 }
 
 .day-placeholder {
-  min-height: 52px;
+  height: 52px;
 }
 
 .calendar-month__legend {
