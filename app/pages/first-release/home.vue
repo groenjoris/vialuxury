@@ -1020,15 +1020,26 @@ onMounted(() => { setFrNavVariant('1'); restoreHeroPhotoIndex() })
     display: none;
   }
 
-  /* Consistent vertical rhythm: every home section gets the SAME top &
-     bottom padding so the gap from a section's content to its background
-     edge equals the gap from that edge to the next section's title across
-     the white ↔ tinted alternation. */
+  /* Below the hero the whole page is one continuous grey surface (no more
+     white ↔ tinted alternation), so the alternating-background margin logic
+     goes away. Every section is transparent over the grey page background;
+     the ONLY vertical gap is each section's 32px top padding — i.e. the gap
+     between a section's content and the next section's title is a single,
+     identical 32px throughout (no doubled top+bottom margins → shorter page). */
+  .home {
+    background: var(--color-background-secondary, #faf9f6);
+  }
   .home-persuasion,
   .home-popular,
   .home-deals,
   .home-categories {
+    background: transparent !important;
     padding-top: 32px !important;
+    padding-bottom: 0 !important;
+  }
+  /* Last section before the (dark) footer keeps a 32px bottom gap so the
+     cards don't sit flush against it. */
+  .home-deals--alt {
     padding-bottom: 32px !important;
   }
   .home-popular__heading,
