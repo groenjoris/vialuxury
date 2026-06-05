@@ -781,6 +781,11 @@ function pickWho(opt: { adults: number; rooms: number }) {
   width: 100%;
   justify-content: stretch;
 }
+.msm-field__panel :deep(.mini-cal__grid) {
+  /* Match the taller mobile cells with a fixed row track so a selected/bold
+     cell can't grow its row and shift the rows below ("wobble"). */
+  grid-auto-rows: 56px;
+}
 .msm-field__panel :deep(.mini-cal__cell) {
   width: auto;
   height: 56px;

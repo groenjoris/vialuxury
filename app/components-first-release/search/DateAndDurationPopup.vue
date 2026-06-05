@@ -540,10 +540,16 @@ const hasSelection = computed(() => !!props.selectedDate || props.nights.length 
 .mini-cal__grid {
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
+  /* Fixed row tracks: a selected/bold cell can never grow its row height, so
+     the rows below never shift ("wobble"). Pairs with the cell height below. */
+  grid-auto-rows: 44px;
 }
 
 .mini-cal__cell {
   height: 44px;
+  /* Defeat the grid item's auto min-content floor (bold text could otherwise
+     push the cell — and its row — taller on iOS WebKit). */
+  min-height: 0;
   display: flex;
   align-items: center;
   justify-content: center;

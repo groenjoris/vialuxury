@@ -641,7 +641,7 @@
               <span class="search-bar__field-icon" aria-hidden="true">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
               </span>
-              <span class="search-bar__label">{{ t('header.arrivalDate') }}</span>
+              <span class="search-bar__label">{{ t('header.searchWhen') }}</span>
             </span>
             <span class="search-bar__value" :class="{ 'search-bar__value--placeholder': whenIsPlaceholder }">{{ whenLabel }}</span>
           </span>
@@ -674,7 +674,7 @@
               <span class="search-bar__field-icon" aria-hidden="true">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>
               </span>
-              <span class="search-bar__label">{{ t('header.duration') }}</span>
+              <span class="search-bar__label">{{ t('header.searchHowLong') }}</span>
             </span>
             <span class="search-bar__value" :class="{ 'search-bar__value--placeholder': hoelangIsPlaceholder }">{{ hoelangLabel }}</span>
           </span>

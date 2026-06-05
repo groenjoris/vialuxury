@@ -366,7 +366,10 @@ function onNewsletterInput(e: Event) {
     white-space: nowrap;
     transform: scaleX(0.88);
     transform-origin: left center;
-    margin: 5px 0 var(--space-lg);
+    /* Hug the wordmark like the navbar/hero lockup. The horizontal logo SVG
+       carries ~7px of bottom whitespace, so pull the payoff up into it to land
+       flush against the visible wordmark (matching the navbar's tight gap). */
+    margin: -6px 0 var(--space-lg);
   }
   /* Divider between every stacked section (email→Hulp, WhatsApp→Populaire,
      Populaire→ViaLuxury). Border sits at the section's top; the grid gap

@@ -8,6 +8,8 @@ const en: Record<string, string> = {
   // Header - Search bar
   'header.destination': 'Where to',
   'header.when': 'When',
+  'header.searchWhen': 'When?',
+  'header.searchHowLong': 'How long?',
   'header.whosComing': 'Who\'s coming',
   'header.chooseDestination': 'Choose a destination',
   'header.chooseDate': 'Flexible, any duration',

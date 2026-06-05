@@ -8,6 +8,8 @@ const nl: Record<string, string> = {
   // Header - Search bar
   'header.destination': 'Waarheen?',
   'header.when': 'Wanneer',
+  'header.searchWhen': 'Wanneer?',
+  'header.searchHowLong': 'Hoelang?',
   'header.whosComing': 'Wie gaat er mee?',
   'header.chooseDestination': 'Kies bestemming',
   'header.chooseDate': 'Flexibel, elke duur',
