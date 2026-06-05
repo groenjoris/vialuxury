@@ -1512,10 +1512,10 @@ function openGalleryPhoto(i: number) {
   galleryIndex.value = i
   galleryOpen.value = true
 }
-/** Mobile footer "Ik ga boeken" → close + jump to the booking area. */
+/** Mobile gallery "Ik ga boeken" → will go to checkout once that exists.
+ *  Idle for now (no scroll-back). */
 function handleGalleryBook() {
-  galleryOpen.value = false
-  nextTick(() => scrollToArrangement())
+  // intentionally a no-op until checkout is built
 }
 
 // Sync FR nav-bar variant with the user's last homepage pick so the

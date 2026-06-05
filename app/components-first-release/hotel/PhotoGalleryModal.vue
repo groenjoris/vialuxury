@@ -243,7 +243,9 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   color: var(--color-text-primary);
 }
 
-/* Shared thumbnail tile. */
+/* Shared thumbnail tile. The aspect-ratio lives on the IMG (height:auto) so
+   the grid auto-row track sizes to the real thumb height — putting it on the
+   button left the rows overlapping (no visible gap between rows). */
 .pg-thumb {
   display: block;
   padding: 0;
@@ -252,9 +254,14 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   border-radius: var(--radius-sm);
   overflow: hidden;
   cursor: pointer;
-  aspect-ratio: 4 / 3;
 }
-.pg-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.pg-thumb img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  height: auto;
+  object-fit: cover;
+  display: block;
+}
 
 /* ───────── Mobile grid overview ───────── */
 .pg-mgrid {

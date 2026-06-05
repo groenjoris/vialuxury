@@ -555,10 +555,10 @@ function openGalleryPhoto(i: number) {
   galleryIndex.value = i
   galleryOpen.value = true
 }
-/** Mobile footer "Ik ga boeken" → close + scroll to the arrangements. */
+/** Mobile gallery "Ik ga boeken" → will go to checkout once that exists.
+ *  Idle for now (no scroll-back). */
 function handleGalleryBook() {
-  galleryOpen.value = false
-  nextTick(() => scrollToArrangements())
+  // intentionally a no-op until checkout is built
 }
 
 /** Smooth-scroll to the mini-map block — wired to the "Bekijk
