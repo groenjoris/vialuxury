@@ -777,7 +777,7 @@ function pickWho(opt: { adults: number; rooms: number }) {
    with the modal body's 16 px side padding providing the margin. */
 .msm-field__panel :deep(.mini-cal__grid),
 .msm-field__panel :deep(.mini-cal__days-header) {
-  grid-template-columns: repeat(7, 1fr);
+  grid-template-columns: repeat(7, minmax(0, 1fr));
   width: 100%;
   justify-content: stretch;
 }

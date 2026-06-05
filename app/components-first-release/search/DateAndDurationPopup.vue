@@ -474,7 +474,7 @@ const hasSelection = computed(() => !!props.selectedDate || props.nights.length 
    Monday and Sunday rather than the section edges. */
 .mini-cal__header {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  grid-template-columns: repeat(7, minmax(0, 1fr));
   align-items: center;
 }
 
@@ -519,7 +519,7 @@ const hasSelection = computed(() => !!props.selectedDate || props.nights.length 
 
 .mini-cal__days-header {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  grid-template-columns: repeat(7, minmax(0, 1fr));
   text-align: center;
   font-family: var(--font-body);
   font-size: 11px;
@@ -539,7 +539,7 @@ const hasSelection = computed(() => !!props.selectedDate || props.nights.length 
 
 .mini-cal__grid {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  grid-template-columns: repeat(7, minmax(0, 1fr));
 }
 
 .mini-cal__cell {
