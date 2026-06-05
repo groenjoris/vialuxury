@@ -2461,6 +2461,22 @@ onMounted(() => {
     display: block;
     padding-top: 12px;
   }
+  /* Hotel name + stars: flow inline so the stars sit right after the name's
+     last word. The base `inline-flex` made a wrapped (2-line) name take the
+     full row width, shoving the stars to the right browser edge. */
+  .deal-page__title-section--mobile .deal-page__hotel-name-wrap {
+    display: block;
+  }
+  .deal-page__title-section--mobile .deal-page__hotel-link {
+    display: inline;
+  }
+  .deal-page__title-section--mobile .deal-page__stars-adjacent {
+    display: inline-flex;
+    vertical-align: middle;
+    margin-left: 8px;
+    position: relative;
+    top: -2px;   /* nudge the 24px stars onto the text's optical centre */
+  }
   /* "Bekijk op kaart" link sits inline next to the city/region meta. */
   .deal-page__view-map-link {
     display: inline-block;
