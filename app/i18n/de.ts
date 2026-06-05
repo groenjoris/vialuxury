@@ -254,6 +254,7 @@ const de: Record<string, string> = {
   'deal.curatedBy': 'Zusammengestellt von',
   'deal.specialisation': 'Spezialisierung',
   'deal.highlights': 'Highlights',
+  'deal.descriptionHeading': 'Beschreibung',
   'deal.inclusionsHeading': 'In diesem Arrangement für',
   'deal.inclusionsEndAlt': 'ist Folgendes inbegriffen',
   'deal.chooseStay': 'Wähle deinen Aufenthalt:',

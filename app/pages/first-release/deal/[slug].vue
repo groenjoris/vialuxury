@@ -170,6 +170,7 @@
 
         <!-- 8. Description + Lees meer -->
         <section id="intro" class="container deal-page__description-mobile">
+          <h2 class="section-title">{{ t('deal.descriptionHeading') }}</h2>
           <div class="deal-page__description">
             <div v-html="firstParagraph"></div>
             <button v-if="hasMoreDescription" type="button" class="deal-page__read-more" @click="descriptionOpen = true">{{ t('common.readMore') }}</button>
@@ -265,7 +266,7 @@
         </section>
 
         <!-- "Waarom ViaLuxury" (Tips moved up under Hotel faciliteiten). -->
-        <FirstReleaseWhyViaLuxury />
+        <FirstReleaseWhyViaLuxury class="deal-page__why-mobile" />
 
         <!-- 17. Anderen bekeken ook -->
         <FirstReleaseOthersAlsoViewed
@@ -1579,7 +1580,10 @@ onMounted(() => {
 }
 .desc-modal__card {
   position: relative;
-  background: var(--color-surface, #fff);
+  /* Explicit solid white — was `var(--color-surface, #fff)`, which on some
+     mobile browsers rendered transparent for the teleported (scoped) modal,
+     leaving the popup with no background. */
+  background: #fff;
   border-radius: var(--radius-lg);
   padding: var(--space-xl);
   /* Wider + square: side = the smaller of 92 vw / 92 vh so the card
@@ -2458,7 +2462,7 @@ onMounted(() => {
   .deal-page__view-map-link {
     display: inline-block;
     color: var(--color-primary, #c9a85c);
-    font-size: 14px;
+    font-size: 16px;   /* +2 */
     font-weight: 600;
     text-decoration: underline;
   }
@@ -2488,6 +2492,12 @@ onMounted(() => {
      the mini-map like on desktop). */
   .deal-page__description-mobile {
     margin-top: 16px;
+    /* Breathing room between "Lees meer" and the next section's divider. */
+    margin-bottom: 16px;
+  }
+  /* "Lees meer" link +2pt on mobile. */
+  .deal-page__description-mobile .deal-page__read-more {
+    font-size: 16px;
   }
   /* Mini-map gets its own section; offset the anchor target so the
      sticky CTA bar doesn't cover it on jump. */
@@ -2551,6 +2561,26 @@ onMounted(() => {
   .deal-page__others-mobile :deep(.others-also-viewed__card) {
     flex: 0 0 85% !important;
     max-width: 85% !important;
+  }
+
+  /* Divider below the Trustpilot block in the mobile sidebar. */
+  .deal-page__sidebar-mobile .sidebar__trust {
+    border-bottom: 1px solid var(--color-border-light);
+    padding-bottom: 24px;
+  }
+  /* No divider between the huisregels block and the FAQ block — the section's
+     own pseudo-divider AND the FaqSection component's own border-top. */
+  .deal-page__faq--mobile::before {
+    display: none;
+  }
+  .deal-page__faq--mobile :deep(.faq-section) {
+    border-top: 0 !important;
+  }
+  /* Tighten the gap between the FAQ block and "Waarom boeken bij ViaLuxury".
+     The class lands on the component's root (which IS .why-vialuxury), so
+     target it directly; !important beats the component's own scoped padding. */
+  .deal-page__why-mobile {
+    padding-top: 0 !important;
   }
 }
 </style>

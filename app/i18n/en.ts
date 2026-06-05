@@ -258,6 +258,7 @@ const en: Record<string, string> = {
   'deal.curatedBy': 'Curated by',
   'deal.specialisation': 'Specialisation',
   'deal.highlights': 'Highlights',
+  'deal.descriptionHeading': 'Description',
   'deal.inclusionsHeading': 'This package for',
   'deal.inclusionsEndAlt': 'includes the following',
   'deal.chooseStay': 'Choose your stay:',

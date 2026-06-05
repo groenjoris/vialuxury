@@ -258,6 +258,7 @@ const nl: Record<string, string> = {
   'deal.curatedBy': 'Samengesteld door',
   'deal.specialisation': 'Specialisatie',
   'deal.highlights': 'Highlights',
+  'deal.descriptionHeading': 'Beschrijving',
   'deal.inclusionsHeading': 'In dit arrangement voor',
   'deal.inclusionsEndAlt': 'is het volgende inbegrepen',
   'deal.chooseStay': 'Kies je verblijf:',
