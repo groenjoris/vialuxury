@@ -34,20 +34,24 @@
     padding-bottom: 20px !important; /* 20px of photo below the pitch */
   }
 
-  /* ── V2 / V4 (home): reorder so the search pill sits BELOW the hero copy.
-        (V1 + V3 keep the natural nav → pill → copy order.) ── */
+  /* ── V2 / V3 / V4 (home): reorder so the search pill sits BELOW the hero
+        copy. (V1 keeps the natural nav → pill → copy order.) ── */
   [data-fr-home-variant="2"] .home-hero .site-header--overlay,
+  [data-fr-home-variant="3"] .home-hero .site-header--overlay,
   [data-fr-home-variant="4"] .home-hero .site-header--overlay {
     display: flex !important;   /* beats the scoped .home-hero .site-header{display:block} */
     flex-direction: column !important;
   }
   [data-fr-home-variant="2"] .home-hero .site-header--overlay .site-header__nav,
+  [data-fr-home-variant="3"] .home-hero .site-header--overlay .site-header__nav,
   [data-fr-home-variant="4"] .home-hero .site-header--overlay .site-header__nav { order: 1 !important; }
 
   [data-fr-home-variant="2"] .home-hero .site-header--overlay .home-hero__content,
+  [data-fr-home-variant="3"] .home-hero .site-header--overlay .home-hero__content,
   [data-fr-home-variant="4"] .home-hero .site-header--overlay .home-hero__content { order: 2 !important; }
 
   [data-fr-home-variant="2"] .home-hero .site-header--overlay .site-header__mobile-search,
+  [data-fr-home-variant="3"] .home-hero .site-header--overlay .site-header__mobile-search,
   [data-fr-home-variant="4"] .home-hero .site-header--overlay .site-header__mobile-search {
     order: 3 !important;
   }
@@ -57,35 +61,47 @@
   [data-fr-home-variant="3"] .home-hero__eyebrow,
   [data-fr-home-variant="4"] .home-hero__eyebrow { display: none !important; }
 
-  /* ── V2 + V4: drop the whole pitch+search combo toward the bottom of the
-        photo. Double the gap between the pitch and the search bar (~10 → 20px),
-        and halve the gap below the search bar (~68 → 34px). ── */
+  /* ── V2 + V3 + V4: drop the whole search combo toward the bottom of the
+        photo. (V2/V4 also show the pitch; V3 has no copy.) Gap pitch→search
+        ~20px, gap below the search bar ~34px. V3 inherits the same search-bar
+        position as V2. ── */
   [data-fr-home-variant="2"] .home-hero .site-header--overlay,
+  [data-fr-home-variant="3"] .home-hero .site-header--overlay,
   [data-fr-home-variant="4"] .home-hero .site-header--overlay {
     min-height: 450px;
     padding-bottom: 0 !important;
   }
   [data-fr-home-variant="2"] .home-hero__content,
+  [data-fr-home-variant="3"] .home-hero__content,
   [data-fr-home-variant="4"] .home-hero__content {
     margin-top: auto !important;   /* push the combo down */
   }
   /* Pitch → search bar gap = 20px (content pad-bottom 32 + slot pad-top 12 +
      pill margin-top). −24 ⇒ 32+12−24 = 20. */
   [data-fr-home-variant="2"] .mobile-search-trigger,
+  [data-fr-home-variant="3"] .mobile-search-trigger,
   [data-fr-home-variant="4"] .mobile-search-trigger {
     margin-top: -24px !important;
   }
   /* Search bar → photo bottom gap = 34px (half). */
   [data-fr-home-variant="2"] .home-hero .site-header--overlay .site-header__mobile-search,
+  [data-fr-home-variant="3"] .home-hero .site-header--overlay .site-header__mobile-search,
   [data-fr-home-variant="4"] .home-hero .site-header--overlay .site-header__mobile-search {
     padding-bottom: 34px !important;
   }
 
-  /* ── V3: bare hero — search bar in the nav chrome at the top (same as V1),
-        the phone in the nav (same as V1), and NO hero copy at all (eyebrow,
-        "Experience more" and pitch all hidden). No reorder. ── */
+  /* ── V3: bare hero — same search-bar position as V2 (bottom of photo) but
+        NO hero copy (eyebrow, "Experience more" and pitch all hidden). The
+        empty content block is removed from flow so only the search bar shows
+        over the photo; the phone stays in the nav (normal header). ── */
   [data-fr-home-variant="3"] .home-hero__title,
   [data-fr-home-variant="3"] .home-hero__tagline { display: none !important; }
+  [data-fr-home-variant="3"] .home-hero__content { display: none !important; }
+  /* Content is gone, so the search slot itself carries the margin-top:auto
+     that drops it to the bottom of the photo. */
+  [data-fr-home-variant="3"] .home-hero .site-header--overlay .site-header__mobile-search {
+    margin-top: auto !important;
+  }
 
   /* ── V4: minimal header on home + search + deal + hotel. ── */
   [data-fr-home-variant="4"] :is(.home, .search-page, .deal-page, .hotel-page) .site-header__nav-inner {
@@ -127,6 +143,9 @@
     flex: none;
     width: 16px;
     height: 16px;
+    /* The phone glyph is inset ~2px inside its viewBox; pull it left so the
+       visible icon lines up with the number's left edge on line 2. */
+    margin-left: -2px;
   }
   [data-fr-home-variant="4"] :is(.home, .search-page, .deal-page, .hotel-page) .site-header__phone-label {
     display: inline;
@@ -139,5 +158,15 @@
     font-size: 14px;
     font-weight: 700;
     line-height: 1.25;
+  }
+
+  /* V4 search-results page: align the search summary bar with the deal page.
+     Move it down ~10px (gap from the logo 10 → 20px) and end the dark header
+     background at the middle of the bar. */
+  [data-fr-home-variant="4"] .search-page .site-header__mobile-search--on-solid .mss {
+    margin-top: -24px !important;   /* was -34 → +10px below the logo */
+  }
+  [data-fr-home-variant="4"] .search-page .site-header__mobile-search--on-solid.site-header__mobile-search--summary {
+    background: linear-gradient(to bottom, #111 34px, #fff 34px) !important;
   }
 }
