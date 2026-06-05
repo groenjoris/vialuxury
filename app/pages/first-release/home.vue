@@ -806,12 +806,16 @@ onMounted(() => { setFrNavVariant('1'); restoreHeroPhotoIndex() })
 }
 
 @media (max-width: 800px) {
+  /* Uitgelicht is hidden on mobile, so the 2-col grid isn't needed; a plain
+     block also stops the grid track from growing to the pills' content width
+     (which broke the horizontal pill scroll). */
   .home-popular__inner {
-    grid-template-columns: 1fr;
-    gap: var(--space-lg);
+    display: block;
   }
-  /* Pills override moved into the larger mobile block below — flex-
-     wrap there fits more pills per row than a forced 1-col grid. */
+  .home-popular__col {
+    min-width: 0;   /* allow the pill row to shrink + scroll instead of overflowing */
+  }
+  /* Pills override (3-row horizontal swipe) lives in the larger mobile block below. */
 }
 
 .home-pill {
@@ -942,6 +946,22 @@ onMounted(() => { setFrNavVariant('1'); restoreHeroPhotoIndex() })
     max-width: 80vw;
     scroll-snap-align: start;
   }
+  /* "Actuele deals" (only) stacks vertically — one card under another —
+     instead of the horizontal swipe carousel kept for "Eerder bekeken". */
+  .home-deals--alt .home-deals__grid--3 {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+    overflow-x: visible !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding: 0 !important;
+  }
+  .home-deals--alt .home-deals__grid--3 > * {
+    flex: initial !important;
+    width: auto !important;
+    max-width: none !important;
+  }
 
   /* Hero — keep the photo visible (top-aligned), but let the hero
      section grow to fit the searchbar + content below. */
@@ -994,21 +1014,48 @@ onMounted(() => { setFrNavVariant('1'); restoreHeroPhotoIndex() })
     gap: 16px;
     padding-bottom: 24px;
   }
-  .home-popular {
-    padding: 30px 0;  /* −10 px top padding: 40px 0; bottom */
+  /* Hide "Uitgelicht" (the featured-deal column) on mobile. Kept in the
+     DOM (incl. its mobile "Bekijk" CTA) so it can be re-enabled later. */
+  .home-popular__col--press {
+    display: none;
   }
 
-  /* Quick filter pills: wrap naturally — pills size to content so
-     more fit per row. Drops the 1-col grid. */
+  /* Consistent vertical rhythm: every home section gets the SAME top &
+     bottom padding so the gap from a section's content to its background
+     edge equals the gap from that edge to the next section's title across
+     the white ↔ tinted alternation. */
+  .home-persuasion,
+  .home-popular,
+  .home-deals,
+  .home-categories {
+    padding-top: 32px !important;
+    padding-bottom: 32px !important;
+  }
+  .home-popular__heading,
+  .home-deals__title {
+    margin-bottom: 20px;
+  }
+
+  /* Quick filter pills: 3 rows that scroll horizontally (swipe). Columns
+     fill left-to-right, 3 rows tall; the row bleeds past the .container
+     inset so it scrolls edge-to-edge. */
   .home-popular__pills {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-auto-flow: column;
+    grid-template-rows: repeat(3, auto);
+    grid-auto-columns: max-content;
     gap: 8px;
-    grid-template-columns: none;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x proximity;
+    margin: 0 -16px;
+    padding: 0 16px 4px;
   }
   .home-pill {
     width: auto;
     flex: 0 0 auto;
+    white-space: nowrap;
+    scroll-snap-align: start;
   }
 }
 </style>
