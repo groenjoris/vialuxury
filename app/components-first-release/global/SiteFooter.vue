@@ -346,10 +346,24 @@ function onNewsletterInput(e: Event) {
        so every divider has equal space above and below it. */
     gap: var(--space-lg);
   }
-  /* Brand: horizontal wordmark + handwritten tagline instead of the stack. */
+  /* Brand: horizontal wordmark + handwritten tagline instead of the stack.
+     Match the mobile HEADER lockup exactly — logo pinned to 204px, tagline
+     shrunk (font + tracking + scaleX) so its right edge lands flush with the
+     logo's, i.e. the payoff is the same width as the logo. */
   .footer-logo__img--vertical { display: none; }
-  .footer-logo__img--horizontal { display: block; height: 34px; }
-  .footer-tagline { display: block; }
+  .footer-logo__img--horizontal { display: block; width: 204px; height: auto; }
+  .footer-tagline {
+    display: block;
+    width: 204px;
+    max-width: 100%;
+    font-size: 11px;
+    line-height: 1.1;
+    letter-spacing: -0.3px;
+    white-space: nowrap;
+    transform: scaleX(0.88);
+    transform-origin: left center;
+    margin: 4px 0 0;
+  }
   /* Divider between every stacked section (email→Hulp, WhatsApp→Populaire,
      Populaire→ViaLuxury). Border sits at the section's top; the grid gap
      above it and the padding-top below it are both var(--space-lg) so the

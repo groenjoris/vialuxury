@@ -12,6 +12,17 @@
          carousel (up to 5 hotel photos) with prev/next arrows that fade
          in on hover. List mode keeps the single static image. -->
     <div class="deal-card-v2__image">
+      <!-- Anti rage-click: the whole photo opens the deal page. Sits ABOVE the
+           image (z-index 1) but BELOW the carousel arrows (z-index 2) and the
+           favourite heart (z-index 3) so those still work. -->
+      <NuxtLink
+        :to="dealHref"
+        :target="linkTarget"
+        rel="noopener"
+        class="deal-card-v2__image-link"
+        :aria-label="hotel?.name || localized(deal.title)"
+        @click.stop
+      />
       <img :src="displayedImage" :alt="hotel?.name || localized(deal.title)" loading="lazy" />
       <!-- Deal-page sidepanel cards lock to a single deterministic
            photo and suppress the carousel arrows. Map sidepanel keeps
@@ -608,6 +619,13 @@ const includesBullets = computed<string[]>(() => {
   position: relative;
   overflow: hidden;
   background: var(--color-background-secondary);
+}
+/* Full-photo click target → deal page (anti rage-click). Below the carousel
+   arrows (z2) + favourite (z3); above the image. */
+.deal-card-v2__image-link {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
 }
 
 /* List view, WIDE variant (filter sidebar hidden): image at double width

@@ -882,18 +882,17 @@
     <Teleport to="body">
       <Transition name="fade">
         <div v-if="descriptionOpen && hotel" class="desc-modal" @click.self="descriptionOpen = false">
-          <div class="desc-modal__card">
-            <!-- Hotel photo on the left, text scrolls on the right.
-                 The stylesheet flips the card to a 2-column grid and pins
-                 the ✕ button to the top of the text column. -->
+          <div class="desc-modal__card" data-scroll-lock-allow="true">
+            <!-- Sticky header (hotel name + close). Stays pinned while the
+                 photo + body scroll underneath it. -->
+            <div class="desc-modal__header">
+              <h2 class="desc-modal__title">{{ hotel.name }}</h2>
+              <button type="button" class="desc-modal__close" @click="descriptionOpen = false" :aria-label="t('common.close')">×</button>
+            </div>
             <div v-if="hotel.images && hotel.images.length" class="desc-modal__photo">
               <img :src="hotel.images[0].url" :alt="hotel.name" />
             </div>
-            <div class="desc-modal__text" data-scroll-lock-allow="true">
-              <button type="button" class="desc-modal__close" @click="descriptionOpen = false" :aria-label="t('common.close')">×</button>
-              <h2 class="desc-modal__title">{{ hotel.name }}</h2>
-              <div class="desc-modal__body" v-html="fullDescription"></div>
-            </div>
+            <div class="desc-modal__body" v-html="fullDescription"></div>
           </div>
         </div>
       </Transition>
@@ -1585,7 +1584,9 @@ onMounted(() => {
      leaving the popup with no background. */
   background: #fff;
   border-radius: var(--radius-lg);
-  padding: var(--space-xl);
+  /* No card padding — the sticky header + photo go edge-to-edge; the body
+     supplies its own padding. */
+  padding: 0;
   /* Wider + square: side = the smaller of 92 vw / 92 vh so the card
      always fits both axes; aspect-ratio locks the result to 1 : 1. */
   width: min(92vh, 92vw);
@@ -1595,15 +1596,28 @@ onMounted(() => {
   overflow-y: auto;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
 }
+/* Sticky header: hotel name + close. Pinned to the top of the scrolling
+   card so the photo + body scroll underneath it. */
+.desc-modal__header {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  padding: 14px var(--space-lg);
+  background: #fff;
+  border-bottom: 1px solid var(--color-border-light);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
 .desc-modal__close {
-  position: absolute;
-  top: var(--space-md);
-  right: var(--space-md);
+  flex-shrink: 0;
   width: 36px;
   height: 36px;
   border-radius: 50%;
   border: 1px solid var(--color-border);
-  background: var(--color-surface, #fff);
+  background: #fff;
   font-size: 22px;
   line-height: 1;
   cursor: pointer;
@@ -1612,13 +1626,14 @@ onMounted(() => {
 .desc-modal__close:hover { border-color: var(--color-primary); }
 .desc-modal__title {
   font-family: var(--font-heading);
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 700;
-  margin: 0 0 var(--space-md);
-  padding-right: 48px;
+  margin: 0;
+  min-width: 0;
   color: var(--color-text-primary);
 }
-.desc-modal__body { font-size: 15px; line-height: 1.75; color: var(--color-text-secondary); }
+.desc-modal__photo img { display: block; width: 100%; height: auto; }
+.desc-modal__body { font-size: 15px; line-height: 1.75; color: var(--color-text-secondary); padding: var(--space-lg); }
 .desc-modal__body :deep(p) { margin: 0 0 var(--space-md); }
 .fade-enter-active, .fade-leave-active { transition: opacity 180ms ease; }
 .fade-enter-from, .fade-leave-to { opacity: 0; }

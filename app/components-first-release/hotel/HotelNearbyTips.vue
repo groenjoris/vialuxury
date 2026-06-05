@@ -262,10 +262,12 @@ function toggleBottom(index: number) {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     scroll-snap-type: x mandatory;
-    /* Bleed past the section's 16px padding so the first card sits at 16px
-       and the row scrolls edge-to-edge with the next card peeking. */
-    margin: 0 -16px;
-    padding: 0 16px 8px;
+    /* Keep the first card at the section's 16px left margin (a scrolling flex
+       row drops its left padding, so the old `margin:0 -16px` put the first
+       card flush against the edge). Bleed only on the RIGHT so the next card
+       still peeks at the right edge. */
+    margin: 0 -16px 0 0;
+    padding: 0 0 8px;
   }
   .tips-row--bottom {
     height: auto;
