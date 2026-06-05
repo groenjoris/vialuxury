@@ -704,7 +704,7 @@
       </section>
 
       <!-- "Waarom ViaLuxury" (Tips moved up under Hotel faciliteiten). -->
-      <FirstReleaseWhyViaLuxury />
+      <FirstReleaseWhyViaLuxury class="deal-page__why-desktop" />
 
       <!-- "Anderen bekeken ook" at the bottom of the deal page.
            Fills 3 cards: same hotel first, then nearby. -->
@@ -2107,7 +2107,8 @@ onMounted(() => {
 .deal-page__facilities::before,
 .deal-page__reviews::before,
 .deal-page__house-rules::before,
-.deal-page__faq::before {
+.deal-page__faq::before,
+.deal-page__why-desktop::before {
   content: '';
   position: absolute;
   top: 0;
@@ -2115,6 +2116,11 @@ onMounted(() => {
   right: var(--space-lg);
   height: 1px;
   background: var(--color-border-light);
+}
+/* The class lands on the WhyViaLuxury component root; it needs a positioning
+   context for the ::before divider (the section above uses position:relative). */
+.deal-page__why-desktop {
+  position: relative;
 }
 
 /* ===== RESPONSIVE ===== */

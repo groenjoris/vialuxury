@@ -149,41 +149,34 @@ function toggleBottom(index: number) {
   gap: 14px;
 }
 
-/* ── Row ── */
+/* ── Row: equal-width cards; the text sits BELOW the image so long tip
+   descriptions (which can run ~3× the title) fit without being clipped. ── */
 .tips-row {
   display: flex;
   gap: 14px;
-  height: 300px; /* Fixed height — no layout shift */
+  align-items: stretch;   /* cards in a row share the tallest height */
 }
 
-.tips-row--bottom {
-  height: 280px;
-}
-
-/* ── Card ── */
+/* ── Card: image on top, text below ── */
 .tip-card {
   position: relative;
   flex: 1 1 0;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border: 1px solid var(--color-border-light);
   border-radius: var(--radius-lg);
   overflow: hidden;
-  cursor: pointer;
-  transition: flex 600ms cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: default;
 }
 
-.tip-card--active {
-  flex: 2.4 1 0;
-}
-
-.tip-card--inactive {
-  flex: 0.8 1 0;
-}
-
-/* ── Image: fills the entire card ── */
+/* ── Image: top of the card, fixed height ── */
 .tip-card__image {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
+  position: relative;
+  height: 200px;
+  flex: 0 0 auto;
+  overflow: hidden;
 }
 
 .tip-card__image img {
@@ -195,76 +188,22 @@ function toggleBottom(index: number) {
 }
 
 .tip-card:hover .tip-card__image img {
-  transform: scale(1.05);
+  transform: scale(1.04);
 }
 
-/* ── Overlay: number + title (visible when collapsed) ── */
-.tip-card__overlay {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 3;
-  padding: var(--space-xl) var(--space-lg) var(--space-md);
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.6) 0%, transparent 100%);
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  transition: opacity 400ms ease;
-}
+/* The dark number+title overlay is no longer used — the title lives in the
+   text block below the image. */
+.tip-card__overlay { display: none; }
 
-.tip-card--active .tip-card__overlay {
-  opacity: 0;
-  pointer-events: none;
-}
-
-.tip-card__number {
-  font-family: var(--font-heading);
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--color-primary);
-  letter-spacing: 0.05em;
-}
-
-.tip-card__title {
-  font-family: var(--font-heading);
-  font-size: 18px;
-  font-weight: 700;
-  color: white;
-  line-height: 1.3;
-  margin: 0;
-  transition: font-size 400ms ease;
-}
-
-.tip-card--inactive .tip-card__title {
-  font-size: 15px;
-}
-
-/* ── Panel: text side (visible when expanded) ── */
+/* ── Text block below the image ── */
 .tip-card__panel {
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  width: 45%;
-  z-index: 4;
-  background: #F5F5F5;
-  display: flex;
-  align-items: center;
-  opacity: 0;
-  transform: translateX(30px);
-  transition: opacity 400ms ease, transform 500ms cubic-bezier(0.4, 0, 0.2, 1);
-  pointer-events: none;
-}
-
-.tip-card--active .tip-card__panel {
-  opacity: 1;
-  transform: translateX(0);
-  pointer-events: auto;
+  display: block;
+  background: #fff;
+  flex: 1 1 auto;
 }
 
 .tip-card__panel-inner {
-  padding: var(--space-xl) var(--space-xl) var(--space-xl) var(--space-lg);
+  padding: var(--space-lg);
 }
 
 .tip-card__accent {
@@ -277,7 +216,7 @@ function toggleBottom(index: number) {
 
 .tip-card__panel-title {
   font-family: var(--font-heading);
-  font-size: 22px;
+  font-size: 18px;
   font-weight: 700;
   color: var(--color-text-primary);
   margin: 0 0 var(--space-sm) 0;
@@ -291,31 +230,11 @@ function toggleBottom(index: number) {
   margin: 0;
 }
 
-/* ── Responsive ── */
+/* ── Tablet ── */
 @media (max-width: 1024px) {
-  .tips-row {
-    height: 260px;
-  }
-
-  .tips-row--bottom {
-    height: 240px;
-  }
-
-  .tip-card__panel {
-    width: 50%;
-  }
-
-  .tip-card__panel-title {
-    font-size: 18px;
-  }
-
-  .tip-card__desc {
-    font-size: 13px;
-  }
-
-  .tip-card__title {
-    font-size: 16px;
-  }
+  .tip-card__image { height: 170px; }
+  .tip-card__panel-title { font-size: 17px; }
+  .tip-card__desc { font-size: 13px; }
 }
 
 @media (max-width: 800px) {
