@@ -881,13 +881,16 @@
     <!-- Full description popup -->
     <Teleport to="body">
       <Transition name="fade">
-        <div v-if="descriptionOpen && hotel" class="desc-modal" @click.self="descriptionOpen = false">
+        <div v-if="descriptionOpen && hotel && currentDeal" class="desc-modal" @click.self="descriptionOpen = false">
           <div class="desc-modal__card" data-scroll-lock-allow="true">
-            <!-- Sticky header (hotel name + close). Stays pinned while the
-                 photo + body scroll underneath it. -->
+            <!-- Header: deal name + close. Desktop = top of the right text
+                 column (image sits left, only the text scrolls); mobile =
+                 sticky header with the photo scrolling underneath it. -->
             <div class="desc-modal__header">
-              <h2 class="desc-modal__title">{{ hotel.name }}</h2>
-              <button type="button" class="desc-modal__close" @click="descriptionOpen = false" :aria-label="t('common.close')">×</button>
+              <h2 class="desc-modal__title">{{ localized(currentDeal.title) }}</h2>
+              <button type="button" class="desc-modal__close" @click="descriptionOpen = false" :aria-label="t('common.close')">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12" /></svg>
+              </button>
             </div>
             <div v-if="hotel.images && hotel.images.length" class="desc-modal__photo">
               <img :src="hotel.images[0].url" :alt="hotel.name" />
@@ -1594,71 +1597,10 @@ onMounted(() => {
   text-decoration: underline;
 }
 
-/* Full description modal */
-.desc-modal {
-  position: fixed; inset: 0; z-index: 1100;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex; align-items: center; justify-content: center;
-  padding: var(--space-lg);
-}
-.desc-modal__card {
-  position: relative;
-  /* Explicit solid white — was `var(--color-surface, #fff)`, which on some
-     mobile browsers rendered transparent for the teleported (scoped) modal,
-     leaving the popup with no background. */
-  background: #fff;
-  border-radius: var(--radius-lg);
-  /* No card padding — the sticky header + photo go edge-to-edge; the body
-     supplies its own padding. */
-  padding: 0;
-  /* Wider + square: side = the smaller of 92 vw / 92 vh so the card
-     always fits both axes; aspect-ratio locks the result to 1 : 1. */
-  width: min(92vh, 92vw);
-  aspect-ratio: 1 / 1;
-  max-width: none;
-  max-height: none;
-  overflow-y: auto;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
-}
-/* Sticky header: hotel name + close. Pinned to the top of the scrolling
-   card so the photo + body scroll underneath it. */
-.desc-modal__header {
-  position: sticky;
-  top: 0;
-  z-index: 5;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-md);
-  padding: 14px var(--space-lg);
-  background: #fff;
-  border-bottom: 1px solid var(--color-border-light);
-  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-}
-.desc-modal__close {
-  flex-shrink: 0;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  border: 1px solid var(--color-border);
-  background: #fff;
-  font-size: 22px;
-  line-height: 1;
-  cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-}
-.desc-modal__close:hover { border-color: var(--color-primary); }
-.desc-modal__title {
-  font-family: var(--font-heading);
-  font-size: 20px;
-  font-weight: 700;
-  margin: 0;
-  min-width: 0;
-  color: var(--color-text-primary);
-}
-.desc-modal__photo img { display: block; width: 100%; height: auto; }
-.desc-modal__body { font-size: 15px; line-height: 1.75; color: var(--color-text-secondary); padding: var(--space-lg); }
-.desc-modal__body :deep(p) { margin: 0 0 var(--space-md); }
+/* Full description modal — all styling is shared with the hotel page and
+   lives in app/assets/css/fr-variant-6.css (`.desc-modal*`). Keeping it in
+   one global place avoids the scoped-vs-global specificity conflicts that
+   previously broke the desktop layout. */
 .fade-enter-active, .fade-leave-active { transition: opacity 180ms ease; }
 .fade-enter-from, .fade-leave-to { opacity: 0; }
 

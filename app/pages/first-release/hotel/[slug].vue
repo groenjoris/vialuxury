@@ -293,15 +293,20 @@
           class="desc-modal"
           @click.self="showFullDescription = false"
         >
-          <div class="desc-modal__card">
+          <div class="desc-modal__card" data-scroll-lock-allow="true">
+            <!-- Header: hotel name + close. Desktop = top of the right text
+                 column (image left, only text scrolls); mobile = sticky
+                 header with the photo scrolling underneath. -->
+            <div class="desc-modal__header">
+              <h2 class="desc-modal__title">{{ hotel.name }}</h2>
+              <button type="button" class="desc-modal__close" @click="showFullDescription = false" :aria-label="t('common.close')">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12" /></svg>
+              </button>
+            </div>
             <div v-if="hotel.images && hotel.images.length" class="desc-modal__photo">
               <img :src="hotel.images[0].url" :alt="hotel.name" />
             </div>
-            <div class="desc-modal__text" data-scroll-lock-allow="true">
-              <button type="button" class="desc-modal__close" @click="showFullDescription = false" :aria-label="t('common.close')">×</button>
-              <h2 class="desc-modal__title">{{ hotel.name }}</h2>
-              <div class="desc-modal__body" v-html="localized(hotel.description)"></div>
-            </div>
+            <div class="desc-modal__body" v-html="localized(hotel.description)"></div>
           </div>
         </div>
       </Transition>
@@ -707,34 +712,8 @@ onBeforeUnmount(() => {
 .hotel-page__read-more { background: none; border: 0; padding: 0; margin-top: 6px; cursor: pointer; color: var(--color-primary); font-size: 14px; font-weight: 600; text-decoration: underline; text-underline-offset: 2px; }
 .hotel-page__read-more:hover { color: var(--color-primary-hover); }
 
-/* Description modal */
-/* Full description modal — same look as the deal page. Overlay
-   + close button styles are local; the card layout (2-col grid,
-   photo left, scrolling text right) lives in fr-variant-6.css
-   keyed on `.desc-modal__card`. */
-.desc-modal {
-  position: fixed; inset: 0;
-  background: rgba(0,0,0,0.4);
-  z-index: 1000;
-  display: flex; align-items: center; justify-content: center;
-  padding: var(--space-lg);
-}
-.desc-modal__close {
-  position: absolute;
-  top: var(--space-md); right: var(--space-md);
-  width: 36px; height: 36px;
-  border-radius: 50%;
-  border: 1px solid var(--color-border);
-  background: #fff;
-  display: inline-flex; align-items: center; justify-content: center;
-  cursor: pointer;
-  color: var(--color-text-primary);
-  font-size: 22px; line-height: 1;
-}
-.desc-modal__close:hover { border-color: var(--color-primary); }
-.desc-modal__title { font-family: var(--font-heading); font-size: 22px; font-weight: 700; margin: 0 0 var(--space-md); padding-right: 40px; }
-.desc-modal__body { font-size: 15px; line-height: 1.75; color: var(--color-text-secondary); }
-.desc-modal__body p { margin: 0 0 var(--space-md); }
+/* Full description modal — all styling is shared with the deal page and
+   lives in app/assets/css/fr-variant-6.css (`.desc-modal*`). */
 
 /* Mini map */
 /* Mini map — match the deal-page layout. Photo wrapped in a

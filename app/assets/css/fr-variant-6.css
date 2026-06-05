@@ -161,70 +161,140 @@
   gap: var(--space-sm);
 }
 
-/* ─── Description "Lees meer" modal — v6 only ───
- * Two-column layout: hotel photo on the left (full height,
- * object-fit cover), full description on the right with the
- * scroll confined to its column. The close button stays at the
- * card's top-right corner — because the card itself has
- * overflow: hidden, the button is visually pinned (sticky-like)
- * while the text scrolls underneath.
+/* ─── Description "Lees meer" modal — shared by the deal + hotel pages ───
+ * Single source of truth for both popups (their pages no longer carry any
+ * scoped `.desc-modal` CSS). DOM order is: header (title + close), photo, body.
+ *
+ * DESKTOP: 2-column card — the photo sits LEFT and is fixed (object-fit
+ *   cover, full height), the header pins the top-right and only the body text
+ *   scrolls. (Photo col1 spans both rows; header = col2/row1; body = col2/row2.)
+ * MOBILE: single column — the header is sticky at the top and the photo +
+ *   body scroll underneath it.
  */
+[data-fr-variant="6"] .desc-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-lg);
+}
 [data-fr-variant="6"] .desc-modal__card {
+  position: relative;
+  background: #fff;
+  border-radius: var(--radius-lg);
+  padding: 0;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  padding: 0;
-  /* 70 % of the viewport height — 15 % breathing room top + bottom.
-     Width equals height so the card reads as a perfect square,
-     capped at the viewport width so we don't overflow on narrow
-     desktops. */
+  grid-template-rows: auto 1fr;
+  /* Square-ish: 70vh tall, equal width, capped to the viewport. */
   height: 70vh;
   width: 70vh;
   max-width: calc(100vw - 32px);
   max-height: 70vh;
   overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
 }
-
+/* Photo: left column, full height, fixed — only the body scrolls. */
 [data-fr-variant="6"] .desc-modal__photo {
+  grid-column: 1;
+  grid-row: 1 / 3;
   overflow: hidden;
   background: #f5f5f5;
 }
-
 [data-fr-variant="6"] .desc-modal__photo img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
 }
-
-[data-fr-variant="6"] .desc-modal__text {
-  overflow-y: auto;
-  padding: var(--space-xl);
-}
-
-/* The close ✕ button (legacy `position: absolute` on the card) stays
-   visually pinned at the top-right of the card while the right
-   column scrolls — same effect as `position: sticky` without
-   restructuring the DOM. Add a solid background + z-index so it
-   reads cleanly over scrolling text. */
-[data-fr-variant="6"] .desc-modal__close {
+/* Header: title + close, top of the right column. */
+[data-fr-variant="6"] .desc-modal__header {
+  grid-column: 2;
+  grid-row: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  padding: 14px var(--space-lg);
   background: #fff;
-  z-index: 10;
+  border-bottom: 1px solid var(--color-border-light);
+}
+[data-fr-variant="6"] .desc-modal__title {
+  font-family: var(--font-heading);
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0;
+  min-width: 0;
+  color: var(--color-text-primary);
+}
+/* Close — matches the side-panel close: grey circle, black cross
+   (SVG stroke=currentColor), darker grey on hover. */
+[data-fr-variant="6"] .desc-modal__close {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: var(--color-background-secondary);
+  color: var(--color-text-primary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+[data-fr-variant="6"] .desc-modal__close:hover {
+  background: var(--color-border);
+}
+/* Body: right column, the ONLY scrolling area on desktop. */
+[data-fr-variant="6"] .desc-modal__body {
+  grid-column: 2;
+  grid-row: 2;
+  overflow-y: auto;
+  padding: var(--space-lg) var(--space-xl);
+  font-size: 15px;
+  line-height: 1.75;
+  color: var(--color-text-secondary);
+}
+[data-fr-variant="6"] .desc-modal__body p {
+  margin: 0 0 var(--space-md);
 }
 
-/* Mobile: stack photo above text instead of the desktop 2-col grid. */
+/* Mobile: single column — sticky header on top, photo + body scroll under. */
 @media (max-width: 800px) {
+  [data-fr-variant="6"] .desc-modal {
+    padding: var(--space-md);
+  }
   [data-fr-variant="6"] .desc-modal__card {
     grid-template-columns: 1fr;
-    grid-template-rows: auto 1fr;
+    grid-template-rows: auto auto 1fr;
     width: 100%;
-    height: 90vh;
-    max-height: 90vh;
-    aspect-ratio: auto;
+    height: 88vh;
+    max-height: 88vh;
+    overflow-y: auto;
+  }
+  [data-fr-variant="6"] .desc-modal__header {
+    grid-column: 1;
+    grid-row: 1;
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
   }
   [data-fr-variant="6"] .desc-modal__photo {
-    height: 200px;
+    grid-column: 1;
+    grid-row: 2;
   }
-  [data-fr-variant="6"] .desc-modal__text {
+  [data-fr-variant="6"] .desc-modal__photo img {
+    height: auto;
+  }
+  [data-fr-variant="6"] .desc-modal__body {
+    grid-column: 1;
+    grid-row: 3;
+    overflow: visible;
     padding: var(--space-lg);
   }
 }
