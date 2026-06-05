@@ -180,6 +180,7 @@ const de: Record<string, string> = {
   'common.for': 'für',
   'common.close': 'Schließen',
   'common.readMore': 'Mehr lesen',
+  'common.readLess': 'Weniger lesen',
   'common.save': 'Speichern',
   'common.share': 'Teilen',
   'common.apply': 'Anwenden',

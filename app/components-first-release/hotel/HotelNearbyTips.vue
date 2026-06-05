@@ -35,6 +35,12 @@
               <div class="tip-card__accent"></div>
               <h3 class="tip-card__panel-title">{{ localized(tip.title) }}</h3>
               <p class="tip-card__desc">{{ localized(tip.description) }}</p>
+              <button
+                v-if="!isMobile"
+                type="button"
+                class="tip-card__more"
+                @click.stop="toggleTop(index)"
+              >{{ activeTop === index ? t('common.readLess') : t('common.readMore') }}</button>
             </div>
           </div>
         </div>
@@ -67,6 +73,12 @@
               <div class="tip-card__accent"></div>
               <h3 class="tip-card__panel-title">{{ localized(tip.title) }}</h3>
               <p class="tip-card__desc">{{ localized(tip.description) }}</p>
+              <button
+                v-if="!isMobile"
+                type="button"
+                class="tip-card__more"
+                @click.stop="toggleBottom(index)"
+              >{{ activeBottom === index ? t('common.readLess') : t('common.readMore') }}</button>
             </div>
           </div>
         </div>
@@ -160,7 +172,11 @@ function toggleBottom(index: number) {
 /* ── Card: image on top, text below ── */
 .tip-card {
   position: relative;
-  flex: 1 1 0;
+  /* Size is driven by flex-basis (NOT flex-grow) so it can be animated — a
+     flex-grow/`flex` transition is left stuck in Chromium and never resizes.
+     flex-basis is a length and animates reliably. */
+  flex-grow: 0;
+  flex-shrink: 1;
   min-width: 0;
   display: flex;
   flex-direction: column;
@@ -168,8 +184,18 @@ function toggleBottom(index: number) {
   border: 1px solid var(--color-border-light);
   border-radius: var(--radius-lg);
   overflow: hidden;
-  cursor: default;
+  cursor: pointer;
+  transition: flex-basis 450ms cubic-bezier(0.4, 0, 0.2, 1);
 }
+/* Equal widths by default. */
+.tips-row--top .tip-card { flex-basis: 33.333%; }
+.tips-row--bottom .tip-card { flex-basis: 50%; }
+/* Clicked card grows, its row-mates shrink — both animate via flex-basis.
+   (Mobile pins flex to 80vw !important, so none of this applies there.) */
+.tips-row--top .tip-card--active { flex-basis: 56%; }
+.tips-row--top .tip-card--inactive { flex-basis: 22%; }
+.tips-row--bottom .tip-card--active { flex-basis: 64%; }
+.tips-row--bottom .tip-card--inactive { flex-basis: 36%; }
 
 /* ── Image: top of the card, fixed height ── */
 .tip-card__image {
@@ -228,7 +254,35 @@ function toggleBottom(index: number) {
   line-height: 1.7;
   color: var(--color-text-secondary);
   margin: 0;
+  /* Collapsed: show only the first ~2 lines ("eerste alinea") with the rest
+     revealed via "Lees meer". */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
+/* Expanded card shows the full description. */
+.tip-card--active .tip-card__desc {
+  -webkit-line-clamp: initial;
+  overflow: visible;
+}
+
+/* "Lees meer" / "Lees minder" toggle — plain orange text link. */
+.tip-card__more {
+  align-self: flex-start;
+  margin-top: var(--space-sm);
+  padding: 0;
+  background: none;
+  border: 0;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-primary);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.tip-card__more:hover { color: var(--color-primary-hover); }
 
 /* ── Tablet ── */
 @media (max-width: 1024px) {
@@ -318,6 +372,13 @@ function toggleBottom(index: number) {
   }
   .tip-card__desc {
     font-size: 14px;
+    /* Mobile shows the full description (no clamp / "Lees meer"). */
+    display: block;
+    -webkit-line-clamp: initial;
+    overflow: visible;
   }
+  /* The "Lees meer" toggle is desktop-only (it's also gated with v-if in
+     the template, but hide defensively in case of a resize). */
+  .tip-card__more { display: none; }
 }
 </style>

@@ -182,6 +182,7 @@ const en: Record<string, string> = {
   'common.for': 'for',
   'common.close': 'Close',
   'common.readMore': 'Read more',
+  'common.readLess': 'Read less',
   'common.save': 'Save',
   'common.share': 'Share',
   'common.apply': 'Apply',

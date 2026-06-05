@@ -182,6 +182,7 @@ const nl: Record<string, string> = {
   'common.for': 'voor',
   'common.close': 'Sluiten',
   'common.readMore': 'Lees meer',
+  'common.readLess': 'Lees minder',
   'common.save': 'Opslaan',
   'common.share': 'Delen',
   'common.apply': 'Toepassen',
