@@ -497,6 +497,22 @@
                       <svg class="menu-panel__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
                     </NuxtLink>
 
+                    <!-- LAYOUT-VARIANT switcher (prototype only) — mobile, in
+                         the menu so it never falls outside the viewport. -->
+                    <span class="menu-panel__section-label menu-panel__section-label--later">Layout-variant</span>
+                    <div class="menu-panel__variants">
+                      <button
+                        v-for="v in (['1','2','3','4'] as const)"
+                        :key="v"
+                        type="button"
+                        class="menu-panel__variant"
+                        :class="{ 'menu-panel__variant--active': homeLayoutVariant === v }"
+                        :aria-pressed="homeLayoutVariant === v"
+                        :aria-label="`Variant ${v}`"
+                        @click="setHomeLayoutVariant(v); hamburgerDropdownOpen = false"
+                      >{{ v }}</button>
+                    </div>
+
                   </div>
                 </aside>
               </Transition>
@@ -874,8 +890,6 @@
          page (overlay variant) since internal pages don't render a
          photo hero. -->
     <FirstReleaseHeroPhotoSwitcher v-if="variant === 'overlay'" />
-    <!-- Mobile-only layout-variant switcher — on every FR page. -->
-    <FirstReleaseHomeVariantSwitcher />
   </header>
 </template>
 
@@ -902,7 +916,7 @@ const props = withDefaults(defineProps<{
 
 const { t } = useFirstReleaseI18n()
 const localeStore = useFirstReleaseLocaleStore()
-const { homeHref, frNavVariant, homeLayoutVariant } = useFirstReleaseHomeVariant()
+const { homeHref, frNavVariant, homeLayoutVariant, setHomeLayoutVariant } = useFirstReleaseHomeVariant()
 
 /** Effective nav-bar layout — prop wins, otherwise read from the
  *  composable (which is restored from URL/localStorage on mount). */
@@ -4044,6 +4058,35 @@ function handleSelectHotelInPopup(slug: string) {
 }
 .menu-panel__section-label--later {
   margin-top: 28px;
+}
+
+/* Layout-variant switcher (prototype only) — a row of round 1–4 chips,
+   aligned to the menu rows' 28px gutter. */
+.menu-panel__variants {
+  display: flex;
+  gap: 10px;
+  margin: 0 28px 8px;
+}
+.menu-panel__variant {
+  width: 44px;
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid #d9d9d9;
+  border-radius: 50%;
+  background: #fff;
+  color: #1a1a1a;
+  font-family: var(--font-body);
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 150ms ease, color 150ms ease, border-color 150ms ease;
+}
+.menu-panel__variant--active {
+  background: #1a1a1a;
+  border-color: #1a1a1a;
+  color: #fff;
 }
 
 .menu-panel__row {
