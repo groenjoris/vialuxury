@@ -131,30 +131,41 @@
     justify-self: start !important;
     align-self: center;
   }
+  /* CSS GRID (not flex) so the two-line layout is deterministic on iOS WebKit:
+     flexbox `gap` needs Safari 14.1+ and `flex-wrap`+`flex-basis:100%` is fragile
+     there, which left the number misaligned on real iPhones. Grid + grid `gap`
+     are supported far earlier, and `grid-column: 1 / -1` pins the number to the
+     icon's column edge regardless of WebKit flex quirks. */
   [data-fr-home-variant="4"] :is(.home, .search-page, .deal-page, .hotel-page) .site-header__phone {
-    display: flex;
-    flex-wrap: wrap !important;   /* beats the scoped SiteHeader nowrap layout */
-    align-items: center;
-    column-gap: 7px;
+    display: grid !important;
+    grid-template-columns: auto 1fr;   /* col 1 = icon, col 2 = label */
+    column-gap: 6px;
     row-gap: 0;
+    align-items: center;
+    justify-items: start;
   }
   [data-fr-home-variant="4"] :is(.home, .search-page, .deal-page, .hotel-page) .site-header__phone svg {
+    grid-column: 1;
+    grid-row: 1;
     display: block;
     flex: none;
     width: 16px;
     height: 16px;
-    /* The phone glyph is inset ~2px inside its viewBox; pull it left so the
-       visible icon lines up with the number's left edge on line 2. */
-    margin-left: -2px;
+    /* The phone glyph is inset ~2px inside its viewBox; nudge it left visually
+       (transform only — does NOT move the grid track or the number). */
+    transform: translateX(-2px);
   }
   [data-fr-home-variant="4"] :is(.home, .search-page, .deal-page, .hotel-page) .site-header__phone-label {
+    grid-column: 2;
+    grid-row: 1;
     display: inline;
     font-size: 13px;
     line-height: 1.25;
     margin: 0;
   }
   [data-fr-home-variant="4"] :is(.home, .search-page, .deal-page, .hotel-page) .site-header__phone-number {
-    flex-basis: 100% !important;   /* force the number onto its own line (line 2) */
+    grid-column: 1 / -1;   /* line 2, starts at the icon's left edge */
+    grid-row: 2;
     font-size: 14px;
     font-weight: 700;
     line-height: 1.25;
