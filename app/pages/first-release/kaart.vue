@@ -67,6 +67,19 @@ const {
 
 // Mobile filter modal (full-screen subpage, same as /search).
 const mobileFilterOpen = ref(false)
+
+/** Arrival-date label for the mobile map pill, e.g. "do 3 jul" (+ "±2" when
+ *  a flex window is set). Mirrors the FilterPills formatting. */
+const arrivalPillLabel = computed(() => {
+  if (!arrivalDate.value) return ''
+  const [y, m, d] = arrivalDate.value.split('-').map(Number)
+  const dt = new Date(y, m - 1, d)
+  const dayShort = ['zo', 'ma', 'di', 'wo', 'do', 'vr', 'za'][dt.getDay()]
+  const monthShort = ['jan', 'feb', 'mrt', 'apr', 'mei', 'jun', 'jul', 'aug', 'sep', 'okt', 'nov', 'dec'][dt.getMonth()]
+  const base = `${dayShort} ${d} ${monthShort}`
+  const flex = Number(committedFlexibility?.value) || 0
+  return flex > 0 ? `${base} ±${flex}` : base
+})
 function resetFilters() {
   resetBudget()
   clearArrivalDate()
@@ -392,13 +405,28 @@ onMounted(() => {
         </svg>
       </button>
 
-      <!-- Top-right: Filters (opens the full-screen filter modal). -->
-      <button type="button" class="kaart-m-filter" @click="mobileFilterOpen = true">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="4" y1="6" x2="20" y2="6" /><line x1="8" y1="12" x2="20" y2="12" /><line x1="12" y1="18" x2="20" y2="18" />
-        </svg>
-        <span>{{ t('search.filters') || 'Filters' }}</span>
-      </button>
+      <!-- Top-left: Filters button + (when a date is picked) a removable
+           date pill beside it. -->
+      <div class="kaart-m-toolbar">
+        <button type="button" class="kaart-m-filter" @click="mobileFilterOpen = true">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="4" y1="6" x2="20" y2="6" /><line x1="8" y1="12" x2="20" y2="12" /><line x1="12" y1="18" x2="20" y2="18" />
+          </svg>
+          <span>{{ t('search.filters') || 'Filters' }}</span>
+        </button>
+        <button
+          v-if="arrivalDate"
+          type="button"
+          class="kaart-m-datepill"
+          :aria-label="`Verwijder datum ${arrivalPillLabel}`"
+          @click="clearArrivalDate"
+        >
+          <span>{{ arrivalPillLabel }}</span>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true">
+            <path d="M18 6L6 18M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
 
       <!-- Bottom sheet: hotel info + horizontal deal carousel. Emits
            its live height so the map slides up by exactly that much. -->
@@ -601,13 +629,22 @@ onMounted(() => {
   }
 }
 
-/* Top-LEFT Filters button — black pill, same style as the mobile
-   /search toolbar buttons. */
-.kaart-m-filter {
+/* Top-LEFT toolbar: Filters button + (when set) a removable date pill. */
+.kaart-m-toolbar {
   position: fixed;
   top: calc(var(--space-md) + env(safe-area-inset-top, 0));
   left: var(--space-md);
   z-index: 1100;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  /* Keep the row clear of the top-right close button. */
+  max-width: calc(100vw - var(--space-md) * 2 - 52px);
+}
+
+/* Filters button — black pill, same style as the mobile /search toolbar. */
+.kaart-m-filter {
+  flex: 0 0 auto;
   height: 48px;
   padding: 8px 16px;
   border-radius: 10px;
@@ -625,6 +662,33 @@ onMounted(() => {
 }
 .kaart-m-filter svg { stroke: #fff; }
 .kaart-m-filter:hover { background: #1f1f1f; }
+
+/* Removable arrival-date pill — white chip beside the Filters button. */
+.kaart-m-datepill {
+  flex: 0 1 auto;
+  min-width: 0;
+  height: 48px;
+  padding: 8px 12px 8px 14px;
+  border-radius: 10px;
+  border: 0;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  cursor: pointer;
+}
+.kaart-m-datepill span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.kaart-m-datepill svg { stroke: var(--color-text-muted); flex-shrink: 0; }
+.kaart-m-datepill:hover svg { stroke: var(--color-text-primary); }
 
 /* Top-RIGHT close-map icon button (white circle). */
 .kaart-m-close {
