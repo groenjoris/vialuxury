@@ -101,16 +101,22 @@
         <div class="home-popular__col home-popular__col--quick">
           <h3 class="home-popular__heading">Snel zoeken</h3>
           <div class="home-popular__pills">
-            <button
-              v-for="f in homeFilters"
-              :key="f.id"
-              type="button"
-              class="home-pill"
-              @click="pickFilter(f.id)"
+            <div
+              v-for="(row, ri) in homeFilterRows"
+              :key="ri"
+              class="home-popular__pill-row"
             >
-              <span class="home-pill__icon" v-html="POPULAR_FILTER_ICONS[ICON_FOR[f.id]] || POPULAR_FILTER_ICONS.star" />
-              <span class="home-pill__label">{{ f.label }}</span>
-            </button>
+              <button
+                v-for="f in row"
+                :key="f.id"
+                type="button"
+                class="home-pill"
+                @click="pickFilter(f.id)"
+              >
+                <span class="home-pill__icon" v-html="POPULAR_FILTER_ICONS[ICON_FOR[f.id]] || POPULAR_FILTER_ICONS.star" />
+                <span class="home-pill__label">{{ f.label }}</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -222,6 +228,19 @@ const actueleDeals: SearchHotel[] = mappedHotels.filter(h => !superIds.has(h.id)
 import { FILTER_TAGS } from '~/utils-first-release/filterTags'
 
 const homeFilters = FILTER_TAGS
+
+// Mobile lays the quick-search pills out in 3 horizontally-scrolling rows.
+// Splitting them into explicit rows (rather than a column-flow grid) lets
+// each row pack its chips left-to-right on its own, so a pill's position
+// depends only on the previous pill in THAT row — no shared-width columns.
+const homeFilterRows = computed(() => {
+  const per = Math.ceil(homeFilters.length / 3)
+  return [
+    homeFilters.slice(0, per),
+    homeFilters.slice(per, per * 2),
+    homeFilters.slice(per * 2),
+  ]
+})
 
 // Featured Hotel Des Indes "culinair verblijf" card for the "Gezien in"
 // column on /home. Pick the specific culinair deal so the hero pic + price
@@ -804,6 +823,12 @@ onMounted(() => { setFrNavVariant('1'); restoreHeroPhotoIndex(); restoreHomeLayo
   grid-template-columns: 1fr 1fr;
   gap: 8px;
 }
+/* Desktop: the 3 row-wrappers vanish from layout so the pills become direct
+   children of the 2-column grid above (unchanged desktop look). Mobile turns
+   each wrapper into its own flex row. */
+.home-popular__pill-row {
+  display: contents;
+}
 
 @media (max-width: 800px) {
   /* Uitgelicht is hidden on mobile, so the 2-col grid isn't needed; a plain
@@ -1050,27 +1075,28 @@ onMounted(() => { setFrNavVariant('1'); restoreHeroPhotoIndex(); restoreHomeLayo
   /* Quick filter pills: 3 rows that scroll horizontally (swipe). Columns
      fill left-to-right, 3 rows tall; the row bleeds past the .container
      inset so it scrolls edge-to-edge. */
+  /* 3 horizontally-scrolling rows. The container is a vertical stack and the
+     single scroll viewport; each row packs its own chips left-to-right, so a
+     pill sits right after the previous pill in its row — no shared columns. */
   .home-popular__pills {
-    display: grid;
-    grid-auto-flow: column;
-    grid-template-rows: repeat(3, auto);
-    grid-auto-columns: max-content;
-    /* Don't stretch each pill to its column's width — let every pill hug
-       its own label so the chips get their natural, varying widths. */
-    justify-items: start;
+    display: flex;
+    flex-direction: column;
     gap: 8px;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
-    scroll-snap-type: x proximity;
     margin: 0 -16px;
     padding: 0 16px 4px;
   }
+  .home-popular__pill-row {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 8px;
+    width: max-content;   /* grow past the viewport so the row scrolls */
+  }
   .home-pill {
     width: auto;
-    flex: 0 0 auto;
-    justify-self: start;   /* hug the label, don't fill the grid column */
+    flex: 0 0 auto;        /* hug the label */
     white-space: nowrap;
-    scroll-snap-align: start;
   }
 }
 </style>

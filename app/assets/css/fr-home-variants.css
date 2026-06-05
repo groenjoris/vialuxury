@@ -38,28 +38,28 @@
         copy. (V1 keeps the natural nav → pill → copy order.) ── */
   [data-fr-home-variant="2"] .home-hero .site-header--overlay,
   [data-fr-home-variant="3"] .home-hero .site-header--overlay,
-  [data-fr-home-variant="4"] .home-hero .site-header--overlay {
+  :is([data-fr-home-variant="4"], [data-fr-home-variant="5"]) .home-hero .site-header--overlay {
     display: flex !important;   /* beats the scoped .home-hero .site-header{display:block} */
     flex-direction: column !important;
   }
   [data-fr-home-variant="2"] .home-hero .site-header--overlay .site-header__nav,
   [data-fr-home-variant="3"] .home-hero .site-header--overlay .site-header__nav,
-  [data-fr-home-variant="4"] .home-hero .site-header--overlay .site-header__nav { order: 1 !important; }
+  :is([data-fr-home-variant="4"], [data-fr-home-variant="5"]) .home-hero .site-header--overlay .site-header__nav { order: 1 !important; }
 
   [data-fr-home-variant="2"] .home-hero .site-header--overlay .home-hero__content,
   [data-fr-home-variant="3"] .home-hero .site-header--overlay .home-hero__content,
-  [data-fr-home-variant="4"] .home-hero .site-header--overlay .home-hero__content { order: 2 !important; }
+  :is([data-fr-home-variant="4"], [data-fr-home-variant="5"]) .home-hero .site-header--overlay .home-hero__content { order: 2 !important; }
 
   [data-fr-home-variant="2"] .home-hero .site-header--overlay .site-header__mobile-search,
   [data-fr-home-variant="3"] .home-hero .site-header--overlay .site-header__mobile-search,
-  [data-fr-home-variant="4"] .home-hero .site-header--overlay .site-header__mobile-search {
+  :is([data-fr-home-variant="4"], [data-fr-home-variant="5"]) .home-hero .site-header--overlay .site-header__mobile-search {
     order: 3 !important;
   }
 
   /* Eyebrow ("SPRING 2026") only in V1. */
   [data-fr-home-variant="2"] .home-hero__eyebrow,
   [data-fr-home-variant="3"] .home-hero__eyebrow,
-  [data-fr-home-variant="4"] .home-hero__eyebrow { display: none !important; }
+  :is([data-fr-home-variant="4"], [data-fr-home-variant="5"]) .home-hero__eyebrow { display: none !important; }
 
   /* ── V2 + V3 + V4: drop the whole search combo toward the bottom of the
         photo. (V2/V4 also show the pitch; V3 has no copy.) Gap pitch→search
@@ -67,26 +67,26 @@
         position as V2. ── */
   [data-fr-home-variant="2"] .home-hero .site-header--overlay,
   [data-fr-home-variant="3"] .home-hero .site-header--overlay,
-  [data-fr-home-variant="4"] .home-hero .site-header--overlay {
+  :is([data-fr-home-variant="4"], [data-fr-home-variant="5"]) .home-hero .site-header--overlay {
     min-height: 450px;
     padding-bottom: 0 !important;
   }
   [data-fr-home-variant="2"] .home-hero__content,
   [data-fr-home-variant="3"] .home-hero__content,
-  [data-fr-home-variant="4"] .home-hero__content {
+  :is([data-fr-home-variant="4"], [data-fr-home-variant="5"]) .home-hero__content {
     margin-top: auto !important;   /* push the combo down */
   }
   /* Pitch → search bar gap = 20px (content pad-bottom 32 + slot pad-top 12 +
      pill margin-top). −24 ⇒ 32+12−24 = 20. */
   [data-fr-home-variant="2"] .mobile-search-trigger,
   [data-fr-home-variant="3"] .mobile-search-trigger,
-  [data-fr-home-variant="4"] .mobile-search-trigger {
+  :is([data-fr-home-variant="4"], [data-fr-home-variant="5"]) .mobile-search-trigger {
     margin-top: -24px !important;
   }
   /* Search bar → photo bottom gap = 34px (half). */
   [data-fr-home-variant="2"] .home-hero .site-header--overlay .site-header__mobile-search,
   [data-fr-home-variant="3"] .home-hero .site-header--overlay .site-header__mobile-search,
-  [data-fr-home-variant="4"] .home-hero .site-header--overlay .site-header__mobile-search {
+  :is([data-fr-home-variant="4"], [data-fr-home-variant="5"]) .home-hero .site-header--overlay .site-header__mobile-search {
     padding-bottom: 34px !important;
   }
 
@@ -104,7 +104,7 @@
   }
 
   /* ── V4: minimal header on home + search + deal + hotel. ── */
-  [data-fr-home-variant="4"] :is(.home, .search-page, .deal-page, .hotel-page) .site-header__nav-inner {
+  :is([data-fr-home-variant="4"], [data-fr-home-variant="5"]) :is(.home, .search-page, .deal-page, .hotel-page) .site-header__nav-inner {
     display: flex;
     align-items: center;
     gap: 12px;
@@ -112,20 +112,20 @@
   /* Swap the horizontal logo for the compact vertical (stacked) one and
      drop the payoff tagline. Both logos are always in the DOM; we toggle
      visibility here so the swap stays scoped to these four pages. */
-  [data-fr-home-variant="4"] :is(.home, .search-page, .deal-page, .hotel-page) .site-header__logo-img--horizontal {
+  :is([data-fr-home-variant="4"], [data-fr-home-variant="5"]) :is(.home, .search-page, .deal-page, .hotel-page) .site-header__logo-img--horizontal {
     display: none !important;
   }
-  [data-fr-home-variant="4"] :is(.home, .search-page, .deal-page, .hotel-page) .site-header__logo-img--vertical {
+  :is([data-fr-home-variant="4"], [data-fr-home-variant="5"]) :is(.home, .search-page, .deal-page, .hotel-page) .site-header__logo-img--vertical {
     display: block !important;
     height: 48px;   /* 20% larger than the original 40px */
     width: auto;
   }
-  [data-fr-home-variant="4"] :is(.home, .search-page, .deal-page, .hotel-page) .site-header__tagline-block {
+  :is([data-fr-home-variant="4"], [data-fr-home-variant="5"]) :is(.home, .search-page, .deal-page, .hotel-page) .site-header__tagline-block {
     display: none;
   }
   /* Phone next to the logo: the icon belongs to "Hulp nodig?" (icon + label
      on line 1), with the number on line 2 left-aligned under the icon. */
-  [data-fr-home-variant="4"] :is(.home, .search-page, .deal-page, .hotel-page) .site-header__phone-wrap {
+  :is([data-fr-home-variant="4"], [data-fr-home-variant="5"]) :is(.home, .search-page, .deal-page, .hotel-page) .site-header__phone-wrap {
     margin: 0 !important;
     width: auto !important;
     justify-self: start !important;
@@ -136,7 +136,7 @@
      there, which left the number misaligned on real iPhones. Grid + grid `gap`
      are supported far earlier, and `grid-column: 1 / -1` pins the number to the
      icon's column edge regardless of WebKit flex quirks. */
-  [data-fr-home-variant="4"] :is(.home, .search-page, .deal-page, .hotel-page) .site-header__phone {
+  :is([data-fr-home-variant="4"], [data-fr-home-variant="5"]) :is(.home, .search-page, .deal-page, .hotel-page) .site-header__phone {
     display: grid !important;
     grid-template-columns: auto 1fr;   /* col 1 = icon, col 2 = label */
     column-gap: 6px;
@@ -144,7 +144,7 @@
     align-items: center;
     justify-items: start;
   }
-  [data-fr-home-variant="4"] :is(.home, .search-page, .deal-page, .hotel-page) .site-header__phone svg {
+  :is([data-fr-home-variant="4"], [data-fr-home-variant="5"]) :is(.home, .search-page, .deal-page, .hotel-page) .site-header__phone svg {
     grid-column: 1;
     grid-row: 1;
     display: block;
@@ -155,7 +155,7 @@
        (transform only — does NOT move the grid track or the number). */
     transform: translateX(-2px);
   }
-  [data-fr-home-variant="4"] :is(.home, .search-page, .deal-page, .hotel-page) .site-header__phone-label {
+  :is([data-fr-home-variant="4"], [data-fr-home-variant="5"]) :is(.home, .search-page, .deal-page, .hotel-page) .site-header__phone-label {
     grid-column: 2;
     grid-row: 1;
     display: inline;
@@ -163,7 +163,7 @@
     line-height: 1.25;
     margin: 0;
   }
-  [data-fr-home-variant="4"] :is(.home, .search-page, .deal-page, .hotel-page) .site-header__phone-number {
+  :is([data-fr-home-variant="4"], [data-fr-home-variant="5"]) :is(.home, .search-page, .deal-page, .hotel-page) .site-header__phone-number {
     grid-column: 1 / -1;   /* line 2, starts at the icon's left edge */
     grid-row: 2;
     font-size: 14px;
@@ -174,35 +174,25 @@
   /* V4 search-results page: align the search summary bar with the deal page.
      Move it down ~10px (gap from the logo 10 → 20px) and end the dark header
      background at the middle of the bar. */
-  [data-fr-home-variant="4"] .search-page .site-header__mobile-search--on-solid .mss {
+  :is([data-fr-home-variant="4"], [data-fr-home-variant="5"]) .search-page .site-header__mobile-search--on-solid .mss {
     margin-top: -24px !important;   /* was -34 → +10px below the logo */
   }
-  [data-fr-home-variant="4"] .search-page .site-header__mobile-search--on-solid.site-header__mobile-search--summary {
+  :is([data-fr-home-variant="4"], [data-fr-home-variant="5"]) .search-page .site-header__mobile-search--on-solid.site-header__mobile-search--summary {
     background: linear-gradient(to bottom, #111 34px, #fff 34px) !important;
   }
 
-  /* ── V5: bare hero like V3 (search bar dropped to the bottom of the photo,
-        no eyebrow / "Experience more" / pitch), PLUS a handwritten
-        "Personally Curated Experiences" payoff directly under the search bar,
-        matched to the bar's width. Home only. ── */
+  /* ── V5 = V4 (minimal header + "Experience more" + pitch + bottom search
+        bar; all the V4 rules above already match V5 via :is(4,5)), with TWO
+        additions on the home hero:
+          1. a handwritten "Personally Curated Experiences" payoff directly
+             under the search bar, at the same width as the bar;
+          2. a slightly taller hero photo so that payoff has room. ── */
+  /* Taller photo + a touch more room under the bar for the payoff. */
   [data-fr-home-variant="5"] .home-hero .site-header--overlay {
-    display: flex !important;
-    flex-direction: column !important;
-    min-height: 450px;
-    padding-bottom: 0 !important;
+    min-height: 496px;
   }
-  [data-fr-home-variant="5"] .home-hero .site-header--overlay .site-header__nav { order: 1 !important; }
-  /* Drop the whole hero copy (eyebrow + title + pitch). */
-  [data-fr-home-variant="5"] .home-hero__eyebrow,
-  [data-fr-home-variant="5"] .home-hero__title,
-  [data-fr-home-variant="5"] .home-hero__tagline,
-  [data-fr-home-variant="5"] .home-hero__content { display: none !important; }
-  /* The search slot carries margin-top:auto to fall to the bottom of the
-     photo; padding-bottom leaves room below the payoff. */
   [data-fr-home-variant="5"] .home-hero .site-header--overlay .site-header__mobile-search {
-    order: 3 !important;
-    margin-top: auto !important;
-    padding-bottom: 28px !important;
+    padding-bottom: 30px !important;
   }
   /* Reveal the handwritten payoff. It is a block sibling inside the same
      16px-padded slot as the search pill, so width:100% == the bar's width. */

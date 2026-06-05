@@ -347,22 +347,26 @@ function onNewsletterInput(e: Event) {
     gap: var(--space-lg);
   }
   /* Brand: horizontal wordmark + handwritten tagline instead of the stack.
-     Match the mobile HEADER lockup exactly — logo pinned to 204px, tagline
-     shrunk (font + tracking + scaleX) so its right edge lands flush with the
-     logo's, i.e. the payoff is the same width as the logo. */
+     Mirror the mobile HEADER lockup EXACTLY (.site-header--nav-v6
+     .site-header__tagline): logo 204px, tagline 20px + −0.3 tracking +
+     scaleX(0.88) so the payoff spans the logo's width. The tagline is
+     pinned tight under the ViaLuxury logo (5px gap, like the header) and
+     separated from the Trustpilot block below by a full gap — so it reads
+     as the logo's payoff, not Trustpilot's. */
   .footer-logo__img--vertical { display: none; }
   .footer-logo__img--horizontal { display: block; width: 204px; height: auto; }
+  .footer-logo { margin-bottom: 0; }
   .footer-tagline {
     display: block;
     width: 204px;
     max-width: 100%;
-    font-size: 11px;
-    line-height: 1.1;
+    font-size: 20px;
+    line-height: 1;
     letter-spacing: -0.3px;
     white-space: nowrap;
     transform: scaleX(0.88);
     transform-origin: left center;
-    margin: 4px 0 0;
+    margin: 5px 0 var(--space-lg);
   }
   /* Divider between every stacked section (email→Hulp, WhatsApp→Populaire,
      Populaire→ViaLuxury). Border sits at the section's top; the grid gap
