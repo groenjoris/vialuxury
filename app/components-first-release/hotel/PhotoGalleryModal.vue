@@ -261,9 +261,10 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   color: var(--color-text-primary);
 }
 
-/* Shared thumbnail tile. The aspect-ratio lives on the IMG (height:auto) so
-   the grid auto-row track sizes to the real thumb height — putting it on the
-   button left the rows overlapping (no visible gap between rows). */
+/* Shared thumbnail tile. Used inside the 2-column grids — the tile keeps
+   each photo's NATURAL aspect ratio (no aspect-ratio + no object-fit:cover),
+   so nothing is cropped or shrunk to fit; the grid row track sizes to the
+   real photo height and the list scrolls. */
 .pg-thumb {
   display: block;
   padding: 0;
@@ -275,9 +276,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 }
 .pg-thumb img {
   width: 100%;
-  aspect-ratio: 4 / 3;
   height: auto;
-  object-fit: cover;
   display: block;
 }
 
@@ -315,8 +314,11 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   flex: 1;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+  /* 2 columns, natural-height rows — photos aren't cropped and the list
+     scrolls vertically. */
   display: grid;
   grid-template-columns: 1fr 1fr;
+  align-content: start;
   gap: 8px;
   padding: var(--space-md);
 }
@@ -461,8 +463,10 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 .pg-d__grid {
   flex: 1;
   overflow-y: auto;
+  /* 2 columns, natural-height rows — photos aren't cropped and the panel
+     scrolls vertically. */
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: 1fr 1fr;
   gap: var(--space-md);
   padding: var(--space-xl);
   align-content: start;
