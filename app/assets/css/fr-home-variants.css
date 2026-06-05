@@ -14,6 +14,26 @@
  * ────────────────────────────────────────────────────────────────── */
 
 @media (max-width: 800px) {
+  /* ── V1 (default): search pill stays in the nav chrome at the top, but the
+        hero copy (eyebrow + "Experience more" + pitch) is pushed to the
+        bottom of the photo — pitch 20px above the photo's bottom edge — and
+        left-aligns with the search bar. Natural order is preserved (no
+        reorder); we only stretch the overlay and bottom-anchor the copy. ── */
+  [data-fr-home-variant="1"] .home-hero .site-header--overlay {
+    display: flex !important;
+    flex-direction: column !important;
+    min-height: 450px;
+    padding-bottom: 0 !important;
+  }
+  [data-fr-home-variant="1"] .home-hero__content {
+    margin: auto 0 0 0 !important;   /* push copy to the bottom of the photo */
+    width: 100% !important;
+    max-width: none !important;
+    padding-left: 16px !important;   /* left-align copy with the search bar */
+    padding-right: 16px !important;
+    padding-bottom: 20px !important; /* 20px of photo below the pitch */
+  }
+
   /* ── V2 / V3 / V4 (home): reorder so the search pill sits BELOW the
         hero copy. (V1 keeps the natural nav → pill → copy order.) ── */
   [data-fr-home-variant="2"] .home-hero .site-header--overlay,
