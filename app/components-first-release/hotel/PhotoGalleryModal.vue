@@ -12,9 +12,11 @@
             <h2 class="pg-mgrid__title">{{ title }}</h2>
           </header>
           <div class="pg-mgrid__body" data-scroll-lock-allow="true">
-            <button v-for="(img, i) in ordered" :key="img.id" type="button" class="pg-thumb" @click="openPhoto(i)">
-              <img :src="img.url" :alt="localized(img.alt)" loading="lazy" />
-            </button>
+            <div class="pg-masonry">
+              <button v-for="(img, i) in ordered" :key="img.id" type="button" class="pg-thumb" @click="openPhoto(i)">
+                <img :src="img.url" :alt="localized(img.alt)" loading="lazy" />
+              </button>
+            </div>
           </div>
           <footer class="pg-mgrid__footer">
             <button type="button" class="pg-btn pg-btn--ghost" @click="$emit('close')">{{ t('gallery.back') }}</button>
@@ -76,9 +78,11 @@
 
             <!-- Grid overview (3 cols) -->
             <div v-if="view === 'grid'" class="pg-d__grid" data-scroll-lock-allow="true">
-              <button v-for="(img, i) in ordered" :key="img.id" type="button" class="pg-thumb" @click="openPhoto(i)">
-                <img :src="img.url" :alt="localized(img.alt)" loading="lazy" />
-              </button>
+              <div class="pg-masonry">
+                <button v-for="(img, i) in ordered" :key="img.id" type="button" class="pg-thumb" @click="openPhoto(i)">
+                  <img :src="img.url" :alt="localized(img.alt)" loading="lazy" />
+                </button>
+              </div>
             </div>
 
             <!-- Full photo + thumb-strip nav -->
@@ -259,12 +263,24 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   color: var(--color-text-primary);
 }
 
-/* Shared thumbnail tile. Used inside the 2-column grids — the tile keeps
-   each photo's NATURAL aspect ratio (no aspect-ratio + no object-fit:cover),
-   so nothing is cropped or shrunk to fit; the grid row track sizes to the
-   real photo height and the list scrolls. */
+/* 2-column masonry. CSS `columns` on this auto-height wrapper lets each photo
+   keep its natural height (no crop, no row-alignment gaps) while the parent
+   body scrolls. (Putting `columns` on the fixed-height scroller itself makes
+   the browser fragment columns horizontally instead — hence the wrapper.) */
+.pg-masonry {
+  columns: 2;
+  column-gap: 8px;
+}
+
+/* Shared thumbnail tile. Keeps each photo's NATURAL aspect ratio (no
+   aspect-ratio + no object-fit:cover): the image is simply resized to the
+   column width and shows in full — nothing is cropped. `break-inside: avoid`
+   keeps a photo whole within its column; margin-bottom is the row gap. */
 .pg-thumb {
   display: block;
+  width: 100%;
+  break-inside: avoid;
+  margin-bottom: 8px;
   padding: 0;
   border: none;
   background: #f5f5f5;
@@ -311,17 +327,11 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 .pg-mgrid__body {
   flex: 1;
   /* min-height:0 lets this flex child shrink below its content height so the
-     overflow actually scrolls — without it iOS Safari clips the grid (bottom
+     overflow actually scrolls — without it iOS Safari clips the body (bottom
      photos cut off, no scroll). */
   min-height: 0;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  /* 2 columns, natural-height rows — photos aren't cropped and the list
-     scrolls vertically. */
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  align-content: start;
-  gap: 8px;
   padding: var(--space-md);
 }
 .pg-mgrid__footer {
@@ -469,13 +479,14 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   flex: 1;
   min-height: 0;
   overflow-y: auto;
-  /* 2 columns, natural-height rows — photos aren't cropped and the panel
-     scrolls vertically. */
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--space-md);
   padding: var(--space-xl);
-  align-content: start;
+}
+/* Wider gap for the roomier desktop panel. */
+.pg-d__grid .pg-masonry {
+  column-gap: var(--space-md);
+}
+.pg-d__grid .pg-thumb {
+  margin-bottom: var(--space-md);
 }
 .pg-d__photo {
   flex: 1;
