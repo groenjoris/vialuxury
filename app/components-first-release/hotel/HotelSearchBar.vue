@@ -27,7 +27,7 @@
           @keydown.enter.stop.prevent="clearWhen"
           @keydown.space.stop.prevent="clearWhen"
         >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
         </span>
       </button>
 
@@ -59,7 +59,7 @@
           @keydown.enter.stop.prevent="clearHowLong"
           @keydown.space.stop.prevent="clearHowLong"
         >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
         </span>
       </button>
 
@@ -565,18 +565,23 @@ function handleChangeSearch() {
 
 .search-bar__clear {
   flex-shrink: 0;
-  align-self: center;
+  /* Bottom-align on the value-text row + size + edge pull identical to the
+     main (SiteHeader) search bar, so the midpage searcher's ✕ sits exactly
+     like the primary one instead of floating vertically centred. */
+  align-self: flex-end;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
+  width: 21px;
+  height: 21px;
   border-radius: 50%;
   border: none;
   background: transparent;
   color: var(--color-text-secondary);
   cursor: pointer;
   transition: background var(--transition-fast), color var(--transition-fast);
+  margin-right: -9px;
+  margin-bottom: 7px;
 }
 
 .search-bar__clear:hover,

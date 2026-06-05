@@ -50,7 +50,7 @@ withDefaults(defineProps<{
   position: relative;
   display: block;
   width: 100%;
-  aspect-ratio: 1 / 1;
+  aspect-ratio: var(--vl-minimap-aspect, 1 / 1);
   max-height: var(--vl-minimap-max-h, none);
   border-radius: var(--radius-lg);
   overflow: hidden;

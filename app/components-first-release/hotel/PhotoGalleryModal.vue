@@ -31,7 +31,7 @@
                opened directly from a page photo it reads as a label without
                the back chevron. -->
           <button type="button" class="pg-mphoto__back" @click="$emit('update:view', 'grid')">
-            <svg v-if="!cameDirect" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6" /></svg>
+            <svg v-if="cameFromGrid" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6" /></svg>
             {{ t('common.allPhotos') }}
           </button>
           <button type="button" class="pg-iconbtn pg-mphoto__close" :aria-label="t('common.close')" @click="closePhoto">
@@ -67,7 +67,7 @@
                 class="pg-d__back"
                 @click="$emit('update:view', 'grid')"
               >
-                <svg v-if="!cameDirect" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6" /></svg>
+                <svg v-if="cameFromGrid" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6" /></svg>
                 {{ t('common.allPhotos') }}
               </button>
               <h2 class="pg-d__title">{{ title }}</h2>
@@ -154,7 +154,18 @@ const ordered = computed<HotelImage[]>(() => {
 })
 const total = computed(() => ordered.value.length)
 
+/** Whether the current photo view was reached FROM the grid (a real
+ *  back-to-grid action exists). Seeded from `cameDirect` on open, but flipped
+ *  true whenever a photo is opened by tapping a grid thumb — so if the user
+ *  opens a page photo directly, goes to the grid, then opens another photo,
+ *  the "← Alle foto's" chevron correctly reappears. */
+const cameFromGrid = ref(false)
+watch(() => props.open, (isOpen) => {
+  if (isOpen) cameFromGrid.value = !props.cameDirect
+})
+
 function openPhoto(i: number) {
+  cameFromGrid.value = true
   emit('update:index', i)
   emit('update:view', 'photo')
 }

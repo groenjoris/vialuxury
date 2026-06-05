@@ -13,9 +13,9 @@
       <nav v-if="!isMobile" class="hotel-page__tabs container">
         <a href="#overzicht" class="hotel-page__tab">{{ t('hotel.tabOverview') }}</a>
         <a href="#arrangementen" class="hotel-page__tab">{{ t('hotel.tabDeals') }}</a>
-        <a href="#veelgestelde-vragen" class="hotel-page__tab">{{ t('hotel.tabFaq') }}</a>
-        <a href="#huisregels" class="hotel-page__tab">{{ t('hotel.tabHouseRules') }}</a>
         <a href="#tips" class="hotel-page__tab">{{ t('hotel.tabNearby') }}</a>
+        <a v-if="hotel.houseRules && hotel.houseRules.length" href="#huisregels" class="hotel-page__tab">{{ t('hotel.tabHouseRules') }}</a>
+        <a href="#veelgestelde-vragen" class="hotel-page__tab">{{ t('hotel.tabFaq') }}</a>
         <!-- Heart + share — right-aligned in the tabs row, above the grey
              divider. Mirrors the deal-page `.deal-page__tabs-actions`
              pattern for cross-page consistency. -->
@@ -261,9 +261,9 @@
         <nav class="hotel-page__tabs hotel-page__tabs--in-bar">
           <a href="#overzicht" class="hotel-page__tab" :class="{ 'hotel-page__tab--active': activeAnchor === 'overzicht' }">{{ t('hotel.tabOverview') }}</a>
           <a href="#arrangementen" class="hotel-page__tab" :class="{ 'hotel-page__tab--active': activeAnchor === 'arrangementen' }">{{ t('hotel.tabDeals') }}</a>
-          <a href="#veelgestelde-vragen" class="hotel-page__tab" :class="{ 'hotel-page__tab--active': activeAnchor === 'veelgestelde-vragen' }">{{ t('hotel.tabFaq') }}</a>
-          <a v-if="hotel.houseRules && hotel.houseRules.length" href="#huisregels" class="hotel-page__tab" :class="{ 'hotel-page__tab--active': activeAnchor === 'huisregels' }">{{ t('hotel.tabHouseRules') }}</a>
           <a href="#tips" class="hotel-page__tab" :class="{ 'hotel-page__tab--active': activeAnchor === 'tips' }">{{ t('hotel.tabNearby') }}</a>
+          <a v-if="hotel.houseRules && hotel.houseRules.length" href="#huisregels" class="hotel-page__tab" :class="{ 'hotel-page__tab--active': activeAnchor === 'huisregels' }">{{ t('hotel.tabHouseRules') }}</a>
+          <a href="#veelgestelde-vragen" class="hotel-page__tab" :class="{ 'hotel-page__tab--active': activeAnchor === 'veelgestelde-vragen' }">{{ t('hotel.tabFaq') }}</a>
         </nav>
         <div class="hotel-page__cta-bar-cluster">
           <div v-if="cheapestDeal" class="hotel-page__cta-bar-price-block">
@@ -749,6 +749,8 @@ onBeforeUnmount(() => {
 
 /* ===== INTRO (description + map) ===== */
 .hotel-page__intro { display: grid; grid-template-columns: 1fr 340px; gap: var(--space-xl); padding-top: var(--space-lg); padding-bottom: var(--space-xl); }
+/* Desktop: wide 2:1 map banner (stacked layout below restores square). */
+.hotel-page__minimap { --vl-minimap-aspect: 2 / 1; }
 .hotel-page__description-col { display: flex; flex-direction: column; gap: var(--space-md); }
 .hotel-page__description { font-size: 15px; line-height: 1.75; color: var(--color-text-secondary); }
 .hotel-page__description p { margin: 0; }
@@ -953,7 +955,7 @@ onBeforeUnmount(() => {
 /* ===== RESPONSIVE ===== */
 @media (max-width: 1100px) {
   .hotel-page__intro { grid-template-columns: 1fr; }
-  .hotel-page__minimap { --vl-minimap-max-h: 250px; }
+  .hotel-page__minimap { --vl-minimap-aspect: 1 / 1; --vl-minimap-max-h: 250px; }
   .reviews__grid { grid-template-columns: 1fr; }
   .reviews__categories { grid-template-columns: 1fr; }
   .house-rules__layout { grid-template-columns: 1fr; gap: var(--space-lg); }

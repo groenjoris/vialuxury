@@ -588,7 +588,7 @@
             @keydown.enter.stop.prevent="clearDestination"
             @keydown.space.stop.prevent="clearDestination"
           >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
           </span>
         </button>
 
@@ -624,7 +624,7 @@
             @keydown.enter.stop.prevent="clearWhenAndDuration"
             @keydown.space.stop.prevent="clearWhenAndDuration"
           >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
           </span>
         </button>
 
@@ -655,7 +655,7 @@
             @keydown.enter.stop.prevent="clearDate"
             @keydown.space.stop.prevent="clearDate"
           >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
           </span>
         </button>
 
@@ -688,7 +688,7 @@
             @keydown.enter.stop.prevent="clearDurationOnly"
             @keydown.space.stop.prevent="clearDurationOnly"
           >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
           </span>
         </button>
 
@@ -722,7 +722,7 @@
             @keydown.enter.stop.prevent="clearWho"
             @keydown.space.stop.prevent="clearWho"
           >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
           </span>
         </button>
 
@@ -3269,8 +3269,8 @@ function handleSelectHotelInPopup(slug: string) {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
+  width: 21px;
+  height: 21px;
   border-radius: 50%;
   border: none;
   background: transparent;
@@ -3281,10 +3281,10 @@ function handleSelectHotelInPopup(slug: string) {
      edge: the field has padding-right: 18 px, so a -9 px pull moves the
      button 9 px to the right (= 9 px gap instead of 18). */
   margin-right: -9px;
-  /* Sit on the value-row baseline: body has padding-bottom: 8 px and
-     the value text is ~16 px tall. A 28×28 button flush at the field
-     bottom centres at y ≈ 46 — within a pixel of the value line. */
-  margin-bottom: 4px;
+  /* Sit on the value-row baseline: body has padding-bottom: 8 px and the
+     value text is ~16 px tall. The 21×21 button flush at the field bottom
+     centres on the value line with a small bottom nudge. */
+  margin-bottom: 7px;
 }
 
 .search-bar__clear:hover,
