@@ -586,12 +586,10 @@
    two stacked dashes. */
 [data-fr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar) .day-cell--checkout:not(.day-cell--sold-out)::after {
   content: '-';
-  /* Absolute so the dash sits in the price slot WITHOUT adding a flex item
-     that would make the check-out cell taller than its row. */
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 6px;
+  /* Static so it lives in the flex column with the day number — together
+     they centre as a group (the number alone was being centred above the
+     absolute-positioned dash, looking off vs other cells). The cell is
+     height:60px + overflow:hidden, so no wobble. */
   text-align: center;
   color: #fff;
   font-size: 10px;

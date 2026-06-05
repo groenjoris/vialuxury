@@ -26,6 +26,14 @@
       <!-- Full-photo viewer -->
       <Transition name="pg-fade">
         <div v-if="open && view === 'photo'" class="pg-mphoto" role="dialog" aria-modal="true">
+          <!-- "Alle foto's" → open the thumbnail overview. The ← chevron is
+               shown only when we came FROM the grid (real back action); when
+               opened directly from a page photo it reads as a label without
+               the back chevron. -->
+          <button type="button" class="pg-mphoto__back" @click="$emit('update:view', 'grid')">
+            <svg v-if="!cameDirect" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6" /></svg>
+            {{ t('common.allPhotos') }}
+          </button>
           <button type="button" class="pg-iconbtn pg-mphoto__close" :aria-label="t('common.close')" @click="closePhoto">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12" /></svg>
           </button>
@@ -54,12 +62,12 @@
           <aside class="pg-d__panel" role="dialog" aria-modal="true">
             <header class="pg-d__header">
               <button
-                v-if="view === 'photo' && !cameDirect"
+                v-if="view === 'photo'"
                 type="button"
                 class="pg-d__back"
                 @click="$emit('update:view', 'grid')"
               >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6" /></svg>
+                <svg v-if="!cameDirect" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6" /></svg>
                 {{ t('common.allPhotos') }}
               </button>
               <h2 class="pg-d__title">{{ title }}</h2>
@@ -153,11 +161,10 @@ function openPhoto(i: number) {
 function setIndex(i: number) {
   emit('update:index', Math.max(0, Math.min(total.value - 1, i)))
 }
-/** Mobile photo close: back to the grid unless we opened straight into the
- *  photo view (then close the whole gallery). */
+/** Mobile photo close (×): always close the whole gallery — the new
+ *  "Alle foto's" button in the upper-left handles going back to the grid. */
 function closePhoto() {
-  if (props.cameDirect) emit('close')
-  else emit('update:view', 'grid')
+  emit('close')
 }
 
 /* ── Mobile swipe ⇄ index sync ── */
@@ -339,6 +346,27 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   right: 12px;
   z-index: 2;
 }
+/* "Alle foto's" back-to-grid pill, upper-left, over the dark photo bg. */
+.pg-mphoto__back {
+  position: absolute;
+  top: calc(10px + env(safe-area-inset-top, 0));
+  left: 12px;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 40px;
+  padding: 0 14px;
+  border: none;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  color: #1a1a1a;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.pg-mphoto__back:hover { background: #fff; }
 .pg-mphoto__track {
   flex: 1;
   display: flex;
