@@ -201,7 +201,7 @@
                   :class="{ 'deal-card-v2__cta--two-line': dateMismatch }"
                 >
                   <template v-if="dateMismatch">
-                    <span>beschikbare</span>
+                    <span>Beschikbare</span>
                     <span>datums</span>
                   </template>
                   <template v-else>{{ ctaLabel || 'Bekijk' }}</template>
