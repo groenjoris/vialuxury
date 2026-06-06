@@ -15,7 +15,7 @@
 
     <!-- Prev / next arrows -->
     <button
-      v-if="carouselImages.length > 1 && activeIndex > 0"
+      v-if="carouselImages.length > 1"
       type="button"
       class="hero-gallery__nav hero-gallery__nav--prev"
       aria-label="Vorige foto"
@@ -24,7 +24,7 @@
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6" /></svg>
     </button>
     <button
-      v-if="carouselImages.length > 1 && activeIndex < carouselImages.length - 1"
+      v-if="carouselImages.length > 1"
       type="button"
       class="hero-gallery__nav hero-gallery__nav--next"
       aria-label="Volgende foto"
@@ -129,11 +129,23 @@ function onScroll() {
 }
 function prevSlide() {
   const el = trackRef.value
-  if (el) el.scrollBy({ left: -el.clientWidth, behavior: 'smooth' })
+  if (!el) return
+  // Wrap to the last photo when at the start, so you can browse backwards.
+  if (activeIndex.value <= 0) {
+    el.scrollTo({ left: (carouselImages.value.length - 1) * el.clientWidth, behavior: 'smooth' })
+  } else {
+    el.scrollBy({ left: -el.clientWidth, behavior: 'smooth' })
+  }
 }
 function nextSlide() {
   const el = trackRef.value
-  if (el) el.scrollBy({ left: el.clientWidth, behavior: 'smooth' })
+  if (!el) return
+  // Wrap to the first photo when at the end.
+  if (activeIndex.value >= carouselImages.value.length - 1) {
+    el.scrollTo({ left: 0, behavior: 'smooth' })
+  } else {
+    el.scrollBy({ left: el.clientWidth, behavior: 'smooth' })
+  }
 }
 </script>
 
