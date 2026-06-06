@@ -372,7 +372,6 @@ import {
   defaultDealPermalink,
 } from '~/data/deals-mapper'
 import { searchHotels } from '~/data/mock/search-hotels'
-import { isDealAvailableInWindow } from '~/utils-first-release/availability'
 import DealCard from '~/components-first-release/search/DealCard.vue'
 
 const { t, localized, locale } = useFirstReleaseI18n()
