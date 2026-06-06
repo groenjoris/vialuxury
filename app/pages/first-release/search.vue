@@ -2187,7 +2187,7 @@ onMounted(() => {
   flex-shrink: 0;
 }
 .m-toolbar-btn:hover {
-  background: #1f1f1f;
+  background: #2b2b2b;
 }
 .m-toolbar-btn--sort-wrap {
   flex: 0 0 auto;

@@ -593,7 +593,7 @@ onMounted(() => {
 }
 
 .kaart-close:hover {
-  background: #1a1a1a;
+  background: #2b2b2b;
 }
 
 /* ═══════════ MOBILE map ═══════════ */
@@ -661,7 +661,7 @@ onMounted(() => {
   cursor: pointer;
 }
 .kaart-m-filter svg { stroke: #fff; }
-.kaart-m-filter:hover { background: #1f1f1f; }
+.kaart-m-filter:hover { background: #2b2b2b; }
 
 /* Removable arrival-date pill — white chip beside the Filters button. */
 .kaart-m-datepill {
