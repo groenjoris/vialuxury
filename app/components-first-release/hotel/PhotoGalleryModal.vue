@@ -311,8 +311,8 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   align-items: center;
   gap: var(--space-md);
   padding: 10px var(--space-md);
-  background: #fff;
-  border-bottom: 1px solid var(--color-border-light);
+  /* Black header bar, matching the site nav bar. */
+  background: #1A1A1A;
 }
 .pg-mgrid__title {
   font-family: var(--font-heading);
@@ -323,6 +323,16 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  color: #fff;
+}
+/* Header icon buttons read like nav-bar buttons: white, orange on hover. */
+.pg-mgrid__header .pg-iconbtn {
+  background: transparent;
+  color: #fff;
+}
+.pg-mgrid__header .pg-iconbtn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--color-primary);
 }
 .pg-mgrid__body {
   flex: 1;
@@ -393,7 +403,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   cursor: pointer;
   backdrop-filter: blur(4px);
 }
-.pg-mphoto__back:hover { background: rgba(0, 0, 0, 0.85); }
+.pg-mphoto__back:hover { background: rgba(0, 0, 0, 0.85); color: var(--color-primary); }
 .pg-mphoto__back .all-btn-icon { font-size: 20px; }
 .pg-mphoto__track {
   flex: 1;
@@ -447,8 +457,10 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   align-items: center;
   gap: var(--space-md);
   padding: 14px var(--space-xl);
-  border-bottom: 1px solid var(--color-border-light);
+  /* Black header bar, matching the site nav bar. */
+  background: #1A1A1A;
 }
+/* "Alle foto's" back + close read like nav-bar buttons: white, orange hover. */
 .pg-d__back {
   display: inline-flex;
   align-items: center;
@@ -460,9 +472,17 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   font-family: var(--font-body);
   font-size: 14px;
   font-weight: 600;
-  color: var(--color-text-primary);
+  color: #fff;
 }
 .pg-d__back:hover { color: var(--color-primary); }
+.pg-d__header .pg-iconbtn {
+  background: transparent;
+  color: #fff;
+}
+.pg-d__header .pg-iconbtn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--color-primary);
+}
 .pg-d__title {
   font-family: var(--font-heading);
   font-size: 20px;
@@ -472,6 +492,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  color: #fff;
 }
 /* Close pinned to the far right. */
 .pg-d__header .pg-iconbtn { margin-left: auto; }
