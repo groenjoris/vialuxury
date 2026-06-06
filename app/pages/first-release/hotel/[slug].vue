@@ -3,29 +3,28 @@
     <FirstReleaseSiteHeader />
 
     <main v-if="hotel" class="hotel-page__main">
-      <!-- Breadcrumbs -->
-      <section class="hotel-page__breadcrumbs container">
-        <FirstReleaseBreadcrumbNav :items="breadcrumbs" />
-      </section>
-
-      <!-- Mobile: share + favorite (icons only), right-aligned, between the
-           breadcrumb and the title (desktop keeps them in the anchor-nav row). -->
-      <div v-if="isMobile" class="hotel-page__mobile-actions container">
-        <div class="hotel-page__share-wrap">
-          <button class="hotel-page__action hotel-page__action--icon" :aria-label="t('common.share')" @click.stop="handleShare">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+      <!-- Breadcrumbs. On mobile the share + favorite icons sit on the same
+           line (top-aligned); the breadcrumb truncates to fit. Desktop keeps
+           the icons in the anchor-nav row. -->
+      <section class="hotel-page__breadcrumbs container" :class="{ 'hotel-page__breadcrumbs--with-actions': isMobile }">
+        <FirstReleaseBreadcrumbNav :items="breadcrumbs" :class="{ 'hotel-page__breadcrumb-nav': isMobile }" />
+        <div v-if="isMobile" class="hotel-page__mobile-actions">
+          <div class="hotel-page__share-wrap">
+            <button class="hotel-page__action hotel-page__action--icon" :aria-label="t('common.share')" @click.stop="handleShare">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+            </button>
+            <FirstReleaseShareMenu :open="shareMenuOpen" @close="shareMenuOpen = false" />
+          </div>
+          <button
+            class="hotel-page__action hotel-page__action--icon"
+            :class="{ 'hotel-page__action--favorited': isFavorited }"
+            :aria-label="t('common.save')"
+            @click="toggleFav(hotel.slug)"
+          >
+            <span class="hotel-page__action-heart">{{ isFavorited ? '♥' : '♡' }}</span>
           </button>
-          <FirstReleaseShareMenu :open="shareMenuOpen" @close="shareMenuOpen = false" />
         </div>
-        <button
-          class="hotel-page__action hotel-page__action--icon"
-          :class="{ 'hotel-page__action--favorited': isFavorited }"
-          :aria-label="t('common.save')"
-          @click="toggleFav(hotel.slug)"
-        >
-          <span class="hotel-page__action-heart">{{ isFavorited ? '♥' : '♡' }}</span>
-        </button>
-      </div>
+      </section>
 
       <!-- Anchor tabs — desktop only. Mobile uses the sticky footer
            CTA instead of a top anchor nav. -->
@@ -682,12 +681,23 @@ onBeforeUnmount(() => {
 @media (max-width: 800px) {
   .hotel-page__breadcrumbs { padding-top: var(--space-xs); padding-bottom: 0; }
 }
-.hotel-page__mobile-actions {
+/* Mobile: breadcrumb + share/fav on one line, top-aligned; breadcrumb shrinks
+   (min-width:0) so its last item ellipsizes, icons keep their width. */
+.hotel-page__breadcrumbs--with-actions {
   display: flex;
-  justify-content: flex-end;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-sm);
+}
+.hotel-page__breadcrumb-nav {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+.hotel-page__mobile-actions {
+  flex-shrink: 0;
+  display: flex;
   align-items: center;
   gap: var(--space-sm);
-  padding-top: var(--space-xs);
 }
 .hotel-page__action--icon { padding: 6px; }
 .hotel-page__action--icon .hotel-page__action-heart { font-size: 22px; }

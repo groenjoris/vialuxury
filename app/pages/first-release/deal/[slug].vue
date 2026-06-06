@@ -15,24 +15,23 @@
            MOBILE BRANCH — content ordered to spec § 1..16
            ============================================================ -->
       <template v-if="isMobile">
-        <!-- 2. Breadcrumb -->
-        <section class="deal-page__breadcrumbs container">
-          <FirstReleaseBreadcrumbNav :items="breadcrumbs" />
-        </section>
-
-        <!-- 2b. Share + favorite (icons only), right-aligned, between the
-             breadcrumb and the title. -->
-        <div class="deal-page__mobile-actions container">
-          <div class="deal-page__share-wrap">
-            <button class="deal-page__action deal-page__action--icon" :aria-label="t('common.share')" @click.stop="handleShare">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+        <!-- 2. Breadcrumb + share/favorite icons on one line. The breadcrumb
+             flexes + truncates (ellipsis on the deal title) to leave room for
+             the icons; both top-aligned. -->
+        <section class="deal-page__breadcrumbs deal-page__breadcrumbs--with-actions container">
+          <FirstReleaseBreadcrumbNav :items="breadcrumbs" class="deal-page__breadcrumb-nav" />
+          <div class="deal-page__mobile-actions">
+            <div class="deal-page__share-wrap">
+              <button class="deal-page__action deal-page__action--icon" :aria-label="t('common.share')" @click.stop="handleShare">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+              </button>
+              <FirstReleaseShareMenu :open="shareMenuOpen" @close="shareMenuOpen = false" />
+            </div>
+            <button class="deal-page__action deal-page__action--icon" :class="{ 'deal-page__action--favorited': isFavorited }" :aria-label="t('common.save')" @click="handleFavoriteClick">
+              <span class="deal-page__action-heart">{{ isFavorited ? '♥' : '♡' }}</span>
             </button>
-            <FirstReleaseShareMenu :open="shareMenuOpen" @close="shareMenuOpen = false" />
           </div>
-          <button class="deal-page__action deal-page__action--icon" :class="{ 'deal-page__action--favorited': isFavorited }" :aria-label="t('common.save')" @click="handleFavoriteClick">
-            <span class="deal-page__action-heart">{{ isFavorited ? '♥' : '♡' }}</span>
-          </button>
-        </div>
+        </section>
 
         <!-- 3. Deal intro: title + hotel + location + "Bekijk op kaart" -->
         <section class="deal-page__title-section deal-page__title-section--mobile container">
@@ -1635,12 +1634,23 @@ onMounted(() => {
 @media (max-width: 800px) {
   .deal-page__breadcrumbs { padding-top: var(--space-xs); padding-bottom: 0; }
 }
-.deal-page__mobile-actions {
+/* Breadcrumb + share/fav on one line, top-aligned. The breadcrumb shrinks
+   (min-width:0) so its last item ellipsizes; the icons keep their width. */
+.deal-page__breadcrumbs--with-actions {
   display: flex;
-  justify-content: flex-end;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-sm);
+}
+.deal-page__breadcrumb-nav {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+.deal-page__mobile-actions {
+  flex-shrink: 0;
+  display: flex;
   align-items: center;
   gap: var(--space-sm);
-  padding-top: var(--space-xs);
 }
 .deal-page__action--icon { padding: 6px; }
 .deal-page__action--icon .deal-page__action-heart { font-size: 22px; }
