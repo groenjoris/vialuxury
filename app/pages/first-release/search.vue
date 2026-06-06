@@ -1811,8 +1811,8 @@ onMounted(() => {
 
 .search-toolbar__filter-toggle:hover,
 .search-toolbar__map-btn:hover {
-  border-color: var(--color-primary);
-  color: var(--color-primary);
+  /* Same grey-fill hover as the Sorteren button + filter pills (no orange). */
+  background: var(--color-border);
 }
 
 .search-toolbar__right {

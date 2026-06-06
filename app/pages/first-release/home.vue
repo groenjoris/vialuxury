@@ -158,17 +158,17 @@
       <div class="container home-categories__grid">
         <button type="button" class="home-category" :style="{ backgroundImage: `url('/images/categories/bikepackages.jpg')` }" @click="pickFilter('fiets')">
           <span class="home-category__title">FIETSVAKANTIE 2026</span>
-          <span class="home-category__btn">Bekijk <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6" /></svg></span>
+          <span class="home-category__btn">Bekijk</span>
         </button>
         <button type="button" class="home-category" :style="{ backgroundImage: `url('/images/categories/seapackages.png')` }" @click="pickFilter('aan-zee')">
           <span class="home-category__title">ONTSPANNEN
 AAN ZEE</span>
-          <span class="home-category__btn">Bekijk <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6" /></svg></span>
+          <span class="home-category__btn">Bekijk</span>
         </button>
         <button type="button" class="home-category" :style="{ backgroundImage: `url('/images/categories/hotelexperiencepackages.jpeg')` }" @click="pickFilter('unique-stay')">
           <span class="home-category__title">HOTEL
 EXPERIENCES</span>
-          <span class="home-category__btn">Bekijk <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6" /></svg></span>
+          <span class="home-category__btn">Bekijk</span>
         </button>
       </div>
     </section>

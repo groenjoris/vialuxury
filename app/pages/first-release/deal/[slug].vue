@@ -2518,6 +2518,11 @@ onMounted(() => {
   .deal-page__sidebar-mobile .sidebar__nights-line { font-size: 15px; }
   .deal-page__sidebar-mobile .sidebar__variant-heading { font-size: 15px; }
   .deal-page__sidebar-mobile .sidebar__other-arrangements { font-size: 16px; }
+  /* Bigger trust checkmarks below "Ik ga boeken" + the "Wis" date-clear
+     link (matched to the "Bekijk op kaart" link size). */
+  .deal-page__sidebar-mobile .sidebar__trust-list li { font-size: 15px; }
+  .deal-page__sidebar-mobile .sidebar__trust-check { font-size: 16px; }
+  .deal-page__sidebar-mobile .sidebar__date-clear { font-size: 16px; }
   /* Stack title block on its own (no right-column on mobile). */
   .deal-page__title-section--mobile {
     display: block;
