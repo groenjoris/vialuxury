@@ -934,7 +934,7 @@ import FirstReleaseOthersAlsoViewed from '~/components-first-release/deal/Others
 import { formatPrice } from '~/utils-first-release/formatPrice'
 import { getReviewLabelKey } from '~/utils-first-release/reviewLabel'
 import { generateDealAvailability } from '~/data/mock/deal-pricing'
-import { PRICED_PERSONS } from '~/utils-first-release/priceFormula'
+import { PRICED_PERSONS, minRoomsFor } from '~/utils-first-release/priceFormula'
 import { matchIcon } from '~/utils-first-release/iconMatcher'
 import { roomsLeftForDeal } from '~/utils-first-release/scarcity'
 import { nightsLabel, nightsWord, personsLabel, roomsLabel } from '~/utils-first-release/plural'
@@ -977,10 +977,12 @@ const chosenReisduurLabel = computed(() => {
 const priceForLabel = computed(() => {
   const deal = currentDeal.value
   if (!deal) return ''
+  // Prototype: the price is always for PRICED_PERSONS in minRoomsFor(those)
+  // rooms — the party-size picker doesn't change it (see PRICED_PERSONS).
   return t('deal.priceFor')
     .replace('{nightsLabel}', nightsLabel(deal.nights, lang.value))
-    .replace('{personsLabel}', personsLabel(store.totalPersons, lang.value))
-    .replace('{roomsLabel}', roomsLabel(store.travelGroup.rooms, lang.value))
+    .replace('{personsLabel}', personsLabel(PRICED_PERSONS, lang.value))
+    .replace('{roomsLabel}', roomsLabel(minRoomsFor(PRICED_PERSONS), lang.value))
 })
 
 // ---------------------------------------------------------------------------
@@ -998,14 +1000,14 @@ const stickyDeLine1 = computed(() => {
   const deal = currentDeal.value
   if (!deal) return ''
   if (!dateSelected.value) {
-    return t('deal.stickyNoDatePrice').replace('{persons}', String(store.totalPersons || 2))
+    return t('deal.stickyNoDatePrice').replace('{persons}', String(PRICED_PERSONS))
   }
   return t('deal.stickyDatePrice')
     .replace('{startDate}', formatDeDayMonth(store.checkInDate))
     .replace('{endDate}', formatDeDayMonth(store.checkOutDate))
     .replace('{nights}', String(deal.nights))
-    .replace('{persons}', String(store.totalPersons || 2))
-    .replace('{rooms}', String(store.travelGroup.rooms || 1))
+    .replace('{persons}', String(PRICED_PERSONS))
+    .replace('{rooms}', String(minRoomsFor(PRICED_PERSONS)))
 })
 
 /** Second line of the sticky CTA bar in German — the tax/admin note. */
