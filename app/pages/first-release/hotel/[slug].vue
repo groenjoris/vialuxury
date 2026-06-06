@@ -8,6 +8,25 @@
         <FirstReleaseBreadcrumbNav :items="breadcrumbs" />
       </section>
 
+      <!-- Mobile: share + favorite (icons only), right-aligned, between the
+           breadcrumb and the title (desktop keeps them in the anchor-nav row). -->
+      <div v-if="isMobile" class="hotel-page__mobile-actions container">
+        <div class="hotel-page__share-wrap">
+          <button class="hotel-page__action hotel-page__action--icon" :aria-label="t('common.share')" @click.stop="handleShare">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+          </button>
+          <FirstReleaseShareMenu :open="shareMenuOpen" @close="shareMenuOpen = false" />
+        </div>
+        <button
+          class="hotel-page__action hotel-page__action--icon"
+          :class="{ 'hotel-page__action--favorited': isFavorited }"
+          :aria-label="t('common.save')"
+          @click="toggleFav(hotel.slug)"
+        >
+          <span class="hotel-page__action-heart">{{ isFavorited ? '♥' : '♡' }}</span>
+        </button>
+      </div>
+
       <!-- Anchor tabs — desktop only. Mobile uses the sticky footer
            CTA instead of a top anchor nav. -->
       <nav v-if="!isMobile" class="hotel-page__tabs container">
@@ -658,6 +677,21 @@ onBeforeUnmount(() => {
 <style scoped>
 /* ===== BREADCRUMBS ===== */
 .hotel-page__breadcrumbs { padding-top: var(--space-md); }
+
+/* Mobile: tighten the gap under the nav search bar + show the share/favorite
+   icons (no labels) right-aligned between the breadcrumb and the title. */
+@media (max-width: 800px) {
+  .hotel-page__breadcrumbs { padding-top: var(--space-xs); padding-bottom: 0; }
+}
+.hotel-page__mobile-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: var(--space-sm);
+  padding-top: var(--space-xs);
+}
+.hotel-page__action--icon { padding: 6px; }
+.hotel-page__action--icon .hotel-page__action-heart { font-size: 22px; }
 
 /* ===== ANCHOR TABS ===== */
 .hotel-page__tabs {

@@ -20,6 +20,20 @@
           <FirstReleaseBreadcrumbNav :items="breadcrumbs" />
         </section>
 
+        <!-- 2b. Share + favorite (icons only), right-aligned, between the
+             breadcrumb and the title. -->
+        <div class="deal-page__mobile-actions container">
+          <div class="deal-page__share-wrap">
+            <button class="deal-page__action deal-page__action--icon" :aria-label="t('common.share')" @click.stop="handleShare">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+            </button>
+            <FirstReleaseShareMenu :open="shareMenuOpen" @close="shareMenuOpen = false" />
+          </div>
+          <button class="deal-page__action deal-page__action--icon" :class="{ 'deal-page__action--favorited': isFavorited }" :aria-label="t('common.save')" @click="handleFavoriteClick">
+            <span class="deal-page__action-heart">{{ isFavorited ? '♥' : '♡' }}</span>
+          </button>
+        </div>
+
         <!-- 3. Deal intro: title + hotel + location + "Bekijk op kaart" -->
         <section class="deal-page__title-section deal-page__title-section--mobile container">
           <h1 class="deal-page__package-title">{{ localized(currentDeal.title) }}</h1>
@@ -1615,6 +1629,21 @@ onMounted(() => {
 .deal-page__action--favorited .deal-page__action-heart { color: #e74c3c; }
 .deal-page__action-label { font-size: 14px; }
 .deal-page__breadcrumbs { padding-top: var(--space-md); }
+
+/* Mobile: tighten the gap under the nav search bar + show the share/favorite
+   icons (no labels) right-aligned between the breadcrumb and the title. */
+@media (max-width: 800px) {
+  .deal-page__breadcrumbs { padding-top: var(--space-xs); padding-bottom: 0; }
+}
+.deal-page__mobile-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: var(--space-sm);
+  padding-top: var(--space-xs);
+}
+.deal-page__action--icon { padding: 6px; }
+.deal-page__action--icon .deal-page__action-heart { font-size: 22px; }
 
 /* ===== 2-COLUMN GRID ===== */
 .deal-page__grid { display: grid; grid-template-columns: 1fr var(--fr-deal-sidebar-width, 340px); gap: var(--space-xl); padding-top: var(--space-lg); align-items: start; }
