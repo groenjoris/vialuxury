@@ -2533,6 +2533,9 @@ onMounted(() => {
   .deal-page__sidebar-mobile .sidebar__trust-list li { font-size: 15px; }
   .deal-page__sidebar-mobile .sidebar__trust-check { font-size: 16px; }
   .deal-page__sidebar-mobile .sidebar__date-clear { font-size: 16px; }
+  /* Selected check-in / check-out dates below the calendar (+2). */
+  .deal-page__sidebar-mobile .sidebar__date-val { font-size: 16px; }
+  .deal-page__sidebar-mobile .sidebar__date-label { font-size: 13px; }
   /* Stack title block on its own (no right-column on mobile). */
   .deal-page__title-section--mobile {
     display: block;
@@ -2664,6 +2667,11 @@ onMounted(() => {
   .deal-page__sidebar-mobile .sidebar__trust {
     border-bottom: 1px solid var(--color-border-light);
     padding-bottom: 24px;
+    /* Left-align the 3 checkmarks + Trustpilot logo block below the CTA. */
+    align-items: flex-start;
+  }
+  .deal-page__sidebar-mobile .sidebar__trust-block {
+    align-items: flex-start;
   }
   /* No divider between the huisregels block and the FAQ block — the section's
      own pseudo-divider AND the FaqSection component's own border-top. */
