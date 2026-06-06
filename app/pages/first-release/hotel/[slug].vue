@@ -112,7 +112,7 @@
              team avatars below. Mirrors `.search-page__header` styling. -->
         <div class="hotel-page__deals-header">
           <h2 class="hotel-page__deals-title">
-            {{ filteredDealCards.length }} beschikbare arrangementen bij dit hotel
+            {{ availableDealCount }} beschikbare arrangementen bij dit hotel
           </h2>
           <p class="hotel-page__deals-handwritten">
             Samengesteld door het ViaLuxury Team
@@ -146,7 +146,7 @@
         </div>
         <div class="deals__grid">
           <FirstReleaseDealCard
-            v-for="card in filteredDealCards"
+            v-for="card in orderedDealCards"
             :key="card.deal.id"
             :deal="card.deal"
             :hotel="searchHotel"
@@ -154,6 +154,10 @@
             hide-hotel-info
             hide-labels
             grid-mode
+            panel-mode
+            :nights-mismatch="card.nightsMismatch"
+            :date-mismatch="card.dateMismatch"
+            :ignore-arrival="card.dateMismatch"
           />
         </div>
       </section>
@@ -349,6 +353,7 @@ import {
   defaultDealPermalink,
 } from '~/data/deals-mapper'
 import { searchHotels } from '~/data/mock/search-hotels'
+import { isDealAvailableInWindow } from '~/utils-first-release/availability'
 import DealCard from '~/components-first-release/search/DealCard.vue'
 
 const { t, localized, locale } = useFirstReleaseI18n()
@@ -420,6 +425,11 @@ const {
   rooms: globalRooms,
   committedArrivalDate: globalArrivalDate,
   committedFlexibility: globalFlexibility,
+  // Live picks from the mid-page search bar (it writes these immediately, no
+  // submit needed) — drive the available/unavailable split below.
+  arrivalDate: liveArrivalDate,
+  selectedNights: liveNights,
+  selectedFlexibility: liveFlexibility,
 } = useFirstReleaseSearchState()
 const searchPersons = ref(globalPersons.value || 2)
 const searchBarRef = ref<InstanceType<typeof import('~/components/hotel/HotelSearchBar.vue').default> | null>(null)
@@ -433,32 +443,50 @@ const dealsHeading = computed(() => t('hotel.availableDeals'))
 // the same five Experience Makers (each with a real photo).
 const hoveredMember = ref<string | null>(null)
 
-/** Local-only search state — only `persons` propagates to the global state
- *  (so the rest of the site picks up the change); date / duration are kept
- *  per-page so the local bar doesn't override the user's main search. */
-const localDuration = ref<string>('')
-const localDate = ref<string | null>(null)
-
 function handleSearchChange(params: { persons: number; rooms: number; duration: string; flexibility: number; date: string | null }) {
   searchPersons.value = params.persons
-  // Persons + rooms ARE shared with the rest of the site (per spec).
+  // Persons + rooms ARE shared with the rest of the site (per spec). Date +
+  // duration are written to the shared state by the bar itself (setArrivalDate
+  // / setSelectedNights), so the card split below reacts immediately.
   setSearchGroup(params.persons, params.rooms)
-  // Date + duration only affect this page's deal list.
-  localDate.value = params.date
-  localDuration.value = params.duration
 }
 
-/** Filter the deal cards by the local search query (duration only — date
- *  doesn't change which packages exist, just which dates they apply to). */
-const filteredDealCards = computed(() => {
-  const dur = localDuration.value
-  if (!dur) return dealCards.value
-  return dealCards.value.filter(c => {
-    const n = c.deal.nights
-    if (dur === '5+') return n >= 5
-    return String(n) === dur
-  })
+/** Does the deal's length match the active duration filter? Empty filter =
+ *  every length qualifies. '5+' covers 5 or more nights. */
+function matchesNights(nights: number): boolean {
+  const ns = liveNights.value
+  if (!ns || ns.length === 0) return true
+  if (ns.includes('5+') && nights >= 5) return true
+  return ns.includes(String(nights))
+}
+
+/** True when an arrival date is picked AND the deal has no bookable date in
+ *  the flex window around it. */
+function isDateMismatch(dealId: string): boolean {
+  if (!liveArrivalDate.value) return false
+  return !isDealAvailableInWindow(dealId, liveArrivalDate.value, liveFlexibility.value)
+}
+
+/** All deal cards, annotated with mismatch flags and ordered available-first.
+ *  Unlike the sidepanel (which hides wrong-length deals), the hotel page keeps
+ *  EVERY arrangement on screen and greys out the ones that don't fit the
+ *  current Wanneer / Hoelang — so the list reacts immediately without items
+ *  disappearing. */
+const orderedDealCards = computed(() => {
+  const annotated = dealCards.value.map(c => ({
+    ...c,
+    nightsMismatch: !matchesNights(c.deal.nights),
+    dateMismatch: isDateMismatch(c.deal.id),
+  }))
+  const available = annotated.filter(c => !c.nightsMismatch && !c.dateMismatch)
+  const unavailable = annotated.filter(c => c.nightsMismatch || c.dateMismatch)
+  return [...available, ...unavailable]
 })
+
+/** Count of arrangements that actually match the current search. */
+const availableDealCount = computed(
+  () => orderedDealCards.value.filter(c => !c.nightsMismatch && !c.dateMismatch).length,
+)
 
 const breadcrumbs = computed(() => [
   { label: t('search.home'), href: '/' },
