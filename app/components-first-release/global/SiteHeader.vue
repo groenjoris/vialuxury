@@ -316,7 +316,7 @@
                       :aria-label="t('common.close') || 'Sluit menu'"
                       @click="hamburgerDropdownOpen = false"
                     >
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                         <path d="M18 6 6 18M6 6l12 12"/>
                       </svg>
                     </button>
@@ -4239,8 +4239,8 @@ function handleSelectHotelInPopup(slug: string) {
   right: 24px;
   top: 50%;
   transform: translateY(-50%);
-  width: 38px;
-  height: 38px;
+  width: 44px;
+  height: 44px;
   border-radius: 999px;
   border: 1px solid #f0f0f0;
   background: #ffffff;

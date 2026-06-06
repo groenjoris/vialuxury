@@ -1638,7 +1638,7 @@ onMounted(() => {
    (min-width:0) so its last item ellipsizes; the icons keep their width. */
 .deal-page__breadcrumbs--with-actions {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   gap: var(--space-sm);
 }
@@ -1873,7 +1873,7 @@ onMounted(() => {
 /* ===== HIGHLIGHTS ===== */
 .deal-page__highlights { padding: var(--space-xl) 0; border-top: 1px solid var(--color-border-light); }
 .highlights__grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md) var(--space-xl); }
-.highlight-item { display: flex; align-items: center; gap: var(--space-md); }
+.highlight-item { display: flex; align-items: flex-start; gap: var(--space-md); }
 /* Match the menu side-panel icon tile — warmer-grey homepage surface,
    8 px rounded corners, no border. */
 .highlight-item__icon { width: 40px; height: 40px; border-radius: 8px; background: var(--color-background-secondary, #faf9f6); border: 0; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
@@ -2564,6 +2564,24 @@ onMounted(() => {
     font-size: 16px;   /* +2 */
     font-weight: 600;
     text-decoration: underline;
+  }
+  /* Keep location + "Bekijk op kaart" on ONE line: the city/region text
+     truncates (ellipsis) and the map link stays pinned to the right instead
+     of wrapping to a new line. */
+  .deal-page__title-section--mobile .deal-page__meta {
+    flex-wrap: nowrap;
+    padding-right: 0;
+  }
+  .deal-page__title-section--mobile .deal-page__meta > span {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .deal-page__title-section--mobile .deal-page__meta .deal-page__view-map-link {
+    margin-left: auto;
+    flex-shrink: 0;
+    white-space: nowrap;
   }
   /* Samengesteld-door card sits below the gallery; small breathing room. */
   .deal-page__creator-mobile {

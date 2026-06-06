@@ -327,12 +327,13 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 }
 /* Header icon buttons read like nav-bar buttons: white, orange on hover. */
 .pg-mgrid__header .pg-iconbtn {
-  background: transparent;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.18);
   color: #fff;
 }
 .pg-mgrid__header .pg-iconbtn:hover {
   background: rgba(255, 255, 255, 0.12);
-  color: var(--color-primary);
+  border-color: rgba(255, 255, 255, 0.3);
 }
 .pg-mgrid__body {
   flex: 1;
@@ -393,17 +394,20 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   align-items: center;
   gap: 8px;
   padding: 10px 16px;
-  border: none;
+  /* Stroke + translucent fill like the nav-bar ghost buttons (visible on any
+     photo thanks to the dark backdrop + blur). */
+  border: 1px solid rgba(255, 255, 255, 0.4);
   border-radius: var(--radius-sm);
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(0, 0, 0, 0.55);
   color: #fff;
   font-family: var(--font-body);
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;
   backdrop-filter: blur(4px);
+  transition: background var(--transition-fast), border-color var(--transition-fast);
 }
-.pg-mphoto__back:hover { background: rgba(0, 0, 0, 0.85); color: var(--color-primary); }
+.pg-mphoto__back:hover { background: rgba(0, 0, 0, 0.7); border-color: rgba(255, 255, 255, 0.7); }
 .pg-mphoto__back .all-btn-icon { font-size: 20px; }
 .pg-mphoto__track {
   flex: 1;
@@ -460,28 +464,33 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   /* Black header bar, matching the site nav bar. */
   background: #1A1A1A;
 }
-/* "Alle foto's" back + close read like nav-bar buttons: white, orange hover. */
+/* "Alle foto's" back + close: nav-bar ghost-button style — white text + a
+   subtle white stroke + translucent fill on the black header, brighter on
+   hover. */
 .pg-d__back {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 6px 10px 6px 6px;
-  border: none;
-  background: none;
+  padding: 7px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.05);
   cursor: pointer;
   font-family: var(--font-body);
   font-size: 14px;
   font-weight: 600;
   color: #fff;
+  transition: background var(--transition-fast), border-color var(--transition-fast);
 }
-.pg-d__back:hover { color: var(--color-primary); }
+.pg-d__back:hover { background: rgba(255, 255, 255, 0.12); border-color: rgba(255, 255, 255, 0.3); }
 .pg-d__header .pg-iconbtn {
-  background: transparent;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.18);
   color: #fff;
 }
 .pg-d__header .pg-iconbtn:hover {
   background: rgba(255, 255, 255, 0.12);
-  color: var(--color-primary);
+  border-color: rgba(255, 255, 255, 0.3);
 }
 .pg-d__title {
   font-family: var(--font-heading);

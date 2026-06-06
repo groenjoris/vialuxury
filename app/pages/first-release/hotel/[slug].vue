@@ -685,7 +685,7 @@ onBeforeUnmount(() => {
    (min-width:0) so its last item ellipsizes, icons keep their width. */
 .hotel-page__breadcrumbs--with-actions {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   gap: var(--space-sm);
 }
