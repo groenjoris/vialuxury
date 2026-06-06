@@ -2613,6 +2613,11 @@ onMounted(() => {
        (24px below content + 24px above title = a consistent 48px). */
     margin-bottom: 24px;
   }
+  /* Tighten the gap between the "Beschrijving" title and its text (was the
+     default 24px section-title margin) to a paragraph-like spacing. */
+  .deal-page__description-mobile .section-title {
+    margin-bottom: var(--space-sm);
+  }
   /* "Lees meer" link +2pt on mobile. */
   .deal-page__description-mobile .deal-page__read-more {
     font-size: 16px;
