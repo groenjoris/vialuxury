@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 import type { SearchHotel } from '~/types/searchHotel'
 import { formatPrice } from '~/utils-first-release/formatPrice'
-import { priceForArrival } from '~/utils-first-release/priceFormula'
+import { priceForArrival, PRICED_PERSONS } from '~/utils-first-release/priceFormula'
 import { dealHasScarcity } from '~/utils-first-release/scarcity'
 
 /**
@@ -51,7 +51,7 @@ const props = defineProps<{
   unmatched?: boolean
 }>()
 
-const { persons, arrivalDate: globalArrivalDate } = useFirstReleaseSearchState()
+const { arrivalDate: globalArrivalDate } = useFirstReleaseSearchState()
 const { selectHotel, setHover, scheduleHover, keepHover } = useFirstReleaseHotelMap()
 
 /** Cancel any pending hide while the cursor is inside the preview. */
@@ -82,18 +82,18 @@ const activeArrival = computed(() => globalArrivalDate.value || props.arrivalDat
  *  what the user sees on the deal/search cards. */
 const cheapest = computed(() => {
   return [...props.hotel.deals].reduce((min, d) => {
-    const dPrice = priceForArrival(d.basePrice, d.id, activeArrival.value, 2)
-    const minPrice = priceForArrival(min.basePrice, min.id, activeArrival.value, 2)
+    const dPrice = priceForArrival(d.basePrice, d.id, activeArrival.value, PRICED_PERSONS)
+    const minPrice = priceForArrival(min.basePrice, min.id, activeArrival.value, PRICED_PERSONS)
     return dPrice < minPrice ? d : min
   })
 })
 
-// Prototype: always the 2-person / 1-room price (party size doesn't scale it).
+// Prototype: always the PRICED_PERSONS / 1-room price (party size doesn't scale it).
 const cheapestPrice = computed(() =>
-  priceForArrival(cheapest.value.basePrice, cheapest.value.id, activeArrival.value, 2),
+  priceForArrival(cheapest.value.basePrice, cheapest.value.id, activeArrival.value, PRICED_PERSONS),
 )
 const cheapestOriginal = computed(() =>
-  priceForArrival(cheapest.value.originalPrice, cheapest.value.id, activeArrival.value, 2),
+  priceForArrival(cheapest.value.originalPrice, cheapest.value.id, activeArrival.value, PRICED_PERSONS),
 )
 
 const nights = computed<number[]>(() => {
@@ -156,7 +156,7 @@ const dealsLabel = computed(() => {
   // Single arrangement → singular, including the persons count.
   if (props.hotel.deals.length === 1) {
     const n = props.hotel.deals[0].nights
-    const p = persons.value
+    const p = PRICED_PERSONS
     return {
       top: 'Arrangement voor',
       bottom: `${n} ${n === 1 ? 'nacht' : 'nachten'}, ${p} ${p === 1 ? 'persoon' : 'personen'}`,

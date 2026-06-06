@@ -172,7 +172,7 @@
                   Arrangement voor {{ deal.nights }} {{ deal.nights === 1 ? 'nacht' : 'nachten' }}
                 </p>
                 <p class="deal-card-v2__meta-line deal-card-v2__meta-line--secondary">
-                  {{ persons }} {{ persons === 1 ? 'persoon' : 'personen' }}
+                  {{ PRICED_PERSONS }} {{ PRICED_PERSONS === 1 ? 'persoon' : 'personen' }}
                 </p>
               </template>
 
@@ -186,7 +186,7 @@
                 <p
                   v-if="!nightsMismatch"
                   class="deal-card-v2__meta-line"
-                >{{ persons }} {{ persons === 1 ? 'persoon' : 'personen' }}, {{ deal.nights }} {{ deal.nights === 1 ? 'nacht' : 'nachten' }}</p>
+                >{{ PRICED_PERSONS }} {{ PRICED_PERSONS === 1 ? 'persoon' : 'personen' }}, {{ deal.nights }} {{ deal.nights === 1 ? 'nacht' : 'nachten' }}</p>
                 <p class="deal-card-v2__price-line">
                   <span class="deal-card-v2__price-prefix">Vanaf</span>
                   <span class="deal-card-v2__price">{{ formatPrice(price) }}</span>
@@ -223,7 +223,7 @@
           </template>
           <template v-else>
             <p class="deal-card-v2__meta-line deal-card-v2__meta-line--small deal-card-v2__meta-line--right">
-              {{ persons }} {{ persons === 1 ? 'persoon' : 'personen' }}, {{ deal.nights }} {{ deal.nights === 1 ? 'nacht' : 'nachten' }}
+              {{ PRICED_PERSONS }} {{ PRICED_PERSONS === 1 ? 'persoon' : 'personen' }}, {{ deal.nights }} {{ deal.nights === 1 ? 'nacht' : 'nachten' }}
             </p>
             <p class="deal-card-v2__price-line deal-card-v2__price-line--right">
               <span class="deal-card-v2__price-prefix">Vanaf</span>
@@ -262,7 +262,7 @@ import { formatPrice } from '~/utils-first-release/formatPrice'
 import { formatDateShort } from '~/utils-first-release/formatDate'
 import dayjs from 'dayjs'
 import { pickSmartInclusions } from '~/utils-first-release/smartInclusions'
-import { priceForArrival } from '~/utils-first-release/priceFormula'
+import { priceForArrival, PRICED_PERSONS } from '~/utils-first-release/priceFormula'
 import { nightsLabel } from '~/utils-first-release/plural'
 import { arrangementSuffixFromHighlights } from '~/utils-first-release/arrangementType'
 import { dealHash, roomsLeftForDeal } from '~/utils-first-release/scarcity'
@@ -505,14 +505,13 @@ const mismatchHref = computed(() => {
  *  When `ignoreArrival` is set (side-panel "andere data" group), price is
  *  computed without the date so the card shows the deal's lowest price. */
 const effectiveArrival = computed(() => (props.ignoreArrival ? null : arrivalDate.value))
-// Prototype: card prices always show the 2-person / 1-room figure. The
-// party-size picker only filters availability + drives the future checkout,
-// so it must not scale the displayed price.
+// Prototype: card prices + the "X personen" label both use PRICED_PERSONS
+// (the party size the price is for). The picker doesn't scale prices yet.
 const price = computed(() =>
-  priceForArrival(props.deal.basePrice, props.deal.id, effectiveArrival.value, 2),
+  priceForArrival(props.deal.basePrice, props.deal.id, effectiveArrival.value, PRICED_PERSONS),
 )
 const originalPrice = computed(() =>
-  priceForArrival(props.deal.originalPrice, props.deal.id, effectiveArrival.value, 2),
+  priceForArrival(props.deal.originalPrice, props.deal.id, effectiveArrival.value, PRICED_PERSONS),
 )
 
 /** Cheapest deal across all sibling arrangements at this hotel — used by
@@ -523,14 +522,14 @@ const cheapestSibling = computed(() => {
   const deals = props.siblingPool ?? props.hotel?.deals
   if (!deals || deals.length === 0) return null
   return deals.reduce((min, d) => {
-    const dPrice = priceForArrival(d.basePrice, d.id, arrivalDate.value, 2)
-    const minPrice = priceForArrival(min.basePrice, min.id, arrivalDate.value, 2)
+    const dPrice = priceForArrival(d.basePrice, d.id, arrivalDate.value, PRICED_PERSONS)
+    const minPrice = priceForArrival(min.basePrice, min.id, arrivalDate.value, PRICED_PERSONS)
     return dPrice < minPrice ? d : min
   })
 })
 const cheapestSiblingPrice = computed(() => {
   const d = cheapestSibling.value
-  return d ? priceForArrival(d.basePrice, d.id, arrivalDate.value, 2) : 0
+  return d ? priceForArrival(d.basePrice, d.id, arrivalDate.value, PRICED_PERSONS) : 0
 })
 
 /** Any kind of mismatch greys out the card; CTA wording differs per case. */

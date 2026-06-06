@@ -55,7 +55,7 @@
             <!-- First row: title + stacked price -->
             <div class="mdeal__top">
               <p class="mdeal__title">
-                <span class="mdeal__lead">Arrangement</span>{{ ' ' }}<span class="mdeal__title-rest">{{ nightsLabel(d.deal.nights, locale as 'nl' | 'en' | 'de') }}, {{ personsLabel(persons, locale as 'nl' | 'en' | 'de') }}</span>
+                <span class="mdeal__lead">Arrangement</span>{{ ' ' }}<span class="mdeal__title-rest">{{ nightsLabel(d.deal.nights, locale as 'nl' | 'en' | 'de') }}, {{ personsLabel(PRICED_PERSONS, locale as 'nl' | 'en' | 'de') }}</span>
               </p>
               <div class="mdeal__price">
                 <div class="mdeal__price-top">
@@ -97,7 +97,7 @@
 import type { SearchHotel, SearchHotelDeal } from '~/types/searchHotel'
 import { formatPrice } from '~/utils-first-release/formatPrice'
 import { nightsLabel, personsLabel } from '~/utils-first-release/plural'
-import { priceForArrival } from '~/utils-first-release/priceFormula'
+import { priceForArrival, PRICED_PERSONS } from '~/utils-first-release/priceFormula'
 import { isDealAvailableInWindow } from '~/utils-first-release/availability'
 
 const { t, localized, locale } = useFirstReleaseI18n()
@@ -182,9 +182,9 @@ const dealViews = computed(() => {
       return {
         deal,
         soldOut,
-        // Prototype: always the 2-person / 1-room price (party size doesn't scale it).
-        price: priceForArrival(deal.basePrice, deal.id, effArrival, 2),
-        originalPrice: priceForArrival(deal.originalPrice, deal.id, effArrival, 2),
+        // Prototype: always the PRICED_PERSONS / 1-room price (party size doesn't scale it).
+        price: priceForArrival(deal.basePrice, deal.id, effArrival, PRICED_PERSONS),
+        originalPrice: priceForArrival(deal.originalPrice, deal.id, effArrival, PRICED_PERSONS),
         includes: (deal.inclusions || []).slice(0, 2).map(i => localized(i)),
         href,
       }

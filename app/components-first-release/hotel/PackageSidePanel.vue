@@ -65,7 +65,7 @@
 import { useBodyScrollLock } from '~/composables-first-release/useBodyScrollLock'
 import type { DealVariant } from '~/types/deal'
 import { formatPrice } from '~/utils-first-release/formatPrice'
-import { priceForArrival } from '~/utils-first-release/priceFormula'
+import { priceForArrival, PRICED_PERSONS } from '~/utils-first-release/priceFormula'
 import { useFirstReleaseDealStore } from '~/stores-first-release/deal'
 
 const { t, localized } = useFirstReleaseI18n()
@@ -75,10 +75,10 @@ const store = useFirstReleaseDealStore()
  *  calendar + sidebar. The party-size picker doesn't scale prices (it only
  *  filters availability + drives the not-yet-built checkout). */
 function variantPrice(v: DealVariant): number {
-  return priceForArrival(v.basePrice, v.id, store.checkInDate, 2)
+  return priceForArrival(v.basePrice, v.id, store.checkInDate, PRICED_PERSONS)
 }
 function variantOriginal(v: DealVariant): number {
-  return priceForArrival(v.originalPrice, v.id, store.checkInDate, 2)
+  return priceForArrival(v.originalPrice, v.id, store.checkInDate, PRICED_PERSONS)
 }
 
 const props = defineProps<{

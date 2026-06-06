@@ -47,6 +47,15 @@ export function isPremiumDay(dealId: string, dayIso: string): boolean {
 export const CALENDAR_PREMIUM_SURCHARGE = 79
 
 /**
+ * Party size the prototype prices + displays everywhere (sidebar, calendar,
+ * cards, side-panels). The "Wie gaat er mee?" picker doesn't affect prices
+ * yet — that linkage happens in the not-yet-built checkout — so every shown
+ * price, and the "X personen" label next to it, use this single value. Change
+ * it here when the real per-person pricing/occupancy goes live.
+ */
+export const PRICED_PERSONS = 2
+
+/**
  * Default occupancy of a hotel room. The deal-page room picker can override
  * this (e.g. a "3-persoonskamer" / family room takes 3 → ceil(persons/3)).
  */

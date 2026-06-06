@@ -934,6 +934,7 @@ import FirstReleaseOthersAlsoViewed from '~/components-first-release/deal/Others
 import { formatPrice } from '~/utils-first-release/formatPrice'
 import { getReviewLabelKey } from '~/utils-first-release/reviewLabel'
 import { generateDealAvailability } from '~/data/mock/deal-pricing'
+import { PRICED_PERSONS } from '~/utils-first-release/priceFormula'
 import { matchIcon } from '~/utils-first-release/iconMatcher'
 import { roomsLeftForDeal } from '~/utils-first-release/scarcity'
 import { nightsLabel, nightsWord, personsLabel, roomsLabel } from '~/utils-first-release/plural'
@@ -1391,7 +1392,7 @@ const calAvailability = computed(() => {
   if (!store.currentDeal) return []
   // Prototype: calendar prices always show the 2-person / 1-room price,
   // independent of the party-size picker (which only filters availability).
-  return generateDealAvailability(calMonth.value.year, calMonth.value.month, store.currentDeal, 2)
+  return generateDealAvailability(calMonth.value.year, calMonth.value.month, store.currentDeal, PRICED_PERSONS)
 })
 const calCheapestPrice = computed(() => {
   const prices = calAvailability.value.filter(a => a.available && a.totalPrice > 0).map(a => a.totalPrice)

@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import type { Deal, DealVariant, TravelGroup, TravelGroupPricing, RoomOption } from '~/types/deal'
 import type { DateAvailability } from '~/types/calendar'
-import { priceForArrival, minRoomsFor, maxRoomsFor } from '~/utils-first-release/priceFormula'
+import { priceForArrival, minRoomsFor, maxRoomsFor, PRICED_PERSONS } from '~/utils-first-release/priceFormula'
 import dayjs from 'dayjs'
 
 export const useFirstReleaseDealStore = defineStore('first-release-deal', () => {
@@ -164,13 +164,12 @@ export const useFirstReleaseDealStore = defineStore('first-release-deal', () => 
     }
 
     const deal = currentDeal.value
-    // Prototype: the headline price always reflects 2 people / 1 room,
+    // Prototype: the headline price always reflects PRICED_PERSONS / 1 room,
     // regardless of how many people are picked. The "Wie gaat er mee?"
     // selector only (later) filters arrangements with enough rooms and
     // drives the checkout — neither of which is in the prototype data — so
     // it must never scale the price shown here.
-    const persons = 2
-    const rooms = 1
+    const persons = PRICED_PERSONS
 
     // Single source of truth for the headline price: `priceForArrival` applies
     // both the per-person formula and the calendar's premium-day surcharge,
