@@ -230,27 +230,31 @@ function nextSlide() {
   display: block;
 }
 
+/* Same size + style as the photo-viewer "Alle foto's" pill — but NO stroke,
+   since it sits on a photo (the dark translucent fill + blur is enough). */
 .hero-gallery__all-btn {
   position: absolute;
   bottom: 12px;
   right: 12px;
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(0, 0, 0, 0.55);
   color: white;
-  padding: 6px 12px;
+  padding: 10px 16px;
   border-radius: var(--radius-sm);
-  font-size: 13px;
+  font-size: 15px;
+  font-weight: 600;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   backdrop-filter: blur(4px);
+  transition: background var(--transition-fast);
 }
 
 .hero-gallery__all-btn:hover {
-  background: rgba(0, 0, 0, 0.85);
+  background: rgba(0, 0, 0, 0.7);
 }
 
 .all-btn-icon {
-  font-size: 16px;
+  font-size: 20px;
 }
 
 /* ===== Mobile carousel ===== */

@@ -67,7 +67,7 @@
                 class="pg-d__back"
                 @click="$emit('update:view', 'grid')"
               >
-                <svg v-if="cameFromGrid" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6" /></svg>
+                <span class="all-btn-icon" aria-hidden="true">⊞</span>
                 {{ t('common.allPhotos') }}
               </button>
               <h2 class="pg-d__title">{{ title }}</h2>
@@ -478,21 +478,25 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 /* "Alle foto's" back + close: nav-bar ghost-button style — white text + a
    subtle white stroke + translucent fill on the black header, brighter on
    hover. */
+/* ⊞ icon + rounded rectangle, same shape/size as the mobile "Alle foto's"
+   pill. Keeps the ghost stroke since it sits on the black header (not a
+   photo) so it stays visible. */
 .pg-d__back {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 7px 14px;
+  gap: 8px;
+  padding: 8px 16px;
   border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   background: rgba(255, 255, 255, 0.05);
   cursor: pointer;
   font-family: var(--font-body);
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 600;
   color: #fff;
   transition: background var(--transition-fast), border-color var(--transition-fast);
 }
+.pg-d__back .all-btn-icon { font-size: 20px; }
 .pg-d__back:hover { background: rgba(255, 255, 255, 0.12); border-color: rgba(255, 255, 255, 0.3); }
 .pg-d__header .pg-iconbtn {
   width: 36px;
