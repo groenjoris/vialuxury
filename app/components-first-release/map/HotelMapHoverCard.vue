@@ -3,7 +3,7 @@ import { computed } from 'vue'
 import type { SearchHotel } from '~/types/searchHotel'
 import { formatPrice } from '~/utils-first-release/formatPrice'
 import { priceForArrival, PRICED_PERSONS } from '~/utils-first-release/priceFormula'
-import { dealHasScarcity } from '~/utils-first-release/scarcity'
+import { dealHasScarcity, roomsLeftForDeal } from '~/utils-first-release/scarcity'
 
 /**
  * HotelMapHoverCard — preview card that floats above a hovered hotel pin
@@ -131,10 +131,16 @@ function formatNights(sorted: number[]): string {
   return `${tokens.slice(0, -1).join(', ')} of ${tokens[tokens.length - 1]}`
 }
 
-/** Whether any of the hotel's arrangements is scarce (<4 left). Hidden in
- *  the sold-out / unmatched states. */
+/** Scarcity is only shown for a single-deal hotel (where "nog X beschikbaar"
+ *  is unambiguous). Hidden in the sold-out / unmatched states. */
 const showScarcity = computed(() =>
-  !props.soldOut && !props.unmatched && props.hotel.deals.some(d => dealHasScarcity(d.id)),
+  !props.soldOut && !props.unmatched
+    && props.hotel.deals.length === 1
+    && dealHasScarcity(props.hotel.deals[0].id),
+)
+/** Rooms left for that single deal — drives the "Nog X beschikbaar" label. */
+const scarcityLeft = computed(() =>
+  props.hotel.deals.length === 1 ? roomsLeftForDeal(props.hotel.deals[0].id) : 0,
 )
 
 /** Split into a top line ("Arrangement voor" / "Arrangementen voor" /
@@ -270,7 +276,7 @@ const cardStyle = computed(() => {
         </div>
         <!-- Scarcity layer (Figma 3987:5012) — full-width black bar at the
              bottom; rounded bottom corners come from the box's clip. -->
-        <div v-if="showScarcity" class="hover-card__scarcity">Beperkte beschikbaarheid</div>
+        <div v-if="showScarcity" class="hover-card__scarcity">Nog {{ scarcityLeft }} beschikbaar</div>
       </div>
       <div class="hover-card__tail" />
     </div>
