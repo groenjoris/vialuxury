@@ -405,7 +405,7 @@ const cardStyle = computed(() => {
   align-items: center;
   justify-content: center;
   padding: 0 4px;
-  background: #1A1E1E;
+  background: var(--color-dark);
   color: #fff;
   font-family: var(--font-body);
   font-size: 12px;
@@ -423,7 +423,7 @@ const cardStyle = computed(() => {
 }
 
 .hover-card__discount {
-  background: #1A1A1A;
+  background: var(--color-dark);
   color: white;
   font-size: 11px;
   font-weight: 700;
@@ -506,6 +506,6 @@ const cardStyle = computed(() => {
    (bottom by default, top when flipped) — match its colour so the seam
    disappears. */
 .hover-card--scarcity .hover-card__tail {
-  background: #1A1E1E;
+  background: var(--color-dark);
 }
 </style>

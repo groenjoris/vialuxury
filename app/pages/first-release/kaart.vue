@@ -578,7 +578,7 @@ onMounted(() => {
   z-index: 1100;
   height: 40px;
   padding: 0 var(--space-md);
-  background: #000;
+  background: var(--color-dark);
   border: 0;
   border-radius: var(--radius-sm);
   box-shadow: var(--shadow-card);
@@ -649,7 +649,7 @@ onMounted(() => {
   padding: 8px 16px;
   border-radius: 10px;
   border: 0;
-  background: #000;
+  background: var(--color-dark);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
   display: inline-flex;
   align-items: center;

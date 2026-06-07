@@ -720,7 +720,7 @@ const includesBullets = computed<string[]>(() => {
   position: absolute;
   top: var(--space-md);
   left: var(--space-md);
-  background: #1A1A1A;
+  background: var(--color-dark);
   color: #fff;
   font-family: var(--font-heading);
   font-size: 18px;
@@ -771,7 +771,7 @@ const includesBullets = computed<string[]>(() => {
   bottom: var(--space-md);
   z-index: 2;
   pointer-events: none;
-  background: #000;
+  background: var(--color-dark);
   color: #fff;
   font-family: var(--font-body);
   font-size: 13px;

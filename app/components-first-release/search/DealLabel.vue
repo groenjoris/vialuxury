@@ -58,7 +58,7 @@ const variant = computed<Variant>(() => VARIANT[props.keyName] || 'black')
 }
 
 .deal-label--black {
-  background: #1A1A1A;
+  background: var(--color-dark);
 }
 
 .deal-label--green {

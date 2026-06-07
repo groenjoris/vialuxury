@@ -365,7 +365,7 @@ function itemCount(value: string): number {
   left: var(--fill-left, 0%);
   right: var(--fill-right, 0%);
   height: 100%;
-  background: #1A1A1A;
+  background: var(--color-dark);
   border-radius: 2px;
 }
 
@@ -389,7 +389,7 @@ function itemCount(value: string): number {
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  background: #1A1A1A;
+  background: var(--color-dark);
   border: 3px solid #fff;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
   cursor: pointer;
@@ -400,7 +400,7 @@ function itemCount(value: string): number {
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  background: #1A1A1A;
+  background: var(--color-dark);
   border: 3px solid #fff;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
   cursor: pointer;

@@ -312,7 +312,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   gap: var(--space-md);
   padding: 10px var(--space-md);
   /* Black header bar, matching the site nav bar. */
-  background: #1A1A1A;
+  background: var(--color-dark);
 }
 .pg-mgrid__title {
   font-family: var(--font-heading);
@@ -372,7 +372,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   position: fixed;
   inset: 0;
   z-index: 1300;
-  background: #111;
+  background: var(--color-dark);
   display: flex;
   flex-direction: column;
 }
@@ -470,7 +470,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   gap: var(--space-md);
   padding: 14px var(--space-xl);
   /* Black header bar, matching the site nav bar. */
-  background: #1A1A1A;
+  background: var(--color-dark);
 }
 /* "Alle foto's" back + close: nav-bar ghost-button style — white text + a
    subtle white stroke + translucent fill on the black header, brighter on
@@ -531,7 +531,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   display: flex;
   flex-direction: column;
   min-height: 0;
-  background: #111;
+  background: var(--color-dark);
 }
 .pg-d__stage {
   flex: 1;
@@ -561,7 +561,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   gap: 8px;
   padding: var(--space-md);
   overflow-x: auto;
-  background: #1a1a1a;
+  background: var(--color-dark);
 }
 .pg-d__strip-thumb {
   flex: 0 0 auto;

@@ -41,7 +41,7 @@ watch(() => props.message, (msg) => {
   gap: 10px;
   padding: 14px 24px;
   border-radius: 12px;
-  background: #1a1a1a;
+  background: var(--color-dark);
   color: #fff;
   font-size: 14px;
   font-weight: 500;

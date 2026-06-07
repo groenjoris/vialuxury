@@ -15,7 +15,10 @@
   --color-background: #FFFFFF;
   --color-background-secondary: #FBFAF8;
   --color-surface: #FFFFFF;
-  --color-top-bar: #1A1A1A;
+  /* Single brand "black" used for every dark surface (nav bar, footer, modal
+     headers + sticky bars, dark buttons/badges). */
+  --color-dark: #1A1E1E;
+  --color-top-bar: var(--color-dark);
   --color-star: #FB862D;
   --color-review: #00B67A;
   --color-error: #D32F2F;

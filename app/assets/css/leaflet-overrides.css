@@ -65,7 +65,7 @@
   border-radius: 50%;
   width: 38px;
   height: 38px;
-  background: #1A1A1A;
+  background: var(--color-dark);
   color: white;
   font-family: var(--font-body);
   font-weight: 600;

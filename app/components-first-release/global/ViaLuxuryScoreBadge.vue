@@ -116,7 +116,7 @@ function hideTooltip() {
   width: 38px;
   height: 38px;
   flex-shrink: 0;
-  background: #000;
+  background: var(--color-dark);
   border-radius: 8px;
 }
 

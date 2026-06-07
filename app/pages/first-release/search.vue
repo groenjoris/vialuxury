@@ -2173,7 +2173,7 @@ onMounted(() => {
   gap: 4px;
   border: 0;
   border-radius: 10px;
-  background: #000;
+  background: var(--color-dark);
   font-family: var(--font-body, 'Basis Grotesque', sans-serif);
   font-size: 14px;
   font-weight: 400;

@@ -119,7 +119,7 @@ function onNewsletterInput(e: Event) {
 
 <style scoped>
 .site-footer {
-  background-color: #1A1A1A;
+  background-color: var(--color-dark);
   color: white;
   /* Sits flush against the last page section — its own internal padding
      provides enough breathing room. */

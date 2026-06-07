@@ -214,7 +214,7 @@ const disclaimer = computed(() => {
 <style>
 .price-info__bubble {
   padding: 10px 12px;
-  background: #1a1a1a;
+  background: var(--color-dark);
   color: #fff;
   font-family: var(--font-body);
   font-size: 12px;

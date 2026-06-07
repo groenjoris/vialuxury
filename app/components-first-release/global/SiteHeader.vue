@@ -2158,7 +2158,7 @@ function handleSelectHotelInPopup(slug: string) {
 .site-header {
   position: relative;
   z-index: 500;
-  background: #111111;
+  background: var(--color-dark);
   /* Reserve space inside the black so the upper half of the search bar
      sits inside the dark header chrome (the lower half protrudes onto
      the page below — Northstar-style). Internal pages (/search, /deal,
@@ -2419,7 +2419,7 @@ function handleSelectHotelInPopup(slug: string) {
 
 .hamburger-dropdown__menu {
   min-width: 240px;
-  background: #1A1A1A;
+  background: var(--color-dark);
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 12px;
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
@@ -2504,7 +2504,7 @@ function handleSelectHotelInPopup(slug: string) {
    20 px top margin per design; row gap of 20 px so the pay-off sits exactly
    20 px below the logo. */
 .site-header__nav {
-  background: #111111;
+  background: var(--color-dark);
   display: flex;
   align-items: stretch;
   position: relative;
@@ -3055,7 +3055,7 @@ function handleSelectHotelInPopup(slug: string) {
   top: calc(100% + 8px);
   right: 0;
   min-width: 210px;
-  background: #1A1A1A;
+  background: var(--color-dark);
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: var(--radius-md);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
@@ -3625,7 +3625,7 @@ function handleSelectHotelInPopup(slug: string) {
 /* Teleported contact dropdown — not scoped */
 .contact-dropdown__menu {
   min-width: 300px;
-  background: #1A1A1A;
+  background: var(--color-dark);
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 12px;
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
@@ -4105,7 +4105,7 @@ function handleSelectHotelInPopup(slug: string) {
     /* Default (pill case): slot's TOP 12 px is painted #111
        so the nav's black bg visually extends DOWN into the
        slot, reaching the pill's midline. White below. */
-    background: linear-gradient(to bottom, #111 12px, #fff 12px);
+    background: linear-gradient(to bottom, var(--color-dark) 12px, #fff 12px);
     /* Slot padding-top = 12 is part of invariant A — DO NOT
        change without recomputing every bar's margin-top. */
     padding: 12px 16px 16px;
@@ -4117,7 +4117,7 @@ function handleSelectHotelInPopup(slug: string) {
      gradient stop so the strip reaches the summary card's
      midline. Bar margin-top stays -34, so tops still align. */
   .site-header .site-header__mobile-search--on-solid.site-header__mobile-search--summary {
-    background: linear-gradient(to bottom, #111 24px, #fff 24px);
+    background: linear-gradient(to bottom, var(--color-dark) 24px, #fff 24px);
   }
   /* Pill — 68 px tall (height in base rule). margin-top -34
      pulls it up half its own height. With slot-padding-top 12,
@@ -4301,7 +4301,7 @@ function handleSelectHotelInPopup(slug: string) {
   transition: background 150ms ease, color 150ms ease, border-color 150ms ease;
 }
 .menu-panel__variant--active {
-  background: #1a1a1a;
+  background: var(--color-dark);
   border-color: #1a1a1a;
   color: #fff;
 }

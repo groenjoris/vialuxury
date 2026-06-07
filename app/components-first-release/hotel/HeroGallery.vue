@@ -199,7 +199,7 @@ function nextSlide() {
   bottom: var(--space-md);
   z-index: 2;
   pointer-events: none;
-  background: #000;
+  background: var(--color-dark);
   color: #fff;
   font-family: var(--font-body);
   font-size: 13px;

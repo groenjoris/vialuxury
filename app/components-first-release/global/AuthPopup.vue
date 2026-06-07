@@ -219,7 +219,7 @@ onBeforeUnmount(() => {
 }
 
 .auth-popup__social-btn--apple {
-  background: #000;
+  background: var(--color-dark);
   color: #fff;
   border-color: #000;
 }
