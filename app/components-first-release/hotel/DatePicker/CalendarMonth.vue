@@ -1,9 +1,9 @@
 <template>
   <div class="calendar-month">
     <div class="calendar-month__header">
-      <button v-if="showPrevButton" class="nav-btn" @click="$emit('prevMonth')">‹</button>
+      <button v-if="showPrevButton" class="nav-btn" aria-label="Vorige maand" @click="$emit('prevMonth')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6" /></svg></button>
       <h4 class="calendar-month__title">{{ monthName }} {{ year }}</h4>
-      <button v-if="showNextButton" class="nav-btn" @click="$emit('nextMonth')">›</button>
+      <button v-if="showNextButton" class="nav-btn" aria-label="Volgende maand" @click="$emit('nextMonth')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6" /></svg></button>
     </div>
 
     <div class="calendar-month__day-headers">

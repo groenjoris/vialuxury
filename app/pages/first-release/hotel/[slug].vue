@@ -21,7 +21,7 @@
             :aria-label="t('common.save')"
             @click="toggleFav(hotel.slug)"
           >
-            <span class="hotel-page__action-heart">{{ isFavorited ? '♥' : '♡' }}</span>
+            <svg class="hotel-page__action-heart" viewBox="0 0 24 24" :fill="isFavorited ? '#e74c3c' : 'none'" :stroke="isFavorited ? '#e74c3c' : 'currentColor'" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" /></svg>
           </button>
         </div>
       </section>
@@ -51,7 +51,7 @@
             :aria-label="t('common.save')"
             @click="toggleFav(hotel.slug)"
           >
-            <span class="hotel-page__action-heart">{{ isFavorited ? '♥' : '♡' }}</span>
+            <svg class="hotel-page__action-heart" viewBox="0 0 24 24" :fill="isFavorited ? '#e74c3c' : 'none'" :stroke="isFavorited ? '#e74c3c' : 'currentColor'" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" /></svg>
             <span class="hotel-page__action-label">Opslaan</span>
           </button>
         </div>
@@ -700,7 +700,7 @@ onBeforeUnmount(() => {
   gap: var(--space-sm);
 }
 .hotel-page__action--icon { padding: 6px; }
-.hotel-page__action--icon .hotel-page__action-heart { font-size: 22px; }
+.hotel-page__action--icon .hotel-page__action-heart { width: 22px; height: 22px; }
 
 /* ===== ANCHOR TABS ===== */
 .hotel-page__tabs {
@@ -787,6 +787,8 @@ onBeforeUnmount(() => {
 .hotel-page__meta { display: flex; align-items: center; gap: var(--space-sm); font-size: 14px; color: var(--color-text-secondary); flex-wrap: wrap; }
 .hotel-page__meta-pin { flex-shrink: 0; color: var(--color-text-secondary); }
 .hotel-page__meta .hotel-page__view-map-link { margin-left: 8px; color: var(--color-primary, #c9a85c); font-weight: 600; text-decoration: underline; }
+/* Default text-link hover: deepen to the primary-hover orange. */
+.hotel-page__meta .hotel-page__view-map-link:hover { color: var(--color-primary-hover); }
 .hotel-page__score-wrap { display: flex; align-items: center; gap: 6px; }
 .hotel-page__score { display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: var(--radius-sm); background: #00B67A; color: #fff; font-size: 13px; font-weight: 700; flex-shrink: 0; }
 .hotel-page__score-label { font-size: 13px; font-weight: 600; color: var(--color-text-primary); }
@@ -813,9 +815,10 @@ onBeforeUnmount(() => {
   font-size: 16px;
   color: var(--color-text-primary);
 }
-.hotel-page__action:hover { color: var(--color-primary); }
-.hotel-page__action-heart { font-size: 19px; line-height: 1; }
-.hotel-page__action--favorited .hotel-page__action-heart { color: #e74c3c; }
+/* Delen / Opslaan: deepen to near-black on hover (no orange), like the anchor
+   nav but without an underline. */
+.hotel-page__action:hover { color: #000; }
+.hotel-page__action-heart { width: 18px; height: 18px; }
 .hotel-page__action-label { font-size: 16px; }
 
 /* ===== INTRO (description + map) ===== */

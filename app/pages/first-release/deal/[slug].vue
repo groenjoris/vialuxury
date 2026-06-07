@@ -28,7 +28,7 @@
               <FirstReleaseShareMenu :open="shareMenuOpen" @close="shareMenuOpen = false" />
             </div>
             <button class="deal-page__action deal-page__action--icon" :class="{ 'deal-page__action--favorited': isFavorited }" :aria-label="t('common.save')" @click="handleFavoriteClick">
-              <span class="deal-page__action-heart">{{ isFavorited ? '♥' : '♡' }}</span>
+              <svg class="deal-page__action-heart" viewBox="0 0 24 24" :fill="isFavorited ? '#e74c3c' : 'none'" :stroke="isFavorited ? '#e74c3c' : 'currentColor'" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" /></svg>
             </button>
           </div>
         </section>
@@ -318,7 +318,7 @@
             <FirstReleaseShareMenu :open="shareMenuOpen" @close="shareMenuOpen = false" />
           </div>
           <button class="deal-page__action" :class="{ 'deal-page__action--favorited': isFavorited }" :aria-label="t('common.save')" @click="handleFavoriteClick">
-            <span class="deal-page__action-heart">{{ isFavorited ? '♥' : '♡' }}</span>
+            <svg class="deal-page__action-heart" viewBox="0 0 24 24" :fill="isFavorited ? '#e74c3c' : 'none'" :stroke="isFavorited ? '#e74c3c' : 'currentColor'" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" /></svg>
             <span class="deal-page__action-label">Opslaan</span>
           </button>
         </div>
@@ -1589,6 +1589,9 @@ onMounted(() => {
 .deal-page__meta { display: flex; align-items: center; gap: var(--space-sm); font-size: 14px; color: var(--color-text-secondary); padding-right: 110px; flex-wrap: wrap; }
 .deal-page__meta-pin { flex-shrink: 0; color: var(--color-text-secondary); }
 .deal-page__meta .deal-page__view-map-link { margin-left: 8px; color: var(--color-primary, #c9a85c); font-weight: 600; text-decoration: underline; }
+/* Default text-link hover: deepen to the primary-hover orange (same as the
+   global a:hover + the "Lees meer" links). */
+.deal-page__meta .deal-page__view-map-link:hover { color: var(--color-primary-hover); }
 .deal-page__score-wrap { display: flex; align-items: center; gap: 6px; }
 .deal-page__score { display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: var(--radius-sm); background: #00B67A; color: #fff; font-size: 13px; font-weight: 700; flex-shrink: 0; }
 .deal-page__score-label { font-size: 13px; font-weight: 600; color: var(--color-text-primary); }
@@ -1623,9 +1626,10 @@ onMounted(() => {
   font-size: 14px;
   color: var(--color-text-primary);
 }
-.deal-page__action:hover { color: var(--color-primary); }
-.deal-page__action-heart { font-size: 17px; line-height: 1; }
-.deal-page__action--favorited .deal-page__action-heart { color: #e74c3c; }
+/* Delen / Opslaan: deepen to near-black on hover (no orange), like the anchor
+   nav but without an underline. */
+.deal-page__action:hover { color: #000; }
+.deal-page__action-heart { width: 18px; height: 18px; }
 .deal-page__action-label { font-size: 14px; }
 .deal-page__breadcrumbs { padding-top: var(--space-md); }
 
@@ -1653,7 +1657,7 @@ onMounted(() => {
   gap: var(--space-sm);
 }
 .deal-page__action--icon { padding: 6px; }
-.deal-page__action--icon .deal-page__action-heart { font-size: 22px; }
+.deal-page__action--icon .deal-page__action-heart { width: 22px; height: 22px; }
 
 /* ===== 2-COLUMN GRID ===== */
 .deal-page__grid { display: grid; grid-template-columns: 1fr var(--fr-deal-sidebar-width, 340px); gap: var(--space-xl); padding-top: var(--space-lg); align-items: start; }
