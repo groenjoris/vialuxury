@@ -1,9 +1,9 @@
 <template>
   <div class="calendar-month">
     <div class="calendar-month__header">
-      <button v-if="showPrevButton" class="nav-btn" @click="$emit('prevMonth')">←</button>
+      <button v-if="showPrevButton" class="nav-btn" @click="$emit('prevMonth')">‹</button>
       <h4 class="calendar-month__title">{{ monthName }} {{ year }}</h4>
-      <button v-if="showNextButton" class="nav-btn" @click="$emit('nextMonth')">→</button>
+      <button v-if="showNextButton" class="nav-btn" @click="$emit('nextMonth')">›</button>
     </div>
 
     <div class="calendar-month__day-headers">
