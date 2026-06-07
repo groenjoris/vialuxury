@@ -538,14 +538,14 @@ function pickWho(opt: { adults: number; rooms: number }) {
   height: 36px;
   border-radius: 50%;
   border: none;
-  background: #fff;
+  background: var(--color-background-secondary);
   display: inline-flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   color: var(--color-text-primary);
 }
-.msm__close:hover { background: rgba(0, 0, 0, 0.04); }
+.msm__close:hover { background: var(--color-border); }
 
 /* Scrollable body holds the four field-cards. Larger vertical gap so
    each field reads as its own section with clear breathing room

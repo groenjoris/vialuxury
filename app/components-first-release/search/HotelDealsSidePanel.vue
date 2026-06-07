@@ -382,7 +382,7 @@ onUnmounted(() => {
 }
 
 .panel__close:hover {
-  background: rgba(0, 0, 0, 0.04);
+  background: var(--color-border);
 }
 
 /* Hotel hero image */

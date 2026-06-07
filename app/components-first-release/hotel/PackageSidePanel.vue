@@ -177,7 +177,7 @@ function getTitle(dealId: string): string {
 }
 
 .panel__close:hover {
-  background: rgba(0, 0, 0, 0.04);
+  background: var(--color-border);
 }
 
 .panel__body {

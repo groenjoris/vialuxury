@@ -254,16 +254,6 @@
 [data-fr-variant="6"] .desc-modal__close:hover {
   background: var(--color-border);
 }
-/* Mobile: white fill, no border, subtle dark hover (desktop keeps the
-   grey-fill reference style). */
-@media (max-width: 800px) {
-  [data-fr-variant="6"] .desc-modal__close {
-    background: #fff;
-  }
-  [data-fr-variant="6"] .desc-modal__close:hover {
-    background: rgba(0, 0, 0, 0.04);
-  }
-}
 /* Body: right column, the ONLY scrolling area on desktop. */
 [data-fr-variant="6"] .desc-modal__body {
   grid-column: 2;
