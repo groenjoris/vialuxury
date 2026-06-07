@@ -130,21 +130,25 @@ const days = computed(() => {
   flex: 1;
 }
 
+/* Month-switch arrows match the white-modal close buttons: 36px, no stroke,
+   light-grey fill, greyer on hover. */
 .nav-btn {
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  border: 1px solid var(--color-border);
+  border: none;
+  background: var(--color-background-secondary);
+  color: var(--color-text-primary);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 16px;
-  transition: all var(--transition-fast);
+  cursor: pointer;
+  transition: background var(--transition-fast);
 }
 
 .nav-btn:hover {
-  border-color: var(--color-primary);
-  color: var(--color-primary);
+  background: var(--color-border);
 }
 
 .calendar-month__day-headers {

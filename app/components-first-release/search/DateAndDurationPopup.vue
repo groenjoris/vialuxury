@@ -496,13 +496,15 @@ const hasSelection = computed(() => !!props.selectedDate || props.nights.length 
 }
 
 .mini-cal__nav {
-  width: 32px;
-  height: 32px;
-  border-radius: 16px;
+  /* Match the white-modal close buttons: 36px, no stroke, light-grey fill,
+     greyer on hover. */
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
   border: 0;
-  background: #f3f3f3;
+  background: var(--color-background-secondary);
   font-size: 15px;
-  color: #6a6a6a;
+  color: var(--color-text-primary);
   cursor: pointer;
   display: inline-flex;
   align-items: center;
@@ -513,8 +515,7 @@ const hasSelection = computed(() => !!props.selectedDate || props.nights.length 
 }
 
 .mini-cal__nav:hover {
-  background: #e6e6e6;
-  color: #1A1A1A;
+  background: var(--color-border);
 }
 
 .mini-cal__days-header {
