@@ -369,8 +369,8 @@ onUnmounted(() => {
   position: absolute;
   top: var(--space-md);
   right: var(--space-md);
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   border: none;
   background: var(--color-background-secondary);
@@ -382,15 +382,7 @@ onUnmounted(() => {
 }
 
 .panel__close:hover {
-  background: var(--color-border);
-}
-
-/* Mobile: enlarge the close to a 44px touch target. */
-@media (max-width: 800px) {
-  .panel__close {
-    width: 44px;
-    height: 44px;
-  }
+  background: rgba(0, 0, 0, 0.04);
 }
 
 /* Hotel hero image */

@@ -177,15 +177,7 @@ function getTitle(dealId: string): string {
 }
 
 .panel__close:hover {
-  background: var(--color-border);
-}
-
-/* Mobile: enlarge the close to a 44px touch target. */
-@media (max-width: 800px) {
-  .panel__close {
-    width: 44px;
-    height: 44px;
-  }
+  background: rgba(0, 0, 0, 0.04);
 }
 
 .panel__body {

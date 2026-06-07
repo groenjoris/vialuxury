@@ -537,7 +537,7 @@ function pickWho(opt: { adults: number; rooms: number }) {
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  border: 1px solid var(--color-border-light, #ececec);
+  border: none;
   background: #fff;
   display: inline-flex;
   align-items: center;

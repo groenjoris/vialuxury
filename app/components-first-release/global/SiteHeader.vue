@@ -4256,15 +4256,13 @@ function handleSelectHotelInPopup(slug: string) {
 .menu-panel__close:hover {
   background: var(--color-border);
 }
-/* Mobile: white fill + border like the search modal's close. */
+/* Mobile: white fill, no border, subtle dark hover. */
 @media (max-width: 800px) {
   .menu-panel__close {
-    border: 1px solid var(--color-border-light, #ececec);
     background: #fff;
   }
   .menu-panel__close:hover {
     background: rgba(0, 0, 0, 0.04);
-    border-color: var(--color-border-light, #ececec);
   }
 }
 
