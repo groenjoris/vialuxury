@@ -81,10 +81,6 @@
           class="deal-card-v2__label"
         />
       </div>
-      <!-- Scarcity sticker — bottom-right of the photo. Same chip look as
-           the amenity stickers (solid black tile, Basis Grotesque white
-           text) but ~half the size. Only shown when fewer than 4 left. -->
-      <span v-if="roomsLeft < 4 && !isMismatch && !unavailable" class="deal-card-v2__rooms-sticker">Nog {{ roomsLeft }} beschikbaar</span>
       <button
         type="button"
         class="deal-card-v2__favorite"
@@ -143,6 +139,9 @@
                 <span class="deal-card-v2__include-text">{{ item }}</span>
               </span>
             </div>
+            <!-- Scarcity sticker — below the checkmarks, left-aligned with them
+                 (off the photo so it never collides with a label sticker). -->
+            <span v-if="roomsLeft < 4 && !isMismatch && !unavailable" class="deal-card-v2__rooms-sticker">Nog {{ roomsLeft }} beschikbaar</span>
           </div>
 
           <!-- GRID ONLY: meta + price-row inline below includes -->
@@ -234,13 +233,15 @@
             <NuxtLink :to="dealHref" :target="linkTarget" rel="noopener" class="deal-card-v2__cta deal-card-v2__cta--full">
               Bekijk
             </NuxtLink>
-            <!-- German-only microcopy below the price + button row. -->
-            <p v-if="isGerman" class="deal-card-v2__max-discount">
-              {{ t('deal.cardMaxDiscount') }}
-            </p>
           </template>
         </div>
       </div>
+
+      <!-- German-only microcopy — list view shows it full-width across the
+           bottom of the white content area (below both columns). -->
+      <p v-if="!gridMode && isGerman" class="deal-card-v2__max-discount deal-card-v2__max-discount--list">
+        {{ t('deal.cardMaxDiscount') }}
+      </p>
     </div>
 
     <!-- Sibling-deals bar — light grey, single underlined link.
@@ -766,11 +767,12 @@ const includesBullets = computed<string[]>(() => {
    panel-sticker look (transparent-black tile, Recoleta white text) but
    ~2× smaller: font 11 vs 18, padding 4×8 vs 8×14, radius 5 vs 8. */
 .deal-card-v2__rooms-sticker {
-  position: absolute;
-  right: var(--space-md);
-  bottom: var(--space-md);
-  z-index: 2;
-  pointer-events: none;
+  /* Sits in the flow below the checkmarks, left-aligned with them (off the
+     photo so it never collides with a label sticker). */
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  margin-top: 8px;
   background: var(--color-dark);
   color: #fff;
   font-family: var(--font-body);
@@ -1315,6 +1317,13 @@ const includesBullets = computed<string[]>(() => {
   line-height: 1.4;
   color: var(--color-text-secondary);
   text-align: left;
+}
+/* List view: span the full width of the white content area, below both
+   columns, separated by a hairline. */
+.deal-card-v2__max-discount--list {
+  margin-top: var(--space-sm);
+  padding-top: var(--space-sm);
+  border-top: 1px solid var(--color-border-light);
 }
 
 /* Mobile: bump the deal title + includes copy, align price row
