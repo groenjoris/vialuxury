@@ -35,7 +35,7 @@
             {{ t('common.allPhotos') }}
           </button>
           <button type="button" class="pg-iconbtn pg-mphoto__close" :aria-label="t('common.close')" @click="closePhoto">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12" /></svg>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12" /></svg>
           </button>
           <div ref="mTrack" class="pg-mphoto__track" data-scroll-lock-allow="true" @scroll.passive="onTrackScroll">
             <div v-for="img in ordered" :key="img.id" class="pg-mphoto__slide">
@@ -381,6 +381,9 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   top: calc(10px + env(safe-area-inset-top, 0));
   right: 12px;
   z-index: 2;
+  /* Same 36px size as the other closing crosses (stays black). */
+  width: 36px;
+  height: 36px;
   /* Same stroke + translucent-dark style as the "Alle foto's" pill, so the
      close cross stays visible on any photo. */
   background: rgba(0, 0, 0, 0.55);
@@ -492,6 +495,8 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 }
 .pg-d__back:hover { background: rgba(255, 255, 255, 0.12); border-color: rgba(255, 255, 255, 0.3); }
 .pg-d__header .pg-iconbtn {
+  width: 36px;
+  height: 36px;
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.18);
   color: #fff;

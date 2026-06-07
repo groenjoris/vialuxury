@@ -254,11 +254,15 @@
 [data-fr-variant="6"] .desc-modal__close:hover {
   background: var(--color-border);
 }
-/* Mobile: enlarge the close to a 44px touch target. */
+/* Mobile: match the search modal's close — white fill + border (desktop keeps
+   the grey-fill reference style). */
 @media (max-width: 800px) {
   [data-fr-variant="6"] .desc-modal__close {
-    width: 44px;
-    height: 44px;
+    border: 1px solid var(--color-border-light, #ececec);
+    background: #fff;
+  }
+  [data-fr-variant="6"] .desc-modal__close:hover {
+    background: rgba(0, 0, 0, 0.04);
   }
 }
 /* Body: right column, the ONLY scrolling area on desktop. */

@@ -4239,21 +4239,33 @@ function handleSelectHotelInPopup(slug: string) {
   right: 24px;
   top: 50%;
   transform: translateY(-50%);
-  width: 44px;
-  height: 44px;
-  border-radius: 999px;
-  border: 1px solid #f0f0f0;
-  background: #ffffff;
+  /* Consistent close cross — desktop matches the "Lees meer" modal (grey
+     fill, no border); mobile matches the search modal (white + border). */
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: var(--color-background-secondary);
   display: inline-flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  color: #0e0e0c;
+  color: var(--color-text-primary);
   transition: background 120ms ease, border-color 120ms ease;
 }
 .menu-panel__close:hover {
-  background: #f7f7f7;
-  border-color: #e2e2e2;
+  background: var(--color-border);
+}
+/* Mobile: white fill + border like the search modal's close. */
+@media (max-width: 800px) {
+  .menu-panel__close {
+    border: 1px solid var(--color-border-light, #ececec);
+    background: #fff;
+  }
+  .menu-panel__close:hover {
+    background: rgba(0, 0, 0, 0.04);
+    border-color: var(--color-border-light, #ececec);
+  }
 }
 
 /* Scrollable body */
