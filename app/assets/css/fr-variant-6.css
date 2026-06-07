@@ -298,7 +298,18 @@
     position: sticky;
     top: 0;
     z-index: 5;
+    /* Keep the header a single row + pin the close to the top-right. */
+    align-items: flex-start;
     border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  }
+  /* Deal name truncates to one line so the header stays compact and the
+     close cross sits in the top-right corner. */
+  [data-fr-variant="6"] .desc-modal__title {
+    flex: 1;
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
   [data-fr-variant="6"] .desc-modal__photo {
     display: block;
