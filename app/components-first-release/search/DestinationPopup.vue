@@ -155,7 +155,7 @@
               v-for="theme in themes"
               :key="theme.id"
               class="dest-chip dest-chip--theme"
-              :class="{ 'dest-chip--selected': selectedThemes.includes(theme.id) }"
+              :class="{ 'dest-chip--selected': !singleSelect && selectedThemes.includes(theme.id) }"
               @click="$emit('toggle-theme', theme.id)"
             >
               <span
