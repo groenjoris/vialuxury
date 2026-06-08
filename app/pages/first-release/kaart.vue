@@ -212,7 +212,7 @@ const initialFocus = computed<{ lat: number; lng: number; zoom?: number } | null
     } else if (entry.type === 'city') {
       const c = CITY_COORDS[entry.key]
       if (c) return { ...c, zoom: 12 }
-    } else if (entry.type === 'destination') {
+    } else if (entry.type === 'destination' && !isMobile.value) {
       const p = PROVINCE_COORDS[entry.key]
       if (p) return { lat: p.lat, lng: p.lng, zoom: p.zoom }
     }
@@ -228,7 +228,7 @@ const initialFocus = computed<{ lat: number; lng: number; zoom?: number } | null
     const c = CITY_COORDS[selectedCities.value[0].name]
     if (c) return { ...c, zoom: 12 }
   }
-  if (selectedDestinations.value.length > 0) {
+  if (selectedDestinations.value.length > 0 && !isMobile.value) {
     const p = PROVINCE_COORDS[selectedDestinations.value[0]]
     if (p) return { lat: p.lat, lng: p.lng, zoom: p.zoom }
   }
