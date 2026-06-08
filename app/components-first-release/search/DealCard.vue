@@ -93,7 +93,8 @@
           <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
         </svg>
       </button>
-      <!-- GRID ONLY: scarcity sticker in the photo's lower-left corner.
+      <!-- GRID ONLY: scarcity sticker in the photo's lower-RIGHT corner
+           (lower-left is reserved for the special-deal labels).
            (List view shows it below the checkmarks instead — see below.) -->
       <span
         v-if="gridMode && roomsLeft < 4 && !isMismatch && !unavailable"
@@ -793,7 +794,7 @@ const includesBullets = computed<string[]>(() => {
 /* Grid view: lift the same chip onto the photo's lower-left corner. */
 .deal-card-v2__rooms-sticker--photo {
   position: absolute;
-  left: var(--space-md);
+  right: var(--space-md);
   bottom: var(--space-md);
   z-index: 2;
   margin-top: 0;
