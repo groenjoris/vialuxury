@@ -210,7 +210,7 @@ function resetAll() {
   border-radius: 0;
   padding: 0 2px;
   height: 32px;
-  color: var(--color-dark);
+  color: var(--color-text-link);
   text-decoration: underline;
   text-underline-offset: 3px;
   transition: color var(--transition-fast);

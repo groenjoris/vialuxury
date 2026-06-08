@@ -173,6 +173,7 @@ function nextSlide() {
   grid-row: 1 / -1;
   position: relative;
   cursor: pointer;
+  overflow: hidden;
 }
 .hero-gallery__cell { cursor: pointer; }
 .hero-gallery__slide { cursor: pointer; }
@@ -182,6 +183,10 @@ function nextSlide() {
   height: 100%;
   object-fit: cover;
   display: block;
+  transition: transform 0.4s ease;
+}
+.hero-gallery__main:hover .hero-gallery__hero-img {
+  transform: scale(1.05);
 }
 
 /* Special-deal labels — bottom-left of the hero, matching the search card. */
@@ -237,6 +242,10 @@ function nextSlide() {
   height: 100%;
   object-fit: cover;
   display: block;
+  transition: transform 0.4s ease;
+}
+.hero-gallery__cell:hover .hero-gallery__img {
+  transform: scale(1.05);
 }
 
 /* Same size + style as the photo-viewer "Alle foto's" pill — but NO stroke,

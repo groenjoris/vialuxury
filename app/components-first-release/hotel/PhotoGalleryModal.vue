@@ -298,6 +298,10 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   width: 100%;
   height: auto;
   display: block;
+  transition: transform 0.4s ease;
+}
+.pg-thumb:hover img {
+  transform: scale(1.05);
 }
 
 /* ───────── Mobile grid overview ───────── */

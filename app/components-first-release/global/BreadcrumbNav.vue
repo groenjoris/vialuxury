@@ -65,9 +65,8 @@ defineProps<{
 }
 
 .breadcrumb__link {
-  color: var(--color-dark);
-  text-decoration: underline;
-  text-underline-offset: 3px;
+  color: var(--color-text-link);
+  text-decoration: none;
 }
 
 .breadcrumb__link:hover {

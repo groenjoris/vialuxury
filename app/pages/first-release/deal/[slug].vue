@@ -119,9 +119,8 @@
               />
             </div>
 
-            <!-- Before date selection: disabled button -->
             <template v-if="!store.checkInDate">
-              <button class="btn btn-primary sidebar__book" disabled>{{ t('deal.bookNow') }}</button>
+              <button class="btn btn-primary sidebar__book">{{ t('deal.bookNow') }}</button>
               <FirstReleaseSidebarPaymentLogos />
             </template>
 
@@ -545,9 +544,8 @@
             />
           </div>
 
-          <!-- Before date selection: disabled button -->
           <template v-if="!store.checkInDate">
-            <button class="btn btn-primary sidebar__book" disabled>{{ t('deal.bookNow') }}</button>
+            <button class="btn btn-primary sidebar__book">{{ t('deal.bookNow') }}</button>
             <FirstReleaseSidebarPaymentLogos />
           </template>
 
@@ -1615,6 +1613,7 @@ onMounted(() => {
 .deal-page__share-wrap { position: relative; }
 .deal-page__action {
   display: inline-flex;
+
   align-items: center;
   gap: 7px;
   padding: 4px 4px;
@@ -1624,7 +1623,7 @@ onMounted(() => {
   font-family: var(--font-body);
   /* Match the anchor-navigation tabs (.deal-page__tab = 14px). */
   font-size: 14px;
-  color: var(--color-dark);
+  color: var(--color-text-link);
 }
 /* Delen / Opslaan: house-black, brand-hover orange on hover (no underline). */
 .deal-page__action:hover { color: var(--color-primary-hover); }
@@ -1775,7 +1774,7 @@ onMounted(() => {
 .sidebar__date-label { font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted); letter-spacing: 0.3px; }
 .sidebar__date-val { font-size: 14px; font-weight: 500; }
 .sidebar__date-arrow { color: var(--color-text-muted); margin: 0 var(--space-xs); }
-.sidebar__date-clear { margin-left: auto; font-size: 14px; color: var(--color-dark); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; background: none; border: none; transition: color var(--transition-fast); }
+.sidebar__date-clear { margin-left: auto; font-size: 14px; color: var(--color-text-link); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; background: none; border: none; transition: color var(--transition-fast); }
 .sidebar__date-clear:hover { color: var(--color-primary-hover); }
 /* Price breakdown */
 .sidebar__breakdown { margin-bottom: var(--space-md); display: flex; flex-direction: column; gap: 6px; }
@@ -1995,7 +1994,7 @@ onMounted(() => {
 .deal-page__tab {
   font-size: 14px;
   font-weight: 500;
-  color: var(--color-dark);
+  color: var(--color-text-link);
   /* Read as links — house-black, underlined, brand-hover orange on hover
      (unified "dark underlined link" style). */
   text-decoration: underline;
@@ -2042,7 +2041,7 @@ onMounted(() => {
    its underline + bumps weight, so users can see where they are. */
 .deal-page__tabs--in-bar .deal-page__tab--active {
   text-decoration: none;
-  color: var(--color-dark);
+  color: var(--color-text-link);
   font-weight: 700;
 }
 
@@ -2074,7 +2073,7 @@ onMounted(() => {
   font-size: 15px;
   font-weight: 600;
   text-align: left;
-  color: var(--color-dark);
+  color: var(--color-text-link);
   background: none;
   border: none;
   cursor: pointer;

@@ -4,14 +4,6 @@ import type { Locale } from '~/i18n/types'
 export const useFirstReleaseLocaleStore = defineStore('first-release-locale', () => {
   const locale = ref<Locale>('nl')
 
-  // Restore from localStorage on client
-  if (import.meta.client) {
-    const saved = localStorage.getItem('vialuxury-locale') as Locale | null
-    if (saved === 'en' || saved === 'nl' || saved === 'de') {
-      locale.value = saved
-    }
-  }
-
   function setLocale(l: Locale) {
     locale.value = l
     if (import.meta.client) {
@@ -20,5 +12,14 @@ export const useFirstReleaseLocaleStore = defineStore('first-release-locale', ()
     }
   }
 
-  return { locale, setLocale }
+  function restoreLocale() {
+    if (!import.meta.client) return
+    const saved = localStorage.getItem('vialuxury-locale') as Locale | null
+    if (saved === 'en' || saved === 'nl' || saved === 'de') {
+      locale.value = saved
+      document.documentElement.lang = saved
+    }
+  }
+
+  return { locale, setLocale, restoreLocale }
 })

@@ -83,13 +83,6 @@
         </span>
       </button>
 
-      <!-- Submit button — two-line copy so the fields can be wider. -->
-      <button
-        class="search-bar__btn search-bar__btn--find-deals"
-        @click="handleChangeSearch"
-      >
-        <span class="search-bar__btn-text">Toon beschikbare<br />arrangementen</span>
-      </button>
     </div>
 
     <!-- Click-outside catcher (full-viewport). Doesn't host the popup
@@ -174,9 +167,6 @@ const {
   commitArrivalDate,
 } = useFirstReleaseSearchState()
 
-const emit = defineEmits<{
-  search: [params: { persons: number; rooms: number; duration: string; flexibility: number; date: string | null }]
-}>()
 
 const barRef = ref<HTMLElement | null>(null)
 const whenFieldRef = ref<HTMLElement | null>(null)
@@ -254,12 +244,17 @@ function closePopup() {
   if (activePopup.value === 'who') {
     setSearchGroup(group.value.adults + group.value.children.length, group.value.rooms)
   }
+  setArrivalDate(selectedDate.value)
+  commitArrivalDate()
+  setSelectedNights([...selectedDurations.value])
   activePopup.value = null
 }
 
 function clearWhen() {
   selectedDate.value = null
   localFlexible.value = false
+  setArrivalDate(null)
+  commitArrivalDate()
 }
 
 /** Date picked from the When popup — save AND close in one tap.
@@ -279,7 +274,6 @@ function clearHowLong() {
 // --- WHEN / DURATION state ---
 const calMonth = ref({ year: new Date().getFullYear(), month: new Date().getMonth() })
 const selectedDate = ref<string | null>(globalArrivalDate.value)
-watch(selectedDate, (v) => { if (v !== globalArrivalDate.value) setArrivalDate(v) })
 watch(globalArrivalDate, (v) => { if (v !== selectedDate.value) selectedDate.value = v })
 const selectedDurations = ref<string[]>([...globalNights.value])
 /** "Ik ben flexibel" tickbox inside the date popup. Local-only here —
@@ -298,14 +292,12 @@ function onToggleNight(value: string) {
   if (i === -1) selectedDurations.value.push(value)
   else selectedDurations.value.splice(i, 1)
   if (selectedDurations.value.length > 0) anyDuration.value = false
-  setSelectedNights([...selectedDurations.value])
 }
 
 function setAnyDuration(next: boolean) {
   anyDuration.value = next
   if (next) {
     selectedDurations.value = []
-    setSelectedNights([])
   }
 }
 
@@ -423,21 +415,6 @@ function pickWhoMvp(opt: { adults: number; rooms: number }) {
 
 defineExpose({ totalPersons })
 
-function handleChangeSearch() {
-  closePopup()
-  // Date + nights are already written to the global LIVE state as the user
-  // edits; commit the date so the snapshot read by /search & /kaart filters
-  // and the MobileSearchSummary reflects the hotel-page search too.
-  commitArrivalDate()
-  const dur = selectedDurations.value[0] || ''
-  emit('search', {
-    persons: totalPersons.value,
-    rooms: group.value.rooms,
-    duration: dur,
-    flexibility: 0,
-    date: selectedDate.value,
-  })
-}
 </script>
 
 <style scoped>
@@ -460,10 +437,7 @@ function handleChangeSearch() {
   height: auto;
   padding: 8px;
   position: relative;
-  /* Grey inset stroke + soft drop shadow, identical to SiteHeader's
-     `.site-header:not(.site-header--overlay) .search-bar` rule. */
-  box-shadow: inset 0 0 0 2px var(--color-border, #d4d4d4),
-              0 10px 24px rgba(0, 0, 0, 0.18);
+  box-shadow: inset 0 0 0 2px var(--color-border, #d4d4d4);
   gap: 0;
 }
 
@@ -591,35 +565,6 @@ function handleChangeSearch() {
   outline: none;
 }
 
-/* Two-line orange pill — narrower than the homepage's single-line button
-   so the fields next to it can breathe. */
-.search-bar__btn--find-deals {
-  background: var(--color-primary);
-  color: #fff;
-  height: 60px;
-  width: auto;
-  padding: 0 20px;
-  border-radius: 4px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--font-body);
-  font-size: 13px;
-  font-weight: 700;
-  line-height: 1.2;
-  letter-spacing: -0.07px;
-  margin-left: 12px;
-  border: none;
-  cursor: pointer;
-  text-align: center;
-  transition: background var(--transition-fast);
-}
-
-.search-bar__btn-text { display: inline-block; }
-
-.search-bar__btn--find-deals:hover {
-  background: var(--color-primary-hover);
-}
 
 /* ===== POPUPS ===== */
 .hsb-overlay {
@@ -692,6 +637,5 @@ function handleChangeSearch() {
   .search-bar { flex-direction: column; height: auto; padding: 6px; }
   .search-bar__field { width: 100%; height: 56px; padding: 0 14px; }
   .search-bar__divider { width: 100%; height: 1px; }
-  .search-bar__btn--find-deals { margin-left: 0; width: 100%; margin-top: 6px; }
 }
 </style>

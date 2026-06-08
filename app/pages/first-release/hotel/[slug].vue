@@ -130,7 +130,7 @@
              team avatars below. Mirrors `.search-page__header` styling. -->
         <div class="hotel-page__deals-header">
           <h2 class="hotel-page__deals-title">
-            {{ availableDealCount }} beschikbare arrangementen bij dit hotel
+            Arrangementen bij dit hotel
           </h2>
           <p class="hotel-page__deals-handwritten">
             Samengesteld door het ViaLuxury Team
@@ -160,9 +160,13 @@
         <!-- Mid-page search bar — desktop only. Mobile users edit
              persons / arrival via the SiteHeader's search modal. -->
         <div v-if="!isMobile" class="hotel-page__deals-search">
-          <FirstReleaseHotelSearchBar ref="searchBarRef" @search="handleSearchChange" />
+          <p class="hotel-page__deals-search-subtitle">Check beschikbaarheid voor je datums of reisgezelschap</p>
+          <FirstReleaseHotelSearchBar ref="searchBarRef" />
         </div>
-        <div class="deals__grid">
+        <div class="deals__grid" :class="{ 'deals__grid--loading': dealsLoading }">
+          <div v-if="dealsLoading" class="deals__loader">
+            <span class="deals__loader-spinner"></span>
+          </div>
           <FirstReleaseDealCard
             v-for="card in orderedDealCards"
             :key="card.deal.id"
@@ -176,6 +180,7 @@
             :nights-mismatch="card.nightsMismatch"
             :date-mismatch="card.dateMismatch"
             :ignore-arrival="card.dateMismatch"
+            :mismatch-messages="buildMismatchMessages(card)"
           />
         </div>
       </section>
@@ -448,7 +453,6 @@ const {
   selectedNights: liveNights,
   selectedFlexibility: liveFlexibility,
 } = useFirstReleaseSearchState()
-const searchPersons = ref(globalPersons.value || 2)
 const searchBarRef = ref<InstanceType<typeof import('~/components/hotel/HotelSearchBar.vue').default> | null>(null)
 
 useHead({ title: `${hotel.value.name} | ViaLuxury` })
@@ -460,13 +464,6 @@ const dealsHeading = computed(() => t('hotel.availableDeals'))
 // the same five Experience Makers (each with a real photo).
 const hoveredMember = ref<string | null>(null)
 
-function handleSearchChange(params: { persons: number; rooms: number; duration: string; flexibility: number; date: string | null }) {
-  searchPersons.value = params.persons
-  // Persons + rooms ARE shared with the rest of the site (per spec). Date +
-  // duration are written to the shared state by the bar itself (setArrivalDate
-  // / setSelectedNights), so the card split below reacts immediately.
-  setSearchGroup(params.persons, params.rooms)
-}
 
 /** Does the deal's length match the active duration filter? Empty filter =
  *  every length qualifies. '5+' covers 5 or more nights. */
@@ -489,6 +486,34 @@ function isDateMismatch(dealId: string): boolean {
  *  EVERY arrangement on screen and greys out the ones that don't fit the
  *  current Wanneer / Hoelang — so the list reacts immediately without items
  *  disappearing. */
+/** Human-readable label for the active nights filter, e.g. "2 nachten"
+ *  or "2 of 4 nachten". */
+const nightsFilterLabel = computed(() => {
+  const ns = liveNights.value
+  if (!ns || ns.length === 0) return ''
+  const labels = ns.map(n => n === '5+' ? '5+' : n)
+  if (labels.length === 1) return `${labels[0]} ${labels[0] === '1' ? 'nacht' : 'nachten'}`
+  return `${labels.slice(0, -1).join(', ')} of ${labels[labels.length - 1]} nachten`
+})
+
+/** "13 juni" style short date for the mismatch message. */
+function formatDateLabel(dateStr: string): string {
+  const [, m, d] = dateStr.split('-')
+  const months = ['januari', 'februari', 'maart', 'april', 'mei', 'juni', 'juli', 'augustus', 'september', 'oktober', 'november', 'december']
+  return `${parseInt(d, 10)} ${months[parseInt(m, 10) - 1] || m}`
+}
+
+function buildMismatchMessages(card: { deal: { nights: number; id: string }; nightsMismatch: boolean; dateMismatch: boolean }): string[] {
+  const msgs: string[] = []
+  if (card.dateMismatch && liveArrivalDate.value) {
+    msgs.push(`Niet beschikbaar op ${formatDateLabel(liveArrivalDate.value)}`)
+  }
+  if (card.nightsMismatch && nightsFilterLabel.value) {
+    msgs.push(`Niet beschikbaar voor ${nightsFilterLabel.value}`)
+  }
+  return msgs
+}
+
 const orderedDealCards = computed(() => {
   const annotated = dealCards.value.map(c => ({
     ...c,
@@ -496,14 +521,27 @@ const orderedDealCards = computed(() => {
     dateMismatch: isDateMismatch(c.deal.id),
   }))
   const available = annotated.filter(c => !c.nightsMismatch && !c.dateMismatch)
-  const unavailable = annotated.filter(c => c.nightsMismatch || c.dateMismatch)
+  const unavailable = annotated
+    .filter(c => c.nightsMismatch || c.dateMismatch)
+    .sort((a, b) => {
+      const aMisses = (a.nightsMismatch ? 1 : 0) + (a.dateMismatch ? 1 : 0)
+      const bMisses = (b.nightsMismatch ? 1 : 0) + (b.dateMismatch ? 1 : 0)
+      return aMisses - bMisses
+    })
   return [...available, ...unavailable]
 })
 
-/** Count of arrangements that actually match the current search. */
-const availableDealCount = computed(
-  () => orderedDealCards.value.filter(c => !c.nightsMismatch && !c.dateMismatch).length,
+/** 1-second loading shimmer when the user changes search filters. */
+const dealsLoading = ref(false)
+let dealsLoadingTimer: ReturnType<typeof setTimeout> | null = null
+const _filterFingerprint = computed(() =>
+  `${liveArrivalDate.value}|${[...liveNights.value].sort().join(',')}|${liveFlexibility.value}|${globalPersons.value}|${globalRooms.value}`,
 )
+watch(_filterFingerprint, () => {
+  dealsLoading.value = true
+  if (dealsLoadingTimer) clearTimeout(dealsLoadingTimer)
+  dealsLoadingTimer = setTimeout(() => { dealsLoading.value = false }, 1000)
+})
 
 const breadcrumbs = computed(() => [
   { label: t('search.home'), href: '/' },
@@ -725,7 +763,7 @@ onBeforeUnmount(() => {
 .hotel-page__tab {
   font-size: 14px;
   font-weight: 500;
-  color: var(--color-dark);
+  color: var(--color-text-link);
   text-decoration: underline;
   text-underline-offset: 3px;
   padding-bottom: var(--space-sm);
@@ -745,7 +783,7 @@ onBeforeUnmount(() => {
 }
 .hotel-page__tabs--in-bar .hotel-page__tab--active {
   text-decoration: none;
-  color: var(--color-dark);
+  color: var(--color-text-link);
   font-weight: 700;
 }
 
@@ -813,9 +851,9 @@ onBeforeUnmount(() => {
   cursor: pointer;
   font-family: var(--font-body);
   font-size: 14px;
-  color: var(--color-dark);
+  color: var(--color-text-link);
 }
-/* Delen / Opslaan: house-black, brand-hover orange on hover (no underline). */
+/* Delen / Opslaan: softer grey, brand-hover orange on hover (no underline). */
 .hotel-page__action:hover { color: var(--color-primary-hover); }
 .hotel-page__action-heart { width: 18px; height: 18px; }
 .hotel-page__action-label { font-size: 14px; }
@@ -880,8 +918,15 @@ onBeforeUnmount(() => {
 }
 .hotel-page__deals-search {
   display: flex;
-  justify-content: flex-start;
+  flex-direction: column;
+  align-items: flex-start;
   margin: var(--space-md) 0 var(--space-lg);
+}
+.hotel-page__deals-search-subtitle {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-text-secondary);
+  margin: 0 0 var(--space-sm);
 }
 .hotel-page__deals-search .hotel-search-bar { width: 75%; max-width: none; }
 .hotel-page__deals-search .hotel-search-bar__fields { max-width: none; }
@@ -911,7 +956,38 @@ onBeforeUnmount(() => {
 .team-avatars__tooltip-score { display: block; font-size: 12px; font-weight: 600; color: var(--color-text-primary); }
 .tooltip-fade-enter-active, .tooltip-fade-leave-active { transition: opacity 150ms ease; }
 .tooltip-fade-enter-from, .tooltip-fade-leave-to { opacity: 0; }
-.deals__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-lg); margin-top: var(--space-lg); }
+.deals__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-lg);
+  margin-top: var(--space-lg);
+  position: relative;
+  transition: opacity 0.3s ease;
+}
+.deals__grid--loading > :not(.deals__loader) {
+  opacity: 0.4;
+  pointer-events: none;
+}
+.deals__loader {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 80px;
+  z-index: 2;
+}
+.deals__loader-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--color-border-light, #e5e5e5);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: deals-spin 0.8s linear infinite;
+}
+@keyframes deals-spin {
+  to { transform: rotate(360deg); }
+}
 @media (max-width: 1023px) { .deals__grid { grid-template-columns: 1fr 1fr; } }
 @media (max-width: 640px)  { .deals__grid { grid-template-columns: 1fr; } }
 
@@ -995,7 +1071,7 @@ onBeforeUnmount(() => {
   font-size: 15px;
   font-weight: 600;
   text-align: left;
-  color: var(--color-dark);
+  color: var(--color-text-link);
   background: none;
   border: none;
   cursor: pointer;

@@ -1499,7 +1499,7 @@ onMounted(() => {
   padding: 0;
   background: none;
   border: none;
-  color: var(--color-dark);
+  color: var(--color-text-link);
   font-family: var(--font-body);
   font-size: 15px;
   font-weight: 500;

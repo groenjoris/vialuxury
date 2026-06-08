@@ -69,7 +69,7 @@ defineEmits<{
   font-family: var(--font-body);
   font-size: 13px;
   font-weight: 600;
-  color: var(--color-dark);
+  color: var(--color-text-link);
   text-decoration: underline;
   text-underline-offset: 3px;
   cursor: pointer;

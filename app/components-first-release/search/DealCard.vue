@@ -7,6 +7,7 @@
       'deal-card-v2--wide': wide,
       'deal-card-v2--unavailable-on-date': dateMismatch || nightsMismatch,
     }"
+    @click="onCardClick"
   >
     <!-- Image area (top in grid, left in list). Grid mode renders a small
          carousel (up to 5 hotel photos) with prev/next arrows that fade
@@ -24,10 +25,9 @@
         @click.stop
       />
       <img :src="displayedImage" :alt="hotel?.name || localized(deal.title)" loading="lazy" />
-      <!-- Deal-page sidepanel cards lock to a single deterministic
-           photo and suppress the carousel arrows. Map sidepanel keeps
-           the carousel + arrows. -->
-      <template v-if="gridMode && carouselImages.length > 1 && !(panelMode && !mapMode)">
+      <!-- Sidepanel cards (deal-page and map) lock to a single
+           deterministic photo and suppress the carousel arrows. -->
+      <template v-if="gridMode && carouselImages.length > 1 && !panelMode">
         <button
           type="button"
           class="deal-card-v2__carousel-nav deal-card-v2__carousel-nav--prev"
@@ -157,10 +157,8 @@
               <p class="deal-card-v2__unavailable">Niet beschikbaar voor jouw zoekopdracht</p>
             </template>
             <template v-else>
-              <!-- "Niet beschikbaar op …" only when the chosen date itself
-                   doesn't work for this deal (regardless of nights). -->
               <p
-                v-if="dateMismatch"
+                v-if="dateMismatch && !(mismatchMessages && mismatchMessages.length)"
                 class="deal-card-v2__date-line deal-card-v2__date-line--unavailable"
               >{{ unavailableDateLabel }}</p>
               <p
@@ -168,29 +166,12 @@
                 class="deal-card-v2__date-line"
               >{{ dateRangeLabel }}</p>
 
-              <!-- Meta block: 2-line variant when the nights don't match
-                   the active filter ("Arrangement voor X nachten" /
-                   "X personen"). The single-line variant lives INSIDE
-                   the grid below in the "meta" row, sitting directly
-                   above the price line. -->
-              <template v-if="nightsMismatch">
-                <p class="deal-card-v2__meta-line">
-                  Arrangement voor {{ deal.nights }} {{ deal.nights === 1 ? 'nacht' : 'nachten' }}
-                </p>
-                <p class="deal-card-v2__meta-line deal-card-v2__meta-line--secondary">
-                  {{ PRICED_PERSONS }} {{ PRICED_PERSONS === 1 ? 'persoon' : 'personen' }}
-                </p>
-              </template>
+              <div v-if="mismatchMessages && mismatchMessages.length" class="deal-card-v2__mismatch-messages">
+                <p v-for="msg in mismatchMessages" :key="msg" class="deal-card-v2__mismatch-msg">{{ msg }}</p>
+              </div>
 
-              <!-- STRUCTURAL: 2x2 CSS Grid. Meta in row 1 (left),
-                   price in row 2 (left), CTA spans both rows (right).
-                   `align-self: end` on every item pins their BOX
-                   bottoms to the grid's bottom edge — CTA bottom
-                   ALWAYS matches price bottom. See CSS rule for the
-                   full structural-rule note. -->
               <div class="deal-card-v2__grid-price-row">
                 <p
-                  v-if="!nightsMismatch"
                   class="deal-card-v2__meta-line"
                 >{{ PRICED_PERSONS }} {{ PRICED_PERSONS === 1 ? 'persoon' : 'personen' }}, {{ deal.nights }} {{ deal.nights === 1 ? 'nacht' : 'nachten' }}</p>
                 <p class="deal-card-v2__price-line">
@@ -328,9 +309,8 @@ const props = defineProps<{
    *  date-range / availability lines + the side-panel CTA wording. */
   panelMode?: boolean
   /** Card is rendered inside the /kaart map sidepanel. When true the v6
-   *  deal-page tweaks (special "X nachten met Y" title, single
-   *  deterministic photo, hidden carousel arrows, full-inclusion list)
-   *  are skipped so the map shows full original titles + photo carousel. */
+   *  deal-page tweaks (special "X nachten met Y" title, full-inclusion list)
+   *  are skipped so the map shows full original titles. */
   mapMode?: boolean
   /** Side-panel only: this deal can't be booked on the active arrival
    *  date (the deal's nights may still match the duration filter). */
@@ -341,6 +321,8 @@ const props = defineProps<{
   /** Override the default "Bekijk" CTA copy. Used for the featured card
    *  on /home which says "Bekijk arrangement" instead. */
   ctaLabel?: string
+  /** Red mismatch messages stacked above the meta line (hotel page). */
+  mismatchMessages?: string[]
 }>()
 
 defineEmits<{ 'view-siblings': [] }>()
@@ -401,9 +383,8 @@ const roomsLeft = computed<number>(() => roomsLeftForDeal(props.deal.id))
  *  panel mode each card picks a deterministic starting frame from the
  *  hotel's gallery so adjacent cards don't share the same photo. */
 const displayedImage = computed(() => {
-  // Deal-page sidepanel: deterministic single photo per deal (no
-  // carousel). Map sidepanel keeps the carousel (live `carouselIndex`).
-  if (props.panelMode && !props.mapMode && carouselImages.value.length > 1) {
+  // Sidepanel (deal-page + map): deterministic single photo per deal.
+  if (props.panelMode && carouselImages.value.length > 1) {
     const i = dealHash(props.deal.id) % carouselImages.value.length
     return carouselImages.value[i] || imageSrc.value
   }
@@ -479,6 +460,18 @@ function nextImage() {
   const n = carouselImages.value.length
   if (n < 2) return
   carouselIndex.value = (carouselIndex.value + 1) % n
+}
+
+const router = useRouter()
+function onCardClick(e: MouseEvent) {
+  const target = e.target as HTMLElement
+  if (target.closest('a, button, [role="button"]')) return
+  const href = props.dateMismatch ? mismatchHref.value : dealHref.value
+  if (linkTarget.value === '_blank') {
+    window.open(href, '_blank', 'noopener')
+  } else {
+    router.push(href)
+  }
 }
 
 /** Carry the arrival date AND persons/rooms through the URL so a new-tab
@@ -628,6 +621,7 @@ const includesBullets = computed<string[]>(() => {
   overflow: hidden;
   transition: box-shadow var(--transition-fast);
   position: relative;
+  cursor: pointer;
 }
 
 .deal-card-v2:hover {
@@ -963,8 +957,11 @@ const includesBullets = computed<string[]>(() => {
   font-weight: 700;
   line-height: 1.3;
   color: var(--color-text-primary);
-  /* Tighter bottom margin so the includes sit closer to the title */
   margin: var(--space-sm) 0 var(--space-sm);
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 /* ===== INCLUDES ===== */
@@ -1066,6 +1063,21 @@ const includesBullets = computed<string[]>(() => {
   text-decoration: line-through;
 }
 
+/* ===== MISMATCH MESSAGES ===== */
+.deal-card-v2__mismatch-messages {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 4px;
+}
+.deal-card-v2__mismatch-msg {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-error, #d32f2f);
+  line-height: 1.3;
+  margin: 0;
+}
+
 /* ===== CTA ===== */
 .deal-card-v2__cta {
   display: inline-flex;
@@ -1097,9 +1109,7 @@ const includesBullets = computed<string[]>(() => {
 .deal-card-v2__cta--two-line {
   flex-direction: column;
   line-height: 1.15;
-  /* Halved padding (was 6px 16px) so the unavailable CTA is more compact and
-     leaves room for the price info (ⓘ) icon beside it. */
-  padding: 3px 8px;
+  padding: 10px 8px;
   font-size: 13px;
   white-space: normal;
 }
@@ -1302,7 +1312,7 @@ const includesBullets = computed<string[]>(() => {
   padding: 0;
   font: inherit;
   font-weight: 600;
-  color: var(--color-dark);
+  color: var(--color-text-link);
   cursor: pointer;
   transition: color var(--transition-fast);
   /* Block-level so the entire bar's content area is one click target and

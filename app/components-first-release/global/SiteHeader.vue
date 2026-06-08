@@ -1074,16 +1074,14 @@ const languages = [
   { code: 'DE', label: 'Deutsch', flag: '\u{1F1E9}\u{1F1EA}' },
 ]
 
-/** Map persisted locale → switcher entry code so the trigger label
- *  matches what the store has restored from localStorage. */
-const localeCode = localeStore.locale === 'en'
-  ? 'EN'
-  : localeStore.locale === 'de'
-    ? 'DE'
-    : 'NL'
-const selectedLanguage = ref(
-  languages.find(l => l.code === localeCode) ?? languages[0],
-)
+const selectedLanguage = computed(() => {
+  const code = localeStore.locale === 'en'
+    ? 'EN'
+    : localeStore.locale === 'de'
+      ? 'DE'
+      : 'NL'
+  return languages.find(l => l.code === code) ?? languages[0]
+})
 const langDropdownOpen = ref(false)
 const langSwitcherRef = ref<HTMLElement | null>(null)
 
@@ -1092,14 +1090,12 @@ const phoneHoursOpen = ref(false)
 const phoneWrapRef = ref<HTMLElement | null>(null)
 
 function selectLanguage(lang: typeof languages[number]) {
-  selectedLanguage.value = lang
   langDropdownOpen.value = false
   if (lang.code === 'EN') {
     localeStore.setLocale('en')
   } else if (lang.code === 'DE') {
     localeStore.setLocale('de')
   } else {
-    // BE/FR not yet translated → fall back to NL.
     localeStore.setLocale('nl')
   }
 }
@@ -1282,6 +1278,7 @@ watch(activePopup, (val) => {
 })
 
 onMounted(() => {
+  localeStore.restoreLocale()
   window.addEventListener('resize', computePopupPosition)
   window.addEventListener('scroll', computePopupPosition, { passive: true, capture: true })
 })
