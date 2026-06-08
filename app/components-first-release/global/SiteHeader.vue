@@ -2861,12 +2861,23 @@ function handleSelectHotelInPopup(slug: string) {
 }
 
 .site-header__phone-number {
+  /* Explicit rest colour (was inheriting #fff): both parts rest at the
+     same "almost white" so the whole control brightens together on
+     hover — see the hover rule below. */
+  color: rgba(255, 255, 255, 0.85);
   font-weight: 700;
 }
 
-.site-header__phone:hover,
-.site-header__phone:focus-visible {
-  color: var(--color-primary);
+/* Hover: brighten BOTH the "Hulp nodig?" label and the number from
+   almost-white to full white — same treatment as the footer links
+   (no orange). Target the children explicitly because each carries its
+   own colour, so a colour change on the parent alone wouldn't reach
+   them. */
+.site-header__phone:hover .site-header__phone-label,
+.site-header__phone:hover .site-header__phone-number,
+.site-header__phone:focus-visible .site-header__phone-label,
+.site-header__phone:focus-visible .site-header__phone-number {
+  color: #fff;
 }
 
 /* Verticals switcher */

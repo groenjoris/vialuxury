@@ -847,7 +847,8 @@ function selectHotel(hotel: { name: string; slug: string }) {
 }
 
 .dest-chip:hover {
-  border-color: #1a1612;
+  /* Match the home-page pills: neutral grey fill, no stroke change. */
+  background: var(--color-border);
 }
 
 .dest-chip--selected {
