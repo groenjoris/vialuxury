@@ -3746,7 +3746,10 @@ function handleSelectHotelInPopup(slug: string) {
   padding: 6px 6px 6px 18px;
   border: 1px solid rgba(255, 255, 255, 0.5);
   border-radius: 10px;            /* rounded rectangle, NOT pill */
-  background: rgba(255, 255, 255, 0.97);
+  /* Fully opaque — on the solid (dark) header pages the slot's dark
+     strip sits behind the pill's top edge, and any translucency let
+     that black tint show through. */
+  background: #fff;
   color: var(--color-text-primary);
   font-family: inherit;
   font-size: 16px;

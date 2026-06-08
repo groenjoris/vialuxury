@@ -181,6 +181,15 @@
     background: linear-gradient(to bottom, #111 34px, #fff 34px) !important;
   }
 
+  /* V4/V5 deal + hotel pages use the 68-px trigger PILL, which these
+     variants pull down with `margin-top: -24` (vs the -34 the base
+     gradient assumes). That drops the pill's midline from 12 → 22 px
+     into the slot, so the dark strip must reach 22 px to still end at
+     the bar's midline (strip = padding-top 12 + |margin-top| shift). */
+  :is([data-fr-home-variant="4"], [data-fr-home-variant="5"]) :is(.deal-page, .hotel-page) .site-header__mobile-search--on-solid:not(.site-header__mobile-search--summary) {
+    background: linear-gradient(to bottom, var(--color-dark) 22px, #fff 22px) !important;
+  }
+
   /* ── V5 = V4 (minimal header + "Experience more" + pitch + bottom search
         bar; all the V4 rules above already match V5 via :is(4,5)), with TWO
         additions on the home hero:
