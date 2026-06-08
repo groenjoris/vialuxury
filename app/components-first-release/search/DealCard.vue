@@ -93,6 +93,12 @@
           <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
         </svg>
       </button>
+      <!-- GRID ONLY: scarcity sticker in the photo's lower-left corner.
+           (List view shows it below the checkmarks instead — see below.) -->
+      <span
+        v-if="gridMode && roomsLeft < 4 && !isMismatch && !unavailable"
+        class="deal-card-v2__rooms-sticker deal-card-v2__rooms-sticker--photo"
+      >Nog {{ roomsLeft }} beschikbaar</span>
     </div>
 
     <!-- Content (single column in grid, two columns in list) -->
@@ -139,9 +145,9 @@
                 <span class="deal-card-v2__include-text">{{ item }}</span>
               </span>
             </div>
-            <!-- Scarcity sticker — below the checkmarks, left-aligned with them
-                 (off the photo so it never collides with a label sticker). -->
-            <span v-if="roomsLeft < 4 && !isMismatch && !unavailable" class="deal-card-v2__rooms-sticker">Nog {{ roomsLeft }} beschikbaar</span>
+            <!-- LIST ONLY: scarcity sticker below the checkmarks, left-aligned
+                 with them. (Grid view shows it on the photo instead — above.) -->
+            <span v-if="!gridMode && roomsLeft < 4 && !isMismatch && !unavailable" class="deal-card-v2__rooms-sticker">Nog {{ roomsLeft }} beschikbaar</span>
           </div>
 
           <!-- GRID ONLY: meta + price-row inline below includes -->
@@ -782,6 +788,16 @@ const includesBullets = computed<string[]>(() => {
   padding: 4px 8px;
   border-radius: 5px;
   letter-spacing: 0.2px;
+}
+
+/* Grid view: lift the same chip onto the photo's lower-left corner. */
+.deal-card-v2__rooms-sticker--photo {
+  position: absolute;
+  left: var(--space-md);
+  bottom: var(--space-md);
+  z-index: 2;
+  margin-top: 0;
+  pointer-events: none;
 }
 
 .deal-card-v2__favorite {
