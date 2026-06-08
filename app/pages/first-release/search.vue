@@ -431,6 +431,7 @@ const {
   // /search so the search bar updates results immediately (see activeArrival).
   arrivalDate: liveArrivalDate, selectedFlexibility: liveFlexibility,
   setArrivalDate, restoreSearchSession,
+  addCity,
 } = useFirstReleaseSearchState()
 
 /** On /search the result filter reads LIVE arrival/flex so editing the search
@@ -464,7 +465,25 @@ onMounted(() => {
   // /search should reflect the *committed* search state. The deal
   // page's calendar will mirror this on its next visit.
   setArrivalDate(committedArrivalDate.value)
+  // Footer "city" deep-link (?city=amsterdam): apply it as a destination
+  // selection — same as picking the city in the destination field.
+  applyCityQuery()
 })
+
+/** Apply a `?city=<slug>` deep-link (from the footer) as a single-select
+ *  city filter: replaces any destination/city/hotel selection with this
+ *  city, so the field shows it and the results adjust. The result filter
+ *  matches on city NAME (case-insensitive); province is display-only. */
+function applyCityQuery() {
+  const slug = (route.query.city as string | undefined)?.toLowerCase()
+  if (!slug) return
+  const match = searchHotels.find(h => h.city.toLowerCase() === slug)
+  const city = match
+    ? { name: match.city, province: match.province ?? '' }
+    : { name: slug.charAt(0).toUpperCase() + slug.slice(1), province: '' }
+  clearDestinations()
+  addCity(city)
+}
 
 // Auto-clear after a tick when loading flips to true, so the spinner doesn't get stuck
 watch(loading, (val) => {
@@ -1124,6 +1143,9 @@ const sortedHotels = computed(() => {
 // Pin the originating deal at the top when arriving from /deal/<slug> via the
 // search-bar's "Vind deals" button. The query is `?from=<deal-permalink>`.
 const route = useRoute()
+// Re-apply the footer city deep-link when it changes while already on
+// /search (NuxtLink swaps the query without remounting the page).
+watch(() => route.query.city, () => applyCityQuery())
 const pinnedFromSlug = computed(() => {
   const q = route.query.from
   return typeof q === 'string' ? q : null
