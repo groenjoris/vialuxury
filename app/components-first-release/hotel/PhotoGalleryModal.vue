@@ -43,11 +43,11 @@
             </div>
           </div>
           <div class="pg-mphoto__controls">
-            <button type="button" class="pg-iconbtn pg-iconbtn--light" :disabled="index <= 0" aria-label="Vorige" @click="setIndex(index - 1)">
+            <button type="button" class="pg-iconbtn pg-iconbtn--light" aria-label="Vorige" @click="setIndex(index - 1)">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6" /></svg>
             </button>
             <span class="pg-counter">{{ index + 1 }} / {{ total }}</span>
-            <button type="button" class="pg-iconbtn pg-iconbtn--light" :disabled="index >= total - 1" aria-label="Volgende" @click="setIndex(index + 1)">
+            <button type="button" class="pg-iconbtn pg-iconbtn--light" aria-label="Volgende" @click="setIndex(index + 1)">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6" /></svg>
             </button>
           </div>
@@ -88,11 +88,11 @@
             <!-- Full photo + thumb-strip nav -->
             <div v-else class="pg-d__photo">
               <div class="pg-d__stage">
-                <button type="button" class="pg-iconbtn pg-iconbtn--light pg-d__arrow pg-d__arrow--prev" :disabled="index <= 0" aria-label="Vorige" @click="setIndex(index - 1)">
+                <button type="button" class="pg-iconbtn pg-iconbtn--light pg-d__arrow pg-d__arrow--prev" aria-label="Vorige" @click="setIndex(index - 1)">
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6" /></svg>
                 </button>
                 <img :src="ordered[index]?.url" :alt="ordered[index] ? localized(ordered[index].alt) : ''" class="pg-d__stage-img" />
-                <button type="button" class="pg-iconbtn pg-iconbtn--light pg-d__arrow pg-d__arrow--next" :disabled="index >= total - 1" aria-label="Volgende" @click="setIndex(index + 1)">
+                <button type="button" class="pg-iconbtn pg-iconbtn--light pg-d__arrow pg-d__arrow--next" aria-label="Volgende" @click="setIndex(index + 1)">
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6" /></svg>
                 </button>
                 <span class="pg-counter pg-d__counter">{{ index + 1 }} / {{ total }}</span>
@@ -172,7 +172,13 @@ function openPhoto(i: number) {
   emit('update:view', 'photo')
 }
 function setIndex(i: number) {
-  emit('update:index', Math.max(0, Math.min(total.value - 1, i)))
+  // Wrap around both ends: prev on the first photo lands on the last,
+  // next on the last lands on the first. On mobile the swipe-track sync
+  // (scrollTrackToIndex with behavior:'auto') makes the wrap an instant
+  // jump rather than a scroll across every photo.
+  const n = total.value
+  if (n <= 0) return
+  emit('update:index', ((i % n) + n) % n)
 }
 /** Mobile photo close (×): always close the whole gallery — the new
  *  "Alle foto's" button in the upper-left handles going back to the grid. */

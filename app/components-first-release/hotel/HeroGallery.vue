@@ -131,8 +131,14 @@ function prevSlide() {
   const el = trackRef.value
   if (!el) return
   // Wrap to the last photo when at the start, so you can browse backwards.
+  // Use an instant jump (not 'smooth') so it doesn't animate all the way
+  // across every photo to reach the end.
   if (activeIndex.value <= 0) {
-    el.scrollTo({ left: (carouselImages.value.length - 1) * el.clientWidth, behavior: 'smooth' })
+    const last = carouselImages.value.length - 1
+    el.scrollTo({ left: last * el.clientWidth, behavior: 'auto' })
+    // An instant programmatic scroll doesn't reliably fire a `scroll`
+    // event, so update the counter index ourselves.
+    activeIndex.value = last
   } else {
     el.scrollBy({ left: -el.clientWidth, behavior: 'smooth' })
   }
@@ -140,9 +146,12 @@ function prevSlide() {
 function nextSlide() {
   const el = trackRef.value
   if (!el) return
-  // Wrap to the first photo when at the end.
+  // Wrap to the first photo when at the end. Instant jump (not 'smooth')
+  // so it doesn't animate back across every photo.
   if (activeIndex.value >= carouselImages.value.length - 1) {
-    el.scrollTo({ left: 0, behavior: 'smooth' })
+    el.scrollTo({ left: 0, behavior: 'auto' })
+    // Instant scroll → set the counter index ourselves (no scroll event).
+    activeIndex.value = 0
   } else {
     el.scrollBy({ left: el.clientWidth, behavior: 'smooth' })
   }
