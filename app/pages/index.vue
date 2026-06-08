@@ -3,7 +3,7 @@
     <div class="start-screen__inner">
       <img src="/images/logo-vialuxury.svg" alt="ViaLuxury" class="start-screen__logo" />
 
-      <h1 class="start-screen__title">Hotel First &amp; Variabel Reisgezelschap</h1>
+      <h1 class="start-screen__title">ViaLuxury Prototype</h1>
 
       <!-- First release — the production-bound "Hotel First" build the
            client has picked to pursue. No homepage-variant switcher. -->
@@ -212,7 +212,7 @@ function startNorthstarFromAd() {
 }
 
 useHead({
-  title: 'User test | ViaLuxury',
+  title: 'ViaLuxury Prototype',
 })
 definePageMeta({ layout: false })
 </script>
