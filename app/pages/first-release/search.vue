@@ -1499,7 +1499,7 @@ onMounted(() => {
   padding: 0;
   background: none;
   border: none;
-  color: var(--color-text-primary);
+  color: var(--color-dark);
   font-family: var(--font-body);
   font-size: 15px;
   font-weight: 500;
@@ -1509,7 +1509,7 @@ onMounted(() => {
 }
 
 .search-page__reset-link:hover {
-  color: var(--color-primary);
+  color: var(--color-primary-hover);
 }
 
 .search-page__no-results-suggest-title {

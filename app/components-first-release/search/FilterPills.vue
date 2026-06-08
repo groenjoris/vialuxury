@@ -210,15 +210,15 @@ function resetAll() {
   border-radius: 0;
   padding: 0 2px;
   height: 32px;
-  color: var(--color-text-secondary);
+  color: var(--color-dark);
   text-decoration: underline;
-  text-underline-offset: 2px;
+  text-underline-offset: 3px;
   transition: color var(--transition-fast);
 }
 .filter-pills__pill--reset:hover {
   background: none;
   border-color: transparent;
-  color: var(--color-text-primary);
+  color: var(--color-primary-hover);
 }
 .filter-pills__pill--reset .filter-pills__close,
 .filter-pills__pill--reset .filter-pills__trash {

@@ -65,12 +65,13 @@ defineProps<{
 }
 
 .breadcrumb__link {
-  color: var(--color-text-secondary);
-  text-decoration: none;
+  color: var(--color-dark);
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 .breadcrumb__link:hover {
-  color: var(--color-primary);
+  color: var(--color-primary-hover);
 }
 
 .breadcrumb__current {

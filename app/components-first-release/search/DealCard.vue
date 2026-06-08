@@ -1301,7 +1301,7 @@ const includesBullets = computed<string[]>(() => {
   padding: 0;
   font: inherit;
   font-weight: 600;
-  color: var(--color-text-secondary);
+  color: var(--color-dark);
   cursor: pointer;
   transition: color var(--transition-fast);
   /* Block-level so the entire bar's content area is one click target and
@@ -1310,12 +1310,12 @@ const includesBullets = computed<string[]>(() => {
   width: 100%;
   text-align: right;
   text-decoration: underline;
-  text-underline-offset: 2px;
+  text-underline-offset: 3px;
 }
-/* Hover: whole string (text + price) goes orange. */
+/* Hover: whole string (text + price) deepens to the brand hover orange. */
 .deal-card-v2__siblings-link:hover,
 .deal-card-v2__siblings-link:hover .deal-card-v2__siblings-price {
-  color: var(--color-primary);
+  color: var(--color-primary-hover);
 }
 .deal-card-v2__siblings-price {
   color: var(--color-text-primary);

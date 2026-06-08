@@ -1624,11 +1624,10 @@ onMounted(() => {
   font-family: var(--font-body);
   /* Match the anchor-navigation tabs (.deal-page__tab = 14px). */
   font-size: 14px;
-  color: var(--color-text-primary);
+  color: var(--color-dark);
 }
-/* Delen / Opslaan: deepen to near-black on hover (no orange), like the anchor
-   nav but without an underline. */
-.deal-page__action:hover { color: #000; }
+/* Delen / Opslaan: house-black, brand-hover orange on hover (no underline). */
+.deal-page__action:hover { color: var(--color-primary-hover); }
 .deal-page__action-heart { width: 18px; height: 18px; }
 .deal-page__action-label { font-size: 14px; }
 .deal-page__breadcrumbs { padding-top: var(--space-md); }
@@ -1776,7 +1775,8 @@ onMounted(() => {
 .sidebar__date-label { font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted); letter-spacing: 0.3px; }
 .sidebar__date-val { font-size: 14px; font-weight: 500; }
 .sidebar__date-arrow { color: var(--color-text-muted); margin: 0 var(--space-xs); }
-.sidebar__date-clear { margin-left: auto; font-size: 14px; color: var(--color-text-muted); text-decoration: underline; cursor: pointer; background: none; border: none; }
+.sidebar__date-clear { margin-left: auto; font-size: 14px; color: var(--color-dark); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; background: none; border: none; transition: color var(--transition-fast); }
+.sidebar__date-clear:hover { color: var(--color-primary-hover); }
 /* Price breakdown */
 .sidebar__breakdown { margin-bottom: var(--space-md); display: flex; flex-direction: column; gap: 6px; }
 .sidebar__breakdown-row { display: flex; justify-content: space-between; align-items: baseline; font-size: 13px; color: var(--color-text-secondary); }
@@ -1995,10 +1995,9 @@ onMounted(() => {
 .deal-page__tab {
   font-size: 14px;
   font-weight: 500;
-  color: var(--color-text-secondary);
-  /* Read as links — underlined by default. Not orange (the spec
-     reserves orange for the "Lees meer / Bekijk details / Bekijk
-     kaart / Bekijk andere arrangementen" CTA set). */
+  color: var(--color-dark);
+  /* Read as links — house-black, underlined, brand-hover orange on hover
+     (unified "dark underlined link" style). */
   text-decoration: underline;
   text-underline-offset: 3px;
   padding-bottom: var(--space-sm);
@@ -2015,10 +2014,8 @@ onMounted(() => {
   scroll-margin-top: 88px;
 }
 .deal-page__tab:hover {
-  /* Hover deepens the text colour, keeps the underline. No orange
-     (per spec) so anchor links stay visually distinct from the CTA
-     links. */
-  color: var(--color-text-primary);
+  /* Hover → brand hover orange, keeps the underline. */
+  color: var(--color-primary-hover);
   text-decoration: underline;
 }
 /* In-bar variant: drop the section padding/border so it fits inside the slim CTA bar */
@@ -2038,14 +2035,14 @@ onMounted(() => {
 }
 .deal-page__tabs--in-bar .deal-page__tab:hover {
   border-bottom: none;
-  color: var(--color-text-primary);
+  color: var(--color-primary-hover);
   text-decoration: underline;
 }
 /* Sticky bar: the tab matching the section currently in view drops
    its underline + bumps weight, so users can see where they are. */
 .deal-page__tabs--in-bar .deal-page__tab--active {
   text-decoration: none;
-  color: var(--color-text-primary);
+  color: var(--color-dark);
   font-weight: 700;
 }
 
@@ -2077,12 +2074,12 @@ onMounted(() => {
   font-size: 15px;
   font-weight: 600;
   text-align: left;
-  color: var(--color-text-primary);
+  color: var(--color-dark);
   background: none;
   border: none;
   cursor: pointer;
 }
-.house-rule__title:hover { color: var(--color-primary); }
+.house-rule__title:hover { color: var(--color-primary-hover); }
 .house-rule__arrow {
   font-size: 20px;
   font-weight: 300;

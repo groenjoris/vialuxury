@@ -725,7 +725,7 @@ onBeforeUnmount(() => {
 .hotel-page__tab {
   font-size: 14px;
   font-weight: 500;
-  color: var(--color-text-secondary);
+  color: var(--color-dark);
   text-decoration: underline;
   text-underline-offset: 3px;
   padding-bottom: var(--space-sm);
@@ -733,7 +733,7 @@ onBeforeUnmount(() => {
   transition: color var(--transition-fast);
 }
 .hotel-page__tab:hover {
-  color: var(--color-text-primary);
+  color: var(--color-primary-hover);
   text-decoration: underline;
 }
 .hotel-page__tabs--in-bar { padding: 0; border-bottom: none; }
@@ -745,7 +745,7 @@ onBeforeUnmount(() => {
 }
 .hotel-page__tabs--in-bar .hotel-page__tab--active {
   text-decoration: none;
-  color: var(--color-text-primary);
+  color: var(--color-dark);
   font-weight: 700;
 }
 
@@ -812,14 +812,13 @@ onBeforeUnmount(() => {
   background: none;
   cursor: pointer;
   font-family: var(--font-body);
-  font-size: 16px;
-  color: var(--color-text-primary);
+  font-size: 14px;
+  color: var(--color-dark);
 }
-/* Delen / Opslaan: deepen to near-black on hover (no orange), like the anchor
-   nav but without an underline. */
-.hotel-page__action:hover { color: #000; }
+/* Delen / Opslaan: house-black, brand-hover orange on hover (no underline). */
+.hotel-page__action:hover { color: var(--color-primary-hover); }
 .hotel-page__action-heart { width: 18px; height: 18px; }
-.hotel-page__action-label { font-size: 16px; }
+.hotel-page__action-label { font-size: 14px; }
 
 /* ===== INTRO (description + map) ===== */
 .hotel-page__intro { display: grid; grid-template-columns: 1fr 340px; gap: var(--space-xl); padding-top: var(--space-lg); padding-bottom: var(--space-xl); }
@@ -996,12 +995,12 @@ onBeforeUnmount(() => {
   font-size: 15px;
   font-weight: 600;
   text-align: left;
-  color: var(--color-text-primary);
+  color: var(--color-dark);
   background: none;
   border: none;
   cursor: pointer;
 }
-.house-rule__title:hover { color: var(--color-primary); }
+.house-rule__title:hover { color: var(--color-primary-hover); }
 .house-rule__arrow {
   font-size: 20px;
   font-weight: 300;

@@ -69,14 +69,14 @@ defineEmits<{
   font-family: var(--font-body);
   font-size: 13px;
   font-weight: 600;
-  color: var(--color-text-secondary);
+  color: var(--color-dark);
   text-decoration: underline;
-  text-underline-offset: 2px;
+  text-underline-offset: 3px;
   cursor: pointer;
   transition: color var(--transition-fast);
 }
 .filter-subpage__reset:hover {
-  color: var(--color-text-primary);
+  color: var(--color-primary-hover);
 }
 
 .filter-subpage__apply {
