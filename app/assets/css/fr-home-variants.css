@@ -93,16 +93,18 @@
 
   /* ── V3: "Experience more" title above search bar, no eyebrow or tagline.
         Content block pushed to the bottom via margin-top:auto; only the
-        title is visible, sitting directly above the search pill. ── */
+        title is visible, left-aligned with the search pill, 24px gap. ── */
   [data-fr-home-variant="3"] .home-hero__eyebrow,
   [data-fr-home-variant="3"] .home-hero__tagline { display: none !important; }
   [data-fr-home-variant="3"] .home-hero__content {
     margin-top: auto !important;
-    padding-bottom: 0 !important;
+    padding: 0 16px !important;
+    text-align: left !important;
   }
   [data-fr-home-variant="3"] .home-hero__title {
     font-size: 36px;
-    margin-bottom: 8px;
+    margin: 0 0 24px !important;
+    text-align: left;
   }
   /* Underline the phone number in the nav bar. */
   [data-fr-home-variant="3"] .site-header__phone-number {
