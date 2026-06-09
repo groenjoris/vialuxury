@@ -77,10 +77,11 @@
     margin-top: auto !important;   /* push the combo down */
   }
   /* Pitch → search bar gap = 20px (content pad-bottom 32 + slot pad-top 12 +
-     pill margin-top). −24 ⇒ 32+12−24 = 20. */
-  [data-fr-home-variant="2"] .mobile-search-trigger,
-  [data-fr-home-variant="3"] .mobile-search-trigger,
-  :is([data-fr-home-variant="4"], [data-fr-home-variant="5"]) .mobile-search-trigger {
+     pill margin-top). −24 ⇒ 32+12−24 = 20. Scoped to .home-hero so
+     deal/hotel pages keep the default -34px position. */
+  [data-fr-home-variant="2"] .home-hero .mobile-search-trigger,
+  [data-fr-home-variant="3"] .home-hero .mobile-search-trigger,
+  :is([data-fr-home-variant="4"], [data-fr-home-variant="5"]) .home-hero .mobile-search-trigger {
     margin-top: -24px !important;
   }
   /* Search bar → photo bottom gap = 34px (half). */
@@ -90,17 +91,23 @@
     padding-bottom: 34px !important;
   }
 
-  /* ── V3: bare hero — same search-bar position as V2 (bottom of photo) but
-        NO hero copy (eyebrow, "Experience more" and pitch all hidden). The
-        empty content block is removed from flow so only the search bar shows
-        over the photo; the phone stays in the nav (normal header). ── */
-  [data-fr-home-variant="3"] .home-hero__title,
+  /* ── V3: "Experience more" title above search bar, no eyebrow or tagline.
+        Content block pushed to the bottom via margin-top:auto; only the
+        title is visible, sitting directly above the search pill. ── */
+  [data-fr-home-variant="3"] .home-hero__eyebrow,
   [data-fr-home-variant="3"] .home-hero__tagline { display: none !important; }
-  [data-fr-home-variant="3"] .home-hero__content { display: none !important; }
-  /* Content is gone, so the search slot itself carries the margin-top:auto
-     that drops it to the bottom of the photo. */
-  [data-fr-home-variant="3"] .home-hero .site-header--overlay .site-header__mobile-search {
+  [data-fr-home-variant="3"] .home-hero__content {
     margin-top: auto !important;
+    padding-bottom: 0 !important;
+  }
+  [data-fr-home-variant="3"] .home-hero__title {
+    font-size: 36px;
+    margin-bottom: 8px;
+  }
+  /* Underline the phone number in the nav bar. */
+  [data-fr-home-variant="3"] .site-header__phone-number {
+    text-decoration: underline;
+    text-underline-offset: 3px;
   }
 
   /* ── V4: minimal header on home + search + deal + hotel. ── */
@@ -181,11 +188,11 @@
     background: linear-gradient(to bottom, #111 34px, #fff 34px) !important;
   }
 
-  /* V4/V5 deal + hotel pages use the 68-px trigger PILL, which these
-     variants pull down with `margin-top: -24` (vs the -34 the base
-     gradient assumes). That drops the pill's midline from 12 → 22 px
-     into the slot, so the dark strip must reach 22 px to still end at
-     the bar's midline (strip = padding-top 12 + |margin-top| shift). */
+  /* V4/V5 deal + hotel pages use the compact header (shorter nav), so the
+     pill needs -24px margin-top (vs -34 default) to sit correctly. */
+  :is([data-fr-home-variant="4"], [data-fr-home-variant="5"]) :is(.deal-page, .hotel-page) .mobile-search-trigger {
+    margin-top: -24px !important;
+  }
   :is([data-fr-home-variant="4"], [data-fr-home-variant="5"]) :is(.deal-page, .hotel-page) .site-header__mobile-search--on-solid:not(.site-header__mobile-search--summary) {
     background: linear-gradient(to bottom, var(--color-dark) 22px, #fff 22px) !important;
   }

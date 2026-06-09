@@ -1266,7 +1266,7 @@ const includesBullets = computed<string[]>(() => {
 
 
 .deal-card-v2--grid .deal-card-v2__pitch {
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 4;
   display: -webkit-box;
   -webkit-box-orient: vertical;
   overflow: hidden;
