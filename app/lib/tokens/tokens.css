@@ -1,0 +1,104 @@
+/* ==========================================================================
+   ViaLuxury Design Tokens
+   Standalone token definitions extracted from the design system.
+   Import this file to access all design tokens via CSS custom properties.
+   ========================================================================== */
+
+:root {
+
+  /* --------------------------------------------------------------------------
+     Colors — Primary
+     -------------------------------------------------------------------------- */
+  --color-primary: #e97132;
+  --color-primary-hover: #d4621f;
+  --color-primary-light: #F5F5F5;
+
+  /* --------------------------------------------------------------------------
+     Colors — Text
+     -------------------------------------------------------------------------- */
+  --color-text-primary: #1A1A1A;
+  --color-text-link: #4A4A4A;
+  --color-text-secondary: #555555;
+  --color-text-muted: #999999;
+
+  /* --------------------------------------------------------------------------
+     Colors — Background & Surface
+     -------------------------------------------------------------------------- */
+  --color-background: #FFFFFF;
+  --color-background-secondary: #FBFAF8;
+  --color-surface: #FFFFFF;
+  --color-dark: #1A1E1E;
+  --color-top-bar: var(--color-dark);
+
+  /* --------------------------------------------------------------------------
+     Colors — Border
+     -------------------------------------------------------------------------- */
+  --color-border: #E5E5E5;
+  --color-border-light: #F0F0F0;
+
+  /* --------------------------------------------------------------------------
+     Colors — Semantic
+     -------------------------------------------------------------------------- */
+  --color-discount: #00B67A;
+  --color-discount-light: #E8F5E9;
+  --color-star: #FB862D;
+  --color-review: #00B67A;
+  --color-error: #D32F2F;
+
+  /* --------------------------------------------------------------------------
+     Typography — Font Families
+     -------------------------------------------------------------------------- */
+  --font-heading: 'Recoleta', 'Playfair Display', Georgia, serif;
+  --font-body: 'Basis Grotesque', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+
+  /* --------------------------------------------------------------------------
+     Spacing Scale
+     -------------------------------------------------------------------------- */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+  --space-3xl: 64px;
+
+  /* --------------------------------------------------------------------------
+     Border Radii
+     -------------------------------------------------------------------------- */
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+
+  /* --------------------------------------------------------------------------
+     Shadows
+     -------------------------------------------------------------------------- */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
+  --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-sidebar: 0 4px 16px rgba(0, 0, 0, 0.1);
+  --shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.12);
+
+  /* --------------------------------------------------------------------------
+     Transitions
+     -------------------------------------------------------------------------- */
+  --transition-fast: 150ms ease;
+  --transition-base: 250ms ease;
+  --transition-slow: 400ms ease;
+
+  /* --------------------------------------------------------------------------
+     Layout — Container & Content Widths
+     -------------------------------------------------------------------------- */
+  --container-max: 1137px;
+  --sidebar-width: 367px;
+  --content-width: 690px;
+  --layout-gap: 80px;
+  --page-padding: 80px;
+
+  /* --------------------------------------------------------------------------
+     Breakpoints
+     (For reference — media queries still require hardcoded px values)
+     -------------------------------------------------------------------------- */
+  --breakpoint-mobile: 768px;
+  --page-padding-mobile: 16px;
+}
