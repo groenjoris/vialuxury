@@ -38,6 +38,7 @@ export interface RoomOption {
   isDefault: boolean
   isUpgrade?: boolean // true when the base room is an upgrade included in the deal
   maxAvailable?: number // Max rooms of this type available (default: unlimited/5)
+  capacity?: number // Sleeps this many guests (default: 2)
   features: LocalizedString[]
 }
 

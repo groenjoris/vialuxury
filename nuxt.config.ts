@@ -17,6 +17,13 @@ export default defineNuxtConfig({
       prefix: 'FirstRelease',
       pathPrefix: false,
     },
+    // Second Release prototype — full independent copy of First Release.
+    // All components auto-imported with a `SecondRelease` prefix.
+    {
+      path: '~/components-second-release',
+      prefix: 'SecondRelease',
+      pathPrefix: false,
+    },
     // Huisstijl variants — frozen snapshot of the 5-homepage prototype.
     {
       path: '~/components-huisstijl',
@@ -29,6 +36,18 @@ export default defineNuxtConfig({
       prefix: 'Northstar',
       pathPrefix: false,
     },
+    // Reusable component library — production-ready components extracted
+    // from the first-release prototype. Auto-imported with a `Vl` prefix.
+    {
+      path: '~/lib/primitives',
+      prefix: 'Vl',
+      pathPrefix: false,
+    },
+    {
+      path: '~/lib/components',
+      prefix: 'Vl',
+      pathPrefix: false,
+    },
   ],
 
   // Auto-import each prototype's composables + stores. Function names
@@ -37,9 +56,11 @@ export default defineNuxtConfig({
   imports: {
     dirs: [
       'composables-first-release/**',
+      'composables-second-release/**',
       'composables-huisstijl/**',
       'composables-northstar/**',
       'stores-first-release/**',
+      'stores-second-release/**',
       'stores-huisstijl/**',
       'stores-northstar/**',
     ],
@@ -61,6 +82,8 @@ export default defineNuxtConfig({
     '~/assets/css/variant-2.css',
     '~/assets/css/fr-variant-6.css',
     '~/assets/css/fr-home-variants.css',
+    '~/assets/css/sr-variant-6.css',
+    '~/assets/css/sr-home-variants.css',
     '~/assets/css/home-categories.css',
   ],
 
@@ -78,7 +101,7 @@ export default defineNuxtConfig({
       // (1200 px container etc.) applies on first paint — without it,
       // the page briefly renders at the legacy 1137 px width and then
       // jumps to 1200 px once the client-side watcher mounts.
-      htmlAttrs: { lang: 'nl', 'data-fr-variant': '6' },
+      htmlAttrs: { lang: 'nl', 'data-fr-variant': '6', 'data-sr-variant': '6' },
       title: 'Via Luxury - Luxe Hotel Arrangementen',
       link: [
         { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },

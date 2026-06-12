@@ -1,0 +1,1050 @@
+<template>
+  <div class="destination-popup" :class="{ 'destination-popup--inline': inline }">
+    <!-- Top bar: grey row with white input field -->
+    <div class="destination-popup__topbar">
+      <div class="destination-popup__search">
+        <svg
+          class="destination-popup__search-icon"
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <circle cx="11" cy="11" r="8" />
+          <path d="M21 21l-4.35-4.35" />
+        </svg>
+        <input
+          ref="searchInputRef"
+          v-model="searchQuery"
+          type="text"
+          class="destination-popup__input"
+          :placeholder="t('header.searchDestinationPlaceholder')"
+          autocomplete="off"
+        />
+        <button
+          v-if="searchQuery.length > 0"
+          class="destination-popup__clear"
+          @click="clearSearch"
+          aria-label="Clear"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Selected items row: minimal pills + Klaar button — only when something is selected.
+         Suppressed in single-select mode: the popup closes immediately on
+         pick so the summary list isn't useful and just adds visual noise. -->
+    <div v-if="!isSearching && !singleSelect && totalSelectedChips.length > 0" class="destination-popup__selected-row">
+      <div class="destination-popup__selected-pills">
+        <span
+          v-for="item in totalSelectedChips"
+          :key="`${item.type}-${item.key}`"
+          class="selected-pill"
+        >
+          <span class="selected-pill__name">{{ item.name }}</span>
+          <button
+            type="button"
+            class="selected-pill__remove"
+            :aria-label="`Remove ${item.name}`"
+            @click.stop="handleChipRemove(item)"
+          >
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </span>
+      </div>
+      <div class="destination-popup__actions">
+        <button
+          type="button"
+          class="destination-popup__done"
+          @click="$emit('save')"
+        >
+          {{ t('header.done') }}
+        </button>
+        <a
+          href="#"
+          class="destination-popup__clear-link"
+          @click.prevent="handleClear"
+        >
+          {{ t('header.clear') }}
+        </a>
+      </div>
+    </div>
+
+    <!-- Content area — scrolls internally only while the user is
+         typing (so the autosuggest list stays anchored under the
+         input). In the click-only default state the popup grows
+         naturally and the page scrolls if it doesn't fit. -->
+    <div
+      class="destination-popup__content"
+      :class="{ 'destination-popup__content--searching': isSearching }"
+    >
+      <!-- Inline (mobile modal): ONE rendering path for both states.
+           Click-only (no query) shows destinations + themes; typing
+           shows filtered cities/provinces + hotels. Identical row
+           markup either way — no icons, no section headings, no
+           separators. The data is the only difference. -->
+      <div v-if="inline" class="destination-popup__results destination-popup__results--inline">
+        <template v-if="inlineHasRows">
+          <template v-for="(section, idx) in inlineSections" :key="section.key">
+            <!-- Divider between sections (skip before the first one). -->
+            <div v-if="idx > 0" class="destination-popup__separator"></div>
+            <h4 class="destination-popup__section-title destination-popup__section-title--results">{{ section.title }}</h4>
+            <ul class="destination-popup__list">
+              <li
+                v-for="row in section.rows"
+                :key="row.key"
+                class="destination-popup__list-item"
+                @click="row.pick()"
+              >
+                <div class="destination-popup__list-text">
+                  <span class="destination-popup__list-name">{{ row.name }}</span>
+                  <span v-if="row.sublabel" class="destination-popup__list-province">{{ row.sublabel }}</span>
+                </div>
+              </li>
+            </ul>
+          </template>
+        </template>
+        <div v-else class="destination-popup__empty">{{ t('header.noResults') }}</div>
+      </div>
+
+      <!-- Browse mode: provincies (no label) on top, themes below. -->
+      <div v-else-if="!isSearching" class="destination-popup__browse">
+        <!-- Provincies / regio's — first section, no heading. -->
+        <div class="destination-popup__section destination-popup__section--destinations">
+          <div class="destination-popup__chips">
+            <button
+              v-for="dest in destinations"
+              :key="dest.id"
+              class="dest-chip dest-chip--destination"
+              :class="{ 'dest-chip--selected': selectedDestinations.includes(dest.id) }"
+              @click="$emit('toggle-destination', dest.id)"
+            >
+              <span
+                class="dest-chip__icon"
+                :style="{ background: destinationTint(dest.id) }"
+                aria-hidden="true"
+              >
+                <img
+                  :src="`/images/destinations/${dest.id}.svg`"
+                  :alt="dest.name"
+                  class="dest-chip__icon-img"
+                />
+              </span>
+              <span class="dest-chip__name">{{ dest.name }}</span>
+              <span class="dest-chip__country">{{ dest.country }}</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="destination-popup__section">
+          <h4 class="destination-popup__section-title">{{ t('header.themes') }}</h4>
+          <div class="destination-popup__chips destination-popup__chips--themes">
+            <button
+              v-for="theme in themes"
+              :key="theme.id"
+              class="dest-chip dest-chip--theme"
+              :class="{ 'dest-chip--selected': !singleSelect && selectedThemes.includes(theme.id) }"
+              @click="$emit('toggle-theme', theme.id)"
+            >
+              <span
+                class="dest-chip__icon"
+                :style="{ background: themeTint(theme.id) }"
+                aria-hidden="true"
+              >
+                <img
+                  :src="`/images/destinations/${theme.id}.svg`"
+                  :alt="theme.name"
+                  class="dest-chip__icon-img"
+                />
+              </span>
+              <span class="dest-chip__name">{{ theme.name }}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Autosuggest mode: vertical list -->
+      <div v-else class="destination-popup__results">
+        <ul v-if="filteredSuggestions.length > 0" class="destination-popup__list">
+          <li
+            v-for="item in filteredSuggestions"
+            :key="item.name"
+            class="destination-popup__list-item"
+            @click="selectSuggestion(item)"
+          >
+            <svg class="destination-popup__list-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
+              <circle cx="12" cy="10" r="3" />
+            </svg>
+            <div class="destination-popup__list-text">
+              <!-- Province / city rows show only the name — no
+                   sublabel (no "Nederland" beneath provinces, no
+                   province beneath cities). -->
+              <span class="destination-popup__list-name">{{ item.name }}</span>
+            </div>
+          </li>
+        </ul>
+
+        <!-- Filtered hotels -->
+        <template v-if="filteredHotels.length > 0">
+          <div v-if="filteredSuggestions.length > 0" class="destination-popup__separator"></div>
+          <h4 class="destination-popup__section-title destination-popup__section-title--results">Hotels</h4>
+          <ul class="destination-popup__list">
+            <li
+              v-for="hotel in filteredHotels"
+              :key="hotel.id"
+              class="destination-popup__list-item destination-popup__list-item--hotel"
+              @click="selectHotel(hotel)"
+            >
+              <svg class="destination-popup__list-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 21V7a2 2 0 012-2h14a2 2 0 012 2v14" />
+                <path d="M3 11h18" />
+                <path d="M9 21V11" />
+              </svg>
+              <div class="destination-popup__list-text">
+                <span class="destination-popup__list-name">{{ hotel.name }}</span>
+                <!-- Hotels: name + city only — stars block removed. -->
+                <span class="destination-popup__list-province">{{ hotel.city }}</span>
+              </div>
+            </li>
+          </ul>
+        </template>
+
+        <!-- No results -->
+        <div
+          v-if="filteredSuggestions.length === 0 && filteredHotels.length === 0"
+          class="destination-popup__empty"
+        >
+          {{ t('header.noResults') }}
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { searchHotels } from '~/data/mock/search-hotels'
+import { dutchCities, dutchProvinces } from '~/data/mock/dutch-cities'
+
+const props = defineProps<{
+  destinations: Array<{ id: string; name: string; country: string; emoji: string }>
+  themes: Array<{ id: string; name: string; emoji: string }>
+  selectedDestinations: string[]
+  selectedThemes: string[]
+  selectedCities?: Array<{ name: string; province: string }>
+  selectionOrder?: Array<{ type: 'destination' | 'theme' | 'city'; key: string }>
+  /** When true the parent treats every selection as a single-select: it
+   *  clears the existing pick before applying the new one and closes the
+   *  popup. The popup itself doesn't enforce single-select internally —
+   *  this prop is here so the parent can wire its handlers accordingly. */
+  singleSelect?: boolean
+  /** When mounted inline (e.g. inside the mobile search modal), drop the
+   *  inner `max-height` + scroll so the popup grows naturally and lets
+   *  its parent (the modal body) do the scrolling instead. */
+  inline?: boolean
+  /** Optional v-model:query — when provided, the popup is filtered by
+   *  this externally-controlled string instead of its own input. Used
+   *  by the mobile modal so the Waarheen field itself is the typing
+   *  surface; the popup's own input is hidden. */
+  query?: string
+}>()
+
+const emit = defineEmits<{
+  'toggle-destination': [id: string]
+  'toggle-theme': [id: string]
+  'select-hotel': [slug: string]
+  'select-city': [city: { name: string; province: string }]
+  'remove-city': [cityName: string]
+  'save': []
+  'clear': []
+  'update:query': [val: string]
+}>()
+
+type ChipKind = 'destination' | 'theme' | 'city' | 'history'
+type ChipItem = {
+  key: string
+  type: ChipKind
+  name: string
+  emoji?: string
+  historyRef?: { name: string; type: string; id?: string; province?: string }
+}
+
+// Unified top row: iterate selectionOrder so chips appear chronologically (newest on the right).
+// Falls back to grouped iteration if selectionOrder prop isn't provided.
+const totalSelectedChips = computed<ChipItem[]>(() => {
+  const out: ChipItem[] = []
+
+  if (props.selectionOrder && props.selectionOrder.length > 0) {
+    for (const entry of props.selectionOrder) {
+      if (entry.type === 'destination') {
+        const dest = props.destinations.find(d => d.id === entry.key)
+        if (dest) out.push({ key: `dest-${entry.key}`, type: 'destination', name: dest.name, emoji: dest.emoji })
+      } else if (entry.type === 'theme') {
+        const theme = props.themes.find(th => th.id === entry.key)
+        if (theme) out.push({ key: `theme-${entry.key}`, type: 'theme', name: theme.name, emoji: theme.emoji })
+      } else if (entry.type === 'city') {
+        out.push({ key: `city-${entry.key}`, type: 'city', name: entry.key })
+      }
+    }
+  } else {
+    // Fallback grouped order
+    for (const id of props.selectedDestinations) {
+      const dest = props.destinations.find(d => d.id === id)
+      if (dest) out.push({ key: `dest-${id}`, type: 'destination', name: dest.name, emoji: dest.emoji })
+    }
+    for (const id of props.selectedThemes) {
+      const theme = props.themes.find(th => th.id === id)
+      if (theme) out.push({ key: `theme-${id}`, type: 'theme', name: theme.name, emoji: theme.emoji })
+    }
+    for (const city of (props.selectedCities || [])) {
+      out.push({ key: `city-${city.name}`, type: 'city', name: city.name })
+    }
+  }
+
+  // History items that aren't already represented above
+  const takenNames = new Set(out.map(i => i.name))
+  for (const h of searchHistory.value) {
+    if (takenNames.has(h.name)) continue
+    out.push({ key: `hist-${h.name}`, type: 'history', name: h.name, historyRef: h })
+  }
+  return out
+})
+
+function handleChipClick(item: ChipItem) {
+  if (item.type === 'history' && item.historyRef) reSelectHistory(item.historyRef)
+  // Destinations / themes / cities already active — click does nothing (remove via X)
+}
+
+function handleChipRemove(item: ChipItem) {
+  if (item.type === 'destination') emit('toggle-destination', item.key.replace('dest-', ''))
+  else if (item.type === 'theme') emit('toggle-theme', item.key.replace('theme-', ''))
+  else if (item.type === 'city') emit('remove-city', item.name)
+  else if (item.type === 'history' && item.historyRef) removeHistory(item.historyRef)
+}
+
+function handleClear() {
+  searchQuery.value = ''            // Clear typed text
+  searchHistory.value = []          // Clear recent-search chips
+  try { sessionStorage.removeItem('vl-search-history') } catch { /* ignore */ }
+  emit('clear')                     // Parent clears destinations/themes/cities
+}
+
+const { t } = useSecondReleaseI18n()
+
+// Persistent search history (module-level would reset on HMR, so use provide/inject pattern)
+// Keep it simple: store in component, persists as long as popup is alive via parent keep-alive
+const searchHistory = ref<{ name: string; type: 'city' | 'destination' | 'hotel'; id?: string; province?: string }[]>([])
+
+// Load from sessionStorage on mount
+onMounted(() => {
+  try {
+    const stored = sessionStorage.getItem('vl-search-history')
+    if (stored) searchHistory.value = JSON.parse(stored)
+  } catch { /* ignore */ }
+})
+
+function addToHistory(item: { name: string; type: 'city' | 'destination' | 'hotel'; id?: string; province?: string }) {
+  // Remove duplicate if exists
+  searchHistory.value = searchHistory.value.filter(h => h.name !== item.name)
+  // Prepend
+  searchHistory.value.unshift(item)
+  // Keep max 3
+  if (searchHistory.value.length > 3) searchHistory.value.pop()
+  // Persist
+  try { sessionStorage.setItem('vl-search-history', JSON.stringify(searchHistory.value)) } catch { /* ignore */ }
+}
+
+function removeHistory(item: { name: string }) {
+  searchHistory.value = searchHistory.value.filter(h => h.name !== item.name)
+  try { sessionStorage.setItem('vl-search-history', JSON.stringify(searchHistory.value)) } catch { /* ignore */ }
+}
+
+function reSelectHistory(item: { name: string; type: string; id?: string; province?: string }) {
+  if (item.type === 'destination' && item.id) {
+    emit('toggle-destination', item.id)
+  } else if (item.type === 'hotel' && item.id) {
+    emit('select-hotel', item.id)
+  } else if (item.type === 'city' && item.province) {
+    emit('select-city', { name: item.name, province: item.province })
+  }
+}
+
+/** Local fallback ref — used when no `query` prop is supplied. */
+const localSearchQuery = ref('')
+/** Writable proxy: when the parent supplies `query`, writes emit
+ *  `update:query`; otherwise we just mutate the local ref. */
+const searchQuery = computed<string>({
+  get() {
+    return props.query !== undefined ? props.query : localSearchQuery.value
+  },
+  set(val: string) {
+    if (props.query !== undefined) emit('update:query', val)
+    else localSearchQuery.value = val
+  },
+})
+const searchInputRef = ref<HTMLInputElement | null>(null)
+
+const isSearching = computed(() => searchQuery.value.trim().length > 0)
+
+// Autofocus on mount
+onMounted(() => {
+  nextTick(() => {
+    searchInputRef.value?.focus()
+  })
+})
+
+function clearSearch() {
+  searchQuery.value = ''
+  nextTick(() => {
+    searchInputRef.value?.focus()
+  })
+}
+
+// Build combined suggestions list: provinces + cities
+const allSuggestions = computed(() => {
+  const suggestions: { name: string; province: string; isProvince: boolean }[] = []
+
+  // Add provinces
+  for (const prov of dutchProvinces) {
+    suggestions.push({ name: prov, province: 'Nederland', isProvince: true })
+  }
+
+  // Add cities
+  for (const city of dutchCities) {
+    suggestions.push({ name: city.name, province: city.province, isProvince: false })
+  }
+
+  return suggestions
+})
+
+// Filter suggestions by query
+const filteredSuggestions = computed(() => {
+  const q = searchQuery.value.trim().toLowerCase()
+  if (!q) return []
+  // Match on the city / province NAME only — don't also match the
+  // sub-label (the parent province). Typing "noord" shouldn't surface
+  // every city in Noord-Holland; the user expects name-prefix-style
+  // behaviour against the primary label.
+  return allSuggestions.value
+    .filter(s => s.name.toLowerCase().includes(q))
+    .slice(0, 10) // limit to 10 results
+})
+
+// Filter hotels by query
+const filteredHotels = computed(() => {
+  const q = searchQuery.value.trim().toLowerCase()
+  if (!q) return []
+  return searchHotels
+    .filter(h => h.name.toLowerCase().includes(q) || h.city.toLowerCase().includes(q))
+    .slice(0, 5) // limit to 5 hotel results
+})
+
+/** Unified, sectioned rows for inline (mobile-modal) rendering. The
+ *  popup uses ONE template path in inline mode — initial (click-only)
+ *  and typing states share identical row markup. Only the data
+ *  changes. Rows are grouped into three sections separated by a
+ *  heading: Bestemmingen, Hotels, Thema's. */
+type InlineRow = {
+  key: string
+  name: string
+  sublabel: string
+  pick: () => void
+}
+type InlineSection = {
+  key: string
+  title: string
+  rows: InlineRow[]
+}
+const inlineSections = computed<InlineSection[]>(() => {
+  if (!isSearching.value) {
+    // Click-only default: provinces + themes. Provinces show only
+    // their name (no country sublabel). Themes keep their "Thema's"
+    // sublabel since the user only asked to simplify city/province/
+    // hotel rows.
+    return [
+      {
+        key: 'destinations',
+        title: 'Bestemmingen',
+        rows: props.destinations.map(d => ({
+          key: `d-${d.id}`,
+          name: d.name,
+          sublabel: '',
+          pick: () => emit('toggle-destination', d.id),
+        })),
+      },
+      {
+        key: 'themes',
+        title: "Thema's",
+        rows: props.themes.map(th => ({
+          key: `t-${th.id}`,
+          name: th.name,
+          sublabel: t('header.themes'),
+          pick: () => emit('toggle-theme', th.id),
+        })),
+      },
+    ].filter(s => s.rows.length > 0)
+  }
+  // Typing state: filtered cities/provinces + hotels + theme matches.
+  // Cities/provinces: name only, no province sublabel. Hotels: name +
+  // city (no stars).
+  const q = searchQuery.value.trim().toLowerCase()
+  const themeMatches = props.themes.filter(th => th.name.toLowerCase().includes(q))
+  return [
+    {
+      key: 'destinations',
+      title: 'Bestemmingen',
+      rows: filteredSuggestions.value.map(s => ({
+        key: `s-${s.name}`,
+        name: s.name,
+        sublabel: '',
+        pick: () => selectSuggestion(s),
+      })),
+    },
+    {
+      key: 'hotels',
+      title: 'Hotels',
+      rows: filteredHotels.value.map(h => ({
+        key: `h-${h.slug}`,
+        name: h.name,
+        sublabel: h.city,
+        pick: () => selectHotel(h),
+      })),
+    },
+    {
+      key: 'themes',
+      title: "Thema's",
+      rows: themeMatches.map(th => ({
+        key: `t-${th.id}`,
+        name: th.name,
+        sublabel: t('header.themes'),
+        pick: () => emit('toggle-theme', th.id),
+      })),
+    },
+  ].filter(s => s.rows.length > 0)
+})
+/** Convenience: total row count across all sections — drives the
+ *  "no results" empty state. */
+const inlineHasRows = computed(() =>
+  inlineSections.value.some(s => s.rows.length > 0),
+)
+
+function selectSuggestion(item: { name: string; province: string; isProvince: boolean }) {
+  // If it's a province that matches one of our destination chips, toggle that
+  if (item.isProvince) {
+    const dest = props.destinations.find(d => d.name === item.name)
+    if (dest) {
+      emit('toggle-destination', dest.id)
+      addToHistory({ name: item.name, type: 'destination', id: dest.id })
+      searchQuery.value = ''
+      return
+    }
+  }
+
+  // Otherwise emit as city selection
+  emit('select-city', { name: item.name, province: item.province })
+  addToHistory({ name: item.name, type: 'city', province: item.province })
+  searchQuery.value = ''
+}
+
+/** Per-destination / per-theme icon-tile tints. Pulled from the Figma
+ *  spec — each region gets a soft regional colour so the chip grid
+ *  reads as a "deck" rather than a uniform list. */
+const DESTINATION_TINTS: Record<string, string> = {
+  zeeland: '#f0e3c6',
+  brabant: '#cfe0c8',
+  limburg: '#d8dccb',
+  gelderland: '#c4d3c0',
+  drenthe: '#e1cfd9',
+  friesland: '#c8d8e2',
+  overijssel: '#ead2c0',
+  flevoland: '#f3ccae',
+  'noord-holland': '#f0c8cf',
+  'zuid-holland': '#cdd2dc',
+  ardennen: '#c2cec5',
+  vlaanderen: '#ead8b5',
+  'belgische-kust': '#ead9d0',
+  wallonie: '#ecc98a',
+}
+
+const THEME_TINTS: Record<string, string> = {
+  'aan-zee': '#c8d8e2',
+  natuur: '#cfe0c8',
+  romantisch: '#f0c8cf',
+  culinair: '#ead2c0',
+  fiets: '#f3ccae',
+  steden: '#cdd2dc',
+  kasteel: '#ead8b5',
+}
+
+function destinationTint(id: string): string {
+  return DESTINATION_TINTS[id] ?? '#e5e2da'
+}
+
+function themeTint(id: string): string {
+  return THEME_TINTS[id] ?? '#e5e2da'
+}
+
+function selectHotel(hotel: { name: string; slug: string }) {
+  emit('select-hotel', hotel.slug)
+  addToHistory({ name: hotel.name, type: 'hotel', id: hotel.slug })
+  searchQuery.value = ''
+}
+</script>
+
+<style scoped>
+.destination-popup {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  /* Lock the popup at the browse-mode height so typing into the search field
+     swaps the inner content without resizing the dropdown. */
+  min-height: 540px;
+}
+
+/* ==================== */
+/* TOP BAR              */
+/* ==================== */
+.destination-popup__topbar {
+  flex-shrink: 0;
+  background: var(--color-background-secondary);
+  padding: 12px var(--space-lg);
+  border-bottom: 1px solid var(--color-border);
+}
+
+/* ==================== */
+/* SELECTED ROW         */
+/* (chips + done button)*/
+/* ==================== */
+.destination-popup__selected-row {
+  flex-shrink: 0;
+  background: var(--color-surface);
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+  padding: 12px var(--space-lg);
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.destination-popup__chips--flex {
+  flex: 1;
+  min-width: 0;
+  flex-wrap: wrap;
+  display: flex;
+  gap: var(--space-sm);
+}
+
+.destination-popup__actions {
+  flex-shrink: 0;
+  margin-left: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.destination-popup__done {
+  padding: 8px 20px;
+  border: none;
+  border-radius: var(--radius-md);
+  background: var(--color-primary);
+  color: #fff;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background var(--transition-fast);
+  font-family: inherit;
+  white-space: nowrap;
+}
+
+.destination-popup__done:hover {
+  background: var(--color-primary-hover);
+}
+
+.destination-popup__clear-link {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  text-decoration: underline;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.destination-popup__clear-link:hover {
+  color: var(--color-text-primary);
+}
+
+/* ==================== */
+/* SEARCH INPUT         */
+/* ==================== */
+.destination-popup__search {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 4px 10px;
+  flex: 1;
+  min-width: 0;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+}
+
+.destination-popup__search-icon {
+  flex-shrink: 0;
+  color: var(--color-text-muted);
+}
+
+.destination-popup__input {
+  flex: 1;
+  height: 32px;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 15px;
+  font-family: inherit;
+  color: var(--color-text-primary);
+  caret-color: var(--color-primary);
+}
+
+.destination-popup__input::placeholder {
+  color: var(--color-text-muted);
+}
+
+.destination-popup__clear {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: none;
+  background: var(--color-background-secondary);
+  color: var(--color-text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 150ms ease, color 150ms ease;
+}
+
+.destination-popup__clear:hover {
+  background: var(--color-border);
+  color: var(--color-text-primary);
+}
+
+/* ==================== */
+/* CONTENT (SCROLLABLE) */
+/* ==================== */
+/* Default (initial / click-only browse): no internal scroll — the
+   popup grows naturally and the page scrolls if it doesn't fit. */
+.destination-popup__content {
+  flex: 0 1 auto;
+  min-height: 0;
+  overflow-y: visible;
+  max-height: none;
+}
+/* Typing state on desktop: re-enable internal scroll so the
+   autosuggest list stays anchored under the input rather than
+   pushing the page down. */
+.destination-popup__content--searching {
+  overflow-y: auto;
+  max-height: 60vh;
+}
+
+/* Inline mode (mobile search modal): no internal scroll cap in
+   either state — the modal body always handles scrolling. */
+.destination-popup--inline .destination-popup__content,
+.destination-popup--inline .destination-popup__content--searching {
+  overflow-y: visible;
+  max-height: none;
+  flex: 0 1 auto;
+}
+
+/* Inline mode: the autosuggest list (typing OR the default click-only
+   view) shows no leading icons — keeps the mobile dropdown to one
+   plain text suggestion per line. */
+.destination-popup--inline .destination-popup__list-icon {
+  display: none;
+}
+
+/* ==================== */
+/* BROWSE MODE          */
+/* ==================== */
+.destination-popup__browse {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px 24px;
+}
+
+.destination-popup__section {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Divider between destinations and themes sections — full-width 1px
+   line matching the Figma spec. */
+.destination-popup__section--destinations {
+  padding-bottom: 16px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.destination-popup__section-title {
+  font-family: var(--font-body);
+  font-size: 16px;
+  font-weight: 700;
+  text-transform: none;
+  letter-spacing: 0;
+  color: #1A1A1A;
+  margin: 0 0 12px;
+  line-height: 1;
+}
+
+.destination-popup__section-title--results {
+  padding: 0 var(--space-md);
+  margin-bottom: var(--space-xs);
+}
+
+.destination-popup__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* Themes wrap to 3 chips per row when space allows. */
+.destination-popup__chips--themes {
+  max-width: 445px;
+}
+
+/* ==================== */
+/* DESTINATION CHIPS    */
+/* ==================== */
+.dest-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 40px;
+  padding: 9px 17px;
+  border: 1px solid #e5e2da;
+  border-radius: 4px;
+  background: #fff;
+  cursor: pointer;
+  transition: border-color 150ms ease, background-color 150ms ease, box-shadow 150ms ease;
+  font-size: 14px;
+  font-family: var(--font-body);
+  font-weight: 400;
+  line-height: 1;
+  color: #1a1612;
+}
+
+.dest-chip:hover {
+  /* Match the home-page pills: neutral grey fill, no stroke change. */
+  background: var(--color-border);
+}
+
+.dest-chip--selected {
+  border-color: var(--color-primary);
+  box-shadow: inset 0 0 0 1px var(--color-primary);
+  background: rgba(233, 113, 50, 0.08);
+}
+
+.dest-chip__icon {
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.dest-chip__icon-img {
+  width: 22px;
+  height: 22px;
+  display: block;
+}
+
+.dest-chip__name {
+  color: #1a1612;
+}
+
+.dest-chip__country {
+  font-size: 14px;
+  color: #6b6357;
+  font-weight: 400;
+  letter-spacing: 0.88px;
+  text-transform: uppercase;
+}
+
+/* History chip variant */
+.dest-chip--history {
+  background: var(--color-background-secondary, #f5f5f5);
+  border-color: transparent;
+  gap: 8px;
+  padding-right: 8px;
+}
+
+.dest-chip--history:hover {
+  background: var(--color-border-light, #eee);
+  border-color: transparent;
+}
+
+/* ==================== */
+/* SELECTED PILLS       */
+/* (minimal, no icons)  */
+/* ==================== */
+.destination-popup__selected-pills {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.selected-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 4px 3px 10px;
+  background: rgba(251, 134, 45, 0.08);
+  border-radius: 999px;
+  font-size: 12px;
+  line-height: 1.2;
+  color: var(--color-text-primary);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.selected-pill__name {
+  font-family: inherit;
+}
+
+.selected-pill__remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  padding: 0;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.selected-pill__remove:hover {
+  background: rgba(0, 0, 0, 0.08);
+  color: var(--color-text-primary);
+}
+
+.dest-chip__history-icon {
+  flex-shrink: 0;
+  color: var(--color-text-muted);
+}
+
+.dest-chip__remove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  color: var(--color-text-muted);
+  transition: background 150ms ease, color 150ms ease;
+  margin-left: 2px;
+}
+
+.dest-chip__remove:hover {
+  background: rgba(0, 0, 0, 0.1);
+  color: var(--color-text-primary);
+}
+
+/* ==================== */
+/* AUTOSUGGEST RESULTS  */
+/* ==================== */
+.destination-popup__results {
+  padding: var(--space-sm) 0;
+}
+
+.destination-popup__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.destination-popup__list-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 10px var(--space-md);
+  cursor: pointer;
+  transition: background-color 150ms ease;
+}
+
+.destination-popup__list-item:hover {
+  background: var(--color-background-secondary);
+}
+
+.destination-popup__list-icon {
+  flex-shrink: 0;
+  color: var(--color-text-muted);
+}
+
+.destination-popup__list-text {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  min-width: 0;
+}
+
+.destination-popup__list-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.destination-popup__list-province {
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+.destination-popup__list-province::before {
+  content: '\00B7';
+  margin-right: var(--space-sm);
+}
+
+/* Hotels */
+.destination-popup__list-stars {
+  font-size: 12px;
+  color: var(--color-primary);
+  letter-spacing: 1px;
+  flex-shrink: 0;
+}
+
+/* Separator */
+.destination-popup__separator {
+  height: 1px;
+  background: var(--color-border-light);
+  margin: var(--space-sm) var(--space-md);
+}
+
+/* Empty state */
+.destination-popup__empty {
+  padding: var(--space-xl) var(--space-md);
+  text-align: center;
+  font-size: 14px;
+  color: var(--color-text-muted);
+}
+</style>

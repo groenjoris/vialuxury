@@ -1,0 +1,609 @@
+<template>
+  <Teleport to="body">
+    <!-- ─────────────── MOBILE ─────────────── -->
+    <template v-if="isMobile">
+      <!-- Grid overview -->
+      <Transition name="pg-fade">
+        <div v-if="open && view === 'grid'" class="pg-mgrid" role="dialog" aria-modal="true">
+          <header class="pg-mgrid__header">
+            <button type="button" class="pg-iconbtn" :aria-label="t('common.close')" @click="$emit('close')">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6" /></svg>
+            </button>
+            <h2 class="pg-mgrid__title">{{ title }}</h2>
+          </header>
+          <div class="pg-mgrid__body" data-scroll-lock-allow="true">
+            <div class="pg-masonry">
+              <button v-for="(img, i) in ordered" :key="img.id" type="button" class="pg-thumb" @click="openPhoto(i)">
+                <img :src="img.url" :alt="localized(img.alt)" loading="lazy" />
+              </button>
+            </div>
+          </div>
+          <footer class="pg-mgrid__footer">
+            <button type="button" class="pg-btn pg-btn--ghost" @click="$emit('close')">{{ t('gallery.back') }}</button>
+            <button type="button" class="pg-btn pg-btn--primary" @click="$emit('book')">{{ t('deal.bookNow') }}</button>
+          </footer>
+        </div>
+      </Transition>
+
+      <!-- Full-photo viewer -->
+      <Transition name="pg-fade">
+        <div v-if="open && view === 'photo'" class="pg-mphoto" role="dialog" aria-modal="true">
+          <!-- "Alle foto's" → open the thumbnail overview. Styled as the dark
+               pill from the hero photo (same shape + ⊞ icon) for consistency. -->
+          <button type="button" class="pg-mphoto__back" @click="$emit('update:view', 'grid')">
+            <span class="all-btn-icon" aria-hidden="true">⊞</span>
+            {{ t('common.allPhotos') }}
+          </button>
+          <button type="button" class="pg-iconbtn pg-mphoto__close" :aria-label="t('common.close')" @click="closePhoto">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12" /></svg>
+          </button>
+          <div ref="mTrack" class="pg-mphoto__track" data-scroll-lock-allow="true" @scroll.passive="onTrackScroll">
+            <div v-for="img in ordered" :key="img.id" class="pg-mphoto__slide">
+              <img :src="img.url" :alt="localized(img.alt)" />
+            </div>
+          </div>
+          <div class="pg-mphoto__controls">
+            <button type="button" class="pg-iconbtn pg-iconbtn--light" aria-label="Vorige" @click="setIndex(index - 1)">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6" /></svg>
+            </button>
+            <span class="pg-counter">{{ index + 1 }} / {{ total }}</span>
+            <button type="button" class="pg-iconbtn pg-iconbtn--light" aria-label="Volgende" @click="setIndex(index + 1)">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6" /></svg>
+            </button>
+          </div>
+        </div>
+      </Transition>
+    </template>
+
+    <!-- ─────────────── DESKTOP (right slide-in panel, 80vw) ─────────────── -->
+    <template v-else>
+      <Transition name="pg-slide">
+        <div v-if="open" class="pg-d" @click.self="$emit('close')">
+          <aside class="pg-d__panel" role="dialog" aria-modal="true">
+            <header class="pg-d__header">
+              <button
+                v-if="view === 'photo'"
+                type="button"
+                class="pg-d__back"
+                @click="$emit('update:view', 'grid')"
+              >
+                <span class="all-btn-icon" aria-hidden="true">⊞</span>
+                {{ t('common.allPhotos') }}
+              </button>
+              <h2 class="pg-d__title">{{ title }}</h2>
+              <button type="button" class="pg-iconbtn" :aria-label="t('common.close')" @click="$emit('close')">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12" /></svg>
+              </button>
+            </header>
+
+            <!-- Grid overview (3 cols) -->
+            <div v-if="view === 'grid'" class="pg-d__grid" data-scroll-lock-allow="true">
+              <div class="pg-masonry">
+                <button v-for="(img, i) in ordered" :key="img.id" type="button" class="pg-thumb" @click="openPhoto(i)">
+                  <img :src="img.url" :alt="localized(img.alt)" loading="lazy" />
+                </button>
+              </div>
+            </div>
+
+            <!-- Full photo + thumb-strip nav -->
+            <div v-else class="pg-d__photo">
+              <div class="pg-d__stage">
+                <button type="button" class="pg-iconbtn pg-iconbtn--light pg-d__arrow pg-d__arrow--prev" aria-label="Vorige" @click="setIndex(index - 1)">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6" /></svg>
+                </button>
+                <img :src="ordered[index]?.url" :alt="ordered[index] ? localized(ordered[index].alt) : ''" class="pg-d__stage-img" />
+                <button type="button" class="pg-iconbtn pg-iconbtn--light pg-d__arrow pg-d__arrow--next" aria-label="Volgende" @click="setIndex(index + 1)">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6" /></svg>
+                </button>
+                <span class="pg-counter pg-d__counter">{{ index + 1 }} / {{ total }}</span>
+              </div>
+              <div ref="dStrip" class="pg-d__strip">
+                <button
+                  v-for="(img, i) in ordered"
+                  :key="img.id"
+                  type="button"
+                  class="pg-d__strip-thumb"
+                  :class="{ 'is-active': i === index }"
+                  @click="setIndex(i)"
+                >
+                  <img :src="img.url" :alt="localized(img.alt)" loading="lazy" />
+                </button>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </Transition>
+    </template>
+  </Teleport>
+</template>
+
+<script setup lang="ts">
+import type { HotelImage } from '~/types/hotel'
+import { useSecondReleaseIsMobile } from '~/composables-second-release/useSecondReleaseIsMobile'
+import { useBodyScrollLock } from '~/composables-second-release/useBodyScrollLock'
+
+const { t, localized } = useSecondReleaseI18n()
+const isMobile = useSecondReleaseIsMobile()
+
+const props = defineProps<{
+  open: boolean
+  images: HotelImage[]
+  title: string
+  /** 'grid' = thumbnail overview, 'photo' = full-photo viewer. */
+  view: 'grid' | 'photo'
+  /** Active photo index into `ordered`. */
+  index: number
+  /** True when opened straight into the photo view from a page photo
+   *  (so the desktop "← Alle foto's" back-to-grid control is hidden). */
+  cameDirect: boolean
+}>()
+
+const emit = defineEmits<{
+  close: []
+  book: []
+  'update:view': [v: 'grid' | 'photo']
+  'update:index': [i: number]
+}>()
+
+useBodyScrollLock().bindTo(toRef(props, 'open'))
+
+/** Ordered list: hero first, then gallery photos. Index everywhere refers
+ *  to this list (matches HeroGallery's `carouselImages`). */
+const ordered = computed<HotelImage[]>(() => {
+  const hero = props.images.find(img => img.position === 'hero')
+  const gallery = props.images.filter(img => img.position === 'gallery')
+  return hero ? [hero, ...gallery] : gallery
+})
+const total = computed(() => ordered.value.length)
+
+/** Whether the current photo view was reached FROM the grid (a real
+ *  back-to-grid action exists). Seeded from `cameDirect` on open, but flipped
+ *  true whenever a photo is opened by tapping a grid thumb — so if the user
+ *  opens a page photo directly, goes to the grid, then opens another photo,
+ *  the "← Alle foto's" chevron correctly reappears. */
+const cameFromGrid = ref(false)
+watch(() => props.open, (isOpen) => {
+  if (isOpen) cameFromGrid.value = !props.cameDirect
+})
+
+function openPhoto(i: number) {
+  cameFromGrid.value = true
+  emit('update:index', i)
+  emit('update:view', 'photo')
+}
+function setIndex(i: number) {
+  // Wrap around both ends: prev on the first photo lands on the last,
+  // next on the last lands on the first. On mobile the swipe-track sync
+  // (scrollTrackToIndex with behavior:'auto') makes the wrap an instant
+  // jump rather than a scroll across every photo.
+  const n = total.value
+  if (n <= 0) return
+  emit('update:index', ((i % n) + n) % n)
+}
+/** Mobile photo close (×): always close the whole gallery — the new
+ *  "Alle foto's" button in the upper-left handles going back to the grid. */
+function closePhoto() {
+  emit('close')
+}
+
+/* ── Mobile swipe ⇄ index sync ── */
+const mTrack = ref<HTMLElement | null>(null)
+const dStrip = ref<HTMLElement | null>(null)
+let syncing = false
+
+function onTrackScroll() {
+  const el = mTrack.value
+  if (!el || el.clientWidth === 0 || syncing) return
+  const i = Math.round(el.scrollLeft / el.clientWidth)
+  if (i !== props.index) emit('update:index', i)
+}
+function scrollTrackToIndex(smooth = false) {
+  const el = mTrack.value
+  if (!el) return
+  syncing = true
+  el.scrollTo({ left: props.index * el.clientWidth, behavior: smooth ? 'smooth' : 'auto' })
+  // release the guard after the scroll settles
+  window.setTimeout(() => { syncing = false }, smooth ? 400 : 60)
+}
+function scrollStripToActive() {
+  const strip = dStrip.value
+  if (!strip) return
+  const active = strip.children[props.index] as HTMLElement | undefined
+  active?.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' })
+}
+
+// When entering the photo view (or jumping via arrows/thumbs), align the
+// mobile swipe track and the desktop thumb-strip to the active index.
+watch(
+  () => [props.open, props.view, props.index] as const,
+  () => {
+    if (!props.open || props.view !== 'photo') return
+    nextTick(() => {
+      if (isMobile.value) scrollTrackToIndex(false)
+      else scrollStripToActive()
+    })
+  },
+)
+
+/* ── Keyboard: Esc closes, ←/→ navigate in the photo view ── */
+function onKey(e: KeyboardEvent) {
+  if (!props.open) return
+  if (e.key === 'Escape') { emit('close'); return }
+  if (props.view !== 'photo') return
+  if (e.key === 'ArrowLeft') setIndex(props.index - 1)
+  else if (e.key === 'ArrowRight') setIndex(props.index + 1)
+}
+onMounted(() => window.addEventListener('keydown', onKey))
+onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
+</script>
+
+<style scoped>
+/* Shared icon button (circle, grey, black glyph). */
+.pg-iconbtn {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: none;
+  background: var(--color-background-secondary);
+  color: var(--color-text-primary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+.pg-iconbtn:hover { background: var(--color-border); }
+.pg-iconbtn:disabled { opacity: 0.35; cursor: default; }
+/* Light variant for use over dark photo backgrounds. */
+.pg-iconbtn--light {
+  background: rgba(255, 255, 255, 0.92);
+  color: #1a1a1a;
+}
+.pg-iconbtn--light:hover { background: #fff; }
+
+.pg-counter {
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+/* 2-column masonry. CSS `columns` on this auto-height wrapper lets each photo
+   keep its natural height (no crop, no row-alignment gaps) while the parent
+   body scrolls. (Putting `columns` on the fixed-height scroller itself makes
+   the browser fragment columns horizontally instead — hence the wrapper.) */
+.pg-masonry {
+  columns: 2;
+  column-gap: 8px;
+}
+
+/* Shared thumbnail tile. Keeps each photo's NATURAL aspect ratio (no
+   aspect-ratio + no object-fit:cover): the image is simply resized to the
+   column width and shows in full — nothing is cropped. `break-inside: avoid`
+   keeps a photo whole within its column; margin-bottom is the row gap. */
+.pg-thumb {
+  display: block;
+  width: 100%;
+  break-inside: avoid;
+  margin-bottom: 8px;
+  padding: 0;
+  border: none;
+  background: #f5f5f5;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  cursor: pointer;
+}
+.pg-thumb img {
+  width: 100%;
+  height: auto;
+  display: block;
+  transition: transform 0.4s ease;
+}
+.pg-thumb:hover img {
+  transform: scale(1.05);
+}
+
+/* ───────── Mobile grid overview ───────── */
+.pg-mgrid {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+}
+.pg-mgrid__header {
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: 10px var(--space-md);
+  /* Black header bar, matching the site nav bar. */
+  background: var(--color-dark);
+}
+.pg-mgrid__title {
+  font-family: var(--font-heading);
+  font-size: 17px;
+  font-weight: 700;
+  margin: 0;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #fff;
+}
+/* Header icon buttons read like nav-bar buttons: white, orange on hover. */
+.pg-mgrid__header .pg-iconbtn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: #fff;
+}
+.pg-mgrid__header .pg-iconbtn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+.pg-mgrid__body {
+  flex: 1;
+  /* min-height:0 lets this flex child shrink below its content height so the
+     overflow actually scrolls — without it iOS Safari clips the body (bottom
+     photos cut off, no scroll). */
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: var(--space-md);
+}
+.pg-mgrid__footer {
+  flex-shrink: 0;
+  display: flex;
+  gap: var(--space-sm);
+  padding: var(--space-md);
+  padding-bottom: calc(var(--space-md) + env(safe-area-inset-bottom, 0));
+  border-top: 1px solid var(--color-border-light);
+  background: #fff;
+}
+.pg-btn {
+  flex: 1;
+  height: 48px;
+  border-radius: var(--radius-md);
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid var(--color-border);
+}
+.pg-btn--ghost { background: #fff; color: var(--color-text-primary); }
+.pg-btn--primary { background: var(--color-primary); color: #fff; border-color: var(--color-primary); }
+
+/* ───────── Mobile full-photo viewer ───────── */
+.pg-mphoto {
+  position: fixed;
+  inset: 0;
+  z-index: 1300;
+  background: var(--color-dark);
+  display: flex;
+  flex-direction: column;
+}
+.pg-mphoto__close {
+  position: absolute;
+  top: calc(10px + env(safe-area-inset-top, 0));
+  right: 12px;
+  z-index: 2;
+  /* Same 36px size as the other closing crosses (stays black). */
+  width: 36px;
+  height: 36px;
+  /* Same stroke + translucent-dark style as the "Alle foto's" pill, so the
+     close cross stays visible on any photo. */
+  background: rgba(0, 0, 0, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  color: #fff;
+  backdrop-filter: blur(4px);
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+.pg-mphoto__close:hover { background: rgba(0, 0, 0, 0.7); border-color: rgba(255, 255, 255, 0.7); }
+/* "Alle foto's" back-to-grid pill, upper-left, over the dark photo bg. */
+/* Matches the hero photo's "Alle foto's" pill: dark translucent rounded
+   rectangle with the ⊞ grid glyph. */
+.pg-mphoto__back {
+  position: absolute;
+  top: calc(10px + env(safe-area-inset-top, 0));
+  left: 12px;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  /* Stroke + translucent fill like the nav-bar ghost buttons (visible on any
+     photo thanks to the dark backdrop + blur). */
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: var(--radius-sm);
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  backdrop-filter: blur(4px);
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+.pg-mphoto__back:hover { background: rgba(0, 0, 0, 0.7); border-color: rgba(255, 255, 255, 0.7); }
+.pg-mphoto__back .all-btn-icon { font-size: 20px; }
+.pg-mphoto__track {
+  flex: 1;
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.pg-mphoto__track::-webkit-scrollbar { display: none; }
+.pg-mphoto__slide {
+  flex: 0 0 100%;
+  width: 100%;
+  scroll-snap-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.pg-mphoto__slide img { width: 100%; height: 100%; max-height: 100%; object-fit: contain; display: block; }
+.pg-mphoto__controls {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-lg);
+  padding: var(--space-md);
+  padding-bottom: calc(var(--space-md) + env(safe-area-inset-bottom, 0));
+}
+.pg-mphoto__controls .pg-counter { color: #fff; min-width: 64px; text-align: center; }
+
+/* ───────── Desktop slide-in panel ───────── */
+.pg-d {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: flex-end;
+}
+.pg-d__panel {
+  width: 80vw;
+  height: 100%;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  box-shadow: -20px 0 60px rgba(0, 0, 0, 0.25);
+}
+.pg-d__header {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: 14px var(--space-xl);
+  /* Black header bar, matching the site nav bar. */
+  background: var(--color-dark);
+}
+/* "Alle foto's" back + close: nav-bar ghost-button style — white text + a
+   subtle white stroke + translucent fill on the black header, brighter on
+   hover. */
+/* ⊞ icon + rounded rectangle, same shape/size as the mobile "Alle foto's"
+   pill. Keeps the ghost stroke since it sits on the black header (not a
+   photo) so it stays visible. */
+.pg-d__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.05);
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+.pg-d__back .all-btn-icon { font-size: 20px; }
+.pg-d__back:hover { background: rgba(255, 255, 255, 0.12); border-color: rgba(255, 255, 255, 0.3); }
+.pg-d__header .pg-iconbtn {
+  width: 36px;
+  height: 36px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: #fff;
+}
+.pg-d__header .pg-iconbtn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+.pg-d__title {
+  font-family: var(--font-heading);
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #fff;
+}
+/* Close pinned to the far right. */
+.pg-d__header .pg-iconbtn { margin-left: auto; }
+.pg-d__grid {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: var(--space-xl);
+}
+/* Wider gap for the roomier desktop panel. */
+.pg-d__grid .pg-masonry {
+  column-gap: var(--space-md);
+}
+.pg-d__grid .pg-thumb {
+  margin-bottom: var(--space-md);
+}
+.pg-d__photo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background: var(--color-dark);
+}
+.pg-d__stage {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+  padding: var(--space-lg);
+}
+.pg-d__stage-img { max-width: 100%; max-height: 100%; object-fit: contain; display: block; }
+.pg-d__arrow { position: absolute; top: 50%; transform: translateY(-50%); }
+.pg-d__arrow--prev { left: 16px; }
+.pg-d__arrow--next { right: 16px; }
+.pg-d__counter {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+.pg-d__strip {
+  flex-shrink: 0;
+  display: flex;
+  gap: 8px;
+  padding: var(--space-md);
+  overflow-x: auto;
+  background: var(--color-dark);
+}
+.pg-d__strip-thumb {
+  flex: 0 0 auto;
+  width: 96px;
+  height: 64px;
+  padding: 0;
+  border: 2px solid transparent;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity var(--transition-fast), border-color var(--transition-fast);
+}
+.pg-d__strip-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.pg-d__strip-thumb.is-active { opacity: 1; border-color: #fff; }
+.pg-d__strip-thumb:hover { opacity: 1; }
+
+/* ───────── Transitions ───────── */
+.pg-fade-enter-active, .pg-fade-leave-active { transition: opacity 220ms ease; }
+.pg-fade-enter-from, .pg-fade-leave-to { opacity: 0; }
+
+.pg-slide-enter-active, .pg-slide-leave-active { transition: opacity 300ms ease; }
+.pg-slide-enter-active .pg-d__panel, .pg-slide-leave-active .pg-d__panel { transition: transform 320ms cubic-bezier(0.16, 1, 0.3, 1); }
+.pg-slide-enter-from, .pg-slide-leave-to { opacity: 0; }
+.pg-slide-enter-from .pg-d__panel, .pg-slide-leave-to .pg-d__panel { transform: translateX(100%); }
+</style>

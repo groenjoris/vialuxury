@@ -36,6 +36,11 @@ const { restoreSearchSession: restoreSearchSessionFr } = useFirstReleaseSearchSt
 // First Release mobile home/nav layout variant (1–4) — restored from
 // localStorage so the picked layout persists across pages + reloads.
 const { restoreHomeLayoutVariant } = useFirstReleaseHomeVariant()
+// Second Release mirror — full independent copy of First Release with its
+// own localStorage namespace + partner state.
+const { restore: restoreSr, set: setSr } = useSecondReleasePartner()
+const { restoreSearchSession: restoreSearchSessionSr } = useSecondReleaseSearchState()
+const { restoreHomeLayoutVariant: restoreHomeLayoutVariantSr } = useSecondReleaseHomeVariant()
 // Homepage variant ('1' / '2' / '3' / '4') — restored from URL first,
 // then localStorage. The active variant is also reflected on <body> as
 // `vl-variant-2` etc., so global CSS (e.g. variant-2.css) can re-style
@@ -65,9 +70,12 @@ onMounted(() => {
   restoreSearchSessionNs()
   restoreSearchSessionFr()
   restoreHomeLayoutVariant()
+  restoreSr()
+  restoreSearchSessionSr()
+  restoreHomeLayoutVariantSr()
   restoreHomeVariant(route.path)
   const p = route.query.partner
-  if (p === 'nu') set('nu')
+  if (p === 'nu') { set('nu'); setSr('nu') }
   applyCheckinFromUrl(route.query.checkin)
   applyGroupFromUrl(route.query.persons, route.query.rooms)
 })
@@ -84,7 +92,7 @@ watch(homeVariant, (v) => {
   body.classList.add(`vl-variant-${v}`)
 }, { immediate: true })
 watch(() => route.query.partner, (val) => {
-  if (val === 'nu') set('nu')
+  if (val === 'nu') { set('nu'); setSr('nu') }
 })
 watch(() => route.query.checkin, applyCheckinFromUrl)
 watch(() => [route.query.persons, route.query.rooms], ([p, r]) => applyGroupFromUrl(p, r))

@@ -31,6 +31,24 @@
         </div>
       </section>
 
+      <!-- Second release — full independent copy of First Release, the
+           next iteration the client will build on. -->
+      <section class="start-section">
+        <h2 class="start-section__title">Second release: hotel first</h2>
+        <div class="start-section__buttons">
+          <button
+            type="button"
+            class="start-btn start-btn--primary"
+            @click="startSecondReleaseFromHome"
+          >Homepage</button>
+          <button
+            type="button"
+            class="start-btn"
+            @click="startSecondReleaseFromNushop"
+          >Start via NUshop</button>
+        </div>
+      </section>
+
       <!-- Huisstijl varianten — experimental homepage-variant prototypes
            frozen on 13 May. Five homepage variants live next to each
            other; the chosen variant persists in localStorage so
@@ -71,6 +89,22 @@
         </div>
       </section>
 
+      <!-- Component library — reusable Vue components extracted from the
+           first-release prototype, showcased on a dedicated page. -->
+      <section class="start-section">
+        <h2 class="start-section__title">Component library</h2>
+        <p class="start-section__lead">
+          Herbruikbare Vue-componenten op basis van het First Release prototype.
+        </p>
+        <div class="start-section__buttons">
+          <button
+            type="button"
+            class="start-btn start-btn--primary"
+            @click="navigateTo('/library')"
+          >Open component library</button>
+        </div>
+      </section>
+
       <!-- Northstar — old prototype, afgerond/bevroren op 8 mei. -->
       <section class="start-section">
         <h2 class="start-section__title">Northstar concept (afgerond op 8 mei)</h2>
@@ -108,6 +142,19 @@ const {
   clearDestinations,
 } = useSearchState()
 
+// Second Release mirror — full independent copy with its own composables.
+const { setHeroPhotoIndex: setHeroPhotoIndexSr } = useSecondReleaseHomeVariant()
+const { set: setPartnerSr, clear: clearSr } = useSecondReleasePartner()
+const {
+  clearArrivalDate: clearArrivalDateSr,
+  setSearchGroup: setSearchGroupSr,
+  clearDuration: clearDurationSr,
+  setFlexibility: setFlexibilitySr,
+  resetBudget: resetBudgetSr,
+  clearFilterTags: clearFilterTagsSr,
+  clearDestinations: clearDestinationsSr,
+} = useSecondReleaseSearchState()
+
 // Northstar mirror — separate state lives in its own composables.
 const { clear: clearNs } = useNorthstarPartner()
 const {
@@ -125,6 +172,7 @@ const {
 onMounted(() => {
   clear()
   clearNs()
+  clearSr()
 })
 
 function resetAll() {
@@ -186,6 +234,34 @@ function startHotelFirstFromAd() {
   if (import.meta.client) {
     window.location.href = '/advertisement/'
   }
+}
+
+/** Reset Second Release session state so each run starts clean. */
+function resetAllSecondRelease() {
+  clearSr()
+  clearArrivalDateSr()
+  setSearchGroupSr(2, 1)
+  clearDurationSr()
+  setFlexibilitySr(0)
+  resetBudgetSr()
+  clearFilterTagsSr()
+  clearDestinationsSr()
+}
+
+/** Second Release — start on the dedicated /second-release/home page. */
+function startSecondReleaseFromHome() {
+  resetAllSecondRelease()
+  setHeroPhotoIndexSr(0)
+  navigateTo('/second-release/home')
+}
+
+/** Second Release NUshop entry — skip the intermediate advertisement page
+ *  and land straight on the co-branded Hotel des Indes deal page with the
+ *  NUshop partner logo (partner flag set + `?partner=nu` query). */
+function startSecondReleaseFromNushop() {
+  resetAllSecondRelease()
+  setPartnerSr('nu')
+  navigateTo('/second-release/deal/ervaar-pure-luxe-in-het-chique-5-hotel-des-indes?partner=nu')
 }
 
 /** "Start with ad" for the experimental homepage variants. Same static

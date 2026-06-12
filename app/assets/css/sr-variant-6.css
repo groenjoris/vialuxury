@@ -1,0 +1,719 @@
+/* ─────────────────────────────────────────────────────────────────
+ * First Release — Variant 6 overrides
+ *
+ * Activated when the FR composable sets
+ *   document.documentElement.dataset.frVariant = '6'
+ *
+ * Strategy: a single CSS-variable bump (`--container-max` 1137 → 1200
+ * and a new `--fr-deal-sidebar-width`), plus a handful of selectors
+ * for blocks that should re-balance at the wider grid. Everything is
+ * scoped under `[data-sr-variant="6"]` so v1-v5 stay byte-identical.
+ * ───────────────────────────────────────────────────────────────── */
+
+:root[data-sr-variant="6"] {
+  --container-max: 1200px;
+  --fr-deal-sidebar-width: 400px;
+}
+
+/* SiteHeader chrome row: the inner nav grid is otherwise capped at the
+ * default container width. Bump it to 1200 so the logo / payoff /
+ * verticals / phone row stretches across the wider hero. */
+[data-sr-variant="6"] .site-header__nav-inner {
+  max-width: 1200px;
+}
+
+/* ─── Hotel page block tunings ───
+ * No sidebar on this page; instead each section uses its own grid.
+ * With ~63 extra px to share, the fixed-width side columns on
+ * house-rules and FAQ grow to 300 px so they look intentional with
+ * the wider description column on their right. The intro row keeps
+ * its 340 px mini-map (the photo doesn't need to grow — its
+ * description column gets the extra room).
+ */
+[data-sr-variant="6"] .house-rules__layout,
+[data-sr-variant="6"] .faq__layout {
+  grid-template-columns: 300px 1fr;
+}
+
+/* ─── Deal page on v6 — hide review/score blocks (backlog item) ───
+ * The inline star rating in the title row stays; everything else
+ * review-related is hidden. The mobile-fullscreen reviews modal is
+ * left mounted but unreachable because its triggers live inside
+ * `.deal-page__mobile-reviews`, which we hide. The score badge,
+ * first divider and review-count meta-line items are gated via
+ * `v-if="frNavVariant !== '6'"` directly in the template — they
+ * have no unique selectors that would survive a CSS-only hide.
+ */
+[data-sr-variant="6"] .deal-page__reviews,
+[data-sr-variant="6"] .deal-page__mobile-reviews {
+  display: none !important;
+}
+
+/* ─── Deal page title row — left/right flex split (v6 only) ───
+ * Title + stars + meta on the left. Creator business card on the
+ * right, right-aligned, 286 px wide. The heart + share icon
+ * actions move OUT of the title section into the anchor-nav row
+ * above (see `.deal-page__tabs-actions` rule below), so the
+ * original `.deal-page__title-actions` is hidden on v6.
+ */
+[data-sr-variant="6"] .deal-page__title-section {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-lg);
+}
+
+[data-sr-variant="6"] .deal-page__title-section .deal-page__title-left {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+[data-sr-variant="6"] .deal-page__title-section .deal-page__title-right {
+  flex: 0 0 auto;
+  width: 286px;
+  display: flex;
+  align-items: stretch;
+  gap: 16px;
+}
+/* Advertentie-flow: partner card sits LEFT of the creator card.
+   Widen the right column to fit both at their natural 286 px each
+   and use a 6 px gap that mirrors the hero gallery's 6 px
+   inter-photo gap — the two cards visually line up with the two
+   gallery columns below them. */
+[data-sr-variant="6"] .deal-page__title-section .deal-page__title-right--with-partner {
+  width: auto;
+  gap: 6px;
+}
+/* Advertentie-flow: shrink the title column so the deal title wraps
+   earlier — its right edge aligns with the boundary between gallery
+   photo 1 and photo 2 (≈ container midpoint). */
+[data-sr-variant="6"] .deal-page__title-section .deal-page__title-left--with-partner {
+  flex: 0 1 50%;
+  max-width: 50%;
+}
+
+[data-sr-variant="6"] .deal-page__title-section .deal-page__title-actions {
+  display: none;
+}
+
+/* Partner card (advertentie flow) — sits in the title-right slot at
+   the same dimensions as the Experience Creator business card so the
+   layout is identical. */
+[data-sr-variant="6"] .deal-page__partner-card {
+  width: 286px;
+  height: 110px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: #fff;
+  border: 1px solid var(--color-border-light, #ececec);
+  border-radius: 14px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+[data-sr-variant="6"] .deal-page__partner-card-caption {
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--color-text-secondary, #6a6a6a);
+  letter-spacing: 0.02em;
+  line-height: 1;
+}
+
+[data-sr-variant="6"] .deal-page__partner-card-logo {
+  height: 56px;
+  width: auto;
+  display: block;
+}
+
+/* Mobile variant: full-width card beneath the gallery. Caption
+   on top, logo below — both centred. Logo is bumped up for
+   visual presence on a phone. */
+[data-sr-variant="6"] .deal-page__partner-card--mobile {
+  width: 100%;
+  height: auto;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 16px;
+}
+[data-sr-variant="6"] .deal-page__partner-card--mobile .deal-page__partner-card-caption {
+  text-align: center;
+  flex: 0 0 auto;
+}
+[data-sr-variant="6"] .deal-page__partner-card--mobile .deal-page__partner-card-logo {
+  height: 56px;
+  max-width: 100%;
+  display: block;
+}
+
+/* Heart + share row inside the anchor-nav tabs, right-aligned so
+   they sit at the same height as the anchor links and just above
+   the section's grey divider. */
+[data-sr-variant="6"] .deal-page__tabs .deal-page__tabs-actions,
+[data-sr-variant="6"] .hotel-page__tabs .hotel-page__tabs-actions {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+/* ─── Description "Lees meer" modal — shared by the deal + hotel pages ───
+ * Single source of truth for both popups (their pages no longer carry any
+ * scoped `.desc-modal` CSS). DOM order is: header (title + close), photo, body.
+ *
+ * DESKTOP: 2-column card — the photo sits LEFT and is fixed (object-fit
+ *   cover, full height), the header pins the top-right and only the body text
+ *   scrolls. (Photo col1 spans both rows; header = col2/row1; body = col2/row2.)
+ * MOBILE: single column — the header is sticky at the top and the photo +
+ *   body scroll underneath it.
+ */
+[data-sr-variant="6"] .desc-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-lg);
+}
+[data-sr-variant="6"] .desc-modal__card {
+  position: relative;
+  background: #fff;
+  border-radius: var(--radius-lg);
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto 1fr;
+  /* 80% of the 1200px content width; height a touch shorter than the width. */
+  width: min(960px, calc(100vw - 32px));
+  height: 72vh;
+  max-width: calc(100vw - 32px);
+  max-height: 72vh;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+}
+/* Photo: left column, BELOW the full-width header; fixed (only body scrolls). */
+[data-sr-variant="6"] .desc-modal__photo {
+  grid-column: 1;
+  grid-row: 2;
+  overflow: hidden;
+  background: #f5f5f5;
+}
+[data-sr-variant="6"] .desc-modal__photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+/* Header: title + close, FULL width across the top; the photo begins
+   underneath it. Sticky so it stays put while the body scrolls. */
+[data-sr-variant="6"] .desc-modal__header {
+  grid-column: 1 / -1;
+  grid-row: 1;
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  padding: 14px var(--space-lg);
+  background: #fff;
+  border-bottom: 1px solid var(--color-border-light);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+[data-sr-variant="6"] .desc-modal__title {
+  font-family: var(--font-heading);
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0;
+  min-width: 0;
+  color: var(--color-text-primary);
+}
+/* Close — matches the side-panel close: grey circle, black cross
+   (SVG stroke=currentColor), darker grey on hover. */
+[data-sr-variant="6"] .desc-modal__close {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: var(--color-background-secondary);
+  color: var(--color-text-primary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+[data-sr-variant="6"] .desc-modal__close:hover {
+  background: var(--color-border);
+}
+/* Body: right column, the ONLY scrolling area on desktop. */
+[data-sr-variant="6"] .desc-modal__body {
+  grid-column: 2;
+  grid-row: 2;
+  overflow-y: auto;
+  padding: var(--space-lg) var(--space-xl);
+  font-size: 15px;
+  line-height: 1.75;
+  color: var(--color-text-secondary);
+}
+[data-sr-variant="6"] .desc-modal__body p {
+  margin: 0 0 var(--space-md);
+}
+
+/* Mobile: plain vertical scroll — only the header is sticky; the photo AND
+   the text scroll together underneath it. (Drop the desktop grid; a grid with
+   a 1fr body at a fixed height squeezed the photo row to nothing, so the photo
+   appeared to be missing.) */
+@media (max-width: 800px) {
+  [data-sr-variant="6"] .desc-modal {
+    padding: var(--space-md);
+  }
+  [data-sr-variant="6"] .desc-modal__card {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: 88vh;
+    overflow-y: auto;
+  }
+  [data-sr-variant="6"] .desc-modal__header {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    /* Keep the header a single row + pin the close to the top-right. */
+    align-items: flex-start;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  }
+  /* Deal name truncates to one line so the header stays compact and the
+     close cross sits in the top-right corner. */
+  [data-sr-variant="6"] .desc-modal__title {
+    flex: 1;
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  [data-sr-variant="6"] .desc-modal__photo {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  [data-sr-variant="6"] .desc-modal__photo img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  [data-sr-variant="6"] .desc-modal__body {
+    overflow: visible;
+    padding: var(--space-lg);
+  }
+}
+
+/* ─── Arrival-date sidebar block (v6 only) ───
+ * The legacy `.sidebar__variant-cta` block above the calendar is
+ * hidden via v-if; its content is folded into the calendar wrapper
+ * with a refreshed order:
+ *   1. Bigger "Kies je aankomstdatum" title
+ *   2. "Dit arrangement is voor [N nachten]" line
+ *   3. "Korter of langer verblijf?" sub-heading
+ *   4. "Bekijk andere arrangementen bij dit hotel" link
+ *   5. Calendar
+ */
+[data-sr-variant="6"] .sidebar__cal-title--big {
+  font-family: var(--font-heading);
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.2;
+  margin: 0 0 6px;
+  color: var(--color-text-primary);
+}
+
+[data-sr-variant="6"] .sidebar__nights-line {
+  margin: 0 0 var(--space-md);
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--color-text-secondary);
+  line-height: 1.4;
+}
+
+[data-sr-variant="6"] .sidebar__variant-heading--v6 {
+  margin: 0 0 4px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  line-height: 1.3;
+}
+
+/* "Bekijk andere arrangementen bij dit hotel" — matches the shared
+   orange-underlined link style. Underline stays on hover; only the
+   colour brightens. */
+[data-sr-variant="6"] .sidebar__other-arrangements {
+  display: inline-block;
+  margin: 0 0 var(--space-md);
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-primary);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+[data-sr-variant="6"] .sidebar__other-arrangements:hover {
+  color: var(--color-primary-hover);
+  text-decoration: underline;
+}
+
+/* ─── Trustpilot + Klarna stack with captions (v6 only) ───
+ * Each logo gets a centred caption directly underneath, and the
+ * two blocks are separated by a clear gap so they read as two
+ * distinct trust signals.
+ */
+[data-sr-variant="6"] .sidebar__trust-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Spacing between Trustpilot and Klarna blocks. */
+[data-sr-variant="6"] .sidebar__trust-block--klarna {
+  margin-top: var(--space-lg);
+}
+
+[data-sr-variant="6"] .sidebar__trust-caption {
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--color-text-secondary);
+  line-height: 1.3;
+  text-align: center;
+}
+
+/* ─── Deal-page calendar (v6 only) ───
+ * Restyles every `.day-cell` inside the deal page's sidebar calendar
+ * AND the page's mobile-calendar section. Available dates become
+ * white tiles with a 1-px border + subtle drop shadow, past/sold-out
+ * dates fade to a flat light-grey card, the cheapest day gains an
+ * orange round badge that overhangs the top-right corner, and the
+ * selected check-in / check-out + the in-range nights gain a
+ * white+green ring shadow. Scoped under `.sidebar__calendar` and
+ * `.deal-page__mobile-calendar` so other pages' calendars (e.g. the
+ * hotel-page date picker) stay on the legacy look.
+ */
+[data-sr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar, .booking-controls__calendar) .calendar-month__grid {
+  gap: 8px;
+  /* Fixed row tracks so a selected / in-range / check-out cell can NEVER grow
+     its row and shift the rows below ("wobble"). Every cell is the same 60px
+     (see .day-cell height below); rows resize only via media query.
+     `!important` beats the base CalendarMonth `grid-auto-rows:52px` (the
+     `:where()` wrapper here otherwise loses the equal-specificity tie). */
+  grid-auto-rows: 60px !important;
+}
+
+[data-sr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar, .booking-controls__calendar) .calendar-month__day-headers {
+  gap: 8px;
+  margin-bottom: var(--space-md);
+}
+
+[data-sr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar, .booking-controls__calendar) .day-header {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  /* Centred above each column's centred date number. */
+  padding: 0;
+  text-align: center;
+}
+
+/* Available date tile — white card with hairline border + 1-px shadow. */
+[data-sr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar, .booking-controls__calendar) .day-cell {
+  background: #fff;
+  border: 1px solid var(--color-border);
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+  border-radius: 0;
+  /* Fixed height (not min-height) + overflow:hidden so no cell can ever grow
+     past one row, regardless of selection / extra content. */
+  height: 60px !important;
+  min-height: 0;
+  overflow: hidden;
+  padding: 5px;
+  /* Day number + price stacked and vertically centred as a group, so the
+     margin above the day equals the margin below the price. !important
+     beats the scoped `display: grid` in CalendarDayCell.vue. */
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 4px;
+}
+
+[data-sr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar, .booking-controls__calendar) .day-cell:hover:not(:disabled) {
+  background: #f3fbf7;
+}
+
+[data-sr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar, .booking-controls__calendar) .day-cell__number {
+  justify-self: center;
+  align-self: center;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.4;
+  color: var(--color-text-primary);
+}
+
+[data-sr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar, .booking-controls__calendar) .day-cell__price,
+[data-sr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar, .booking-controls__calendar) .day-cell__sold {
+  /* In flow, directly under the day number (the cell's flex gap provides
+     the spacing) so the day+price group stays balanced. */
+  position: static !important;
+  text-align: center;
+  font-size: 10px;
+  font-weight: 400;
+  color: var(--color-discount) !important;   /* beats scoped --color-text-primary */
+  line-height: 1.4;
+}
+
+/* Past + sold-out: flat grey card, no shadow, no border.
+   Exclude `.day-cell--checkout` and `.day-cell--in-range` so the
+   selected range stays green even when one of those nights happens
+   to fall on a sold-out date (no room is occupied on the check-out
+   day, and in-range days inherit the range styling). */
+[data-sr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar, .booking-controls__calendar) .day-cell--past:not(.day-cell--checkout),
+[data-sr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar, .booking-controls__calendar) .day-cell--sold-out:not(.day-cell--in-range):not(.day-cell--checkout) {
+  background: #dbdbdb;
+  border-color: transparent;
+  box-shadow: none;
+  opacity: 0.4;
+}
+
+/* Selected check-in & check-out: vivid green, ring shadow, white text.
+   Check-out gets IDENTICAL styling to check-in regardless of whether the
+   underlying date is sold-out or past — the check-out night isn't spent
+   at the hotel, so no inventory check applies. The `!important` flags on
+   background / box-shadow / opacity guard against scoped legacy rules
+   (e.g. `.day-cell--past { opacity: 0.3 }` and
+   `.day-cell--checkout { background: #9AE3C7 }`) sneaking through. */
+/* Selected check-in & check-out: green tile (white text via the scoped
+   rule). The tile keeps its OWN 1px border — we just recolour it black
+   instead of adding an outer/inner ring. Because the border width is
+   unchanged (grey 1px → black 1px) the tile's box never changes size, so
+   selecting a day does NOT shift the calendar grid. */
+[data-sr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar, .booking-controls__calendar) .day-cell--selected,
+[data-sr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar, .booking-controls__calendar) .day-cell--checkout {
+  background: var(--color-discount) !important;
+  border: 1px solid var(--color-text-primary) !important;
+  opacity: 1 !important;
+  box-shadow: none !important;
+  z-index: 1;
+}
+
+/* In-range nights: light-green tile, NO border/ring. */
+[data-sr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar, .booking-controls__calendar) .day-cell--in-range:not(.day-cell--selected):not(.day-cell--checkout) {
+  background: color-mix(in srgb, var(--color-discount) 45%, #fff) !important;
+  border-color: transparent;
+  box-shadow: none !important;
+}
+
+/* Inside any selected / range tile: every glyph reads white (beats the
+   variant-6 green price + dark number rules above). */
+[data-sr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar, .booking-controls__calendar) :where(.day-cell--selected, .day-cell--checkout, .day-cell--in-range) .day-cell__number,
+[data-sr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar, .booking-controls__calendar) :where(.day-cell--selected, .day-cell--checkout, .day-cell--in-range) .day-cell__price,
+[data-sr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar, .booking-controls__calendar) :where(.day-cell--selected, .day-cell--checkout, .day-cell--in-range) .day-cell__sold {
+  color: #fff !important;
+}
+
+/* Selected check-in / check-out: bold day number. */
+[data-sr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar, .booking-controls__calendar) :where(.day-cell--selected, .day-cell--checkout) .day-cell__number {
+  font-weight: 700 !important;
+}
+
+/* In / Out pill — translucent white, rounded only on the bottom-left
+   corner so it sits flush with the cell's top-right edge. */
+[data-sr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar, .booking-controls__calendar) .day-cell__badge {
+  /* Pull 1px out over the (transparent) border so the pill butts straight
+     against the black outer stroke — no green sliver between them.
+     !important beats the scoped `.day-cell__badge { top:0; right:0 }`. */
+  top: -1px !important;
+  right: -1px !important;
+  width: auto;
+  height: auto;
+  min-width: 18px;
+  padding: 2px 4px;
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+  border-radius: 0 0 0 8px;
+  font-size: 9px !important;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+/* Cheapest-day badge — orange round chip tucked into the date cell's
+   top-right corner (fully inside, not overhanging). The `!important`
+   flags beat the component-scoped rules in CalendarDayCell.vue
+   (color #00CB8B, top 2px, left 4px) which would otherwise win by
+   cascade order. */
+[data-sr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar, .booking-controls__calendar) .day-cell__star {
+  top: 1px !important;
+  right: 1px !important;
+  left: auto !important;
+  width: auto;
+  height: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;          /* drop the orange circle */
+  color: var(--color-primary) !important;  /* orange ★ glyph */
+  font-size: 14px;
+  line-height: 1;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+/* Cheapest-day price — colour-match the orange badge. The !important
+   flag beats the scoped `.day-cell__price--cheapest { color: #00CB8B }`
+   in CalendarDayCell.vue. */
+[data-sr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar, .booking-controls__calendar) .day-cell__price--cheapest {
+  color: var(--color-primary) !important;
+}
+
+/* Match the placeholder cell height so the first-week offset doesn't
+   collapse the row. */
+[data-sr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar, .booking-controls__calendar) .day-placeholder {
+  height: 60px;
+}
+
+/* Check-out cell carries no price (the night isn't spent at the hotel)
+   — render a small dash in the price slot so the cell doesn't look
+   half-empty. Purely visual; the underlying template is untouched. */
+/* Only on an AVAILABLE check-out (empty price slot). A sold-out check-out
+   already renders the `.day-cell__sold` dash, so excluding it here prevents
+   two stacked dashes. */
+[data-sr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar, .booking-controls__calendar) .day-cell--checkout:not(.day-cell--sold-out)::after {
+  content: '-';
+  /* Static so it lives in the flex column with the day number — together
+     they centre as a group (the number alone was being centred above the
+     absolute-positioned dash, looking off vs other cells). The cell is
+     height:60px + overflow:hidden, so no wobble. */
+  text-align: center;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.4;
+  pointer-events: none;
+}
+
+/* Legend (under the calendar) — naked orange ★ matching the day-cell
+   marker. The "niet beschikbaar" swatch matches the flat grey
+   unavailable tile. */
+[data-sr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar, .booking-controls__calendar) .legend-star {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  height: auto;
+  background: transparent;
+  color: var(--color-primary) !important;  /* beats scoped #00CB8B in CalendarMonth.vue */
+  font-size: 14px;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+/* Mobile: shrink the tiles, gaps + font so the 7-column grid never
+   overflows the page margins on small screens. */
+@media (max-width: 800px) {
+  [data-sr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar, .booking-controls__calendar) .calendar-month__grid,
+  [data-sr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar, .booking-controls__calendar) .calendar-month__day-headers {
+    gap: 4px;
+  }
+  [data-sr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar, .booking-controls__calendar) .day-cell {
+    /* Shrink horizontally (padding + font below) to fit the 7 columns;
+       keep the height for a clear gap between the centred date and the
+       bottom price. */
+    padding: 5px 2px;
+  }
+  [data-sr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar, .booking-controls__calendar) .day-cell__number {
+    font-size: 13px;
+  }
+  [data-sr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar, .booking-controls__calendar) .day-cell__price,
+  [data-sr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar, .booking-controls__calendar) .day-cell__sold {
+    font-size: 9px;
+  }
+  [data-sr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar, .booking-controls__calendar) .day-header {
+    font-size: 12px;
+  }
+}
+
+[data-sr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar, .booking-controls__calendar) .legend-swatch--unavailable {
+  background: #dbdbdb;
+  opacity: 0.4;
+}
+
+/* (Nav-variant 6's rounded-rectangle button chrome lives inside
+   SiteHeader.vue's scoped block, joined to variant 3's existing rule
+   — Vue scoped CSS appends a data-v-* attribute selector that boosts
+   specificity over any external override, so the rule has to sit in
+   the same scoped block as the base pill declaration.) */
+
+/* ─────────── "Gezien in:" press-logos banner ───────────
+   Standalone credibility band, decoupled from the Uitgelicht deal
+   card. Sits between the quick-filter pills and "Eerder bekeken".
+   Subtle warm-grey background so it reads as its own section but
+   doesn't compete with the cards above/below. */
+.home-press-banner {
+  padding: var(--space-lg) 0;
+  background: var(--color-background-secondary, #faf9f6);
+  border-top: 1px solid var(--color-border-light);
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.home-press-banner__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-xl);
+  flex-wrap: wrap;
+}
+
+.home-press-banner__label {
+  font-family: var(--font-heading);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  flex-shrink: 0;
+}
+
+.home-press-banner__logos {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  gap: var(--space-lg);
+  flex-wrap: wrap;
+}
+
+.home-press-banner__logo {
+  height: 26px;
+  width: auto;
+  object-fit: contain;
+  display: block;
+}
+/* Per-logo size tuning so the "Gezien in:" band reads optically
+   balanced — Volkskrant is naturally tall, NU.nl visually compact. */
+.home-press-banner__logo[src*="volkskrant"] { height: 20.8px; }   /* 80% */
+.home-press-banner__logo[src*="nu.svg"]      { height: 31.2px; }   /* 120% */
+
+@media (max-width: 640px) {
+  .home-press-banner__inner { justify-content: center; }
+  .home-press-banner__logos { justify-content: center; gap: var(--space-md); }
+  .home-press-banner__logo { height: 22px; }
+  .home-press-banner__logo[src*="volkskrant"] { height: 17.6px; }
+  .home-press-banner__logo[src*="nu.svg"]      { height: 26.4px; }
+}

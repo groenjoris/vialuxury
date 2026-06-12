@@ -1,0 +1,234 @@
+/* ──────────────────────────────────────────────────────────────────
+ * First Release — MOBILE home/nav layout variants (1–4).
+ * Driven by `data-sr-home-variant` on <html> (set by
+ * useFirstReleaseHomeVariant). Mobile only; desktop is untouched.
+ *
+ *  V1 — original: search pill in the nav chrome (same Y as the deal
+ *       page), hero copy below. Eyebrow shown. = the natural DOM order,
+ *       so V1 needs NO overrides.
+ *  V2 — search bar below the hero copy; eyebrow hidden.
+ *  V3 — like V2 but only "Experience more" + search bar (hide eyebrow,
+ *       pitch and the nav phone); 30px under the bar to the photo edge.
+ *  V4 — minimal header (vertical logo + 2-line phone + language +
+ *       hamburger) on home + search + deal + hotel; search below pitch.
+ * ────────────────────────────────────────────────────────────────── */
+
+@media (max-width: 800px) {
+  /* ── V1 (default): search pill stays in the nav chrome at the top, but the
+        hero copy (eyebrow + "Experience more" + pitch) is pushed to the
+        bottom of the photo — pitch 20px above the photo's bottom edge — and
+        left-aligns with the search bar. Natural order is preserved (no
+        reorder); we only stretch the overlay and bottom-anchor the copy. ── */
+  [data-sr-home-variant="1"] .home-hero .site-header--overlay {
+    display: flex !important;
+    flex-direction: column !important;
+    min-height: 450px;
+    padding-bottom: 0 !important;
+  }
+  [data-sr-home-variant="1"] .home-hero__content {
+    margin: auto 0 0 0 !important;   /* push copy to the bottom of the photo */
+    width: 100% !important;
+    max-width: none !important;
+    padding-left: 16px !important;   /* left-align copy with the search bar */
+    padding-right: 16px !important;
+    padding-bottom: 20px !important; /* 20px of photo below the pitch */
+  }
+
+  /* ── V2 / V3 / V4 (home): reorder so the search pill sits BELOW the hero
+        copy. (V1 keeps the natural nav → pill → copy order.) ── */
+  [data-sr-home-variant="2"] .home-hero .site-header--overlay,
+  [data-sr-home-variant="3"] .home-hero .site-header--overlay,
+  :is([data-sr-home-variant="4"], [data-sr-home-variant="5"]) .home-hero .site-header--overlay {
+    display: flex !important;   /* beats the scoped .home-hero .site-header{display:block} */
+    flex-direction: column !important;
+  }
+  [data-sr-home-variant="2"] .home-hero .site-header--overlay .site-header__nav,
+  [data-sr-home-variant="3"] .home-hero .site-header--overlay .site-header__nav,
+  :is([data-sr-home-variant="4"], [data-sr-home-variant="5"]) .home-hero .site-header--overlay .site-header__nav { order: 1 !important; }
+
+  [data-sr-home-variant="2"] .home-hero .site-header--overlay .home-hero__content,
+  [data-sr-home-variant="3"] .home-hero .site-header--overlay .home-hero__content,
+  :is([data-sr-home-variant="4"], [data-sr-home-variant="5"]) .home-hero .site-header--overlay .home-hero__content { order: 2 !important; }
+
+  [data-sr-home-variant="2"] .home-hero .site-header--overlay .site-header__mobile-search,
+  [data-sr-home-variant="3"] .home-hero .site-header--overlay .site-header__mobile-search,
+  :is([data-sr-home-variant="4"], [data-sr-home-variant="5"]) .home-hero .site-header--overlay .site-header__mobile-search {
+    order: 3 !important;
+  }
+
+  /* Eyebrow ("SPRING 2026") only in V1. */
+  [data-sr-home-variant="2"] .home-hero__eyebrow,
+  [data-sr-home-variant="3"] .home-hero__eyebrow,
+  :is([data-sr-home-variant="4"], [data-sr-home-variant="5"]) .home-hero__eyebrow { display: none !important; }
+
+  /* ── V2 + V3 + V4: drop the whole search combo toward the bottom of the
+        photo. (V2/V4 also show the pitch; V3 has no copy.) Gap pitch→search
+        ~20px, gap below the search bar ~34px. V3 inherits the same search-bar
+        position as V2. ── */
+  [data-sr-home-variant="2"] .home-hero .site-header--overlay,
+  [data-sr-home-variant="3"] .home-hero .site-header--overlay,
+  :is([data-sr-home-variant="4"], [data-sr-home-variant="5"]) .home-hero .site-header--overlay {
+    min-height: 450px;
+    padding-bottom: 0 !important;
+  }
+  [data-sr-home-variant="2"] .home-hero__content,
+  [data-sr-home-variant="3"] .home-hero__content,
+  :is([data-sr-home-variant="4"], [data-sr-home-variant="5"]) .home-hero__content {
+    margin-top: auto !important;   /* push the combo down */
+  }
+  /* Pitch → search bar gap = 20px (content pad-bottom 32 + slot pad-top 12 +
+     pill margin-top). −24 ⇒ 32+12−24 = 20. Scoped to .home-hero so
+     deal/hotel pages keep the default -34px position. */
+  [data-sr-home-variant="2"] .home-hero .mobile-search-trigger,
+  [data-sr-home-variant="3"] .home-hero .mobile-search-trigger,
+  :is([data-sr-home-variant="4"], [data-sr-home-variant="5"]) .home-hero .mobile-search-trigger {
+    margin-top: -24px !important;
+  }
+  /* Search bar → photo bottom gap = 34px (half). */
+  [data-sr-home-variant="2"] .home-hero .site-header--overlay .site-header__mobile-search,
+  [data-sr-home-variant="3"] .home-hero .site-header--overlay .site-header__mobile-search,
+  :is([data-sr-home-variant="4"], [data-sr-home-variant="5"]) .home-hero .site-header--overlay .site-header__mobile-search {
+    padding-bottom: 34px !important;
+  }
+
+  /* ── V3: "Experience more" title above search bar, no eyebrow or tagline.
+        Content block pushed to the bottom via margin-top:auto; only the
+        title is visible, left-aligned with the search pill, 24px gap. ── */
+  [data-sr-home-variant="3"] .home-hero__eyebrow,
+  [data-sr-home-variant="3"] .home-hero__tagline { display: none !important; }
+  [data-sr-home-variant="3"] .home-hero__content {
+    margin-top: auto !important;
+    padding: 0 16px !important;
+    text-align: left !important;
+  }
+  [data-sr-home-variant="3"] .home-hero__title {
+    font-size: 36px;
+    margin: 0 0 24px !important;
+    text-align: left;
+  }
+  /* Underline the phone number in the nav bar. */
+  [data-sr-home-variant="3"] .site-header__phone-number {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  /* ── V4: minimal header on home + search + deal + hotel. ── */
+  :is([data-sr-home-variant="4"], [data-sr-home-variant="5"]) :is(.home, .search-page, .deal-page, .hotel-page) .site-header__nav-inner {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  /* Swap the horizontal logo for the compact vertical (stacked) one and
+     drop the payoff tagline. Both logos are always in the DOM; we toggle
+     visibility here so the swap stays scoped to these four pages. */
+  :is([data-sr-home-variant="4"], [data-sr-home-variant="5"]) :is(.home, .search-page, .deal-page, .hotel-page) .site-header__logo-img--horizontal {
+    display: none !important;
+  }
+  :is([data-sr-home-variant="4"], [data-sr-home-variant="5"]) :is(.home, .search-page, .deal-page, .hotel-page) .site-header__logo-img--vertical {
+    display: block !important;
+    height: 48px;   /* 20% larger than the original 40px */
+    width: auto;
+  }
+  :is([data-sr-home-variant="4"], [data-sr-home-variant="5"]) :is(.home, .search-page, .deal-page, .hotel-page) .site-header__tagline-block {
+    display: none;
+  }
+  /* Phone next to the logo: the icon belongs to "Hulp nodig?" (icon + label
+     on line 1), with the number on line 2 left-aligned under the icon. */
+  :is([data-sr-home-variant="4"], [data-sr-home-variant="5"]) :is(.home, .search-page, .deal-page, .hotel-page) .site-header__phone-wrap {
+    margin: 0 !important;
+    width: auto !important;
+    justify-self: start !important;
+    align-self: center;
+  }
+  /* CSS GRID (not flex) so the two-line layout is deterministic on iOS WebKit:
+     flexbox `gap` needs Safari 14.1+ and `flex-wrap`+`flex-basis:100%` is fragile
+     there, which left the number misaligned on real iPhones. Grid + grid `gap`
+     are supported far earlier, and `grid-column: 1 / -1` pins the number to the
+     icon's column edge regardless of WebKit flex quirks. */
+  :is([data-sr-home-variant="4"], [data-sr-home-variant="5"]) :is(.home, .search-page, .deal-page, .hotel-page) .site-header__phone {
+    display: grid !important;
+    grid-template-columns: auto 1fr;   /* col 1 = icon, col 2 = label */
+    column-gap: 6px;
+    row-gap: 0;
+    align-items: center;
+    justify-items: start;
+  }
+  :is([data-sr-home-variant="4"], [data-sr-home-variant="5"]) :is(.home, .search-page, .deal-page, .hotel-page) .site-header__phone svg {
+    grid-column: 1;
+    grid-row: 1;
+    display: block;
+    flex: none;
+    width: 16px;
+    height: 16px;
+    /* The phone glyph is inset ~2px inside its viewBox; nudge it left visually
+       (transform only — does NOT move the grid track or the number). */
+    transform: translateX(-2px);
+  }
+  :is([data-sr-home-variant="4"], [data-sr-home-variant="5"]) :is(.home, .search-page, .deal-page, .hotel-page) .site-header__phone-label {
+    grid-column: 2;
+    grid-row: 1;
+    display: inline;
+    font-size: 13px;
+    line-height: 1.25;
+    margin: 0;
+  }
+  :is([data-sr-home-variant="4"], [data-sr-home-variant="5"]) :is(.home, .search-page, .deal-page, .hotel-page) .site-header__phone-number {
+    grid-column: 1 / -1;   /* line 2, starts at the icon's left edge */
+    grid-row: 2;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.25;
+  }
+
+  /* V4 search-results page: align the search summary bar with the deal page.
+     Move it down ~10px (gap from the logo 10 → 20px) and end the dark header
+     background at the middle of the bar. */
+  :is([data-sr-home-variant="4"], [data-sr-home-variant="5"]) .search-page .site-header__mobile-search--on-solid .mss {
+    margin-top: -24px !important;   /* was -34 → +10px below the logo */
+  }
+  :is([data-sr-home-variant="4"], [data-sr-home-variant="5"]) .search-page .site-header__mobile-search--on-solid.site-header__mobile-search--summary {
+    background: linear-gradient(to bottom, #111 34px, #fff 34px) !important;
+  }
+
+  /* V4/V5 deal + hotel pages use the compact header (shorter nav), so the
+     pill needs -24px margin-top (vs -34 default) to sit correctly. */
+  :is([data-sr-home-variant="4"], [data-sr-home-variant="5"]) :is(.deal-page, .hotel-page) .mobile-search-trigger {
+    margin-top: -24px !important;
+  }
+  :is([data-sr-home-variant="4"], [data-sr-home-variant="5"]) :is(.deal-page, .hotel-page) .site-header__mobile-search--on-solid:not(.site-header__mobile-search--summary) {
+    background: linear-gradient(to bottom, var(--color-dark) 22px, #fff 22px) !important;
+  }
+
+  /* ── V5 = V4, but the header phone ("Hulp nodig?" + number) combo is
+        wrapped in a PILL matching the language-switcher / hamburger chrome:
+        44px tall, fully rounded, hairline translucent-white border + fill,
+        same hover brighten. The existing 2-line content stays; the pill
+        just frames it and centres it vertically. Applies on every V4/V5
+        page (home + search + deal + hotel).
+
+        (The old V5 — a handwritten "Personally Curated Experiences" payoff
+        + taller hero — has been removed; its DOM node stays hidden via the
+        base `.mobile-search-payoff { display:none }`.) ── */
+  /* The pill chrome lives on the WRAP (the phone button itself carries a
+     scoped `background:none` reset we don't want to fight). The wrap has no
+     competing background/border, so the translucent fill applies cleanly. */
+  [data-sr-home-variant="5"] :is(.home, .search-page, .deal-page, .hotel-page) .site-header__phone-wrap {
+    display: inline-flex;
+    align-items: center;            /* vertically centre the 2-row phone grid */
+    height: 44px;
+    padding: 0 12px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.05);
+    transition: background var(--transition-fast), border-color var(--transition-fast);
+  }
+  [data-sr-home-variant="5"] :is(.home, .search-page, .deal-page, .hotel-page) .site-header__phone-wrap:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+  /* Drop the V4 glyph nudge inside the pill (it would crowd the rounded
+     left edge). */
+  [data-sr-home-variant="5"] :is(.home, .search-page, .deal-page, .hotel-page) .site-header__phone svg {
+    transform: none;
+  }
+}
