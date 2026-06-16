@@ -1,10 +1,10 @@
 <template>
   <button
-    class="vl-btn"
+    class="btn"
     :class="[
-      `vl-btn--${variant}`,
-      `vl-btn--${size}`,
-      { 'vl-btn--full': fullWidth },
+      `btn--${variant}`,
+      `btn--${size}`,
+      { 'btn--full': fullWidth },
     ]"
     :type="type"
     :disabled="disabled"
@@ -16,7 +16,7 @@
 
 <script setup lang="ts">
 const props = withDefaults(defineProps<{
-  variant?: 'primary' | 'secondary' | 'ghost'
+  variant?: 'primary' | 'secondary' | 'dark'
   size?: 'sm' | 'md' | 'lg'
   disabled?: boolean
   type?: 'button' | 'submit'
@@ -40,7 +40,7 @@ function onClick(event: MouseEvent) {
 </script>
 
 <style scoped>
-.vl-btn {
+.btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -57,63 +57,63 @@ function onClick(event: MouseEvent) {
   white-space: nowrap;
 }
 
-.vl-btn:disabled {
+.btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
 /* Sizes */
-.vl-btn--sm {
+.btn--sm {
   padding: 6px 16px;
   font-size: 14px;
 }
 
-.vl-btn--md {
+.btn--md {
   padding: 10px 24px;
   font-size: 16px;
 }
 
-.vl-btn--lg {
+.btn--lg {
   padding: 14px 32px;
   font-size: 17px;
 }
 
-.vl-btn--full {
+.btn--full {
   width: 100%;
 }
 
 /* Primary — orange, white text */
-.vl-btn--primary {
+.btn--primary {
   background-color: var(--color-primary);
   color: #fff;
   border-color: var(--color-primary);
 }
 
-.vl-btn--primary:hover:not(:disabled) {
+.btn--primary:hover:not(:disabled) {
   background-color: var(--color-primary-hover);
   border-color: var(--color-primary-hover);
 }
 
-/* Secondary — subtle filled with border */
-.vl-btn--secondary {
+/* Secondary — white bg with border */
+.btn--secondary {
   background-color: var(--color-background-secondary);
   color: var(--color-text-primary);
   border-color: var(--color-border);
 }
 
-.vl-btn--secondary:hover:not(:disabled) {
+.btn--secondary:hover:not(:disabled) {
   background-color: var(--color-border-light);
 }
 
-/* Ghost — transparent with border */
-.vl-btn--ghost {
-  background-color: transparent;
-  color: var(--color-text-primary);
-  border-color: var(--color-border);
+/* Dark — black bg, white text */
+.btn--dark {
+  background-color: var(--color-dark);
+  color: #fff;
+  border-color: var(--color-dark);
 }
 
-.vl-btn--ghost:hover:not(:disabled) {
-  border-color: var(--color-primary);
-  color: var(--color-primary);
+.btn--dark:hover:not(:disabled) {
+  background-color: #2b2b2b;
+  border-color: #2b2b2b;
 }
 </style>

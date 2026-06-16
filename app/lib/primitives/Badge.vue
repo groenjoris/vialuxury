@@ -1,21 +1,21 @@
 <template>
-  <span class="vl-badge" :class="`vl-badge--${variant}`">
+  <span class="badge" :class="`badge--${variant}`">
     <slot>{{ label }}</slot>
   </span>
 </template>
 
 <script setup lang="ts">
 withDefaults(defineProps<{
-  variant?: 'score' | 'discount' | 'neutral'
+  variant?: 'score' | 'dark'
   label?: string
 }>(), {
-  variant: 'neutral',
+  variant: 'score',
   label: '',
 })
 </script>
 
 <style scoped>
-.vl-badge {
+.badge {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -26,23 +26,16 @@ withDefaults(defineProps<{
   font-weight: 700;
   line-height: 1.2;
   white-space: nowrap;
-}
-
-/* Score — solid green, white text */
-.vl-badge--score {
-  background: var(--color-discount);
   color: #fff;
 }
 
-/* Discount — light green background, green text */
-.vl-badge--discount {
-  background: var(--color-discount-light);
-  color: var(--color-discount);
+/* Score — solid green, white text */
+.badge--score {
+  background: var(--color-discount);
 }
 
-/* Neutral — grey */
-.vl-badge--neutral {
-  background: var(--color-background-secondary);
-  color: var(--color-text-secondary);
+/* Dark — solid black, white text */
+.badge--dark {
+  background: var(--color-dark);
 }
 </style>

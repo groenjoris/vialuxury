@@ -12,7 +12,7 @@
         v-for="(tip, index) in tips"
         :key="tip.id ?? index"
         class="tip-card"
-        :class="{ 'tip-card--active': openKey === keyFor(tip, index) }"
+        :class="{ 'tip-card--active': isOpen(tip, index) }"
       >
         <div class="tip-card__image">
           <img :src="tip.image" :alt="tip.title" loading="lazy" />
@@ -21,13 +21,13 @@
         <div class="tip-card__panel">
           <div class="tip-card__accent" />
           <h3 class="tip-card__panel-title">{{ tip.title }}</h3>
-          <p class="tip-card__desc">{{ tip.description }}</p>
+          <p class="tip-card__desc" :class="{ 'tip-card__desc--expanded': isOpen(tip, index) }">{{ tip.description }}</p>
           <button
             type="button"
             class="tip-card__more"
             @click="toggle(keyFor(tip, index))"
           >
-            {{ openKey === keyFor(tip, index) ? 'Lees minder' : 'Lees meer' }}
+            {{ isOpen(tip, index) ? 'Lees minder' : 'Lees meer' }}
           </button>
         </div>
       </div>
@@ -43,7 +43,7 @@ interface NearbyTip {
   image: string
 }
 
-defineProps<{
+const props = defineProps<{
   tips: NearbyTip[]
   hotelName?: string
   heading?: string
@@ -53,6 +53,10 @@ const openKey = ref<string | null>(null)
 
 function keyFor(tip: NearbyTip, index: number): string {
   return tip.id ?? String(index)
+}
+
+function isOpen(tip: NearbyTip, index: number): boolean {
+  return openKey.value === keyFor(tip, index)
 }
 
 function toggle(key: string) {
@@ -153,6 +157,9 @@ function toggle(key: string) {
   line-height: 1.3;
 }
 
+/* Collapsed: clamp to 4 lines. Expanded: show the full text. The explicit
+   `--expanded` modifier on the paragraph guarantees the toggle works
+   regardless of cascade ordering. */
 .tip-card__desc {
   font-size: 14px;
   line-height: 1.7;
@@ -163,7 +170,8 @@ function toggle(key: string) {
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
-.tip-card--active .tip-card__desc {
+.tip-card__desc--expanded {
+  display: block;
   -webkit-line-clamp: initial;
   overflow: visible;
 }

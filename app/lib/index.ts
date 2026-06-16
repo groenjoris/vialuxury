@@ -7,8 +7,12 @@
  * Import design tokens once at the app root:
  *   import '~/lib/tokens/tokens.css'
  *
- * Then import components/utilities as needed:
- *   import { VlButton, VlDealCard } from '~/lib'
+ * Components use plain, prefix-less names and are imported by path:
+ *   import Button from '~/lib/primitives/Button.vue'
+ *   import DealCard from '~/lib/components/DealCard.vue'
+ *
+ * Utilities, types and composables come from this barrel:
+ *   import { formatPrice, type Deal, useScrollLock } from '~/lib'
  */
 
 // ── Utilities ──
@@ -19,6 +23,3 @@ export * from './types'
 
 // ── Composables ──
 export * from './composables'
-
-// Components are auto-imported by Nuxt (see nuxt.config `components` dirs)
-// or can be imported directly from './primitives' and './components'.

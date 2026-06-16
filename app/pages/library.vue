@@ -21,74 +21,50 @@
 
         <div class="lib__grid">
           <article class="demo">
-            <header class="demo__head"><h3>VlButton</h3><code>variant · size · disabled · fullWidth</code></header>
+            <header class="demo__head"><h3>Button</h3><code>variant · disabled · fullWidth</code></header>
             <div class="demo__body demo__body--row">
-              <VlButton variant="primary">Primary</VlButton>
-              <VlButton variant="secondary">Secondary</VlButton>
-              <VlButton variant="ghost">Ghost</VlButton>
-              <VlButton variant="primary" size="sm">Small</VlButton>
-              <VlButton variant="primary" disabled>Disabled</VlButton>
+              <Button variant="primary">Primary</Button>
+              <Button variant="secondary">Secondary</Button>
+              <Button variant="dark">Donker</Button>
+              <Button variant="primary" disabled>Disabled</Button>
             </div>
           </article>
 
           <article class="demo">
-            <header class="demo__head"><h3>VlInput</h3><code>v-model · placeholder · type</code></header>
+            <header class="demo__head"><h3>Input</h3><code>v-model · footer-stijl</code></header>
             <div class="demo__body">
-              <VlInput v-model="inputVal" placeholder="Typ iets…" />
+              <Input v-model="inputVal" placeholder="Jouw e-mailadres" type="email" />
               <p class="demo__note">Waarde: {{ inputVal || '—' }}</p>
             </div>
           </article>
 
           <article class="demo">
-            <header class="demo__head"><h3>VlBadge</h3><code>variant: score · discount · neutral</code></header>
+            <header class="demo__head"><h3>Badge</h3><code>variant: score · dark</code></header>
             <div class="demo__body demo__body--row">
-              <VlBadge variant="score" label="9,2" />
-              <VlBadge variant="discount" label="-40%" />
-              <VlBadge variant="neutral" label="Wellness" />
+              <Badge variant="score" label="9,2" />
+              <Badge variant="dark" label="2 nachten" />
+              <Badge variant="dark" label="Nog 1 beschikbaar" />
             </div>
           </article>
 
           <article class="demo">
-            <header class="demo__head"><h3>VlBreadcrumb</h3><code>items</code></header>
+            <header class="demo__head"><h3>Breadcrumb</h3><code>items</code></header>
             <div class="demo__body">
-              <VlBreadcrumb :items="breadcrumbItems" />
+              <Breadcrumb :items="breadcrumbItems" />
             </div>
           </article>
 
           <article class="demo">
-            <header class="demo__head"><h3>VlIcon</h3><code>name · size</code></header>
+            <header class="demo__head"><h3>Icon</h3><code>name · size</code></header>
             <div class="demo__body demo__body--row demo__body--icons">
-              <VlIcon v-for="n in iconNames" :key="n" :name="n" :size="24" />
+              <Icon v-for="n in iconNames" :key="n" :name="n" :size="24" />
             </div>
           </article>
 
           <article class="demo">
-            <header class="demo__head"><h3>VlTooltip</h3><code>text · position</code></header>
-            <div class="demo__body">
-              <VlTooltip text="Inclusief ontbijt, diner en wellness" position="top">
-                <VlButton variant="ghost" size="sm">Hover mij</VlButton>
-              </VlTooltip>
-            </div>
-          </article>
-
-          <article class="demo">
-            <header class="demo__head"><h3>VlToast</h3><code>v-model · message · duration</code></header>
-            <div class="demo__body">
-              <VlButton variant="secondary" size="sm" @click="toastOpen = true">Toon toast</VlButton>
-              <VlToast v-model="toastOpen" message="Opgeslagen in favorieten!" :duration="2500" />
-            </div>
-          </article>
-
-          <article class="demo">
-            <header class="demo__head"><h3>VlModal</h3><code>v-model · title · slots</code></header>
-            <div class="demo__body">
-              <VlButton variant="secondary" size="sm" @click="modalOpen = true">Open modal</VlButton>
-              <VlModal v-model="modalOpen" title="Voorbeeld modal">
-                <p>Dit is de body van de modal. Klik buiten of op Escape om te sluiten.</p>
-                <template #footer>
-                  <VlButton variant="primary" size="sm" @click="modalOpen = false">Sluiten</VlButton>
-                </template>
-              </VlModal>
+            <header class="demo__head"><h3>Tooltip</h3><code>ⓘ prijs-toelichting · variant</code></header>
+            <div class="demo__body demo__body--row">
+              <span class="demo__price">Vanaf €229 <Tooltip variant="deal" /></span>
             </div>
           </article>
         </div>
@@ -97,13 +73,13 @@
       <!-- ───────────── CARDS ───────────── -->
       <section id="cards" class="lib__section">
         <h2 class="lib__section-title">Cards</h2>
-        <p class="lib__section-lead">Deal- en hotelkaarten met carousel, prijzen en favoriet-toggle.</p>
+        <p class="lib__section-lead">Deal-, map-preview- en creator-kaarten.</p>
 
         <div class="lib__grid lib__grid--wide">
           <article class="demo">
-            <header class="demo__head"><h3>VlDealCard</h3><code>grid mode</code></header>
+            <header class="demo__head"><h3>DealCard</h3><code>grid mode</code></header>
             <div class="demo__body" style="max-width: 360px;">
-              <VlDealCard
+              <DealCard
                 :deal="sampleDeal"
                 :hotel="sampleHotel"
                 grid-mode
@@ -115,9 +91,9 @@
           </article>
 
           <article class="demo">
-            <header class="demo__head"><h3>VlDealCard</h3><code>dateMismatch — greyed + red message</code></header>
+            <header class="demo__head"><h3>DealCard</h3><code>dateMismatch — grijs + rode melding</code></header>
             <div class="demo__body" style="max-width: 360px;">
-              <VlDealCard
+              <DealCard
                 :deal="sampleDeal"
                 :hotel="sampleHotel"
                 grid-mode
@@ -129,24 +105,26 @@
           </article>
 
           <article class="demo">
-            <header class="demo__head"><h3>VlHotelCard</h3><code>map preview</code></header>
-            <div class="demo__body" style="max-width: 320px;">
-              <VlHotelCard
-                name="Grand Hotel Amrâth"
-                :image="img.hero"
-                :star-rating="5"
-                city="Amsterdam"
-                region="Noord-Holland"
-                :price="229"
-                :nights="2"
+            <header class="demo__head"><h3>MapPreviewCard</h3><code>placement · soldOut · roomsLeft</code></header>
+            <div class="demo__body demo__body--mappreview">
+              <MapPreviewCard
+                name="Grand Hotel Amrâth" :image="img.hero" :star-rating="5"
+                city="Amsterdam" region="Noord-Holland"
+                :price="229" :original-price="462" :discount-percentage="40"
+                :nights="2" :rooms-left="2" placement="above"
+              />
+              <MapPreviewCard
+                name="Carlton Beach" :image="img.sea" :star-rating="4"
+                city="Scheveningen" region="Zuid-Holland"
+                :price="0" :nights="2" sold-out placement="below"
               />
             </div>
           </article>
 
           <article class="demo">
-            <header class="demo__head"><h3>VlCreatorCard</h3><code>experience creator</code></header>
+            <header class="demo__head"><h3>CreatorCard</h3><code>experience creator</code></header>
             <div class="demo__body" style="max-width: 360px;">
-              <VlCreatorCard
+              <CreatorCard
                 name="Esther"
                 :photo="img.esther"
                 specialty="Culinaire stedentrips"
@@ -164,14 +142,16 @@
         <p class="lib__section-lead">Volledig ontkoppeld van globale state — waarden via props, wijzigingen via events.</p>
 
         <div class="lib__grid lib__grid--wide">
-          <article class="demo demo--full">
-            <header class="demo__head"><h3>VlSearchBar</h3><code>Wanneer · Hoelang · Wie</code></header>
+          <article class="demo demo--full demo--popups">
+            <header class="demo__head"><h3>SearchBar</h3><code>Wanneer · Hoelang · Wie · Vind deals</code></header>
             <div class="demo__body">
-              <VlSearchBar
+              <SearchBar
                 v-model:arrival-date="search.date"
                 v-model:nights="search.nights"
                 v-model:persons="search.persons"
                 v-model:rooms="search.rooms"
+                :availability="availabilityMap"
+                @search="onSearch"
               />
               <p class="demo__note">
                 Datum: {{ search.date || '—' }} · Nachten: {{ search.nights.join(', ') || '—' }}
@@ -181,41 +161,41 @@
           </article>
 
           <article class="demo">
-            <header class="demo__head"><h3>VlMobileSearchTrigger</h3><code>label</code></header>
+            <header class="demo__head"><h3>MobileSearchTrigger</h3><code>label</code></header>
             <div class="demo__body">
-              <VlMobileSearchTrigger label="Doorzoek 84 hotelarrangementen" @click="toastOpen = true" />
+              <MobileSearchTrigger label="Doorzoek 84 hotelarrangementen" />
             </div>
           </article>
 
           <article class="demo">
-            <header class="demo__head"><h3>VlFilterPills</h3><code>pills · remove · clear</code></header>
+            <header class="demo__head"><h3>FilterPills</h3><code>pills · remove · clear</code></header>
             <div class="demo__body">
-              <VlFilterPills :pills="pills" @remove="removePill" @clear="pills = []" />
-              <VlButton v-if="!pills.length" variant="ghost" size="sm" @click="resetPills">Reset voorbeeld</VlButton>
+              <FilterPills :pills="pills" @remove="removePill" @clear="pills = []" />
+              <Button v-if="!pills.length" variant="secondary" @click="resetPills">Reset voorbeeld</Button>
             </div>
           </article>
 
           <article class="demo">
-            <header class="demo__head"><h3>VlDurationPicker</h3><code>v-model · anyDuration</code></header>
+            <header class="demo__head"><h3>DurationPicker</h3><code>v-model · anyDuration · subtitel</code></header>
             <div class="demo__body">
-              <VlDurationPicker v-model="search.nights" v-model:any-duration="anyDuration" />
+              <DurationPicker v-model="search.nights" v-model:any-duration="anyDuration" />
             </div>
           </article>
 
           <article class="demo">
-            <header class="demo__head"><h3>VlPersonsPicker</h3><code>persons · rooms</code></header>
+            <header class="demo__head"><h3>PersonsPicker</h3><code>persons · rooms</code></header>
             <div class="demo__body">
-              <VlPersonsPicker v-model:persons="search.persons" v-model:rooms="search.rooms" />
+              <PersonsPicker v-model:persons="search.persons" v-model:rooms="search.rooms" />
             </div>
           </article>
 
-          <article class="demo">
-            <header class="demo__head"><h3>VlDatePicker</h3><code>calendar + availability</code></header>
-            <div class="demo__body">
-              <VlDatePicker
+          <article class="demo demo--full">
+            <header class="demo__head"><h3>DatePicker</h3><code>sidebar-kalender · grijze/groene cellen</code></header>
+            <div class="demo__body" style="max-width: 360px;">
+              <DatePicker
                 v-model="search.date"
                 v-model:month="calMonth"
-                :availability="availability"
+                :availability="availabilityList"
               />
             </div>
           </article>
@@ -225,34 +205,20 @@
       <!-- ───────────── MEDIA ───────────── -->
       <section id="media" class="lib__section">
         <h2 class="lib__section-title">Media</h2>
-        <p class="lib__section-lead">Carousels en foto-galerijen met hover-zoom en lightbox.</p>
+        <p class="lib__section-lead">Foto-galerij + carousel met dot-indicatoren.</p>
 
         <div class="lib__grid lib__grid--wide">
           <article class="demo demo--full">
-            <header class="demo__head"><h3>VlHeroGallery</h3><code>1 hero + 2×2 grid · openPhoto</code></header>
+            <header class="demo__head"><h3>HeroGallery</h3><code>1 hero + 2×2 grid · openPhoto</code></header>
             <div class="demo__body">
-              <VlHeroGallery :images="galleryImages" @open-gallery="openPhotoModal(0)" @open-photo="openPhotoModal" />
+              <HeroGallery :images="galleryImages" @open-gallery="() => {}" @open-photo="() => {}" />
             </div>
           </article>
 
           <article class="demo">
-            <header class="demo__head"><h3>VlCarousel</h3><code>autoplay · arrows · dots</code></header>
+            <header class="demo__head"><h3>Carousel</h3><code>autoplay · arrows · dots</code></header>
             <div class="demo__body" style="max-width: 420px;">
-              <VlCarousel :items="carouselImages" autoplay :interval="3500" />
-            </div>
-          </article>
-
-          <article class="demo">
-            <header class="demo__head"><h3>VlPhotoModal</h3><code>lightbox · grid/photo</code></header>
-            <div class="demo__body">
-              <VlButton variant="secondary" size="sm" @click="openPhotoModal(0)">Open galerij</VlButton>
-              <VlPhotoModal
-                v-model="photoOpen"
-                v-model:index="photoIndex"
-                v-model:view="photoView"
-                :images="galleryImages"
-                title="Grand Hotel Amrâth"
-              />
+              <Carousel :items="carouselImages" autoplay :interval="3500" />
             </div>
           </article>
         </div>
@@ -265,38 +231,37 @@
 
         <div class="lib__grid lib__grid--wide">
           <article class="demo demo--full">
-            <header class="demo__head"><h3>VlFaqSection</h3><code>items · heading</code></header>
+            <header class="demo__head"><h3>FaqSection</h3><code>items · heading</code></header>
             <div class="demo__body">
-              <VlFaqSection heading="Veelgestelde vragen" :items="faqItems" />
+              <FaqSection heading="Veelgestelde vragen" :items="faqItems" />
             </div>
           </article>
 
           <article class="demo demo--full">
-            <header class="demo__head"><h3>VlNearbyTips</h3><code>tips · heading</code></header>
+            <header class="demo__head"><h3>NearbyTips</h3><code>tips · lees meer/minder</code></header>
             <div class="demo__body">
-              <VlNearbyTips heading="Tips in de buurt" :tips="tipItems" hotel-name="Grand Hotel Amrâth" />
+              <NearbyTips heading="Tips in de buurt" :tips="tipItems" hotel-name="Grand Hotel Amrâth" />
             </div>
           </article>
 
           <article class="demo">
-            <header class="demo__head"><h3>VlWhySection</h3><code>items · heading</code></header>
+            <header class="demo__head"><h3>WhySection</h3><code>items · heading</code></header>
             <div class="demo__body">
-              <VlWhySection heading="Waarom ViaLuxury" :items="whyItems" />
+              <WhySection heading="Waarom ViaLuxury" :items="whyItems" />
             </div>
           </article>
 
           <article class="demo">
-            <header class="demo__head"><h3>VlPaymentLogos</h3><code>locale</code></header>
+            <header class="demo__head"><h3>PaymentLogos</h3><code>locale</code></header>
             <div class="demo__body">
-              <VlPaymentLogos locale="nl" />
+              <PaymentLogos locale="nl" />
             </div>
           </article>
 
-          <article class="demo">
-            <header class="demo__head"><h3>VlShareMenu</h3><code>v-model · url · title</code></header>
-            <div class="demo__body" style="position: relative;">
-              <VlButton variant="secondary" size="sm" @click="shareOpen = !shareOpen">Delen</VlButton>
-              <VlShareMenu v-model="shareOpen" url="https://vialuxury.nl/deal/voorbeeld" title="Mooi luxe hotel" />
+          <article class="demo demo--popups">
+            <header class="demo__head"><h3>ShareMenu</h3><code>Delen-knop + share-popup</code></header>
+            <div class="demo__body" style="min-height: 80px;">
+              <ShareMenu title="Mooi luxe hotel" />
             </div>
           </article>
         </div>
@@ -306,6 +271,31 @@
 </template>
 
 <script setup lang="ts">
+// Library components use plain, prefix-less names and are imported by
+// path (they are NOT globally auto-imported — see nuxt.config.ts).
+import Button from '~/lib/primitives/Button.vue'
+import Input from '~/lib/primitives/Input.vue'
+import Badge from '~/lib/primitives/Badge.vue'
+import Breadcrumb from '~/lib/primitives/Breadcrumb.vue'
+import Icon from '~/lib/primitives/Icon.vue'
+import Tooltip from '~/lib/primitives/Tooltip.vue'
+import DealCard from '~/lib/components/DealCard.vue'
+import MapPreviewCard from '~/lib/components/MapPreviewCard.vue'
+import CreatorCard from '~/lib/components/CreatorCard.vue'
+import SearchBar from '~/lib/components/SearchBar.vue'
+import MobileSearchTrigger from '~/lib/components/MobileSearchTrigger.vue'
+import FilterPills from '~/lib/components/FilterPills.vue'
+import DurationPicker from '~/lib/components/DurationPicker.vue'
+import PersonsPicker from '~/lib/components/PersonsPicker.vue'
+import DatePicker from '~/lib/components/DatePicker.vue'
+import HeroGallery from '~/lib/components/HeroGallery.vue'
+import Carousel from '~/lib/components/Carousel.vue'
+import FaqSection from '~/lib/components/FaqSection.vue'
+import NearbyTips from '~/lib/components/NearbyTips.vue'
+import WhySection from '~/lib/components/WhySection.vue'
+import PaymentLogos from '~/lib/components/PaymentLogos.vue'
+import ShareMenu from '~/lib/components/ShareMenu.vue'
+
 definePageMeta({ layout: false })
 useHead({ title: 'Component Library | ViaLuxury' })
 
@@ -320,18 +310,16 @@ const img = {
 }
 
 const sections = [
-  { id: 'primitives', title: 'Primitives', count: 8 },
-  { id: 'cards', title: 'Cards', count: 4 },
+  { id: 'primitives', title: 'Primitives', count: 6 },
+  { id: 'cards', title: 'Cards', count: 3 },
   { id: 'search', title: 'Search & filters', count: 6 },
-  { id: 'media', title: 'Media', count: 3 },
+  { id: 'media', title: 'Media', count: 2 },
   { id: 'content', title: 'Content sections', count: 5 },
 ]
 const totalCount = computed(() => sections.reduce((n, s) => n + s.count, 0))
 
 // ── Primitives demo state ──
 const inputVal = ref('')
-const toastOpen = ref(false)
-const modalOpen = ref(false)
 const breadcrumbItems = [
   { label: 'Home', href: '/' },
   { label: 'Arrangementen', href: '#' },
@@ -378,8 +366,9 @@ function resetPills() {
   ]
 }
 
-// Sample availability for the date picker (June 2026)
-const availability = computed<Record<string, { available: boolean; price?: number; premium?: boolean }>>(() => {
+// Sample availability — June 2026. SearchBar's Wanneer popup expects a
+// Record keyed by ISO date; DatePicker expects an array of entries.
+const availabilityMap = computed<Record<string, { available: boolean; price?: number; premium?: boolean }>>(() => {
   const map: Record<string, { available: boolean; price?: number; premium?: boolean }> = {}
   for (let d = 1; d <= 30; d++) {
     const iso = `2026-06-${String(d).padStart(2, '0')}`
@@ -389,6 +378,15 @@ const availability = computed<Record<string, { available: boolean; price?: numbe
   }
   return map
 })
+const availabilityList = computed<{ date: string; available: boolean; soldOut?: boolean; totalPrice: number }[]>(() =>
+  Object.entries(availabilityMap.value).map(([date, a]) => ({
+    date,
+    available: a.available,
+    soldOut: !a.available,
+    totalPrice: a.price ?? 0,
+  })),
+)
+function onSearch() { /* showcase: no-op */ }
 
 // ── Media demo data ──
 const galleryImages = [
@@ -399,17 +397,8 @@ const galleryImages = [
   { url: img.haarlem, alt: 'Stad' },
 ]
 const carouselImages = [img.hero, img.spa, img.wellness, img.sea]
-const photoOpen = ref(false)
-const photoIndex = ref(0)
-const photoView = ref<'grid' | 'photo'>('grid')
-function openPhotoModal(i: number) {
-  photoIndex.value = i
-  photoView.value = i === 0 ? 'grid' : 'photo'
-  photoOpen.value = true
-}
 
 // ── Content demo data ──
-const shareOpen = ref(false)
 const faqItems = [
   { id: 'q1', question: 'Kan ik mijn boeking annuleren?', answer: 'Ja, tot 14 dagen voor aankomst kun je kosteloos annuleren.' },
   { id: 'q2', question: 'Is het ontbijt inbegrepen?', answer: 'Bij dit arrangement is een uitgebreid ontbijtbuffet inbegrepen.' },
@@ -524,6 +513,27 @@ const whyItems = [
   flex-direction: column;
 }
 .demo--full { grid-column: 1 / -1; }
+/* Demos with absolutely-positioned popups (SearchBar fields, ShareMenu)
+   must not clip them, and need vertical room below the trigger. */
+.demo--popups { overflow: visible; }
+.demo--popups .demo__body { overflow: visible; min-height: 360px; }
+/* MapPreview caret needs breathing room above + below the card. */
+.demo__body--mappreview {
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 40px;
+  padding: 48px 18px;
+  align-items: flex-start;
+}
+.demo__body--mappreview > * { max-width: 300px; }
+.demo__price {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-heading);
+  font-size: 20px;
+  font-weight: 700;
+}
 .demo__head {
   display: flex;
   align-items: baseline;

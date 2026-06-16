@@ -1,12 +1,14 @@
 <!--
-  VlSearchBar — Desktop horizontal search bar.
+  SearchBar — Desktop horizontal search bar.
 
   Three fields — "Wanneer" (arrival date) | "Hoelang" (duration) |
-  "Wie gaat er mee" (persons / rooms) — each opening a popup below it.
-  Composes VlDatePicker, VlDurationPicker and VlPersonsPicker. Values apply
-  live (no submit button); every change is emitted immediately. White
-  fields, grey inset border, no drop shadow. Clicking outside an open
-  popup closes it (via useClickOutside).
+  "Wie gaat er mee" (persons / rooms) — each opening a popup below it,
+  followed by the big orange "Vind deals" search button (as in the
+  SiteHeader desktop search bar). Composes VlDatePicker, VlDurationPicker
+  and VlPersonsPicker. Values apply live; every change is emitted
+  immediately. Pressing "Vind deals" emits `search`. White fields, grey
+  inset border, no drop shadow. Clicking outside an open popup closes it
+  (via useClickOutside).
 
   Props:
     - arrivalDate: string | null
@@ -19,12 +21,15 @@
         Selected rooms count.
     - availability?: Record<string, { available: boolean; price?: number; premium?: boolean }>
         Optional availability map forwarded to VlDatePicker.
+    - searchLabel?: string
+        Text on the orange button. Default 'Vind deals'.
 
   Events:
     - update:arrivalDate  — new arrival date (or null).
     - update:nights       — new array of night ids.
     - update:persons      — new persons count.
     - update:rooms        — new rooms count.
+    - search              — the "Vind deals" button was clicked.
 
   Fully decoupled: holds only transient UI state (which popup is open and
   the visible calendar month). All search values come from props.
@@ -110,6 +115,12 @@
           <span class="search-bar__value">{{ whoLabel }}</span>
         </span>
       </button>
+
+      <!-- "Vind deals" — big orange search button, mirrors the SiteHeader
+           desktop search bar. -->
+      <button type="button" class="search-bar__btn search-bar__btn--find-deals" @click="$emit('search')">
+        <span>{{ searchLabel }}</span>
+      </button>
     </div>
 
     <!-- WANNEER popup — calendar. Picking a date auto-closes. -->
@@ -158,13 +169,17 @@ const props = withDefaults(defineProps<{
   persons: number
   rooms: number
   availability?: Record<string, DayAvailability>
-}>(), {})
+  searchLabel?: string
+}>(), {
+  searchLabel: 'Vind deals',
+})
 
 const emit = defineEmits<{
   'update:arrivalDate': [val: string | null]
   'update:nights': [val: string[]]
   'update:persons': [val: number]
   'update:rooms': [val: number]
+  search: []
 }>()
 
 const MONTH_NAMES = [
@@ -281,8 +296,8 @@ const whoLabel = computed(() => {
 
 <style scoped>
 /* Mirrors the prototype's internal-page search bar: white background, grey
-   inset stroke, light-grey dividers, uppercase 12px labels. No drop shadow,
-   no submit button. */
+   inset stroke, light-grey dividers, uppercase 12px labels. No drop shadow.
+   The orange "Vind deals" button sits flush at the end of the bar. */
 .vl-search-bar {
   position: relative;
   width: 100%;
@@ -319,7 +334,6 @@ const whoLabel = computed(() => {
 }
 
 .search-bar__field--when { border-radius: 4px 0 0 4px; }
-.search-bar__field--who { border-radius: 0 4px 4px 0; }
 
 .search-bar__field:hover {
   background: var(--color-background-secondary, #faf9f6);
@@ -415,6 +429,34 @@ const whoLabel = computed(() => {
   outline: none;
 }
 
+/* "Vind deals" — big orange CTA. Mirrors SiteHeader's
+   .search-bar__btn--find-deals: 60px tall, 38px side padding, 4px radius. */
+.search-bar__btn--find-deals {
+  flex-shrink: 0;
+  background: var(--color-primary);
+  color: #fff;
+  height: 60px;
+  width: auto;
+  padding: 0 38px;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: -0.07px;
+  margin-left: 16px;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background var(--transition-fast);
+}
+.search-bar__btn--find-deals:hover {
+  background: var(--color-primary-hover);
+}
+
 /* Popups — anchored to the bar (absolute) so they scroll with it. */
 .vl-popup {
   background: var(--color-surface, #fff);
@@ -433,5 +475,6 @@ const whoLabel = computed(() => {
   .search-bar { flex-direction: column; height: auto; padding: 6px; }
   .search-bar__field { width: 100%; height: 56px; padding: 0 14px; }
   .search-bar__divider { width: 100%; height: 1px; }
+  .search-bar__btn--find-deals { width: 100%; margin-left: 0; margin-top: 6px; }
 }
 </style>

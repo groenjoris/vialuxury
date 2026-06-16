@@ -11,7 +11,7 @@
     @keydown.space.prevent="flip"
   >
     <div class="creator-card__inner">
-      <!-- Front — photo left, text right -->
+      <!-- Front — horizontal: photo left, text right -->
       <article class="creator-card__face creator-card__face--front">
         <img :src="photo" :alt="name" class="creator-card__avatar" />
         <div class="creator-card__body">
@@ -62,6 +62,8 @@ function flip() {
 
 <style scoped>
 .creator-card {
+  /* Fixed dimensions per spec: 286 × 110. The flip animation needs
+     perspective on the containing element. */
   perspective: 900px;
   width: 286px;
   height: 110px;
@@ -104,7 +106,7 @@ function flip() {
   overflow: hidden;
 }
 
-/* Front face — photo left, text right */
+/* ── Front face — horizontal: photo left, text right ── */
 .creator-card__face--front {
   display: flex;
   align-items: center;
@@ -113,6 +115,8 @@ function flip() {
 }
 
 .creator-card__avatar {
+  /* Big round avatar on the left — circular crop, inset from the card
+     edges so the card padding wraps the circle. */
   width: 86px;
   height: 86px;
   border-radius: 50%;
@@ -126,8 +130,7 @@ function flip() {
   min-width: 0;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  gap: 4px;
+  justify-content: space-between;
   padding: 12px 14px;
 }
 
@@ -154,12 +157,16 @@ function flip() {
   display: flex;
   flex-direction: column;
   gap: 1px;
+  margin: 4px 0;
 }
 
 .creator-card__field-label {
+  /* Match the "Samengesteld door" caption above the handwritten name. */
   font-family: var(--font-body);
   font-size: 11px;
   font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
   color: var(--color-text-secondary, #6a6a6a);
   line-height: 1.2;
 }
@@ -188,7 +195,7 @@ function flip() {
   font-family: var(--font-body);
 }
 
-/* Back face */
+/* ── Back ── */
 .creator-card__face--back {
   transform: rotateY(180deg);
   background: linear-gradient(180deg, #fff 0%, #faf6ee 100%);
@@ -215,6 +222,7 @@ function flip() {
   font-style: italic;
   color: var(--color-text-primary, #1a1a1a);
   line-height: 1.35;
+  /* Cap to the available height; if quote is longer, ellipsis. */
   display: -webkit-box;
   -webkit-line-clamp: 4;
   -webkit-box-orient: vertical;
@@ -229,6 +237,9 @@ function flip() {
   line-height: 1;
 }
 
+/* Mobile: span the full content width of the deal-page section,
+   a touch taller (150 px) and every text element bumped up so it
+   reads comfortably on a phone. */
 @media (max-width: 800px) {
   .creator-card {
     width: 100%;

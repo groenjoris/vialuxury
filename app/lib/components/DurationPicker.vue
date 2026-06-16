@@ -1,9 +1,11 @@
 <!--
-  VlDurationPicker — Night-count selector.
+  DurationPicker — Night-count selector.
 
   A vertical list of checkbox-style night options plus a "Maakt niet uit"
-  (any duration) option at the top. Toggling a specific night clears
-  "any duration"; toggling "any duration" clears the specific nights.
+  (any duration) option at the top. A subtitle under the title hints that
+  multiple durations can be selected ("Je kunt er meerdere kiezen", copied
+  from the prototype's DateAndDurationPopup). Toggling a specific night
+  clears "any duration"; toggling "any duration" clears the specific nights.
 
   Props:
     - modelValue: string[]   — currently selected night ids, e.g. ['2','3'].
@@ -22,6 +24,7 @@
 <template>
   <div class="dur-pop">
     <h4 class="dur-pop__title">Kies reisduur</h4>
+    <p class="dur-pop__hint">Je kunt er meerdere kiezen</p>
 
     <div class="dur-pop__list">
       <!-- "Maakt niet uit" — clears every specific night. -->
@@ -122,12 +125,23 @@ function onAnyDurationChange(next: boolean) {
 }
 
 .dur-pop__title {
-  margin: 0 0 16px;
+  margin: 0;
   font-family: var(--font-body);
   font-size: 16px;
   font-weight: 700;
   line-height: 1;
   color: #1a1a1a;
+}
+
+/* Subtitle hint — "Je kunt er meerdere kiezen", matching the prototype's
+   when-pop__hint (14px, grey, sits under the title). */
+.dur-pop__hint {
+  margin: 4px 0 16px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 400;
+  color: #999999;
+  line-height: 1;
 }
 
 .dur-pop__list {

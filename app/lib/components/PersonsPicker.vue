@@ -1,5 +1,5 @@
 <!--
-  VlPersonsPicker — Travel-group selector.
+  PersonsPicker — Travel-group selector.
 
   A single-select list of "X personen / Y kamers" presets, mirroring the
   prototype's HotelSearchBar "who" MVP popup. Eight rows: 2 personen / 1

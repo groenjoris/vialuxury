@@ -1,21 +1,21 @@
 <template>
-  <div class="vl-carousel">
-    <div class="vl-carousel__viewport">
+  <div class="carousel">
+    <div class="carousel__viewport">
       <div
-        class="vl-carousel__track"
+        class="carousel__track"
         :style="{ transform: `translateX(-${activeIndex * 100}%)` }"
       >
         <div
           v-for="(item, index) in items"
           :key="index"
-          class="vl-carousel__slide"
+          class="carousel__slide"
         >
           <slot :item="item" :index="index">
             <img
               v-if="typeof item === 'string'"
               :src="item"
               alt=""
-              class="vl-carousel__img"
+              class="carousel__img"
               loading="lazy"
             />
           </slot>
@@ -26,7 +26,7 @@
       <template v-if="showArrows && items.length > 1">
         <button
           type="button"
-          class="vl-carousel__nav vl-carousel__nav--prev"
+          class="carousel__nav carousel__nav--prev"
           aria-label="Vorige"
           @click="prev"
         >
@@ -34,7 +34,7 @@
         </button>
         <button
           type="button"
-          class="vl-carousel__nav vl-carousel__nav--next"
+          class="carousel__nav carousel__nav--next"
           aria-label="Volgende"
           @click="next"
         >
@@ -44,13 +44,13 @@
     </div>
 
     <!-- Dot indicators -->
-    <div v-if="showDots && items.length > 1" class="vl-carousel__dots">
+    <div v-if="showDots && items.length > 1" class="carousel__dots">
       <button
         v-for="(item, index) in items"
         :key="index"
         type="button"
-        class="vl-carousel__dot"
-        :class="{ 'vl-carousel__dot--active': index === activeIndex }"
+        class="carousel__dot"
+        :class="{ 'carousel__dot--active': index === activeIndex }"
         :aria-label="`Ga naar item ${index + 1}`"
         :aria-current="index === activeIndex"
         @click="goTo(index)"
@@ -104,28 +104,28 @@ function next() {
 </script>
 
 <style scoped>
-.vl-carousel {
+.carousel {
   width: 100%;
 }
 
-.vl-carousel__viewport {
+.carousel__viewport {
   position: relative;
   overflow: hidden;
   border-radius: var(--radius-lg);
 }
 
-.vl-carousel__track {
+.carousel__track {
   display: flex;
   transition: transform 400ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.vl-carousel__slide {
+.carousel__slide {
   flex: 0 0 100%;
   width: 100%;
   min-width: 0;
 }
 
-.vl-carousel__img {
+.carousel__img {
   display: block;
   width: 100%;
   height: 100%;
@@ -133,7 +133,7 @@ function next() {
 }
 
 /* Prev / next arrows — white circular buttons, vertically centred. */
-.vl-carousel__nav {
+.carousel__nav {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
@@ -151,11 +151,12 @@ function next() {
   transition: background var(--transition-fast);
   z-index: 2;
 }
-.vl-carousel__nav:hover { background: #fff; }
-.vl-carousel__nav--prev { left: 10px; }
-.vl-carousel__nav--next { right: 10px; }
+.carousel__nav:hover { background: #fff; }
+.carousel__nav--prev { left: 10px; }
+.carousel__nav--next { right: 10px; }
 
-.vl-carousel__dots {
+/* Dot indicators beneath the image. */
+.carousel__dots {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -163,7 +164,7 @@ function next() {
   margin-top: var(--space-sm);
 }
 
-.vl-carousel__dot {
+.carousel__dot {
   width: 8px;
   height: 8px;
   padding: 0;
@@ -173,8 +174,8 @@ function next() {
   cursor: pointer;
   transition: background var(--transition-fast), transform var(--transition-fast);
 }
-.vl-carousel__dot:hover { background: var(--color-text-muted); }
-.vl-carousel__dot--active {
+.carousel__dot:hover { background: var(--color-text-muted); }
+.carousel__dot--active {
   background: var(--color-primary);
   transform: scale(1.25);
 }

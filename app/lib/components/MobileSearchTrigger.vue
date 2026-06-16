@@ -1,5 +1,5 @@
 <!--
-  VlMobileSearchTrigger — Mobile search pill button.
+  MobileSearchTrigger — Mobile search pill button.
 
   A white rounded-rectangle bar with a label on the left and an orange
   square search-icon button on the right. Tapping anywhere on the bar

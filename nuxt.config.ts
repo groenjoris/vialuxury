@@ -36,18 +36,11 @@ export default defineNuxtConfig({
       prefix: 'Northstar',
       pathPrefix: false,
     },
-    // Reusable component library — production-ready components extracted
-    // from the first-release prototype. Auto-imported with a `Vl` prefix.
-    {
-      path: '~/lib/primitives',
-      prefix: 'Vl',
-      pathPrefix: false,
-    },
-    {
-      path: '~/lib/components',
-      prefix: 'Vl',
-      pathPrefix: false,
-    },
+    // NOTE: the reusable component library (~/lib/primitives + ~/lib/
+    // components) is intentionally NOT auto-imported. Its components use
+    // plain, prefix-less names (Button, Input, DealCard, …) — some of
+    // which collide with ~/components — so consumers import them by path:
+    //   import Button from '~/lib/primitives/Button.vue'
   ],
 
   // Auto-import each prototype's composables + stores. Function names

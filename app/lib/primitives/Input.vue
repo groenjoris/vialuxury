@@ -1,6 +1,6 @@
 <template>
   <input
-    class="vl-input"
+    class="input"
     :type="type"
     :value="modelValue"
     :placeholder="placeholder"
@@ -39,29 +39,32 @@ function onInput(event: Event) {
 </script>
 
 <style scoped>
-.vl-input {
+/* Mirrors the footer newsletter field (.footer-newsletter__input):
+   white fill, transparent border, no orange focus stroke. */
+.input {
   width: 100%;
-  padding: 10px 14px;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
+  height: 42px;
+  padding: 0 14px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: #fff;
+  color: #1A1A1A;
   font-family: var(--font-body);
   font-size: 14px;
-  color: var(--color-text-primary);
-  background: var(--color-surface);
-  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  transition: border-color var(--transition-fast);
 }
 
-.vl-input::placeholder {
-  color: var(--color-text-muted);
+.input::placeholder {
+  color: #9a9a9a;
 }
 
-.vl-input:focus {
+.input:focus {
   outline: none;
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(233, 113, 50, 0.15);
+  /* No orange ring on the active field — keep a neutral dark border. */
+  border-color: rgba(26, 26, 26, 0.35);
 }
 
-.vl-input:disabled {
+.input:disabled {
   opacity: 0.6;
   cursor: not-allowed;
   background: var(--color-background-secondary);

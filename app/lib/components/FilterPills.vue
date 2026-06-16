@@ -1,5 +1,5 @@
 <!--
-  VlFilterPills — Active-filter tag row.
+  FilterPills — Active-filter tag row.
 
   Renders a wrapping row of removable filter chips. Each chip shows a label
   and a × button; clicking it emits `remove(id)`. A trailing text-link

@@ -1,16 +1,14 @@
 # ViaLuxury UI Primitives
 
 Atomic, prop-driven Vue 3 components. They are self-contained — no global
-state, no prototype imports (except `VlModal`, which uses the shared
-`useScrollLock` composable) — and styled entirely with the design tokens in
+state, no prototype imports — and styled entirely with the design tokens in
 `~/lib/tokens/tokens.css`.
 
 ## Auto-import
 
-Nuxt auto-imports everything in this folder with a `Vl` prefix, so
-`VlButton.vue` is available as `<VlButton>` anywhere in the app without an
-explicit import. Make sure the tokens stylesheet is loaded once at the app
-root:
+Nuxt auto-imports everything in this folder, so `Button.vue` is available as
+`<Button>` anywhere in the app without an explicit import. Make sure the tokens
+stylesheet is loaded once at the app root:
 
 ```ts
 import '~/lib/tokens/tokens.css'
@@ -18,13 +16,13 @@ import '~/lib/tokens/tokens.css'
 
 ---
 
-## VlButton
+## Button
 
 A button with three visual variants and three sizes.
 
 | Prop | Type | Default | Notes |
 |------|------|---------|-------|
-| `variant` | `'primary' \| 'secondary' \| 'ghost'` | `'primary'` | Primary = orange/white. Ghost = transparent + border. |
+| `variant` | `'primary' \| 'secondary' \| 'dark'` | `'primary'` | Primary = orange/white. Secondary = white bg + border. Dark = black bg (`--color-dark`) / white text, hover `#2b2b2b` (e.g. "Alle foto's", "Wijzig kamertype", map close). |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | |
 | `disabled` | `boolean` | `false` | |
 | `type` | `'button' \| 'submit'` | `'button'` | |
@@ -34,16 +32,17 @@ A button with three visual variants and three sizes.
 **Slots:** default — button label/content.
 
 ```vue
-<VlButton variant="primary" size="lg" full-width @click="onSubmit">
-  Boek nu
-</VlButton>
+<Button variant="dark" size="lg" full-width @click="onSubmit">
+  Wijzig kamertype
+</Button>
 ```
 
 ---
 
-## VlInput
+## Input
 
-A v-model-compatible text input with a token-based focus ring.
+A v-model-compatible text input. Mirrors the footer newsletter field: white
+fill, transparent border, and a neutral (non-orange) focus border.
 
 | Prop | Type | Default | Notes |
 |------|------|---------|-------|
@@ -56,30 +55,30 @@ A v-model-compatible text input with a token-based focus ring.
 **Events:** `update:modelValue` (`string`), `focus` (`FocusEvent`), `blur` (`FocusEvent`).
 
 ```vue
-<VlInput v-model="query" placeholder="Zoek een hotel" aria-label="Zoekterm" />
+<Input v-model="email" type="email" placeholder="Je e-mailadres" aria-label="E-mailadres" />
 ```
 
 ---
 
-## VlBadge
+## Badge
 
-A small pill label in three colour variants.
+A small pill label in two colour variants.
 
 | Prop | Type | Default | Notes |
 |------|------|---------|-------|
-| `variant` | `'score' \| 'discount' \| 'neutral'` | `'neutral'` | Score = solid green/white. Discount = light green bg, green text. Neutral = grey. |
+| `variant` | `'score' \| 'dark'` | `'score'` | Score = solid green (`--color-discount`) / white text (review score). Dark = solid black (`--color-dark`) / white text (photo stickers "2 nachten" / "Nog 1 beschikbaar"). |
 | `label` | `string` | `''` | Text shown when no slot is provided. |
 
 **Slots:** default — overrides `label`.
 
 ```vue
-<VlBadge variant="score" label="9.2" />
-<VlBadge variant="discount">-35%</VlBadge>
+<Badge variant="score" label="9.2" />
+<Badge variant="dark">2 nachten</Badge>
 ```
 
 ---
 
-## VlBreadcrumb
+## Breadcrumb
 
 A single-line breadcrumb trail. The final item without an `href` is rendered
 as the current page (muted, `aria-current="page"`) and truncates with an
@@ -90,7 +89,7 @@ ellipsis when the row overflows.
 | `items` | `Array<{ label: string; href?: string }>` | — | Items with an `href` become links; the rest are plain text. |
 
 ```vue
-<VlBreadcrumb
+<Breadcrumb
   :items="[
     { label: 'Home', href: '/' },
     { label: 'Italië', href: '/italie' },
@@ -101,7 +100,7 @@ ellipsis when the row overflows.
 
 ---
 
-## VlIcon
+## Icon
 
 A lightweight inline-SVG icon. Stroke-based, uses `currentColor` so it inherits
 the surrounding text colour.
@@ -116,76 +115,23 @@ the surrounding text colour.
 `info`, `star`, `plus`, `minus`.
 
 ```vue
-<VlIcon name="heart" :size="24" style="color: var(--color-primary)" />
+<Icon name="heart" :size="24" style="color: var(--color-primary)" />
 ```
 
 ---
 
-## VlTooltip
+## Tooltip
 
-Wraps a trigger element and shows a teleported tooltip on hover/focus. The
-bubble is positioned in fixed coordinates relative to the trigger and points
-at it with a small caret.
-
-| Prop | Type | Default | Notes |
-|------|------|---------|-------|
-| `text` | `string` | — | Tooltip content. |
-| `position` | `'top' \| 'bottom' \| 'left' \| 'right'` | `'top'` | Side the bubble appears on. |
-
-**Slots:** default — the trigger element.
-
-```vue
-<VlTooltip text="Inclusief ontbijt" position="top">
-  <VlIcon name="info" />
-</VlTooltip>
-```
-
----
-
-## VlToast
-
-A teleported toast notification anchored to the bottom-centre of the viewport.
-Auto-dismisses after `duration`; controlled via `v-model`.
+The small circular ⓘ price-info icon (grey, italic "i", 14px circle). On
+hover/tap/keyboard focus it shows a teleported dark bubble with a caret that
+flips above ↔ below based on viewport space. Port of `PriceInfoTooltip`.
 
 | Prop | Type | Default | Notes |
 |------|------|---------|-------|
-| `modelValue` | `boolean` | — | Visibility (v-model). |
-| `message` | `string` | `''` | Text shown. |
-| `duration` | `number` | `3000` | Auto-dismiss delay in ms. `0` = sticky (no auto-dismiss). |
+| `variant` | `'card' \| 'deal'` | `'card'` | `card` = long strike-through-price disclaimer (deal cards). `deal` = short booking-fee disclaimer (deal-page sidebar / sticky CTA). |
 
-**Events:** `update:modelValue` (`boolean`) — emitted `false` when it auto-dismisses.
+No slots — the icon and disclaimer text are built in.
 
 ```vue
-<VlToast v-model="showToast" message="Opgeslagen in je favorieten" />
-```
-
----
-
-## VlModal
-
-A teleported, accessible modal dialog with a dark overlay. Closes on overlay
-click-outside and on Escape, and locks body scroll while open via the shared
-`useScrollLock` composable.
-
-| Prop | Type | Default | Notes |
-|------|------|---------|-------|
-| `modelValue` | `boolean` | — | Open state (v-model). |
-| `title` | `string` | `''` | Optional heading rendered in the default header. |
-| `maxWidth` | `string` | `'480px'` | CSS max-width of the dialog. |
-
-**Events:** `update:modelValue` (`boolean`), `close` — both fire on any close
-action (overlay click, Escape, close button).
-**Slots:** default — body; `#header` — replaces the title area (the close
-button is always rendered); `#footer` — footer actions (only rendered when
-provided).
-
-```vue
-<VlModal v-model="open" title="Bevestig je boeking" max-width="560px">
-  <p>Weet je zeker dat je wilt doorgaan?</p>
-
-  <template #footer>
-    <VlButton variant="ghost" @click="open = false">Annuleer</VlButton>
-    <VlButton variant="primary" @click="confirm">Bevestig</VlButton>
-  </template>
-</VlModal>
+<Tooltip variant="deal" />
 ```

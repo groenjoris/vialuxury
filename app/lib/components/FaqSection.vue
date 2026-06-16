@@ -78,6 +78,8 @@ function toggle(key: string) {
   cursor: pointer;
 }
 
+/* Whole row (question text + the +/− glyph, which inherits this colour)
+   turns orange on hover. By default the glyph is black. */
 .faq-item__question:hover {
   color: var(--color-primary);
 }
@@ -87,7 +89,8 @@ function toggle(key: string) {
   font-weight: 300;
   flex-shrink: 0;
   margin-left: var(--space-md);
-  color: var(--color-primary);
+  /* Inherit the question colour: black by default, orange on hover. */
+  color: inherit;
 }
 
 .faq-item__answer {
