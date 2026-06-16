@@ -15,7 +15,7 @@ export const useSecondReleaseLocaleStore = defineStore('second-release-locale', 
   function restoreLocale() {
     if (!import.meta.client) return
     const saved = localStorage.getItem('vialuxury-locale') as Locale | null
-    if (saved === 'en' || saved === 'nl' || saved === 'de') {
+    if (saved === 'en' || saved === 'nl' || saved === 'nl-BE' || saved === 'de') {
       locale.value = saved
       document.documentElement.lang = saved
     }

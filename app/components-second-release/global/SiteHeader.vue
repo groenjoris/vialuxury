@@ -1017,12 +1017,13 @@ const activeVertical = computed(() => {
 })
 
 // --- Language switcher ---
-// Order is fixed (NL → EN → FR-BE → FR-FR → DE). Each entry carries a
-// region-aware `code` so French shows up twice with distinct labels
-// (Belgium vs France). NL, EN and DE drive the i18n locale; BE/FR
-// fall back to NL until those locales exist.
+// Order is fixed (NL → NL-BE → EN → FR-BE → FR-FR → DE). Each entry
+// carries a region-aware `code`. NL, NL-BE (Belgian Dutch), EN and DE
+// drive the i18n locale; the French entries fall back to NL until those
+// locales exist. NL-BE reuses the Dutch translations.
 const languages = [
   { code: 'NL', label: 'Nederlands', flag: '\u{1F1F3}\u{1F1F1}' },
+  { code: 'NL-BE', label: 'Belgisch-Nederlands', flag: '\u{1F1E7}\u{1F1EA}' },
   { code: 'EN', label: 'English', flag: '\u{1F1EC}\u{1F1E7}' },
   { code: 'BE', label: 'Français', flag: '\u{1F1E7}\u{1F1EA}' },
   { code: 'FR', label: 'Français', flag: '\u{1F1EB}\u{1F1F7}' },
@@ -1034,7 +1035,9 @@ const selectedLanguage = computed(() => {
     ? 'EN'
     : localeStore.locale === 'de'
       ? 'DE'
-      : 'NL'
+      : localeStore.locale === 'nl-BE'
+        ? 'NL-BE'
+        : 'NL'
   return languages.find(l => l.code === code) ?? languages[0]
 })
 const langDropdownOpen = ref(false)
@@ -1050,6 +1053,8 @@ function selectLanguage(lang: typeof languages[number]) {
     localeStore.setLocale('en')
   } else if (lang.code === 'DE') {
     localeStore.setLocale('de')
+  } else if (lang.code === 'NL-BE') {
+    localeStore.setLocale('nl-BE')
   } else {
     localeStore.setLocale('nl')
   }

@@ -4,7 +4,7 @@ import nl from '~/i18n/nl'
 import en from '~/i18n/en'
 import de from '~/i18n/de'
 
-const maps = { nl, en, de } as const
+const maps = { nl, en, de, 'nl-BE': nl } as const
 
 export function useSecondReleaseI18n() {
   const store = useSecondReleaseLocaleStore()
