@@ -74,7 +74,7 @@
       :current-price-extra="panelCard?.room.priceExtra ?? 0"
       :guests-label="panelGuestsLabel"
       @select="onPanelSelect"
-      @close="panelCard = null"
+      @close="panelRoomId = null"
     />
   </section>
 </template>
@@ -103,11 +103,17 @@ defineEmits<{
 const { localized } = useSecondReleaseI18n()
 const store = useSecondReleaseDealStore()
 
-/* ── Room-type panel — opened per CARD, switches that card's type ── */
-const panelCard = ref<RoomCard | null>(null)
+/* ── Room-type panel — opened per CARD, switches that card's type.
+   Tracks the room-type ID and resolves the card LIVE, so the panel
+   always mirrors the current assignment (and closes itself when the
+   card disappears after a group change). ── */
+const panelRoomId = ref<string | null>(null)
+const panelCard = computed<RoomCard | null>(() =>
+  roomCards.value.find(c => c.room.id === panelRoomId.value) ?? null,
+)
 
 function openRoomPanel(card: RoomCard) {
-  panelCard.value = card
+  panelRoomId.value = card.room.id
 }
 
 /** Required per-room capacity for a card's guests. */
@@ -150,19 +156,18 @@ function upgradeButtonLabel(card: RoomCard): string | null {
   return 'Wijzig kamertype'
 }
 
-/** "Voor gast 1 en gast 2" — only when guest labels are shown. */
+/** "Voor gast 4 en gast 5" — mirrors the card's guest label, so the
+ *  panel says exactly which guests the room switch applies to. */
 const panelGuestsLabel = computed(() => {
   const g = panelCard.value?.guests
   if (!g) return null
-  const lower = g.charAt(0).toLowerCase() + g.slice(1)
-  const i = lower.lastIndexOf(', ')
-  return 'Voor ' + (i === -1 ? lower : lower.slice(0, i) + ' en ' + lower.slice(i + 2))
+  return 'Voor ' + g.charAt(0).toLowerCase() + g.slice(1)
 })
 
 /** Selecting closes the panel and switches the card's room type. */
 function onPanelSelect(newRoomId: string) {
   const card = panelCard.value
-  if (!card || newRoomId === card.room.id) { panelCard.value = null; return }
+  if (!card || newRoomId === card.room.id) { panelRoomId.value = null; return }
 
   if (store.travelGroup.rooms <= 1) {
     store.selectRoom(newRoomId)
@@ -173,7 +178,7 @@ function onPanelSelect(newRoomId: string) {
     store.setRoomAllocationCount(card.room.id, Math.max(0, remaining))
     store.setRoomAllocationCount(newRoomId, (alloc[newRoomId] ?? 0) + moved)
   }
-  panelCard.value = null
+  panelRoomId.value = null
 }
 
 const hotelImage = computed(() => props.hotel.images[0]?.url || '')
@@ -265,15 +270,13 @@ const roomCards = computed<RoomCard[]>(() => {
 
   if (store.travelGroup.rooms <= 1) {
     const room = store.selectedRoom ?? deal.baseRoomType
-    const names: string[] = []
-    for (let g = 1; g <= store.totalPersons; g++) names.push(`gast ${g}`)
-    const guests = names.join(', ')
+    // Single room type → no guest line (it's evident who sleeps there).
     return [{
       room,
       count: 1,
       image: imageFor(room),
       sticker: stickerFor(room),
-      guests: guests.charAt(0).toUpperCase() + guests.slice(1),
+      guests: null,
       guestCount: store.totalPersons,
     }]
   }
@@ -284,29 +287,41 @@ const roomCards = computed<RoomCard[]>(() => {
     const room = store.allRoomTypes.find(r => r.id === roomId)
     if (room) cards.push({ room, count, image: imageFor(room), sticker: stickerFor(room), guests: null, guestCount: 0 })
   }
-  // Base room first, upgrades after — stable, readable order.
-  cards.sort((a, b) => (a.room.isDefault ? -1 : 1) - (b.room.isDefault ? -1 : 1))
+  // Largest room type first (3-person room gets guests 1-3), base room
+  // before paid upgrades as a tie-breaker.
+  cards.sort((a, b) =>
+    ((b.room.capacity ?? 2) - (a.room.capacity ?? 2))
+    || ((a.room.isDefault ? 0 : 1) - (b.room.isDefault ? 0 : 1)),
+  )
 
-  // ── Guest assignment — every individual room gets at least 1 guest;
-  //    the remaining guests fill rooms up to capacity, in card order.
-  //    The labels show which guests sleep in which room type.
-  const totalRooms = cards.reduce((s, c) => s + c.count, 0)
-  let remaining = Math.max(0, store.totalPersons - totalRooms)
+  // ── Guest assignment — fill each room-type card up to capacity, in
+  //    card order. 5p/2k → 3-persoonskamer: gast 1-3, 2-persoonskamer:
+  //    gast 4 en 5. The guest LINE only renders when there are multiple
+  //    room types (with a single type it's evident who sleeps there).
+  let remaining = store.totalPersons
   let guestNr = 1
   for (const card of cards) {
     const cap = card.room.capacity ?? 2
-    let guestsInType = card.count // 1 guest per room to start with
-    const extra = Math.min((cap - 1) * card.count, remaining)
-    guestsInType += extra
-    remaining -= extra
+    const guestsInType = Math.min(cap * card.count, remaining)
+    remaining -= guestsInType
     card.guestCount = guestsInType
-    const names: string[] = []
-    for (let g = 0; g < guestsInType; g++) names.push(`gast ${guestNr++}`)
-    card.guests = names.join(', ')
-    card.guests = card.guests.charAt(0).toUpperCase() + card.guests.slice(1)
+    card.guests = cards.length > 1 ? formatGuestList(guestNr, guestsInType) : null
+    guestNr += guestsInType
   }
   return cards
 })
+
+/** "Gast 1, gast 2 en gast 3" — comma-separated with "en" before the
+ *  last guest, starting from guest number `start`. */
+function formatGuestList(start: number, count: number): string | null {
+  if (count <= 0) return null
+  const names: string[] = []
+  for (let g = 0; g < count; g++) names.push(`gast ${start + g}`)
+  let label: string
+  if (names.length === 1) label = names[0]
+  else label = `${names.slice(0, -1).join(', ')} en ${names[names.length - 1]}`
+  return label.charAt(0).toUpperCase() + label.slice(1)
+}
 </script>
 
 <style scoped>

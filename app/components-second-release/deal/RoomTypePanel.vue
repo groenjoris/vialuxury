@@ -168,8 +168,11 @@ onBeforeUnmount(() => { if (acquired) { scrollLock.release(); acquired = false }
 }
 
 /* Room option card — no orange stroke; the current selection gets a
-   subtle dark border instead. */
+   subtle dark border instead. flex-shrink: 0 is essential: the cards
+   live in a flex-column scroll body and would otherwise be squashed
+   to fit the viewport, clipping everything but the photo. */
 .room-card {
+  flex-shrink: 0;
   border: 1.5px solid var(--color-border);
   border-radius: var(--radius-lg);
   overflow: hidden;
