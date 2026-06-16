@@ -33,7 +33,7 @@ const de: Record<string, string> = {
 
   // Header - Travel group
   'header.adults': 'Erwachsene',
-  'header.adultsAge': '18 Jahre oder älter',
+  'header.adultsAge': 'ab 12 Jahren',
   'header.children': 'Kinder',
   'header.childrenAge': '0–17 Jahre',
   'header.dog': 'Hund mitnehmen',

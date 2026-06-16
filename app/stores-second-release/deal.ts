@@ -78,6 +78,10 @@ export const useSecondReleaseDealStore = defineStore('second-release-deal', () =
   const dateAvailability = ref<DateAvailability[]>([])
   const isTravelGroupModalOpen = ref(false)
   const roomUnavailableMessage = ref<string | null>(null)
+  /** Set when a 3-person room was needed but this arrangement has none, and
+   *  we fell back to enough 2-person rooms. The deal page surfaces it as a
+   *  toast. Cleared by the consumer. */
+  const tripleFallbackMessage = ref<string | null>(null)
   const previousCheckInDate = ref<string | null>(null)
 
   /**
@@ -308,6 +312,21 @@ export const useSecondReleaseDealStore = defineStore('second-release-deal', () =
     const R = travelGroup.value.rooms
     const avail = tripleRoom.value?.maxAvailable ?? 0
     let t = Math.max(0, P - 2 * R)
+
+    // A 3-person room is needed (some room would hold 3+), but this
+    // arrangement has none → fall back to enough 2-person rooms (ceil(P/2))
+    // and flag a toast. Bumping `rooms` re-runs this watcher; the second pass
+    // no longer needs a triple, so it settles into plain base rooms.
+    if (t > 0 && !tripleRoom.value) {
+      const neededRooms = Math.ceil(P / 2)
+      if (neededRooms !== R) {
+        tripleFallbackMessage.value =
+          `Geen 3-persoonskamers beschikbaar voor dit arrangement, we hebben ${neededRooms} 2-persoonskamers geselecteerd.`
+        travelGroup.value = { ...travelGroup.value, rooms: neededRooms }
+        return
+      }
+    }
+
     t = Math.min(t, R, tripleRoom.value ? avail : 0)
     const baseId = deal.baseRoomType.id
     const tripleId = tripleRoom.value?.id
@@ -393,11 +412,6 @@ export const useSecondReleaseDealStore = defineStore('second-release-deal', () =
 
   /** Set check-in date */
   function setCheckIn(date: string) {
-    // Only show unavailability popup when CHANGING an existing date while a paid upgrade is selected
-    if (checkInDate.value && currentDeal.value && selectedRoom.value && !selectedRoom.value.isDefault) {
-      previousCheckInDate.value = checkInDate.value
-      roomUnavailableMessage.value = t('store.roomUnavailable').replace('{room}', localized(selectedRoom.value.name))
-    }
     checkInDate.value = date
     updateCheckOut()
   }
@@ -489,6 +503,7 @@ export const useSecondReleaseDealStore = defineStore('second-release-deal', () =
     dateAvailability,
     isTravelGroupModalOpen,
     roomUnavailableMessage,
+    tripleFallbackMessage,
     roomAllocation,
     // Getters
     totalPersons,

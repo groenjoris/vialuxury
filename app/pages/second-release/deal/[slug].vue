@@ -329,12 +329,12 @@
               <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
               <circle cx="12" cy="10" r="3" />
             </svg>
-            <span>{{ hotel.location.city }}, {{ hotel.location.region }}</span>
+            <span>{{ hotelStreetCity }}, {{ hotel.location.region }}</span>
             <template v-if="chosenReisduurLabel">
               <span class="deal-page__divider">·</span>
               <span>Reisduur: {{ chosenReisduurLabel }}</span>
             </template>
-            <a href="#mini-map" class="deal-page__view-map-link" @click.prevent="scrollToMiniMap">{{ t('common.viewMap') || 'Bekijk op kaart' }}</a>
+            <NuxtLink :to="`/second-release/kaart?focus=${hotel.slug}`" class="deal-page__view-map-link">{{ t('common.viewMap') || 'Bekijk op kaart' }}</NuxtLink>
           </div>
         </div>
         <!-- Right column: Experience Creator business card on every
@@ -353,50 +353,31 @@
         </div>
       </section>
 
-      <!-- Hero Gallery -->
+      <!-- Hero Gallery — lower-right photo replaced by the location map. -->
       <section class="container deal-page__gallery">
         <SecondReleaseHeroGallery
           :images="hotel.images"
           :labels="galleryLabels"
           :rooms-left="dealRoomsLeft"
+          :map-lat="hotel.location.coordinates.lat"
+          :map-lng="hotel.location.coordinates.lng"
+          :map-slug="hotel.slug"
           @open-gallery="openGallery"
           @open-photo="openGalleryPhoto"
         />
       </section>
 
-      <!-- Two-column layout: Content | Booking Sidebar -->
-      <!-- Row 1: inclusions chips | In de buurt (grid, headings level) -->
-      <div class="deal-page__grid deal-page__grid--areas container">
-        <!-- Inclusions — bordered chips in 2 columns (wireframe) -->
-        <section id="intro" class="deal-page__inc-chips-section ga-chips">
-          <h2 class="section-title">In dit arrangement is het volgende inbegrepen</h2>
-          <div class="inc-chips">
-            <div v-for="inc in displayedInclusions" :key="inc.id" class="inc-chip">
-              <img v-if="incIconUrl(inc)" :src="incIconUrl(inc)!" class="inc-chip__icon" alt="" loading="lazy" />
-              <span v-else class="inc-chip__check">✓</span>
-              <span>{{ localized(inc.title) }}</span>
-            </div>
+      <!-- Includes — full-width row below the gallery (no heading). Boxes
+           size to their content; the row spreads flush left↔right. -->
+      <section id="intro" class="container deal-page__inc-row">
+        <div class="inc-row">
+          <div v-for="inc in displayedInclusions" :key="inc.id" class="inc-row__chip">
+            <img v-if="incIconUrl(inc)" :src="incIconUrl(inc)!" class="inc-row__icon" alt="" loading="lazy" />
+            <span v-else class="inc-row__check">✓</span>
+            <span>{{ localized(inc.title) }}</span>
           </div>
-        </section>
-
-        <!-- In de buurt: mini map + top-3 tips. Plain block (no card
-             border) — heading matches the inclusions heading style. -->
-        <div id="mini-map" class="deal-page__nearby-block ga-nearby">
-          <h2 class="section-title">In de buurt</h2>
-          <SecondReleaseMiniMapCard
-            :slug="hotel.slug"
-            :lat="hotel.location.coordinates.lat"
-            :lng="hotel.location.coordinates.lng"
-            :address="hotelStreetCity"
-          />
-          <ul class="nearby-card__tips">
-            <li v-for="tip in hotel.nearbyTips.slice(0, 3)" :key="tip.id">
-              <span class="sidebar__inc-check">✓</span>
-              <span>{{ localized(tip.title) }}</span>
-            </li>
-          </ul>
         </div>
-      </div>
+      </section>
 
       <!-- Flow section: the "Jouw vakantie" card floats right; every block
            (booking controls, hotel/room cards, inclusion banners) is its
@@ -405,7 +386,17 @@
       <div class="container deal-page__flow">
         <!-- Jouw vakantie: floated summary card -->
         <div class="deal-page__flow-sidebar deal-page__col-right">
-          <h3 class="sidebar__title">Jouw vakantie</h3>
+          <!-- Top of the sidebar mirrors Release 1: arrangement contents
+               first (overnachting → rooms → rest), then the dates/price. -->
+          <h3 class="sidebar__title">Dit arrangement bevat</h3>
+          <ul class="sidebar__inc-list">
+            <li v-for="(item, i) in sidebarInclusions" :key="i">
+              <span class="sidebar__inc-check">✓</span>
+              <span>{{ item }}</span>
+            </li>
+          </ul>
+
+          <div class="sidebar__divider"></div>
 
           <!-- Always rendered — placeholders keep the card the same height
                before a date is chosen. -->
@@ -618,18 +609,6 @@
       :titles-map="titlesMap"
       @close="isPanelOpen = false" @select="handlePanelSelect"
     />
-    <!-- Room unavailable popup -->
-    <Teleport to="body">
-      <Transition name="fade">
-        <div v-if="store.roomUnavailableMessage" class="room-unavailable-overlay" @click.self="store.cancelRoomUnavailable()">
-          <div class="room-unavailable-popup">
-            <p class="room-unavailable-popup__text">{{ store.roomUnavailableMessage }}</p>
-            <button class="room-unavailable-popup__btn" @click="store.confirmRoomUnavailable()">Oké</button>
-          </div>
-        </div>
-      </Transition>
-    </Teleport>
-
     <!-- Toast notification -->
     <SecondReleaseToastNotification :message="toastMessage" type="success" />
 
@@ -1116,6 +1095,15 @@ const hasOtherArrangements = computed(() => {
 })
 const toastMessage = ref('')
 
+// Surface the store's 3-person-room fallback as a toast (deal-page flow:
+// the user picked a party size that needs a triple this hotel lacks).
+watch(() => store.tripleFallbackMessage, (msg) => {
+  if (!msg) return
+  toastMessage.value = ''
+  nextTick(() => { toastMessage.value = msg })
+  store.tripleFallbackMessage = null
+}, { immediate: true })
+
 function handleFavoriteClick() {
   // No login popup — just toggle the session favourite and confirm via toast.
   toggleFav(hotel.value?.slug)
@@ -1247,6 +1235,30 @@ const roomAllocationEntries = computed(() => {
   }
   return entries
 })
+/** Overnight-count label, locale-aware: "2 overnachtingen" / "2 nights". */
+function overnightLabel(n: number): string {
+  if (locale.value === 'en') return `${n} ${n === 1 ? 'night' : 'nights'}`
+  if (locale.value === 'de') return `${n} ${n === 1 ? 'Übernachtung' : 'Übernachtungen'}`
+  return `${n} ${n === 1 ? 'overnachting' : 'overnachtingen'}`
+}
+
+/** Sidebar "Dit arrangement bevat" list (mirrors R1): overnachting first
+ *  (no hotel name), then the room types (e.g. "2 x Comfort Room"), then the
+ *  remaining inclusions. */
+const sidebarInclusions = computed<string[]>(() => {
+  const out: string[] = []
+  out.push(overnightLabel(currentDeal.value?.nights ?? 1))
+  for (const entry of roomAllocationEntries.value) {
+    if (!entry.room) continue
+    out.push(`${entry.count} x ${localized(entry.room.name)}`)
+  }
+  for (const inc of filteredInclusions.value) {
+    if (isOvernightInclusion(inc)) continue
+    out.push(localized(inc.title))
+  }
+  return out
+})
+
 const dealVariants = dealVariantsByPermalink[routeSlug.value] || []
 const dealsMap = dealsMapByPermalink[routeSlug.value] || {}
 
@@ -2727,6 +2739,60 @@ onMounted(() => {
 }
 @media (max-width: 800px) {
   .inc-chips { grid-template-columns: 1fr; }
+}
+
+/* Includes row — strip below the gallery. Each box sizes to its own text
+   first; the number that fit per row follows from that. FULL rows stretch
+   their boxes to fill the width (with a gap between them); the LAST,
+   incomplete row stays content-sized + left-aligned — the invisible
+   trailing flex item (::after) soaks up that row's leftover space so its
+   boxes don't stretch. */
+.deal-page__inc-row {
+  margin-top: var(--space-lg);
+  /* Clear gap before the booking-controls / sidebar row below. */
+  margin-bottom: var(--space-xl);
+}
+.inc-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.inc-row::after {
+  content: "";
+  flex: 1000 1 auto;
+}
+.inc-row__chip {
+  flex: 1 1 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 18px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  font-size: 14px;
+  color: var(--color-text-primary);
+  line-height: 1.4;
+  white-space: nowrap;
+}
+.inc-row__check {
+  color: var(--color-discount);
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.inc-row__icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  object-fit: contain;
+}
+
+/* Sidebar divider between the "Dit arrangement bevat" list and the dates. */
+.sidebar__divider {
+  height: 1px;
+  background: var(--color-border);
+  margin: var(--space-md) 0;
 }
 
 /* Named-area grid — pairs the left sections with the right rail:

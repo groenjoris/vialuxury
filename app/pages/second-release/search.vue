@@ -411,7 +411,7 @@ import { searchHotels } from '~/data/mock/search-hotels'
 import { dealMatchesAllTags, getFilterTag } from '~/utils-second-release/filterTags'
 import FilterPills from '~/components-second-release/search/FilterPills.vue'
 import { isDealAvailableInWindow } from '~/utils-second-release/availability'
-import { adjustPrice } from '~/utils-second-release/priceFormula'
+import { adjustPrice, hotelHasTripleRoom } from '~/utils-second-release/priceFormula'
 import {
   hotelMatchesDestination,
   hasActiveDestinationFilter,
@@ -815,6 +815,9 @@ const filteredHotelsIgnoringDate = computed(() => {
   const nightsActive = selectedNights.value.length > 0
   const p = persons.value
   const r = rooms.value
+  // A 3-person room is needed when a room would have to hold 3+ guests
+  // (P > 2·R). Then only hotels that actually have a 3-person room qualify.
+  const tripleNeeded = p > 2 * r
   const destFilter = {
     destinations: [...selectedDestinations.value],
     cities: [...selectedCities.value],
@@ -833,6 +836,10 @@ const filteredHotelsIgnoringDate = computed(() => {
   const out = []
   for (const hotel of searchHotels) {
     const matchingDeals = hotel.deals.filter((d) => {
+      // A 3-person room is needed (party size > 2 per room) but this deal's
+      // arrangement has none. Keyed on the deal permalink — the SAME key the
+      // deal store uses (deal.hotelSlug = package permalink = d.slug).
+      if (tripleNeeded && !hotelHasTripleRoom(d.slug)) return false
       const priceForPersons = adjustPrice(d.basePrice, p, r)
       if (priceForPersons < budgetMin.value || priceForPersons > budgetMax.value) return false
       if (nightsActive) {
@@ -1070,6 +1077,9 @@ const filteredHotels = computed(() => {
   const flex = activeFlex.value
   const p = persons.value
   const r = rooms.value
+  // A 3-person room is needed when a room would have to hold 3+ guests
+  // (P > 2·R). Then only hotels that actually have a 3-person room qualify.
+  const tripleNeeded = p > 2 * r
   const destFilter = {
     destinations: [...selectedDestinations.value],
     cities: [...selectedCities.value],
@@ -1095,6 +1105,10 @@ const filteredHotels = computed(() => {
   const out = []
   for (const hotel of searchHotels) {
     const matchingDeals = hotel.deals.filter((d) => {
+      // A 3-person room is needed (party size > 2 per room) but this deal's
+      // arrangement has none. Keyed on the deal permalink — the SAME key the
+      // deal store uses (deal.hotelSlug = package permalink = d.slug).
+      if (tripleNeeded && !hotelHasTripleRoom(d.slug)) return false
       // Budget compares against the price for the CURRENT person count.
       const priceForPersons = adjustPrice(d.basePrice, p, r)
       if (priceForPersons < budgetMin.value || priceForPersons > budgetMax.value) return false

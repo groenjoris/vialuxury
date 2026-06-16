@@ -3366,6 +3366,10 @@ function handleSelectHotelInPopup(slug: string) {
   padding: 0;
   width: 560px;          /* fixed: don't shrink while user types */
   max-width: 90vw;
+  /* Fixed browse height so the dropdown doesn't resize when typing,
+     but never taller than the viewport (.popup also caps at 70vh).
+     The inner content area scrolls when themes run past the bottom. */
+  height: min(540px, 70vh);
   overflow: hidden;
   display: flex;
   flex-direction: column;

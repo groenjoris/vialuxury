@@ -68,14 +68,14 @@
     </div>
     <div class="hero-gallery__grid">
       <div
-        v-for="(image, index) in galleryImages"
+        v-for="(image, index) in photoCells"
         :key="image.id"
         class="hero-gallery__cell"
         @click="$emit('openPhoto', index + 1)"
       >
         <img :src="image.url" :alt="localized(image.alt)" class="hero-gallery__img" />
         <button
-          v-if="index === galleryImages.length - 1"
+          v-if="index === allPhotosCellIndex"
           class="hero-gallery__all-btn"
           @click.stop="$emit('openGallery')"
         >
@@ -83,6 +83,17 @@
           {{ t('common.allPhotos') }}
         </button>
       </div>
+      <!-- Deal page: the lower-right photo is replaced by the location map. -->
+      <NuxtLink
+        v-if="hasMap"
+        :to="mapSlug ? `/second-release/kaart?focus=${mapSlug}` : '/second-release/kaart'"
+        class="hero-gallery__cell hero-gallery__cell--map"
+        :aria-label="t('common.viewMap')"
+      >
+        <SecondReleaseStaticMiniMap :lat="mapLat!" :lng="mapLng!" :zoom="11" />
+        <span class="hero-gallery__map-pin"><SecondReleaseMapPin /></span>
+        <span class="hero-gallery__map-link">{{ t('common.viewMap') || 'Bekijk op kaart' }}</span>
+      </NuxtLink>
     </div>
   </div>
 </template>
@@ -100,6 +111,11 @@ const props = defineProps<{
   labels?: string[]
   /** Rooms-left count; the limited-supply sticker shows when < 4. */
   roomsLeft?: number | null
+  /** When lat+lng are given (deal page), the lower-right gallery photo is
+   *  replaced by a static location map that links through to /kaart. */
+  mapLat?: number | null
+  mapLng?: number | null
+  mapSlug?: string
 }>()
 
 defineEmits<{
@@ -111,6 +127,16 @@ defineEmits<{
 
 const heroImage = computed(() => props.images.find((img) => img.position === 'hero'))
 const galleryImages = computed(() => props.images.filter((img) => img.position === 'gallery').slice(0, 4))
+
+/** When the map occupies the lower-right cell, only 3 photo thumbnails are
+ *  shown (the map takes the 4th slot). */
+const hasMap = computed(() => props.mapLat != null && props.mapLng != null)
+const photoCells = computed(() => (hasMap.value ? galleryImages.value.slice(0, 3) : galleryImages.value))
+const lastPhotoCellIndex = computed(() => photoCells.value.length - 1)
+/** With the map in the lower-right slot, the "Alle foto's" button sits on
+ *  the photo directly ABOVE it (top-right cell, index 1). Without a map it
+ *  stays on the last gallery photo. */
+const allPhotosCellIndex = computed(() => (hasMap.value ? 1 : lastPhotoCellIndex.value))
 
 /** Mobile carousel shows EVERY photo (hero first, then gallery) one at a
  *  time. */
@@ -235,6 +261,40 @@ function nextSlide() {
 .hero-gallery__cell {
   position: relative;
   overflow: hidden;
+}
+
+/* Map cell (deal page) — fills the lower-right grid slot, centred pin. */
+.hero-gallery__cell--map {
+  display: block;
+  cursor: pointer;
+}
+.hero-gallery__map-pin {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -100%);
+  filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.25));
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* "Bekijk kaart" — solid black button, lower-right of the map tile. */
+.hero-gallery__map-link {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  z-index: 2;
+  background: var(--color-dark);
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 8px 14px;
+  border-radius: var(--radius-sm);
+  transition: background var(--transition-fast);
+}
+.hero-gallery__cell--map:hover .hero-gallery__map-link {
+  background: #2b2b2b;
 }
 
 .hero-gallery__img {

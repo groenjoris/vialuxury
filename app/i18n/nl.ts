@@ -33,7 +33,7 @@ const nl: Record<string, string> = {
 
   // Header - Travel group
   'header.adults': 'Volwassenen',
-  'header.adultsAge': '18 jaar of ouder',
+  'header.adultsAge': 'vanaf 12 jaar',
   'header.children': 'Kinderen',
   'header.childrenAge': '0\u201317 jaar',
   'header.dog': 'Hond meenemen',

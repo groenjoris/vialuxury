@@ -28,6 +28,20 @@
             />
           </div>
         </template>
+
+        <!-- ── Reisduur + CTA — grey box. When the calendar is COLLAPSED it
+             sits here, below the (collapsed) date field. -->
+        <div v-if="!calendarOpen" class="booking-controls__meta-box">
+          <h3 class="booking-controls__duration-title">
+            {{ t('deal.thisArrangementIsFor') }} {{ nightsWord(dealNights, false) }}
+          </h3>
+          <template v-if="hasOtherArrangements">
+            <p class="booking-controls__shorter">{{ t('deal.shorterOrLongerStay') }}</p>
+            <a href="#" class="booking-controls__link" @click.prevent="$emit('open-arrangements')">
+              {{ t('deal.viewOtherArrangements') }}
+            </a>
+          </template>
+        </div>
       </div>
 
       <!-- ── Right half: reisgezelschap + reisduur/CTA box ── -->
@@ -63,14 +77,16 @@
         </div>
       </div>
 
-      <!-- ── Reisduur + CTA — grey box under the people selector ── -->
-      <div class="booking-controls__meta-box">
-        <h3 class="booking-controls__label">Reisduur</h3>
-        <p class="booking-controls__static">{{ reisduurLabel }}</p>
+      <!-- ── Reisduur + CTA — grey box. When the calendar is EXPANDED it
+           sits here, below the reisgezelschap selector. -->
+      <div v-if="calendarOpen" class="booking-controls__meta-box">
+        <h3 class="booking-controls__duration-title">
+          {{ t('deal.thisArrangementIsFor') }} {{ nightsWord(dealNights, false) }}
+        </h3>
         <template v-if="hasOtherArrangements">
-          <h3 class="booking-controls__label booking-controls__label--plain">Korter of langer verblijf?</h3>
+          <p class="booking-controls__shorter">{{ t('deal.shorterOrLongerStay') }}</p>
           <a href="#" class="booking-controls__link" @click.prevent="$emit('open-arrangements')">
-            Bekijk overige arrangementen bij dit hotel
+            {{ t('deal.viewOtherArrangements') }}
           </a>
         </template>
       </div>
@@ -84,6 +100,9 @@ import { useSecondReleaseDealStore } from '~/stores-second-release/deal'
 import { useSecondReleaseClickOutside } from '~/composables-second-release/useSecondReleaseClickOutside'
 import { generateDealAvailability } from '~/data/mock/deal-pricing'
 import { PRICED_PERSONS, minRoomsFor, maxRoomsFor } from '~/utils-second-release/priceFormula'
+import { nightsWord } from '~/utils-second-release/plural'
+
+const { t } = useSecondReleaseI18n()
 
 defineProps<{
   hasOtherArrangements?: boolean
@@ -182,11 +201,7 @@ const groupLabel = computed(() =>
 )
 
 /** "2 nachten, 3 dagen" */
-const reisduurLabel = computed(() => {
-  const n = store.currentDeal?.nights ?? 0
-  const d = n + 1
-  return `${n} ${n === 1 ? 'nacht' : 'nachten'}, ${d} ${d === 1 ? 'dag' : 'dagen'}`
-})
+const dealNights = computed(() => store.currentDeal?.nights ?? 1)
 </script>
 
 <style scoped>
@@ -215,13 +230,33 @@ const reisduurLabel = computed(() => {
   min-width: 0;
 }
 
-/* Reisduur first, CTA fallback below it. */
+/* Reisduur block — grey rounded box around the whole thing. */
 .booking-controls__meta-box {
-  padding: var(--space-sm) 0 0;
+  margin-top: var(--space-md);
+  padding: var(--space-md);
+  background: var(--color-border-light);
+  border-radius: var(--radius-md);
 }
 
-.booking-controls__meta-box .booking-controls__static {
-  margin-bottom: var(--space-md);
+/* "Dit arrangement is voor x nachten" — Basis Grotesque (body font),
+   sidebar-title size. */
+.booking-controls__duration-title {
+  font-family: var(--font-body);
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.4;
+  color: var(--color-text-primary);
+  margin: 0 0 4px;
+}
+
+/* "Korter of langer verblijf?" — plain body text. */
+.booking-controls__shorter {
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.4;
+  color: var(--color-text-secondary);
+  margin: 0 0 4px;
 }
 
 .booking-controls__field-block {

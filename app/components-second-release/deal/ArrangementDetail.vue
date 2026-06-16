@@ -15,11 +15,14 @@
       </div>
     </article>
 
-    <!-- ── Room cards — one per allocated room type ── -->
+    <!-- ── Room cards — ONE card per room TYPE. Multiple rooms of the same
+         type list as rows inside the card (Kamer 1, Kamer 2, …) — the card
+         grows taller — each row with its own guest assignment + upgrade
+         link. Upgrading one room adds a new card for the new type. ── -->
     <template v-if="only !== 'banners'">
-    <article v-for="(card, i) in roomCards" :key="card.room.id" class="arr-card arr-card--fixed">
+    <article v-for="card in roomCards" :key="card.room.id" class="arr-card arr-card--fixed">
       <div class="arr-card__image">
-        <span class="arr-card__chip">{{ i === 0 ? (card.count === 1 ? 'Je kamer' : 'Je kamers') : 'Nog een kamer' }}</span>
+        <span class="arr-card__chip">{{ totalTypes === 1 ? 'Je kamer' : 'Kamertype ' + (card.typeIndex + 1) }}</span>
         <span
           v-if="card.sticker"
           class="arr-card__sticker"
@@ -28,19 +31,27 @@
         <img :src="card.image" :alt="localized(card.room.name)" loading="lazy" />
       </div>
       <div class="arr-card__body">
-        <h3 class="arr-card__title">{{ card.count }} x&nbsp; {{ localized(card.room.name) }}</h3>
-        <p class="arr-card__desc">{{ localized(card.room.description) }}</p>
-        <div class="arr-card__footer">
-          <div class="arr-card__meta-block">
-            <span class="arr-card__meta">{{ card.count }} {{ card.count === 1 ? 'kamer' : 'kamers' }}, max {{ card.count * (card.room.capacity ?? 2) }} personen</span>
-            <span v-if="card.guests" class="arr-card__guests">{{ card.guests }}</span>
+        <h3 class="arr-card__title"><template v-if="card.rows.length > 1">{{ card.rows.length }}x&nbsp;</template>{{ localized(card.room.name) }}</h3>
+        <p class="arr-card__desc">{{ localized(card.room.description) }} Max {{ card.room.capacity ?? 2 }} {{ (card.room.capacity ?? 2) === 1 ? 'persoon' : 'personen' }} per kamer.</p>
+        <ul v-if="card.room.features && card.room.features.length" class="arr-card__features">
+          <li v-for="(feature, i) in card.room.features" :key="i">
+            <span class="arr-card__feature-check">✓</span>
+            <span>{{ localized(feature) }}</span>
+          </li>
+        </ul>
+        <div class="arr-card__rooms">
+          <div v-for="row in card.rows" :key="row.key" class="arr-card__room-row">
+            <span class="arr-card__room-info">
+              <span v-if="totalRooms > 1" class="arr-card__room-label">Kamer {{ row.roomNumber }}:</span>
+              <span v-if="row.guests" class="arr-card__guests">{{ row.guests }}</span>
+            </span>
+            <button
+              v-if="upgradeLabelForRow(row)"
+              type="button"
+              class="arr-card__change-btn"
+              @click="openRoomPanel(row)"
+            >{{ upgradeLabelForRow(row) }}</button>
           </div>
-          <button
-            v-if="upgradeButtonLabel(card)"
-            type="button"
-            class="arr-card__change-btn"
-            @click="openRoomPanel(card)"
-          >{{ upgradeButtonLabel(card) }}</button>
         </div>
       </div>
     </article>
@@ -68,13 +79,13 @@
     <!-- Room-type side panel — select-only switch per card (no steppers) -->
     <SecondReleaseRoomTypePanel
       v-if="only !== 'banners' && store.currentDeal"
-      :is-open="!!panelCard"
-      :rooms="panelCard ? selectableRoomsFor(panelCard) : []"
-      :current-room-id="panelCard?.room.id ?? ''"
-      :current-price-extra="panelCard?.room.priceExtra ?? 0"
+      :is-open="!!panelRow"
+      :rooms="panelRow ? selectableRoomsForRow(panelRow) : []"
+      :current-room-id="panelRow?.room.id ?? ''"
+      :current-price-extra="panelRow?.room.priceExtra ?? 0"
       :guests-label="panelGuestsLabel"
       @select="onPanelSelect"
-      @close="panelRoomId = null"
+      @close="panelKey = null"
     />
   </section>
 </template>
@@ -103,22 +114,17 @@ defineEmits<{
 const { localized } = useSecondReleaseI18n()
 const store = useSecondReleaseDealStore()
 
-/* ── Room-type panel — opened per CARD, switches that card's type.
-   Tracks the room-type ID and resolves the card LIVE, so the panel
-   always mirrors the current assignment (and closes itself when the
-   card disappears after a group change). ── */
-const panelRoomId = ref<string | null>(null)
-const panelCard = computed<RoomCard | null>(() =>
-  roomCards.value.find(c => c.room.id === panelRoomId.value) ?? null,
+/* ── Room-type panel — opened per ROOM ROW, switches that single room's
+   type. Tracks the row key and resolves the row LIVE, so the panel always
+   mirrors the current assignment (and closes itself when the row
+   disappears after a group change). ── */
+const panelKey = ref<string | null>(null)
+const panelRow = computed<RoomRow | null>(() =>
+  physicalRooms.value.find(r => r.key === panelKey.value) ?? null,
 )
 
-function openRoomPanel(card: RoomCard) {
-  panelRoomId.value = card.room.id
-}
-
-/** Required per-room capacity for a card's guests. */
-function requiredCapacity(card: RoomCard): number {
-  return Math.max(1, Math.ceil(card.guestCount / card.count))
+function openRoomPanel(row: RoomRow) {
+  panelKey.value = row.key
 }
 
 /** Panel photo per room type — the base room and its 3-person duplicate
@@ -131,54 +137,62 @@ function panelImageFor(r: RoomOption): string {
   return r.image
 }
 
-/** Room types this card can switch to (current one included): enough
- *  capacity for its guests AND enough inventory for its room count. */
-function selectableRoomsFor(card: RoomCard): RoomOption[] {
-  const need = requiredCapacity(card)
+/** Room types a single room can switch to (current one included): enough
+ *  capacity for its guests AND at least one available unit. */
+function selectableRoomsForRow(row: RoomRow): RoomOption[] {
+  const need = Math.max(1, row.guestCount)
   return store.allRoomTypes
     .filter(r =>
       (r.capacity ?? 2) >= need
-      && (r.maxAvailable ?? 5) >= card.count,
+      && (r.maxAvailable ?? 5) >= 1,
     )
     .map(r => ({ ...r, image: panelImageFor(r) }))
 }
 
 /** "Upgrade vanaf €xx" — xx is the cheapest POSITIVE surcharge among the
- *  other suitable room types. No suitable alternatives at all → no
- *  button (e.g. a 3-person card when no other type sleeps 3). */
-function upgradeButtonLabel(card: RoomCard): string | null {
-  const others = selectableRoomsFor(card).filter(r => r.id !== card.room.id)
+ *  other suitable room types. No real upgrade (only lateral changes) →
+ *  "Wijzig kamertype". No suitable alternatives at all → no link. */
+function upgradeLabelForRow(row: RoomRow): string | null {
+  const others = selectableRoomsForRow(row).filter(r => r.id !== row.room.id)
   if (others.length === 0) return null
+  // When this room is itself an upgrade — paid OR a free included upgrade —
+  // you don't "upgrade" it, you change its type.
+  const roomIsUpgrade = (row.room.priceExtra ?? 0) > 0 || row.room.isUpgrade || hasFreeUpgrade.value
+  if (roomIsUpgrade) return 'Wijzig kamertype'
   const diffs = others
-    .map(r => r.priceExtra - card.room.priceExtra)
+    .map(r => r.priceExtra - row.room.priceExtra)
     .filter(d => d > 0)
   if (diffs.length > 0) return `Upgrade vanaf ${formatPrice(Math.min(...diffs))}`
   return 'Wijzig kamertype'
 }
 
-/** "Voor gast 4 en gast 5" — mirrors the card's guest label, so the
- *  panel says exactly which guests the room switch applies to. */
+/** "Voor gast 4 en gast 5" — mirrors the row's guest label, so the panel
+ *  says exactly which guests the room switch applies to. */
 const panelGuestsLabel = computed(() => {
-  const g = panelCard.value?.guests
+  const g = panelRow.value?.guests
   if (!g) return null
   return 'Voor ' + g.charAt(0).toLowerCase() + g.slice(1)
 })
 
-/** Selecting closes the panel and switches the card's room type. */
+/** Selecting closes the panel and switches THIS room's type. */
 function onPanelSelect(newRoomId: string) {
-  const card = panelCard.value
-  if (!card || newRoomId === card.room.id) { panelRoomId.value = null; return }
+  const row = panelRow.value
+  if (!row || newRoomId === row.room.id) { panelKey.value = null; return }
 
   if (store.travelGroup.rooms <= 1) {
     store.selectRoom(newRoomId)
   } else {
+    // Swap THIS slot's type in place so its guests move with it to the new
+    // card, then mirror the change into the store's per-type counts (kept
+    // matched, so the watcher won't re-seed / reshuffle the order).
+    const slots = [...roomSlots.value]
+    slots[row.slotIndex] = newRoomId
+    roomSlots.value = slots
     const alloc = { ...store.effectiveAllocation }
-    const moved = card.count
-    const remaining = (alloc[card.room.id] ?? 0) - moved
-    store.setRoomAllocationCount(card.room.id, Math.max(0, remaining))
-    store.setRoomAllocationCount(newRoomId, (alloc[newRoomId] ?? 0) + moved)
+    store.setRoomAllocationCount(row.room.id, Math.max(0, (alloc[row.room.id] ?? 0) - 1))
+    store.setRoomAllocationCount(newRoomId, (alloc[newRoomId] ?? 0) + 1)
   }
-  panelRoomId.value = null
+  panelKey.value = null
 }
 
 const hotelImage = computed(() => props.hotel.images[0]?.url || '')
@@ -191,16 +205,30 @@ const hotelExcerpt = computed(() => {
   return firstPara || text
 })
 
+/** One physical room (a single bookable unit). */
+interface RoomRow {
+  /** Stable identity for ONE physical room (its slot position). */
+  key: string
+  /** Index into `roomSlots` — which ordered slot this room occupies. */
+  slotIndex: number
+  /** 1-based number of this physical room across the whole booking. */
+  roomNumber: number
+  room: RoomOption
+  /** "Gast 1 en gast 2" — which guests sleep in THIS room. Only filled
+   *  when there is more than one physical room. */
+  guests: string | null
+  /** Number of guests assigned to this room. */
+  guestCount: number
+}
+
+/** One card per room TYPE; its rooms list as rows inside the card. */
 interface RoomCard {
   room: RoomOption
-  count: number
+  /** 0-based card order — drives the "Kamertype N" chip. */
+  typeIndex: number
   image: string
   sticker: { text: string; tone: 'free' | 'paid' } | null
-  /** "Gast 1, gast 2" — which guests sleep in this room TYPE. Only
-   *  filled when there is more than one room-type card. */
-  guests: string | null
-  /** Number of guests assigned to this room type. */
-  guestCount: number
+  rows: RoomRow[]
 }
 
 /** A deal contains a FREE room upgrade when it carries a kamerupgrade
@@ -262,54 +290,120 @@ function isUpgradeInclusion(inc: DealInclusion): boolean {
   return /kamerupgrade|upgrade\s+naar/i.test(title)
 }
 
-/** One card per room type. Single-room mode shows the selected room;
- *  multi-room mode shows the effective allocation (count per type). */
-const roomCards = computed<RoomCard[]>(() => {
+/* ── Ordered "room slots" overlay ──────────────────────────────────────
+   The store tracks room counts PER TYPE (no per-room identity), which would
+   reshuffle guest numbers whenever the allocation recomputes. We keep an
+   ordered array of one room-type-id per physical room so guest assignment
+   stays STABLE: upgrading a single room swaps that slot's type in place, so
+   its guests (e.g. "Gast 1 en gast 2") move WITH it to the new card. The
+   overlay is re-seeded from the store whenever the group changes (so the
+   counts per type no longer match the slots). */
+const roomSlots = ref<string[]>([])
+
+/** Default-order seed: largest capacity first (3-person room gets guests
+ *  1-3), base room before upgrades. */
+function seedRoomSlots() {
+  const types: { room: RoomOption; count: number }[] = []
+  for (const [roomId, count] of Object.entries(store.effectiveAllocation)) {
+    if (count <= 0) continue
+    const room = store.allRoomTypes.find(r => r.id === roomId)
+    if (room) types.push({ room, count })
+  }
+  types.sort((a, b) =>
+    ((b.room.capacity ?? 2) - (a.room.capacity ?? 2))
+    || ((a.room.isDefault ? 0 : 1) - (b.room.isDefault ? 0 : 1)),
+  )
+  const slots: string[] = []
+  for (const t of types) for (let k = 0; k < t.count; k++) slots.push(t.room.id)
+  roomSlots.value = slots
+}
+
+/** True when the slot overlay still matches the store's per-type counts. */
+function slotsMatchAllocation(): boolean {
+  const slotCounts: Record<string, number> = {}
+  for (const id of roomSlots.value) slotCounts[id] = (slotCounts[id] || 0) + 1
+  const allocCounts: Record<string, number> = {}
+  for (const [id, c] of Object.entries(store.effectiveAllocation)) if (c > 0) allocCounts[id] = c
+  const keys = new Set([...Object.keys(slotCounts), ...Object.keys(allocCounts)])
+  for (const k of keys) if ((slotCounts[k] || 0) !== (allocCounts[k] || 0)) return false
+  return true
+}
+
+// Re-seed only when the allocation no longer matches the overlay (a group
+// change), NOT when we ourselves swapped a slot during an upgrade.
+watch(() => store.effectiveAllocation, () => {
+  if (!slotsMatchAllocation()) seedRoomSlots()
+}, { deep: true, immediate: true })
+
+/** Flat list of PHYSICAL rooms with global numbering + guest assignment.
+ *  Single-room mode → one room, no guest line. Multi-room mode walks the
+ *  ordered slots and fills each room up to its capacity in order:
+ *    5p/3k same type → kamer 1: gast 1-2, kamer 2: gast 3-4, kamer 3: gast 5
+ *    5p/2k (3-pers + 2-pers) → kamer 1: gast 1-3, kamer 2: gast 4-5 */
+const physicalRooms = computed<RoomRow[]>(() => {
   const deal = store.currentDeal
   if (!deal) return []
 
   if (store.travelGroup.rooms <= 1) {
     const room = store.selectedRoom ?? deal.baseRoomType
-    // Single room type → no guest line (it's evident who sleeps there).
-    return [{
-      room,
-      count: 1,
-      image: imageFor(room),
-      sticker: stickerFor(room),
-      guests: null,
-      guestCount: store.totalPersons,
-    }]
+    return [{ key: 'single', slotIndex: 0, roomNumber: 1, room, guests: null, guestCount: store.totalPersons }]
   }
 
-  const cards: RoomCard[] = []
-  for (const [roomId, count] of Object.entries(store.effectiveAllocation)) {
-    if (count <= 0) continue
-    const room = store.allRoomTypes.find(r => r.id === roomId)
-    if (room) cards.push({ room, count, image: imageFor(room), sticker: stickerFor(room), guests: null, guestCount: 0 })
-  }
-  // Largest room type first (3-person room gets guests 1-3), base room
-  // before paid upgrades as a tie-breaker.
-  cards.sort((a, b) =>
-    ((b.room.capacity ?? 2) - (a.room.capacity ?? 2))
-    || ((a.room.isDefault ? 0 : 1) - (b.room.isDefault ? 0 : 1)),
-  )
+  const slots = roomSlots.value
+  const totalRooms = slots.length
+  const roomsResolved = slots.map(id => store.allRoomTypes.find(r => r.id === id) ?? deal.baseRoomType)
 
-  // ── Guest assignment — fill each room-type card up to capacity, in
-  //    card order. 5p/2k → 3-persoonskamer: gast 1-3, 2-persoonskamer:
-  //    gast 4 en 5. The guest LINE only renders when there are multiple
-  //    room types (with a single type it's evident who sleeps there).
-  let remaining = store.totalPersons
+  // Guest counts per room — NO empty rooms: give every room 1 guest first,
+  // then fill the earlier rooms up to capacity with the remainder.
+  //   4p/3k → [2,1,1];  5p/2k (3-pers + 2-pers) → [3,2]
+  const counts = roomsResolved.map(() => 0)
+  let toAssign = store.totalPersons
+  for (let i = 0; i < roomsResolved.length && toAssign > 0; i++) { counts[i] = 1; toAssign-- }
+  for (let i = 0; i < roomsResolved.length && toAssign > 0; i++) {
+    const cap = roomsResolved[i].capacity ?? 2
+    const add = Math.min(cap - counts[i], toAssign)
+    counts[i] += add
+    toAssign -= add
+  }
+
   let guestNr = 1
-  for (const card of cards) {
-    const cap = card.room.capacity ?? 2
-    const guestsInType = Math.min(cap * card.count, remaining)
-    remaining -= guestsInType
-    card.guestCount = guestsInType
-    card.guests = cards.length > 1 ? formatGuestList(guestNr, guestsInType) : null
-    guestNr += guestsInType
+  return roomsResolved.map((room, idx) => {
+    const guestsHere = counts[idx]
+    const start = guestNr
+    guestNr += guestsHere
+    return {
+      key: `slot-${idx}`,
+      slotIndex: idx,
+      roomNumber: idx + 1,
+      room,
+      guests: totalRooms > 1 ? formatGuestList(start, guestsHere) : null,
+      guestCount: guestsHere,
+    }
+  })
+})
+
+/** Total physical rooms — drives "Je kamer" vs the "Kamer N" row labels. */
+const totalRooms = computed(() => physicalRooms.value.length)
+
+/** One card per room TYPE (grouped from the physical rooms, first-seen
+ *  order). Each card lists its rooms as rows. */
+const roomCards = computed<RoomCard[]>(() => {
+  const cards: RoomCard[] = []
+  const byType = new Map<string, RoomCard>()
+  for (const row of physicalRooms.value) {
+    let card = byType.get(row.room.id)
+    if (!card) {
+      card = { room: row.room, typeIndex: byType.size, image: imageFor(row.room), sticker: stickerFor(row.room), rows: [] }
+      byType.set(row.room.id, card)
+      cards.push(card)
+    }
+    card.rows.push(row)
   }
   return cards
 })
+
+/** Number of distinct room TYPES — drives "Je kamer" vs "Kamertype N". */
+const totalTypes = computed(() => roomCards.value.length)
 
 /** "Gast 1, gast 2 en gast 3" — comma-separated with "en" before the
  *  last guest, starting from guest number `start`. */
@@ -317,10 +411,9 @@ function formatGuestList(start: number, count: number): string | null {
   if (count <= 0) return null
   const names: string[] = []
   for (let g = 0; g < count; g++) names.push(`gast ${start + g}`)
-  let label: string
-  if (names.length === 1) label = names[0]
-  else label = `${names.slice(0, -1).join(', ')} en ${names[names.length - 1]}`
-  return label.charAt(0).toUpperCase() + label.slice(1)
+  // Lowercase "gast …" (it follows the "Kamer N:" label).
+  if (names.length === 1) return names[0]
+  return `${names.slice(0, -1).join(', ')} en ${names[names.length - 1]}`
 }
 </script>
 
@@ -389,6 +482,11 @@ function formatGuestList(start: number, count: number): string | null {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  /* Hover zoom — same effect as the gallery photos. */
+  transition: transform 0.4s ease;
+}
+.arr-card:hover .arr-card__image img {
+  transform: scale(1.05);
 }
 
 /* Black label chip top-left on the photo ("Je Hotel" / "Je Kamers") */
@@ -462,11 +560,34 @@ function formatGuestList(start: number, count: number): string | null {
   font-size: 14px;
   line-height: 1.65;
   color: var(--color-text-secondary);
-  margin: 0 0 12px;
+  margin: 0 0 8px;
   display: -webkit-box;
   -webkit-line-clamp: 5;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+/* Room amenities — checkmark list. Same font size + colour as the
+   description (incl. the checkmarks). */
+.arr-card__features {
+  list-style: none;
+  margin: 0 0 14px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.arr-card__features li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  line-height: 1.65;
+}
+.arr-card__feature-check {
+  color: var(--color-text-secondary);
+  flex-shrink: 0;
 }
 
 .arr-card__more {
@@ -483,48 +604,60 @@ function formatGuestList(start: number, count: number): string | null {
   color: var(--color-primary-hover);
 }
 
-.arr-card__footer {
+/* Room rows — one line per physical room of this type; the card grows
+   taller with more rooms. Each row: "Kamer N: Gast …" + upgrade link. */
+.arr-card__rooms {
   margin-top: auto;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-md);
-  flex-wrap: wrap;
+  flex-direction: column;
+  gap: 8px;
 }
 
-.arr-card__meta-block {
+.arr-card__room-row {
   display: flex;
-  flex-direction: column;
-  gap: 2px;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-md);
+}
+
+.arr-card__room-info {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px;
   min-width: 0;
 }
 
-.arr-card__meta {
+.arr-card__room-label {
   font-size: 14px;
+  font-weight: 600;
   color: var(--color-text-primary);
 }
 
-/* Which guests sleep in this room type ("Gast 1, gast 2"). */
+/* Which guests sleep in this room ("Gast 1 en gast 2"). */
 .arr-card__guests {
-  font-size: 13px;
+  font-size: 14px;
   color: var(--color-text-secondary);
 }
 
+/* Upgrade control — a text link (one per room row), not a solid button. */
 .arr-card__change-btn {
-  background: var(--color-dark);
-  color: #fff;
+  background: none;
   border: none;
-  border-radius: var(--radius-sm);
+  padding: 0;
+  color: var(--color-primary);
   font-family: var(--font-body);
   font-size: 14px;
   font-weight: 600;
-  padding: 10px 18px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
   cursor: pointer;
-  transition: background var(--transition-fast);
+  flex-shrink: 0;
+  transition: color var(--transition-fast);
 }
 
 .arr-card__change-btn:hover {
-  background: #2b2b2b;
+  color: var(--color-primary-hover);
 }
 
 @media (max-width: 800px) {

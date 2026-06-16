@@ -37,7 +37,7 @@ const en: Record<string, string> = {
 
   // Header - Travel group
   'header.adults': 'Adults',
-  'header.adultsAge': '18 years or older',
+  'header.adultsAge': 'ages 12 and up',
   'header.children': 'Children',
   'header.childrenAge': '0\u201317 years',
   'header.dog': 'Bring your dog',

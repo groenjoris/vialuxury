@@ -36,6 +36,8 @@
             alt="ViaLuxury"
             class="site-header__logo-img site-header__logo-img--horizontal"
           />
+          <!-- TEMP: version badge so it's obvious this is Release 2. Remove later. -->
+          <span class="site-header__version-badge">R2</span>
         </NuxtLink>
 
         <!-- Pay-off block (grid row 2, col 1 on desktop; flows under the
@@ -2608,6 +2610,22 @@ function handleSelectHotelInPopup(slug: string) {
   align-items: center;
 }
 
+/* TEMP: Release-2 version badge. Remove when no longer needed. */
+.site-header__version-badge {
+  flex-shrink: 0;
+  margin-left: 8px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--color-primary);
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  line-height: 1.4;
+  pointer-events: none;
+}
+
 .site-header__logo-img {
   display: block;
 }
@@ -3335,6 +3353,10 @@ function handleSelectHotelInPopup(slug: string) {
   padding: 0;
   width: 560px;          /* fixed: don't shrink while user types */
   max-width: 90vw;
+  /* Fixed browse height so the dropdown doesn't resize when typing,
+     but never taller than the viewport (.popup also caps at 70vh).
+     The inner content area scrolls when themes run past the bottom. */
+  height: min(540px, 70vh);
   overflow: hidden;
   display: flex;
   flex-direction: column;

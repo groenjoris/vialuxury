@@ -611,9 +611,10 @@ function selectHotel(hotel: { name: string; slug: string }) {
   display: flex;
   flex-direction: column;
   flex: 1 1 auto;
-  /* Lock the popup at the browse-mode height so typing into the search field
-     swaps the inner content without resizing the dropdown. */
-  min-height: 540px;
+  /* The .popup--destination wrapper owns the (fixed, viewport-capped)
+     height now, so the component just fills it and lets its content
+     area scroll. min-height:0 lets the flex child shrink to fit. */
+  min-height: 0;
 }
 
 /* ==================== */
@@ -749,9 +750,11 @@ function selectHotel(hotel: { name: string; slug: string }) {
 /* Default (initial / click-only browse): no internal scroll — the
    popup grows naturally and the page scrolls if it doesn't fit. */
 .destination-popup__content {
-  flex: 0 1 auto;
+  flex: 1 1 auto;
   min-height: 0;
-  overflow-y: visible;
+  /* Browse mode scrolls internally (destinations + ALL themes) while the
+     search bar above stays pinned. */
+  overflow-y: auto;
   max-height: none;
 }
 /* Typing state on desktop: re-enable internal scroll so the
