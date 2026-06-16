@@ -3018,6 +3018,7 @@ function handleSelectHotelInPopup(slug: string) {
   font-weight: 600;
   letter-spacing: 0.3px;
   cursor: pointer;
+  white-space: nowrap;
   transition: background var(--transition-fast), border-color var(--transition-fast);
 }
 
