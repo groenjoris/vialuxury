@@ -761,6 +761,7 @@
             @select-city="onSingleCity"
             @remove-city="handleRemoveCityLocal"
             @save="closePopup()"
+            @search="handleSearch"
             @clear="clearDestination"
           />
         </div>
@@ -1068,7 +1069,7 @@ const activeVertical = computed(() => {
 // locales exist. NL-BE reuses the Dutch translations.
 const languages = [
   { code: 'NL', label: 'Nederlands', flag: '\u{1F1F3}\u{1F1F1}' },
-  { code: 'NL-BE', label: 'Belgisch-Nederlands', flag: '\u{1F1E7}\u{1F1EA}' },
+  { code: 'NL-BE', label: 'Nederlands', flag: '\u{1F1E7}\u{1F1EA}' },
   { code: 'EN', label: 'English', flag: '\u{1F1EC}\u{1F1E7}' },
   { code: 'BE', label: 'Français', flag: '\u{1F1E7}\u{1F1EA}' },
   { code: 'FR', label: 'Français', flag: '\u{1F1EB}\u{1F1F7}' },
@@ -2619,13 +2620,14 @@ function handleSelectHotelInPopup(slug: string) {
   align-self: start;
 }
 
-/* The three actions (language / members / menu) span the same 256-px
- *  width as the phone-number block below them, evenly spaced. */
+/* Right-aligned cluster with a CONSTANT gap between buttons. A fixed
+ *  256-px width + space-between used to collapse the inter-button gap
+ *  whenever the language trigger showed a longer code (e.g. "NL-BE"),
+ *  so the cluster now shrink-wraps its content and keeps the spacing. */
 .site-header--nav-v1 .site-header__nav-actions,
 .site-header--nav-v6 .site-header__nav-actions {
-  width: 256px;
-  justify-content: space-between;
-  gap: 0;
+  justify-content: flex-end;
+  gap: 13px;
 }
 
 /* Logo (grid row 1, col 1) — width pinned to 244 px per design. */

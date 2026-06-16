@@ -44,6 +44,7 @@
                 :placeholder="destinationPlaceholder"
                 autocomplete="off"
                 @focus="active = 'where'"
+                @keydown.enter.prevent="$emit('search')"
               />
               <button
                 v-if="destinationQuery.length > 0 || hasDestinationPick"
@@ -73,6 +74,7 @@
                   @select-city="onPickCity"
                   @remove-city="$emit('remove-city', $event)"
                   @save="active = null"
+                  @search="$emit('search')"
                   @clear="$emit('clear-destinations')"
                 />
               </div>

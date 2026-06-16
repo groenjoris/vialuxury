@@ -98,16 +98,20 @@
               {{ t('sidebar.viewDetails') }}
             </a>
 
-            <!-- Calendar -->
-            <div class="sidebar__calendar">
-              <h4 class="sidebar__cal-title sidebar__cal-title--big">{{ t('calendar.chooseArrivalDateLong') }}</h4>
-              <p v-if="currentDeal" class="sidebar__nights-line">
+            <!-- Arrangement duration + other-stay link -->
+            <div class="sidebar__duration">
+              <h4 v-if="currentDeal" class="sidebar__cal-title sidebar__cal-title--big">
                 {{ t('deal.thisArrangementIsFor') }} {{ nightsWord(currentDeal.nights, false) }}
-              </p>
+              </h4>
               <template v-if="hasOtherArrangements">
                 <h4 class="sidebar__variant-heading sidebar__variant-heading--v6">{{ t('deal.shorterOrLongerStay') }}</h4>
                 <a href="#" class="sidebar__other-arrangements" @click.prevent="arrangementsPanelOpen = true">{{ t('deal.viewOtherArrangements') }}</a>
               </template>
+            </div>
+
+            <!-- Calendar -->
+            <div class="sidebar__calendar">
+              <h4 class="sidebar__cal-title sidebar__cal-title--big">{{ t('calendar.chooseArrivalDateLong') }}</h4>
               <FirstReleaseCalendarMonth
                 :year="calMonth.year" :month="calMonth.month"
                 :availability="calAvailability"
@@ -517,12 +521,11 @@
             {{ t('sidebar.viewDetails') }}
           </a>
 
-          <!-- Calendar -->
-          <div class="sidebar__calendar" ref="calendarRef">
-            <h4 class="sidebar__cal-title sidebar__cal-title--big">{{ t('calendar.chooseArrivalDateLong') }}</h4>
-            <p v-if="currentDeal" class="sidebar__nights-line">
+          <!-- Arrangement duration + other-stay link -->
+          <div class="sidebar__duration">
+            <h4 v-if="currentDeal" class="sidebar__cal-title sidebar__cal-title--big">
               {{ t('deal.thisArrangementIsFor') }} {{ nightsWord(currentDeal.nights, false) }}
-            </p>
+            </h4>
             <template v-if="hasOtherArrangements">
               <h4 class="sidebar__variant-heading sidebar__variant-heading--v6">{{ t('deal.shorterOrLongerStay') }}</h4>
               <a
@@ -533,6 +536,11 @@
                 {{ t('deal.viewOtherArrangements') }}
               </a>
             </template>
+          </div>
+
+          <!-- Calendar -->
+          <div class="sidebar__calendar" ref="calendarRef">
+            <h4 class="sidebar__cal-title sidebar__cal-title--big">{{ t('calendar.chooseArrivalDateLong') }}</h4>
             <FirstReleaseCalendarMonth
               :year="calMonth.year" :month="calMonth.month"
               :availability="calAvailability"
@@ -1758,6 +1766,14 @@ onMounted(() => {
 .sidebar__variant-btn { display: inline-flex; align-items: center; gap: 6px; font: inherit; font-size: 14px; font-weight: 600; color: var(--color-primary); background: none; border: none; padding: 0; cursor: pointer; text-decoration: underline; text-underline-offset: 2px; }
 .sidebar__variant-btn:hover { opacity: 0.85; }
 .sidebar__variant-btn svg { flex-shrink: 0; }
+
+/* Arrangement duration block (above the calendar) — divider line
+   separates it from the "Kies je aankomstdatum" calendar below. */
+.sidebar__duration {
+  margin-bottom: var(--space-md);
+  padding-bottom: var(--space-md);
+  border-bottom: 1px solid var(--color-border);
+}
 
 /* Calendar */
 .sidebar__calendar { margin-bottom: var(--space-md); }

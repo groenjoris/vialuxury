@@ -25,6 +25,7 @@
           class="destination-popup__input"
           :placeholder="t('header.searchDestinationPlaceholder')"
           autocomplete="off"
+          @keydown.enter.prevent="$emit('search')"
         />
         <button
           v-if="searchQuery.length > 0"
@@ -269,6 +270,7 @@ const emit = defineEmits<{
   'remove-city': [cityName: string]
   'save': []
   'clear': []
+  'search': []
   'update:query': [val: string]
 }>()
 
