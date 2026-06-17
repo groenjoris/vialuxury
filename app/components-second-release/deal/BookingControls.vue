@@ -54,7 +54,10 @@
         </button>
         <div v-if="groupOpen" class="booking-controls__group-popup">
           <div class="group-popup__row">
-            <span class="group-popup__label">Volwassenen</span>
+            <span class="group-popup__label-block">
+              <span class="group-popup__label">Personen</span>
+              <span class="group-popup__sub">vanaf 12 jaar</span>
+            </span>
             <div class="group-popup__stepper">
               <button type="button" class="group-popup__step-btn" :disabled="draftAdults <= 1" @click="changeAdults(-1)">−</button>
               <span class="group-popup__step-val">{{ draftAdults }}</span>
@@ -99,7 +102,7 @@
 import { useSecondReleaseDealStore } from '~/stores-second-release/deal'
 import { useSecondReleaseClickOutside } from '~/composables-second-release/useSecondReleaseClickOutside'
 import { generateDealAvailability } from '~/data/mock/deal-pricing'
-import { PRICED_PERSONS, minRoomsFor, maxRoomsFor } from '~/utils-second-release/priceFormula'
+import { minRoomsFor, maxRoomsFor, priceForArrival } from '~/utils-second-release/priceFormula'
 import { nightsWord } from '~/utils-second-release/plural'
 
 const { t } = useSecondReleaseI18n()
@@ -152,8 +155,23 @@ watch(() => store.checkInDate, (val) => {
   }
 })
 const calAvailability = computed(() => {
-  if (!store.currentDeal) return []
-  return generateDealAvailability(calMonth.value.year, calMonth.value.month, store.currentDeal, PRICED_PERSONS)
+  const deal = store.currentDeal
+  if (!deal) return []
+  const persons = store.totalPersons
+  const rooms = store.travelGroup.rooms
+  const triples = store.tripleRoomCount
+  // Availability/sold-out structure from the shared generator, then override
+  // each day's price with the SECOND-RELEASE formula (priceForArrival —
+  // exactly what the sidebar uses) so the calendar follows the selected
+  // travel group (persons + rooms + 3-person-room saving).
+  return generateDealAvailability(calMonth.value.year, calMonth.value.month, deal, persons).map((d) => {
+    if (!d.available) return d
+    const totalPrice = priceForArrival(deal.basePrice, deal.id, d.date, persons, rooms, triples)
+    const originalPrice = d.discountPercentage
+      ? Math.round(totalPrice / (1 - d.discountPercentage / 100))
+      : totalPrice
+    return { ...d, totalPrice, originalPrice }
+  })
 })
 const calCheapestPrice = computed(() => {
   const prices = calAvailability.value.filter(a => a.available && a.totalPrice > 0).map(a => a.totalPrice)
@@ -234,7 +252,7 @@ const dealNights = computed(() => store.currentDeal?.nights ?? 1)
 .booking-controls__meta-box {
   margin-top: var(--space-md);
   padding: var(--space-md);
-  background: var(--color-border-light);
+  background: var(--color-background-secondary);
   border-radius: var(--radius-md);
 }
 
@@ -337,10 +355,21 @@ const dealNights = computed(() => store.currentDeal?.nights ?? 1)
   padding: 8px 0;
 }
 
+.group-popup__label-block {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
 .group-popup__label {
   font-size: 15px;
   font-weight: 500;
   color: var(--color-text-primary);
+}
+
+.group-popup__sub {
+  font-size: 13px;
+  color: var(--color-text-secondary);
 }
 
 .group-popup__stepper {

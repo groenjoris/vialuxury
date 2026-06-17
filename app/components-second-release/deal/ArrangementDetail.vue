@@ -32,7 +32,8 @@
       </div>
       <div class="arr-card__body">
         <h3 class="arr-card__title"><template v-if="card.rows.length > 1">{{ card.rows.length }}x&nbsp;</template>{{ localized(card.room.name) }}</h3>
-        <p class="arr-card__desc">{{ localized(card.room.description) }} Max {{ card.room.capacity ?? 2 }} {{ (card.room.capacity ?? 2) === 1 ? 'persoon' : 'personen' }} per kamer.</p>
+        <p class="arr-card__capacity">Max. {{ card.room.capacity ?? 2 }} {{ (card.room.capacity ?? 2) === 1 ? 'persoon' : 'personen' }}</p>
+        <p class="arr-card__desc">{{ localized(card.room.description) }}</p>
         <ul v-if="card.room.features && card.room.features.length" class="arr-card__features">
           <li v-for="(feature, i) in card.room.features" :key="i">
             <span class="arr-card__feature-check">✓</span>
@@ -40,10 +41,10 @@
           </li>
         </ul>
         <div class="arr-card__rooms">
-          <div v-for="row in card.rows" :key="row.key" class="arr-card__room-row">
-            <span class="arr-card__room-info">
-              <span v-if="totalRooms > 1" class="arr-card__room-label">Kamer {{ row.roomNumber }}:</span>
-              <span v-if="row.guests" class="arr-card__guests">{{ row.guests }}</span>
+          <div v-for="(row, ri) in card.rows" :key="row.key" class="arr-card__room-row">
+            <span class="arr-card__room-info" v-if="totalRooms > 1">
+              <span v-if="card.rows.length > 1" class="arr-card__room-label">Kamer {{ ri + 1 }}:</span>
+              <span class="arr-card__guests">{{ card.rows.length > 1 ? row.guests : ('Voor ' + row.guests) }}</span>
             </span>
             <button
               v-if="upgradeLabelForRow(row)"
@@ -137,13 +138,16 @@ function panelImageFor(r: RoomOption): string {
   return r.image
 }
 
-/** Room types a single room can switch to (current one included): enough
- *  capacity for its guests AND at least one available unit. */
+/** Room types a single room can switch to (current one included): only the
+ *  SAME capacity tier. A 2-person room switches to other 2-person room types
+ *  (never the 3-person room — not even for a group of 2); a 3-person room can
+ *  only switch to other 3-person rooms (in practice none exist → no options).
+ */
 function selectableRoomsForRow(row: RoomRow): RoomOption[] {
-  const need = Math.max(1, row.guestCount)
+  const tier = row.room.capacity ?? 2
   return store.allRoomTypes
     .filter(r =>
-      (r.capacity ?? 2) >= need
+      (r.capacity ?? 2) === tier
       && (r.maxAvailable ?? 5) >= 1,
     )
     .map(r => ({ ...r, image: panelImageFor(r) }))
@@ -236,12 +240,20 @@ interface RoomCard {
  *  as part of the arrangement. */
 const hasFreeUpgrade = computed(() => !!upgradeInc.value)
 
+/** The 3-person room is a CAPACITY variant of the base room (auto-assigned
+ *  when the party needs it), not a user-chosen paid upgrade — even though it
+ *  carries a +€50 surcharge. It must be treated like the 2-person base. */
+function isTripleRoom(room: RoomOption): boolean {
+  return !!store.tripleRoom && room.id === store.tripleRoom.id
+}
+
 /** Sticker copy per room type:
  *  - deal includes a free upgrade → green "DIT IS EEN GRATIS UPGRADE"
  *  - paid upgrade picked by the user → BLACK sticker (replaces the
- *    green one, same size + position): "Door jouw gekozen upgrade + €X" */
+ *    green one, same size + position): "Door jouw gekozen upgrade + €X"
+ *  The 3-person room is never the BLACK "chosen upgrade" sticker. */
 function stickerFor(room: RoomOption): RoomCard['sticker'] {
-  if (room.priceExtra > 0) {
+  if (room.priceExtra > 0 && !isTripleRoom(room)) {
     return { text: `Door jouw gekozen upgrade + ${formatPrice(room.priceExtra)}`, tone: 'paid' }
   }
   if (hasFreeUpgrade.value || room.isUpgrade) {
@@ -255,7 +267,7 @@ function stickerFor(room: RoomOption): RoomCard['sticker'] {
  *  - free included upgrade → the free-upgrade inclusion's photo
  *  - base room → the "x Overnachting" inclusion's photo */
 function imageFor(room: RoomOption): string {
-  if (room.priceExtra > 0) return room.image
+  if (room.priceExtra > 0 && !isTripleRoom(room)) return room.image
   if (hasFreeUpgrade.value || room.isUpgrade) {
     return upgradeInc.value?.image || room.image
   }
@@ -548,6 +560,13 @@ function formatGuestList(start: number, count: number): string | null {
   font-size: 19px;
   font-weight: 700;
   color: var(--color-text-primary);
+  margin: 0 0 2px;
+}
+
+/* Max occupancy — small line directly under the room name. */
+.arr-card__capacity {
+  font-size: 13px;
+  color: var(--color-text-secondary);
   margin: 0 0 10px;
 }
 

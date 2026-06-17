@@ -36,7 +36,7 @@ const en: Record<string, string> = {
   'header.recentSearches': 'Recent searches',
 
   // Header - Travel group
-  'header.adults': 'Adults',
+  'header.adults': 'Guests',
   'header.adultsAge': 'ages 12 and up',
   'header.children': 'Children',
   'header.childrenAge': '0\u201317 years',

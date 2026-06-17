@@ -1,33 +1,34 @@
 import { dealHash } from './scarcity'
 
 /**
- * Pricing formula (second release):
- *   - base price = arrangement for 2 persons in 1 room
- *   - +€50 per extra person (arrangement cost, independent of rooms)
- *   - +€150 per extra room
- *   - (+€50 per 3-person room used — see `cheapestConfigSurcharge`)
+ * Pricing scheme (second release). All of this is baked into the PACKAGE
+ * price (shown in the calendar); only room-TYPE upgrades are itemised in the
+ * sidebar.
+ *
+ *   - `basePrice` = the Release-1 arrangement price for 2 persons / 1 room.
+ *   - Per-person: each pair of guests costs one `basePrice`; a lone extra
+ *     guest costs `basePrice − 50`.
+ *       1p → base − 50 · 2p → base · 3p (= 2p + 1p) → 2·base − 50 …
+ *   - Extra rooms: each room BEYOND the standard 2-per-room packing
+ *     (ceil(persons/2)) costs +€150.
+ *       4p/2k → standard · 4p/3k → +€150 · 4p/4k → +€300
+ *   - 3-person room: replacing two 2-person rooms with one 3-person room
+ *     SAVES €75 — so subtract €75 per 3-person room used.
  */
-export function adjustPrice(basePrice: number, persons: number, rooms: number = 1): number {
-  if (persons <= 0) return basePrice
-  const extraPersons = Math.max(0, persons - 2) * 50
-  const extraRooms = Math.max(0, rooms - 1) * 150
-  return Math.round(basePrice + extraPersons + extraRooms)
-}
-
-/** Add a fixed surcharge (e.g. €79 for "premium" calendar days) on top of
- *  the 2-person base before the persons/rooms extras are applied. */
-export function adjustPriceWithSurcharge(
+export function adjustPrice(
   basePrice: number,
   persons: number,
-  surcharge: number,
-  rooms: number = 1,
+  rooms?: number,
+  tripleRooms: number = 0,
 ): number {
-  return adjustPrice(basePrice + surcharge, persons, rooms)
+  if (persons <= 0) return Math.round(basePrice)
+  const standardRooms = Math.ceil(persons / 2)
+  const r = rooms ?? standardRooms
+  const personCost = basePrice * standardRooms - (persons % 2 === 1 ? 50 : 0)
+  const extraRoomCost = Math.max(0, r - standardRooms) * 150
+  const tripleSaving = Math.max(0, tripleRooms) * 75
+  return Math.round(personCost + extraRoomCost - tripleSaving)
 }
-
-/** Surcharge for a 3-person room (duplicated 2-person room + 3 single
- *  beds). */
-export const TRIPLE_ROOM_EXTRA = 50
 
 /** ~25% of the hotels (deterministic hash on the hotel/package slug) carry
  *  a 3-person room in inventory. */
@@ -35,18 +36,19 @@ export function hotelHasTripleRoom(hotelKey: string): boolean {
   return dealHash(`${hotelKey}|triple`) % 4 === 0
 }
 
+/** Number of 3-person rooms in the cheapest fitting config for this party
+ *  (the auto-assignment: max(0, P − 2R), capped by room count + stock).
+ *  Pass it to `adjustPrice`/`priceForArrival` as `tripleRooms` to get the
+ *  cheapest headline price. */
+export function cheapestTripleCount(hotelKey: string, persons: number, rooms: number): number {
+  const need = Math.max(0, persons - 2 * rooms)
+  return Math.min(need, rooms, tripleRoomsAvailable(hotelKey))
+}
+
 /** 1 or 2 triple rooms in stock, deterministic per hotel; 0 when the
  *  hotel has none. */
 export function tripleRoomsAvailable(hotelKey: string): number {
   return hotelHasTripleRoom(hotelKey) ? 1 + (dealHash(`${hotelKey}|triple-avail`) % 2) : 0
-}
-
-/** Extra cost of the cheapest room configuration for this party: number
- *  of 3-person rooms needed (max(0, P − 2R), capped by stock) × €50. */
-export function cheapestConfigSurcharge(hotelKey: string, persons: number, rooms: number): number {
-  const need = Math.max(0, persons - 2 * rooms)
-  const t = Math.min(need, rooms, tripleRoomsAvailable(hotelKey))
-  return t * TRIPLE_ROOM_EXTRA
 }
 
 /**
@@ -119,11 +121,12 @@ export function priceForArrival(
   dealId: string | undefined | null,
   arrivalDate: string | null,
   persons: number,
-  rooms: number = 1,
+  rooms?: number,
+  tripleRooms: number = 0,
 ): number {
   const surcharge =
     arrivalDate && dealId && isPremiumDay(dealId, arrivalDate)
       ? CALENDAR_PREMIUM_SURCHARGE
       : 0
-  return adjustPrice(basePrice + surcharge, persons, rooms)
+  return adjustPrice(basePrice + surcharge, persons, rooms, tripleRooms)
 }

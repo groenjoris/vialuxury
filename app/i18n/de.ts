@@ -32,7 +32,7 @@ const de: Record<string, string> = {
   'header.flexArrival': 'Wie flexibel ist dieses Datum?',
 
   // Header - Travel group
-  'header.adults': 'Erwachsene',
+  'header.adults': 'Personen',
   'header.adultsAge': 'ab 12 Jahren',
   'header.children': 'Kinder',
   'header.childrenAge': '0–17 Jahre',

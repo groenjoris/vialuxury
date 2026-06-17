@@ -251,7 +251,7 @@ import { formatPrice } from '~/utils-second-release/formatPrice'
 import { formatDateShort } from '~/utils-second-release/formatDate'
 import dayjs from 'dayjs'
 import { pickSmartInclusions } from '~/utils-second-release/smartInclusions'
-import { priceForArrival, cheapestConfigSurcharge } from '~/utils-second-release/priceFormula'
+import { priceForArrival, cheapestTripleCount } from '~/utils-second-release/priceFormula'
 import { nightsLabel } from '~/utils-second-release/plural'
 import { arrangementSuffixFromHighlights } from '~/utils-second-release/arrangementType'
 import { dealHash, roomsLeftForDeal } from '~/utils-second-release/scarcity'
@@ -511,16 +511,16 @@ const effectiveArrival = computed(() => (props.ignoreArrival ? null : arrivalDat
 // in the cheapest fitting configuration (only at hotels that have one).
 const cardPersons = computed(() => persons.value || 2)
 const cardRooms = computed(() => rooms.value || 1)
-const tripleSurcharge = computed(() =>
-  cheapestConfigSurcharge(props.deal.slug, cardPersons.value, cardRooms.value),
+// Cheapest fitting config → use 3-person rooms where available (each saves
+// €75 + a room), so the headline matches the deal page's auto-assignment.
+const cardTriples = computed(() =>
+  cheapestTripleCount(props.deal.slug, cardPersons.value, cardRooms.value),
 )
 const price = computed(() =>
-  priceForArrival(props.deal.basePrice, props.deal.id, effectiveArrival.value, cardPersons.value, cardRooms.value)
-  + tripleSurcharge.value,
+  priceForArrival(props.deal.basePrice, props.deal.id, effectiveArrival.value, cardPersons.value, cardRooms.value, cardTriples.value),
 )
 const originalPrice = computed(() =>
-  priceForArrival(props.deal.originalPrice, props.deal.id, effectiveArrival.value, cardPersons.value, cardRooms.value)
-  + tripleSurcharge.value,
+  priceForArrival(props.deal.originalPrice, props.deal.id, effectiveArrival.value, cardPersons.value, cardRooms.value, cardTriples.value),
 )
 
 /** Cheapest deal across all sibling arrangements at this hotel — used by

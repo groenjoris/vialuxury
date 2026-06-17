@@ -3,7 +3,7 @@ import type { Deal, DealVariant, TravelGroup, TravelGroupPricing, RoomOption } f
 import type { DateAvailability } from '~/types/calendar'
 import {
   priceForArrival, minRoomsFor, maxRoomsFor,
-  TRIPLE_ROOM_EXTRA, hotelHasTripleRoom, tripleRoomsAvailable,
+  hotelHasTripleRoom, tripleRoomsAvailable,
 } from '~/utils-second-release/priceFormula'
 import { dealHash } from '~/utils-second-release/scarcity'
 import dayjs from 'dayjs'
@@ -139,8 +139,19 @@ export const useSecondReleaseDealStore = defineStore('second-release-deal', () =
         nl: `${baseName.nl ?? ''} (3 personen)`,
         en: `${baseName.en ?? baseName.nl ?? ''} (3 persons)`,
       },
-      features: [...base.features, { nl: '3 eenpersoonsbedden', en: '3 single beds' }],
-      priceExtra: TRIPLE_ROOM_EXTRA,
+      // Drop the base "2-persoons bed" amenity — the 3-person room lists
+      // "3 eenpersoonsbedden" instead.
+      features: [
+        ...base.features.filter((f) => {
+          const txt = typeof f === 'string' ? f : (f.nl ?? '')
+          return !/2[-\s]?persoons\s*bed/i.test(txt)
+        }),
+        { nl: '3 eenpersoonsbedden', en: '3 single beds' },
+      ],
+      // NOT a paid upgrade — the 3-person room is a capacity variant. Its
+      // price effect (−€75 vs two 2-person rooms) is baked into the package
+      // price via `tripleRoomCount`, not charged as a room-type surcharge.
+      priceExtra: 0,
       isDefault: false,
       isUpgrade: false,
       capacity: 3,
@@ -180,6 +191,17 @@ export const useSecondReleaseDealStore = defineStore('second-release-deal', () =
     return { [currentDeal.value.baseRoomType.id]: totalRooms }
   })
 
+  /** Number of 3-person rooms in the current configuration — drives the
+   *  −€75-per-triple package discount (and is shared with the calendar). */
+  const tripleRoomCount = computed(() => {
+    const tid = tripleRoom.value?.id
+    if (!tid) return 0
+    if (travelGroup.value.rooms <= 1) {
+      return selectedRoomId.value === tid ? 1 : 0
+    }
+    return effectiveAllocation.value[tid] ?? 0
+  })
+
   /** Total upgrade cost based on allocation */
   const allocationUpgradeCost = computed(() => {
     if (!currentDeal.value) return 0
@@ -201,14 +223,15 @@ export const useSecondReleaseDealStore = defineStore('second-release-deal', () =
     }
 
     const deal = currentDeal.value
-    // Second release pricing: base (2p/1 room) + €50 per extra person +
-    // €150 per extra room. Room-type surcharges (3-person room +€50,
-    // paid upgrades) are added separately below via the allocation.
+    // Package price = R1 per-person price (pair = base, lone guest = base−50)
+    // + €150 per extra room − €75 per 3-person room used. Room-TYPE upgrades
+    // (deluxe etc.) are added separately below via the allocation.
     const persons = totalPersons.value
     const rooms = travelGroup.value.rooms
+    const triples = tripleRoomCount.value
 
-    const arrangementAmount = priceForArrival(deal.basePrice, deal.id, checkInDate.value, persons, rooms)
-    const originalArrangementAmount = priceForArrival(deal.originalPrice, deal.id, checkInDate.value, persons, rooms)
+    const arrangementAmount = priceForArrival(deal.basePrice, deal.id, checkInDate.value, persons, rooms, triples)
+    const originalArrangementAmount = priceForArrival(deal.originalPrice, deal.id, checkInDate.value, persons, rooms, triples)
 
     // Single room → the selected room-type upgrade applies. Multi-room →
     // sum the per-type upgrade costs of the allocation (date-independent,
@@ -512,6 +535,7 @@ export const useSecondReleaseDealStore = defineStore('second-release-deal', () =
     roomUpgradeCost,
     allRoomTypes,
     tripleRoom,
+    tripleRoomCount,
     isRoomAllocationActive,
     effectiveAllocation,
     allocationUpgradeCost,
