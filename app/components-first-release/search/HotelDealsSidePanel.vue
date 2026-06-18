@@ -7,7 +7,15 @@
         :class="{ 'panel-overlay--map': mapMode }"
         @click.self="$emit('close')"
       >
-        <aside class="panel" @wheel.stop @touchmove.stop>
+        <aside
+          ref="panelRef"
+          class="panel"
+          role="dialog"
+          aria-modal="true"
+          tabindex="-1"
+          @wheel.stop
+          @touchmove.stop
+        >
           <div class="panel__header">
             <div class="panel__header-info">
               <!-- When `panelTitle` is provided (v6 deal page), it leads
@@ -76,6 +84,7 @@
 
 <script setup lang="ts">
 import { useBodyScrollLock } from '~/composables-first-release/useBodyScrollLock'
+import { useFocusTrap } from '~/composables-first-release/useFocusTrap'
 import type { SearchHotel } from '~/types/searchHotel'
 import { mappedHotels } from '~/data/deals-mapper'
 import { isDealAvailableInWindow } from '~/utils-first-release/availability'
@@ -105,9 +114,13 @@ const props = defineProps<{
   currentDealId?: string
 }>()
 
-defineEmits<{
+const emit = defineEmits<{
   (e: 'close'): void
 }>()
+
+// Keyboard focus trap + Escape-to-close + focus restore on close.
+const panelRef = ref<HTMLElement | null>(null)
+useFocusTrap(panelRef, toRef(props, 'isOpen'), { onEscape: () => emit('close') })
 
 // Lock the underlying page while the side panel is open
 // (skipped in mapMode — the kaart page deliberately leaves the

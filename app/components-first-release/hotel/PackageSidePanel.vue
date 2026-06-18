@@ -2,7 +2,7 @@
   <Teleport to="body">
     <Transition name="panel">
       <div v-if="isOpen" class="panel-overlay" @click.self="$emit('close')">
-        <aside class="panel">
+        <aside ref="panelRef" class="panel" role="dialog" aria-modal="true" tabindex="-1">
           <div class="panel__header">
             <h2 class="panel__title">{{ t('deal.availableArrangements') }}</h2>
             <p class="panel__subtitle">{{ hotelName }}</p>
@@ -63,6 +63,7 @@
 
 <script setup lang="ts">
 import { useBodyScrollLock } from '~/composables-first-release/useBodyScrollLock'
+import { useFocusTrap } from '~/composables-first-release/useFocusTrap'
 import type { DealVariant } from '~/types/deal'
 import { formatPrice } from '~/utils-first-release/formatPrice'
 import { priceForArrival, PRICED_PERSONS } from '~/utils-first-release/priceFormula'
@@ -91,10 +92,14 @@ const props = defineProps<{
   titlesMap: Record<string, string>
 }>()
 
-defineEmits<{
+const emit = defineEmits<{
   (e: 'close'): void
   (e: 'select', dealId: string): void
 }>()
+
+// Keyboard focus trap + Escape-to-close + focus restore on close.
+const panelRef = ref<HTMLElement | null>(null)
+useFocusTrap(panelRef, toRef(props, 'isOpen'), { onEscape: () => emit('close') })
 
 // Body scroll lock while the side panel is open.
 const _scrollLock = useBodyScrollLock()

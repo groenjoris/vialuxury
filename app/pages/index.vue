@@ -8,7 +8,7 @@
       <!-- First release — the production-bound "Hotel First" build the
            client has picked to pursue. No homepage-variant switcher. -->
       <section class="start-section">
-        <h2 class="start-section__title">First release: hotel first</h2>
+        <h2 class="start-section__title">Redesign (first release)</h2>
         <p class="start-section__lead">
           <a
             href="https://docs.google.com/spreadsheets/d/1II0u8mkbtFpg16CWzlYGMD2yO4QR9dtOI6bDxPRREqo/edit?gid=379133869#gid=379133869"
@@ -34,7 +34,7 @@
       <!-- Second release — full independent copy of First Release, the
            next iteration the client will build on. -->
       <section class="start-section">
-        <h2 class="start-section__title">Second release: hotel first</h2>
+        <h2 class="start-section__title">Variable Travel Group (second release)</h2>
         <div class="start-section__buttons">
           <button
             type="button"

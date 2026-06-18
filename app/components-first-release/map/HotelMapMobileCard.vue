@@ -6,7 +6,9 @@
         ref="cardRef"
         class="mapcard"
         role="dialog"
+        aria-modal="true"
         aria-label="Hotel"
+        tabindex="-1"
         @click.stop
         @touchmove.stop
       >
@@ -99,6 +101,7 @@ import { formatPrice } from '~/utils-first-release/formatPrice'
 import { nightsLabel, personsLabel } from '~/utils-first-release/plural'
 import { priceForArrival, PRICED_PERSONS } from '~/utils-first-release/priceFormula'
 import { isDealAvailableInWindow } from '~/utils-first-release/availability'
+import { useFocusTrap } from '~/composables-first-release/useFocusTrap'
 
 const { t, localized, locale } = useFirstReleaseI18n()
 const { persons, arrivalDate, selectedFlexibility } = useFirstReleaseSearchState()
@@ -118,6 +121,9 @@ const emit = defineEmits<{
 
 const cardRef = ref<HTMLElement | null>(null)
 let ro: ResizeObserver | null = null
+
+// Keyboard focus trap + Escape-to-close + focus restore on close.
+useFocusTrap(cardRef, toRef(props, 'isOpen'), { onEscape: () => emit('close') })
 
 function emitHeight() {
   emit('height', props.isOpen && cardRef.value ? Math.round(cardRef.value.getBoundingClientRect().height) : 0)

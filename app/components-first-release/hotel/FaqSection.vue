@@ -8,7 +8,7 @@
         class="faq-item"
         :class="{ 'faq-item--open': openId === item.id }"
       >
-        <button class="faq-item__question" @click="toggle(item.id)">
+        <button class="faq-item__question" :aria-expanded="openId === item.id" @click="toggle(item.id)">
           <span>{{ localized(item.question) }}</span>
           <span class="faq-item__arrow">{{ openId === item.id ? '−' : '+' }}</span>
         </button>

@@ -686,7 +686,12 @@ const includesBullets = computed<string[]>(() => {
   z-index: 2;
 }
 
-.deal-card-v2__image:hover .deal-card-v2__carousel-nav {
+.deal-card-v2__image:hover .deal-card-v2__carousel-nav,
+/* Keyboard users: reveal the arrows when either arrow is focused. */
+.deal-card-v2__image:focus-within .deal-card-v2__carousel-nav {
+  opacity: 1;
+}
+.deal-card-v2__carousel-nav:focus-visible {
   opacity: 1;
 }
 

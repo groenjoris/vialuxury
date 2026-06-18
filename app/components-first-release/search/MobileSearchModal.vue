@@ -219,9 +219,12 @@
                     :key="`${opt.adults}-${opt.rooms}`"
                     role="option"
                     :aria-selected="whoMvpSelectedKey === `${opt.adults}-${opt.rooms}`"
+                    tabindex="0"
                     class="msm-who__item"
                     :class="{ 'msm-who__item--selected': whoMvpSelectedKey === `${opt.adults}-${opt.rooms}` }"
                     @click="pickWho(opt)"
+                    @keydown.enter.prevent="pickWho(opt)"
+                    @keydown.space.prevent="pickWho(opt)"
                   >
                     <span>{{ opt.adults }} personen / {{ opt.rooms }} {{ opt.rooms === 1 ? 'kamer' : 'kamers' }}</span>
                     <svg
@@ -335,7 +338,17 @@ watch(() => props.open, (isOpen) => {
   if (isOpen && !_scrollLockAcquired) { _scrollLock.acquire(); _scrollLockAcquired = true }
   else if (!isOpen && _scrollLockAcquired) { _scrollLock.release(); _scrollLockAcquired = false }
 })
+
+// Escape closes the modal (keyboard-only users — WCAG 2.1.1). If a picker
+// section is open, Escape collapses that first, then closes the modal.
+function onKeydown(e: KeyboardEvent) {
+  if (e.key !== 'Escape' || !props.open) return
+  if (active.value) active.value = null
+  else emit('close')
+}
+onMounted(() => document.addEventListener('keydown', onKeydown))
 onBeforeUnmount(() => {
+  document.removeEventListener('keydown', onKeydown)
   if (_scrollLockAcquired) { _scrollLock.release(); _scrollLockAcquired = false }
 })
 

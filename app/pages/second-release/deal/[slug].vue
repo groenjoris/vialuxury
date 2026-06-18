@@ -1222,11 +1222,13 @@ const displayedInclusions = computed(() => {
 
 /** Room allocation entries for rendering separate room cards */
 const roomAllocationEntries = computed(() => {
-  if (!store.isRoomAllocationActive) {
+  // Single room → the selected room (reflects a single-room upgrade).
+  if (store.travelGroup.rooms <= 1) {
     const room = store.selectedRoom ?? currentDeal.value?.baseRoomType
-    if (!room) return []
-    return [{ room, count: store.travelGroup.rooms }]
+    return room ? [{ room, count: 1 }] : []
   }
+  // Multi-room → the effective allocation (reflects per-room upgrades),
+  // independent of whether an arrival date is picked yet.
   const entries: { room: any; count: number }[] = []
   for (const [roomId, count] of Object.entries(store.effectiveAllocation)) {
     if (count <= 0) continue
@@ -1235,6 +1237,14 @@ const roomAllocationEntries = computed(() => {
   }
   return entries
 })
+
+/** "1 x Comfort kamer (max 3 personen)" — count + room name (without the
+ *  capacity suffix the 3-person room carries) + the room's max occupancy. */
+function roomEntryLabel(room: any, count: number): string {
+  const name = localized(room.name).replace(/\s*\(\s*\d+\s*person(?:en|s)?\s*\)\s*$/i, '')
+  const maxPersons = count * (room.capacity ?? 2)
+  return `${count} x ${name} (max ${maxPersons} ${maxPersons === 1 ? 'persoon' : 'personen'})`
+}
 /** Overnight-count label, locale-aware: "2 overnachtingen" / "2 nights". */
 function overnightLabel(n: number): string {
   if (locale.value === 'en') return `${n} ${n === 1 ? 'night' : 'nights'}`
@@ -1250,7 +1260,7 @@ const sidebarInclusions = computed<string[]>(() => {
   out.push(overnightLabel(currentDeal.value?.nights ?? 1))
   for (const entry of roomAllocationEntries.value) {
     if (!entry.room) continue
-    out.push(`${entry.count} x ${localized(entry.room.name)}`)
+    out.push(roomEntryLabel(entry.room, entry.count))
   }
   for (const inc of filteredInclusions.value) {
     if (isOvernightInclusion(inc)) continue

@@ -265,7 +265,7 @@
           <p class="house-rules__intro">{{ t('deal.houseRulesIntro') }}</p>
           <div class="house-rules__right">
             <div v-for="rule in hotel.houseRules" :key="rule.id" class="house-rule" :class="{ 'house-rule--open': openRuleId === rule.id }">
-              <button class="house-rule__title" @click="toggleRule(rule.id)">
+              <button class="house-rule__title" :aria-expanded="openRuleId === rule.id" @click="toggleRule(rule.id)">
                 <span>{{ localized(rule.title) }}</span>
                 <span class="house-rule__arrow">{{ openRuleId === rule.id ? '−' : '+' }}</span>
               </button>
@@ -688,7 +688,7 @@
               class="house-rule"
               :class="{ 'house-rule--open': openRuleId === rule.id }"
             >
-              <button class="house-rule__title" @click="toggleRule(rule.id)">
+              <button class="house-rule__title" :aria-expanded="openRuleId === rule.id" @click="toggleRule(rule.id)">
                 <span>{{ localized(rule.title) }}</span>
                 <span class="house-rule__arrow">{{ openRuleId === rule.id ? '−' : '+' }}</span>
               </button>
@@ -712,7 +712,7 @@
               class="house-rule"
               :class="{ 'house-rule--open': openFaqId === item.id }"
             >
-              <button class="house-rule__title" @click="toggleFaq(item.id)">
+              <button class="house-rule__title" :aria-expanded="openFaqId === item.id" @click="toggleFaq(item.id)">
                 <span>{{ localized(item.question) }}</span>
                 <span class="house-rule__arrow">{{ openFaqId === item.id ? '−' : '+' }}</span>
               </button>

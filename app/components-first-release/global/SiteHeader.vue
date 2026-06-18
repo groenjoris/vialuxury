@@ -259,7 +259,11 @@
                   class="lang-switcher__option"
                   :class="{ 'lang-switcher__option--active': lang.code === selectedLanguage.code }"
                   role="option"
+                  :aria-selected="lang.code === selectedLanguage.code"
+                  tabindex="0"
                   @click="selectLanguage(lang)"
+                  @keydown.enter.prevent="selectLanguage(lang)"
+                  @keydown.space.prevent="selectLanguage(lang)"
                 >
                   <span class="lang-switcher__flag">{{ lang.flag }}</span>
                   <span class="lang-switcher__label">{{ lang.label }}</span>
@@ -744,7 +748,7 @@
     <Teleport to="body">
     <Transition name="popup">
       <div v-if="activePopup" class="popup-backdrop" @click.self="closePopup">
-        <div class="popup-anchor" :style="popupStyle">
+        <div ref="popupAnchorRef" class="popup-anchor" :style="popupStyle" tabindex="-1">
         <!-- DESTINATION POPUP -->
         <div v-if="activePopup === 'destination'" class="popup popup--destination">
           <FirstReleaseDestinationPopup
@@ -845,9 +849,12 @@
               :key="`${opt.adults}-${opt.rooms}`"
               role="option"
               :aria-selected="whoMvpSelectedKey === `${opt.adults}-${opt.rooms}`"
+              tabindex="0"
               class="who-mvp__item"
               :class="{ 'who-mvp__item--selected': whoMvpSelectedKey === `${opt.adults}-${opt.rooms}` }"
               @click="pickWhoMvp(opt)"
+              @keydown.enter.prevent="pickWhoMvp(opt)"
+              @keydown.space.prevent="pickWhoMvp(opt)"
             >
               <span>{{ opt.adults }} personen / {{ opt.rooms }} {{ opt.rooms === 1 ? 'kamer' : 'kamers' }}</span>
               <svg
@@ -1256,6 +1263,14 @@ const totalArrangementCount = computed(() => {
 
 const mobileSearchLabel = computed(() => `Doorzoek ${totalArrangementCount.value} hotelarrangementen`)
 
+/** Teleported popup container. The focus trap moves keyboard focus into it
+ *  on open, cycles Tab within it, closes on Escape, and restores focus to
+ *  the opener on close — so keyboard users can reach + select the options. */
+const popupAnchorRef = ref<HTMLElement | null>(null)
+useFocusTrap(popupAnchorRef, computed(() => activePopup.value !== null), {
+  onEscape: () => closePopup(),
+})
+
 function togglePopup(popup: 'destination' | 'when' | 'who' | 'date' | 'duration') {
   activePopup.value = activePopup.value === popup ? null : popup
 }
@@ -1303,6 +1318,7 @@ function closePopup() {
   activePopup.value = null
   externalAnchor.value = null
   schedulePulse()
+  // Focus is restored to the opener by the useFocusTrap composable.
 }
 
 /** Public API: open one of the three popups anchored to an external element

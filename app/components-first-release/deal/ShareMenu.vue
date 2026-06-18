@@ -48,14 +48,21 @@
 </template>
 
 <script setup lang="ts">
-withDefaults(defineProps<{
+const props = withDefaults(defineProps<{
   open: boolean
   title?: string
 }>(), {
   title: 'Ik heb een mooi luxe hotel gevonden',
 })
 
-defineEmits<{ close: [] }>()
+const emit = defineEmits<{ close: [] }>()
+
+// Escape closes the share menu (keyboard-only users — WCAG 2.1.1).
+function onKeydown(e: KeyboardEvent) {
+  if (e.key === 'Escape' && props.open) emit('close')
+}
+onMounted(() => document.addEventListener('keydown', onKeydown))
+onBeforeUnmount(() => document.removeEventListener('keydown', onKeydown))
 
 /** Static, non-functional share targets (prototype only). */
 const apps = [

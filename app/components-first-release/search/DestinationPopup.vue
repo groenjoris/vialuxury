@@ -107,7 +107,11 @@
                 v-for="row in section.rows"
                 :key="row.key"
                 class="destination-popup__list-item"
+                role="button"
+                tabindex="0"
                 @click="row.pick()"
+                @keydown.enter.prevent="row.pick()"
+                @keydown.space.prevent="row.pick()"
               >
                 <div class="destination-popup__list-text">
                   <span class="destination-popup__list-name">{{ row.name }}</span>
@@ -183,7 +187,11 @@
             v-for="item in filteredSuggestions"
             :key="item.name"
             class="destination-popup__list-item"
+            role="button"
+            tabindex="0"
             @click="selectSuggestion(item)"
+            @keydown.enter.prevent="selectSuggestion(item)"
+            @keydown.space.prevent="selectSuggestion(item)"
           >
             <svg class="destination-popup__list-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
@@ -207,7 +215,11 @@
               v-for="hotel in filteredHotels"
               :key="hotel.id"
               class="destination-popup__list-item destination-popup__list-item--hotel"
+              role="button"
+              tabindex="0"
               @click="selectHotel(hotel)"
+              @keydown.enter.prevent="selectHotel(hotel)"
+              @keydown.space.prevent="selectHotel(hotel)"
             >
               <svg class="destination-popup__list-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M3 21V7a2 2 0 012-2h14a2 2 0 012 2v14" />

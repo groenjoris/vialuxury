@@ -1,9 +1,12 @@
 import { onMounted, onUnmounted, type Ref } from 'vue'
 
 /**
- * Calls `handler` when a mousedown occurs outside the referenced element(s).
- * Pass a single ref or an array of refs (any inside-the-set click counts as inside).
- * The listener is automatically attached on mount and detached on unmount.
+ * Calls `handler` to DISMISS a popup when the user either:
+ *   - presses the mouse down outside the referenced element(s), or
+ *   - presses Escape (keyboard-only users need a way out — WCAG 2.1.1).
+ *
+ * Pass a single ref or an array of refs (any inside-the-set click counts as
+ * inside). The listeners are attached on mount and detached on unmount.
  *
  * Example:
  *   const dropdownEl = ref<HTMLElement | null>(null)
@@ -11,7 +14,7 @@ import { onMounted, onUnmounted, type Ref } from 'vue'
  */
 export function useFirstReleaseClickOutside(
   target: Ref<HTMLElement | null> | Array<Ref<HTMLElement | null>>,
-  handler: (e: MouseEvent) => void,
+  handler: (e: MouseEvent | KeyboardEvent) => void,
 ) {
   const refs = Array.isArray(target) ? target : [target]
 
@@ -25,6 +28,16 @@ export function useFirstReleaseClickOutside(
     handler(e)
   }
 
-  onMounted(() => document.addEventListener('mousedown', onDocClick))
-  onUnmounted(() => document.removeEventListener('mousedown', onDocClick))
+  function onKeydown(e: KeyboardEvent) {
+    if (e.key === 'Escape') handler(e)
+  }
+
+  onMounted(() => {
+    document.addEventListener('mousedown', onDocClick)
+    document.addEventListener('keydown', onKeydown)
+  })
+  onUnmounted(() => {
+    document.removeEventListener('mousedown', onDocClick)
+    document.removeEventListener('keydown', onKeydown)
+  })
 }
