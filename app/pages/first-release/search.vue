@@ -126,9 +126,17 @@
                    Hidden on mobile per spec — the page header runs
                    tighter on small viewports and Trustpilot lives
                    in the footer instead. -->
-              <div v-if="!isMobile" class="search-trust">
-                <img src="/images/trustpilot.svg" alt="Trustpilot" class="search-trust__logo" />
-                <span class="search-trust__text">15.294 beoordelingen</span>
+              <div v-if="!isMobile" class="search-header-right">
+                <!-- Partner co-brand card (e.g. arriving via the "HEMA actie"
+                     home button → ?partner=hema), shown LEFT of Trustpilot. -->
+                <div v-if="showPartnerLogo" class="search-partner">
+                  <span class="search-partner__caption">In samenwerking met</span>
+                  <img src="/images/partners/hema.png" alt="HEMA" class="search-partner__logo" />
+                </div>
+                <div class="search-trust">
+                  <img src="/images/trustpilot.svg" alt="Trustpilot" class="search-trust__logo" />
+                  <span class="search-trust__text">15.294 beoordelingen</span>
+                </div>
               </div>
             </div>
           </div>
@@ -1143,6 +1151,10 @@ const sortedHotels = computed(() => {
 // Pin the originating deal at the top when arriving from /deal/<slug> via the
 // search-bar's "Vind deals" button. The query is `?from=<deal-permalink>`.
 const route = useRoute()
+
+/** Co-brand the results page when arriving via a partner button (the home
+ *  "HEMA actie" card navigates here with `?partner=hema`). */
+const showPartnerLogo = computed(() => !!route.query.partner)
 // Re-apply the footer city deep-link when it changes while already on
 // /search (NuxtLink swaps the query without remounting the page).
 watch(() => route.query.city, () => applyCityQuery())
@@ -1678,6 +1690,30 @@ onMounted(() => {
 /* Right-column Trustpilot block — replaces the team-avatars that used
    to live here. Right-aligned, vertical stack: logo on top, review
    count beneath. */
+/* Right side of the header — partner co-brand card (optional) + Trustpilot. */
+.search-header-right {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-lg);
+  flex-shrink: 0;
+}
+.search-partner {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.search-partner__caption {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+}
+.search-partner__logo {
+  height: 56px;
+  width: auto;
+  display: block;
+}
+
 .search-trust {
   display: flex;
   flex-direction: column;

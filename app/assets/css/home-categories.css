@@ -10,7 +10,7 @@
 
 .home-categories__grid {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: repeat(4, 1fr);
   gap: var(--space-md);
 }
 
@@ -102,6 +102,33 @@
 
 .home-category:hover .home-category__btn {
   background: #2b2b2b;
+}
+
+/* ─── Partner co-brand card (e.g. "HEMA actie") ───
+ * White card showing the partner logo instead of a photo; links to the
+ * search results with a `?partner=` flag so that page co-brands too. */
+.home-category--partner {
+  background-color: #fff;
+  border: 1px solid var(--color-border);
+}
+.home-category--partner::after,
+.home-category--partner::before {
+  display: none;
+}
+.home-category__partner-logo {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -55%);
+  width: 60%;
+  max-width: 200px;
+  height: auto;
+  z-index: 2;
+  pointer-events: none;
+}
+.home-category--partner .home-category__title {
+  color: var(--color-text-primary);
+  text-shadow: none;
 }
 
 .home-category__btn svg {

@@ -348,10 +348,6 @@
               <circle cx="12" cy="10" r="3" />
             </svg>
             <span>{{ hotel.location.city }}, {{ hotel.location.region }}</span>
-            <template v-if="chosenReisduurLabel">
-              <span class="deal-page__divider">·</span>
-              <span>Reisduur: {{ chosenReisduurLabel }}</span>
-            </template>
             <a href="#mini-map" class="deal-page__view-map-link" @click.prevent="scrollToMiniMap">{{ t('common.viewMap') || 'Bekijk op kaart' }}</a>
           </div>
         </div>
@@ -974,22 +970,6 @@ const lang = computed<'nl' | 'en' | 'de'>(() => {
   return 'nl'
 })
 
-/** Reisduur the user picked on /search (persisted via sessionStorage in
- *  useFirstReleaseSearchState). Shown in the deal-page meta line so the choice is
- *  visible after navigating in from the search results. Returns null when
- *  no reisduur was selected (don't show anything). */
-const { selectedNights } = useFirstReleaseSearchState()
-const chosenReisduurLabel = computed(() => {
-  const ns = selectedNights.value
-  if (!ns || ns.length === 0) return null
-  const parts = ns.map(n => n === '5+' ? '5+' : n)
-  // "1, 2 of 3 nachten" / "1 nacht" / "5+ nachten"
-  let head: string
-  if (parts.length === 1) head = parts[0]
-  else head = `${parts.slice(0, -1).join(', ')} of ${parts[parts.length - 1]}`
-  const onlyOne = parts.length === 1 && parts[0] === '1'
-  return `${head} ${onlyOne ? 'nacht' : 'nachten'}`
-})
 
 /** Plural-aware "Voor X nacht(en), Y persoon/personen" used both under the
  *  calendar (sidebar) and in the sticky CTA bar. */

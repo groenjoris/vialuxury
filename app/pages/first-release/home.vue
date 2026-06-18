@@ -170,6 +170,11 @@ AAN ZEE</span>
 EXPERIENCES</span>
           <span class="home-category__btn">Bekijk</span>
         </button>
+        <button type="button" class="home-category home-category--partner" @click="goPartnerActie('hema')">
+          <span class="home-category__title">HEMA actie</span>
+          <img src="/images/partners/hema.png" alt="HEMA" class="home-category__partner-logo" />
+          <span class="home-category__btn">Bekijk</span>
+        </button>
       </div>
     </section>
 
@@ -292,6 +297,18 @@ function pickFilter(tagId: string) {
   resetBudget()
   toggleFilterTag(tagId)
   navigateTo('/first-release/search')
+}
+
+/** Partner co-brand entry (e.g. "HEMA actie"): start clean and land on the
+ *  search results with a `?partner=` flag so that page shows the partner
+ *  logo card next to Trustpilot. */
+function goPartnerActie(partner: string) {
+  clearFilterTags()
+  clearDestinations()
+  clearArrivalDate()
+  clearDuration()
+  resetBudget()
+  navigateTo({ path: '/first-release/search', query: { partner } })
 }
 
 // Persist this home's nav variant so internal pages render the same nav.
