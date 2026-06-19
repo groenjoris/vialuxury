@@ -18,6 +18,7 @@ import {
   sharedReviewSummary,
   sharedFaq,
   sharedNearbyTips,
+  desIndesNearbyTips,
   sharedHouseRules,
   sharedBaseRoom,
   sharedRoomUpgrades,
@@ -242,7 +243,10 @@ function toIndividualReviews(): Review[] {
   return sharedReviews
 }
 
-function toNearbyTips(): NearbyTip[] {
+function toNearbyTips(pkg: RawPackage): NearbyTip[] {
+  // Hotel Des Indes gets its own Den Haag tips (5); every other hotel uses
+  // the shared generic three.
+  if (/des\s*indes/i.test(pkg.hotelName || '')) return desIndesNearbyTips
   return sharedNearbyTips
 }
 
@@ -307,7 +311,7 @@ function toHotel(pkg: RawPackage): Hotel {
     facilities: toFacilities(pkg),
     reviews: toReviewSummary(pkg.hotelId, pkg.reviewScore),
     individualReviews: toIndividualReviews(),
-    nearbyTips: toNearbyTips(),
+    nearbyTips: toNearbyTips(pkg),
     faq: toFaq(),
     highlights: (pkg.highlights || []).map((h) => ({ icon: h.iconUrl, text: loc(h.title) })),
   }

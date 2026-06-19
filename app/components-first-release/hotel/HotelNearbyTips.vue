@@ -187,11 +187,14 @@ function toggleBottom(index: number) {
   cursor: pointer;
   transition: flex-basis 450ms cubic-bezier(0.4, 0, 0.2, 1);
 }
-/* Equal widths by default. */
-.tips-row--top .tip-card { flex-basis: 33.333%; }
-.tips-row--bottom .tip-card { flex-basis: 50%; }
-/* Clicked card grows, its row-mates shrink — both animate via flex-basis.
-   (Mobile pins flex to 80vw !important, so none of this applies there.) */
+/* Initial state: every card the SAME width in BOTH rows — a third of the
+   row minus the two 14px gaps. flex-grow:0 keeps the 2-card bottom row from
+   stretching to fill (cards match the top row, left-aligned). */
+.tips-row--top .tip-card,
+.tips-row--bottom .tip-card { flex-basis: calc((100% - 28px) / 3); }
+/* Clicked card grows (Lees meer), its row-mates shrink — animated via
+   flex-basis. (Mobile pins flex to 80vw !important, so none of this applies
+   there.) */
 .tips-row--top .tip-card--active { flex-basis: 56%; }
 .tips-row--top .tip-card--inactive { flex-basis: 22%; }
 .tips-row--bottom .tip-card--active { flex-basis: 64%; }

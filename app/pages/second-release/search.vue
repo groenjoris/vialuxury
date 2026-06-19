@@ -70,6 +70,7 @@
                       : 'Geen deals gevonden die voldoen aan je wensen'
                   }}
                 </h1>
+                <h1 v-else-if="showPartnerLogo" ref="titleRef" class="search-page__title">Exclusief voor HEMA Klanten</h1>
                 <h1 v-else-if="singleThemeTagId" ref="titleRef" :key="`themed-${singleThemeTagId}`" class="search-page__title">
                   {{ themedTitleText }}
                 </h1>
@@ -88,16 +89,28 @@
                      read as celebratory content that doesn't fit the empty
                      state. -->
                 <template v-if="!hasNoResults">
+                <!-- Partner variant (HEMA actie): plain body-font subtitle,
+                     no handwritten USP, no avatars. -->
+                <p v-if="showPartnerLogo" class="search-page__partner-usp">
+                  Extra veel korting op complete hotelarrangementen. De prijs is altijd inclusief de boekingskosten, dagelijks ontbijt en 3-gangendiner voor 2 personen. Boek vóór 30 september 2026 en verblijf t/m februari 2027.
+                </p>
                 <!-- :key forces the clip-path animation to replay when the
                      themed subtitle text swaps (e.g. user picks another
                      theme without leaving the page). -->
                 <p
+                  v-else
                   class="search-page__usp"
                   :key="singleThemeTagId ? `themed-sub-${singleThemeTagId}` : 'default-sub'"
                 >{{ singleThemeTagId ? themedSubtitle : t('search.usp') }}</p>
-                <!-- Avatars only on the default header; themed views drop
-                     them so the handwritten subtitle carries the focus. -->
-                <div v-if="!singleThemeTagId" class="team-avatars">
+                <!-- Mobile partner logo card (desktop shows it next to
+                     Trustpilot, which is hidden on mobile). -->
+                <div v-if="isMobile && showPartnerLogo" class="deal-page__partner-card deal-page__partner-card--mobile search-page__partner-mobile">
+                  <span class="deal-page__partner-card-caption">In samenwerking met:</span>
+                  <img src="/images/partners/hema.png" alt="HEMA" class="deal-page__partner-card-logo" />
+                </div>
+                <!-- Avatars only on the default header; themed + partner
+                     views drop them so the subtitle carries the focus. -->
+                <div v-if="!singleThemeTagId && !showPartnerLogo" class="team-avatars">
                   <div
                     v-for="member in teamMembers"
                     :key="member.name"
@@ -127,13 +140,14 @@
                    tighter on small viewports and Trustpilot lives
                    in the footer instead. -->
               <div v-if="!isMobile" class="search-header-right">
-                <!-- Partner co-brand card (e.g. arriving via the "HEMA actie"
-                     home button → ?partner=hema), shown LEFT of Trustpilot. -->
-                <div v-if="showPartnerLogo" class="search-partner">
-                  <span class="search-partner__caption">In samenwerking met</span>
-                  <img src="/images/partners/hema.png" alt="HEMA" class="search-partner__logo" />
+                <!-- Partner variant (HEMA actie → ?partner=hema): the partner
+                     card REPLACES Trustpilot in this slot (same card as the
+                     deal page), leaving more width for the title + text. -->
+                <div v-if="showPartnerLogo" class="deal-page__partner-card">
+                  <span class="deal-page__partner-card-caption">In samenwerking met:</span>
+                  <img src="/images/partners/hema.png" alt="HEMA" class="deal-page__partner-card-logo" />
                 </div>
-                <div class="search-trust">
+                <div v-else class="search-trust">
                   <img src="/images/trustpilot.svg" alt="Trustpilot" class="search-trust__logo" />
                   <span class="search-trust__text">15.294 beoordelingen</span>
                 </div>
@@ -1714,21 +1728,9 @@ onMounted(() => {
   gap: var(--space-lg);
   flex-shrink: 0;
 }
-.search-partner {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 6px;
-  flex-shrink: 0;
-}
-.search-partner__caption {
-  font-size: 13px;
-  color: var(--color-text-secondary);
-}
-.search-partner__logo {
-  height: 56px;
-  width: auto;
-  display: block;
+/* Mobile partner card sits below the title (replacing the subtitle). */
+.search-page__partner-mobile {
+  margin: 8px 0 4px;
 }
 
 .search-trust {
@@ -1756,6 +1758,18 @@ onMounted(() => {
   color: var(--color-text-primary);
   margin-top: 0;                /* Title sits at Y=0 of header-text */
   margin-bottom: 4px;
+}
+
+/* Partner variant subtitle (HEMA actie) — plain body font (Basis
+   Grotesque), no handwritten animation. */
+.search-page__partner-usp {
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--color-text-secondary);
+  margin: 0;
+  max-width: 620px;
 }
 
 .search-page__usp {

@@ -149,6 +149,30 @@ export const sharedNearbyTips: NearbyTip[] = [
   },
 ]
 
+/** Den Haag–specific nearby tips for Hotel Des Indes (5 tips: two local
+ *  landmarks up front, then the shared generic three). */
+export const desIndesNearbyTips: NearbyTip[] = [
+  {
+    id: 'tip-mauritshuis',
+    title: { nl: 'Mauritshuis', en: 'Mauritshuis' },
+    description: {
+      nl: 'Het Mauritshuis is het thuis van de beste Nederlandse schilderkunst uit de Gouden Eeuw. In het hart van Den Haag bevindt zich de compacte, maar wereldberoemde collectie. Meesterwerken als Vermeers Meisje met de parel, De Anatomische les van dr. Nicolaes Tulp van Rembrandt, Het puttertje van Fabritius en De stier van Potter zijn permanent te zien in de intieme museumzalen van dit zeventiende-eeuwse monument.',
+      en: 'The Mauritshuis is home to the finest Dutch painting from the Golden Age. In the heart of The Hague you will find this compact yet world-famous collection. Masterpieces such as Vermeer’s Girl with a Pearl Earring, Rembrandt’s The Anatomy Lesson of Dr Nicolaes Tulp, Fabritius’ The Goldfinch and Potter’s The Bull are permanently on display in the intimate galleries of this seventeenth-century monument.',
+    },
+    image: '/images/tips/Den_Haag_Binnenhof_Mauritshuis_4.jpg',
+  },
+  {
+    id: 'tip-pier-scheveningen',
+    title: { nl: 'Pier Scheveningen', en: 'Pier Scheveningen' },
+    description: {
+      nl: 'De vernieuwde Pier is inmiddels een ware foodboulevard met eigentijds en hoogwaardig aanbod van streetfood, restaurants, bars, terrassen en winkels. Het hele jaar door worden er festivals, markten, muzikale en culturele evenementen georganiseerd. Het leuke is, de Pier is gratis toegankelijk. Maak jouw beleving op de Pier compleet met een ritje in Europa’s eerste reuzenrad boven zee!',
+      en: 'The renovated Pier has become a true food boulevard with a contemporary, high-quality offering of street food, restaurants, bars, terraces and shops. Throughout the year festivals, markets and musical and cultural events are organised. The best part: the Pier is free to enter. Complete your experience on the Pier with a ride in Europe’s first Ferris wheel over the sea!',
+    },
+    image: '/images/tips/Scheveningen.jpg',
+  },
+  ...sharedNearbyTips,
+]
+
 export const sharedHouseRules: HouseRule[] = [
   {
     id: 'rule-checkin',

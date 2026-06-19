@@ -1,7 +1,7 @@
 <template>
   <section v-if="cards.length > 0" class="others container">
     <header class="others__head">
-      <h2 class="others__title">Anderen bekeken ook</h2>
+      <h2 class="others__title">Andere reizigers boekten ook</h2>
       <p v-if="arrivalDate" class="others__sub">
         Beschikbaar op {{ formattedArrival }}
       </p>

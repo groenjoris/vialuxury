@@ -101,6 +101,12 @@
         <div class="home-popular__col home-popular__col--quick">
           <h3 class="home-popular__heading">Snel zoeken</h3>
           <div class="home-popular__pills">
+            <div class="home-popular__pill-row">
+              <button type="button" class="home-pill home-pill--partner" @click="goPartnerActie('hema')">
+                <img src="/images/partners/hema.png" alt="HEMA" class="home-pill__logo" />
+                <span class="home-pill__label">HEMA actie</span>
+              </button>
+            </div>
             <div
               v-for="(row, ri) in homeFilterRows"
               :key="ri"
@@ -168,11 +174,6 @@ AAN ZEE</span>
         <button type="button" class="home-category" :style="{ backgroundImage: `url('/images/categories/hotelexperiencepackages.jpeg')` }" @click="pickFilter('unique-stay')">
           <span class="home-category__title">HOTEL
 EXPERIENCES</span>
-          <span class="home-category__btn">Bekijk</span>
-        </button>
-        <button type="button" class="home-category home-category--partner" @click="goPartnerActie('hema')">
-          <span class="home-category__title">HEMA actie</span>
-          <img src="/images/partners/hema.png" alt="HEMA" class="home-category__partner-logo" />
           <span class="home-category__btn">Bekijk</span>
         </button>
       </div>
@@ -895,6 +896,15 @@ onMounted(() => { setFrNavVariant('1'); restoreHeroPhotoIndex(); restoreHomeLayo
 .home-pill__icon :deep(svg) {
   width: 100%;
   height: 100%;
+}
+
+/* Partner pill (e.g. "HEMA actie") — the brand logo replaces the icon. */
+.home-pill__logo {
+  height: 16px;
+  width: auto;
+  display: block;
+  margin-right: 2px;
+  flex-shrink: 0;
 }
 
 .home-pill__count {
