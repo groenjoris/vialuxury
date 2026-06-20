@@ -27,6 +27,7 @@
               </div>
               <div class="room-card__body">
                 <h3 class="room-card__name">{{ localized(room.name) }}</h3>
+                <p class="room-card__capacity">maximaal {{ room.capacity ?? 2 }} {{ (room.capacity ?? 2) === 1 ? 'persoon' : 'personen' }}</p>
                 <p class="room-card__desc">{{ localized(room.description) }}</p>
                 <ul v-if="room.features.length" class="room-card__features">
                   <li v-for="f in room.features" :key="localized(f)">{{ localized(f) }}</li>
@@ -75,13 +76,15 @@ defineEmits<{
 
 const { localized } = useSecondReleaseI18n()
 
-/** "Upgrade voor €75" relative to the card's current room; the base room
- *  reads "Inbegrepen". */
+/** Price of a room relative to the card's current room:
+ *  - costs more  → "Upgrade voor €75"
+ *  - costs less  → "Downgrade en betaal €30 minder"
+ *  - same price  → "Inbegrepen" (no distinction between the included base
+ *    room, a suggested 3-person room, and any other same-price option). */
 function priceLabel(room: RoomOption): string {
-  if (room.isDefault) return 'Inbegrepen'
   const diff = room.priceExtra - props.currentPriceExtra
   if (diff > 0) return `Upgrade voor ${formatPrice(diff)}`
-  if (diff === 0) return 'Geen meerprijs'
+  if (diff < 0) return `Downgrade en betaal ${formatPrice(-diff)} minder`
   return 'Inbegrepen'
 }
 
@@ -220,6 +223,14 @@ onBeforeUnmount(() => { if (acquired) { scrollLock.release(); acquired = false }
   font-size: 17px;
   font-weight: 700;
   color: var(--color-text-primary);
+  margin: 0 0 2px;
+}
+
+/* Max occupancy — small line directly under the room name. */
+.room-card__capacity {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
   margin: 0 0 6px;
 }
 

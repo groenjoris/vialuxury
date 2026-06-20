@@ -148,10 +148,11 @@ export const useSecondReleaseDealStore = defineStore('second-release-deal', () =
         }),
         { nl: '3 eenpersoonsbedden', en: '3 single beds' },
       ],
-      // NOT a paid upgrade — the 3-person room is a capacity variant. Its
-      // price effect (−€75 vs two 2-person rooms) is baked into the package
-      // price via `tripleRoomCount`, not charged as a room-type surcharge.
-      priceExtra: 0,
+      // A 3-person room costs €30 more than the 2-person base (a bigger room
+      // with an extra bed). Priced as a room-TYPE surcharge so the panel can
+      // show "Upgrade voor €30" / "Downgrade en betaal €30 minder" and the
+      // sidebar itemises it like any other upgrade.
+      priceExtra: 30,
       isDefault: false,
       isUpgrade: false,
       capacity: 3,
@@ -369,7 +370,28 @@ export const useSecondReleaseDealStore = defineStore('second-release-deal', () =
   // Re-assign the cheapest configuration on every party-size change
   // ("based on the latest selection in any person selection field").
   // Manual picks via the room panel stay until the next group change.
-  watch(travelGroup, () => applyAutoAssignment(), { deep: true })
+  // `suppressAutoAssign` lets a manual room edit (e.g. the deal page adding
+  // a room to fix an under-capacity downgrade) bump `rooms` WITHOUT the
+  // watcher reshuffling the allocation back to the cheapest auto-config —
+  // which would otherwise wipe a paid upgrade the user kept elsewhere.
+  let suppressAutoAssign = false
+  watch(travelGroup, () => {
+    if (suppressAutoAssign) { suppressAutoAssign = false; return }
+    applyAutoAssignment()
+  }, { deep: true })
+
+  /** Add room(s) and pin the exact allocation, bypassing auto-assignment.
+   *  `targetAlloc` is the full per-type room map (its sum becomes the new
+   *  room count). Used by the deal page when a capacity downgrade needs an
+   *  extra room but the rest of the manual configuration must be preserved. */
+  function setAllocationWithRooms(targetAlloc: Record<string, number>) {
+    const newRooms = Object.values(targetAlloc).reduce((s, n) => s + n, 0)
+    if (newRooms <= 0) return
+    suppressAutoAssign = true
+    roomAllocation.value = { ...targetAlloc }
+    travelGroup.value = { ...travelGroup.value, rooms: newRooms }
+    pushSearchGroup()
+  }
 
   /** Initialize with a deal */
   function initializeDeal(deal: Deal, variants: DealVariant[]) {
@@ -551,6 +573,7 @@ export const useSecondReleaseDealStore = defineStore('second-release-deal', () =
     setTravelGroup,
     selectRoom,
     setRoomAllocationCount,
+    setAllocationWithRooms,
     resetRoomAllocation,
     setCheckIn,
     clearDates,

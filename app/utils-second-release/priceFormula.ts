@@ -12,22 +12,24 @@ import { dealHash } from './scarcity'
  *   - Extra rooms: each room BEYOND the standard 2-per-room packing
  *     (ceil(persons/2)) costs +€150.
  *       4p/2k → standard · 4p/3k → +€150 · 4p/4k → +€300
- *   - 3-person room: replacing two 2-person rooms with one 3-person room
- *     SAVES €75 — so subtract €75 per 3-person room used.
+ *   - 3-person room: priced as a room-TYPE surcharge (`priceExtra`), itemised
+ *     in the sidebar like any other upgrade — NOT a package discount here.
  */
 export function adjustPrice(
   basePrice: number,
   persons: number,
   rooms?: number,
-  tripleRooms: number = 0,
+  // Kept for call-site compatibility but no longer used: the 3-person room is
+  // now priced as a room-TYPE surcharge (`RoomOption.priceExtra`, itemised in
+  // the sidebar), NOT as a package discount here.
+  _tripleRooms: number = 0,
 ): number {
   if (persons <= 0) return Math.round(basePrice)
   const standardRooms = Math.ceil(persons / 2)
   const r = rooms ?? standardRooms
   const personCost = basePrice * standardRooms - (persons % 2 === 1 ? 50 : 0)
   const extraRoomCost = Math.max(0, r - standardRooms) * 150
-  const tripleSaving = Math.max(0, tripleRooms) * 75
-  return Math.round(personCost + extraRoomCost - tripleSaving)
+  return Math.round(personCost + extraRoomCost)
 }
 
 /** ~25% of the hotels (deterministic hash on the hotel/package slug) carry

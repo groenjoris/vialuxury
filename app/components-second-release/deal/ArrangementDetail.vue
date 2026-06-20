@@ -32,7 +32,6 @@
       </div>
       <div class="arr-card__body">
         <h3 class="arr-card__title"><template v-if="card.rows.length > 1">{{ card.rows.length }}x&nbsp;</template>{{ localized(card.room.name) }}</h3>
-        <p class="arr-card__capacity">Max. {{ card.room.capacity ?? 2 }} {{ (card.room.capacity ?? 2) === 1 ? 'persoon' : 'personen' }}</p>
         <p class="arr-card__desc">{{ localized(card.room.description) }}</p>
         <ul v-if="card.room.features && card.room.features.length" class="arr-card__features">
           <li v-for="(feature, i) in card.room.features" :key="i">
@@ -41,10 +40,10 @@
           </li>
         </ul>
         <div class="arr-card__rooms">
-          <div v-for="(row, ri) in card.rows" :key="row.key" class="arr-card__room-row">
-            <span class="arr-card__room-info" v-if="totalRooms > 1">
-              <span v-if="card.rows.length > 1" class="arr-card__room-label">Kamer {{ ri + 1 }}:</span>
-              <span class="arr-card__guests">{{ card.rows.length > 1 ? row.guests : ('Voor ' + row.guests) }}</span>
+          <div v-for="row in card.rows" :key="row.key" class="arr-card__room-row">
+            <span class="arr-card__room-info">
+              <span v-if="totalRooms > 1" class="arr-card__room-label">Kamer {{ row.roomNumber }}:</span>
+              <span class="arr-card__guests">maximaal {{ row.room.capacity ?? 2 }} {{ (row.room.capacity ?? 2) === 1 ? 'persoon' : 'personen' }}</span>
             </span>
             <button
               v-if="upgradeLabelForRow(row)"
@@ -88,6 +87,41 @@
       @select="onPanelSelect"
       @close="panelKey = null"
     />
+
+    <!-- Capacity confirmation — a downgrade left too few beds for the party -->
+    <Teleport to="body">
+      <div
+        v-if="pendingDowngrade"
+        class="cap-dialog__backdrop"
+        @click.self="cancelAddRoom"
+      >
+        <div
+          class="cap-dialog"
+          role="alertdialog"
+          aria-modal="true"
+          aria-labelledby="cap-dialog-title"
+          aria-describedby="cap-dialog-body"
+        >
+          <h3 id="cap-dialog-title" class="cap-dialog__title">Niet alle reizigers passen</h3>
+          <p id="cap-dialog-body" class="cap-dialog__body">
+            Met deze kamerkeuze is er plek voor {{ pendingDowngrade.seats }}
+            van de {{ store.totalPersons }} reizigers. Voeg een extra 2-persoonskamer
+            toe zodat iedereen mee kan.
+          </p>
+          <p v-if="pendingDowngrade.extraCost > 0" class="cap-dialog__price">
+            Extra kamer: + {{ formatPrice(pendingDowngrade.extraCost) }}
+          </p>
+          <div class="cap-dialog__actions">
+            <button type="button" class="cap-dialog__btn cap-dialog__btn--ghost" @click="cancelAddRoom">
+              Annuleren
+            </button>
+            <button type="button" class="cap-dialog__btn cap-dialog__btn--primary" @click="confirmAddRoom">
+              Extra kamer toevoegen
+            </button>
+          </div>
+        </div>
+      </div>
+    </Teleport>
   </section>
 </template>
 
@@ -96,6 +130,7 @@ import type { Hotel } from '~/types/hotel'
 import type { RoomOption, DealInclusion } from '~/types/deal'
 import { useSecondReleaseDealStore } from '~/stores-second-release/deal'
 import { formatPrice } from '~/utils-second-release/formatPrice'
+import { priceForArrival } from '~/utils-second-release/priceFormula'
 import SecondReleaseRoomTypePanel from '~/components-second-release/deal/RoomTypePanel.vue'
 
 const props = defineProps<{
@@ -138,18 +173,12 @@ function panelImageFor(r: RoomOption): string {
   return r.image
 }
 
-/** Room types a single room can switch to (current one included): only the
- *  SAME capacity tier. A 2-person room switches to other 2-person room types
- *  (never the 3-person room — not even for a group of 2); a 3-person room can
- *  only switch to other 3-person rooms (in practice none exist → no options).
- */
-function selectableRoomsForRow(row: RoomRow): RoomOption[] {
-  const tier = row.room.capacity ?? 2
+/** Room types a single room can switch to (current one included): ALL
+ *  available room types, regardless of capacity — so a 2-person room can be
+ *  swapped for a 3-person room (and vice versa). */
+function selectableRoomsForRow(_row: RoomRow): RoomOption[] {
   return store.allRoomTypes
-    .filter(r =>
-      (r.capacity ?? 2) === tier
-      && (r.maxAvailable ?? 5) >= 1,
-    )
+    .filter(r => (r.maxAvailable ?? 5) >= 1)
     .map(r => ({ ...r, image: panelImageFor(r) }))
 }
 
@@ -163,40 +192,128 @@ function upgradeLabelForRow(row: RoomRow): string | null {
   // you don't "upgrade" it, you change its type.
   const roomIsUpgrade = (row.room.priceExtra ?? 0) > 0 || row.room.isUpgrade || hasFreeUpgrade.value
   if (roomIsUpgrade) return 'Wijzig kamertype'
+  // "Upgrade vanaf €xx" only when a PRICIER room of the SAME capacity exists —
+  // i.e. a real comfort upgrade for the same number of people. A 3-person
+  // room with no other 3-person rooms has no such option → "Wijzig kamertype".
   const diffs = others
+    .filter(r => (r.capacity ?? 2) === (row.room.capacity ?? 2))
     .map(r => r.priceExtra - row.room.priceExtra)
     .filter(d => d > 0)
   if (diffs.length > 0) return `Upgrade vanaf ${formatPrice(Math.min(...diffs))}`
   return 'Wijzig kamertype'
 }
 
-/** "Voor gast 4 en gast 5" — mirrors the row's guest label, so the panel
- *  says exactly which guests the room switch applies to. */
+/** "Voor kamer 2" — tells the panel which room the switch applies to.
+ *  Only shown when there is more than one room. */
 const panelGuestsLabel = computed(() => {
-  const g = panelRow.value?.guests
-  if (!g) return null
-  return 'Voor ' + g.charAt(0).toLowerCase() + g.slice(1)
+  const row = panelRow.value
+  if (!row || totalRooms.value <= 1) return null
+  return `Voor kamer ${row.roomNumber}`
 })
 
-/** Selecting closes the panel and switches THIS room's type. */
+/* ── Capacity guard ─────────────────────────────────────────────────────
+   Now that the panel offers EVERY room type, a downgrade (only possible from
+   the 3-person room → a 2-person room) can leave fewer beds than travellers.
+   Before applying such a swap we pause and ask the user whether to add a
+   room; only the 3→2 case can ever under-serve, and a single extra room
+   always covers the 1-bed shortfall it creates. ── */
+
+/** Total beds across the current physical rooms. */
+const totalCapacity = computed(() =>
+  physicalRooms.value.reduce((s, r) => s + (r.room.capacity ?? 2), 0),
+)
+
+/** A deferred under-capacity swap awaiting the user's confirmation. */
+const pendingDowngrade = ref<{
+  newRoomId: string
+  /** Beds the booking would have AFTER the swap (before adding a room). */
+  seats: number
+  targetAlloc: Record<string, number>
+  extraCost: number
+} | null>(null)
+
+/** Apply a straightforward (capacity-safe) swap of one room's type. */
+function applyRoomSwap(row: RoomRow, newRoomId: string) {
+  if (store.travelGroup.rooms <= 1) {
+    store.selectRoom(newRoomId)
+    return
+  }
+  // Swap THIS slot's type in place, then mirror it into the store's per-type
+  // counts (kept matched, so the watcher won't re-seed / reshuffle the order).
+  const slots = [...roomSlots.value]
+  slots[row.slotIndex] = newRoomId
+  roomSlots.value = slots
+  const alloc = { ...store.effectiveAllocation }
+  store.setRoomAllocationCount(row.room.id, Math.max(0, (alloc[row.room.id] ?? 0) - 1))
+  store.setRoomAllocationCount(newRoomId, (alloc[newRoomId] ?? 0) + 1)
+}
+
+/** The room-type allocation AFTER swapping `row` to `newRoomId` and adding
+ *  one extra base room — the config we'd commit if the user confirms. */
+function targetAllocForAddRoom(row: RoomRow, newRoomId: string): Record<string, number> {
+  const baseId = store.currentDeal!.baseRoomType.id
+  const slots = store.travelGroup.rooms <= 1
+    ? [newRoomId]
+    : roomSlots.value.map((id, i) => (i === row.slotIndex ? newRoomId : id))
+  slots.push(baseId)
+  const alloc: Record<string, number> = {}
+  for (const id of slots) alloc[id] = (alloc[id] ?? 0) + 1
+  return alloc
+}
+
+/** Price difference of committing `targetAlloc` (rooms = its sum) vs. now. */
+function addRoomExtraCost(targetAlloc: Record<string, number>): number {
+  const deal = store.currentDeal
+  if (!deal) return 0
+  const persons = store.totalPersons
+  const newRooms = Object.values(targetAlloc).reduce((s, n) => s + n, 0)
+  const tid = store.tripleRoom?.id
+  const triples = tid ? (targetAlloc[tid] ?? 0) : 0
+  const arrangement = priceForArrival(deal.basePrice, deal.id, store.checkInDate, persons, newRooms, triples)
+  let upgrade = 0
+  for (const [id, c] of Object.entries(targetAlloc)) {
+    const r = store.allRoomTypes.find(x => x.id === id)
+    if (r && r.priceExtra > 0) upgrade += r.priceExtra * c
+  }
+  return Math.max(0, (arrangement + upgrade) - store.pricing.totalPrice)
+}
+
+/** Selecting closes the panel and switches THIS room's type — unless the
+ *  switch would leave too few beds, in which case we ask first. */
 function onPanelSelect(newRoomId: string) {
   const row = panelRow.value
   if (!row || newRoomId === row.room.id) { panelKey.value = null; return }
 
-  if (store.travelGroup.rooms <= 1) {
-    store.selectRoom(newRoomId)
-  } else {
-    // Swap THIS slot's type in place so its guests move with it to the new
-    // card, then mirror the change into the store's per-type counts (kept
-    // matched, so the watcher won't re-seed / reshuffle the order).
-    const slots = [...roomSlots.value]
-    slots[row.slotIndex] = newRoomId
-    roomSlots.value = slots
-    const alloc = { ...store.effectiveAllocation }
-    store.setRoomAllocationCount(row.room.id, Math.max(0, (alloc[row.room.id] ?? 0) - 1))
-    store.setRoomAllocationCount(newRoomId, (alloc[newRoomId] ?? 0) + 1)
+  const newRoom = store.allRoomTypes.find(r => r.id === newRoomId)
+  const newCapacity = newRoom?.capacity ?? 2
+  const projectedCapacity = totalCapacity.value - (row.room.capacity ?? 2) + newCapacity
+
+  if (projectedCapacity < store.totalPersons) {
+    // Under-capacity: defer the swap and confirm adding a room.
+    const targetAlloc = targetAllocForAddRoom(row, newRoomId)
+    pendingDowngrade.value = {
+      newRoomId,
+      seats: projectedCapacity,
+      targetAlloc,
+      extraCost: addRoomExtraCost(targetAlloc),
+    }
+    panelKey.value = null
+    return
   }
+
+  applyRoomSwap(row, newRoomId)
   panelKey.value = null
+}
+
+/** User confirms: commit the swap together with the extra room. */
+function confirmAddRoom() {
+  if (pendingDowngrade.value) store.setAllocationWithRooms(pendingDowngrade.value.targetAlloc)
+  pendingDowngrade.value = null
+}
+
+/** User cancels: keep the original configuration unchanged. */
+function cancelAddRoom() {
+  pendingDowngrade.value = null
 }
 
 const hotelImage = computed(() => props.hotel.images[0]?.url || '')
@@ -696,5 +813,84 @@ function formatGuestList(start: number, count: number): string | null {
   .arr-card__body {
     padding: var(--space-md);
   }
+}
+
+/* ── Capacity confirmation dialog ─────────────────────────────────────── */
+.cap-dialog__backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-lg);
+}
+
+.cap-dialog {
+  background: #fff;
+  border-radius: var(--radius-lg);
+  max-width: 420px;
+  width: 100%;
+  padding: var(--space-xl);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+}
+
+.cap-dialog__title {
+  font-family: var(--font-heading);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0 0 var(--space-sm);
+}
+
+.cap-dialog__body {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+.cap-dialog__price {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: var(--space-md) 0 0;
+}
+
+.cap-dialog__actions {
+  display: flex;
+  gap: var(--space-sm);
+  justify-content: flex-end;
+  margin-top: var(--space-lg);
+}
+
+.cap-dialog__btn {
+  padding: 10px 18px;
+  border-radius: var(--radius-md);
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+.cap-dialog__btn--ghost {
+  background: #fff;
+  border-color: var(--color-border);
+  color: var(--color-text-primary);
+}
+.cap-dialog__btn--ghost:hover { background: var(--color-bg-subtle, #f5f5f5); }
+
+.cap-dialog__btn--primary {
+  background: var(--color-primary);
+  color: #fff;
+}
+.cap-dialog__btn--primary:hover { background: var(--color-primary-hover); }
+
+@media (max-width: 600px) {
+  .cap-dialog { padding: var(--space-lg); }
+  .cap-dialog__actions { flex-direction: column-reverse; }
+  .cap-dialog__btn { width: 100%; }
 }
 </style>
