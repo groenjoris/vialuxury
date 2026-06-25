@@ -971,7 +971,8 @@ const THEME_IMAGES: Record<string, string> = {
   kasteel: '/images/landingpages/kasteel.png',
   'five-star': '/images/landingpages/five-star.jpg',
 }
-const LANDING_FALLBACK_IMAGE = '/images/hero/spa-van-oys.jpg'
+// Themes without a dedicated photo fall back to the homepage hero image.
+const { heroPhotoUrl: homeHeroImage } = useSecondReleaseHomeVariant()
 
 /** Hero copy + photo for the active landing page. Solo has its own copy;
  *  themed landings reuse the THEME_TITLES "special" texts (falling back to
@@ -989,7 +990,7 @@ const heroPitch = computed(() => {
 const heroBg = computed(() => {
   if (isSolo.value) return '/images/landingpages/solo-reizen-header.jpg'
   const id = landingThemeId.value
-  return (id && THEME_IMAGES[id]) || LANDING_FALLBACK_IMAGE
+  return (id && THEME_IMAGES[id]) || homeHeroImage.value
 })
 
 /** The single active tag id when no destination-popup pick is set;
