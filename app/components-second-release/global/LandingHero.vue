@@ -176,7 +176,7 @@ withDefaults(defineProps<{
 @media (min-width: 801px) {
   .home-hero--search-below {
     height: auto;
-    min-height: 700px;
+    min-height: 780px;
   }
   .home-hero--search-below :deep(.site-header) {
     display: flex;
@@ -189,7 +189,7 @@ withDefaults(defineProps<{
     position: static;
     top: auto;
     width: 100%;
-    padding-top: 156px;
+    padding-top: 236px;
     padding-bottom: 8px;
   }
   .home-hero--search-below :deep(.site-header--overlay .site-header__search-dock) {
