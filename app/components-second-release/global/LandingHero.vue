@@ -174,13 +174,16 @@ withDefaults(defineProps<{
    absolute top-anchored copy + half-overlap dock. Gated to desktop so the
    mobile (variant-2) home layout below is left untouched. ── */
 @media (min-width: 801px) {
+  /* Same hero height as the homepage (640px); the SiteHeader fills it as a
+     flow column (nav → copy → search), with the copy pushed down and the
+     search bar pinned toward the bottom of the photo. */
   .home-hero--search-below {
-    height: auto;
-    min-height: 780px;
+    height: 640px;
   }
   .home-hero--search-below :deep(.site-header) {
     display: flex;
     flex-direction: column;
+    height: 100%;
     padding-bottom: 0;
   }
   /* width:100% defeats the flex auto-margin shrink so the copy fills the
@@ -190,13 +193,13 @@ withDefaults(defineProps<{
     top: auto;
     width: 100%;
     padding-top: 236px;
-    padding-bottom: 8px;
+    padding-bottom: 0;
   }
   .home-hero--search-below :deep(.site-header--overlay .site-header__search-dock) {
     position: static;
     transform: none;
-    margin: 24px 0 0;
-    padding: 0 0 44px;
+    margin: auto 0 0;
+    padding: 0 0 36px;
   }
 }
 
