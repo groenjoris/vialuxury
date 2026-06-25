@@ -192,14 +192,16 @@ withDefaults(defineProps<{
     position: static;
     top: auto;
     width: 100%;
-    padding-top: 236px;
+    padding-top: 156px;
     padding-bottom: 0;
   }
+  /* Search bar follows the copy (fixed gap) rather than pinning to the
+     bottom, so moving the copy up moves the search bar with it. */
   .home-hero--search-below :deep(.site-header--overlay .site-header__search-dock) {
     position: static;
     transform: none;
-    margin: auto 0 0;
-    padding: 0 0 36px;
+    margin: 28px 0 0;
+    padding: 0;
   }
 }
 
