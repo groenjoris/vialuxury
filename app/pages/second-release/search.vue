@@ -5,9 +5,9 @@
     <SecondReleaseLandingHero
       v-if="isSolo"
       search-below
-      bg-url="/images/landingpages/solo-reizen.jpg"
-      title="Solo reizen is de trend"
-      pitch="Perfecte deals voor alleenreizigers, samengesteld door het Vialuxury team."
+      bg-url="/images/landingpages/solo-reizen-header.jpg"
+      title="Solo reizen"
+      pitch="Perfecte deals voor alleenreizigers, samengesteld door het ViaLuxury-team."
     />
     <SecondReleaseSiteHeader v-else />
 
