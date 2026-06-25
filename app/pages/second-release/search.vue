@@ -1423,6 +1423,12 @@ onMounted(() => {
   padding-bottom: var(--space-3xl);
 }
 
+/* Solo landing has no breadcrumbs, so add breathing room between the hero
+   and the results section. */
+.search-page--solo .search-page__main {
+  padding-top: var(--space-2xl);
+}
+
 .search-page__breadcrumbs {
   padding-top: var(--space-lg);
   padding-bottom: var(--space-sm);
