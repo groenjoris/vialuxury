@@ -191,20 +191,23 @@ withDefaults(defineProps<{
     padding-bottom: 0;
   }
   /* width:100% defeats the flex auto-margin shrink so the copy fills the
-     container and its left edge lines up with the search bar (like home). */
+     container and its left edge lines up with the search bar (like home).
+     margin-top:auto pushes the whole copy + search combo to the BOTTOM of
+     the photo. */
   .home-hero--search-below .home-hero__content {
     position: static;
     top: auto;
     width: 100%;
-    padding-top: 156px;
+    margin-top: auto;
+    padding-top: 0;
     padding-bottom: 0;
   }
-  /* Search bar follows the copy (fixed gap) rather than pinning to the
-     bottom, so moving the copy up moves the search bar with it. */
+  /* Search bar follows the copy (fixed gap above) and sits 80px from the
+     bottom edge of the photo. */
   .home-hero--search-below :deep(.site-header--overlay .site-header__search-dock) {
     position: static;
     transform: none;
-    margin: 28px 0 0;
+    margin: 28px 0 80px;
     padding: 0;
   }
   /* Themed landings have longer titles — shrink so they stay on one line
