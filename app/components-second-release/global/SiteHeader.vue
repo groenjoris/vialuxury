@@ -499,22 +499,6 @@
                       <svg class="menu-panel__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
                     </NuxtLink>
 
-                    <!-- LAYOUT-VARIANT switcher (prototype only) — mobile, in
-                         the menu so it never falls outside the viewport. -->
-                    <span class="menu-panel__section-label menu-panel__section-label--later">Layout-variant</span>
-                    <div class="menu-panel__variants">
-                      <button
-                        v-for="v in (['1','2','3','4','5'] as const)"
-                        :key="v"
-                        type="button"
-                        class="menu-panel__variant"
-                        :class="{ 'menu-panel__variant--active': homeLayoutVariant === v }"
-                        :aria-pressed="homeLayoutVariant === v"
-                        :aria-label="`Variant ${v}`"
-                        @click="setHomeLayoutVariant(v); hamburgerDropdownOpen = false"
-                      >{{ v }}</button>
-                    </div>
-
                   </div>
                 </aside>
               </Transition>
@@ -992,7 +976,7 @@ const props = withDefaults(defineProps<{
 
 const { t } = useSecondReleaseI18n()
 const localeStore = useSecondReleaseLocaleStore()
-const { homeHref, srNavVariant, homeLayoutVariant, setHomeLayoutVariant } = useSecondReleaseHomeVariant()
+const { homeHref, srNavVariant } = useSecondReleaseHomeVariant()
 
 /** Effective nav-bar layout — prop wins, otherwise read from the
  *  composable (which is restored from URL/localStorage on mount). */

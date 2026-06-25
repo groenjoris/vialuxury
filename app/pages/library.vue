@@ -14,6 +14,76 @@
 
     <!-- Content -->
     <main class="lib__main">
+      <!-- ───────────── ATOMS (foundations) ───────────── -->
+      <section id="atoms" class="lib__section">
+        <h2 class="lib__section-title">Atoms</h2>
+        <p class="lib__section-lead">Fundament — de kleuren, typografie en vormen waaruit alle andere componenten zijn opgebouwd.</p>
+
+        <div class="lib__grid">
+          <!-- Colours -->
+          <article class="demo demo--full">
+            <header class="demo__head"><h3>Kleuren</h3><code>--color-*</code></header>
+            <div class="demo__body">
+              <div v-for="g in palette" :key="g.group" class="atom-palette">
+                <span class="atom-palette__label">{{ g.group }}</span>
+                <div class="atom-swatches">
+                  <div v-for="s in g.swatches" :key="s.token" class="atom-swatch">
+                    <span class="atom-swatch__chip" :style="{ background: s.value }" />
+                    <span class="atom-swatch__name">{{ s.name }}</span>
+                    <code class="atom-swatch__value">{{ s.value }}</code>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- Typography -->
+          <article class="demo demo--full">
+            <header class="demo__head"><h3>Typografie</h3><code>--font-heading · --font-body</code></header>
+            <div class="demo__body atom-type">
+              <div class="atom-type__row">
+                <span class="atom-type__meta">Recoleta — koppen</span>
+                <p class="atom-type__sample atom-type__sample--heading">Luxe verblijven, zorgeloos geboekt</p>
+              </div>
+              <div class="atom-type__row">
+                <span class="atom-type__meta">Basis Grotesque — tekst</span>
+                <p class="atom-type__sample atom-type__sample--body">Ontdek met zorg geselecteerde hotels en arrangementen, met de beste prijs en flexibel annuleren.</p>
+              </div>
+              <div class="atom-type__scale">
+                <span class="atom-type__size" style="font-size: 28px; font-weight: 700;">28 / bold</span>
+                <span class="atom-type__size" style="font-size: 22px; font-weight: 700;">22 / bold</span>
+                <span class="atom-type__size" style="font-size: 17px; font-weight: 600;">17 / semi</span>
+                <span class="atom-type__size" style="font-size: 15px;">15 / regular</span>
+                <span class="atom-type__size" style="font-size: 13px; color: var(--color-text-secondary);">13 / klein</span>
+              </div>
+            </div>
+          </article>
+
+          <!-- Radii -->
+          <article class="demo">
+            <header class="demo__head"><h3>Hoeken</h3><code>--radius-*</code></header>
+            <div class="demo__body demo__body--row atom-shapes">
+              <div v-for="r in radii" :key="r.name" class="atom-shape">
+                <span class="atom-shape__box" :style="{ borderRadius: r.value }" />
+                <span class="atom-shape__name">{{ r.name }}</span>
+                <code class="atom-shape__value">{{ r.value }}</code>
+              </div>
+            </div>
+          </article>
+
+          <!-- Shadows -->
+          <article class="demo">
+            <header class="demo__head"><h3>Schaduwen</h3><code>--shadow-*</code></header>
+            <div class="demo__body demo__body--row atom-shapes">
+              <div v-for="s in shadows" :key="s.name" class="atom-shape">
+                <span class="atom-shape__box atom-shape__box--shadow" :style="{ boxShadow: `var(${s.token})` }" />
+                <span class="atom-shape__name">{{ s.name }}</span>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
       <!-- ───────────── PRIMITIVES ───────────── -->
       <section id="primitives" class="lib__section">
         <h2 class="lib__section-title">Primitives</h2>
@@ -310,13 +380,60 @@ const img = {
 }
 
 const sections = [
+  // Atoms are foundations (tokens), not components — excluded from the
+  // "X herbruikbare componenten" tally below.
+  { id: 'atoms', title: 'Atoms', count: 4, foundation: true },
   { id: 'primitives', title: 'Primitives', count: 6 },
   { id: 'cards', title: 'Cards', count: 3 },
   { id: 'search', title: 'Search & filters', count: 6 },
   { id: 'media', title: 'Media', count: 2 },
   { id: 'content', title: 'Content sections', count: 5 },
 ]
-const totalCount = computed(() => sections.reduce((n, s) => n + s.count, 0))
+const totalCount = computed(() =>
+  sections.filter(s => !s.foundation).reduce((n, s) => n + s.count, 0),
+)
+
+// ── Atoms (design tokens — mirror app/lib/tokens/tokens.css) ──
+const palette = [
+  { group: 'Merk', swatches: [
+    { name: 'primary', value: '#E97132', token: '--color-primary' },
+    { name: 'primary-hover', value: '#D4621F', token: '--color-primary-hover' },
+  ] },
+  { group: 'Tekst', swatches: [
+    { name: 'text-primary', value: '#1A1A1A', token: '--color-text-primary' },
+    { name: 'text-secondary', value: '#555555', token: '--color-text-secondary' },
+    { name: 'text-muted', value: '#999999', token: '--color-text-muted' },
+    { name: 'text-link', value: '#4A4A4A', token: '--color-text-link' },
+  ] },
+  { group: 'Achtergrond', swatches: [
+    { name: 'background', value: '#FFFFFF', token: '--color-background' },
+    { name: 'background-secondary', value: '#FBFAF8', token: '--color-background-secondary' },
+    { name: 'dark', value: '#1A1E1E', token: '--color-dark' },
+  ] },
+  { group: 'Rand', swatches: [
+    { name: 'border', value: '#E5E5E5', token: '--color-border' },
+    { name: 'border-light', value: '#F0F0F0', token: '--color-border-light' },
+  ] },
+  { group: 'Semantisch', swatches: [
+    { name: 'discount', value: '#00B67A', token: '--color-discount' },
+    { name: 'discount-light', value: '#E8F5E9', token: '--color-discount-light' },
+    { name: 'star', value: '#FB862D', token: '--color-star' },
+    { name: 'error', value: '#D32F2F', token: '--color-error' },
+  ] },
+]
+const radii = [
+  { name: 'xs', value: '2px' },
+  { name: 'sm', value: '4px' },
+  { name: 'md', value: '8px' },
+  { name: 'lg', value: '12px' },
+  { name: 'xl', value: '16px' },
+]
+const shadows = [
+  { name: 'sm', token: '--shadow-sm' },
+  { name: 'card', token: '--shadow-card' },
+  { name: 'sidebar', token: '--shadow-sidebar' },
+  { name: 'hover', token: '--shadow-hover' },
+]
 
 // ── Primitives demo state ──
 const inputVal = ref('')
@@ -568,6 +685,104 @@ const whyItems = [
   font-size: 13px;
   color: var(--color-text-muted);
   margin: 0;
+}
+
+/* ── Atoms: colours ── */
+.atom-palette {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.atom-palette + .atom-palette { margin-top: 18px; }
+.atom-palette__label {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--color-text-muted);
+}
+.atom-swatches {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 12px;
+}
+.atom-swatch {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.atom-swatch__chip {
+  height: 48px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border-light);
+}
+.atom-swatch__name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+.atom-swatch__value {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  font-family: var(--font-body);
+  text-transform: uppercase;
+}
+
+/* ── Atoms: typography ── */
+.atom-type__row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.atom-type__row + .atom-type__row { margin-top: 6px; }
+.atom-type__meta {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--color-text-muted);
+}
+.atom-type__sample { margin: 0; color: var(--color-text-primary); }
+.atom-type__sample--heading { font-family: var(--font-heading); font-size: 26px; font-weight: 700; }
+.atom-type__sample--body { font-family: var(--font-body); font-size: 16px; line-height: 1.6; }
+.atom-type__scale {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 18px;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--color-border-light);
+  font-family: var(--font-body);
+}
+
+/* ── Atoms: shapes (radii + shadows) ── */
+.atom-shapes { gap: 20px; align-items: flex-start; }
+.atom-shape {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.atom-shape__box {
+  width: 56px;
+  height: 56px;
+  background: var(--color-primary);
+}
+.atom-shape__box--shadow {
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border-light);
+}
+.atom-shape__name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+.atom-shape__value {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  font-family: var(--font-body);
 }
 
 @media (max-width: 900px) {

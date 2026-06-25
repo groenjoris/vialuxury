@@ -39,7 +39,10 @@ const heroPhotoIndex = ref(0)
  * <html>; all variant CSS lives in app/assets/css/fr-home-variants.css. */
 type HomeLayoutVariant = '1' | '2' | '3' | '4' | '5'
 const STORAGE_KEY_HOME_VARIANT = 'vl_fr_home_variant'
-const homeLayoutVariant = ref<HomeLayoutVariant>('1')
+// Variant 2 is the FINAL mobile home layout (horizontal logo + tagline +
+// search bar below the "Experience more" copy). The variant switcher has been
+// removed; the value is locked to '2'.
+const homeLayoutVariant = ref<HomeLayoutVariant>('2')
 
 if (import.meta.client) {
   watch(homeLayoutVariant, (v) => {
@@ -106,21 +109,14 @@ export function useFirstReleaseHomeVariant() {
   }
 
   /* ─────────── Mobile home/nav layout variant API ─────────── */
-  function setHomeLayoutVariant(v: HomeLayoutVariant) {
-    homeLayoutVariant.value = v
-    if (import.meta.client) {
-      try { localStorage.setItem(STORAGE_KEY_HOME_VARIANT, v) } catch { /* ignore */ }
-    }
+  // Locked to variant 2 (final). Kept as a no-op so existing call-sites
+  // (`setHomeLayoutVariant`, `restoreHomeLayoutVariant`) compile unchanged.
+  function setHomeLayoutVariant(_v: HomeLayoutVariant) {
+    homeLayoutVariant.value = '2'
   }
 
   function restoreHomeLayoutVariant() {
-    if (!import.meta.client) return
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY_HOME_VARIANT)
-      if (stored === '1' || stored === '2' || stored === '3' || stored === '4' || stored === '5') {
-        homeLayoutVariant.value = stored
-      }
-    } catch { /* ignore */ }
+    homeLayoutVariant.value = '2'
   }
 
   return {
