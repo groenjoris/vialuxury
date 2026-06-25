@@ -1,10 +1,19 @@
 <template>
-  <div class="search-page">
-    <SecondReleaseSiteHeader />
+  <div class="search-page" :class="{ 'search-page--solo': isSolo }">
+    <!-- Solo-travel landing page: the homepage hero on top, the normal
+         search-results section below. Otherwise the standard solid header. -->
+    <SecondReleaseLandingHero
+      v-if="isSolo"
+      search-below
+      bg-url="/images/landingpages/solo-reizen.jpg"
+      title="Solo reizen is de trend"
+      pitch="Perfecte deals voor alleenreizigers, samengesteld door het Vialuxury team."
+    />
+    <SecondReleaseSiteHeader v-else />
 
     <main class="search-page__main">
-      <!-- Breadcrumbs -->
-      <section class="search-page__breadcrumbs container">
+      <!-- Breadcrumbs (hidden on the solo landing — the hero replaces them) -->
+      <section v-if="!isSolo" class="search-page__breadcrumbs container">
         <SecondReleaseBreadcrumbNav :items="breadcrumbs" />
       </section>
 
@@ -453,8 +462,12 @@ const {
   // /search so the search bar updates results immediately (see activeArrival).
   arrivalDate: liveArrivalDate, selectedFlexibility: liveFlexibility,
   setArrivalDate, restoreSearchSession,
-  addCity,
+  addCity, setSearchGroup,
 } = useSecondReleaseSearchState()
+
+/** Solo-travel landing page mode (?landing=solo): renders the homepage hero
+ *  above the results and defaults the search to 1 persoon / 1 kamer. */
+const isSolo = computed(() => route.query.landing === 'solo')
 
 /** On /search the result filter reads LIVE arrival/flex so editing the search
  *  bar updates results instantly; everywhere else it reads the committed
@@ -490,6 +503,8 @@ onMounted(() => {
   // Footer "city" deep-link (?city=amsterdam): apply it as a destination
   // selection — same as picking the city in the destination field.
   applyCityQuery()
+  // Solo-travel landing: default the search to 1 persoon / 1 kamer.
+  if (isSolo.value) setSearchGroup(1, 1)
 })
 
 /** Apply a `?city=<slug>` deep-link (from the footer) as a single-select

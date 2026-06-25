@@ -516,12 +516,12 @@
     <div
       class="site-header__mobile-search"
       :class="{
-        'site-header__mobile-search--summary': _route.path === '/second-release/search',
+        'site-header__mobile-search--summary': showMobileSearchSummary,
         'site-header__mobile-search--on-solid': variant !== 'overlay',
       }"
     >
       <SecondReleaseMobileSearchSummary
-        v-if="_route.path === '/second-release/search'"
+        v-if="showMobileSearchSummary"
         @open="mobileSearchOpen = true"
       />
       <button v-else type="button" class="mobile-search-trigger" @click="mobileSearchOpen = true">
@@ -981,6 +981,13 @@ const { homeHref, srNavVariant } = useSecondReleaseHomeVariant()
 /** Effective nav-bar layout — prop wins, otherwise read from the
  *  composable (which is restored from URL/localStorage on mount). */
 const effectiveNavVariant = computed(() => props.navVariant ?? srNavVariant.value)
+
+// On the /search results page the mobile header shows the compact search
+// SUMMARY bar — EXCEPT when the header is the overlay hero (the solo-travel
+// landing page lives on /search but wants the normal "Vind deals" trigger).
+const showMobileSearchSummary = computed(() =>
+  _route.path === '/second-release/search' && props.variant !== 'overlay',
+)
 
 // --- Verticals (computed for reactivity on locale change) ---
 const verticals = computed(() => {
@@ -1974,7 +1981,8 @@ const whoLabel = computed(() => {
   const adults = searchGroup.value.adults
   const rooms = searchGroup.value.rooms
   const roomWord = rooms === 1 ? t('common.roomSingular') : t('common.roomPlural')
-  const head = `${adults} personen / ${rooms} ${roomWord}`
+  const personWord = adults === 1 ? 'persoon' : 'personen'
+  const head = `${adults} ${personWord} / ${rooms} ${roomWord}`
   const extras: string[] = []
   if (searchGroup.value.children.length > 0) {
     extras.push(`${searchGroup.value.children.length} ${searchGroup.value.children.length === 1 ? t('common.childSingular') : t('common.childPlural')}`)

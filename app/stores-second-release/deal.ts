@@ -82,6 +82,10 @@ export const useSecondReleaseDealStore = defineStore('second-release-deal', () =
    *  we fell back to enough 2-person rooms. The deal page surfaces it as a
    *  toast. Cleared by the consumer. */
   const tripleFallbackMessage = ref<string | null>(null)
+  /** Set when, after a travel-group change, the previously selected arrival
+   *  date no longer has availability for the new party. The deal page
+   *  surfaces it as a toast and the calendar drops its selection. */
+  const availabilityMessage = ref<string | null>(null)
   const previousCheckInDate = ref<string | null>(null)
 
   /**
@@ -549,6 +553,7 @@ export const useSecondReleaseDealStore = defineStore('second-release-deal', () =
     isTravelGroupModalOpen,
     roomUnavailableMessage,
     tripleFallbackMessage,
+    availabilityMessage,
     roomAllocation,
     // Getters
     totalPersons,

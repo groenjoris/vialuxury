@@ -388,7 +388,10 @@
           <ul class="sidebar__inc-list">
             <li v-for="(item, i) in sidebarInclusions" :key="i">
               <span class="sidebar__inc-check">✓</span>
-              <span>{{ item }}</span>
+              <span class="sidebar__inc-text">
+                {{ item.text }}
+                <span v-if="item.upgrade" class="sidebar__inc-upgrade">(upgrade)</span>
+              </span>
             </li>
           </ul>
 
@@ -1083,6 +1086,15 @@ watch(() => store.tripleFallbackMessage, (msg) => {
   store.tripleFallbackMessage = null
 }, { immediate: true })
 
+// Surface "no availability for the new party on <date>" as a toast (set by
+// BookingControls when a group change invalidates the selected arrival date).
+watch(() => store.availabilityMessage, (msg) => {
+  if (!msg) return
+  toastMessage.value = ''
+  nextTick(() => { toastMessage.value = msg })
+  store.availabilityMessage = null
+})
+
 function handleFavoriteClick() {
   // No login popup — just toggle the session favourite and confirm via toast.
   toggleFav(hotel.value?.slug)
@@ -1174,14 +1186,35 @@ const hasUpgradeInclusion = computed(() =>
 
 // Reactive state for the overnight CTA branch + synthetic upgrade block injection
 const dateSelected = computed(() => !!store.checkInDate)
-const paidUpgradeSelected = computed(() => (store.selectedRoom?.priceExtra ?? 0) > 0)
+// A paid single-room upgrade — the 3-person room (a capacity variant that
+// also carries a surcharge) does NOT count as a user-chosen upgrade.
+const paidUpgradeSelected = computed(() =>
+  (store.selectedRoom?.priceExtra ?? 0) > 0 && store.selectedRoom?.id !== store.tripleRoom?.id,
+)
+
+/** True when the user actively picked a room upgrade (paid, non-triple) in
+ *  EITHER single- or multi-room mode. When set, the deal's bundled FREE
+ *  room-upgrade inclusion is superseded and dropped from the includes lists. */
+const userSelectedUpgrade = computed(() => {
+  const tid = store.tripleRoom?.id
+  if (store.travelGroup.rooms <= 1) return paidUpgradeSelected.value
+  return Object.entries(store.effectiveAllocation).some(([id, count]) => {
+    if (count <= 0 || id === tid) return false
+    const r = store.allRoomTypes.find(x => x.id === id)
+    return (r?.priceExtra ?? 0) > 0
+  })
+})
 
 /** filteredInclusions plus a synthetic kamerupgrade block when the user
  *  picked a paid upgrade via RoomUpgradeSidePanel (only when the deal
  *  doesn't already ship one). The synthetic block reuses the same
  *  content-block markup + UPGRADE sticker via isUpgradeInclusion(). */
 const displayedInclusions = computed(() => {
-  const list = [...filteredInclusions.value]
+  let list = [...filteredInclusions.value]
+  // User picked their own upgrade → the bundled FREE upgrade is superseded.
+  if (userSelectedUpgrade.value) {
+    list = list.filter(inc => !isUpgradeInclusion(inc))
+  }
   if (paidUpgradeSelected.value && !hasUpgradeInclusion.value && store.selectedRoom) {
     const r = store.selectedRoom
     const synthetic = {
@@ -1231,19 +1264,28 @@ function overnightLabel(n: number): string {
   return `${n} ${n === 1 ? 'overnachting' : 'overnachtingen'}`
 }
 
+/** A room counts as an upgrade — paid OR the deal's free room upgrade —
+ *  but the 3-person room (a capacity variant) does not. */
+function roomIsUpgrade(room: any): boolean {
+  if (!room || room.id === store.tripleRoom?.id) return false
+  return (room.priceExtra ?? 0) > 0 || room.isUpgrade === true || hasUpgradeInclusion.value
+}
+
 /** Sidebar "Dit arrangement bevat" list (mirrors R1): overnachting first
  *  (no hotel name), then the room types (e.g. "2 x Comfort Room"), then the
- *  remaining inclusions. */
-const sidebarInclusions = computed<string[]>(() => {
-  const out: string[] = []
-  out.push(overnightLabel(currentDeal.value?.nights ?? 1))
+ *  remaining inclusions. The bundled "kamerupgrade" inclusion is NEVER listed
+ *  here — an upgraded room gets a "(upgrade)" sub-line on its own item. */
+const sidebarInclusions = computed<{ text: string; upgrade?: boolean }[]>(() => {
+  const out: { text: string; upgrade?: boolean }[] = []
+  out.push({ text: overnightLabel(currentDeal.value?.nights ?? 1) })
   for (const entry of roomAllocationEntries.value) {
     if (!entry.room) continue
-    out.push(roomEntryLabel(entry.room, entry.count))
+    out.push({ text: roomEntryLabel(entry.room, entry.count), upgrade: roomIsUpgrade(entry.room) })
   }
   for (const inc of filteredInclusions.value) {
     if (isOvernightInclusion(inc)) continue
-    out.push(localized(inc.title))
+    if (isUpgradeInclusion(inc)) continue // shown on the room line as "(upgrade)" instead
+    out.push({ text: localized(inc.title) })
   }
   return out
 })
@@ -1626,8 +1668,16 @@ onMounted(() => {
   /* Border-bottom moved to .sidebar__details-link below so the link
      sits ABOVE the divider (inside the inclusion block). */
 }
-.sidebar__inc-list li { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--color-text-secondary); }
+.sidebar__inc-list li { display: flex; align-items: flex-start; gap: 8px; font-size: 14px; color: var(--color-text-secondary); }
 .sidebar__inc-check { color: var(--color-discount); font-weight: 700; flex-shrink: 0; }
+.sidebar__inc-text { min-width: 0; }
+/* "(upgrade)" wraps to its own line under the room name (doesn't fit beside). */
+.sidebar__inc-upgrade {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
 
 /* "Bekijk details" — plain orange-underlined text link beneath the
    inclusions list. The link's box owns the bottom border so the

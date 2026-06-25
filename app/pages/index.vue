@@ -46,6 +46,11 @@
             class="start-btn"
             @click="startSecondReleaseFromNushop"
           >Start via NUshop</button>
+          <button
+            type="button"
+            class="start-btn"
+            @click="startSecondReleaseSolo"
+          >Solo reizen</button>
         </div>
       </section>
 
@@ -253,6 +258,14 @@ function startSecondReleaseFromHome() {
   resetAllSecondRelease()
   setHeroPhotoIndexSr(0)
   navigateTo('/second-release/home')
+}
+
+/** Second Release solo-travel landing page — the homepage hero over the
+ *  search results, defaulted to 1 persoon / 1 kamer. */
+function startSecondReleaseSolo() {
+  resetAllSecondRelease()
+  setSearchGroupSr(1, 1)
+  navigateTo('/second-release/search?landing=solo')
 }
 
 /** Second Release NUshop entry — skip the intermediate advertisement page

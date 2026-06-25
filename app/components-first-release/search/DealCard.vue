@@ -1022,14 +1022,14 @@ const includesBullets = computed<string[]>(() => {
 
 /* ===== META + PRICE LINES ===== */
 .deal-card-v2__meta-line {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
   color: var(--color-text-primary);
   margin: 0;
 }
 
 .deal-card-v2__meta-line--small {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
   white-space: nowrap;
 }

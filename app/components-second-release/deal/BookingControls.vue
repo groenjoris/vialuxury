@@ -1,37 +1,46 @@
 <template>
   <section class="booking-controls">
     <div class="booking-controls__row">
-      <!-- ── Aankomstdatum ──
-           Collapsed ONLY when arriving with a date already chosen (global
-           search state, e.g. from a search-result card). Clicking the
-           field opens the inline calendar — and once open it stays open;
-           selecting a date does NOT collapse it. -->
-      <div class="booking-controls__field-block booking-controls__field-block--date">
-        <template v-if="!calendarOpen">
-          <h3 class="booking-controls__label">Aankomstdatum</h3>
-          <button type="button" class="booking-controls__field" @click="calendarOpen = true">
-            <span>{{ formattedArrival }}</span>
+      <!-- ── Left half: reisgezelschap + reisduur/CTA box ──
+           Reisgezelschap is chosen first; it drives the availability shown
+           in the calendar on the right. -->
+      <div class="booking-controls__side">
+        <div class="booking-controls__field-block" ref="groupBlockRef">
+          <h3 class="booking-controls__label">Reisgezelschap</h3>
+          <button type="button" class="booking-controls__field" @click="groupOpen = !groupOpen">
+            <span>{{ groupLabel }}</span>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9" /></svg>
           </button>
-        </template>
-        <template v-else>
-          <h3 class="booking-controls__label">Kies aankomstdatum</h3>
-          <div class="booking-controls__calendar">
-            <SecondReleaseCalendarMonth
-              :year="calMonth.year" :month="calMonth.month"
-              :availability="calAvailability"
-              :selected-check-in="store.checkInDate" :selected-check-out="store.checkOutDate"
-              :cheapest-price="calCheapestPrice"
-              :show-prev-button="true" :show-next-button="true"
-              :show-legend="true"
-              @select-date="onSelectDate" @prev-month="calPrev" @next-month="calNext"
-            />
+          <div v-if="groupOpen" class="booking-controls__group-popup">
+            <div class="group-popup__row">
+              <span class="group-popup__label-block">
+                <span class="group-popup__label">Personen</span>
+                <span class="group-popup__sub">vanaf 12 jaar</span>
+              </span>
+              <div class="group-popup__stepper">
+                <button type="button" class="group-popup__step-btn" :disabled="draftAdults <= 1" @click="changeAdults(-1)">−</button>
+                <span class="group-popup__step-val">{{ draftAdults }}</span>
+                <button type="button" class="group-popup__step-btn" :disabled="draftAdults >= 16" @click="changeAdults(1)">+</button>
+              </div>
+            </div>
+            <div class="group-popup__row">
+              <span class="group-popup__label">Kamers</span>
+              <div class="group-popup__stepper">
+                <button type="button" class="group-popup__step-btn" :disabled="draftRooms <= minDraftRooms" @click="changeRooms(-1)">−</button>
+                <span class="group-popup__step-val">{{ draftRooms }}</span>
+                <button type="button" class="group-popup__step-btn" :disabled="draftRooms >= maxDraftRooms" @click="changeRooms(1)">+</button>
+              </div>
+            </div>
+            <button type="button" class="group-popup__done" @click="applyGroup">Klaar</button>
+            <p class="group-popup__note">
+              Dit arrangement is alleen voor volwassenen. Kinderen mee?
+              <NuxtLink to="/second-release/search" class="group-popup__note-link">Toon kindvriendelijke arrangementen</NuxtLink>
+            </p>
           </div>
-        </template>
+        </div>
 
-        <!-- ── Reisduur + CTA — grey box. When the calendar is COLLAPSED it
-             sits here, below the (collapsed) date field. -->
-        <div v-if="!calendarOpen" class="booking-controls__meta-box">
+        <!-- ── Reisduur + CTA — grey box, always under the reisgezelschap. -->
+        <div class="booking-controls__meta-box">
           <h3 class="booking-controls__duration-title">
             {{ t('deal.thisArrangementIsFor') }} {{ nightsWord(dealNights, false) }}
           </h3>
@@ -44,55 +53,43 @@
         </div>
       </div>
 
-      <!-- ── Right half: reisgezelschap + reisduur/CTA box ── -->
-      <div class="booking-controls__side">
-      <div class="booking-controls__field-block" ref="groupBlockRef">
-        <h3 class="booking-controls__label">Reisgezelschap</h3>
-        <button type="button" class="booking-controls__field" @click="groupOpen = !groupOpen">
-          <span>{{ groupLabel }}</span>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9" /></svg>
-        </button>
-        <div v-if="groupOpen" class="booking-controls__group-popup">
-          <div class="group-popup__row">
-            <span class="group-popup__label-block">
-              <span class="group-popup__label">Personen</span>
-              <span class="group-popup__sub">vanaf 12 jaar</span>
-            </span>
-            <div class="group-popup__stepper">
-              <button type="button" class="group-popup__step-btn" :disabled="draftAdults <= 1" @click="changeAdults(-1)">−</button>
-              <span class="group-popup__step-val">{{ draftAdults }}</span>
-              <button type="button" class="group-popup__step-btn" :disabled="draftAdults >= 16" @click="changeAdults(1)">+</button>
-            </div>
+      <!-- ── Right half: Aankomstdatum / calendar ──
+           Collapsed ONLY when arriving with a date already chosen (global
+           search state). Clicking opens the inline calendar; selecting a
+           date keeps it open. A loading overlay covers it while the
+           calendar refreshes after a travel-group change. -->
+      <div class="booking-controls__field-block booking-controls__field-block--date">
+        <div class="booking-controls__date-wrap">
+          <!-- While the party changes, hide the calendar entirely and show a
+               short (~1s) loading state, then reveal it with updated prices. -->
+          <div v-if="calLoading" class="booking-controls__loading" aria-live="polite">
+            <span class="booking-controls__spinner" aria-hidden="true" />
+            <span class="booking-controls__loading-text">Prijzen bijwerken…</span>
           </div>
-          <div class="group-popup__row">
-            <span class="group-popup__label">Kamers</span>
-            <div class="group-popup__stepper">
-              <button type="button" class="group-popup__step-btn" :disabled="draftRooms <= minDraftRooms" @click="changeRooms(-1)">−</button>
-              <span class="group-popup__step-val">{{ draftRooms }}</span>
-              <button type="button" class="group-popup__step-btn" :disabled="draftRooms >= maxDraftRooms" @click="changeRooms(1)">+</button>
-            </div>
-          </div>
-          <button type="button" class="group-popup__done" @click="applyGroup">Klaar</button>
-          <p class="group-popup__note">
-            Dit arrangement is alleen voor volwassenen. Kinderen mee?
-            <NuxtLink to="/second-release/search" class="group-popup__note-link">Toon kindvriendelijke arrangementen</NuxtLink>
-          </p>
+          <template v-else>
+            <template v-if="!calendarOpen">
+              <h3 class="booking-controls__label">Aankomstdatum</h3>
+              <button type="button" class="booking-controls__field" @click="calendarOpen = true">
+                <span>{{ formattedArrival }}</span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9" /></svg>
+              </button>
+            </template>
+            <template v-else>
+              <h3 class="booking-controls__label">Kies aankomstdatum</h3>
+              <div class="booking-controls__calendar">
+                <SecondReleaseCalendarMonth
+                  :year="calMonth.year" :month="calMonth.month"
+                  :availability="calAvailability"
+                  :selected-check-in="store.checkInDate" :selected-check-out="store.checkOutDate"
+                  :cheapest-price="calCheapestPrice"
+                  :show-prev-button="true" :show-next-button="true"
+                  :show-legend="true"
+                  @select-date="onSelectDate" @prev-month="calPrev" @next-month="calNext"
+                />
+              </div>
+            </template>
+          </template>
         </div>
-      </div>
-
-      <!-- ── Reisduur + CTA — grey box. When the calendar is EXPANDED it
-           sits here, below the reisgezelschap selector. -->
-      <div v-if="calendarOpen" class="booking-controls__meta-box">
-        <h3 class="booking-controls__duration-title">
-          {{ t('deal.thisArrangementIsFor') }} {{ nightsWord(dealNights, false) }}
-        </h3>
-        <template v-if="hasOtherArrangements">
-          <p class="booking-controls__shorter">{{ t('deal.shorterOrLongerStay') }}</p>
-          <a href="#" class="booking-controls__link" @click.prevent="$emit('open-arrangements')">
-            {{ t('deal.viewOtherArrangements') }}
-          </a>
-        </template>
-      </div>
       </div>
     </div>
   </section>
@@ -125,19 +122,46 @@ const store = useSecondReleaseDealStore()
 const calendarOpen = ref(!store.checkInDate)
 watch(() => store.checkInDate, (v) => { if (!v) calendarOpen.value = true })
 
+/* ── Calendar "refreshing" overlay — shown briefly after a travel-group
+   change so the availability update reads as a real refresh. ── */
+const calLoading = ref(false)
+let loadingTimer: ReturnType<typeof setTimeout> | null = null
+function flashCalendarLoading() {
+  calLoading.value = true
+  if (loadingTimer) clearTimeout(loadingTimer)
+  loadingTimer = setTimeout(() => { calLoading.value = false }, 2500)
+}
+onBeforeUnmount(() => { if (loadingTimer) clearTimeout(loadingTimer) })
+
+/* ── Party-dependent availability ──
+   The default party (≤2 personen / 1 kamer) always has full availability.
+   Larger parties / extra rooms make a deterministic subset of dates
+   unavailable (more rooms → larger share), so changing the reisgezelschap
+   visibly refreshes the calendar and can invalidate a chosen date. */
+function partyAvailable(dateStr: string, persons: number, rooms: number): boolean {
+  if (rooms <= 1 && persons <= 2) return true
+  const key = `${store.currentDeal?.id ?? ''}|${dateStr}`
+  let h = 0x811c9dc5
+  for (let i = 0; i < key.length; i++) { h ^= key.charCodeAt(i); h = (h * 0x01000193) >>> 0 }
+  const blockPct = Math.min(45, (rooms - 1) * 18 + Math.max(0, persons - 2) * 6)
+  return (h % 100) >= blockPct
+}
+
 function onSelectDate(date: string) {
   store.setCheckIn(date)
 }
 
 /** "Maandag 26 juni 2026" — full Dutch weekday + date, capitalised. */
-const formattedArrival = computed(() => {
-  if (!store.checkInDate) return 'Kies datum'
-  const d = new Date(store.checkInDate)
+function formatArrivalLong(date: string): string {
+  const d = new Date(date)
   const s = new Intl.DateTimeFormat('nl-NL', {
     weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
   }).format(d)
   return s.charAt(0).toUpperCase() + s.slice(1)
-})
+}
+const formattedArrival = computed(() =>
+  store.checkInDate ? formatArrivalLong(store.checkInDate) : 'Kies datum',
+)
 
 /* ── Calendar month state (mirrors the old sidebar calendar) ── */
 const calMonth = ref(
@@ -166,6 +190,10 @@ const calAvailability = computed(() => {
   // travel group (persons + rooms + 3-person-room saving).
   return generateDealAvailability(calMonth.value.year, calMonth.value.month, deal, persons).map((d) => {
     if (!d.available) return d
+    // Mask out dates with no availability for the selected party.
+    if (!partyAvailable(d.date, persons, rooms)) {
+      return { ...d, available: false, soldOut: true }
+    }
     const totalPrice = priceForArrival(deal.basePrice, deal.id, d.date, persons, rooms, triples)
     const originalPrice = d.discountPercentage
       ? Math.round(totalPrice / (1 - d.discountPercentage / 100))
@@ -210,8 +238,27 @@ function changeRooms(delta: number) {
 }
 
 function applyGroup() {
+  const changed =
+    draftAdults.value !== store.totalPersons || draftRooms.value !== store.travelGroup.rooms
   store.setTravelGroup({ adults: draftAdults.value, children: [], rooms: draftRooms.value })
   groupOpen.value = false
+  if (!changed) return
+
+  // Refresh the calendar with a short loading animation.
+  flashCalendarLoading()
+
+  // If a date was already chosen but the new party has no availability on
+  // it, drop the selection and tell the user via a toast.
+  const date = store.checkInDate
+  const persons = store.totalPersons
+  const rooms = store.travelGroup.rooms
+  if (date && !partyAvailable(date, persons, rooms)) {
+    const personLabel = `${persons} ${persons === 1 ? 'persoon' : 'personen'}`
+    const roomLabel = `${rooms} ${rooms === 1 ? 'kamer' : 'kamers'}`
+    store.availabilityMessage =
+      `Er is geen beschikbaarheid voor ${personLabel}, ${roomLabel} op ${formatArrivalLong(date)}`
+    store.clearDates() // drops check-in/out; the calendar re-opens with no selection
+  }
 }
 
 const groupLabel = computed(() =>
@@ -233,9 +280,9 @@ const dealNights = computed(() => store.currentDeal?.nights ?? 1)
 
 .booking-controls__row {
   display: grid;
-  /* Date column carries the calendar — give it more room so the month
-     grid matches the first-release sidebar calendar width (~350px). */
-  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+  /* Reisgezelschap on the left (narrower); the calendar carries the month
+     grid on the right, so it gets the wider track (~350px). */
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr);
   gap: var(--space-lg);
   align-items: start;
 }
@@ -332,6 +379,44 @@ const dealNights = computed(() => store.currentDeal?.nights ?? 1)
 /* Inline calendar fills its (wider) column. */
 .booking-controls__calendar {
   max-width: none;
+}
+
+.booking-controls__date-wrap {
+  position: relative;
+}
+
+/* Loading state shown INSTEAD of the calendar while it refreshes for a new
+   party. Holds roughly the calendar's height so the layout doesn't jump. */
+.booking-controls__loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 340px;
+}
+
+.booking-controls__spinner {
+  width: 28px;
+  height: 28px;
+  border: 3px solid var(--color-border);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: booking-spin 0.7s linear infinite;
+}
+
+@keyframes booking-spin {
+  to { transform: rotate(360deg); }
+}
+
+.booking-controls__loading-text {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .booking-controls__spinner { animation-duration: 1.6s; }
 }
 
 /* Reisgezelschap popup — adults/rooms steppers + adults-only note */

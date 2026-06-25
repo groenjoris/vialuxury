@@ -173,7 +173,7 @@
               <div class="deal-card-v2__grid-price-row">
                 <p
                   class="deal-card-v2__meta-line"
-                >{{ cardPersons }} {{ cardPersons === 1 ? 'persoon' : 'personen' }}, {{ deal.nights }} {{ deal.nights === 1 ? 'nacht' : 'nachten' }}</p>
+                >{{ deal.nights }} {{ deal.nights === 1 ? 'nacht' : 'nachten' }}, {{ cardPersons }} {{ cardPersons === 1 ? 'persoon' : 'personen' }}, {{ cardRooms }} {{ cardRooms === 1 ? 'kamer' : 'kamers' }}</p>
                 <p class="deal-card-v2__price-line">
                   <span class="deal-card-v2__price-prefix">Vanaf</span>
                   <span class="deal-card-v2__price">{{ formatPrice(price) }}</span>
@@ -210,7 +210,10 @@
           </template>
           <template v-else>
             <p class="deal-card-v2__meta-line deal-card-v2__meta-line--small deal-card-v2__meta-line--right">
-              {{ cardPersons }} {{ cardPersons === 1 ? 'persoon' : 'personen' }}, {{ deal.nights }} {{ deal.nights === 1 ? 'nacht' : 'nachten' }}
+              {{ deal.nights }} {{ deal.nights === 1 ? 'nacht' : 'nachten' }}, {{ cardPersons }} {{ cardPersons === 1 ? 'persoon' : 'personen' }}
+            </p>
+            <p class="deal-card-v2__meta-line deal-card-v2__meta-line--small deal-card-v2__meta-line--right deal-card-v2__meta-line--secondary">
+              {{ cardRooms }} {{ cardRooms === 1 ? 'kamer' : 'kamers' }}
             </p>
             <p class="deal-card-v2__price-line deal-card-v2__price-line--right">
               <span class="deal-card-v2__price-prefix">Vanaf</span>
@@ -1025,14 +1028,14 @@ const includesBullets = computed<string[]>(() => {
 
 /* ===== META + PRICE LINES ===== */
 .deal-card-v2__meta-line {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
   color: var(--color-text-primary);
   margin: 0;
 }
 
 .deal-card-v2__meta-line--small {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
   white-space: nowrap;
 }

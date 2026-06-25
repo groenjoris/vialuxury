@@ -1,44 +1,14 @@
 <template>
   <div class="home">
-    <!-- Hero with full-bleed background image -->
-    <section class="home-hero">
-      <!-- <img> + object-fit gives identical cropping in every browser
-           (Edge / Firefox / Safari handle background-size: cover with
-           subtly different subpixel rounding). The wrapper keeps the
-           ::after gradient overlay. -->
-      <div
-        class="home-hero__bg"
-        :class="{
-          /* Pills 1 and 8 sit a bit too high in the default
-             `object-position: center bottom` crop — push them 200 px
-             DOWN within the same crop window so more of the upper
-             portion shows. */
-          'home-hero__bg--shift-down': heroPhotoIndex === 0 || heroPhotoIndex === 7,
-        }"
-      >
-        <img class="home-hero__bg-img" :src="heroPhotoUrl" alt="" />
-      </div>
-      <!-- Help / phone block + pay-off both removed — both now live
-           inside SiteHeader's row 2. -->
-
-      <SecondReleaseSiteHeader variant="overlay">
-        <template #hero>
-          <div class="home-hero__content container">
-            <div class="home-hero__eyebrow">
-              <span class="home-hero__eyebrow-dot" aria-hidden="true" />
-              <span>SPRING 2026</span>
-            </div>
-            <h1 class="home-hero__title">
-              Experience<span class="home-hero__title-em"> more</span>
-            </h1>
-            <p class="home-hero__tagline">
-              Onze experience creators stellen complete verblijven samen met luxe extra's en exclusieve voordelen, zodat jij meer beleeft voor een scherpere prijs.
-            </p>
-          </div>
-        </template>
-      </SecondReleaseSiteHeader>
-
-    </section>
+    <!-- Hero with full-bleed background image (shared LandingHero) -->
+    <SecondReleaseLandingHero
+      :bg-url="heroPhotoUrl"
+      :bg-shift-down="heroPhotoIndex === 0 || heroPhotoIndex === 7"
+      eyebrow="SPRING 2026"
+      title="Experience"
+      title-em="more"
+      pitch="Onze experience creators stellen complete verblijven samen met luxe extra's en exclusieve voordelen, zodat jij meer beleeft voor een scherpere prijs."
+    />
 
     <!-- Persuasion block — three short claims directly below the hero
          photo. Trustpilot on the left, social-proof in the middle,
