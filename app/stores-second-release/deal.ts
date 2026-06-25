@@ -235,15 +235,25 @@ export const useSecondReleaseDealStore = defineStore('second-release-deal', () =
     const rooms = travelGroup.value.rooms
     const triples = tripleRoomCount.value
 
-    const arrangementAmount = priceForArrival(deal.basePrice, deal.id, checkInDate.value, persons, rooms, triples)
-    const originalArrangementAmount = priceForArrival(deal.originalPrice, deal.id, checkInDate.value, persons, rooms, triples)
+    // The 3-person room is a CAPACITY variant, not a comfort upgrade: its
+    // surcharge belongs in the arrangement price, NOT the "Kamerupgrade" line
+    // (otherwise upgrading one room reads "2x" when a triple is also present).
+    const tid = tripleRoom.value?.id ?? null
+    const tripleSurcharge = tripleRoom.value ? triples * (tripleRoom.value.priceExtra ?? 0) : 0
 
-    // Single room → the selected room-type upgrade applies. Multi-room →
-    // sum the per-type upgrade costs of the allocation (date-independent,
-    // so an auto-assigned 3-person room raises the price immediately).
+    const arrangementAmount = priceForArrival(deal.basePrice, deal.id, checkInDate.value, persons, rooms, triples) + tripleSurcharge
+    const originalArrangementAmount = priceForArrival(deal.originalPrice, deal.id, checkInDate.value, persons, rooms, triples) + tripleSurcharge
+
+    // Comfort upgrades = paid room types EXCLUDING the 3-person room.
+    //  - multi-room: sum the per-type surcharges from the allocation
+    //  - single-room: the selected room's surcharge (unless it's the triple)
     const roomUpgrade = travelGroup.value.rooms >= 2
-      ? allocationUpgradeCost.value
-      : roomUpgradeCost.value
+      ? Object.entries(effectiveAllocation.value).reduce((s, [id, c]) => {
+          if (c <= 0 || id === tid) return s
+          const r = allRoomTypes.value.find(rt => rt.id === id)
+          return s + (r && r.priceExtra > 0 ? r.priceExtra * c : 0)
+        }, 0)
+      : (selectedRoom.value && selectedRoom.value.id !== tid ? roomUpgradeCost.value : 0)
 
     const totalPrice = arrangementAmount + roomUpgrade
     const originalPrice = originalArrangementAmount + roomUpgrade
@@ -259,6 +269,7 @@ export const useSecondReleaseDealStore = defineStore('second-release-deal', () =
     if (roomUpgrade > 0) {
       const upgradeCount = travelGroup.value.rooms >= 2
         ? Object.entries(effectiveAllocation.value).reduce((s, [id, c]) => {
+            if (id === tid) return s
             const r = allRoomTypes.value.find(rt => rt.id === id)
             return s + (r && r.priceExtra > 0 ? c : 0)
           }, 0)

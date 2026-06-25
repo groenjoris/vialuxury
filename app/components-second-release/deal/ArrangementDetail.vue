@@ -2,18 +2,8 @@
   <section class="arr-detail">
     <h2 v-if="only !== 'banners'" class="arr-detail__heading">Jouw arrangement in detail</h2>
 
-    <!-- ── Hotel card ── -->
-    <article v-if="only !== 'banners'" class="arr-card arr-card--fixed">
-      <div class="arr-card__image">
-        <span class="arr-card__chip">Je hotel</span>
-        <img :src="hotelImage" :alt="hotel.name" loading="lazy" />
-      </div>
-      <div class="arr-card__body">
-        <h3 class="arr-card__title">{{ hotel.name }}</h3>
-        <p class="arr-card__desc">{{ hotelExcerpt }}</p>
-        <a href="#" class="arr-card__more" @click.prevent="$emit('open-description')">Lees meer</a>
-      </div>
-    </article>
+    <!-- Hotel card removed — the hotel description now lives below the
+         includes row (next to the minimap). -->
 
     <!-- ── Room cards — ONE card per room TYPE. Multiple rooms of the same
          type list as rows inside the card (Kamer 1, Kamer 2, …) — the card
@@ -31,7 +21,7 @@
         <img :src="card.image" :alt="localized(card.room.name)" loading="lazy" />
       </div>
       <div class="arr-card__body">
-        <h3 class="arr-card__title"><template v-if="card.rows.length > 1">{{ card.rows.length }}x&nbsp;</template>{{ localized(card.room.name) }}</h3>
+        <h3 class="arr-card__title">{{ card.rows.length }}x&nbsp;{{ localized(card.room.name) }}</h3>
         <p class="arr-card__desc">{{ localized(card.room.description) }}</p>
         <ul v-if="card.room.features && card.room.features.length" class="arr-card__features">
           <li v-for="(feature, i) in card.room.features" :key="i">

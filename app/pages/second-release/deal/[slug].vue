@@ -349,15 +349,13 @@
         </div>
       </section>
 
-      <!-- Hero Gallery — lower-right photo replaced by the location map. -->
+      <!-- Hero Gallery — photos only (the location map now sits next to the
+           hotel description below the includes row). -->
       <section class="container deal-page__gallery">
         <SecondReleaseHeroGallery
           :images="hotel.images"
           :labels="galleryLabels"
           :rooms-left="dealRoomsLeft"
-          :map-lat="hotel.location.coordinates.lat"
-          :map-lng="hotel.location.coordinates.lng"
-          :map-slug="hotel.slug"
           @open-gallery="openGallery"
           @open-photo="openGalleryPhoto"
         />
@@ -368,10 +366,32 @@
       <section id="intro" class="container deal-page__inc-row">
         <div class="inc-row">
           <div v-for="inc in displayedInclusions" :key="inc.id" class="inc-row__chip">
-            <img v-if="incIconUrl(inc)" :src="incIconUrl(inc)!" class="inc-row__icon" alt="" loading="lazy" />
+            <svg v-if="isOvernightInclusion(inc)" class="inc-row__bed" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4v16"/><path d="M2 8h18a2 2 0 0 1 2 2v10"/><path d="M2 17h20"/><path d="M6 8v9"/></svg>
+            <img v-else-if="incIconUrl(inc)" :src="incIconUrl(inc)!" class="inc-row__icon" alt="" loading="lazy" />
             <span v-else class="inc-row__check">✓</span>
             <span>{{ localized(inc.title) }}</span>
           </div>
+        </div>
+      </section>
+
+      <!-- Hotel description (first paragraph + "lees meer", like R1) — same
+           width as the date/travel-group controls below; the minimap floats
+           to its right (mirrors the sidebar float so widths line up). -->
+      <section class="container deal-page__intro-row">
+        <div class="deal-page__intro-map">
+          <SecondReleaseMiniMapCard
+            class="deal-page__minimap"
+            :slug="hotel.slug"
+            :lat="hotel.location.coordinates.lat"
+            :lng="hotel.location.coordinates.lng"
+            :address="hotelStreetCity"
+          />
+        </div>
+        <div class="deal-page__intro-desc">
+          <!-- Fill the height next to the minimap: the full description,
+               clamped, then "lees meer" opens the modal. -->
+          <div class="deal-page__intro-desc-text" v-html="fullDescription"></div>
+          <button v-if="hasMoreDescription" type="button" class="deal-page__read-more" @click="descriptionOpen = true">{{ t('common.readMore') }}</button>
         </div>
       </section>
 
@@ -2826,6 +2846,12 @@ onMounted(() => {
   flex-shrink: 0;
   object-fit: contain;
 }
+.inc-row__bed {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  color: var(--color-text-primary);
+}
 
 /* Sidebar divider between the "Dit arrangement bevat" list and the dates. */
 .sidebar__divider {
@@ -2874,6 +2900,38 @@ onMounted(() => {
   }
   .ga-nearby .nearby-card__tips {
     flex-shrink: 0;
+  }
+
+  /* ── Hotel description + minimap row ──
+     Mirrors the flow float below it (minimap = 370px floated right, same
+     margin), so the description's width matches the booking controls. */
+  .deal-page__intro-row {
+    display: flow-root;
+    margin-bottom: var(--space-xl);
+  }
+  .deal-page__intro-row .deal-page__intro-map {
+    float: right;
+    width: 370px;
+    margin-left: var(--space-xl);
+    /* 240px-tall map (overrides the square aspect ratio). */
+    --vl-minimap-max-h: 240px;
+  }
+  .deal-page__intro-row .deal-page__intro-desc {
+    display: flow-root;
+  }
+  /* Description fills the height next to the 240px map, then "lees meer".
+     The mask softens the bottom clip where the text is cut off. */
+  .deal-page__intro-row .deal-page__intro-desc-text {
+    max-height: 208px;
+    overflow: hidden;
+    font-size: 15px;
+    line-height: 1.75;
+    color: var(--color-text-secondary);
+    -webkit-mask-image: linear-gradient(180deg, #000 80%, transparent);
+    mask-image: linear-gradient(180deg, #000 80%, transparent);
+  }
+  .deal-page__intro-row .deal-page__read-more {
+    margin-top: 6px;
   }
 
   /* ── Flow section: floated sidebar + per-card BFC blocks ──
