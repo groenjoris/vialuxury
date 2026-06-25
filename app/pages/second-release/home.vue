@@ -250,7 +250,6 @@ const ICON_FOR: Record<string, string> = {
 }
 
 const {
-  toggleFilterTag,
   clearFilterTags,
   clearDestinations,
   clearArrivalDate,
@@ -259,15 +258,10 @@ const {
 } = useSecondReleaseSearchState()
 
 function pickFilter(tagId: string) {
-  // Rule #1: arriving on /search via a home theme button starts with a
-  // clean slate — every other filter wiped, only the picked tag applied.
-  clearFilterTags()
-  clearDestinations()
-  clearArrivalDate()
-  clearDuration()
-  resetBudget()
-  toggleFilterTag(tagId)
-  navigateTo('/second-release/search')
+  // Theme buttons open the themed LANDING page (hero + filtered results).
+  // The landing page applies the tag on a clean slate itself, so we just
+  // navigate with ?landing=<tagId>.
+  navigateTo({ path: '/second-release/search', query: { landing: tagId } })
 }
 
 /** Partner co-brand entry (e.g. "HEMA actie"): start clean and land on the

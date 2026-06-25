@@ -3,7 +3,7 @@
        page. Wraps the overlay SiteHeader (which carries the nav + the
        search bar/dock that half-overlaps the hero bottom) over a
        background photo, with eyebrow / title / pitch copy. -->
-  <section class="home-hero" :class="{ 'home-hero--search-below': searchBelow }">
+  <section class="home-hero" :class="{ 'home-hero--search-below': searchBelow, 'home-hero--compact-title': compactTitle }">
     <div
       class="home-hero__bg"
       :class="{ 'home-hero__bg--shift-down': bgShiftDown }"
@@ -45,11 +45,15 @@ withDefaults(defineProps<{
   /** Place the search bar BELOW the title/pitch (solo landing) instead of
    *  the homepage's top half-overlap dock. */
   searchBelow?: boolean
+  /** Smaller title — for longer themed landing titles that would otherwise
+   *  wrap and overflow the fixed-height hero. */
+  compactTitle?: boolean
 }>(), {
   bgShiftDown: false,
   eyebrow: null,
   titleEm: null,
   searchBelow: false,
+  compactTitle: false,
 })
 </script>
 
@@ -202,6 +206,13 @@ withDefaults(defineProps<{
     transform: none;
     margin: 28px 0 0;
     padding: 0;
+  }
+  /* Themed landings have longer titles — shrink so they stay on one line
+     and the copy + search bar fit inside the fixed 640px hero. */
+  .home-hero--compact-title .home-hero__title {
+    font-size: clamp(48px, 5.2vw, 72px);
+    line-height: 1.05;
+    letter-spacing: -1.5px;
   }
 }
 

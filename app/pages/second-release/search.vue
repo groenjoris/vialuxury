@@ -3,11 +3,12 @@
     <!-- Solo-travel landing page: the homepage hero on top, the normal
          search-results section below. Otherwise the standard solid header. -->
     <SecondReleaseLandingHero
-      v-if="isSolo"
+      v-if="isLanding"
       search-below
-      bg-url="/images/landingpages/solo-reizen-header.jpg"
-      title="Solo reizen"
-      pitch="Perfecte deals voor alleenreizigers, samengesteld door het ViaLuxury-team."
+      :compact-title="!isSolo"
+      :bg-url="heroBg"
+      :title="heroTitle"
+      :pitch="heroPitch"
     />
     <SecondReleaseSiteHeader v-else />
 
@@ -80,7 +81,7 @@
                   }}
                 </h1>
                 <h1 v-else-if="showPartnerLogo" ref="titleRef" class="search-page__title">Exclusief voor HEMA Klanten</h1>
-                <h1 v-else-if="singleThemeTagId" ref="titleRef" :key="`themed-${singleThemeTagId}`" class="search-page__title">
+                <h1 v-else-if="singleThemeTagId && !isLanding" ref="titleRef" :key="`themed-${singleThemeTagId}`" class="search-page__title">
                   {{ themedTitleText }}
                 </h1>
                 <h1 v-else ref="titleRef" class="search-page__title">{{ totalDeals }} {{ t('search.deals') }}</h1>
@@ -109,8 +110,8 @@
                 <p
                   v-else
                   class="search-page__usp"
-                  :key="singleThemeTagId ? `themed-sub-${singleThemeTagId}` : 'default-sub'"
-                >{{ singleThemeTagId ? themedSubtitle : t('search.usp') }}</p>
+                  :key="(singleThemeTagId && !isLanding) ? `themed-sub-${singleThemeTagId}` : 'default-sub'"
+                >{{ (singleThemeTagId && !isLanding) ? themedSubtitle : t('search.usp') }}</p>
                 <!-- Mobile partner logo card (desktop shows it next to
                      Trustpilot, which is hidden on mobile). -->
                 <div v-if="isMobile && showPartnerLogo" class="deal-page__partner-card deal-page__partner-card--mobile search-page__partner-mobile">
@@ -119,7 +120,7 @@
                 </div>
                 <!-- Avatars only on the default header; themed + partner
                      views drop them so the subtitle carries the focus. -->
-                <div v-if="!singleThemeTagId && !showPartnerLogo" class="team-avatars">
+                <div v-if="(!singleThemeTagId || isLanding) && !showPartnerLogo" class="team-avatars">
                   <div
                     v-for="member in teamMembers"
                     :key="member.name"
@@ -463,11 +464,19 @@ const {
   arrivalDate: liveArrivalDate, selectedFlexibility: liveFlexibility,
   setArrivalDate, restoreSearchSession,
   addCity, setSearchGroup,
+  // NOTE: clearFilterTags/clearDestinations/clearArrivalDate/clearDuration/
+  // resetBudget are destructured from the same composable further below
+  // (budget block) — don't re-declare them here.
+  toggleFilterTag,
 } = useSecondReleaseSearchState()
 
-/** Solo-travel landing page mode (?landing=solo): renders the homepage hero
- *  above the results and defaults the search to 1 persoon / 1 kamer. */
-const isSolo = computed(() => route.query.landing === 'solo')
+/** Landing-page mode (?landing=<key>): renders the homepage hero above the
+ *  results. `solo` is the solo-travel landing; any other key is a theme tag
+ *  (wellness, aan-zee, …) whose filter is applied so the results are themed. */
+const landingKey = computed(() => (route.query.landing as string) || null)
+const isLanding = computed(() => !!landingKey.value)
+const isSolo = computed(() => landingKey.value === 'solo')
+const landingThemeId = computed(() => (landingKey.value && landingKey.value !== 'solo' ? landingKey.value : null))
 
 /** On /search the result filter reads LIVE arrival/flex so editing the search
  *  bar updates results instantly; everywhere else it reads the committed
@@ -504,7 +513,18 @@ onMounted(() => {
   // selection — same as picking the city in the destination field.
   applyCityQuery()
   // Solo-travel landing: default the search to 1 persoon / 1 kamer.
-  if (isSolo.value) setSearchGroup(1, 1)
+  if (isSolo.value) {
+    setSearchGroup(1, 1)
+  } else if (landingThemeId.value) {
+    // Themed landing: clean slate + apply only the theme tag, so the
+    // results filter and the count reflect the theme.
+    clearFilterTags()
+    clearDestinations()
+    clearArrivalDate()
+    clearDuration()
+    resetBudget()
+    toggleFilterTag(landingThemeId.value)
+  }
 })
 
 /** Apply a `?city=<slug>` deep-link (from the footer) as a single-select
@@ -934,6 +954,43 @@ const THEME_TITLES: Record<string, { title: string; subtitle: string }> = {
   'new-hotels':    { title: 'Nieuwe hotels',              subtitle: 'Onze selectie van de nieuwste luxe hoteldeals' },
   'best-price':    { title: 'Super Deals',                subtitle: 'De leukste hotelarrangementen voor een spotprijsje!' },
 }
+
+/** Theme tag → landing-page hero image (public/images/landingpages/*).
+ *  Themes without a dedicated photo fall back to a neutral luxe image. */
+const THEME_IMAGES: Record<string, string> = {
+  wellness: '/images/landingpages/wellness.jpg',
+  'jacuzzi-room': '/images/landingpages/jacuzzi-room.jpg',
+  pool: '/images/landingpages/pool.png',
+  'with-dinner': '/images/landingpages/with-dinner.jpg',
+  'dog-friendly': '/images/landingpages/dog-friendly.jpg',
+  'aan-zee': '/images/landingpages/aan-zee.png',
+  natuur: '/images/landingpages/natuur.jpg',
+  culinair: '/images/landingpages/culinair.jpg',
+  fiets: '/images/landingpages/fiets.png',
+  steden: '/images/landingpages/steden.jpg',
+  kasteel: '/images/landingpages/kasteel.png',
+  'five-star': '/images/landingpages/five-star.jpg',
+}
+const LANDING_FALLBACK_IMAGE = '/images/hero/spa-van-oys.jpg'
+
+/** Hero copy + photo for the active landing page. Solo has its own copy;
+ *  themed landings reuse the THEME_TITLES "special" texts (falling back to
+ *  the filter label) and the theme image. */
+const heroTitle = computed(() => {
+  if (isSolo.value) return 'Solo reizen'
+  const id = landingThemeId.value
+  return (id && (THEME_TITLES[id]?.title ?? getFilterTag(id)?.label)) || 'Arrangementen'
+})
+const heroPitch = computed(() => {
+  if (isSolo.value) return 'Perfecte deals voor alleenreizigers, samengesteld door het ViaLuxury-team.'
+  const id = landingThemeId.value
+  return (id && THEME_TITLES[id]?.subtitle) || 'Met zorg samengesteld door het ViaLuxury-team.'
+})
+const heroBg = computed(() => {
+  if (isSolo.value) return '/images/landingpages/solo-reizen-header.jpg'
+  const id = landingThemeId.value
+  return (id && THEME_IMAGES[id]) || LANDING_FALLBACK_IMAGE
+})
 
 /** The single active tag id when no destination-popup pick is set;
  *  null otherwise. Arrival date, nights and budget are allowed to be
