@@ -169,29 +169,35 @@ withDefaults(defineProps<{
   margin: 0;
 }
 
-/* ── Solo landing: search bar BELOW the title/pitch (desktop). The hero
+/* ── Solo landing (desktop): search bar BELOW the title/pitch. The hero
    becomes a flow column (nav → copy → search dock) instead of the homepage's
-   absolute top-anchored copy + half-overlap dock. ── */
-.home-hero--search-below {
-  height: auto;
-  min-height: 600px;
-}
-.home-hero--search-below :deep(.site-header) {
-  display: flex;
-  flex-direction: column;
-  padding-bottom: 0;
-}
-.home-hero--search-below .home-hero__content {
-  position: static;
-  top: auto;
-  padding-top: 56px;
-  padding-bottom: 8px;
-}
-.home-hero--search-below :deep(.site-header--overlay .site-header__search-dock) {
-  position: static;
-  transform: none;
-  margin: 24px 0 0;
-  padding: 0 0 44px;
+   absolute top-anchored copy + half-overlap dock. Gated to desktop so the
+   mobile (variant-2) home layout below is left untouched. ── */
+@media (min-width: 801px) {
+  .home-hero--search-below {
+    height: auto;
+    min-height: 700px;
+  }
+  .home-hero--search-below :deep(.site-header) {
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 0;
+  }
+  /* width:100% defeats the flex auto-margin shrink so the copy fills the
+     container and its left edge lines up with the search bar (like home). */
+  .home-hero--search-below .home-hero__content {
+    position: static;
+    top: auto;
+    width: 100%;
+    padding-top: 156px;
+    padding-bottom: 8px;
+  }
+  .home-hero--search-below :deep(.site-header--overlay .site-header__search-dock) {
+    position: static;
+    transform: none;
+    margin: 24px 0 0;
+    padding: 0 0 44px;
+  }
 }
 
 @media (max-width: 800px) {
