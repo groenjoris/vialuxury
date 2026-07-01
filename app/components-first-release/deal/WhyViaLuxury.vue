@@ -5,12 +5,11 @@
     <div class="why-vialuxury__grid">
       <div class="why-vialuxury__body">
         <p class="why-vialuxury__intro">
-          ViaLuxury stelt persoonlijk deals samen, die verder gaan dan
-          alleen een hotel.
+          Een echte bijzondere ervaring begint vóór aankomst. Daarom stellen
+          wij elk arrangement persoonlijk samen, tot het laatste detail.
         </p>
         <p class="why-vialuxury__intro">
-          Wanneer je de onderdelen los boekt, dan ben je niet alleen veel
-          meer tijd kwijt, maar ook veel duurder uit.
+          Gemiddeld een 9.5 op Trustpilot, meer dan 15.000 gasten gingen je voor.
         </p>
 
         <ul class="why-vialuxury__list">
@@ -49,24 +48,24 @@ import teamPhoto from '~/assets/images/teams/team.avif'
 
 const points = [
   {
-    title: 'Zorgvuldig geselecteerde deals',
-    detail: 'Alleen hotels die de moeite waard zijn, met arrangementen die écht iets toevoegen.',
+    title: 'Compleet verzorgd arrangement',
+    detail: 'Geen losse overnachting opties, maar een complete belevenis die wij met het hotel hebben samengesteld.',
   },
   {
-    title: 'Elk hotel persoonlijk gecheckt',
-    detail: 'Onze Experience Makers slapen er zelf voor het op de site komt.',
+    title: 'Scherpe pakketprijs',
+    detail: 'Directe afspraken met de hotels, daarom betaal je voor het geheel minder dan wanneer je alles los boekt.',
   },
   {
-    title: 'Uitstekende klantenservice',
-    detail: 'Echte mensen aan de telefoon, met hotelkennis uit eerste hand.',
+    title: 'Persoonlijk samengesteld',
+    detail: 'Wij boeken alleen wat we zelf zouden boeken. Elk pakket is samengesteld door mensen vanuit persoonlijke ervaring.',
   },
   {
-    title: 'Altijd bereikbaar',
-    detail: "Vragen op je vrije zondag? Wij zijn er, ook 's avonds en in het weekend.",
+    title: 'Mensen aan de lijn',
+    detail: 'Vragen over dit arrangement? Kom je er niet uit, je wordt vriendelijk geholpen door een service gerichte persoon.',
   },
   {
-    title: 'Tevreden klanten',
-    detail: 'Gemiddeld een 9.5 op Trustpilot, met meer dan 15.000 beoordelingen.',
+    title: 'Alleen hotels die het waard zijn',
+    detail: 'Wij selecteren zorgvuldig. Voldoet een hotel niet aan onze standaard, dan staat deze er niet bij.',
   },
 ]
 </script>
