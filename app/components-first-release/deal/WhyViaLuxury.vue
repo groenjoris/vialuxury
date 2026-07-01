@@ -8,11 +8,15 @@
           Een echte bijzondere ervaring begint vóór aankomst. Daarom stellen
           wij elk arrangement persoonlijk samen, tot het laatste detail.
         </p>
-        <p class="why-vialuxury__intro">
-          Gemiddeld een 9.5 op Trustpilot, meer dan 15.000 gasten gingen je voor.
-        </p>
-
         <ul class="why-vialuxury__list">
+          <li class="why-vialuxury__item">
+            <span class="why-vialuxury__check" aria-hidden="true">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="5 12 10 17 19 7" />
+              </svg>
+            </span>
+            <span class="why-vialuxury__trust-line">Gemiddeld een 9.5 op Trustpilot, meer dan 15.000 gasten gingen je voor.</span>
+          </li>
           <li v-for="point in points" :key="point.title" class="why-vialuxury__item">
             <span class="why-vialuxury__check" aria-hidden="true">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
@@ -179,6 +183,16 @@ const points = [
   font-weight: 400;
   color: var(--color-text-secondary);
   line-height: 1.45;
+}
+
+/* Trustpilot stat rendered as a single checkmark line (no title/detail). */
+.why-vialuxury__trust-line {
+  align-self: center;
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  line-height: 1.3;
 }
 
 @media (max-width: 800px) {
