@@ -282,9 +282,13 @@ const localFlexible = ref(false)
 /** "Maakt niet uit" tickbox inside the duration popup. */
 const anyDuration = ref(globalNights.value.length === 0 ? false : false)
 
+let flexCloseTimer: ReturnType<typeof setTimeout> | null = null
 function setLocalFlexible(next: boolean) {
   localFlexible.value = next
   if (next) selectedDate.value = null
+  // Picking "Ik ben flexibel" closes the popup after a beat.
+  if (flexCloseTimer) { clearTimeout(flexCloseTimer); flexCloseTimer = null }
+  if (next) flexCloseTimer = setTimeout(() => { closePopup() }, 1000)
 }
 
 function onToggleNight(value: string) {
@@ -324,8 +328,8 @@ const whenOnlyLabel = computed(() => {
     const monthName = monthNames.value[parseInt(m, 10) - 1]
     return `${parseInt(d, 10)} ${monthName}`
   }
-  if (localFlexible.value) return 'Ik ben flexibel'
-  return 'Kies datum'
+  if (localFlexible.value) return t('header.flexibleLabel')
+  return t('header.tab.arrivalDate')
 })
 
 const whenIsPlaceholder = computed(
@@ -333,15 +337,15 @@ const whenIsPlaceholder = computed(
 )
 
 const howLongLabel = computed(() => {
-  if (anyDuration.value) return 'Maakt niet uit'
+  if (anyDuration.value) return t('header.anyDurationLabel')
   const calDurs = selectedDurations.value
   if (calDurs.length > 0) {
     const labels = calDurs
       .map(id => durationOptions.value.find(o => o.id === id)?.label)
       .filter(Boolean) as string[]
-    return labels.join(' of ')
+    return labels.join(` ${t('common.or')} `)
   }
-  return 'Kies reisduur'
+  return t('header.tab.nights')
 })
 
 const howLongIsPlaceholder = computed(

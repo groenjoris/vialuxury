@@ -174,6 +174,16 @@
             </button>
           </div>
         </div>
+
+        <!-- "Geen voorkeur" — clears any destination/theme pick and closes. -->
+        <div class="destination-popup__separator destination-popup__separator--no-pref"></div>
+        <div class="destination-popup__section destination-popup__section--no-pref">
+          <div class="destination-popup__chips">
+            <button class="dest-chip" @click="handleNoPreference">
+              <span class="dest-chip__name">{{ t('header.noPreference') }}</span>
+            </button>
+          </div>
+        </div>
       </div>
 
       <!-- Autosuggest mode: vertical list -->
@@ -341,6 +351,12 @@ function handleClear() {
   searchHistory.value = []          // Clear recent-search chips
   try { sessionStorage.removeItem('vl-search-history') } catch { /* ignore */ }
   emit('clear')                     // Parent clears destinations/themes/cities
+}
+
+/** "Geen voorkeur" — wipe any destination/theme selection and close. */
+function handleNoPreference() {
+  emit('clear')
+  emit('save')
 }
 
 const { t } = useSecondReleaseI18n()
@@ -1043,6 +1059,12 @@ function selectHotel(hotel: { name: string; slug: string }) {
   height: 1px;
   background: var(--color-border-light);
   margin: var(--space-sm) var(--space-md);
+}
+
+/* Divider above "Geen voorkeur" — the browse container already carries
+   16/24px padding, so the line spans full width without extra margins. */
+.destination-popup__separator--no-pref {
+  margin: 0;
 }
 
 /* Empty state */

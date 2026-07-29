@@ -89,7 +89,7 @@
 
       <!-- RIGHT — nights -->
       <section v-if="mode !== 'date'" class="when-pop__nights-section">
-        <h4 class="when-pop__title">Kies reisduur</h4>
+        <h4 class="when-pop__title">{{ t('header.tab.nights') }}</h4>
         <p class="when-pop__hint">{{ t('header.tab.nightsHint') }}</p>
 
         <div class="when-pop__nights-list">
@@ -116,7 +116,7 @@
                 <polyline points="5 12 10 17 19 7" />
               </svg>
             </span>
-            <span class="dur-check__label">Maakt niet uit</span>
+            <span class="dur-check__label">{{ t('header.duration.noMatter') }}</span>
           </label>
           <label
             v-for="opt in nightOptions"
@@ -258,13 +258,13 @@ function handleSelectDate(date: string) {
   emit('update:selectedDate', props.selectedDate === date ? null : date)
 }
 
-const nightOptions = [
-  { label: '1 nacht', value: '1' },
-  { label: '2 nachten', value: '2' },
-  { label: '3 nachten', value: '3' },
-  { label: '4 nachten', value: '4' },
-  { label: '5 nachten of meer', value: '5+' },
-]
+const nightOptions = computed(() => [
+  { label: t('header.duration.1night'), value: '1' },
+  { label: t('header.duration.2nights'), value: '2' },
+  { label: t('header.duration.3nights'), value: '3' },
+  { label: t('header.duration.4nights'), value: '4' },
+  { label: t('header.duration.5plusLong'), value: '5+' },
+])
 
 const hasSelection = computed(() => !!props.selectedDate || props.nights.length > 0 || flexible.value)
 </script>

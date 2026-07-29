@@ -840,7 +840,7 @@
               @keydown.enter.prevent="pickWhoMvp(opt)"
               @keydown.space.prevent="pickWhoMvp(opt)"
             >
-              <span>{{ opt.adults }} personen / {{ opt.rooms }} {{ opt.rooms === 1 ? 'kamer' : 'kamers' }}</span>
+              <span>{{ opt.adults }} {{ opt.adults === 1 ? t('common.personSingular') : t('common.personPlural') }} / {{ opt.rooms }} {{ opt.rooms === 1 ? t('common.roomSingular') : t('common.roomPlural') }}</span>
               <svg
                 v-if="whoMvpSelectedKey === `${opt.adults}-${opt.rooms}`"
                 width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"
@@ -1387,6 +1387,7 @@ function clearWhenAndDuration() {
   flexState.value = { durations: [], months: [] }
   localNights.value = []
   localAnyDuration.value = false
+  anyDurationExplicit.value = false
   localFlexible.value = false
   localFlexType.value = null
   calMonth.value = { year: new Date().getFullYear(), month: new Date().getMonth() }
@@ -1423,6 +1424,7 @@ function clearDate() {
 function clearDurationOnly() {
   localNights.value = []
   localAnyDuration.value = false
+  anyDurationExplicit.value = false
   localFlexType.value = null
   selectedDurations.value = []
   applyLiveCriteria()
@@ -1648,12 +1650,16 @@ const localFlexType = ref<string | null>(globalFlexType.value)
  *  picked — so a fresh user sees the neutral "any duration" choice
  *  pre-selected. Cleared the moment the user picks a specific night. */
 const localAnyDuration = ref(globalNights.value.length === 0)
+/** True only when the user actively checked "Maakt niet uit" — the
+ *  pre-checked default keeps the field in placeholder state. */
+const anyDurationExplicit = ref(false)
 
 /** "Ik ben flexibel" — user has opted out of picking a specific
  *  arrival date. Drives the "Flexibel" label on the search-bar
  *  field's date half and disables the calendar inside the popup. */
 const localFlexible = ref(false)
 
+let flexCloseTimer: ReturnType<typeof setTimeout> | null = null
 function setLocalFlexible(next: boolean) {
   localFlexible.value = next
   if (next) {
@@ -1664,6 +1670,9 @@ function setLocalFlexible(next: boolean) {
   }
   notePicker()
   applyLiveCriteria()
+  // Picking "Ik ben flexibel" closes the popup after a beat.
+  if (flexCloseTimer) { clearTimeout(flexCloseTimer); flexCloseTimer = null }
+  if (next) flexCloseTimer = setTimeout(() => { closePopup() }, 1000)
 }
 
 function toggleLocalNight(value: string) {
@@ -1675,6 +1684,7 @@ function toggleLocalNight(value: string) {
   if (localNights.value.length > 0) {
     localFlexType.value = null
     localAnyDuration.value = false
+    anyDurationExplicit.value = false
   }
   notePicker()
   applyLiveCriteria()
@@ -1683,6 +1693,7 @@ function toggleLocalNight(value: string) {
 function setAnyDuration(next: boolean) {
   // Local-only — same draft pattern as `toggleLocalNight`.
   localAnyDuration.value = next
+  anyDurationExplicit.value = next
   if (next) {
     localNights.value = []
     localFlexType.value = null
@@ -1710,6 +1721,7 @@ watch(globalNights, (g) => {
   // Keep "Maakt niet uit" pre-checked whenever no specific nights are
   // picked; clears the moment a night is added.
   localAnyDuration.value = next.length === 0 && !localFlexType.value
+  if (next.length > 0) anyDurationExplicit.value = false
 })
 watch(globalFlexType, (g) => {
   if (g !== localFlexType.value) localFlexType.value = g
@@ -1851,7 +1863,7 @@ function handleFlexState(state: { durations: string[]; months: string[] }) {
 
 const whenLabel = computed(() => {
   // "Ik ben flexibel" wins over any date / month state.
-  if (localFlexible.value) return 'Flexibel'
+  if (localFlexible.value) return t('header.flexibleLabel')
   // Date / months only — duration moved to Hoelang field.
   if (selectedDate.value) {
     const [, m, d] = selectedDate.value.split('-')
@@ -1866,7 +1878,7 @@ const whenLabel = computed(() => {
     })
     return monthLabels.join(', ')
   }
-  return 'Alle datums'
+  return t('header.tab.arrivalDate')
 })
 
 /** Empty when the user hasn't chosen a date / month — drives the lighter
@@ -1878,27 +1890,32 @@ const whenIsPlaceholder = computed(
 const hoelangLabel = computed(() => {
   if (localFlexType.value) {
     const typeLabels: Record<string, string> = {
-      'weekend-fri-sun': 'Weekend (vr-zo)',
-      'weekend-sat-sun': 'Weekend (za-zo)',
-      'long-weekend': 'Lang weekend',
-      'midweek': 'Midweek',
+      'weekend-fri-sun': `${t('header.flex.weekendFriSun')} (${t('header.flex.weekendFriSunSub')})`,
+      'weekend-sat-sun': `${t('header.flex.weekendSatSun')} (${t('header.flex.weekendSatSunSub')})`,
+      'long-weekend': t('header.flex.longWeekend'),
+      'midweek': t('header.flex.midweek'),
     }
-    return typeLabels[localFlexType.value] || 'Kies aantal nachten'
+    return typeLabels[localFlexType.value] || t('header.tab.nights')
   }
-  if (localAnyDuration.value) return 'Elke reisduur'
-  if (localNights.value.length === 0) return 'Kies aantal nachten'
+  // "Elke reisduur" only when the user explicitly checked "Maakt niet uit";
+  // the untouched default shows the "Kies aantal nachten" placeholder.
+  if (localAnyDuration.value && anyDurationExplicit.value) return t('header.anyDurationLabel')
+  if (localNights.value.length === 0) return t('header.tab.nights')
   if (localNights.value.length === 1) {
     const v = localNights.value[0]
-    if (v === '1') return '1 nacht'
-    if (v === '5+') return '5+ nachten'
-    return `${v} nachten`
+    if (v === '1') return `1 ${t('common.night')}`
+    if (v === '5+') return `5+ ${t('common.nights')}`
+    return `${v} ${t('common.nights')}`
   }
   const sorted = [...localNights.value].sort()
-  return `${sorted.join(' of ')} nachten`
+  return `${sorted.join(` ${t('common.or')} `)} ${t('common.nights')}`
 })
 
 const hoelangIsPlaceholder = computed(
-  () => !localFlexType.value && !localAnyDuration.value && localNights.value.length === 0,
+  () =>
+    !localFlexType.value
+    && !(localAnyDuration.value && anyDurationExplicit.value)
+    && localNights.value.length === 0,
 )
 
 /** Combined "Wanneer en hoelang" field label — joins the date and duration
@@ -2021,7 +2038,8 @@ const whoLabel = computed(() => {
   const adults = searchGroup.value.adults
   const rooms = searchGroup.value.rooms
   const roomWord = rooms === 1 ? t('common.roomSingular') : t('common.roomPlural')
-  const head = `${adults} personen / ${rooms} ${roomWord}`
+  const personWord = adults === 1 ? t('common.personSingular') : t('common.personPlural')
+  const head = `${adults} ${personWord} / ${rooms} ${roomWord}`
   const extras: string[] = []
   if (searchGroup.value.children.length > 0) {
     extras.push(`${searchGroup.value.children.length} ${searchGroup.value.children.length === 1 ? t('common.childSingular') : t('common.childPlural')}`)
