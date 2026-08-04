@@ -1764,7 +1764,8 @@ onMounted(() => {
 .sidebar__book:disabled { opacity: 0.5; cursor: not-allowed; }
 
 /* Summary (after date selection) */
-.sidebar__summary { border-top: 1px solid var(--color-border-light); padding-top: var(--space-md); }
+/* No border-top — the calendar legend above already carries the divider. */
+.sidebar__summary { padding-top: var(--space-md); }
 .sidebar__dates { display: flex; align-items: center; gap: var(--space-sm); margin-bottom: var(--space-md); }
 .sidebar__date { display: flex; flex-direction: column; gap: 1px; }
 .sidebar__date-label { font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted); letter-spacing: 0.3px; }
