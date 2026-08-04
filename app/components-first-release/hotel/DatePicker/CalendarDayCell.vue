@@ -21,8 +21,9 @@
 
     <!-- Tiny green star in the corner of the cheapest available days. -->
     <span
-      v-if="isCheapest && availability?.available && !isSelected && !isInRange && !isPast"
+      v-if="isCheapest && availability?.available && !isPast"
       class="day-cell__star"
+      :class="{ 'day-cell__star--selected': isSelected || isInRange }"
       aria-label="Goedkoopste prijs"
     >★</span>
 
@@ -244,7 +245,11 @@ function handleClick() {
   left: 4px;
   font-size: 10px;
   line-height: 1;
-  color: var(--color-discount);
+  color: var(--color-primary);
   pointer-events: none;
+}
+/* Selected / in-range day: the star turns white on the filled cell. */
+.day-cell__star--selected {
+  color: #fff;
 }
 </style>

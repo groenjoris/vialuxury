@@ -562,8 +562,8 @@
    cascade order. */
 [data-fr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar) .day-cell__star {
   top: 1px !important;
-  right: 1px !important;
-  left: auto !important;
+  left: 1px !important;
+  right: auto !important;
   width: auto;
   height: auto;
   display: inline-flex;
@@ -575,6 +575,11 @@
   line-height: 1;
   border-radius: 0;
   box-shadow: none;
+}
+
+/* Selected / in-range day: white star on the filled cell. */
+[data-fr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar) .day-cell__star--selected{
+  color: #fff !important;
 }
 
 /* Cheapest-day price — colour-match the orange badge. The !important

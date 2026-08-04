@@ -181,9 +181,11 @@ const days = computed(() => {
   align-items: center;
   flex-wrap: wrap;
   gap: var(--space-md);
+  /* The legend belongs WITH the calendar — the divider sits BELOW it
+     (was a border-top separating the legend from the month grid). */
   margin-top: var(--space-md);
-  padding-top: var(--space-md);
-  border-top: 1px solid var(--color-border-light);
+  padding-bottom: var(--space-md);
+  border-bottom: 1px solid var(--color-border-light);
   font-size: 13px;
   color: var(--color-text-secondary);
 }
