@@ -87,7 +87,22 @@
     <div class="site-footer__bottom">
       <div class="container site-footer__bottom-inner">
         <p>&copy; {{ new Date().getFullYear() }} ViaLuxury. {{ t('footer.allRightsReserved') }}</p>
-        <NuxtLink to="/" class="site-footer__usertest-btn">Start scherm</NuxtLink>
+        <div class="site-footer__proto-controls">
+          <!-- Prototype toggle: "Samengesteld door" card on the deal page. -->
+          <label class="site-footer__proto-toggle">
+            <input
+              type="checkbox"
+              class="site-footer__proto-toggle-input"
+              :checked="showCreatorCard"
+              @change="setShowCreatorCard(($event.target as HTMLInputElement).checked)"
+            />
+            <span class="site-footer__proto-toggle-track" aria-hidden="true">
+              <span class="site-footer__proto-toggle-thumb"></span>
+            </span>
+            <span>Samengesteld door-kaart</span>
+          </label>
+          <NuxtLink to="/" class="site-footer__usertest-btn">Start scherm</NuxtLink>
+        </div>
       </div>
     </div>
   </footer>
@@ -97,6 +112,10 @@
 import { useFirstReleaseHomeVariant } from '~/composables-first-release/useFirstReleaseHomeVariant'
 const { t } = useFirstReleaseI18n()
 const { homeHref } = useFirstReleaseHomeVariant()
+
+// Prototype toggle for the deal page's "Samengesteld door" card.
+const { showCreatorCard, setShowCreatorCard, restoreShowCreatorCard } = useFirstReleaseCreatorCard()
+onMounted(() => restoreShowCreatorCard())
 
 /** Force a Dutch native-validation bubble on the newsletter email field
  *  (browsers otherwise show the message in the browser's own locale). */
@@ -317,6 +336,52 @@ function onNewsletterInput(e: Event) {
   justify-content: space-between;
   gap: var(--space-md);
   flex-wrap: wrap;
+}
+
+/* Prototype controls cluster (toggle + start-scherm) in the bottom bar. */
+.site-footer__proto-controls {
+  display: inline-flex;
+  align-items: center;
+  gap: 16px;
+}
+.site-footer__proto-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  user-select: none;
+}
+.site-footer__proto-toggle-input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+.site-footer__proto-toggle-track {
+  position: relative;
+  width: 34px;
+  height: 18px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.25);
+  transition: background var(--transition-fast);
+  flex-shrink: 0;
+}
+.site-footer__proto-toggle-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #fff;
+  transition: transform var(--transition-fast);
+}
+.site-footer__proto-toggle-input:checked + .site-footer__proto-toggle-track {
+  background: var(--color-primary);
+}
+.site-footer__proto-toggle-input:checked + .site-footer__proto-toggle-track .site-footer__proto-toggle-thumb {
+  transform: translateX(16px);
 }
 
 .site-footer__usertest-btn {

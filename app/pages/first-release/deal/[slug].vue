@@ -75,8 +75,9 @@
           </div>
         </section>
 
-        <!-- 6b. Samengesteld door — always shown if a creator is set. -->
-        <section v-if="creator" class="container deal-page__creator-mobile">
+        <!-- 6b. Samengesteld door — shown if a creator is set AND the
+             footer's prototype toggle hasn't hidden the card. -->
+        <section v-if="creator && showCreatorCard" class="container deal-page__creator-mobile">
           <FirstReleaseExperienceCreatorCard :creator="creator" />
         </section>
 
@@ -356,6 +357,7 @@
              (`?partner=nu` on Hotel des Indes), an extra NuShop
              partner card sits to the LEFT of the creator card. -->
         <div
+          v-if="showPartnerLogo || showCreatorCard"
           class="deal-page__title-right"
           :class="{ 'deal-page__title-right--with-partner': showPartnerLogo }"
         >
@@ -363,7 +365,7 @@
             <span class="deal-page__partner-card-caption">In samenwerking met:</span>
             <img src="/images/logos/nushoplogo.svg" alt="NUshop" class="deal-page__partner-card-logo" />
           </div>
-          <FirstReleaseExperienceCreatorCard :creator="creator" />
+          <FirstReleaseExperienceCreatorCard v-if="showCreatorCard" :creator="creator" />
         </div>
       </section>
 
@@ -1528,8 +1530,10 @@ function handleGalleryBook() {
 // `restoreFrNavVariant` runs on mount so localStorage drives the nav
 // chrome variant for direct-link visits.
 const { restoreFrNavVariant } = useFirstReleaseHomeVariant()
+const { showCreatorCard, restoreShowCreatorCard } = useFirstReleaseCreatorCard()
 onMounted(() => {
   restoreFrNavVariant(window.location.pathname)
+  restoreShowCreatorCard()
 })
 </script>
 

@@ -25,6 +25,9 @@ HFVR project
 /advertisement
 /backlog
 
+# Nested standalone project with its own git repo
+/vialuxury-emails
+
 # Local env files
 .env
 .env.*
