@@ -258,7 +258,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 /* Light variant for use over dark photo backgrounds. */
 .pg-iconbtn--light {
   background: rgba(255, 255, 255, 0.92);
-  color: #1a1a1a;
+  color: #141414;
 }
 .pg-iconbtn--light:hover { background: #fff; }
 

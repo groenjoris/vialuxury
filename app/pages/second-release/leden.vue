@@ -33,7 +33,7 @@
               </svg>
             </button>
             <button class="members-login__social" aria-label="Apple">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="#000">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="#141414">
                 <path d="M17.05 20.28c-.98.95-2.05.88-3.08.4-1.09-.5-2.08-.51-3.23 0-1.44.64-2.2.45-3.06-.4C3.79 16.17 4.36 9.43 8.9 9.16c1.28.07 2.17.74 2.92.8.93-.19 1.82-.9 3.06-.82 1.47.12 2.57.7 3.29 1.76-3.01 1.82-2.3 5.83.56 6.96-.65 1.72-1.49 3.42-2.99 4.78l.31-.36zM12.07 9.1c-.14-2.73 2.14-5.04 4.82-5.1.39 3.13-2.84 5.46-4.82 5.1z"/>
               </svg>
             </button>
@@ -63,9 +63,9 @@
         <div class="members-usp__visual">
           <div class="members-usp__icon-block">
             <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" class="members-usp__icon">
-              <circle cx="40" cy="40" r="38" stroke="#e97132" stroke-width="2.5" fill="none"/>
-              <path d="M40 18l5.5 11.2 12.3 1.8-8.9 8.7 2.1 12.3L40 46.3l-11 5.7 2.1-12.3-8.9-8.7 12.3-1.8z" fill="#e97132" opacity="0.15"/>
-              <path d="M40 22l4.2 8.5 9.4 1.4-6.8 6.6 1.6 9.4L40 43.5l-8.4 4.4 1.6-9.4-6.8-6.6 9.4-1.4z" fill="#e97132"/>
+              <circle cx="40" cy="40" r="38" stroke="#FB862C" stroke-width="2.5" fill="none"/>
+              <path d="M40 18l5.5 11.2 12.3 1.8-8.9 8.7 2.1 12.3L40 46.3l-11 5.7 2.1-12.3-8.9-8.7 12.3-1.8z" fill="#FB862C" opacity="0.15"/>
+              <path d="M40 22l4.2 8.5 9.4 1.4-6.8 6.6 1.6 9.4L40 43.5l-8.4 4.4 1.6-9.4-6.8-6.6 9.4-1.4z" fill="#FB862C"/>
             </svg>
           </div>
         </div>
@@ -82,11 +82,11 @@
         <div class="members-usp__visual">
           <div class="members-usp__icon-block">
             <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" class="members-usp__icon">
-              <circle cx="40" cy="40" r="38" stroke="#00B67A" stroke-width="2.5" fill="none"/>
-              <rect x="26" y="24" width="28" height="32" rx="3" fill="#00B67A" opacity="0.12"/>
-              <rect x="29" y="27" width="22" height="26" rx="2" fill="none" stroke="#00B67A" stroke-width="2"/>
-              <path d="M34 36h12M34 41h8" stroke="#00B67A" stroke-width="2" stroke-linecap="round"/>
-              <circle cx="54" cy="28" r="8" fill="#e97132"/>
+              <circle cx="40" cy="40" r="38" stroke="#27C88D" stroke-width="2.5" fill="none"/>
+              <rect x="26" y="24" width="28" height="32" rx="3" fill="#27C88D" opacity="0.12"/>
+              <rect x="29" y="27" width="22" height="26" rx="2" fill="none" stroke="#27C88D" stroke-width="2"/>
+              <path d="M34 36h12M34 41h8" stroke="#27C88D" stroke-width="2" stroke-linecap="round"/>
+              <circle cx="54" cy="28" r="8" fill="#FB862C"/>
               <path d="M51.5 28l2 2 3.5-3.5" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </div>
@@ -104,12 +104,12 @@
         <div class="members-usp__visual">
           <div class="members-usp__icon-block">
             <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" class="members-usp__icon">
-              <circle cx="40" cy="40" r="38" stroke="#00B67A" stroke-width="2.5" fill="none"/>
-              <path d="M28 34a12 12 0 0124 0v4H28v-4z" fill="#00B67A" opacity="0.12"/>
-              <rect x="26" y="38" width="28" height="18" rx="2" fill="#00B67A" opacity="0.15"/>
-              <rect x="28" y="40" width="24" height="14" rx="1.5" fill="none" stroke="#00B67A" stroke-width="2"/>
-              <circle cx="40" cy="47" r="3" fill="#e97132"/>
-              <path d="M36 38v-4a4 4 0 018 0v4" stroke="#00B67A" stroke-width="2" stroke-linecap="round"/>
+              <circle cx="40" cy="40" r="38" stroke="#27C88D" stroke-width="2.5" fill="none"/>
+              <path d="M28 34a12 12 0 0124 0v4H28v-4z" fill="#27C88D" opacity="0.12"/>
+              <rect x="26" y="38" width="28" height="18" rx="2" fill="#27C88D" opacity="0.15"/>
+              <rect x="28" y="40" width="24" height="14" rx="1.5" fill="none" stroke="#27C88D" stroke-width="2"/>
+              <circle cx="40" cy="47" r="3" fill="#FB862C"/>
+              <path d="M36 38v-4a4 4 0 018 0v4" stroke="#27C88D" stroke-width="2" stroke-linecap="round"/>
             </svg>
           </div>
         </div>
@@ -191,7 +191,7 @@ onMounted(() => {
   width: 100%;
   padding: 14px 16px;
   border: 1px solid var(--color-border);
-  border-radius: 8px;
+  border-radius: 6px;
   font-family: var(--font-body);
   font-size: 15px;
   background: var(--color-surface);
@@ -210,7 +210,7 @@ onMounted(() => {
   background-color: var(--color-primary);
   color: #fff;
   border: none;
-  border-radius: 8px;
+  border-radius: 6px;
   font-family: var(--font-body);
   font-size: 16px;
   font-weight: 600;
@@ -255,7 +255,7 @@ onMounted(() => {
   width: 56px;
   height: 56px;
   border: 1px solid var(--color-border);
-  border-radius: 12px;
+  border-radius: 6px;
   background: var(--color-surface);
   cursor: pointer;
   display: flex;
@@ -342,7 +342,7 @@ onMounted(() => {
   height: 200px;
   background: #FFFFFF;
   border: 1px solid #E5E5E5;
-  border-radius: 24px;
+  border-radius: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -380,7 +380,7 @@ onMounted(() => {
 
 .members-steps__card {
   background: var(--color-surface);
-  border-radius: 16px;
+  border-radius: 6px;
   padding: 36px 28px;
   box-shadow: 0 2px 16px rgba(0, 0, 0, 0.05);
   text-align: center;
@@ -458,7 +458,7 @@ onMounted(() => {
   padding: 16px 48px;
   background-color: var(--color-primary);
   color: #fff;
-  border-radius: 8px;
+  border-radius: 6px;
   font-family: var(--font-body);
   font-size: 17px;
   font-weight: 600;

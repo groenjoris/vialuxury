@@ -111,7 +111,7 @@ onBeforeUnmount(() => {
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  color: var(--color-text-primary, #1A1A1A);
+  color: var(--color-text-primary, #141414);
   transition: background 150ms ease;
 }
 
@@ -124,7 +124,7 @@ onBeforeUnmount(() => {
   font-family: var(--font-body);
   font-size: 16px;
   font-weight: 600;
-  color: var(--color-text-primary, #1A1A1A);
+  color: var(--color-text-primary, #141414);
   margin: 0;
 }
 

@@ -24,7 +24,13 @@
     :aria-expanded="open"
     :aria-label="'Toelichting prijs'"
   >
-    <span class="price-info__icon" aria-hidden="true">i</span>
+    <span class="price-info__icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10" />
+        <path d="m12,17v-5.5c0-.276-.224-.5-.5-.5h-1.5" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10" />
+        <circle cx="12" cy="7.25" r="1.25" fill="currentColor" stroke-width="0" />
+      </svg>
+    </span>
   </span>
 
   <Teleport to="body">
@@ -181,7 +187,7 @@ const disclaimer = computed(() => {
   outline: none;
 }
 .price-info:focus-visible .price-info__icon {
-  box-shadow: 0 0 0 2px var(--color-primary, #e97132);
+  box-shadow: 0 0 0 2px var(--color-primary, #FB862C);
 }
 .price-info__icon {
   display: inline-flex;
@@ -189,22 +195,18 @@ const disclaimer = computed(() => {
   justify-content: center;
   width: 14px;
   height: 14px;
-  border-radius: 50%;
-  background: transparent;
-  border: 1px solid var(--color-text-muted, #999999);
   color: var(--color-text-muted, #999999);
-  font-family: var(--font-body);
-  font-style: italic;
-  font-size: 10px;
-  font-weight: 700;
-  line-height: 1;
   user-select: none;
-  transition: color 120ms ease, border-color 120ms ease;
+  transition: color 120ms ease;
+}
+.price-info__icon svg {
+  width: 100%;
+  height: 100%;
+  display: block;
 }
 .price-info:hover .price-info__icon,
 .price-info[aria-expanded="true"] .price-info__icon {
-  color: var(--color-text-primary, #1A1A1A);
-  border-color: var(--color-text-primary, #1A1A1A);
+  color: var(--color-text-primary, #141414);
 }
 </style>
 
@@ -235,14 +237,14 @@ const disclaimer = computed(() => {
   top: 100%;
   right: 8px;
   border: 6px solid transparent;
-  border-top-color: #1a1a1a;
+  border-top-color: #141414;
 }
 /* Caret points UP at the icon when the bubble sits below. */
 .price-info__bubble--below::after {
   top: auto;
   bottom: 100%;
   border-top-color: transparent;
-  border-bottom-color: #1a1a1a;
+  border-bottom-color: #141414;
 }
 
 .price-info-fade-enter-active,

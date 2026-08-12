@@ -101,7 +101,7 @@ const pronounCapitalised = computed(() =>
 .creator-card:focus-visible {
   outline: 2px solid var(--color-primary);
   outline-offset: 4px;
-  border-radius: 14px;
+  border-radius: 6px;
 }
 
 .creator-card__inner {
@@ -121,7 +121,7 @@ const pronounCapitalised = computed(() =>
   inset: 0;
   background: #fff;
   border: 1px solid var(--color-border-light, #ececec);
-  border-radius: 14px;
+  border-radius: 6px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
@@ -171,7 +171,7 @@ const pronounCapitalised = computed(() =>
   font-family: 'Oooh Baby', cursive;
   font-weight: 400;
   font-size: 26px;
-  color: var(--color-text-primary, #1A1A1A);
+  color: var(--color-text-primary, #141414);
   line-height: 1;
   margin-top: 2px;
 }
@@ -198,7 +198,7 @@ const pronounCapitalised = computed(() =>
   font-family: var(--font-body);
   font-size: 12px;
   font-weight: 600;
-  color: var(--color-text-primary, #1A1A1A);
+  color: var(--color-text-primary, #141414);
   line-height: 1.3;
 }
 
@@ -243,7 +243,7 @@ const pronounCapitalised = computed(() =>
   font-size: 12px;
   font-weight: 400;
   font-style: italic;
-  color: var(--color-text-primary, #1A1A1A);
+  color: var(--color-text-primary, #141414);
   line-height: 1.35;
   /* Cap to the available height; if quote is longer, ellipsis. */
   display: -webkit-box;
@@ -256,7 +256,7 @@ const pronounCapitalised = computed(() =>
   margin: 4px 0 0;
   font-family: 'Oooh Baby', cursive;
   font-size: 18px;
-  color: var(--color-text-primary, #1A1A1A);
+  color: var(--color-text-primary, #141414);
   line-height: 1;
 }
 </style>

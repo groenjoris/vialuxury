@@ -620,7 +620,7 @@ function formatGuestList(start: number, count: number): string | null {
   font-size: 13px;
   font-weight: 600;
   padding: 4px 10px;
-  border-radius: 4px;
+  border-radius: 6px;
   pointer-events: none;
 }
 
@@ -636,7 +636,7 @@ function formatGuestList(start: number, count: number): string | null {
   font-weight: 700;
   letter-spacing: 0.3px;
   padding: 5px 10px;
-  border-radius: 4px;
+  border-radius: 6px;
   pointer-events: none;
   max-width: 80%;
   text-align: left;

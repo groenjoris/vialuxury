@@ -66,3 +66,54 @@
   --transition-base: 250ms ease;
   --transition-slow: 400ms ease;
 }
+
+/* Primary-button retint for the two actively-developed prototypes
+   ("Redesign" = First Release, "Variable Travel Group" = Second Release).
+   Gated by the `vl-release-*` body class set in app.vue, so Huisstijl,
+   Northstar and the plain marketing pages keep the original brand
+   orange (#E97132 / #D4621F) untouched. */
+body.vl-release-first,
+body.vl-release-second {
+  --color-primary: #FB862C;
+  --color-primary-hover: #F56800;
+
+  /* Flatten the radius scale to a single 6px corner everywhere. Pills /
+     circles (50%, 999px) and hardcoded literal border-radius values in
+     the First/Second Release templates were updated to 6px directly in
+     their own files — this only covers the var(--radius-*) consumers. */
+  --radius-xs: 6px;
+  --radius-sm: 6px;
+  --radius-md: 6px;
+  --radius-lg: 6px;
+  --radius-xl: 6px;
+
+  /* Unify the discount/review light-green accent to one consistent
+     color. Most usages in these two prototypes hardcode the hex
+     directly rather than going through the variable — those were
+     updated in their own files; this covers the few var()-based
+     consumers. */
+  --color-discount: #27C88D;
+  --color-review: #27C88D;
+
+  /* One single "black" across the prototype. Every near-black that read
+     as black (#1A1A1A text, #1A1E1E dark surfaces, #0E0E0C, #111, #000)
+     collapses onto #141414; the grey scale below/above is untouched.
+     Translucent rgba(0,0,0,…) shadows and photo scrims deliberately keep
+     pure black — they are shading, not a fill colour. */
+  --color-text-primary: #141414;
+  --color-dark: #141414;
+
+  /* base.css sets a body background but no body colour, so any text that
+     never declares one fell back to the browser default (pure #000).
+     Anchoring it here catches those too. */
+  color: var(--color-text-primary);
+}
+
+/* Buttons don't inherit `color` — they default to the UA `buttontext`
+   (pure black), so the body rule above misses them (search-bar fields,
+   calendar day cells). Element-level specificity, so any component that
+   sets its own button colour still wins. */
+body.vl-release-first button,
+body.vl-release-second button {
+  color: inherit;
+}

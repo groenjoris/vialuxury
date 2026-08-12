@@ -13,7 +13,7 @@
 
         <!-- Trustpilot logo + sentence -->
         <div class="footer-trustpilot">
-          <img src="/images/trustpilot-white.svg" alt="Trustpilot" class="footer-trustpilot__logo" />
+          <img src="/images/trustpilot-white-27c88d.svg" alt="Trustpilot" class="footer-trustpilot__logo" />
           <span class="footer-trustpilot__sentence">{{ t('footer.trustpilotSentence') }}</span>
         </div>
 
@@ -229,7 +229,7 @@ function onNewsletterInput(e: Event) {
   border: 1px solid transparent;
   border-radius: 6px;
   background: #fff;
-  color: #1A1A1A;
+  color: #141414;
   font-family: var(--font-body);
   font-size: 14px;
 }
@@ -251,7 +251,7 @@ function onNewsletterInput(e: Event) {
   height: 42px;
   padding: 0 18px;
   border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: 8px;
+  border-radius: 6px;
   background: rgba(255, 255, 255, 0.05);
   color: rgba(255, 255, 255, 0.85);
   font-family: var(--font-body);
@@ -274,8 +274,8 @@ function onNewsletterInput(e: Event) {
   font-size: 16px;
   font-weight: 600;
   /* Explicit white — the global `h1..h6 { color: var(--color-text-primary) }`
-     rule (typography.css) otherwise painted these headings #1A1A1A,
-     i.e. invisible on the #1A1A1A footer (read as "empty gaps"). */
+     rule (typography.css) otherwise painted these headings #141414,
+     i.e. invisible on the #141414 footer (read as "empty gaps"). */
   color: #fff;
   margin-bottom: var(--space-md);
 }

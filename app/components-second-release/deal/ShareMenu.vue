@@ -90,7 +90,7 @@ const extras = [
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(0, 0, 0, 0.08);
-  border-radius: 14px;
+  border-radius: 6px;
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.22);
   font-family: var(--font-body);
 }
@@ -119,7 +119,7 @@ const extras = [
   flex-shrink: 0;
   width: 48px;
   height: 48px;
-  border-radius: 10px;
+  border-radius: 6px;
   background: #fff;
   border: 1px solid rgba(0, 0, 0, 0.08);
   display: flex;
@@ -132,7 +132,7 @@ const extras = [
   font-size: 15px;
   font-weight: 700;
   line-height: 1.25;
-  color: #1a1a1a;
+  color: #141414;
 }
 
 .share-menu__sep {
@@ -149,7 +149,7 @@ const extras = [
   padding: 7px 8px;
   border: none;
   background: none;
-  border-radius: 8px;
+  border-radius: 6px;
   cursor: pointer;
   font-family: inherit;
   text-align: left;
@@ -178,7 +178,7 @@ const extras = [
 
 .share-menu__label {
   font-size: 15px;
-  color: #1a1a1a;
+  color: #141414;
 }
 
 .share-menu-fade-enter-active,

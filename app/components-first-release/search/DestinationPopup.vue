@@ -204,8 +204,7 @@
             @keydown.space.prevent="selectSuggestion(item)"
           >
             <svg class="destination-popup__list-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
-              <circle cx="12" cy="10" r="3" />
+              <path d="M4.5 9.75768C4.5 15.5 12 22 12 22C12 22 19.5 15.5 19.5 9.75768C19.5 4.81181 15.6559 2 12 2C8.34409 2 4.5 4.81181 4.5 9.75768Z" /><path d="M12 12C13.3807 12 14.5 10.8807 14.5 9.5C14.5 8.11929 13.3807 7 12 7C10.6193 7 9.5 8.11929 9.5 9.5C9.5 10.8807 10.6193 12 12 12Z" />
             </svg>
             <div class="destination-popup__list-text">
               <!-- Province / city rows show only the name — no
@@ -837,7 +836,7 @@ function selectHotel(hotel: { name: string; slug: string }) {
   font-weight: 700;
   text-transform: none;
   letter-spacing: 0;
-  color: #1A1A1A;
+  color: #141414;
   margin: 0 0 12px;
   line-height: 1;
 }
@@ -868,7 +867,7 @@ function selectHotel(hotel: { name: string; slug: string }) {
   height: 40px;
   padding: 9px 17px;
   border: 1px solid #e5e2da;
-  border-radius: 4px;
+  border-radius: 6px;
   background: #fff;
   cursor: pointer;
   transition: border-color 150ms ease, background-color 150ms ease, box-shadow 150ms ease;
@@ -876,7 +875,7 @@ function selectHotel(hotel: { name: string; slug: string }) {
   font-family: var(--font-body);
   font-weight: 400;
   line-height: 1;
-  color: #1a1612;
+  color: #141414;
 }
 
 .dest-chip:hover {
@@ -887,7 +886,7 @@ function selectHotel(hotel: { name: string; slug: string }) {
 .dest-chip--selected {
   border-color: var(--color-primary);
   box-shadow: inset 0 0 0 1px var(--color-primary);
-  background: rgba(233, 113, 50, 0.08);
+  background: rgba(251, 134, 44, 0.08);
 }
 
 .dest-chip__icon {
@@ -908,7 +907,7 @@ function selectHotel(hotel: { name: string; slug: string }) {
 }
 
 .dest-chip__name {
-  color: #1a1612;
+  color: #141414;
 }
 
 .dest-chip__country {

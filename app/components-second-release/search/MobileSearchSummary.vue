@@ -122,10 +122,10 @@ function prettyHotelSlug(slug: string): string {
   width: 100%;
   padding: 16px;
   background: #fff;
-  border: 4px solid var(--color-primary, #e97132);
+  border: 4px solid var(--color-primary, #FB862C);
   /* 14 − 4 px border = 10 px inner curve, so the white interior
      reads as rounded too (not just the orange outer). */
-  border-radius: 14px;
+  border-radius: 6px;
   text-align: left;
   cursor: pointer;
 }
@@ -152,7 +152,7 @@ function prettyHotelSlug(slug: string): string {
   font-size: 16px;
   font-weight: 700;
   line-height: 1.4;
-  color: #000;
+  color: #141414;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -164,7 +164,7 @@ function prettyHotelSlug(slug: string): string {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: var(--color-primary, #e97132);
+  color: var(--color-primary, #FB862C);
 }
 /* Row 2: bold 12 px chunks separated by 4 px orange round dots, gap 4 px. */
 .mss__detail {
@@ -179,14 +179,14 @@ function prettyHotelSlug(slug: string): string {
   font-size: 14px;
   font-weight: 700;
   line-height: 1.4;
-  color: #000;
+  color: #141414;
   white-space: nowrap;
 }
 .mss__dot {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: var(--color-primary, #e97132);
+  background: var(--color-primary, #FB862C);
   flex-shrink: 0;
 }
 </style>

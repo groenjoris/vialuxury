@@ -155,7 +155,7 @@ const points = [
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  background: rgba(233, 113, 50, 0.12);
+  background: rgba(251, 134, 44, 0.12);
   color: var(--color-primary);
   display: inline-flex;
   align-items: center;

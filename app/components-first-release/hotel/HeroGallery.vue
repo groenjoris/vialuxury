@@ -220,7 +220,7 @@ function nextSlide() {
   font-weight: 600;
   line-height: 1.2;
   padding: 4px 8px;
-  border-radius: 5px;
+  border-radius: 6px;
   letter-spacing: 0.2px;
 }
 
@@ -340,7 +340,7 @@ function nextSlide() {
   border-radius: 50%;
   border: none;
   background: rgba(255, 255, 255, 0.95);
-  color: #1a1a1a;
+  color: #141414;
   display: inline-flex;
   align-items: center;
   justify-content: center;

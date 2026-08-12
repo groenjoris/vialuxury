@@ -210,7 +210,7 @@ onBeforeUnmount(() => { if (acquired) { scrollLock.release(); acquired = false }
   font-size: 12px;
   font-weight: 600;
   padding: 4px 8px;
-  border-radius: 4px;
+  border-radius: 6px;
   pointer-events: none;
 }
 

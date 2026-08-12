@@ -41,13 +41,12 @@
               <span class="deal-page__hotel-subtitle">{{ hotel.name }}</span>
             </NuxtLink>
             <div class="deal-page__stars-adjacent" aria-hidden="true">
-              <span v-for="n in hotel.starRating" :key="n" class="star-adj">★</span>
+              <span v-for="n in hotel.starRating" :key="n" class="star-adj"><svg class="icon-star" viewBox="0 0 18 18" width="1em" height="1em" fill="currentColor" style="vertical-align:-0.125em" aria-hidden="true"><path d="M16.963,6.786c-.088-.271-.323-.469-.605-.51l-4.62-.671L9.672,1.418c-.252-.512-1.093-.512-1.345,0l-2.066,4.186-4.62,.671c-.282,.041-.517,.239-.605,.51-.088,.271-.015,.57,.19,.769l3.343,3.258-.79,4.601c-.048,.282,.067,.566,.298,.734,.231,.167,.538,.189,.79,.057l4.132-2.173,4.132,2.173c.11,.058,.229,.086,.349,.086,.155,0,.31-.048,.441-.143,.231-.168,.347-.452,.298-.734l-.79-4.601,3.343-3.258c.205-.199,.278-.498,.19-.769Z"/></svg></span>
             </div>
           </div>
           <div class="deal-page__meta">
             <svg class="deal-page__meta-pin" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-              <circle cx="12" cy="10" r="3" />
+              <path d="M4.5 9.75768C4.5 15.5 12 22 12 22C12 22 19.5 15.5 19.5 9.75768C19.5 4.81181 15.6559 2 12 2C8.34409 2 4.5 4.81181 4.5 9.75768Z" /><path d="M12 12C13.3807 12 14.5 10.8807 14.5 9.5C14.5 8.11929 13.3807 7 12 7C10.6193 7 9.5 8.11929 9.5 9.5C9.5 10.8807 10.6193 12 12 12Z" />
             </svg>
             <span>{{ hotel.location.city }}, {{ hotel.location.region }}</span>
             <a href="#mini-map" class="deal-page__view-map-link" @click.prevent="scrollToMiniMap">{{ t('common.viewMap') || 'Bekijk op kaart' }}</a>
@@ -179,7 +178,7 @@
                 <li><span class="sidebar__trust-check">✓</span> {{ t('deal.trustTrustpilot') }}</li>
               </ul>
               <div class="sidebar__trust-block">
-                <img src="/images/trustpilot.svg" alt="Trustpilot" class="sidebar__trust-logo" />
+                <img src="/images/trustpilot-27c88d.svg" alt="Trustpilot" class="sidebar__trust-logo" />
                 <span class="sidebar__trust-caption">15.294 beoordelingen</span>
               </div>
             </div>
@@ -340,13 +339,12 @@
               <span class="deal-page__hotel-subtitle">{{ hotel.name }}</span>
             </NuxtLink>
             <div class="deal-page__stars-adjacent" aria-hidden="true">
-              <span v-for="n in hotel.starRating" :key="n" class="star-adj">★</span>
+              <span v-for="n in hotel.starRating" :key="n" class="star-adj"><svg class="icon-star" viewBox="0 0 18 18" width="1em" height="1em" fill="currentColor" style="vertical-align:-0.125em" aria-hidden="true"><path d="M16.963,6.786c-.088-.271-.323-.469-.605-.51l-4.62-.671L9.672,1.418c-.252-.512-1.093-.512-1.345,0l-2.066,4.186-4.62,.671c-.282,.041-.517,.239-.605,.51-.088,.271-.015,.57,.19,.769l3.343,3.258-.79,4.601c-.048,.282,.067,.566,.298,.734,.231,.167,.538,.189,.79,.057l4.132-2.173,4.132,2.173c.11,.058,.229,.086,.349,.086,.155,0,.31-.048,.441-.143,.231-.168,.347-.452,.298-.734l-.79-4.601,3.343-3.258c.205-.199,.278-.498,.19-.769Z"/></svg></span>
             </div>
           </div>
           <div class="deal-page__meta">
             <svg class="deal-page__meta-pin" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-              <circle cx="12" cy="10" r="3" />
+              <path d="M4.5 9.75768C4.5 15.5 12 22 12 22C12 22 19.5 15.5 19.5 9.75768C19.5 4.81181 15.6559 2 12 2C8.34409 2 4.5 4.81181 4.5 9.75768Z" /><path d="M12 12C13.3807 12 14.5 10.8807 14.5 9.5C14.5 8.11929 13.3807 7 12 7C10.6193 7 9.5 8.11929 9.5 9.5C9.5 10.8807 10.6193 12 12 12Z" />
             </svg>
             <span>{{ hotel.location.city }}, {{ hotel.location.region }}</span>
             <a href="#mini-map" class="deal-page__view-map-link" @click.prevent="scrollToMiniMap">{{ t('common.viewMap') || 'Bekijk op kaart' }}</a>
@@ -613,7 +611,7 @@
                  was removed at the user's request; the homepage
                  persuasion band still carries that message. -->
             <div class="sidebar__trust-block">
-              <img src="/images/trustpilot.svg" alt="Trustpilot" class="sidebar__trust-logo" />
+              <img src="/images/trustpilot-27c88d.svg" alt="Trustpilot" class="sidebar__trust-logo" />
               <span class="sidebar__trust-caption">15.294 beoordelingen</span>
             </div>
           </div>
@@ -1561,7 +1559,7 @@ onMounted(() => {
 .deal-page__stars-adjacent .star-adj {
   font-size: 24px;
   line-height: 1;
-  color: #111111;
+  color: #141414;
   -webkit-font-smoothing: none;
   text-rendering: geometricPrecision;
 }
@@ -1583,7 +1581,7 @@ onMounted(() => {
    global a:hover + the "Lees meer" links). */
 .deal-page__meta .deal-page__view-map-link:hover { color: var(--color-primary-hover); }
 .deal-page__score-wrap { display: flex; align-items: center; gap: 6px; }
-.deal-page__score { display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: var(--radius-sm); background: #00B67A; color: #fff; font-size: 13px; font-weight: 700; flex-shrink: 0; }
+.deal-page__score { display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: var(--radius-sm); background: #27C88D; color: #fff; font-size: 13px; font-weight: 700; flex-shrink: 0; }
 .deal-page__score-label { font-size: 13px; font-weight: 600; color: var(--color-text-primary); }
 .deal-page__divider { color: var(--color-text-muted); }
 .deal-page__title-actions {
@@ -1831,7 +1829,7 @@ onMounted(() => {
   line-height: 1.4;
 }
 .sidebar__trust-check {
-  color: #00B67A;
+  color: #27C88D;
   font-weight: 700;
   font-size: 14px;
   flex-shrink: 0;
@@ -1847,7 +1845,7 @@ onMounted(() => {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: #00B67A;
+  color: #27C88D;
 }
 .sidebar__trust-icon svg {
   width: 30px;
@@ -1880,9 +1878,9 @@ onMounted(() => {
 .highlight-item { display: flex; align-items: flex-start; gap: var(--space-md); }
 /* Match the menu side-panel icon tile — warmer-grey homepage surface,
    8 px rounded corners, no border. */
-.highlight-item__icon { width: 40px; height: 40px; border-radius: 8px; background: var(--color-background-secondary, #faf9f6); border: 0; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.highlight-item__icon { width: 40px; height: 40px; border-radius: 6px; background: var(--color-background-secondary, #FBFAF8); border: 0; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .highlight-item__text { font-size: 14px; font-weight: 500; color: var(--color-text-primary); }
-.highlight-item__check { font-size: 18px; line-height: 1; font-weight: 700; color: var(--color-discount, #00B67A); }
+.highlight-item__check { font-size: 18px; line-height: 1; font-weight: 700; color: var(--color-discount, #27C88D); }
 
 /* ===== CONTENT BLOCKS ===== */
 .deal-page__content-blocks { padding: var(--space-xl) 0; border-top: 1px solid var(--color-border-light); scroll-margin-top: 88px; }
@@ -1912,7 +1910,7 @@ onMounted(() => {
   font-weight: 400;
   letter-spacing: 0.04em;
   padding: 5px;
-  border-radius: 4px;
+  border-radius: 6px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
@@ -2133,15 +2131,15 @@ onMounted(() => {
 /* ===== REVIEWS ===== */
 .deal-page__reviews { padding: var(--space-xl) var(--space-lg); position: relative; }
 .reviews__score-bar { display: flex; align-items: center; gap: var(--space-sm); margin-bottom: var(--space-md); }
-.reviews__score-big { font-size: 24px; font-weight: 700; font-family: var(--font-heading); background: #00B67A; color: #fff; padding: 8px 12px; border-radius: var(--radius-sm); }
+.reviews__score-big { font-size: 24px; font-weight: 700; font-family: var(--font-heading); background: #27C88D; color: #fff; padding: 8px 12px; border-radius: var(--radius-sm); }
 .reviews__score-meta { display: flex; flex-direction: column; gap: 1px; }
 .reviews__score-verdict { font-size: 15px; font-weight: 600; color: var(--color-text-primary); }
 .reviews__score-count { font-size: 13px; color: var(--color-text-muted); }
 .reviews__categories { display: grid; grid-template-columns: 1fr 1fr; gap: 6px var(--space-xl); margin-bottom: var(--space-lg); max-width: 720px; }
 .reviews__cat { display: grid; grid-template-columns: 110px 1fr 32px; align-items: center; gap: var(--space-sm); font-size: 13px; }
 .reviews__cat-name { color: var(--color-text-secondary); }
-.reviews__cat-bar { height: 6px; background: var(--color-border-light); border-radius: 3px; overflow: hidden; }
-.reviews__cat-fill { height: 100%; background: #00B67A; border-radius: 3px; }
+.reviews__cat-bar { height: 6px; background: var(--color-border-light); border-radius: 6px; overflow: hidden; }
+.reviews__cat-fill { height: 100%; background: #27C88D; border-radius: 6px; }
 .reviews__cat-score { font-weight: 600; text-align: right; }
 .reviews__grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md); }
 .review-card { padding: var(--space-md); background: var(--color-background-secondary); border-radius: var(--radius-md); display: flex; flex-direction: column; }
@@ -2160,7 +2158,7 @@ onMounted(() => {
   font-weight: 500;
   color: var(--color-text-muted);
 }
-.review-card__arrangement svg { color: #00B67A; flex-shrink: 0; }
+.review-card__arrangement svg { color: #27C88D; flex-shrink: 0; }
 
 /* ===== FAQ ===== */
 .deal-page__faq { padding: var(--space-xl) var(--space-lg); position: relative; }
@@ -2211,7 +2209,7 @@ onMounted(() => {
   display: flex; align-items: center; justify-content: center;
 }
 .room-unavailable-popup {
-  background: #fff; border: 2px solid var(--color-discount); border-radius: 12px;
+  background: #fff; border: 2px solid var(--color-discount); border-radius: 6px;
   width: 450px; max-width: 90vw; min-height: 300px;
   padding: var(--space-2xl);
   display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -2222,11 +2220,11 @@ onMounted(() => {
   margin-bottom: var(--space-xl);
 }
 .room-unavailable-popup__btn {
-  display: inline-block; padding: 12px 40px; border-radius: 8px;
+  display: inline-block; padding: 12px 40px; border-radius: 6px;
   background: var(--color-discount); color: #fff; font-size: 14px; font-weight: 600;
   border: none; cursor: pointer; transition: background 150ms ease-out;
 }
-.room-unavailable-popup__btn:hover { background: color-mix(in srgb, var(--color-discount) 88%, #000); }
+.room-unavailable-popup__btn:hover { background: color-mix(in srgb, var(--color-discount) 88%, #141414); }
 .fade-enter-active, .fade-leave-active { transition: opacity 200ms ease; }
 .fade-enter-from, .fade-leave-to { opacity: 0; }
 

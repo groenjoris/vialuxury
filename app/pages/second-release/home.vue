@@ -16,7 +16,7 @@
     <section class="home-persuasion">
       <div class="container home-persuasion__inner">
         <div class="home-persuasion__col home-persuasion__col--trust">
-          <img src="/images/trustpilot.svg" alt="Trustpilot" class="home-persuasion__trustpilot" />
+          <img src="/images/trustpilot-27c88d.svg" alt="Trustpilot" class="home-persuasion__trustpilot" />
           <p class="home-persuasion__text">15.294 gasten beoordelen ons met een 9 uit 10</p>
         </div>
         <div class="home-persuasion__col">
@@ -230,20 +230,20 @@ const featuredDesIndesDeal = featuredDesIndes
 // in place of the previous emoji glyph.
 const ICON_FOR: Record<string, string> = {
   wellness: 'bath',
-  'jacuzzi-room': 'bath',
+  'jacuzzi-room': 'hotTub',
   pool: 'waves',
   'with-dinner': 'utensils',
   'dog-friendly': 'dog',
   'mini-trip': 'backpack',
   'aan-zee': 'waves',
   natuur: 'leaf',
-  romantisch: 'sparkles',
+  romantisch: 'heart',
   culinair: 'wine',
   fiets: 'bike',
   steden: 'building',
   kasteel: 'castle',
   'unique-stay': 'sparkles',
-  'five-star': 'crown',
+  'five-star': 'diamond',
   exclusive: 'crown',
   'best-price': 'euro',
   'new-hotels': 'star',
@@ -526,7 +526,7 @@ onMounted(() => { setFrNavVariant('1'); restoreHeroPhotoIndex(); restoreHomeLayo
   width: 6px;
   height: 6px;
   border-radius: 999px;
-  background: #e97132;
+  background: #FB862C;
 }
 
 .home-hero__title {
@@ -589,12 +589,12 @@ onMounted(() => { setFrNavVariant('1'); restoreHeroPhotoIndex(); restoreHomeLayo
 }
 
 .home-hero__trust-star {
-  color: #00b57e;
+  color: #27C88D;
   font-size: 13px;
 }
 
 .home-hero__trust-check {
-  color: #00b57e;
+  color: #27C88D;
   font-size: 13px;
 }
 
@@ -654,7 +654,7 @@ onMounted(() => { setFrNavVariant('1'); restoreHeroPhotoIndex(); restoreHomeLayo
   align-items: center;
   justify-content: center;
   height: 56px;
-  color: #00B67A;
+  color: #27C88D;
 }
 
 .home-persuasion__award svg {
@@ -684,7 +684,7 @@ onMounted(() => { setFrNavVariant('1'); restoreHeroPhotoIndex(); restoreHomeLayo
 
 /* ===== POPULAR FILTERS BAND ===== */
 .home-popular {
-  background: var(--color-background-secondary, #faf9f6);
+  background: var(--color-background-secondary, #FBFAF8);
   padding: 28px 0;
 }
 
@@ -703,7 +703,7 @@ onMounted(() => { setFrNavVariant('1'); restoreHeroPhotoIndex(); restoreHomeLayo
 .home-popular__heading {
   font-family: var(--font-heading);
   font-size: 24px;
-  font-weight: 700;
+  font-weight: 600;
   margin: 0 0 var(--space-xl);
   color: var(--color-text-primary);
   line-height: 1.1;
@@ -719,6 +719,7 @@ onMounted(() => { setFrNavVariant('1'); restoreHeroPhotoIndex(); restoreHomeLayo
   flex-direction: column;
   background: var(--color-surface);
   border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border-light);
   box-shadow: var(--shadow-card);
   overflow: hidden;
 }
@@ -727,6 +728,7 @@ onMounted(() => { setFrNavVariant('1'); restoreHeroPhotoIndex(); restoreHomeLayo
    :deep because DealCard is scoped to its own component. */
 .home-popular__featured-wrap :deep(.deal-card-v2) {
   border-radius: 0;
+  border: none;
   box-shadow: none;
 }
 
@@ -836,7 +838,7 @@ onMounted(() => { setFrNavVariant('1'); restoreHeroPhotoIndex(); restoreHomeLayo
   border: 1px solid #e5e2da;
   border-radius: var(--radius-sm);
   text-decoration: none;
-  color: #1a1411;
+  color: #141414;
   font-size: 14px;
   cursor: pointer;
   font-family: inherit;
@@ -853,7 +855,7 @@ onMounted(() => { setFrNavVariant('1'); restoreHeroPhotoIndex(); restoreHomeLayo
   display: inline-flex;
   width: 14px;
   height: 14px;
-  color: #1a1411;
+  color: #141414;
   margin-right: 2px;
 }
 
@@ -882,16 +884,16 @@ onMounted(() => { setFrNavVariant('1'); restoreHeroPhotoIndex(); restoreHomeLayo
 }
 
 .home-deals--alt {
-  background: var(--color-background-secondary, #faf9f6);
+  background: var(--color-background-secondary, #FBFAF8);
 }
 
 .home-deals__title {
   font-family: var(--font-heading);
   font-size: clamp(32px, 4vw, 44px);
   line-height: 1;
-  font-weight: 400;
+  font-weight: 600;
   letter-spacing: -0.88px;
-  color: #0e0e0c;
+  color: #141414;
   margin: 0 0 32px;
 }
 
@@ -1043,7 +1045,7 @@ onMounted(() => { setFrNavVariant('1'); restoreHeroPhotoIndex(); restoreHomeLayo
      between a section's content and the next section's title is a single,
      identical 32px throughout (no doubled top+bottom margins → shorter page). */
   .home {
-    background: var(--color-background-secondary, #faf9f6);
+    background: var(--color-background-secondary, #FBFAF8);
   }
   .home-persuasion,
   .home-popular,

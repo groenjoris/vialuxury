@@ -40,7 +40,7 @@ watch(() => props.message, (msg) => {
   align-items: center;
   gap: 10px;
   padding: 14px 24px;
-  border-radius: 12px;
+  border-radius: 6px;
   background: var(--color-dark);
   color: #fff;
   font-size: 14px;

@@ -158,7 +158,7 @@
                   <img src="/images/partners/hema.png" alt="HEMA" class="deal-page__partner-card-logo" />
                 </div>
                 <div v-else class="search-trust">
-                  <img src="/images/trustpilot.svg" alt="Trustpilot" class="search-trust__logo" />
+                  <img src="/images/trustpilot-27c88d.svg" alt="Trustpilot" class="search-trust__logo" />
                   <span class="search-trust__text">15.294 beoordelingen</span>
                 </div>
               </div>
@@ -183,8 +183,7 @@
                 @click="handleMapClick"
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
-                  <circle cx="12" cy="10" r="3" />
+                  <path d="M4.5 9.75768C4.5 15.5 12 22 12 22C12 22 19.5 15.5 19.5 9.75768C19.5 4.81181 15.6559 2 12 2C8.34409 2 4.5 4.81181 4.5 9.75768Z" /><path d="M12 12C13.3807 12 14.5 10.8807 14.5 9.5C14.5 8.11929 13.3807 7 12 7C10.6193 7 9.5 8.11929 9.5 9.5C9.5 10.8807 10.6193 12 12 12Z" />
                 </svg>
                 {{ t('search.viewOnMap') }}
               </button>
@@ -302,8 +301,7 @@
               </button>
               <button class="m-toolbar-btn" @click="handleMapClick">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
-                  <circle cx="12" cy="10" r="3" />
+                  <path d="M4.5 9.75768C4.5 15.5 12 22 12 22C12 22 19.5 15.5 19.5 9.75768C19.5 4.81181 15.6559 2 12 2C8.34409 2 4.5 4.81181 4.5 9.75768Z" /><path d="M12 12C13.3807 12 14.5 10.8807 14.5 9.5C14.5 8.11929 13.3807 7 12 7C10.6193 7 9.5 8.11929 9.5 9.5C9.5 10.8807 10.6193 12 12 12Z" />
                 </svg>
                 Kaart
               </button>
@@ -2340,7 +2338,7 @@ onMounted(() => {
   justify-content: center;
   gap: 4px;
   border: 0;
-  border-radius: 10px;
+  border-radius: 6px;
   background: var(--color-dark);
   font-family: var(--font-body, 'Basis Grotesque', sans-serif);
   font-size: 14px;
@@ -2376,11 +2374,11 @@ onMounted(() => {
   align-items: center;
   justify-content: center;
   background: #fff;
-  border: 1px solid #000;
-  color: #000;
+  border: 1px solid #141414;
+  color: #141414;
 }
 .m-toolbar-btn--search-icon:hover { background: #f5f5f5; }
-.m-toolbar-btn--search-icon svg { stroke: #000; }
+.m-toolbar-btn--search-icon svg { stroke: #141414; }
 /* Sort dropdown — mobile rules. Anchored under the Sort button,
    widened so the options sit comfortably; z-index above the
    sticky toolbar so a pinned bar above doesn't clip it. */
