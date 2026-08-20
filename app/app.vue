@@ -102,12 +102,16 @@ const releaseScope = computed(() => {
   if (route.path.startsWith('/second-release')) return 'second'
   return null
 })
-watch(releaseScope, (scope) => {
-  if (!import.meta.client) return
-  const body = document.body
-  body.classList.remove('vl-release-first', 'vl-release-second')
-  if (scope) body.classList.add(`vl-release-${scope}`)
-}, { immediate: true })
+// Set via useHead, NOT a client-side watch: the class has to be in the
+// server-rendered <body> or the first paint uses the :root defaults (old
+// #E97132 orange, 12px radii, old green) and only snaps to the prototype
+// values once hydration runs — a full flash of the pre-redesign styling on
+// every page load.
+useHead({
+  bodyAttrs: {
+    class: computed(() => (releaseScope.value ? `vl-release-${releaseScope.value}` : '')),
+  },
+})
 watch(() => route.query.partner, (val) => {
   if (val === 'nu') { set('nu'); setSr('nu') }
 })

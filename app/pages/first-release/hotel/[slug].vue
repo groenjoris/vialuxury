@@ -116,8 +116,8 @@
         <h2 class="section-title">{{ t('hotel.facilities') }}</h2>
         <div class="facilities__grid">
           <div v-for="fac in hotel.facilities" :key="localized(fac.label)" class="facility-item">
-            <img v-if="fac.icon" :src="fac.icon" alt="" class="facility-item__icon" loading="lazy" />
-            <span v-else class="facility-item__check">✓</span>
+            <img v-if="facilityIcon(localized(fac.label))" :src="facilityIcon(localized(fac.label))!" alt="" class="facility-item__icon" loading="lazy" />
+            <span v-else class="facility-item__check"><svg class="icon-check" viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10" style="vertical-align:-0.125em"><path d="M3 13L8 19L21 5"/></svg></span>
             <span>{{ localized(fac.label) }}</span>
           </div>
         </div>
@@ -363,6 +363,7 @@
 </template>
 
 <script setup lang="ts">
+import { facilityIcon } from '~/utils-first-release/facilityIcon'
 import { formatPrice } from '~/utils-first-release/formatPrice'
 import { nightsLabel, personsLabel, roomsLabel } from '~/utils-first-release/plural'
 import { useBodyScrollLock } from '~/composables-first-release/useBodyScrollLock'

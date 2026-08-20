@@ -9,11 +9,13 @@
       <div
         class="home-hero__bg"
         :class="{
-          /* Pills 1 and 8 sit a bit too high in the default
-             `object-position: center bottom` crop — push them 200 px
-             DOWN within the same crop window so more of the upper
-             portion shows. */
-          'home-hero__bg--shift-down': heroPhotoIndex === 0 || heroPhotoIndex === 7,
+          /* Photo 8 sits a bit too high in the default
+             `object-position: center bottom` crop — push it 200 px DOWN
+             within the same crop window so more of the upper portion
+             shows. Photo 1 (spa-van-oys, 2000x1329 in a 2.85 frame) is
+             NOT shifted: at +200 px the window lands on the ceiling and
+             crops the loungers and fire out of the bottom. */
+          'home-hero__bg--shift-down': heroPhotoIndex === 7,
         }"
       >
         <img class="home-hero__bg-img" :src="heroPhotoUrl" alt="" />

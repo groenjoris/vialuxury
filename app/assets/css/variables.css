@@ -111,9 +111,12 @@ body.vl-release-second {
 
 /* Buttons don't inherit `color` — they default to the UA `buttontext`
    (pure black), so the body rule above misses them (search-bar fields,
-   calendar day cells). Element-level specificity, so any component that
-   sets its own button colour still wins. */
-body.vl-release-first button,
-body.vl-release-second button {
+   calendar day cells).
+   Wrapped in `:where()` so the selector scores 0,0,1 — it still beats the
+   UA default (any author rule does), but ANY component that declares its
+   own button colour now wins, including single-class rules like
+   `.btn-primary { color: white }`. Without :where() this scored 0,1,2 and
+   silently turned the orange "Ik ga boeken" CTA's label black. */
+:where(body.vl-release-first, body.vl-release-second) button {
   color: inherit;
 }

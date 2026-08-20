@@ -258,11 +258,20 @@ onBeforeUnmount(() => { if (acquired) { scrollLock.release(); acquired = false }
 }
 
 .room-card__features li::before {
-  content: '✓';
+  /* Joris check icon as a mask so the rule's own colour still drives it. */
+  content: '';
   position: absolute;
   left: 0;
-  color: var(--color-discount);
-  font-weight: 700;
+  top: 0.28em;
+  width: 0.8em;
+  height: 0.8em;
+  background-color: var(--color-discount);
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='square' stroke-miterlimit='10'%3E%3Cpath d='M3 13L8 19L21 5'/%3E%3C/svg%3E");
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='square' stroke-miterlimit='10'%3E%3Cpath d='M3 13L8 19L21 5'/%3E%3C/svg%3E");
+  mask-repeat: no-repeat;
+  -webkit-mask-repeat: no-repeat;
+  mask-size: contain;
+  -webkit-mask-size: contain;
 }
 
 /* Footer: price lower-left, select button right */
@@ -306,8 +315,17 @@ onBeforeUnmount(() => { if (acquired) { scrollLock.release(); acquired = false }
 }
 
 .room-card__selected::before {
-  content: '✓';
-  color: var(--color-discount);
+  content: '';
+  display: inline-block;
+  width: 0.8em;
+  height: 0.8em;
+  background-color: var(--color-discount);
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='square' stroke-miterlimit='10'%3E%3Cpath d='M3 13L8 19L21 5'/%3E%3C/svg%3E");
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='square' stroke-miterlimit='10'%3E%3Cpath d='M3 13L8 19L21 5'/%3E%3C/svg%3E");
+  mask-repeat: no-repeat;
+  -webkit-mask-repeat: no-repeat;
+  mask-size: contain;
+  -webkit-mask-size: contain;
 }
 
 /* Slide-in transition (matches the other side panels) */

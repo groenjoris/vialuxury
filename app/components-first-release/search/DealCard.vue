@@ -141,7 +141,7 @@
           <div class="deal-card-v2__includes" :class="{ 'deal-card-v2__includes--full': fullInclusions && fullInclusions.length }">
             <div class="deal-card-v2__includes-list">
               <span v-for="item in includesBullets" :key="item" class="deal-card-v2__include">
-                <span class="deal-card-v2__check">✓</span>
+                <span class="deal-card-v2__check"><svg class="icon-check" viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10" style="vertical-align:-0.125em"><path d="M3 13L8 19L21 5"/></svg></span>
                 <span class="deal-card-v2__include-text">{{ item }}</span>
               </span>
             </div>

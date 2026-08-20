@@ -134,7 +134,6 @@
             >
               <span
                 class="dest-chip__icon"
-                :style="{ background: destinationTint(dest.id) }"
                 aria-hidden="true"
               >
                 <img
@@ -161,7 +160,6 @@
             >
               <span
                 class="dest-chip__icon"
-                :style="{ background: themeTint(theme.id) }"
                 aria-hidden="true"
               >
                 <img
@@ -575,43 +573,8 @@ function selectSuggestion(item: { name: string; province: string; isProvince: bo
   searchQuery.value = ''
 }
 
-/** Per-destination / per-theme icon-tile tints. Pulled from the Figma
- *  spec — each region gets a soft regional colour so the chip grid
- *  reads as a "deck" rather than a uniform list. */
-const DESTINATION_TINTS: Record<string, string> = {
-  zeeland: '#f0e3c6',
-  brabant: '#cfe0c8',
-  limburg: '#d8dccb',
-  gelderland: '#c4d3c0',
-  drenthe: '#e1cfd9',
-  friesland: '#c8d8e2',
-  overijssel: '#ead2c0',
-  flevoland: '#f3ccae',
-  'noord-holland': '#f0c8cf',
-  'zuid-holland': '#cdd2dc',
-  ardennen: '#c2cec5',
-  vlaanderen: '#ead8b5',
-  'belgische-kust': '#ead9d0',
-  wallonie: '#ecc98a',
-}
 
-const THEME_TINTS: Record<string, string> = {
-  'aan-zee': '#c8d8e2',
-  natuur: '#cfe0c8',
-  romantisch: '#f0c8cf',
-  culinair: '#ead2c0',
-  fiets: '#f3ccae',
-  steden: '#cdd2dc',
-  kasteel: '#ead8b5',
-}
 
-function destinationTint(id: string): string {
-  return DESTINATION_TINTS[id] ?? '#e5e2da'
-}
-
-function themeTint(id: string): string {
-  return THEME_TINTS[id] ?? '#e5e2da'
-}
 
 function selectHotel(hotel: { name: string; slug: string }) {
   emit('select-hotel', hotel.slug)
@@ -878,6 +841,9 @@ function selectHotel(hotel: { name: string; slug: string }) {
 }
 
 .dest-chip__icon {
+  /* One uniform cream tile — the per-region / per-theme pastel tints
+     were dropped in favour of a single neutral surface. */
+  background: var(--color-background-secondary);
   width: 26px;
   height: 26px;
   border-radius: 6px;
@@ -889,8 +855,12 @@ function selectHotel(hotel: { name: string; slug: string }) {
 }
 
 .dest-chip__icon-img {
-  width: 22px;
-  height: 22px;
+  /* 18px inside the 26px tile. Note this is 0.75× the icons' 24×24
+     viewBox, so their 2px strokes render at 1.5px — crisp on a 2× screen,
+     slightly soft on a 1× one. 24px (1:1) or 12px (0.5×) are the sizes
+     that land exactly on whole pixels everywhere. */
+  width: 18px;
+  height: 18px;
   display: block;
 }
 

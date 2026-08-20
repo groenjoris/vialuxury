@@ -3,7 +3,7 @@
     <!-- Hero with full-bleed background image (shared LandingHero) -->
     <SecondReleaseLandingHero
       :bg-url="heroPhotoUrl"
-      :bg-shift-down="heroPhotoIndex === 0 || heroPhotoIndex === 7"
+      :bg-shift-down="heroPhotoIndex === 7"
       eyebrow="SPRING 2026"
       title="Experience"
       title-em="more"

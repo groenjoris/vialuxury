@@ -89,7 +89,7 @@
             <h3 class="sidebar__title">{{ t('sidebar.arrangementFullTitle') }}</h3>
             <ul class="sidebar__inc-list">
               <li v-for="inc in currentDeal.inclusions" :key="inc.id">
-                <span class="sidebar__inc-check">✓</span>
+                <span class="sidebar__inc-check"><svg class="icon-check" viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10" style="vertical-align:-0.125em"><path d="M3 13L8 19L21 5"/></svg></span>
                 <span>{{ localized(inc.title) }}</span>
               </li>
             </ul>
@@ -150,9 +150,9 @@
             <!-- Trust + Trustpilot -->
             <div class="sidebar__trust">
               <ul class="sidebar__trust-list">
-                <li><span class="sidebar__trust-check">✓</span> {{ t('deal.trust2min') }}</li>
-                <li><span class="sidebar__trust-check">✓</span> {{ t('deal.trustCancel') }}</li>
-                <li><span class="sidebar__trust-check">✓</span> {{ t('deal.trustTrustpilot') }}</li>
+                <li><span class="sidebar__trust-check"><svg class="icon-check" viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10" style="vertical-align:-0.125em"><path d="M3 13L8 19L21 5"/></svg></span> {{ t('deal.trust2min') }}</li>
+                <li><span class="sidebar__trust-check"><svg class="icon-check" viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10" style="vertical-align:-0.125em"><path d="M3 13L8 19L21 5"/></svg></span> {{ t('deal.trustCancel') }}</li>
+                <li><span class="sidebar__trust-check"><svg class="icon-check" viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10" style="vertical-align:-0.125em"><path d="M3 13L8 19L21 5"/></svg></span> {{ t('deal.trustTrustpilot') }}</li>
               </ul>
               <div class="sidebar__trust-block">
                 <img src="/images/trustpilot-27c88d.svg" alt="Trustpilot" class="sidebar__trust-logo" />
@@ -182,7 +182,7 @@
           <div class="highlights__grid">
             <div v-for="hl in highlights" :key="hl.text" class="highlight-item">
               <span class="highlight-item__icon">
-                <img :src="hl.icon || '/icons/highlights/special.svg'" :alt="hl.text" width="22" height="22" />
+                <img :src="hl.icon || '/icons/facilities/special.svg'" :alt="hl.text" width="22" height="22" />
               </span>
               <span class="highlight-item__text">{{ hl.text }}</span>
             </div>
@@ -216,7 +216,7 @@
               </div>
               <div class="content-block__body">
                 <h3 class="content-block__title">
-                  <span class="content-block__check">✓</span>
+                  <span class="content-block__check"><svg class="icon-check" viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10" style="vertical-align:-0.125em"><path d="M3 13L8 19L21 5"/></svg></span>
                   {{ localized(inc.title) }}
                 </h3>
                 <p class="content-block__desc">{{ localized(inc.description) }}</p>
@@ -230,8 +230,8 @@
           <h2 class="section-title">{{ t('hotel.facilities') }}</h2>
           <div class="facilities__grid facilities__grid--mobile">
             <div v-for="fac in hotel.facilities" :key="localized(fac.label)" class="facility-item">
-              <img v-if="fac.icon && fac.icon.startsWith('http')" :src="fac.icon" :alt="localized(fac.label)" class="facility-item__icon" width="20" height="20" loading="lazy" />
-              <span v-else class="facility-item__check">✓</span>
+              <img v-if="facilityIcon(localized(fac.label))" :src="facilityIcon(localized(fac.label))!" :alt="localized(fac.label)" class="facility-item__icon" width="20" height="20" loading="lazy" />
+              <span v-else class="facility-item__check"><svg class="icon-check" viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10" style="vertical-align:-0.125em"><path d="M3 13L8 19L21 5"/></svg></span>
               <span>{{ localized(fac.label) }}</span>
             </div>
           </div>
@@ -368,7 +368,7 @@
           <div v-for="inc in displayedInclusions" :key="inc.id" class="inc-row__chip">
             <svg v-if="isOvernightInclusion(inc)" class="inc-row__bed" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4v16"/><path d="M2 8h18a2 2 0 0 1 2 2v10"/><path d="M2 17h20"/><path d="M6 8v9"/></svg>
             <img v-else-if="incIconUrl(inc)" :src="incIconUrl(inc)!" class="inc-row__icon" alt="" loading="lazy" />
-            <span v-else class="inc-row__check">✓</span>
+            <span v-else class="inc-row__check"><svg class="icon-check" viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10" style="vertical-align:-0.125em"><path d="M3 13L8 19L21 5"/></svg></span>
             <span>{{ localized(inc.title) }}</span>
           </div>
         </div>
@@ -407,7 +407,7 @@
           <h3 class="sidebar__title">Dit arrangement bevat</h3>
           <ul class="sidebar__inc-list">
             <li v-for="(item, i) in sidebarInclusions" :key="i">
-              <span class="sidebar__inc-check">✓</span>
+              <span class="sidebar__inc-check"><svg class="icon-check" viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10" style="vertical-align:-0.125em"><path d="M3 13L8 19L21 5"/></svg></span>
               <span class="sidebar__inc-text">
                 {{ item.text }}
                 <span v-if="item.upgrade" class="sidebar__inc-upgrade">(upgrade)</span>
@@ -465,9 +465,9 @@
           <!-- Trust USPs + Trustpilot logo -->
           <div class="sidebar__trust">
             <ul class="sidebar__trust-list">
-              <li><span class="sidebar__trust-check">✓</span> {{ t('deal.trust2min') }}</li>
-              <li><span class="sidebar__trust-check">✓</span> {{ t('deal.trustCancel') }}</li>
-              <li><span class="sidebar__trust-check">✓</span> {{ t('deal.trustTrustpilot') }}</li>
+              <li><span class="sidebar__trust-check"><svg class="icon-check" viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10" style="vertical-align:-0.125em"><path d="M3 13L8 19L21 5"/></svg></span> {{ t('deal.trust2min') }}</li>
+              <li><span class="sidebar__trust-check"><svg class="icon-check" viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10" style="vertical-align:-0.125em"><path d="M3 13L8 19L21 5"/></svg></span> {{ t('deal.trustCancel') }}</li>
+              <li><span class="sidebar__trust-check"><svg class="icon-check" viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10" style="vertical-align:-0.125em"><path d="M3 13L8 19L21 5"/></svg></span> {{ t('deal.trustTrustpilot') }}</li>
             </ul>
             <div class="sidebar__trust-block">
               <img src="/images/trustpilot-27c88d.svg" alt="Trustpilot" class="sidebar__trust-logo" />
@@ -503,8 +503,8 @@
         <h2 class="section-title">{{ t('hotel.facilities') }}</h2>
         <div class="facilities__grid">
           <div v-for="fac in hotel.facilities" :key="localized(fac.label)" class="facility-item">
-            <img v-if="fac.icon && fac.icon.startsWith('http')" :src="fac.icon" :alt="localized(fac.label)" class="facility-item__icon" width="20" height="20" loading="lazy" />
-            <span v-else class="facility-item__check">✓</span>
+            <img v-if="facilityIcon(localized(fac.label))" :src="facilityIcon(localized(fac.label))!" :alt="localized(fac.label)" class="facility-item__icon" width="20" height="20" loading="lazy" />
+            <span v-else class="facility-item__check"><svg class="icon-check" viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10" style="vertical-align:-0.125em"><path d="M3 13L8 19L21 5"/></svg></span>
             <span>{{ localized(fac.label) }}</span>
           </div>
         </div>
@@ -713,8 +713,8 @@
       <div class="mobile-subpage">
         <div class="facilities__grid facilities__grid--mobile">
           <div v-for="fac in hotel?.facilities || []" :key="localized(fac.label)" class="facility-item">
-            <img v-if="fac.icon && fac.icon.startsWith('http')" :src="fac.icon" :alt="localized(fac.label)" class="facility-item__icon" width="20" height="20" loading="lazy" />
-            <span v-else class="facility-item__check">✓</span>
+            <img v-if="facilityIcon(localized(fac.label))" :src="facilityIcon(localized(fac.label))!" :alt="localized(fac.label)" class="facility-item__icon" width="20" height="20" loading="lazy" />
+            <span v-else class="facility-item__check"><svg class="icon-check" viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10" style="vertical-align:-0.125em"><path d="M3 13L8 19L21 5"/></svg></span>
             <span>{{ localized(fac.label) }}</span>
           </div>
         </div>
@@ -804,6 +804,7 @@
 </template>
 
 <script setup lang="ts">
+import { facilityIcon } from '~/utils-second-release/facilityIcon'
 import { useSecondReleaseDealStore } from '~/stores-second-release/deal'
 import { useSearchNavLock } from '~/composables-second-release/useMobileSearchModalControl'
 import { useBodyScrollLock } from '~/composables-second-release/useBodyScrollLock'
@@ -1442,7 +1443,7 @@ const _legacyHighlights = computed(() => [
   { icon: '/icons/highlights/spa.svg', text: t('deal.highlight.wellness') },
   { icon: '/icons/highlights/nature.svg', text: t('deal.highlight.estate') },
   { icon: '/icons/highlights/bike.svg', text: t('deal.highlight.cycling') },
-  { icon: '/icons/highlights/special.svg', text: t('deal.highlight.exclusive') },
+  { icon: '/icons/facilities/special.svg', text: t('deal.highlight.exclusive') },
 ])
 
 // Build maps from the deal variants (sibling packages) for quick lookup

@@ -74,7 +74,7 @@
               <p v-if="d.soldOut" class="mdeal__soldout">{{ t('mapCard.soldOutForDates') }}</p>
               <ul v-else class="mdeal__includes">
                 <li v-for="(inc, i) in d.includes" :key="i">
-                  <span class="mdeal__check" aria-hidden="true">✓</span>
+                  <span class="mdeal__check" aria-hidden="true"><svg class="icon-check" viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10" style="vertical-align:-0.125em"><path d="M3 13L8 19L21 5"/></svg></span>
                   <span class="mdeal__inc-text">{{ inc }}</span>
                 </li>
               </ul>
