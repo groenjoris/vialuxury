@@ -735,15 +735,19 @@ const includesBullets = computed<string[]>(() => {
   /* Angled banner shape instead of a plain rounded rect. The box carries
      the artwork's own 145:104 ratio + `background-size: contain`, so the
      slant stays exactly as drawn and is never stretched.
-     Padding alone sizes the shape around the text — shrink it to tighten
-     the banner, not the font. Asymmetric on purpose: the shape's right
-     end tapers diagonally, so geometric centring reads as "pushed
-     right"; the extra right padding restores the OPTICAL centre. */
+     Padding is asymmetric on purpose: the shape's right end tapers
+     diagonally, so geometric centring reads as "pushed right"; the
+     extra right padding restores the OPTICAL centre. */
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 145 104'%3E%3Cpath d='M123.24 100.853L144.909 4.88359C145.524 2.16058 143.231 -0.33886 140.466 0.0394912L3.4576 18.7817C1.47641 19.0527 -0.000259399 20.7451 -0.000259399 22.7448V90.5564C-0.000259399 92.6393 1.59824 94.3736 3.67427 94.5431L119.013 103.959C120.999 104.121 122.801 102.797 123.24 100.853Z' fill='%23141414'/%3E%3C/svg%3E");
   background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
-  aspect-ratio: 145 / 104;
+  /* Fixed box in the artwork's 145:104 ratio — iOS Safari sizes
+     content-driven aspect-ratio boxes differently, which shrank the
+     banner under the text on real iPhones. */
+  width: 60px;
+  height: 43px;
+  box-sizing: border-box;
   display: inline-flex;
   align-items: center;
   justify-content: center;

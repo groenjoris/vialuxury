@@ -103,17 +103,18 @@
         <div class="home-popular__col home-popular__col--quick">
           <h3 class="home-popular__heading">Snel zoeken</h3>
           <div class="home-popular__pills">
-            <div class="home-popular__pill-row">
-              <button type="button" class="home-pill home-pill--partner" @click="goPartnerActie('hema')">
-                <img src="/images/partners/hema.png" alt="HEMA" class="home-pill__logo" />
-                <span class="home-pill__label">HEMA actie</span>
-              </button>
-            </div>
             <div
               v-for="(row, ri) in homeFilterRows"
               :key="ri"
               class="home-popular__pill-row"
             >
+              <!-- HEMA partner pill leads the FIRST row (its own row made
+                   mobile render it as a lonely fourth swipe-row). Desktop is
+                   unaffected: the row wrappers are display:contents there. -->
+              <button v-if="ri === 0" type="button" class="home-pill home-pill--partner" @click="goPartnerActie('hema')">
+                <img src="/images/partners/hema.png" alt="HEMA" class="home-pill__logo" />
+                <span class="home-pill__label">HEMA actie</span>
+              </button>
               <button
                 v-for="f in row"
                 :key="f.id"
