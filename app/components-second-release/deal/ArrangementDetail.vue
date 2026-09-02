@@ -25,7 +25,7 @@
         <p class="arr-card__desc">{{ localized(card.room.description) }}</p>
         <ul v-if="card.room.features && card.room.features.length" class="arr-card__features">
           <li v-for="(feature, i) in card.room.features" :key="i">
-            <span class="arr-card__feature-check">✓</span>
+            <span class="arr-card__feature-check"><svg class="icon-check" viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10" style="vertical-align:-0.125em"><path d="M3 13L8 19L21 5"/></svg></span>
             <span>{{ localized(feature) }}</span>
           </li>
         </ul>
@@ -58,7 +58,7 @@
       </div>
       <div class="arr-card__body">
         <h3 class="arr-card__title">
-          <span class="arr-card__check">✓</span>
+          <span class="arr-card__check"><svg class="icon-check" viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10" style="vertical-align:-0.125em"><path d="M3 13L8 19L21 5"/></svg></span>
           {{ localized(inc.title) }}
         </h3>
         <p class="arr-card__desc">{{ localized(inc.description) }}</p>
@@ -620,7 +620,7 @@ function formatGuestList(start: number, count: number): string | null {
   font-size: 13px;
   font-weight: 600;
   padding: 4px 10px;
-  border-radius: 4px;
+  border-radius: 6px;
   pointer-events: none;
 }
 
@@ -636,7 +636,7 @@ function formatGuestList(start: number, count: number): string | null {
   font-weight: 700;
   letter-spacing: 0.3px;
   padding: 5px 10px;
-  border-radius: 4px;
+  border-radius: 6px;
   pointer-events: none;
   max-width: 80%;
   text-align: left;

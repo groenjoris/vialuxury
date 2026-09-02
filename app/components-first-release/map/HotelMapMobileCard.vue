@@ -26,7 +26,7 @@
           <div class="mapcard__head-text">
             <h2 class="mapcard__name">{{ hotel.name }}</h2>
             <div class="mapcard__stars" aria-hidden="true">
-              <span v-for="n in hotel.starRating" :key="n">★</span>
+              <span v-for="n in hotel.starRating" :key="n"><svg class="icon-star" viewBox="0 0 18 18" width="1em" height="1em" fill="currentColor" style="vertical-align:-0.125em" aria-hidden="true"><path d="M16.963,6.786c-.088-.271-.323-.469-.605-.51l-4.62-.671L9.672,1.418c-.252-.512-1.093-.512-1.345,0l-2.066,4.186-4.62,.671c-.282,.041-.517,.239-.605,.51-.088,.271-.015,.57,.19,.769l3.343,3.258-.79,4.601c-.048,.282,.067,.566,.298,.734,.231,.167,.538,.189,.79,.057l4.132-2.173,4.132,2.173c.11,.058,.229,.086,.349,.086,.155,0,.31-.048,.441-.143,.231-.168,.347-.452,.298-.734l-.79-4.601,3.343-3.258c.205-.199,.278-.498,.19-.769Z"/></svg></span>
             </div>
           </div>
           <button
@@ -76,7 +76,7 @@
               <p v-if="d.soldOut" class="mdeal__soldout">{{ t('mapCard.soldOutForDates') }}</p>
               <ul v-else class="mdeal__includes">
                 <li v-for="(inc, i) in d.includes" :key="i">
-                  <span class="mdeal__check" aria-hidden="true">✓</span>
+                  <span class="mdeal__check" aria-hidden="true"><svg class="icon-check" viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10" style="vertical-align:-0.125em"><path d="M3 13L8 19L21 5"/></svg></span>
                   <span class="mdeal__inc-text">{{ inc }}</span>
                 </li>
               </ul>
@@ -250,7 +250,7 @@ const dealViews = computed(() => {
   font-family: var(--font-heading);
   font-size: 16px;
   font-weight: 700;
-  color: #1a1e1e;
+  color: #141414;
   line-height: 1.175;
   overflow: hidden;
   display: -webkit-box;
@@ -304,7 +304,7 @@ const dealViews = computed(() => {
   width: 290px;
   background: #fff;
   border: 1px solid #f5f5f5;
-  border-radius: 4px;
+  border-radius: 6px;
   box-shadow: 0 4px 2px rgba(0, 0, 0, 0.1);
   padding: 10px;
   display: flex;
@@ -352,7 +352,7 @@ const dealViews = computed(() => {
   font-family: var(--font-body);
   font-weight: 700;
   font-size: 10px;
-  color: #222;
+  color: #141414;
 }
 .mdeal__original {
   font-family: var(--font-heading);
@@ -371,7 +371,7 @@ const dealViews = computed(() => {
   font-weight: 700;
   font-size: 20px;
   line-height: 1;
-  color: #222;
+  color: #141414;
 }
 .mdeal__price-bot :deep(.price-info) { align-self: flex-end; margin-bottom: 1px; }
 
@@ -397,10 +397,10 @@ const dealViews = computed(() => {
   gap: 6px;
   font-family: var(--font-body);
   font-size: 12px;
-  color: #222;
+  color: #141414;
   line-height: 1.2;
 }
-.mdeal__check { color: var(--color-discount, #00B67A); font-weight: 700; flex-shrink: 0; }
+.mdeal__check { color: var(--color-discount, #27C88D); font-weight: 700; flex-shrink: 0; }
 .mdeal__inc-text {
   overflow: hidden;
   white-space: nowrap;

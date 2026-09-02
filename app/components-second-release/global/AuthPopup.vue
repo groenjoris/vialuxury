@@ -125,7 +125,7 @@ onBeforeUnmount(() => {
 
 .auth-popup {
   background: #fff;
-  border-radius: 16px;
+  border-radius: 6px;
   width: 440px;
   max-width: 92vw;
   max-height: 90vh;
@@ -203,7 +203,7 @@ onBeforeUnmount(() => {
   gap: 10px;
   width: 100%;
   padding: 11px 16px;
-  border-radius: 10px;
+  border-radius: 6px;
   border: 1px solid var(--color-border);
   background: #fff;
   font-size: 14px;
@@ -221,12 +221,12 @@ onBeforeUnmount(() => {
 .auth-popup__social-btn--apple {
   background: var(--color-dark);
   color: #fff;
-  border-color: #000;
+  border-color: #141414;
 }
 
 .auth-popup__social-btn--apple:hover {
-  background: #222;
-  border-color: #222;
+  background: #141414;
+  border-color: #141414;
 }
 
 /* Divider */
@@ -273,7 +273,7 @@ onBeforeUnmount(() => {
 .auth-popup__input {
   padding: 10px 14px;
   border: 1px solid var(--color-border);
-  border-radius: 8px;
+  border-radius: 6px;
   font-size: 14px;
   color: var(--color-text-primary);
   background: #fff;

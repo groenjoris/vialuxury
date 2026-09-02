@@ -4,9 +4,29 @@
  * confidently classify — the template then renders a CSS checkmark for
  * visual consistency (better than mixing in random third-party icons).
  *
- * See app/data/highlight-icons.ts for the concept palette.
+ * The concept palette is defined below, local to this prototype.
  */
-import { HIGHLIGHT_ICONS, type HighlightConcept } from '~/data/highlight-icons'
+/**
+ * Concept → local icon. `app/data/highlight-icons.ts` is shared with
+ * Huisstijl / Northstar and still points at the filled asset.vialuxury.com
+ * glyphs, so this prototype keeps its own map here rather than editing the
+ * shared one — same line-icon family as the rest of the redesign.
+ */
+const HIGHLIGHT_ICONS = {
+  dining:   '/icons/facilities/restaurant.svg',
+  wellness: '/icons/facilities/wellness.svg',
+  pool:     '/icons/facilities/pool.svg',
+  fitness:  '/icons/facilities/fitness.svg',
+  bike:     '/icons/facilities/bike.svg',
+  wifi:     '/icons/facilities/wifi.svg',
+  parking:  '/icons/facilities/parking.svg',
+  kids:     '/icons/facilities/kids.svg',
+  pets:     '/icons/facilities/pets.svg',
+  service:  '/icons/facilities/service.svg',
+  beach:    '/icons/facilities/beach.svg',
+} as const
+
+type HighlightConcept = keyof typeof HIGHLIGHT_ICONS
 
 interface IconMatch {
   /** Concept icon URL, or null when we want the template's CSS checkmark fallback. */

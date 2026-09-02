@@ -239,7 +239,7 @@ function toggleBottom(index: number) {
   width: 40px;
   height: 3px;
   background: var(--color-primary);
-  border-radius: 2px;
+  border-radius: 6px;
   margin-bottom: var(--space-md);
 }
 

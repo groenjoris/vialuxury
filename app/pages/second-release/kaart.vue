@@ -650,7 +650,7 @@ onMounted(() => {
   flex: 0 0 auto;
   height: 48px;
   padding: 8px 16px;
-  border-radius: 10px;
+  border-radius: 6px;
   border: 0;
   background: var(--color-dark);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
@@ -672,7 +672,7 @@ onMounted(() => {
   min-width: 0;
   height: 48px;
   padding: 8px 12px 8px 14px;
-  border-radius: 10px;
+  border-radius: 6px;
   border: 0;
   background: #fff;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);

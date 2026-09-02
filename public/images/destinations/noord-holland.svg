@@ -1,7 +1,6 @@
-<svg preserveAspectRatio="none" width="100%" height="100%" overflow="visible" style="display: block;" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
-<g id="SVG">
-<path id="Vector" d="M8.25 7.33333C8.25 5.5 9.53333 4.58333 11 4.58333C12.4667 4.58333 13.75 5.5 13.75 7.33333C13.75 9.16667 12.8333 11 11 11C9.16667 11 8.25 9.16667 8.25 7.33333Z" fill="var(--fill-0, #B14963)"/>
-<path id="Vector_2" d="M10.0833 11H11.9167V18.3333H10.0833V11Z" fill="var(--fill-0, #B14963)"/>
-<path id="Vector_3" d="M11.9167 14.6667C13.75 14.2083 15.5833 12.8333 16.5 11C16.1333 13.2 14.6667 14.85 11.9167 15.4V14.6667Z" fill="var(--fill-0, #B14963)"/>
-</g>
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M6.68592 8.7666C7.48698 9.40799 8 10.3942 8 11.5002C8 13.4332 6.433 15.0002 4.5 15.0002C3.52066 15.0002 2.63526 14.5979 2 13.9497" stroke="#141414" stroke-width="2" stroke-miterlimit="10"/>
+<path d="M22 9.5L2 8.5" stroke="#141414" stroke-width="2" stroke-miterlimit="10"/>
+<path d="M22 20.5L2 19.5V8.5C2 5.5 4.5 3 9 2L22 9.5V12L21.9515 12.0097C20.526 12.2948 19.5 13.5464 19.5 15C19.5 16.4537 20.526 17.7052 21.9515 17.9903L22 18V20.5Z" stroke="#141414" stroke-width="2" stroke-miterlimit="10" stroke-linecap="square"/>
+<path d="M13.5 17C12.3954 17 11.5 16.1046 11.5 15C11.5 13.8954 12.3954 13 13.5 13C14.6046 13 15.5 13.8954 15.5 15C15.5 16.1046 14.6046 17 13.5 17Z" stroke="#141414" stroke-width="2" stroke-miterlimit="10" stroke-linecap="square"/>
 </svg>

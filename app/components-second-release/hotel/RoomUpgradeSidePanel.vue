@@ -480,12 +480,19 @@ onUnmounted(() => {
 }
 
 .room-card__features li::before {
-  content: '✓';
+  content: '';
   position: absolute;
   left: 1px;
-  font-weight: 700;
-  color: var(--color-primary);
-  font-size: 12px;
+  top: 0.3em;
+  width: 11px;
+  height: 11px;
+  background-color: var(--color-primary);
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='square' stroke-miterlimit='10'%3E%3Cpath d='M3 13L8 19L21 5'/%3E%3C/svg%3E");
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='square' stroke-miterlimit='10'%3E%3Cpath d='M3 13L8 19L21 5'/%3E%3C/svg%3E");
+  mask-repeat: no-repeat;
+  -webkit-mask-repeat: no-repeat;
+  mask-size: contain;
+  -webkit-mask-size: contain;
 }
 
 .room-card__availability {

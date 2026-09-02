@@ -138,7 +138,6 @@
             >
               <span
                 class="dest-chip__icon"
-                :style="{ background: destinationTint(dest.id) }"
                 aria-hidden="true"
               >
                 <img
@@ -165,7 +164,6 @@
             >
               <span
                 class="dest-chip__icon"
-                :style="{ background: themeTint(theme.id) }"
                 aria-hidden="true"
               >
                 <img
@@ -204,8 +202,7 @@
             @keydown.space.prevent="selectSuggestion(item)"
           >
             <svg class="destination-popup__list-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
-              <circle cx="12" cy="10" r="3" />
+              <path d="M4.5 9.75768C4.5 15.5 12 22 12 22C12 22 19.5 15.5 19.5 9.75768C19.5 4.81181 15.6559 2 12 2C8.34409 2 4.5 4.81181 4.5 9.75768Z" /><path d="M12 12C13.3807 12 14.5 10.8807 14.5 9.5C14.5 8.11929 13.3807 7 12 7C10.6193 7 9.5 8.11929 9.5 9.5C9.5 10.8807 10.6193 12 12 12Z" />
             </svg>
             <div class="destination-popup__list-text">
               <!-- Province / city rows show only the name — no
@@ -588,43 +585,8 @@ function selectSuggestion(item: { name: string; province: string; isProvince: bo
   searchQuery.value = ''
 }
 
-/** Per-destination / per-theme icon-tile tints. Pulled from the Figma
- *  spec — each region gets a soft regional colour so the chip grid
- *  reads as a "deck" rather than a uniform list. */
-const DESTINATION_TINTS: Record<string, string> = {
-  zeeland: '#f0e3c6',
-  brabant: '#cfe0c8',
-  limburg: '#d8dccb',
-  gelderland: '#c4d3c0',
-  drenthe: '#e1cfd9',
-  friesland: '#c8d8e2',
-  overijssel: '#ead2c0',
-  flevoland: '#f3ccae',
-  'noord-holland': '#f0c8cf',
-  'zuid-holland': '#cdd2dc',
-  ardennen: '#c2cec5',
-  vlaanderen: '#ead8b5',
-  'belgische-kust': '#ead9d0',
-  wallonie: '#ecc98a',
-}
 
-const THEME_TINTS: Record<string, string> = {
-  'aan-zee': '#c8d8e2',
-  natuur: '#cfe0c8',
-  romantisch: '#f0c8cf',
-  culinair: '#ead2c0',
-  fiets: '#f3ccae',
-  steden: '#cdd2dc',
-  kasteel: '#ead8b5',
-}
 
-function destinationTint(id: string): string {
-  return DESTINATION_TINTS[id] ?? '#e5e2da'
-}
-
-function themeTint(id: string): string {
-  return THEME_TINTS[id] ?? '#e5e2da'
-}
 
 function selectHotel(hotel: { name: string; slug: string }) {
   emit('select-hotel', hotel.slug)
@@ -837,7 +799,7 @@ function selectHotel(hotel: { name: string; slug: string }) {
   font-weight: 700;
   text-transform: none;
   letter-spacing: 0;
-  color: #1A1A1A;
+  color: #141414;
   margin: 0 0 12px;
   line-height: 1;
 }
@@ -868,7 +830,7 @@ function selectHotel(hotel: { name: string; slug: string }) {
   height: 40px;
   padding: 9px 17px;
   border: 1px solid #e5e2da;
-  border-radius: 4px;
+  border-radius: 6px;
   background: #fff;
   cursor: pointer;
   transition: border-color 150ms ease, background-color 150ms ease, box-shadow 150ms ease;
@@ -876,7 +838,7 @@ function selectHotel(hotel: { name: string; slug: string }) {
   font-family: var(--font-body);
   font-weight: 400;
   line-height: 1;
-  color: #1a1612;
+  color: #141414;
 }
 
 .dest-chip:hover {
@@ -887,10 +849,13 @@ function selectHotel(hotel: { name: string; slug: string }) {
 .dest-chip--selected {
   border-color: var(--color-primary);
   box-shadow: inset 0 0 0 1px var(--color-primary);
-  background: rgba(233, 113, 50, 0.08);
+  background: rgba(251, 134, 44, 0.08);
 }
 
 .dest-chip__icon {
+  /* One uniform cream tile — the per-region / per-theme pastel tints
+     were dropped in favour of a single neutral surface. */
+  background: var(--color-background-secondary);
   width: 26px;
   height: 26px;
   border-radius: 6px;
@@ -902,13 +867,17 @@ function selectHotel(hotel: { name: string; slug: string }) {
 }
 
 .dest-chip__icon-img {
-  width: 22px;
-  height: 22px;
+  /* 18px inside the 26px tile. Note this is 0.75× the icons' 24×24
+     viewBox, so their 2px strokes render at 1.5px — crisp on a 2× screen,
+     slightly soft on a 1× one. 24px (1:1) or 12px (0.5×) are the sizes
+     that land exactly on whole pixels everywhere. */
+  width: 18px;
+  height: 18px;
   display: block;
 }
 
 .dest-chip__name {
-  color: #1a1612;
+  color: #141414;
 }
 
 .dest-chip__country {

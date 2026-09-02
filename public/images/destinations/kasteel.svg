@@ -1,8 +1,13 @@
-<svg preserveAspectRatio="none" width="100%" height="100%" overflow="visible" style="display: block;" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
-<g id="SVG">
-<path id="Vector" d="M4.58333 18.3333V10.0833H6.41667V8.25H8.25V10.0833H10.0833V8.25H11.9167V10.0833H13.75V8.25H15.5833V10.0833H17.4167V18.3333H4.58333Z" fill="var(--fill-0, #846023)"/>
-<path id="Vector_2" d="M11.9167 12.8333H10.0833V18.3333H11.9167V12.8333Z" fill="var(--fill-0, #EAD8B5)"/>
-<path id="Vector_3" d="M12.8333 3.66667H15.5833V6.41667H12.8333V3.66667Z" fill="var(--fill-0, #846023)"/>
-<path id="Vector_4" d="M13.2 2.75H12.4667V11H13.2V2.75Z" fill="var(--fill-0, #846023)"/>
-</g>
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M2 17V15" stroke="#141414" stroke-width="2" stroke-linecap="square"/>
+<path d="M6 17H2V21H6" stroke="#141414" stroke-width="2"/>
+<path d="M22 17V15" stroke="#141414" stroke-width="2" stroke-linecap="square"/>
+<path d="M18 17H22V21H18" stroke="#141414" stroke-width="2"/>
+<path d="M10 21V17C10 15.8954 10.8954 15 12 15C13.1046 15 14 15.8954 14 17V21" stroke="#141414" stroke-width="2"/>
+<path d="M8 5V3" stroke="#141414" stroke-width="2" stroke-linecap="square"/>
+<path d="M12 5V3" stroke="#141414" stroke-width="2" stroke-linecap="square"/>
+<path d="M16 5V3" stroke="#141414" stroke-width="2" stroke-linecap="square"/>
+<path d="M4 5H20" stroke="#141414" stroke-width="2" stroke-linecap="square"/>
+<path d="M4 3V10H20V3" stroke="#141414" stroke-width="2" stroke-linecap="square"/>
+<path d="M6 10V21H18V10" stroke="#141414" stroke-width="2"/>
 </svg>

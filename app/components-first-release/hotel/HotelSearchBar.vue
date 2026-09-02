@@ -463,14 +463,14 @@ defineExpose({ totalPersons })
 }
 
 .search-bar__field--when {
-  border-radius: 4px 0 0 4px;
+  border-radius: 6px 0 0 6px;
 }
 .search-bar__field--who {
-  border-radius: 0 4px 4px 0;
+  border-radius: 0 6px 6px 0;
 }
 
 .search-bar__field:hover {
-  background: var(--color-background-secondary, #faf9f6);
+  background: var(--color-background-secondary, #FBFAF8);
 }
 
 .search-bar__field--active {
@@ -619,21 +619,21 @@ defineExpose({ totalPersons })
   font-family: var(--font-body);
   font-size: 15px;
   font-weight: 400;
-  color: #0e0e0c;
+  color: #141414;
   line-height: 1.2;
   cursor: pointer;
   transition: background 120ms ease, color 120ms ease;
 }
 
 .who-mvp__item:hover {
-  background: rgba(233, 113, 50, 0.08);
+  background: rgba(251, 134, 44, 0.08);
   color: var(--color-primary);
 }
 
 .who-mvp__item--selected {
   font-weight: 600;
   color: var(--color-primary);
-  background: rgba(233, 113, 50, 0.08);
+  background: rgba(251, 134, 44, 0.08);
 }
 
 /* Responsive */

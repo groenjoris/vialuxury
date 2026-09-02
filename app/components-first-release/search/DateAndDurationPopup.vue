@@ -338,7 +338,7 @@ const hasSelection = computed(() => !!props.selectedDate || props.nights.length 
   font-size: 16px;
   font-weight: 700;
   line-height: 1;
-  color: #1A1A1A;
+  color: #141414;
 }
 
 /* "I'm flexible" checkbox row */
@@ -360,7 +360,7 @@ const hasSelection = computed(() => !!props.selectedDate || props.nights.length 
   width: 18px;
   height: 18px;
   border: 1.5px solid #c7c7c7;
-  border-radius: 4px;
+  border-radius: 6px;
   background: #fff;
   display: inline-flex;
   align-items: center;
@@ -381,7 +381,7 @@ const hasSelection = computed(() => !!props.selectedDate || props.nights.length 
   font-family: var(--font-body);
   font-size: 16px;
   font-weight: 400;
-  color: #1A1A1A;
+  color: #141414;
   line-height: 1.2;
 }
 
@@ -434,7 +434,7 @@ const hasSelection = computed(() => !!props.selectedDate || props.nights.length 
   font-family: var(--font-body);
   font-size: 16px;
   font-weight: 400;
-  color: #1A1A1A;
+  color: #141414;
   line-height: 1.2;
   transition: color 150ms ease;
 }
@@ -449,7 +449,7 @@ const hasSelection = computed(() => !!props.selectedDate || props.nights.length 
   width: 18px;
   height: 18px;
   border: 1.5px solid #c7c7c7;
-  border-radius: 4px;
+  border-radius: 6px;
   background: #fff;
   display: inline-flex;
   align-items: center;
@@ -491,7 +491,7 @@ const hasSelection = computed(() => !!props.selectedDate || props.nights.length 
   font-family: var(--font-body);
   font-size: 16px;
   font-weight: 600;
-  color: #1A1A1A;
+  color: #141414;
   line-height: 1;
 }
 
@@ -557,18 +557,18 @@ const hasSelection = computed(() => !!props.selectedDate || props.nights.length 
   font-family: var(--font-body);
   font-size: 14px;
   font-weight: 400;
-  color: #1A1A1A;
+  color: #141414;
   background: none;
   border: 0;
   padding: 0;
   cursor: pointer;
   line-height: 1;
-  border-radius: 8px;
+  border-radius: 6px;
   transition: background 150ms ease, color 150ms ease;
 }
 
 .mini-cal__cell:hover:not(.mini-cal__cell--empty):not(.mini-cal__cell--past):not(:disabled) {
-  background: rgba(233, 113, 50, 0.1);
+  background: rgba(251, 134, 44, 0.1);
   color: var(--color-primary);
 }
 
@@ -619,7 +619,7 @@ const hasSelection = computed(() => !!props.selectedDate || props.nights.length 
   background: var(--color-primary);
   color: #fff;
   border: none;
-  border-radius: 8px;
+  border-radius: 6px;
   font-family: var(--font-body);
   font-size: 16px;
   font-weight: 500;

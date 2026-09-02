@@ -6,7 +6,7 @@
     <section class="vp-hero">
       <div class="container vp-hero__inner">
         <div class="vp-hero__icon">
-          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#00B67A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#27C88D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
             <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
             <polyline points="9 22 9 12 15 12 15 22" />
           </svg>
@@ -100,7 +100,7 @@ onMounted(() => {
   flex: 1;
   padding: 14px 16px;
   border: 1px solid var(--color-border);
-  border-radius: 8px;
+  border-radius: 6px;
   font-family: var(--font-body);
   font-size: 15px;
   background: var(--color-surface);
@@ -118,7 +118,7 @@ onMounted(() => {
   background-color: var(--color-primary);
   color: #fff;
   border: none;
-  border-radius: 8px;
+  border-radius: 6px;
   font-family: var(--font-body);
   font-size: 15px;
   font-weight: 600;
@@ -163,7 +163,7 @@ onMounted(() => {
   padding: 14px 36px;
   background-color: var(--color-discount);
   color: #fff;
-  border-radius: 8px;
+  border-radius: 6px;
   font-family: var(--font-body);
   font-size: 16px;
   font-weight: 600;

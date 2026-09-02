@@ -27,8 +27,7 @@
           <section class="msm-field">
             <div class="msm-field__heading">
               <svg class="msm-field__icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/>
-                <circle cx="12" cy="10" r="3"/>
+                <path d="M4.5 9.75768C4.5 15.5 12 22 12 22C12 22 19.5 15.5 19.5 9.75768C19.5 4.81181 15.6559 2 12 2C8.34409 2 4.5 4.81181 4.5 9.75768Z" /><path d="M12 12C13.3807 12 14.5 10.8807 14.5 9.5C14.5 8.11929 13.3807 7 12 7C10.6193 7 9.5 8.11929 9.5 9.5C9.5 10.8807 10.6193 12 12 12Z" />
               </svg>
               <span class="msm-field__label">{{ t('header.destination') }}</span>
             </div>
@@ -512,7 +511,7 @@ function pickWho(opt: { adults: number; rooms: number }) {
   /* Warm off-white grey — same surface as the homepage persuasion /
      popular bands so the modal feels like part of the same chrome.
      Field cards stay white for contrast. */
-  background: var(--color-background-secondary, #faf9f6);
+  background: var(--color-background-secondary, #FBFAF8);
   color: var(--color-text-primary);
   z-index: 1000;
   display: flex;
@@ -594,7 +593,7 @@ function pickWho(opt: { adults: number; rooms: number }) {
 
 .msm-field__card {
   background: #fff;
-  border-radius: 12px;
+  border-radius: 6px;
   overflow: hidden;
   /* Darker 2 px stroke — was the muted `--color-border-light`,
      which read as a barely-there ghost on the warm-grey surface.
@@ -702,7 +701,7 @@ function pickWho(opt: { adults: number; rooms: number }) {
    element. The card's bottom corners flatten when active. */
 .msm-field__panel {
   background: #fff;
-  border-radius: 0 0 12px 12px;
+  border-radius: 0 0 6px 6px;
   padding: 0;
   margin-top: -2px;             /* overlap the field card's 2 px border */
   border: 2px solid var(--color-border, #c8c8c8);
@@ -713,7 +712,7 @@ function pickWho(opt: { adults: number; rooms: number }) {
 
 /* Square off the card's bottom when its panel is open below. */
 .msm-field__card--active {
-  border-radius: 12px 12px 0 0;
+  border-radius: 6px 6px 0 0;
 }
 
 /* Top toolbar — used by the Reisduur panel: title (left) + Klaar
@@ -737,7 +736,7 @@ function pickWho(opt: { adults: number; rooms: number }) {
   height: 36px;
   padding: 0 18px;
   border: none;
-  border-radius: 8px;
+  border-radius: 6px;
   background: var(--color-primary);
   color: #fff;
   font-family: var(--font-body);
@@ -826,7 +825,7 @@ function pickWho(opt: { adults: number; rooms: number }) {
 .msm-who__item--selected {
   font-weight: 600;
   color: var(--color-primary);
-  background: rgba(233, 113, 50, 0.08);
+  background: rgba(251, 134, 44, 0.08);
 }
 
 /* Footer: full-width orange "Zoeken" CTA */
@@ -834,13 +833,13 @@ function pickWho(opt: { adults: number; rooms: number }) {
   flex-shrink: 0;
   padding: 12px 16px max(16px, env(safe-area-inset-bottom));
   border-top: 1px solid var(--color-border-light, #ececec);
-  background: var(--color-background-secondary, #faf9f6);
+  background: var(--color-background-secondary, #FBFAF8);
 }
 .msm__submit {
   width: 100%;
   height: 52px;
   border: none;
-  border-radius: 12px;
+  border-radius: 6px;
   background: var(--color-primary);
   color: #fff;
   font-family: var(--font-body);

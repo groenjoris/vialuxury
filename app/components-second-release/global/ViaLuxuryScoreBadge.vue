@@ -117,7 +117,7 @@ function hideTooltip() {
   height: 38px;
   flex-shrink: 0;
   background: var(--color-dark);
-  border-radius: 8px;
+  border-radius: 6px;
 }
 
 .vl-score__number {
@@ -195,7 +195,7 @@ function hideTooltip() {
 .vl-score__bar-fill {
   display: block;
   height: 100%;
-  background: #00B67A;
+  background: #27C88D;
   border-radius: 999px;
 }
 

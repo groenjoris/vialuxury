@@ -91,6 +91,27 @@ watch(homeVariant, (v) => {
   body.classList.remove('vl-variant-1', 'vl-variant-2', 'vl-variant-3', 'vl-variant-4', 'vl-variant-5', 'vl-variant-hf')
   body.classList.add(`vl-variant-${v}`)
 }, { immediate: true })
+
+// Reflect which prototype ("Redesign" = First Release, "Variable Travel
+// Group" = Second Release) is active on <body>, so global CSS can retint
+// shared tokens (e.g. the primary-button color in variables.css) inside
+// those two prototypes only — Huisstijl, Northstar and the plain marketing
+// pages keep the original brand orange untouched.
+const releaseScope = computed(() => {
+  if (route.path.startsWith('/first-release')) return 'first'
+  if (route.path.startsWith('/second-release')) return 'second'
+  return null
+})
+// Set via useHead, NOT a client-side watch: the class has to be in the
+// server-rendered <body> or the first paint uses the :root defaults (old
+// #E97132 orange, 12px radii, old green) and only snaps to the prototype
+// values once hydration runs — a full flash of the pre-redesign styling on
+// every page load.
+useHead({
+  bodyAttrs: {
+    class: computed(() => (releaseScope.value ? `vl-release-${releaseScope.value}` : '')),
+  },
+})
 watch(() => route.query.partner, (val) => {
   if (val === 'nu') { set('nu'); setSr('nu') }
 })

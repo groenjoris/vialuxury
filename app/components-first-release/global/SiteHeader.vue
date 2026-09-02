@@ -336,7 +336,7 @@
                       @click="hamburgerDropdownOpen = false"
                     >
                       <span class="menu-panel__icon-tile">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0e0e0c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 18v-6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v6"/><path d="M3 14h18"/><path d="M5 18v2M19 18v2"/><path d="M7 10V8a3 3 0 0 1 3-3h4a3 3 0 0 1 3 3v2"/></svg>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#141414" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 18v-6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v6"/><path d="M3 14h18"/><path d="M5 18v2M19 18v2"/><path d="M7 10V8a3 3 0 0 1 3-3h4a3 3 0 0 1 3 3v2"/></svg>
                       </span>
                       <span class="menu-panel__row-text">
                         <span class="menu-panel__row-title">
@@ -357,7 +357,7 @@
                       @click="hamburgerDropdownOpen = false"
                     >
                       <span class="menu-panel__icon-tile">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0e0e0c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 2v7a3 3 0 0 0 3 3h0a3 3 0 0 0 3-3V2"/><path d="M6 12v10"/><path d="M17 2v20"/><path d="M21 2c0 5-2 6-4 6"/></svg>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#141414" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 2v7a3 3 0 0 0 3 3h0a3 3 0 0 0 3-3V2"/><path d="M6 12v10"/><path d="M17 2v20"/><path d="M21 2c0 5-2 6-4 6"/></svg>
                       </span>
                       <span class="menu-panel__row-text">
                         <span class="menu-panel__row-title">{{ t('header.restaurants') }}</span>
@@ -374,7 +374,7 @@
                       @click="hamburgerDropdownOpen = false"
                     >
                       <span class="menu-panel__icon-tile">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0e0e0c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#141414" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
                       </span>
                       <span class="menu-panel__row-text">
                         <span class="menu-panel__row-title">{{ t('header.giftCard') }}</span>
@@ -390,7 +390,7 @@
                       @click="hamburgerDropdownOpen = false"
                     >
                       <span class="menu-panel__icon-tile">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0e0e0c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h18"/><path d="M12 3 4 13h16L12 3z"/><path d="M9 21v-6h6v6"/></svg>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#141414" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h18"/><path d="M12 3 4 13h16L12 3z"/><path d="M9 21v-6h6v6"/></svg>
                       </span>
                       <span class="menu-panel__row-text">
                         <span class="menu-panel__row-title">{{ t('header.holidayParks') }}</span>
@@ -405,7 +405,7 @@
                       @click="hamburgerDropdownOpen = false"
                     >
                       <span class="menu-panel__icon-tile">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0e0e0c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#141414" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
                       </span>
                       <span class="menu-panel__row-text">
                         <span class="menu-panel__row-title">Jouw favorieten</span>
@@ -423,7 +423,7 @@
                       @click="hamburgerDropdownOpen = false"
                     >
                       <span class="menu-panel__icon-tile menu-panel__icon-tile--sm">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0e0e0c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#141414" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
                       </span>
                       <span class="menu-panel__row-text">
                         <span class="menu-panel__row-title menu-panel__row-title--sm">Inloggen leden</span>
@@ -443,7 +443,7 @@
                     >
                       <span class="menu-panel__icon-tile menu-panel__icon-tile--sm">
                         <!-- user-plus glyph (Lucide) -->
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0e0e0c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#141414" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
                       </span>
                       <span class="menu-panel__row-text">
                         <span class="menu-panel__row-title menu-panel__row-title--sm">Gratis aanmelden</span>
@@ -458,7 +458,7 @@
                       @click="hamburgerDropdownOpen = false"
                     >
                       <span class="menu-panel__icon-tile menu-panel__icon-tile--sm">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0e0e0c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16v12H5.17L4 17.17V4z"/></svg>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#141414" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16v12H5.17L4 17.17V4z"/></svg>
                       </span>
                       <span class="menu-panel__row-text">
                         <span class="menu-panel__row-title menu-panel__row-title--sm">{{ t('header.contact') }}</span>
@@ -473,7 +473,7 @@
                       @click="hamburgerDropdownOpen = false"
                     >
                       <span class="menu-panel__icon-tile menu-panel__icon-tile--sm">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0e0e0c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#141414" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
                       </span>
                       <span class="menu-panel__row-text">
                         <span class="menu-panel__row-title menu-panel__row-title--sm">{{ t('header.faq') }}</span>
@@ -492,7 +492,7 @@
                     >
                       <span class="menu-panel__icon-tile menu-panel__icon-tile--sm">
                         <!-- Hotel / building glyph -->
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0e0e0c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 21V9h6v12"/><path d="M3 9h18"/></svg>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#141414" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 21V9h6v12"/><path d="M3 9h18"/></svg>
                       </span>
                       <span class="menu-panel__row-text">
                         <span class="menu-panel__row-title menu-panel__row-title--sm">Aanmelden als hotel</span>
@@ -560,7 +560,7 @@
           <span class="search-bar__field-body">
             <span class="search-bar__field-row">
               <span class="search-bar__field-icon" aria-hidden="true">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 9.75768C4.5 15.5 12 22 12 22C12 22 19.5 15.5 19.5 9.75768C19.5 4.81181 15.6559 2 12 2C8.34409 2 4.5 4.81181 4.5 9.75768Z" /><path d="M12 12C13.3807 12 14.5 10.8807 14.5 9.5C14.5 8.11929 13.3807 7 12 7C10.6193 7 9.5 8.11929 9.5 9.5C9.5 10.8807 10.6193 12 12 12Z" /></svg>
               </span>
               <span class="search-bar__label">{{ t('header.destination') }}</span>
             </span>
@@ -2264,10 +2264,10 @@ function handleSelectHotelInPopup(slug: string) {
    so the hover background never touches the dividers with a rounded
    corner. Radius matches the search button's 4 px. */
 .site-header .search-bar__field--destination {
-  border-radius: 4px 0 0 4px;
+  border-radius: 6px 0 0 6px;
 }
 .site-header .search-bar__field--who {
-  border-radius: 0 4px 4px 0;
+  border-radius: 0 6px 6px 0;
 }
 
 /* Body: top-aligned label-row, bottom-aligned value, full field height. */
@@ -2280,7 +2280,7 @@ function handleSelectHotelInPopup(slug: string) {
 .site-header .search-bar__field:hover {
   /* Warm off-grey from the homepage palette — same `--color-background-secondary`
      used by the persuasion / popular bands on the homepage. */
-  background: var(--color-background-secondary, #faf9f6);
+  background: var(--color-background-secondary, #FBFAF8);
   border-color: transparent;
 }
 
@@ -2356,7 +2356,7 @@ function handleSelectHotelInPopup(slug: string) {
   height: 60px;                  /* explicit so divider/hover line up */
   width: auto;
   padding: 0 38px;
-  border-radius: 4px;
+  border-radius: 6px;
   display: inline-flex;
   align-items: center;
   gap: 10px;
@@ -2377,11 +2377,11 @@ function handleSelectHotelInPopup(slug: string) {
 
 /* Search-button pulse — used after picker change with no search click */
 @keyframes search-btn-pulse {
-  0%, 100%   { box-shadow: 0 0 0 0 rgba(233, 113, 50, 0.55); }
-  18%        { box-shadow: 0 0 0 14px rgba(233, 113, 50, 0); }
-  36%        { box-shadow: 0 0 0 0 rgba(233, 113, 50, 0); }
-  54%        { box-shadow: 0 0 0 0 rgba(233, 113, 50, 0.55); }
-  72%        { box-shadow: 0 0 0 14px rgba(233, 113, 50, 0); }
+  0%, 100%   { box-shadow: 0 0 0 0 rgba(251, 134, 44, 0.55); }
+  18%        { box-shadow: 0 0 0 14px rgba(251, 134, 44, 0); }
+  36%        { box-shadow: 0 0 0 0 rgba(251, 134, 44, 0); }
+  54%        { box-shadow: 0 0 0 0 rgba(251, 134, 44, 0.55); }
+  72%        { box-shadow: 0 0 0 14px rgba(251, 134, 44, 0); }
 }
 
 .search-bar__btn--pulsing {
@@ -2404,7 +2404,7 @@ function handleSelectHotelInPopup(slug: string) {
   height: 60px;                  /* explicit so divider/hover line up */
   width: auto;
   padding: 0 38px;
-  border-radius: 4px;
+  border-radius: 6px;
   display: inline-flex;
   align-items: center;
   gap: 10px;
@@ -2427,7 +2427,7 @@ function handleSelectHotelInPopup(slug: string) {
 .verticals__item-accent {
   font-family: var(--font-heading);
   font-weight: 700;
-  color: #e97132;
+  color: #FB862C;
 }
 
 /* "more" word styled one pt bigger than the rest of the nav item */
@@ -2442,7 +2442,7 @@ function handleSelectHotelInPopup(slug: string) {
   min-width: 240px;
   background: var(--color-dark);
   border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 12px;
+  border-radius: 6px;
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
   padding: 12px 8px;
   z-index: 9999;
@@ -2763,7 +2763,7 @@ function handleSelectHotelInPopup(slug: string) {
   padding: 16px 16px 14px;
   background: #fff;
   border: 1px solid var(--color-border-light, #ececec);
-  border-radius: 10px;
+  border-radius: 6px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
   display: flex;
   flex-direction: column;
@@ -2802,14 +2802,14 @@ function handleSelectHotelInPopup(slug: string) {
   gap: 0 12px;
   padding: 8px 4px;
   margin: 0 -4px;
-  border-radius: 8px;
+  border-radius: 6px;
   text-decoration: none;
   color: var(--color-text-primary);
   cursor: pointer;
   transition: background 120ms ease, color 120ms ease;
 }
 .site-header__phone-popover-item:hover {
-  background: var(--color-background-secondary, #faf9f6);
+  background: var(--color-background-secondary, #FBFAF8);
 }
 .site-header__phone-popover-icon {
   grid-column: 1;
@@ -3017,7 +3017,7 @@ function handleSelectHotelInPopup(slug: string) {
   width: 18px;
   height: 2px;
   background: #ffffff;
-  border-radius: 1px;
+  border-radius: 6px;
 }
 
 /* Contact dropdown */
@@ -3173,7 +3173,7 @@ function handleSelectHotelInPopup(slug: string) {
   display: flex;
   align-items: center;
   background: var(--color-background-secondary, #faf7f0);
-  border-radius: 18px;
+  border-radius: 6px;
   height: 80px;
   padding: 8px;
   position: relative;
@@ -3197,7 +3197,7 @@ function handleSelectHotelInPopup(slug: string) {
   border: 1px solid transparent;
   background: #fff;
   text-align: left;
-  border-radius: 12px;
+  border-radius: 6px;
   transition: background var(--transition-fast),
               border-color var(--transition-fast),
               box-shadow var(--transition-fast);
@@ -3209,13 +3209,13 @@ function handleSelectHotelInPopup(slug: string) {
    off-grey used by the homepage persuasion / popular bands so the
    search bar hover reads as a known surface across the site. */
 .search-bar__field:hover {
-  background: var(--color-background-secondary, #faf9f6);
+  background: var(--color-background-secondary, #FBFAF8);
   border-color: transparent;
 }
 
 .search-bar__field--active {
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(233, 113, 50, 0.18);
+  box-shadow: 0 0 0 3px rgba(251, 134, 44, 0.18);
 }
 
 .search-bar__field--destination {
@@ -3333,7 +3333,7 @@ function handleSelectHotelInPopup(slug: string) {
      previously was a fixed 56px square icon button. */
   height: 56px;
   padding: 0 24px;
-  border-radius: 12px;
+  border-radius: 6px;
   background: var(--color-primary);
   border: none;
   display: inline-flex;
@@ -3430,21 +3430,21 @@ function handleSelectHotelInPopup(slug: string) {
   font-family: var(--font-body);
   font-size: 15px;
   font-weight: 400;
-  color: #0e0e0c;
+  color: #141414;
   line-height: 1.2;
   cursor: pointer;
   transition: background 120ms ease, color 120ms ease;
 }
 
 .who-mvp__item:hover {
-  background: rgba(233, 113, 50, 0.08);
+  background: rgba(251, 134, 44, 0.08);
   color: var(--color-primary);
 }
 
 .who-mvp__item--selected {
   font-weight: 600;
   color: var(--color-primary);
-  background: rgba(233, 113, 50, 0.08);
+  background: rgba(251, 134, 44, 0.08);
 }
 
 /* ==================== */
@@ -3563,7 +3563,7 @@ function handleSelectHotelInPopup(slug: string) {
   position: absolute;
   inset: 0;
   background: var(--color-border);
-  border-radius: 26px;
+  border-radius: 6px;
   cursor: pointer;
   transition: background var(--transition-fast);
 }
@@ -3665,7 +3665,7 @@ function handleSelectHotelInPopup(slug: string) {
   min-width: 300px;
   background: var(--color-dark);
   border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 12px;
+  border-radius: 6px;
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
   padding: 16px;
   z-index: 9999;
@@ -3710,7 +3710,7 @@ function handleSelectHotelInPopup(slug: string) {
 }
 
 .contact-dropdown__item--urgent svg {
-  color: #E6A033;
+  color: #FB862C;
 }
 
 .contact-dropdown__item-text {
@@ -3783,7 +3783,7 @@ function handleSelectHotelInPopup(slug: string) {
   height: 68px;
   padding: 6px 6px 6px 18px;
   border: 1px solid rgba(255, 255, 255, 0.5);
-  border-radius: 10px;            /* rounded rectangle, NOT pill */
+  border-radius: 6px;            /* rounded rectangle, NOT pill */
   /* Fully opaque — on the solid (dark) header pages the slot's dark
      strip sits behind the pill's top edge, and any translucency let
      that black tint show through. */
@@ -4126,9 +4126,9 @@ function handleSelectHotelInPopup(slug: string) {
         `padding-top` (12). Resulting bar top = nav-bottom - 22.
 
      B) BLACK BG must end at each bar's midline (= "halfway
-        through the bar"). The nav's #111 black extends DOWN
+        through the bar"). The nav's #141414 black extends DOWN
         into the slot via a linear-gradient on the slot bg —
-        the slot's top STRIP is painted #111, the rest #fff.
+        the slot's top STRIP is painted #141414, the rest #fff.
         Strip height = (bar-height / 2) - 22 px:
           - 68-px pill   → strip 12 px (default rule)
           - 92-px summary → strip 24 px (--summary override)
@@ -4143,7 +4143,7 @@ function handleSelectHotelInPopup(slug: string) {
      ────────────────────────────────────────────────────── */
   .site-header .site-header__mobile-search--on-solid {
     position: relative;
-    /* Default (pill case): slot's TOP 12 px is painted #111
+    /* Default (pill case): slot's TOP 12 px is painted #141414
        so the nav's black bg visually extends DOWN into the
        slot, reaching the pill's midline. White below. */
     background: linear-gradient(to bottom, var(--color-dark) 12px, #fff 12px);
@@ -4335,7 +4335,7 @@ function handleSelectHotelInPopup(slug: string) {
   border: 1.5px solid #d9d9d9;
   border-radius: 50%;
   background: #fff;
-  color: #1a1a1a;
+  color: #141414;
   font-family: var(--font-body);
   font-size: 16px;
   font-weight: 700;
@@ -4344,7 +4344,7 @@ function handleSelectHotelInPopup(slug: string) {
 }
 .menu-panel__variant--active {
   background: var(--color-dark);
-  border-color: #1a1a1a;
+  border-color: #141414;
   color: #fff;
 }
 
@@ -4354,14 +4354,14 @@ function handleSelectHotelInPopup(slug: string) {
   gap: 16px;
   margin: 0 16px;
   padding: 12px 16px;
-  border-radius: 10px;
+  border-radius: 6px;
   text-decoration: none;
   color: inherit;
   cursor: pointer;
   transition: background 120ms ease;
 }
 .menu-panel__row:hover {
-  background: #faf9f6;
+  background: #FBFAF8;
 }
 
 .menu-panel__row--lg { min-height: 68px; }
@@ -4371,14 +4371,14 @@ function handleSelectHotelInPopup(slug: string) {
   flex-shrink: 0;
   width: 40px;
   height: 40px;
-  border-radius: 8px;
+  border-radius: 6px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   /* Warmer off-grey from the homepage palette — same surface as
      `--color-background-secondary` (used by the persuasion / popular
      bands), so the menu icons read as the same fill the home uses. */
-  background: var(--color-background-secondary, #faf9f6);
+  background: var(--color-background-secondary, #FBFAF8);
 }
 .menu-panel__icon-tile--sm {
   width: 32px;
@@ -4399,7 +4399,7 @@ function handleSelectHotelInPopup(slug: string) {
   font-size: 16px;
   font-weight: 700;
   letter-spacing: -0.08px;
-  color: #0e0e0c;
+  color: #141414;
   line-height: 1.2;
   display: inline-flex;
   align-items: baseline;
@@ -4415,7 +4415,7 @@ function handleSelectHotelInPopup(slug: string) {
      the heading-styled Verblijven label. */
   font-family: var(--font-heading);
   font-weight: 700;
-  color: #e26a2c;
+  color: #FB862C;
 }
 
 .menu-panel__row-sub {

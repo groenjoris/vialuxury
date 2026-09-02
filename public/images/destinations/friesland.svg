@@ -1,7 +1,5 @@
-<svg preserveAspectRatio="none" width="100%" height="100%" overflow="visible" style="display: block;" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
-<g id="SVG">
-<path id="Vector" d="M11 3.66667V13.75L5.5 11.9167L11 3.66667Z" fill="var(--fill-0, #2C5874)"/>
-<path id="Vector_2" opacity="0.7" d="M11.9167 6.41667V13.75L16.5 11.9167L11.9167 6.41667Z" fill="var(--fill-0, #2C5874)"/>
-<path id="Vector_3" d="M2.75 15.5833C4.58333 15.5833 5.5 16.9583 8.25 16.9583C11 16.9583 13.75 15.5833 16.5 15.5833C19.25 15.5833 19.25 16.9583 19.25 16.9583V19.25H2.75V15.5833Z" fill="var(--fill-0, #2C5874)"/>
-</g>
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M8 17V18" stroke="#141414" stroke-width="2" stroke-miterlimit="10" stroke-linecap="square"/>
+<path d="M4.63961 22H17.8676C18.5701 22 19.2212 21.6314 19.5826 21.029L22 17V16L2 17L2.67845 20.3922C2.86542 21.3271 3.68625 22 4.63961 22Z" stroke="#141414" stroke-width="2" stroke-miterlimit="10" stroke-linecap="square"/>
+<path d="M12 12.5V3L4 12.9L12 12.5Z" stroke="#141414" stroke-width="2" stroke-miterlimit="10" stroke-linecap="square"/>
 </svg>

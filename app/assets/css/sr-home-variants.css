@@ -187,7 +187,7 @@
     margin-top: -24px !important;   /* was -34 → +10px below the logo */
   }
   :is([data-sr-home-variant="4"], [data-sr-home-variant="5"]) .search-page .site-header__mobile-search--on-solid.site-header__mobile-search--summary {
-    background: linear-gradient(to bottom, #111 34px, #fff 34px) !important;
+    background: linear-gradient(to bottom, #141414 34px, #fff 34px) !important;
   }
 
   /* V4/V5 deal + hotel pages use the compact header (shorter nav), so the

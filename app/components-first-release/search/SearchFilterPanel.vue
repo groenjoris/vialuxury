@@ -355,7 +355,7 @@ function itemCount(value: string): number {
   right: 0;
   height: 4px;
   background: var(--color-border);
-  border-radius: 2px;
+  border-radius: 6px;
   transform: translateY(-50%);
 }
 
@@ -366,7 +366,7 @@ function itemCount(value: string): number {
   right: var(--fill-right, 0%);
   height: 100%;
   background: var(--color-dark);
-  border-radius: 2px;
+  border-radius: 6px;
 }
 
 .filter-budget__input {
@@ -477,7 +477,7 @@ function itemCount(value: string): number {
   width: 16px;
   height: 16px;
   border: 1px solid var(--color-border);
-  border-radius: 3px;
+  border-radius: 6px;
   cursor: pointer;
   flex-shrink: 0;
   position: relative;

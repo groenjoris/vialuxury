@@ -112,14 +112,13 @@
           <h3 class="deal-card-v2__name-row">
             <span class="deal-card-v2__name">{{ hotel.name }}</span>
             <span class="deal-card-v2__stars" aria-hidden="true">
-              <span v-for="n in hotel.starRating" :key="n">★</span>
+              <span v-for="n in hotel.starRating" :key="n"><svg class="icon-star" viewBox="0 0 18 18" width="1em" height="1em" fill="currentColor" style="vertical-align:-0.125em" aria-hidden="true"><path d="M16.963,6.786c-.088-.271-.323-.469-.605-.51l-4.62-.671L9.672,1.418c-.252-.512-1.093-.512-1.345,0l-2.066,4.186-4.62,.671c-.282,.041-.517,.239-.605,.51-.088,.271-.015,.57,.19,.769l3.343,3.258-.79,4.601c-.048,.282,.067,.566,.298,.734,.231,.167,.538,.189,.79,.057l4.132-2.173,4.132,2.173c.11,.058,.229,.086,.349,.086,.155,0,.31-.048,.441-.143,.231-.168,.347-.452,.298-.734l-.79-4.601,3.343-3.258c.205-.199,.278-.498,.19-.769Z"/></svg></span>
             </span>
           </h3>
         </NuxtLink>
         <div ref="metaEl" class="deal-card-v2__meta">
           <svg class="deal-card-v2__loc-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
-            <circle cx="12" cy="10" r="3" />
+            <path d="M4.5 9.75768C4.5 15.5 12 22 12 22C12 22 19.5 15.5 19.5 9.75768C19.5 4.81181 15.6559 2 12 2C8.34409 2 4.5 4.81181 4.5 9.75768Z" /><path d="M12 12C13.3807 12 14.5 10.8807 14.5 9.5C14.5 8.11929 13.3807 7 12 7C10.6193 7 9.5 8.11929 9.5 9.5C9.5 10.8807 10.6193 12 12 12Z" />
           </svg>
           <span class="deal-card-v2__location">
             <span>{{ hotel.city }}</span>
@@ -143,7 +142,7 @@
             <span class="deal-card-v2__package-label">{{ packageLabel }}</span>
             <div class="deal-card-v2__includes-list">
               <span v-for="item in includesBullets" :key="item" class="deal-card-v2__include">
-                <span class="deal-card-v2__check">✓</span>
+                <span class="deal-card-v2__check"><svg class="icon-check" viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10" style="vertical-align:-0.125em"><path d="M3 13L8 19L21 5"/></svg></span>
                 <span class="deal-card-v2__include-text">{{ item }}</span>
               </span>
             </div>
@@ -620,6 +619,9 @@ const includesBullets = computed<string[]>(() => {
   min-width: 0;
   background: var(--color-surface);
   border-radius: var(--radius-lg);
+  /* Same 1px + colour as the card's own `__divider` below, so the frame
+     and the internal rule read as one line weight. */
+  border: 1px solid var(--color-border-light);
   box-shadow: var(--shadow-card);
   overflow: hidden;
   transition: box-shadow var(--transition-fast);
@@ -678,7 +680,7 @@ const includesBullets = computed<string[]>(() => {
   border-radius: 50%;
   border: none;
   background: rgba(255, 255, 255, 0.95);
-  color: #1a1a1a;
+  color: #141414;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -730,13 +732,26 @@ const includesBullets = computed<string[]>(() => {
   position: absolute;
   top: var(--space-md);
   left: var(--space-md);
-  background: var(--color-dark);
+  /* Angled banner shape instead of a plain rounded rect. The box carries
+     the artwork's own 145:104 ratio + `background-size: contain`, so the
+     slant stays exactly as drawn and is never stretched.
+     Padding alone sizes the shape around the text — shrink it to tighten
+     the banner, not the font. Asymmetric on purpose: the shape's right
+     end tapers diagonally, so geometric centring reads as "pushed
+     right"; the extra right padding restores the OPTICAL centre. */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 145 104'%3E%3Cpath d='M123.24 100.853L144.909 4.88359C145.524 2.16058 143.231 -0.33886 140.466 0.0394912L3.4576 18.7817C1.47641 19.0527 -0.000259399 20.7451 -0.000259399 22.7448V90.5564C-0.000259399 92.6393 1.59824 94.3736 3.67427 94.5431L119.013 103.959C120.999 104.121 122.801 102.797 123.24 100.853Z' fill='%23141414'/%3E%3C/svg%3E");
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  aspect-ratio: 145 / 104;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   color: #fff;
   font-family: var(--font-heading);
-  font-size: 18px;
+  font-size: 15px;
   font-weight: 700;
-  padding: 6px 12px;
-  border-radius: var(--radius-sm);
+  padding: 0 13px 0 6px;
   letter-spacing: 0.5px;
 }
 
@@ -766,7 +781,7 @@ const includesBullets = computed<string[]>(() => {
   font-weight: 600;
   line-height: 1.2;
   padding: 8px 14px;
-  border-radius: 8px;
+  border-radius: 6px;
   letter-spacing: 0.2px;
   backdrop-filter: blur(2px);
   -webkit-backdrop-filter: blur(2px);
@@ -789,7 +804,7 @@ const includesBullets = computed<string[]>(() => {
   font-weight: 600;
   line-height: 1.2;
   padding: 4px 8px;
-  border-radius: 5px;
+  border-radius: 6px;
   letter-spacing: 0.2px;
 }
 
@@ -894,7 +909,7 @@ const includesBullets = computed<string[]>(() => {
 }
 
 .deal-card-v2__stars {
-  color: #1A1A1A;
+  color: #141414;
   font-size: 13px;
   letter-spacing: 1px;
   flex-shrink: 0;
@@ -920,7 +935,7 @@ const includesBullets = computed<string[]>(() => {
   width: 28px;
   height: 28px;
   border-radius: var(--radius-sm);
-  background: #00B67A;
+  background: #27C88D;
   color: #fff;
   font-size: 12px;
   font-weight: 700;

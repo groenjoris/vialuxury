@@ -63,14 +63,13 @@
           <div class="hotel-page__name-wrap">
             <h1 class="hotel-page__name">{{ hotel.name }}</h1>
             <div class="hotel-page__stars" aria-hidden="true">
-              <span v-for="n in hotel.starRating" :key="n" class="star-adj">★</span>
+              <span v-for="n in hotel.starRating" :key="n" class="star-adj"><svg class="icon-star" viewBox="0 0 18 18" width="1em" height="1em" fill="currentColor" style="vertical-align:-0.125em" aria-hidden="true"><path d="M16.963,6.786c-.088-.271-.323-.469-.605-.51l-4.62-.671L9.672,1.418c-.252-.512-1.093-.512-1.345,0l-2.066,4.186-4.62,.671c-.282,.041-.517,.239-.605,.51-.088,.271-.015,.57,.19,.769l3.343,3.258-.79,4.601c-.048,.282,.067,.566,.298,.734,.231,.167,.538,.189,.79,.057l4.132-2.173,4.132,2.173c.11,.058,.229,.086,.349,.086,.155,0,.31-.048,.441-.143,.231-.168,.347-.452,.298-.734l-.79-4.601,3.343-3.258c.205-.199,.278-.498,.19-.769Z"/></svg></span>
             </div>
           </div>
           <p v-if="hotel.pitch" class="hotel-page__pitch">{{ localized(hotel.pitch) }}</p>
           <div class="hotel-page__meta">
             <svg class="hotel-page__meta-pin" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-              <circle cx="12" cy="10" r="3" />
+              <path d="M4.5 9.75768C4.5 15.5 12 22 12 22C12 22 19.5 15.5 19.5 9.75768C19.5 4.81181 15.6559 2 12 2C8.34409 2 4.5 4.81181 4.5 9.75768Z" /><path d="M12 12C13.3807 12 14.5 10.8807 14.5 9.5C14.5 8.11929 13.3807 7 12 7C10.6193 7 9.5 8.11929 9.5 9.5C9.5 10.8807 10.6193 12 12 12Z" />
             </svg>
             <span>{{ hotel.location.city }}, {{ hotel.location.region }}</span>
             <a href="#location" class="hotel-page__view-map-link" @click.prevent="scrollToMiniMap">{{ t('common.viewMap') || 'Bekijk op kaart' }}</a>
@@ -117,8 +116,8 @@
         <h2 class="section-title">{{ t('hotel.facilities') }}</h2>
         <div class="facilities__grid">
           <div v-for="fac in hotel.facilities" :key="localized(fac.label)" class="facility-item">
-            <img v-if="fac.icon" :src="fac.icon" alt="" class="facility-item__icon" loading="lazy" />
-            <span v-else class="facility-item__check">✓</span>
+            <img v-if="facilityIcon(localized(fac.label))" :src="facilityIcon(localized(fac.label))!" alt="" class="facility-item__icon" loading="lazy" />
+            <span v-else class="facility-item__check"><svg class="icon-check" viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10" style="vertical-align:-0.125em"><path d="M3 13L8 19L21 5"/></svg></span>
             <span>{{ localized(fac.label) }}</span>
           </div>
         </div>
@@ -364,6 +363,7 @@
 </template>
 
 <script setup lang="ts">
+import { facilityIcon } from '~/utils-first-release/facilityIcon'
 import { formatPrice } from '~/utils-first-release/formatPrice'
 import { nightsLabel, personsLabel, roomsLabel } from '~/utils-first-release/plural'
 import { useBodyScrollLock } from '~/composables-first-release/useBodyScrollLock'
@@ -812,7 +812,7 @@ onBeforeUnmount(() => {
 .hotel-page__stars .star-adj {
   font-size: 20px;
   line-height: 1;
-  color: #111111;
+  color: #141414;
   -webkit-font-smoothing: none;
   text-rendering: geometricPrecision;
 }
@@ -828,7 +828,7 @@ onBeforeUnmount(() => {
 /* Default text-link hover: deepen to the primary-hover orange. */
 .hotel-page__meta .hotel-page__view-map-link:hover { color: var(--color-primary-hover); }
 .hotel-page__score-wrap { display: flex; align-items: center; gap: 6px; }
-.hotel-page__score { display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: var(--radius-sm); background: #00B67A; color: #fff; font-size: 13px; font-weight: 700; flex-shrink: 0; }
+.hotel-page__score { display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: var(--radius-sm); background: #27C88D; color: #fff; font-size: 13px; font-weight: 700; flex-shrink: 0; }
 .hotel-page__score-label { font-size: 13px; font-weight: 600; color: var(--color-text-primary); }
 .hotel-page__divider { color: var(--color-text-muted); }
 /* Heart + share live inside `.hotel-page__tabs` (right-aligned via
@@ -994,15 +994,15 @@ onBeforeUnmount(() => {
 /* ===== REVIEWS ===== */
 .hotel-page__reviews { padding: var(--space-xl) var(--space-lg); position: relative; }
 .reviews__score-bar { display: flex; align-items: center; gap: var(--space-sm); margin-bottom: var(--space-md); }
-.reviews__score-big { font-size: 24px; font-weight: 700; font-family: var(--font-heading); background: #00B67A; color: #fff; padding: 8px 12px; border-radius: var(--radius-sm); }
+.reviews__score-big { font-size: 24px; font-weight: 700; font-family: var(--font-heading); background: #27C88D; color: #fff; padding: 8px 12px; border-radius: var(--radius-sm); }
 .reviews__score-meta { display: flex; flex-direction: column; gap: 1px; }
 .reviews__score-verdict { font-size: 15px; font-weight: 600; color: var(--color-text-primary); }
 .reviews__score-count { font-size: 13px; color: var(--color-text-muted); }
 .reviews__categories { display: grid; grid-template-columns: 1fr 1fr; gap: 6px var(--space-xl); margin-bottom: var(--space-lg); max-width: 720px; }
 .reviews__cat { display: grid; grid-template-columns: 110px 1fr 32px; align-items: center; gap: var(--space-sm); font-size: 13px; }
 .reviews__cat-name { color: var(--color-text-secondary); }
-.reviews__cat-bar { height: 6px; background: var(--color-border-light); border-radius: 3px; overflow: hidden; }
-.reviews__cat-fill { height: 100%; background: #00B67A; border-radius: 3px; }
+.reviews__cat-bar { height: 6px; background: var(--color-border-light); border-radius: 6px; overflow: hidden; }
+.reviews__cat-fill { height: 100%; background: #27C88D; border-radius: 6px; }
 .reviews__cat-score { font-weight: 600; text-align: right; }
 .reviews__grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md); }
 .review-card { padding: var(--space-md); background: var(--color-background-secondary); border-radius: var(--radius-md); display: flex; flex-direction: column; }
@@ -1021,7 +1021,7 @@ onBeforeUnmount(() => {
   font-weight: 500;
   color: var(--color-text-muted);
 }
-.review-card__arrangement svg { color: #00B67A; flex-shrink: 0; }
+.review-card__arrangement svg { color: #27C88D; flex-shrink: 0; }
 
 /* ===== HOUSE RULES ===== */
 .hotel-page__house-rules { padding: var(--space-xl) var(--space-lg); position: relative; }
