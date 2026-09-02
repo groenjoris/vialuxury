@@ -140,7 +140,7 @@
       <div class="deal-card-v2__body-row">
         <div class="deal-card-v2__main-col">
           <div class="deal-card-v2__includes" :class="{ 'deal-card-v2__includes--full': fullInclusions && fullInclusions.length }">
-            <span v-if="gridMode" class="deal-card-v2__package-label">{{ packageLabel }}</span>
+            <span class="deal-card-v2__package-label">{{ packageLabel }}</span>
             <div class="deal-card-v2__includes-list">
               <span v-for="item in includesBullets" :key="item" class="deal-card-v2__include">
                 <span class="deal-card-v2__check">✓</span>
@@ -985,7 +985,7 @@ const includesBullets = computed<string[]>(() => {
   min-width: 0;
 }
 
-/* "Arrangement" / "Package" label above the includes (grid cards). */
+/* "Arrangement" / "Package" label above the includes. */
 .deal-card-v2__package-label {
   display: block;
   font-family: var(--font-heading);

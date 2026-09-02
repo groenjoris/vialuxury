@@ -140,6 +140,7 @@
       <div class="deal-card-v2__body-row">
         <div class="deal-card-v2__main-col">
           <div class="deal-card-v2__includes" :class="{ 'deal-card-v2__includes--full': fullInclusions && fullInclusions.length }">
+            <span class="deal-card-v2__package-label">{{ packageLabel }}</span>
             <div class="deal-card-v2__includes-list">
               <span v-for="item in includesBullets" :key="item" class="deal-card-v2__include">
                 <span class="deal-card-v2__check">✓</span>
@@ -266,6 +267,8 @@ const isMobile = useFirstReleaseIsMobile()
 const linkTarget = computed(() => (isMobile.value ? '_self' : '_blank'))
 /** German-only extra microcopy row sits below the CTA. */
 const isGerman = computed(() => locale.value === 'de')
+/** "Arrangement" / "Package" label above the includes list. */
+const packageLabel = computed(() => (locale.value === 'en' ? 'Package' : 'Arrangement'))
 
 const { persons, rooms, arrivalDate } = useFirstReleaseSearchState()
 // Session-wide favourites (no login popup). Keyed by hotel slug when
@@ -973,6 +976,16 @@ const includesBullets = computed<string[]>(() => {
 .deal-card-v2__includes {
   flex: 1;
   min-width: 0;
+}
+
+/* "Arrangement" / "Package" label above the includes. */
+.deal-card-v2__package-label {
+  display: block;
+  font-family: var(--font-heading);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-primary);
+  margin-bottom: 4px;
 }
 
 .deal-card-v2__includes-list {
