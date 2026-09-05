@@ -126,11 +126,12 @@
 
       <!-- Browse mode: provincies (no label) on top, themes below. -->
       <div v-else-if="!isSearching" class="destination-popup__browse">
-        <!-- Provincies / regio's — first section, no heading. -->
+        <!-- Provincies / regio's — first section, no heading. Browse mode
+             shows a curated 6 (autosuggest still searches the full list). -->
         <div class="destination-popup__section destination-popup__section--destinations">
           <div class="destination-popup__chips">
             <button
-              v-for="dest in destinations"
+              v-for="dest in browseDestinations"
               :key="dest.id"
               class="dest-chip dest-chip--destination"
               :class="{ 'dest-chip--selected': selectedDestinations.includes(dest.id) }"
@@ -148,6 +149,11 @@
               </span>
               <span class="dest-chip__name">{{ dest.name }}</span>
               <span class="dest-chip__country">{{ dest.country }}</span>
+            </button>
+            <!-- Text-only escape hatch on its own row below the tiles:
+                 clears any pick and closes ("show everything"). -->
+            <button class="dest-chip dest-chip--no-pref" @click="handleNoPreference">
+              <span class="dest-chip__name">{{ t('header.noPreferenceLong') }}</span>
             </button>
           </div>
         </div>
@@ -177,15 +183,6 @@
           </div>
         </div>
 
-        <!-- "Geen voorkeur" — clears any destination/theme pick and closes. -->
-        <div class="destination-popup__separator destination-popup__separator--no-pref"></div>
-        <div class="destination-popup__section destination-popup__section--no-pref">
-          <div class="destination-popup__chips">
-            <button class="dest-chip" @click="handleNoPreference">
-              <span class="dest-chip__name">{{ t('header.noPreference') }}</span>
-            </button>
-          </div>
-        </div>
       </div>
 
       <!-- Autosuggest mode: vertical list -->
@@ -361,6 +358,15 @@ function handleClear() {
   try { sessionStorage.removeItem('vl-search-history') } catch { /* ignore */ }
   emit('clear')                     // Parent clears destinations/themes/cities
 }
+
+/** Browse mode shows only this curated set of province tiles (in this
+ *  order); the full `destinations` prop still feeds typed autosuggest. */
+const BROWSE_DESTINATION_IDS = ['zeeland', 'limburg', 'gelderland', 'drenthe', 'noord-holland', 'zuid-holland']
+const browseDestinations = computed(() =>
+  BROWSE_DESTINATION_IDS
+    .map(id => props.destinations.find(d => d.id === id))
+    .filter((d): d is (typeof props.destinations)[number] => !!d),
+)
 
 /** "Geen voorkeur" — wipe any destination/theme selection and close. */
 function handleNoPreference() {
@@ -1042,10 +1048,13 @@ function selectHotel(hotel: { name: string; slug: string }) {
   margin: var(--space-sm) var(--space-md);
 }
 
-/* Divider above "Geen voorkeur" — the browse container already carries
-   16/24px padding, so the line spans full width without extra margins. */
-.destination-popup__separator--no-pref {
-  margin: 0;
+/* "Nog geen voorkeur" escape hatch: text-only chip on its own row below
+   the province tiles. flex-basis 100% forces the wrap; max-content keeps
+   the border hugging the (long) label. */
+.dest-chip--no-pref {
+  flex-basis: 100%;
+  max-width: max-content;
+  white-space: nowrap;
 }
 
 /* Empty state */

@@ -101,6 +101,7 @@ const en: Record<string, string> = {
   'header.duration.noMatter': "Doesn't matter",
   'header.duration.5plusLong': '5 nights or more',
   'header.noPreference': 'No preference',
+  'header.noPreferenceLong': 'No preference yet, show me everything',
   'common.or': 'or',
   'header.duration.weekendShort': 'Weekend',
   'header.duration.weekendShortSub': 'Sat \u2013 Sun',

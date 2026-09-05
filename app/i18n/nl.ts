@@ -101,6 +101,7 @@ const nl: Record<string, string> = {
   'header.duration.noMatter': 'Maakt niet uit',
   'header.duration.5plusLong': '5 nachten of meer',
   'header.noPreference': 'Geen voorkeur',
+  'header.noPreferenceLong': 'Nog geen voorkeur, laat alles zien',
   'common.or': 'of',
   'header.duration.weekendShort': 'Weekend',
   'header.duration.weekendShortSub': 'za \u2013 zo',
