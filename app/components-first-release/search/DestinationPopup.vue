@@ -286,6 +286,7 @@ const emit = defineEmits<{
   'remove-city': [cityName: string]
   'save': []
   'clear': []
+  'no-preference': []
   'search': []
   'update:query': [val: string]
 }>()
@@ -368,9 +369,10 @@ const browseDestinations = computed(() =>
     .filter((d): d is (typeof props.destinations)[number] => !!d),
 )
 
-/** "Geen voorkeur" — wipe any destination/theme selection and close. */
+/** "Nog geen voorkeur" — wipe any destination/theme selection, flag the
+ *  explicit no-preference pick (field shows "Alle bestemmingen") and close. */
 function handleNoPreference() {
-  emit('clear')
+  emit('no-preference')
   emit('save')
 }
 
@@ -880,6 +882,8 @@ function selectHotel(hotel: { name: string; slug: string }) {
   width: 18px;
   height: 18px;
   display: block;
+  /* Icons render black regardless of the colours baked into the SVGs. */
+  filter: brightness(0);
 }
 
 .dest-chip__name {
@@ -1055,6 +1059,17 @@ function selectHotel(hotel: { name: string; slug: string }) {
   flex-basis: 100%;
   max-width: max-content;
   white-space: nowrap;
+}
+/* Mobile: plain text link instead of a bordered chip. */
+@media (max-width: 800px) {
+  .dest-chip--no-pref {
+    height: auto;
+    padding: 0;
+    border: none;
+    background: transparent;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
 }
 
 /* Empty state */

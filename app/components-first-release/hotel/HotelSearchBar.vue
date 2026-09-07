@@ -1,6 +1,6 @@
 <template>
   <div class="hotel-search-bar" ref="barRef">
-    <div class="search-bar">
+    <div class="search-bar" :class="{ 'search-bar--popup-open': activePopup }">
       <!-- 1. Wanneer -->
       <button
         ref="whenFieldRef"
@@ -89,7 +89,7 @@
          anymore — popups sit as siblings below so they're absolute-
          positioned relative to `.hotel-search-bar` and scroll with it
          (same visual behaviour as the home searchbar). -->
-    <div v-if="activePopup" class="hsb-overlay" @click.self="closePopup"></div>
+    <div v-if="activePopup" class="hsb-overlay" @click.self="onOverlayClick"></div>
 
     <!-- WHEN POPUP — calendar half of the combined search-bar popup.
          No Klaar footer: picking a date auto-closes the popup. -->
@@ -208,6 +208,19 @@ function calcPopupPosition(popup: PopupName) {
     width: `${popupW}px`,
     zIndex: '501',
   }
+}
+
+/** Overlay click: close — and when the click sits on top of another field,
+ *  open that field's popup immediately (one-click switching). */
+function onOverlayClick(e: MouseEvent) {
+  const prev = activePopup.value
+  closePopup() // commits the open picker's state, same as a plain outside click
+  const field = document.elementsFromPoint(e.clientX, e.clientY).find(
+    (el): el is HTMLElement => el instanceof HTMLElement && el.classList.contains('search-bar__field'),
+  )
+  if (!field) return
+  const m = field.className.match(/search-bar__field--(when|howlong|who)/)
+  if (m && m[1] !== prev) field.click()
 }
 
 function togglePopup(popup: PopupName) {
@@ -575,6 +588,13 @@ defineExpose({ totalPersons })
   position: fixed;
   inset: 0;
   z-index: 500;
+}
+
+/* While a popup is open the bar rises above the click-capture overlay,
+   so clicking ANOTHER field switches popups in one click. */
+.search-bar--popup-open {
+  position: relative;
+  z-index: 501;
 }
 
 .popup {

@@ -731,7 +731,7 @@
          and flip above/below depending on viewport space. -->
     <Teleport to="body">
     <Transition name="popup">
-      <div v-if="activePopup" class="popup-backdrop" @click.self="closePopup">
+      <div v-if="activePopup" class="popup-backdrop" @click.self="onBackdropClick">
         <div ref="popupAnchorRef" class="popup-anchor" :style="popupStyle" tabindex="-1">
         <!-- DESTINATION POPUP -->
         <div v-if="activePopup === 'destination'" class="popup popup--destination">
@@ -751,6 +751,7 @@
             @save="closePopup()"
             @search="handleSearch"
             @clear="clearDestination"
+            @no-preference="handleNoPreferencePick"
           />
         </div>
 
@@ -987,6 +988,7 @@
       @select-city="handleSelectCityLocal"
       @remove-city="handleRemoveCityLocal"
       @clear-destinations="clearDestination"
+      @no-preference="handleNoPreferencePick"
       @update:cal-month="calMonth = $event"
       @update:selected-date="selectedDate = $event"
       @update:flexibility="flexibility = $event"
@@ -1284,6 +1286,7 @@ watch(activePopup, (val) => {
 
 onMounted(() => {
   localeStore.restoreLocale()
+  try { noPrefPicked.value = localStorage.getItem(NO_PREF_KEY) === '1' } catch { /* ignore */ }
   window.addEventListener('resize', computePopupPosition)
   window.addEventListener('scroll', computePopupPosition, { passive: true, capture: true })
 })
@@ -1291,6 +1294,21 @@ onBeforeUnmount(() => {
   window.removeEventListener('resize', computePopupPosition)
   window.removeEventListener('scroll', computePopupPosition, true as unknown as EventListenerOptions)
 })
+
+/** Backdrop click: close the popup — and when the click landed on TOP of
+ *  another search-bar field (the teleported backdrop covers the whole page,
+ *  bar included), open that field's popup right away so switching fields
+ *  takes one click instead of two. */
+function onBackdropClick(e: MouseEvent) {
+  const prev = activePopup.value
+  closePopup()
+  const field = document.elementsFromPoint(e.clientX, e.clientY).find(
+    (el): el is HTMLElement => el instanceof HTMLElement && el.classList.contains('search-bar__field'),
+  )
+  if (!field) return
+  const m = field.className.match(/search-bar__field--(destination|when|date|duration|who)/)
+  if (m && m[1] !== prev) field.click()
+}
 
 function closePopup() {
   // Persons/rooms NO LONGER commit on close — every searchbar field
@@ -1321,7 +1339,30 @@ function clearDestination() {
   // the user presses Find Deals — except on /search, where it applies live.
   resetLocalDestinationState()
   applyLiveDestination()
+  setNoPrefPicked(false) // a plain clear returns to the placeholder
   closePopup()
+}
+
+/** Explicit "Nog geen voorkeur, laat alles zien" pick: same wipe as a
+ *  clear, but the field shows "Alle bestemmingen" instead of the
+ *  placeholder. Survives reloads via localStorage; any later pick or a
+ *  plain clear drops the flag. */
+const NO_PREF_KEY = 'vl_fr_no_dest_pref'
+const noPrefPicked = ref(false)
+function setNoPrefPicked(v: boolean) {
+  noPrefPicked.value = v
+  if (import.meta.client) {
+    try {
+      if (v) localStorage.setItem(NO_PREF_KEY, '1')
+      else localStorage.removeItem(NO_PREF_KEY)
+    } catch { /* ignore */ }
+  }
+}
+function handleNoPreferencePick() {
+  resetLocalDestinationState()
+  applyLiveDestination()
+  setNoPrefPicked(true)
+  // Popup closes via its own 'save' emit.
 }
 
 /** Single-select handlers (variant 1): clear existing draft picks first,
@@ -1588,7 +1629,10 @@ const destinationLabel = computed(() => {
     names.push(hotel.name)
   }
 
-  if (names.length === 0) return t('header.chooseDestination')
+  if (names.length === 0) {
+    // Explicit "Nog geen voorkeur" pick reads as a value, not a placeholder.
+    return noPrefPicked.value ? t('header.allDestinations') : t('header.chooseDestination')
+  }
 
   // Show as many names as fit within MAX_CHARS, then "+ n" for the rest
   const MAX_CHARS = 32
@@ -3366,6 +3410,7 @@ function handleSelectHotelInPopup(slug: string) {
   z-index: 600;
   background: transparent;
 }
+
 
 .popup-anchor {
   /* position/top/left/bottom set inline via :style */

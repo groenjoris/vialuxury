@@ -145,6 +145,12 @@
               <span class="dest-chip__name">{{ dest.name }}</span>
               <span class="dest-chip__country">{{ dest.country }}</span>
             </button>
+            <!-- Text-only escape hatch on its own row below the tiles:
+                 marks "no preference" and closes ("show everything").
+                 Mobile renders it as a plain text link. -->
+            <button class="dest-chip dest-chip--no-pref" @click="handleNoPreference">
+              <span class="dest-chip__name">{{ t('header.noPreferenceLong') }}</span>
+            </button>
           </div>
         </div>
 
@@ -173,15 +179,6 @@
           </div>
         </div>
 
-        <!-- "Geen voorkeur" — clears any destination/theme pick and closes. -->
-        <div class="destination-popup__separator destination-popup__separator--no-pref"></div>
-        <div class="destination-popup__section destination-popup__section--no-pref">
-          <div class="destination-popup__chips">
-            <button class="dest-chip" @click="handleNoPreference">
-              <span class="dest-chip__name">{{ t('header.noPreference') }}</span>
-            </button>
-          </div>
-        </div>
       </div>
 
       <!-- Autosuggest mode: vertical list -->
@@ -277,6 +274,7 @@ const emit = defineEmits<{
   'remove-city': [cityName: string]
   'save': []
   'clear': []
+  'no-preference': []
   'search': []
   'update:query': [val: string]
 }>()
@@ -350,9 +348,10 @@ function handleClear() {
   emit('clear')                     // Parent clears destinations/themes/cities
 }
 
-/** "Geen voorkeur" — wipe any destination/theme selection and close. */
+/** "Nog geen voorkeur" — wipe any destination/theme selection, flag the
+ *  explicit no-preference pick (field shows "Alle bestemmingen") and close. */
 function handleNoPreference() {
-  emit('clear')
+  emit('no-preference')
   emit('save')
 }
 
@@ -862,6 +861,8 @@ function selectHotel(hotel: { name: string; slug: string }) {
   width: 18px;
   height: 18px;
   display: block;
+  /* Icons render black regardless of the colours baked into the SVGs. */
+  filter: brightness(0);
 }
 
 .dest-chip__name {
@@ -1030,10 +1031,24 @@ function selectHotel(hotel: { name: string; slug: string }) {
   margin: var(--space-sm) var(--space-md);
 }
 
-/* Divider above "Geen voorkeur" — the browse container already carries
-   16/24px padding, so the line spans full width without extra margins. */
-.destination-popup__separator--no-pref {
-  margin: 0;
+/* "Nog geen voorkeur" escape hatch: text-only chip on its own row below
+   the province tiles. flex-basis 100% forces the wrap; max-content keeps
+   the border hugging the (long) label. */
+.dest-chip--no-pref {
+  flex-basis: 100%;
+  max-width: max-content;
+  white-space: nowrap;
+}
+/* Mobile: plain text link instead of a bordered chip. */
+@media (max-width: 800px) {
+  .dest-chip--no-pref {
+    height: auto;
+    padding: 0;
+    border: none;
+    background: transparent;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
 }
 
 /* Empty state */
