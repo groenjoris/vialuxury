@@ -71,8 +71,8 @@ const whenCombinedLabel = computed<string>(() => {
     if (search.committedFlexibility.value > 0) label += ` ±${search.committedFlexibility.value}`
     datePart = label
   }
-  // Duration part — per-field fallback "Elke reisduur"
-  let durPart = 'Elke reisduur'
+  // Duration part — per-field fallback "Geen voorkeur"
+  let durPart = 'Geen voorkeur'
   const nights = search.selectedNights.value
   if (nights.length) {
     const sorted = [...nights].sort()

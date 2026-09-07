@@ -102,6 +102,7 @@ const de: Record<string, string> = {
   'header.duration.5plusLong': '5 N\u00e4chte oder mehr',
   'header.noPreference': 'Keine Pr\u00e4ferenz',
   'header.noPreferenceLong': 'Noch keine Pr\u00e4ferenz, alles anzeigen',
+  'header.allDestinations': 'Alle Reiseziele',
   'common.or': 'oder',
   'header.duration.weekendShort': 'Wochenende',
   'header.duration.weekendShortSub': 'Sa – So',
