@@ -101,6 +101,7 @@ const nl: Record<string, string> = {
   'header.duration.noMatter': 'Maakt niet uit',
   'header.duration.5plusLong': '5 nachten of meer',
   'header.noPreference': 'Geen voorkeur',
+  'header.phone': 'Telefoon',
   'header.noPreferenceLong': 'Nog geen voorkeur, laat alles zien',
   'header.allDestinations': 'Alle bestemmingen',
   'common.or': 'of',
