@@ -75,6 +75,7 @@
                   @save="active = null"
                   @search="$emit('search')"
                   @clear="$emit('clear-destinations')"
+                  @no-preference="$emit('no-preference')"
                 />
               </div>
             </Transition>
@@ -181,7 +182,7 @@
                   :cal-month="calMonth"
                   :selected-date="selectedDate"
                   :nights="selectedDurations"
-                  :any-duration="selectedDurations.length === 0"
+                  :any-duration="anyDurationExplicit && selectedDurations.length === 0"
                   @toggle-night="onToggleNight"
                   @set-any-duration="onSetAnyDuration"
                   @save="active = null"
@@ -285,6 +286,7 @@ const emit = defineEmits<{
   'select-city': [city: { name: string; province: string }]
   'remove-city': [cityName: string]
   'clear-destinations': []
+  'no-preference': []
   'update:calMonth': [val: { year: number; month: number }]
   'update:selectedDate': [val: string | null]
   'update:flexibility': [val: number]
@@ -410,10 +412,11 @@ const whenSummary = computed(() => {
 })
 
 const howLongSummary = computed(() => {
-  // Empty selection = "any duration" default → mirror that in the
-  // collapsed field so the box visibly reads "Maakt niet uit" when
-  // the user hasn't picked specific nights yet.
-  if (props.selectedDurations.length === 0) return 'Maakt niet uit'
+  // Untouched default shows the placeholder; only an explicit
+  // "Maakt niet uit" tap reads as the "Geen voorkeur" value.
+  if (props.selectedDurations.length === 0) {
+    return anyDurationExplicit.value ? t('header.noPreference') : t('header.tab.nights')
+  }
   return props.selectedDurations.join(' of ') + ' nachten'
 })
 
@@ -429,6 +432,7 @@ function onToggleNight(value: string) {
   const i = next.indexOf(value)
   if (i === -1) next.push(value)
   else next.splice(i, 1)
+  if (next.length > 0) anyDurationExplicit.value = false
   emit('update:selectedDurations', next)
 }
 
@@ -469,7 +473,11 @@ function onClearHowLong() {
 /** "Maakt niet uit" tick — clears all specific-night picks. The
  *  derived prop above re-checks the box automatically once
  *  selectedDurations is empty, so no extra state needed locally. */
+/** Checked only after the user explicitly taps "Maakt niet uit" —
+ *  the untouched default shows no pre-selection. */
+const anyDurationExplicit = ref(false)
 function onSetAnyDuration(next: boolean) {
+  anyDurationExplicit.value = next
   if (next) emit('update:selectedDurations', [])
 }
 

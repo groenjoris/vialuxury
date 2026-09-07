@@ -293,7 +293,7 @@ const selectedDurations = ref<string[]>([...globalNights.value])
  *  the hotel page doesn't push flexibility back into shared state. */
 const localFlexible = ref(false)
 /** "Maakt niet uit" tickbox inside the duration popup. */
-const anyDuration = ref(globalNights.value.length === 0 ? false : false)
+const anyDuration = ref(false)
 
 let flexCloseTimer: ReturnType<typeof setTimeout> | null = null
 function setLocalFlexible(next: boolean) {
@@ -311,11 +311,16 @@ function onToggleNight(value: string) {
   if (selectedDurations.value.length > 0) anyDuration.value = false
 }
 
+let anyDurCloseTimer: ReturnType<typeof setTimeout> | null = null
 function setAnyDuration(next: boolean) {
   anyDuration.value = next
   if (next) {
     selectedDurations.value = []
   }
+  // Picking "Maakt niet uit" closes the popup after a beat — same
+  // behaviour as "Ik ben flexibel" on the date field.
+  if (anyDurCloseTimer) { clearTimeout(anyDurCloseTimer); anyDurCloseTimer = null }
+  if (next) anyDurCloseTimer = setTimeout(() => { closePopup() }, 1000)
 }
 
 watch(globalNights, (g) => {
@@ -350,7 +355,7 @@ const whenIsPlaceholder = computed(
 )
 
 const howLongLabel = computed(() => {
-  if (anyDuration.value) return t('header.anyDurationLabel')
+  if (anyDuration.value) return t('header.noPreference')
   const calDurs = selectedDurations.value
   if (calDurs.length > 0) {
     const labels = calDurs

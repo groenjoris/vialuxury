@@ -768,7 +768,7 @@
             v-model:cal-month="calMonth"
             v-model:selected-date="selectedDate"
             :nights="localNights"
-            :any-duration="localAnyDuration"
+            :any-duration="localAnyDuration && anyDurationExplicit"
             :flexible="localFlexible"
             @toggle-night="toggleLocalNight"
             @set-any-duration="setAnyDuration"
@@ -791,7 +791,7 @@
             v-model:cal-month="calMonth"
             :selected-date="selectedDate"
             :nights="localNights"
-            :any-duration="localAnyDuration"
+            :any-duration="localAnyDuration && anyDurationExplicit"
             :flexible="localFlexible"
             @toggle-night="toggleLocalNight"
             @set-any-duration="setAnyDuration"
@@ -813,7 +813,7 @@
             v-model:cal-month="calMonth"
             v-model:selected-date="selectedDate"
             :nights="localNights"
-            :any-duration="localAnyDuration"
+            :any-duration="localAnyDuration && anyDurationExplicit"
             :flexible="localFlexible"
             @toggle-night="toggleLocalNight"
             @set-any-duration="setAnyDuration"
@@ -1631,7 +1631,7 @@ const destinationLabel = computed(() => {
 
   if (names.length === 0) {
     // Explicit "Nog geen voorkeur" pick reads as a value, not a placeholder.
-    return noPrefPicked.value ? t('header.allDestinations') : t('header.chooseDestination')
+    return noPrefPicked.value ? t('header.noPreference') : t('header.chooseDestination')
   }
 
   // Show as many names as fit within MAX_CHARS, then "+ n" for the rest
@@ -1734,6 +1734,7 @@ function toggleLocalNight(value: string) {
   applyLiveCriteria()
 }
 
+let anyDurCloseTimer: ReturnType<typeof setTimeout> | null = null
 function setAnyDuration(next: boolean) {
   // Local-only — same draft pattern as `toggleLocalNight`.
   localAnyDuration.value = next
@@ -1744,6 +1745,10 @@ function setAnyDuration(next: boolean) {
   }
   notePicker()
   applyLiveCriteria()
+  // Picking "Maakt niet uit" closes the popup after a beat — same
+  // behaviour as "Ik ben flexibel" on the arrival-date field.
+  if (anyDurCloseTimer) { clearTimeout(anyDurCloseTimer); anyDurCloseTimer = null }
+  if (next) anyDurCloseTimer = setTimeout(() => { closePopup() }, 1000)
 }
 
 function setLocalFlexType(val: string | null) {
@@ -1943,7 +1948,7 @@ const hoelangLabel = computed(() => {
   }
   // "Elke reisduur" only when the user explicitly checked "Maakt niet uit";
   // the untouched default shows the "Kies aantal nachten" placeholder.
-  if (localAnyDuration.value && anyDurationExplicit.value) return t('header.anyDurationLabel')
+  if (localAnyDuration.value && anyDurationExplicit.value) return t('header.noPreference')
   if (localNights.value.length === 0) return t('header.tab.nights')
   if (localNights.value.length === 1) {
     const v = localNights.value[0]
