@@ -28,6 +28,11 @@
             class="start-btn"
             @click="startHotelFirstFromAd"
           >Start met advertentie</button>
+          <button
+            type="button"
+            class="start-btn"
+            @click="navigateTo('/first-release/payoff-varianten')"
+          >Pay-off varianten</button>
         </div>
       </section>
 

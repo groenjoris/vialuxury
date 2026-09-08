@@ -21,7 +21,7 @@
       <div class="site-header__nav-inner container">
         <!-- Logo (grid row 1, col 1). Variant 4 (mobile) swaps the
              horizontal logo for the compact vertical one. -->
-        <NuxtLink :to="homeHref" class="site-header__logo">
+        <NuxtLink ref="logoLinkRef" :to="homeHref" class="site-header__logo">
           <!-- Both logos are always rendered; which one shows is decided by
                CSS so the swap can be scoped per-page (V4 minimal header only
                applies on home/search/deal/hotel — see fr-home-variants.css).
@@ -36,6 +36,15 @@
             alt="ViaLuxury"
             class="site-header__logo-img site-header__logo-img--horizontal"
           />
+        </NuxtLink>
+
+        <!-- Opt-in pay-off under the logo (grid row 2, col 1 on desktop;
+             flows under the logo on mobile). Off by default — the
+             /first-release/payoff-varianten page passes text + font to
+             compare candidates. JS scales the font-size so the line is
+             exactly as wide as the logo. -->
+        <NuxtLink v-if="payoff" :to="homeHref" class="site-header__tagline-block">
+          <span ref="payoffRef" class="site-header__tagline" :style="payoffStyle">{{ payoff }}</span>
         </NuxtLink>
 
         <!-- Verticals switcher (grid row 2, col 2 — desktop only) -->
@@ -998,7 +1007,74 @@ const props = withDefaults(defineProps<{
    *  variant that's currently stored in the composable so internal
    *  pages don't have to pass anything. */
   navVariant?: '1' | '2' | '3'
+  /** Pay-off line under the logo. Omitted = no pay-off (current live state). */
+  payoff?: string
+  /** CSS font-family for the pay-off (defaults to the component's own rule). */
+  payoffFont?: string
 }>(), { variant: 'solid', hideSearchDock: false })
+
+// --- PAY-OFF: fit the line to the logo's exact width ---------------------
+const logoLinkRef = ref<{ $el?: HTMLElement } | HTMLElement | null>(null)
+const payoffRef = ref<HTMLElement | null>(null)
+const payoffSize = ref<number | null>(null)
+const payoffStyle = computed(() => ({
+  fontFamily: props.payoffFont || undefined,
+  fontSize: payoffSize.value ? `${payoffSize.value}px` : undefined,
+  // Hidden until measured so the unscaled line never flashes.
+  visibility: payoffSize.value ? 'visible' : 'hidden',
+}))
+/** The VISIBLE logo image — not the link, whose grid column the pay-off
+ *  itself could widen (circular fit). */
+function logoEl(): HTMLElement | null {
+  const r = logoLinkRef.value as { $el?: HTMLElement } | HTMLElement | null
+  if (!r) return null
+  const link = (r as { $el?: HTMLElement }).$el ?? (r as HTMLElement)
+  const imgs = Array.from(link.querySelectorAll<HTMLElement>('.site-header__logo-img'))
+  return imgs.find(img => img.getBoundingClientRect().width > 0) ?? link
+}
+function fitPayoff() {
+  const logo = logoEl()
+  const span = payoffRef.value
+  if (!logo || !span) return
+  const logoW = logo.getBoundingClientRect().width
+  if (!logoW) return
+  // Measure at a fixed probe size, then scale linearly to the logo width.
+  // Restore the previous inline size afterwards: Vue only re-applies the
+  // :style binding when the computed value CHANGES, so clearing it here
+  // would leave the span unsized on a repeat fit with the same result.
+  const probe = 100
+  const prev = span.style.fontSize
+  span.style.fontSize = `${probe}px`
+  // Measure the TEXT RUN, not the span: the flex-column parent blockifies
+  // the span so its own box is always the full column width.
+  const range = document.createRange()
+  range.selectNodeContents(span)
+  const w = range.getBoundingClientRect().width
+  span.style.fontSize = prev
+  if (w > 0) payoffSize.value = Math.round((probe * logoW / w) * 100) / 100
+}
+let payoffRO: ResizeObserver | null = null
+function armPayoffFit() {
+  if (!import.meta.client || !props.payoff) return
+  fitPayoff()
+  document.fonts?.ready.then(fitPayoff)
+  document.fonts?.addEventListener('loadingdone', fitPayoff)
+  const logo = logoEl()
+  if (logo && 'ResizeObserver' in window) {
+    payoffRO?.disconnect()
+    payoffRO = new ResizeObserver(fitPayoff)
+    payoffRO.observe(logo)
+  }
+}
+watch(() => [props.payoff, props.payoffFont], () => {
+  payoffSize.value = null
+  nextTick(armPayoffFit)
+})
+onMounted(armPayoffFit)
+onBeforeUnmount(() => {
+  payoffRO?.disconnect()
+  if (import.meta.client) document.fonts?.removeEventListener('loadingdone', fitPayoff)
+})
 
 const { t } = useFirstReleaseI18n()
 const localeStore = useFirstReleaseLocaleStore()
@@ -2714,16 +2790,23 @@ function handleSelectHotelInPopup(slug: string) {
      so the handwritten payoff still reads as plain text. */
   text-decoration: none;
   color: inherit;
+  /* The pay-off must never widen the logo's grid column (fitPayoff sizes
+     the text to the logo image, so the column is the logo's alone). */
+  contain: inline-size;
+  min-width: 0;
 }
 .site-header__tagline-block:hover { text-decoration: none; }
 
-/* Pay-off — handwritten Oooh Baby, white. */
+/* Pay-off — white; font-family + fitted font-size come from the
+   `payoffFont` prop / fitPayoff() inline style (these are fallbacks). */
 .site-header__tagline {
   font-family: 'Oooh Baby', cursive;
   font-size: 22px;
   font-weight: 400;
   color: #fff;
-  letter-spacing: 0.2px;
+  /* No tracking: a fixed per-glyph spacing would not scale with the
+     font-size and throw the logo-width fit off by a few percent. */
+  letter-spacing: 0;
   line-height: 1;
   white-space: nowrap;
 }
@@ -3994,20 +4077,12 @@ function handleSelectHotelInPopup(slug: string) {
     gap: 0 !important;
   }
   .site-header .site-header__tagline {
-    /* Root cause: the tagline uses a script font (Oooh Baby) which
-       renders ~40 % wider per px than a sans-serif. Shrinking
-       font-size alone keeps the tagline wider than the 204 px logo
-       column. Use a 3-knob combo — font-size + tighter tracking +
-       a small horizontal scale — to land the right edge flush
-       with the logo's right edge at a still-readable size. */
-    font-size: 11px;
+    /* Width is fitted to the logo by JS (see fitPayoff) — no
+       font-specific size/scale knobs needed here. */
     line-height: 1.1;
     white-space: nowrap;
     overflow: visible;
-    letter-spacing: -0.3px;
     display: inline-block;
-    transform: scaleX(0.88);
-    transform-origin: left center;
   }
   .site-header .site-header__tagline-stroke { display: none; }
 
