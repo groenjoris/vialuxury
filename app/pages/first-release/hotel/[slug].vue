@@ -909,12 +909,12 @@ onBeforeUnmount(() => {
   margin: 0;
 }
 .hotel-page__deals-handwritten {
-  font-family: 'Oooh Baby', cursive;
-  font-size: 23px;
-  line-height: 1.1;
+  /* Body font since the handwritten Oooh Baby was dropped (readability). */
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.4;
   color: var(--color-text-primary);
   margin: 4px 0 8px;
-  padding-right: 6px;
 }
 .hotel-page__deals-search {
   display: flex;

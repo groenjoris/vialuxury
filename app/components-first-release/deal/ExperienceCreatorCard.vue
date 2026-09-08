@@ -88,7 +88,7 @@ const pronounCapitalised = computed(() =>
     font-size: 17px;
   }
   .creator-card__name {
-    font-size: 32px;
+    font-size: 22px;
   }
   .creator-card__field-value {
     font-size: 18px;
@@ -168,9 +168,10 @@ const pronounCapitalised = computed(() =>
 
 .creator-card__name {
   display: block;
-  font-family: 'Oooh Baby', cursive;
-  font-weight: 400;
-  font-size: 26px;
+  /* Body font since the handwritten Oooh Baby was dropped (readability). */
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 20px;
   color: var(--color-text-primary, #141414);
   line-height: 1;
   margin-top: 2px;
@@ -254,8 +255,8 @@ const pronounCapitalised = computed(() =>
 
 .creator-card__signature {
   margin: 4px 0 0;
-  font-family: 'Oooh Baby', cursive;
-  font-size: 18px;
+  font-family: var(--font-body);
+  font-size: 14px;
   color: var(--color-text-primary, #141414);
   line-height: 1;
 }

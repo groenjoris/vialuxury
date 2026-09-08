@@ -170,7 +170,7 @@ function onNewsletterInput(e: Event) {
 }
 .footer-tagline {
   display: none;
-  font-family: 'Oooh Baby', cursive;
+  font-family: var(--font-body);
   font-size: 22px;
   font-weight: 400;
   line-height: 1;

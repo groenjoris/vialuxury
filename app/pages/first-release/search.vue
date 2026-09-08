@@ -1624,36 +1624,18 @@ onMounted(() => {
 }
 
 .search-page__usp {
-  /* Handwritten subtitle — same font family as the homepage payoff.
-     Animates in from left to right after the page loads, as if being
-     written by hand. Translate-y pulls the text 4 px closer to the
-     title visually WITHOUT shifting siblings (the avatars stay put). */
-  font-family: 'Oooh Baby', cursive;
-  /* No bold weight exists for Oooh Baby — bumping the size by ~2 pt
-     instead so the subtitle reads a touch heavier. */
-  font-size: 23px;
+  /* Subtitle in the body font — the handwritten Oooh Baby was dropped
+     (Jordi: hard to read); a better-readable script may return later.
+     The write-on animation and flourish padding went with it. */
+  font-family: var(--font-body);
+  font-size: 16px;
   font-weight: 400;
   color: var(--color-text-secondary);
-  line-height: 1;
+  line-height: 1.4;
   display: inline-block;
   /* Zero the default <p> margins (1em 0 = 16+16) so the subtitle
      doesn't bloat the header zone past 200 px. */
   margin: 0;
-  transform: translateY(-4px);
-  animation: search-usp-write 1.2s ease-out 0.2s both;
-  /* Oooh Baby's terminal glyphs (final "d", "j", "g", etc.) have
-     cursive flourishes that extend past the glyph's advance-width.
-     The `clip-path` inset is anchored to the element's box, so
-     without breathing room the trailing flourish gets clipped. A
-     tiny padding-right widens the box, and the keyframe's "to"
-     state pulls the right inset slightly negative so the flourish
-     stays fully visible. */
-  padding-right: 6px;
-}
-
-@keyframes search-usp-write {
-  from { clip-path: inset(0 100% 0 -6px); }
-  to   { clip-path: inset(0 -6px  0 -6px); }
 }
 
 /* ===== RESULT LIST / GRID ===== */

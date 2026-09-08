@@ -38,32 +38,6 @@
           />
         </NuxtLink>
 
-        <!-- Pay-off block (grid row 2, col 1 on desktop; flows under the
-             logo on mobile). Handwritten tagline + optional wavy stroke. -->
-        <NuxtLink :to="homeHref" class="site-header__tagline-block">
-          <span class="site-header__tagline">Personally Curated Experiences</span>
-          <!-- Wavy underline-stroke under the handwritten tagline. v1 and
-               v6 are intentionally stroke-less (cleaner row); we don't
-               mount the SVG at all so there's no chance a CSS-specificity
-               quirk leaves it visible. -->
-          <svg
-            v-if="!['1', '6'].includes(effectiveNavVariant)"
-            class="site-header__tagline-stroke"
-            viewBox="0 0 320 12"
-            preserveAspectRatio="none"
-            aria-hidden="true"
-            focusable="false"
-          >
-            <path
-              d="M2 7 C 50 2, 110 11, 170 5 S 280 9, 318 4"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="0.5"
-              stroke-linecap="round"
-            />
-          </svg>
-        </NuxtLink>
-
         <!-- Verticals switcher (grid row 2, col 2 — desktop only) -->
         <nav v-if="!isMobile" class="verticals" aria-label="Verticals">
           <template v-for="v in verticals" :key="v.id">
