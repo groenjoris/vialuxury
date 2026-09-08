@@ -1,7 +1,7 @@
 <template>
   <div class="payoff-page">
     <div class="payoff-page__intro container">
-      <h1 class="payoff-page__title">Pay-off &amp; subtitel — 10 varianten (R1)</h1>
+      <h1 class="payoff-page__title">Pay-off &amp; subtitel — 12 varianten (R1)</h1>
       <p class="payoff-page__lead">
         Bovenkant van de zoekresultatenpagina per variant. Pay-off onder het logo:
         <em>“{{ PAYOFF }}”</em> — altijd precies even breed als het logo. De subtitel
@@ -64,8 +64,8 @@
 
 <script setup lang="ts">
 /**
- * Decision page for the R1 pay-off / subtitle font. Ten stacked copies of
- * the top of the search-results page, each with a different handwritten
+ * Decision page for the R1 pay-off / subtitle font. Stacked copies of the
+ * top of the search-results page, each with a different handwritten
  * candidate (Google Fonts) — plus the current state as variant 1.
  */
 const PAYOFF = 'Zorgvuldig samengestelde hotelervaringen'
@@ -83,14 +83,18 @@ type Variant = {
 const variants: Variant[] = [
   { id: 'current', name: 'Geen pay-off · subtitel in Basis Grotesque', font: null, badge: 'Huidig', badgeKind: 'current' },
   { id: 'bad-script', name: 'Bad Script', font: "'Bad Script', cursive", badge: 'Aanbevolen', badgeKind: 'pick' },
-  { id: 'marck-script', name: 'Marck Script', font: "'Marck Script', cursive" },
-  { id: 'cedarville', name: 'Cedarville Cursive', font: "'Cedarville Cursive', cursive" },
-  { id: 'nothing-you-could-do', name: 'Nothing You Could Do', font: "'Nothing You Could Do', cursive" },
-  { id: 'waiting-for-the-sunrise', name: 'Waiting for the Sunrise', font: "'Waiting for the Sunrise', cursive" },
-  { id: 'beth-ellen', name: 'Beth Ellen', font: "'Beth Ellen', cursive" },
-  { id: 'handlee', name: 'Handlee', font: "'Handlee', cursive" },
-  { id: 'kalam', name: 'Kalam', font: "'Kalam', cursive" },
-  { id: 'covered-by-your-grace', name: 'Covered By Your Grace', font: "'Covered By Your Grace', cursive" },
+  // Round 2 — same spirit as Bad Script: refined pen-cursive, readable,
+  // not the usual suspects. (Round 1's casual/rough ones were dropped.)
+  { id: 'over-the-rainbow', name: 'Over the Rainbow', font: "'Over the Rainbow', cursive" },
+  { id: 'la-belle-aurore', name: 'La Belle Aurore', font: "'La Belle Aurore', cursive" },
+  { id: 'zeyada', name: 'Zeyada', font: "'Zeyada', cursive" },
+  { id: 'ruthie', name: 'Ruthie', font: "'Ruthie', cursive" },
+  { id: 'sacramento', name: 'Sacramento', font: "'Sacramento', cursive" },
+  { id: 'rouge-script', name: 'Rouge Script', font: "'Rouge Script', cursive" },
+  { id: 'petit-formal-script', name: 'Petit Formal Script', font: "'Petit Formal Script', cursive" },
+  { id: 'euphoria-script', name: 'Euphoria Script', font: "'Euphoria Script', cursive" },
+  { id: 'meddon', name: 'Meddon', font: "'Meddon', cursive" },
+  { id: 'grand-hotel', name: 'Grand Hotel', font: "'Grand Hotel', cursive" },
 ]
 
 const breadcrumbs = [
@@ -101,14 +105,16 @@ const breadcrumbs = [
 const GOOGLE_FONTS =
   'https://fonts.googleapis.com/css2'
   + '?family=Bad+Script'
-  + '&family=Marck+Script'
-  + '&family=Cedarville+Cursive'
-  + '&family=Nothing+You+Could+Do'
-  + '&family=Waiting+for+the+Sunrise'
-  + '&family=Beth+Ellen'
-  + '&family=Handlee'
-  + '&family=Kalam'
-  + '&family=Covered+By+Your+Grace'
+  + '&family=Over+the+Rainbow'
+  + '&family=La+Belle+Aurore'
+  + '&family=Zeyada'
+  + '&family=Ruthie'
+  + '&family=Sacramento'
+  + '&family=Rouge+Script'
+  + '&family=Petit+Formal+Script'
+  + '&family=Euphoria+Script'
+  + '&family=Meddon'
+  + '&family=Grand+Hotel'
   + '&display=swap'
 
 useHead({
