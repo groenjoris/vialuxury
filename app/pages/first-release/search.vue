@@ -85,9 +85,8 @@
                 >
                   Laat alle deals zien
                 </button>
-                <!-- USP + team-avatars hidden in the no-results state — they
-                     read as celebratory content that doesn't fit the empty
-                     state. -->
+                <!-- USP hidden in the no-results state — it reads as
+                     celebratory content that doesn't fit the empty state. -->
                 <template v-if="!hasNoResults">
                 <!-- Partner variant (HEMA actie): plain body-font subtitle,
                      no handwritten USP, no avatars. -->
@@ -107,29 +106,6 @@
                 <div v-if="isMobile && showPartnerLogo" class="deal-page__partner-card deal-page__partner-card--mobile search-page__partner-mobile">
                   <span class="deal-page__partner-card-caption">In samenwerking met:</span>
                   <img src="/images/partners/hema.png" alt="HEMA" class="deal-page__partner-card-logo" />
-                </div>
-                <!-- Avatars only on the default header; themed + partner
-                     views drop them so the subtitle carries the focus. -->
-                <div v-if="!singleThemeTagId && !showPartnerLogo" class="team-avatars">
-                  <div
-                    v-for="member in teamMembers"
-                    :key="member.name"
-                    class="team-avatars__item"
-                    @mouseenter="hoveredMember = member.name"
-                    @mouseleave="hoveredMember = null"
-                  >
-                    <div class="team-avatars__circle" :class="{ 'team-avatars__circle--photo': member.photo }">
-                      <img v-if="member.photo" :src="member.photo" :alt="member.name" />
-                      <span v-else class="team-avatars__initials">{{ member.initials }}</span>
-                    </div>
-                    <Transition name="tooltip-fade">
-                      <div v-if="hoveredMember === member.name" class="team-avatars__tooltip">
-                        <strong class="team-avatars__tooltip-name">{{ member.name }}</strong>
-                        <span class="team-avatars__tooltip-role">{{ member.role }}</span>
-                        <span class="team-avatars__tooltip-score">{{ member.score }}</span>
-                      </div>
-                    </Transition>
-                  </div>
                 </div>
                 </template>
               </div>
@@ -464,10 +440,6 @@ const activeArrival = computed(() =>
 const activeFlex = computed(() =>
   route.path === '/first-release/search' ? liveFlexibility.value : committedFlexibility.value,
 )
-
-// Team members for avatar row
-const hoveredMember = ref<string | null>(null)
-import { teamMembers } from '~/data/team-members'
 
 // Loading state — local override so we can briefly show a spinner on filter changes
 const localLoading = ref(false)
@@ -1588,108 +1560,6 @@ onMounted(() => {
 }
 
 /* ── Team Avatars ── */
-.team-avatars {
-  display: flex;
-  gap: 0;
-  flex-shrink: 0;
-}
-
-.team-avatars__item {
-  position: relative;
-  margin-left: -8px;
-}
-
-.team-avatars__item:first-child {
-  margin-left: 0;
-}
-
-.team-avatars__circle {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: var(--color-background-secondary);
-  border: 2px solid #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  cursor: pointer;
-  transition: transform 150ms ease, box-shadow 150ms ease;
-  position: relative;
-  z-index: 1;
-}
-
-.team-avatars__item:hover .team-avatars__circle {
-  transform: scale(1.15);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  z-index: 5;
-}
-
-.team-avatars__circle--photo img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.team-avatars__initials {
-  font-family: var(--font-body);
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--color-text-secondary);
-  line-height: 1;
-}
-
-.team-avatars__tooltip {
-  position: absolute;
-  top: calc(100% + 8px);
-  right: 0;
-  width: 240px;
-  padding: 12px 14px;
-  background: #fff;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
-  z-index: 100;
-  pointer-events: none;
-}
-
-.team-avatars__tooltip-name {
-  display: block;
-  font-family: var(--font-heading);
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--color-text-primary);
-  margin-bottom: 4px;
-}
-
-.team-avatars__tooltip-role {
-  display: block;
-  font-size: 13px;
-  line-height: 1.45;
-  color: var(--color-text-secondary);
-  margin-bottom: 6px;
-}
-
-.team-avatars__tooltip-score {
-  display: block;
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--color-discount);
-}
-
-.tooltip-fade-enter-active {
-  transition: opacity 150ms ease, transform 150ms ease;
-}
-.tooltip-fade-leave-active {
-  transition: opacity 100ms ease, transform 100ms ease;
-}
-.tooltip-fade-enter-from,
-.tooltip-fade-leave-to {
-  opacity: 0;
-  transform: translateY(-4px);
-}
-
-/* Header text column (title + subtitle + avatars). */
 .search-page__header-text {
   display: flex;
   flex-direction: column;
@@ -2071,10 +1941,6 @@ onMounted(() => {
   /* Hide sidebar entirely; filter moves to FilterSubpage */
   .search-page__sidebar {
     display: none !important;
-  }
-  /* Hide team avatars (hover tooltips don't work on touch) */
-  .team-avatars {
-    display: none;
   }
   /* Hide list/grid view switch — grid only on mobile */
   .search-toolbar__view-switch {
