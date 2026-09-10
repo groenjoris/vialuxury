@@ -1286,17 +1286,14 @@ const pinnedAvailable = computed(() => {
 })
 
 /** Final list shown in the grid: pinned hotel first (always), then the rest.
- *  On mobile we suppress the "unavailable" pinned card entirely — it
- *  reads as confusing noise ("Hotel X · niet beschikbaar voor jouw
- *  zoekopdracht") on a narrow viewport. Desktop keeps the pin so the
- *  origin hotel is visible at-a-glance alongside the rest of the
- *  matching deals. */
+ *  The origin hotel stays on top on every viewport, also when it no longer
+ *  matches the search — the card then reads "niet beschikbaar voor jouw
+ *  zoekopdracht" (user spec). */
 const displayedHotels = computed(() => {
   const pinned = pinnedHotel.value
   if (!pinned) return sortedHotels.value
   const rest = sortedHotels.value.filter(h => h.id !== pinned.id)
   const unavailable = !pinnedAvailable.value
-  if (unavailable && isMobile.value) return rest
   // Use the unfiltered hotel record so its image / pitch render even when
   // unavailable; mark it via a sentinel so the card knows.
   return [{ ...pinned, _pinned: true, _unavailable: unavailable } as SearchHotel & { _pinned: true; _unavailable: boolean }, ...rest]

@@ -944,7 +944,7 @@
       @update:flexibility="flexibility = $event"
       @update:selected-durations="selectedDurations = $event"
       @update:flex-state="handleFlexState"
-      @update:search-group="searchGroup = $event"
+      @update:search-group="whoExplicit = true; searchGroup = $event"
       @search="handleMobileSearch"
     />
 
@@ -1007,6 +1007,23 @@ const verticals = computed(() => {
 })
 // Route-aware: 'vakantieparken' on /vakantieparken*, otherwise 'hotels' (home/search/deal/hotel)
 const _route = useRoute()
+
+/** Deal-page context: the hotel + deal the user is looking at. Drives the
+ *  bar's prefill (destination = this hotel, duration = the deal's nights)
+ *  and the "pin origin hotel on top" rule after "Vind deals". */
+const dealPageSlug = (() => {
+  const m = (_route.path || '').match(/\/deal\/([^/?#]+)/)
+  return m ? decodeURIComponent(m[1]) : null
+})()
+const dealPageHotel = dealPageSlug
+  ? (searchHotels.find(h => h.deals.some(d => d.slug === dealPageSlug)) ?? null)
+  : null
+const dealPageDeal = dealPageHotel?.deals.find(d => d.slug === dealPageSlug) ?? null
+const isDealPage = !!dealPageHotel
+/** Nights key for the duration picker ('1'…'4' or '5+'). */
+const dealNightsKey = dealPageDeal
+  ? (dealPageDeal.nights >= 5 ? '5+' : String(dealPageDeal.nights))
+  : null
 const activeVertical = computed(() => {
   if (_route.path.startsWith('/vakantieparken')) return 'vakantieparken'
   return 'hotels'
@@ -1235,6 +1252,7 @@ watch(activePopup, (val) => {
 
 onMounted(() => {
   localeStore.restoreLocale()
+  restoreBarSnapshot()
   try { noPrefPicked.value = localStorage.getItem(NO_PREF_KEY) === '1' } catch { /* ignore */ }
   window.addEventListener('resize', computePopupPosition)
   window.addEventListener('scroll', computePopupPosition, { passive: true, capture: true })
@@ -1383,6 +1401,7 @@ function clearWhenAndDuration() {
 }
 
 function clearWho() {
+  whoExplicit.value = false
   searchGroup.value = { adults: 2, children: [], rooms: 1, dog: false }
   closePopup()
 }
@@ -1486,7 +1505,22 @@ const localDestHotels = ref<{ slug: string; name: string }[]>(
 )
 const localDestSelectionOrder = ref<LocalSelectionEntry[]>([...selectionOrder.value])
 
+/** Deal page: the destination field shows THIS hotel and nothing else. It
+ *  is a prefill, not a hotel filter — commitSearch() skips it when
+ *  applying hotel filters and only uses it to pin the hotel on top. Any
+ *  change/clear of the field drops the flag. */
+const dealPrefillSlug = ref<string | null>(null)
+if (dealPageHotel) {
+  localDestDestinations.value = []
+  localDestThemes.value = []
+  localDestCities.value = []
+  localDestHotels.value = [{ slug: dealPageHotel.slug, name: dealPageHotel.name }]
+  localDestSelectionOrder.value = [{ type: 'hotel', key: dealPageHotel.slug }]
+  dealPrefillSlug.value = dealPageHotel.slug
+}
+
 function resetLocalDestinationState() {
+  dealPrefillSlug.value = null
   localDestDestinations.value = []
   localDestThemes.value = []
   localDestCities.value = []
@@ -1623,17 +1657,17 @@ const {
 const calMonth = ref({ year: new Date().getFullYear(), month: new Date().getMonth() })
 /** Arrival date picker — live-synced with the global useSecondReleaseSearchState.arrivalDate
  *  so every calendar on the site shows the same selection. */
-const selectedDate = ref<string | null>(globalArrivalDate.value)
+const selectedDate = ref<string | null>(null) // seeded by restoreBarSnapshot()
 const flexibility = ref(0)
-const selectedDurations = ref<string[]>([])
+const selectedDurations = ref<string[]>(dealNightsKey ? [dealNightsKey] : [])
 const flexState = ref<{ durations: string[]; months: string[] }>({ durations: [], months: [] })
 
 // --- LOCAL DRAFT STATE for the search-bar pickers ---
 // Pickers update only these refs; nothing is pushed to shared state until
 // the user clicks the Vind deals / search button. This keeps the rest of
 // the page (filters, results, deal cards) untouched while the user typesArrange.
-const localNights = ref<string[]>([...globalNights.value])
-const localFlexType = ref<string | null>(globalFlexType.value)
+const localNights = ref<string[]>(dealNightsKey ? [dealNightsKey] : [...globalNights.value])
+const localFlexType = ref<string | null>(dealNightsKey ? null : globalFlexType.value)
 /** "Maakt niet uit" — user has explicitly opted out of picking a
  *  specific number of nights. Drives the "Elke reisduur" label on
  *  the search-bar field; cleared as soon as the user picks any
@@ -1641,7 +1675,7 @@ const localFlexType = ref<string | null>(globalFlexType.value)
 /** Default "Maakt niet uit" to CHECKED when no specific nights are
  *  picked — so a fresh user sees the neutral "any duration" choice
  *  pre-selected. Cleared the moment the user picks a specific night. */
-const localAnyDuration = ref(globalNights.value.length === 0)
+const localAnyDuration = ref(!dealNightsKey && globalNights.value.length === 0)
 /** True only when the user actively checked "Maakt niet uit" — the
  *  pre-checked default keeps the field in placeholder state. */
 const anyDurationExplicit = ref(false)
@@ -1712,6 +1746,7 @@ function setLocalFlexType(val: string | null) {
 // searchbar popup, mobile modal) flow back into this popup so its UI
 // stays in sync with the global selection.
 watch(globalNights, (g) => {
+  if (isDealPage) return // the deal page keeps the deal's nights prefill
   const next = [...g]
   if (JSON.stringify(next) !== JSON.stringify(localNights.value)) {
     localNights.value = next
@@ -1733,6 +1768,7 @@ watch(
   [selectedDestinations, selectedCities, sharedSelectedHotels, selectedFilterTags, selectionOrder],
   () => {
     if (activePopup.value === 'destination') return
+    if (isDealPage) return // the deal page keeps its hotel prefill
     syncLocalDestFromShared()
   },
   { deep: true },
@@ -1782,11 +1818,8 @@ const FLEX_TYPE_DOW: Record<string, number> = {
 }
 
 watch(selectedDate, (val) => {
-  // Live-commit to global state so every other calendar on the site (deal
-  // page, hotel page, /search filter pill) reflects the same selection.
-  // Result-list filtering is gated by `committedArrivalDate`, so this does
-  // NOT trigger a re-filter on /search or /kaart.
-  if (val !== globalArrivalDate.value) setArrivalDate(val)
+  // Draft only — the shared arrival date (and with it the deal-page
+  // calendar) is untouched until "Vind deals" commits it.
   if (val && flexState.value.months.length > 0) {
     flexState.value = { ...flexState.value, months: [] }
   }
@@ -1803,11 +1836,8 @@ watch(selectedDate, (val) => {
   notePicker()
 })
 
-/** Mirror global → local: when another calendar changes the arrival date
- *  (e.g. the deal page sidebar), keep the navbar popup in sync. */
-watch(globalArrivalDate, (val) => {
-  if (val !== selectedDate.value) selectedDate.value = val
-})
+// (No global→local arrival-date mirror: the bar is not connected to the
+// deal-page calendar. It only shows a date the user picked in the bar.)
 
 /** Mirror global flexibility → local. */
 watch(() => useSecondReleaseSearchState().selectedFlexibility.value, (val) => {
@@ -1945,30 +1975,15 @@ const destinationIsPlaceholder = computed(() => (
 /** Local draft for the Wie-popup — initialised from the global persons/rooms
  *  so a navbar opened on /deal or /search reflects the current group size. */
 const searchGroup = ref({
-  adults: globalPersons.value || 2,
+  adults: 2, // seeded by restoreBarSnapshot() when chosen in the bar before
   children: [] as { age: number }[],
-  rooms: globalRooms.value || 1,
+  rooms: 1,
   dog: false,
 })
 
-/** Mirror global persons/rooms back to the local draft when another component
- *  (e.g. the deal-page Travel Group modal) commits a change. Skip if the
- *  popup is open so we don't yank the user's in-progress draft. */
-watch(globalPersons, (p) => {
-  if (activePopup.value === 'who') return
-  if (p !== searchGroup.value.adults + searchGroup.value.children.length) {
-    searchGroup.value = {
-      ...searchGroup.value,
-      adults: Math.max(1, p - searchGroup.value.children.length),
-    }
-  }
-})
-watch(globalRooms, (r) => {
-  if (activePopup.value === 'who') return
-  if (r !== searchGroup.value.rooms) {
-    searchGroup.value = { ...searchGroup.value, rooms: r }
-  }
-})
+// (No global→local persons/rooms mirror: the bar is not connected to the
+// deal-page travel-group controls. It shows a group only when the user
+// picked one in the bar before — see restoreBarSnapshot().)
 
 /** Enforce minimum rooms (1p→1, 2p→1, 3p→2, 4p→2, 5p→3 …). Only bumps
  *  rooms UP when persons exceed the current capacity; manually-added extra
@@ -1999,6 +2014,44 @@ function removeSearchChild() {
 
 // True when the "who" field is still on its default (2 adults / 0 children /
 // 1 room / no dog) — used to dim the value as placeholder and hide the clear ✕.
+/** True once the user picked a travel group IN THE BAR (desktop popup or
+ *  mobile modal). Until then the who-field stays a placeholder, whatever
+ *  the deal page's own travel-group control says. */
+const whoExplicit = ref(false)
+
+/** The bar's own memory of what the user last committed IN THE BAR —
+ *  independent from the shared search state, which the deal page's
+ *  calendar / travel-group controls also write to. Covers the fields the
+ *  spec wants "prefilled only when selected earlier": arrival date,
+ *  flexible and travel group. */
+const BAR_SNAPSHOT_KEY = 'vl_sr_searchbar'
+type BarSnapshot = { date: string | null; flexible: boolean; whoExplicit: boolean; adults: number; rooms: number }
+function saveBarSnapshot() {
+  if (!import.meta.client) return
+  const snap: BarSnapshot = {
+    date: selectedDate.value,
+    flexible: localFlexible.value,
+    whoExplicit: whoExplicit.value,
+    adults: searchGroup.value.adults,
+    rooms: searchGroup.value.rooms,
+  }
+  try { localStorage.setItem(BAR_SNAPSHOT_KEY, JSON.stringify(snap)) } catch { /* ignore */ }
+}
+function restoreBarSnapshot() {
+  if (!import.meta.client) return
+  try {
+    const raw = localStorage.getItem(BAR_SNAPSHOT_KEY)
+    if (!raw) return
+    const snap = JSON.parse(raw) as Partial<BarSnapshot>
+    if (typeof snap.date === 'string') selectedDate.value = snap.date
+    if (snap.flexible) localFlexible.value = true
+    if (snap.whoExplicit && snap.adults && snap.rooms) {
+      whoExplicit.value = true
+      searchGroup.value = { adults: snap.adults, children: [], rooms: snap.rooms, dog: false }
+    }
+  } catch { /* ignore */ }
+}
+
 const whoIsPlaceholder = computed(() => (
   searchGroup.value.adults === 2 &&
   searchGroup.value.children.length === 0 &&
@@ -2024,6 +2077,7 @@ const whoMvpSelectedKey = computed(() => {
 })
 
 function pickWhoMvp(opt: { adults: number; rooms: number }) {
+  whoExplicit.value = true
   searchGroup.value = { adults: opt.adults, children: [], rooms: opt.rooms, dog: false }
   applyLiveCriteria()
   closePopup()
@@ -2031,6 +2085,7 @@ function pickWhoMvp(opt: { adults: number; rooms: number }) {
 
 /** "Klaar" in the who-popup — apply the live criteria and close. */
 function applyWho() {
+  whoExplicit.value = true
   applyLiveCriteria()
   closePopup()
 }
@@ -2073,7 +2128,11 @@ async function commitSearch() {
   for (const id of localDestDestinations.value) toggleDestination(id)
   for (const id of localDestThemes.value) toggleFilterTag(id)
   for (const city of localDestCities.value) handleSelectCity(city)
-  for (const hotel of localDestHotels.value) addHotel({ name: hotel.name, slug: hotel.slug })
+  for (const hotel of localDestHotels.value) {
+    // The deal-page prefill is not a hotel FILTER — it only pins (below).
+    if (hotel.slug === dealPrefillSlug.value) continue
+    addHotel({ name: hotel.name, slug: hotel.slug })
+  }
 
   // Apply When + Who drafts.
   const totalPersons = searchGroup.value.adults + searchGroup.value.children.length
@@ -2082,6 +2141,7 @@ async function commitSearch() {
   setSelectedNights(localNights.value.filter(v => ['1', '2', '3', '4', '5+'].includes(v)))
   setFlexType(localFlexType.value)
   setGlobalFlexibility(flexibility.value)
+  saveBarSnapshot()
 
   // Promote live arrival/flex into the snapshot used by /search and /kaart.
   commitArrivalDate()
@@ -2095,7 +2155,12 @@ async function commitSearch() {
 
   // If the user picked a specific hotel from the destination popup, pin it.
   // Otherwise fall back to the deal-page slug (when changing search from /deal).
-  const fromSlug = localDestHotels.value[0]?.slug || currentDealSlug()
+  // Pin the origin hotel on top of the results (even when it no longer
+  // matches the search) — but only when the user picked no OTHER destination.
+  const noOtherDestination = localDestDestinations.value.length === 0
+    && localDestCities.value.length === 0
+    && localDestThemes.value.length === 0
+  const fromSlug = localDestHotels.value[0]?.slug || (noOtherDestination ? currentDealSlug() : null)
   const target = fromSlug
     ? `/second-release/search?from=${encodeURIComponent(fromSlug)}`
     : '/second-release/search'
@@ -2115,12 +2180,11 @@ async function commitSearch() {
   }
 }
 
-/* ── Live search on /search ONLY ──
- * On the results page, editing the search bar applies immediately (no "Vind
- * deals" press). Home and deal/hotel keep buffering drafts until commit.
- * Destination and criteria are split so that, e.g., changing the date never
- * re-adds a destination the user removed via a filter pill. */
-const liveMode = computed(() => _route.path === '/second-release/search')
+/* ── Results only update on "Vind deals" ──
+ * The bar never applies live (also not on /search) — every field is a
+ * draft until commitSearch(). `liveMode` stays as a switch so the
+ * apply-live helpers below remain wired but inert. */
+const liveMode = computed(() => false)
 
 /** Push the bar's destination draft to shared state live (single-select:
  *  clear then re-add). Does not touch tags/budget. */
