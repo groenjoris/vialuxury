@@ -3,6 +3,7 @@
     class="site-header"
     :class="[
       { 'site-header--overlay': variant === 'overlay' },
+      { 'site-header--has-payoff': !!payoff },
       `site-header--nav-v${effectiveNavVariant}`,
       // v3 and v4 share v2's nav layout (with one small tweak each).
       // Adding the v2 class alongside their own lets every v2 rule
@@ -4160,17 +4161,21 @@ function handleSelectHotelInPopup(slug: string) {
     grid-column: 1 / -1;
     align-self: center;
     justify-self: center !important;    /* centre the wrap in its grid track */
-    /* Phone sits roughly in the MIDDLE of the gap between the
-       tagline's bottom and the search-pill's top (which now
-       reaches 34 px into the nav). 12 px keeps the phone
-       visually centred in that strip on home / deal / hotel
-       with the search bar 12 px lower than before — and clears
-       the pill's top half so the bar never obscures it. */
-    margin-top: 12px;
+    /* Without a pay-off row the phone sits directly under the logo /
+       menu button; 34 px reproduces the gap the tagline row used to
+       provide (≈5 px margin + 12 px text + 12 px phone margin, plus
+       the hamburger sitting a few px lower than the logo). */
+    margin-top: 34px;
     /* Belt + suspenders: ensure inline content also centres if the
        wrap ends up wider than its inner button. */
     text-align: center;
     width: auto;
+  }
+  /* With a pay-off row (opt-in prop) the tagline provides the spacing:
+     the phone sits 12 px below it, roughly centred in the strip between
+     the tagline's bottom and the search-pill's top. */
+  .site-header.site-header--has-payoff .site-header__phone-wrap {
+    margin-top: 12px;
   }
   /* Phone uses the SAME margin-top (12 px) across all four
      pages now — the summary card's top sits at the same Y as
