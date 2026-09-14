@@ -994,7 +994,7 @@
 </template>
 
 <script setup lang="ts">
-import { TRIP_NIGHT_KEYS, isNightKey, nightKeyFor, joinNightKeys } from '~/utils-multi-hotel-trip/nights'
+import { TRIP_NIGHT_KEYS, isNightKey, nightKeyFor, joinNightKeys, summarizeNightKeys } from '~/utils-multi-hotel-trip/nights'
 import { TRIPS_DESTINATION_ID } from '~/utils-multi-hotel-trip/destinationMatch'
 import { useMultiHotelTripLocaleStore } from '~/stores-multi-hotel-trip/locale'
 import { searchHotels } from '~/data/mock/search-hotels'
@@ -2044,12 +2044,8 @@ const hoelangLabel = computed(() => {
   // the untouched default shows the "Kies aantal nachten" placeholder.
   if (localAnyDuration.value && anyDurationExplicit.value) return t('header.noPreference')
   if (localNights.value.length === 0) return t('header.tab.nights')
-  if (localNights.value.length === 1) {
-    const v = localNights.value[0]
-    if (v === '1') return `1 ${t('common.night')}`
-    return `${v} ${t('common.nights')}`
-  }
-  return `${joinNightKeys(localNights.value, t('common.or'))} ${t('common.nights')}`
+  // Volledige groep → groepsnaam ("Lange vakantie"); anders de losse nachten.
+  return summarizeNightKeys(localNights.value, t, { night: t('common.night'), nights: t('common.nights'), or: t('common.or') })
 })
 
 const hoelangIsPlaceholder = computed(

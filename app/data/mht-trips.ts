@@ -1,7 +1,8 @@
 /**
- * Multi Hotel Trip — de "vakanties": autoroutes van
+ * Multi Hotel Trip — de "vakanties": autoroutes (en één fietsvakantie) van
  * twee of drie hotels achter elkaar. Inhoud komt uit de briefing-PDF's
- * "Original No. 001–006" (vakanties voorbeeld content/).
+ * "Original No. 001–006" (vakanties voorbeeld content/) plus de echte
+ * ViaLuxury-deal "Fietsvakantie 2026" (Twente & Salland).
  *
  * Elke vakantie wordt als één SearchHotel-record met één deal door de
  * bestaande zoekresultaten en dealcards geleid; `hotel.trip` markeert het
@@ -27,6 +28,9 @@ interface StopSpec {
   city: string
   /** Streek/provincie voor de locatieregel op de PDP ("Béthune, Noord-Frankrijk"). */
   region: string
+  /** NL-provincie voor het bestemmingsfilter; alleen nodig als `region` geen
+   *  provincie is (Twente, Salland → Overijssel). Buitenland: leeg. */
+  province?: string
   nights: number
   stars?: number
   image?: string
@@ -138,7 +142,7 @@ const TRIPS: TripSpec[] = [
     stops: [
       { name: 'Landgoed Groot Warnsborn', city: 'Arnhem', region: 'Gelderland', nights: 2, stars: 4, lat: 52.0247, lng: 5.8672, image: '/images/vakanties/003/hotel-1.jpg', includes: [l('2 x overnachting', '2 nights'), l('Kamerupgrade naar een luxe kamer', 'Room upgrade to a luxury room'), l('Dagelijks ontbijtbuffet', 'Daily breakfast buffet'), l('Culinair 3-gangendiner', 'Culinary 3-course dinner'), l('Welkomstdrankje met een lekkernij', 'Welcome drink with a treat'), l('Badjas en slippers', 'Bathrobe and slippers'), l('Late check-out tot 12:00 uur', 'Late check-out until 12:00'), l('Gratis parkeren', 'Free parking')] },
       { name: 'Kasteel Engelenburg', city: 'Brummen', region: 'Gelderland', nights: 2, stars: 4, lat: 52.0906, lng: 6.1553, image: '/images/vakanties/003/hotel-2.jpg', includes: [l('2 x overnachting', '2 nights'), l('Kamerupgrade naar luxe kamer (o.b.v.b.)', 'Room upgrade to a luxury room (subject to availability)'), l('Dagelijks royaal ontbijt', 'Daily generous breakfast'), l('Culinair 3- of 4-gangendiner', 'Culinary 3- or 4-course dinner'), l('Early check-in vanaf 14:00 uur', 'Early check-in from 14:00'), l('Late check-out tot 12:00 uur', 'Late check-out until 12:00'), l('Gratis parkeren', 'Free parking')] },
-      { name: 'Landhuishotel De Bloemenbeek', city: 'De Lutte', region: 'Twente', nights: 2, stars: 4, lat: 52.3156, lng: 6.9797, image: '/images/vakanties/003/hotel-3.jpg', includes: [l('2 x overnachting', '2 nights'), l('Kamerupgrade naar Superior kamer (o.b.v.b.)', 'Room upgrade to a Superior room (subject to availability)'), l('Dagelijks ontbijtbuffet', 'Daily breakfast buffet'), l('4-gangen-Michelin-diner', '4-course Michelin dinner'), l('Onbeperkt gebruik van de spa', 'Unlimited use of the spa'), l('Late check-out tot 13:00 uur', 'Late check-out until 13:00'), l('Gratis parkeren', 'Free parking')] },
+      { name: 'Landhuishotel De Bloemenbeek', city: 'De Lutte', region: 'Twente', province: 'Overijssel', nights: 2, stars: 4, lat: 52.3156, lng: 6.9797, image: '/images/vakanties/003/hotel-3.jpg', includes: [l('2 x overnachting', '2 nights'), l('Kamerupgrade naar Superior kamer (o.b.v.b.)', 'Room upgrade to a Superior room (subject to availability)'), l('Dagelijks ontbijtbuffet', 'Daily breakfast buffet'), l('4-gangen-Michelin-diner', '4-course Michelin dinner'), l('Onbeperkt gebruik van de spa', 'Unlimited use of the spa'), l('Late check-out tot 13:00 uur', 'Late check-out until 13:00'), l('Gratis parkeren', 'Free parking')] },
     ],
     title: l('Kastelen & Landgoederen: 7-daagse autoroute incl. 3 culinaire diners', 'Castles & Estates: 7-day road trip incl. 3 culinary dinners'),
     pitch: l('Van de Veluwe naar het Twentse coulisselandschap: zes nachten in drie bijzondere kastelen en landgoederen, met een Michelin-diner als finale.', 'From the Veluwe to the Twente landscape: six nights in three castles and estates, with a Michelin dinner as the finale.'),
@@ -270,8 +274,59 @@ const TRIPS: TripSpec[] = [
     tags: ['auto', 'aan-zee', 'wellness', 'steden'],
     routeImage: '/images/vakanties/006/route.jpg',
   },
+  // ── Fietsvakantie Twente & Salland (echte ViaLuxury-deal "Fietsvakantie 2026") ──
+  {
+    id: 'trip-fietsvakantie-twente-salland',
+    slug: 'fietsvakantie-twente-en-salland-delden-raalte-markelo',
+    type: 'fiets',
+    stops: [
+      { name: 'Hotel Wapen van Delden', city: 'Delden', region: 'Twente', province: 'Overijssel', nights: 2, stars: 4, lat: 52.2622, lng: 6.7113, image: 'https://asset.vialuxury.com/assets/9f13962b-27bb-43f9-b875-bd7b63b04c98?key=photo-full', extraImages: ['https://asset.vialuxury.com/assets/de37ddd8-3265-455d-b733-b4b123879a08?key=photo-full', 'https://asset.vialuxury.com/assets/ead7f055-ea8d-4d7b-a45b-b508d83b3396?key=photo-full'], includes: [l('2 x overnachting', '2 nights'), l('Dagelijks uitgebreid ontbijtbuffet', 'Daily extensive breakfast buffet'), l('2 x 3-gangendiner', '2 x 3-course dinner'), l('Welkomstfietstasje met water, regenponcho en bandenplaksetje', 'Welcome cycling bag with water, rain poncho and repair kit'), l('ViaLuxury welkomstcadeau', 'ViaLuxury welcome gift'), l('Bagagetransport naar Raalte', 'Luggage transfer to Raalte'), l('Gratis parkeren (gehele vakantie)', 'Free parking (whole holiday)')] },
+      { name: 'Hotel de Zwaan', city: 'Raalte', region: 'Salland', province: 'Overijssel', nights: 2, stars: 3, lat: 52.3833, lng: 6.2667, includes: [l('2 x overnachting', '2 nights'), l('Dagelijks uitgebreid ontbijtbuffet', 'Daily extensive breakfast buffet'), l('2 x 3-gangendiner', '2 x 3-course dinner'), l('Fietsroutes Salland op je telefoon', 'Salland cycling routes on your phone'), l('Bagagetransport naar Markelo', 'Luggage transfer to Markelo')] },
+      { name: 'Landhuishotel Herikerberg', city: 'Markelo', region: 'Twente', province: 'Overijssel', nights: 2, stars: 4, lat: 52.2361, lng: 6.5194, image: 'https://asset.vialuxury.com/assets/61164a46-85d5-4f32-8547-9f2c5727af3f?key=photo-full', extraImages: ['https://asset.vialuxury.com/assets/d79b8fd5-75cf-49a6-b558-5f28a85d9f1c?key=photo-full'], includes: [l('2 x overnachting', '2 nights'), l('Dagelijks uitgebreid ontbijtbuffet', 'Daily extensive breakfast buffet'), l('2 x 3-gangendiner', '2 x 3-course dinner'), l('Fietsroutes Twente op je telefoon', 'Twente cycling routes on your phone'), l('Bagagetransport terug naar Delden', 'Luggage transfer back to Delden')] },
+    ],
+    title: l('7-daagse fietsvakantie Twente & Salland: Delden – Raalte – Markelo incl. dagelijks 3-gangendiner', '7-day cycling holiday Twente & Salland: Delden – Raalte – Markelo incl. daily 3-course dinner'),
+    pitch: l('Rustige fietspaden, schilderachtige dorpen en elke twee nachten een ander hotel — je bagage reist vooruit.', 'Quiet cycle paths, picturesque villages and a different hotel every two nights; your luggage travels ahead.'),
+    price: 1059,
+    originalPrice: 1635,
+    discountPercentage: 35,
+    highlights: [
+      l('6 nachten / 3 hotels', '6 nights / 3 hotels'),
+      l('Dagelijks 3-gangendiner', 'Daily 3-course dinner'),
+      l('Dagelijkse bagagetransfer', 'Daily luggage transfer'),
+      l('Fietsroutes op je telefoon', 'Cycling routes on your phone'),
+    ],
+    inclusions: [
+      l('2 x overnachting in Hotel Wapen van Delden', '2 nights at Hotel Wapen van Delden'),
+      l('2 x overnachting in Hotel de Zwaan', '2 nights at Hotel de Zwaan'),
+      l('2 x overnachting in Landhuishotel Herikerberg', '2 nights at Landhuishotel Herikerberg'),
+      l('Dagelijks uitgebreid ontbijtbuffet', 'Daily extensive breakfast buffet'),
+      l('Dagelijks 3-gangendiner', 'Daily 3-course dinner'),
+      l('Bagagetransport tussen de hotels', 'Luggage transfer between the hotels'),
+      l('Fietsroutes Twente & Salland op je telefoon', 'Twente & Salland cycling routes on your phone'),
+      l('Welkomstfietstasje en ViaLuxury welkomstcadeau', 'Welcome cycling bag and ViaLuxury welcome gift'),
+      l('Gratis parkeren (gehele vakantie)', 'Free parking (whole holiday)'),
+    ],
+    tags: ['fiets', 'natuur', 'culinair'],
+  },
 ]
 
+
+const NL_PROVINCES = new Set(['Drenthe', 'Flevoland', 'Friesland', 'Gelderland', 'Groningen', 'Limburg', 'Noord-Brabant', 'Noord-Holland', 'Overijssel', 'Utrecht', 'Zeeland', 'Zuid-Holland'])
+const isNlProvince = (s: string) => NL_PROVINCES.has(s)
+
+/** Quick-filter-tags → thema-woorden die de gewone filters (filterTags.ts)
+ *  herkennen, zodat een vakantie ook in de reguliere zoekresultaten op
+ *  "Kasteelhotels", "Wellness", "Aan zee" enz. matcht. */
+const TAG_THEMES: Record<string, string> = {
+  kasteel: 'Kasteelhotels',
+  wellness: 'Wellness',
+  'aan-zee': 'Aan zee',
+  natuur: 'In de natuur',
+  culinair: 'Culinair genieten',
+  steden: 'Stedentrip',
+  fiets: 'Fietsvakantie',
+  superluxe: '5-sterren luxe',
+}
 
 function findHotel(name: string): SearchHotel | undefined {
   const lower = name.toLowerCase()
@@ -316,6 +371,7 @@ function toStop(s: StopSpec, dayFrom: number): MultiHotelTripDetailStop {
   return {
     city: s.city || h?.city || '',
     region: s.region || h?.province || h?.region || '',
+    province: s.province ?? (h?.province || (isNlProvince(s.region) ? s.region : undefined)),
     hotelName: h?.name ?? s.name,
     hotelSlug: h?.slug,
     nights: s.nights,
@@ -362,7 +418,11 @@ function buildTrip(spec: TripSpec): { hotel: SearchHotel; detail: MultiHotelTrip
     detailedInclusions: spec.inclusions,
     heroImage: first.image,
     hasDinner: spec.inclusions.some(i => /diner/i.test(i.nl)),
-    themes: spec.type === 'fiets' ? ['Fietsvakantie', 'Vakanties'] : ['Autovakantie', 'Vakanties'],
+    themes: [
+      spec.type === 'fiets' ? 'Fietsvakantie' : 'Autovakantie',
+      'Vakanties',
+      ...spec.tags.map(t => TAG_THEMES[t]).filter((t): t is string => !!t),
+    ],
   }
   const hotel: SearchHotel = {
     id: spec.id,

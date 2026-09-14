@@ -421,7 +421,8 @@
 <script setup lang="ts">
 // Multi Hotel Trip: de Vakanties-zoekpagina is dezelfde pagina onder een
 // eigen URL (hero + quick filters i.p.v. filterpaneel; toont vakanties).
-definePageMeta({ alias: ['/multi-hotel-trip/vakanties'] })
+// /multi-hotel-trip/vakanties is een eigen pagina (vakanties.vue) die deze
+// component rendert — zie de toelichting daar (geen alias).
 import type { SearchHotel } from '~/types/searchHotel'
 import { searchHotels } from '~/data/mock/search-hotels'
 import { dealMatchesAllTags, getFilterTag } from '~/utils-multi-hotel-trip/filterTags'
@@ -430,6 +431,7 @@ import { isDealAvailableInWindow } from '~/utils-multi-hotel-trip/availability'
 import { adjustPrice } from '~/utils-multi-hotel-trip/priceFormula'
 import {
   hotelMatchesDestination,
+  tripMatchesDestination,
   hasActiveDestinationFilter,
   neighboursOf,
   DESTINATION_LABEL_BY_ID,
@@ -518,6 +520,39 @@ function filteredTrips(withArrival: boolean, quickOverride?: readonly string[]):
       if (priceForPersons < budgetMin.value || priceForPersons > budgetMax.value) return false
       if (nightsActive && !selectedNights.value.includes(nightKeyFor(d.nights))) return false
       if (arrival && !isDealAvailableInWindow(d.id, arrival, flex)) return false
+      return true
+    })
+    if (deals.length > 0) out.push({ ...trip, deals })
+  }
+  return out
+}
+
+/** Vakanties die óók in de gewone zoekresultaten (zonder bestemming
+ *  "Vakanties") als kaartje verschijnen — op dezelfde criteria als de
+ *  hotels: budget, reisduur, arrangement/thema/specials-tags, aankomstdatum
+ *  en bestemming (een vakantie hoort bij een provincie/plaats zodra één van
+ *  haar hotels daar ligt). */
+function tripsForRegularResults(
+  withArrival: boolean,
+  destFilter: { destinations: string[]; cities: { name: string }[]; hotels: { slug: string }[] },
+  pickedThemes: string[],
+  pickedOther: string[],
+): SearchHotel[] {
+  const nightsActive = selectedNights.value.length > 0
+  const p = persons.value
+  const arrival = withArrival ? activeArrival.value : null
+  const flex = activeFlex.value
+  const destActive = hasActiveDestinationFilter(destFilter)
+  const out: SearchHotel[] = []
+  for (const trip of tripSearchHotels) {
+    if (destActive && !tripMatchesDestination(trip, destFilter)) continue
+    const deals = trip.deals.filter((d) => {
+      const priceForPersons = adjustPrice(d.basePrice, p)
+      if (priceForPersons < budgetMin.value || priceForPersons > budgetMax.value) return false
+      if (nightsActive && !selectedNights.value.includes(nightKeyFor(d.nights))) return false
+      if (!dealMatchesAllTags(d, trip, pickedOther)) return false
+      if (arrival && !isDealAvailableInWindow(d.id, arrival, flex)) return false
+      if (pickedThemes.length > 0 && !pickedThemes.some(id => getFilterTag(id)?.matches(d, trip))) return false
       return true
     })
     if (deals.length > 0) out.push({ ...trip, deals })
@@ -956,6 +991,8 @@ const filteredHotelsIgnoringDate = computed(() => {
       out.push({ ...hotel, deals: matchingDeals })
     }
   }
+  // Multi Hotel Trip: vakantiekaartjes tussen de hotels (zonder datumfilter).
+  out.push(...tripsForRegularResults(false, destFilter, pickedThemes, pickedOther))
   return out
 })
 
@@ -1147,13 +1184,16 @@ const filterCounts = computed(() => {
   }
   const destActive = hasActiveDestinationFilter(destFilter)
   return computeFilterCounts({
-    hotels: searchHotels,
+    // Multi Hotel Trip: de vakanties tellen mee (ze staan ook tussen de resultaten).
+    hotels: [...searchHotels, ...tripSearchHotels],
     inBudget: (d) => {
       const price = adjustPrice(d.basePrice, p)
       return price >= budgetMin.value && price <= budgetMax.value
     },
     isAvailableOnDate: arrival ? (d) => isDealAvailableInWindow(d.id, arrival, flex) : undefined,
-    matchesDestination: destActive ? (h) => hotelMatchesDestination(h, destFilter) : undefined,
+    matchesDestination: destActive
+      ? (h) => (h.trip ? tripMatchesDestination(h, destFilter) : hotelMatchesDestination(h, destFilter))
+      : undefined,
     selectedNights: selectedNights.value,
     selectedTagIds: selectedFilterTags.value,
   })
@@ -1225,6 +1265,8 @@ const filteredHotels = computed(() => {
       out.push({ ...hotel, deals: matchingDeals })
     }
   }
+  // Multi Hotel Trip: vakantiekaartjes tussen de hotels, op dezelfde criteria.
+  out.push(...tripsForRegularResults(true, destFilter, pickedThemes, pickedOther))
   return out
 })
 

@@ -66,22 +66,62 @@
       </button>
       <Transition name="filter-expand">
         <div v-if="group.open" class="filter-group__body">
-          <label
-            v-for="item in group.items"
-            :key="item.value || item.label"
-            class="filter-item"
-            :class="{ 'filter-item--disabled': itemCount(item.value) === 0 && !isItemChecked(group.id, item.value) }"
-          >
-            <input
-              type="checkbox"
-              class="filter-item__checkbox"
-              :checked="isItemChecked(group.id, item.value)"
-              :disabled="!isItemWired(group.id) || (itemCount(item.value) === 0 && !isItemChecked(group.id, item.value))"
-              @change="onItemToggle(group.id, item.value)"
-            />
-            <span class="filter-item__label">{{ item.label }}</span>
-            <span v-if="counts" class="filter-item__count">({{ itemCount(item.value) }})</span>
-          </label>
+          <!-- Multi Hotel Trip: reisduur als twee groepen (Kort verblijf 1–4 /
+               Lange vakantie 5–8) met de losse nachten als chips eronder —
+               geen lijst van acht checkboxes. -->
+          <template v-if="group.id === 'travelDuration'">
+            <div v-for="ng in NIGHT_GROUPS" :key="ng.id" class="filter-nights">
+              <label
+                class="filter-item"
+                :class="{ 'filter-item--disabled': groupCount(ng) === 0 && groupState(ng) === 'none' }"
+              >
+                <input
+                  type="checkbox"
+                  class="filter-item__checkbox"
+                  :class="{ 'filter-item__checkbox--partial': groupState(ng) === 'some' }"
+                  :checked="groupState(ng) === 'all'"
+                  :disabled="groupCount(ng) === 0 && groupState(ng) === 'none'"
+                  @change="onNightGroupToggle(ng)"
+                />
+                <span class="filter-item__label">
+                  {{ t(ng.labelKey) }}
+                  <span class="filter-nights__range">{{ t(ng.rangeKey) }}</span>
+                </span>
+                <span v-if="counts" class="filter-item__count">({{ groupCount(ng) }})</span>
+              </label>
+              <div class="filter-nights__chips" role="group" :aria-label="t(ng.labelKey)">
+                <button
+                  v-for="key in ng.keys"
+                  :key="key"
+                  type="button"
+                  class="filter-nights__chip"
+                  :class="{ 'filter-nights__chip--on': selectedNights.includes(key) }"
+                  :disabled="itemCount(key) === 0 && !selectedNights.includes(key)"
+                  :aria-pressed="selectedNights.includes(key)"
+                  :title="counts ? `${key === '1' ? t('filter.1day') : key + ' ' + t('common.nights')} (${itemCount(key)})` : undefined"
+                  @click="toggleNight(key)"
+                >{{ key }}</button>
+              </div>
+            </div>
+          </template>
+          <template v-else>
+            <label
+              v-for="item in group.items"
+              :key="item.value || item.label"
+              class="filter-item"
+              :class="{ 'filter-item--disabled': itemCount(item.value) === 0 && !isItemChecked(group.id, item.value) }"
+            >
+              <input
+                type="checkbox"
+                class="filter-item__checkbox"
+                :checked="isItemChecked(group.id, item.value)"
+                :disabled="!isItemWired(group.id) || (itemCount(item.value) === 0 && !isItemChecked(group.id, item.value))"
+                @change="onItemToggle(group.id, item.value)"
+              />
+              <span class="filter-item__label">{{ item.label }}</span>
+              <span v-if="counts" class="filter-item__count">({{ itemCount(item.value) }})</span>
+            </label>
+          </template>
         </div>
       </Transition>
       </div>
@@ -91,6 +131,7 @@
 
 <script setup lang="ts">
 import { formatPrice } from '~/utils-multi-hotel-trip/formatPrice'
+import { NIGHT_GROUPS, nightGroupState, toggleNightGroup, type NightGroup } from '~/utils-multi-hotel-trip/nights'
 
 const { t } = useMultiHotelTripI18n()
 
@@ -185,9 +226,18 @@ interface FilterGroup {
 
 // Wire travel-duration + filter-tag checkboxes to shared search state
 const {
-  selectedNights, toggleNight,
+  selectedNights, toggleNight, setSelectedNights,
   selectedFilterTags, toggleFilterTag,
 } = useMultiHotelTripSearchState()
+
+/* Reisduur in twee groepen (zie utils-multi-hotel-trip/nights.ts). */
+const groupState = (ng: NightGroup) => nightGroupState(selectedNights.value, ng)
+/** Som van de nacht-tellingen: de nachten sluiten elkaar uit, dus dit is het
+ *  aantal deals dat de groep zou opleveren. */
+const groupCount = (ng: NightGroup) => ng.keys.reduce((sum, k) => sum + itemCount(k), 0)
+function onNightGroupToggle(ng: NightGroup) {
+  setSelectedNights(toggleNightGroup(selectedNights.value, ng))
+}
 
 function isItemWired(groupId: string): boolean {
   return groupId === 'travelDuration'
@@ -230,16 +280,8 @@ const filterGroups = computed<FilterGroup[]>(() => [
     id: 'travelDuration',
     title: t('filter.travelDuration'),
     open: openState.travelDuration,
-    items: [
-      { label: t('filter.1day'), value: '1' },
-      { label: t('filter.2days'), value: '2' },
-      { label: t('filter.3days'), value: '3' },
-      { label: t('filter.4days'), value: '4' },
-      { label: t('filter.5days'), value: '5' },
-      { label: t('filter.6days'), value: '6' },
-      { label: t('filter.7days'), value: '7' },
-      { label: t('filter.8days'), value: '8' },
-    ],
+    // Wordt als twee groepen (kort / lang) met nacht-chips gerenderd, zie template.
+    items: [],
   },
   // Budget / Totaalprijs slider is rendered inline before the
   // 'specials' group via a `v-if` in the template, so the visible
@@ -525,6 +567,62 @@ function itemCount(value: string): number {
 
 .filter-item--disabled .filter-item__checkbox {
   cursor: not-allowed;
+}
+
+/* ── Reisduur: kort / lang met nacht-chips ── */
+.filter-nights {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.filter-nights + .filter-nights { margin-top: 4px; }
+.filter-nights__range {
+  margin-left: 4px;
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+.filter-nights__chips {
+  display: flex;
+  gap: 6px;
+  padding-left: 24px;
+}
+.filter-nights__chip {
+  min-width: 30px;
+  height: 26px;
+  padding: 0 6px;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  background: #fff;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
+}
+.filter-nights__chip:hover:not(:disabled) { border-color: var(--color-text-primary); }
+.filter-nights__chip--on {
+  background: var(--color-discount);
+  border-color: var(--color-discount);
+  color: #fff;
+}
+.filter-nights__chip:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+/* Deel van de groep geselecteerd: gevuld vakje met streepje. */
+.filter-item__checkbox--partial {
+  background-color: var(--color-discount);
+  border-color: var(--color-discount);
+}
+.filter-item__checkbox--partial::after {
+  content: '';
+  position: absolute;
+  left: 3px;
+  top: 6px;
+  width: 8px;
+  height: 2px;
+  background: #fff;
 }
 
 /* Expand transition */

@@ -154,7 +154,7 @@
 </template>
 
 <script setup lang="ts">
-import { joinNightKeys } from '~/utils-multi-hotel-trip/nights'
+import { summarizeNightKeys } from '~/utils-multi-hotel-trip/nights'
 import { minRoomsFor, maxRoomsFor } from '~/utils-multi-hotel-trip/priceFormula'
 
 const { t } = useMultiHotelTripI18n()
@@ -362,7 +362,8 @@ const howLongLabel = computed(() => {
   if (anyDuration.value) return t('header.noPreference')
   const calDurs = selectedDurations.value
   if (calDurs.length > 0) {
-    return `${joinNightKeys(calDurs, t('common.or'))} ${t('common.nights')}`
+    // Volledige groep → "Lange vakantie"; anders de losse nachten.
+    return summarizeNightKeys(calDurs, t, { night: t('common.night'), nights: t('common.nights'), or: t('common.or') })
   }
   return t('header.tab.nights')
 })

@@ -33,7 +33,9 @@
 </template>
 
 <script setup lang="ts">
-import { joinNightKeys } from '~/utils-multi-hotel-trip/nights'
+import { summarizeNightKeys } from '~/utils-multi-hotel-trip/nights'
+
+const { t } = useMultiHotelTripI18n()
 defineEmits<{ open: [] }>()
 
 const search = useMultiHotelTripSearchState()
@@ -77,14 +79,8 @@ const whenCombinedLabel = computed<string>(() => {
   let durPart = 'Elke reisduur'
   const nights = search.selectedNights.value
   if (nights.length) {
-    const sorted = [...nights].sort()
-    if (sorted.length === 1) {
-      const v = sorted[0]
-      if (v === '1') durPart = '1 nacht'
-      else durPart = `${v} nachten`
-    } else {
-      durPart = `${joinNightKeys(sorted, 'of')} nachten`
-    }
+    // Volledige groep → "Lange vakantie"; anders de losse nachten.
+    durPart = summarizeNightKeys(nights, t, { night: 'nacht', nights: 'nachten', or: 'of' })
   }
   return `${datePart} · ${durPart}`
 })

@@ -247,6 +247,12 @@ const nl: Record<string, string> = {
   'trip.checkOut': 'Check-out',
   'trip.inclusive': 'Inclusief',
   'trip.routeLabel': 'Route',
+  // Multi Hotel Trip — reisduur in twee groepen (kort / lang)
+  'nights.group.short': 'Kort verblijf',
+  'nights.group.shortRange': '1 t/m 4 nachten',
+  'nights.group.long': 'Lange vakantie',
+  'nights.group.longRange': '5 t/m 8 nachten',
+  'nights.group.both': 'Kort of lang verblijf',
   'search.filters': 'Filters',
   'search.arrangement': 'Arrangement',
   'search.fromPrice': 'Vanaf',

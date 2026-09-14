@@ -244,6 +244,12 @@ const en: Record<string, string> = {
   'trip.checkOut': 'Check-out',
   'trip.inclusive': 'Included',
   'trip.routeLabel': 'Route',
+  // Multi Hotel Trip — reisduur in twee groepen (kort / lang)
+  'nights.group.short': 'Short stay',
+  'nights.group.shortRange': '1 to 4 nights',
+  'nights.group.long': 'Long holiday',
+  'nights.group.longRange': '5 to 8 nights',
+  'nights.group.both': 'Short or long stay',
   'search.filters': 'Filters',
   'search.arrangement': 'Package',
   'search.fromPrice': 'From',

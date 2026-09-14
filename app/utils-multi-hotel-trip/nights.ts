@@ -13,6 +13,60 @@ export type NightKey = (typeof NIGHT_KEYS)[number]
  *  wanneer de gebruiker via de hoofdnavigatie op Vakanties klikt. */
 export const TRIP_NIGHT_KEYS: NightKey[] = ['5', '6', '7', '8']
 
+/**
+ * Reisduur in twee groepen i.p.v. één lange lijst van acht: "Kort verblijf"
+ * (1 t/m 4 nachten) en "Lange vakantie" (5 t/m 8 nachten). Alle pickers
+ * (zoekbalk, filterpaneel, mobiele modal, hotelpagina) tonen de groep als
+ * kop met de losse nachten als kleine chips erachter; de opgeslagen state
+ * blijft gewoon de lijst met night-keys.
+ */
+export type NightGroupId = 'short' | 'long'
+export interface NightGroup {
+  id: NightGroupId
+  keys: NightKey[]
+  /** i18n-keys voor de groepsnaam en de bereik-ondertitel. */
+  labelKey: string
+  rangeKey: string
+}
+export const NIGHT_GROUPS: NightGroup[] = [
+  { id: 'short', keys: ['1', '2', '3', '4'], labelKey: 'nights.group.short', rangeKey: 'nights.group.shortRange' },
+  { id: 'long', keys: ['5', '6', '7', '8'], labelKey: 'nights.group.long', rangeKey: 'nights.group.longRange' },
+]
+
+/** Hoeveel van de groep is geselecteerd: niets, een deel of alles. */
+export function nightGroupState(selected: readonly string[], group: NightGroup): 'none' | 'some' | 'all' {
+  const n = group.keys.filter(k => selected.includes(k)).length
+  if (n === 0) return 'none'
+  return n === group.keys.length ? 'all' : 'some'
+}
+
+/** Groepstoggle: alles aan → groep leeg; anders de hele groep aan. Geeft de
+ *  nieuwe selectie terug (andere groep blijft ongemoeid). */
+export function toggleNightGroup(selected: readonly string[], group: NightGroup): string[] {
+  const rest = selected.filter(k => !(group.keys as string[]).includes(k))
+  return nightGroupState(selected, group) === 'all' ? rest : [...rest, ...group.keys]
+}
+
+/**
+ * Korte samenvatting van een selectie voor veldwaarden en pills:
+ * een volledige groep heet bij haar naam ("Kort verblijf", "Lange vakantie",
+ * beide → "Kort of lang verblijf"); anders de losse nachten ("5, 6 of 7
+ * nachten"). `t` levert de vertalingen.
+ */
+export function summarizeNightKeys(
+  keys: readonly string[],
+  t: (key: string) => string,
+  words: { night: string; nights: string; or: string },
+): string {
+  if (keys.length === 0) return ''
+  const full = NIGHT_GROUPS.filter(g => nightGroupState(keys, g) === 'all')
+  const covered = full.flatMap(g => g.keys as string[])
+  if (full.length === NIGHT_GROUPS.length) return t('nights.group.both')
+  if (full.length === 1 && keys.every(k => covered.includes(k))) return t(full[0]!.labelKey)
+  if (keys.length === 1) return nightKeyLabel(keys[0]!, words.night, words.nights)
+  return `${joinNightKeys(keys, words.or)} ${words.nights}`
+}
+
 const MAX_NIGHT_KEY = 8
 
 /** Reisduur-key voor een deal: 1…7 exact, 8 = acht nachten of langer. */

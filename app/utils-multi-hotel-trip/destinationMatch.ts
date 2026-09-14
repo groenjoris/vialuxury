@@ -95,3 +95,22 @@ export function hotelMatchesDestination(h: SearchHotel, f: DestinationFilter): b
   })) return true
   return false
 }
+
+/**
+ * Multi Hotel Trip — een vakantie (meerdere hotels) hoort bij een bestemming
+ * zodra één van haar hotels erbij hoort: provincie via `stop.province`,
+ * plaats via `stop.city`, of een gepind hotel via `stop.hotelSlug`. Zonder
+ * actief bestemmingsfilter matcht alles. De pseudo-bestemming "Vakanties"
+ * wordt buiten deze functie afgehandeld (vakantiestand).
+ */
+export function tripMatchesDestination(h: SearchHotel, f: DestinationFilter): boolean {
+  if (!hasActiveDestinationFilter(f)) return true
+  const stops = h.trip?.stops ?? []
+  if (f.hotels.some(x => stops.some(s => s.hotelSlug && s.hotelSlug === x.slug))) return true
+  if (f.cities.some(c => stops.some(s => s.city.toLowerCase() === c.name.toLowerCase()))) return true
+  return f.destinations.some((id) => {
+    const province = NL_PROVINCE_BY_ID[id]
+    if (province) return stops.some(s => s.province === province)
+    return false
+  })
+}

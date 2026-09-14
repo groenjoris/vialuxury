@@ -19,6 +19,8 @@ export interface MultiHotelTripStop {
   /** Ligging, voor het routekaartje op de card. */
   lat?: number
   lng?: number
+  /** NL-provincie voor het bestemmingsfilter (streeknaam kan afwijken, bv. Twente → Overijssel). */
+  province?: string
 }
 export interface MultiHotelTripInfo {
   type: MultiHotelTripType

@@ -29,6 +29,7 @@
 import { computed } from 'vue'
 import { getFilterTag } from '~/utils-multi-hotel-trip/filterTags'
 import { DESTINATION_LABEL_BY_ID } from '~/utils-multi-hotel-trip/destinationMatch'
+import { NIGHT_GROUPS, nightGroupState, toggleNightGroup } from '~/utils-multi-hotel-trip/nights'
 
 /**
  * FilterPills — single row of removable filter chips for the "soft" filters
@@ -59,7 +60,7 @@ const props = withDefaults(
 )
 
 const {
-  selectedNights, toggleNight, clearNights,
+  selectedNights, toggleNight, clearNights, setSelectedNights,
   selectedFilterTags, toggleFilterTag, clearFilterTags,
   budgetMin, budgetMax, resetBudget,
   arrivalDate, selectedFlexibility, clearArrivalDate,
@@ -126,8 +127,20 @@ const pills = computed<Pill[]>(() => {
       onRemove: () => toggleFilterTag(id),
     })
   }
-  // Nights
+  // Nights — een volledige groep als één pil ("Lange vakantie"), de
+  // overige nachten los.
+  const covered = new Set<string>()
+  for (const g of NIGHT_GROUPS) {
+    if (nightGroupState(selectedNights.value, g) !== 'all') continue
+    g.keys.forEach(k => covered.add(k))
+    out.push({
+      key: `nights-${g.id}`,
+      label: t(g.labelKey),
+      onRemove: () => setSelectedNights(toggleNightGroup(selectedNights.value, g)),
+    })
+  }
   for (const n of selectedNights.value) {
+    if (covered.has(n)) continue
     out.push({
       key: `night-${n}`,
       label: `${n} ${n === '1' ? 'nacht' : 'nachten'}`,
