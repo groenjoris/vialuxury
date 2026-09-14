@@ -16,6 +16,9 @@ export interface MultiHotelTripStop {
   starRating?: number
   /** Foto voor hotels buiten de dataset (public/images/vakanties/...). */
   image?: string
+  /** Ligging, voor het routekaartje op de card. */
+  lat?: number
+  lng?: number
 }
 export interface MultiHotelTripInfo {
   type: MultiHotelTripType

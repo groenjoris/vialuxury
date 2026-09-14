@@ -24,10 +24,16 @@
         :aria-label="hotel?.name || localized(deal.title)"
         @click.stop
       />
-      <img :src="displayedImage" :alt="hotel?.name || localized(deal.title)" loading="lazy" />
+      <!-- Multi Hotel Trip: linkerhelft de foto van het eerste hotel,
+           rechterhelft een schematisch routekaartje met genummerde stops. -->
+      <template v-if="isTrip">
+        <img class="deal-card-v2__trip-photo" :src="tripPhoto" :alt="localized(deal.title)" loading="lazy" />
+        <MultiHotelTripRouteMap class="deal-card-v2__trip-map" :stops="tripMapStops" />
+      </template>
+      <img v-else :src="displayedImage" :alt="hotel?.name || localized(deal.title)" loading="lazy" />
       <!-- Sidepanel cards (deal-page and map) lock to a single
            deterministic photo and suppress the carousel arrows. -->
-      <template v-if="gridMode && carouselImages.length > 1 && !panelMode">
+      <template v-if="gridMode && carouselImages.length > 1 && !panelMode && !isTrip">
         <button
           type="button"
           class="deal-card-v2__carousel-nav deal-card-v2__carousel-nav--prev"
@@ -97,7 +103,7 @@
            (lower-left is reserved for the special-deal labels).
            (List view shows it below the checkmarks instead — see below.) -->
       <span
-        v-if="gridMode && roomsLeft < 4 && !isMismatch && !unavailable"
+        v-if="gridMode && roomsLeft < 4 && !isMismatch && !unavailable && !isTrip"
         class="deal-card-v2__rooms-sticker deal-card-v2__rooms-sticker--photo"
       >Nog {{ roomsLeft }} beschikbaar</span>
     </div>
@@ -345,6 +351,14 @@ defineEmits<{ 'view-siblings': [] }>()
 const isTrip = computed(() => !!props.hotel?.trip)
 /** "Landgraaf · Eijsden · Sittard" — plaatsnamen van de hotels in reisvolgorde. */
 const tripStopsLabel = computed(() => (props.hotel?.trip?.stops ?? []).map(s => s.city).join(' · '))
+/** Foto in de linkerhelft: het eerste hotel van de route. */
+const tripPhoto = computed(() => props.hotel?.trip?.stops[0]?.image || imageSrc.value)
+/** Stops met ligging voor het routekaartje (rechterhelft). */
+const tripMapStops = computed(() =>
+  (props.hotel?.trip?.stops ?? [])
+    .filter(s => typeof s.lat === 'number' && typeof s.lng === 'number')
+    .map(s => ({ lat: s.lat as number, lng: s.lng as number, label: s.city })),
+)
 
 /** Card title — every context (search card, deal-page sidepanel, map
  *  sidepanel) renders the full localised deal title, identical to
@@ -991,6 +1005,26 @@ const includesBullets = computed<string[]>(() => {
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+/* Multi Hotel Trip: fotogebied gesplitst — foto links, routekaartje rechts. */
+.deal-card-v2__trip-photo {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 50%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.deal-card-v2__trip-map {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 50%;
+  height: 100%;
+  border-left: 2px solid #fff;
+  box-sizing: border-box;
 }
 
 /* Multi Hotel Trip: plaatsnamen van 2–3 hotels mogen over twee regels lopen. */

@@ -1,8 +1,7 @@
 /**
- * Multi Hotel Trip — de "vakanties": autoroutes (en één fietsvakantie) van
+ * Multi Hotel Trip — de "vakanties": autoroutes van
  * twee of drie hotels achter elkaar. Inhoud komt uit de briefing-PDF's
- * "Original No. 001–006" (vakanties voorbeeld content/) plus de echte
- * Fietsvakantie Twente & Salland uit deals.json.
+ * "Original No. 001–006" (vakanties voorbeeld content/).
  *
  * Elke vakantie wordt als één SearchHotel-record met één deal door de
  * bestaande zoekresultaten en dealcards geleid; `hotel.trip` markeert het
@@ -27,6 +26,9 @@ interface StopSpec {
   nights: number
   stars?: number
   image?: string
+  /** Ligging voor het routekaartje op de card. */
+  lat: number
+  lng: number
 }
 
 interface TripSpec {
@@ -59,9 +61,9 @@ const TRIPS: TripSpec[] = [
     slug: 'ontdek-noord-frankrijk-en-de-opaalkust-in-7-dagen',
     type: 'auto',
     stops: [
-      { name: 'Hotel Royal Beaulaincourt', city: 'Béthune', nights: 2, stars: 4, image: '/images/vakanties/001/hotel-1.jpg' },
-      { name: 'Hôtel Château Tilques', city: 'Tilques', nights: 2, stars: 3, image: '/images/vakanties/001/hotel-2.jpg' },
-      { name: 'Hôtel Château Cléry', city: "Hesdin-l'Abbé", nights: 2, stars: 3, image: '/images/vakanties/001/hotel-3.jpg' },
+      { name: 'Hotel Royal Beaulaincourt', city: 'Béthune', nights: 2, stars: 4, lat: 50.5305, lng: 2.6406, image: '/images/vakanties/001/hotel-1.jpg' },
+      { name: 'Hôtel Château Tilques', city: 'Tilques', nights: 2, stars: 3, lat: 50.7797, lng: 2.2010, image: '/images/vakanties/001/hotel-2.jpg' },
+      { name: 'Hôtel Château Cléry', city: "Hesdin-l'Abbé", nights: 2, stars: 3, lat: 50.6725, lng: 1.7365, image: '/images/vakanties/001/hotel-3.jpg' },
     ],
     title: l('Ontdek Noord-Frankrijk en de Opaalkust in 7 dagen', 'Discover Northern France and the Opal Coast in 7 days'),
     pitch: l('Béthune, de moerassen van Saint-Omer en de kastelen aan de Opaalkust — stad, natuur en kust in drie bijzondere hotels.', 'Béthune, the marshes of Saint-Omer and the castles of the Opal Coast in three special hotels.'),
@@ -93,9 +95,9 @@ const TRIPS: TripSpec[] = [
     slug: '7-daagse-roadtrip-langs-de-hanzesteden-zwolle-deventer-zutphen',
     type: 'auto',
     stops: [
-      { name: 'Hotel Mooirivier', city: 'Dalfsen', nights: 2, stars: 4, image: '/images/vakanties/002/hotel-1.jpg' },
-      { name: 'Hotel de Zwaan', city: 'Raalte', nights: 2, stars: 3, image: '/images/vakanties/002/hotel-2.jpg' },
-      { name: "Hotel 's Gravenhof", city: 'Zutphen', nights: 2, stars: 4, image: '/images/vakanties/002/hotel-3.jpg' },
+      { name: 'Hotel Mooirivier', city: 'Dalfsen', nights: 2, stars: 4, lat: 52.5108, lng: 6.2589, image: '/images/vakanties/002/hotel-1.jpg' },
+      { name: 'Hotel de Zwaan', city: 'Raalte', nights: 2, stars: 3, lat: 52.3833, lng: 6.2667, image: '/images/vakanties/002/hotel-2.jpg' },
+      { name: "Hotel 's Gravenhof", city: 'Zutphen', nights: 2, stars: 4, lat: 52.1383, lng: 6.2014, image: '/images/vakanties/002/hotel-3.jpg' },
     ],
     title: l('7-daagse roadtrip langs de Hanzesteden Zwolle, Deventer & Zutphen', '7-day road trip along the Hanseatic cities Zwolle, Deventer & Zutphen'),
     pitch: l('Museum de Fundatie, het Bergkwartier en de verborgen hofjes van Zutphen — drie Hanzesteden vanuit drie hotels aan de IJssel.', 'Three Hanseatic cities from three hotels along the IJssel river.'),
@@ -126,9 +128,9 @@ const TRIPS: TripSpec[] = [
     slug: 'kastelen-en-landgoederen-7-daagse-autoroute',
     type: 'auto',
     stops: [
-      { name: 'Landgoed Groot Warnsborn', city: 'Arnhem', nights: 2, stars: 4, image: '/images/vakanties/003/hotel-1.jpg' },
-      { name: 'Kasteel Engelenburg', city: 'Brummen', nights: 2, stars: 4, image: '/images/vakanties/003/hotel-2.jpg' },
-      { name: 'Landhuishotel De Bloemenbeek', city: 'De Lutte', nights: 2, stars: 4, image: '/images/vakanties/003/hotel-3.jpg' },
+      { name: 'Landgoed Groot Warnsborn', city: 'Arnhem', nights: 2, stars: 4, lat: 52.0247, lng: 5.8672, image: '/images/vakanties/003/hotel-1.jpg' },
+      { name: 'Kasteel Engelenburg', city: 'Brummen', nights: 2, stars: 4, lat: 52.0906, lng: 6.1553, image: '/images/vakanties/003/hotel-2.jpg' },
+      { name: 'Landhuishotel De Bloemenbeek', city: 'De Lutte', nights: 2, stars: 4, lat: 52.3156, lng: 6.9797, image: '/images/vakanties/003/hotel-3.jpg' },
     ],
     title: l('Kastelen & Landgoederen: 7-daagse autoroute incl. 3 culinaire diners', 'Castles & Estates: 7-day road trip incl. 3 culinary dinners'),
     pitch: l('Van de Veluwe naar het Twentse coulisselandschap: zes nachten in drie bijzondere kastelen en landgoederen, met een Michelin-diner als finale.', 'From the Veluwe to the Twente landscape: six nights in three castles and estates, with a Michelin dinner as the finale.'),
@@ -158,9 +160,9 @@ const TRIPS: TripSpec[] = [
     slug: 'bourgondisch-zuid-limburg-luxe-en-wellness-7-daagse-autoroute',
     type: 'auto',
     stops: [
-      { name: 'Hotel Merici', city: 'Sittard', nights: 2, stars: 4 },
-      { name: 'Hotel Winselerhof', city: 'Landgraaf', nights: 2, stars: 4 },
-      { name: 'Van Oys Maastricht Retreat', city: 'Eijsden', nights: 2, stars: 5 },
+      { name: 'Hotel Merici', city: 'Sittard', nights: 2, stars: 4, lat: 50.9994, lng: 5.8689 },
+      { name: 'Hotel Winselerhof', city: 'Landgraaf', nights: 2, stars: 4, lat: 50.9133, lng: 6.0294 },
+      { name: 'Van Oys Maastricht Retreat', city: 'Eijsden', nights: 2, stars: 5, lat: 50.7783, lng: 5.7128 },
     ],
     title: l('Bourgondisch Zuid-Limburg: luxe & wellness in 7 dagen', 'Burgundian South Limburg: luxury & wellness in 7 days'),
     pitch: l('Sittard, het Heuvelland en een 5-sterren Superior finale bij Van Oys — met drie diners uit Gault&Millau en de Michelin-gids.', 'Sittard, the hills and a 5-star Superior finale at Van Oys, with three dinners from Gault&Millau and the Michelin guide.'),
@@ -191,9 +193,9 @@ const TRIPS: TripSpec[] = [
     slug: 'bourgondisch-zuid-limburg-7-daagse-culinaire-autoroute',
     type: 'auto',
     stops: [
-      { name: 'Hotel Merici', city: 'Sittard', nights: 2, stars: 4 },
-      { name: 'Hotel Winselerhof', city: 'Landgraaf', nights: 2, stars: 4 },
-      { name: 'Hotel Monastère', city: 'Maastricht', nights: 2, stars: 4, image: '/images/vakanties/005/hotel-3.jpg' },
+      { name: 'Hotel Merici', city: 'Sittard', nights: 2, stars: 4, lat: 50.9994, lng: 5.8689 },
+      { name: 'Hotel Winselerhof', city: 'Landgraaf', nights: 2, stars: 4, lat: 50.9133, lng: 6.0294 },
+      { name: 'Hotel Monastère', city: 'Maastricht', nights: 2, stars: 4, lat: 50.8514, lng: 5.6910, image: '/images/vakanties/005/hotel-3.jpg' },
     ],
     title: l('Bourgondisch Zuid-Limburg: 7-daagse culinaire autoroute', 'Burgundian South Limburg: 7-day culinary road trip'),
     pitch: l('Historisch Sittard, het glooiende Heuvelland en bruisend Maastricht — twee kloosters en een 16e-eeuwse herenboerderij.', 'Historic Sittard, the rolling hills and vibrant Maastricht: two monasteries and a 16th-century manor farm.'),
@@ -224,9 +226,9 @@ const TRIPS: TripSpec[] = [
     slug: 'nederlandse-kustroute-6-daagse-autoroute',
     type: 'auto',
     stops: [
-      { name: 'Grand Hotel Ter Duin', city: 'Burgh-Haamstede', nights: 2, stars: 4, image: '/images/vakanties/006/hotel-1.jpg' },
-      { name: 'Inntel Hotels Den Haag Marina Beach', city: 'Scheveningen', nights: 1, stars: 4 },
-      { name: 'Carlton Square', city: 'Haarlem', nights: 2, stars: 4, image: '/images/vakanties/006/hotel-3.jpg' },
+      { name: 'Grand Hotel Ter Duin', city: 'Burgh-Haamstede', nights: 2, stars: 4, lat: 51.7058, lng: 3.7494, image: '/images/vakanties/006/hotel-1.jpg' },
+      { name: 'Inntel Hotels Den Haag Marina Beach', city: 'Scheveningen', nights: 1, stars: 4, lat: 52.1078, lng: 4.2731 },
+      { name: 'Carlton Square', city: 'Haarlem', nights: 2, stars: 4, lat: 52.3874, lng: 4.6462, image: '/images/vakanties/006/hotel-3.jpg' },
     ],
     title: l('Nederlandse kustroute: 6 dagen langs Zeeland, Scheveningen en Noord-Holland', 'Dutch coastal route: 6 days along Zeeland, Scheveningen and North Holland'),
     pitch: l('Van de Zeeuwse stranden via Scheveningen naar Haarlem, Zandvoort en Bloemendaal — strand, wellness en stad in één kustvakantie.', 'From the Zeeland beaches via Scheveningen to Haarlem, Zandvoort and Bloemendaal: beach, wellness and city in one coastal holiday.'),
@@ -252,11 +254,6 @@ const TRIPS: TripSpec[] = [
   },
 ]
 
-/** De echte Fietsvakantie Twente & Salland uit deals.json (hotelrecord
- *  "Fietsvakantie 2026", pakket van 6 nachten). Zorgt dat "Met de fiets"
- *  ook iets oplevert. */
-const FIETS_SOURCE_HOTEL = 'Fietsvakantie 2026'
-const FIETS_NIGHTS = 6
 
 function findHotel(name: string): SearchHotel | undefined {
   const lower = name.toLowerCase()
@@ -272,6 +269,8 @@ function toStop(s: StopSpec): MultiHotelTripStop {
     nights: s.nights,
     starRating: h?.starRating ?? s.stars,
     image: h?.heroImage ?? s.image,
+    lat: s.lat,
+    lng: s.lng,
   }
 }
 
@@ -326,53 +325,13 @@ function buildTrip(spec: TripSpec): SearchHotel | null {
       stops,
       tags: spec.tags,
       routeImage: spec.routeImage,
+      // Voorlopig (geen vakantie-PDP): deal van een hotel uit de dataset, anders de vakantiepagina.
       pdpHref: pdpDeal ? `/multi-hotel-trip/deal/${pdpDeal.slug}` : '/multi-hotel-trip/vakanties',
     },
   }
 }
 
-function buildFietsvakantie(): SearchHotel | null {
-  const src = findHotel(FIETS_SOURCE_HOTEL)
-  const pkg = src?.deals.find(d => d.nights === FIETS_NIGHTS) ?? src?.deals[0]
-  if (!src || !pkg) return null
-  const stops: MultiHotelTripStop[] = [
-    { city: 'Delden', hotelName: 'Hotel in Delden', nights: 2, starRating: 4 },
-    { city: 'Raalte', hotelName: 'Hotel in Raalte', nights: 2, starRating: 4 },
-    { city: 'Markelo', hotelName: 'Hotel in Markelo', nights: 2, starRating: 4 },
-  ]
-  const gallery = (src.galleryImages && src.galleryImages.length ? src.galleryImages : [src.heroImage]).slice(0, 3)
-  const deal: SearchHotelDeal = {
-    ...pkg,
-    id: 'trip-fietsvakantie-twente-salland-deal',
-    title: l('7-daagse fietsvakantie Twente & Salland: Delden – Raalte – Markelo incl. dagelijks 3-gangendiner', '7-day cycling holiday Twente & Salland: Delden – Raalte – Markelo incl. daily 3-course dinner'),
-    highlights: [
-      l(`${pkg.nights} nachten / 3 hotels`, `${pkg.nights} nights / 3 hotels`),
-      l('Dagelijks 3-gangendiner', 'Daily 3-course dinner'),
-      l('Dagelijkse bagagetransfer', 'Daily luggage transfer'),
-      l('Prachtige fietsroutes op je telefoon', 'Beautiful cycling routes on your phone'),
-    ],
-    themes: ['Fietsvakantie', 'Vakanties'],
-  }
-  return {
-    ...src,
-    id: 'trip-fietsvakantie-twente-salland',
-    slug: 'fietsvakantie-twente-en-salland-delden-raalte-markelo',
-    name: 'Meerdere hotels',
-    city: 'Delden',
-    galleryImages: gallery,
-    pitch: l('Rustige fietspaden, schilderachtige dorpen en elke avond een ander hotel — je bagage reist vooruit.', 'Quiet cycle paths, picturesque villages and a different hotel every night; your luggage travels ahead.'),
-    deals: [deal],
-    trip: {
-      type: 'fiets',
-      stops,
-      tags: ['fiets', 'natuur', 'culinair'],
-      pdpHref: `/multi-hotel-trip/deal/${pkg.slug}`,
-    },
-  }
-}
-
 /** Alle meerhotel-vakanties als SearchHotel-records (met `trip` gezet). */
-export const tripSearchHotels: SearchHotel[] = [
-  ...TRIPS.map(buildTrip),
-  buildFietsvakantie(),
-].filter((t): t is SearchHotel => t !== null)
+export const tripSearchHotels: SearchHotel[] = TRIPS
+  .map(buildTrip)
+  .filter((t): t is SearchHotel => t !== null)
