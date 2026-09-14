@@ -89,14 +89,15 @@
       <div class="container home-popular__inner">
         <div class="home-popular__col home-popular__col--press">
           <h3 class="home-popular__heading">Uitgelicht</h3>
-          <div v-if="featuredDesIndes && featuredDesIndesDeal" class="home-popular__featured-wrap">
+          <!-- Multi Hotel Trip: de vakantie "Ontdek Noord-Frankrijk en de Opaalkust" als uitgelicht. -->
+          <div v-if="featuredTrip && featuredTripDeal" class="home-popular__featured-wrap">
             <MultiHotelTripDealCard
               class="home-popular__featured"
-              :hotel="featuredDesIndes"
-              :deal="featuredDesIndesDeal"
+              :hotel="featuredTrip"
+              :deal="featuredTripDeal"
               :grid-mode="true"
               :hide-bar="true"
-              :cta-label="isMobile ? 'Bekijk' : 'Bekijk arrangement'"
+              :cta-label="isMobile ? 'Bekijk' : 'Bekijk vakantie'"
             />
           </div>
         </div>
@@ -174,9 +175,11 @@
 AAN ZEE</span>
           <span class="home-category__btn">Bekijk</span>
         </button>
-        <button type="button" class="home-category" :style="{ backgroundImage: `url('/images/categories/hotelexperiencepackages.jpeg')` }" @click="pickFilter('unique-stay')">
-          <span class="home-category__title">HOTEL
-EXPERIENCES</span>
+        <!-- Multi Hotel Trip: ankeiler naar de vakanties (Kasteel Rosendael, foto uit trip 003). -->
+        <button type="button" class="home-category" :style="{ backgroundImage: `url('/images/vakanties/003/rosendael.jpg')` }" @click="goVakanties()">
+          <span class="home-category__sticker">Nieuw</span>
+          <span class="home-category__title">ROADTRIP NEDERLAND
+MET 3 HOTELS</span>
           <span class="home-category__btn">Bekijk</span>
         </button>
       </div>
@@ -208,6 +211,7 @@ EXPERIENCES</span>
 <script setup lang="ts">
 import { POPULAR_FILTER_ICONS } from '~/utils-multi-hotel-trip/popularFilterIcons'
 import { mappedHotels } from '~/data/deals-mapper'
+import { tripSearchHotels } from '~/data/mht-trips'
 import type { SearchHotel } from '~/types/searchHotel'
 import { pickPrimaryDeal } from '~/utils-multi-hotel-trip/primaryDeal'
 import { useMultiHotelTripIsMobile } from '~/composables-multi-hotel-trip/useMultiHotelTripIsMobile'
@@ -227,9 +231,22 @@ const superDeals: SearchHotel[] = [...mappedHotels]
   })
   .slice(0, 3)
 
-// Actuele deals: next 9 hotels after the super-three
+// Multi Hotel Trip — Uitgelicht: de vakantie "Ontdek Noord-Frankrijk en de
+// Opaalkust in 7 dagen" (trip 001) in plaats van een los hotelarrangement.
+const featuredTrip: SearchHotel | null = tripSearchHotels.find(h => /noord-frankrijk/.test(h.slug)) ?? null
+const featuredTripDeal = featuredTrip ? pickPrimaryDeal(featuredTrip.deals) : null
+
+// Actuele deals: 3 × 3 kaarten — per rij één vakantie (rechts), de overige
+// zes zijn de volgende hotels na de super-drie. De uitgelichte vakantie
+// doet niet nog eens mee.
 const superIds = new Set(superDeals.map(h => h.id))
-const actueleDeals: SearchHotel[] = mappedHotels.filter(h => !superIds.has(h.id)).slice(0, 9)
+const actueleHotels: SearchHotel[] = mappedHotels.filter(h => !superIds.has(h.id)).slice(0, 6)
+const actueleTrips: SearchHotel[] = tripSearchHotels.filter(h => h.id !== featuredTrip?.id).slice(0, 3)
+const actueleDeals: SearchHotel[] = []
+for (let row = 0; row < 3; row++) {
+  actueleDeals.push(...actueleHotels.slice(row * 2, row * 2 + 2))
+  if (actueleTrips[row]) actueleDeals.push(actueleTrips[row]!)
+}
 
 
 // Home filter pills come from the unified FILTER_TAGS config so they stay
@@ -250,14 +267,6 @@ const homeFilterRows = computed(() => {
     homeFilters.slice(per * 2),
   ]
 })
-
-// Featured Hotel Des Indes "culinair verblijf" card for the "Gezien in"
-// column on /home. Pick the specific culinair deal so the hero pic + price
-// match the right arrangement.
-const featuredDesIndes = mappedHotels.find(h => /des.indes/i.test(h.name)) ?? null
-const featuredDesIndesDeal = featuredDesIndes
-  ? featuredDesIndes.deals.find(d => /culinair-verblijf/.test(d.slug)) ?? pickPrimaryDeal(featuredDesIndes.deals)
-  : null
 
 // Filter id → POPULAR_FILTER_ICONS key. Renders a black Lucide-style SVG
 // in place of the previous emoji glyph.
@@ -301,6 +310,17 @@ function pickFilter(tagId: string) {
   resetBudget()
   toggleFilterTag(tagId)
   navigateTo('/multi-hotel-trip/search')
+}
+
+/** Multi Hotel Trip: ankeiler "Roadtrip Nederland met 3 hotels" → de
+ *  vakantie-resultaten, met schone filters. */
+function goVakanties() {
+  clearFilterTags()
+  clearDestinations()
+  clearArrivalDate()
+  clearDuration()
+  resetBudget()
+  navigateTo('/multi-hotel-trip/vakanties')
 }
 
 /** Partner co-brand entry (e.g. "HEMA actie"): start clean and land on the
@@ -746,6 +766,30 @@ onMounted(() => { setMhtNavVariant('1'); restoreHeroPhotoIndex(); restoreHomeLay
   margin: 0 0 var(--space-xl);
   color: var(--color-text-primary);
   line-height: 1.1;
+}
+
+/* Multi Hotel Trip: "Nieuw"-sticker rechtsboven op een ankeiler (zelfde
+   oranje pil als de Nieuw-badge bij "Vakanties" in de navigatie). */
+.home-category__sticker {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  height: 24px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: var(--color-primary);
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  pointer-events: none;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
 }
 
 /* Featured card + "Gezien in" press footer are wrapped as one visual
