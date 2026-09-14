@@ -498,6 +498,10 @@ function onCardClick(e: MouseEvent) {
  *  with the right group size — even if Chrome doesn't clone sessionStorage
  *  to the new tab. */
 const dealHref = computed(() => {
+  // Multi Hotel Trip: zolang er geen vakantie-PDP is linkt de card naar de
+  // door de vakantie opgegeven pagina (deal van een van de hotels, of de
+  // vakantiepagina).
+  if (props.hotel?.trip?.pdpHref) return props.hotel.trip.pdpHref
   const params = new URLSearchParams()
   if (arrivalDate.value) params.set('checkin', arrivalDate.value)
   if (persons.value !== 2) params.set('persons', String(persons.value))

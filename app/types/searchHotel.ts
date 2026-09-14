@@ -9,13 +9,23 @@ export type MultiHotelTripType = 'auto' | 'fiets'
 export interface MultiHotelTripStop {
   city: string
   hotelName: string
-  hotelSlug: string
+  /** Slug in de dataset; leeg voor hotels die (nog) niet in deals.json staan. */
+  hotelSlug?: string
+  /** Aantal nachten op deze stop (voor de vakantie-PDP). */
+  nights?: number
+  starRating?: number
+  /** Foto voor hotels buiten de dataset (public/images/vakanties/...). */
+  image?: string
 }
 export interface MultiHotelTripInfo {
   type: MultiHotelTripType
   stops: MultiHotelTripStop[]
   /** Quick-filter ids (zie utils-multi-hotel-trip/tripFilters.ts). */
   tags: string[]
+  /** Routekaart uit de briefing (voor de vakantie-PDP). */
+  routeImage?: string
+  /** Waar de card voorlopig naartoe linkt zolang er geen vakantie-PDP is. */
+  pdpHref?: string
 }
 
 export interface SearchHotel {
