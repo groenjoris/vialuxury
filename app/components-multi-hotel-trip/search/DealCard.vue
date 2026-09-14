@@ -121,10 +121,10 @@
       <!-- TOP ROW — full content width: hotel name + stars on line 1,
            location on line 2 -->
       <div v-if="showHotelInfo && hotel" class="deal-card-v2__hotel-info">
-        <!-- Multi Hotel Trip: een vakantie heeft geen hotelnaam — "Meerdere hotels",
-             zonder link en zonder sterren. -->
+        <!-- Multi Hotel Trip: een vakantie heeft geen hotelnaam — "Autovakantie met
+             3 hotels" / "Fietsvakantie met 2 hotels", zonder link en zonder sterren. -->
         <h3 v-if="isTrip" class="deal-card-v2__name-row">
-          <span class="deal-card-v2__name">{{ t('trip.multipleHotels') }}</span>
+          <span class="deal-card-v2__name">{{ tripTypeLabel }}</span>
         </h3>
         <NuxtLink v-else :to="`/multi-hotel-trip/hotel/${hotel.slug}`" :target="linkTarget" class="deal-card-v2__name-link" @click.stop>
           <h3 class="deal-card-v2__name-row">
@@ -356,6 +356,12 @@ defineEmits<{ 'view-siblings': [] }>()
 
 /** Multi Hotel Trip: dit record is een meerhotel-vakantie (twee of drie hotels). */
 const isTrip = computed(() => !!props.hotel?.trip)
+/** "Autovakantie met 3 hotels" — soort vakantie + aantal hotels, in plaats van een hotelnaam. */
+const tripTypeLabel = computed(() => {
+  const trip = props.hotel?.trip
+  if (!trip) return ''
+  return t('trip.typeWithHotels').replace('{type}', t(`trip.${trip.type}`)).replace('{n}', String(trip.stops.length))
+})
 /** "Landgraaf · Eijsden · Sittard" — plaatsnamen van de hotels in reisvolgorde. */
 const tripStopsLabel = computed(() => (props.hotel?.trip?.stops ?? []).map(s => s.city).join(' · '))
 /** Foto in de linkerhelft: het eerste hotel van de route. */

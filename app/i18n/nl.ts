@@ -240,6 +240,7 @@ const nl: Record<string, string> = {
   'trip.auto': 'Autovakantie',
   'trip.fiets': 'Fietsvakantie',
   'trip.multipleHotels': 'Meerdere hotels',
+  'trip.typeWithHotels': '{type} met {n} hotels',
   // Multi Hotel Trip — vakantie-PDP
   'trip.fantasticHotels': '{n} fantastische hotels',
   'trip.hotelsIncludedHeading': 'In deze vakantie zijn deze hotels inbegrepen:',
