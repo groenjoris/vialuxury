@@ -195,12 +195,13 @@ withDefaults(defineProps<{
     padding-top: 0;
     padding-bottom: 0;
   }
-  /* Search bar follows the copy (fixed gap above) and sits 80px from the
-     bottom edge of the photo. */
+  /* Search bar follows the copy (fixed gap above) and sits 40px from the
+     bottom edge of the photo (was 80px — Joris: tekst + zoekbalk als geheel
+     40px lager). The copy is pushed down with it (margin-top: auto). */
   .home-hero--search-below :deep(.site-header--overlay .site-header__search-dock) {
     position: static;
     transform: none;
-    margin: 28px 0 80px;
+    margin: 28px 0 40px;
     padding: 0;
   }
   /* Landings have longer titles — shrink so they stay on one line and the

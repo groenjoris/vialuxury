@@ -237,7 +237,7 @@ const nl: Record<string, string> = {
   'search.hotelDealsAndHolidays': 'hotelarrangementen & vakanties',
   'search.holidaysTitle': 'Vakanties',
   'search.holidaysHeroTitle': 'Auto- en fietsvakanties',
-  'search.holidaysPitch': 'Verken een prachtige streek met auto of fiets, en verblijf in 3 verschillende hotels. Met zorg samengesteld door ViaLuxury.',
+  'search.holidaysPitch': 'Verken een prachtige streek met auto of fiets, en verblijf in 3 verschillende hotels. Met zorg samengesteld en persoonlijk gecheckt.',
   'trip.auto': 'Autovakantie',
   'trip.fiets': 'Fietsvakantie',
   'trip.multipleHotels': 'Meerdere hotels',
