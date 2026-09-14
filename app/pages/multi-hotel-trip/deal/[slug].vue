@@ -965,13 +965,7 @@
     </Teleport>
 
     <!-- Vakantie: hotel-pop-up vanuit het dagprogramma -->
-    <MultiHotelTripHotelModal
-      :open="tripHotelOpen"
-      :hotel="tripHotelModal"
-      :variant="tripHotelPanel ? 'panel' : 'modal'"
-      :z-index="tripHotelPanel ? 1300 : undefined"
-      @close="closeTripHotel"
-    />
+    <MultiHotelTripHotelModal :open="tripHotelOpen" :hotel="tripHotelModal" @close="tripHotelOpen = false" />
     <!-- Vakantie: fullscreen kaart met route, hotels en omgevingshighlights -->
     <MultiHotelTripFullscreenMap
       v-if="isTrip"
@@ -980,8 +974,8 @@
       :stops="tripMapStops"
       :highlights="tripMapHighlights"
       :nights-labels="tripMapNightsLabels"
+      :hotels="tripHotelDetailsAll"
       @close="tripMapOpen = false"
-      @hotel-click="openTripHotelPanel"
     />
 
     <!-- Photo gallery / lightbox -->
@@ -1500,14 +1494,11 @@ const tripMapHighlights = computed(() =>
 /** Hotel-pop-up vanuit het dagprogramma ("Meer over dit hotel"). */
 const tripHotelOpen = ref(false)
 const tripHotelIndex = ref(0)
-/** Vanuit de fullscreen kaart opent de hotelinformatie als sidepanel. */
-const tripHotelPanel = ref(false)
-function openTripHotel(i: number) { tripHotelIndex.value = i; tripHotelPanel.value = false; tripHotelOpen.value = true }
-function openTripHotelPanel(i: number) { tripHotelIndex.value = i; tripHotelPanel.value = true; tripHotelOpen.value = true }
-function closeTripHotel() { tripHotelOpen.value = false }
-const tripHotelModal = computed<TripHotelModalData | null>(() => {
+function openTripHotel(i: number) { tripHotelIndex.value = i; tripHotelOpen.value = true }
+/** Hotelinformatie voor stop `i` (pop-up op de pagina, sidepanel op de kaart). */
+function tripHotelData(i: number): TripHotelModalData | null {
   if (!tripPdp || !trip) return null
-  const d = tripHotelDetails(trip, tripPdp.content, tripHotelIndex.value)
+  const d = tripHotelDetails(trip, tripPdp.content, i)
   if (!d) return null
   return {
     name: d.name,
@@ -1521,7 +1512,12 @@ const tripHotelModal = computed<TripHotelModalData | null>(() => {
     room: d.room ? { name: localized(d.room.name), description: localized(d.room.description), image: d.room.image } : undefined,
     checkIn: d.checkIn,
   }
-})
+}
+const tripHotelModal = computed<TripHotelModalData | null>(() => tripHotelData(tripHotelIndex.value))
+/** Alle hotels, voor het sidepanel op de fullscreen kaart. */
+const tripHotelDetailsAll = computed<TripHotelModalData[]>(() =>
+  (trip?.stops ?? []).map((_, i) => tripHotelData(i)).filter((h): h is TripHotelModalData => !!h),
+)
 
 // SearchHotel companion for the ViaLuxury score badge — look it up by
 // slug (the hotel page slug) so the badge has access to deals + price

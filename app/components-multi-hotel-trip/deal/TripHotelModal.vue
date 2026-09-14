@@ -1,18 +1,11 @@
 <template>
-  <!-- Multi Hotel Trip — pop-up met hotelinformatie vanuit het dagprogramma
-       ("Meer over dit hotel"): foto, naam + sterren, ligging, korte
-       beschrijving, faciliteiten en wat er bij dít hotel inbegrepen is.
-       Zelfde kaart-in-overlay als de beschrijvings-pop-up van de dealpagina;
-       vanuit de fullscreen kaart als sidepanel rechts (variant="panel"). -->
+  <!-- Multi Hotel Trip — gecentreerde pop-up met hotelinformatie vanuit de
+       dealpagina (klik op een hotelnaam, "Meer over dit hotel" of een marker
+       op de minimap). De inhoud zelf staat in TripHotelDetails, gedeeld met
+       het sidepanel op de fullscreen kaart. -->
   <Teleport to="body">
-    <Transition :name="variant === 'panel' ? 'thm-panel' : 'fade'">
-      <div
-        v-if="open && hotel"
-        class="thm"
-        :class="{ 'thm--panel': variant === 'panel' }"
-        :style="zIndex ? { zIndex } : undefined"
-        @click.self="$emit('close')"
-      >
+    <Transition name="fade">
+      <div v-if="open && hotel" class="thm" @click.self="$emit('close')">
         <div class="thm__card" data-scroll-lock-allow="true">
           <div class="thm__header">
             <div class="thm__heading">
@@ -35,67 +28,7 @@
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12" /></svg>
             </button>
           </div>
-
-          <div class="thm__body">
-            <!-- Eén foto bovenin, rouleerbaar met pijlen (zoals op de zoekresultaatkaart). -->
-            <div v-if="hotel.images.length" class="thm__carousel">
-              <img :src="hotel.images[photoIndex]" :alt="hotel.name" class="thm__photo" />
-              <template v-if="hotel.images.length > 1">
-                <button type="button" class="thm__nav thm__nav--prev" aria-label="Vorige foto" @click="prevPhoto">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6" /></svg>
-                </button>
-                <button type="button" class="thm__nav thm__nav--next" aria-label="Volgende foto" @click="nextPhoto">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6" /></svg>
-                </button>
-                <span class="thm__counter">{{ photoIndex + 1 }} / {{ hotel.images.length }}</span>
-              </template>
-            </div>
-
-            <p class="thm__description">{{ hotel.description }}</p>
-
-            <!-- Kamerblok: foto links, kamertype + beschrijving rechts. -->
-            <section v-if="hotel.room" class="thm__section thm__room">
-              <div v-if="hotel.room.image" class="thm__room-photo">
-                <img :src="hotel.room.image" :alt="hotel.room.name" />
-              </div>
-              <div class="thm__room-body">
-                <h3 class="thm__section-title">{{ t('trip.roomHeading') }}</h3>
-                <p class="thm__room-name">{{ hotel.room.name }}</p>
-                <p class="thm__room-text">{{ hotel.room.description }}</p>
-              </div>
-            </section>
-
-            <section v-if="hotel.facilities.length" class="thm__section">
-              <h3 class="thm__section-title">{{ t('hotel.facilities') }}</h3>
-              <ul class="thm__facilities">
-                <li v-for="fac in hotel.facilities" :key="fac.label" class="thm__facility">
-                  <span class="thm__facility-icon"><img :src="fac.icon" :alt="''" width="18" height="18" /></span>
-                  <span>{{ fac.label }}</span>
-                </li>
-              </ul>
-            </section>
-
-            <!-- Huisregels per hotel (de pop-up scrolt). -->
-            <section v-if="hotel.houseRules && hotel.houseRules.length" class="thm__section">
-              <h3 class="thm__section-title">{{ t('hotel.houseRules') }}</h3>
-              <dl class="thm__rules">
-                <template v-for="(rule, i) in hotel.houseRules" :key="i">
-                  <dt class="thm__rule-title">{{ rule.title }}</dt>
-                  <dd class="thm__rule-text">{{ rule.description }}</dd>
-                </template>
-              </dl>
-            </section>
-
-            <section v-if="hotel.includes.length" class="thm__section">
-              <h3 class="thm__section-title">{{ t('trip.includedAtHotel') }}</h3>
-              <ul class="thm__includes">
-                <li v-for="(inc, i) in hotel.includes" :key="i">
-                  <span class="thm__check"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10" aria-hidden="true"><path d="M3 13L8 19L21 5"/></svg></span>
-                  <span>{{ inc }}</span>
-                </li>
-              </ul>
-            </section>
-          </div>
+          <MultiHotelTripHotelDetails :hotel="hotel" />
         </div>
       </div>
     </Transition>
@@ -104,49 +37,19 @@
 
 <script setup lang="ts">
 import { useBodyScrollLock } from '~/composables-multi-hotel-trip/useBodyScrollLock'
+import type { TripHotelModalData } from './TripHotelDetails.vue'
 
-export interface TripHotelModalData {
-  name: string
-  starRating?: number
-  /** "Béthune, Noord-Frankrijk" */
-  location: string
-  images: string[]
-  description: string
-  facilities: { icon: string; label: string }[]
-  includes: string[]
-  houseRules?: { title: string; description: string }[]
-  room?: { name: string; description: string; image?: string }
-  /** "15:00" */
-  checkIn?: string
-}
+export type { TripHotelModalData }
 
 const props = defineProps<{
   open: boolean
   hotel: TripHotelModalData | null
-  /** 'modal' = gecentreerde kaart (standaard); 'panel' = sidepanel rechts
-   *  (vanuit de fullscreen kaart). */
-  variant?: 'modal' | 'panel'
-  /** Boven een andere overlay (bv. de fullscreen kaart op 1200). */
-  zIndex?: number
 }>()
 
 defineEmits<{ close: [] }>()
 
 const { t } = useMultiHotelTripI18n()
 useBodyScrollLock().bindTo(computed(() => props.open))
-
-/* Fotocarrousel: één foto, pijlen roteren (met wrap), teller rechtsboven.
-   Bij een ander hotel of opnieuw openen begint hij bij de eerste foto. */
-const photoIndex = ref(0)
-watch(() => [props.open, props.hotel?.name], () => { photoIndex.value = 0 })
-function prevPhoto() {
-  const n = props.hotel?.images.length ?? 0
-  if (n) photoIndex.value = (photoIndex.value - 1 + n) % n
-}
-function nextPhoto() {
-  const n = props.hotel?.images.length ?? 0
-  if (n) photoIndex.value = (photoIndex.value + 1) % n
-}
 </script>
 
 <style scoped>
@@ -200,6 +103,7 @@ function nextPhoto() {
   font-size: 14px;
   color: var(--color-text-secondary);
 }
+.thm__meta-sep { margin: 0 4px; color: var(--color-text-muted, #9a958c); }
 .thm__close {
   flex-shrink: 0;
   width: 36px;
@@ -214,152 +118,11 @@ function nextPhoto() {
   cursor: pointer;
 }
 .thm__close:hover { background: var(--color-border-light); }
-.thm__body { padding: var(--space-lg); }
-.thm__meta-sep { margin: 0 4px; color: var(--color-text-muted, #9a958c); }
-.thm__carousel {
-  position: relative;
-  height: 300px;
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  margin-bottom: var(--space-lg);
-  background: var(--color-background-secondary);
-}
-.thm__photo { width: 100%; height: 100%; object-fit: cover; display: block; }
-/* Pijlen zoals op de dealcard: ronde witte knoppen links/rechts midden. */
-.thm__nav {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 36px;
-  height: 36px;
-  border: 0;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.92);
-  color: #141414;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
-}
-.thm__nav:hover { background: #fff; }
-.thm__nav--prev { left: 12px; }
-.thm__nav--next { right: 12px; }
-.thm__counter {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  padding: 4px 10px;
-  border-radius: 999px;
-  background: rgba(0, 0, 0, 0.7);
-  color: #fff;
-  font-family: var(--font-body);
-  font-size: 12px;
-  font-weight: 600;
-}
-/* Kamerblok */
-.thm__room {
-  display: grid;
-  grid-template-columns: 220px minmax(0, 1fr);
-  gap: var(--space-lg);
-  align-items: start;
-  margin-bottom: var(--space-lg);
-}
-.thm__room-photo {
-  aspect-ratio: 4 / 3;
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  background: var(--color-background-secondary);
-}
-.thm__room-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.thm__room-name { margin: 0 0 4px; font-size: 15px; font-weight: 600; color: var(--color-text-primary); }
-.thm__room-text { margin: 0; font-size: 14px; line-height: 1.6; color: var(--color-text-secondary); }
-.thm__description {
-  margin: 0 0 var(--space-lg);
-  font-size: 15px;
-  line-height: 1.7;
-  color: var(--color-text-secondary);
-}
-.thm__section + .thm__section { margin-top: var(--space-lg); }
-.thm__section-title {
-  margin: 0 0 var(--space-sm);
-  font-size: 16px;
-  font-weight: 700;
-}
-.thm__facilities {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px 16px;
-}
-.thm__facility {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 14px;
-  color: var(--color-text-primary);
-}
-.thm__facility-icon {
-  width: 32px;
-  height: 32px;
-  border-radius: 6px;
-  background: var(--color-background-secondary, #FBFAF8);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-.thm__includes {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.thm__includes li {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  font-size: 14px;
-  line-height: 1.5;
-  color: var(--color-text-secondary);
-}
-.thm__check { color: var(--color-discount, #27C88D); flex-shrink: 0; display: inline-flex; margin-top: 2px; }
-.thm__rules { margin: 0; display: grid; grid-template-columns: 1fr; gap: 10px; }
-.thm__rule-title { font-size: 14px; font-weight: 600; color: var(--color-text-primary); }
-.thm__rule-text { margin: 2px 0 0; font-size: 14px; line-height: 1.55; color: var(--color-text-secondary); }
-
 .fade-enter-active, .fade-leave-active { transition: opacity 180ms ease; }
 .fade-enter-from, .fade-leave-to { opacity: 0; }
-
-/* Sidepanel-variant (vanuit de fullscreen kaart): rechts, volle hoogte,
-   schuift in zoals de andere sidepanels. */
-.thm--panel {
-  justify-content: flex-end;
-  align-items: stretch;
-  padding: 0;
-  background: rgba(0, 0, 0, 0.4);
-}
-.thm--panel .thm__card {
-  width: min(440px, 95vw);
-  height: 100%;
-  max-height: none;
-  border-radius: 0;
-  box-shadow: -8px 0 30px rgba(0, 0, 0, 0.15);
-}
-.thm-panel-enter-active, .thm-panel-leave-active { transition: opacity 300ms ease; }
-.thm-panel-enter-active .thm__card, .thm-panel-leave-active .thm__card { transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1); }
-.thm-panel-enter-from, .thm-panel-leave-to { opacity: 0; }
-.thm-panel-enter-from .thm__card, .thm-panel-leave-to .thm__card { transform: translateX(100%); }
 
 @media (max-width: 767px) {
   .thm { padding: 0; align-items: flex-end; }
   .thm__card { max-height: 92vh; border-radius: var(--radius-lg) var(--radius-lg) 0 0; }
-  .thm__carousel { height: 220px; }
-  .thm__room { grid-template-columns: 1fr; gap: var(--space-sm); }
-  .thm__facilities { grid-template-columns: 1fr; }
 }
 </style>

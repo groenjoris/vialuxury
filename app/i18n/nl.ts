@@ -268,6 +268,7 @@ const nl: Record<string, string> = {
   'trip.dinnerText': 'Vanavond hoef je nergens meer heen: in het restaurant van het hotel staat een inbegrepen {dinner} voor je klaar.',
   'trip.homewardTitle': 'Uitchecken en terugreis',
   'trip.mapTitle': 'Route en omgeving',
+  'trip.closeMap': 'Sluit kaart',
   'trip.mapLegendHotels': 'Hotels van deze vakantie',
   'trip.mapLegendHighlights': 'Omgeving en bezienswaardigheden',
   'trip.tag.breakfast': 'Ontbijt',

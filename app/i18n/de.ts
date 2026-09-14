@@ -261,6 +261,7 @@ const de: Record<string, string> = {
   'trip.dinnerText': 'Heute Abend müssen Sie nirgendwo mehr hin: im Hotelrestaurant erwartet Sie ein inbegriffenes {dinner}.',
   'trip.homewardTitle': 'Check-out und Heimreise',
   'trip.mapTitle': 'Route und Umgebung',
+  'trip.closeMap': 'Karte schließen',
   'trip.mapLegendHotels': 'Hotels dieser Reise',
   'trip.mapLegendHighlights': 'Umgebung und Sehenswürdigkeiten',
   'trip.tag.breakfast': 'Frühstück',
