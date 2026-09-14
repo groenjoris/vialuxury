@@ -551,6 +551,7 @@ const en: Record<string, string> = {
   'sidebar.arrangementFor': 'Package for',
   'sidebar.viewDetails': 'View details',
   'sidebar.arrangementFullTitle': 'This arrangement for 2 people includes:',
+  'sidebar.holidayFullTitle': 'This holiday for 2 people includes:',
   'sidebar.forArrival': 'For arrival date',
   'sidebar.clear': 'clear',
   'sidebar.luxeRoomSingular': 'luxury room (upgrade)',

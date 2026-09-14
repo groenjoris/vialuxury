@@ -90,7 +90,7 @@
         <section class="deal-page__sidebar-mobile container">
           <div class="deal-page__col-right deal-page__col-right--mobile">
             <!-- Inclusions -->
-            <h3 class="sidebar__title">{{ t('sidebar.arrangementFullTitle') }}</h3>
+            <h3 class="sidebar__title">{{ isTrip ? t('sidebar.holidayFullTitle') : t('sidebar.arrangementFullTitle') }}</h3>
             <ul class="sidebar__inc-list">
               <li v-for="inc in currentDeal.inclusions" :key="inc.id">
                 <span class="sidebar__inc-check"><svg class="icon-check" viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10" style="vertical-align:-0.125em"><path d="M3 13L8 19L21 5"/></svg></span>
@@ -103,9 +103,10 @@
               {{ t('sidebar.viewDetails') }}
             </a>
 
-            <!-- Arrangement duration + other-stay link -->
-            <div class="sidebar__duration">
-              <h4 v-if="currentDeal" class="sidebar__cal-title sidebar__cal-title--big">
+            <!-- Arrangement duration + other-stay link (niet bij een vakantie: de
+                 duur staat al in de kop en het dagprogramma) -->
+            <div v-if="!isTrip || hasOtherArrangements" class="sidebar__duration">
+              <h4 v-if="currentDeal && !isTrip" class="sidebar__cal-title sidebar__cal-title--big">
                 {{ t('deal.thisArrangementIsFor') }} {{ nightsWord(currentDeal.nights, false) }}
               </h4>
               <template v-if="hasOtherArrangements">
@@ -549,7 +550,7 @@
         <div class="deal-page__col-right">
           <!-- Inclusions -->
           <h3 class="sidebar__title">
-            {{ t('sidebar.arrangementFullTitle') }}
+            {{ isTrip ? t('sidebar.holidayFullTitle') : t('sidebar.arrangementFullTitle') }}
           </h3>
           <ul class="sidebar__inc-list">
             <li v-for="inc in currentDeal.inclusions" :key="inc.id">
@@ -563,9 +564,10 @@
             {{ t('sidebar.viewDetails') }}
           </a>
 
-          <!-- Arrangement duration + other-stay link -->
-          <div class="sidebar__duration">
-            <h4 v-if="currentDeal" class="sidebar__cal-title sidebar__cal-title--big">
+          <!-- Arrangement duration + other-stay link (niet bij een vakantie: de
+               duur staat al in de kop en het dagprogramma) -->
+          <div v-if="!isTrip || hasOtherArrangements" class="sidebar__duration">
+            <h4 v-if="currentDeal && !isTrip" class="sidebar__cal-title sidebar__cal-title--big">
               {{ t('deal.thisArrangementIsFor') }} {{ nightsWord(currentDeal.nights, false) }}
             </h4>
             <template v-if="hasOtherArrangements">
