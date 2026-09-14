@@ -1,6 +1,6 @@
 <template>
-  <!-- Multi Hotel Trip — de hotelinformatie van een vakantiehotel, gedeeld
-       door de gecentreerde pop-up (dealpagina) en het sidepanel op de
+  <!-- Multi Hotel Trip — de hotelinformatie van een vakantiehotel, getoond
+       in het hotel-sidepanel (TripHotelPanel) op de dealpagina en op de
        fullscreen kaart. Volgorde: fotocarrousel, beschrijving, inbegrepen,
        kamer (foto over de volle breedte, beschrijving eronder),
        faciliteiten, huisregels. -->

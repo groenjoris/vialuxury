@@ -1,6 +1,6 @@
 <template>
   <!-- Multi Hotel Trip — tekst waarin de hotelnamen van de vakantie klikbaar
-       zijn (subtiele onderstreping, oranje bij hover) en de hotel-pop-up
+       zijn (subtiele onderstreping, oranje bij hover) en het hotel-sidepanel
        openen. Gebruikt in het dagprogramma (koppen, ondertitels) en de
        inclusielijst in de zijbalk. -->
   <span class="tht">

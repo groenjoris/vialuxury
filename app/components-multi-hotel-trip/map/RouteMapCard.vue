@@ -3,7 +3,7 @@
        Echte kaart (Leaflet, OpenStreetMap-tegels, niet te slepen of te
        zoomen) met de route, per etappe de afstand op de lijn en genummerde
        hotelmarkers met de plaatsnaam ernaast (zelfde markers als de
-       fullscreen kaart). Klik op een marker of plaatsnaam → hotel-pop-up;
+       fullscreen kaart). Klik op een marker of plaatsnaam → hotel-sidepanel;
        klik elders op de kaart of op "Bekijk kaart" → fullscreen kaart. -->
   <div class="route-map">
     <div ref="mapEl" class="route-map__box" role="button" tabindex="0" :aria-label="t('common.viewMap')" @keydown.enter.prevent="$emit('open')"></div>

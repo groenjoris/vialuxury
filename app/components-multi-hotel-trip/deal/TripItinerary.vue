@@ -48,13 +48,12 @@
               {{ block.meta }}
             </p>
             <p class="itin-block__text">{{ block.text }}</p>
-            <!-- "Meer over dit hotel" opent het hotel-sidepanel (zoals op de kaart);
-                 een klik op de hotelnaam in de tekst opent de gecentreerde pop-up. -->
+            <!-- "Meer over dit hotel" → hotel-sidepanel (net als de hotelnamen in de tekst). -->
             <button
               v-if="block.stopIndex != null && block.kind === 'checkin'"
               type="button"
               class="itin-block__link"
-              @click="$emit('open-hotel-panel', block.stopIndex)"
+              @click="$emit('open-hotel', block.stopIndex)"
             >{{ t('trip.moreAboutHotel') }}</button>
           </div>
         </article>
@@ -121,7 +120,7 @@ withDefaults(defineProps<{
   stacked?: boolean
 }>(), { stacked: false, hotels: () => [] })
 
-defineEmits<{ 'open-hotel': [stopIndex: number]; 'open-hotel-panel': [stopIndex: number] }>()
+defineEmits<{ 'open-hotel': [stopIndex: number] }>()
 
 const { t } = useMultiHotelTripI18n()
 

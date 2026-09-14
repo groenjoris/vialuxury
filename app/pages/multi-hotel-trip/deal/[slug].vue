@@ -238,7 +238,7 @@
           <template v-if="isTrip">
             <h2 class="section-title">{{ t('trip.itineraryHeading') }}</h2>
             <p class="deal-page__itinerary-intro">{{ t('trip.itineraryIntro') }}</p>
-            <MultiHotelTripItinerary :days="tripDaysView" :hotels="tripHotelLinks" stacked @open-hotel="openTripHotel" @open-hotel-panel="openTripHotelPanel" />
+            <MultiHotelTripItinerary :days="tripDaysView" :hotels="tripHotelLinks" stacked @open-hotel="openTripHotel" />
           </template>
           <template v-else>
           <h2 class="section-title">
@@ -452,7 +452,7 @@
             <template v-if="isTrip">
               <h2 class="section-title">{{ t('trip.itineraryHeading') }}</h2>
               <p class="deal-page__itinerary-intro">{{ t('trip.itineraryIntro') }}</p>
-              <MultiHotelTripItinerary :days="tripDaysView" :hotels="tripHotelLinks" @open-hotel="openTripHotel" @open-hotel-panel="openTripHotelPanel" />
+              <MultiHotelTripItinerary :days="tripDaysView" :hotels="tripHotelLinks" @open-hotel="openTripHotel" />
             </template>
             <template v-else>
             <h2 class="section-title">
@@ -971,9 +971,8 @@
       </Transition>
     </Teleport>
 
-    <!-- Vakantie: hotel-pop-up (klik op een hotelnaam of een marker op de minimap) -->
-    <MultiHotelTripHotelModal :open="tripHotelOpen" :hotel="tripHotelModal" @close="tripHotelOpen = false" />
-    <!-- Vakantie: hotel-sidepanel ("Meer over dit hotel" in het dagprogramma), zelfde panel als op de kaart -->
+    <!-- Vakantie: hotel-sidepanel (hotelnaam in de tekst, marker op de minimap, "Meer over dit
+         hotel" in het dagprogramma) — zelfde panel als op de fullscreen kaart -->
     <MultiHotelTripHotelPanel v-if="isTrip" overlay :hotel="tripPanelHotel" @close="tripPanelOpen = false" />
     <!-- Vakantie: fullscreen kaart met route, hotels en omgevingshighlights -->
     <MultiHotelTripFullscreenMap
@@ -1024,7 +1023,7 @@ import dayjs from 'dayjs'
 import { formatDateWeekdayShort } from '~/utils-multi-hotel-trip/formatDate'
 import { tripPdpBySlug, tripHotelDetails } from '~/data/mht-trip-pdp'
 import type { TripDayView, TripBlockView } from '~/components-multi-hotel-trip/deal/TripItinerary.vue'
-import type { TripHotelModalData } from '~/components-multi-hotel-trip/deal/TripHotelModal.vue'
+import type { TripHotelModalData } from '~/components-multi-hotel-trip/deal/TripHotelDetails.vue'
 import { PRICED_PERSONS, minRoomsFor } from '~/utils-multi-hotel-trip/priceFormula'
 import { matchIcon } from '~/utils-multi-hotel-trip/iconMatcher'
 import { roomsLeftForDeal } from '~/utils-multi-hotel-trip/scarcity'
@@ -1504,16 +1503,12 @@ const tripMapHighlights = computed(() =>
   })),
 )
 
-/** Hotel-pop-up (klik op een hotelnaam in de tekst of een marker op de minimap). */
-const tripHotelOpen = ref(false)
-const tripHotelIndex = ref(0)
-function openTripHotel(i: number) { tripHotelIndex.value = i; tripHotelOpen.value = true }
-/** Hotel-sidepanel ("Meer over dit hotel" in het dagprogramma) — zelfde panel als op de kaart. */
+/** Hotel-sidepanel (hotelnaam in de tekst, marker op de minimap, "Meer over dit hotel"). */
 const tripPanelOpen = ref(false)
 const tripPanelIndex = ref(0)
-function openTripHotelPanel(i: number) { tripPanelIndex.value = i; tripPanelOpen.value = true }
+function openTripHotel(i: number) { tripPanelIndex.value = i; tripPanelOpen.value = true }
 const tripPanelHotel = computed<TripHotelModalData | null>(() => (tripPanelOpen.value ? tripHotelData(tripPanelIndex.value) : null))
-/** Hotelinformatie voor stop `i` (pop-up op de pagina, sidepanel op de kaart). */
+/** Hotelinformatie voor stop `i` (sidepanel op de pagina en op de kaart). */
 function tripHotelData(i: number): TripHotelModalData | null {
   if (!tripPdp || !trip) return null
   const d = tripHotelDetails(trip, tripPdp.content, i)
@@ -1531,7 +1526,6 @@ function tripHotelData(i: number): TripHotelModalData | null {
     checkIn: d.checkIn,
   }
 }
-const tripHotelModal = computed<TripHotelModalData | null>(() => tripHotelData(tripHotelIndex.value))
 /** Alle hotels, voor het sidepanel op de fullscreen kaart. */
 const tripHotelDetailsAll = computed<TripHotelModalData[]>(() =>
   (trip?.stops ?? []).map((_, i) => tripHotelData(i)).filter((h): h is TripHotelModalData => !!h),
