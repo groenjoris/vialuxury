@@ -34,8 +34,9 @@ export interface MultiHotelTripPdp {
 
 const l = (nl: string, en = nl): LocalizedString => ({ nl, en })
 
-/** Maximaal aantal foto's in de PDP-gallery (hero + 4 cellen). */
-const MAX_GALLERY = 5
+/** Maximaal aantal foto's per vakantie: de desktop-gallery toont hero + 4,
+ *  de lightbox ("Alle foto's") en de mobiele carrousel tonen ze allemaal. */
+const MAX_GALLERY = 9
 
 function buildImages(trip: MultiHotelTripDetail): { images: HotelImage[]; stickers: Record<string, string> } {
   const images: HotelImage[] = []
@@ -49,7 +50,7 @@ function buildImages(trip: MultiHotelTripDetail): { images: HotelImage[]; sticke
   })
   // 2. Aanvullen met extra foto's — uit de dataset (hotels in deals.json) of
   //    uit `extraImages` van de stop (aangeleverde hotelfoto's) — round-robin
-  //    over de hotels, zodat de 1 + 4 gallery gevuld raakt waar dat kan.
+  //    over de hotels, zodat elk hotel in de zichtbare 1 + 4 gallery terugkomt.
   const used = new Set(images.map(img => img.url.split('?')[0]))
   const extras = trip.stops.map((stop) => {
     const h = stop.hotelSlug ? mappedHotelsByHotelPermalink[stop.hotelSlug] : undefined
