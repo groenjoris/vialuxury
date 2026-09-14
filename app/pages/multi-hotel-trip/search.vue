@@ -7,8 +7,8 @@
       search-below
       compact-title
       :bg-url="tripHeroBg"
-      :eyebrow="t('header.new')"
-      :title="t('search.holidaysTitle')"
+      :eyebrow="tripHeroCaption"
+      :title="t('search.holidaysHeroTitle')"
       :pitch="tripHeroPitch"
     />
     <MultiHotelTripSiteHeader v-else />
@@ -478,7 +478,10 @@ function isSearchRoute(p: string): boolean {
  * is gekozen in de zoekbalk. */
 const isTripLanding = computed(() => route.path === '/multi-hotel-trip/vakanties')
 const isTripMode = computed(() => isTripLanding.value || selectedDestinations.value.includes(TRIPS_DESTINATION_ID))
-const tripHeroBg = '/images/landingpages/natuur.jpg'
+/* Hero van de Vakanties-landing: Geuldal bij Stokhem (foto uit de
+   voorbeeldcontent van Joris), met de locatie als eyebrow boven de titel. */
+const tripHeroBg = '/images/vakanties/geuldal-stokhem.jpg'
+const tripHeroCaption = 'Geuldal bij Stokhem, Limburg'
 const tripHeroPitch = computed(() => t('search.holidaysPitch'))
 /** Het verticale filterpaneel bestaat niet in vakantiestand. */
 const sidebarVisible = computed(() => showFilters.value && !isTripMode.value)
