@@ -929,6 +929,7 @@
       :selected-durations="selectedDurations"
       :search-group="searchGroup"
       :destination-label="destinationLabel"
+      :destination-is-placeholder="destinationIsPlaceholder"
       :when-label="whenLabel"
       :who-label="whoLabel"
       @close="mobileSearchOpen = false"

@@ -12,6 +12,7 @@ const en: Record<string, string> = {
   'header.searchHowLong': 'How long?',
   'header.whosComing': 'Who\'s coming',
   'header.chooseDestination': 'Choose a destination',
+  'header.typeDestination': 'Type a destination or hotel',
   'header.chooseDate': 'Flexible, any duration',
   'header.flexibleLabel': 'Flexible',
   'header.anyDuration': 'any travel duration',

@@ -12,6 +12,7 @@ const nl: Record<string, string> = {
   'header.searchHowLong': 'Hoelang?',
   'header.whosComing': 'Wie gaat er mee?',
   'header.chooseDestination': 'Kies bestemming',
+  'header.typeDestination': 'Type bestemming of hotel',
   'header.chooseDate': 'Flexibel, elke duur',
   'header.flexibleLabel': 'Flexibel',
   'header.anyDuration': 'elke reisduur',

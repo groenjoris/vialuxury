@@ -91,11 +91,11 @@
       class="destination-popup__content"
       :class="{ 'destination-popup__content--searching': isSearching }"
     >
-      <!-- Inline (mobile modal) while TYPING: flat sectioned list of
-           matching cities/provinces + hotels (no icons). The click-only
-           state falls through to the same browse block as desktop below
-           (province tiles, "Nog geen voorkeur" link, theme tiles). -->
-      <div v-if="inline && isSearching" class="destination-popup__results destination-popup__results--inline">
+      <!-- Inline (mobile modal): ONE rendering path for both states — a
+           plain vertical list. Click-only shows the SAME content as the
+           desktop tiles (curated provinces, "Nog geen voorkeur" link,
+           themes); typing shows filtered cities/provinces + hotels. -->
+      <div v-if="inline" class="destination-popup__results destination-popup__results--inline">
         <template v-if="inlineHasRows">
           <template v-for="(section, idx) in inlineSections" :key="section.key">
             <!-- Divider between sections (skip before the first one). -->
@@ -106,6 +106,7 @@
                 v-for="row in section.rows"
                 :key="row.key"
                 class="destination-popup__list-item"
+                :class="{ 'destination-popup__list-item--link': row.link }"
                 role="button"
                 tabindex="0"
                 @click="row.pick()"
@@ -495,6 +496,8 @@ type InlineRow = {
   name: string
   sublabel: string
   pick: () => void
+  /** Renders as a text link (the "Nog geen voorkeur" escape hatch). */
+  link?: boolean
 }
 type InlineSection = {
   key: string
@@ -503,20 +506,28 @@ type InlineSection = {
 }
 const inlineSections = computed<InlineSection[]>(() => {
   if (!isSearching.value) {
-    // Click-only default: provinces + themes. Provinces show only
-    // their name (no country sublabel). Themes keep their "Thema's"
-    // sublabel since the user only asked to simplify city/province/
-    // hotel rows.
+    // Click-only default: the SAME content as the desktop tiles —
+    // provinces, the "Nog geen voorkeur" link, then themes. Provinces
+    // show only their name (no country sublabel).
     return [
       {
         key: 'destinations',
         title: 'Bestemmingen',
-        rows: props.destinations.map(d => ({
-          key: `d-${d.id}`,
-          name: d.name,
-          sublabel: '',
-          pick: () => emit('toggle-destination', d.id),
-        })),
+        rows: [
+          ...browseDestinations.value.map(d => ({
+            key: `d-${d.id}`,
+            name: d.name,
+            sublabel: '',
+            pick: () => emit('toggle-destination', d.id),
+          })),
+          {
+            key: 'no-pref',
+            name: t('header.noPreferenceLong'),
+            sublabel: '',
+            pick: handleNoPreference,
+            link: true,
+          },
+        ],
       },
       {
         key: 'themes',
@@ -776,10 +787,11 @@ function selectHotel(hotel: { name: string; slug: string }) {
 .destination-popup--inline .destination-popup__list-icon {
   display: none;
 }
-/* Inline browse (click-only): same tiles as desktop, tighter padding to
-   fit the modal's panel width. */
-.destination-popup--inline .destination-popup__browse {
-  padding: 12px 12px 16px;
+/* Inline "Nog geen voorkeur" row — a text link, not a destination. */
+.destination-popup--inline .destination-popup__list-item--link .destination-popup__list-name {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  color: var(--color-text-secondary);
 }
 
 /* ==================== */

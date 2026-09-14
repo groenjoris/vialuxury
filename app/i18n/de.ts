@@ -12,6 +12,7 @@ const de: Record<string, string> = {
   'header.searchHowLong': 'Wie lange?',
   'header.whosComing': 'Wer kommt mit?',
   'header.chooseDestination': 'Reiseziel wählen',
+  'header.typeDestination': 'Reiseziel oder Hotel eingeben',
   'header.chooseDate': 'Flexibel, jede Dauer',
   'header.flexibleLabel': 'Flexibel',
   'header.anyDuration': 'jede Reisedauer',

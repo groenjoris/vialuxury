@@ -35,12 +35,23 @@
               class="msm-field__card msm-field__card--input"
               :class="{ 'msm-field__card--active': active === 'where' }"
             >
+              <!-- Custom placeholder: rendered as an overlay 8 px to the
+                   RIGHT of the caret so the blinking cursor never sits on
+                   top of the text. Shows the current pick (or "Kies
+                   bestemming"); once the field has focus and nothing is
+                   picked it invites typing: "Type bestemming of hotel". -->
+              <span
+                v-if="!destinationQuery"
+                class="msm-field__placeholder"
+                :class="{ 'msm-field__placeholder--value': !destinationIsPlaceholder && destinationLabel }"
+                aria-hidden="true"
+              >{{ destinationPlaceholder }}</span>
               <input
                 ref="destinationInputRef"
                 v-model="destinationQuery"
                 type="text"
                 class="msm-field__input"
-                :placeholder="destinationPlaceholder"
+                :aria-label="destinationPlaceholder"
                 autocomplete="off"
                 @focus="active = 'where'"
                 @keydown.enter.prevent="$emit('search')"
@@ -275,6 +286,8 @@ const props = defineProps<{
   selectedDurations: string[]
   searchGroup: { adults: number; children: { age: number }[]; rooms: number; dog?: boolean }
   destinationLabel?: string
+  /** True while the bar's destination field is in placeholder state. */
+  destinationIsPlaceholder?: boolean
   whenLabel?: string
   whoLabel?: string
   /** Live total of all arrangements — shown in the modal title. */
@@ -360,6 +373,10 @@ const destinationQuery = ref('')
 const destinationInputRef = ref<HTMLInputElement | null>(null)
 
 const destinationPlaceholder = computed(() => {
+  // Focused + nothing picked: the field is a typing surface, so invite
+  // typing ("Type bestemming of hotel"). Unfocused it mirrors the bar's
+  // label ("Kies bestemming" / the pick / "Geen voorkeur").
+  if (active.value === 'where' && props.destinationIsPlaceholder) return t('header.typeDestination')
   if (props.destinationLabel && props.destinationLabel.trim()) return props.destinationLabel
   return 'Bestemming, stad of hotel'
 })
@@ -671,11 +688,31 @@ function pickWho(opt: { adults: number; rooms: number }) {
 /* Input variant — Waarheen's typing surface. The field itself accepts
    keyboard input; suggestions appear below in the panel. */
 .msm-field__card--input {
+  position: relative;               /* anchors the custom placeholder */
   display: flex;
   align-items: center;
   gap: 12px;
   padding: 0 12px 0 18px;
   min-height: 56px;
+}
+/* Custom placeholder overlay — 8 px right of the caret (the input's
+   text starts at the card's 18 px padding, the placeholder at 26 px). */
+.msm-field__placeholder {
+  position: absolute;
+  left: 26px;
+  right: 48px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  font-family: var(--font-body);
+  font-size: 16px;
+  color: var(--color-text-secondary, #6a6a6a);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.msm-field__placeholder--value {
+  color: var(--color-text-primary);
 }
 .msm-field__input {
   flex: 1;
