@@ -118,10 +118,10 @@
             </span>
             <span class="dur-check__label">{{ t('header.duration.noMatter') }}</span>
           </label>
-          <!-- Multi Hotel Trip: reisduur in twee groepen i.p.v. één lange
-               lijst — "Kort verblijf" (1 t/m 4 nachten) en "Lange vakantie"
-               (5 t/m 8 nachten). De groepskop selecteert de hele groep; de
-               chips eronder verfijnen naar losse nachten. -->
+          <!-- Multi Hotel Trip: reisduur in twee categorieën — "Kort verblijf"
+               (1 t/m 4 nachten) en "Vakantie" (5 t/m 8 nachten). De categorie-
+               kop vinkt in één keer alle nachten eronder aan; de losse nachten
+               staan als verticale lijst ingesprongen eronder. -->
           <div v-for="group in NIGHT_GROUPS" :key="group.id" class="dur-group">
             <label
               class="dur-check dur-check--group"
@@ -152,18 +152,31 @@
                 <span class="dur-check__sub">{{ t(group.rangeKey) }}</span>
               </span>
             </label>
-            <div class="dur-chips" role="group" :aria-label="t(group.labelKey)">
-              <button
-                v-for="key in group.keys"
-                :key="key"
-                type="button"
-                class="dur-chip"
-                :class="{ 'dur-chip--on': nights.includes(key) }"
-                :aria-pressed="nights.includes(key)"
-                :aria-label="nightKeyLabel(key, t('common.night'), t('common.nights'))"
-                @click="$emit('toggle-night', key)"
-              >{{ key }}</button>
-            </div>
+            <!-- Losse nachten: verticale lijst, ingesprongen onder de categorie. -->
+            <label
+              v-for="key in group.keys"
+              :key="key"
+              class="dur-check dur-check--night"
+              :class="{ 'dur-check--selected': nights.includes(key) }"
+            >
+              <input
+                type="checkbox"
+                class="dur-check__input"
+                :checked="nights.includes(key)"
+                @change="$emit('toggle-night', key)"
+              />
+              <span class="dur-check__box" aria-hidden="true">
+                <svg
+                  v-if="nights.includes(key)"
+                  width="12" height="12" viewBox="0 0 24 24"
+                  fill="none" stroke="currentColor" stroke-width="3"
+                  stroke-linecap="round" stroke-linejoin="round"
+                >
+                  <polyline points="5 12 10 17 19 7" />
+                </svg>
+              </span>
+              <span class="dur-check__label">{{ nightKeyLabel(key, t('common.night'), t('common.nights')) }}</span>
+            </label>
           </div>
         </div>
       </section>
@@ -500,7 +513,7 @@ const hasSelection = computed(() => !!props.selectedDate || props.nights.length 
 .dur-group {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
 }
 .dur-group + .dur-group {
   padding-top: 12px;
@@ -522,30 +535,11 @@ const hasSelection = computed(() => !!props.selectedDate || props.nights.length 
   border-radius: 1px;
   background: #fff;
 }
-.dur-chips {
-  display: flex;
-  align-items: center;
-  gap: 5px;
+.dur-check--group .dur-check__label { font-weight: 600; }
+/* Losse nachten ingesprongen onder de categoriekop, iets kleiner. */
+.dur-check--night {
   padding-left: 28px;
-}
-.dur-chip {
-  width: 32px;
-  height: 30px;
-  border: 1.5px solid #c7c7c7;
-  border-radius: 6px;
-  background: #fff;
-  font-family: var(--font-body);
-  font-size: 14px;
-  font-weight: 600;
-  color: #141414;
-  cursor: pointer;
-  transition: background 150ms ease, border-color 150ms ease, color 150ms ease;
-}
-.dur-chip:hover { border-color: var(--color-primary); }
-.dur-chip--on {
-  background: var(--color-primary);
-  border-color: var(--color-primary);
-  color: #fff;
+  font-size: 15px;
 }
 
 .dur-check--selected .dur-check__label { color: var(--color-primary); }

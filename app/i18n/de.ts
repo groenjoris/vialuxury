@@ -243,9 +243,9 @@ const de: Record<string, string> = {
   // Multi Hotel Trip — reisduur in twee groepen (kort / lang)
   'nights.group.short': 'Kurzer Aufenthalt',
   'nights.group.shortRange': '1 bis 4 Nächte',
-  'nights.group.long': 'Langer Urlaub',
+  'nights.group.long': 'Urlaub',
   'nights.group.longRange': '5 bis 8 Nächte',
-  'nights.group.both': 'Kurzer oder langer Aufenthalt',
+  'nights.group.both': 'Kurzaufenthalt oder Urlaub',
   'search.filters': 'Filter',
   'search.arrangement': 'Arrangement',
   'search.fromPrice': 'Ab',
