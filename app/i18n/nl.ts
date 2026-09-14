@@ -241,7 +241,7 @@ const nl: Record<string, string> = {
   'trip.auto': 'Autovakantie',
   'trip.fiets': 'Fietsvakantie',
   'trip.multipleHotels': 'Meerdere hotels',
-  'trip.typeWithHotels': '{type} met {n} hotels',
+  'trip.topHotels': '{n} tophotels',
   // Multi Hotel Trip — vakantie-PDP
   'trip.fantasticHotels': '{n} fantastische hotels',
   'trip.hotelsIncludedHeading': 'In deze vakantie zijn deze hotels inbegrepen:',
@@ -292,10 +292,8 @@ const nl: Record<string, string> = {
   'trip.checkInFrom': 'Inchecken vanaf {time}',
   // Multi Hotel Trip — reisduur in twee groepen (kort / lang)
   'nights.group.short': 'Kort verblijf',
-  'nights.group.shortRange': '1 t/m 4 nachten',
-  'nights.group.long': 'Vakantie',
-  'nights.group.longRange': '5 t/m 8 nachten',
-  'nights.group.both': 'Kort verblijf of vakantie',
+  'nights.group.long': '5 of meer nachten',
+  'nights.group.both': 'Kort of lang verblijf',
   'search.filters': 'Filters',
   'search.arrangement': 'Arrangement',
   'search.fromPrice': 'Vanaf',

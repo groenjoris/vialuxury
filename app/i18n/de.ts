@@ -234,7 +234,7 @@ const de: Record<string, string> = {
   'trip.auto': 'Autoreise',
   'trip.fiets': 'Radreise',
   'trip.multipleHotels': 'Mehrere Hotels',
-  'trip.typeWithHotels': '{type} mit {n} Hotels',
+  'trip.topHotels': '{n} Top-Hotels',
   // Multi Hotel Trip — vakantie-PDP
   'trip.fantasticHotels': '{n} fantastische Hotels',
   'trip.hotelsIncludedHeading': 'Diese Hotels sind in diesem Urlaub inbegriffen:',
@@ -285,10 +285,8 @@ const de: Record<string, string> = {
   'trip.checkInFrom': 'Check-in ab {time}',
   // Multi Hotel Trip — reisduur in twee groepen (kort / lang)
   'nights.group.short': 'Kurzer Aufenthalt',
-  'nights.group.shortRange': '1 bis 4 Nächte',
-  'nights.group.long': 'Urlaub',
-  'nights.group.longRange': '5 bis 8 Nächte',
-  'nights.group.both': 'Kurzaufenthalt oder Urlaub',
+  'nights.group.long': '5 oder mehr Nächte',
+  'nights.group.both': 'Kurzer oder langer Aufenthalt',
   'search.filters': 'Filter',
   'search.arrangement': 'Arrangement',
   'search.fromPrice': 'Ab',

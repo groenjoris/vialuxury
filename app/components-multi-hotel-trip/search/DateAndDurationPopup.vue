@@ -119,7 +119,7 @@
             <span class="dur-check__label">{{ t('header.duration.noMatter') }}</span>
           </label>
           <!-- Multi Hotel Trip: reisduur in twee categorieën — "Kort verblijf"
-               (1 t/m 4 nachten) en "Vakantie" (5 t/m 8 nachten). De categorie-
+               (1 t/m 4 nachten) en "5 of meer nachten" (5 t/m 8), zonder bereik-toelichting. De categorie-
                kop vinkt in één keer alle nachten eronder aan; de losse nachten
                staan als verticale lijst ingesprongen eronder. -->
           <div v-for="group in NIGHT_GROUPS" :key="group.id" class="dur-group">
@@ -149,7 +149,6 @@
               </span>
               <span class="dur-check__label">
                 {{ t(group.labelKey) }}
-                <span class="dur-check__sub">{{ t(group.rangeKey) }}</span>
               </span>
             </label>
             <!-- Losse nachten: verticale lijst, ingesprongen onder de categorie. -->
@@ -521,12 +520,6 @@ const hasSelection = computed(() => !!props.selectedDate || props.nights.length 
 }
 .dur-check--group { align-items: flex-start; }
 .dur-check--group .dur-check__box { margin-top: 1px; }
-.dur-check__sub {
-  display: block;
-  margin-top: 2px;
-  font-size: 12px;
-  color: #999999;
-}
 /* Deel van de groep geselecteerd: streepje i.p.v. vinkje. */
 .dur-check__dash {
   display: block;

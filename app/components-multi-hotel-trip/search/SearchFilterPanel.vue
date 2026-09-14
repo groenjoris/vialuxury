@@ -67,7 +67,7 @@
       <Transition name="filter-expand">
         <div v-if="group.open" class="filter-group__body">
           <!-- Multi Hotel Trip: reisduur in twee categorieën (Kort verblijf 1–4 /
-               Vakantie 5–8). De categorie vinkt alle nachten eronder in één
+               "5 of meer nachten"; geen bereik-toelichting). De categorie vinkt alle nachten eronder in één
                keer aan; de losse nachten staan ingesprongen eronder. -->
           <template v-if="group.id === 'travelDuration'">
             <div v-for="ng in NIGHT_GROUPS" :key="ng.id" class="filter-nights">
@@ -83,10 +83,7 @@
                   :disabled="groupCount(ng) === 0 && groupState(ng) === 'none'"
                   @change="onNightGroupToggle(ng)"
                 />
-                <span class="filter-item__label filter-item__label--group">
-                  {{ t(ng.labelKey) }}
-                  <span class="filter-nights__range">{{ t(ng.rangeKey) }}</span>
-                </span>
+                <span class="filter-item__label filter-item__label--group">{{ t(ng.labelKey) }}</span>
                 <span v-if="counts" class="filter-item__count">({{ groupCount(ng) }})</span>
               </label>
               <!-- Losse nachten: verticale lijst, ingesprongen onder de categorie. -->
@@ -580,11 +577,6 @@ function itemCount(value: string): number {
   gap: 8px;
 }
 .filter-nights + .filter-nights { margin-top: 6px; }
-.filter-nights__range {
-  margin-left: 4px;
-  font-size: 12px;
-  color: var(--color-text-muted);
-}
 .filter-item__label--group {
   font-weight: 600;
   color: var(--color-text-primary);

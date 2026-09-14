@@ -15,22 +15,22 @@ export const TRIP_NIGHT_KEYS: NightKey[] = ['5', '6', '7', '8']
 
 /**
  * Reisduur in twee groepen i.p.v. één lange lijst van acht: "Kort verblijf"
- * (1 t/m 4 nachten) en "Lange vakantie" (5 t/m 8 nachten). Alle pickers
- * (zoekbalk, filterpaneel, mobiele modal, hotelpagina) tonen de groep als
- * kop met de losse nachten als kleine chips erachter; de opgeslagen state
- * blijft gewoon de lijst met night-keys.
+ * (1 t/m 4 nachten) en "5 of meer nachten" (5 t/m 8) — bewust niet
+ * "Vakantie", dat botst met de bestemming/het thema "Vakanties". Alle
+ * pickers (zoekbalk, filterpaneel, mobiele modal, hotelpagina) tonen de
+ * groep als kop (zonder bereik-toelichting) met de losse nachten als
+ * verticale lijst eronder; de opgeslagen state blijft de lijst night-keys.
  */
 export type NightGroupId = 'short' | 'long'
 export interface NightGroup {
   id: NightGroupId
   keys: NightKey[]
-  /** i18n-keys voor de groepsnaam en de bereik-ondertitel. */
+  /** i18n-key voor de groepsnaam. */
   labelKey: string
-  rangeKey: string
 }
 export const NIGHT_GROUPS: NightGroup[] = [
-  { id: 'short', keys: ['1', '2', '3', '4'], labelKey: 'nights.group.short', rangeKey: 'nights.group.shortRange' },
-  { id: 'long', keys: ['5', '6', '7', '8'], labelKey: 'nights.group.long', rangeKey: 'nights.group.longRange' },
+  { id: 'short', keys: ['1', '2', '3', '4'], labelKey: 'nights.group.short' },
+  { id: 'long', keys: ['5', '6', '7', '8'], labelKey: 'nights.group.long' },
 ]
 
 /** Hoeveel van de groep is geselecteerd: niets, een deel of alles. */
@@ -49,7 +49,7 @@ export function toggleNightGroup(selected: readonly string[], group: NightGroup)
 
 /**
  * Korte samenvatting van een selectie voor veldwaarden en pills:
- * een volledige groep heet bij haar naam ("Kort verblijf", "Lange vakantie",
+ * een volledige groep heet bij haar naam ("Kort verblijf", "5 of meer nachten",
  * beide → "Kort of lang verblijf"); anders de losse nachten ("5, 6 of 7
  * nachten"). `t` levert de vertalingen.
  */
