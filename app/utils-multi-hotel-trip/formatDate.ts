@@ -46,3 +46,14 @@ export function getDutchDayHeaders(): string[] {
   // Start with Monday (Dutch convention)
   return ['Ma', 'Di', 'Wo', 'Do', 'Vr', 'Za', 'Zo']
 }
+
+/**
+ * Format date as "do 15 mrt" (weekday short, lower-case — same notation as
+ * the arrival pill on the results page). Multi Hotel Trip: check-in/check-out
+ * per hotel on the vakantie-PDP.
+ */
+export function formatDateWeekdayShort(date: string): string {
+  const d = dayjs(date)
+  const day = ['zo', 'ma', 'di', 'wo', 'do', 'vr', 'za'][d.day()]
+  return `${day} ${d.date()} ${DUTCH_MONTHS_SHORT[d.month()]}`
+}

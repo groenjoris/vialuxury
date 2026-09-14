@@ -37,10 +37,13 @@
         <section class="deal-page__title-section deal-page__title-section--mobile container">
           <h1 class="deal-page__package-title">{{ localized(currentDeal.title) }}</h1>
           <div class="deal-page__hotel-name-wrap">
-            <NuxtLink :to="`/multi-hotel-trip/hotel/${hotel.slug}`" class="deal-page__hotel-link">
+            <!-- Vakantie: "3 fantastische hotels" (geen link); sterren alleen
+                 als alle hotels hetzelfde aantal hebben (anders starRating 0). -->
+            <span v-if="isTrip" class="deal-page__hotel-subtitle">{{ tripHotelsLabel }}</span>
+            <NuxtLink v-else :to="`/multi-hotel-trip/hotel/${hotel.slug}`" class="deal-page__hotel-link">
               <span class="deal-page__hotel-subtitle">{{ hotel.name }}</span>
             </NuxtLink>
-            <div class="deal-page__stars-adjacent" aria-hidden="true">
+            <div v-if="hotel.starRating > 0" class="deal-page__stars-adjacent" aria-hidden="true">
               <span v-for="n in hotel.starRating" :key="n" class="star-adj"><svg class="icon-star" viewBox="0 0 18 18" width="1em" height="1em" fill="currentColor" style="vertical-align:-0.125em" aria-hidden="true"><path d="M16.963,6.786c-.088-.271-.323-.469-.605-.51l-4.62-.671L9.672,1.418c-.252-.512-1.093-.512-1.345,0l-2.066,4.186-4.62,.671c-.282,.041-.517,.239-.605,.51-.088,.271-.015,.57,.19,.769l3.343,3.258-.79,4.601c-.048,.282,.067,.566,.298,.734,.231,.167,.538,.189,.79,.057l4.132-2.173,4.132,2.173c.11,.058,.229,.086,.349,.086,.155,0,.31-.048,.441-.143,.231-.168,.347-.452,.298-.734l-.79-4.601,3.343-3.258c.205-.199,.278-.498,.19-.769Z"/></svg></span>
             </div>
           </div>
@@ -48,7 +51,8 @@
             <svg class="deal-page__meta-pin" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M4.5 9.75768C4.5 15.5 12 22 12 22C12 22 19.5 15.5 19.5 9.75768C19.5 4.81181 15.6559 2 12 2C8.34409 2 4.5 4.81181 4.5 9.75768Z" /><path d="M12 12C13.3807 12 14.5 10.8807 14.5 9.5C14.5 8.11929 13.3807 7 12 7C10.6193 7 9.5 8.11929 9.5 9.5C9.5 10.8807 10.6193 12 12 12Z" />
             </svg>
-            <span>{{ hotel.location.city }}, {{ hotel.location.region }}</span>
+            <span v-if="isTrip">{{ tripCitiesLabel }}</span>
+            <span v-else>{{ hotel.location.city }}, {{ hotel.location.region }}</span>
             <a href="#mini-map" class="deal-page__view-map-link" @click.prevent="scrollToMiniMap">{{ t('common.viewMap') || 'Bekijk op kaart' }}</a>
           </div>
         </section>
@@ -59,6 +63,7 @@
             :images="hotel.images"
             :labels="galleryLabels"
             :rooms-left="dealRoomsLeft"
+            :stickers="tripGalleryStickers"
             @open-gallery="openGallery"
             @open-photo="openGalleryPhoto"
           />
@@ -185,8 +190,8 @@
           </div>
         </section>
 
-        <!-- 8. Description + Lees meer -->
-        <section id="intro" class="container deal-page__description-mobile">
+        <!-- 8. Description + Lees meer (niet bij een vakantie) -->
+        <section v-if="!isTrip" id="intro" class="container deal-page__description-mobile">
           <h2 class="section-title">{{ t('deal.descriptionHeading') }}</h2>
           <div class="deal-page__description">
             <div v-html="firstParagraph"></div>
@@ -194,8 +199,8 @@
           </div>
         </section>
 
-        <!-- 9. Highlights -->
-        <section class="container deal-page__highlights deal-page__highlights--mobile">
+        <!-- 9. Highlights (niet bij een vakantie) -->
+        <section v-if="!isTrip" class="container deal-page__highlights deal-page__highlights--mobile">
           <h2 class="section-title">{{ t('deal.highlights') }}</h2>
           <div class="highlights__grid">
             <div v-for="hl in highlights" :key="hl.text" class="highlight-item">
@@ -207,9 +212,15 @@
           </div>
         </section>
 
-        <!-- 10. Mini map -->
+        <!-- 10. Mini map — vakantie: routekaart met alle hotels -->
         <section id="mini-map" class="container deal-page__mini-map-mobile">
+          <MultiHotelTripRouteMapCard
+            v-if="isTrip"
+            class="deal-page__minimap deal-page__minimap--trip"
+            :stops="tripMapStops"
+          />
           <MultiHotelTripMiniMapCard
+            v-else
             class="deal-page__minimap"
             :slug="hotel.slug"
             :lat="hotel.location.coordinates.lat"
@@ -221,6 +232,12 @@
         <!-- 11. Included cards (repeat full include section). Anchor
              target for the "Bekijk details" link in the sidebar. -->
         <section id="arrangement" class="container deal-page__content-blocks deal-page__content-blocks--mobile">
+          <!-- Vakantie: per hotel een blok (dagen, naam, locatie, foto + Inclusief). -->
+          <template v-if="isTrip">
+            <h2 class="section-title">{{ t('trip.hotelsIncludedHeading') }}</h2>
+            <MultiHotelTripStops :stops="tripStopsView" stacked />
+          </template>
+          <template v-else>
           <h2 class="section-title">
             {{ t('deal.inclusionsHeading') }}
             <span>2 personen</span>
@@ -241,10 +258,11 @@
               </div>
             </div>
           </div>
+          </template>
         </section>
 
         <!-- 12. Hotel facilities — stacked -->
-        <section class="container deal-page__facilities deal-page__facilities--mobile">
+        <section v-if="hotel.facilities.length" class="container deal-page__facilities deal-page__facilities--mobile">
           <h2 class="section-title">{{ t('hotel.facilities') }}</h2>
           <div class="facilities__grid facilities__grid--mobile">
             <div v-for="fac in hotel.facilities" :key="localized(fac.label)" class="facility-item">
@@ -335,10 +353,13 @@
         >
           <h1 class="deal-page__package-title">{{ localized(currentDeal.title) }}</h1>
           <div class="deal-page__hotel-name-wrap">
-            <NuxtLink :to="`/multi-hotel-trip/hotel/${hotel.slug}`" class="deal-page__hotel-link">
+            <!-- Vakantie: "3 fantastische hotels" (geen link); sterren alleen
+                 als alle hotels hetzelfde aantal hebben (anders starRating 0). -->
+            <span v-if="isTrip" class="deal-page__hotel-subtitle">{{ tripHotelsLabel }}</span>
+            <NuxtLink v-else :to="`/multi-hotel-trip/hotel/${hotel.slug}`" class="deal-page__hotel-link">
               <span class="deal-page__hotel-subtitle">{{ hotel.name }}</span>
             </NuxtLink>
-            <div class="deal-page__stars-adjacent" aria-hidden="true">
+            <div v-if="hotel.starRating > 0" class="deal-page__stars-adjacent" aria-hidden="true">
               <span v-for="n in hotel.starRating" :key="n" class="star-adj"><svg class="icon-star" viewBox="0 0 18 18" width="1em" height="1em" fill="currentColor" style="vertical-align:-0.125em" aria-hidden="true"><path d="M16.963,6.786c-.088-.271-.323-.469-.605-.51l-4.62-.671L9.672,1.418c-.252-.512-1.093-.512-1.345,0l-2.066,4.186-4.62,.671c-.282,.041-.517,.239-.605,.51-.088,.271-.015,.57,.19,.769l3.343,3.258-.79,4.601c-.048,.282,.067,.566,.298,.734,.231,.167,.538,.189,.79,.057l4.132-2.173,4.132,2.173c.11,.058,.229,.086,.349,.086,.155,0,.31-.048,.441-.143,.231-.168,.347-.452,.298-.734l-.79-4.601,3.343-3.258c.205-.199,.278-.498,.19-.769Z"/></svg></span>
             </div>
           </div>
@@ -346,7 +367,8 @@
             <svg class="deal-page__meta-pin" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M4.5 9.75768C4.5 15.5 12 22 12 22C12 22 19.5 15.5 19.5 9.75768C19.5 4.81181 15.6559 2 12 2C8.34409 2 4.5 4.81181 4.5 9.75768Z" /><path d="M12 12C13.3807 12 14.5 10.8807 14.5 9.5C14.5 8.11929 13.3807 7 12 7C10.6193 7 9.5 8.11929 9.5 9.5C9.5 10.8807 10.6193 12 12 12Z" />
             </svg>
-            <span>{{ hotel.location.city }}, {{ hotel.location.region }}</span>
+            <span v-if="isTrip">{{ tripCitiesLabel }}</span>
+            <span v-else>{{ hotel.location.city }}, {{ hotel.location.region }}</span>
             <a href="#mini-map" class="deal-page__view-map-link" @click.prevent="scrollToMiniMap">{{ t('common.viewMap') || 'Bekijk op kaart' }}</a>
           </div>
         </div>
@@ -373,6 +395,7 @@
           :images="hotel.images"
           :labels="galleryLabels"
           :rooms-left="dealRoomsLeft"
+          :stickers="tripGalleryStickers"
           @open-gallery="openGallery"
           @open-photo="openGalleryPhoto"
         />
@@ -381,8 +404,14 @@
       <!-- Two-column layout: Content | Booking Sidebar -->
       <div class="deal-page__grid container">
         <div class="deal-page__col-left">
+          <!-- Vakantie: geen beschrijving, wél een brede routekaart met alle hotels. -->
+          <div v-if="isTrip" id="intro" class="deal-page__intro deal-page__intro--trip">
+            <div id="mini-map" class="deal-page__minimap-anchor">
+              <MultiHotelTripRouteMapCard class="deal-page__minimap deal-page__minimap--trip" :stops="tripMapStops" />
+            </div>
+          </div>
           <!-- Description + Mini map row -->
-          <div id="intro" class="deal-page__intro">
+          <div v-else id="intro" class="deal-page__intro">
             <div class="deal-page__description">
               <div v-html="firstParagraph"></div>
               <button v-if="hasMoreDescription" type="button" class="deal-page__read-more" @click="descriptionOpen = true">{{ t('common.readMore') }}</button>
@@ -396,8 +425,8 @@
             />
           </div>
 
-          <!-- Highlights -->
-          <section class="deal-page__highlights">
+          <!-- Highlights (niet bij een vakantie) -->
+          <section v-if="!isTrip" class="deal-page__highlights">
             <h2 class="section-title">{{ t('deal.highlights') }}</h2>
             <div class="highlights__grid">
               <div v-for="hl in highlights" :key="hl.text" class="highlight-item">
@@ -411,6 +440,12 @@
 
           <!-- Content blocks: What's included -->
           <section id="arrangement" class="deal-page__content-blocks">
+            <!-- Vakantie: per hotel een blok over de volle kolombreedte. -->
+            <template v-if="isTrip">
+              <h2 class="section-title">{{ t('trip.hotelsIncludedHeading') }}</h2>
+              <MultiHotelTripStops :stops="tripStopsView" />
+            </template>
+            <template v-else>
             <h2 class="section-title">
               {{ t('deal.inclusionsHeading') }}
               <!-- Persons fixed at 2 — plain text, no popup trigger. -->
@@ -438,6 +473,7 @@
 
               </div>
             </div>
+            </template>
           </section>
 
           <!-- Facilities (mobile only here; desktop renders full-width below) -->
@@ -621,7 +657,7 @@
       </div>
 
       <!-- Hotel-level full-width sections (desktop) — facilities / reviews / faq -->
-      <section v-if="!isMobile" class="deal-page__facilities container">
+      <section v-if="!isMobile && hotel.facilities.length" class="deal-page__facilities container">
         <h2 class="section-title">{{ t('hotel.facilities') }}</h2>
         <div class="facilities__grid">
           <div v-for="fac in hotel.facilities" :key="localized(fac.label)" class="facility-item">
@@ -950,6 +986,10 @@ import MultiHotelTripOthersAlsoViewed from '~/components-multi-hotel-trip/deal/O
 import { formatPrice } from '~/utils-multi-hotel-trip/formatPrice'
 import { getReviewLabelKey } from '~/utils-multi-hotel-trip/reviewLabel'
 import { generateDealAvailability } from '~/data/mock/deal-pricing'
+import dayjs from 'dayjs'
+import { formatDateWeekdayShort } from '~/utils-multi-hotel-trip/formatDate'
+import { tripPdpBySlug } from '~/data/mht-trip-pdp'
+import type { TripStopView } from '~/components-multi-hotel-trip/deal/TripStops.vue'
 import { PRICED_PERSONS, minRoomsFor } from '~/utils-multi-hotel-trip/priceFormula'
 import { matchIcon } from '~/utils-multi-hotel-trip/iconMatcher'
 import { roomsLeftForDeal } from '~/utils-multi-hotel-trip/scarcity'
@@ -1236,8 +1276,15 @@ const routeSlug = computed(() => (route.params.slug as string) || defaultDealPer
  *  same team member, so the v6 business card stays stable across reloads
  *  while different deals show different creators. */
 const creator = computed(() => creatorForSlug(routeSlug.value))
-const initialDeal = mappedPackagesByPermalink[routeSlug.value] || mappedPackagesByPermalink[defaultDealPermalink]
-const initialHotel = mappedHotelsByPackagePermalink[routeSlug.value] || mappedHotelsByPackagePermalink[defaultDealPermalink]
+// Multi Hotel Trip: een vakantie-slug (zie data/mht-trips.ts) levert een
+// samengestelde Deal + Hotel ("3 fantastische hotels") — de pagina toont dan
+// de vakantieblokken (routekaart, hotels per dag) in plaats van
+// beschrijving/minimap/highlights/arrangementkaarten.
+const tripPdp = tripPdpBySlug(routeSlug.value)
+const isTrip = !!tripPdp
+const trip = tripPdp?.trip ?? null
+const initialDeal = tripPdp?.deal ?? (mappedPackagesByPermalink[routeSlug.value] || mappedPackagesByPermalink[defaultDealPermalink])
+const initialHotel = tripPdp?.hotel ?? (mappedHotelsByPackagePermalink[routeSlug.value] || mappedHotelsByPackagePermalink[defaultDealPermalink])
 
 /** Show the NU.shop co-branding block in the anchor-tab row only when the
  *  user-test partner flag is active AND the deal belongs to Hotel Des Indes
@@ -1271,6 +1318,52 @@ const galleryLabels = computed(() => dealSearchHotel.value?.labels ?? [])
 const dealRoomsLeft = computed<number | null>(() =>
   dealSearchDeal.value ? roomsLeftForDeal(dealSearchDeal.value.id) : null,
 )
+
+// ── Multi Hotel Trip: vakantie-specifieke weergave ──
+/** "3 fantastische hotels" op de plek van de hotelnaam. */
+const tripHotelsLabel = computed(() =>
+  trip ? t('trip.fantasticHotels').replace('{n}', String(trip.stops.length)) : '',
+)
+/** "Béthune · Tilques · Hesdin-l'Abbé" — zelfde notatie als de dealcard. */
+const tripCitiesLabel = computed(() => trip ? trip.stops.map(s => s.city).join(' · ') : '')
+/** Hotelnaam-sticker per gallery-foto. */
+const tripGalleryStickers = tripPdp?.stickers
+/** Stops met ligging voor de routekaart. */
+const tripMapStops = computed(() =>
+  (trip?.stops ?? [])
+    .filter(s => typeof s.lat === 'number' && typeof s.lng === 'number')
+    .map(s => ({ lat: s.lat as number, lng: s.lng as number, label: s.city })),
+)
+/** "Dag 1 en 2" / "Dag 3" / "Dag 1 t/m 3". */
+function tripDayLabel(from: number, to: number): string {
+  if (to <= from) return t('trip.daySingle').replace('{a}', String(from))
+  if (to === from + 1) return t('trip.dayAnd').replace('{a}', String(from)).replace('{b}', String(to))
+  return t('trip.dayRange').replace('{a}', String(from)).replace('{b}', String(to))
+}
+/** Hotelblokken voor <MultiHotelTripStops>: daglabel + (bij gekozen datum)
+ *  check-in/check-out per hotel, afgeleid van de aankomstdatum van de reis. */
+const tripStopsView = computed<TripStopView[]>(() => {
+  if (!trip) return []
+  const checkIn = store.checkInDate
+  return trip.stops.map((s) => {
+    const view: TripStopView = {
+      hotelName: s.hotelName,
+      hotelSlug: s.hotelSlug,
+      starRating: s.starRating,
+      city: s.city,
+      region: s.region,
+      image: s.image,
+      includes: s.includes,
+      dayLabel: tripDayLabel(s.dayFrom, s.dayTo),
+    }
+    if (checkIn) {
+      const ci = dayjs(checkIn).add(s.dayFrom - 1, 'day')
+      view.checkIn = formatDateWeekdayShort(ci.format('YYYY-MM-DD'))
+      view.checkOut = formatDateWeekdayShort(ci.add(s.nights, 'day').format('YYYY-MM-DD'))
+    }
+    return view
+  })
+})
 
 // SearchHotel companion for the ViaLuxury score badge — look it up by
 // slug (the hotel page slug) so the badge has access to deals + price
@@ -1502,7 +1595,9 @@ useHead({ title: `${currentDeal.value?.title ? localized(currentDeal.value.title
 
 const breadcrumbs = computed(() => [
   { label: t('search.home'), href: '/' },
-  { label: t('search.arrangements'), href: '/multi-hotel-trip/search' },
+  isTrip
+    ? { label: t('header.holidays'), href: '/multi-hotel-trip/vakanties' }
+    : { label: t('search.arrangements'), href: '/multi-hotel-trip/search' },
   { label: currentDeal.value ? localized(currentDeal.value.title) : hotel.value.name },
 ])
 
@@ -1692,6 +1787,11 @@ onMounted(() => {
 
 /* Intro row: description + mini map side by side */
 .deal-page__intro { display: grid; grid-template-columns: 1fr 220px; gap: var(--space-xl); margin-bottom: var(--space-xl); align-items: start; }
+/* Vakantie: de routekaart neemt de hele kolombreedte (2/3 van het scherm)
+   en is iets hoger dan de vierkante 220 px minimap. */
+.deal-page__intro--trip { display: block; }
+.deal-page__minimap-anchor { scroll-margin-top: 88px; }
+.deal-page__minimap--trip { --vl-routemap-aspect: 8 / 3; }
 
 /* Mini map */
 /* Map preview + below-the-map footer (address left, "Bekijk kaart"
@@ -2203,6 +2303,7 @@ onMounted(() => {
   .deal-page__col-right { position: static; }
   .deal-page__intro { grid-template-columns: 1fr; }
   .deal-page__minimap { --vl-minimap-max-h: 200px; }
+  .deal-page__minimap--trip { --vl-routemap-aspect: 3 / 2; --vl-routemap-max-h: 280px; }
   .content-blocks__grid { grid-template-columns: 1fr; }
   .reviews__grid { grid-template-columns: 1fr; }
   .reviews__categories { grid-template-columns: 1fr; }
