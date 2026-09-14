@@ -6,6 +6,9 @@
 #   scripts/install-git-hooks.sh
 set -u
 [ -n "${MHT_SYNC_SKIP:-}" ] && exit 0
+# `git commit` geeft zijn hooks GIT_INDEX_FILE (tijdelijke index bij een partial
+# commit) mee; onze eigen git add/commit moeten op de echte index werken.
+unset GIT_INDEX_FILE GIT_PREFIX
 ROOT="$(git rev-parse --show-toplevel)"
 cd "$ROOT"
 GIT_DIR="$(git rev-parse --git-dir)"
