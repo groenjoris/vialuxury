@@ -227,6 +227,7 @@ const en: Record<string, string> = {
   'search.usp': 'Unique experiences, hand-picked by the ViaLuxury team',
   'search.home': 'Home',
   'search.arrangements': 'Packages',
+  'search.holiday': 'holiday',
   'search.holidays': 'holidays',
   'search.holidaysTitle': 'Holidays',
   'search.holidaysPitch': 'Two or three hotels in one journey — by car or by bike, hand-picked by the ViaLuxury team.',

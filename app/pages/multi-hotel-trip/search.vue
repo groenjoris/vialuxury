@@ -20,9 +20,9 @@
       </section>
 
       <!-- Grid: Filter Sidebar + Results -->
-      <div class="search-page__grid container" :class="{ 'search-page__grid--no-sidebar': !showFilters }">
+      <div class="search-page__grid container" :class="{ 'search-page__grid--no-sidebar': !sidebarVisible }">
         <Transition name="sidebar-slide">
-          <div v-if="showFilters" class="search-page__sidebar" ref="sidebarRef">
+          <div v-if="sidebarVisible" class="search-page__sidebar" ref="sidebarRef">
             <!-- Map preview (fake door) at the top of sidebar -->
             <MultiHotelTripMapPreviewCard class="search-page__map-preview" @click="handleMapClick" />
             <MultiHotelTripSearchFilterPanel
@@ -48,7 +48,7 @@
              — no Totaalprijs, no Specials, no "Verberg filter" button. -->
         <Transition name="sticky-filter-fade">
           <MultiHotelTripSearchFilterPanel
-            v-if="showFilters && stickyFilterVisible"
+            v-if="sidebarVisible && stickyFilterVisible"
             class="search-page__sticky-filter"
             :style="stickyFilterStyle"
             :budget-min="budgetMinDraft"
@@ -85,7 +85,7 @@
                 <h1 v-else-if="singleThemeTagId" ref="titleRef" :key="`themed-${singleThemeTagId}`" class="search-page__title">
                   {{ themedTitleText }}
                 </h1>
-                <h1 v-else ref="titleRef" class="search-page__title">{{ totalDeals }} {{ isTripMode ? t('search.holidays') : t('search.deals') }}</h1>
+                <h1 v-else ref="titleRef" class="search-page__title">{{ totalDeals }} {{ isTripMode ? t(totalDeals === 1 ? 'search.holiday' : 'search.holidays') : t('search.deals') }}</h1>
                 <!-- "Laat alle deals zien" secondary button — only when no
                      results so the user can wipe filters in one click. -->
                 <button
@@ -142,10 +142,6 @@
             </div>
           </div>
 
-          <!-- Multi Hotel Trip: quick filters (grote aan/uit-pillen, max. twee
-               rijen) vervangen het filterpaneel links op de Vakanties-pagina. -->
-          <MultiHotelTripQuickFilters v-if="isTripMode && !isMobile" class="search-page__quick-filters" />
-
           <!-- Mobile toolbar + pills render below this block as
                direct children of .search-page__results, where the tall
                parent lets `position: sticky` pin the toolbar through
@@ -154,7 +150,7 @@
           <!-- ============================================================
                DESKTOP toolbar: filter toggle, sort, view switch
                ============================================================ -->
-          <div v-if="!isMobile" class="search-toolbar">
+          <div v-if="!isMobile" class="search-toolbar" :class="{ 'search-toolbar--trips': isTripMode }">
             <div class="search-toolbar__left">
               <!-- Map button: only when filter hidden on desktop (sidebar map is otherwise visible) -->
               <button
@@ -191,8 +187,10 @@
                  wrapper to zero so the toolbar stays its natural
                  small height. -->
             <MultiHotelTripFilterPills v-if="!isTripMode" class="search-toolbar__pills" />
-            <!-- Vakantiestand: lege spacer houdt Sorteren/weergave rechts. -->
-            <div v-else class="search-toolbar__pills" aria-hidden="true"></div>
+            <!-- Vakantiestand: de quick filters staan als losse flex-items in
+                 deze rij; Sorteren/weergave sluiten er rechts op aan en
+                 verhuizen mee naar de tweede rij als de pillen omlopen. -->
+            <MultiHotelTripQuickFilters v-else inline :counts="tripQuickFilterCounts" />
 
             <div class="search-toolbar__right">
               <!-- Sort dropdown -->
@@ -329,7 +327,7 @@
             <section class="search-page__mobile-pills">
               <!-- Destination + arrival date live in the search summary bar on
                    mobile, so don't repeat them as filter chips here. -->
-              <MultiHotelTripQuickFilters v-if="isTripMode" />
+              <MultiHotelTripQuickFilters v-if="isTripMode" :counts="tripQuickFilterCounts" />
               <MultiHotelTripFilterPills v-else :hide-location-date="true" />
             </section>
             <!-- Divider between the pills and the result cards (always shown,
@@ -350,8 +348,8 @@
             class="search-page__result-list"
             :class="{
               'search-page__result-list--grid': effectiveViewMode === 'grid',
-              'search-page__result-list--grid-3': effectiveViewMode === 'grid' && !showFilters,
-              'search-page__result-list--list-wide': effectiveViewMode === 'list' && !showFilters,
+              'search-page__result-list--grid-3': effectiveViewMode === 'grid' && !sidebarVisible,
+              'search-page__result-list--list-wide': effectiveViewMode === 'list' && !sidebarVisible,
             }"
           >
             <MultiHotelTripDealCard
@@ -361,7 +359,7 @@
               :deal="row.deal"
               :sibling-count="row.siblings.length"
               :grid-mode="effectiveViewMode === 'grid'"
-              :wide="!showFilters"
+              :wide="!sidebarVisible"
               :unavailable="row._unavailable"
               @view-siblings="openDealPanel(row.hotel)"
             />
@@ -386,7 +384,7 @@
                 :deal="entry.deal"
                 :hotel="entry.hotel"
                 grid-mode
-                :wide="!showFilters"
+                :wide="!sidebarVisible"
               />
             </div>
           </div>
@@ -438,7 +436,7 @@ import {
 } from '~/utils-multi-hotel-trip/destinationMatch'
 import { computeFilterCounts } from '~/utils-multi-hotel-trip/filterCounts'
 import { tripSearchHotels } from '~/data/mht-trips'
-import { tripMatchesQuickFilters } from '~/utils-multi-hotel-trip/tripFilters'
+import { tripMatchesQuickFilters, TRIP_QUICK_FILTERS } from '~/utils-multi-hotel-trip/tripFilters'
 import { nightKeyFor, TRIP_NIGHT_KEYS } from '~/utils-multi-hotel-trip/nights'
 import { TRIPS_DESTINATION_ID } from '~/utils-multi-hotel-trip/destinationMatch'
 import { useMobileSearchModalControl } from '~/composables-multi-hotel-trip/useMobileSearchModalControl'
@@ -480,6 +478,10 @@ const isTripLanding = computed(() => route.path === '/multi-hotel-trip/vakanties
 const isTripMode = computed(() => isTripLanding.value || selectedDestinations.value.includes(TRIPS_DESTINATION_ID))
 const tripHeroBg = '/images/landingpages/natuur.jpg'
 const tripHeroPitch = computed(() => t('search.holidaysPitch'))
+/** Het verticale filterpaneel bestaat niet in vakantiestand. */
+const sidebarVisible = computed(() => showFilters.value && !isTripMode.value)
+// NB: de watch die het paneel sluit zodra de vakantiestand aangaat staat
+// verderop, ná `const route = useRoute()` (de watch leest isTripMode direct uit).
 const {
   selectedTripFilters, clearTripFilters,
   toggleDestination: toggleDestinationShared,
@@ -502,12 +504,12 @@ function enterTripLanding() {
 
 /** Vakanties gefilterd op budget, reisduur, (optioneel) aankomstdatum en de
  *  quick filters. Bestemming/thema/arrangement-filters gelden hier niet. */
-function filteredTrips(withArrival: boolean): SearchHotel[] {
+function filteredTrips(withArrival: boolean, quickOverride?: readonly string[]): SearchHotel[] {
   const nightsActive = selectedNights.value.length > 0
   const p = persons.value
   const arrival = withArrival ? activeArrival.value : null
   const flex = activeFlex.value
-  const quick = [...selectedTripFilters.value]
+  const quick = [...(quickOverride ?? selectedTripFilters.value)]
   const out: SearchHotel[] = []
   for (const trip of tripSearchHotels) {
     if (!tripMatchesQuickFilters(trip.trip?.tags ?? [], quick)) continue
@@ -522,6 +524,20 @@ function filteredTrips(withArrival: boolean): SearchHotel[] {
   }
   return out
 }
+
+/** Afhankelijkheid tussen de quick-filterpillen: per pil het aantal vakanties
+ *  als die pil (extra) aan zou staan, gegeven de huidige selectie en de
+ *  overige zoekcriteria. 0 → de pil wordt inactief. */
+const tripQuickFilterCounts = computed<Record<string, number>>(() => {
+  const out: Record<string, number> = {}
+  for (const f of TRIP_QUICK_FILTERS) {
+    const quick = selectedTripFilters.value.includes(f.id)
+      ? [...selectedTripFilters.value]
+      : [...selectedTripFilters.value, f.id]
+    out[f.id] = filteredTrips(true, quick).length
+  }
+  return out
+})
 
 // Loading state — local override so we can briefly show a spinner on filter changes
 const localLoading = ref(false)
@@ -1231,6 +1247,8 @@ const sortedHotels = computed(() => {
 // Pin the originating deal at the top when arriving from /deal/<slug> via the
 // search-bar's "Vind deals" button. The query is `?from=<deal-permalink>`.
 const route = useRoute()
+// Vakantiestand aan (bv. "Vakanties" gekozen in de zoekbalk) → zijfilter dicht.
+watch(isTripMode, (on) => { if (on) showFilters.value = false })
 
 /** Co-brand the results page when arriving via a partner button (the home
  *  "HEMA actie" card navigates here with `?partner=hema`). */
@@ -2296,8 +2314,40 @@ onMounted(() => {
 .search-page--landing .search-page__main {
   padding-top: var(--space-2xl);
 }
-/* Quick-filterrij tussen de paginakop en de toolbar. */
-.search-page__quick-filters {
+/* Toolbar in vakantiestand: quick-filterpillen + Sorteren/weergave in één
+   omlopende rij; de knoppen rechts krijgen de pilhoogte en -stijl en
+   verhuizen via margin-left:auto mee naar de laatste rij. */
+.search-toolbar--trips {
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
   padding: var(--space-md) 0 var(--space-sm);
+}
+.search-toolbar--trips .search-toolbar__right {
+  margin-left: auto;
+  gap: 8px;
+}
+.search-toolbar--trips .search-toolbar__sort-btn {
+  height: 44px;
+  padding: 0 17px;
+  font-size: 14px;
+  font-weight: 400;
+  background: #fff;
+  border: 1px solid #e5e2da;
+  border-radius: var(--radius-sm);
+  color: #141414;
+}
+.search-toolbar--trips .search-toolbar__sort-btn:hover {
+  background: var(--color-border);
+}
+.search-toolbar--trips .search-toolbar__view-toggle {
+  border-color: #e5e2da;
+  border-radius: var(--radius-sm);
+  background: #fff;
+}
+.search-toolbar--trips .search-toolbar__view-btn {
+  /* 42 + 2 × 1px rand van de toggle = 44px, gelijk aan de pillen. */
+  width: 42px;
+  height: 42px;
 }
 </style>

@@ -223,6 +223,7 @@ const de: Record<string, string> = {
   'search.usp': 'Zusammengestellt vom ViaLuxury Team',
   'search.home': 'Home',
   'search.arrangements': 'Arrangements',
+  'search.holiday': 'Urlaub',
   'search.holidays': 'Urlaube',
   'search.holidaysTitle': 'Urlaube',
   'search.holidaysPitch': 'Zwei oder drei Hotels auf einer Reise — mit dem Auto oder dem Fahrrad, sorgfältig zusammengestellt vom ViaLuxury-Team.',

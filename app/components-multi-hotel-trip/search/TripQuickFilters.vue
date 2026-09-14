@@ -1,19 +1,26 @@
 <template>
-  <!-- Multi Hotel Trip — quick filters op de Vakanties-zoekpagina. Eén
-       horizontale rij (max. twee regels) grote filterpillen die je aan en
-       uit zet. Aan = donkere pil met kruisje; klikken op de hele pil zet
-       hem weer uit, de pil blijft staan (anders dan de reguliere
-       verwijder-pills). -->
-  <div class="tqf" role="group" aria-label="Snelfilters">
+  <!-- Multi Hotel Trip — quick filters op de Vakanties-zoekpagina. Zelfde
+       vormgeving als de "Snel zoeken"-pillen op de homepage (wit, 1px rand,
+       14px tekst met 14px lijn-icoon, grijze vulling bij hover). Aan =
+       donkere pil met kruisje; klikken op de hele pil zet hem weer uit, de pil
+       blijft staan. Pillen die in combinatie met de huidige selectie geen
+       enkele vakantie meer opleveren worden inactief (afhankelijkheid).
+       `inline` maakt de root display:contents zodat de pillen directe
+       flex-items van de toolbar worden en sorteren/weergave in dezelfde (of
+       de volgende) rij meelopen. -->
+  <div class="tqf" :class="{ 'tqf--inline': inline }" role="group" aria-label="Snelfilters">
     <button
       v-for="f in TRIP_QUICK_FILTERS"
       :key="f.id"
       type="button"
       class="tqf__pill"
-      :class="{ 'tqf__pill--on': isOn(f.id) }"
+      :class="{ 'tqf__pill--on': isOn(f.id), 'tqf__pill--off': isDisabled(f.id) }"
       :aria-pressed="isOn(f.id)"
+      :disabled="isDisabled(f.id)"
+      :title="isDisabled(f.id) ? 'Geen vakanties met deze combinatie' : undefined"
       @click="toggleTripFilter(f.id)"
     >
+      <span class="tqf__icon" v-html="iconFor(f.id)" />
       <span class="tqf__label">{{ f.label }}</span>
       <svg
         v-if="isOn(f.id)"
@@ -38,11 +45,48 @@
 // (MultiHotelTrip) en deze bestandsnaam — de component heet daardoor
 // <MultiHotelTripQuickFilters> (niet MultiHotelTripTripQuickFilters).
 import { TRIP_QUICK_FILTERS } from '~/utils-multi-hotel-trip/tripFilters'
+import { POPULAR_FILTER_ICONS } from '~/utils-multi-hotel-trip/popularFilterIcons'
+
+const props = withDefaults(defineProps<{
+  /** Pillen als directe flex-items van de ouder (toolbar-rij). */
+  inline?: boolean
+  /** Per filter-id: aantal vakanties als deze pil (extra) aan zou staan.
+   *  0 = inactief, tenzij de pil zelf al aan staat. Zonder counts is alles actief. */
+  counts?: Record<string, number>
+}>(), { inline: false, counts: undefined })
 
 const { selectedTripFilters, toggleTripFilter } = useMultiHotelTripSearchState()
 
 function isOn(id: string): boolean {
   return selectedTripFilters.value.includes(id)
+}
+
+function isDisabled(id: string): boolean {
+  if (isOn(id)) return false
+  const c = props.counts
+  if (!c) return false
+  return (c[id] ?? 0) === 0
+}
+
+/** Zelfde lijn-iconenfamilie als de homepage-snelfilters; de auto komt er
+ *  hier bij (bestaat niet in de set). */
+const CAR_ICON = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></svg>'
+const ICON_FOR: Record<string, string> = {
+  auto: 'car',
+  fiets: 'bike',
+  kasteel: 'castle',
+  superluxe: 'crown',
+  budget: 'euro',
+  wellness: 'hotTub',
+  'aan-zee': 'waves',
+  natuur: 'treePine',
+  culinair: 'utensils',
+  steden: 'building',
+}
+function iconFor(id: string): string {
+  const key = ICON_FOR[id]
+  if (key === 'car') return CAR_ICON
+  return (key && POPULAR_FILTER_ICONS[key]) || POPULAR_FILTER_ICONS.star!
 }
 </script>
 
@@ -50,46 +94,79 @@ function isOn(id: string): boolean {
 .tqf {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 8px;
+}
+/* Inline: de pillen worden flex-items van de omliggende toolbar. */
+.tqf--inline {
+  display: contents;
 }
 
-/* Groter dan de reguliere filterpills (32px): 40px hoog, 14px tekst. */
+/* Identiek aan .home-pill (homepage "Snel zoeken"). */
 .tqf__pill {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  height: 40px;
-  padding: 0 16px;
+  justify-content: flex-start;
+  gap: 6px;
+  height: 44px;
+  padding: 0 17px;
   background: #fff;
-  border: 1px solid var(--color-border);
-  border-radius: 999px;
-  font-family: var(--font-body);
+  border: 1px solid #e5e2da;
+  border-radius: var(--radius-sm);
+  color: #141414;
+  font-family: inherit;
   font-size: 14px;
-  font-weight: 600;
-  color: var(--color-text-primary);
+  font-weight: 400;
+  line-height: 1;
+  white-space: nowrap;
   cursor: pointer;
-  transition: background var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
+  transition: border-color var(--transition-fast), background var(--transition-fast), color var(--transition-fast);
 }
-
 .tqf__pill:hover {
-  border-color: var(--color-text-primary);
+  /* Zelfde neutrale hover als de homepage-pil: de vulling wordt grijs. */
+  background: var(--color-border);
 }
 
-/* Aan: donkere pil, witte tekst, kruisje rechts. */
+.tqf__icon {
+  display: inline-flex;
+  width: 14px;
+  height: 14px;
+  color: #141414;
+  margin-right: 2px;
+  flex-shrink: 0;
+}
+.tqf__icon :deep(svg) {
+  width: 100%;
+  height: 100%;
+}
+
+/* Aan: donkere pil, witte tekst en icoon, kruisje rechts. */
 .tqf__pill--on {
-  background: var(--color-dark);
-  border-color: var(--color-dark);
+  background: #141414;
+  border-color: #141414;
   color: #fff;
   padding-right: 12px;
 }
-
-.tqf__pill--on:hover {
-  background: var(--color-text-primary);
-  border-color: var(--color-text-primary);
+.tqf__pill--on .tqf__icon {
+  color: #fff;
 }
-
+.tqf__pill--on:hover {
+  background: #2a2a2a;
+  border-color: #2a2a2a;
+}
 .tqf__close {
   flex-shrink: 0;
+}
+
+/* Inactief: levert met de huidige selectie geen vakanties op. */
+.tqf__pill--off,
+.tqf__pill--off:hover {
+  background: #fff;
+  border-color: #eeece7;
+  color: #b3b0a8;
+  cursor: default;
+}
+.tqf__pill--off .tqf__icon {
+  color: #b3b0a8;
 }
 
 @media (max-width: 800px) {
@@ -97,7 +174,7 @@ function isOn(id: string): boolean {
     gap: 8px;
   }
   .tqf__pill {
-    height: 36px;
+    height: 40px;
     padding: 0 14px;
     font-size: 13px;
   }
