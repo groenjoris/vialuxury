@@ -1289,8 +1289,9 @@ const sortedHotels = computed(() => {
 // Pin the originating deal at the top when arriving from /deal/<slug> via the
 // search-bar's "Vind deals" button. The query is `?from=<deal-permalink>`.
 const route = useRoute()
-// Vakantiestand aan (bv. "Vakanties" gekozen in de zoekbalk) → zijfilter dicht.
-watch(isTripMode, (on) => { if (on) showFilters.value = false })
+// Vakantiestand aan (bv. "Vakanties" gekozen in de zoekbalk) → zijfilter dicht;
+// weer uit (bestemming Vakanties weggehaald) → zijfilter terug open.
+watch(isTripMode, (on) => { showFilters.value = !on })
 
 /** Co-brand the results page when arriving via a partner button (the home
  *  "HEMA actie" card navigates here with `?partner=hema`). */
@@ -1442,6 +1443,26 @@ const displayedDeals = computed(() => {
         }
         rows.push(bucket.shift()!)
       }
+    }
+
+    // Multi Hotel Trip: vakantiekaartjes niet laten verdwijnen tussen ~80
+    // hoteldeals — in "Aanbevolen" krijgen ze vaste, verspreide plekken
+    // (2e kaart, daarna elke 4e), in hun eigen (geschudde) volgorde. Zo
+    // staat er altijd een vakantie in de eerste rij en blijven ze zichtbaar
+    // zonder de hotels te verdringen. Andere sorteringen: gewoon op prijs/
+    // sterren tussen de hotels.
+    const tripRows = rows.filter(r => !!r.hotel.trip)
+    if (tripRows.length && tripRows.length < rows.length) {
+      const hotelRows = rows.filter(r => !r.hotel.trip)
+      const merged: Row[] = []
+      let ti = 0
+      for (let i = 0; hotelRows.length || ti < tripRows.length; i++) {
+        const tripSlot = i % 4 === 1
+        if (tripSlot && ti < tripRows.length) merged.push(tripRows[ti++]!)
+        else if (hotelRows.length) merged.push(hotelRows.shift()!)
+        else merged.push(tripRows[ti++]!)
+      }
+      rows.splice(0, rows.length, ...merged)
     }
 
     return pinnedFirstRow ? [pinnedFirstRow, ...rows] : rows
