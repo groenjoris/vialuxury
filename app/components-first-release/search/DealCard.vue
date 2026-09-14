@@ -1309,6 +1309,19 @@ const includesBullets = computed<string[]>(() => {
   overflow: hidden;
 }
 
+/* Grid rows stretch every card to the tallest one (e.g. a 3-line title).
+   Put that extra height UNDER THE TITLE — not under the checkmarks — so the
+   "Arrangement" / trip label, the includes and the price row of every card
+   in the row line up at the same height. The title box grows (text stays
+   top-aligned); the body below keeps its natural height. */
+.deal-card-v2--grid .deal-card-v2__pitch {
+  flex: 1 0 auto;
+}
+.deal-card-v2--grid .deal-card-v2__body-row,
+.deal-card-v2--grid .deal-card-v2__includes {
+  flex: 0 0 auto;
+}
+
 /* ===== SIBLINGS BAR ===== */
 .deal-card-v2__siblings-bar {
   position: absolute;
