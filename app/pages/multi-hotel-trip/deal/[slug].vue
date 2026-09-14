@@ -217,7 +217,7 @@
             v-if="isTrip"
             class="deal-page__minimap"
             :stops="tripMapStops"
-            @stop-click="openTripHotel"
+            @open="tripMapOpen = true"
           />
           <MultiHotelTripMiniMapCard
             v-else
@@ -408,7 +408,7 @@
           <!-- Description + Mini map row. Vakantie: samenvattende beschrijving
                van de hele reis + het schematische routekaartje van de dealcard
                op de plek (en breedte) van de gewone minimap. -->
-          <div id="intro" class="deal-page__intro">
+          <div id="intro" class="deal-page__intro" :class="{ 'deal-page__intro--trip': isTrip }">
             <div class="deal-page__description">
               <div v-html="firstParagraph"></div>
               <button v-if="hasMoreDescription" type="button" class="deal-page__read-more" @click="descriptionOpen = true">{{ t('common.readMore') }}</button>
@@ -416,9 +416,9 @@
             <MultiHotelTripRouteMapCard
               v-if="isTrip"
               id="mini-map"
-              class="deal-page__minimap"
+              class="deal-page__minimap deal-page__minimap--trip"
               :stops="tripMapStops"
-              @stop-click="openTripHotel"
+              @open="tripMapOpen = true"
             />
             <MultiHotelTripMiniMapCard
               v-else
@@ -962,6 +962,15 @@
 
     <!-- Vakantie: hotel-pop-up vanuit het dagprogramma -->
     <MultiHotelTripHotelModal :open="tripHotelOpen" :hotel="tripHotelModal" @close="tripHotelOpen = false" />
+    <!-- Vakantie: fullscreen kaart met route, hotels en omgevingshighlights -->
+    <MultiHotelTripFullscreenMap
+      v-if="isTrip"
+      :open="tripMapOpen"
+      :title="currentDeal ? localized(currentDeal.title) : ''"
+      :stops="tripMapStops"
+      :highlights="tripMapHighlights"
+      @close="tripMapOpen = false"
+    />
 
     <!-- Photo gallery / lightbox -->
     <MultiHotelTripPhotoGalleryModal
@@ -1451,6 +1460,18 @@ const tripDaysView = computed<TripDayView[]>(() => {
   })
 })
 
+/** Fullscreen kaart (klik op het kaartje): route + hotels + omgevingshighlights. */
+const tripMapOpen = ref(false)
+const tripMapHighlights = computed(() =>
+  (tripPdp?.content?.mapHighlights ?? []).map(h => ({
+    name: localized(h.name),
+    lat: h.lat,
+    lng: h.lng,
+    text: localized(h.text),
+    image: h.image,
+  })),
+)
+
 /** Hotel-pop-up vanuit het dagprogramma ("Meer over dit hotel"). */
 const tripHotelOpen = ref(false)
 const tripHotelIndex = ref(0)
@@ -1899,6 +1920,9 @@ onMounted(() => {
 
 /* Intro row: description + mini map side by side */
 .deal-page__intro { display: grid; grid-template-columns: 1fr 220px; gap: var(--space-xl); margin-bottom: var(--space-xl); align-items: start; }
+/* Vakantie: kaartje op de helft van de kolom (beschrijving krijgt de andere helft). */
+.deal-page__intro--trip { grid-template-columns: 1fr 1fr; }
+.deal-page__minimap--trip { --vl-minimap-aspect: 4 / 3; }
 /* Vakantie: intro onder de dagprogramma-kop. */
 .deal-page__itinerary-intro { margin: calc(-1 * var(--space-md)) 0 var(--space-lg); font-size: 14px; color: var(--color-text-secondary); }
 

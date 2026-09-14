@@ -3,20 +3,14 @@
        PDP. Zelfde plek en breedte als de minimap van een gewone deal
        (rechterkolom van .deal-page__intro) en dezelfde vormgeving als het
        kaartje op de vakantie-dealcard: het schematische SVG-kaartje met
-       water/land/provinciegrenzen, plaatsnamen en genummerde stops. Hover op
-       een nummer toont de hotelnaam, klikken opent de hotel-pop-up. Klikken
-       op de kaart zelf wordt later gebrieft (link is nu een placeholder). -->
+       water/land/provinciegrenzen, plaatsnamen en genummerde stops. Klikken op
+       het kaartje (of "Bekijk kaart") opent de fullscreen kaart met de route,
+       de hotels en de omgevingshighlights. -->
   <div class="route-map">
-    <a href="#" class="route-map__box" :aria-label="t('common.viewMap')" @click.prevent>
-      <MultiHotelTripRouteMap
-        class="route-map__svg"
-        :stops="stops"
-        :max-scale="maxScale"
-        show-labels
-        interactive
-        @stop-click="$emit('stop-click', $event)"
-      />
-    </a>
+    <!-- Het kaartje als geheel is klikbaar → fullscreen kaart met route en omgeving. -->
+    <button type="button" class="route-map__box" :aria-label="t('common.viewMap')" @click="$emit('open')">
+      <MultiHotelTripRouteMap class="route-map__svg" :stops="stops" :max-scale="maxScale" show-labels />
+    </button>
     <div class="route-map__footer">
       <span class="route-map__route">
         <template v-for="(s, i) in stops" :key="`r-${i}`">
@@ -24,7 +18,7 @@
           <span v-if="i < stops.length - 1" class="route-map__route-arrow" aria-hidden="true">→</span>
         </template>
       </span>
-      <a href="#" class="route-map__view-link" @click.prevent>{{ t('common.viewMap') }}</a>
+      <button type="button" class="route-map__view-link" @click="$emit('open')">{{ t('common.viewMap') }}</button>
     </div>
   </div>
 </template>
@@ -34,7 +28,7 @@ interface RouteStop { lat: number; lng: number; label: string; title?: string }
 
 const { t } = useMultiHotelTripI18n()
 
-defineEmits<{ 'stop-click': [index: number] }>()
+defineEmits<{ open: [] }>()
 
 withDefaults(defineProps<{
   /** Hotels in reisvolgorde. */
@@ -57,6 +51,7 @@ withDefaults(defineProps<{
   position: relative;
   display: block;
   width: 100%;
+  padding: 0;
   aspect-ratio: var(--vl-minimap-aspect, 1 / 1);
   max-height: var(--vl-minimap-max-h, none);
   border-radius: var(--radius-lg);
@@ -89,6 +84,10 @@ withDefaults(defineProps<{
 .route-map__route-stop { white-space: nowrap; }
 .route-map__route-arrow { margin: 0 4px; color: var(--color-text-muted, #9a958c); }
 .route-map__view-link {
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
   font-family: var(--font-body);
   font-size: 14px;
   font-weight: 600;
