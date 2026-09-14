@@ -5,11 +5,11 @@
       <div class="footer-col footer-col--brand">
         <NuxtLink :to="homeHref" class="footer-logo">
           <!-- Desktop keeps the stacked logo; mobile uses the horizontal
-               wordmark + handwritten tagline (toggled via CSS). -->
+               wordmark (toggled via CSS). No pay-off under the logo — the
+               brand pay-off was dropped together with the header's. -->
           <img src="/images/logo-vialuxury.svg" alt="ViaLuxury" class="footer-logo__img footer-logo__img--vertical" />
           <img src="/images/logo-vialuxury-horizontal.svg" alt="ViaLuxury" class="footer-logo__img footer-logo__img--horizontal" />
         </NuxtLink>
-        <p class="footer-tagline">Personally Curated Experiences</p>
 
         <!-- Trustpilot logo + sentence -->
         <div class="footer-trustpilot">
@@ -163,20 +163,10 @@ function onNewsletterInput(e: Event) {
   width: auto;
   filter: brightness(0) invert(1);
 }
-/* Desktop shows the stacked logo; the horizontal wordmark + tagline are
-   mobile-only (revealed in the @media block). */
+/* Desktop shows the stacked logo; the horizontal wordmark is mobile-only
+   (revealed in the @media block). */
 .footer-logo__img--horizontal {
   display: none;
-}
-.footer-tagline {
-  display: none;
-  font-family: var(--font-body);
-  font-size: 22px;
-  font-weight: 400;
-  line-height: 1;
-  color: #fff;
-  letter-spacing: 0.2px;
-  margin: -8px 0 0;
 }
 
 /* ── Trustpilot — logo + single sentence (replaces stars + score) ── */
@@ -411,31 +401,11 @@ function onNewsletterInput(e: Event) {
        so every divider has equal space above and below it. */
     gap: var(--space-lg);
   }
-  /* Brand: horizontal wordmark + handwritten tagline instead of the stack.
-     Mirror the mobile HEADER lockup EXACTLY (.site-header--nav-v6
-     .site-header__tagline): logo 204px, tagline 20px + −0.3 tracking +
-     scaleX(0.88) so the payoff spans the logo's width. The tagline is
-     pinned tight under the ViaLuxury logo (5px gap, like the header) and
-     separated from the Trustpilot block below by a full gap — so it reads
-     as the logo's payoff, not Trustpilot's. */
+  /* Brand: horizontal wordmark instead of the stack (same 204px lockup as
+     the mobile header). The Trustpilot block follows after a full gap. */
   .footer-logo__img--vertical { display: none; }
   .footer-logo__img--horizontal { display: block; width: 204px; height: auto; }
-  .footer-logo { margin-bottom: 0; }
-  .footer-tagline {
-    display: block;
-    width: 204px;
-    max-width: 100%;
-    font-size: 20px;
-    line-height: 1;
-    letter-spacing: -0.3px;
-    white-space: nowrap;
-    transform: scaleX(0.88);
-    transform-origin: left center;
-    /* Hug the wordmark like the navbar/hero lockup. The horizontal logo SVG
-       carries ~7px of bottom whitespace, so pull the payoff up into it to land
-       flush against the visible wordmark (matching the navbar's tight gap). */
-    margin: -6px 0 var(--space-lg);
-  }
+  .footer-logo { margin-bottom: var(--space-lg); }
   /* Divider between every stacked section (email→Hulp, WhatsApp→Populaire,
      Populaire→ViaLuxury). Border sits at the section's top; the grid gap
      above it and the padding-top below it are both var(--space-lg) so the

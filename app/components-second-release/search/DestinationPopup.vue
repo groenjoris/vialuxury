@@ -91,12 +91,11 @@
       class="destination-popup__content"
       :class="{ 'destination-popup__content--searching': isSearching }"
     >
-      <!-- Inline (mobile modal): ONE rendering path for both states.
-           Click-only (no query) shows destinations + themes; typing
-           shows filtered cities/provinces + hotels. Identical row
-           markup either way — no icons, no section headings, no
-           separators. The data is the only difference. -->
-      <div v-if="inline" class="destination-popup__results destination-popup__results--inline">
+      <!-- Inline (mobile modal) while TYPING: flat sectioned list of
+           matching cities/provinces + hotels (no icons). The click-only
+           state falls through to the same browse block as desktop below
+           (province tiles, "Nog geen voorkeur" link, theme tiles). -->
+      <div v-if="inline && isSearching" class="destination-popup__results destination-popup__results--inline">
         <template v-if="inlineHasRows">
           <template v-for="(section, idx) in inlineSections" :key="section.key">
             <!-- Divider between sections (skip before the first one). -->
@@ -751,11 +750,15 @@ function selectHotel(hotel: { name: string; slug: string }) {
   flex: 0 1 auto;
 }
 
-/* Inline mode: the autosuggest list (typing OR the default click-only
-   view) shows no leading icons — keeps the mobile dropdown to one
-   plain text suggestion per line. */
+/* Inline mode: the autosuggest list (typing) shows no leading icons —
+   keeps the mobile dropdown to one plain text suggestion per line. */
 .destination-popup--inline .destination-popup__list-icon {
   display: none;
+}
+/* Inline browse (click-only): same tiles as desktop, tighter padding to
+   fit the modal's panel width. */
+.destination-popup--inline .destination-popup__browse {
+  padding: 12px 12px 16px;
 }
 
 /* ==================== */
