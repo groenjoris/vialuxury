@@ -48,13 +48,14 @@
               {{ block.meta }}
             </p>
             <p class="itin-block__text">{{ block.text }}</p>
-            <!-- "Meer over dit hotel" → hotel-sidepanel (net als de hotelnamen in de tekst). -->
+            <!-- "Meer over hotel <naam>" bij elk blok waar een hotel in voorkomt
+                 (inchecken, uitchecken, ontbijt, diner, terugreis) → hotel-sidepanel. -->
             <button
-              v-if="block.stopIndex != null && block.kind === 'checkin'"
+              v-if="block.stopIndex != null"
               type="button"
               class="itin-block__link"
               @click="$emit('open-hotel', block.stopIndex)"
-            >{{ t('trip.moreAboutHotel') }}</button>
+            >{{ moreAboutLabel(block) }}</button>
           </div>
         </article>
       </div>
@@ -97,8 +98,9 @@ export interface TripBlockView {
   /** Hotelblok: sterren en plaats/streek. */
   starRating?: number
   meta?: string
-  /** Index van het hotel (voor de hotel-pop-up). */
+  /** Index en naam van het hotel (voor het hotel-sidepanel en de "Meer over"-link). */
   stopIndex?: number
+  hotelName?: string
 }
 
 export interface TripDayView {
@@ -112,7 +114,7 @@ export interface TripDayView {
   blocks: TripBlockView[]
 }
 
-withDefaults(defineProps<{
+const props = withDefaults(defineProps<{
   days: TripDayView[]
   /** Hotelnamen van de vakantie → klikbaar in koppen en ondertitels. */
   hotels?: TripHotelLink[]
@@ -121,6 +123,15 @@ withDefaults(defineProps<{
 }>(), { stacked: false, hotels: () => [] })
 
 defineEmits<{ 'open-hotel': [stopIndex: number] }>()
+
+/** "Meer over hotel Kasteel Engelenburg"; begint de naam al met Hotel/Hôtel,
+ *  dan zonder het extra woord: "Meer over Hotel Royal Beaulaincourt". */
+function moreAboutLabel(block: TripBlockView): string {
+  const name = block.hotelName ?? props.hotels.find(h => h.stopIndex === block.stopIndex)?.name
+  if (!name) return t('trip.moreAboutHotel')
+  const key = /^h[oô]tel\b/i.test(name) ? 'trip.moreAbout' : 'trip.moreAboutHotelNamed'
+  return t(key).replace('{hotel}', name)
+}
 
 const { t } = useMultiHotelTripI18n()
 

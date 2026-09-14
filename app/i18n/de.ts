@@ -249,6 +249,8 @@ const de: Record<string, string> = {
   'trip.itineraryHeading': 'Tag für Tag',
   'trip.itineraryIntro': 'So sieht Ihr Urlaub aus: ein Beispielprogramm, das Tempo bestimmen Sie.',
   'trip.moreAboutHotel': 'Mehr über dieses Hotel',
+  'trip.moreAboutHotelNamed': 'Mehr über Hotel {hotel}',
+  'trip.moreAbout': 'Mehr über {hotel}',
   'trip.includedAtHotel': 'In diesem Hotel inbegriffen',
   'trip.tag.checkin': 'Check-in',
   'trip.tag.checkout': 'Check-out',

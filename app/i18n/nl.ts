@@ -256,6 +256,8 @@ const nl: Record<string, string> = {
   'trip.itineraryHeading': 'Dag voor dag',
   'trip.itineraryIntro': 'Zo ziet je vakantie eruit: een voorbeeldprogramma, je bepaalt zelf het tempo.',
   'trip.moreAboutHotel': 'Meer over dit hotel',
+  'trip.moreAboutHotelNamed': 'Meer over hotel {hotel}',
+  'trip.moreAbout': 'Meer over {hotel}',
   'trip.includedAtHotel': 'Inbegrepen bij dit hotel',
   'trip.tag.checkin': 'Inchecken',
   'trip.tag.checkout': 'Uitchecken',

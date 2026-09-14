@@ -253,6 +253,8 @@ const en: Record<string, string> = {
   'trip.itineraryHeading': 'Day by day',
   'trip.itineraryIntro': 'What your holiday looks like: a sample programme, you set the pace.',
   'trip.moreAboutHotel': 'More about this hotel',
+  'trip.moreAboutHotelNamed': 'More about hotel {hotel}',
+  'trip.moreAbout': 'More about {hotel}',
   'trip.includedAtHotel': 'Included at this hotel',
   'trip.tag.checkin': 'Check-in',
   'trip.tag.checkout': 'Check-out',

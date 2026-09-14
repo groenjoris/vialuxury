@@ -1428,6 +1428,7 @@ const tripDaysView = computed<TripDayView[]>(() => {
             starRating: st?.starRating,
             meta: st ? `${st.city}, ${st.region}` : undefined,
             stopIndex: b.stopIndex,
+            hotelName: name || undefined,
           }
         case 'checkout':
           return {
@@ -1436,6 +1437,8 @@ const tripDaysView = computed<TripDayView[]>(() => {
             title: b.title ? localized(b.title) : t('trip.checkoutAt').replace('{hotel}', name),
             text: b.text ? localized(b.text) : t('trip.checkoutText').replace('{hotel}', name),
             image: b.image,
+            stopIndex: b.stopIndex,
+            hotelName: name || undefined,
           }
         case 'dinner': {
           const dl = b.dinnerLabel ? localized(b.dinnerLabel) : t('trip.tag.dinner').toLowerCase()
@@ -1446,6 +1449,7 @@ const tripDaysView = computed<TripDayView[]>(() => {
             text: t('trip.dinnerText').replace('{dinner}', dl),
             image: b.image,
             stopIndex: b.stopIndex,
+            hotelName: name || undefined,
           }
         }
         case 'breakfast': {
@@ -1457,6 +1461,7 @@ const tripDaysView = computed<TripDayView[]>(() => {
             text: t('trip.breakfastText').replace('{breakfast}', bl.charAt(0).toLowerCase() + bl.slice(1)),
             image: b.image,
             stopIndex: b.stopIndex,
+            hotelName: name || undefined,
           }
         }
         case 'homeward':
@@ -1466,6 +1471,8 @@ const tripDaysView = computed<TripDayView[]>(() => {
             title: b.title ? localized(b.title) : t('trip.homewardTitle'),
             text: b.text ? localized(b.text) : t('trip.checkoutText').replace('{hotel}', name),
             image: b.image,
+            stopIndex: b.stopIndex,
+            hotelName: name || undefined,
           }
         default:
           return {
