@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { matchesNightKeys } from '~/utils-multi-hotel-trip/nights'
 import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { searchHotels } from '~/data/mock/search-hotels'
@@ -124,11 +125,7 @@ const mapHotels = computed<SearchHotel[]>(() => {
   }
   const themesActive = pickedThemes.length > 0
 
-  const matchesDuration = (n: number) => {
-    if (ns.length === 0) return true
-    if (ns.includes('5+') && n >= 5) return true
-    return ns.includes(String(n))
-  }
+  const matchesDuration = (n: number) => matchesNightKeys(n, ns)
   const inBudget = (basePrice: number) => {
     const price = adjustPrice(basePrice, p)
     return price >= sharedBudgetMin.value && price <= sharedBudgetMax.value

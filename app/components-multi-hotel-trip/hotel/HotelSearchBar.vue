@@ -154,6 +154,7 @@
 </template>
 
 <script setup lang="ts">
+import { joinNightKeys } from '~/utils-multi-hotel-trip/nights'
 import { minRoomsFor, maxRoomsFor } from '~/utils-multi-hotel-trip/priceFormula'
 
 const { t } = useMultiHotelTripI18n()
@@ -335,7 +336,10 @@ const durationOptions = computed(() => [
   { id: '2', label: t('header.duration.2nights') },
   { id: '3', label: t('header.duration.3nights') },
   { id: '4', label: t('header.duration.4nights') },
-  { id: '5+', label: t('header.duration.5nights') },
+  { id: '5', label: t('header.duration.5nightsExact') },
+  { id: '6', label: t('header.duration.6nights') },
+  { id: '7', label: t('header.duration.7nights') },
+  { id: '8', label: t('header.duration.8nights') },
 ])
 
 const monthNames = computed(() => Array.from({ length: 12 }, (_, i) => t(`header.months.${i}`)))
@@ -358,10 +362,7 @@ const howLongLabel = computed(() => {
   if (anyDuration.value) return t('header.noPreference')
   const calDurs = selectedDurations.value
   if (calDurs.length > 0) {
-    const labels = calDurs
-      .map(id => durationOptions.value.find(o => o.id === id)?.label)
-      .filter(Boolean) as string[]
-    return labels.join(` ${t('common.or')} `)
+    return `${joinNightKeys(calDurs, t('common.or'))} ${t('common.nights')}`
   }
   return t('header.tab.nights')
 })

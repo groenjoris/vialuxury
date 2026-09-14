@@ -33,6 +33,7 @@
 </template>
 
 <script setup lang="ts">
+import { joinNightKeys } from '~/utils-multi-hotel-trip/nights'
 defineEmits<{ open: [] }>()
 
 const search = useMultiHotelTripSearchState()
@@ -80,10 +81,9 @@ const whenCombinedLabel = computed<string>(() => {
     if (sorted.length === 1) {
       const v = sorted[0]
       if (v === '1') durPart = '1 nacht'
-      else if (v === '5+') durPart = '5+ nachten'
       else durPart = `${v} nachten`
     } else {
-      durPart = `${sorted.join(' of ')} nachten`
+      durPart = `${joinNightKeys(sorted, 'of')} nachten`
     }
   }
   return `${datePart} · ${durPart}`

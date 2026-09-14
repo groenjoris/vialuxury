@@ -363,6 +363,7 @@
 </template>
 
 <script setup lang="ts">
+import { matchesNightKeys } from '~/utils-multi-hotel-trip/nights'
 import { facilityIcon } from '~/utils-multi-hotel-trip/facilityIcon'
 import { formatPrice } from '~/utils-multi-hotel-trip/formatPrice'
 import { nightsLabel, personsLabel, roomsLabel } from '~/utils-multi-hotel-trip/plural'
@@ -466,12 +467,11 @@ const hoveredMember = ref<string | null>(null)
 
 
 /** Does the deal's length match the active duration filter? Empty filter =
- *  every length qualifies. '5+' covers 5 or more nights. */
+ *  every length qualifies. Keys '1'…'8' ('8' = 8+), zie nights.ts. */
 function matchesNights(nights: number): boolean {
   const ns = liveNights.value
   if (!ns || ns.length === 0) return true
-  if (ns.includes('5+') && nights >= 5) return true
-  return ns.includes(String(nights))
+  return matchesNightKeys(nights, ns)
 }
 
 /** True when an arrival date is picked AND the deal has no bookable date in
@@ -491,7 +491,7 @@ function isDateMismatch(dealId: string): boolean {
 const nightsFilterLabel = computed(() => {
   const ns = liveNights.value
   if (!ns || ns.length === 0) return ''
-  const labels = ns.map(n => n === '5+' ? '5+' : n)
+  const labels = [...ns].sort()
   if (labels.length === 1) return `${labels[0]} ${labels[0] === '1' ? 'nacht' : 'nachten'}`
   return `${labels.slice(0, -1).join(', ')} of ${labels[labels.length - 1]} nachten`
 })

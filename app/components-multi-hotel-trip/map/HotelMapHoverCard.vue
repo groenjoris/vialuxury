@@ -106,11 +106,11 @@ const nights = computed<number[]>(() => {
  *   {1,2}     → "1 of 2"
  *   {1,2,3}   → "1-3"        (runs of ≥3 consecutive collapse to a range)
  *   {1,2,4}   → "1, 2 of 4"  (runs of 1–2 stay as individual numbers)
- *   {1,2,3,6} → "1-3 of 5+"  (any value ≥5 collapses to a trailing "5+")
+ *   {1,2,3,6} → "1-3 of 6"
  */
 function formatNights(sorted: number[]): string {
-  const below = sorted.filter(n => n < 5)
-  const hasFivePlus = sorted.some(n => n >= 5)
+  // Multi Hotel Trip: reisduren tot 8 zijn losse categorieën, dus geen '5+'.
+  const below = sorted
   const tokens: string[] = []
   let i = 0
   while (i < below.length) {
@@ -124,7 +124,6 @@ function formatNights(sorted: number[]): string {
     }
     i = j + 1
   }
-  if (hasFivePlus) tokens.push('5+')
   if (tokens.length === 0) return ''
   if (tokens.length === 1) return tokens[0]
   if (tokens.length === 2) return `${tokens[0]} of ${tokens[1]}`

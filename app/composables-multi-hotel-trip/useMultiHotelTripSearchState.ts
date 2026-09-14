@@ -4,7 +4,8 @@
  * search page filter panel and side panels stay in sync.
  *
  * Nights:
- *   - String IDs from the duration picker: '1', '2', '3', '4', '5+'
+ *   - String IDs from the duration picker: '1' … '8' (Multi Hotel Trip:
+ *     5/6/7/8 als losse categorieën, zie utils-multi-hotel-trip/nights.ts)
  *   - Multi-select: ['2', '3'] = "2 or 3 nights"
  *   - Empty array = no nights filter (show all)
  */
@@ -23,6 +24,8 @@ const SS_HOTELS = 'vl_hotels'
 const SS_SELECTION_ORDER = 'vl_selection_order'
 const SS_NIGHTS = 'vl_selected_nights'
 const SS_FLEX_TYPE = 'vl_flex_type'
+// Multi Hotel Trip: quick filters op de Vakanties-zoekpagina.
+const SS_TRIP_FILTERS = 'vl_mht_trip_filters'
 
 function persistNights() {
   if (!import.meta.client) return
@@ -76,6 +79,16 @@ const budgetMax = ref(2000)
 /** Unified filter-tag IDs (Arrangement + Thema + Specials).
  *  See `~/utils/filterTags.ts` for the full list of valid IDs. */
 const selectedFilterTags = ref<string[]>([])
+
+/** Multi Hotel Trip: actieve quick-filter ids op de Vakanties-zoekpagina
+ *  (zie utils-multi-hotel-trip/tripFilters.ts). */
+const selectedTripFilters = ref<string[]>([])
+
+function persistTripFilters() {
+  if (!import.meta.client) return
+  if (selectedTripFilters.value.length) localStorage.setItem(SS_TRIP_FILTERS, JSON.stringify(selectedTripFilters.value))
+  else localStorage.removeItem(SS_TRIP_FILTERS)
+}
 
 /** Destination filters (lifted from SiteHeader so /search + /kaart can read them). */
 const selectedDestinations = ref<string[]>([])
@@ -137,6 +150,13 @@ export function useMultiHotelTripSearchState() {
       if (!selectedFlexType.value) {
         const v = localStorage.getItem(SS_FLEX_TYPE)
         if (v) selectedFlexType.value = v
+      }
+      if (!selectedTripFilters.value.length) {
+        const v = localStorage.getItem(SS_TRIP_FILTERS)
+        if (v) {
+          const parsed = JSON.parse(v)
+          if (Array.isArray(parsed)) selectedTripFilters.value = parsed
+        }
       }
     } catch { /* ignore */ }
     // Destination filters — only repopulate when the live state is empty so
@@ -258,6 +278,18 @@ export function useMultiHotelTripSearchState() {
     selectionOrder.value = selectionOrder.value.filter(e => !(e.type === 'theme' && removed.has(e.key)))
   }
 
+  // ----- Multi Hotel Trip: quick filters (Vakanties-zoekpagina) -----
+  function toggleTripFilter(id: string) {
+    const idx = selectedTripFilters.value.indexOf(id)
+    if (idx === -1) selectedTripFilters.value.push(id)
+    else selectedTripFilters.value.splice(idx, 1)
+    persistTripFilters()
+  }
+  function clearTripFilters() {
+    selectedTripFilters.value = []
+    persistTripFilters()
+  }
+
   // ----- Destination helpers (mirroring the previous SiteHeader-local logic) -----
   function toggleDestination(id: string) {
     const idx = selectedDestinations.value.indexOf(id)
@@ -329,6 +361,7 @@ export function useMultiHotelTripSearchState() {
     selectedCities: readonly(selectedCities),
     selectedHotels: readonly(selectedHotels),
     selectionOrder: readonly(selectionOrder),
+    selectedTripFilters: readonly(selectedTripFilters),
     setArrivalDate,
     clearArrivalDate,
     commitArrivalDate,
@@ -353,5 +386,7 @@ export function useMultiHotelTripSearchState() {
     addHotel,
     removeHotel,
     clearDestinations,
+    toggleTripFilter,
+    clearTripFilters,
   }
 }

@@ -263,7 +263,10 @@ const nightOptions = computed(() => [
   { label: t('header.duration.2nights'), value: '2' },
   { label: t('header.duration.3nights'), value: '3' },
   { label: t('header.duration.4nights'), value: '4' },
-  { label: t('header.duration.5plusLong'), value: '5+' },
+  { label: t('header.duration.5nightsExact'), value: '5' },
+  { label: t('header.duration.6nights'), value: '6' },
+  { label: t('header.duration.7nights'), value: '7' },
+  { label: t('header.duration.8nights'), value: '8' },
 ])
 
 const hasSelection = computed(() => !!props.selectedDate || props.nights.length > 0 || flexible.value)

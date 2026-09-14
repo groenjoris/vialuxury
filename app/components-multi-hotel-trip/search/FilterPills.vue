@@ -130,7 +130,7 @@ const pills = computed<Pill[]>(() => {
   for (const n of selectedNights.value) {
     out.push({
       key: `night-${n}`,
-      label: n === '5+' ? '5+ nachten' : `${n} ${n === '1' ? 'nacht' : 'nachten'}`,
+      label: `${n} ${n === '1' ? 'nacht' : 'nachten'}`,
       onRemove: () => toggleNight(n),
     })
   }

@@ -1,10 +1,21 @@
 <template>
-  <div class="search-page">
-    <MultiHotelTripSiteHeader />
+  <div class="search-page" :class="{ 'search-page--landing': isTripLanding, 'search-page--trips': isTripMode }">
+    <!-- Multi Hotel Trip: de Vakanties-landing krijgt de homepage-achtige hero
+         (foto + zoekbalk eronder, zoals de themapagina's in R2). -->
+    <MultiHotelTripLandingHero
+      v-if="isTripLanding"
+      search-below
+      compact-title
+      :bg-url="tripHeroBg"
+      :eyebrow="t('header.new')"
+      :title="t('search.holidaysTitle')"
+      :pitch="tripHeroPitch"
+    />
+    <MultiHotelTripSiteHeader v-else />
 
     <main class="search-page__main">
       <!-- Breadcrumbs -->
-      <section class="search-page__breadcrumbs container">
+      <section v-if="!isTripLanding" class="search-page__breadcrumbs container">
         <MultiHotelTripBreadcrumbNav :items="breadcrumbs" />
       </section>
 
@@ -74,7 +85,7 @@
                 <h1 v-else-if="singleThemeTagId" ref="titleRef" :key="`themed-${singleThemeTagId}`" class="search-page__title">
                   {{ themedTitleText }}
                 </h1>
-                <h1 v-else ref="titleRef" class="search-page__title">{{ totalDeals }} {{ t('search.deals') }}</h1>
+                <h1 v-else ref="titleRef" class="search-page__title">{{ totalDeals }} {{ isTripMode ? t('search.holidays') : t('search.deals') }}</h1>
                 <!-- "Laat alle deals zien" secondary button — only when no
                      results so the user can wipe filters in one click. -->
                 <button
@@ -131,6 +142,10 @@
             </div>
           </div>
 
+          <!-- Multi Hotel Trip: quick filters (grote aan/uit-pillen, max. twee
+               rijen) vervangen het filterpaneel links op de Vakanties-pagina. -->
+          <MultiHotelTripQuickFilters v-if="isTripMode && !isMobile" class="search-page__quick-filters" />
+
           <!-- Mobile toolbar + pills render below this block as
                direct children of .search-page__results, where the tall
                parent lets `position: sticky` pin the toolbar through
@@ -143,7 +158,7 @@
             <div class="search-toolbar__left">
               <!-- Map button: only when filter hidden on desktop (sidebar map is otherwise visible) -->
               <button
-                v-if="!showFilters && !isMobile"
+                v-if="!showFilters && !isMobile && !isTripMode"
                 type="button"
                 class="search-toolbar__map-btn"
                 @click="handleMapClick"
@@ -154,7 +169,7 @@
                 {{ t('search.viewOnMap') }}
               </button>
               <button
-                v-if="isMobile || !showFilters"
+                v-if="!isTripMode && (isMobile || !showFilters)"
                 class="search-toolbar__filter-toggle"
                 @click="handleFilterButtonClick"
               >
@@ -175,7 +190,9 @@
                  `.filter-pills--empty { display: none }` collapses the
                  wrapper to zero so the toolbar stays its natural
                  small height. -->
-            <MultiHotelTripFilterPills class="search-toolbar__pills" />
+            <MultiHotelTripFilterPills v-if="!isTripMode" class="search-toolbar__pills" />
+            <!-- Vakantiestand: lege spacer houdt Sorteren/weergave rechts. -->
+            <div v-else class="search-toolbar__pills" aria-hidden="true"></div>
 
             <div class="search-toolbar__right">
               <!-- Sort dropdown -->
@@ -253,6 +270,7 @@
           <template v-if="isMobile">
             <section class="search-page__mobile-toolbar">
               <button
+                v-if="!isTripMode"
                 class="m-toolbar-btn"
                 :class="{ 'm-toolbar-btn--has-dot': hasActiveFilters }"
                 @click="handleFilterButtonClick"
@@ -265,7 +283,7 @@
                 Filter
                 <span v-if="hasActiveFilters" class="m-toolbar-btn__dot" aria-hidden="true"></span>
               </button>
-              <button class="m-toolbar-btn" @click="handleMapClick">
+              <button v-if="!isTripMode" class="m-toolbar-btn" @click="handleMapClick">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M4.5 9.75768C4.5 15.5 12 22 12 22C12 22 19.5 15.5 19.5 9.75768C19.5 4.81181 15.6559 2 12 2C8.34409 2 4.5 4.81181 4.5 9.75768Z" /><path d="M12 12C13.3807 12 14.5 10.8807 14.5 9.5C14.5 8.11929 13.3807 7 12 7C10.6193 7 9.5 8.11929 9.5 9.5C9.5 10.8807 10.6193 12 12 12Z" />
                 </svg>
@@ -311,7 +329,8 @@
             <section class="search-page__mobile-pills">
               <!-- Destination + arrival date live in the search summary bar on
                    mobile, so don't repeat them as filter chips here. -->
-              <MultiHotelTripFilterPills :hide-location-date="true" />
+              <MultiHotelTripQuickFilters v-if="isTripMode" />
+              <MultiHotelTripFilterPills v-else :hide-location-date="true" />
             </section>
             <!-- Divider between the pills and the result cards (always shown,
                  even when no pills are active). -->
@@ -402,6 +421,9 @@
 </template>
 
 <script setup lang="ts">
+// Multi Hotel Trip: de Vakanties-zoekpagina is dezelfde pagina onder een
+// eigen URL (hero + quick filters i.p.v. filterpaneel; toont vakanties).
+definePageMeta({ alias: ['/multi-hotel-trip/vakanties'] })
 import type { SearchHotel } from '~/types/searchHotel'
 import { searchHotels } from '~/data/mock/search-hotels'
 import { dealMatchesAllTags, getFilterTag } from '~/utils-multi-hotel-trip/filterTags'
@@ -415,6 +437,10 @@ import {
   DESTINATION_LABEL_BY_ID,
 } from '~/utils-multi-hotel-trip/destinationMatch'
 import { computeFilterCounts } from '~/utils-multi-hotel-trip/filterCounts'
+import { tripSearchHotels } from '~/data/mht-trips'
+import { tripMatchesQuickFilters } from '~/utils-multi-hotel-trip/tripFilters'
+import { nightKeyFor, TRIP_NIGHT_KEYS } from '~/utils-multi-hotel-trip/nights'
+import { TRIPS_DESTINATION_ID } from '~/utils-multi-hotel-trip/destinationMatch'
 import { useMobileSearchModalControl } from '~/composables-multi-hotel-trip/useMobileSearchModalControl'
 
 const { t } = useMultiHotelTripI18n()
@@ -435,11 +461,67 @@ const {
  *  snapshot (home/deal/hotel only change on "Vind deals"). `route` is declared
  *  below — both computeds are lazy so they resolve after setup completes. */
 const activeArrival = computed(() =>
-  route.path === '/multi-hotel-trip/search' ? liveArrivalDate.value : committedArrivalDate.value,
+  isSearchRoute(route.path) ? liveArrivalDate.value : committedArrivalDate.value,
 )
 const activeFlex = computed(() =>
-  route.path === '/multi-hotel-trip/search' ? liveFlexibility.value : committedFlexibility.value,
+  isSearchRoute(route.path) ? liveFlexibility.value : committedFlexibility.value,
 )
+
+function isSearchRoute(p: string): boolean {
+  return p === '/multi-hotel-trip/search' || p === '/multi-hotel-trip/vakanties'
+}
+
+/* ── Multi Hotel Trip: vakantiestand ──
+ * `isTripLanding` = we staan op /multi-hotel-trip/vakanties (hero i.p.v. header,
+ * geen breadcrumbs). `isTripMode` = de resultaten tonen meerhotel-vakanties
+ * i.p.v. hotels: op de landing altijd, elders zodra "Vakanties" als bestemming
+ * is gekozen in de zoekbalk. */
+const isTripLanding = computed(() => route.path === '/multi-hotel-trip/vakanties')
+const isTripMode = computed(() => isTripLanding.value || selectedDestinations.value.includes(TRIPS_DESTINATION_ID))
+const tripHeroBg = '/images/landingpages/natuur.jpg'
+const tripHeroPitch = computed(() => t('search.holidaysPitch'))
+const {
+  selectedTripFilters, clearTripFilters,
+  toggleDestination: toggleDestinationShared,
+  setSelectedNights: setSelectedNightsShared,
+} = useMultiHotelTripSearchState()
+
+/** Landing via de hoofdlink of directe URL: bestemming "Vakanties" + reisduur
+ *  5–8 nachten voorgeselecteerd (alleen als er nog geen vakantie-reisduur
+ *  gekozen is), filterpaneel dicht. */
+function enterTripLanding() {
+  if (!selectedDestinations.value.includes(TRIPS_DESTINATION_ID)) {
+    clearDestinations()
+    toggleDestinationShared(TRIPS_DESTINATION_ID)
+  }
+  if (!selectedNights.value.some(n => (TRIP_NIGHT_KEYS as string[]).includes(n))) {
+    setSelectedNightsShared([...TRIP_NIGHT_KEYS])
+  }
+  showFilters.value = false
+}
+
+/** Vakanties gefilterd op budget, reisduur, (optioneel) aankomstdatum en de
+ *  quick filters. Bestemming/thema/arrangement-filters gelden hier niet. */
+function filteredTrips(withArrival: boolean): SearchHotel[] {
+  const nightsActive = selectedNights.value.length > 0
+  const p = persons.value
+  const arrival = withArrival ? activeArrival.value : null
+  const flex = activeFlex.value
+  const quick = [...selectedTripFilters.value]
+  const out: SearchHotel[] = []
+  for (const trip of tripSearchHotels) {
+    if (!tripMatchesQuickFilters(trip.trip?.tags ?? [], quick)) continue
+    const deals = trip.deals.filter((d) => {
+      const priceForPersons = adjustPrice(d.basePrice, p)
+      if (priceForPersons < budgetMin.value || priceForPersons > budgetMax.value) return false
+      if (nightsActive && !selectedNights.value.includes(nightKeyFor(d.nights))) return false
+      if (arrival && !isDealAvailableInWindow(d.id, arrival, flex)) return false
+      return true
+    })
+    if (deals.length > 0) out.push({ ...trip, deals })
+  }
+  return out
+}
 
 // Loading state — local override so we can briefly show a spinner on filter changes
 const localLoading = ref(false)
@@ -460,6 +542,8 @@ onMounted(() => {
   // Footer "city" deep-link (?city=amsterdam): apply it as a destination
   // selection — same as picking the city in the destination field.
   applyCityQuery()
+  // Multi Hotel Trip: Vakanties-landing → vakantiestand aanzetten.
+  if (isTripLanding.value) enterTripLanding()
 })
 
 /** Apply a `?city=<slug>` deep-link (from the footer) as a single-select
@@ -507,6 +591,7 @@ function onFilterChange() {
 // added to the watch source via a separate watcher block below.
 watch(() => [
   [...selectedNights.value],
+  [...selectedTripFilters.value],
   [...selectedFilterTags.value],
   [...selectedDestinations.value],
   [...selectedCities.value],
@@ -519,7 +604,9 @@ watch(() => [
 
 const breadcrumbs = computed(() => [
   { label: t('search.home'), href: '/' },
-  { label: t('search.arrangements'), href: '/multi-hotel-trip/search' },
+  isTripMode.value
+    ? { label: t('search.holidaysTitle'), href: '/multi-hotel-trip/vakanties' }
+    : { label: t('search.arrangements'), href: '/multi-hotel-trip/search' },
 ])
 
 const totalDeals = computed(() => {
@@ -532,7 +619,7 @@ const viewMode = ref<'list' | 'grid'>('grid')
 // Force grid mode on mobile (list view would be too cramped)
 const isMobile = useMultiHotelTripIsMobile()
 const effectiveViewMode = computed<'list' | 'grid'>(() => (isMobile.value ? 'grid' : viewMode.value))
-const showFilters = ref(true)   /* Default: filter sidebar visible on /search */
+const showFilters = ref(!useRoute().path.endsWith('/vakanties'))   /* Default: filter sidebar visible on /search; dicht op de Vakanties-pagina */
 
 /* Sticky compact filter — appears once the regular sidebar has
    scrolled past the top of the viewport. */
@@ -557,6 +644,8 @@ function scrollTitleToTop() {
 }
 onMounted(() => {
   if (!import.meta.client) return
+  // Multi Hotel Trip: op de Vakanties-landing blijft de hero in beeld.
+  if (isTripLanding.value) return
   if (window.scrollY !== 0) return
   // Desktop-only — on mobile the user already lands close enough to
   // the title via the mobile chrome above, and an additional auto-
@@ -683,6 +772,7 @@ const hasActiveFilters = computed(() => {
     || selectedHotels.value.length > 0
     || selectedNights.value.length > 0
     || selectedFilterTags.value.length > 0
+    || selectedTripFilters.value.length > 0
     || committedFlexibility.value > 0
     // Budget counts as "active" only when moved off its defaults
     // (100–2000). The old `> 0 / < 5000` test was always true, so
@@ -787,6 +877,9 @@ function resetFilters() {
   clearDuration()
   clearFilterTags()
   clearDestinations()
+  clearTripFilters()
+  // Op de Vakanties-pagina blijft "Vakanties" de bestemming.
+  if (isTripLanding.value) toggleDestinationShared(TRIPS_DESTINATION_ID)
 }
 
 /* ─── No-results state (suggestions + reasoned copy) ─────────────
@@ -804,6 +897,7 @@ function resetFilters() {
  *  AND surface relevant suggestions ("Deze deals zijn beschikbaar op
  *  andere datums"). */
 const filteredHotelsIgnoringDate = computed(() => {
+  if (isTripMode.value) return filteredTrips(false)
   const nightsActive = selectedNights.value.length > 0
   const p = persons.value
   const destFilter = {
@@ -827,7 +921,7 @@ const filteredHotelsIgnoringDate = computed(() => {
       const priceForPersons = adjustPrice(d.basePrice, p)
       if (priceForPersons < budgetMin.value || priceForPersons > budgetMax.value) return false
       if (nightsActive) {
-        const nightKey = d.nights >= 5 ? '5+' : String(d.nights)
+        const nightKey = nightKeyFor(d.nights)
         if (!selectedNights.value.includes(nightKey)) return false
       }
       if (!dealMatchesAllTags(d, hotel, pickedOther)) return false
@@ -970,6 +1064,7 @@ const suggestionMode = computed<SuggestionMode>(() => {
 
 /** Up to 3 suggestion deals — pool depends on `suggestionMode`. */
 const suggestionDeals = computed(() => {
+  if (isTripMode.value) return []
   let pool: typeof searchHotels
   if (suggestionMode.value === 'date-only') pool = filteredHotelsIgnoringDate.value
   else if (suggestionMode.value === 'same-destination') pool = hotelsInSelectedDestination.value
@@ -1054,6 +1149,7 @@ const filterCounts = computed(() => {
 // the destination filter (hotel-level). The hotel's deals[] is pruned to
 // the matching set so the side panel only shows relevant packages.
 const filteredHotels = computed(() => {
+  if (isTripMode.value) return filteredTrips(true)
   const nightsActive = selectedNights.value.length > 0
   const arrival = activeArrival.value
   const arrivalActive = !!arrival
@@ -1088,7 +1184,7 @@ const filteredHotels = computed(() => {
       const priceForPersons = adjustPrice(d.basePrice, p)
       if (priceForPersons < budgetMin.value || priceForPersons > budgetMax.value) return false
       if (nightsActive) {
-        const nightKey = d.nights >= 5 ? '5+' : String(d.nights)
+        const nightKey = nightKeyFor(d.nights)
         if (!selectedNights.value.includes(nightKey)) return false
       }
       // Non-thema tag filters (arrangement + specials) — still AND-gated.
@@ -2193,5 +2289,15 @@ onMounted(() => {
    toolbar and the first result card. */
 .search-page__mobile-pills:has(.filter-pills--empty) {
   padding: 0;
+}
+
+/* ── Multi Hotel Trip: Vakanties-zoekpagina ── */
+/* De hero vervangt de breadcrumbs: ademruimte tussen hero en resultaten. */
+.search-page--landing .search-page__main {
+  padding-top: var(--space-2xl);
+}
+/* Quick-filterrij tussen de paginakop en de toolbar. */
+.search-page__quick-filters {
+  padding: var(--space-md) 0 var(--space-sm);
 }
 </style>

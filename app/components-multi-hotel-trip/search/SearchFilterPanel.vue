@@ -235,7 +235,10 @@ const filterGroups = computed<FilterGroup[]>(() => [
       { label: t('filter.2days'), value: '2' },
       { label: t('filter.3days'), value: '3' },
       { label: t('filter.4days'), value: '4' },
-      { label: t('filter.5plusDays'), value: '5+' },
+      { label: t('filter.5days'), value: '5' },
+      { label: t('filter.6days'), value: '6' },
+      { label: t('filter.7days'), value: '7' },
+      { label: t('filter.8days'), value: '8' },
     ],
   },
   // Budget / Totaalprijs slider is rendered inline before the

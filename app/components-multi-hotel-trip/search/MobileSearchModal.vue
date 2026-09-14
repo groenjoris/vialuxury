@@ -268,6 +268,7 @@
 </template>
 
 <script setup lang="ts">
+import { joinNightKeys } from '~/utils-multi-hotel-trip/nights'
 import { useBodyScrollLock } from '~/composables-multi-hotel-trip/useBodyScrollLock'
 
 const { t } = useMultiHotelTripI18n()
@@ -447,7 +448,7 @@ const howLongSummary = computed(() => {
   if (props.selectedDurations.length === 0) {
     return anyDurationExplicit.value ? t('header.noPreference') : t('header.tab.nights')
   }
-  return props.selectedDurations.join(' of ') + ' nachten'
+  return `${joinNightKeys(props.selectedDurations, t('common.or'))} nachten`
 })
 
 const whoSummary = computed(() => {

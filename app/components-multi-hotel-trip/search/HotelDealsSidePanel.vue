@@ -82,6 +82,7 @@
 </template>
 
 <script setup lang="ts">
+import { matchesNightKeys } from '~/utils-multi-hotel-trip/nights'
 import { useBodyScrollLock } from '~/composables-multi-hotel-trip/useBodyScrollLock'
 import { useFocusTrap } from '~/composables-multi-hotel-trip/useFocusTrap'
 import type { SearchHotel } from '~/types/searchHotel'
@@ -146,13 +147,12 @@ const sortedSiblingDeals = computed(() => {
     .sort((a, b) => a.basePrice - b.basePrice)
 })
 
-/** Match selected nights filter (string array; '5+' covers ≥ 5). When no
+/** Match selected nights filter (keys '1'…'8', '8' = 8+; zie nights.ts). When no
  *  nights are selected, every deal qualifies. */
 function matchesNights(deal: { nights: number }): boolean {
   const ns = selectedNights.value
   if (!ns || ns.length === 0) return true
-  if (ns.includes('5+') && deal.nights >= 5) return true
-  return ns.includes(String(deal.nights))
+  return matchesNightKeys(deal.nights, ns)
 }
 
 /** A deal is "available" when it has at least one bookable date inside the

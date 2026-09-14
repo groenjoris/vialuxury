@@ -54,12 +54,13 @@
             <span
               v-if="v.id === activeVertical"
               class="verticals__item verticals__item--active verticals__item--inactive-link"
+              :class="{ 'verticals__item--new': !!v.badge }"
               aria-current="page"
             >
               <template v-if="v.id === 'hotels'">
                 <span>{{ t('header.hotels') }} <span class="verticals__item-accent">+ <span class="verticals__item-more">more</span></span></span>
               </template>
-              <template v-else>{{ v.label }}</template>
+              <template v-else>{{ v.label }}<span v-if="v.badge" class="verticals__badge">{{ v.badge }}</span></template>
             </span>
             <a
               v-else-if="v.external"
@@ -72,11 +73,13 @@
               v-else
               :to="v.href"
               class="verticals__item"
+              :class="{ 'verticals__item--new': !!v.badge }"
+              @click="onVerticalClick(v, $event)"
             >
               <template v-if="v.id === 'hotels'">
                 <span>{{ t('header.hotels') }} <span class="verticals__item-accent">+ <span class="verticals__item-more">more</span></span></span>
               </template>
-              <template v-else>{{ v.label }}</template>
+              <template v-else>{{ v.label }}<span v-if="v.badge" class="verticals__badge">{{ v.badge }}</span></template>
             </NuxtLink>
           </template>
         </nav>
@@ -915,8 +918,8 @@
       <nav class="mobile-menu">
         <!-- Verticals -->
         <div class="mobile-menu__section">
-          <NuxtLink v-for="v in verticals" :key="v.id" :to="v.href" class="mobile-menu__item" @click="mobileMenuOpen = false">
-            {{ v.label }}
+          <NuxtLink v-for="v in verticals" :key="v.id" :to="v.href" class="mobile-menu__item" @click="mobileMenuOpen = false; onVerticalClick(v, $event)">
+            {{ v.label }}<span v-if="v.badge" class="mobile-menu__badge">{{ v.badge }}</span>
           </NuxtLink>
           <NuxtLink to="/multi-hotel-trip/vakantieparken" class="mobile-menu__item" @click="mobileMenuOpen = false">
             {{ t('header.holidayParks') }}
@@ -991,6 +994,8 @@
 </template>
 
 <script setup lang="ts">
+import { TRIP_NIGHT_KEYS, isNightKey, nightKeyFor, joinNightKeys } from '~/utils-multi-hotel-trip/nights'
+import { TRIPS_DESTINATION_ID } from '~/utils-multi-hotel-trip/destinationMatch'
 import { useMultiHotelTripLocaleStore } from '~/stores-multi-hotel-trip/locale'
 import { searchHotels } from '~/data/mock/search-hotels'
 import { mappedHotels } from '~/data/deals-mapper'
@@ -1090,6 +1095,9 @@ const effectiveNavVariant = computed(() => props.navVariant ?? mhtNavVariant.val
 const verticals = computed(() => {
   const all = [
     { id: 'hotels', label: t('header.hotels'), href: homeHref.value, external: false },
+    // Multi Hotel Trip: nieuwe hoofdlink "Vakanties" (met Nieuw-badge) tussen
+    // Hotels + more en Geef cadeaubon — opent de Vakanties-zoekpagina.
+    { id: 'vakanties', label: t('header.holidays'), href: '/multi-hotel-trip/vakanties', external: false, badge: t('header.new') },
     { id: 'restaurants', label: t('header.restaurants'), href: 'https://restaurants.vialuxury.com/', external: true },
     { id: 'cadeaubon', label: t('header.giftCard'), href: 'https://cadeaukaart.vialuxury.com/Product/Products', external: true },
   ]
@@ -1115,11 +1123,10 @@ const dealPageHotel = dealPageSlug
   : null
 const dealPageDeal = dealPageHotel?.deals.find(d => d.slug === dealPageSlug) ?? null
 const isDealPage = !!dealPageHotel
-/** Nights key for the duration picker ('1'…'4' or '5+'). */
-const dealNightsKey = dealPageDeal
-  ? (dealPageDeal.nights >= 5 ? '5+' : String(dealPageDeal.nights))
-  : null
+/** Nights key for the duration picker ('1' … '8', zie utils-multi-hotel-trip/nights.ts). */
+const dealNightsKey = dealPageDeal ? nightKeyFor(dealPageDeal.nights) : null
 const activeVertical = computed(() => {
+  if (_route.path.startsWith('/multi-hotel-trip/vakanties')) return 'vakanties'
   if (_route.path.startsWith('/vakantieparken')) return 'vakantieparken'
   return 'hotels'
 })
@@ -1544,6 +1551,8 @@ function clearDurationOnly() {
 
 // --- DESTINATION ---
 const destinations = [
+  // Multi Hotel Trip: "Vakanties" als pseudo-bestemming (opent de vakantiepagina).
+  { id: 'vakanties', name: 'Vakanties', country: 'Nieuw', emoji: '\u{1F697}' },
   { id: 'zeeland', name: 'Zeeland', country: 'NL', emoji: '\u{1F3D6}\u{FE0F}' },
   { id: 'brabant', name: 'Noord-Brabant', country: 'NL', emoji: '\u{1F333}' },
   { id: 'limburg', name: 'Limburg', country: 'NL', emoji: '\u26F0\u{FE0F}' },
@@ -1958,7 +1967,7 @@ watch(selectedDurations, (val) => {
   // drive `localNights`. `commitSearch()` / `applyLiveCriteria()` only read
   // `localNights`, so without this mirror a nights pick made in the mobile
   // modal never reached the filter ("aantal nachten wordt niet meegenomen").
-  const nights = val.filter(v => ['1', '2', '3', '4', '5+'].includes(v))
+  const nights = val.filter(v => isNightKey(v))
   if (JSON.stringify(nights) !== JSON.stringify(localNights.value)) {
     localNights.value = nights
   }
@@ -1972,7 +1981,10 @@ const durationOptions = computed(() => [
   { id: '2', label: t('header.duration.2nights'), sub: null },
   { id: '3', label: t('header.duration.3nights'), sub: null },
   { id: '4', label: t('header.duration.4nights'), sub: null },
-  { id: '5+', label: t('header.duration.5nights'), sub: null },
+  { id: '5', label: t('header.duration.5nightsExact'), sub: null },
+  { id: '6', label: t('header.duration.6nights'), sub: null },
+  { id: '7', label: t('header.duration.7nights'), sub: null },
+  { id: '8', label: t('header.duration.8nights'), sub: null },
   { id: 'weekend-short', label: t('header.duration.weekendShort'), sub: t('header.duration.weekendShortSub') },
   { id: 'weekend-long', label: t('header.duration.weekendLong'), sub: t('header.duration.weekendLongSub') },
   { id: 'long-weekend', label: t('header.duration.longWeekend'), sub: t('header.duration.longWeekendSub') },
@@ -2035,11 +2047,9 @@ const hoelangLabel = computed(() => {
   if (localNights.value.length === 1) {
     const v = localNights.value[0]
     if (v === '1') return `1 ${t('common.night')}`
-    if (v === '5+') return `5+ ${t('common.nights')}`
     return `${v} ${t('common.nights')}`
   }
-  const sorted = [...localNights.value].sort()
-  return `${sorted.join(` ${t('common.or')} `)} ${t('common.nights')}`
+  return `${joinNightKeys(localNights.value, t('common.or'))} ${t('common.nights')}`
 })
 
 const hoelangIsPlaceholder = computed(
@@ -2228,7 +2238,7 @@ async function commitSearch() {
   const totalPersons = searchGroup.value.adults + searchGroup.value.children.length
   setSearchGroup(totalPersons, searchGroup.value.rooms)
   setArrivalDate(selectedDate.value)
-  setSelectedNights(localNights.value.filter(v => ['1', '2', '3', '4', '5+'].includes(v)))
+  setSelectedNights(localNights.value.filter(v => isNightKey(v)))
   setFlexType(localFlexType.value)
   setGlobalFlexibility(flexibility.value)
   saveBarSnapshot()
@@ -2251,9 +2261,13 @@ async function commitSearch() {
     && localDestCities.value.length === 0
     && localDestThemes.value.length === 0
   const fromSlug = localDestHotels.value[0]?.slug || (noOtherDestination ? currentDealSlug() : null)
-  const target = fromSlug
-    ? `/multi-hotel-trip/search?from=${encodeURIComponent(fromSlug)}`
-    : '/multi-hotel-trip/search'
+  // Multi Hotel Trip: met "Vakanties" als bestemming landt de zoekopdracht
+  // op de Vakanties-zoekpagina (hero + quick filters).
+  const target = localDestDestinations.value.includes(TRIPS_DESTINATION_ID)
+    ? '/multi-hotel-trip/vakanties'
+    : fromSlug
+      ? `/multi-hotel-trip/search?from=${encodeURIComponent(fromSlug)}`
+      : '/multi-hotel-trip/search'
   // Take the search-nav lock BEFORE navigating so the deal
   // page's `store.queryParams` watcher (which would otherwise
   // race and call `router.replace`, cancelling our nav) skips
@@ -2294,11 +2308,36 @@ function applyLiveCriteria() {
   const totalPersons = searchGroup.value.adults + searchGroup.value.children.length
   setSearchGroup(totalPersons, searchGroup.value.rooms)
   setArrivalDate(selectedDate.value)
-  setSelectedNights(localNights.value.filter(v => ['1', '2', '3', '4', '5+'].includes(v)))
+  setSelectedNights(localNights.value.filter(v => isNightKey(v)))
   setFlexType(localFlexType.value)
   setGlobalFlexibility(flexibility.value)
   commitArrivalDate()
   triggerSearchUpdate()
+}
+
+/* ── Multi Hotel Trip: hoofdlink "Vakanties" ──
+ * Zet de zoekbalk in vakantiestand vóór de navigatie: bestemming "Vakanties"
+ * (pseudo-bestemming), reisduur 5/6/7/8 nachten voorgeselecteerd, en land op
+ * de Vakanties-zoekpagina (homepage-achtige hero + quick filters). */
+function enterTrips() {
+  resetLocalDestinationState()
+  setNoPrefPicked(false)
+  localDestDestinations.value = [TRIPS_DESTINATION_ID]
+  localDestSelectionOrder.value = [{ type: 'destination', key: TRIPS_DESTINATION_ID }]
+  localNights.value = [...TRIP_NIGHT_KEYS]
+  localFlexType.value = null
+  clearDestinations()
+  toggleDestination(TRIPS_DESTINATION_ID)
+  setSelectedNights([...TRIP_NIGHT_KEYS])
+  setFlexType(null)
+  saveBarSnapshot()
+  triggerSearchUpdate()
+  navigateTo('/multi-hotel-trip/vakanties')
+}
+function onVerticalClick(v: { id: string }, e?: Event) {
+  if (v.id !== 'vakanties') return
+  e?.preventDefault()
+  enterTrips()
 }
 
 function currentDealSlug(): string | null {
@@ -4612,5 +4651,44 @@ function handleSelectHotelInPopup(slug: string) {
 
 @media (max-width: 640px) {
   .menu-panel { width: 100vw; }
+}
+
+/* ── Multi Hotel Trip: "Vakanties" hoofdlink met Nieuw-badge in de
+   rechterbovenhoek van het woord (desktop verticals + mobiel menu). ── */
+.verticals__item--new {
+  position: relative;
+  padding-right: 30px;
+}
+.verticals__badge {
+  position: absolute;
+  top: 1px;
+  right: 6px;
+  display: inline-flex;
+  align-items: center;
+  height: 14px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: var(--color-primary);
+  color: #fff;
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  pointer-events: none;
+}
+.mobile-menu__badge {
+  display: inline-flex;
+  align-items: center;
+  height: 16px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--color-primary);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 </style>

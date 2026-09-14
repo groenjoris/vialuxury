@@ -108,7 +108,12 @@
       <!-- TOP ROW — full content width: hotel name + stars on line 1,
            location on line 2 -->
       <div v-if="showHotelInfo && hotel" class="deal-card-v2__hotel-info">
-        <NuxtLink :to="`/multi-hotel-trip/hotel/${hotel.slug}`" :target="linkTarget" class="deal-card-v2__name-link" @click.stop>
+        <!-- Multi Hotel Trip: een vakantie heeft geen hotelnaam — "Meerdere hotels",
+             zonder link en zonder sterren. -->
+        <h3 v-if="isTrip" class="deal-card-v2__name-row">
+          <span class="deal-card-v2__name">{{ t('trip.multipleHotels') }}</span>
+        </h3>
+        <NuxtLink v-else :to="`/multi-hotel-trip/hotel/${hotel.slug}`" :target="linkTarget" class="deal-card-v2__name-link" @click.stop>
           <h3 class="deal-card-v2__name-row">
             <span class="deal-card-v2__name">{{ hotel.name }}</span>
             <span class="deal-card-v2__stars" aria-hidden="true">
@@ -120,7 +125,9 @@
           <svg class="deal-card-v2__loc-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M4.5 9.75768C4.5 15.5 12 22 12 22C12 22 19.5 15.5 19.5 9.75768C19.5 4.81181 15.6559 2 12 2C8.34409 2 4.5 4.81181 4.5 9.75768Z" /><path d="M12 12C13.3807 12 14.5 10.8807 14.5 9.5C14.5 8.11929 13.3807 7 12 7C10.6193 7 9.5 8.11929 9.5 9.5C9.5 10.8807 10.6193 12 12 12Z" />
           </svg>
-          <span class="deal-card-v2__location">
+          <!-- Multi Hotel Trip: plaatsnamen van de twee of drie hotels i.p.v. één plaats. -->
+          <span v-if="isTrip" class="deal-card-v2__location deal-card-v2__location--trip">{{ tripStopsLabel }}</span>
+          <span v-else class="deal-card-v2__location">
             <span>{{ hotel.city }}</span>
             <span v-if="!hideRegion" class="deal-card-v2__location-region">, {{ hotel.region }}</span>
           </span>
@@ -267,7 +274,12 @@ const linkTarget = computed(() => (isMobile.value ? '_self' : '_blank'))
 /** German-only extra microcopy row sits below the CTA. */
 const isGerman = computed(() => locale.value === 'de')
 /** "Arrangement" / "Package" label above the includes list. */
-const packageLabel = computed(() => (locale.value === 'en' ? 'Package' : 'Arrangement'))
+const packageLabel = computed(() => {
+  // Multi Hotel Trip: "Autovakantie" / "Fietsvakantie" i.p.v. "Arrangement".
+  const trip = props.hotel?.trip
+  if (trip) return t(trip.type === 'fiets' ? 'trip.fiets' : 'trip.auto')
+  return locale.value === 'en' ? 'Package' : 'Arrangement'
+})
 
 const { persons, rooms, arrivalDate } = useMultiHotelTripSearchState()
 // Session-wide favourites (no login popup). Keyed by hotel slug when
@@ -328,6 +340,11 @@ const props = defineProps<{
 }>()
 
 defineEmits<{ 'view-siblings': [] }>()
+
+/** Multi Hotel Trip: dit record is een meerhotel-vakantie (twee of drie hotels). */
+const isTrip = computed(() => !!props.hotel?.trip)
+/** "Landgraaf · Eijsden · Sittard" — plaatsnamen van de hotels in reisvolgorde. */
+const tripStopsLabel = computed(() => (props.hotel?.trip?.stops ?? []).map(s => s.city).join(' · '))
 
 /** Card title — every context (search card, deal-page sidepanel, map
  *  sidepanel) renders the full localised deal title, identical to
@@ -557,6 +574,10 @@ const unavailableDateLabel = computed(() => {
 })
 
 const includesBullets = computed<string[]>(() => {
+  // Multi Hotel Trip: een vakantie toont precies zijn vier highlights.
+  if (props.hotel?.trip) {
+    return props.deal.highlights.slice(0, 4).map(h => localized(h).trim()).filter(Boolean)
+  }
   // Caller-supplied full list wins (used on /hotel/<slug>): show everything,
   // de-duped, with no smartInclusions trimming.
   if (props.fullInclusions && props.fullInclusions.length > 0) {
@@ -966,6 +987,22 @@ const includesBullets = computed<string[]>(() => {
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+/* Multi Hotel Trip: plaatsnamen van 2–3 hotels mogen over twee regels lopen. */
+.deal-card-v2__meta:has(.deal-card-v2__location--trip) {
+  white-space: normal;
+  align-items: flex-start;
+  overflow: visible;
+}
+.deal-card-v2__location--trip {
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+  line-height: 1.35;
+}
+.deal-card-v2__meta:has(.deal-card-v2__location--trip) .deal-card-v2__loc-icon {
+  margin-top: 2px;
 }
 
 /* Divider between hotel info and deal pitch */

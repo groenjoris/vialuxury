@@ -1,5 +1,23 @@
 import type { LocalizedString } from '~/i18n/types'
 
+/** Multi Hotel Trip — een "vakantie" bestaat uit twee of drie hotels
+ *  achter elkaar. Zo'n reis wordt als één SearchHotel-record met één deal
+ *  door de zoekresultaten geleid; `trip` markeert het record en draagt de
+ *  tussenstops (plaatsnamen) + quick-filter-tags. Alleen gebruikt door het
+ *  Multi Hotel Trip-prototype; R1/R2 laten het veld leeg. */
+export type MultiHotelTripType = 'auto' | 'fiets'
+export interface MultiHotelTripStop {
+  city: string
+  hotelName: string
+  hotelSlug: string
+}
+export interface MultiHotelTripInfo {
+  type: MultiHotelTripType
+  stops: MultiHotelTripStop[]
+  /** Quick-filter ids (zie utils-multi-hotel-trip/tripFilters.ts). */
+  tags: string[]
+}
+
 export interface SearchHotel {
   id: string
   slug: string
@@ -32,6 +50,8 @@ export interface SearchHotel {
    *  "Voldoet niet aan je zoekwensen" — clicking still opens the side
    *  panel with all of the hotel's deals. */
   unmatched?: boolean
+  /** Multi Hotel Trip: gezet wanneer dit record een meerhotel-vakantie is. */
+  trip?: MultiHotelTripInfo
 }
 
 export interface SearchHotelDeal {

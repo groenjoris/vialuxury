@@ -18,6 +18,7 @@
  */
 import type { SearchHotel, SearchHotelDeal } from '~/types/searchHotel'
 import { getFilterTag, FILTER_TAGS } from './filterTags'
+import { NIGHT_KEYS, nightKeyFor as nightKeyForNights } from './nights'
 
 export interface FilterCountContext {
   hotels: readonly SearchHotel[]
@@ -32,7 +33,7 @@ export interface FilterCountContext {
   /** Optional hotel-level destination filter. When null/undefined the
    *  destination filter is considered inactive. */
   matchesDestination?: (hotel: SearchHotel) => boolean
-  /** Current selected night keys ("1", "2", …, "5+"). */
+  /** Current selected night keys ("1" … "8"). */
   selectedNights: readonly string[]
   /** Currently checked filter-tag ids (across arrangement/thema/
    *  specials — the function partitions them internally). */
@@ -40,7 +41,7 @@ export interface FilterCountContext {
 }
 
 function nightKeyFor(deal: SearchHotelDeal): string {
-  return deal.nights >= 5 ? '5+' : String(deal.nights)
+  return nightKeyForNights(deal.nights)
 }
 
 function matchesNights(deal: SearchHotelDeal, nights: readonly string[]): boolean {
@@ -137,7 +138,7 @@ export function computeFilterCounts(ctx: FilterCountContext): Record<string, num
     }
   }
 
-  for (const key of ['1', '2', '3', '4', '5+']) {
+  for (const key of NIGHT_KEYS) {
     out[key] = countDeals(ctx, { nights: [key] })
   }
 
