@@ -20,6 +20,8 @@
                   <path d="M4.5 9.75768C4.5 15.5 12 22 12 22C12 22 19.5 15.5 19.5 9.75768C19.5 4.81181 15.6559 2 12 2C8.34409 2 4.5 4.81181 4.5 9.75768Z" /><path d="M12 12C13.3807 12 14.5 10.8807 14.5 9.5C14.5 8.11929 13.3807 7 12 7C10.6193 7 9.5 8.11929 9.5 9.5C9.5 10.8807 10.6193 12 12 12Z" />
                 </svg>
                 {{ hotel.location }}
+                <span v-if="hotel.checkIn" class="thm__meta-sep" aria-hidden="true">·</span>
+                <span v-if="hotel.checkIn">{{ t('trip.checkInFrom').replace('{time}', hotel.checkIn) }}</span>
               </p>
             </div>
             <button type="button" class="thm__close" :aria-label="t('common.close')" @click="$emit('close')">
@@ -28,18 +30,33 @@
           </div>
 
           <div class="thm__body">
-            <div v-if="hotel.images.length" class="thm__photos" :class="{ 'thm__photos--single': hotel.images.length === 1 }">
-              <img
-                v-for="(src, i) in hotel.images.slice(0, 3)"
-                :key="i"
-                :src="src"
-                :alt="hotel.name"
-                class="thm__photo"
-                :class="{ 'thm__photo--main': i === 0 }"
-              />
+            <!-- Eén foto bovenin, rouleerbaar met pijlen (zoals op de zoekresultaatkaart). -->
+            <div v-if="hotel.images.length" class="thm__carousel">
+              <img :src="hotel.images[photoIndex]" :alt="hotel.name" class="thm__photo" />
+              <template v-if="hotel.images.length > 1">
+                <button type="button" class="thm__nav thm__nav--prev" aria-label="Vorige foto" @click="prevPhoto">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6" /></svg>
+                </button>
+                <button type="button" class="thm__nav thm__nav--next" aria-label="Volgende foto" @click="nextPhoto">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6" /></svg>
+                </button>
+                <span class="thm__counter">{{ photoIndex + 1 }} / {{ hotel.images.length }}</span>
+              </template>
             </div>
 
             <p class="thm__description">{{ hotel.description }}</p>
+
+            <!-- Kamerblok: foto links, kamertype + beschrijving rechts. -->
+            <section v-if="hotel.room" class="thm__section thm__room">
+              <div v-if="hotel.room.image" class="thm__room-photo">
+                <img :src="hotel.room.image" :alt="hotel.room.name" />
+              </div>
+              <div class="thm__room-body">
+                <h3 class="thm__section-title">{{ t('trip.roomHeading') }}</h3>
+                <p class="thm__room-name">{{ hotel.room.name }}</p>
+                <p class="thm__room-text">{{ hotel.room.description }}</p>
+              </div>
+            </section>
 
             <section v-if="hotel.facilities.length" class="thm__section">
               <h3 class="thm__section-title">{{ t('hotel.facilities') }}</h3>
@@ -49,6 +66,17 @@
                   <span>{{ fac.label }}</span>
                 </li>
               </ul>
+            </section>
+
+            <!-- Huisregels per hotel (de pop-up scrolt). -->
+            <section v-if="hotel.houseRules && hotel.houseRules.length" class="thm__section">
+              <h3 class="thm__section-title">{{ t('hotel.houseRules') }}</h3>
+              <dl class="thm__rules">
+                <template v-for="(rule, i) in hotel.houseRules" :key="i">
+                  <dt class="thm__rule-title">{{ rule.title }}</dt>
+                  <dd class="thm__rule-text">{{ rule.description }}</dd>
+                </template>
+              </dl>
             </section>
 
             <section v-if="hotel.includes.length" class="thm__section">
@@ -79,6 +107,10 @@ export interface TripHotelModalData {
   description: string
   facilities: { icon: string; label: string }[]
   includes: string[]
+  houseRules?: { title: string; description: string }[]
+  room?: { name: string; description: string; image?: string }
+  /** "15:00" */
+  checkIn?: string
 }
 
 const props = defineProps<{
@@ -90,6 +122,19 @@ defineEmits<{ close: [] }>()
 
 const { t } = useMultiHotelTripI18n()
 useBodyScrollLock().bindTo(computed(() => props.open))
+
+/* Fotocarrousel: één foto, pijlen roteren (met wrap), teller rechtsboven.
+   Bij een ander hotel of opnieuw openen begint hij bij de eerste foto. */
+const photoIndex = ref(0)
+watch(() => [props.open, props.hotel?.name], () => { photoIndex.value = 0 })
+function prevPhoto() {
+  const n = props.hotel?.images.length ?? 0
+  if (n) photoIndex.value = (photoIndex.value - 1 + n) % n
+}
+function nextPhoto() {
+  const n = props.hotel?.images.length ?? 0
+  if (n) photoIndex.value = (photoIndex.value + 1) % n
+}
 </script>
 
 <style scoped>
@@ -158,19 +203,65 @@ useBodyScrollLock().bindTo(computed(() => props.open))
 }
 .thm__close:hover { background: var(--color-border-light); }
 .thm__body { padding: var(--space-lg); }
-.thm__photos {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  grid-template-rows: 1fr 1fr;
-  gap: 6px;
-  height: 260px;
+.thm__meta-sep { margin: 0 4px; color: var(--color-text-muted, #9a958c); }
+.thm__carousel {
+  position: relative;
+  height: 300px;
   border-radius: var(--radius-lg);
   overflow: hidden;
   margin-bottom: var(--space-lg);
+  background: var(--color-background-secondary);
 }
-.thm__photos--single { grid-template-columns: 1fr; grid-template-rows: 1fr; }
 .thm__photo { width: 100%; height: 100%; object-fit: cover; display: block; }
-.thm__photo--main { grid-row: 1 / -1; }
+/* Pijlen zoals op de dealcard: ronde witte knoppen links/rechts midden. */
+.thm__nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.92);
+  color: #141414;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+}
+.thm__nav:hover { background: #fff; }
+.thm__nav--prev { left: 12px; }
+.thm__nav--next { right: 12px; }
+.thm__counter {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.7);
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 600;
+}
+/* Kamerblok */
+.thm__room {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  gap: var(--space-lg);
+  align-items: start;
+  margin-bottom: var(--space-lg);
+}
+.thm__room-photo {
+  aspect-ratio: 4 / 3;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--color-background-secondary);
+}
+.thm__room-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.thm__room-name { margin: 0 0 4px; font-size: 15px; font-weight: 600; color: var(--color-text-primary); }
+.thm__room-text { margin: 0; font-size: 14px; line-height: 1.6; color: var(--color-text-secondary); }
 .thm__description {
   margin: 0 0 var(--space-lg);
   font-size: 15px;
@@ -225,6 +316,9 @@ useBodyScrollLock().bindTo(computed(() => props.open))
   color: var(--color-text-secondary);
 }
 .thm__check { color: var(--color-discount, #27C88D); flex-shrink: 0; display: inline-flex; margin-top: 2px; }
+.thm__rules { margin: 0; display: grid; grid-template-columns: 1fr; gap: 10px; }
+.thm__rule-title { font-size: 14px; font-weight: 600; color: var(--color-text-primary); }
+.thm__rule-text { margin: 2px 0 0; font-size: 14px; line-height: 1.55; color: var(--color-text-secondary); }
 
 .fade-enter-active, .fade-leave-active { transition: opacity 180ms ease; }
 .fade-enter-from, .fade-leave-to { opacity: 0; }
@@ -232,7 +326,8 @@ useBodyScrollLock().bindTo(computed(() => props.open))
 @media (max-width: 767px) {
   .thm { padding: 0; align-items: flex-end; }
   .thm__card { max-height: 92vh; border-radius: var(--radius-lg) var(--radius-lg) 0 0; }
-  .thm__photos { height: 200px; }
+  .thm__carousel { height: 220px; }
+  .thm__room { grid-template-columns: 1fr; gap: var(--space-sm); }
   .thm__facilities { grid-template-columns: 1fr; }
 }
 </style>

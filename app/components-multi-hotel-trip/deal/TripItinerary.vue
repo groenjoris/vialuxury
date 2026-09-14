@@ -1,9 +1,10 @@
 <template>
   <!-- Multi Hotel Trip — dagprogramma op de vakantie-PDP. Per dag een sectie
        ("Dag 1", met datum zodra er een aankomstdatum is) met 2–3 blokken
-       onder elkaar: altijd foto links, tekst rechts. Inchecken toont het
-       hotel met een link naar de hotel-pop-up; uitcheckdagen beginnen met
-       wat je onderweg kunt doen. `stacked` (mobiel) zet foto boven tekst. -->
+       onder elkaar: altijd foto links, tekst rechts. Elke dag na de eerste
+       begint met wakker worden en ontbijten (inbegrepen); inchecken toont het
+       hotel met een link naar de hotel-pop-up; uitcheckdagen beginnen met wat
+       je onderweg kunt doen. `stacked` (mobiel) zet foto boven tekst. -->
   <div class="itin" :class="{ 'itin--stacked': stacked }">
     <section v-for="day in days" :key="day.day" class="itin-day">
       <header class="itin-day__head">
@@ -21,10 +22,16 @@
           class="itin-block"
           :class="`itin-block--${block.kind}`"
         >
-          <div class="itin-block__media">
+          <!-- Foto is klikbaar: grotere versie in een gecentreerde pop-up. -->
+          <button
+            type="button"
+            class="itin-block__media"
+            :aria-label="`${block.title} — ${t('common.allPhotos')}`"
+            @click="openImage(block)"
+          >
             <img v-if="block.image" :src="block.image" :alt="block.title" loading="lazy" />
             <span class="itin-block__tag">{{ block.tag }}</span>
-          </div>
+          </button>
           <div class="itin-block__body">
             <h4 class="itin-block__title">
               {{ block.title }}
@@ -49,11 +56,31 @@
         </article>
       </div>
     </section>
+
+    <!-- Gecentreerde foto-pop-up -->
+    <Teleport to="body">
+      <Transition name="fade">
+        <div v-if="lightbox" class="itin-lb" @click.self="lightbox = null">
+          <figure class="itin-lb__card">
+            <button type="button" class="itin-lb__close" :aria-label="t('common.close')" @click="lightbox = null">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12" /></svg>
+            </button>
+            <img :src="lightbox.image" :alt="lightbox.title" class="itin-lb__img" />
+            <figcaption class="itin-lb__caption">
+              <span class="itin-lb__tag">{{ lightbox.tag }}</span>
+              {{ lightbox.title }}
+            </figcaption>
+          </figure>
+        </div>
+      </Transition>
+    </Teleport>
   </div>
 </template>
 
 <script setup lang="ts">
-export type TripBlockKind = 'checkin' | 'checkout' | 'activity' | 'dinner' | 'homeward'
+import { useBodyScrollLock } from '~/composables-multi-hotel-trip/useBodyScrollLock'
+
+export type TripBlockKind = 'checkin' | 'checkout' | 'activity' | 'dinner' | 'homeward' | 'breakfast'
 
 /** Eén blok in het dagprogramma, al vertaald door de dealpagina. */
 export interface TripBlockView {
@@ -90,6 +117,16 @@ withDefaults(defineProps<{
 defineEmits<{ 'open-hotel': [stopIndex: number] }>()
 
 const { t } = useMultiHotelTripI18n()
+
+/** Grotere versie van een blokfoto in een gecentreerde pop-up. */
+const lightbox = ref<TripBlockView | null>(null)
+function openImage(block: TripBlockView) {
+  if (block.image) lightbox.value = block
+}
+useBodyScrollLock().bindTo(computed(() => !!lightbox.value))
+function onKey(e: KeyboardEvent) { if (e.key === 'Escape') lightbox.value = null }
+onMounted(() => window.addEventListener('keydown', onKey))
+onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 </script>
 
 <style scoped>
@@ -140,11 +177,19 @@ const { t } = useMultiHotelTripI18n()
 }
 .itin-block__media {
   position: relative;
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
   aspect-ratio: 4 / 3;
   border-radius: var(--radius-lg);
   overflow: hidden;
   background: var(--color-background-secondary);
+  cursor: zoom-in;
 }
+.itin-block__media img { transition: transform 0.3s ease; }
+.itin-block__media:hover img { transform: scale(1.03); }
+.itin-block__media:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
 .itin-block__media img {
   width: 100%;
   height: 100%;
@@ -167,10 +212,11 @@ const { t } = useMultiHotelTripI18n()
   text-transform: uppercase;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
 }
+/* Inchecken / onderweg / terugreis: zwart label met witte tekst. */
 .itin-block--checkin .itin-block__tag,
 .itin-block--checkout .itin-block__tag,
 .itin-block--homeward .itin-block__tag {
-  background: var(--color-primary, #ff7e00);
+  background: #141414;
   color: #fff;
 }
 .itin-block__body { min-width: 0; padding-top: 2px; }
@@ -217,6 +263,73 @@ const { t } = useMultiHotelTripI18n()
   cursor: pointer;
 }
 .itin-block__link:hover { color: var(--color-primary-hover); }
+
+/* ── Foto-pop-up ── */
+.itin-lb {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-lg);
+  background: rgba(20, 20, 20, 0.7);
+}
+.itin-lb__card {
+  position: relative;
+  margin: 0;
+  max-width: min(1100px, 100%);
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.itin-lb__img {
+  display: block;
+  max-width: 100%;
+  max-height: calc(100vh - 2 * var(--space-lg) - 48px);
+  object-fit: contain;
+  border-radius: var(--radius-lg);
+  background: #000;
+}
+.itin-lb__caption {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 500;
+}
+.itin-lb__tag {
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.94);
+  color: #141414;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.itin-lb__close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 1;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.94);
+  color: #141414;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.itin-lb__close:hover { background: #fff; }
+.fade-enter-active, .fade-leave-active { transition: opacity 180ms ease; }
+.fade-enter-from, .fade-leave-to { opacity: 0; }
 
 .itin--stacked .itin-block { grid-template-columns: 1fr; gap: var(--space-sm); }
 @media (max-width: 767px) {

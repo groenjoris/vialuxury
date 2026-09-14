@@ -11,7 +11,7 @@
  *   koppelt elke foto-id aan de hotelnaam voor de sticker op de foto.
  */
 import type { Deal } from '~/types/deal'
-import type { Hotel, HotelImage, Facility } from '~/types/hotel'
+import type { Hotel, HotelImage, Facility, HouseRule } from '~/types/hotel'
 import type { LocalizedString } from '~/i18n/types'
 import { tripDetailBySlug, type MultiHotelTripDetail, type MultiHotelTripDetailStop } from './mht-trips'
 import { TRIP_ITINERARIES, type TripItinerarySpec } from './mht-trip-itineraries'
@@ -39,7 +39,7 @@ export interface MultiHotelTripPdp {
 }
 
 /* ── Dagprogramma ─────────────────────────────────────────────────────── */
-export type TripRawBlockKind = 'checkin' | 'checkout' | 'activity' | 'dinner' | 'homeward'
+export type TripRawBlockKind = 'checkin' | 'checkout' | 'activity' | 'dinner' | 'homeward' | 'breakfast'
 export interface TripRawBlock {
   kind: TripRawBlockKind
   /** Hotel waar het blok over gaat (inchecken/uitchecken/diner/terugreis). */
@@ -50,6 +50,8 @@ export interface TripRawBlock {
   image?: string
   /** Dinerblok: "3-gangendiner" / "4-gangendiner" / "verrassingsdiner". */
   dinnerLabel?: LocalizedString
+  /** Ontbijtblok: de ontbijt-inclusie van dit hotel ("Dagelijks ontbijtbuffet"). */
+  breakfastLabel?: LocalizedString
 }
 export interface TripRawDay {
   day: number
@@ -79,6 +81,14 @@ function dinnerImageOf(stop: MultiHotelTripDetailStop): string | undefined {
   return stop.dinnerImage ?? stop.extraImages?.[0] ?? stop.image
 }
 
+/** Ontbijt-inclusie van een hotel (elke vakantie heeft er een). */
+function breakfastOf(stop: MultiHotelTripDetailStop): LocalizedString {
+  return stop.includes.find(i => /ontbijt|breakfast/i.test(i.nl)) ?? { nl: 'Ontbijt', en: 'Breakfast' }
+}
+function breakfastImageOf(stop: MultiHotelTripDetailStop): string | undefined {
+  return stop.breakfastImage ?? stop.extraImages?.[1] ?? stop.dinnerImage ?? stop.image
+}
+
 /** Bouwt per dag de blokken: vaste blokken (inchecken, uitchecken, diner)
  *  uit de hotelgegevens, redactionele blokken uit `content.days`. */
 export function buildTripDays(trip: MultiHotelTripDetail, content: TripItinerarySpec | null): TripRawDay[] {
@@ -97,6 +107,10 @@ export function buildTripDays(trip: MultiHotelTripDetail, content: TripItinerary
       const d = dinnerOf(stops[i]!)
       if (!d) return
       if (arrival || d.daily) blocks.push({ kind: 'dinner', stopIndex: i, dinnerLabel: d.label, image: dinnerImageOf(stops[i]!) })
+    }
+    // Wakker worden en ontbijten — vanaf dag 2, in het hotel van vannacht (inbegrepen).
+    if (day > 1 && prevIdx >= 0) {
+      blocks.push({ kind: 'breakfast', stopIndex: prevIdx, breakfastLabel: breakfastOf(stops[prevIdx]!), image: breakfastImageOf(stops[prevIdx]!) })
     }
     if (idx === -1) {
       // Laatste dag: uitchecken en terugreis.
@@ -138,6 +152,12 @@ export interface TripHotelDetails {
   description: LocalizedString
   facilities: { icon: string; label: string }[]
   includes: LocalizedString[]
+  /** Huisregels (uit de dataset, anders de gedeelde set) — in de pop-up. */
+  houseRules: HouseRule[]
+  /** Kamer(type) uit de redactionele inhoud, met foto. */
+  room?: { name: LocalizedString; description: LocalizedString; image?: string }
+  /** Inchecktijd, bv. "15:00". */
+  checkIn: string
 }
 
 const FALLBACK_ICON = '/icons/facilities/special.svg'
@@ -168,6 +188,11 @@ export function tripHotelDetails(trip: MultiHotelTripDetail, content: TripItiner
     description,
     facilities,
     includes: stop.includes,
+    houseRules: ds?.houseRules ?? sharedHouseRules,
+    room: info?.room
+      ? { name: info.room.name, description: info.room.description, image: info.room.image ?? stop.extraImages?.[1] ?? uniqueImages[1] }
+      : undefined,
+    checkIn: stop.checkIn,
   }
 }
 

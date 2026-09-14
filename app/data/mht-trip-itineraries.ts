@@ -20,6 +20,8 @@ export interface TripHotelInfo {
   description: LocalizedString
   /** Faciliteiten als labels; het icoon komt uit utils facilityIcon. */
   facilities: string[]
+  /** Kamer(type) waarin je verblijft, voor het kamerblok in de hotel-pop-up. */
+  room?: { name: LocalizedString; description: LocalizedString; image?: string }
 }
 
 export interface TripDayBlockSpec {
@@ -81,16 +83,19 @@ export const TRIP_ITINERARIES: Record<string, TripItinerarySpec> = {
         description: l('Een 18e-eeuws hôtel particulier in het hart van Béthune, in 2023 volledig gerestaureerd tot een viersterrenhotel met 34 kamers. Achter de klassieke gevel vind je een lichte binnenplaats, een restaurant met terras en een bar in de oude salons. De Grand-Place met het belfort ligt om de hoek.',
           'An 18th-century private mansion in the heart of Béthune, fully restored in 2023 into a four-star hotel with 34 rooms. Behind the classical façade: a bright courtyard, a restaurant with terrace and a bar in the old salons. The Grand-Place and belfry are around the corner.'),
         facilities: ['Restaurant', 'Bar', 'Terras op de binnenplaats', 'Gratis wifi', 'Airconditioning', 'Lift', 'Fietsenstalling', 'Parkeergarage nabij (betaald)'],
+        room: { name: l('Privilege Room', 'Privilege Room'), description: l('Verblijf in het stijlvolle Privilege Room, waar comfort en elegantie samenkomen. De kamer is ruim en smaakvol ingericht en biedt alle gemakken voor een ontspannen verblijf in het hart van Béthune.', 'Stay in the stylish Privilege Room, where comfort and elegance meet. The room is spacious and tastefully furnished and offers every convenience for a relaxed stay in the heart of Béthune.'), image: '/images/vakanties/001/beaulaincourt-3.jpg' },
       },
       'Hôtel Château Tilques': {
         description: l('Een 19e-eeuws kasteel van rode baksteen in een park van vier hectare, net buiten Saint-Omer. De 53 kamers liggen verdeeld over het kasteel en de voormalige stallen; het restaurant kijkt door een grote glaswand uit op het gazon. Met verwarmd binnenzwembad, tennisbaan en een golfbaan op loopafstand.',
           'A 19th-century red-brick château in a four-hectare park just outside Saint-Omer. The 53 rooms are spread over the château and the former stables; the restaurant looks out over the lawn through a large glass wall. Heated indoor pool, tennis court and a golf course within walking distance.'),
         facilities: ['Restaurant', 'Bar', 'Verwarmd binnenzwembad', 'Tennisbaan', 'Park van 4 hectare', 'Gratis parkeren', 'Gratis wifi', 'Golfbaan nabij'],
+        room: { name: l('Chambre Charme', 'Chambre Charme'), description: l('De Chambre Charme ligt in het kasteel of de voormalige stallen en is ingericht in warme tinten met klassieke stoffen. Vanuit het raam kijk je uit over het park; de badkamer heeft een bad of ruime douche.', 'The Chambre Charme is located in the château or the former stables and is decorated in warm tones with classic fabrics. The window looks out over the park; the bathroom has a bath or a spacious shower.'), image: '/images/vakanties/001/tilques-4.jpg' },
       },
       'Hôtel Château Cléry': {
         description: l('Een 18e-eeuws kasteel op een landgoed van vijf hectare in Hesdin-l\'Abbé, tien minuten van Boulogne-sur-Mer en de Opaalkust. De 28 kamers liggen in het kasteel en de bijgebouwen rond de tuin met hortensia\'s. Diner in de serre van het restaurant, ontspannen in de kleine spa met sauna.',
           'An 18th-century château on a five-hectare estate in Hesdin-l\'Abbé, ten minutes from Boulogne-sur-Mer and the Opal Coast. The 28 rooms are in the château and outbuildings around the hydrangea garden. Dinner in the restaurant\'s conservatory, relaxation in the small spa with sauna.'),
         facilities: ['Restaurant in de serre', 'Bar', 'Spa met sauna', 'Fitnessruimte', 'Landgoed van 5 hectare', 'Gratis parkeren', 'Gratis wifi', 'Fietsverhuur'],
+        room: { name: l('Chambre Charme', 'Chambre Charme'), description: l('Een sfeervolle kamer in het kasteel of een van de bijgebouwen rond de tuin, met klassiek meubilair, een comfortabel bed en zicht op het landgoed. Rustig gelegen, op een steenworp van de serre en de spa.', "A charming room in the château or one of the outbuildings around the garden, with classic furniture, a comfortable bed and views of the estate. Quietly located, a stone's throw from the conservatory and the spa."), image: '/images/vakanties/001/clery-6.jpg' },
       },
     },
     days: [
@@ -138,16 +143,19 @@ export const TRIP_ITINERARIES: Record<string, TripItinerarySpec> = {
         description: l('Een modern viersterrenhotel direct aan de Overijsselse Vecht, tussen Dalfsen en Zwolle. De 68 kamers zijn licht en ruim, het restaurant en de wellness met sauna en buitenjacuzzi kijken uit over het water. Fietsen en kano\'s staan klaar voor een tocht over de rivier of naar Zwolle.',
           'A modern four-star hotel right on the Overijssel Vecht, between Dalfsen and Zwolle. The 68 rooms are bright and spacious; the restaurant and the wellness with sauna and outdoor jacuzzi overlook the water. Bikes and canoes are ready for a trip along the river or into Zwolle.'),
         facilities: ['Restaurant met terras aan het water', 'Wellness met sauna en buitenjacuzzi', 'Fietsverhuur', 'Kanoverhuur', 'Gratis parkeren', 'Gratis wifi', 'Lift', 'Laadpalen'],
+        room: { name: l('Comfortkamer aan de Vecht', 'Comfortkamer aan de Vecht'), description: l('Lichte, moderne kamer met een groot raam op de rivier, een boxspringbed en een ruime badkamer met regendouche. Ideaal om na een fiets- of kanotocht bij te komen.', 'Bright, modern room with a large window on the river, a box-spring bed and a spacious bathroom with rain shower. Ideal for unwinding after a bike or canoe trip.') },
       },
       'Hotel de Zwaan': {
         description: l('Familiehotel in het hart van Raalte, al generaties lang een begrip in Salland. Bekend om restaurant Buitengewoon met zijn wijnkelder en om de gastvrijheid van de familie. De 28 kamers zijn klassiek en comfortabel; het dorp met zijn terrassen ligt voor de deur.',
           'Family hotel in the heart of Raalte, a household name in Salland for generations. Known for its restaurant with wine cellar and the family\'s hospitality. The 28 rooms are classic and comfortable; the village and its terraces are right outside.'),
         facilities: ['Restaurant', 'Wijnkelder en wijnbar', 'Terras', 'Gratis parkeren', 'Gratis wifi', 'Fietsverhuur', 'Lift'],
+        room: { name: l('Comfortkamer', 'Comfortkamer'), description: l('Klassiek ingerichte kamer met warme kleuren, een comfortabel tweepersoonsbed en een nette badkamer. Het dorp en het restaurant van de familie liggen onder je.', "Classically furnished room in warm colours with a comfortable double bed and a neat bathroom. The village and the family's restaurant are right below you.") },
       },
       "Hotel 's Gravenhof": {
         description: l('Boetiekhotel in een 17e-eeuws stadspaleis aan het \'s Gravenhof, het plein tegenover de Walburgiskerk in het oudste deel van Zutphen. Achttien kamers met hoge plafonds en moderne badkamers, een stadstuin en een brasserie op de begane grond. De hofjes, boetiekjes en de IJsselkade liggen op loopafstand.',
           'Boutique hotel in a 17th-century town palace on the \'s Gravenhof square opposite the Walburgis church, in the oldest part of Zutphen. Eighteen rooms with high ceilings and modern bathrooms, a city garden and a ground-floor brasserie. Courtyards, boutiques and the IJssel quay are a short walk away.'),
         facilities: ['Brasserie', 'Bar', 'Stadstuin', 'Gratis wifi', 'Fietsenstalling', 'Parkeren nabij (betaald)'],
+        room: { name: l('Stadspaleiskamer', 'Stadspaleiskamer'), description: l('Kamer met hoge plafonds en originele details in het 17e-eeuwse stadspaleis, gecombineerd met een moderne badkamer. Sommige kamers kijken uit op de Walburgiskerk.', 'Room with high ceilings and original details in the 17th-century town palace, combined with a modern bathroom. Some rooms overlook the Walburgis church.') },
       },
     },
     days: [
@@ -195,16 +203,19 @@ export const TRIP_ITINERARIES: Record<string, TripItinerarySpec> = {
         description: l('Een landhuis uit 1770 op een bosrijk landgoed van 200 hectare aan de rand van Arnhem, aan de voet van de Veluwe. De 27 kamers zijn klassiek ingericht met uitzicht op het park; het restaurant serveert seizoensgebonden gerechten. Wandelroutes beginnen bij de voordeur.',
           'A 1770 country house on a wooded 200-hectare estate on the edge of Arnhem, at the foot of the Veluwe. The 27 rooms are classically furnished with park views; the restaurant serves seasonal dishes. Walking routes start at the front door.'),
         facilities: ['Restaurant', 'Bar en lounge met open haard', 'Terras met uitzicht op het park', 'Wandelroutes vanaf het hotel', 'Gratis parkeren', 'Gratis wifi', 'Fietsverhuur', 'Badjas en slippers'],
+        room: { name: l('Luxe kamer (upgrade)', 'Luxe kamer (upgrade)'), description: l('Je krijgt een upgrade naar een luxe kamer aan de parkzijde: klassiek ingericht, met zitje, badjas en slippers en uitzicht op de oude bomen van het landgoed.', "You are upgraded to a luxury room on the park side: classically furnished, with a seating area, bathrobe and slippers and views of the estate's old trees.") },
       },
       'Kasteel Engelenburg': {
         description: l('Een 17e-eeuws kasteel omringd door een slotgracht en een Engelse landschapstuin bij Brummen, tussen de IJssel en de Veluwezoom. Veertig kamers in het kasteel en het koetshuis, een restaurant in de oranjerie en een eigen 9-holes golfbaan. De wijnkelder en de sigarenlounge maken het beeld compleet.',
           'A 17th-century castle surrounded by a moat and an English landscape garden near Brummen, between the IJssel and the Veluwezoom. Forty rooms in the castle and coach house, a restaurant in the orangery and its own 9-hole golf course. The wine cellar and cigar lounge complete the picture.'),
         facilities: ['Restaurant in de oranjerie', 'Wijnkelder', 'Eigen 9-holes golfbaan', 'Landschapstuin met slotgracht', 'Gratis parkeren', 'Gratis wifi', 'Bar en lounge', 'Early check-in'],
+        room: { name: l('Luxe kamer (upgrade)', 'Luxe kamer (upgrade)'), description: l('Op basis van beschikbaarheid verblijf je in een luxe kamer in het kasteel of het koetshuis, met antiek meubilair, een royaal bed en zicht op de tuin of de slotgracht.', 'Subject to availability you stay in a luxury room in the castle or coach house, with antique furniture, a generous bed and views of the garden or moat.') },
       },
       'Landhuishotel De Bloemenbeek': {
         description: l('Vijfsterrenlandhuishotel in het coulisselandschap van De Lutte, met een Michelin-restaurant en een spa van 1.500 vierkante meter met binnen- en buitenbaden, sauna\'s en behandelkamers. De kamers en suites kijken uit over de tuin en het Twentse landschap.',
           'Five-star country house hotel in the Twente landscape near De Lutte, with a Michelin restaurant and a 1,500-square-metre spa with indoor and outdoor pools, saunas and treatment rooms. Rooms and suites overlook the garden and the countryside.'),
         facilities: ['Michelin-restaurant De Bloemenbeek', 'Spa met binnen- en buitenbad', 'Sauna\'s en hamam', 'Behandelingen en massages', 'Fitness', 'Gratis parkeren', 'Gratis wifi', 'Fietsverhuur'],
+        room: { name: l('Superior kamer (upgrade)', 'Superior kamer (upgrade)'), description: l('Een Superior kamer met terras of balkon op de tuin, een badkamer met bad en aparte douche en een badjas voor de spa. Rust en ruimte in het coulisselandschap.', 'A Superior room with terrace or balcony onto the garden, a bathroom with bath and separate shower and a bathrobe for the spa. Peace and space in the Twente countryside.') },
       },
     },
     days: [
@@ -252,16 +263,19 @@ export const TRIP_ITINERARIES: Record<string, TripItinerarySpec> = {
         description: l('Viersterrenhotel in een prachtig gerestaureerd Ursulinenklooster midden in het historische Kloosterkwartier van Sittard. De kloostergangen, de kapel en de binnentuin zijn bewaard; de 45 kamers zijn modern en rustig. Restaurant George\'s heeft een Gault&Millau-vermelding.',
           'Four-star hotel in a beautifully restored Ursuline convent in the historic Kloosterkwartier of Sittard. Cloisters, chapel and courtyard garden have been preserved; the 45 rooms are modern and quiet. Restaurant George\'s holds a Gault&Millau listing.'),
         facilities: ['Restaurant George\'s (Gault&Millau)', 'Bar in de kapel', 'Binnentuin en terras', 'Gratis wifi', 'Lift', 'Parkeergarage Oda nabij (betaald)', 'Fietsenstalling'],
+        room: { name: l('Kloosterkamer (upgrade)', 'Kloosterkamer (upgrade)'), description: l('Op basis van beschikbaarheid krijg je een upgrade naar een luxer kamertype in het voormalige klooster: hoge ramen, rustige kleuren en een moderne badkamer, met zicht op de binnentuin of het Kloosterkwartier.', 'Subject to availability you are upgraded to a more luxurious room type in the former convent: tall windows, calm colours and a modern bathroom, overlooking the courtyard garden or the Kloosterkwartier.') },
       },
       'Hotel Winselerhof': {
         description: l('Een 16e-eeuwse herenboerderij aan de rand van Landgraaf, met een binnenplaats, een eigen wijngaard en 49 kamers rond de oude hoeve. Restaurant Pirandello serveert Italiaans-Limburgse gerechten met een Gault&Millau-vermelding; vanaf het terras kijk je over het Zuid-Limburgse land.',
           'A 16th-century manor farm on the edge of Landgraaf, with a courtyard, its own vineyard and 49 rooms around the old farmstead. Restaurant Pirandello serves Italian-Limburg cuisine with a Gault&Millau listing; the terrace looks out over the South Limburg countryside.'),
         facilities: ['Restaurant Pirandello (Gault&Millau)', 'Eigen wijngaard', 'Binnenplaats met terras', 'Gratis parkeren', 'Gratis wifi', 'Wandel- en fietsroutes', 'Bar'],
+        room: { name: l('Hoevekamer', 'Hoevekamer'), description: l("Een ruime kamer in de oude hoeve, met houten balken, een comfortabel bed en zicht op de binnenplaats of de wijngaard. 's Ochtends ontbijt je in het restaurant beneden.", 'A spacious room in the old farmstead, with wooden beams, a comfortable bed and views of the courtyard or vineyard. In the morning you breakfast in the restaurant downstairs.') },
       },
       'Van Oys Maastricht Retreat': {
         description: l('Vijfsterren Superior hotel in een 17e-eeuws kasteel op een landgoed bij Eijsden, tien minuten van Maastricht. Lid van The Leading Hotels of the World en bekroond met een Michelin Key. Restaurant Maes staat in de Michelin-gids; de Oysana-spa met binnenbad, sauna\'s en behandelkamers ligt in de oude kasteelhoeve.',
           'Five-star Superior hotel in a 17th-century castle on an estate near Eijsden, ten minutes from Maastricht. A Leading Hotel of the World with a Michelin Key. Restaurant Maes is Michelin-listed; the Oysana spa with indoor pool, saunas and treatment rooms occupies the old castle farm.'),
         facilities: ['Restaurant Maes (Michelin-gids)', 'Oysana spa met binnenbad', 'Sauna\'s en behandelingen', 'Fitness', 'Kasteeltuin', 'Gratis parkeren', 'Gratis wifi', 'Bar en lounge'],
+        room: { name: l('Deluxe Room', 'Deluxe Room'), description: l('Je verblijft in een Deluxe Room met kasteel- of tuinzicht: design in warme materialen, een kingsize bed, marmeren badkamer en een badjas voor de Oysana-spa.', 'You stay in a Deluxe Room with castle or garden views: design in warm materials, a king-size bed, marble bathroom and a bathrobe for the Oysana spa.') },
       },
     },
     days: [
@@ -309,16 +323,19 @@ export const TRIP_ITINERARIES: Record<string, TripItinerarySpec> = {
         description: l('Viersterrenhotel in een prachtig gerestaureerd Ursulinenklooster midden in het historische Kloosterkwartier van Sittard. De kloostergangen, de kapel en de binnentuin zijn bewaard; de 45 kamers zijn modern en rustig. Restaurant George\'s heeft een Gault&Millau-vermelding.',
           'Four-star hotel in a beautifully restored Ursuline convent in the historic Kloosterkwartier of Sittard. Cloisters, chapel and courtyard garden have been preserved; the 45 rooms are modern and quiet. Restaurant George\'s holds a Gault&Millau listing.'),
         facilities: ['Restaurant George\'s (Gault&Millau)', 'Bar in de kapel', 'Binnentuin en terras', 'Gratis wifi', 'Lift', 'Parkeergarage Oda nabij (betaald)', 'Fietsenstalling'],
+        room: { name: l('Kloosterkamer (upgrade)', 'Kloosterkamer (upgrade)'), description: l('Op basis van beschikbaarheid krijg je een upgrade naar een luxer kamertype in het voormalige klooster: hoge ramen, rustige kleuren en een moderne badkamer, met zicht op de binnentuin of het Kloosterkwartier.', 'Subject to availability you are upgraded to a more luxurious room type in the former convent: tall windows, calm colours and a modern bathroom, overlooking the courtyard garden or the Kloosterkwartier.') },
       },
       'Hotel Winselerhof': {
         description: l('Een 16e-eeuwse herenboerderij aan de rand van Landgraaf, met een binnenplaats, een eigen wijngaard en 49 kamers rond de oude hoeve. Restaurant Pirandello serveert Italiaans-Limburgse gerechten met een Gault&Millau-vermelding; vanaf het terras kijk je over het Zuid-Limburgse land.',
           'A 16th-century manor farm on the edge of Landgraaf, with a courtyard, its own vineyard and 49 rooms around the old farmstead. Restaurant Pirandello serves Italian-Limburg cuisine with a Gault&Millau listing; the terrace looks out over the South Limburg countryside.'),
         facilities: ['Restaurant Pirandello (Gault&Millau)', 'Eigen wijngaard', 'Binnenplaats met terras', 'Gratis parkeren', 'Gratis wifi', 'Wandel- en fietsroutes', 'Bar'],
+        room: { name: l('Hoevekamer', 'Hoevekamer'), description: l("Een ruime kamer in de oude hoeve, met houten balken, een comfortabel bed en zicht op de binnenplaats of de wijngaard. 's Ochtends ontbijt je in het restaurant beneden.", 'A spacious room in the old farmstead, with wooden beams, a comfortable bed and views of the courtyard or vineyard. In the morning you breakfast in the restaurant downstairs.') },
       },
       'Hotel Monastère': {
         description: l('Boetiekhotel in een voormalig klooster uit 1907 in de wijk Boschstraatkwartier, op loopafstand van het Vrijthof en de Markt. De 56 kamers zijn ingericht met kunst en design; de kloostertuin is een oase in de stad. Ontbijt in de voormalige kapel, borrel in de bar of op het binnenterras.',
           'Boutique hotel in a former 1907 convent in the Boschstraat quarter, walking distance from the Vrijthof and Markt. The 56 rooms feature art and design; the cloister garden is an oasis in the city. Breakfast in the former chapel, drinks in the bar or on the inner terrace.'),
         facilities: ['Bar en lounge', 'Kloostertuin met terras', 'Ontbijt in de kapel', 'Gratis wifi', 'Lift', 'Parkeergarage nabij (betaald)', 'Fietsverhuur'],
+        room: { name: l('Executive Room (upgrade)', 'Executive Room (upgrade)'), description: l('Op basis van beschikbaarheid een Executive Room met kunst aan de wand, een zitje en een luxe badkamer. Een fles wijn staat bij aankomst op de kamer.', 'Subject to availability an Executive Room with art on the walls, a seating area and a luxurious bathroom. A bottle of wine awaits in the room on arrival.') },
       },
     },
     days: [
@@ -366,16 +383,19 @@ export const TRIP_ITINERARIES: Record<string, TripItinerarySpec> = {
         description: l('Viersterrenhotel in de duinen van Burgh-Haamstede, op de kop van Schouwen-Duiveland. De 95 kamers en suites liggen rond een binnentuin; er is een binnenzwembad met sauna en fitness, een restaurant met terras en dagelijks een tasting-uurtje in de bar. Het strand en de bossen van Westerschouwen liggen op fietsafstand.',
           'Four-star hotel in the dunes of Burgh-Haamstede, at the tip of Schouwen-Duiveland. The 95 rooms and suites surround an inner garden; there is an indoor pool with sauna and gym, a restaurant with terrace and a daily tasting hour in the bar. The beach and the Westerschouwen woods are a short cycle away.'),
         facilities: ['Restaurant met terras', 'Bar met dagelijks tasting-uurtje', 'Binnenzwembad', 'Wellness en fitness', 'Fietsverhuur', 'Parkeren (betaald)', 'Gratis wifi', 'Lift'],
+        room: { name: l('Comfortkamer', 'Comfortkamer'), description: l('Frisse kamer in duinkleuren met een comfortabel bed, zitje en badkamer met douche. Een badjas ligt klaar voor het zwembad en de wellness.', 'Fresh room in dune colours with a comfortable bed, seating area and bathroom with shower. A bathrobe is ready for the pool and wellness.') },
       },
       'Inntel Hotels Den Haag Marina Beach': {
         description: l('Splinternieuw viersterrenhotel direct aan het strand van Scheveningen, aan de jachthaven. De kamers hebben zeezicht of een whirlpool; op het dak liggen een binnen- en buitenzwembad, spa en fitness met uitzicht over de Noordzee. De Pier en de boulevard liggen op loopafstand.',
           'Brand-new four-star hotel right on Scheveningen beach, by the marina. Rooms have sea views or a whirlpool; on the roof are an indoor and outdoor pool, spa and gym overlooking the North Sea. The Pier and boulevard are a short walk away.'),
         facilities: ['Restaurant met zeezicht', 'Binnen- en buitenzwembad', 'Spa en sauna', 'Fitness', 'Direct aan het strand', 'Parkeergarage (gereduceerd tarief)', 'Gratis wifi', 'Lift'],
+        room: { name: l('Kamer met whirlpool of zeezicht', 'Kamer met whirlpool of zeezicht'), description: l('Splinternieuwe kamer met een whirlpool voor twee of een balkon met uitzicht over de Noordzee en de jachthaven. Strak design, kingsize bed en een regendouche.', 'Brand-new room with a whirlpool for two or a balcony overlooking the North Sea and the marina. Sleek design, king-size bed and a rain shower.') },
       },
       'Carlton Square': {
         description: l('Viersterrenhotel aan het Baan-plein in het centrum van Haarlem, op vijf minuten lopen van de Grote Markt. De 106 kamers zijn ruim en modern; restaurant Baan 7 serveert een verrassingsmenu van de chef. Zandvoort en Bloemendaal aan Zee liggen op een kwartier.',
           'Four-star hotel on the Baan square in the centre of Haarlem, five minutes\' walk from the Grote Markt. The 106 rooms are spacious and modern; restaurant Baan 7 serves the chef\'s surprise menu. Zandvoort and Bloemendaal aan Zee are fifteen minutes away.'),
         facilities: ['Restaurant Baan 7', 'Bar', 'Fitness', 'Gratis wifi', 'Lift', 'Parkeergarage nabij (betaald)', 'Fietsverhuur'],
+        room: { name: l('Comfortkamer', 'Comfortkamer'), description: l('Ruime, moderne kamer met een kingsize bed, bureau en een badkamer met douche. Rustig gelegen aan het plein, op loopafstand van de Grote Markt.', 'Spacious, modern room with a king-size bed, desk and a bathroom with shower. Quietly located on the square, within walking distance of the Grote Markt.') },
       },
     },
     days: [
@@ -421,16 +441,19 @@ export const TRIP_ITINERARIES: Record<string, TripItinerarySpec> = {
         description: l('Modern viersterrenhotel in het centrum van Delden, tegenover de Oude Blasiuskerk en op loopafstand van Landgoed Twickel. Ruime kamers, een brasserie met terras op het plein en een fietsenberging met oplaadpunten. Je auto blijft hier de hele vakantie gratis staan.',
           'Modern four-star hotel in the centre of Delden, opposite the Oude Blasius church and a short walk from the Twickel estate. Spacious rooms, a brasserie with terrace on the square and a bike store with charging points. Your car stays here free for the whole holiday.'),
         facilities: ['Brasserie met terras', 'Bar', 'Afgesloten fietsenberging met laadpunten', 'Gratis parkeren', 'Gratis wifi', 'Lift', 'Fietsverhuur'],
+        room: { name: l('Comfortkamer', 'Comfortkamer'), description: l('Moderne kamer met een comfortabel bed, bureau en badkamer met regendouche. Je fiets staat veilig in de afgesloten berging beneden.', 'Modern room with a comfortable bed, desk and bathroom with rain shower. Your bike is safe in the locked storage downstairs.') },
       },
       'Hotel de Zwaan': {
         description: l('Familiehotel in het hart van Raalte, al generaties lang een begrip in Salland. Bekend om restaurant Buitengewoon met zijn wijnkelder en om de gastvrijheid van de familie. De kamers zijn klassiek en comfortabel; het dorp met zijn terrassen ligt voor de deur.',
           'Family hotel in the heart of Raalte, a household name in Salland for generations. Known for its restaurant with wine cellar and the family\'s hospitality. The rooms are classic and comfortable; the village and its terraces are right outside.'),
         facilities: ['Restaurant', 'Wijnkelder en wijnbar', 'Terras', 'Afgesloten fietsenberging', 'Gratis parkeren', 'Gratis wifi', 'Lift'],
+        room: { name: l('Comfortkamer', 'Comfortkamer'), description: l('Klassiek ingerichte kamer met warme kleuren, een comfortabel tweepersoonsbed en een nette badkamer. Het dorp en het restaurant van de familie liggen onder je.', "Classically furnished room in warm colours with a comfortable double bed and a neat bathroom. The village and the family's restaurant are right below you.") },
       },
       'Landhuishotel Herikerberg': {
         description: l('Landhuishotel met rieten dak in de bossen van de Herikerberg bij Markelo, midden in het Twentse coulisselandschap. Een tuin vol rododendrons, een restaurant met terras en een sfeervolle lounge met open haard. Vanaf het hotel lopen wandel- en fietsroutes de heuvel op.',
           'Thatched country house hotel in the woods of the Herikerberg near Markelo, in the heart of the Twente landscape. A garden full of rhododendrons, a restaurant with terrace and a cosy lounge with open fire. Walking and cycling routes climb the hill straight from the hotel.'),
         facilities: ['Restaurant met terras', 'Lounge met open haard', 'Tuin', 'Afgesloten fietsenberging', 'Gratis parkeren', 'Gratis wifi', 'Wandel- en fietsroutes vanaf het hotel'],
+        room: { name: l('Landhuiskamer', 'Landhuiskamer'), description: l('Kamer met zicht op de rododendrontuin of het bos, ingericht in warme landhuisstijl met een comfortabel bed en een badkamer met bad of douche.', 'Room overlooking the rhododendron garden or the woods, decorated in warm country-house style with a comfortable bed and a bathroom with bath or shower.') },
       },
     },
     days: [

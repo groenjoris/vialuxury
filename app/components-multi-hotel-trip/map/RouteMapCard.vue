@@ -3,11 +3,19 @@
        PDP. Zelfde plek en breedte als de minimap van een gewone deal
        (rechterkolom van .deal-page__intro) en dezelfde vormgeving als het
        kaartje op de vakantie-dealcard: het schematische SVG-kaartje met
-       water/land/provinciegrenzen en genummerde stops. Klikken op de kaart
-       wordt later gebrieft (link is nu een placeholder). -->
+       water/land/provinciegrenzen, plaatsnamen en genummerde stops. Hover op
+       een nummer toont de hotelnaam, klikken opent de hotel-pop-up. Klikken
+       op de kaart zelf wordt later gebrieft (link is nu een placeholder). -->
   <div class="route-map">
     <a href="#" class="route-map__box" :aria-label="t('common.viewMap')" @click.prevent>
-      <MultiHotelTripRouteMap class="route-map__svg" :stops="stops" :max-scale="maxScale" />
+      <MultiHotelTripRouteMap
+        class="route-map__svg"
+        :stops="stops"
+        :max-scale="maxScale"
+        show-labels
+        interactive
+        @stop-click="$emit('stop-click', $event)"
+      />
     </a>
     <div class="route-map__footer">
       <span class="route-map__route">
@@ -22,9 +30,11 @@
 </template>
 
 <script setup lang="ts">
-interface RouteStop { lat: number; lng: number; label: string }
+interface RouteStop { lat: number; lng: number; label: string; title?: string }
 
 const { t } = useMultiHotelTripI18n()
+
+defineEmits<{ 'stop-click': [index: number] }>()
 
 withDefaults(defineProps<{
   /** Hotels in reisvolgorde. */
@@ -61,11 +71,12 @@ withDefaults(defineProps<{
   height: 100%;
   display: block;
 }
+/* Kaartje is maar 220 px breed: route en link onder elkaar, links uitgelijnd. */
 .route-map__footer {
   display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: var(--space-md);
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
 }
 .route-map__route {
   display: inline;

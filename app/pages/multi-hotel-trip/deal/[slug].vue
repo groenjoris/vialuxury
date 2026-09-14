@@ -217,6 +217,7 @@
             v-if="isTrip"
             class="deal-page__minimap"
             :stops="tripMapStops"
+            @stop-click="openTripHotel"
           />
           <MultiHotelTripMiniMapCard
             v-else
@@ -274,11 +275,11 @@
         </section>
 
         <!-- Tips in de buurt — directly below Hotel faciliteiten. -->
-        <div id="tips" class="deal-page__nearby-mobile">
+        <div v-if="!isTrip" id="tips" class="deal-page__nearby-mobile">
           <MultiHotelTripHotelNearbyTips :tips="hotel.nearbyTips" :hotel-name="hotel.name" />
         </div>
 
-        <section v-if="hotel.houseRules && hotel.houseRules.length" id="huisregels" class="container deal-page__house-rules deal-page__house-rules--mobile">
+        <section v-if="!isTrip && hotel.houseRules && hotel.houseRules.length" id="huisregels" class="container deal-page__house-rules deal-page__house-rules--mobile">
           <h2 class="section-title">{{ t('hotel.houseRules') }}</h2>
           <p class="house-rules__intro">{{ t('deal.houseRulesIntro') }}</p>
           <div class="house-rules__right">
@@ -301,7 +302,7 @@
         </section>
 
         <!-- "Waarom ViaLuxury" (Tips moved up under Hotel faciliteiten). -->
-        <MultiHotelTripWhyViaLuxury class="deal-page__why-mobile" />
+        <MultiHotelTripWhyViaLuxury v-if="!isTrip" class="deal-page__why-mobile" />
 
         <!-- 17. Anderen bekeken ook -->
         <MultiHotelTripOthersAlsoViewed
@@ -323,9 +324,10 @@
       <!-- Anchor tabs -->
       <nav class="deal-page__tabs container">
         <a href="#intro" class="deal-page__tab">{{ t('deal.tabIntro') }}</a>
-        <a href="#arrangement" class="deal-page__tab">{{ t('deal.tabArrangement') }}</a>
-        <a href="#tips" class="deal-page__tab">{{ t('hotel.tabNearby') }}</a>
-        <a v-if="hotel && hotel.houseRules && hotel.houseRules.length" href="#huisregels" class="deal-page__tab">{{ t('hotel.tabHouseRules') }}</a>
+        <!-- Vakantie: "Dag voor dag" i.p.v. "Jouw arrangement"; geen tips/huisregels. -->
+        <a href="#arrangement" class="deal-page__tab">{{ isTrip ? t('trip.itineraryHeading') : t('deal.tabArrangement') }}</a>
+        <a v-if="!isTrip" href="#tips" class="deal-page__tab">{{ t('hotel.tabNearby') }}</a>
+        <a v-if="!isTrip && hotel && hotel.houseRules && hotel.houseRules.length" href="#huisregels" class="deal-page__tab">{{ t('hotel.tabHouseRules') }}</a>
         <a href="#veelgestelde-vragen" class="deal-page__tab">{{ t('hotel.tabFaq') }}</a>
         <!-- Heart + share live in the anchor-nav row, right-aligned, so
              they sit at the same height as the tabs and above the grey
@@ -416,6 +418,7 @@
               id="mini-map"
               class="deal-page__minimap"
               :stops="tripMapStops"
+              @stop-click="openTripHotel"
             />
             <MultiHotelTripMiniMapCard
               v-else
@@ -672,7 +675,7 @@
       </section>
 
       <!-- Tips in de buurt — directly below Hotel faciliteiten. -->
-      <div v-if="!isMobile" id="tips">
+      <div v-if="!isMobile && !isTrip" id="tips">
         <MultiHotelTripHotelNearbyTips :tips="hotel.nearbyTips" :hotel-name="hotel.name" />
       </div>
 
@@ -710,7 +713,7 @@
       </section>
 
       <!-- House Rules (desktop, full-width) -->
-      <section v-if="!isMobile && hotel.houseRules && hotel.houseRules.length" id="huisregels" class="deal-page__house-rules container">
+      <section v-if="!isMobile && !isTrip && hotel.houseRules && hotel.houseRules.length" id="huisregels" class="deal-page__house-rules container">
         <div class="house-rules__layout">
           <div class="house-rules__left">
             <h2 class="section-title">{{ t('hotel.houseRules') }}</h2>
@@ -760,7 +763,7 @@
       </section>
 
       <!-- "Waarom ViaLuxury" (Tips moved up under Hotel faciliteiten). -->
-      <MultiHotelTripWhyViaLuxury class="deal-page__why-desktop" />
+      <MultiHotelTripWhyViaLuxury v-if="!isTrip" class="deal-page__why-desktop" />
 
       <!-- "Anderen bekeken ook" at the bottom of the deal page.
            Fills 3 cards: same hotel first, then nearby. -->
@@ -853,9 +856,9 @@
       <div class="deal-page__cta-bar-inner container">
         <nav class="deal-page__tabs deal-page__tabs--in-bar">
           <a href="#intro" class="deal-page__tab" :class="{ 'deal-page__tab--active': activeAnchor === 'intro' }">{{ t('deal.tabIntro') }}</a>
-          <a href="#arrangement" class="deal-page__tab" :class="{ 'deal-page__tab--active': activeAnchor === 'arrangement' }">{{ t('deal.tabArrangement') }}</a>
-          <a href="#tips" class="deal-page__tab" :class="{ 'deal-page__tab--active': activeAnchor === 'tips' }">{{ t('hotel.tabNearby') }}</a>
-          <a v-if="hotel.houseRules && hotel.houseRules.length" href="#huisregels" class="deal-page__tab" :class="{ 'deal-page__tab--active': activeAnchor === 'huisregels' }">{{ t('hotel.tabHouseRules') }}</a>
+          <a href="#arrangement" class="deal-page__tab" :class="{ 'deal-page__tab--active': activeAnchor === 'arrangement' }">{{ isTrip ? t('trip.itineraryHeading') : t('deal.tabArrangement') }}</a>
+          <a v-if="!isTrip" href="#tips" class="deal-page__tab" :class="{ 'deal-page__tab--active': activeAnchor === 'tips' }">{{ t('hotel.tabNearby') }}</a>
+          <a v-if="!isTrip && hotel.houseRules && hotel.houseRules.length" href="#huisregels" class="deal-page__tab" :class="{ 'deal-page__tab--active': activeAnchor === 'huisregels' }">{{ t('hotel.tabHouseRules') }}</a>
           <a href="#veelgestelde-vragen" class="deal-page__tab" :class="{ 'deal-page__tab--active': activeAnchor === 'veelgestelde-vragen' }">{{ t('hotel.tabFaq') }}</a>
         </nav>
         <div class="deal-page__cta-bar-cluster">
@@ -1340,8 +1343,24 @@ const tripGalleryStickers = tripPdp?.stickers
 const tripMapStops = computed(() =>
   (trip?.stops ?? [])
     .filter(s => typeof s.lat === 'number' && typeof s.lng === 'number')
-    .map(s => ({ lat: s.lat as number, lng: s.lng as number, label: s.city })),
+    .map(s => ({ lat: s.lat as number, lng: s.lng as number, label: s.city, title: s.hotelName })),
 )
+/** "een half uur" / "drie kwartier" / "1 uur 20 min" — reistijd in woorden. */
+function tripDurationLabel(minutes: number): string {
+  if (minutes === 30) return t('trip.dur.halfHour')
+  if (minutes === 45) return t('trip.dur.threeQuarters')
+  if (minutes === 60) return t('trip.dur.hour')
+  if (minutes < 60) return t('trip.dur.minutes').replace('{m}', String(minutes))
+  const h = Math.floor(minutes / 60), m = minutes % 60
+  return m === 0 ? t('trip.dur.hours').replace('{h}', String(h)) : t('trip.dur.hoursMinutes').replace('{h}', String(h)).replace('{m}', String(m))
+}
+/** "50 km (een half uur)" — of bij een fietsvakantie "45 km fietsen". */
+function tripDistanceLabel(travel?: { km: number; minutes: number }): string {
+  if (!travel) return ''
+  if (trip?.type === 'fiets') return t('trip.distanceBike').replace('{km}', String(travel.km))
+  return t('trip.distanceDrive').replace('{km}', String(travel.km)).replace('{duration}', tripDurationLabel(travel.minutes))
+}
+
 /** Dagprogramma voor <MultiHotelTripItinerary>: de vaste blokken (inchecken,
  *  onderweg/uitchecken, diner, terugreis) krijgen hier hun tekst; met een
  *  gekozen aankomstdatum krijgt elke dag zijn datum. */
@@ -1387,6 +1406,17 @@ const tripDaysView = computed<TripDayView[]>(() => {
             stopIndex: b.stopIndex,
           }
         }
+        case 'breakfast': {
+          const bl = b.breakfastLabel ? localized(b.breakfastLabel) : t('trip.tag.breakfast')
+          return {
+            kind: 'breakfast',
+            tag: t('trip.tag.breakfast'),
+            title: t('trip.breakfastAt').replace('{hotel}', name),
+            text: t('trip.breakfastText').replace('{breakfast}', bl.charAt(0).toLowerCase() + bl.slice(1)),
+            image: b.image,
+            stopIndex: b.stopIndex,
+          }
+        }
         case 'homeward':
           return {
             kind: 'homeward',
@@ -1407,9 +1437,16 @@ const tripDaysView = computed<TripDayView[]>(() => {
     })
     const view: TripDayView = { day: d.day, label: t('trip.daySingle').replace('{a}', String(d.day)), blocks }
     if (checkIn) view.date = formatDateWeekdayShort(dayjs(checkIn).add(d.day - 1, 'day').format('YYYY-MM-DD'))
-    if (from && stop && from !== stop) view.subtitle = `${from.city} → ${stop.city}`
-    else if (stop) view.subtitle = `${stop.city} · ${stop.hotelName}`
-    else if (from) view.subtitle = from.city
+    // Informatieve ondertitel per dagtype (aankomst / wisseldag / verblijf / terugreis).
+    if (d.day === 1 && stop) {
+      view.subtitle = t('trip.subtitle.arrival').replace('{city}', stop.city).replace('{region}', stop.region).replace('{hotel}', stop.hotelName).replace('{time}', stop.checkIn)
+    } else if (from && stop && from !== stop) {
+      view.subtitle = t('trip.subtitle.transfer').replace('{distance}', tripDistanceLabel(stop.travel)).replace('{city}', stop.city).replace('{hotel}', stop.hotelName).replace('{time}', stop.checkIn)
+    } else if (stop) {
+      view.subtitle = t('trip.subtitle.stay').replace('{city}', stop.city).replace('{hotel}', stop.hotelName)
+    } else if (from) {
+      view.subtitle = t('trip.subtitle.home').replace('{hotel}', from.hotelName)
+    }
     return view
   })
 })
@@ -1430,6 +1467,9 @@ const tripHotelModal = computed<TripHotelModalData | null>(() => {
     description: localized(d.description),
     facilities: d.facilities,
     includes: d.includes.map(inc => localized(inc)),
+    houseRules: d.houseRules.map(r => ({ title: localized(r.title), description: localized(r.description) })),
+    room: d.room ? { name: localized(d.room.name), description: localized(d.room.description), image: d.room.image } : undefined,
+    checkIn: d.checkIn,
   }
 })
 
