@@ -36,6 +36,29 @@
         </div>
       </section>
 
+      <!-- Multi Hotel Trip — namespaced copy of First Release (kept in sync
+           via scripts/sync-r1-to-mht.sh) plus the room-table checkout merged
+           in from the flexibel-annuleren prototype. New concept: vakanties
+           met twee of drie hotels achter elkaar. -->
+      <section class="start-section">
+        <h2 class="start-section__title">Multi Hotel Trip</h2>
+        <p class="start-section__lead">
+          Kopie van release één + checkout met room table (flexibel annuleren).
+        </p>
+        <div class="start-section__buttons">
+          <button
+            type="button"
+            class="start-btn start-btn--primary"
+            @click="startMultiHotelTripFromHome"
+          >Homepage</button>
+          <button
+            type="button"
+            class="start-btn"
+            @click="startMultiHotelTripCheckout"
+          >Direct naar checkout</button>
+        </div>
+      </section>
+
       <!-- Second release — full independent copy of First Release, the
            next iteration the client will build on. -->
       <section class="start-section">
@@ -165,6 +188,19 @@ const {
   clearDestinations: clearDestinationsSr,
 } = useSecondReleaseSearchState()
 
+// Multi Hotel Trip mirror — namespaced copy of First Release with its own composables.
+const { setHeroPhotoIndex: setHeroPhotoIndexMht } = useMultiHotelTripHomeVariant()
+const { clear: clearMht } = useMultiHotelTripPartner()
+const {
+  clearArrivalDate: clearArrivalDateMht,
+  setSearchGroup: setSearchGroupMht,
+  clearDuration: clearDurationMht,
+  setFlexibility: setFlexibilityMht,
+  resetBudget: resetBudgetMht,
+  clearFilterTags: clearFilterTagsMht,
+  clearDestinations: clearDestinationsMht,
+} = useMultiHotelTripSearchState()
+
 // Northstar mirror — separate state lives in its own composables.
 const { clear: clearNs } = useNorthstarPartner()
 const {
@@ -183,6 +219,7 @@ onMounted(() => {
   clear()
   clearNs()
   clearSr()
+  clearMht()
 })
 
 function resetAll() {
@@ -280,6 +317,32 @@ function startSecondReleaseFromNushop() {
   resetAllSecondRelease()
   setPartnerSr('nu')
   navigateTo('/second-release/deal/ervaar-pure-luxe-in-het-chique-5-hotel-des-indes?partner=nu')
+}
+
+/** Reset Multi Hotel Trip session state so each run starts clean. */
+function resetAllMultiHotelTrip() {
+  clearMht()
+  clearArrivalDateMht()
+  setSearchGroupMht(2, 1)
+  clearDurationMht()
+  setFlexibilityMht(0)
+  resetBudgetMht()
+  clearFilterTagsMht()
+  clearDestinationsMht()
+}
+
+/** Multi Hotel Trip — start on the dedicated /multi-hotel-trip/home page. */
+function startMultiHotelTripFromHome() {
+  resetAllMultiHotelTrip()
+  setHeroPhotoIndexMht(0)
+  navigateTo('/multi-hotel-trip/home')
+}
+
+/** Multi Hotel Trip — jump straight into the merged checkout (room table
+ *  flow from the flexibel-annuleren prototype): kalenderstap eerst. */
+function startMultiHotelTripCheckout() {
+  resetAllMultiHotelTrip()
+  navigateTo('/multi-hotel-trip/checkout/datum')
 }
 
 /** "Start with ad" for the experimental homepage variants. Same static

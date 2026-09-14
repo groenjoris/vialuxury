@@ -107,7 +107,11 @@
                 :key="row.key"
                 class="destination-popup__list-item"
                 :class="{ 'destination-popup__list-item--link': row.link }"
+                role="button"
+                tabindex="0"
                 @click="row.pick()"
+                @keydown.enter.prevent="row.pick()"
+                @keydown.space.prevent="row.pick()"
               >
                 <div class="destination-popup__list-text">
                   <span class="destination-popup__list-name">{{ row.name }}</span>
@@ -122,11 +126,12 @@
 
       <!-- Browse mode: provincies (no label) on top, themes below. -->
       <div v-else-if="!isSearching" class="destination-popup__browse">
-        <!-- Provincies / regio's — first section, no heading. -->
+        <!-- Provincies / regio's — first section, no heading. Browse mode
+             shows a curated 6 (autosuggest still searches the full list). -->
         <div class="destination-popup__section destination-popup__section--destinations">
           <div class="destination-popup__chips">
             <button
-              v-for="dest in destinations"
+              v-for="dest in browseDestinations"
               :key="dest.id"
               class="dest-chip dest-chip--destination"
               :class="{ 'dest-chip--selected': selectedDestinations.includes(dest.id) }"
@@ -146,8 +151,7 @@
               <span class="dest-chip__country">{{ dest.country }}</span>
             </button>
             <!-- Text-only escape hatch on its own row below the tiles:
-                 marks "no preference" and closes ("show everything").
-                 Mobile renders it as a plain text link. -->
+                 clears any pick and closes ("show everything"). -->
             <button class="dest-chip dest-chip--no-pref" @click="handleNoPreference">
               <span class="dest-chip__name">{{ t('header.noPreferenceLong') }}</span>
             </button>
@@ -188,7 +192,11 @@
             v-for="item in filteredSuggestions"
             :key="item.name"
             class="destination-popup__list-item"
+            role="button"
+            tabindex="0"
             @click="selectSuggestion(item)"
+            @keydown.enter.prevent="selectSuggestion(item)"
+            @keydown.space.prevent="selectSuggestion(item)"
           >
             <svg class="destination-popup__list-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M4.5 9.75768C4.5 15.5 12 22 12 22C12 22 19.5 15.5 19.5 9.75768C19.5 4.81181 15.6559 2 12 2C8.34409 2 4.5 4.81181 4.5 9.75768Z" /><path d="M12 12C13.3807 12 14.5 10.8807 14.5 9.5C14.5 8.11929 13.3807 7 12 7C10.6193 7 9.5 8.11929 9.5 9.5C9.5 10.8807 10.6193 12 12 12Z" />
@@ -211,7 +219,11 @@
               v-for="hotel in filteredHotels"
               :key="hotel.id"
               class="destination-popup__list-item destination-popup__list-item--hotel"
+              role="button"
+              tabindex="0"
               @click="selectHotel(hotel)"
+              @keydown.enter.prevent="selectHotel(hotel)"
+              @keydown.space.prevent="selectHotel(hotel)"
             >
               <svg class="destination-popup__list-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M3 21V7a2 2 0 012-2h14a2 2 0 012 2v14" />
@@ -348,6 +360,15 @@ function handleClear() {
   emit('clear')                     // Parent clears destinations/themes/cities
 }
 
+/** Browse mode shows only this curated set of province tiles (in this
+ *  order); the full `destinations` prop still feeds typed autosuggest. */
+const BROWSE_DESTINATION_IDS = ['zeeland', 'limburg', 'gelderland', 'drenthe', 'noord-holland', 'zuid-holland']
+const browseDestinations = computed(() =>
+  BROWSE_DESTINATION_IDS
+    .map(id => props.destinations.find(d => d.id === id))
+    .filter((d): d is (typeof props.destinations)[number] => !!d),
+)
+
 /** "Nog geen voorkeur" — wipe any destination/theme selection, flag the
  *  explicit no-preference pick (field shows "Alle bestemmingen") and close. */
 function handleNoPreference() {
@@ -355,7 +376,7 @@ function handleNoPreference() {
   emit('save')
 }
 
-const { t } = useSecondReleaseI18n()
+const { t } = useMultiHotelTripI18n()
 
 // Persistent search history (module-level would reset on HMR, so use provide/inject pattern)
 // Keep it simple: store in component, persists as long as popup is alive via parent keep-alive
@@ -493,7 +514,7 @@ const inlineSections = computed<InlineSection[]>(() => {
         key: 'destinations',
         title: 'Bestemmingen',
         rows: [
-          ...props.destinations.map(d => ({
+          ...browseDestinations.value.map(d => ({
             key: `d-${d.id}`,
             name: d.name,
             sublabel: '',
@@ -1056,14 +1077,15 @@ function selectHotel(hotel: { name: string; slug: string }) {
   max-width: max-content;
   white-space: nowrap;
 }
-/* Mobile: plain text (no border, no underline) instead of a bordered chip. */
+/* Mobile: plain text link instead of a bordered chip. */
 @media (max-width: 800px) {
   .dest-chip--no-pref {
     height: auto;
     padding: 0;
     border: none;
     background: transparent;
-    color: var(--color-text-secondary);
+    text-decoration: underline;
+    text-underline-offset: 3px;
   }
 }
 

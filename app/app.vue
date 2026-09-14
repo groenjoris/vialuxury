@@ -41,6 +41,11 @@ const { restoreHomeLayoutVariant } = useFirstReleaseHomeVariant()
 const { restore: restoreSr, set: setSr } = useSecondReleasePartner()
 const { restoreSearchSession: restoreSearchSessionSr } = useSecondReleaseSearchState()
 const { restoreHomeLayoutVariant: restoreHomeLayoutVariantSr } = useSecondReleaseHomeVariant()
+// Multi Hotel Trip mirror — namespaced copy of First Release (kept in sync
+// via scripts/sync-r1-to-mht.sh) with its own localStorage namespace.
+const { restore: restoreMht, set: setMht } = useMultiHotelTripPartner()
+const { restoreSearchSession: restoreSearchSessionMht } = useMultiHotelTripSearchState()
+const { restoreHomeLayoutVariant: restoreHomeLayoutVariantMht } = useMultiHotelTripHomeVariant()
 // Homepage variant ('1' / '2' / '3' / '4') — restored from URL first,
 // then localStorage. The active variant is also reflected on <body> as
 // `vl-variant-2` etc., so global CSS (e.g. variant-2.css) can re-style
@@ -73,9 +78,12 @@ onMounted(() => {
   restoreSr()
   restoreSearchSessionSr()
   restoreHomeLayoutVariantSr()
+  restoreMht()
+  restoreSearchSessionMht()
+  restoreHomeLayoutVariantMht()
   restoreHomeVariant(route.path)
   const p = route.query.partner
-  if (p === 'nu') { set('nu'); setSr('nu') }
+  if (p === 'nu') { set('nu'); setSr('nu'); setMht('nu') }
   applyCheckinFromUrl(route.query.checkin)
   applyGroupFromUrl(route.query.persons, route.query.rooms)
 })
@@ -100,6 +108,7 @@ watch(homeVariant, (v) => {
 const releaseScope = computed(() => {
   if (route.path.startsWith('/first-release')) return 'first'
   if (route.path.startsWith('/second-release')) return 'second'
+  if (route.path.startsWith('/multi-hotel-trip')) return 'mht'
   return null
 })
 // Set via useHead, NOT a client-side watch: the class has to be in the
@@ -113,7 +122,7 @@ useHead({
   },
 })
 watch(() => route.query.partner, (val) => {
-  if (val === 'nu') { set('nu'); setSr('nu') }
+  if (val === 'nu') { set('nu'); setSr('nu'); setMht('nu') }
 })
 watch(() => route.query.checkin, applyCheckinFromUrl)
 watch(() => [route.query.persons, route.query.rooms], ([p, r]) => applyGroupFromUrl(p, r))

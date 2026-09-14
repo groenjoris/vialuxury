@@ -24,6 +24,15 @@ export default defineNuxtConfig({
       prefix: 'SecondRelease',
       pathPrefix: false,
     },
+    // Multi Hotel Trip prototype — namespaced copy of First Release plus the
+    // checkout (room table) merged in from the flexibel-annuleren prototype.
+    // Kept in sync with R1 via scripts/sync-r1-to-mht.sh. All components
+    // auto-imported with a `MultiHotelTrip` prefix.
+    {
+      path: '~/components-multi-hotel-trip',
+      prefix: 'MultiHotelTrip',
+      pathPrefix: false,
+    },
     // Huisstijl variants — frozen snapshot of the 5-homepage prototype.
     {
       path: '~/components-huisstijl',
@@ -50,10 +59,12 @@ export default defineNuxtConfig({
     dirs: [
       'composables-first-release/**',
       'composables-second-release/**',
+      'composables-multi-hotel-trip/**',
       'composables-huisstijl/**',
       'composables-northstar/**',
       'stores-first-release/**',
       'stores-second-release/**',
+      'stores-multi-hotel-trip/**',
       'stores-huisstijl/**',
       'stores-northstar/**',
     ],
@@ -77,6 +88,10 @@ export default defineNuxtConfig({
     '~/assets/css/fr-home-variants.css',
     '~/assets/css/sr-variant-6.css',
     '~/assets/css/sr-home-variants.css',
+    '~/assets/css/mht-variant-6.css',
+    '~/assets/css/mht-home-variants.css',
+    // Checkout (room table) design system, scoped under .mht-checkout.
+    '~/assets/css/mht-checkout.css',
     '~/assets/css/home-categories.css',
   ],
 
@@ -94,7 +109,7 @@ export default defineNuxtConfig({
       // (1200 px container etc.) applies on first paint — without it,
       // the page briefly renders at the legacy 1137 px width and then
       // jumps to 1200 px once the client-side watcher mounts.
-      htmlAttrs: { lang: 'nl', 'data-fr-variant': '6', 'data-sr-variant': '6' },
+      htmlAttrs: { lang: 'nl', 'data-fr-variant': '6', 'data-sr-variant': '6', 'data-mht-variant': '6' },
       title: 'Via Luxury - Luxe Hotel Arrangementen',
       link: [
         { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },

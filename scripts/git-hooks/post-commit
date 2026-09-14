@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+# post-commit: raakt een commit Release 1 (R1) aan, voer die wijzigingen dan
+# automatisch door in het Multi Hotel Trip-prototype (MHT) en commit dat als
+# aparte "MHT: sync met R1"-commit. Bij conflicten blijft de werkkopie staan
+# met conflict-markers en wordt niets gecommit. Installeren:
+#   scripts/install-git-hooks.sh
+set -u
+[ -n "${MHT_SYNC_SKIP:-}" ] && exit 0
+ROOT="$(git rev-parse --show-toplevel)"
+cd "$ROOT"
+GIT_DIR="$(git rev-parse --git-dir)"
+# Niet tijdens merge/rebase/cherry-pick (dan is HEAD nog in beweging).
+for f in MERGE_HEAD REBASE_HEAD CHERRY_PICK_HEAD rebase-merge rebase-apply; do
+  [ -e "$GIT_DIR/$f" ] && exit 0
+done
+
+R1_PATHS=(
+  app/components-first-release
+  app/composables-first-release
+  app/stores-first-release
+  app/utils-first-release
+  app/pages/first-release
+  app/assets/css/fr-variant-6.css
+  app/assets/css/fr-home-variants.css
+)
+MHT_PATHS=(
+  app/components-multi-hotel-trip
+  app/composables-multi-hotel-trip
+  app/stores-multi-hotel-trip
+  app/utils-multi-hotel-trip
+  app/pages/multi-hotel-trip
+  app/assets/css/mht-variant-6.css
+  app/assets/css/mht-home-variants.css
+  scripts/mht-sync/last-synced-r1-commit
+)
+
+changed="$(git diff-tree --no-commit-id --name-only -r HEAD -- "${R1_PATHS[@]}")"
+[ -z "$changed" ] && exit 0
+
+echo "[mht-sync] R1 gewijzigd in $(git rev-parse --short HEAD) — MHT bijwerken…"
+if scripts/sync-r1-to-mht.sh; then
+  git add -A -- "${MHT_PATHS[@]}"
+  if git diff --cached --quiet; then
+    echo "[mht-sync] geen MHT-wijzigingen nodig."
+    exit 0
+  fi
+  subject="$(git log -1 --format=%s HEAD)"
+  MHT_SYNC_SKIP=1 git commit -q -m "MHT: sync met R1 ($(git rev-parse --short HEAD) — ${subject})
+
+Automatisch doorgevoerd door scripts/sync-r1-to-mht.sh (post-commit hook).
+
+Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
+  echo "[mht-sync] MHT-sync gecommit: $(git rev-parse --short HEAD)"
+else
+  echo "[mht-sync] LET OP: conflicten of fouten — los de markers op in de MHT-bestanden en commit ze daarna (marker is al bijgewerkt)." >&2
+fi
+exit 0
