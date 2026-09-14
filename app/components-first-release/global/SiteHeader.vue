@@ -2487,12 +2487,16 @@ function handleSelectHotelInPopup(slug: string) {
   font-weight: 500;
   color: var(--color-text-primary);
   line-height: 1.2;
-  /* Don't truncate the value with an ellipsis — labels are deliberately
-     compact ("Kies datum", "2 personen / 1 kamer", "Maakt niet uit") so
-     they should fit; on the rare narrow viewport let the field grow
-     instead of dropping characters. */
-  overflow: visible;
-  text-overflow: clip;
+  /* Truncate with an ellipsis: the fixed labels ("Kies datum", "2 personen /
+     1 kamer") always fit, but a prefilled destination — the hotel name on
+     the hotel/deal page, e.g. "Hotel Ter Zand - Handwritten Collection" —
+     is longer than the field and used to run underneath the clear ✕ and
+     into the next field. The body is min-width:0 / flex:1, so the value
+     clips at the body edge and the ✕ (a sibling flex item) stays clear. */
+  display: block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
 }
 
