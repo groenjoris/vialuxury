@@ -486,8 +486,8 @@ type InlineSection = {
 const inlineSections = computed<InlineSection[]>(() => {
   if (!isSearching.value) {
     // Click-only default: the SAME content as the desktop tiles —
-    // provinces, the "Nog geen voorkeur" link, then themes. Provinces
-    // show only their name (no country sublabel).
+    // provinces, the "Nog geen voorkeur" link, then themes. Rows show
+    // only their name (no country / "Thema's" sublabel).
     return [
       {
         key: 'destinations',
@@ -514,7 +514,7 @@ const inlineSections = computed<InlineSection[]>(() => {
         rows: props.themes.map(th => ({
           key: `t-${th.id}`,
           name: th.name,
-          sublabel: t('header.themes'),
+          sublabel: '',
           pick: () => emit('toggle-theme', th.id),
         })),
       },
@@ -552,7 +552,7 @@ const inlineSections = computed<InlineSection[]>(() => {
       rows: themeMatches.map(th => ({
         key: `t-${th.id}`,
         name: th.name,
-        sublabel: t('header.themes'),
+        sublabel: '',
         pick: () => emit('toggle-theme', th.id),
       })),
     },
@@ -766,10 +766,12 @@ function selectHotel(hotel: { name: string; slug: string }) {
 .destination-popup--inline .destination-popup__list-icon {
   display: none;
 }
-/* Inline "Nog geen voorkeur" row — a text link, not a destination. */
+/* Inline rows read one step larger than the desktop autosuggest (15 px). */
+.destination-popup--inline .destination-popup__list-name {
+  font-size: 15px;
+}
+/* Inline "Nog geen voorkeur" row — plain secondary text, no underline. */
 .destination-popup--inline .destination-popup__list-item--link .destination-popup__list-name {
-  text-decoration: underline;
-  text-underline-offset: 3px;
   color: var(--color-text-secondary);
 }
 
