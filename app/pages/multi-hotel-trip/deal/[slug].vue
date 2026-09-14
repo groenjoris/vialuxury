@@ -94,7 +94,8 @@
             <ul class="sidebar__inc-list">
               <li v-for="inc in currentDeal.inclusions" :key="inc.id">
                 <span class="sidebar__inc-check"><svg class="icon-check" viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10" style="vertical-align:-0.125em"><path d="M3 13L8 19L21 5"/></svg></span>
-                <span>{{ localized(inc.title) }}</span>
+                <MultiHotelTripHotelText v-if="isTrip" :text="localized(inc.title)" :hotels="tripHotelLinks" @open-hotel="openTripHotel" />
+                <span v-else>{{ localized(inc.title) }}</span>
               </li>
             </ul>
             <!-- Anchor link → scrolls to the full include-cards section. -->
@@ -218,6 +219,7 @@
             class="deal-page__minimap"
             :stops="tripMapStops"
             @open="tripMapOpen = true"
+            @stop-click="openTripHotel"
           />
           <MultiHotelTripMiniMapCard
             v-else
@@ -236,7 +238,7 @@
           <template v-if="isTrip">
             <h2 class="section-title">{{ t('trip.itineraryHeading') }}</h2>
             <p class="deal-page__itinerary-intro">{{ t('trip.itineraryIntro') }}</p>
-            <MultiHotelTripItinerary :days="tripDaysView" stacked @open-hotel="openTripHotel" />
+            <MultiHotelTripItinerary :days="tripDaysView" :hotels="tripHotelLinks" stacked @open-hotel="openTripHotel" />
           </template>
           <template v-else>
           <h2 class="section-title">
@@ -419,6 +421,7 @@
               class="deal-page__minimap deal-page__minimap--trip"
               :stops="tripMapStops"
               @open="tripMapOpen = true"
+              @stop-click="openTripHotel"
             />
             <MultiHotelTripMiniMapCard
               v-else
@@ -449,7 +452,7 @@
             <template v-if="isTrip">
               <h2 class="section-title">{{ t('trip.itineraryHeading') }}</h2>
               <p class="deal-page__itinerary-intro">{{ t('trip.itineraryIntro') }}</p>
-              <MultiHotelTripItinerary :days="tripDaysView" @open-hotel="openTripHotel" />
+              <MultiHotelTripItinerary :days="tripDaysView" :hotels="tripHotelLinks" @open-hotel="openTripHotel" />
             </template>
             <template v-else>
             <h2 class="section-title">
@@ -551,7 +554,8 @@
           <ul class="sidebar__inc-list">
             <li v-for="inc in currentDeal.inclusions" :key="inc.id">
               <span class="sidebar__inc-check"><svg class="icon-check" viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10" style="vertical-align:-0.125em"><path d="M3 13L8 19L21 5"/></svg></span>
-              <span>{{ localized(inc.title) }}</span>
+              <MultiHotelTripHotelText v-if="isTrip" :text="localized(inc.title)" :hotels="tripHotelLinks" @open-hotel="openTripHotel" />
+              <span v-else>{{ localized(inc.title) }}</span>
             </li>
           </ul>
           <!-- Anchor link → scrolls to the full include-cards section. -->
@@ -961,7 +965,13 @@
     </Teleport>
 
     <!-- Vakantie: hotel-pop-up vanuit het dagprogramma -->
-    <MultiHotelTripHotelModal :open="tripHotelOpen" :hotel="tripHotelModal" @close="tripHotelOpen = false" />
+    <MultiHotelTripHotelModal
+      :open="tripHotelOpen"
+      :hotel="tripHotelModal"
+      :variant="tripHotelPanel ? 'panel' : 'modal'"
+      :z-index="tripHotelPanel ? 1300 : undefined"
+      @close="closeTripHotel"
+    />
     <!-- Vakantie: fullscreen kaart met route, hotels en omgevingshighlights -->
     <MultiHotelTripFullscreenMap
       v-if="isTrip"
@@ -969,7 +979,9 @@
       :title="currentDeal ? localized(currentDeal.title) : ''"
       :stops="tripMapStops"
       :highlights="tripMapHighlights"
+      :nights-labels="tripMapNightsLabels"
       @close="tripMapOpen = false"
+      @hotel-click="openTripHotelPanel"
     />
 
     <!-- Photo gallery / lightbox -->
@@ -1348,12 +1360,25 @@ const tripHotelsLabel = computed(() =>
 const tripCitiesLabel = computed(() => trip ? trip.stops.map(s => s.city).join(' · ') : '')
 /** Hotelnaam-sticker per gallery-foto. */
 const tripGalleryStickers = tripPdp?.stickers
-/** Stops met ligging voor de routekaart. */
+/** Stops met ligging voor de kaarten (minimap + fullscreen). */
 const tripMapStops = computed(() =>
   (trip?.stops ?? [])
     .filter(s => typeof s.lat === 'number' && typeof s.lng === 'number')
-    .map(s => ({ lat: s.lat as number, lng: s.lng as number, label: s.city, title: s.hotelName })),
+    .map(s => ({
+      lat: s.lat as number,
+      lng: s.lng as number,
+      label: s.city,
+      title: s.hotelName,
+      starRating: s.starRating,
+      nights: s.nights,
+      image: s.image,
+      travelKm: s.travel?.km,
+    })),
 )
+/** "2 nachten" per hotel voor het hover-kaartje op de fullscreen kaart. */
+const tripMapNightsLabels = computed(() => (trip?.stops ?? []).map(s => nightsLabel(s.nights, lang.value)))
+/** Hotelnamen → klikbaar in dagprogramma en zijbalk (TripHotelText). */
+const tripHotelLinks = computed(() => (trip?.stops ?? []).map((s, i) => ({ name: s.hotelName, stopIndex: i })))
 /** "een half uur" / "drie kwartier" / "1 uur 20 min" — reistijd in woorden. */
 function tripDurationLabel(minutes: number): string {
   if (minutes === 30) return t('trip.dur.halfHour')
@@ -1475,7 +1500,11 @@ const tripMapHighlights = computed(() =>
 /** Hotel-pop-up vanuit het dagprogramma ("Meer over dit hotel"). */
 const tripHotelOpen = ref(false)
 const tripHotelIndex = ref(0)
-function openTripHotel(i: number) { tripHotelIndex.value = i; tripHotelOpen.value = true }
+/** Vanuit de fullscreen kaart opent de hotelinformatie als sidepanel. */
+const tripHotelPanel = ref(false)
+function openTripHotel(i: number) { tripHotelIndex.value = i; tripHotelPanel.value = false; tripHotelOpen.value = true }
+function openTripHotelPanel(i: number) { tripHotelIndex.value = i; tripHotelPanel.value = true; tripHotelOpen.value = true }
+function closeTripHotel() { tripHotelOpen.value = false }
 const tripHotelModal = computed<TripHotelModalData | null>(() => {
   if (!tripPdp || !trip) return null
   const d = tripHotelDetails(trip, tripPdp.content, tripHotelIndex.value)

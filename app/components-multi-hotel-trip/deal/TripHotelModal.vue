@@ -2,10 +2,17 @@
   <!-- Multi Hotel Trip — pop-up met hotelinformatie vanuit het dagprogramma
        ("Meer over dit hotel"): foto, naam + sterren, ligging, korte
        beschrijving, faciliteiten en wat er bij dít hotel inbegrepen is.
-       Zelfde kaart-in-overlay als de beschrijvings-pop-up van de dealpagina. -->
+       Zelfde kaart-in-overlay als de beschrijvings-pop-up van de dealpagina;
+       vanuit de fullscreen kaart als sidepanel rechts (variant="panel"). -->
   <Teleport to="body">
-    <Transition name="fade">
-      <div v-if="open && hotel" class="thm" @click.self="$emit('close')">
+    <Transition :name="variant === 'panel' ? 'thm-panel' : 'fade'">
+      <div
+        v-if="open && hotel"
+        class="thm"
+        :class="{ 'thm--panel': variant === 'panel' }"
+        :style="zIndex ? { zIndex } : undefined"
+        @click.self="$emit('close')"
+      >
         <div class="thm__card" data-scroll-lock-allow="true">
           <div class="thm__header">
             <div class="thm__heading">
@@ -116,6 +123,11 @@ export interface TripHotelModalData {
 const props = defineProps<{
   open: boolean
   hotel: TripHotelModalData | null
+  /** 'modal' = gecentreerde kaart (standaard); 'panel' = sidepanel rechts
+   *  (vanuit de fullscreen kaart). */
+  variant?: 'modal' | 'panel'
+  /** Boven een andere overlay (bv. de fullscreen kaart op 1200). */
+  zIndex?: number
 }>()
 
 defineEmits<{ close: [] }>()
@@ -322,6 +334,26 @@ function nextPhoto() {
 
 .fade-enter-active, .fade-leave-active { transition: opacity 180ms ease; }
 .fade-enter-from, .fade-leave-to { opacity: 0; }
+
+/* Sidepanel-variant (vanuit de fullscreen kaart): rechts, volle hoogte,
+   schuift in zoals de andere sidepanels. */
+.thm--panel {
+  justify-content: flex-end;
+  align-items: stretch;
+  padding: 0;
+  background: rgba(0, 0, 0, 0.4);
+}
+.thm--panel .thm__card {
+  width: min(440px, 95vw);
+  height: 100%;
+  max-height: none;
+  border-radius: 0;
+  box-shadow: -8px 0 30px rgba(0, 0, 0, 0.15);
+}
+.thm-panel-enter-active, .thm-panel-leave-active { transition: opacity 300ms ease; }
+.thm-panel-enter-active .thm__card, .thm-panel-leave-active .thm__card { transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1); }
+.thm-panel-enter-from, .thm-panel-leave-to { opacity: 0; }
+.thm-panel-enter-from .thm__card, .thm-panel-leave-to .thm__card { transform: translateX(100%); }
 
 @media (max-width: 767px) {
   .thm { padding: 0; align-items: flex-end; }

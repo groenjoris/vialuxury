@@ -38,17 +38,17 @@
       v-for="(m, i) in markers"
       :key="`stop-${i}`"
       class="trm__marker"
-      :class="{ 'trm__marker--interactive': interactive, 'trm__marker--hover': hover === i }"
+      :class="{ 'trm__marker--interactive': interactive || hoverable, 'trm__marker--hover': hover === i }"
       :transform="`translate(${m.x} ${m.y})`"
       :tabindex="interactive ? 0 : undefined"
       :role="interactive ? 'button' : undefined"
       :aria-label="interactive ? (stops[i]?.title ?? stops[i]?.label) : undefined"
       @click.stop.prevent="interactive && $emit('stop-click', i)"
       @keydown.enter.prevent="interactive && $emit('stop-click', i)"
-      @mouseenter="hover = i"
-      @mouseleave="hover = null"
-      @focus="hover = i"
-      @blur="hover = null"
+      @mouseenter="setHover(i)"
+      @mouseleave="setHover(null)"
+      @focus="setHover(i)"
+      @blur="setHover(null)"
     >
       <circle r="10" />
       <text y="0.5">{{ i + 1 }}</text>
@@ -76,17 +76,25 @@ const props = withDefaults(defineProps<{
   maxScale?: number
   /** Plaatsnamen naast de markers tonen (PDP-minimap). */
   showLabels?: boolean
-  /** Markers klikbaar (stop-click) met hotelnaam bij hover (PDP-minimap). */
+  /** Markers klikbaar (stop-click) met hotelnaam-tooltip bij hover. */
   interactive?: boolean
+  /** Alleen hover (stop-hover), geen klik/tooltip — dealcard: de card toont
+   *  zelf de foto en naam van het gehoverde hotel. */
+  hoverable?: boolean
 }>(), {
   maxScale: 200,
   showLabels: false,
   interactive: false,
+  hoverable: false,
 })
 
-defineEmits<{ 'stop-click': [index: number] }>()
+const emit = defineEmits<{ 'stop-click': [index: number]; 'stop-hover': [index: number | null] }>()
 
 const hover = ref<number | null>(null)
+function setHover(i: number | null) {
+  hover.value = i
+  if (props.hoverable || props.interactive) emit('stop-hover', i)
+}
 
 /** Tekenruimte (px). Verhouding ≈ de rechterhelft van het 224 px hoge fotogebied. */
 const W = 170

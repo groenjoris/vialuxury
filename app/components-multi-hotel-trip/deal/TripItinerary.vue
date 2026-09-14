@@ -12,7 +12,9 @@
           {{ day.label }}
           <span v-if="day.date" class="itin-day__date">{{ day.date }}</span>
         </h3>
-        <p v-if="day.subtitle" class="itin-day__subtitle">{{ day.subtitle }}</p>
+        <p v-if="day.subtitle" class="itin-day__subtitle">
+          <MultiHotelTripHotelText :text="day.subtitle" :hotels="hotels" @open-hotel="$emit('open-hotel', $event)" />
+        </p>
       </header>
 
       <div class="itin-day__blocks">
@@ -34,7 +36,7 @@
           </button>
           <div class="itin-block__body">
             <h4 class="itin-block__title">
-              {{ block.title }}
+              <MultiHotelTripHotelText :text="block.title" :hotels="hotels" @open-hotel="$emit('open-hotel', $event)" />
               <span v-if="block.starRating" class="itin-block__stars" aria-hidden="true">
                 <span v-for="n in block.starRating" :key="n" class="itin-block__star"><svg viewBox="0 0 18 18" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M16.963,6.786c-.088-.271-.323-.469-.605-.51l-4.62-.671L9.672,1.418c-.252-.512-1.093-.512-1.345,0l-2.066,4.186-4.62,.671c-.282,.041-.517,.239-.605,.51-.088,.271-.015,.57,.19,.769l3.343,3.258-.79,4.601c-.048,.282,.067,.566,.298,.734,.231,.167,.538,.189,.79,.057l4.132-2.173,4.132,2.173c.11,.058,.229,.086,.349,.086,.155,0,.31-.048,.441-.143,.231-.168,.347-.452,.298-.734l-.79-4.601,3.343-3.258c.205-.199,.278-.498,.19-.769Z"/></svg></span>
               </span>
@@ -79,6 +81,7 @@
 
 <script setup lang="ts">
 import { useBodyScrollLock } from '~/composables-multi-hotel-trip/useBodyScrollLock'
+import type { TripHotelLink } from './TripHotelText.vue'
 
 export type TripBlockKind = 'checkin' | 'checkout' | 'activity' | 'dinner' | 'homeward' | 'breakfast'
 
@@ -110,9 +113,11 @@ export interface TripDayView {
 
 withDefaults(defineProps<{
   days: TripDayView[]
+  /** Hotelnamen van de vakantie → klikbaar in koppen en ondertitels. */
+  hotels?: TripHotelLink[]
   /** Mobiel: foto boven de tekst. */
   stacked?: boolean
-}>(), { stacked: false })
+}>(), { stacked: false, hotels: () => [] })
 
 defineEmits<{ 'open-hotel': [stopIndex: number] }>()
 

@@ -85,7 +85,7 @@
                 <h1 v-else-if="singleThemeTagId" ref="titleRef" :key="`themed-${singleThemeTagId}`" class="search-page__title">
                   {{ themedTitleText }}
                 </h1>
-                <h1 v-else ref="titleRef" class="search-page__title">{{ totalDeals }} {{ isTripMode ? t(totalDeals === 1 ? 'search.holiday' : 'search.holidays') : t('search.deals') }}</h1>
+                <h1 v-else ref="titleRef" class="search-page__title">{{ totalDeals }} {{ resultsNoun }}</h1>
                 <!-- "Laat alle deals zien" secondary button — only when no
                      results so the user can wipe filters in one click. -->
                 <button
@@ -662,6 +662,19 @@ const breadcrumbs = computed(() => [
 
 const totalDeals = computed(() => {
   return sortedHotels.value.reduce((sum, hotel) => sum + hotel.deals.length, 0)
+})
+/** Multi Hotel Trip: "x hotelarrangementen & vakanties" bij gemengde
+ *  resultaten, "x hotelarrangementen" zonder vakanties, "x vakanties"
+ *  zonder hotels (of in de vakantiestand). */
+const tripDealCount = computed(() =>
+  sortedHotels.value.filter(h => h.trip).reduce((sum, h) => sum + h.deals.length, 0),
+)
+const resultsNoun = computed(() => {
+  const total = totalDeals.value
+  const trips = tripDealCount.value
+  if (isTripMode.value || (trips > 0 && trips === total)) return t(total === 1 ? 'search.holiday' : 'search.holidays')
+  if (trips === 0) return t(total === 1 ? 'search.hotelDeal' : 'search.hotelDeals')
+  return t('search.hotelDealsAndHolidays')
 })
 
 // View mode & filter state

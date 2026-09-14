@@ -27,8 +27,15 @@
       <!-- Multi Hotel Trip: linkerhelft de foto van het eerste hotel,
            rechterhelft een schematisch routekaartje met genummerde stops. -->
       <template v-if="isTrip">
-        <img class="deal-card-v2__trip-photo" :src="tripPhoto" :alt="localized(deal.title)" loading="lazy" />
-        <MultiHotelTripRouteMap class="deal-card-v2__trip-map" :stops="tripMapStops" />
+        <!-- Hover op een nummer op het kaartje: foto + naam en sterren van dát hotel. -->
+        <img class="deal-card-v2__trip-photo" :src="tripHoverStop?.image || tripPhoto" :alt="tripHoverStop?.hotelName || localized(deal.title)" loading="lazy" />
+        <div v-if="tripHoverStop" class="deal-card-v2__trip-caption">
+          <span class="deal-card-v2__trip-caption-name">{{ tripHoverStop.hotelName }}</span>
+          <span v-if="tripHoverStop.starRating" class="deal-card-v2__trip-caption-stars" aria-hidden="true">
+            <span v-for="n in tripHoverStop.starRating" :key="n"><svg viewBox="0 0 18 18" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M16.963,6.786c-.088-.271-.323-.469-.605-.51l-4.62-.671L9.672,1.418c-.252-.512-1.093-.512-1.345,0l-2.066,4.186-4.62,.671c-.282,.041-.517,.239-.605,.51-.088,.271-.015,.57,.19,.769l3.343,3.258-.79,4.601c-.048,.282,.067,.566,.298,.734,.231,.167,.538,.189,.79,.057l4.132-2.173,4.132,2.173c.11,.058,.229,.086,.349,.086,.155,0,.31-.048,.441-.143,.231-.168,.347-.452,.298-.734l-.79-4.601,3.343-3.258c.205-.199,.278-.498,.19-.769Z"/></svg></span>
+          </span>
+        </div>
+        <MultiHotelTripRouteMap class="deal-card-v2__trip-map" :stops="tripMapStops" hoverable @stop-hover="tripHoverIndex = $event" />
       </template>
       <img v-else :src="displayedImage" :alt="hotel?.name || localized(deal.title)" loading="lazy" />
       <!-- Sidepanel cards (deal-page and map) lock to a single
@@ -353,6 +360,12 @@ const isTrip = computed(() => !!props.hotel?.trip)
 const tripStopsLabel = computed(() => (props.hotel?.trip?.stops ?? []).map(s => s.city).join(' · '))
 /** Foto in de linkerhelft: het eerste hotel van de route. */
 const tripPhoto = computed(() => props.hotel?.trip?.stops[0]?.image || imageSrc.value)
+/** Gehoverd nummer op het kaartje → foto en naam van dat hotel in de linkerhelft. */
+const tripHoverIndex = ref<number | null>(null)
+const tripHoverStop = computed(() => {
+  const stops = (props.hotel?.trip?.stops ?? []).filter(s => typeof s.lat === 'number' && typeof s.lng === 'number')
+  return tripHoverIndex.value != null ? stops[tripHoverIndex.value] ?? null : null
+})
 /** Stops met ligging voor het routekaartje (rechterhelft). */
 const tripMapStops = computed(() =>
   (props.hotel?.trip?.stops ?? [])
@@ -1026,6 +1039,27 @@ const includesBullets = computed<string[]>(() => {
   border-left: 2px solid #fff;
   box-sizing: border-box;
 }
+/* Hover op een nummer: naam + sterren van dat hotel onderin de foto. */
+.deal-card-v2__trip-caption {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 50%;
+  padding: 28px 10px 10px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0));
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  pointer-events: none;
+}
+.deal-card-v2__trip-caption-name {
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+.deal-card-v2__trip-caption-stars { display: inline-flex; gap: 1px; font-size: 11px; line-height: 1; }
 
 /* Multi Hotel Trip: plaatsnamen van 2–3 hotels mogen over twee regels lopen. */
 .deal-card-v2__meta:has(.deal-card-v2__location--trip) {

@@ -83,6 +83,7 @@ export default defineNuxtConfig({
     'leaflet/dist/leaflet.css',
     'leaflet.markercluster/dist/MarkerCluster.css',
     '~/assets/css/leaflet-overrides.css',
+    '~/assets/css/mht-trip-map.css',
     '~/assets/css/variant-2.css',
     '~/assets/css/fr-variant-6.css',
     '~/assets/css/fr-home-variants.css',

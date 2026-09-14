@@ -232,6 +232,9 @@ const nl: Record<string, string> = {
   // Multi Hotel Trip — Vakanties-zoekpagina + dealcards
   'search.holiday': 'vakantie',
   'search.holidays': 'vakanties',
+  'search.hotelDeal': 'hotelarrangement',
+  'search.hotelDeals': 'hotelarrangementen',
+  'search.hotelDealsAndHolidays': 'hotelarrangementen & vakanties',
   'search.holidaysTitle': 'Vakanties',
   'search.holidaysPitch': 'Twee of drie hotels in één reis — met de auto of de fiets, met zorg samengesteld door het ViaLuxury-team.',
   'trip.auto': 'Autovakantie',
