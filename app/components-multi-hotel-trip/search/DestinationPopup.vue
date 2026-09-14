@@ -1077,15 +1077,14 @@ function selectHotel(hotel: { name: string; slug: string }) {
   max-width: max-content;
   white-space: nowrap;
 }
-/* Mobile: plain text link instead of a bordered chip. */
+/* Mobile: plain text (no border, no underline) instead of a bordered chip. */
 @media (max-width: 800px) {
   .dest-chip--no-pref {
     height: auto;
     padding: 0;
     border: none;
     background: transparent;
-    text-decoration: underline;
-    text-underline-offset: 3px;
+    color: var(--color-text-secondary);
   }
 }
 
