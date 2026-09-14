@@ -8,7 +8,9 @@
  * record (de card toont dan "Autovakantie"/"Fietsvakantie", de plaatsnamen
  * van de hotels en "Meerdere hotels"). Hotels die in deals.json staan
  * leveren hun eigen foto/sterren; de overige gebruiken de foto's uit de
- * PDF's (public/images/vakanties/<nr>/hotel-<n>.jpg).
+ * PDF's (public/images/vakanties/<nr>/hotel-<n>.jpg). Voor No. 001 zijn
+ * dat de door Joris aangeleverde high-res hotelfoto's (bron:
+ * vakanties voorbeeld content/<hotel>/, verkleind met sips -Z 1600).
  *
  * De vakantie-PDP (/multi-hotel-trip/deal/<slug>) leest `tripDetailBySlug`:
  * per hotel de dagen, ligging en de "Inclusief"-lijst uit de PDF; de
@@ -65,9 +67,9 @@ const TRIPS: TripSpec[] = [
     slug: 'ontdek-noord-frankrijk-en-de-opaalkust-in-7-dagen',
     type: 'auto',
     stops: [
-      { name: 'Hotel Royal Beaulaincourt', city: 'Béthune', region: 'Noord-Frankrijk', nights: 2, stars: 4, lat: 50.5305, lng: 2.6406, image: '/images/vakanties/001/hotel-1.jpg', extraImages: ['/images/vakanties/001/hotel-1b.jpg', '/images/vakanties/001/hotel-1c.jpg'], includes: [l('2 x overnachting', '2 nights'), l('Dagelijks ontbijtbuffet', 'Daily breakfast buffet'), l('3-gangendiner (dag van aankomst)', '3-course dinner (day of arrival)'), l('Welkomstbubbels', 'Welcome bubbles'), l('Late check-out tot 15:00 uur', 'Late check-out until 15:00')] },
-      { name: 'Hôtel Château Tilques', city: 'Tilques', region: 'Noord-Frankrijk', nights: 2, stars: 3, lat: 50.7797, lng: 2.2010, image: '/images/vakanties/001/hotel-2.jpg', extraImages: ['/images/vakanties/001/hotel-2b.jpg', '/images/vakanties/001/hotel-2c.jpg'], includes: [l('2 x overnachting', '2 nights'), l('Dagelijks ontbijtbuffet', 'Daily breakfast buffet'), l('3-gangendiner (dag van aankomst)', '3-course dinner (day of arrival)'), l('Late check-out', 'Late check-out'), l('Gratis parkeren', 'Free parking')] },
-      { name: 'Hôtel Château Cléry', city: "Hesdin-l'Abbé", region: 'Opaalkust', nights: 2, stars: 3, lat: 50.6725, lng: 1.7365, image: '/images/vakanties/001/hotel-3.jpg', extraImages: ['/images/vakanties/001/hotel-3b.jpg', '/images/vakanties/001/hotel-3c.jpg'], includes: [l('2 x overnachting', '2 nights'), l('Dagelijks ontbijtbuffet', 'Daily breakfast buffet'), l('3-gangendiner (dag van aankomst)', '3-course dinner (day of arrival)'), l('Late check-out', 'Late check-out'), l('Gratis parkeren', 'Free parking')] },
+      { name: 'Hotel Royal Beaulaincourt', city: 'Béthune', region: 'Noord-Frankrijk', nights: 2, stars: 4, lat: 50.5305, lng: 2.6406, image: '/images/vakanties/001/hotel-1.jpg', extraImages: ['/images/vakanties/001/hotel-1b.jpg', '/images/vakanties/001/hotel-1c.jpg', '/images/vakanties/001/hotel-1d.jpg'], includes: [l('2 x overnachting', '2 nights'), l('Dagelijks ontbijtbuffet', 'Daily breakfast buffet'), l('3-gangendiner (dag van aankomst)', '3-course dinner (day of arrival)'), l('Welkomstbubbels', 'Welcome bubbles'), l('Late check-out tot 15:00 uur', 'Late check-out until 15:00')] },
+      { name: 'Hôtel Château Tilques', city: 'Tilques', region: 'Noord-Frankrijk', nights: 2, stars: 3, lat: 50.7797, lng: 2.2010, image: '/images/vakanties/001/hotel-2.jpg', extraImages: ['/images/vakanties/001/hotel-2b.jpg', '/images/vakanties/001/hotel-2c.jpg', '/images/vakanties/001/hotel-2d.jpg', '/images/vakanties/001/hotel-2e.jpg', '/images/vakanties/001/hotel-2f.jpg'], includes: [l('2 x overnachting', '2 nights'), l('Dagelijks ontbijtbuffet', 'Daily breakfast buffet'), l('3-gangendiner (dag van aankomst)', '3-course dinner (day of arrival)'), l('Late check-out', 'Late check-out'), l('Gratis parkeren', 'Free parking')] },
+      { name: 'Hôtel Château Cléry', city: "Hesdin-l'Abbé", region: 'Opaalkust', nights: 2, stars: 3, lat: 50.6725, lng: 1.7365, image: '/images/vakanties/001/hotel-3.jpg', extraImages: ['/images/vakanties/001/hotel-3b.jpg', '/images/vakanties/001/hotel-3c.jpg', '/images/vakanties/001/hotel-3d.jpg', '/images/vakanties/001/hotel-3e.jpg', '/images/vakanties/001/hotel-3f.jpg', '/images/vakanties/001/hotel-3g.jpg', '/images/vakanties/001/hotel-3h.jpg', '/images/vakanties/001/hotel-3i.jpg'], includes: [l('2 x overnachting', '2 nights'), l('Dagelijks ontbijtbuffet', 'Daily breakfast buffet'), l('3-gangendiner (dag van aankomst)', '3-course dinner (day of arrival)'), l('Late check-out', 'Late check-out'), l('Gratis parkeren', 'Free parking')] },
     ],
     title: l('Ontdek Noord-Frankrijk en de Opaalkust in 7 dagen', 'Discover Northern France and the Opal Coast in 7 days'),
     pitch: l('Béthune, de moerassen van Saint-Omer en de kastelen aan de Opaalkust — stad, natuur en kust in drie bijzondere hotels.', 'Béthune, the marshes of Saint-Omer and the castles of the Opal Coast in three special hotels.'),

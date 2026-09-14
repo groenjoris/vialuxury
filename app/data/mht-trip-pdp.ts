@@ -36,7 +36,7 @@ const l = (nl: string, en = nl): LocalizedString => ({ nl, en })
 
 /** Maximaal aantal foto's per vakantie: de desktop-gallery toont hero + 4,
  *  de lightbox ("Alle foto's") en de mobiele carrousel tonen ze allemaal. */
-const MAX_GALLERY = 9
+const MAX_GALLERY = 20
 
 function buildImages(trip: MultiHotelTripDetail): { images: HotelImage[]; stickers: Record<string, string> } {
   const images: HotelImage[] = []
