@@ -26,7 +26,7 @@ const inclMatch = (re: RegExp) => (deal: SearchHotelDeal) => {
   return re.test(text)
 }
 
-// ----- the 18 tags -----
+// ----- the 19 tags -----
 export const FILTER_TAGS: FilterTag[] = [
   // ---------- ARRANGEMENT ----------
   {
@@ -101,9 +101,19 @@ export const FILTER_TAGS: FilterTag[] = [
     category: 'thema',
     matches: themeMatch(/culinair|michelin|genieten/i),
   },
+  // Multi Hotel Trip: de vakanties als thema — "Autovakantie" (alleen de
+  // meerhotel-autoroutes) en "Fietsvakantie" (voorheen "Met fiets"; matcht
+  // ook de losse fietsarrangementen).
+  {
+    id: 'autovakantie',
+    label: 'Autovakantie',
+    emoji: '🚗',
+    category: 'thema',
+    matches: themeMatch(/autovakantie/i),
+  },
   {
     id: 'fiets',
-    label: 'Met fiets',
+    label: 'Fietsvakantie',
     emoji: '🚴',
     category: 'thema',
     matches: themeMatch(/fiets/i),

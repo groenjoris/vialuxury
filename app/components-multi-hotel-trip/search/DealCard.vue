@@ -121,8 +121,8 @@
       <!-- TOP ROW — full content width: hotel name + stars on line 1,
            location on line 2 -->
       <div v-if="showHotelInfo && hotel" class="deal-card-v2__hotel-info">
-        <!-- Multi Hotel Trip: een vakantie heeft geen hotelnaam — "3 tophotels",
-             zonder link en zonder sterren. -->
+        <!-- Multi Hotel Trip: een vakantie heeft geen hotelnaam — "Autovakantie met
+             3 hotels" / "Fietsvakantie met 3 hotels", zonder link en zonder sterren. -->
         <h3 v-if="isTrip" class="deal-card-v2__name-row">
           <span class="deal-card-v2__name">{{ tripTypeLabel }}</span>
         </h3>
@@ -356,11 +356,11 @@ defineEmits<{ 'view-siblings': [] }>()
 
 /** Multi Hotel Trip: dit record is een meerhotel-vakantie (twee of drie hotels). */
 const isTrip = computed(() => !!props.hotel?.trip)
-/** "3 tophotels" — aantal hotels van de vakantie, in plaats van een hotelnaam. */
+/** "Autovakantie met 3 hotels" — soort vakantie + aantal hotels, in plaats van een hotelnaam. */
 const tripTypeLabel = computed(() => {
   const trip = props.hotel?.trip
   if (!trip) return ''
-  return t('trip.topHotels').replace('{n}', String(trip.stops.length))
+  return t('trip.typeWithHotels').replace('{type}', t(`trip.${trip.type}`)).replace('{n}', String(trip.stops.length))
 })
 /** "Landgraaf · Eijsden · Sittard" — plaatsnamen van de hotels in reisvolgorde. */
 const tripStopsLabel = computed(() => (props.hotel?.trip?.stops ?? []).map(s => s.city).join(' · '))

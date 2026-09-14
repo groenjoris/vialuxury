@@ -119,7 +119,7 @@
             <span class="dur-check__label">{{ t('header.duration.noMatter') }}</span>
           </label>
           <!-- Multi Hotel Trip: reisduur in twee categorieën — "Kort verblijf"
-               (1 t/m 4 nachten) en "5 of meer nachten" (5 t/m 8), zonder bereik-toelichting. De categorie-
+               (1 t/m 4 nachten) en "Vakantie" (5 t/m 8 nachten), zonder bereik-toelichting. De categorie-
                kop vinkt in één keer alle nachten eronder aan; de losse nachten
                staan als verticale lijst ingesprongen eronder. -->
           <div v-for="group in NIGHT_GROUPS" :key="group.id" class="dur-group">

@@ -67,7 +67,7 @@
       <Transition name="filter-expand">
         <div v-if="group.open" class="filter-group__body">
           <!-- Multi Hotel Trip: reisduur in twee categorieën (Kort verblijf 1–4 /
-               "5 of meer nachten"; geen bereik-toelichting). De categorie vinkt alle nachten eronder in één
+               Vakantie 5–8; geen bereik-toelichting). De categorie vinkt alle nachten eronder in één
                keer aan; de losse nachten staan ingesprongen eronder. -->
           <template v-if="group.id === 'travelDuration'">
             <div v-for="ng in NIGHT_GROUPS" :key="ng.id" class="filter-nights">

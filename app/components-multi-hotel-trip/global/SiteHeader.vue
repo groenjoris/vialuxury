@@ -1570,7 +1570,7 @@ const destinations = [
 ]
 
 // Themes shown in the destination popup come from the unified FILTER_TAGS
-// config (category 'thema'). Only those 7 IDs appear here.
+// config (category 'thema'), incl. de vakantiethema's Autovakantie/Fietsvakantie.
 const themes = computed(() =>
   tagsByCategory('thema').map(t => ({ id: t.id, name: t.label, emoji: t.emoji })),
 )
@@ -1595,7 +1595,7 @@ const selectedHotels = sharedSelectedHotels
 
 /** The popup expects an array of theme IDs that are currently active.
  *  We filter the global filter-tag list down to the Thema category. */
-const themeIds = ['aan-zee', 'natuur', 'romantisch', 'culinair', 'fiets', 'steden', 'kasteel']
+const themeIds = ['aan-zee', 'natuur', 'romantisch', 'culinair', 'autovakantie', 'fiets', 'steden', 'kasteel']
 const selectedThemes = computed(() =>
   selectedFilterTags.value.filter(id => themeIds.includes(id)),
 )

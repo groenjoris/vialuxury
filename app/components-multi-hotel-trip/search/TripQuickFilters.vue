@@ -68,10 +68,8 @@ function isDisabled(id: string): boolean {
   return (c[id] ?? 0) === 0
 }
 
-/** Zelfde lijn-iconenfamilie als de homepage-snelfilters; de auto komt er
- *  hier bij (bestaat niet in de set). */
-const CAR_ICON = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></svg>'
-/* Landen (kaartspeld) en Cultuur (landmark) zitten evenmin in de set. */
+/** Zelfde lijn-iconenfamilie als de homepage-snelfilters (incl. `car`).
+ *  Landen (kaartspeld) en Cultuur (landmark) zitten niet in de set. */
 const PIN_ICON = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>'
 const LANDMARK_ICON = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="3" x2="21" y1="22" y2="22"/><line x1="6" x2="6" y1="18" y2="11"/><line x1="10" x2="10" y1="18" y2="11"/><line x1="14" x2="14" y1="18" y2="11"/><line x1="18" x2="18" y1="18" y2="11"/><polygon points="12 2 20 7 4 7"/></svg>'
 const ICON_FOR: Record<string, string> = {
@@ -92,7 +90,6 @@ const ICON_FOR: Record<string, string> = {
 }
 function iconFor(id: string): string {
   const key = ICON_FOR[id]
-  if (key === 'car') return CAR_ICON
   if (key === 'pin') return PIN_ICON
   if (key === 'landmark') return LANDMARK_ICON
   return (key && POPULAR_FILTER_ICONS[key]) || POPULAR_FILTER_ICONS.star!

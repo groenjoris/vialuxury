@@ -281,6 +281,7 @@ const ICON_FOR: Record<string, string> = {
   natuur: 'leaf',
   romantisch: 'heart',
   culinair: 'wine',
+  autovakantie: 'car',
   fiets: 'bike',
   steden: 'building',
   kasteel: 'castle',

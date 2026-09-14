@@ -6,8 +6,8 @@
  *
  * Elke vakantie wordt als één SearchHotel-record met één deal door de
  * bestaande zoekresultaten en dealcards geleid; `hotel.trip` markeert het
- * record (de card toont dan "3 tophotels" en de plaatsnamen van de hotels).
- * Hotels die in deals.json staan
+ * record (de card toont dan "Autovakantie met 3 hotels" / "Fietsvakantie met
+ * 3 hotels" en de plaatsnamen van de hotels). Hotels die in deals.json staan
  * leveren hun eigen foto/sterren; de overige gebruiken de foto's uit de
  * PDF's (public/images/vakanties/<nr>/hotel-<n>.jpg). Voor No. 001 zijn
  * dat de door Joris aangeleverde high-res hotelfoto's (bron:
@@ -446,8 +446,8 @@ function buildTrip(spec: TripSpec): { hotel: SearchHotel; detail: MultiHotelTrip
   const hotel: SearchHotel = {
     id: spec.id,
     slug: spec.slug,
-    // Geen hotelnaam: "3 tophotels" (alt/aria; de card zelf vertaalt via i18n).
-    name: `${stops.length} tophotels`,
+    // Geen hotelnaam: soort vakantie + aantal hotels (alt/aria; de card zelf vertaalt via i18n).
+    name: `${spec.type === 'fiets' ? 'Fietsvakantie' : 'Autovakantie'} met ${stops.length} hotels`,
     starRating: avgStars,
     city: first.city,
     region: known[0]?.region ?? 'Nederland',
