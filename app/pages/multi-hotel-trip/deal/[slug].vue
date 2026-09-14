@@ -1515,10 +1515,17 @@ function tripHotelData(i: number): TripHotelModalData | null {
   if (!tripPdp || !trip) return null
   const d = tripHotelDetails(trip, tripPdp.content, i)
   if (!d) return null
+  // Met een gekozen aankomstdatum: in- en uitcheckdatum van dit hotel
+  // (aankomst + voorafgaande nachten; uitchecken = inchecken + nachten).
+  const stop = trip.stops[i]
+  const arrival = store.checkInDate
+  const checkInDay = arrival && stop ? dayjs(arrival).add(stop.dayFrom - 1, 'day') : null
   return {
     name: d.name,
     starRating: d.starRating,
     location: `${d.city}, ${d.region}`,
+    checkInDate: checkInDay ? formatDateWeekdayShort(checkInDay.format('YYYY-MM-DD')) : undefined,
+    checkOutDate: checkInDay && stop ? formatDateWeekdayShort(checkInDay.add(stop.nights, 'day').format('YYYY-MM-DD')) : undefined,
     images: d.images,
     description: localized(d.description),
     facilities: d.facilities,

@@ -76,6 +76,9 @@ export interface TripHotelModalData {
   room?: { name: string; description: string; image?: string }
   /** "15:00" */
   checkIn?: string
+  /** Met een gekozen aankomstdatum: in-/uitcheckdatum van dít hotel ("ma 5 okt"). */
+  checkInDate?: string
+  checkOutDate?: string
 }
 
 const props = defineProps<{ hotel: TripHotelModalData }>()

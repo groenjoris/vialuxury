@@ -20,10 +20,20 @@
                 <span v-for="n in hotel.starRating" :key="n" class="thp__star"><svg viewBox="0 0 18 18" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M16.963,6.786c-.088-.271-.323-.469-.605-.51l-4.62-.671L9.672,1.418c-.252-.512-1.093-.512-1.345,0l-2.066,4.186-4.62,.671c-.282,.041-.517,.239-.605,.51-.088,.271-.015,.57,.19,.769l3.343,3.258-.79,4.601c-.048,.282,.067,.566,.298,.734,.231,.167,.538,.189,.79,.057l4.132-2.173,4.132,2.173c.11,.058,.229,.086,.349,.086,.155,0,.31-.048,.441-.143,.231-.168,.347-.452,.298-.734l-.79-4.601,3.343-3.258c.205-.199,.278-.498,.19-.769Z"/></svg></span>
               </span>
             </h3>
-            <p class="thp__meta">
-              {{ hotel.location }}
-              <template v-if="hotel.checkIn"> · {{ t('trip.checkInFrom').replace('{time}', hotel.checkIn) }}</template>
-            </p>
+            <p class="thp__meta">{{ hotel.location }}</p>
+            <!-- Met een gekozen aankomstdatum: in- en uitcheckdatum van dit hotel
+                 (geen inchecktijd — die staat in het dagprogramma). -->
+            <div v-if="hotel.checkInDate && hotel.checkOutDate" class="thp__dates">
+              <span class="thp__date">
+                <span class="thp__date-label">{{ t('trip.checkIn') }}</span>
+                <span class="thp__date-val">{{ hotel.checkInDate }}</span>
+              </span>
+              <span class="thp__date-arrow" aria-hidden="true">→</span>
+              <span class="thp__date">
+                <span class="thp__date-label">{{ t('trip.checkOut') }}</span>
+                <span class="thp__date-val">{{ hotel.checkOutDate }}</span>
+              </span>
+            </div>
           </div>
           <button type="button" class="thp__close" :aria-label="t('common.close')" @click="$emit('close')">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12" /></svg>
@@ -106,6 +116,24 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 .thp__stars { display: inline-flex; align-items: center; gap: 1px; }
 .thp__star { font-size: 15px; line-height: 1; color: #141414; display: inline-flex; }
 .thp__meta { margin: 4px 0 0; font-size: 13px; color: var(--color-text-secondary); }
+/* In-/uitcheckdatum (zelfde opzet als de datums in de zijbalk van de PDP). */
+.thp__dates {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 10px;
+  font-family: var(--font-body);
+}
+.thp__date { display: flex; flex-direction: column; gap: 2px; }
+.thp__date-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+}
+.thp__date-val { font-size: 14px; font-weight: 600; color: var(--color-text-primary); }
+.thp__date-arrow { color: var(--color-text-muted, #9a958c); font-size: 14px; }
 .thp__close {
   flex-shrink: 0;
   width: 36px;
