@@ -63,7 +63,6 @@
             :images="hotel.images"
             :labels="galleryLabels"
             :rooms-left="dealRoomsLeft"
-            :stickers="tripGalleryStickers"
             @open-gallery="openGallery"
             @open-photo="openGalleryPhoto"
           />
@@ -190,8 +189,8 @@
           </div>
         </section>
 
-        <!-- 8. Description + Lees meer (niet bij een vakantie) -->
-        <section v-if="!isTrip" id="intro" class="container deal-page__description-mobile">
+        <!-- 8. Description + Lees meer -->
+        <section id="intro" class="container deal-page__description-mobile">
           <h2 class="section-title">{{ t('deal.descriptionHeading') }}</h2>
           <div class="deal-page__description">
             <div v-html="firstParagraph"></div>
@@ -199,8 +198,8 @@
           </div>
         </section>
 
-        <!-- 9. Highlights (niet bij een vakantie) -->
-        <section v-if="!isTrip" class="container deal-page__highlights deal-page__highlights--mobile">
+        <!-- 9. Highlights -->
+        <section class="container deal-page__highlights deal-page__highlights--mobile">
           <h2 class="section-title">{{ t('deal.highlights') }}</h2>
           <div class="highlights__grid">
             <div v-for="hl in highlights" :key="hl.text" class="highlight-item">
@@ -216,7 +215,7 @@
         <section id="mini-map" class="container deal-page__mini-map-mobile">
           <MultiHotelTripRouteMapCard
             v-if="isTrip"
-            class="deal-page__minimap deal-page__minimap--trip"
+            class="deal-page__minimap"
             :stops="tripMapStops"
           />
           <MultiHotelTripMiniMapCard
@@ -232,10 +231,11 @@
         <!-- 11. Included cards (repeat full include section). Anchor
              target for the "Bekijk details" link in the sidebar. -->
         <section id="arrangement" class="container deal-page__content-blocks deal-page__content-blocks--mobile">
-          <!-- Vakantie: per hotel een blok (dagen, naam, locatie, foto + Inclusief). -->
+          <!-- Vakantie: dagprogramma (per dag 2–3 blokken, foto boven tekst). -->
           <template v-if="isTrip">
-            <h2 class="section-title">{{ t('trip.hotelsIncludedHeading') }}</h2>
-            <MultiHotelTripStops :stops="tripStopsView" stacked />
+            <h2 class="section-title">{{ t('trip.itineraryHeading') }}</h2>
+            <p class="deal-page__itinerary-intro">{{ t('trip.itineraryIntro') }}</p>
+            <MultiHotelTripItinerary :days="tripDaysView" stacked @open-hotel="openTripHotel" />
           </template>
           <template v-else>
           <h2 class="section-title">
@@ -395,7 +395,6 @@
           :images="hotel.images"
           :labels="galleryLabels"
           :rooms-left="dealRoomsLeft"
-          :stickers="tripGalleryStickers"
           @open-gallery="openGallery"
           @open-photo="openGalleryPhoto"
         />
@@ -404,19 +403,22 @@
       <!-- Two-column layout: Content | Booking Sidebar -->
       <div class="deal-page__grid container">
         <div class="deal-page__col-left">
-          <!-- Vakantie: geen beschrijving, wél een brede routekaart met alle hotels. -->
-          <div v-if="isTrip" id="intro" class="deal-page__intro deal-page__intro--trip">
-            <div id="mini-map" class="deal-page__minimap-anchor">
-              <MultiHotelTripRouteMapCard class="deal-page__minimap deal-page__minimap--trip" :stops="tripMapStops" />
-            </div>
-          </div>
-          <!-- Description + Mini map row -->
-          <div v-else id="intro" class="deal-page__intro">
+          <!-- Description + Mini map row. Vakantie: samenvattende beschrijving
+               van de hele reis + het schematische routekaartje van de dealcard
+               op de plek (en breedte) van de gewone minimap. -->
+          <div id="intro" class="deal-page__intro">
             <div class="deal-page__description">
               <div v-html="firstParagraph"></div>
               <button v-if="hasMoreDescription" type="button" class="deal-page__read-more" @click="descriptionOpen = true">{{ t('common.readMore') }}</button>
             </div>
+            <MultiHotelTripRouteMapCard
+              v-if="isTrip"
+              id="mini-map"
+              class="deal-page__minimap"
+              :stops="tripMapStops"
+            />
             <MultiHotelTripMiniMapCard
+              v-else
               class="deal-page__minimap"
               :slug="hotel.slug"
               :lat="hotel.location.coordinates.lat"
@@ -425,8 +427,8 @@
             />
           </div>
 
-          <!-- Highlights (niet bij een vakantie) -->
-          <section v-if="!isTrip" class="deal-page__highlights">
+          <!-- Highlights -->
+          <section class="deal-page__highlights">
             <h2 class="section-title">{{ t('deal.highlights') }}</h2>
             <div class="highlights__grid">
               <div v-for="hl in highlights" :key="hl.text" class="highlight-item">
@@ -440,10 +442,11 @@
 
           <!-- Content blocks: What's included -->
           <section id="arrangement" class="deal-page__content-blocks">
-            <!-- Vakantie: per hotel een blok over de volle kolombreedte. -->
+            <!-- Vakantie: dagprogramma — per dag 2–3 blokken, foto links, tekst rechts. -->
             <template v-if="isTrip">
-              <h2 class="section-title">{{ t('trip.hotelsIncludedHeading') }}</h2>
-              <MultiHotelTripStops :stops="tripStopsView" />
+              <h2 class="section-title">{{ t('trip.itineraryHeading') }}</h2>
+              <p class="deal-page__itinerary-intro">{{ t('trip.itineraryIntro') }}</p>
+              <MultiHotelTripItinerary :days="tripDaysView" @open-hotel="openTripHotel" />
             </template>
             <template v-else>
             <h2 class="section-title">
@@ -954,6 +957,9 @@
       </Transition>
     </Teleport>
 
+    <!-- Vakantie: hotel-pop-up vanuit het dagprogramma -->
+    <MultiHotelTripHotelModal :open="tripHotelOpen" :hotel="tripHotelModal" @close="tripHotelOpen = false" />
+
     <!-- Photo gallery / lightbox -->
     <MultiHotelTripPhotoGalleryModal
       v-if="hotel && currentDeal"
@@ -963,6 +969,7 @@
       :view="galleryView"
       :index="galleryIndex"
       :came-direct="galleryCameDirect"
+      :stickers="tripGalleryStickers"
       @update:view="galleryView = $event"
       @update:index="galleryIndex = $event"
       @close="galleryOpen = false"
@@ -988,8 +995,9 @@ import { getReviewLabelKey } from '~/utils-multi-hotel-trip/reviewLabel'
 import { generateDealAvailability } from '~/data/mock/deal-pricing'
 import dayjs from 'dayjs'
 import { formatDateWeekdayShort } from '~/utils-multi-hotel-trip/formatDate'
-import { tripPdpBySlug } from '~/data/mht-trip-pdp'
-import type { TripStopView } from '~/components-multi-hotel-trip/deal/TripStops.vue'
+import { tripPdpBySlug, tripHotelDetails } from '~/data/mht-trip-pdp'
+import type { TripDayView, TripBlockView } from '~/components-multi-hotel-trip/deal/TripItinerary.vue'
+import type { TripHotelModalData } from '~/components-multi-hotel-trip/deal/TripHotelModal.vue'
 import { PRICED_PERSONS, minRoomsFor } from '~/utils-multi-hotel-trip/priceFormula'
 import { matchIcon } from '~/utils-multi-hotel-trip/iconMatcher'
 import { roomsLeftForDeal } from '~/utils-multi-hotel-trip/scarcity'
@@ -1334,35 +1342,95 @@ const tripMapStops = computed(() =>
     .filter(s => typeof s.lat === 'number' && typeof s.lng === 'number')
     .map(s => ({ lat: s.lat as number, lng: s.lng as number, label: s.city })),
 )
-/** "Dag 1 en 2" / "Dag 3" / "Dag 1 t/m 3". */
-function tripDayLabel(from: number, to: number): string {
-  if (to <= from) return t('trip.daySingle').replace('{a}', String(from))
-  if (to === from + 1) return t('trip.dayAnd').replace('{a}', String(from)).replace('{b}', String(to))
-  return t('trip.dayRange').replace('{a}', String(from)).replace('{b}', String(to))
-}
-/** Hotelblokken voor <MultiHotelTripStops>: daglabel + (bij gekozen datum)
- *  check-in/check-out per hotel, afgeleid van de aankomstdatum van de reis. */
-const tripStopsView = computed<TripStopView[]>(() => {
-  if (!trip) return []
+/** Dagprogramma voor <MultiHotelTripItinerary>: de vaste blokken (inchecken,
+ *  onderweg/uitchecken, diner, terugreis) krijgen hier hun tekst; met een
+ *  gekozen aankomstdatum krijgt elke dag zijn datum. */
+const cap = (str: string) => (str ? str.charAt(0).toUpperCase() + str.slice(1) : str)
+const tripDaysView = computed<TripDayView[]>(() => {
+  if (!tripPdp || !trip) return []
   const checkIn = store.checkInDate
-  return trip.stops.map((s) => {
-    const view: TripStopView = {
-      hotelName: s.hotelName,
-      hotelSlug: s.hotelSlug,
-      starRating: s.starRating,
-      city: s.city,
-      region: s.region,
-      image: s.image,
-      includes: s.includes,
-      dayLabel: tripDayLabel(s.dayFrom, s.dayTo),
-    }
-    if (checkIn) {
-      const ci = dayjs(checkIn).add(s.dayFrom - 1, 'day')
-      view.checkIn = formatDateWeekdayShort(ci.format('YYYY-MM-DD'))
-      view.checkOut = formatDateWeekdayShort(ci.add(s.nights, 'day').format('YYYY-MM-DD'))
-    }
+  const content = tripPdp.content
+  return tripPdp.days.map((d) => {
+    const stop = d.stopIndex != null ? trip.stops[d.stopIndex] : undefined
+    const from = d.fromStopIndex != null ? trip.stops[d.fromStopIndex] : undefined
+    const blocks: TripBlockView[] = d.blocks.map((b) => {
+      const st = b.stopIndex != null ? trip.stops[b.stopIndex] : undefined
+      const name = st?.hotelName ?? ''
+      switch (b.kind) {
+        case 'checkin':
+          return {
+            kind: 'checkin',
+            tag: t('trip.tag.checkin'),
+            title: t('trip.checkinAt').replace('{hotel}', name),
+            text: localized(content?.hotels[name]?.description ?? trip.pitch),
+            image: b.image,
+            starRating: st?.starRating,
+            meta: st ? `${st.city}, ${st.region}` : undefined,
+            stopIndex: b.stopIndex,
+          }
+        case 'checkout':
+          return {
+            kind: 'checkout',
+            tag: t('trip.tag.route'),
+            title: b.title ? localized(b.title) : t('trip.checkoutAt').replace('{hotel}', name),
+            text: b.text ? localized(b.text) : t('trip.checkoutText').replace('{hotel}', name),
+            image: b.image,
+          }
+        case 'dinner': {
+          const dl = b.dinnerLabel ? localized(b.dinnerLabel) : t('trip.tag.dinner').toLowerCase()
+          return {
+            kind: 'dinner',
+            tag: t('trip.tag.dinner'),
+            title: cap(t('trip.dinnerAt').replace('{dinner}', dl).replace('{hotel}', name)),
+            text: t('trip.dinnerText').replace('{dinner}', dl),
+            image: b.image,
+            stopIndex: b.stopIndex,
+          }
+        }
+        case 'homeward':
+          return {
+            kind: 'homeward',
+            tag: t('trip.tag.homeward'),
+            title: b.title ? localized(b.title) : t('trip.homewardTitle'),
+            text: b.text ? localized(b.text) : t('trip.checkoutText').replace('{hotel}', name),
+            image: b.image,
+          }
+        default:
+          return {
+            kind: 'activity',
+            tag: t('trip.tag.activity'),
+            title: b.title ? localized(b.title) : '',
+            text: b.text ? localized(b.text) : '',
+            image: b.image,
+          }
+      }
+    })
+    const view: TripDayView = { day: d.day, label: t('trip.daySingle').replace('{a}', String(d.day)), blocks }
+    if (checkIn) view.date = formatDateWeekdayShort(dayjs(checkIn).add(d.day - 1, 'day').format('YYYY-MM-DD'))
+    if (from && stop && from !== stop) view.subtitle = `${from.city} → ${stop.city}`
+    else if (stop) view.subtitle = `${stop.city} · ${stop.hotelName}`
+    else if (from) view.subtitle = from.city
     return view
   })
+})
+
+/** Hotel-pop-up vanuit het dagprogramma ("Meer over dit hotel"). */
+const tripHotelOpen = ref(false)
+const tripHotelIndex = ref(0)
+function openTripHotel(i: number) { tripHotelIndex.value = i; tripHotelOpen.value = true }
+const tripHotelModal = computed<TripHotelModalData | null>(() => {
+  if (!tripPdp || !trip) return null
+  const d = tripHotelDetails(trip, tripPdp.content, tripHotelIndex.value)
+  if (!d) return null
+  return {
+    name: d.name,
+    starRating: d.starRating,
+    location: `${d.city}, ${d.region}`,
+    images: d.images,
+    description: localized(d.description),
+    facilities: d.facilities,
+    includes: d.includes.map(inc => localized(inc)),
+  }
 })
 
 // SearchHotel companion for the ViaLuxury score badge — look it up by
@@ -1545,7 +1613,11 @@ const hotelStreetCity = computed(() => {
 // Highlights are derived from the package's CURATED short list (`pkg.includes[]`,
 // 4-6 items), with a matching icon or emoji fallback. Drops overnight items.
 const highlights = computed(() => {
-  const titles = (curatedHighlightsByPermalink[routeSlug.value] || [])
+  // Vakantie: de highlights uit de redactionele inhoud (mht-trip-itineraries.ts).
+  const source = isTrip
+    ? (hotel.value?.highlights ?? []).map(h => h.text)
+    : (curatedHighlightsByPermalink[routeSlug.value] || [])
+  const titles = source
     .map(t => localized(t).trim())
     .filter(Boolean)
     .filter(t => !/overnachting|night/i.test(t))
@@ -1787,11 +1859,8 @@ onMounted(() => {
 
 /* Intro row: description + mini map side by side */
 .deal-page__intro { display: grid; grid-template-columns: 1fr 220px; gap: var(--space-xl); margin-bottom: var(--space-xl); align-items: start; }
-/* Vakantie: de routekaart neemt de hele kolombreedte (2/3 van het scherm)
-   en is iets hoger dan de vierkante 220 px minimap. */
-.deal-page__intro--trip { display: block; }
-.deal-page__minimap-anchor { scroll-margin-top: 88px; }
-.deal-page__minimap--trip { --vl-routemap-aspect: 8 / 3; }
+/* Vakantie: intro onder de dagprogramma-kop. */
+.deal-page__itinerary-intro { margin: calc(-1 * var(--space-md)) 0 var(--space-lg); font-size: 14px; color: var(--color-text-secondary); }
 
 /* Mini map */
 /* Map preview + below-the-map footer (address left, "Bekijk kaart"
@@ -2303,7 +2372,6 @@ onMounted(() => {
   .deal-page__col-right { position: static; }
   .deal-page__intro { grid-template-columns: 1fr; }
   .deal-page__minimap { --vl-minimap-max-h: 200px; }
-  .deal-page__minimap--trip { --vl-routemap-aspect: 3 / 2; --vl-routemap-max-h: 280px; }
   .content-blocks__grid { grid-template-columns: 1fr; }
   .reviews__grid { grid-template-columns: 1fr; }
   .reviews__categories { grid-template-columns: 1fr; }

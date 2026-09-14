@@ -10,7 +10,6 @@
         @click="$emit('openPhoto', i)"
       >
         <img :src="image.url" :alt="localized(image.alt)" class="hero-gallery__slide-img" />
-        <span v-if="stickerFor(image)" class="hero-gallery__sticker">{{ stickerFor(image) }}</span>
       </div>
     </div>
 
@@ -53,8 +52,6 @@
         :alt="heroImage?.alt ? localized(heroImage.alt) : t('common.hotelPhoto')"
         class="hero-gallery__hero-img"
       />
-      <!-- Multi Hotel Trip: hotelnaam-sticker per foto (vakantie-PDP). -->
-      <span v-if="heroImage && stickerFor(heroImage)" class="hero-gallery__sticker">{{ stickerFor(heroImage) }}</span>
       <!-- Same stickers as the search card: special labels bottom-left,
            limited-supply bottom-right. Desktop hero only. -->
       <div v-if="labels && labels.length" class="hero-gallery__labels">
@@ -77,7 +74,6 @@
         @click="$emit('openPhoto', index + 1)"
       >
         <img :src="image.url" :alt="localized(image.alt)" class="hero-gallery__img" />
-        <span v-if="stickerFor(image)" class="hero-gallery__sticker">{{ stickerFor(image) }}</span>
         <button
           v-if="index === galleryImages.length - 1"
           class="hero-gallery__all-btn"
@@ -104,14 +100,7 @@ const props = defineProps<{
   labels?: string[]
   /** Rooms-left count; the limited-supply sticker shows when < 4. */
   roomsLeft?: number | null
-  /** Multi Hotel Trip: foto-id → tekst van de sticker op die foto (hotelnaam
-   *  op de vakantie-PDP). Ontbreekt de id, dan geen sticker. */
-  stickers?: Record<string, string>
 }>()
-
-function stickerFor(image: HotelImage): string | undefined {
-  return props.stickers?.[image.id]
-}
 
 defineEmits<{
   openGallery: []
@@ -244,30 +233,6 @@ function nextSlide() {
   letter-spacing: 0.2px;
 }
 
-/* Multi Hotel Trip: hotelnaam-sticker linksboven op elke foto van een
-   vakantie (hero, gallery-cellen en mobiele slides). Wit label met donkere
-   tekst — de speciale labels (linksonder) en "Nog x beschikbaar"
-   (rechtsonder) blijven vrij. */
-.hero-gallery__sticker {
-  position: absolute;
-  top: 12px;
-  left: 12px;
-  z-index: 2;
-  pointer-events: none;
-  max-width: calc(100% - 24px);
-  background: rgba(255, 255, 255, 0.94);
-  color: var(--color-text-primary);
-  font-family: var(--font-body);
-  font-size: 13px;
-  font-weight: 600;
-  line-height: 1.2;
-  padding: 5px 9px;
-  border-radius: 6px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
 
 .hero-gallery__grid {
   display: grid;

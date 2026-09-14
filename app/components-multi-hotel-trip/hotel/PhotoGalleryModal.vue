@@ -15,6 +15,7 @@
             <div class="pg-masonry">
               <button v-for="(img, i) in ordered" :key="img.id" type="button" class="pg-thumb" @click="openPhoto(i)">
                 <img :src="img.url" :alt="localized(img.alt)" loading="lazy" />
+                <span v-if="stickerFor(img)" class="pg-sticker">{{ stickerFor(img) }}</span>
               </button>
             </div>
           </div>
@@ -40,6 +41,7 @@
           <div ref="mTrack" class="pg-mphoto__track" data-scroll-lock-allow="true" @scroll.passive="onTrackScroll">
             <div v-for="img in ordered" :key="img.id" class="pg-mphoto__slide">
               <img :src="img.url" :alt="localized(img.alt)" />
+              <span v-if="stickerFor(img)" class="pg-sticker pg-sticker--stage">{{ stickerFor(img) }}</span>
             </div>
           </div>
           <div class="pg-mphoto__controls">
@@ -81,6 +83,7 @@
               <div class="pg-masonry">
                 <button v-for="(img, i) in ordered" :key="img.id" type="button" class="pg-thumb" @click="openPhoto(i)">
                   <img :src="img.url" :alt="localized(img.alt)" loading="lazy" />
+                  <span v-if="stickerFor(img)" class="pg-sticker">{{ stickerFor(img) }}</span>
                 </button>
               </div>
             </div>
@@ -92,6 +95,7 @@
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6" /></svg>
                 </button>
                 <img :src="ordered[index]?.url" :alt="ordered[index] ? localized(ordered[index].alt) : ''" class="pg-d__stage-img" />
+                <span v-if="ordered[index] && stickerFor(ordered[index])" class="pg-sticker pg-sticker--stage">{{ stickerFor(ordered[index]) }}</span>
                 <button type="button" class="pg-iconbtn pg-iconbtn--light pg-d__arrow pg-d__arrow--next" aria-label="Volgende" @click="setIndex(index + 1)">
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6" /></svg>
                 </button>
@@ -136,7 +140,14 @@ const props = defineProps<{
   /** True when opened straight into the photo view from a page photo
    *  (so the desktop "← Alle foto's" back-to-grid control is hidden). */
   cameDirect: boolean
+  /** Multi Hotel Trip: foto-id → hotelnaam; toont een sticker op de foto in
+   *  de pop-up (op de pagina zelf staan geen stickers). */
+  stickers?: Record<string, string>
 }>()
+
+function stickerFor(img: HotelImage): string | undefined {
+  return props.stickers?.[img.id]
+}
 
 const emit = defineEmits<{
   close: []
@@ -606,4 +617,34 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 .pg-slide-enter-active .pg-d__panel, .pg-slide-leave-active .pg-d__panel { transition: transform 320ms cubic-bezier(0.16, 1, 0.3, 1); }
 .pg-slide-enter-from, .pg-slide-leave-to { opacity: 0; }
 .pg-slide-enter-from .pg-d__panel, .pg-slide-leave-to .pg-d__panel { transform: translateX(100%); }
+
+/* Multi Hotel Trip: hotelnaam-sticker linksboven op een foto in de pop-up. */
+.pg-thumb { position: relative; }
+.pg-mphoto__slide { position: relative; }
+.pg-sticker {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 2;
+  pointer-events: none;
+  max-width: calc(100% - 20px);
+  background: rgba(255, 255, 255, 0.94);
+  color: var(--color-text-primary, #141414);
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.2;
+  padding: 4px 8px;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.pg-sticker--stage {
+  top: 16px;
+  left: 16px;
+  font-size: 13px;
+  padding: 5px 9px;
+}
 </style>
