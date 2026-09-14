@@ -34,31 +34,9 @@
           </div>
         </div>
 
-        <!-- Hotel-sidepanel (klik op een hotelmarker). -->
-        <Transition name="tfm-panel">
-          <aside v-if="panelHotel" class="tfm__panel" role="dialog" :aria-label="panelHotel.name" data-scroll-lock-allow="true">
-            <div class="tfm__panel-header">
-              <div class="tfm__panel-heading">
-                <h3 class="tfm__panel-title">
-                  {{ panelHotel.name }}
-                  <span v-if="panelHotel.starRating" class="tfm__panel-stars" aria-hidden="true">
-                    <span v-for="n in panelHotel.starRating" :key="n" class="tfm__panel-star"><svg viewBox="0 0 18 18" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M16.963,6.786c-.088-.271-.323-.469-.605-.51l-4.62-.671L9.672,1.418c-.252-.512-1.093-.512-1.345,0l-2.066,4.186-4.62,.671c-.282,.041-.517,.239-.605,.51-.088,.271-.015,.57,.19,.769l3.343,3.258-.79,4.601c-.048,.282,.067,.566,.298,.734,.231,.167,.538,.189,.79,.057l4.132-2.173,4.132,2.173c.11,.058,.229,.086,.349,.086,.155,0,.31-.048,.441-.143,.231-.168,.347-.452,.298-.734l-.79-4.601,3.343-3.258c.205-.199,.278-.498,.19-.769Z"/></svg></span>
-                  </span>
-                </h3>
-                <p class="tfm__panel-meta">
-                  {{ panelHotel.location }}
-                  <template v-if="panelHotel.checkIn"> · {{ t('trip.checkInFrom').replace('{time}', panelHotel.checkIn) }}</template>
-                </p>
-              </div>
-              <button type="button" class="tfm__panel-close" :aria-label="t('common.close')" @click="selectedHotel = null">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12" /></svg>
-              </button>
-            </div>
-            <div class="tfm__panel-body">
-              <MultiHotelTripHotelDetails :hotel="panelHotel" />
-            </div>
-          </aside>
-        </Transition>
+        <!-- Hotel-sidepanel (klik op een hotelmarker) — dezelfde component als
+             "Meer over dit hotel" op de dealpagina. -->
+        <MultiHotelTripHotelPanel :hotel="panelHotel" @close="selectedHotel = null" />
       </div>
     </Transition>
   </Teleport>
@@ -215,7 +193,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  background: var(--color-primary, #ff7e00);
+  background: #141414;
   border: 2px solid #fff;
   box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
   color: #fff;
@@ -244,59 +222,6 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 .tfm__close:hover { background: #2b2b2b; }
 .tfm__map { flex: 1; min-height: 0; }
 
-/* Hotel-sidepanel rechts, volle hoogte. */
-.tfm__panel {
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  width: 440px;
-  max-width: 95vw;
-  z-index: 1300;
-  display: flex;
-  flex-direction: column;
-  background: var(--color-surface, #fff);
-  box-shadow: -8px 0 30px rgba(0, 0, 0, 0.15);
-}
-.tfm__panel-header {
-  flex-shrink: 0;
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: var(--space-md);
-  padding: var(--space-lg) var(--space-lg) var(--space-md);
-  border-bottom: 1px solid var(--color-border-light);
-}
-.tfm__panel-title {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin: 0;
-  font-size: 20px;
-  font-weight: 700;
-  line-height: 1.25;
-}
-.tfm__panel-stars { display: inline-flex; align-items: center; gap: 1px; }
-.tfm__panel-star { font-size: 15px; line-height: 1; color: #141414; display: inline-flex; }
-.tfm__panel-meta { margin: 4px 0 0; font-size: 13px; color: var(--color-text-secondary); }
-.tfm__panel-close {
-  flex-shrink: 0;
-  width: 36px;
-  height: 36px;
-  border: 0;
-  border-radius: 50%;
-  background: var(--color-background-secondary);
-  color: var(--color-text-primary);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-}
-.tfm__panel-close:hover { background: var(--color-border-light); }
-.tfm__panel-body { flex: 1; min-height: 0; overflow: auto; }
-.tfm-panel-enter-active, .tfm-panel-leave-active { transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1); }
-.tfm-panel-enter-from, .tfm-panel-leave-to { transform: translateX(100%); }
 .tfm__zoom {
   position: absolute;
   right: var(--space-lg);
@@ -326,6 +251,5 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   .tfm__legend { display: none; }
   .tfm__header { gap: var(--space-md); }
   .tfm__stage--with-panel { right: 0; }
-  .tfm__panel { width: 100%; max-width: none; }
 }
 </style>

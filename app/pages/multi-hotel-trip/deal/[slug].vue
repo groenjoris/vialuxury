@@ -238,7 +238,7 @@
           <template v-if="isTrip">
             <h2 class="section-title">{{ t('trip.itineraryHeading') }}</h2>
             <p class="deal-page__itinerary-intro">{{ t('trip.itineraryIntro') }}</p>
-            <MultiHotelTripItinerary :days="tripDaysView" :hotels="tripHotelLinks" stacked @open-hotel="openTripHotel" />
+            <MultiHotelTripItinerary :days="tripDaysView" :hotels="tripHotelLinks" stacked @open-hotel="openTripHotel" @open-hotel-panel="openTripHotelPanel" />
           </template>
           <template v-else>
           <h2 class="section-title">
@@ -452,7 +452,7 @@
             <template v-if="isTrip">
               <h2 class="section-title">{{ t('trip.itineraryHeading') }}</h2>
               <p class="deal-page__itinerary-intro">{{ t('trip.itineraryIntro') }}</p>
-              <MultiHotelTripItinerary :days="tripDaysView" :hotels="tripHotelLinks" @open-hotel="openTripHotel" />
+              <MultiHotelTripItinerary :days="tripDaysView" :hotels="tripHotelLinks" @open-hotel="openTripHotel" @open-hotel-panel="openTripHotelPanel" />
             </template>
             <template v-else>
             <h2 class="section-title">
@@ -955,7 +955,14 @@
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12" /></svg>
               </button>
             </div>
-            <div v-if="hotel.images && hotel.images.length" class="desc-modal__photo">
+            <!-- Vakantie: links één foto per hotel (reisvolgorde) met de hotelnaam als sticker. -->
+            <div v-if="isTrip && tripDescPhotos.length" class="desc-modal__photo desc-modal__photo--trip">
+              <figure v-for="p in tripDescPhotos" :key="p.url" class="desc-modal__trip-photo">
+                <img :src="p.url" :alt="p.name" />
+                <figcaption class="desc-modal__sticker">{{ p.name }}</figcaption>
+              </figure>
+            </div>
+            <div v-else-if="hotel.images && hotel.images.length" class="desc-modal__photo">
               <img :src="hotel.images[0].url" :alt="hotel.name" />
             </div>
             <div class="desc-modal__body" v-html="fullDescription"></div>
@@ -964,8 +971,10 @@
       </Transition>
     </Teleport>
 
-    <!-- Vakantie: hotel-pop-up vanuit het dagprogramma -->
+    <!-- Vakantie: hotel-pop-up (klik op een hotelnaam of een marker op de minimap) -->
     <MultiHotelTripHotelModal :open="tripHotelOpen" :hotel="tripHotelModal" @close="tripHotelOpen = false" />
+    <!-- Vakantie: hotel-sidepanel ("Meer over dit hotel" in het dagprogramma), zelfde panel als op de kaart -->
+    <MultiHotelTripHotelPanel v-if="isTrip" overlay :hotel="tripPanelHotel" @close="tripPanelOpen = false" />
     <!-- Vakantie: fullscreen kaart met route, hotels en omgevingshighlights -->
     <MultiHotelTripFullscreenMap
       v-if="isTrip"
@@ -1371,6 +1380,10 @@ const tripMapStops = computed(() =>
 )
 /** "2 nachten" per hotel voor het hover-kaartje op de fullscreen kaart. */
 const tripMapNightsLabels = computed(() => (trip?.stops ?? []).map(s => nightsLabel(s.nights, lang.value)))
+/** "Lees meer"-pop-up: links één foto per hotel, in reisvolgorde, met de hotelnaam als sticker. */
+const tripDescPhotos = computed(() =>
+  (trip?.stops ?? []).filter(s => !!s.image).map(s => ({ url: s.image as string, name: s.hotelName })),
+)
 /** Hotelnamen → klikbaar in dagprogramma en zijbalk (TripHotelText). */
 const tripHotelLinks = computed(() => (trip?.stops ?? []).map((s, i) => ({ name: s.hotelName, stopIndex: i })))
 /** "een half uur" / "drie kwartier" / "1 uur 20 min" — reistijd in woorden. */
@@ -1491,10 +1504,15 @@ const tripMapHighlights = computed(() =>
   })),
 )
 
-/** Hotel-pop-up vanuit het dagprogramma ("Meer over dit hotel"). */
+/** Hotel-pop-up (klik op een hotelnaam in de tekst of een marker op de minimap). */
 const tripHotelOpen = ref(false)
 const tripHotelIndex = ref(0)
 function openTripHotel(i: number) { tripHotelIndex.value = i; tripHotelOpen.value = true }
+/** Hotel-sidepanel ("Meer over dit hotel" in het dagprogramma) — zelfde panel als op de kaart. */
+const tripPanelOpen = ref(false)
+const tripPanelIndex = ref(0)
+function openTripHotelPanel(i: number) { tripPanelIndex.value = i; tripPanelOpen.value = true }
+const tripPanelHotel = computed<TripHotelModalData | null>(() => (tripPanelOpen.value ? tripHotelData(tripPanelIndex.value) : null))
 /** Hotelinformatie voor stop `i` (pop-up op de pagina, sidepanel op de kaart). */
 function tripHotelData(i: number): TripHotelModalData | null {
   if (!tripPdp || !trip) return null
