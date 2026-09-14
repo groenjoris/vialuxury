@@ -2,7 +2,8 @@
    PDP en fullscreen kaart). Leaflet maakt markers en tooltips zelf aan,
    dus deze stijlen zijn globaal (zie utils-multi-hotel-trip/tripMapLayers.ts). */
 
-/* Genummerde hotelmarker + naam/plaats ernaast */
+/* Genummerde hotelmarker + naam/plaats ernaast. Standaardstijl: zwarte bol,
+   oranje bij hover (zelfde als de nummers op het dealcard-kaartje). */
 .tml-hotel { pointer-events: none; }
 .tml-hotel--clickable { pointer-events: auto; cursor: pointer; }
 .tml-hotel__num {
@@ -12,7 +13,7 @@
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  background: var(--color-primary, #ff7e00);
+  background: #141414;
   border: 2px solid #fff;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
   color: #fff;
@@ -21,7 +22,7 @@
   font-weight: 700;
   transition: background 150ms ease;
 }
-.tml-hotel--clickable:hover .tml-hotel__num { background: #141414; }
+.tml-hotel--clickable:hover .tml-hotel__num { background: var(--color-primary, #ff7e00); }
 .tml-hotel__name {
   position: absolute;
   top: 50%;

@@ -43,7 +43,7 @@
       :tabindex="interactive ? 0 : undefined"
       :role="interactive ? 'button' : undefined"
       :aria-label="interactive ? (stops[i]?.title ?? stops[i]?.label) : undefined"
-      @click.stop.prevent="interactive && $emit('stop-click', i)"
+      @click="onMarkerClick($event, i)"
       @keydown.enter.prevent="interactive && $emit('stop-click', i)"
       @mouseenter="setHover(i)"
       @mouseleave="setHover(null)"
@@ -91,6 +91,14 @@ const props = withDefaults(defineProps<{
 const emit = defineEmits<{ 'stop-click': [index: number]; 'stop-hover': [index: number | null] }>()
 
 const hover = ref<number | null>(null)
+/** Alleen bij `interactive` vangt de marker de klik zelf af (hotel-pop-up);
+ *  op de dealcard (hoverable) bubbelt de klik door naar de kaart → dealpagina. */
+function onMarkerClick(e: MouseEvent, i: number) {
+  if (!props.interactive) return
+  e.stopPropagation()
+  e.preventDefault()
+  emit('stop-click', i)
+}
 function setHover(i: number | null) {
   hover.value = i
   if (props.hoverable || props.interactive) emit('stop-hover', i)
@@ -102,7 +110,7 @@ const H = 224
 /** Deel van de breedte/hoogte dat rondom de stops vrij blijft. */
 const PAD = 0.24
 
-const data = shapes as unknown as { countries: Shape[]; provinces: Shape[]; lakes: Shape[] }
+const data = shapes as unknown as { countries: Shape[]; provinces: Shape[]; lakes: Shape[]; borders?: Shape[] }
 
 /** Equirectangular projectie rond de route: u = lng · cos(lat0), v = lat. */
 const frame = computed(() => {
@@ -169,7 +177,22 @@ const lakePaths = computed(() => pathsOf(data.lakes))
 const provincePaths = computed(() => pathsOf(data.provinces))
 /** Landsgrenzen nog een keer als lijn bovenop de provincies, zodat de
  *  buitengrens van Nederland (en de kustlijn) duidelijk blijft. */
-const borderPaths = computed(() => pathsOf(data.countries))
+/** Landsgrenzen over land (Natural Earth boundary lines): open paden, geen kust. */
+const borderPaths = computed(() => {
+  const out: string[] = []
+  for (const shape of data.borders ?? []) {
+    for (const ring of shape.rings) {
+      if (!ringInView(ring)) continue
+      let d = ''
+      ring.forEach(([lng, lat], i) => {
+        const [x, y] = project(lng!, lat!)
+        d += `${i === 0 ? 'M' : 'L'}${x.toFixed(1)} ${y.toFixed(1)}`
+      })
+      out.push(d)
+    }
+  }
+  return out
+})
 
 /** Punt-in-polygoon (even-odd) in graden. */
 function inRing(lng: number, lat: number, ring: number[][]): boolean {
@@ -269,10 +292,14 @@ const ariaLabel = computed(() => `Route: ${props.stops.map((s, i) => `${i + 1}. 
   stroke-width: 0.8;
   vector-effect: non-scaling-stroke;
 }
+/* Landsgrenzen: donkerder en gestreept, duidelijk te onderscheiden van
+   provinciegrenzen en kustlijn. */
 .trm__border {
   fill: none;
-  stroke: #bfb6a6;
-  stroke-width: 1;
+  stroke: #6f665a;
+  stroke-width: 1.6;
+  stroke-dasharray: 4 2.5;
+  stroke-linecap: round;
   vector-effect: non-scaling-stroke;
 }
 .trm__label {
@@ -293,10 +320,12 @@ const ariaLabel = computed(() => `Route: ${props.stops.map((s, i) => `${i + 1}. 
   stroke-linecap: round;
   vector-effect: non-scaling-stroke;
 }
+/* Standaardstijl hotelmarkers: zwarte bol, oranje bij hover. */
 .trm__marker circle {
-  fill: var(--color-primary, #ff7e00);
+  fill: #141414;
   stroke: #fff;
   stroke-width: 2;
+  transition: fill 150ms ease;
 }
 .trm__marker text {
   font-family: var(--font-body);
@@ -307,8 +336,10 @@ const ariaLabel = computed(() => `Route: ${props.stops.map((s, i) => `${i + 1}. 
   dominant-baseline: central;
   pointer-events: none;
 }
-.trm__marker--interactive { cursor: pointer; outline: none; }
-.trm__marker--interactive.trm__marker--hover circle { fill: #141414; }
+/* Markers vangen muis-events ook wanneer de SVG zelf `pointer-events: none`
+   heeft (dealcard: de kaart ligt boven de klik-overlay van de foto). */
+.trm__marker--interactive { cursor: pointer; outline: none; pointer-events: auto; }
+.trm__marker--interactive.trm__marker--hover circle { fill: var(--color-primary, #ff7e00); }
 /* Plaatsnaam naast de marker, met witte rand voor leesbaarheid op de kaart. */
 .trm__city {
   font-family: var(--font-body);

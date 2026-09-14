@@ -6,6 +6,7 @@ schematische routekaartje op de Multi Hotel Trip vakantie-dealcards
 Bronnen (open data, worden gedownload):
   - Natural Earth 1:10m admin-0 landen (NL, BE, FR, DE, GB, LU)
   - Natural Earth 1:50m meren (IJsselmeer)
+  - Natural Earth 1:10m landsgrenzen (alleen grenzen over land, geen kust)
   - CBS/cartomap Nederlandse provincies (WGS84)
 Alles wordt geknipt op het venster Benelux + Noord-Frankrijk + West-Duitsland,
 vereenvoudigd (Douglas-Peucker) en afgerond op 3 decimalen (~33 KB).
@@ -21,6 +22,7 @@ SOURCES = {
     'countries': 'https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_10m_admin_0_countries.geojson',
     'lakes': 'https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_50m_lakes.geojson',
     'provinces': 'https://cartomap.github.io/nl/wgs84/provincie_2023.geojson',
+    'borders': 'https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_10m_admin_0_boundary_lines_land.geojson',
 }
 
 def fetch(url):
@@ -92,15 +94,45 @@ def process(features, code_of, tol, min_pts=4):
         if rings: out.append({'id': code, 'rings': rings})
     return out
 
+def lines_of(geom):
+    if geom['type'] == 'LineString': return [geom['coordinates']]
+    if geom['type'] == 'MultiLineString': return list(geom['coordinates'])
+    return []
+
+def inside(p):
+    return BBOX[0] <= p[0] <= BBOX[2] and BBOX[1] <= p[1] <= BBOX[3]
+
+def process_lines(features, tol, min_pts=2):
+    """Grenslijnen: aaneengesloten stukken binnen het venster, vereenvoudigd."""
+    out = []
+    for f in features:
+        pieces = []
+        for line in lines_of(f['geometry']):
+            run = []
+            for p in line:
+                if inside(p): run.append(p)
+                else:
+                    if len(run) >= min_pts: pieces.append(run)
+                    run = []
+            if len(run) >= min_pts: pieces.append(run)
+        rings = []
+        for run in pieces:
+            s = simplify(run, tol)
+            if len(s) >= min_pts:
+                rings.append([[round(p[0], ROUND), round(p[1], ROUND)] for p in s])
+        if rings: out.append({'id': 'border', 'rings': rings})
+    return out
+
 def main():
     want = {'NLD': 'NL', 'BEL': 'BE', 'FRA': 'FR', 'DEU': 'DE', 'GBR': 'GB', 'LUX': 'LU'}
     countries = process(fetch(SOURCES['countries'])['features'], lambda f: want.get(f['properties'].get('ADM0_A3')), tol=0.008)
     provinces = process(fetch(SOURCES['provinces'])['features'], lambda f: f['properties'].get('statnaam'), tol=0.006)
     lakes = process(fetch(SOURCES['lakes'])['features'], lambda f: f['properties'].get('name') or 'lake', tol=0.006)
-    data = {'bbox': BBOX, 'countries': countries, 'provinces': provinces, 'lakes': lakes}
+    borders = process_lines(fetch(SOURCES['borders'])['features'], tol=0.004)
+    data = {'bbox': BBOX, 'countries': countries, 'provinces': provinces, 'lakes': lakes, 'borders': borders}
     with open(OUT, 'w') as fh:
         fh.write(json.dumps(data, separators=(',', ':')))
-    print('written', OUT, os.path.getsize(OUT), 'bytes;', 'lakes:', [l['id'] for l in lakes])
+    print('written', OUT, os.path.getsize(OUT), 'bytes;', 'lakes:', [l['id'] for l in lakes], 'border pieces:', sum(len(b['rings']) for b in borders))
 
 if __name__ == '__main__':
     main()

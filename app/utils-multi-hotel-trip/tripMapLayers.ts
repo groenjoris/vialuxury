@@ -8,8 +8,12 @@
  * in assets/css/mht-trip-map.css (Leaflet maakt de DOM zelf aan).
  */
 import type * as Leaflet from 'leaflet'
+import shapes from '~/data/mht-route-map-shapes.json'
 
 type L = typeof Leaflet
+
+interface Shape { id: string; rings: number[][][] }
+const BORDERS = ((shapes as unknown as { borders?: Shape[] }).borders ?? []).flatMap(s => s.rings)
 
 export interface TripMapStop {
   lat: number
@@ -113,6 +117,16 @@ export function addTripHighlights(L: L, map: Leaflet.Map, highlights: TripMapHig
     m.bindTooltip(hoverCardHtml({ image: h.image, title: h.name, lines: [h.text] }), { ...TOOLTIP, offset: [0, -30] })
     return m
   })
+}
+
+/** Landsgrenzen (Natural Earth, alleen grenzen over land) als duidelijke
+ *  gestreepte lijn bovenop de tegels — de OSM-grenzen zelf zijn erg subtiel. */
+export function addCountryBorders(L: L, map: Leaflet.Map, weight = 2): void {
+  for (const ring of BORDERS) {
+    const pts = ring.map(([lng, lat]) => [lat!, lng!] as [number, number])
+    L.polyline(pts, { color: '#fff', weight: weight + 2, opacity: 0.6, interactive: false }).addTo(map)
+    L.polyline(pts, { color: '#5b5347', weight, dashArray: '7 5', opacity: 0.9, interactive: false }).addTo(map)
+  }
 }
 
 /** Standaard OpenStreetMap-tegels (de CARTO-basemaps vragen een API-key). */

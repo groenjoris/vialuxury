@@ -20,7 +20,7 @@
 </template>
 
 <script setup lang="ts">
-import { addOsmTiles, addTripRoute, addTripHotels, type TripMapStop } from '~/utils-multi-hotel-trip/tripMapLayers'
+import { addOsmTiles, addCountryBorders, addTripRoute, addTripHotels, type TripMapStop } from '~/utils-multi-hotel-trip/tripMapLayers'
 
 const props = defineProps<{
   /** Hotels in reisvolgorde (met plaatsnaam, hotelnaam en afstand vanaf het vorige hotel). */
@@ -55,6 +55,7 @@ onMounted(async () => {
     zoomSnap: 0.25,
   })
   addOsmTiles(L, map, false)
+  addCountryBorders(L, map, 1.5)
   addTripRoute(L, map, props.stops, { distances: true, weight: 2.5 })
   addTripHotels(L, map, props.stops, {
     size: 30,

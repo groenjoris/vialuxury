@@ -10,7 +10,7 @@
   <Teleport to="body">
     <Transition name="fade">
       <div v-if="open" class="tfm" role="dialog" aria-modal="true" :aria-label="t('trip.mapTitle')">
-        <!-- Kaart + kop + zoom schuiven samen naar links als het panel opent. -->
+        <!-- Kaart, topbalk en zoom krimpen samen in breedte als het panel opent. -->
         <div class="tfm__stage" :class="{ 'tfm__stage--with-panel': selectedHotel != null }">
           <header class="tfm__header">
             <div class="tfm__heading">
@@ -21,6 +21,11 @@
               <li><span class="tfm__legend-hotel">1</span>{{ t('trip.mapLegendHotels') }}</li>
               <li><span class="tfm__legend-pin" v-html="PIN_SVG"></span>{{ t('trip.mapLegendHighlights') }}</li>
             </ul>
+            <!-- Prominente sluitknop, zoals "Sluit kaart" op /kaart; krimpt mee met de topbalk. -->
+            <button type="button" class="tfm__close" @click="$emit('close')">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12" /></svg>
+              <span>{{ t('trip.closeMap') }}</span>
+            </button>
           </header>
           <div ref="mapEl" class="tfm__map"></div>
           <div class="tfm__zoom">
@@ -28,12 +33,6 @@
             <button type="button" class="tfm__zoom-btn" aria-label="Uitzoomen" @click="map?.zoomOut()">−</button>
           </div>
         </div>
-
-        <!-- Prominente sluitknop, zoals "Sluit kaart" op /kaart; blijft boven het panel. -->
-        <button type="button" class="tfm__close" @click="$emit('close')">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12" /></svg>
-          <span>{{ t('trip.closeMap') }}</span>
-        </button>
 
         <!-- Hotel-sidepanel (klik op een hotelmarker). -->
         <Transition name="tfm-panel">
@@ -71,6 +70,7 @@ import type { TripHotelModalData } from '~/components-multi-hotel-trip/deal/Trip
 import {
   PIN_SVG,
   addOsmTiles,
+  addCountryBorders,
   addTripRoute,
   addTripHotels,
   addTripHighlights,
@@ -113,6 +113,7 @@ async function mount() {
   const L = (await import('leaflet')).default
   map = L.map(mapEl.value, { zoomControl: false, attributionControl: true, scrollWheelZoom: true })
   addOsmTiles(L, map)
+  addCountryBorders(L, map, 2)
   addTripRoute(L, map, props.stops, { distances: true })
   addTripHotels(L, map, props.stops, {
     size: 30,
@@ -162,22 +163,26 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   background: #fff;
   overflow: hidden;
 }
-/* Kaart, kop en zoomknoppen samen; schuift de panelbreedte naar links als
-   het hotel-sidepanel opent (zelfde beweging als /kaart). */
+/* Kaart, topbalk en zoomknoppen samen; krimpt de panelbreedte in als het
+   hotel-sidepanel opent (zelfde timing als het panel op /kaart), zodat
+   topbalk en "Sluit kaart" nooit onder het panel komen. */
 .tfm__stage {
   position: absolute;
-  inset: 0;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
   display: flex;
   flex-direction: column;
-  will-change: transform;
-  transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1);
+  transition: right 300ms cubic-bezier(0.16, 1, 0.3, 1);
 }
-.tfm__stage--with-panel { transform: translateX(-440px); }
+.tfm__stage--with-panel { right: 440px; }
 .tfm__header {
   display: flex;
   align-items: center;
-  gap: var(--space-lg);
-  padding: var(--space-md) calc(var(--space-lg) + 140px) var(--space-md) var(--space-lg);
+  flex-wrap: wrap;
+  gap: var(--space-sm) var(--space-lg);
+  padding: var(--space-md) var(--space-lg);
   border-bottom: 1px solid var(--color-border-light);
   background: #fff;
 }
@@ -193,7 +198,8 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 }
 .tfm__legend {
   display: flex;
-  gap: var(--space-lg);
+  flex-wrap: wrap;
+  gap: var(--space-xs) var(--space-lg);
   margin: 0 0 0 auto;
   padding: 0;
   list-style: none;
@@ -217,12 +223,9 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   font-weight: 700;
 }
 .tfm__legend-pin { display: inline-flex; transform: scale(0.75); }
-/* "Sluit kaart" — donkere knop rechtsboven, boven het panel (zoals /kaart). */
+/* "Sluit kaart" — donkere knop rechts in de topbalk (zoals /kaart). */
 .tfm__close {
-  position: absolute;
-  top: var(--space-md);
-  right: var(--space-lg);
-  z-index: 1400;
+  flex-shrink: 0;
   height: 40px;
   padding: 0 var(--space-md);
   border: 0;
@@ -262,8 +265,6 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   justify-content: space-between;
   gap: var(--space-md);
   padding: var(--space-lg) var(--space-lg) var(--space-md);
-  /* Ruimte voor de "Sluit kaart"-knop die over de rechterbovenhoek valt. */
-  padding-right: calc(var(--space-lg) + 130px);
   border-bottom: 1px solid var(--color-border-light);
 }
 .tfm__panel-title {
@@ -324,7 +325,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 @media (max-width: 767px) {
   .tfm__legend { display: none; }
   .tfm__header { gap: var(--space-md); }
-  .tfm__stage--with-panel { transform: none; }
+  .tfm__stage--with-panel { right: 0; }
   .tfm__panel { width: 100%; max-width: none; }
 }
 </style>

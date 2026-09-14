@@ -1030,6 +1030,9 @@ const includesBullets = computed<string[]>(() => {
   object-fit: cover;
   display: block;
 }
+/* Het kaartje ligt bóven de klik-overlay van de foto (z-index 1), anders
+   bereikt de hover de nummers nooit; alleen de nummers zelf vangen
+   muis-events (pointer-events in TripRouteMap), de rest klikt door. */
 .deal-card-v2__trip-map {
   position: absolute;
   top: 0;
@@ -1038,6 +1041,8 @@ const includesBullets = computed<string[]>(() => {
   height: 100%;
   border-left: 2px solid #fff;
   box-sizing: border-box;
+  z-index: 2;
+  pointer-events: none;
 }
 /* Hover op een nummer: naam + sterren van dat hotel onderin de foto. */
 .deal-card-v2__trip-caption {
