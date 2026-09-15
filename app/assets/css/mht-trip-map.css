@@ -26,6 +26,7 @@
 .tml-hotel__name {
   position: absolute;
   top: 50%;
+  left: var(--tml-gap, 36px);
   transform: translateY(-50%);
   padding: 3px 7px;
   border-radius: 6px;
@@ -38,6 +39,8 @@
   white-space: nowrap;
 }
 .tml-hotel--clickable:hover .tml-hotel__name { color: var(--color-primary, #ff7e00); }
+/* Label links van de bol als het rechts buiten de kaart zou vallen (keepLabelsInView). */
+.tml-hotel--flip .tml-hotel__name { left: auto; right: var(--tml-gap, 36px); }
 
 /* Afstand halverwege een etappe */
 .tml-km-wrap { pointer-events: none; }

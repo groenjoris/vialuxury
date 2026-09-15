@@ -53,6 +53,7 @@ import {
   addTripHotels,
   addTripHighlights,
   hoverCardHtml,
+  keepLabelsInView,
   type TripMapStop,
   type TripMapHighlight,
   type TripRouteLeg,
@@ -96,7 +97,7 @@ async function mount() {
   addOsmTiles(L, map)
   addCountryBorders(L, map, 2)
   const routeBounds = addTripRoute(L, map, props.stops, { distances: true, legs: props.legs })
-  addTripHotels(L, map, props.stops, {
+  const hotelMarkers = addTripHotels(L, map, props.stops, {
     size: 30,
     labelText: s => s.title ?? s.label,
     labelSize: 13,
@@ -120,6 +121,8 @@ async function mount() {
     map.fitBounds(b, { padding: [72, 72], maxZoom: 13 })
   }
   setTimeout(() => map?.invalidateSize(), 50)
+  map.on('moveend', () => { if (map) keepLabelsInView(map, hotelMarkers) })
+  setTimeout(() => { if (map) keepLabelsInView(map, hotelMarkers) }, 120)
 }
 
 function unmount() {

@@ -1382,6 +1382,7 @@ const tripMapStops = computed(() =>
       image: s.image,
       travelKm: s.travel?.km,
       travelLabel: tripTravelLabel(s.travel, i),
+      travelShort: tripTravelShort(s.travel, i),
     })),
 )
 /** "2 nachten" per hotel voor het hover-kaartje op de fullscreen kaart. */
@@ -1414,6 +1415,14 @@ function tripTravelLabel(travel: { km: number; minutes: number } | undefined, i:
   if (!tr) return undefined
   if (trip?.type === 'fiets') return `${t('trip.distanceBike').replace('{km}', String(tr.km))} (${tripDurationLabel(tr.minutes)})`
   return tripDistanceLabel(tr)
+}
+/** Compacte reistijd voor de minimap: "50 min", "1 uur", "2 u 30 min". */
+function tripTravelShort(travel: { km: number; minutes: number } | undefined, i: number): string | undefined {
+  const minutes = travel?.minutes ?? tripRouteLegs.value.find(l => l.to === i)?.minutes
+  if (!minutes) return undefined
+  if (minutes < 60) return t('trip.durShort.minutes').replace('{m}', String(minutes))
+  const h = Math.floor(minutes / 60), m = minutes % 60
+  return m === 0 ? t('trip.durShort.hours').replace('{h}', String(h)) : t('trip.durShort.hoursMinutes').replace('{h}', String(h)).replace('{m}', String(m))
 }
 /** "50 km (een half uur)" — of bij een fietsvakantie "45 km fietsen". */
 function tripDistanceLabel(travel?: { km: number; minutes: number }): string {

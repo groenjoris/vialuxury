@@ -20,7 +20,7 @@
 </template>
 
 <script setup lang="ts">
-import { addOsmTiles, addCountryBorders, addTripRoute, addTripHotels, type TripMapStop, type TripRouteLeg } from '~/utils-multi-hotel-trip/tripMapLayers'
+import { addOsmTiles, addCountryBorders, addTripRoute, addTripHotels, keepLabelsInView, type TripMapStop, type TripRouteLeg } from '~/utils-multi-hotel-trip/tripMapLayers'
 
 const props = defineProps<{
   /** Hotels in reisvolgorde (met plaatsnaam, hotelnaam en afstand vanaf het vorige hotel). */
@@ -37,6 +37,7 @@ const mapEl = ref<HTMLElement | null>(null)
 let map: import('leaflet').Map | null = null
 let ro: ResizeObserver | null = null
 let routeBounds: import('leaflet').LatLngBounds | null = null
+let hotelMarkers: import('leaflet').Marker[] = []
 
 function fit(L: typeof import('leaflet')) {
   if (!map || !props.stops.length) return
@@ -62,15 +63,19 @@ onMounted(async () => {
   })
   addOsmTiles(L, map, false)
   addCountryBorders(L, map, 1.5)
-  routeBounds = addTripRoute(L, map, props.stops, { distances: true, weight: 2.5, legs: props.legs })
-  addTripHotels(L, map, props.stops, {
+  // Minimap: alleen de reistijd op de etappe ("50 min"); de volledige tekst staat op de grote kaart.
+  routeBounds = addTripRoute(L, map, props.stops, { distances: true, weight: 2.5, legs: props.legs, labelMode: 'short' })
+  hotelMarkers = addTripHotels(L, map, props.stops, {
     size: 30,
     labelText: s => s.label,
     labelSize: 14,
     onClick: i => emit('stop-click', i),
   })
   map.on('click', () => emit('open'))
+  // Plaatsnamen binnen de kaart houden (rechts buiten beeld → links van de bol).
+  map.on('moveend', () => { if (map) keepLabelsInView(map, hotelMarkers) })
   fit(L)
+  keepLabelsInView(map, hotelMarkers)
   ro = new ResizeObserver(() => { map?.invalidateSize(); fit(L) })
   ro.observe(mapEl.value)
 })

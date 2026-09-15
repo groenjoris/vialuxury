@@ -246,7 +246,7 @@ const de: Record<string, string> = {
   'trip.inclusive': 'Inklusive',
   'trip.routeLabel': 'Route',
   // Multi Hotel Trip — dagprogramma + hotel-pop-up op de vakantie-PDP
-  'trip.itineraryHeading': 'Tag für Tag',
+  'trip.itineraryHeading': 'Beispiel-Reiseplan',
   'trip.itineraryIntro': 'So sieht Ihr Urlaub aus: ein Beispielprogramm, das Tempo bestimmen Sie.',
   'trip.moreAboutHotel': 'Mehr über dieses Hotel',
   'trip.moreAboutHotelNamed': 'Mehr über Hotel {hotel}',
@@ -285,6 +285,9 @@ const de: Record<string, string> = {
   'trip.dur.minutes': '{m} Minuten',
   'trip.dur.hours': '{h} Stunden',
   'trip.dur.hoursMinutes': '{h} Std. {m} Min.',
+  'trip.durShort.minutes': '{m} Min.',
+  'trip.durShort.hours': '{h} Std.',
+  'trip.durShort.hoursMinutes': '{h} Std. {m} Min.',
   'trip.roomHeading': 'Ihr Zimmer',
   'trip.checkInFrom': 'Check-in ab {time}',
   // Multi Hotel Trip — reisduur in twee groepen (kort / lang)

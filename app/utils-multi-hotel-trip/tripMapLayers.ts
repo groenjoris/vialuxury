@@ -31,6 +31,8 @@ export interface TripMapStop {
   /** Volledig label halverwege de etappe, al vertaald: "50 km (een half uur)".
    *  Heeft voorrang op `travelKm`. */
   travelLabel?: string
+  /** Compact label (minimap): alleen de reistijd, "50 min". */
+  travelShort?: string
 }
 
 /** Rijroute (OSRM) tussen stop `from` en stop `to` — zie scripts/build-trip-routes.py. */
@@ -106,7 +108,7 @@ export function addTripRoute(
   L: L,
   map: Leaflet.Map,
   stops: TripMapStop[],
-  opts: { distances?: boolean; weight?: number; legs?: TripRouteLeg[] } = {},
+  opts: { distances?: boolean; weight?: number; legs?: TripRouteLeg[]; labelMode?: 'full' | 'short' } = {},
 ): Leaflet.LatLngBounds | null {
   if (stops.length < 2) return null
   const w = opts.weight ?? 3
@@ -129,7 +131,9 @@ export function addTripRoute(
   if (opts.distances) {
     for (const seg of segments) {
       const stop = stops[seg.i]!
-      const text = stop.travelLabel ?? (stop.travelKm ? `${stop.travelKm} km` : seg.leg ? `${seg.leg.km} km` : '')
+      const text = opts.labelMode === 'short'
+        ? (stop.travelShort ?? (seg.leg ? `${seg.leg.minutes} min` : ''))
+        : (stop.travelLabel ?? (stop.travelKm ? `${stop.travelKm} km` : seg.leg ? `${seg.leg.km} km` : ''))
       if (!text) continue
       const icon = L.divIcon({ className: 'tml-km-wrap', html: `<span class="tml-km">${escapeHtml(text)}</span>`, iconSize: [0, 0], iconAnchor: [0, 0] })
       L.marker(midpointAlong(seg.pts), { icon, interactive: false, keyboard: false, zIndexOffset: 500 }).addTo(map)
@@ -160,7 +164,7 @@ export function addTripHotels(L: L, map: Leaflet.Map, stops: TripMapStop[], opts
     const label = opts.labelText ? opts.labelText(s, i) : (s.title ?? s.label)
     const icon = L.divIcon({
       className: `tml-hotel${clickable ? ' tml-hotel--clickable' : ''}`,
-      html: `<span class="tml-hotel__num">${i + 1}</span><span class="tml-hotel__name" style="font-size:${labelSize}px;left:${size + 6}px">${escapeHtml(label)}</span>`,
+      html: `<span class="tml-hotel__num">${i + 1}</span><span class="tml-hotel__name" style="font-size:${labelSize}px;--tml-gap:${size + 6}px">${escapeHtml(label)}</span>`,
       iconSize: [size, size],
       iconAnchor: [size / 2, size / 2],
     })
@@ -169,6 +173,25 @@ export function addTripHotels(L: L, map: Leaflet.Map, stops: TripMapStop[], opts
     if (opts.onClick) m.on('click', (e) => { L.DomEvent.stopPropagation(e); opts.onClick!(i) })
     return m
   })
+}
+
+/** Houd de naam/plaatsnaam naast een hotelmarker binnen de kaart: valt het
+ *  label rechts buiten beeld, dan komt het links van de bol te staan
+ *  (`tml-hotel--flip`). Aanroepen na fitBounds en bij moveend/resize. */
+export function keepLabelsInView(map: Leaflet.Map, markers: Leaflet.Marker[]): void {
+  const box = map.getContainer().getBoundingClientRect()
+  for (const m of markers) {
+    const el = m.getElement()
+    const name = el?.querySelector<HTMLElement>('.tml-hotel__name')
+    if (!el || !name) continue
+    el.classList.remove('tml-hotel--flip')
+    const r = name.getBoundingClientRect()
+    if (r.right > box.right - 4) {
+      el.classList.add('tml-hotel--flip')
+      // Past het links ook niet, dan toch rechts (minste schade).
+      if (name.getBoundingClientRect().left < box.left + 4) el.classList.remove('tml-hotel--flip')
+    }
+  }
 }
 
 /** Omgevingshighlights als pin met hover-kaartje. */
