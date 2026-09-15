@@ -352,17 +352,27 @@
               'search-page__result-list--list-wide': effectiveViewMode === 'list' && !sidebarVisible,
             }"
           >
-            <MhtJesseDealCard
-              v-for="row in displayedDeals"
-              :key="row.deal.id"
-              :hotel="row.hotel"
-              :deal="row.deal"
-              :sibling-count="row.siblings.length"
-              :grid-mode="effectiveViewMode === 'grid'"
-              :wide="!sidebarVisible"
-              :unavailable="row._unavailable"
-              @view-siblings="openDealPanel(row.hotel)"
-            />
+            <!-- Vakanties krijgen de v5-kaart (foto met fotostrook, routelijn,
+                 arrangementregel, inclusief-vinkjes, prijsregel). Gewone
+                 hotelarrangementen houden de bestaande DealCard. -->
+            <template v-for="row in displayedDeals" :key="row.deal.id">
+              <MhtJesseTripCardV5
+                v-if="row.hotel?.trip"
+                :hotel="row.hotel"
+                :deal="row.deal"
+                :list-mode="effectiveViewMode === 'list'"
+              />
+              <MhtJesseDealCard
+                v-else
+                :hotel="row.hotel"
+                :deal="row.deal"
+                :sibling-count="row.siblings.length"
+                :grid-mode="effectiveViewMode === 'grid'"
+                :wide="!sidebarVisible"
+                :unavailable="row._unavailable"
+                @view-siblings="openDealPanel(row.hotel)"
+              />
+            </template>
           </div>
 
           <!-- Empty state: nothing matches the active filters. Friendly
