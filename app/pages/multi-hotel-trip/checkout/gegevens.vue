@@ -19,6 +19,13 @@ interface SelRow {
 
 const BOOKING_FEE = CHECKOUT_BOOKING_FEE
 const selection = useState<SelRow[]>('mht-checkout-selection', () => [])
+// Vakantie: de kamerkeuze is overgeslagen — één kamer (flexibel tarief) staat
+// voorgeselecteerd, zodat kassabon en "Boek nu" werken; terug gaat naar de datum.
+const checkoutIsTrip = useState<boolean>('mht-checkout-trip', () => false)
+if (checkoutIsTrip.value && selection.value.length === 0 && roomsData[0]) {
+  const r = roomsData[0]
+  selection.value = [{ baseId: r.id, rateKey: 'flexible', price: r.priceNow, priceWas: r.priceWas, quantity: 1 }]
+}
 const checkoutDay = useState<{ price: number; checkIn?: string; checkOut?: string } | null>(
   'mht-checkout-day',
   () => null,
@@ -93,7 +100,7 @@ useHead({ title: 'Gegevens en betaalwijze — ViaLuxury' })
           <MultiHotelTripCheckoutGegevensForm :start-at="1" :cancel-block="cancelBlock" :can-undo-flex="flexAddedHere" @toggle-flex="toggleFlex" />
 
           <div class="col-form__cta col-form__cta--split">
-            <NuxtLink class="btn-back t-body" to="/multi-hotel-trip/checkout/kamers">← Terug naar kamers</NuxtLink>
+            <NuxtLink class="btn-back t-body" :to="checkoutIsTrip ? '/multi-hotel-trip/checkout/datum' : '/multi-hotel-trip/checkout/kamers'">{{ checkoutIsTrip ? '← Terug naar datum' : '← Terug naar kamers' }}</NuxtLink>
             <button class="btn-primary btn-primary--auto" type="button" :disabled="roomsSel === 0">
               {{ roomsSel === 0 ? 'Selecteer een kamer' : 'Boek nu' }}
             </button>

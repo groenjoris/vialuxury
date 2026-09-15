@@ -37,9 +37,10 @@
         <section class="deal-page__title-section deal-page__title-section--mobile container">
           <h1 class="deal-page__package-title">{{ localized(currentDeal.title) }}</h1>
           <div class="deal-page__hotel-name-wrap">
-            <!-- Vakantie: "3 fantastische hotels" (geen link); sterren alleen
-                 als alle hotels hetzelfde aantal hebben (anders starRating 0). -->
-            <span v-if="isTrip" class="deal-page__hotel-subtitle">{{ tripHotelsLabel }}</span>
+            <!-- Vakantie: de hotelnamen met een pijltje ertussen (elke naam opent het
+                 hotel-sidepanel); sterren ernaast alleen als alle hotels hetzelfde
+                 aantal hebben (anders starRating 0). -->
+            <span v-if="isTrip" class="deal-page__hotel-subtitle deal-page__hotel-subtitle--trip"><MultiHotelTripHotelText :text="tripHotelsLabel" :hotels="tripHotelLinks" @open-hotel="openTripHotel" /></span>
             <NuxtLink v-else :to="`/multi-hotel-trip/hotel/${hotel.slug}`" class="deal-page__hotel-link">
               <span class="deal-page__hotel-subtitle">{{ hotel.name }}</span>
             </NuxtLink>
@@ -180,7 +181,7 @@
             <div class="sidebar__trust">
               <ul class="sidebar__trust-list">
                 <li><span class="sidebar__trust-check"><svg class="icon-check" viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10" style="vertical-align:-0.125em"><path d="M3 13L8 19L21 5"/></svg></span> {{ t('deal.trust2min') }}</li>
-                <li><span class="sidebar__trust-check"><svg class="icon-check" viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10" style="vertical-align:-0.125em"><path d="M3 13L8 19L21 5"/></svg></span> {{ t('deal.trustCancel') }}</li>
+                <li><span class="sidebar__trust-check"><svg class="icon-check" viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10" style="vertical-align:-0.125em"><path d="M3 13L8 19L21 5"/></svg></span> {{ isTrip ? t('trip.freeCancel30') : t('deal.trustCancel') }}</li>
                 <li><span class="sidebar__trust-check"><svg class="icon-check" viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10" style="vertical-align:-0.125em"><path d="M3 13L8 19L21 5"/></svg></span> {{ t('deal.trustTrustpilot') }}</li>
               </ul>
               <div class="sidebar__trust-block">
@@ -237,6 +238,7 @@
         <section id="arrangement" class="container deal-page__content-blocks deal-page__content-blocks--mobile">
           <!-- Vakantie: dagprogramma (per dag 2–3 blokken, foto boven tekst). -->
           <template v-if="isTrip">
+            <p v-if="tripCancelLine" class="deal-page__cancel-line"><span class="deal-page__cancel-check" aria-hidden="true"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10"><path d="M3 13L8 19L21 5"/></svg></span>{{ tripCancelLine }}</p>
             <h2 class="section-title">{{ t('trip.itineraryHeading') }}</h2>
             <p class="deal-page__itinerary-intro">{{ t('trip.itineraryIntro') }}</p>
             <MultiHotelTripItinerary :days="tripDaysView" :hotels="tripHotelLinks" stacked @open-hotel="openTripHotel" />
@@ -359,9 +361,10 @@
         >
           <h1 class="deal-page__package-title">{{ localized(currentDeal.title) }}</h1>
           <div class="deal-page__hotel-name-wrap">
-            <!-- Vakantie: "3 fantastische hotels" (geen link); sterren alleen
-                 als alle hotels hetzelfde aantal hebben (anders starRating 0). -->
-            <span v-if="isTrip" class="deal-page__hotel-subtitle">{{ tripHotelsLabel }}</span>
+            <!-- Vakantie: de hotelnamen met een pijltje ertussen (elke naam opent het
+                 hotel-sidepanel); sterren ernaast alleen als alle hotels hetzelfde
+                 aantal hebben (anders starRating 0). -->
+            <span v-if="isTrip" class="deal-page__hotel-subtitle deal-page__hotel-subtitle--trip"><MultiHotelTripHotelText :text="tripHotelsLabel" :hotels="tripHotelLinks" @open-hotel="openTripHotel" /></span>
             <NuxtLink v-else :to="`/multi-hotel-trip/hotel/${hotel.slug}`" class="deal-page__hotel-link">
               <span class="deal-page__hotel-subtitle">{{ hotel.name }}</span>
             </NuxtLink>
@@ -452,6 +455,7 @@
           <section id="arrangement" class="deal-page__content-blocks">
             <!-- Vakantie: dagprogramma — per dag 2–3 blokken, foto links, tekst rechts. -->
             <template v-if="isTrip">
+              <p v-if="tripCancelLine" class="deal-page__cancel-line"><span class="deal-page__cancel-check" aria-hidden="true"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10"><path d="M3 13L8 19L21 5"/></svg></span>{{ tripCancelLine }}</p>
               <h2 class="section-title">{{ t('trip.itineraryHeading') }}</h2>
               <p class="deal-page__itinerary-intro">{{ t('trip.itineraryIntro') }}</p>
               <MultiHotelTripItinerary :days="tripDaysView" :hotels="tripHotelLinks" @open-hotel="openTripHotel" />
@@ -653,7 +657,7 @@
           <div class="sidebar__trust">
             <ul class="sidebar__trust-list">
               <li><span class="sidebar__trust-check"><svg class="icon-check" viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10" style="vertical-align:-0.125em"><path d="M3 13L8 19L21 5"/></svg></span> {{ t('deal.trust2min') }}</li>
-              <li><span class="sidebar__trust-check"><svg class="icon-check" viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10" style="vertical-align:-0.125em"><path d="M3 13L8 19L21 5"/></svg></span> {{ t('deal.trustCancel') }}</li>
+              <li><span class="sidebar__trust-check"><svg class="icon-check" viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10" style="vertical-align:-0.125em"><path d="M3 13L8 19L21 5"/></svg></span> {{ isTrip ? t('trip.freeCancel30') : t('deal.trustCancel') }}</li>
               <li><span class="sidebar__trust-check"><svg class="icon-check" viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10" style="vertical-align:-0.125em"><path d="M3 13L8 19L21 5"/></svg></span> {{ t('deal.trustTrustpilot') }}</li>
             </ul>
             <!-- Trustpilot block — the "Flexibel annuleren" companion
@@ -1024,7 +1028,7 @@ import { formatPrice } from '~/utils-multi-hotel-trip/formatPrice'
 import { getReviewLabelKey } from '~/utils-multi-hotel-trip/reviewLabel'
 import { generateDealAvailability } from '~/data/mock/deal-pricing'
 import dayjs from 'dayjs'
-import { formatDateWeekdayShort } from '~/utils-multi-hotel-trip/formatDate'
+import { formatDateWeekdayShort, formatDateLong } from '~/utils-multi-hotel-trip/formatDate'
 import tripRoutesJson from '~/data/mht-trip-routes.json'
 import type { TripRouteLeg } from '~/utils-multi-hotel-trip/tripMapLayers'
 import { tripPdpBySlug, tripHotelDetails } from '~/data/mht-trip-pdp'
@@ -1300,8 +1304,26 @@ function handleFavoriteClick() {
 // kalenderstap; met datum direct naar de kamerkeuze. Op een telefoon stuurt
 // de mht-mobile middleware door naar de mobiele checkout-site.
 // Verse start vanaf de dealpagina: eerdere kalenderkeuze wissen.
-useState<{ price: number } | null>('mht-checkout-day', () => null).value = null
+const checkoutDayState = useState<{ price: number; checkIn?: string; checkOut?: string } | null>('mht-checkout-day', () => null)
+checkoutDayState.value = null
+/** Vakantie-checkout: geen kamerkeuze — na de datum (of direct, als die al
+ *  gekozen is) door naar het gegevensscherm. De checkoutpagina's lezen deze vlag. */
+const checkoutIsTrip = useState<boolean>('mht-checkout-trip', () => false)
 function goToCheckout() {
+  checkoutIsTrip.value = isTrip
+  if (isTrip) {
+    if (store.checkInDate && currentDeal.value) {
+      checkoutDayState.value = {
+        price: currentDeal.value.basePrice,
+        checkIn: formatDateWeekdayShort(store.checkInDate),
+        checkOut: formatDateWeekdayShort(dayjs(store.checkInDate).add(currentDeal.value.nights, 'day').format('YYYY-MM-DD')),
+      }
+      navigateTo('/multi-hotel-trip/checkout/gegevens')
+    } else {
+      navigateTo('/multi-hotel-trip/checkout/datum')
+    }
+    return
+  }
   navigateTo(store.checkInDate ? '/multi-hotel-trip/checkout/kamers' : '/multi-hotel-trip/checkout/datum')
 }
 
@@ -1360,10 +1382,18 @@ const dealRoomsLeft = computed<number | null>(() =>
 )
 
 // ── Multi Hotel Trip: vakantie-specifieke weergave ──
-/** "3 fantastische hotels" op de plek van de hotelnaam. */
-const tripHotelsLabel = computed(() =>
-  trip ? t('trip.fantasticHotels').replace('{n}', String(trip.stops.length)) : '',
-)
+/** "Hotel Royal Beaulaincourt → Hôtel Château Tilques → Hôtel Château Cléry" op de plek van de hotelnaam. */
+const tripHotelsLabel = computed(() => trip ? trip.stops.map(s => s.hotelName).join(' → ') : '')
+/** Onder de highlights, boven het reisschema: gratis annuleren tot 30 dagen voor vertrek —
+ *  met gekozen aankomstdatum de concrete datum; ligt die grens al achter ons, dan geen regel. */
+const tripCancelLine = computed(() => {
+  if (!isTrip) return ''
+  const arrival = store.checkInDate
+  if (!arrival) return t('trip.freeCancelLine')
+  const deadline = dayjs(arrival).subtract(30, 'day')
+  if (deadline.isBefore(dayjs().startOf('day'))) return ''
+  return t('trip.freeCancelLineDate').replace('{date}', formatDateLong(deadline.format('YYYY-MM-DD')))
+})
 /** "Béthune · Tilques · Hesdin-l'Abbé" — zelfde notatie als de dealcard. */
 const tripCitiesLabel = computed(() => trip ? trip.stops.map(s => s.city).join(' · ') : '')
 /** Hotelnaam-sticker per gallery-foto. */
@@ -2426,6 +2456,19 @@ onMounted(() => {
 }
 
 /* ===== FACILITIES ===== */
+/* Vakantie: hotelnamen met pijltjes mogen over meer regels lopen. */
+.deal-page__hotel-subtitle--trip { white-space: normal; line-height: 1.4; }
+/* Vakantie: "Gratis annuleren tot …" boven het reisschema. */
+.deal-page__cancel-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 var(--space-lg);
+  font-family: var(--font-body);
+  font-size: 15px;
+  color: var(--color-text-primary);
+}
+.deal-page__cancel-check { display: inline-flex; color: var(--color-discount, #27C88D); font-size: 18px; }
 .deal-page__facilities { padding: var(--space-xl) var(--space-lg); position: relative; }
 .facilities__grid {
   display: grid;

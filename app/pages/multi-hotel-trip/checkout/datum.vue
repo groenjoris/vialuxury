@@ -138,8 +138,10 @@ const ctaDisabled = computed(() => selected.value === null)
 const ctaText = computed(() =>
   selected.value === null ? 'Selecteer eerst een datum' : 'Opslaan en doorgaan',
 )
+// Vakantie (vlag van de dealpagina): geen kamerkeuze, direct naar gegevens.
+const checkoutIsTrip = useState<boolean>('mht-checkout-trip', () => false)
 function onCta() {
-  if (selected.value) navigateTo('/multi-hotel-trip/checkout/kamers')
+  if (selected.value) navigateTo(checkoutIsTrip.value ? '/multi-hotel-trip/checkout/gegevens' : '/multi-hotel-trip/checkout/kamers')
 }
 
 const arrangementIncludes = [

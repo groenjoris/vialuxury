@@ -288,9 +288,9 @@ const linkTarget = computed(() => (isMobile.value ? '_self' : '_blank'))
 const isGerman = computed(() => locale.value === 'de')
 /** "Arrangement" / "Package" label above the includes list. */
 const packageLabel = computed(() => {
-  // Multi Hotel Trip: "Autovakantie" / "Fietsvakantie" i.p.v. "Arrangement".
+  // Multi Hotel Trip: "Autovakantie inclusief" / "Fietsvakantie inclusief" i.p.v. "Arrangement".
   const trip = props.hotel?.trip
-  if (trip) return t(trip.type === 'fiets' ? 'trip.fiets' : 'trip.auto')
+  if (trip) return t(trip.type === 'fiets' ? 'trip.fietsIncl' : 'trip.autoIncl')
   return locale.value === 'en' ? 'Package' : 'Arrangement'
 })
 

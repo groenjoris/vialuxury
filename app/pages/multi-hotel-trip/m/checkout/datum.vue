@@ -102,6 +102,8 @@ function formatDay(offset: number) {
 }
 
 // Kalenderprijs + datums delen met de kamerkeuze (zelfde state als desktop).
+// Vakantie (vlag van de dealpagina): geen kamerkeuze, direct naar gegevens.
+const checkoutIsTrip = useState<boolean>('mht-checkout-trip', () => false)
 const checkoutDay = useState<{
   price: number
   checkIn?: string
@@ -199,7 +201,7 @@ useHead({ title: 'Selecteer aankomstdatum — ViaLuxury' })
             class="btn-primary mcta__btn"
             type="button"
             :disabled="selected === null"
-            @click="navigateTo('/multi-hotel-trip/m/checkout/kamers')"
+            @click="navigateTo(checkoutIsTrip ? '/multi-hotel-trip/checkout/gegevens' : '/multi-hotel-trip/m/checkout/kamers')"
           >
             {{ selected === null ? 'Selecteer eerst een datum' : 'Opslaan en doorgaan' }}
           </button>

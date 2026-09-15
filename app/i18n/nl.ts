@@ -240,10 +240,16 @@ const nl: Record<string, string> = {
   'search.holidaysPitch': 'Verken een prachtige streek met auto of fiets, en verblijf in 3 verschillende hotels. Met zorg samengesteld en persoonlijk gecheckt.',
   'trip.auto': 'Autovakantie',
   'trip.fiets': 'Fietsvakantie',
+  // Dealcard: label boven de inclusies
+  'trip.autoIncl': 'Autovakantie inclusief',
+  'trip.fietsIncl': 'Fietsvakantie inclusief',
   'trip.multipleHotels': 'Meerdere hotels',
   'trip.typeWithHotels': '{type} met {n} hotels',
   // Multi Hotel Trip — vakantie-PDP
   'trip.fantasticHotels': '{n} fantastische hotels',
+  'trip.freeCancel30': 'Kosteloos annuleren tot 30 dagen voor vertrek',
+  'trip.freeCancelLine': 'Gratis annuleren tot 30 dagen voor vertrek.',
+  'trip.freeCancelLineDate': 'Gratis annuleren tot {date} (30 dagen voor vertrek).',
   'trip.hotelsIncludedHeading': 'In deze vakantie zijn deze hotels inbegrepen:',
   'trip.daySingle': 'Dag {a}',
   'trip.dayAnd': 'Dag {a} en {b}',
