@@ -1,0 +1,142 @@
+/* Multi Hotel Trip — CHECKOUT design system (room table flow), merged in from
+   the flexibel-annuleren prototype (vialuxury-checkout: tokens.css + base.css).
+   Deliberately distinct from the marketing-site tokens (--color-*): this is
+   the checkout's own system, sourced from the "Checkout" Figma (page
+   "Flexible Cancellation"). Everything is SCOPED under `.mhtj-checkout` (the
+   root element of every checkout page) so it never leaks into the rest of
+   the prototype, and the marketing-site base styles can't restyle it. */
+
+.mhtj-checkout {
+  /* Colors */
+  --c-white: #ffffff;
+  --c-black: #000000;
+  --c-via-black: #1a1e1e;      /* primary text / dark surfaces */
+  --c-via-orange: #ff7e00;     /* primary CTA */
+  --c-via-orange-hover: #e67100;
+  --c-via-green: #36c890;      /* accent / recommended / discount */
+  --c-dark-grey: #515454;      /* secondary text, radio outline */
+  --c-medium-grey: #888989;    /* tertiary text */
+  --c-light-grey: #d9d9d9;     /* borders */
+  --c-surface: #f7f7f7;        /* subtle backgrounds */
+  --c-green-soft: #eaf9f2;     /* soft green background */
+  --c-green-pale: #d7f1e4;     /* badge background (Figma) */
+
+  /* Typography */
+  --font-body: 'Basis Grotesque', 'Inter', system-ui, sans-serif;
+
+  /* Type scale (size / line-height) — weights applied inline */
+  --t-display: 32px;   --lh-display: 48px;   /* DT_Headline  900 */
+  --t-h1: 24px;        --lh-h1: 36px;        /* Headline 1   900 */
+  --t-h2: 20px;        --lh-h2: 24px;        /* Subhead BOLD 900 */
+  --t-body-lg: 16px;   --lh-body-lg: 24px;   /* Description 1 500/900 */
+  --t-body: 14px;      --lh-body: 20px;      /* Description 2 500/900 */
+  --t-caption: 12px;   --lh-caption: 16px;   /* Caption      500 */
+
+  --w-medium: 500;
+  --w-black: 900;
+
+  /* Layout */
+  --radius: 8px;
+  --radius-sm: 4px;
+  --card-border: 1px solid var(--c-light-grey);
+  --card-pad: 48px;
+  --section-gap: 36px;
+  --page-max: 1440px;
+  --content-max: 1200px;
+  --shadow-card: 0 1px 2px rgba(26, 30, 30, 0.04);
+  --shadow-pop: 0 8px 24px rgba(26, 30, 30, 0.12);
+
+  /* Base (was `body` in the checkout prototype) */
+  font-family: var(--font-body);
+  font-weight: var(--w-medium);
+  font-size: var(--t-body-lg);
+  line-height: var(--lh-body-lg);
+  color: var(--c-via-black);
+  background: var(--c-surface);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* The marketing site puts Recoleta on every heading; the checkout uses the
+   body font throughout (sizes/weights come from the .t-* utilities). */
+.mhtj-checkout :is(h1, h2, h3, h4, h5, h6) {
+  font-family: var(--font-body);
+  color: inherit;
+}
+
+.mhtj-checkout img,
+.mhtj-checkout svg {
+  display: block;
+  max-width: 100%;
+}
+
+.mhtj-checkout button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+.mhtj-checkout a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.mhtj-checkout ul {
+  list-style: none;
+}
+
+/* Layout helpers */
+.mhtj-checkout .container {
+  width: 100%;
+  max-width: var(--content-max);
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* Cards */
+.mhtj-checkout .card {
+  background: var(--c-white);
+  border: var(--card-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+}
+
+/* Primary CTA */
+.mhtj-checkout .btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--c-via-orange);
+  color: var(--c-white);
+  font-weight: var(--w-black);
+  font-size: var(--t-body-lg);
+  line-height: 1;
+  padding: 22px 40px;
+  border-radius: var(--radius);
+  transition: background 0.15s ease;
+  width: 100%;
+}
+.mhtj-checkout .btn-primary:hover {
+  background: var(--c-via-orange-hover);
+  color: var(--c-white);
+}
+.mhtj-checkout .btn-primary:disabled {
+  background: var(--c-light-grey);
+  color: var(--c-medium-grey);
+  cursor: not-allowed;
+}
+
+/* Type utilities */
+.mhtj-checkout .t-display { font-size: var(--t-display); line-height: var(--lh-display); font-weight: var(--w-black); }
+.mhtj-checkout .t-h1 { font-size: var(--t-h1); line-height: var(--lh-h1); font-weight: var(--w-black); }
+.mhtj-checkout .t-h2 { font-size: var(--t-h2); line-height: var(--lh-h2); font-weight: var(--w-black); }
+.mhtj-checkout .t-body-lg { font-size: var(--t-body-lg); line-height: var(--lh-body-lg); }
+.mhtj-checkout .t-body { font-size: var(--t-body); line-height: var(--lh-body); }
+.mhtj-checkout .t-caption { font-size: var(--t-caption); line-height: var(--lh-caption); }
+.mhtj-checkout .t-bold { font-weight: var(--w-black); }
+.mhtj-checkout .c-green { color: var(--c-via-green); }
+.mhtj-checkout .c-grey { color: var(--c-dark-grey); }
+.mhtj-checkout .c-mgrey { color: var(--c-medium-grey); }

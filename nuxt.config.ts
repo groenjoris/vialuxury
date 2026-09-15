@@ -33,6 +33,13 @@ export default defineNuxtConfig({
       prefix: 'MultiHotelTrip',
       pathPrefix: false,
     },
+    // Multi Hotel Trip - Jesse — losstaande kopie van MHT als persoonlijke
+    // speeltuin. Eigen namespace, wordt niet automatisch gesynchroniseerd.
+    {
+      path: '~/components-mht-jesse',
+      prefix: 'MhtJesse',
+      pathPrefix: false,
+    },
     // Huisstijl variants — frozen snapshot of the 5-homepage prototype.
     {
       path: '~/components-huisstijl',
@@ -60,11 +67,13 @@ export default defineNuxtConfig({
       'composables-first-release/**',
       'composables-second-release/**',
       'composables-multi-hotel-trip/**',
+      'composables-mht-jesse/**',
       'composables-huisstijl/**',
       'composables-northstar/**',
       'stores-first-release/**',
       'stores-second-release/**',
       'stores-multi-hotel-trip/**',
+      'stores-mht-jesse/**',
       'stores-huisstijl/**',
       'stores-northstar/**',
     ],
@@ -84,6 +93,7 @@ export default defineNuxtConfig({
     'leaflet.markercluster/dist/MarkerCluster.css',
     '~/assets/css/leaflet-overrides.css',
     '~/assets/css/mht-trip-map.css',
+    '~/assets/css/mhtj-trip-map.css',
     '~/assets/css/variant-2.css',
     '~/assets/css/fr-variant-6.css',
     '~/assets/css/fr-home-variants.css',
@@ -91,8 +101,11 @@ export default defineNuxtConfig({
     '~/assets/css/sr-home-variants.css',
     '~/assets/css/mht-variant-6.css',
     '~/assets/css/mht-home-variants.css',
+    '~/assets/css/mhtj-variant-6.css',
+    '~/assets/css/mhtj-home-variants.css',
     // Checkout (room table) design system, scoped under .mht-checkout.
     '~/assets/css/mht-checkout.css',
+    '~/assets/css/mhtj-checkout.css',
     '~/assets/css/home-categories.css',
   ],
 
@@ -110,7 +123,7 @@ export default defineNuxtConfig({
       // (1200 px container etc.) applies on first paint — without it,
       // the page briefly renders at the legacy 1137 px width and then
       // jumps to 1200 px once the client-side watcher mounts.
-      htmlAttrs: { lang: 'nl', 'data-fr-variant': '6', 'data-sr-variant': '6', 'data-mht-variant': '6' },
+      htmlAttrs: { lang: 'nl', 'data-fr-variant': '6', 'data-sr-variant': '6', 'data-mht-variant': '6', 'data-mhtj-variant': '6' },
       title: 'Via Luxury - Luxe Hotel Arrangementen',
       link: [
         { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },

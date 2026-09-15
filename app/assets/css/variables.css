@@ -74,7 +74,8 @@
    orange (#E97132 / #D4621F) untouched. */
 body.vl-release-first,
 body.vl-release-second,
-body.vl-release-mht {
+body.vl-release-mht,
+body.vl-release-mhtj {
   --color-primary: #FB862C;
   --color-primary-hover: #F56800;
 
@@ -118,6 +119,6 @@ body.vl-release-mht {
    own button colour now wins, including single-class rules like
    `.btn-primary { color: white }`. Without :where() this scored 0,1,2 and
    silently turned the orange "Ik ga boeken" CTA's label black. */
-:where(body.vl-release-first, body.vl-release-second, body.vl-release-mht) button {
+:where(body.vl-release-first, body.vl-release-second, body.vl-release-mht, body.vl-release-mhtj) button {
   color: inherit;
 }
