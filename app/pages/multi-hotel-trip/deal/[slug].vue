@@ -1425,7 +1425,8 @@ const tripDaysView = computed<TripDayView[]>(() => {
             kind: 'checkin',
             tag: t('trip.tag.checkin'),
             title: t('trip.checkinAt').replace('{hotel}', name),
-            text: localized(content?.hotels[name]?.description ?? trip.pitch),
+            // Dag 1 met eigen aankomsttekst (heenreis, inchecktijd); anders de hotelbeschrijving.
+            text: b.text ? localized(b.text) : localized(content?.hotels[name]?.description ?? trip.pitch),
             image: b.image,
             starRating: st?.starRating,
             meta: st ? `${st.city}, ${st.region}` : undefined,

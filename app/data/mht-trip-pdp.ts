@@ -119,7 +119,8 @@ export function buildTripDays(trip: MultiHotelTripDetail, content: TripItinerary
       continue
     }
     if (day === 1) {
-      blocks.push({ kind: 'checkin', stopIndex: idx, image: stops[idx]!.image })
+      // Eigen aankomsttekst (heenreis + inchecktijd) als de content die heeft.
+      blocks.push({ kind: 'checkin', stopIndex: idx, image: spec?.arrival?.image ?? stops[idx]!.image, text: spec?.arrival?.text })
       pushActivities()
       pushDinner(idx, true)
       out.push({ day, stopIndex: idx, blocks })

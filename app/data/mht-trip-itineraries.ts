@@ -32,6 +32,9 @@ export interface TripDayBlockSpec {
 
 export interface TripDaySpec {
   day: number
+  /** Aankomstdag (dag 1): eigen tekst voor het incheckblok — de heenreis
+   *  (vanwaar, hoe lang) en de inchecktijd, i.p.v. de hotelbeschrijving. */
+  arrival?: { text: LocalizedString; image?: string }
   /** Uitcheckdag: wat je onderweg naar het volgende hotel kunt doen. */
   route?: TripDayBlockSpec
   /** Verblijfsdag (of aankomstdag): 1–2 blokken. */
@@ -110,7 +113,12 @@ export const TRIP_ITINERARIES: Record<string, TripItinerarySpec> = {
       },
     },
     days: [
-      { day: 1, activities: [
+      { day: 1,
+        arrival: { text: l(
+          'Vanuit Utrecht rijd je in ruim drie uur (zo\'n 300 km) via Antwerpen en Gent naar Béthune in Noord-Frankrijk. Inchecken bij Hotel Royal Beaulaincourt kan vanaf 14:00 uur; het hotel ligt in het hart van de stad, dus zet de koffers neer en loop meteen de Grand-Place op.',
+          'From Utrecht it is a drive of just over three hours (about 300 km) via Antwerp and Ghent to Béthune in northern France. Check-in at Hotel Royal Beaulaincourt is possible from 14:00; the hotel sits in the heart of town, so drop your bags and walk straight onto the Grand-Place.',
+        ) },
+        activities: [
         { title: l('Ontdek Béthune', 'Discover Béthune'), text: l('Wandel vanuit het hotel naar de Grand-Place: het belfort uit 1388 staat op de UNESCO-lijst en de art-decogevels eromheen dateren van de wederopbouw na 1918. Neem een terrasje onder de arcades en proef de streekbieren van de brouwerijen uit de omgeving.', 'Walk from the hotel to the Grand-Place: the belfry from 1388 is UNESCO-listed and the art-deco façades around it date from the reconstruction after 1918. Take a terrace under the arcades and try the regional beers.'), image: img('001', 'bethune') },
       ] },
       { day: 2, activities: [
