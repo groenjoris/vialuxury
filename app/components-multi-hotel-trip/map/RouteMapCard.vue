@@ -20,11 +20,13 @@
 </template>
 
 <script setup lang="ts">
-import { addOsmTiles, addCountryBorders, addTripRoute, addTripHotels, type TripMapStop } from '~/utils-multi-hotel-trip/tripMapLayers'
+import { addOsmTiles, addCountryBorders, addTripRoute, addTripHotels, type TripMapStop, type TripRouteLeg } from '~/utils-multi-hotel-trip/tripMapLayers'
 
 const props = defineProps<{
   /** Hotels in reisvolgorde (met plaatsnaam, hotelnaam en afstand vanaf het vorige hotel). */
   stops: TripMapStop[]
+  /** Rijroutes tussen de hotels (OSRM); zonder legs een rechte lijn. */
+  legs?: TripRouteLeg[]
 }>()
 
 const emit = defineEmits<{ open: []; 'stop-click': [index: number] }>()
@@ -34,10 +36,14 @@ const { t } = useMultiHotelTripI18n()
 const mapEl = ref<HTMLElement | null>(null)
 let map: import('leaflet').Map | null = null
 let ro: ResizeObserver | null = null
+let routeBounds: import('leaflet').LatLngBounds | null = null
 
 function fit(L: typeof import('leaflet')) {
   if (!map || !props.stops.length) return
-  map.fitBounds(L.latLngBounds(props.stops.map(s => [s.lat, s.lng] as [number, number])), { padding: [36, 36], maxZoom: 11 })
+  // Hotels én de getekende rijroute in beeld (een route kan buiten de hotels uitbuigen).
+  const b = L.latLngBounds(props.stops.map(s => [s.lat, s.lng] as [number, number]))
+  if (routeBounds?.isValid()) b.extend(routeBounds)
+  map.fitBounds(b, { padding: [36, 36], maxZoom: 11 })
 }
 
 onMounted(async () => {
@@ -56,7 +62,7 @@ onMounted(async () => {
   })
   addOsmTiles(L, map, false)
   addCountryBorders(L, map, 1.5)
-  addTripRoute(L, map, props.stops, { distances: true, weight: 2.5 })
+  routeBounds = addTripRoute(L, map, props.stops, { distances: true, weight: 2.5, legs: props.legs })
   addTripHotels(L, map, props.stops, {
     size: 30,
     labelText: s => s.label,

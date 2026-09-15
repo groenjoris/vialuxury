@@ -28,6 +28,46 @@ export interface TripMapStop {
   image?: string
   /** Afstand (km) vanaf het vorige hotel — label halverwege de lijn. */
   travelKm?: number
+  /** Volledig label halverwege de etappe, al vertaald: "50 km (een half uur)".
+   *  Heeft voorrang op `travelKm`. */
+  travelLabel?: string
+}
+
+/** Rijroute (OSRM) tussen stop `from` en stop `to` — zie scripts/build-trip-routes.py. */
+export interface TripRouteLeg {
+  from: number
+  to: number
+  km: number
+  minutes: number
+  /** [lat, lng] */
+  coords: [number, number][]
+}
+
+/** Punt halverwege een lijn (gemeten langs de lijn, niet het middelste
+ *  coördinaat), zodat het afstandslabel ook op een kronkelende route
+ *  netjes in het midden staat. */
+function midpointAlong(pts: [number, number][]): [number, number] {
+  if (pts.length < 2) return pts[0] ?? [0, 0]
+  const cos = Math.cos((pts[0]![0] * Math.PI) / 180)
+  const seg: number[] = []
+  let total = 0
+  for (let i = 1; i < pts.length; i++) {
+    const dy = pts[i]![0] - pts[i - 1]![0]
+    const dx = (pts[i]![1] - pts[i - 1]![1]) * cos
+    const d = Math.hypot(dx, dy)
+    seg.push(d)
+    total += d
+  }
+  let acc = 0
+  for (let i = 0; i < seg.length; i++) {
+    if (acc + seg[i]! >= total / 2) {
+      const f = seg[i]! ? (total / 2 - acc) / seg[i]! : 0
+      const a = pts[i]!, b = pts[i + 1]!
+      return [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f]
+    }
+    acc += seg[i]!
+  }
+  return pts[pts.length - 1]!
 }
 
 export interface TripMapHighlight {
@@ -58,22 +98,44 @@ export function hoverCardHtml(o: { image?: string; title: string; stars?: number
 
 const TOOLTIP: Leaflet.TooltipOptions = { direction: 'top', offset: [0, -22], className: 'tml-hover', opacity: 1, interactive: false }
 
-/** Route als lijn (witte halo + donkere lijn); optioneel per etappe de
- *  afstand halverwege de lijn. */
-export function addTripRoute(L: L, map: Leaflet.Map, stops: TripMapStop[], opts: { distances?: boolean; weight?: number } = {}): void {
-  const pts = stops.map(s => [s.lat, s.lng] as [number, number])
-  if (pts.length < 2) return
+/** Route als lijn (witte halo + donkere lijn): de echte rijroute per etappe
+ *  als `legs` (OSRM-geometrie) meekomt, anders hemelsbreed. Optioneel per
+ *  etappe een label halverwege de lijn (afstand + reistijd). Geeft de
+ *  bounds van de getekende route terug, zodat de kaart erop kan inzoomen. */
+export function addTripRoute(
+  L: L,
+  map: Leaflet.Map,
+  stops: TripMapStop[],
+  opts: { distances?: boolean; weight?: number; legs?: TripRouteLeg[] } = {},
+): Leaflet.LatLngBounds | null {
+  if (stops.length < 2) return null
   const w = opts.weight ?? 3
-  L.polyline(pts, { color: '#fff', weight: w + 4, opacity: 0.9, lineJoin: 'round', interactive: false }).addTo(map)
-  L.polyline(pts, { color: '#141414', weight: w, lineJoin: 'round', interactive: false }).addTo(map)
-  if (!opts.distances) return
-  for (let i = 1; i < stops.length; i++) {
-    const km = stops[i]!.travelKm
-    if (!km) continue
-    const a = stops[i - 1]!, b = stops[i]!
-    const icon = L.divIcon({ className: 'tml-km-wrap', html: `<span class="tml-km">${km} km</span>`, iconSize: [0, 0], iconAnchor: [0, 0] })
-    L.marker([(a.lat + b.lat) / 2, (a.lng + b.lng) / 2], { icon, interactive: false, keyboard: false, zIndexOffset: 500 }).addTo(map)
+  const segments = stops.slice(1).map((s, k) => {
+    const i = k + 1
+    const leg = opts.legs?.find(l => l.from === i - 1 && l.to === i)
+    const pts: [number, number][] = leg && leg.coords.length > 1
+      ? leg.coords
+      : [[stops[i - 1]!.lat, stops[i - 1]!.lng], [s.lat, s.lng]]
+    return { i, leg, pts }
+  })
+  const bounds = L.latLngBounds([])
+  for (const seg of segments) {
+    L.polyline(seg.pts, { color: '#fff', weight: w + 4, opacity: 0.9, lineJoin: 'round', lineCap: 'round', interactive: false }).addTo(map)
   }
+  for (const seg of segments) {
+    const line = L.polyline(seg.pts, { color: '#141414', weight: w, lineJoin: 'round', lineCap: 'round', interactive: false }).addTo(map)
+    bounds.extend(line.getBounds())
+  }
+  if (opts.distances) {
+    for (const seg of segments) {
+      const stop = stops[seg.i]!
+      const text = stop.travelLabel ?? (stop.travelKm ? `${stop.travelKm} km` : seg.leg ? `${seg.leg.km} km` : '')
+      if (!text) continue
+      const icon = L.divIcon({ className: 'tml-km-wrap', html: `<span class="tml-km">${escapeHtml(text)}</span>`, iconSize: [0, 0], iconAnchor: [0, 0] })
+      L.marker(midpointAlong(seg.pts), { icon, interactive: false, keyboard: false, zIndexOffset: 500 }).addTo(map)
+    }
+  }
+  return bounds
 }
 
 export interface TripHotelLayerOptions {

@@ -55,6 +55,7 @@ import {
   hoverCardHtml,
   type TripMapStop,
   type TripMapHighlight,
+  type TripRouteLeg,
 } from '~/utils-multi-hotel-trip/tripMapLayers'
 
 const props = defineProps<{
@@ -69,6 +70,8 @@ const props = defineProps<{
   nightsLabels?: string[]
   /** Hotelinformatie per stop, voor het sidepanel. */
   hotels?: TripHotelModalData[]
+  /** Rijroutes tussen de hotels (OSRM); zonder legs een rechte lijn. */
+  legs?: TripRouteLeg[]
 }>()
 
 const emit = defineEmits<{ close: [] }>()
@@ -92,7 +95,7 @@ async function mount() {
   map = L.map(mapEl.value, { zoomControl: false, attributionControl: true, scrollWheelZoom: true })
   addOsmTiles(L, map)
   addCountryBorders(L, map, 2)
-  addTripRoute(L, map, props.stops, { distances: true })
+  const routeBounds = addTripRoute(L, map, props.stops, { distances: true, legs: props.legs })
   addTripHotels(L, map, props.stops, {
     size: 30,
     labelText: s => s.title ?? s.label,
@@ -111,7 +114,11 @@ async function mount() {
     ...props.stops.map(s => [s.lat, s.lng] as [number, number]),
     ...props.highlights.map(h => [h.lat, h.lng] as [number, number]),
   ]
-  if (all.length) map.fitBounds(L.latLngBounds(all), { padding: [72, 72], maxZoom: 13 })
+  if (all.length) {
+    const b = L.latLngBounds(all)
+    if (routeBounds?.isValid()) b.extend(routeBounds)
+    map.fitBounds(b, { padding: [72, 72], maxZoom: 13 })
+  }
   setTimeout(() => map?.invalidateSize(), 50)
 }
 

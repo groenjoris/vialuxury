@@ -218,7 +218,7 @@
           <MultiHotelTripRouteMapCard
             v-if="isTrip"
             class="deal-page__minimap"
-            :stops="tripMapStops"
+            :stops="tripMapStops" :legs="tripRouteLegs"
             @open="tripMapOpen = true"
             @stop-click="openTripHotel"
           />
@@ -421,7 +421,7 @@
               v-if="isTrip"
               id="mini-map"
               class="deal-page__minimap deal-page__minimap--trip"
-              :stops="tripMapStops"
+              :stops="tripMapStops" :legs="tripRouteLegs"
               @open="tripMapOpen = true"
               @stop-click="openTripHotel"
             />
@@ -983,7 +983,7 @@
       v-if="isTrip"
       :open="tripMapOpen"
       :title="currentDeal ? localized(currentDeal.title) : ''"
-      :stops="tripMapStops"
+      :stops="tripMapStops" :legs="tripRouteLegs"
       :highlights="tripMapHighlights"
       :nights-labels="tripMapNightsLabels"
       :hotels="tripHotelDetailsAll"
@@ -1025,6 +1025,8 @@ import { getReviewLabelKey } from '~/utils-multi-hotel-trip/reviewLabel'
 import { generateDealAvailability } from '~/data/mock/deal-pricing'
 import dayjs from 'dayjs'
 import { formatDateWeekdayShort } from '~/utils-multi-hotel-trip/formatDate'
+import tripRoutesJson from '~/data/mht-trip-routes.json'
+import type { TripRouteLeg } from '~/utils-multi-hotel-trip/tripMapLayers'
 import { tripPdpBySlug, tripHotelDetails } from '~/data/mht-trip-pdp'
 import type { TripDayView, TripBlockView } from '~/components-multi-hotel-trip/deal/TripItinerary.vue'
 import type { TripHotelModalData } from '~/components-multi-hotel-trip/deal/TripHotelDetails.vue'
@@ -1370,7 +1372,7 @@ const tripGalleryStickers = tripPdp?.stickers
 const tripMapStops = computed(() =>
   (trip?.stops ?? [])
     .filter(s => typeof s.lat === 'number' && typeof s.lng === 'number')
-    .map(s => ({
+    .map((s, i) => ({
       lat: s.lat as number,
       lng: s.lng as number,
       label: s.city,
@@ -1379,6 +1381,7 @@ const tripMapStops = computed(() =>
       nights: s.nights,
       image: s.image,
       travelKm: s.travel?.km,
+      travelLabel: tripTravelLabel(s.travel, i),
     })),
 )
 /** "2 nachten" per hotel voor het hover-kaartje op de fullscreen kaart. */
@@ -1397,6 +1400,20 @@ function tripDurationLabel(minutes: number): string {
   if (minutes < 60) return t('trip.dur.minutes').replace('{m}', String(minutes))
   const h = Math.floor(minutes / 60), m = minutes % 60
   return m === 0 ? t('trip.dur.hours').replace('{h}', String(h)) : t('trip.dur.hoursMinutes').replace('{h}', String(h)).replace('{m}', String(m))
+}
+/** Rijroutes tussen de hotels (OSRM, vooraf berekend — scripts/build-trip-routes.py). */
+const tripRouteLegs = computed<TripRouteLeg[]>(() =>
+  (tripRoutesJson as Record<string, { legs: TripRouteLeg[] }>)[trip?.id ?? '']?.legs ?? [],
+)
+/** Label op de kaart halverwege etappe `i`: afstand + reistijd uit de reisdata
+ *  ("50 km (een half uur)", fiets: "35 km fietsen (2 uur 30 min)"); zonder
+ *  reisdata de waarden van de berekende route. */
+function tripTravelLabel(travel: { km: number; minutes: number } | undefined, i: number): string | undefined {
+  const leg = tripRouteLegs.value.find(l => l.to === i)
+  const tr = travel ?? (leg ? { km: leg.km, minutes: leg.minutes } : undefined)
+  if (!tr) return undefined
+  if (trip?.type === 'fiets') return `${t('trip.distanceBike').replace('{km}', String(tr.km))} (${tripDurationLabel(tr.minutes)})`
+  return tripDistanceLabel(tr)
 }
 /** "50 km (een half uur)" — of bij een fietsvakantie "45 km fietsen". */
 function tripDistanceLabel(travel?: { km: number; minutes: number }): string {
