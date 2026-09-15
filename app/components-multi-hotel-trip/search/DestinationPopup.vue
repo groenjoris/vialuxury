@@ -173,7 +173,7 @@
                 aria-hidden="true"
               >
                 <img
-                  :src="`/images/destinations/${theme.id}.svg`"
+                  :src="theme.icon ?? `/images/destinations/${theme.id}.svg`"
                   :alt="theme.name"
                   class="dest-chip__icon-img"
                 />
@@ -257,7 +257,7 @@ import { dutchCities, dutchProvinces } from '~/data/mock/dutch-cities'
 
 const props = defineProps<{
   destinations: Array<{ id: string; name: string; country: string; emoji: string }>
-  themes: Array<{ id: string; name: string; emoji: string }>
+  themes: Array<{ id: string; name: string; emoji: string; icon?: string }>
   selectedDestinations: string[]
   selectedThemes: string[]
   selectedCities?: Array<{ name: string; province: string }>

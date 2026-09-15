@@ -1572,7 +1572,7 @@ const destinations = [
 // Themes shown in the destination popup come from the unified FILTER_TAGS
 // config (category 'thema'), incl. de vakantiethema's Autovakantie/Fietsvakantie.
 const themes = computed(() =>
-  tagsByCategory('thema').map(t => ({ id: t.id, name: t.label, emoji: t.emoji })),
+  tagsByCategory('thema').map(t => ({ id: t.id, name: t.label, emoji: t.emoji, icon: t.icon })),
 )
 
 // Destination state lives in useMultiHotelTripSearchState so /search and /kaart can read

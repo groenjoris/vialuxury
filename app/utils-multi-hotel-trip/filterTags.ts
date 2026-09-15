@@ -8,6 +8,8 @@ export interface FilterTag {
   label: string
   emoji: string
   category: FilterCategory
+  /** Eigen icoon voor de bestemmingsdropdown (standaard /images/destinations/<id>.svg). */
+  icon?: string
   /** Returns true if a single deal of a hotel satisfies this tag.
    *  Some tags are inherently hotel-level (e.g. 5-sterren, Honden welkom);
    *  for those the deal arg is unused and `hotel` carries the truth. */
@@ -108,6 +110,7 @@ export const FILTER_TAGS: FilterTag[] = [
     id: 'autovakantie',
     label: 'Autovakantie',
     emoji: '🚗',
+    icon: '/images/icons/car.png',
     category: 'thema',
     matches: themeMatch(/autovakantie/i),
   },
