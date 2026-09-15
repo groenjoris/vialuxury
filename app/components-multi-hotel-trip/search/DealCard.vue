@@ -364,8 +364,9 @@ const tripTypeLabel = computed(() => {
 })
 /** "Landgraaf · Eijsden · Sittard" — plaatsnamen van de hotels in reisvolgorde. */
 const tripStopsLabel = computed(() => (props.hotel?.trip?.stops ?? []).map(s => s.city).join(' · '))
-/** Foto in de linkerhelft: het eerste hotel van de route. */
-const tripPhoto = computed(() => props.hotel?.trip?.stops[0]?.image || imageSrc.value)
+/** Foto in de linkerhelft: de omgevingsfoto van de vakantie (zelfde als de
+ *  eerste foto op de PDP); zonder cover het eerste hotel van de route. */
+const tripPhoto = computed(() => props.hotel?.trip?.coverImage || props.hotel?.trip?.stops[0]?.image || imageSrc.value)
 /** Gehoverd nummer op het kaartje → foto en naam van dat hotel in de linkerhelft. */
 const tripHoverIndex = ref<number | null>(null)
 const tripHoverStop = computed(() => {

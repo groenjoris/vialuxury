@@ -201,15 +201,24 @@ const l = (nl: string, en = nl): LocalizedString => ({ nl, en })
 /** Maximaal aantal foto's per vakantie: de desktop-gallery toont hero + 4,
  *  de lightbox ("Alle foto's") en de mobiele carrousel tonen ze allemaal. */
 const MAX_GALLERY = 20
+/** Sticker op de omgevingsfoto in de foto-pop-up. */
+const COVER_STICKER = 'Omgeving'
 
 function buildImages(trip: MultiHotelTripDetail): { images: HotelImage[]; stickers: Record<string, string> } {
   const images: HotelImage[] = []
   const stickers: Record<string, string> = {}
+  // 0. Omgevingsfoto als eerste (hero) — dezelfde foto als op de dealcard,
+  //    met sticker "Omgeving" (niet aan een hotel gekoppeld).
+  if (trip.coverImage) {
+    const id = `${trip.id}-cover`
+    images.push({ id, url: trip.coverImage, alt: trip.title, position: 'hero' })
+    stickers[id] = COVER_STICKER
+  }
   // 1. Eén foto per hotel, in reisvolgorde.
   trip.stops.forEach((stop, i) => {
     if (!stop.image) return
     const id = `${trip.id}-img-${i}`
-    images.push({ id, url: stop.image, alt: l(stop.hotelName), position: i === 0 ? 'hero' : 'gallery' })
+    images.push({ id, url: stop.image, alt: l(stop.hotelName), position: images.length === 0 ? 'hero' : 'gallery' })
     stickers[id] = stop.hotelName
   })
   // 2. Aanvullen met extra foto's — uit de dataset (hotels in deals.json) of

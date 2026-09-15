@@ -29,6 +29,8 @@ export interface MultiHotelTripInfo {
   tags: string[]
   /** Routekaart uit de briefing (voor de vakantie-PDP). */
   routeImage?: string
+  /** Omgevingsfoto: standaardfoto op de dealcard (hover op een nummer toont het hotel). */
+  coverImage?: string
   /** Waar de card voorlopig naartoe linkt zolang er geen vakantie-PDP is. */
   pdpHref?: string
 }
