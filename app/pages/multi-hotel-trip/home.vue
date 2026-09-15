@@ -146,24 +146,7 @@
       </div>
     </section>
 
-    <!-- Super Hotel Deals: 3 hand-picked luxury hotels -->
-    <section class="home-deals">
-      <div class="container">
-        <h2 class="home-deals__title">Eerder bekeken</h2>
-        <div class="home-deals__grid home-deals__grid--3">
-          <MultiHotelTripDealCard
-            v-for="hotel in superDeals"
-            :key="hotel.id"
-            :hotel="hotel"
-            :deal="pickPrimaryDeal(hotel.deals)"
-            :grid-mode="true"
-            :hide-bar="true"
-          />
-        </div>
-      </div>
-    </section>
-
-    <!-- Category banners: 3 clickable banners below "Eerder bekeken" -->
+    <!-- Category banners: 3 clickable banners — boven "Eerder bekeken" (Joris: promorij en Eerder bekeken verwisseld) -->
     <section class="home-categories">
       <div class="container home-categories__grid">
         <button type="button" class="home-category" :style="{ backgroundImage: `url('/images/categories/bikepackages.jpg')` }" @click="pickFilter('fiets')">
@@ -182,6 +165,23 @@ AAN ZEE</span>
 MET 3 HOTELS</span>
           <span class="home-category__btn">Bekijk</span>
         </button>
+      </div>
+    </section>
+
+    <!-- Super Hotel Deals: 3 hand-picked luxury hotels -->
+    <section class="home-deals">
+      <div class="container">
+        <h2 class="home-deals__title">Eerder bekeken</h2>
+        <div class="home-deals__grid home-deals__grid--3">
+          <MultiHotelTripDealCard
+            v-for="hotel in superDeals"
+            :key="hotel.id"
+            :hotel="hotel"
+            :deal="pickPrimaryDeal(hotel.deals)"
+            :grid-mode="true"
+            :hide-bar="true"
+          />
+        </div>
       </div>
     </section>
 
