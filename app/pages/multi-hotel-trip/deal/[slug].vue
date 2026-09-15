@@ -53,7 +53,7 @@
             </svg>
             <span v-if="isTrip">{{ tripCitiesLabel }}</span>
             <span v-else>{{ hotel.location.city }}, {{ hotel.location.region }}</span>
-            <a href="#mini-map" class="deal-page__view-map-link" @click.prevent="scrollToMiniMap">{{ t('common.viewMap') || 'Bekijk op kaart' }}</a>
+            <a href="#mini-map" class="deal-page__view-map-link" @click.prevent="isTrip ? (tripMapOpen = true) : scrollToMiniMap()">{{ t('common.viewMap') || 'Bekijk op kaart' }}</a>
           </div>
         </section>
 
@@ -375,7 +375,7 @@
             </svg>
             <span v-if="isTrip">{{ tripCitiesLabel }}</span>
             <span v-else>{{ hotel.location.city }}, {{ hotel.location.region }}</span>
-            <a href="#mini-map" class="deal-page__view-map-link" @click.prevent="scrollToMiniMap">{{ t('common.viewMap') || 'Bekijk op kaart' }}</a>
+            <a href="#mini-map" class="deal-page__view-map-link" @click.prevent="isTrip ? (tripMapOpen = true) : scrollToMiniMap()">{{ t('common.viewMap') || 'Bekijk op kaart' }}</a>
           </div>
         </div>
         <!-- Right column: Experience Creator business card on every
@@ -1419,7 +1419,7 @@ const tripDaysView = computed<TripDayView[]>(() => {
     const blocks: TripBlockView[] = d.blocks.map((b) => {
       const st = b.stopIndex != null ? trip.stops[b.stopIndex] : undefined
       const name = st?.hotelName ?? ''
-      switch (b.kind) {
+      const view: TripBlockView = (() => { switch (b.kind) {
         case 'checkin':
           return {
             kind: 'checkin',
@@ -1461,7 +1461,14 @@ const tripDaysView = computed<TripDayView[]>(() => {
             kind: 'breakfast',
             tag: t('trip.tag.breakfast'),
             title: t('trip.breakfastAt').replace('{hotel}', name),
-            text: t('trip.breakfastText').replace('{breakfast}', bl.charAt(0).toLowerCase() + bl.slice(1)),
+            // Eigen tekst uit de content; anders op een uitcheckdag het "laatste
+            // ontbijt"-sjabloon (met de volgende plaats), op de vertrekdag het
+            // thuis-sjabloon, en op een verblijfsdag het gewone sjabloon.
+            text: b.text
+              ? localized(b.text)
+              : b.last
+                ? (b.nextCity ? t('trip.breakfastLastText').replace('{city}', b.nextCity) : t('trip.breakfastHomeText'))
+                : t('trip.breakfastText').replace('{breakfast}', bl.charAt(0).toLowerCase() + bl.slice(1)),
             image: b.image,
             stopIndex: b.stopIndex,
             hotelName: name || undefined,
@@ -1485,7 +1492,10 @@ const tripDaysView = computed<TripDayView[]>(() => {
             text: b.text ? localized(b.text) : '',
             image: b.image,
           }
-      }
+      } })()
+      // "Meer over …"-pop-up: korte tekst in het blok, achtergrond achter een klik.
+      if (b.more) view.more = { label: localized(b.more.label), title: localized(b.more.title), paragraphs: b.more.paragraphs.map(p => localized(p)), image: b.more.image }
+      return view
     })
     const view: TripDayView = { day: d.day, label: t('trip.daySingle').replace('{a}', String(d.day)), blocks }
     if (checkIn) view.date = formatDateWeekdayShort(dayjs(checkIn).add(d.day - 1, 'day').format('YYYY-MM-DD'))

@@ -278,6 +278,8 @@ const nl: Record<string, string> = {
   'trip.tag.breakfast': 'Ontbijt',
   'trip.breakfastAt': 'Wakker worden en ontbijten bij {hotel}',
   'trip.breakfastText': 'Het ontbijt is inbegrepen ({breakfast}). Begin de dag rustig aan tafel voordat je erop uit gaat.',
+  'trip.breakfastLastText': 'Nog één keer genieten van het ontbijt; vroege vogels maken eerst een ochtendwandeling. Daarna uitchecken en op weg naar {city}.',
+  'trip.breakfastHomeText': 'Nog één keer rustig ontbijten, dan uitchecken en op huis aan.',
   'trip.subtitle.arrival': 'Onderweg naar {city} in {region}, inchecken bij {hotel} vanaf {time}.',
   'trip.subtitle.stay': 'Ontdek {city} en omgeving, overnacht in {hotel}.',
   'trip.subtitle.transfer': 'Uitchecken en {distance} naar {city}, inchecken bij {hotel} vanaf {time}.',

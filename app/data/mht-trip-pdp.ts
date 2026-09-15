@@ -14,7 +14,7 @@ import type { Deal } from '~/types/deal'
 import type { Hotel, HotelImage, Facility, HouseRule } from '~/types/hotel'
 import type { LocalizedString } from '~/i18n/types'
 import { tripDetailBySlug, type MultiHotelTripDetail, type MultiHotelTripDetailStop } from './mht-trips'
-import { TRIP_ITINERARIES, type TripItinerarySpec } from './mht-trip-itineraries'
+import { TRIP_ITINERARIES, type TripItinerarySpec, type TripMoreInfo } from './mht-trip-itineraries'
 import { facilityIcon } from '~/utils-multi-hotel-trip/facilityIcon'
 import { mappedHotelsByHotelPermalink } from './deals-mapper'
 import {
@@ -52,6 +52,12 @@ export interface TripRawBlock {
   dinnerLabel?: LocalizedString
   /** Ontbijtblok: de ontbijt-inclusie van dit hotel ("Dagelijks ontbijtbuffet"). */
   breakfastLabel?: LocalizedString
+  /** Ontbijtblok op een uitcheck-/vertrekdag ("laatste ontbijt"-sjabloon). */
+  last?: boolean
+  /** Uitcheckdag: plaats van het volgende hotel (voor "op weg naar {city}"). */
+  nextCity?: string
+  /** "Meer over …"-pop-up (redactioneel blok). */
+  more?: TripMoreInfo
 }
 export interface TripRawDay {
   day: number
@@ -101,7 +107,7 @@ export function buildTripDays(trip: MultiHotelTripDetail, content: TripItinerary
     const spec = content?.days.find(d => d.day === day)
     const blocks: TripRawBlock[] = []
     const pushActivities = () => {
-      for (const a of spec?.activities ?? []) blocks.push({ kind: 'activity', title: a.title, text: a.text, image: a.image })
+      for (const a of spec?.activities ?? []) blocks.push({ kind: 'activity', title: a.title, text: a.text, image: a.image, more: a.more })
     }
     const pushDinner = (i: number, arrival: boolean) => {
       const d = dinnerOf(stops[i]!)
@@ -110,11 +116,19 @@ export function buildTripDays(trip: MultiHotelTripDetail, content: TripItinerary
     }
     // Wakker worden en ontbijten — vanaf dag 2, in het hotel van vannacht (inbegrepen).
     if (day > 1 && prevIdx >= 0) {
-      blocks.push({ kind: 'breakfast', stopIndex: prevIdx, breakfastLabel: breakfastOf(stops[prevIdx]!), image: breakfastImageOf(stops[prevIdx]!) })
+      blocks.push({
+        kind: 'breakfast',
+        stopIndex: prevIdx,
+        breakfastLabel: breakfastOf(stops[prevIdx]!),
+        image: breakfastImageOf(stops[prevIdx]!),
+        text: spec?.breakfast?.text,
+        last: idx !== prevIdx,
+        nextCity: idx >= 0 && idx !== prevIdx ? stops[idx]?.city : undefined,
+      })
     }
     if (idx === -1) {
       // Laatste dag: uitchecken en terugreis.
-      blocks.push({ kind: 'homeward', stopIndex: prevIdx, title: spec?.homeward?.title, text: spec?.homeward?.text, image: spec?.homeward?.image ?? stops[prevIdx]?.image })
+      blocks.push({ kind: 'homeward', stopIndex: prevIdx, title: spec?.homeward?.title, text: spec?.homeward?.text, image: spec?.homeward?.image ?? stops[prevIdx]?.image, more: spec?.homeward?.more })
       out.push({ day, stopIndex: null, fromStopIndex: prevIdx, blocks })
       continue
     }
@@ -128,8 +142,9 @@ export function buildTripDays(trip: MultiHotelTripDetail, content: TripItinerary
     }
     if (idx !== prevIdx) {
       // Wisseldag: eerst onderweg (uitchecken), dan inchecken, dan diner.
-      blocks.push({ kind: 'checkout', stopIndex: prevIdx, title: spec?.route?.title, text: spec?.route?.text, image: spec?.route?.image ?? stops[prevIdx]?.image })
-      blocks.push({ kind: 'checkin', stopIndex: idx, image: stops[idx]!.image })
+      blocks.push({ kind: 'checkout', stopIndex: prevIdx, title: spec?.route?.title, text: spec?.route?.text, image: spec?.route?.image ?? stops[prevIdx]?.image, more: spec?.route?.more })
+      // Eigen aankomsttekst (kort; hotelinfo achter de klik) als de content die heeft.
+      blocks.push({ kind: 'checkin', stopIndex: idx, image: spec?.arrival?.image ?? stops[idx]!.image, text: spec?.arrival?.text })
       pushActivities()
       pushDinner(idx, true)
       out.push({ day, stopIndex: idx, fromStopIndex: prevIdx, blocks })

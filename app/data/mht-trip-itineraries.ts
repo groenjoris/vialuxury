@@ -24,17 +24,32 @@ export interface TripHotelInfo {
   room?: { name: LocalizedString; description: LocalizedString; image?: string }
 }
 
+/** "Meer over …"-pop-up bij een dagblok: het blok zelf blijft kort, de
+ *  achtergrond (geschiedenis, tips) zit achter een klik. */
+export interface TripMoreInfo {
+  /** Linktekst: "Meer over de Opaalkust". */
+  label: LocalizedString
+  title: LocalizedString
+  paragraphs: LocalizedString[]
+  image?: string
+}
+
 export interface TripDayBlockSpec {
   title: LocalizedString
   text: LocalizedString
   image?: string
+  more?: TripMoreInfo
 }
 
 export interface TripDaySpec {
   day: number
-  /** Aankomstdag (dag 1): eigen tekst voor het incheckblok — de heenreis
-   *  (vanwaar, hoe lang) en de inchecktijd, i.p.v. de hotelbeschrijving. */
+  /** Eigen tekst voor het incheckblok van deze dag (dag 1: de heenreis en de
+   *  inchecktijd; wisseldag: aankomst bij het volgende hotel) i.p.v. de
+   *  hotelbeschrijving — die zit achter "Meer over hotel …". */
   arrival?: { text: LocalizedString; image?: string }
+  /** Eigen ontbijttekst voor deze ochtend (anders het vaste sjabloon; op een
+   *  uitcheckdag het "laatste ontbijt"-sjabloon). */
+  breakfast?: { text: LocalizedString }
   /** Uitcheckdag: wat je onderweg naar het volgende hotel kunt doen. */
   route?: TripDayBlockSpec
   /** Verblijfsdag (of aankomstdag): 1–2 blokken. */
@@ -113,29 +128,135 @@ export const TRIP_ITINERARIES: Record<string, TripItinerarySpec> = {
       },
     },
     days: [
+      // Redactie: elk blok 2–3 zinnen, het dagprogramma leest als één reis.
+      // Hotelinfo zit achter "Meer over hotel …", achtergrond achter "Meer over …".
       { day: 1,
         arrival: { text: l(
-          'Vanuit Utrecht rijd je in ruim drie uur (zo\'n 300 km) via Antwerpen en Gent naar Béthune in Noord-Frankrijk. Inchecken bij Hotel Royal Beaulaincourt kan vanaf 14:00 uur; het hotel ligt in het hart van de stad, dus zet de koffers neer en loop meteen de Grand-Place op.',
-          'From Utrecht it is a drive of just over three hours (about 300 km) via Antwerp and Ghent to Béthune in northern France. Check-in at Hotel Royal Beaulaincourt is possible from 14:00; the hotel sits in the heart of town, so drop your bags and walk straight onto the Grand-Place.',
+          'Vanuit Utrecht rijd je in ruim drie uur (zo\'n 300 km) naar Béthune in Noord-Frankrijk. Inchecken kan vanaf 14:00 uur; het hotel ligt midden in de stad, dus zet de koffers neer en loop de Grand-Place op.',
+          'From Utrecht it is a drive of just over three hours (about 300 km) to Béthune in northern France. Check-in is possible from 14:00; the hotel is right in the centre, so drop your bags and walk onto the Grand-Place.',
         ) },
         activities: [
-        { title: l('Ontdek Béthune', 'Discover Béthune'), text: l('Wandel vanuit het hotel naar de Grand-Place: het belfort uit 1388 staat op de UNESCO-lijst en de art-decogevels eromheen dateren van de wederopbouw na 1918. Neem een terrasje onder de arcades en proef de streekbieren van de brouwerijen uit de omgeving.', 'Walk from the hotel to the Grand-Place: the belfry from 1388 is UNESCO-listed and the art-deco façades around it date from the reconstruction after 1918. Take a terrace under the arcades and try the regional beers.'), image: img('001', 'bethune') },
-      ] },
-      { day: 2, activities: [
-        { title: l('Arras: twee Vlaamse pleinen en de Wellington-tunnels', 'Arras: two Flemish squares and the Wellington tunnels'), text: l('Op een half uur rijden ligt Arras met de Grand\'Place en de Place des Héros, omzoomd door 155 barokke gevels in Vlaamse stijl. Onder de stad liggen de Carrière Wellington, de tunnels waarin in 1917 duizenden soldaten wachtten op de aanval.', 'Half an hour away lies Arras with its Grand\'Place and Place des Héros, lined with 155 baroque Flemish-style façades. Beneath the city are the Carrière Wellington tunnels where thousands of soldiers waited for the 1917 offensive.'), image: img('001', 'arras') },
-        { title: l('Avond in Béthune', 'Evening in Béthune'), text: l('Vanavond is het diner vrij: kies een bistro aan de Grand-Place of een van de restaurants in de zijstraten. Het hotel reserveert graag voor je.', 'Dinner is free tonight: pick a bistro on the Grand-Place or one of the restaurants in the side streets. The hotel is happy to book for you.'), image: img('001', 'bethune') },
-      ] },
-      { day: 3, route: { title: l('Per fluisterboot door het Marais audomarois', 'By whisper boat through the Marais audomarois'), text: l('De rit naar Tilques duurt maar 50 minuten, dus maak een omweg via Saint-Omer. In het Marais audomarois, het laatste bewoonde moeras van Frankrijk, vaar je met een fluisterboot langs groentetuinen en houten bruggetjes. Lunch daarna in de stad bij de kathedraal.', 'The drive to Tilques takes only 50 minutes, so detour via Saint-Omer. In the Marais audomarois, France\'s last inhabited marsh, a whisper boat takes you past vegetable gardens and wooden bridges. Lunch afterwards in town by the cathedral.'), image: img('001', 'marais') } },
-      { day: 4, activities: [
-        { title: l('Wandelen, fietsen of golfen rond het kasteel', 'Walk, cycle or golf around the château'), text: l('Vanaf Château Tilques lopen wandel- en fietsroutes door het bocage-landschap van de Audomarois. Golfers kunnen terecht op de baan van Aa Saint-Omer, op vijf minuten van het hotel; wie liever niets doet, neemt het zwembad.', 'Walking and cycling routes start at Château Tilques and cross the bocage landscape of the Audomarois. Golfers can play the Aa Saint-Omer course five minutes away; or simply take the pool.'), image: img('001', 'marais') },
-        { title: l('Saint-Omer en La Coupole', 'Saint-Omer and La Coupole'), text: l('In de middag naar Saint-Omer voor de kathedraal Notre-Dame en de openbare tuin, of naar La Coupole: de reusachtige betonnen koepel van waaruit de Duitsers V2-raketten wilden lanceren, nu een indrukwekkend geschiedenismuseum.', 'In the afternoon visit Saint-Omer for the Notre-Dame cathedral and public garden, or La Coupole: the huge concrete dome built to launch V2 rockets, now an impressive history museum.'), image: img('001', 'boulogne') },
-      ] },
-      { day: 5, route: { title: l('Langs de Opaalkust: Cap Blanc-Nez en Wissant', 'Along the Opal Coast: Cap Blanc-Nez and Wissant'), text: l('Rij niet rechtstreeks maar via de kust: bij Cap Blanc-Nez klim je over de krijtrotsen en zie je bij helder weer Engeland liggen. Lunch met zicht op zee in Wissant, wandel over het strand en zak dan via Boulogne af naar Cléry.', 'Do not drive straight, take the coast: at Cap Blanc-Nez you climb the chalk cliffs and on a clear day see England. Lunch by the sea in Wissant, walk the beach and then drop down via Boulogne to Cléry.'), image: img('001', 'blancnez') } },
-      { day: 6, activities: [
-        { title: l('Boulogne-sur-Mer: bovenstad en Nausicaá', 'Boulogne-sur-Mer: upper town and Nausicaá'), text: l('De ommuurde bovenstad van Boulogne heeft een basiliek met een enorme koepel, een kasteel-museum en een wandeling over de volledige stadsmuur. Aan de haven ligt Nausicaá, het grootste aquarium van Europa.', 'Boulogne\'s walled upper town has a basilica with an enormous dome, a castle museum and a walk along the complete ramparts. Down by the harbour is Nausicaá, Europe\'s largest aquarium.'), image: img('001', 'boulogne') },
-        { title: l('Montreuil-sur-Mer, het stadje van Victor Hugo', 'Montreuil-sur-Mer, Victor Hugo\'s town'), text: l('Een half uur zuidwaarts ligt Montreuil-sur-Mer, waar Hugo Les Misérables liet beginnen. Wandel over de drie kilometer lange vestingwallen en eindig in een van de vele restaurants; het stadje staat bekend om zijn keuken.', 'Half an hour south lies Montreuil-sur-Mer, where Hugo set the opening of Les Misérables. Walk the three kilometres of ramparts and finish in one of the many restaurants; the town is known for its food.'), image: img('001', 'montreuil') },
-      ] },
-      { day: 7, homeward: { title: l('Terug naar huis via de kust', 'Home via the coast'), text: l('Late check-out, dus rustig ontbijten in de serre. De terugreis naar Utrecht duurt circa drieënhalf uur. Wie nog niet genoeg zee heeft gezien rijdt via Calais en de Belgische kust.', 'Late check-out, so a leisurely breakfast in the conservatory. The drive back to Utrecht takes about three and a half hours; if you want more sea, return via Calais and the Belgian coast.'), image: img('001', 'wissant') } },
+          { title: l('Ontdek Béthune', 'Discover Béthune'),
+            text: l('Het belfort uit 1388 staat op de UNESCO-lijst; de art-decogevels eromheen zijn van de wederopbouw na 1918. Neem een terras onder de arcades en proef een streekbier.',
+              'The belfry from 1388 is on the UNESCO list; the art-deco façades around it date from the post-1918 reconstruction. Take a terrace under the arcades and try a local beer.'),
+            image: img('001', 'bethune'),
+            more: { label: l('Meer over Béthune', 'More about Béthune'), title: l('Béthune, stad van het belfort', 'Béthune, town of the belfry'), image: img('001', 'bethune'), paragraphs: [
+              l('Béthune was in de Eerste Wereldoorlog een Brits garnizoensstadje vlak achter het front en werd in 1918 grotendeels verwoest. De wederopbouw in de jaren twintig leverde de Grand-Place op zoals je hem nu ziet: een plein vol art-decogevels rond het middeleeuwse belfort, dat als een van de weinige gebouwen overeind bleef.',
+                'In the First World War Béthune was a British garrison town just behind the front and was largely destroyed in 1918. The 1920s reconstruction produced today\'s Grand-Place: a square of art-deco façades around the medieval belfry, one of the few buildings left standing.'),
+              l('Het belfort (1388) hoort bij de UNESCO-reeks belforten van België en Frankrijk; van april tot september kun je de 133 treden op voor het uitzicht over de mijnstreek. Op zaterdagochtend is er markt op het plein, en de brouwerijen uit de omgeving (Brasserie Saint-Germain, Page 24) staan op elke kaart.',
+                'The belfry (1388) is part of the UNESCO series of belfries of Belgium and France; from April to September you can climb its 133 steps for a view over the mining country. There is a market on the square on Saturday mornings, and the local breweries (Brasserie Saint-Germain, Page 24) feature on every menu.'),
+            ] } },
+        ] },
+      { day: 2,
+        breakfast: { text: l(
+          'De eerste ochtend in Frankrijk: croissants, kaas en verse jus op de lichte binnenplaats van het hotel. Geen haast, Arras ligt op een half uur.',
+          'Your first morning in France: croissants, cheese and fresh juice in the hotel\'s bright courtyard. No hurry, Arras is half an hour away.',
+        ) },
+        activities: [
+          { title: l('Een dag naar Arras', 'A day out in Arras'),
+            text: l('Op een half uur rijden liggen de twee barokke pleinen van Arras, omzoomd door 155 Vlaamse gevels. Onder de stad wachten de Wellington-tunnels uit 1917.',
+              'Half an hour away are the two baroque squares of Arras, lined with 155 Flemish façades. Beneath the town wait the Wellington tunnels of 1917.'),
+            image: img('001', 'arras'),
+            more: { label: l('Meer over Arras', 'More about Arras'), title: l('Arras: twee pleinen en een stad onder de stad', 'Arras: two squares and a town beneath the town'), image: img('001', 'arras'), paragraphs: [
+              l('De Grand\'Place en de Place des Héros vormen samen het grootste barokke ensemble van Frankrijk: 155 huizen in Vlaamse stijl op arcades, na 1918 steen voor steen herbouwd. Vanaf het belfort van het stadhuis (lift tot halverwege, dan trappen) overzie je beide pleinen.',
+                'Together the Grand\'Place and Place des Héros form the largest baroque ensemble in France: 155 Flemish-style houses on arcades, rebuilt stone by stone after 1918. From the town-hall belfry (lift halfway, then stairs) you overlook both squares.'),
+              l('De Carrière Wellington is een netwerk van krijtgroeven waarin Nieuw-Zeelandse tunnelgravers in 1917 plaats maakten voor 24.000 soldaten, die vandaaruit de Slag om Arras begonnen. De rondleiding duurt een uur en gaat twintig meter diep; trek een trui aan. Lunchen doe je het best onder de arcades van de Place des Héros.',
+                'The Carrière Wellington is a network of chalk quarries where New Zealand tunnellers made room for 24,000 soldiers in 1917, who launched the Battle of Arras from there. The tour takes an hour and goes twenty metres down; bring a jumper. Lunch is best under the arcades of the Place des Héros.'),
+            ] } },
+          { title: l('Avond in Béthune', 'Evening in Béthune'),
+            text: l('Het diner is vanavond vrij: kies een bistro aan de Grand-Place of laat het hotel een tafel reserveren in een van de zijstraten.',
+              'Dinner is free tonight: pick a bistro on the Grand-Place or let the hotel book a table in one of the side streets.'),
+            image: img('001', 'bethune') },
+        ] },
+      { day: 3,
+        breakfast: { text: l(
+          'Nog één keer genieten van het ontbijtbuffet; vroege vogels lopen eerst nog een rondje om het belfort. Daarna uitchecken en op weg naar Tilques.',
+          'One more breakfast buffet; early birds first take a turn around the belfry. Then check out and head for Tilques.',
+        ) },
+        route: { title: l('Onderweg: per fluisterboot door het Marais audomarois', 'En route: by whisper boat through the Marais audomarois'),
+          text: l('De rit naar Tilques duurt maar 50 minuten, dus maak een omweg via Saint-Omer en stap in een fluisterboot door het laatste bewoonde moeras van Frankrijk. Lunch daarna in de stad.',
+            'The drive to Tilques takes only 50 minutes, so detour via Saint-Omer and board a whisper boat through France\'s last inhabited marsh. Lunch in town afterwards.'),
+          image: img('001', 'marais'),
+          more: { label: l('Meer over het Marais audomarois', 'More about the Marais audomarois'), title: l('Het Marais audomarois', 'The Marais audomarois'), image: img('001', 'marais'), paragraphs: [
+            l('Het Marais audomarois is een moeras van 3.700 hectare met 700 kilometer aan sloten en kanalen, al sinds de middeleeuwen drooggelegd door monniken en tuinders. Het is het laatste moeras van Frankrijk waar nog gewoond en geboerd wordt: de bloemkolen van Saint-Omer komen hiervandaan en de post wordt op sommige eilandjes nog per boot bezorgd.',
+              'The Marais audomarois is a 3,700-hectare marsh with 700 kilometres of ditches and canals, drained since the Middle Ages by monks and market gardeners. It is the last marsh in France that is still inhabited and farmed: Saint-Omer\'s cauliflowers come from here and on some islands the post still arrives by boat.'),
+            l('Vaar mee met een elektrische fluisterboot (circa een uur, vanaf Clairmarais of de Maison du Marais) of huur een bacôve, de traditionele platte houten boot, en peddel zelf. In de stad zijn de kathedraal Notre-Dame en de bibliotheek met een Gutenbergbijbel de moeite waard.',
+              'Join an electric whisper boat (about an hour, from Clairmarais or the Maison du Marais) or rent a bacôve, the traditional flat wooden boat, and paddle yourself. In town, the Notre-Dame cathedral and the library with a Gutenberg Bible are worth a visit.'),
+          ] } },
+        arrival: { text: l(
+          'Halverwege de middag rij je de oprijlaan van Château Tilques op; inchecken kan vanaf 15:00 uur. Voor het diner is er tijd voor een duik in het verwarmde binnenbad of een rondje door het park.',
+          'Mid-afternoon you drive up the avenue of Château Tilques; check-in is possible from 15:00. Before dinner there is time for a dip in the heated indoor pool or a stroll through the park.',
+        ) } },
+      { day: 4,
+        breakfast: { text: l(
+          'Ontbijt achter de grote glaswand van het restaurant, met uitzicht op het gazon. Vandaag hoef je de auto niet in.',
+          'Breakfast behind the restaurant\'s big glass wall, looking out over the lawn. Today the car can stay where it is.',
+        ) },
+        activities: [
+          { title: l('Wandelen, fietsen of golfen rond het kasteel', 'Walk, cycle or golf around the château'),
+            text: l('Vanaf het kasteel lopen wandel- en fietsroutes door het bocage-landschap van de Audomarois; golfers spelen op Aa Saint-Omer, vijf minuten verderop. Niets doen mag ook: het zwembad is de hele dag open.',
+              'Walking and cycling routes run from the château through the bocage of the Audomarois; golfers play Aa Saint-Omer, five minutes away. Doing nothing is allowed too: the pool is open all day.'),
+            image: img('001', 'marais') },
+          { title: l('Saint-Omer en La Coupole', 'Saint-Omer and La Coupole'),
+            text: l('In de middag naar Saint-Omer voor de kathedraal en de stadstuin, of naar La Coupole: de betonnen koepel van waaruit de Duitsers V2-raketten wilden lanceren.',
+              'In the afternoon head to Saint-Omer for the cathedral and the public garden, or to La Coupole: the concrete dome from which the Germans planned to launch V2 rockets.'),
+            image: img('001', 'boulogne'),
+            more: { label: l('Meer over La Coupole', 'More about La Coupole'), title: l('La Coupole', 'La Coupole'), paragraphs: [
+              l('La Coupole is een bunker uit 1943-1944 met een betonnen koepel van 71 meter doorsnee en vijf meter dik, gebouwd om V2-raketten op Londen af te vuren. Door geallieerde bombardementen is er nooit één gelanceerd. Vandaag is het een geschiedenismuseum over de bezetting van Noord-Frankrijk en de wedloop naar de ruimte, met een planetarium.',
+                'La Coupole is a 1943-44 bunker with a concrete dome 71 metres across and five metres thick, built to fire V2 rockets at London. Thanks to Allied bombing not a single one was ever launched. Today it is a history museum on the occupation of northern France and the space race, with a planetarium.'),
+              l('Reken op twee tot drie uur; het is er binnen fris. La Coupole ligt op tien minuten van het hotel, aan de zuidkant van Saint-Omer.',
+                'Allow two to three hours; it is cool inside. La Coupole is ten minutes from the hotel, on the south side of Saint-Omer.'),
+            ] } },
+        ] },
+      { day: 5,
+        breakfast: { text: l(
+          'Laatste ontbijt in het kasteel; wie vroeg op is, loopt nog een rondje door het park. Dan uitchecken en op weg naar de kust.',
+          'Last breakfast in the château; early risers take one more turn around the park. Then check out and head for the coast.',
+        ) },
+        route: { title: l('Onderweg: langs de Opaalkust', 'En route: along the Opal Coast'),
+          text: l('Rij niet rechtstreeks maar via de kust: klim bij Cap Blanc-Nez over de krijtrotsen en lunch met zeezicht in Wissant. Daarna via Boulogne naar Cléry.',
+            'Don\'t drive straight there: go via the coast, climb the chalk cliffs at Cap Blanc-Nez and lunch with a sea view in Wissant. Then on via Boulogne to Cléry.'),
+          image: img('001', 'blancnez'),
+          more: { label: l('Meer over de Opaalkust', 'More about the Opal Coast'), title: l('De Opaalkust', 'The Opal Coast'), image: img('001', 'wissant'), paragraphs: [
+            l('De Côte d\'Opale loopt van de Belgische grens tot de baai van de Somme en dankt zijn naam aan het melkachtige licht boven zee. Het mooiste stuk ligt tussen Calais en Boulogne: de twee kapen Cap Blanc-Nez (krijt, 134 meter) en Cap Gris-Nez (zandsteen, het dichtst bij Engeland) met daartussen het brede strand van Wissant. Bij helder weer zie je de witte kliffen van Dover.',
+              'The Côte d\'Opale runs from the Belgian border to the Bay of the Somme and owes its name to the milky light over the sea. The finest stretch lies between Calais and Boulogne: the two headlands of Cap Blanc-Nez (chalk, 134 metres) and Cap Gris-Nez (sandstone, the closest point to England) with the broad beach of Wissant in between. On a clear day you can see the white cliffs of Dover.'),
+            l('De kapen zijn een Grand Site de France: parkeer bij de voet en loop het GR-pad langs de rand van de klif (stevige schoenen, het waait er altijd). Wissant is een zeilsurfdorp met een handvol visrestaurants aan het strand; Audresselles, iets zuidelijker, is het adres voor mosselen en krab.',
+              'The headlands are a Grand Site de France: park at the foot and walk the GR path along the cliff edge (sturdy shoes, it is always windy). Wissant is a windsurfing village with a handful of fish restaurants on the beach; Audresselles, a little further south, is the place for mussels and crab.'),
+          ] } },
+        arrival: { text: l(
+          'Vanaf de kust is het nog twintig minuten naar Hesdin-l\'Abbé, waar je vanaf 15:00 uur incheckt bij Château Cléry. De sauna is open tot het diner; het terras aan de hortensiatuin vraagt om een glas.',
+          'From the coast it is another twenty minutes to Hesdin-l\'Abbé, where you check in at Château Cléry from 15:00. The sauna is open until dinner; the terrace by the hydrangea garden calls for a glass.',
+        ) } },
+      { day: 6,
+        breakfast: { text: l(
+          'Ontbijt in de serre met zicht op de tuin. Op het programma: een haven, een vestingstadje en het grootste aquarium van Europa.',
+          'Breakfast in the conservatory overlooking the garden. On today\'s programme: a harbour, a fortified town and the largest aquarium in Europe.',
+        ) },
+        activities: [
+          { title: l('Boulogne-sur-Mer: bovenstad en Nausicaá', 'Boulogne-sur-Mer: upper town and Nausicaá'),
+            text: l('De ommuurde bovenstad van Boulogne heeft een basiliek met een enorme koepel en een wandeling over de complete stadsmuur. Aan de haven ligt Nausicaá, het grootste aquarium van Europa.',
+              'The walled upper town of Boulogne has a basilica with a huge dome and a walk along the entire town wall. By the harbour lies Nausicaá, the largest aquarium in Europe.'),
+            image: img('001', 'boulogne'),
+            more: { label: l('Meer over Boulogne-sur-Mer', 'More about Boulogne-sur-Mer'), title: l('Boulogne-sur-Mer', 'Boulogne-sur-Mer'), image: img('001', 'boulogne'), paragraphs: [
+              l('Boulogne is de grootste vissershaven van Frankrijk en tegelijk een van de oudste steden van de kust: de Romeinen vertrokken hiervandaan naar Britannië. De bovenstad ligt binnen een complete 13e-eeuwse stadsmuur van anderhalve kilometer; binnen de muren vind je de basiliek Notre-Dame met haar 101 meter hoge koepel, het kasteel-museum en de rustige straatjes rond het stadhuis.',
+                'Boulogne is France\'s largest fishing port and one of the oldest towns on the coast: the Romans set off for Britain from here. The upper town sits inside a complete 13th-century wall of a kilometre and a half; within it are the Notre-Dame basilica with its 101-metre dome, the castle museum and the quiet streets around the town hall.'),
+              l('Nausicaá aan de haven toont 58.000 dieren in een bak van 10.000 m³ met een kijkvenster van twintig meter; reken op een halve dag en reserveer online. Vis eet je in de benedenstad aan de Quai Gambetta, waar de boten \'s ochtends aanleggen.',
+                'Nausicaá by the harbour shows 58,000 animals in a 10,000 m³ tank with a twenty-metre viewing window; allow half a day and book online. Eat fish in the lower town on the Quai Gambetta, where the boats come in in the morning.'),
+            ] } },
+          { title: l('Montreuil-sur-Mer, het stadje van Victor Hugo', 'Montreuil-sur-Mer, Victor Hugo\'s little town'),
+            text: l('Een half uur zuidwaarts ligt Montreuil-sur-Mer, waar Victor Hugo Les Misérables liet beginnen. Wandel de drie kilometer vestingwallen en eindig in een van de restaurants; het stadje staat bekend om zijn keuken.',
+              'Half an hour south lies Montreuil-sur-Mer, where Victor Hugo set the opening of Les Misérables. Walk the three kilometres of ramparts and finish in one of the restaurants; the town is known for its food.'),
+            image: img('001', 'montreuil') },
+        ] },
+      { day: 7,
+        breakfast: { text: l(
+          'Late check-out, dus rustig ontbijten in de serre en nog een laatste wandeling over het landgoed voordat de koffers in de auto gaan.',
+          'Late check-out, so a leisurely breakfast in the conservatory and one last walk around the estate before the bags go in the car.',
+        ) },
+        homeward: { title: l('Terug naar huis via de kust', 'Home via the coast'),
+          text: l('De terugreis naar Utrecht duurt circa drieënhalf uur. Wie nog niet genoeg zee heeft gezien, rijdt via Calais en de Belgische kust.',
+            'The drive back to Utrecht takes about three and a half hours. If you have not had enough sea yet, go via Calais and the Belgian coast.'),
+          image: img('001', 'wissant') } },
     ],
     mapHighlights: [
       { name: l('Belfort van Béthune', 'Belfry of Béthune'), lat: 50.5305, lng: 2.641, text: l('UNESCO-belfort uit 1388 op de Grand-Place, omringd door art-decogevels uit de wederopbouw.', 'UNESCO belfry from 1388 on the Grand-Place, surrounded by art-deco façades from the reconstruction.'), image: img('001', 'bethune') },

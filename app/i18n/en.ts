@@ -275,6 +275,8 @@ const en: Record<string, string> = {
   'trip.tag.breakfast': 'Breakfast',
   'trip.breakfastAt': 'Wake up and breakfast at {hotel}',
   'trip.breakfastText': 'Breakfast is included ({breakfast}). Start the day at leisure before heading out.',
+  'trip.breakfastLastText': 'One more breakfast; early birds take a morning walk first. Then check out and head for {city}.',
+  'trip.breakfastHomeText': 'One last leisurely breakfast, then check out and head home.',
   'trip.subtitle.arrival': 'On the way to {city} in {region}, check in at {hotel} from {time}.',
   'trip.subtitle.stay': 'Explore {city} and its surroundings, overnight at {hotel}.',
   'trip.subtitle.transfer': 'Check out and {distance} to {city}, check in at {hotel} from {time}.',

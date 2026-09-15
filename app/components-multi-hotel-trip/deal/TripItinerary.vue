@@ -48,18 +48,45 @@
               {{ block.meta }}
             </p>
             <p class="itin-block__text">{{ block.text }}</p>
-            <!-- "Meer over hotel <naam>" bij elk blok waar een hotel in voorkomt
-                 (inchecken, uitchecken, ontbijt, diner, terugreis) → hotel-sidepanel. -->
-            <button
-              v-if="block.stopIndex != null"
-              type="button"
-              class="itin-block__link"
-              @click="$emit('open-hotel', block.stopIndex)"
-            >{{ moreAboutLabel(block) }}</button>
+            <!-- Links onder de tekst: "Meer over hotel <naam>" bij elk blok waar een
+                 hotel in voorkomt (→ hotel-sidepanel) en/of "Meer over …" (→ info-pop-up
+                 met de achtergrond die niet in het korte blok past). -->
+            <div v-if="block.stopIndex != null || block.more" class="itin-block__links">
+              <button
+                v-if="block.stopIndex != null"
+                type="button"
+                class="itin-block__link"
+                @click="$emit('open-hotel', block.stopIndex)"
+              >{{ moreAboutLabel(block) }}</button>
+              <button
+                v-if="block.more"
+                type="button"
+                class="itin-block__link"
+                @click="info = block.more"
+              >{{ block.more.label }}</button>
+            </div>
           </div>
         </article>
       </div>
     </section>
+
+    <!-- Gecentreerde info-pop-up ("Meer over de Opaalkust") -->
+    <Teleport to="body">
+      <Transition name="fade">
+        <div v-if="info" class="itin-info" @click.self="info = null">
+          <article class="itin-info__card" data-scroll-lock-allow="true">
+            <button type="button" class="itin-info__close" :aria-label="t('common.close')" @click="info = null">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12" /></svg>
+            </button>
+            <img v-if="info.image" :src="info.image" :alt="info.title" class="itin-info__img" />
+            <div class="itin-info__body">
+              <h3 class="itin-info__title">{{ info.title }}</h3>
+              <p v-for="(p, i) in info.paragraphs" :key="i" class="itin-info__text">{{ p }}</p>
+            </div>
+          </article>
+        </div>
+      </Transition>
+    </Teleport>
 
     <!-- Gecentreerde foto-pop-up -->
     <Teleport to="body">
@@ -101,6 +128,15 @@ export interface TripBlockView {
   /** Index en naam van het hotel (voor het hotel-sidepanel en de "Meer over"-link). */
   stopIndex?: number
   hotelName?: string
+  /** "Meer over …"-pop-up (label, titel, alinea's, foto). */
+  more?: TripMoreInfoView
+}
+
+export interface TripMoreInfoView {
+  label: string
+  title: string
+  paragraphs: string[]
+  image?: string
 }
 
 export interface TripDayView {
@@ -140,8 +176,10 @@ const lightbox = ref<TripBlockView | null>(null)
 function openImage(block: TripBlockView) {
   if (block.image) lightbox.value = block
 }
-useBodyScrollLock().bindTo(computed(() => !!lightbox.value))
-function onKey(e: KeyboardEvent) { if (e.key === 'Escape') lightbox.value = null }
+/** "Meer over …"-pop-up. */
+const info = ref<TripMoreInfoView | null>(null)
+useBodyScrollLock().bindTo(computed(() => !!lightbox.value || !!info.value))
+function onKey(e: KeyboardEvent) { if (e.key === 'Escape') { lightbox.value = null; info.value = null } }
 onMounted(() => window.addEventListener('keydown', onKey))
 onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 </script>
@@ -280,6 +318,51 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   cursor: pointer;
 }
 .itin-block__link:hover { color: var(--color-primary-hover); }
+.itin-block__links { display: flex; flex-wrap: wrap; gap: 0 20px; }
+
+/* Info-pop-up: gecentreerde kaart met optionele foto, titel en alinea's. */
+.itin-info {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-lg);
+  background: rgba(0, 0, 0, 0.55);
+}
+.itin-info__card {
+  position: relative;
+  width: min(560px, 100%);
+  max-height: 88vh;
+  overflow: auto;
+  border-radius: var(--radius-lg);
+  background: var(--color-surface, #fff);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+}
+.itin-info__img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+.itin-info__body { padding: var(--space-lg); }
+.itin-info__title { margin: 0 0 var(--space-sm); font-size: 22px; font-weight: 700; line-height: 1.2; }
+.itin-info__text { margin: 0 0 var(--space-sm); font-size: 15px; line-height: 1.7; color: var(--color-text-secondary); }
+.itin-info__text:last-child { margin-bottom: 0; }
+.itin-info__close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 1;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.92);
+  color: #141414;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+}
+.itin-info__close:hover { background: #fff; }
 
 /* ── Foto-pop-up ── */
 .itin-lb {

@@ -271,6 +271,8 @@ const de: Record<string, string> = {
   'trip.tag.breakfast': 'Frühstück',
   'trip.breakfastAt': 'Aufwachen und frühstücken im {hotel}',
   'trip.breakfastText': 'Das Frühstück ist inbegriffen ({breakfast}). Beginnen Sie den Tag in Ruhe, bevor Sie losziehen.',
+  'trip.breakfastLastText': 'Noch einmal frühstücken; Frühaufsteher machen vorher einen Morgenspaziergang. Dann auschecken und weiter nach {city}.',
+  'trip.breakfastHomeText': 'Ein letztes gemütliches Frühstück, dann auschecken und Richtung Heimat.',
   'trip.subtitle.arrival': 'Unterwegs nach {city} in {region}, Check-in im {hotel} ab {time}.',
   'trip.subtitle.stay': 'Entdecken Sie {city} und Umgebung, Übernachtung im {hotel}.',
   'trip.subtitle.transfer': 'Check-out und {distance} nach {city}, Check-in im {hotel} ab {time}.',
