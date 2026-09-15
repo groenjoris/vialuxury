@@ -265,8 +265,9 @@
           </template>
         </section>
 
-        <!-- 12. Hotel facilities — stacked -->
-        <section v-if="hotel.facilities.length" class="container deal-page__facilities deal-page__facilities--mobile">
+        <!-- 12. Hotel facilities — stacked (niet bij een vakantie: de faciliteiten
+             staan per hotel in het hotel-sidepanel) -->
+        <section v-if="hotel.facilities.length && !isTrip" class="container deal-page__facilities deal-page__facilities--mobile">
           <h2 class="section-title">{{ t('hotel.facilities') }}</h2>
           <div class="facilities__grid facilities__grid--mobile">
             <div v-for="fac in hotel.facilities" :key="localized(fac.label)" class="facility-item">
@@ -486,8 +487,8 @@
             </template>
           </section>
 
-          <!-- Facilities (mobile only here; desktop renders full-width below) -->
-          <button v-if="isMobile" type="button" class="deal-page__mobile-row" @click="activeMobileSection = 'facilities'">
+          <!-- Facilities (mobile only here; desktop renders full-width below; niet bij een vakantie) -->
+          <button v-if="isMobile && !isTrip" type="button" class="deal-page__mobile-row" @click="activeMobileSection = 'facilities'">
             <div class="deal-page__mobile-row-text">
               <span class="deal-page__mobile-row-title">{{ t('hotel.facilities') }}</span>
               <span class="deal-page__mobile-row-meta">{{ hotel.facilities.length }} {{ t('common.facilities') || 'faciliteiten' }}</span>
@@ -668,8 +669,9 @@
         </div>
       </div>
 
-      <!-- Hotel-level full-width sections (desktop) — facilities / reviews / faq -->
-      <section v-if="!isMobile && hotel.facilities.length" class="deal-page__facilities container">
+      <!-- Hotel-level full-width sections (desktop) — facilities / reviews / faq.
+           Vakantie: geen faciliteitenblok (per hotel in het sidepanel). -->
+      <section v-if="!isMobile && hotel.facilities.length && !isTrip" class="deal-page__facilities container">
         <h2 class="section-title">{{ t('hotel.facilities') }}</h2>
         <div class="facilities__grid">
           <div v-for="fac in hotel.facilities" :key="localized(fac.label)" class="facility-item">
