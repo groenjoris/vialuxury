@@ -2,15 +2,20 @@
   <div class="search-page" :class="{ 'search-page--landing': isTripLanding, 'search-page--trips': isTripMode }">
     <!-- Multi Hotel Trip: de Vakanties-landing krijgt de homepage-achtige hero
          (foto + zoekbalk eronder, zoals de themapagina's in R2). -->
-    <MultiHotelTripLandingHero
-      v-if="isTripLanding"
-      search-below
-      compact-title
-      :bg-url="tripHeroBg"
-      :eyebrow="tripHeroCaption"
-      :title="t('search.holidaysHeroTitle')"
-      :pitch="tripHeroPitch"
-    />
+    <div v-if="isTripLanding" class="search-page__trip-hero">
+      <MultiHotelTripLandingHero
+        search-below
+        compact-title
+        :bg-url="tripHeroBg"
+        :eyebrow="tripHeroCaption"
+        :title="t('search.holidaysHeroTitle')"
+        :pitch="tripHeroPitch"
+      />
+      <!-- Variantenschakelaar voor de vakantie-dealcards (onder het logo, voor de opdrachtgever). -->
+      <div class="search-page__trip-variants container">
+        <MultiHotelTripCardVariantSwitch />
+      </div>
+    </div>
     <MultiHotelTripSiteHeader v-else />
 
     <main class="search-page__main">
@@ -2428,5 +2433,20 @@ onMounted(() => {
   /* 42 + 2 × 1px rand van de toggle = 44px, gelijk aan de pillen. */
   width: 42px;
   height: 42px;
+}
+
+/* Multi Hotel Trip: variantenschakelaar onder het logo in de Vakanties-hero. */
+.search-page__trip-hero { position: relative; }
+.search-page__trip-variants {
+  position: absolute;
+  top: 58px;
+  left: 0;
+  right: 0;
+  z-index: 5;
+  pointer-events: none;
+}
+.search-page__trip-variants > * { pointer-events: auto; }
+@media (max-width: 800px) {
+  .search-page__trip-variants { display: none; }
 }
 </style>

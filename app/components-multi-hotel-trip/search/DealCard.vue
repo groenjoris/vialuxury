@@ -12,7 +12,7 @@
     <!-- Image area (top in grid, left in list). Grid mode renders a small
          carousel (up to 5 hotel photos) with prev/next arrows that fade
          in on hover. List mode keeps the single static image. -->
-    <div class="deal-card-v2__image">
+    <div class="deal-card-v2__image" :class="{ 'deal-card-v2__image--trip-overlay': tripOverlay }">
       <!-- Anti rage-click: the whole photo opens the deal page. Sits ABOVE the
            image (z-index 1) but BELOW the carousel arrows (z-index 2) and the
            favourite heart (z-index 3) so those still work. -->
@@ -35,7 +35,7 @@
             <span v-for="n in tripHoverStop.starRating" :key="n"><svg viewBox="0 0 18 18" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M16.963,6.786c-.088-.271-.323-.469-.605-.51l-4.62-.671L9.672,1.418c-.252-.512-1.093-.512-1.345,0l-2.066,4.186-4.62,.671c-.282,.041-.517,.239-.605,.51-.088,.271-.015,.57,.19,.769l3.343,3.258-.79,4.601c-.048,.282,.067,.566,.298,.734,.231,.167,.538,.189,.79,.057l4.132-2.173,4.132,2.173c.11,.058,.229,.086,.349,.086,.155,0,.31-.048,.441-.143,.231-.168,.347-.452,.298-.734l-.79-4.601,3.343-3.258c.205-.199,.278-.498,.19-.769Z"/></svg></span>
           </span>
         </div>
-        <MultiHotelTripRouteMap class="deal-card-v2__trip-map" :stops="tripMapStops" hoverable @stop-hover="tripHoverIndex = $event" />
+        <MultiHotelTripRouteMap class="deal-card-v2__trip-map" :stops="tripMapStops" :overlay="tripOverlay" hoverable @stop-hover="tripHoverIndex = $event" />
       </template>
       <img v-else :src="displayedImage" :alt="hotel?.name || localized(deal.title)" loading="lazy" />
       <!-- Sidepanel cards (deal-page and map) lock to a single
@@ -356,6 +356,10 @@ defineEmits<{ 'view-siblings': [] }>()
 
 /** Multi Hotel Trip: dit record is een meerhotel-vakantie (twee of drie hotels). */
 const isTrip = computed(() => !!props.hotel?.trip)
+/** Dealcard-variant (schakelaar op de Vakanties-pagina): 'overlay' = foto over de
+ *  volle breedte met het kaartje semi-transparant erover. */
+const { variant: tripCardVariant } = useMultiHotelTripCardVariant()
+const tripOverlay = computed(() => isTrip.value && tripCardVariant.value === 'overlay')
 /** "Autovakantie met 3 hotels" — soort vakantie + aantal hotels, in plaats van een hotelnaam. */
 const tripTypeLabel = computed(() => {
   const trip = props.hotel?.trip
@@ -1051,6 +1055,17 @@ const includesBullets = computed<string[]>(() => {
   z-index: 2;
   pointer-events: none;
 }
+/* Variant "overlay": foto over de volle breedte, het kaartje rechts met een
+   zachte linkerrand (mask) en semi-transparante kaartlaag (TripRouteMap
+   `overlay`), zodat het met de foto mengt; route en markers blijven dekkend. */
+.deal-card-v2__image--trip-overlay .deal-card-v2__trip-photo { width: 100%; }
+.deal-card-v2__image--trip-overlay .deal-card-v2__trip-map {
+  width: 64%;
+  border-left: 0;
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 28%);
+  mask-image: linear-gradient(to right, transparent 0, #000 28%);
+}
+.deal-card-v2__image--trip-overlay .deal-card-v2__trip-caption { width: 100%; }
 /* Hover op een nummer: naam + sterren van dat hotel onderin de foto. */
 .deal-card-v2__trip-caption {
   position: absolute;

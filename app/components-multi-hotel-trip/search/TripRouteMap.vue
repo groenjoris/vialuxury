@@ -8,6 +8,7 @@
        genummerde stops. -->
   <svg
     class="trm"
+    :class="{ 'trm--overlay': overlay }"
     :viewBox="`0 0 ${W} ${H}`"
     preserveAspectRatio="xMidYMid slice"
     role="img"
@@ -128,6 +129,9 @@ const props = withDefaults(defineProps<{
   markerIcon?: boolean
   /** Etappelabel: zwarte pil of alleen tekst ("45 km") boven de lijn. */
   legLabelStyle?: 'pill' | 'plain'
+  /** Dealcard-variant "overlay": kaartlaag semi-transparant over de foto;
+   *  route, markers en namen blijven dekkend. */
+  overlay?: boolean
 }>(), {
   maxScale: 200,
   showLabels: false,
@@ -144,6 +148,7 @@ const props = withDefaults(defineProps<{
   geoNames: false,
   markerIcon: false,
   legLabelStyle: 'pill',
+  overlay: false,
 })
 
 /** Hotel-glyph uit de aangeleverde iconenset (24 × 24, lijnen), wit op de zwarte bol. */
@@ -428,6 +433,14 @@ const ariaLabel = computed(() => `Route: ${props.stops.map((s, i) => `${i + 1}. 
 .trm__water {
   fill: #d7e6f0;
 }
+/* Overlay-variant (dealcard): de kaartlaag laat de foto doorschemeren; route,
+   markers en plaatsnamen blijven volledig dekkend. */
+.trm--overlay .trm__water { fill: rgba(215, 230, 240, 0.55); }
+.trm--overlay .trm__land { fill: rgba(243, 239, 230, 0.66); }
+.trm--overlay .trm__lake { fill: rgba(215, 230, 240, 0.6); }
+.trm--overlay .trm__province { stroke: rgba(224, 217, 204, 0.75); }
+.trm--overlay .trm__border { stroke: rgba(111, 102, 90, 0.8); }
+.trm--overlay .trm__label { fill: rgba(80, 74, 64, 0.8); }
 .trm__land {
   fill: #f3efe6;
   stroke: none;
