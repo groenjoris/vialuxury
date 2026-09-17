@@ -409,13 +409,46 @@
         />
       </section>
 
+      <!-- Vakantie — opzet van de R2-dealpagina (Variable Travel Group), code
+           overgenomen uit second-release/deal/[slug].vue: de highlights als chips
+           in horizontale rijen over de volle breedte, daaronder de beschrijving
+           links en de minimap uiterst rechts (zelfde breedte als de zijbalk,
+           die pas daaronder begint). -->
+      <template v-if="isTrip">
+        <section id="intro" class="container deal-page__inc-row">
+          <div class="inc-row">
+            <div v-for="hl in highlights" :key="hl.text" class="inc-row__chip">
+              <img v-if="hl.icon" :src="hl.icon" class="inc-row__icon" alt="" loading="lazy" />
+              <span v-else class="inc-row__check"><svg class="icon-check" viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10" style="vertical-align:-0.125em"><path d="M3 13L8 19L21 5"/></svg></span>
+              <span>{{ hl.text }}</span>
+            </div>
+          </div>
+        </section>
+        <section class="container deal-page__intro-row">
+          <div class="deal-page__intro-map">
+            <MultiHotelTripRouteMapCard
+              id="mini-map"
+              class="deal-page__minimap deal-page__minimap--trip"
+              :stops="tripMapStops" :legs="tripRouteLegs"
+              @open="tripMapOpen = true"
+              @stop-click="openTripHotel"
+            />
+          </div>
+          <div class="deal-page__intro-desc">
+            <!-- Volledige beschrijving, afgekapt naast de minimap; "Lees meer" opent de pop-up. -->
+            <div class="deal-page__intro-desc-text" v-html="fullDescription"></div>
+            <button v-if="hasMoreDescription" type="button" class="deal-page__read-more" @click="descriptionOpen = true">{{ t('common.readMore') }}</button>
+          </div>
+        </section>
+      </template>
+
       <!-- Two-column layout: Content | Booking Sidebar -->
       <div class="deal-page__grid container">
         <div class="deal-page__col-left">
           <!-- Description + Mini map row. Vakantie: samenvattende beschrijving
                van de hele reis + het schematische routekaartje van de dealcard
                op de plek (en breedte) van de gewone minimap. -->
-          <div id="intro" class="deal-page__intro" :class="{ 'deal-page__intro--trip': isTrip }">
+          <div v-if="!isTrip" id="intro" class="deal-page__intro">
             <div class="deal-page__description">
               <div v-html="firstParagraph"></div>
               <button v-if="hasMoreDescription" type="button" class="deal-page__read-more" @click="descriptionOpen = true">{{ t('common.readMore') }}</button>
@@ -438,8 +471,8 @@
             />
           </div>
 
-          <!-- Highlights -->
-          <section class="deal-page__highlights">
+          <!-- Highlights (vakantie: als chips boven het grid) -->
+          <section v-if="!isTrip" class="deal-page__highlights">
             <h2 class="section-title">{{ t('deal.highlights') }}</h2>
             <div class="highlights__grid">
               <div v-for="hl in highlights" :key="hl.text" class="highlight-item">
@@ -2041,9 +2074,68 @@ onMounted(() => {
 .fade-enter-from, .fade-leave-to { opacity: 0; }
 
 /* Intro row: description + mini map side by side */
+/* ── Vakantie: highlights-chips + beschrijving/minimap-rij (uit second-release) ──
+   Elke chip past zich aan zijn tekst aan; VOLLE rijen rekken de chips uit tot de
+   volle breedte, de laatste (onvolledige) rij blijft links uitgelijnd dankzij het
+   onzichtbare ::after-flexitem dat de restruimte opsnoept. */
+.deal-page__inc-row {
+  margin-top: var(--space-lg);
+  margin-bottom: var(--space-xl);
+}
+.inc-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.inc-row::after {
+  content: "";
+  flex: 1000 1 auto;
+}
+.inc-row__chip {
+  flex: 1 1 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 18px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  font-size: 14px;
+  color: var(--color-text-primary);
+  line-height: 1.4;
+  white-space: nowrap;
+}
+.inc-row__check { color: var(--color-discount); font-weight: 700; flex-shrink: 0; }
+.inc-row__icon { width: 20px; height: 20px; flex-shrink: 0; object-fit: contain; }
+/* Beschrijving links, minimap rechts gefloat in de breedte van de zijbalk
+   (zodat de kaart precies boven de zijbalk uitlijnt). */
+.deal-page__intro-row {
+  display: flow-root;
+  margin-bottom: var(--space-xl);
+}
+.deal-page__intro-row .deal-page__intro-map {
+  float: right;
+  width: var(--mht-deal-sidebar-width, 340px);
+  margin-left: var(--space-xl);
+}
+.deal-page__intro-row .deal-page__intro-desc { display: flow-root; }
+/* Beschrijving vult de hoogte naast de minimap (4:3 + routeregel), dan "Lees meer";
+   het masker verzacht de afkapping onderaan. */
+.deal-page__intro-row .deal-page__intro-desc-text {
+  max-height: 300px;
+  overflow: hidden;
+  font-size: 15px;
+  line-height: 1.75;
+  color: var(--color-text-secondary);
+  -webkit-mask-image: linear-gradient(180deg, #141414 80%, transparent);
+  mask-image: linear-gradient(180deg, #141414 80%, transparent);
+}
+.deal-page__intro-row .deal-page__intro-desc-text :deep(p) { margin: 0 0 var(--space-md); }
+.deal-page__intro-row .deal-page__read-more { margin-top: 6px; }
+
 .deal-page__intro { display: grid; grid-template-columns: 1fr 220px; gap: var(--space-xl); margin-bottom: var(--space-xl); align-items: start; }
 /* Vakantie: kaartje op de helft van de kolom (beschrijving krijgt de andere helft). */
-.deal-page__intro--trip { grid-template-columns: 1fr 1fr; }
 .deal-page__minimap--trip { --vl-minimap-aspect: 4 / 3; }
 /* Vakantie: intro onder de dagprogramma-kop. */
 .deal-page__itinerary-intro { margin: calc(-1 * var(--space-md)) 0 var(--space-lg); font-size: 14px; color: var(--color-text-secondary); }
