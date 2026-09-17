@@ -1878,11 +1878,24 @@ const highlights = computed(() => {
     if (seen.has(key)) continue
     seen.add(key)
     const m = matchIcon(text)
-    out.push({ icon: m.iconUrl, emoji: m.emoji, text })
+    out.push({ icon: (isTrip ? tripHighlightIcon(text) : null) ?? m.iconUrl, emoji: m.emoji, text })
     if (out.length >= 6) break
   }
   return out
 })
+
+/** Vakantie-highlights (chips onder de gallery): iconen uit de core-iconenset
+ *  van Joris — hotel voor de hotels/nachten, klok voor de etappes, kasteel voor
+ *  stad/natuur/kust en kastelen, champagneglas voor de welkomstbubbels. Diner en
+ *  parkeren houden het icoon van de gewone matcher. */
+function tripHighlightIcon(text: string): string | null {
+  if (/parkeren|parking|diner|dinner|ontbijt|breakfast/i.test(text)) return null
+  if (/bubbels|champagne|prosecco|bubbles/i.test(text)) return '/icons/mht/champagne.svg'
+  if (/hotel|nachten|nights/i.test(text)) return '/icons/mht/hotel.svg'
+  if (/etappe|minuten|minutes|rijtijd|rijden|\bkm\b/i.test(text)) return '/icons/mht/clock.svg'
+  if (/kasteel|kastelen|castle|stad|natuur|kust|landgoed|estate|coast/i.test(text)) return '/icons/mht/castle.svg'
+  return null
+}
 
 // Old static highlights (unused — kept commented for reference)
 const _legacyHighlights = computed(() => [
