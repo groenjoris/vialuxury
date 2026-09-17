@@ -73,6 +73,10 @@ interface TripSpec {
    *  In de gallery met sticker "Omgeving"; zonder cover valt hij terug op de
    *  foto van het eerste hotel. */
   coverImage?: string
+  /** Omgevingsfoto's (sticker "Omgeving"), in deze volgorde direct na de cover
+   *  in de PDP-gallery — de eerste vier staan dus bij landing in beeld; de
+   *  hotelfoto's komen daarna (alleen in de foto-pop-up). */
+  nearbyImages?: string[]
 }
 
 const l = (nl: string, en: string): LocalizedString => ({ nl, en })
@@ -83,6 +87,18 @@ const TRIPS: TripSpec[] = [
     id: 'trip-noord-frankrijk',
     slug: 'ontdek-noord-frankrijk-en-de-opaalkust-in-7-dagen',
     coverImage: '/images/vakanties/cover/noord-frankrijk.jpg',
+    // Aangeleverd door Joris (vakanties voorbeeld content/<hotel>/nearby):
+    // Nausicaá, Boulogne-sur-Mer, Béthune en Lille staan bij landing in beeld.
+    nearbyImages: [
+      '/images/vakanties/001/nearby-nausicaa.jpg',
+      '/images/vakanties/001/nearby-boulogne.jpg',
+      '/images/vakanties/001/nearby-bethune.jpg',
+      '/images/vakanties/001/nearby-lille.jpg',
+      '/images/vakanties/001/nearby-marais.jpg',
+      '/images/vakanties/001/nearby-saint-omer.jpg',
+      '/images/vakanties/001/nearby-stoomtrein.jpg',
+      '/images/vakanties/001/nearby-kasteel.jpg',
+    ],
     type: 'auto',
     stops: [
       { name: 'Hotel Royal Beaulaincourt', city: 'Béthune', region: 'Noord-Frankrijk', nights: 2, stars: 4, lat: 50.5305, lng: 2.6406, image: '/images/vakanties/001/beaulaincourt-1.jpg', extraImages: ['/images/vakanties/001/beaulaincourt-2.jpg', '/images/vakanties/001/beaulaincourt-3.jpg', '/images/vakanties/001/beaulaincourt-4.jpg'], dinnerImage: '/images/vakanties/001/beaulaincourt-4.jpg', checkIn: '14:00', breakfastImage: '/images/vakanties/001/beaulaincourt-4.jpg', includes: [l('2 x overnachting', '2 nights'), l('Dagelijks ontbijtbuffet', 'Daily breakfast buffet'), l('3-gangendiner (dag van aankomst)', '3-course dinner (day of arrival)'), l('Welkomstbubbels', 'Welcome bubbles'), l('Late check-out tot 15:00 uur', 'Late check-out until 15:00')] },
@@ -391,6 +407,8 @@ export interface MultiHotelTripDetail {
   routeImage?: string
   /** Omgevingsfoto — eerste foto in de gallery (sticker "Omgeving"). */
   coverImage?: string
+  /** Extra omgevingsfoto's na de cover (sticker "Omgeving"); hotelfoto's volgen daarna. */
+  nearbyImages?: string[]
   reviewScore: number
   reviewCount: number
 }
@@ -499,6 +517,7 @@ function buildTrip(spec: TripSpec): { hotel: SearchHotel; detail: MultiHotelTrip
     tags: spec.tags,
     routeImage: spec.routeImage,
     coverImage: spec.coverImage,
+    nearbyImages: spec.nearbyImages,
     reviewScore: avgScore,
     reviewCount,
   }
