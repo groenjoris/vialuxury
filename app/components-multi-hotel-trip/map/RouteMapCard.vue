@@ -1,12 +1,27 @@
 <template>
   <!-- Multi Hotel Trip — minimap naast de beschrijving op de vakantie-PDP.
-       Echte kaart (Leaflet, OpenStreetMap-tegels, niet te slepen of te
-       zoomen) met de route, per etappe de afstand op de lijn en genummerde
-       hotelmarkers met de plaatsnaam ernaast (zelfde markers als de
-       fullscreen kaart). Klik op een marker of plaatsnaam → hotel-sidepanel;
-       klik elders op de kaart of op "Bekijk kaart" → fullscreen kaart. -->
+       Schematisch kaartje (zelfde vormgeving als op de dealcard: water, land,
+       grenzen, zwarte genummerde markers) met de echte rijroutes per etappe,
+       de reistijd op de lijn en de plaatsnamen naast de markers. Klik op een
+       marker → hotel-sidepanel; klik elders of op "Bekijk kaart" → fullscreen kaart. -->
   <div class="route-map">
-    <div ref="mapEl" class="route-map__box" role="button" tabindex="0" :aria-label="t('common.viewMap')" @keydown.enter.prevent="$emit('open')"></div>
+    <div class="route-map__box" role="button" tabindex="0" :aria-label="t('common.viewMap')" @click="$emit('open')" @keydown.enter.prevent="$emit('open')">
+      <MultiHotelTripRouteMap
+        :stops="svgStops"
+        :legs="legs"
+        :leg-labels="legLabels"
+        :width="400"
+        :height="300"
+        :max-scale="700"
+        :marker-radius="17"
+        :number-size="15"
+        :label-size="16"
+        :leg-label-size="13"
+        show-labels
+        interactive
+        @stop-click="$emit('stop-click', $event)"
+      />
+    </div>
     <div class="route-map__footer">
       <span class="route-map__route">
         <template v-for="(s, i) in stops" :key="`r-${i}`">
@@ -20,71 +35,22 @@
 </template>
 
 <script setup lang="ts">
-import { addOsmTiles, addCountryBorders, addTripRoute, addTripHotels, keepLabelsInView, type TripMapStop, type TripRouteLeg } from '~/utils-multi-hotel-trip/tripMapLayers'
+import type { TripMapStop, TripRouteLeg } from '~/utils-multi-hotel-trip/tripMapLayers'
 
 const props = defineProps<{
-  /** Hotels in reisvolgorde (met plaatsnaam, hotelnaam en afstand vanaf het vorige hotel). */
+  /** Hotels in reisvolgorde (met plaatsnaam, hotelnaam en reistijd vanaf het vorige hotel). */
   stops: TripMapStop[]
   /** Rijroutes tussen de hotels (OSRM); zonder legs een rechte lijn. */
   legs?: TripRouteLeg[]
 }>()
 
-const emit = defineEmits<{ open: []; 'stop-click': [index: number] }>()
+defineEmits<{ open: []; 'stop-click': [index: number] }>()
 
 const { t } = useMultiHotelTripI18n()
 
-const mapEl = ref<HTMLElement | null>(null)
-let map: import('leaflet').Map | null = null
-let ro: ResizeObserver | null = null
-let routeBounds: import('leaflet').LatLngBounds | null = null
-let hotelMarkers: import('leaflet').Marker[] = []
-
-function fit(L: typeof import('leaflet')) {
-  if (!map || !props.stops.length) return
-  // Hotels én de getekende rijroute in beeld (een route kan buiten de hotels uitbuigen).
-  const b = L.latLngBounds(props.stops.map(s => [s.lat, s.lng] as [number, number]))
-  if (routeBounds?.isValid()) b.extend(routeBounds)
-  map.fitBounds(b, { padding: [36, 36], maxZoom: 11 })
-}
-
-onMounted(async () => {
-  if (!mapEl.value) return
-  const L = (await import('leaflet')).default
-  map = L.map(mapEl.value, {
-    zoomControl: false,
-    attributionControl: false,
-    dragging: false,
-    scrollWheelZoom: false,
-    doubleClickZoom: false,
-    touchZoom: false,
-    boxZoom: false,
-    keyboard: false,
-    zoomSnap: 0.25,
-  })
-  addOsmTiles(L, map, false)
-  addCountryBorders(L, map, 1.5)
-  // Minimap: alleen de reistijd op de etappe ("50 min"); de volledige tekst staat op de grote kaart.
-  routeBounds = addTripRoute(L, map, props.stops, { distances: true, weight: 2.5, legs: props.legs, labelMode: 'short' })
-  hotelMarkers = addTripHotels(L, map, props.stops, {
-    size: 30,
-    labelText: s => s.label,
-    labelSize: 14,
-    onClick: i => emit('stop-click', i),
-  })
-  map.on('click', () => emit('open'))
-  // Plaatsnamen binnen de kaart houden (rechts buiten beeld → links van de bol).
-  map.on('moveend', () => { if (map) keepLabelsInView(map, hotelMarkers) })
-  fit(L)
-  keepLabelsInView(map, hotelMarkers)
-  ro = new ResizeObserver(() => { map?.invalidateSize(); fit(L) })
-  ro.observe(mapEl.value)
-})
-
-onBeforeUnmount(() => {
-  ro?.disconnect()
-  map?.remove()
-  map = null
-})
+const svgStops = computed(() => props.stops.map(s => ({ lat: s.lat, lng: s.lng, label: s.label, title: s.title })))
+/** Alleen de reistijd op de etappe ("50 min"); de volledige tekst staat op de grote kaart. */
+const legLabels = computed(() => props.stops.map(s => s.travelShort))
 </script>
 
 <style scoped>
@@ -103,12 +69,11 @@ onBeforeUnmount(() => {
   border-radius: var(--radius-lg);
   overflow: hidden;
   border: 1px solid var(--color-border-light);
-  background: #e9e5dc;
+  background: #d7e6f0;
   cursor: pointer;
 }
 .route-map__box:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
-/* Leaflet zelf krijgt de klikcursor van de kaart als geheel. */
-.route-map__box :deep(.leaflet-container) { cursor: pointer; background: #e9e5dc; font-family: var(--font-body); }
+.route-map__box :deep(.trm) { width: 100%; height: 100%; display: block; }
 /* Kaartje is smal: route en link onder elkaar, links uitgelijnd. */
 .route-map__footer {
   display: flex;

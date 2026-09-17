@@ -1,15 +1,18 @@
 <template>
-  <!-- Multi Hotel Trip — schematisch routekaartje voor de vakantie-dealcard.
-       Vaste tekenruimte van 170 × 224 px (rechterhelft van het fotogebied);
-       de SVG schaalt mee en snijdt bij een iets andere verhouding wat af aan
-       de randen (slice). Kaartlaag: water, land (landsgrenzen NL/BE/FR/DE/GB),
-       IJsselmeer, provinciegrenzen — daarop de route met genummerde stops. -->
+  <!-- Multi Hotel Trip — schematisch routekaartje voor de vakantie-dealcard
+       (170 × 224, rechterhelft van het fotogebied) én de minimap op de PDP
+       (400 × 300 met grotere markers/labels, echte rijroutes via `legs` en
+       de reistijd per etappe). De SVG schaalt mee en snijdt bij een iets
+       andere verhouding wat af aan de randen (slice). Kaartlaag: water, land,
+       IJsselmeer, provinciegrenzen, landsgrenzen — daarop de route met
+       genummerde stops. -->
   <svg
     class="trm"
     :viewBox="`0 0 ${W} ${H}`"
     preserveAspectRatio="xMidYMid slice"
     role="img"
     :aria-label="ariaLabel"
+    @click="$emit('map-click')"
   >
     <rect class="trm__water" x="0" y="0" :width="W" :height="H" />
     <path v-for="(d, i) in landPaths" :key="`land-${i}`" class="trm__land" :d="d" />
@@ -23,7 +26,12 @@
       :x="lbl.x"
       :y="lbl.y"
     >{{ lbl.id }}</text>
-    <polyline class="trm__route" :points="routePoints" />
+    <!-- Route: de echte rijroute per etappe (legs, met witte halo) of hemelsbreed. -->
+    <template v-if="legPaths.length">
+      <path v-for="(d, i) in legPaths" :key="`halo-${i}`" class="trm__route-halo" :d="d" />
+      <path v-for="(d, i) in legPaths" :key="`leg-${i}`" class="trm__route" :d="d" />
+    </template>
+    <polyline v-else class="trm__route" :points="routePoints" />
     <!-- Plaatsnamen naast de markers (PDP-minimap; op de card uit). -->
     <text
       v-for="(m, i) in markers"
@@ -33,7 +41,13 @@
       :x="m.labelX"
       :y="m.y + 0.5"
       :text-anchor="m.labelAnchor"
+      :style="{ fontSize: `${labelSize}px` }"
     >{{ stops[i]?.label }}</text>
+    <!-- Reistijd halverwege elke etappe (PDP-minimap). -->
+    <g v-for="lbl in legLabelPos" :key="`legl-${lbl.i}`" class="trm__leg" :transform="`translate(${lbl.x} ${lbl.y})`">
+      <rect :x="-lbl.w / 2" :y="-lbl.h / 2" :width="lbl.w" :height="lbl.h" :rx="lbl.h / 2" />
+      <text :style="{ fontSize: `${legLabelSize}px` }">{{ lbl.text }}</text>
+    </g>
     <g
       v-for="(m, i) in markers"
       :key="`stop-${i}`"
@@ -50,19 +64,20 @@
       @focus="setHover(i)"
       @blur="setHover(null)"
     >
-      <circle r="10" />
-      <text y="0.5">{{ i + 1 }}</text>
+      <circle :r="markerRadius" />
+      <text y="0.5" :style="{ fontSize: `${numberSize}px` }">{{ i + 1 }}</text>
     </g>
     <!-- Hover/focus: hotelnaam boven de marker. -->
     <g v-if="interactive && hover !== null && tip" class="trm__tip" :transform="`translate(${tip.x} ${tip.y})`">
-      <rect :x="-tip.w / 2" y="-16" :width="tip.w" height="16" rx="4" />
-      <text y="-7.5">{{ tip.text }}</text>
+      <rect :x="-tip.w / 2" :y="-tip.h" :width="tip.w" :height="tip.h" rx="4" />
+      <text :y="-tip.h / 2" :style="{ fontSize: `${labelSize}px` }">{{ tip.text }}</text>
     </g>
   </svg>
 </template>
 
 <script setup lang="ts">
 import shapes from '~/data/mht-route-map-shapes.json'
+import type { TripRouteLeg } from '~/utils-multi-hotel-trip/tripMapLayers'
 
 interface Shape { id: string; rings: number[][][] }
 interface StopPoint { lat: number; lng: number; label?: string; title?: string }
@@ -81,14 +96,34 @@ const props = withDefaults(defineProps<{
   /** Alleen hover (stop-hover), geen klik/tooltip — dealcard: de card toont
    *  zelf de foto en naam van het gehoverde hotel. */
   hoverable?: boolean
+  /** Tekenruimte (viewBox) in px; de SVG schaalt mee met zijn container. */
+  width?: number
+  height?: number
+  /** Echte rijroutes per etappe (OSRM); zonder legs hemelsbreed. */
+  legs?: TripRouteLeg[]
+  /** Label per stop (index ≥ 1) halverwege de etappe ernaartoe: "50 min". */
+  legLabels?: (string | undefined)[]
+  /** Maten in viewBox-px: bolstraal, cijfer, plaatsnaam, reistijdlabel. */
+  markerRadius?: number
+  numberSize?: number
+  labelSize?: number
+  legLabelSize?: number
 }>(), {
   maxScale: 200,
   showLabels: false,
   interactive: false,
   hoverable: false,
+  width: 170,
+  height: 224,
+  legs: () => [],
+  legLabels: () => [],
+  markerRadius: 10,
+  numberSize: 11,
+  labelSize: 9,
+  legLabelSize: 11,
 })
 
-const emit = defineEmits<{ 'stop-click': [index: number]; 'stop-hover': [index: number | null] }>()
+const emit = defineEmits<{ 'stop-click': [index: number]; 'stop-hover': [index: number | null]; 'map-click': [] }>()
 
 const hover = ref<number | null>(null)
 /** Alleen bij `interactive` vangt de marker de klik zelf af (hotel-pop-up);
@@ -104,9 +139,9 @@ function setHover(i: number | null) {
   if (props.hoverable || props.interactive) emit('stop-hover', i)
 }
 
-/** Tekenruimte (px). Verhouding ≈ de rechterhelft van het 224 px hoge fotogebied. */
-const W = 170
-const H = 224
+/** Tekenruimte (px) — vast per gebruik (card 170 × 224, PDP 400 × 300). */
+const W = props.width
+const H = props.height
 /** Deel van de breedte/hoogte dat rondom de stops vrij blijft. */
 const PAD = 0.24
 
@@ -114,8 +149,10 @@ const data = shapes as unknown as { countries: Shape[]; provinces: Shape[]; lake
 
 /** Equirectangular projectie rond de route: u = lng · cos(lat0), v = lat. */
 const frame = computed(() => {
-  const pts = props.stops.length ? props.stops : [{ lat: 52.2, lng: 5.3 }]
-  const lat0 = pts.reduce((s, p) => s + p.lat, 0) / pts.length
+  // Kader om de stops én de gereden route (die kan buiten de stops uitbuigen).
+  const legPts = props.legs.flatMap(l => l.coords.map(([lat, lng]) => ({ lat, lng })))
+  const pts = props.stops.length ? [...props.stops, ...legPts] : [{ lat: 52.2, lng: 5.3 }]
+  const lat0 = props.stops.length ? props.stops.reduce((s, p) => s + p.lat, 0) / props.stops.length : 52.2
   const cos = Math.cos((lat0 * Math.PI) / 180)
   const us = pts.map(p => p.lng * cos)
   const vs = pts.map(p => p.lat)
@@ -243,14 +280,53 @@ const countryLabels = computed(() => {
 const markers = computed(() => props.stops.map((s) => {
   const [x, y] = project(s.lng, s.lat)
   // Plaatsnaam rechts van de marker; dicht bij de rechterrand links ervan.
-  const right = x + 14 + (s.label?.length ?? 0) * 5.2 <= W - 4
+  const gap = props.markerRadius + 4
+  const right = x + gap + (s.label?.length ?? 0) * props.labelSize * 0.58 <= W - 4
   return {
     x: Number(x.toFixed(1)),
     y: Number(y.toFixed(1)),
-    labelX: Number((right ? x + 14 : x - 14).toFixed(1)),
+    labelX: Number((right ? x + gap : x - gap).toFixed(1)),
     labelAnchor: right ? 'start' : 'end',
   }
 }))
+
+/** Echte rijroute per etappe als SVG-pad (geprojecteerd). */
+const legPaths = computed(() => props.legs
+  .filter(l => l.coords.length > 1)
+  .map(l => l.coords.map(([lat, lng], i) => { const [x, y] = project(lng, lat); return `${i === 0 ? 'M' : 'L'}${x.toFixed(1)} ${y.toFixed(1)}` }).join('')))
+
+/** Punt halverwege een (geprojecteerde) lijn, gemeten langs de lijn. */
+function midpointAlong(pts: [number, number][]): [number, number] {
+  let total = 0
+  const seg = pts.slice(1).map((p, i) => { const d = Math.hypot(p[0] - pts[i]![0], p[1] - pts[i]![1]); total += d; return d })
+  let acc = 0
+  for (let i = 0; i < seg.length; i++) {
+    if (acc + seg[i]! >= total / 2) {
+      const f = seg[i]! ? (total / 2 - acc) / seg[i]! : 0
+      const a = pts[i]!, b = pts[i + 1]!
+      return [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f]
+    }
+    acc += seg[i]!
+  }
+  return pts[pts.length - 1] ?? [0, 0]
+}
+
+/** Reistijdlabels halverwege elke etappe (langs de echte route of de rechte lijn). */
+const legLabelPos = computed(() => {
+  const out: { i: number; x: number; y: number; w: number; h: number; text: string }[] = []
+  for (let i = 1; i < props.stops.length; i++) {
+    const text = props.legLabels[i]
+    if (!text) continue
+    const leg = props.legs.find(l => l.from === i - 1 && l.to === i)
+    const pts: [number, number][] = leg && leg.coords.length > 1
+      ? leg.coords.map(([lat, lng]) => project(lng, lat))
+      : [project(props.stops[i - 1]!.lng, props.stops[i - 1]!.lat), project(props.stops[i]!.lng, props.stops[i]!.lat)]
+    const [x, y] = midpointAlong(pts)
+    const h = props.legLabelSize * 1.7
+    out.push({ i, x: Number(x.toFixed(1)), y: Number(y.toFixed(1)), w: text.length * props.legLabelSize * 0.6 + props.legLabelSize, h, text })
+  }
+  return out
+})
 
 /** Tooltip met de hotelnaam boven de gehoverde marker, binnen het kader. */
 const tip = computed(() => {
@@ -259,10 +335,12 @@ const tip = computed(() => {
   const s = props.stops[hover.value]
   if (!m || !s) return null
   const text = s.title ?? s.label ?? ''
-  const w = Math.min(W - 8, text.length * 5.1 + 10)
+  const h = props.labelSize * 1.8
+  const w = Math.min(W - 8, text.length * props.labelSize * 0.57 + props.labelSize)
   const x = Math.min(Math.max(m.x, w / 2 + 4), W - w / 2 - 4)
-  const y = m.y - 13 < 18 ? m.y + 30 : m.y - 13
-  return { x, y, w, text }
+  const above = m.y - props.markerRadius - 3
+  const y = above - h < 2 ? m.y + props.markerRadius + 3 + h : above
+  return { x, y, w, h, text }
 })
 
 const routePoints = computed(() => markers.value.map(m => `${m.x},${m.y}`).join(' '))
@@ -320,6 +398,26 @@ const ariaLabel = computed(() => `Route: ${props.stops.map((s, i) => `${i + 1}. 
   stroke-linecap: round;
   vector-effect: non-scaling-stroke;
 }
+/* Witte halo onder de echte rijroute, zodat hij leesbaar blijft over grenzen en namen. */
+.trm__route-halo {
+  fill: none;
+  stroke: #fff;
+  stroke-width: 5;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  opacity: 0.9;
+  vector-effect: non-scaling-stroke;
+}
+/* Reistijd halverwege een etappe: zwarte pil (zelfde stijl als op de grote kaart). */
+.trm__leg { pointer-events: none; }
+.trm__leg rect { fill: #141414; }
+.trm__leg text {
+  font-family: var(--font-body);
+  font-weight: 700;
+  fill: #fff;
+  text-anchor: middle;
+  dominant-baseline: central;
+}
 /* Standaardstijl hotelmarkers: zwarte bol, oranje bij hover. */
 .trm__marker circle {
   fill: #141414;
@@ -329,7 +427,6 @@ const ariaLabel = computed(() => `Route: ${props.stops.map((s, i) => `${i + 1}. 
 }
 .trm__marker text {
   font-family: var(--font-body);
-  font-size: 11px;
   font-weight: 700;
   fill: #fff;
   text-anchor: middle;
@@ -343,7 +440,6 @@ const ariaLabel = computed(() => `Route: ${props.stops.map((s, i) => `${i + 1}. 
 /* Plaatsnaam naast de marker, met witte rand voor leesbaarheid op de kaart. */
 .trm__city {
   font-family: var(--font-body);
-  font-size: 9px;
   font-weight: 600;
   fill: #141414;
   stroke: #fff;
