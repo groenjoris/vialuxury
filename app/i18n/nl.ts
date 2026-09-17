@@ -260,7 +260,7 @@ const nl: Record<string, string> = {
   'trip.routeLabel': 'Route',
   // Multi Hotel Trip — dagprogramma + hotel-pop-up op de vakantie-PDP
   'trip.itineraryHeading': 'Voorbeeld reisschema',
-  'trip.includedHeading': 'Het volgende is inbegrepen',
+  'trip.includedHeading': 'In deze {type} voor 2 personen is het volgende inbegrepen',
   // Onder de minimap
   'trip.fromHomeLine': 'Reistijd van {city} naar {to}: ca. {duration}',
   'trip.totalRouteLine': 'Totale route tussen hotels: {km} km',
@@ -570,7 +570,7 @@ const nl: Record<string, string> = {
 
   'sidebar.arrangementFor': 'Arrangement voor',
   'sidebar.arrangementFullTitle': 'In dit arrangement voor 2 personen is het volgende inbegrepen:',
-  'sidebar.holidayFullTitle': 'In deze {type} voor 2 personen is het volgende inbegrepen',
+  'sidebar.holidayFullTitle': 'In deze vakantie voor 2 personen is het volgende inbegrepen:',
   'sidebar.viewDetails': 'Bekijk details',
   'sidebar.forArrival': 'Voor aankomstdatum',
   'sidebar.clear': 'wissen',

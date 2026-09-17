@@ -256,7 +256,7 @@ const en: Record<string, string> = {
   'trip.routeLabel': 'Route',
   // Multi Hotel Trip — dagprogramma + hotel-pop-up op de vakantie-PDP
   'trip.itineraryHeading': 'Sample itinerary',
-  'trip.includedHeading': 'What is included',
+  'trip.includedHeading': 'This {type} for 2 people includes',
   'trip.fromHomeLine': 'Travel time from {city} to {to}: approx. {duration}',
   'trip.totalRouteLine': 'Total route between hotels: {km} km',
   'trip.totalDriveLine': 'Total driving time: approx. {duration}',
@@ -565,7 +565,7 @@ const en: Record<string, string> = {
   'sidebar.arrangementFor': 'Package for',
   'sidebar.viewDetails': 'View details',
   'sidebar.arrangementFullTitle': 'This arrangement for 2 people includes:',
-  'sidebar.holidayFullTitle': 'This {type} for 2 people includes',
+  'sidebar.holidayFullTitle': 'This holiday for 2 people includes:',
   'sidebar.forArrival': 'For arrival date',
   'sidebar.clear': 'clear',
   'sidebar.luxeRoomSingular': 'luxury room (upgrade)',
