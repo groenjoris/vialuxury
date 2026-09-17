@@ -257,6 +257,9 @@ const en: Record<string, string> = {
   // Multi Hotel Trip — dagprogramma + hotel-pop-up op de vakantie-PDP
   'trip.itineraryHeading': 'Sample itinerary',
   'trip.includedHeading': 'What is included',
+  'trip.fromHomeLine': 'From {city}: {duration} to {to}',
+  'trip.totalRouteLine': 'Total route between hotels: {km} km',
+  'trip.totalDriveLine': 'Total driving time: approx. {duration}',
   'trip.itineraryIntro': 'What your holiday looks like: a sample programme, you set the pace.',
   'trip.moreAboutHotel': 'More about this hotel',
   'trip.moreAboutHotelNamed': 'More about hotel {hotel}',

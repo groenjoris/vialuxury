@@ -18,14 +18,25 @@
     <path v-for="(d, i) in landPaths" :key="`land-${i}`" class="trm__land" :d="d" />
     <path v-for="(d, i) in lakePaths" :key="`lake-${i}`" class="trm__lake" :d="d" />
     <path v-for="(d, i) in provincePaths" :key="`prov-${i}`" class="trm__province" :d="d" />
+    <!-- Regio's/provincies buiten NL (alleen met geo-namen, PDP-minimap). -->
+    <path v-for="(d, i) in regionPaths" :key="`reg-${i}`" class="trm__province" :d="d" />
     <path v-for="(d, i) in borderPaths" :key="`border-${i}`" class="trm__border" :d="d" />
     <text
       v-for="lbl in countryLabels"
       :key="`lbl-${lbl.id}`"
       class="trm__label"
+      :class="{ 'trm__label--name': geoNames }"
       :x="lbl.x"
       :y="lbl.y"
-    >{{ lbl.id }}</text>
+    >{{ geoNames ? (COUNTRY_NAMES[lbl.id] ?? lbl.id) : lbl.id }}</text>
+    <!-- Regionamen (PDP-minimap): West-Vlaanderen, Pas-de-Calais, Gelderland … -->
+    <text
+      v-for="lbl in regionLabels"
+      :key="`reg-lbl-${lbl.id}`"
+      class="trm__region"
+      :x="lbl.x"
+      :y="lbl.y"
+    >{{ lbl.name }}</text>
     <!-- Route: de echte rijroute per etappe (legs, met witte halo) of hemelsbreed. -->
     <template v-if="legPaths.length">
       <path v-for="(d, i) in legPaths" :key="`halo-${i}`" class="trm__route-halo" :d="d" />
@@ -43,10 +54,11 @@
       :text-anchor="m.labelAnchor"
       :style="{ fontSize: `${labelSize}px` }"
     >{{ stops[i]?.label }}</text>
-    <!-- Reistijd halverwege elke etappe (PDP-minimap). -->
-    <g v-for="lbl in legLabelPos" :key="`legl-${lbl.i}`" class="trm__leg" :transform="`translate(${lbl.x} ${lbl.y})`">
-      <rect :x="-lbl.w / 2" :y="-lbl.h / 2" :width="lbl.w" :height="lbl.h" :rx="lbl.h / 2" />
-      <text :style="{ fontSize: `${legLabelSize}px` }">{{ lbl.text }}</text>
+    <!-- Afstand/reistijd halverwege elke etappe (PDP-minimap): zwarte pil, of
+         `plain` = alleen zwarte tekst met witte rand, iets boven de lijn. -->
+    <g v-for="lbl in legLabelPos" :key="`legl-${lbl.i}`" class="trm__leg" :class="{ 'trm__leg--plain': legLabelStyle === 'plain' }" :transform="`translate(${lbl.x} ${lbl.y})`">
+      <rect v-if="legLabelStyle !== 'plain'" :x="-lbl.w / 2" :y="-lbl.h / 2" :width="lbl.w" :height="lbl.h" :rx="lbl.h / 2" />
+      <text :y="legLabelStyle === 'plain' ? -legLabelSize * 0.9 : 0" :style="{ fontSize: `${legLabelSize}px` }">{{ lbl.text }}</text>
     </g>
     <g
       v-for="(m, i) in markers"
@@ -65,7 +77,9 @@
       @blur="setHover(null)"
     >
       <circle :r="markerRadius" />
-      <text y="0.5" :style="{ fontSize: `${numberSize}px` }">{{ i + 1 }}</text>
+      <!-- Hotel-icoon (aangeleverde set, assets/icons/iconen/hotel) of het volgnummer. -->
+      <g v-if="markerIcon" class="trm__marker-icon" :transform="`translate(${-12 * iconScale} ${-12 * iconScale}) scale(${iconScale})`" v-html="HOTEL_GLYPH" />
+      <text v-else y="0.5" :style="{ fontSize: `${numberSize}px` }">{{ i + 1 }}</text>
     </g>
     <!-- Hover/focus: hotelnaam boven de marker. -->
     <g v-if="interactive && hover !== null && tip" class="trm__tip" :transform="`translate(${tip.x} ${tip.y})`">
@@ -108,6 +122,12 @@ const props = withDefaults(defineProps<{
   numberSize?: number
   labelSize?: number
   legLabelSize?: number
+  /** Volledige landnamen + regionamen i.p.v. landcodes (PDP-minimap). */
+  geoNames?: boolean
+  /** Hotel-icoon in de bol i.p.v. het volgnummer. */
+  markerIcon?: boolean
+  /** Etappelabel: zwarte pil of alleen tekst ("45 km") boven de lijn. */
+  legLabelStyle?: 'pill' | 'plain'
 }>(), {
   maxScale: 200,
   showLabels: false,
@@ -121,7 +141,22 @@ const props = withDefaults(defineProps<{
   numberSize: 11,
   labelSize: 9,
   legLabelSize: 11,
+  geoNames: false,
+  markerIcon: false,
+  legLabelStyle: 'pill',
 })
+
+/** Hotel-glyph uit de aangeleverde iconenset (24 × 24, lijnen), wit op de zwarte bol. */
+const HOTEL_GLYPH = '<path d="M10 22.0026V18H14V22.0026" stroke="#fff" stroke-width="2"/><path d="M5 4C5 2.89543 5.89543 2 7 2H17C18.1046 2 19 2.89543 19 4V15.5L21 16V22H3V16L5 15.5V4Z" stroke="#fff" stroke-width="2" fill="none"/><path d="M15 6H14M15 10H14M15 14H14M10 6H9M10 10H9M10 14H9" stroke="#fff" stroke-width="2" stroke-linecap="square"/>'
+const iconScale = computed(() => (props.markerRadius * 1.15) / 24)
+
+/** Nederlandse land- en regionamen voor de kaart (data: Natural Earth, Engels). */
+const COUNTRY_NAMES: Record<string, string> = { NL: 'Nederland', BE: 'België', FR: 'Frankrijk', DE: 'Duitsland', GB: 'Verenigd Koninkrijk', LU: 'Luxemburg' }
+const REGION_NAMES: Record<string, string> = {
+  'West Flanders': 'West-Vlaanderen', 'East Flanders': 'Oost-Vlaanderen', 'Antwerp': 'Antwerpen', 'Liege': 'Luik',
+  'Flemish Brabant': 'Vlaams-Brabant', 'Walloon Brabant': 'Waals-Brabant', 'Brussels': 'Brussel', 'Hainaut': 'Henegouwen',
+  'Namur': 'Namen', 'Luxembourg': 'Luxemburg', 'Nordrhein-Westfalen': 'Noordrijn-Westfalen', 'Niedersachsen': 'Nedersaksen',
+}
 
 const emit = defineEmits<{ 'stop-click': [index: number]; 'stop-hover': [index: number | null]; 'map-click': [] }>()
 
@@ -145,7 +180,7 @@ const H = props.height
 /** Deel van de breedte/hoogte dat rondom de stops vrij blijft. */
 const PAD = 0.24
 
-const data = shapes as unknown as { countries: Shape[]; provinces: Shape[]; lakes: Shape[]; borders?: Shape[] }
+const data = shapes as unknown as { countries: Shape[]; provinces: Shape[]; lakes: Shape[]; borders?: Shape[]; regions?: (Shape & { country?: string })[] }
 
 /** Equirectangular projectie rond de route: u = lng · cos(lat0), v = lat. */
 const frame = computed(() => {
@@ -210,6 +245,8 @@ function pathsOf(list: Shape[]): string[] {
 }
 
 const landPaths = computed(() => pathsOf(data.countries))
+/** Regiogrenzen buiten Nederland (NL tekent de nauwkeurigere cartomap-provincies). */
+const regionPaths = computed(() => props.geoNames ? pathsOf((data.regions ?? []).filter(r => r.country !== 'NLD')) : [])
 const lakePaths = computed(() => pathsOf(data.lakes))
 const provincePaths = computed(() => pathsOf(data.provinces))
 /** Landsgrenzen nog een keer als lijn bovenop de provincies, zodat de
@@ -266,13 +303,47 @@ const countryLabels = computed(() => {
         if (rings.some(r => inRing(lng, lat, r))) { sx += x; sy += y; n++ }
       }
     }
-    if (n / total < 0.1) continue
+    // Met volledige namen (PDP) volstaat een kleiner zichtbaar deel, zodat ook
+    // een buurland aan de rand (België) zijn naam krijgt.
+    if (n / total < (props.geoNames ? 0.04 : 0.1)) continue
     let x = sx / n, y = sy / n
     // Binnen de kaart houden en niet over een stop heen.
     x = Math.min(Math.max(x, 14), W - 14)
     y = Math.min(Math.max(y, 10), H - 10)
     if (stopPx.some(([px, py]) => Math.hypot(px - x, py - y) < 24)) y = y < H / 2 ? y - 18 : y + 18
     out.push({ id: c.id, x: Number(x.toFixed(1)), y: Number(y.toFixed(1)) })
+  }
+  return out
+})
+
+/** Regionamen (alleen met geo-namen): zwaartepunt van de zichtbare rasterpunten
+ *  in de regio, alleen als genoeg van de regio in beeld is en niet op een stop
+ *  of een ander label. */
+const regionLabels = computed(() => {
+  if (!props.geoNames) return [] as { id: string; name: string; x: number; y: number }[]
+  const out: { id: string; name: string; x: number; y: number }[] = []
+  const stopPx = props.stops.map(s => project(s.lng, s.lat))
+  const taken: [number, number][] = [...stopPx, ...countryLabels.value.map(l => [l.x, l.y] as [number, number])]
+  const { cos, k, uc, vc } = frame.value
+  const COLS = 20, ROWS = 15
+  for (const r of data.regions ?? []) {
+    const rings = r.rings.filter(ringInView)
+    if (!rings.length) continue
+    let sx = 0, sy = 0, n = 0
+    for (let i = 0; i < COLS; i++) {
+      for (let j = 0; j < ROWS; j++) {
+        const x = ((i + 0.5) / COLS) * W
+        const y = ((j + 0.5) / ROWS) * H
+        const lng = (uc + (x - W / 2) / k) / cos
+        const lat = vc - (y - H / 2) / k
+        if (rings.some(ring => inRing(lng, lat, ring))) { sx += x; sy += y; n++ }
+      }
+    }
+    if (n / (COLS * ROWS) < 0.05) continue
+    const x = Math.min(Math.max(sx / n, 30), W - 30), y = Math.min(Math.max(sy / n, 12), H - 12)
+    if (taken.some(([px, py]) => Math.hypot(px - x, py - y) < 34)) continue
+    taken.push([x, y])
+    out.push({ id: r.id, name: REGION_NAMES[r.id] ?? r.id, x: Number(x.toFixed(1)), y: Number(y.toFixed(1)) })
   }
   return out
 })
@@ -390,6 +461,18 @@ const ariaLabel = computed(() => `Route: ${props.stops.map((s, i) => `${i + 1}. 
   dominant-baseline: central;
   pointer-events: none;
 }
+/* Volledige landnamen (PDP-minimap). */
+.trm__label--name { font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; }
+/* Regionamen: klein, cursief, gedempt. */
+.trm__region {
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-style: italic;
+  fill: #8f8778;
+  text-anchor: middle;
+  dominant-baseline: central;
+  pointer-events: none;
+}
 .trm__route {
   fill: none;
   stroke: #141414;
@@ -418,6 +501,15 @@ const ariaLabel = computed(() => `Route: ${props.stops.map((s, i) => `${i + 1}. 
   text-anchor: middle;
   dominant-baseline: central;
 }
+/* Zonder pil: zwarte tekst met witte rand, boven de lijn. */
+.trm__leg--plain text {
+  fill: #141414;
+  stroke: #fff;
+  stroke-width: 3;
+  paint-order: stroke;
+  stroke-linejoin: round;
+}
+.trm__marker-icon { pointer-events: none; }
 /* Standaardstijl hotelmarkers: zwarte bol, oranje bij hover. */
 .trm__marker circle {
   fill: #141414;

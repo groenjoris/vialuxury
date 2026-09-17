@@ -14,21 +14,24 @@
         :height="300"
         :max-scale="700"
         :marker-radius="17"
-        :number-size="15"
-        :label-size="16"
+        :label-size="13"
         :leg-label-size="13"
         show-labels
+        geo-names
+        marker-icon
+        leg-label-style="plain"
         interactive
         @stop-click="$emit('stop-click', $event)"
       />
     </div>
     <div class="route-map__footer">
-      <span class="route-map__route">
-        <template v-for="(s, i) in stops" :key="`r-${i}`">
-          <span class="route-map__route-stop">{{ s.label }}</span>
-          <span v-if="i < stops.length - 1" class="route-map__route-arrow" aria-hidden="true">→</span>
-        </template>
-      </span>
+      <!-- Auto-icoon met de reissamenvatting: heenreis, totale route, totale rijtijd. -->
+      <div v-if="summaryLines.length" class="route-map__summary">
+        <img src="/icons/mht/car.svg" alt="" class="route-map__summary-icon" width="24" height="24" />
+        <div class="route-map__summary-lines">
+          <p v-for="(line, i) in summaryLines" :key="i" class="route-map__summary-line">{{ line }}</p>
+        </div>
+      </div>
       <button type="button" class="route-map__view-link" @click="$emit('open')">{{ t('common.viewMap') }}</button>
     </div>
   </div>
@@ -42,6 +45,8 @@ const props = defineProps<{
   stops: TripMapStop[]
   /** Rijroutes tussen de hotels (OSRM); zonder legs een rechte lijn. */
   legs?: TripRouteLeg[]
+  /** Regels onder de kaart (al vertaald): heenreis, totale route, totale rijtijd. */
+  summary?: (string | undefined)[]
 }>()
 
 defineEmits<{ open: []; 'stop-click': [index: number] }>()
@@ -49,8 +54,9 @@ defineEmits<{ open: []; 'stop-click': [index: number] }>()
 const { t } = useMultiHotelTripI18n()
 
 const svgStops = computed(() => props.stops.map(s => ({ lat: s.lat, lng: s.lng, label: s.label, title: s.title })))
-/** Alleen de reistijd op de etappe ("50 min"); de volledige tekst staat op de grote kaart. */
-const legLabels = computed(() => props.stops.map(s => s.travelShort))
+/** Alleen de afstand op de etappe ("45 km"); de volledige tekst staat op de grote kaart. */
+const legLabels = computed(() => props.stops.map(s => (s.travelKm ? `${s.travelKm} km` : undefined)))
+const summaryLines = computed(() => (props.summary ?? []).filter((l): l is string => !!l))
 </script>
 
 <style scoped>
@@ -74,23 +80,23 @@ const legLabels = computed(() => props.stops.map(s => s.travelShort))
 }
 .route-map__box:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
 .route-map__box :deep(.trm) { width: 100%; height: 100%; display: block; }
-/* Kaartje is smal: route en link onder elkaar, links uitgelijnd. */
+/* Onder de kaart: samenvatting en link onder elkaar, links uitgelijnd. */
 .route-map__footer {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 4px;
+  gap: 8px;
 }
-.route-map__route {
-  display: inline;
+.route-map__summary { display: flex; align-items: flex-start; gap: 10px; }
+.route-map__summary-icon { flex-shrink: 0; margin-top: 1px; }
+.route-map__summary-lines { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.route-map__summary-line {
+  margin: 0;
   font-family: var(--font-body);
   font-size: 13px;
+  line-height: 1.45;
   color: var(--color-text-secondary);
-  line-height: 1.4;
-  min-width: 0;
 }
-.route-map__route-stop { white-space: nowrap; }
-.route-map__route-arrow { margin: 0 4px; color: var(--color-text-muted, #9a958c); }
 .route-map__view-link {
   padding: 0;
   border: 0;

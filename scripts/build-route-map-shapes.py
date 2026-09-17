@@ -23,6 +23,9 @@ SOURCES = {
     'lakes': 'https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_50m_lakes.geojson',
     'provinces': 'https://cartomap.github.io/nl/wgs84/provincie_2023.geojson',
     'borders': 'https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_10m_admin_0_boundary_lines_land.geojson',
+    # Regio's/provincies (BE, FR, DE, GB, NL) voor de regionamen op de PDP-minimap.
+    # (de 50m-set bevat alleen deelstaten van grote landen; 10m heeft ook BE/FR/DE/NL)
+    'regions': 'https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_10m_admin_1_states_provinces.geojson',
 }
 
 def fetch(url):
@@ -129,10 +132,17 @@ def main():
     provinces = process(fetch(SOURCES['provinces'])['features'], lambda f: f['properties'].get('statnaam'), tol=0.006)
     lakes = process(fetch(SOURCES['lakes'])['features'], lambda f: f['properties'].get('name') or 'lake', tol=0.006)
     borders = process_lines(fetch(SOURCES['borders'])['features'], tol=0.004)
-    data = {'bbox': BBOX, 'countries': countries, 'provinces': provinces, 'lakes': lakes, 'borders': borders}
+    # Regio's: naam als id, landcode apart (voor NL tekenen we de cartomap-provincies;
+    # de NE-regio's dienen daar alleen voor de naam).
+    REGION_COUNTRIES = {'NLD', 'BEL', 'FRA', 'DEU', 'GBR', 'LUX'}
+    region_feats = [f for f in fetch(SOURCES['regions'])['features'] if f['properties'].get('adm0_a3') in REGION_COUNTRIES]
+    regions = process(region_feats, lambda f: f['properties'].get('name') or f['properties'].get('name_en'), tol=0.006)
+    by_name = {f['properties'].get('name') or f['properties'].get('name_en'): f['properties'].get('adm0_a3') for f in region_feats}
+    for r in regions: r['country'] = by_name.get(r['id'])
+    data = {'bbox': BBOX, 'countries': countries, 'provinces': provinces, 'lakes': lakes, 'borders': borders, 'regions': regions}
     with open(OUT, 'w') as fh:
         fh.write(json.dumps(data, separators=(',', ':')))
-    print('written', OUT, os.path.getsize(OUT), 'bytes;', 'lakes:', [l['id'] for l in lakes], 'border pieces:', sum(len(b['rings']) for b in borders))
+    print('written', OUT, os.path.getsize(OUT), 'bytes;', 'lakes:', [l['id'] for l in lakes], 'border pieces:', sum(len(b['rings']) for b in borders), 'regions:', [r['id'] for r in regions])
 
 if __name__ == '__main__':
     main()

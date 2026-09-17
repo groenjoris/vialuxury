@@ -77,6 +77,9 @@ interface TripSpec {
    *  in de PDP-gallery — de eerste vier staan dus bij landing in beeld; de
    *  hotelfoto's komen daarna (alleen in de foto-pop-up). */
   nearbyImages?: string[]
+  /** Heenreis vanaf huis (prototype: Utrecht) naar het eerste hotel — onder de
+   *  minimap: "Vanaf Utrecht: 3 uur naar Béthune". Schatting. */
+  fromHome?: { city: string; minutes: number }
 }
 
 const l = (nl: string, en: string): LocalizedString => ({ nl, en })
@@ -87,6 +90,7 @@ const TRIPS: TripSpec[] = [
     id: 'trip-noord-frankrijk',
     slug: 'ontdek-noord-frankrijk-en-de-opaalkust-in-7-dagen',
     coverImage: '/images/vakanties/cover/noord-frankrijk.jpg',
+    fromHome: { city: 'Utrecht', minutes: 180 },
     // Aangeleverd door Joris (vakanties voorbeeld content/<hotel>/nearby):
     // Nausicaá, Boulogne-sur-Mer, Béthune en Lille staan bij landing in beeld.
     nearbyImages: [
@@ -134,6 +138,7 @@ const TRIPS: TripSpec[] = [
     id: 'trip-hanzesteden',
     slug: '7-daagse-roadtrip-langs-de-hanzesteden-zwolle-deventer-zutphen',
     coverImage: '/images/vakanties/cover/hanzesteden.jpg',
+    fromHome: { city: 'Utrecht', minutes: 75 },
     type: 'auto',
     stops: [
       { name: 'Hotel Mooirivier', city: 'Dalfsen', region: 'Overijssel', nights: 2, stars: 4, lat: 52.5108, lng: 6.2589, image: '/images/vakanties/002/hotel-1.jpg', includes: [l('2 x overnachting', '2 nights'), l('Dagelijks ontbijtbuffet', 'Daily breakfast buffet'), l('3-gangendiner (dag van aankomst)', '3-course dinner (day of arrival)'), l('Gebruik van de wellness', 'Use of the wellness'), l('Gratis parkeren', 'Free parking')] },
@@ -170,6 +175,7 @@ const TRIPS: TripSpec[] = [
     id: 'trip-kastelen-landgoederen',
     slug: 'kastelen-en-landgoederen-7-daagse-autoroute',
     coverImage: '/images/vakanties/cover/kastelen-landgoederen.jpg',
+    fromHome: { city: 'Utrecht', minutes: 60 },
     type: 'auto',
     stops: [
       { name: 'Landgoed Groot Warnsborn', city: 'Arnhem', region: 'Gelderland', nights: 2, stars: 4, lat: 52.0247, lng: 5.8672, image: '/images/vakanties/003/hotel-1.jpg', includes: [l('2 x overnachting', '2 nights'), l('Kamerupgrade naar een luxe kamer', 'Room upgrade to a luxury room'), l('Dagelijks ontbijtbuffet', 'Daily breakfast buffet'), l('Culinair 3-gangendiner', 'Culinary 3-course dinner'), l('Welkomstdrankje met een lekkernij', 'Welcome drink with a treat'), l('Badjas en slippers', 'Bathrobe and slippers'), l('Late check-out tot 12:00 uur', 'Late check-out until 12:00'), l('Gratis parkeren', 'Free parking')] },
@@ -206,6 +212,7 @@ const TRIPS: TripSpec[] = [
     id: 'trip-zuid-limburg-luxe',
     slug: 'bourgondisch-zuid-limburg-luxe-en-wellness-7-daagse-autoroute',
     coverImage: '/images/vakanties/cover/zuid-limburg-luxe.jpg',
+    fromHome: { city: 'Utrecht', minutes: 105 },
     type: 'auto',
     stops: [
       { name: 'Hotel Merici', city: 'Sittard', region: 'Limburg', nights: 2, stars: 4, lat: 50.9994, lng: 5.8689, includes: [l('2 x overnachting', '2 nights'), l('Kamerupgrade naar luxer kamertype (o.b.v.b.)', 'Room upgrade (subject to availability)'), l('Dagelijks ontbijtbuffet', 'Daily breakfast buffet'), l("Culinair 3-gangendiner in Restaurant George's (dag van aankomst)", "Culinary 3-course dinner at Restaurant George's (day of arrival)"), l('VIP-pas voor Maasmechelen Village Outlet', 'VIP pass for Maasmechelen Village Outlet'), l('Late check-out tot 12:00 uur (o.b.v.b.)', 'Late check-out until 12:00 (subject to availability)')] },
@@ -243,6 +250,7 @@ const TRIPS: TripSpec[] = [
     id: 'trip-zuid-limburg',
     slug: 'bourgondisch-zuid-limburg-7-daagse-culinaire-autoroute',
     coverImage: '/images/vakanties/cover/zuid-limburg.jpg',
+    fromHome: { city: 'Utrecht', minutes: 105 },
     type: 'auto',
     stops: [
       { name: 'Hotel Merici', city: 'Sittard', region: 'Limburg', nights: 2, stars: 4, lat: 50.9994, lng: 5.8689, includes: [l('2 x overnachting', '2 nights'), l('Kamerupgrade naar luxer kamertype (o.b.v.b.)', 'Room upgrade (subject to availability)'), l('Dagelijks ontbijtbuffet', 'Daily breakfast buffet'), l("Culinair 3-gangendiner in Restaurant George's (dag van aankomst)", "Culinary 3-course dinner at Restaurant George's (day of arrival)"), l('VIP-pas voor Maasmechelen Village Outlet', 'VIP pass for Maasmechelen Village Outlet'), l('Late check-out tot 12:00 uur (o.b.v.b.)', 'Late check-out until 12:00 (subject to availability)')] },
@@ -279,6 +287,7 @@ const TRIPS: TripSpec[] = [
     id: 'trip-kustroute',
     slug: 'nederlandse-kustroute-6-daagse-autoroute',
     coverImage: '/images/vakanties/cover/kustroute.jpg',
+    fromHome: { city: 'Utrecht', minutes: 100 },
     type: 'auto',
     stops: [
       { name: 'Grand Hotel Ter Duin', city: 'Burgh-Haamstede', region: 'Zeeland', nights: 2, stars: 4, lat: 51.7058, lng: 3.7494, image: '/images/vakanties/006/hotel-1.jpg', includes: [l('2 x overnachting', '2 nights'), l('Dagelijks ontbijtbuffet', 'Daily breakfast buffet'), l('3-gangendiner (dag van aankomst)', '3-course dinner (day of arrival)'), l('Tasting uurtje 17:00–18:00 uur', 'Tasting hour 17:00–18:00'), l('Welkomstdrankje', 'Welcome drink'), l('Gebruik van zwembad', 'Use of the pool'), l('Gebruik van wellness & fitness', 'Use of wellness & fitness'), l('Late check-out tot 12:00 uur', 'Late check-out until 12:00')] },
@@ -314,6 +323,7 @@ const TRIPS: TripSpec[] = [
     id: 'trip-fietsvakantie-twente-salland',
     slug: 'fietsvakantie-twente-en-salland-delden-raalte-markelo',
     coverImage: '/images/vakanties/cover/fietsvakantie-twente-salland.jpg',
+    fromHome: { city: 'Utrecht', minutes: 90 },
     type: 'fiets',
     stops: [
       { name: 'Hotel Wapen van Delden', city: 'Delden', region: 'Twente', province: 'Overijssel', nights: 2, stars: 4, lat: 52.2622, lng: 6.7113, image: 'https://asset.vialuxury.com/assets/9f13962b-27bb-43f9-b875-bd7b63b04c98?key=photo-full', extraImages: ['https://asset.vialuxury.com/assets/de37ddd8-3265-455d-b733-b4b123879a08?key=photo-full', 'https://asset.vialuxury.com/assets/ead7f055-ea8d-4d7b-a45b-b508d83b3396?key=photo-full'], includes: [l('2 x overnachting', '2 nights'), l('Dagelijks uitgebreid ontbijtbuffet', 'Daily extensive breakfast buffet'), l('2 x 3-gangendiner', '2 x 3-course dinner'), l('Welkomstfietstasje met water, regenponcho en bandenplaksetje', 'Welcome cycling bag with water, rain poncho and repair kit'), l('ViaLuxury welkomstcadeau', 'ViaLuxury welcome gift'), l('Bagagetransport naar Raalte', 'Luggage transfer to Raalte'), l('Gratis parkeren (gehele vakantie)', 'Free parking (whole holiday)')] },
@@ -409,6 +419,8 @@ export interface MultiHotelTripDetail {
   coverImage?: string
   /** Extra omgevingsfoto's na de cover (sticker "Omgeving"); hotelfoto's volgen daarna. */
   nearbyImages?: string[]
+  /** Heenreis vanaf huis naar het eerste hotel (schatting). */
+  fromHome?: { city: string; minutes: number }
   reviewScore: number
   reviewCount: number
 }
@@ -518,6 +530,7 @@ function buildTrip(spec: TripSpec): { hotel: SearchHotel; detail: MultiHotelTrip
     routeImage: spec.routeImage,
     coverImage: spec.coverImage,
     nearbyImages: spec.nearbyImages,
+    fromHome: spec.fromHome,
     reviewScore: avgScore,
     reviewCount,
   }

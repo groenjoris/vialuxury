@@ -219,7 +219,7 @@
           <MultiHotelTripRouteMapCard
             v-if="isTrip"
             class="deal-page__minimap"
-            :stops="tripMapStops" :legs="tripRouteLegs"
+            :stops="tripMapStops" :legs="tripRouteLegs" :summary="tripMapSummary"
             @open="tripMapOpen = true"
             @stop-click="openTripHotel"
           />
@@ -442,7 +442,7 @@
             <MultiHotelTripRouteMapCard
               id="mini-map"
               class="deal-page__minimap deal-page__minimap--trip"
-              :stops="tripMapStops" :legs="tripRouteLegs"
+              :stops="tripMapStops" :legs="tripRouteLegs" :summary="tripMapSummary"
               @open="tripMapOpen = true"
               @stop-click="openTripHotel"
             />
@@ -470,7 +470,7 @@
               v-if="isTrip"
               id="mini-map"
               class="deal-page__minimap deal-page__minimap--trip"
-              :stops="tripMapStops" :legs="tripRouteLegs"
+              :stops="tripMapStops" :legs="tripRouteLegs" :summary="tripMapSummary"
               @open="tripMapOpen = true"
               @stop-click="openTripHotel"
             />
@@ -1499,6 +1499,20 @@ function tripTravelLabel(travel: { km: number; minutes: number } | undefined, i:
   if (trip?.type === 'fiets') return `${t('trip.distanceBike').replace('{km}', String(tr.km))} (${tripDurationLabel(tr.minutes)})`
   return tripDistanceLabel(tr)
 }
+/** Regels onder de minimap: heenreis vanaf huis, totale route en totale rijtijd
+ *  tussen de hotels (uit de reisdata, anders de berekende route). */
+const tripMapSummary = computed<(string | undefined)[]>(() => {
+  if (!trip) return []
+  const legs = tripRouteLegs.value
+  const km = trip.stops.reduce((sum, s, i) => sum + (s.travel?.km ?? legs.find(l => l.to === i)?.km ?? 0), 0)
+  const min = trip.stops.reduce((sum, s, i) => sum + (s.travel?.minutes ?? legs.find(l => l.to === i)?.minutes ?? 0), 0)
+  const first = trip.stops[0]
+  return [
+    trip.fromHome && first ? t('trip.fromHomeLine').replace('{city}', trip.fromHome.city).replace('{duration}', tripDurationLabel(trip.fromHome.minutes)).replace('{to}', first.city) : undefined,
+    km ? t('trip.totalRouteLine').replace('{km}', String(km)) : undefined,
+    min ? t('trip.totalDriveLine').replace('{duration}', tripDurationLabel(min)) : undefined,
+  ]
+})
 /** Compacte reistijd voor de minimap: "50 min", "1 uur", "2 u 30 min". */
 function tripTravelShort(travel: { km: number; minutes: number } | undefined, i: number): string | undefined {
   const minutes = travel?.minutes ?? tripRouteLegs.value.find(l => l.to === i)?.minutes
@@ -2573,11 +2587,15 @@ onMounted(() => {
 /* Vakantie: "Het volgende is inbegrepen" — rijen over de volle breedte, gescheiden
    door een hairline: de hotels met een foto links, de overige punten met een
    icoontegel (zoals de highlights), rechts titel + korte tekst. */
-.trip-incl { margin-bottom: var(--space-xl); }
+.trip-incl {
+  margin-bottom: 40px;
+  padding-bottom: 40px;
+  border-bottom: 1px solid var(--color-border-light);
+}
 .trip-incl__grid { display: flex; flex-direction: column; }
 .trip-incl__item {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: var(--space-md);
   padding: var(--space-md) 0;
   border-bottom: 1px solid var(--color-border-light);

@@ -261,6 +261,10 @@ const nl: Record<string, string> = {
   // Multi Hotel Trip — dagprogramma + hotel-pop-up op de vakantie-PDP
   'trip.itineraryHeading': 'Voorbeeld reisschema',
   'trip.includedHeading': 'Het volgende is inbegrepen',
+  // Onder de minimap
+  'trip.fromHomeLine': 'Vanaf {city}: {duration} naar {to}',
+  'trip.totalRouteLine': 'Totale route tussen hotels: {km} km',
+  'trip.totalDriveLine': 'Totale rijtijd: ca. {duration}',
   'trip.itineraryIntro': 'Zo ziet je vakantie eruit: een voorbeeldprogramma, je bepaalt zelf het tempo.',
   'trip.moreAboutHotel': 'Meer over dit hotel',
   'trip.moreAboutHotelNamed': 'Meer over hotel {hotel}',
