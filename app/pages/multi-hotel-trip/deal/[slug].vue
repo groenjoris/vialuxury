@@ -194,7 +194,7 @@
 
         <!-- 8. Description + Lees meer -->
         <section id="intro" class="container deal-page__description-mobile">
-          <h2 class="section-title">{{ t('deal.descriptionHeading') }}</h2>
+          <h2 class="section-title">{{ isTrip ? tripIntroTitle : t('deal.descriptionHeading') }}</h2>
           <div class="deal-page__description">
             <div v-html="firstParagraph"></div>
             <button v-if="hasMoreDescription" type="button" class="deal-page__read-more" @click="descriptionOpen = true">{{ t('common.readMore') }}</button>
@@ -457,6 +457,8 @@
             />
           </div>
           <div class="deal-page__intro-desc">
+            <!-- Kop boven de beschrijving: "7-daagse reis met eigen vervoer in Noord-Frankrijk". -->
+            <h2 class="section-title deal-page__intro-title">{{ tripIntroTitle }}</h2>
             <!-- De eerste twee alinea's; "Lees meer" opent de pop-up met de hele tekst. -->
             <div class="deal-page__intro-desc-text" v-html="firstTwoParagraphs"></div>
             <button v-if="hasMoreDescription" type="button" class="deal-page__read-more" @click="descriptionOpen = true">{{ t('common.readMore') }}</button>
@@ -1458,6 +1460,13 @@ const dealRoomsLeft = computed<number | null>(() =>
 )
 
 // ── Multi Hotel Trip: vakantie-specifieke weergave ──
+/** Kop boven de beschrijving: eigen titel uit de content, anders "{n}-daagse reis met eigen vervoer". */
+const tripIntroTitle = computed(() => {
+  if (!trip) return ''
+  const own = tripPdp?.content?.introTitle
+  if (own) return localized(own)
+  return t(trip.type === 'fiets' ? 'trip.introTitleBike' : 'trip.introTitleAuto').replace('{days}', String(trip.nights + 1))
+})
 /** Kop van het inclusieblok: "In deze autovakantie voor 2 personen is het volgende inbegrepen". */
 const tripIncludedHeading = computed(() => {
   const type = t(trip?.type === 'fiets' ? 'trip.fiets' : 'trip.auto')
@@ -2194,6 +2203,7 @@ onMounted(() => {
   margin-left: var(--space-xl);
 }
 .deal-page__intro-row .deal-page__intro-desc { display: flow-root; }
+.deal-page__intro-title { margin-bottom: var(--space-md); }
 /* Beschrijving: de eerste twee alinea's, dan "Lees meer". */
 .deal-page__intro-row .deal-page__intro-desc-text {
   font-size: 15px;

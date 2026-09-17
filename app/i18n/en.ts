@@ -256,6 +256,8 @@ const en: Record<string, string> = {
   'trip.routeLabel': 'Route',
   // Multi Hotel Trip — dagprogramma + hotel-pop-up op de vakantie-PDP
   'trip.itineraryHeading': 'Sample itinerary',
+  'trip.introTitleAuto': '{days}-day trip by car',
+  'trip.introTitleBike': '{days}-day cycling trip',
   'trip.includedHeading': 'This {type} for 2 people includes',
   'trip.fromHomeLine': 'Travel time from {city} to {to}: approx. {duration}',
   'trip.totalRouteLine': 'Total route between hotels: {km} km',

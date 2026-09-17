@@ -252,6 +252,8 @@ const de: Record<string, string> = {
   'trip.routeLabel': 'Route',
   // Multi Hotel Trip — dagprogramma + hotel-pop-up op de vakantie-PDP
   'trip.itineraryHeading': 'Beispiel-Reiseplan',
+  'trip.introTitleAuto': '{days}-tägige Reise mit eigenem Auto',
+  'trip.introTitleBike': '{days}-tägige Radreise',
   'trip.includedHeading': 'Bei dieser {type} für 2 Personen ist Folgendes inbegriffen',
   'trip.fromHomeLine': 'Fahrzeit von {city} nach {to}: ca. {duration}',
   'trip.totalRouteLine': 'Gesamtstrecke zwischen den Hotels: {km} km',

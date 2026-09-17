@@ -68,6 +68,9 @@ export interface TripMapHighlight {
 }
 
 export interface TripItinerarySpec {
+  /** Kop boven de beschrijving ("7-daagse reis met eigen vervoer in Noord-Frankrijk");
+   *  zonder eigen titel het sjabloon `trip.introTitleAuto/Bike`. */
+  introTitle?: LocalizedString
   /** "Het volgende is inbegrepen" — rijen over de volle breedte boven het
    *  reisschema: de hotels met een foto (`image`), de overige punten met een
    *  icoon (`icon`, /icons/facilities/…). */
@@ -131,6 +134,7 @@ export const TRIP_ITINERARIES: Record<string, TripItinerarySpec> = {
         room: { name: l('Chambre Charme', 'Chambre Charme'), description: l('Een sfeervolle kamer in het kasteel of een van de bijgebouwen rond de tuin, met klassiek meubilair, een comfortabel bed en zicht op het landgoed. Rustig gelegen, op een steenworp van de serre en de spa.', "A charming room in the château or one of the outbuildings around the garden, with classic furniture, a comfortable bed and views of the estate. Quietly located, a stone's throw from the conservatory and the spa."), image: '/images/vakanties/001/clery-6.jpg' },
       },
     },
+    introTitle: l('7-daagse reis met eigen vervoer in Noord-Frankrijk', '7-day trip by car in Northern France'),
     included: [
       { title: l('2 overnachtingen in Hotel Royal Beaulaincourt', '2 nights at Hotel Royal Beaulaincourt'),
         text: l('Twee nachten in het 18e-eeuwse herenhuis in het hart van Béthune, in een Privilege Room.', 'Two nights in the 18th-century mansion in the heart of Béthune, in a Privilege Room.'),
