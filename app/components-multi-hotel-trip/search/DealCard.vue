@@ -40,6 +40,9 @@
              bolletje, "2 nachten", met tussen de stops een gestreepte lijn en een
              rijdende auto (fiets bij de fietsvakantie). Hover op een stop → foto/naam van dat hotel. -->
         <div v-else class="deal-card-v2__trip-timeline" :style="{ '--tl-icon': `url(/icons/mht/${tripTransportIcon}.svg)` }">
+          <!-- Doorlopende stippellijn van de eerste tot de laatste stip; stippen en
+               vervoersiconen liggen erbovenop. -->
+          <span class="trip-tl__track" aria-hidden="true"></span>
           <template v-for="(s, i) in tripTimelineStops" :key="`tl-${i}`">
             <div
               class="trip-tl__stop"
@@ -52,9 +55,7 @@
               <span class="trip-tl__nights">{{ s.nights }}</span>
             </div>
             <div v-if="i < tripTimelineStops.length - 1" class="trip-tl__leg" aria-hidden="true">
-              <span class="trip-tl__dash"></span>
-              <span class="trip-tl__icon"></span>
-              <span class="trip-tl__dash"></span>
+              <span class="trip-tl__icon-wrap"><span class="trip-tl__icon"></span></span>
             </div>
           </template>
         </div>
@@ -1114,6 +1115,8 @@ const includesBullets = computed<string[]>(() => {
   pointer-events: none;
 }
 .trip-tl__stop {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1122,11 +1125,22 @@ const includesBullets = computed<string[]>(() => {
   pointer-events: auto;
   cursor: default;
 }
+/* De lijn loopt op de hoogte van de stippen: de kolommen staan gecentreerd in het
+   contentvak van de strook (padding 48 boven, 12 onder), de stippen in het midden
+   van de kolom; 20 px = padding 14 + halve stip. */
+.trip-tl__track {
+  position: absolute;
+  left: 20px;
+  right: 20px;
+  top: calc(48px + (100% - 60px) / 2 - 1px);
+  border-top: 2px dashed rgba(255, 255, 255, 0.85);
+  pointer-events: none;
+}
 .trip-tl__stop--first { align-items: flex-start; }
 .trip-tl__stop--last { align-items: flex-end; }
 .trip-tl__city {
   font-family: var(--font-body);
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 700;
   line-height: 1.1;
   white-space: nowrap;
@@ -1144,28 +1158,34 @@ const includesBullets = computed<string[]>(() => {
 .trip-tl__stop--hover .trip-tl__dot { background: var(--color-primary, #ff7e00); }
 .trip-tl__nights {
   font-family: var(--font-body);
-  font-size: 15px;
+  font-size: 14px;
   line-height: 1.2;
   white-space: nowrap;
   color: rgba(255, 255, 255, 0.92);
   text-shadow: 0 1px 6px rgba(0, 0, 0, 0.5);
 }
 .trip-tl__leg {
+  position: relative;
+  z-index: 1;
   flex: 1;
   display: flex;
   align-items: center;
-  gap: 6px;
-  margin: 0 8px;
+  justify-content: center;
 }
-.trip-tl__dash { flex: 1; border-top: 2px dashed rgba(255, 255, 255, 0.85); }
+/* Donker rondje achter het icoon zodat het zich aftekent tegen de stippellijn. */
+.trip-tl__icon-wrap {
+  display: inline-flex;
+  padding: 3px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.45);
+}
 .trip-tl__icon {
-  width: 26px;
-  height: 26px;
+  width: 24px;
+  height: 24px;
   flex-shrink: 0;
   background: #fff;
   -webkit-mask: var(--tl-icon) center / contain no-repeat;
   mask: var(--tl-icon) center / contain no-repeat;
-  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4));
 }
 /* Hover-caption boven in de foto (de tijdlijn zit onderin), rechts van de kortingsbadge. */
 .deal-card-v2__image--trip-timeline .deal-card-v2__trip-caption {
