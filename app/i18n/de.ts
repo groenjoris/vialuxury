@@ -253,7 +253,7 @@ const de: Record<string, string> = {
   // Multi Hotel Trip — dagprogramma + hotel-pop-up op de vakantie-PDP
   'trip.itineraryHeading': 'Beispiel-Reiseplan',
   'trip.includedHeading': 'Das ist inbegriffen',
-  'trip.fromHomeLine': 'Ab {city}: {duration} nach {to}',
+  'trip.fromHomeLine': 'Fahrzeit von {city} nach {to}: ca. {duration}',
   'trip.totalRouteLine': 'Gesamtstrecke zwischen den Hotels: {km} km',
   'trip.totalDriveLine': 'Gesamtfahrzeit: ca. {duration}',
   'trip.itineraryIntro': 'So sieht Ihr Urlaub aus: ein Beispielprogramm, das Tempo bestimmen Sie.',

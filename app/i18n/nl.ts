@@ -262,7 +262,7 @@ const nl: Record<string, string> = {
   'trip.itineraryHeading': 'Voorbeeld reisschema',
   'trip.includedHeading': 'Het volgende is inbegrepen',
   // Onder de minimap
-  'trip.fromHomeLine': 'Vanaf {city}: {duration} naar {to}',
+  'trip.fromHomeLine': 'Reistijd van {city} naar {to}: ca. {duration}',
   'trip.totalRouteLine': 'Totale route tussen hotels: {km} km',
   'trip.totalDriveLine': 'Totale rijtijd: ca. {duration}',
   'trip.itineraryIntro': 'Zo ziet je vakantie eruit: een voorbeeldprogramma, je bepaalt zelf het tempo.',

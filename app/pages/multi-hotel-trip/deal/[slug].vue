@@ -1501,16 +1501,16 @@ function tripTravelLabel(travel: { km: number; minutes: number } | undefined, i:
 }
 /** Regels onder de minimap: heenreis vanaf huis, totale route en totale rijtijd
  *  tussen de hotels (uit de reisdata, anders de berekende route). */
-const tripMapSummary = computed<(string | undefined)[]>(() => {
+const tripMapSummary = computed<({ icon: 'car' | 'route' | 'clock'; text: string } | undefined)[]>(() => {
   if (!trip) return []
   const legs = tripRouteLegs.value
   const km = trip.stops.reduce((sum, s, i) => sum + (s.travel?.km ?? legs.find(l => l.to === i)?.km ?? 0), 0)
   const min = trip.stops.reduce((sum, s, i) => sum + (s.travel?.minutes ?? legs.find(l => l.to === i)?.minutes ?? 0), 0)
   const first = trip.stops[0]
   return [
-    trip.fromHome && first ? t('trip.fromHomeLine').replace('{city}', trip.fromHome.city).replace('{duration}', tripDurationLabel(trip.fromHome.minutes)).replace('{to}', first.city) : undefined,
-    km ? t('trip.totalRouteLine').replace('{km}', String(km)) : undefined,
-    min ? t('trip.totalDriveLine').replace('{duration}', tripDurationLabel(min)) : undefined,
+    trip.fromHome && first ? { icon: 'car' as const, text: t('trip.fromHomeLine').replace('{city}', trip.fromHome.city).replace('{duration}', tripDurationLabel(trip.fromHome.minutes)).replace('{to}', first.city) } : undefined,
+    km ? { icon: 'route' as const, text: t('trip.totalRouteLine').replace('{km}', String(km)) } : undefined,
+    min ? { icon: 'clock' as const, text: t('trip.totalDriveLine').replace('{duration}', tripDurationLabel(min)) } : undefined,
   ]
 })
 /** Compacte reistijd voor de minimap: "50 min", "1 uur", "2 u 30 min". */

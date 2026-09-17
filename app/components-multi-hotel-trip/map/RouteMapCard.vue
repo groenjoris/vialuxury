@@ -25,13 +25,14 @@
       />
     </div>
     <div class="route-map__footer">
-      <!-- Auto-icoon met de reissamenvatting: heenreis, totale route, totale rijtijd. -->
-      <div v-if="summaryLines.length" class="route-map__summary">
-        <img src="/icons/mht/car.svg" alt="" class="route-map__summary-icon" width="24" height="24" />
-        <div class="route-map__summary-lines">
-          <p v-for="(line, i) in summaryLines" :key="i" class="route-map__summary-line">{{ line }}</p>
-        </div>
-      </div>
+      <!-- Reissamenvatting, elke regel met een eigen icoon uit de core-iconenset:
+           auto (heenreis), pijlen (totale route), klok (totale rijtijd). -->
+      <ul v-if="summaryLines.length" class="route-map__summary">
+        <li v-for="(line, i) in summaryLines" :key="i" class="route-map__summary-line">
+          <img :src="`/icons/mht/${line.icon}.svg`" alt="" class="route-map__summary-icon" width="22" height="22" />
+          <span>{{ line.text }}</span>
+        </li>
+      </ul>
       <button type="button" class="route-map__view-link" @click="$emit('open')">{{ t('common.viewMap') }}</button>
     </div>
   </div>
@@ -45,8 +46,8 @@ const props = defineProps<{
   stops: TripMapStop[]
   /** Rijroutes tussen de hotels (OSRM); zonder legs een rechte lijn. */
   legs?: TripRouteLeg[]
-  /** Regels onder de kaart (al vertaald): heenreis, totale route, totale rijtijd. */
-  summary?: (string | undefined)[]
+  /** Regels onder de kaart (al vertaald) met icoon: heenreis (car), totale route (route), rijtijd (clock). */
+  summary?: ({ icon: 'car' | 'route' | 'clock'; text: string } | undefined)[]
 }>()
 
 defineEmits<{ open: []; 'stop-click': [index: number] }>()
@@ -56,7 +57,7 @@ const { t } = useMultiHotelTripI18n()
 const svgStops = computed(() => props.stops.map(s => ({ lat: s.lat, lng: s.lng, label: s.label, title: s.title })))
 /** Alleen de afstand op de etappe ("45 km"); de volledige tekst staat op de grote kaart. */
 const legLabels = computed(() => props.stops.map(s => (s.travelKm ? `${s.travelKm} km` : undefined)))
-const summaryLines = computed(() => (props.summary ?? []).filter((l): l is string => !!l))
+const summaryLines = computed(() => (props.summary ?? []).filter((l): l is { icon: 'car' | 'route' | 'clock'; text: string } => !!l))
 </script>
 
 <style scoped>
@@ -87,16 +88,18 @@ const summaryLines = computed(() => (props.summary ?? []).filter((l): l is strin
   align-items: flex-start;
   gap: 8px;
 }
-.route-map__summary { display: flex; align-items: flex-start; gap: 10px; }
-.route-map__summary-icon { flex-shrink: 0; margin-top: 1px; }
-.route-map__summary-lines { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+/* Zelfde letter als de beschrijving (15 px / 1.75), per regel een icoon. */
+.route-map__summary { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
 .route-map__summary-line {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
   margin: 0;
-  font-family: var(--font-body);
-  font-size: 13px;
-  line-height: 1.45;
+  font-size: 15px;
+  line-height: 1.75;
   color: var(--color-text-secondary);
 }
+.route-map__summary-icon { flex-shrink: 0; margin-top: 2px; }
 .route-map__view-link {
   padding: 0;
   border: 0;
