@@ -68,6 +68,9 @@ export interface TripMapHighlight {
 }
 
 export interface TripItinerarySpec {
+  /** "Het volgende is inbegrepen" — compacte blokken (thumb, titel, korte
+   *  tekst; twee per rij) boven het reisschema. */
+  included?: { title: LocalizedString; text: LocalizedString; image?: string }[]
   /** Alinea's; de eerste is de teaser op de pagina. */
   description: LocalizedString[]
   highlights: LocalizedString[]
@@ -127,6 +130,32 @@ export const TRIP_ITINERARIES: Record<string, TripItinerarySpec> = {
         room: { name: l('Chambre Charme', 'Chambre Charme'), description: l('Een sfeervolle kamer in het kasteel of een van de bijgebouwen rond de tuin, met klassiek meubilair, een comfortabel bed en zicht op het landgoed. Rustig gelegen, op een steenworp van de serre en de spa.', "A charming room in the château or one of the outbuildings around the garden, with classic furniture, a comfortable bed and views of the estate. Quietly located, a stone's throw from the conservatory and the spa."), image: '/images/vakanties/001/clery-6.jpg' },
       },
     },
+    included: [
+      { title: l('2 overnachtingen in Hotel Royal Beaulaincourt', '2 nights at Hotel Royal Beaulaincourt'),
+        text: l('Twee nachten in het 18e-eeuwse herenhuis in het hart van Béthune, in een Privilege Room.', 'Two nights in the 18th-century mansion in the heart of Béthune, in a Privilege Room.'),
+        image: '/images/vakanties/001/beaulaincourt-1.jpg' },
+      { title: l('2 overnachtingen in Hôtel Château Tilques', '2 nights at Hôtel Château Tilques'),
+        text: l('Twee nachten in het kasteel in een park van vier hectare bij Saint-Omer, in een Chambre Charme.', 'Two nights in the château in a four-hectare park near Saint-Omer, in a Chambre Charme.'),
+        image: '/images/vakanties/001/tilques-1.jpg' },
+      { title: l('2 overnachtingen in Hôtel Château Cléry', '2 nights at Hôtel Château Cléry'),
+        text: l('Twee nachten op het landgoed bij Hesdin-l\'Abbé, op tien minuten van de Opaalkust.', 'Two nights on the estate near Hesdin-l\'Abbé, ten minutes from the Opal Coast.'),
+        image: '/images/vakanties/001/clery-1.jpg' },
+      { title: l('6 dagen ontbijt', '6 days of breakfast'),
+        text: l('Elke ochtend een uitgebreid ontbijtbuffet in het hotel waar je die nacht slaapt.', 'An extensive breakfast buffet every morning at the hotel where you spent the night.'),
+        image: '/images/vakanties/001/tilques-5.jpg' },
+      { title: l('3 x een 3-gangendiner', '3 x a 3-course dinner'),
+        text: l('In elk hotel op de dag van aankomst: \'s avonds hoef je nergens meer heen.', 'At each hotel on the day of arrival: no need to go anywhere in the evening.'),
+        image: '/images/vakanties/001/clery-4.jpg' },
+      { title: l('Welkomstbubbels in Hotel Royal Beaulaincourt', 'Welcome bubbles at Hotel Royal Beaulaincourt'),
+        text: l('Een glas bubbels bij aankomst op dag 1, om de vakantie mee te openen.', 'A glass of bubbles on arrival on day 1 to open the holiday.'),
+        image: '/images/vakanties/001/beaulaincourt-4.jpg' },
+      { title: l('Late check-out bij alle hotels', 'Late check-out at all hotels'),
+        text: l('Rustig ontbijten en op je gemak vertrekken; in Béthune zelfs tot 15:00 uur.', 'A leisurely breakfast and an unhurried departure; in Béthune even until 15:00.'),
+        image: '/images/vakanties/001/clery-6.jpg' },
+      { title: l('Gratis parkeren bij alle hotels', 'Free parking at all hotels'),
+        text: l('Bij alle drie de hotels staat je auto gratis geparkeerd, klaar voor de volgende etappe.', 'Free parking at all three hotels, ready for the next leg.'),
+        image: '/images/vakanties/001/clery-3.jpg' },
+    ],
     days: [
       // Redactie: elk blok 2–3 zinnen, het dagprogramma leest als één reis.
       // Hotelinfo zit achter "Meer over hotel …", achtergrond achter "Meer over …".

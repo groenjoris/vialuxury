@@ -238,7 +238,19 @@
         <section id="arrangement" class="container deal-page__content-blocks deal-page__content-blocks--mobile">
           <!-- Vakantie: dagprogramma (per dag 2–3 blokken, foto boven tekst). -->
           <template v-if="isTrip">
-            <p v-if="tripCancelLine" class="deal-page__cancel-line"><span class="deal-page__cancel-check" aria-hidden="true"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10"><path d="M3 13L8 19L21 5"/></svg></span>{{ tripCancelLine }}</p>
+            <!-- Vakantie: "Het volgende is inbegrepen" — compacte inclusieblokken (thumb, titel, tekst). -->
+            <section v-if="tripIncluded.length" class="trip-incl">
+            <h2 class="section-title">{{ t('trip.includedHeading') }}</h2>
+            <div class="trip-incl__grid">
+              <article v-for="b in tripIncluded" :key="b.title" class="trip-incl__item">
+              <div v-if="b.image" class="trip-incl__thumb"><img :src="b.image" :alt="b.title" loading="lazy" /></div>
+              <div class="trip-incl__body">
+                <h3 class="trip-incl__title"><span class="trip-incl__check" aria-hidden="true"><svg class="icon-check" viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10"><path d="M3 13L8 19L21 5"/></svg></span><MultiHotelTripHotelText :text="b.title" :hotels="tripHotelLinks" @open-hotel="openTripHotel" /></h3>
+                <p class="trip-incl__text">{{ b.text }}</p>
+              </div>
+              </article>
+            </div>
+            </section>
             <h2 class="section-title">{{ t('trip.itineraryHeading') }}</h2>
             <p class="deal-page__itinerary-intro">{{ t('trip.itineraryIntro') }}</p>
             <MultiHotelTripItinerary :days="tripDaysView" :hotels="tripHotelLinks" stacked @open-hotel="openTripHotel" />
@@ -488,7 +500,19 @@
           <section id="arrangement" class="deal-page__content-blocks">
             <!-- Vakantie: dagprogramma — per dag 2–3 blokken, foto links, tekst rechts. -->
             <template v-if="isTrip">
-              <p v-if="tripCancelLine" class="deal-page__cancel-line"><span class="deal-page__cancel-check" aria-hidden="true"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10"><path d="M3 13L8 19L21 5"/></svg></span>{{ tripCancelLine }}</p>
+              <!-- Vakantie: "Het volgende is inbegrepen" — compacte inclusieblokken (thumb, titel, tekst). -->
+              <section v-if="tripIncluded.length" class="trip-incl">
+              <h2 class="section-title">{{ t('trip.includedHeading') }}</h2>
+              <div class="trip-incl__grid">
+                <article v-for="b in tripIncluded" :key="b.title" class="trip-incl__item">
+                  <div v-if="b.image" class="trip-incl__thumb"><img :src="b.image" :alt="b.title" loading="lazy" /></div>
+                  <div class="trip-incl__body">
+                    <h3 class="trip-incl__title"><span class="trip-incl__check" aria-hidden="true"><svg class="icon-check" viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10"><path d="M3 13L8 19L21 5"/></svg></span><MultiHotelTripHotelText :text="b.title" :hotels="tripHotelLinks" @open-hotel="openTripHotel" /></h3>
+                    <p class="trip-incl__text">{{ b.text }}</p>
+                  </div>
+                </article>
+              </div>
+            </section>
               <h2 class="section-title">{{ t('trip.itineraryHeading') }}</h2>
               <p class="deal-page__itinerary-intro">{{ t('trip.itineraryIntro') }}</p>
               <MultiHotelTripItinerary :days="tripDaysView" :hotels="tripHotelLinks" @open-hotel="openTripHotel" />
@@ -1417,16 +1441,10 @@ const dealRoomsLeft = computed<number | null>(() =>
 // ── Multi Hotel Trip: vakantie-specifieke weergave ──
 /** "Hotel Royal Beaulaincourt → Hôtel Château Tilques → Hôtel Château Cléry" op de plek van de hotelnaam. */
 const tripHotelsLabel = computed(() => trip ? trip.stops.map(s => s.hotelName).join(' → ') : '')
-/** Onder de highlights, boven het reisschema: gratis annuleren tot 30 dagen voor vertrek —
- *  met gekozen aankomstdatum de concrete datum; ligt die grens al achter ons, dan geen regel. */
-const tripCancelLine = computed(() => {
-  if (!isTrip) return ''
-  const arrival = store.checkInDate
-  if (!arrival) return t('trip.freeCancelLine')
-  const deadline = dayjs(arrival).subtract(30, 'day')
-  if (deadline.isBefore(dayjs().startOf('day'))) return ''
-  return t('trip.freeCancelLineDate').replace('{date}', formatDateLong(deadline.format('YYYY-MM-DD')))
-})
+/** "Het volgende is inbegrepen": compacte blokken uit de redactionele inhoud (mht-trip-itineraries.ts). */
+const tripIncluded = computed(() =>
+  (tripPdp?.content?.included ?? []).map(b => ({ title: localized(b.title), text: localized(b.text), image: b.image })),
+)
 /** "Béthune · Tilques · Hesdin-l'Abbé" — zelfde notatie als de dealcard. */
 const tripCitiesLabel = computed(() => trip ? trip.stops.map(s => s.city).join(' · ') : '')
 /** Hotelnaam-sticker per gallery-foto. */
@@ -2550,17 +2568,36 @@ onMounted(() => {
 /* ===== FACILITIES ===== */
 /* Vakantie: hotelnamen met pijltjes mogen over meer regels lopen. */
 .deal-page__hotel-subtitle--trip { white-space: normal; line-height: 1.4; }
-/* Vakantie: "Gratis annuleren tot …" boven het reisschema. */
-.deal-page__cancel-line {
+/* Vakantie: "Het volgende is inbegrepen" — compacte versie van de inclusieblokken
+   (content-block) van de arrangementpagina's: thumb links, titel + korte tekst rechts,
+   twee per rij. */
+.trip-incl { margin-bottom: var(--space-xl); }
+.trip-incl__grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md) var(--space-lg); }
+.trip-incl__item {
   display: flex;
-  align-items: center;
-  gap: 8px;
-  margin: 0 0 var(--space-lg);
-  font-family: var(--font-body);
-  font-size: 15px;
-  color: var(--color-text-primary);
+  align-items: flex-start;
+  gap: var(--space-md);
+  padding: var(--space-md);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
 }
-.deal-page__cancel-check { display: inline-flex; color: var(--color-discount, #27C88D); font-size: 18px; }
+.trip-incl__thumb {
+  width: 112px;
+  aspect-ratio: 4 / 3;
+  flex-shrink: 0;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: var(--color-background-secondary);
+}
+.trip-incl__thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.trip-incl__body { min-width: 0; }
+.trip-incl__title { display: flex; align-items: flex-start; gap: 8px; margin: 0 0 4px; font-size: 15px; font-weight: 600; line-height: 1.35; color: var(--color-text-primary); }
+.trip-incl__check { color: var(--color-discount); display: inline-flex; flex-shrink: 0; margin-top: 2px; }
+.trip-incl__text { margin: 0; font-size: 14px; line-height: 1.55; color: var(--color-text-secondary); }
+@media (max-width: 800px) {
+  .trip-incl__grid { grid-template-columns: 1fr; }
+}
 .deal-page__facilities { padding: var(--space-xl) var(--space-lg); position: relative; }
 .facilities__grid {
   display: grid;
