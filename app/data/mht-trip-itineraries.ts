@@ -68,9 +68,10 @@ export interface TripMapHighlight {
 }
 
 export interface TripItinerarySpec {
-  /** "Het volgende is inbegrepen" — compacte blokken (thumb, titel, korte
-   *  tekst; twee per rij) boven het reisschema. */
-  included?: { title: LocalizedString; text: LocalizedString; image?: string }[]
+  /** "Het volgende is inbegrepen" — rijen over de volle breedte boven het
+   *  reisschema: de hotels met een foto (`image`), de overige punten met een
+   *  icoon (`icon`, /icons/facilities/…). */
+  included?: { title: LocalizedString; text: LocalizedString; image?: string; icon?: string }[]
   /** Alinea's; de eerste is de teaser op de pagina. */
   description: LocalizedString[]
   highlights: LocalizedString[]
@@ -142,19 +143,19 @@ export const TRIP_ITINERARIES: Record<string, TripItinerarySpec> = {
         image: '/images/vakanties/001/clery-1.jpg' },
       { title: l('6 dagen ontbijt', '6 days of breakfast'),
         text: l('Elke ochtend een uitgebreid ontbijtbuffet in het hotel waar je die nacht slaapt.', 'An extensive breakfast buffet every morning at the hotel where you spent the night.'),
-        image: '/images/vakanties/001/tilques-5.jpg' },
+        icon: '/icons/facilities/restaurant.svg' },
       { title: l('3 x een 3-gangendiner', '3 x a 3-course dinner'),
         text: l('In elk hotel op de dag van aankomst: \'s avonds hoef je nergens meer heen.', 'At each hotel on the day of arrival: no need to go anywhere in the evening.'),
-        image: '/images/vakanties/001/clery-4.jpg' },
+        icon: '/icons/facilities/restaurant.svg' },
       { title: l('Welkomstbubbels in Hotel Royal Beaulaincourt', 'Welcome bubbles at Hotel Royal Beaulaincourt'),
         text: l('Een glas bubbels bij aankomst op dag 1, om de vakantie mee te openen.', 'A glass of bubbles on arrival on day 1 to open the holiday.'),
-        image: '/images/vakanties/001/beaulaincourt-4.jpg' },
+        icon: '/icons/facilities/bar.svg' },
       { title: l('Late check-out bij alle hotels', 'Late check-out at all hotels'),
         text: l('Rustig ontbijten en op je gemak vertrekken; in Béthune zelfs tot 15:00 uur.', 'A leisurely breakfast and an unhurried departure; in Béthune even until 15:00.'),
-        image: '/images/vakanties/001/clery-6.jpg' },
+        icon: '/icons/facilities/service.svg' },
       { title: l('Gratis parkeren bij alle hotels', 'Free parking at all hotels'),
         text: l('Bij alle drie de hotels staat je auto gratis geparkeerd, klaar voor de volgende etappe.', 'Free parking at all three hotels, ready for the next leg.'),
-        image: '/images/vakanties/001/clery-3.jpg' },
+        icon: '/icons/facilities/parking.svg' },
     ],
     days: [
       // Redactie: elk blok 2–3 zinnen, het dagprogramma leest als één reis.

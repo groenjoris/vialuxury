@@ -244,6 +244,7 @@
             <div class="trip-incl__grid">
               <article v-for="b in tripIncluded" :key="b.title" class="trip-incl__item">
               <div v-if="b.image" class="trip-incl__thumb"><img :src="b.image" :alt="b.title" loading="lazy" /></div>
+                  <span v-else class="trip-incl__icon" aria-hidden="true"><img :src="b.icon || '/icons/facilities/special.svg'" alt="" width="22" height="22" /></span>
               <div class="trip-incl__body">
                 <h3 class="trip-incl__title"><span class="trip-incl__check" aria-hidden="true"><svg class="icon-check" viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10"><path d="M3 13L8 19L21 5"/></svg></span><MultiHotelTripHotelText :text="b.title" :hotels="tripHotelLinks" @open-hotel="openTripHotel" /></h3>
                 <p class="trip-incl__text">{{ b.text }}</p>
@@ -506,6 +507,7 @@
               <div class="trip-incl__grid">
                 <article v-for="b in tripIncluded" :key="b.title" class="trip-incl__item">
                   <div v-if="b.image" class="trip-incl__thumb"><img :src="b.image" :alt="b.title" loading="lazy" /></div>
+                  <span v-else class="trip-incl__icon" aria-hidden="true"><img :src="b.icon || '/icons/facilities/special.svg'" alt="" width="22" height="22" /></span>
                   <div class="trip-incl__body">
                     <h3 class="trip-incl__title"><span class="trip-incl__check" aria-hidden="true"><svg class="icon-check" viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10"><path d="M3 13L8 19L21 5"/></svg></span><MultiHotelTripHotelText :text="b.title" :hotels="tripHotelLinks" @open-hotel="openTripHotel" /></h3>
                     <p class="trip-incl__text">{{ b.text }}</p>
@@ -1443,7 +1445,7 @@ const dealRoomsLeft = computed<number | null>(() =>
 const tripHotelsLabel = computed(() => trip ? trip.stops.map(s => s.hotelName).join(' → ') : '')
 /** "Het volgende is inbegrepen": compacte blokken uit de redactionele inhoud (mht-trip-itineraries.ts). */
 const tripIncluded = computed(() =>
-  (tripPdp?.content?.included ?? []).map(b => ({ title: localized(b.title), text: localized(b.text), image: b.image })),
+  (tripPdp?.content?.included ?? []).map(b => ({ title: localized(b.title), text: localized(b.text), image: b.image, icon: b.icon })),
 )
 /** "Béthune · Tilques · Hesdin-l'Abbé" — zelfde notatie als de dealcard. */
 const tripCitiesLabel = computed(() => trip ? trip.stops.map(s => s.city).join(' · ') : '')
@@ -2568,35 +2570,46 @@ onMounted(() => {
 /* ===== FACILITIES ===== */
 /* Vakantie: hotelnamen met pijltjes mogen over meer regels lopen. */
 .deal-page__hotel-subtitle--trip { white-space: normal; line-height: 1.4; }
-/* Vakantie: "Het volgende is inbegrepen" — compacte versie van de inclusieblokken
-   (content-block) van de arrangementpagina's: thumb links, titel + korte tekst rechts,
-   twee per rij. */
+/* Vakantie: "Het volgende is inbegrepen" — rijen over de volle breedte, gescheiden
+   door een hairline: de hotels met een foto links, de overige punten met een
+   icoontegel (zoals de highlights), rechts titel + korte tekst. */
 .trip-incl { margin-bottom: var(--space-xl); }
-.trip-incl__grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md) var(--space-lg); }
+.trip-incl__grid { display: flex; flex-direction: column; }
 .trip-incl__item {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: var(--space-md);
-  padding: var(--space-md);
-  border: 1px solid var(--color-border-light);
-  border-radius: var(--radius-lg);
-  background: var(--color-surface);
+  padding: var(--space-md) 0;
+  border-bottom: 1px solid var(--color-border-light);
 }
+.trip-incl__item:last-child { border-bottom: 0; }
 .trip-incl__thumb {
-  width: 112px;
-  aspect-ratio: 4 / 3;
+  width: 120px;
+  aspect-ratio: 3 / 2;
   flex-shrink: 0;
   border-radius: var(--radius-sm);
   overflow: hidden;
   background: var(--color-background-secondary);
 }
 .trip-incl__thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.trip-incl__icon {
+  width: 40px;
+  height: 40px;
+  margin: 0 40px;
+  border-radius: 6px;
+  background: var(--color-background-secondary, #FBFAF8);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
 .trip-incl__body { min-width: 0; }
-.trip-incl__title { display: flex; align-items: flex-start; gap: 8px; margin: 0 0 4px; font-size: 15px; font-weight: 600; line-height: 1.35; color: var(--color-text-primary); }
+.trip-incl__title { display: flex; align-items: flex-start; gap: 8px; margin: 0 0 2px; font-size: 15px; font-weight: 600; line-height: 1.35; color: var(--color-text-primary); }
 .trip-incl__check { color: var(--color-discount); display: inline-flex; flex-shrink: 0; margin-top: 2px; }
 .trip-incl__text { margin: 0; font-size: 14px; line-height: 1.55; color: var(--color-text-secondary); }
 @media (max-width: 800px) {
-  .trip-incl__grid { grid-template-columns: 1fr; }
+  .trip-incl__thumb { width: 96px; }
+  .trip-incl__icon { margin: 0 28px; }
 }
 .deal-page__facilities { padding: var(--space-xl) var(--space-lg); position: relative; }
 .facilities__grid {
