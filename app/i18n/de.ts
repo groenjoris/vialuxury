@@ -569,7 +569,7 @@ const de: Record<string, string> = {
   'deal.refreshing': 'Verfügbarkeit wird aktualisiert...',
   'sidebar.arrangementFor': 'Arrangement für',
   'sidebar.arrangementFullTitle': 'In diesem Arrangement für 2 Personen ist Folgendes inbegriffen:',
-  'sidebar.holidayFullTitle': 'In diesem Urlaub für 2 Personen ist Folgendes inbegriffen:',
+  'sidebar.holidayFullTitle': 'Bei dieser {type} für 2 Personen ist Folgendes inbegriffen',
   'sidebar.viewDetails': 'Details ansehen',
   'sidebar.forArrival': 'Für Ankunftsdatum',
   'sidebar.clear': 'löschen',

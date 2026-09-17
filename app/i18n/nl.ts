@@ -570,7 +570,7 @@ const nl: Record<string, string> = {
 
   'sidebar.arrangementFor': 'Arrangement voor',
   'sidebar.arrangementFullTitle': 'In dit arrangement voor 2 personen is het volgende inbegrepen:',
-  'sidebar.holidayFullTitle': 'In deze vakantie voor 2 personen is het volgende inbegrepen:',
+  'sidebar.holidayFullTitle': 'In deze {type} voor 2 personen is het volgende inbegrepen',
   'sidebar.viewDetails': 'Bekijk details',
   'sidebar.forArrival': 'Voor aankomstdatum',
   'sidebar.clear': 'wissen',

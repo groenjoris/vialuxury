@@ -267,42 +267,6 @@
 [data-mht-variant="6"] .desc-modal__body p {
   margin: 0 0 var(--space-md);
 }
-/* Multi Hotel Trip: in de linkerkolom één foto per hotel (reisvolgorde),
-   gestapeld over de volle hoogte, met de hotelnaam als sticker linksboven
-   (zelfde sticker als in de foto-pop-up). */
-[data-mht-variant="6"] .desc-modal__photo--trip {
-  display: grid;
-  grid-auto-rows: 1fr;
-  gap: 4px;
-  background: #fff;
-}
-[data-mht-variant="6"] .desc-modal__trip-photo {
-  position: relative;
-  margin: 0;
-  min-height: 0;
-  overflow: hidden;
-  background: #f5f5f5;
-}
-[data-mht-variant="6"] .desc-modal__sticker {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  z-index: 2;
-  max-width: calc(100% - 20px);
-  padding: 4px 8px;
-  border-radius: 6px;
-  background: rgba(255, 255, 255, 0.94);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
-  color: var(--color-text-primary, #141414);
-  font-family: var(--font-body);
-  font-size: 12px;
-  font-weight: 600;
-  line-height: 1.2;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  pointer-events: none;
-}
 
 /* Mobile: plain vertical scroll — only the header is sticky; the photo AND
    the text scroll together underneath it. (Drop the desktop grid; a grid with
@@ -350,10 +314,6 @@
     overflow: visible;
     padding: var(--space-lg);
   }
-  /* Vakantie: de drie hotelfoto's onder elkaar in vaste verhouding. */
-  [data-mht-variant="6"] .desc-modal__photo--trip { display: grid; grid-auto-rows: auto; }
-  [data-mht-variant="6"] .desc-modal__trip-photo { aspect-ratio: 3 / 2; }
-  [data-mht-variant="6"] .desc-modal__trip-photo img { height: 100%; object-fit: cover; }
 }
 
 /* ─── Arrival-date sidebar block (v6 only) ───

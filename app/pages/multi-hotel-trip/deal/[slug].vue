@@ -91,7 +91,7 @@
         <section class="deal-page__sidebar-mobile container">
           <div class="deal-page__col-right deal-page__col-right--mobile">
             <!-- Inclusions -->
-            <h3 class="sidebar__title">{{ isTrip ? t('sidebar.holidayFullTitle') : t('sidebar.arrangementFullTitle') }}</h3>
+            <h3 class="sidebar__title">{{ isTrip ? tripSidebarTitle : t('sidebar.arrangementFullTitle') }}</h3>
             <ul class="sidebar__inc-list">
               <li v-for="inc in currentDeal.inclusions" :key="inc.id">
                 <span class="sidebar__inc-check"><svg class="icon-check" viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10" style="vertical-align:-0.125em"><path d="M3 13L8 19L21 5"/></svg></span>
@@ -457,8 +457,8 @@
             />
           </div>
           <div class="deal-page__intro-desc">
-            <!-- Volledige beschrijving, afgekapt naast de minimap; "Lees meer" opent de pop-up. -->
-            <div class="deal-page__intro-desc-text" v-html="fullDescription"></div>
+            <!-- De eerste twee alinea's; "Lees meer" opent de pop-up met de hele tekst. -->
+            <div class="deal-page__intro-desc-text" v-html="firstTwoParagraphs"></div>
             <button v-if="hasMoreDescription" type="button" class="deal-page__read-more" @click="descriptionOpen = true">{{ t('common.readMore') }}</button>
           </div>
         </section>
@@ -507,7 +507,7 @@
           </section>
 
           <!-- Content blocks: What's included -->
-          <section id="arrangement" class="deal-page__content-blocks">
+          <section id="arrangement" class="deal-page__content-blocks" :class="{ 'deal-page__content-blocks--trip': isTrip }">
             <!-- Vakantie: dagprogramma — per dag 2–3 blokken, foto links, tekst rechts. -->
             <template v-if="isTrip">
               <!-- Vakantie: "Het volgende is inbegrepen" — compacte inclusieblokken (thumb, titel, tekst). -->
@@ -632,7 +632,7 @@
         <div class="deal-page__col-right">
           <!-- Inclusions -->
           <h3 class="sidebar__title">
-            {{ isTrip ? t('sidebar.holidayFullTitle') : t('sidebar.arrangementFullTitle') }}
+            {{ isTrip ? tripSidebarTitle : t('sidebar.arrangementFullTitle') }}
           </h3>
           <ul class="sidebar__inc-list">
             <li v-for="inc in currentDeal.inclusions" :key="inc.id">
@@ -1040,15 +1040,9 @@
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12" /></svg>
               </button>
             </div>
-            <!-- Vakantie: links één foto per hotel (reisvolgorde) met de hotelnaam als sticker. -->
-            <div v-if="isTrip && tripDescPhotos.length" class="desc-modal__photo desc-modal__photo--trip">
-              <figure v-for="p in tripDescPhotos" :key="p.url" class="desc-modal__trip-photo">
-                <img :src="p.url" :alt="p.name" />
-                <figcaption class="desc-modal__sticker">{{ p.name }}</figcaption>
-              </figure>
-            </div>
-            <div v-else-if="hotel.images && hotel.images.length" class="desc-modal__photo">
-              <img :src="hotel.images[0].url" :alt="hotel.name" />
+            <!-- Vakantie: de tweede gallery-foto (omgeving, geen hotel); anders de eerste foto. -->
+            <div v-if="hotel.images && hotel.images.length" class="desc-modal__photo">
+              <img :src="(isTrip && hotel.images[1] ? hotel.images[1] : hotel.images[0]).url" :alt="hotel.name" />
             </div>
             <div class="desc-modal__body" v-html="fullDescription"></div>
           </div>
@@ -1324,6 +1318,11 @@ const firstParagraph = computed(() => {
   return m ? m[0] : html.split(/\n\n+/)[0]
 })
 const hasMoreDescription = computed(() => fullDescription.value.length > firstParagraph.value.length + 4)
+/** Vakantie-intro: de eerste twee alinea's (de pop-up toont alles). */
+const firstTwoParagraphs = computed(() => {
+  const ps = fullDescription.value.match(/<p[^>]*>[\s\S]*?<\/p>/gi)
+  return ps ? ps.slice(0, 2).join('') : firstParagraph.value
+})
 
 // Watch for search bar changes → fake refresh
 const { searchVersion } = useMultiHotelTripSearchState()
@@ -1459,6 +1458,11 @@ const dealRoomsLeft = computed<number | null>(() =>
 )
 
 // ── Multi Hotel Trip: vakantie-specifieke weergave ──
+/** "In deze autovakantie voor 2 personen is het volgende inbegrepen" (zijbalk). */
+const tripSidebarTitle = computed(() => {
+  const type = t(trip?.type === 'fiets' ? 'trip.fiets' : 'trip.auto')
+  return t('sidebar.holidayFullTitle').replace('{type}', type.charAt(0).toLowerCase() + type.slice(1))
+})
 /** "Hotel Royal Beaulaincourt → Hôtel Château Tilques → Hôtel Château Cléry" op de plek van de hotelnaam. */
 const tripHotelsLabel = computed(() => trip ? trip.stops.map(s => s.hotelName).join(' → ') : '')
 /** "Het volgende is inbegrepen": compacte blokken uit de redactionele inhoud (mht-trip-itineraries.ts). */
@@ -1497,10 +1501,6 @@ const tripMapStops = computed(() =>
 )
 /** "2 nachten" per hotel voor het hover-kaartje op de fullscreen kaart. */
 const tripMapNightsLabels = computed(() => (trip?.stops ?? []).map(s => nightsLabel(s.nights, lang.value)))
-/** "Lees meer"-pop-up: links één foto per hotel, in reisvolgorde, met de hotelnaam als sticker. */
-const tripDescPhotos = computed(() =>
-  (trip?.stops ?? []).filter(s => !!s.image).map(s => ({ url: s.image as string, name: s.hotelName })),
-)
 /** Hotelnamen → klikbaar in dagprogramma en zijbalk (TripHotelText). */
 const tripHotelLinks = computed(() => (trip?.stops ?? []).map((s, i) => ({ name: s.hotelName, stopIndex: i })))
 /** "een half uur" / "drie kwartier" / "1 uur 20 min" — reistijd in woorden. */
@@ -2194,16 +2194,11 @@ onMounted(() => {
   margin-left: var(--space-xl);
 }
 .deal-page__intro-row .deal-page__intro-desc { display: flow-root; }
-/* Beschrijving vult de hoogte naast de minimap (4:3 + routeregel), dan "Lees meer";
-   het masker verzacht de afkapping onderaan. */
+/* Beschrijving: de eerste twee alinea's, dan "Lees meer". */
 .deal-page__intro-row .deal-page__intro-desc-text {
-  max-height: 300px;
-  overflow: hidden;
   font-size: 15px;
   line-height: 1.75;
   color: var(--color-text-secondary);
-  -webkit-mask-image: linear-gradient(180deg, #141414 80%, transparent);
-  mask-image: linear-gradient(180deg, #141414 80%, transparent);
 }
 .deal-page__intro-row .deal-page__intro-desc-text :deep(p) { margin: 0 0 var(--space-md); }
 .deal-page__intro-row .deal-page__read-more { margin-top: 6px; }
@@ -2624,6 +2619,10 @@ onMounted(() => {
 /* ===== FACILITIES ===== */
 /* Vakantie: hotelnamen met pijltjes mogen over meer regels lopen. */
 .deal-page__hotel-subtitle--trip { white-space: normal; line-height: 1.4; }
+/* Vakantie: het inclusieblok mag omhoog — geen streep/padding boven de content-blocks
+   en de ruimte van het grid eraf, zodat het direct onder de beschrijving/minimap begint
+   (het hoeft niet uit te lijnen met de zijbalk). */
+.deal-page__content-blocks--trip { padding-top: 0; border-top: 0; margin-top: calc(-1 * var(--space-lg)); }
 /* Vakantie: "Het volgende is inbegrepen" — rijen over de volle breedte, gescheiden
    door een hairline: de hotels met een foto links, de overige punten met een
    icoontegel (zoals de highlights), rechts titel + korte tekst. */
