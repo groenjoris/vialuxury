@@ -37,9 +37,6 @@
           <div class="itin-block__body">
             <h4 class="itin-block__title">
               <MultiHotelTripHotelText :text="block.title" :hotels="hotels" @open-hotel="$emit('open-hotel', $event)" />
-              <span v-if="block.starRating" class="itin-block__stars" aria-hidden="true">
-                <span v-for="n in block.starRating" :key="n" class="itin-block__star"><svg viewBox="0 0 18 18" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M16.963,6.786c-.088-.271-.323-.469-.605-.51l-4.62-.671L9.672,1.418c-.252-.512-1.093-.512-1.345,0l-2.066,4.186-4.62,.671c-.282,.041-.517,.239-.605,.51-.088,.271-.015,.57,.19,.769l3.343,3.258-.79,4.601c-.048,.282,.067,.566,.298,.734,.231,.167,.538,.189,.79,.057l4.132-2.173,4.132,2.173c.11,.058,.229,.086,.349,.086,.155,0,.31-.048,.441-.143,.231-.168,.347-.452,.298-.734l-.79-4.601,3.343-3.258c.205-.199,.278-.498,.19-.769Z"/></svg></span>
-              </span>
             </h4>
             <p v-if="block.meta" class="itin-block__meta">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -48,18 +45,11 @@
               {{ block.meta }}
             </p>
             <p class="itin-block__text">{{ block.text }}</p>
-            <!-- Links onder de tekst: "Meer over hotel <naam>" bij elk blok waar een
-                 hotel in voorkomt (→ hotel-sidepanel) en/of "Meer over …" (→ info-pop-up
-                 met de achtergrond die niet in het korte blok past). -->
-            <div v-if="block.stopIndex != null || block.more" class="itin-block__links">
+            <!-- "Meer over …" (→ info-pop-up met de achtergrond die niet in het korte
+                 blok past). Hotelinfo zit achter de hotelnaam in de kop (sidepanel) en
+                 achter "Lees meer" in het inclusieblok, niet meer als aparte link hier. -->
+            <div v-if="block.more" class="itin-block__links">
               <button
-                v-if="block.stopIndex != null"
-                type="button"
-                class="itin-block__link"
-                @click="$emit('open-hotel', block.stopIndex)"
-              >{{ moreAboutLabel(block) }}</button>
-              <button
-                v-if="block.more"
                 type="button"
                 class="itin-block__link"
                 @click="info = block.more"
@@ -160,14 +150,6 @@ const props = withDefaults(defineProps<{
 
 defineEmits<{ 'open-hotel': [stopIndex: number] }>()
 
-/** "Meer over hotel Kasteel Engelenburg"; begint de naam al met Hotel/Hôtel,
- *  dan zonder het extra woord: "Meer over Hotel Royal Beaulaincourt". */
-function moreAboutLabel(block: TripBlockView): string {
-  const name = block.hotelName ?? props.hotels.find(h => h.stopIndex === block.stopIndex)?.name
-  if (!name) return t('trip.moreAboutHotel')
-  const key = /^h[oô]tel\b/i.test(name) ? 'trip.moreAbout' : 'trip.moreAboutHotelNamed'
-  return t(key).replace('{hotel}', name)
-}
 
 const { t } = useMultiHotelTripI18n()
 
@@ -286,8 +268,6 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   line-height: 1.3;
   color: var(--color-text-primary);
 }
-.itin-block__stars { display: inline-flex; align-items: center; gap: 1px; }
-.itin-block__star { font-size: 15px; line-height: 1; color: #141414; display: inline-flex; }
 .itin-block__meta {
   display: flex;
   align-items: center;

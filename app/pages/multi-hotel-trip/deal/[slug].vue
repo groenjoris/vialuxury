@@ -246,8 +246,17 @@
               <div v-if="b.image" class="trip-incl__thumb"><img :src="b.image" :alt="b.title" loading="lazy" /></div>
                   <span v-else class="trip-incl__icon" aria-hidden="true"><img :src="b.icon || '/icons/facilities/special.svg'" alt="" width="22" height="22" /></span>
               <div class="trip-incl__body">
-                <h3 class="trip-incl__title"><span class="trip-incl__check" aria-hidden="true"><svg class="icon-check" viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10"><path d="M3 13L8 19L21 5"/></svg></span><MultiHotelTripHotelText :text="b.title" :hotels="tripHotelLinks" @open-hotel="openTripHotel" /></h3>
+                <h3 class="trip-incl__title">
+                  <span class="trip-incl__check" aria-hidden="true"><svg class="icon-check" viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10"><path d="M3 13L8 19L21 5"/></svg></span>
+                  <span class="trip-incl__title-text">
+                    <MultiHotelTripHotelText :text="b.title" :hotels="tripHotelLinks" @open-hotel="openTripHotel" />
+                    <!-- Hotel: sterren achter de naam -->
+                    <span v-if="b.starRating" class="trip-incl__stars" aria-hidden="true"><span v-for="n in b.starRating" :key="n" class="trip-incl__star"><svg viewBox="0 0 18 18" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M16.963,6.786c-.088-.271-.323-.469-.605-.51l-4.62-.671L9.672,1.418c-.252-.512-1.093-.512-1.345,0l-2.066,4.186-4.62,.671c-.282,.041-.517,.239-.605,.51-.088,.271-.015,.57,.19,.769l3.343,3.258-.79,4.601c-.048,.282,.067,.566,.298,.734,.231,.167,.538,.189,.79,.057l4.132-2.173,4.132,2.173c.11,.058,.229,.086,.349,.086,.155,0,.31-.048,.441-.143,.231-.168,.347-.452,.298-.734l-.79-4.601,3.343-3.258c.205-.199,.278-.498,.19-.769Z"/></svg></span></span>
+                  </span>
+                </h3>
                 <p class="trip-incl__text">{{ b.text }}</p>
+                <!-- Hotel: "Lees meer" opent het hotel-sidepanel -->
+                <button v-if="b.stopIndex != null" type="button" class="trip-incl__more" @click="openTripHotel(b.stopIndex)">{{ t('common.readMore') }}</button>
               </div>
               </article>
             </div>
@@ -509,8 +518,17 @@
                   <div v-if="b.image" class="trip-incl__thumb"><img :src="b.image" :alt="b.title" loading="lazy" /></div>
                   <span v-else class="trip-incl__icon" aria-hidden="true"><img :src="b.icon || '/icons/facilities/special.svg'" alt="" width="22" height="22" /></span>
                   <div class="trip-incl__body">
-                    <h3 class="trip-incl__title"><span class="trip-incl__check" aria-hidden="true"><svg class="icon-check" viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10"><path d="M3 13L8 19L21 5"/></svg></span><MultiHotelTripHotelText :text="b.title" :hotels="tripHotelLinks" @open-hotel="openTripHotel" /></h3>
+                    <h3 class="trip-incl__title">
+                      <span class="trip-incl__check" aria-hidden="true"><svg class="icon-check" viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10"><path d="M3 13L8 19L21 5"/></svg></span>
+                      <span class="trip-incl__title-text">
+                        <MultiHotelTripHotelText :text="b.title" :hotels="tripHotelLinks" @open-hotel="openTripHotel" />
+                        <!-- Hotel: sterren achter de naam -->
+                        <span v-if="b.starRating" class="trip-incl__stars" aria-hidden="true"><span v-for="n in b.starRating" :key="n" class="trip-incl__star"><svg viewBox="0 0 18 18" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M16.963,6.786c-.088-.271-.323-.469-.605-.51l-4.62-.671L9.672,1.418c-.252-.512-1.093-.512-1.345,0l-2.066,4.186-4.62,.671c-.282,.041-.517,.239-.605,.51-.088,.271-.015,.57,.19,.769l3.343,3.258-.79,4.601c-.048,.282,.067,.566,.298,.734,.231,.167,.538,.189,.79,.057l4.132-2.173,4.132,2.173c.11,.058,.229,.086,.349,.086,.155,0,.31-.048,.441-.143,.231-.168,.347-.452,.298-.734l-.79-4.601,3.343-3.258c.205-.199,.278-.498,.19-.769Z"/></svg></span></span>
+                      </span>
+                    </h3>
                     <p class="trip-incl__text">{{ b.text }}</p>
+                    <!-- Hotel: "Lees meer" opent het hotel-sidepanel -->
+                    <button v-if="b.stopIndex != null" type="button" class="trip-incl__more" @click="openTripHotel(b.stopIndex)">{{ t('common.readMore') }}</button>
                   </div>
                 </article>
               </div>
@@ -1445,7 +1463,16 @@ const dealRoomsLeft = computed<number | null>(() =>
 const tripHotelsLabel = computed(() => trip ? trip.stops.map(s => s.hotelName).join(' → ') : '')
 /** "Het volgende is inbegrepen": compacte blokken uit de redactionele inhoud (mht-trip-itineraries.ts). */
 const tripIncluded = computed(() =>
-  (tripPdp?.content?.included ?? []).map(b => ({ title: localized(b.title), text: localized(b.text), image: b.image, icon: b.icon })),
+  (tripPdp?.content?.included ?? []).map((b) => {
+    const title = localized(b.title)
+    // Hotelpunt (de overnachtingen): het hotel waarvan de naam in de titel staat →
+    // sterren + "Lees meer" (sidepanel). Andere punten die een hotel noemen
+    // (welkomstbubbels) krijgen dat niet.
+    const isStay = /overnachting|night/i.test(title)
+    const stopIndex = isStay ? (trip?.stops ?? []).findIndex(st => title.includes(st.hotelName)) : -1
+    const stop = stopIndex >= 0 ? trip?.stops[stopIndex] : undefined
+    return { title, text: localized(b.text), image: b.image, icon: b.icon, stopIndex: stopIndex >= 0 ? stopIndex : undefined, starRating: stop?.starRating }
+  }),
 )
 /** "Béthune · Tilques · Hesdin-l'Abbé" — zelfde notatie als de dealcard. */
 const tripCitiesLabel = computed(() => trip ? trip.stops.map(s => s.city).join(' · ') : '')
@@ -2637,7 +2664,26 @@ onMounted(() => {
 .trip-incl__body { min-width: 0; }
 .trip-incl__title { display: flex; align-items: flex-start; gap: 8px; margin: 0 0 2px; font-size: 15px; font-weight: 600; line-height: 1.35; color: var(--color-text-primary); }
 .trip-incl__check { color: var(--color-discount); display: inline-flex; flex-shrink: 0; margin-top: 2px; }
+.trip-incl__title-text { display: inline; }
+.trip-incl__stars { display: inline-flex; align-items: center; gap: 1px; margin-left: 6px; vertical-align: -1px; }
+.trip-incl__star { display: inline-flex; font-size: 13px; line-height: 1; color: #141414; }
 .trip-incl__text { margin: 0; font-size: 14px; line-height: 1.55; color: var(--color-text-secondary); }
+/* "Lees meer" onder de tekst van een hotelpunt → hotel-sidepanel. */
+.trip-incl__more {
+  display: inline-block;
+  margin-top: 6px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-primary);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.trip-incl__more:hover { color: var(--color-primary-hover); }
 @media (max-width: 800px) {
   .trip-incl__thumb { width: 96px; }
   .trip-incl__icon { margin: 0 28px; }
