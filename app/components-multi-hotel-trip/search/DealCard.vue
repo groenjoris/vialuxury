@@ -12,7 +12,7 @@
     <!-- Image area (top in grid, left in list). Grid mode renders a small
          carousel (up to 5 hotel photos) with prev/next arrows that fade
          in on hover. List mode keeps the single static image. -->
-    <div class="deal-card-v2__image" :class="{ 'deal-card-v2__image--trip-overlay': tripOverlay }">
+    <div class="deal-card-v2__image" :class="{ 'deal-card-v2__image--trip-overlay': tripOverlay, 'deal-card-v2__image--trip-timeline': tripTimeline }">
       <!-- Anti rage-click: the whole photo opens the deal page. Sits ABOVE the
            image (z-index 1) but BELOW the carousel arrows (z-index 2) and the
            favourite heart (z-index 3) so those still work. -->
@@ -35,7 +35,29 @@
             <span v-for="n in tripHoverStop.starRating" :key="n"><svg viewBox="0 0 18 18" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M16.963,6.786c-.088-.271-.323-.469-.605-.51l-4.62-.671L9.672,1.418c-.252-.512-1.093-.512-1.345,0l-2.066,4.186-4.62,.671c-.282,.041-.517,.239-.605,.51-.088,.271-.015,.57,.19,.769l3.343,3.258-.79,4.601c-.048,.282,.067,.566,.298,.734,.231,.167,.538,.189,.79,.057l4.132-2.173,4.132,2.173c.11,.058,.229,.086,.349,.086,.155,0,.31-.048,.441-.143,.231-.168,.347-.452,.298-.734l-.79-4.601,3.343-3.258c.205-.199,.278-.498,.19-.769Z"/></svg></span>
           </span>
         </div>
-        <MultiHotelTripRouteMap class="deal-card-v2__trip-map" :stops="tripMapStops" :overlay="tripOverlay" hoverable @stop-hover="tripHoverIndex = $event" />
+        <MultiHotelTripRouteMap v-if="!tripTimeline" class="deal-card-v2__trip-map" :stops="tripMapStops" :overlay="tripOverlay" hoverable @stop-hover="tripHoverIndex = $event" />
+        <!-- Variant "tijdlijn": onderaan de foto een schematische route — plaatsnaam,
+             bolletje, "2 nachten", met tussen de stops een gestreepte lijn en een
+             rijdende auto (fiets bij de fietsvakantie). Hover op een stop → foto/naam van dat hotel. -->
+        <div v-else class="deal-card-v2__trip-timeline" :style="{ '--tl-icon': `url(/icons/mht/${tripTransportIcon}.svg)` }">
+          <template v-for="(s, i) in tripTimelineStops" :key="`tl-${i}`">
+            <div
+              class="trip-tl__stop"
+              :class="{ 'trip-tl__stop--first': i === 0, 'trip-tl__stop--last': i === tripTimelineStops.length - 1, 'trip-tl__stop--hover': tripHoverIndex === i }"
+              @mouseenter="tripHoverIndex = i"
+              @mouseleave="tripHoverIndex = null"
+            >
+              <span class="trip-tl__city">{{ s.city }}</span>
+              <span class="trip-tl__dot" aria-hidden="true"></span>
+              <span class="trip-tl__nights">{{ s.nights }}</span>
+            </div>
+            <div v-if="i < tripTimelineStops.length - 1" class="trip-tl__leg" aria-hidden="true">
+              <span class="trip-tl__dash"></span>
+              <span class="trip-tl__icon"></span>
+              <span class="trip-tl__dash"></span>
+            </div>
+          </template>
+        </div>
       </template>
       <img v-else :src="displayedImage" :alt="hotel?.name || localized(deal.title)" loading="lazy" />
       <!-- Sidepanel cards (deal-page and map) lock to a single
@@ -360,6 +382,14 @@ const isTrip = computed(() => !!props.hotel?.trip)
  *  volle breedte met het kaartje semi-transparant erover. */
 const { variant: tripCardVariant } = useMultiHotelTripCardVariant()
 const tripOverlay = computed(() => isTrip.value && tripCardVariant.value === 'overlay')
+const tripTimeline = computed(() => isTrip.value && tripCardVariant.value === 'timeline')
+/** Tijdlijn-variant: plaatsnaam + aantal nachten per stop; auto of fiets als vervoer. */
+const tripTimelineStops = computed(() =>
+  (props.hotel?.trip?.stops ?? [])
+    .filter(s => typeof s.lat === 'number' && typeof s.lng === 'number')
+    .map(s => ({ city: s.city, nights: nightsLabel(s.nights, locale.value) })),
+)
+const tripTransportIcon = computed(() => (props.hotel?.trip?.type === 'fiets' ? 'bike' : 'car-side'))
 /** "Autovakantie met 3 hotels" — soort vakantie + aantal hotels, in plaats van een hotelnaam. */
 const tripTypeLabel = computed(() => {
   const trip = props.hotel?.trip
@@ -1066,6 +1096,86 @@ const includesBullets = computed<string[]>(() => {
   mask-image: linear-gradient(to right, transparent 0, #000 28%);
 }
 .deal-card-v2__image--trip-overlay .deal-card-v2__trip-caption { width: 100%; }
+/* Variant "tijdlijn": foto over de volle breedte, onderaan een donkere verloop
+   met de schematische route (plaatsnaam · bolletje · nachten, gestreepte lijnen
+   met een rijdende auto/fiets ertussen). De hover-caption gaat dan naar boven. */
+.deal-card-v2__image--trip-timeline .deal-card-v2__trip-photo { width: 100%; }
+.deal-card-v2__trip-timeline {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  padding: 48px 14px 12px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.72) 0%, rgba(0, 0, 0, 0.4) 55%, rgba(0, 0, 0, 0) 100%);
+  color: #fff;
+  pointer-events: none;
+}
+.trip-tl__stop {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  pointer-events: auto;
+  cursor: default;
+}
+.trip-tl__stop--first { align-items: flex-start; }
+.trip-tl__stop--last { align-items: flex-end; }
+.trip-tl__city {
+  font-family: var(--font-body);
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.1;
+  white-space: nowrap;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.5);
+}
+.trip-tl__dot {
+  display: block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.25);
+  transition: background 150ms ease;
+}
+.trip-tl__stop--hover .trip-tl__dot { background: var(--color-primary, #ff7e00); }
+.trip-tl__nights {
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.2;
+  white-space: nowrap;
+  color: rgba(255, 255, 255, 0.92);
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.5);
+}
+.trip-tl__leg {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 8px;
+}
+.trip-tl__dash { flex: 1; border-top: 2px dashed rgba(255, 255, 255, 0.85); }
+.trip-tl__icon {
+  width: 26px;
+  height: 26px;
+  flex-shrink: 0;
+  background: #fff;
+  -webkit-mask: var(--tl-icon) center / contain no-repeat;
+  mask: var(--tl-icon) center / contain no-repeat;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4));
+}
+/* Hover-caption boven in de foto (de tijdlijn zit onderin), rechts van de kortingsbadge. */
+.deal-card-v2__image--trip-timeline .deal-card-v2__trip-caption {
+  top: 0;
+  bottom: auto;
+  width: 100%;
+  padding: 14px 64px 28px 96px;
+  align-items: flex-start;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0));
+}
 /* Hover op een nummer: naam + sterren van dat hotel onderin de foto. */
 .deal-card-v2__trip-caption {
   position: absolute;

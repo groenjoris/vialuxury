@@ -4,13 +4,18 @@
  *  - '50-50'   : foto links, schematisch routekaartje rechts (huidige variant)
  *  - 'overlay' : foto over de volle breedte, het kaartje semi-transparant
  *                als overlay erover (route en iconen blijven dekkend)
+ *  - 'timeline': foto over de volle breedte, onderaan een schematische
+ *                tijdlijn: plaatsnaam · bolletje · "2 nachten", met tussen de
+ *                stops een gestreepte lijn en een rijdende auto (fiets bij de
+ *                fietsvakantie)
  * Keuze wordt in localStorage bewaard zodat hij tussen pagina's blijft staan.
  */
-export type TripCardVariant = '50-50' | 'overlay'
+export type TripCardVariant = '50-50' | 'overlay' | 'timeline'
 
 export const TRIP_CARD_VARIANTS: { id: TripCardVariant; label: string }[] = [
   { id: '50-50', label: '50-50' },
   { id: 'overlay', label: 'Overlay' },
+  { id: 'timeline', label: 'Tijdlijn' },
 ]
 
 const STORAGE_KEY = 'vl_mht_trip_card_variant'
@@ -23,7 +28,7 @@ export function useMultiHotelTripCardVariant() {
     onMounted(() => {
       try {
         const saved = localStorage.getItem(STORAGE_KEY)
-        if (saved === '50-50' || saved === 'overlay') variant.value = saved
+        if (saved === '50-50' || saved === 'overlay' || saved === 'timeline') variant.value = saved
       } catch { /* localStorage niet beschikbaar */ }
     })
   }
