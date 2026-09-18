@@ -32,3 +32,5 @@ HFVR project
 .env
 .env.*
 !.env.example
+.vercel
+.env*

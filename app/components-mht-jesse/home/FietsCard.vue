@@ -5,7 +5,11 @@
     :class="{ 'fiets-card--playing': isPlaying }"
     @click="onCardClick"
   >
-    <!-- Beeldvlak: video, stilstaand beeld, verloop, badge, hart, routelijn. -->
+    <!-- Beeldvlak: video, stilstaand beeld, verloop, badge, hart, routelijn.
+         `preload="auto"`: dit is één uitgelichte kaart, dus de 247 kB haalt de
+         browser vast op en de eerste hover speelt meteen. In een resultatenlijst
+         met tien kaarten hoort hier `preload="metadata"` te staan, anders laadt
+         de pagina tien video's binnen. -->
     <div class="fiets-card__media">
       <NuxtLink
         :to="dealHref"
@@ -22,7 +26,7 @@
         muted
         loop
         playsinline
-        preload="metadata"
+        preload="auto"
         :poster="media.poster"
       >
         <source :src="media.video" type="video/mp4" />
