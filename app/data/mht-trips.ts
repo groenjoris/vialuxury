@@ -510,6 +510,7 @@ function buildTrip(spec: TripSpec): { hotel: SearchHotel; detail: MultiHotelTrip
       tags: spec.tags,
       routeImage: spec.routeImage,
       coverImage: spec.coverImage,
+      nearbyImages: spec.nearbyImages,
       pdpHref,
     },
   }

@@ -78,9 +78,9 @@
       @blur="setHover(null)"
     >
       <circle :r="markerRadius" />
-      <!-- Hotel-icoon (aangeleverde set, assets/icons/iconen/hotel) of het volgnummer. -->
+      <!-- Hotel-icoon (aangeleverde set, assets/icons/iconen/hotel), het volgnummer, of niets (stipjes). -->
       <g v-if="markerIcon" class="trm__marker-icon" :transform="`translate(${-12 * iconScale} ${-12 * iconScale}) scale(${iconScale})`" v-html="HOTEL_GLYPH" />
-      <text v-else y="0.5" :style="{ fontSize: `${numberSize}px` }">{{ i + 1 }}</text>
+      <text v-else-if="!dots" y="0.5" :style="{ fontSize: `${numberSize}px` }">{{ i + 1 }}</text>
     </g>
     <!-- Hover/focus: hotelnaam boven de marker. -->
     <g v-if="interactive && hover !== null && tip" class="trm__tip" :transform="`translate(${tip.x} ${tip.y})`">
@@ -132,6 +132,8 @@ const props = withDefaults(defineProps<{
   /** Dealcard-variant "overlay": kaartlaag semi-transparant over de foto;
    *  route, markers en namen blijven dekkend. */
   overlay?: boolean
+  /** Alleen stipjes als marker (geen nummer) — mini-kaartje in de collage-variant. */
+  dots?: boolean
 }>(), {
   maxScale: 200,
   showLabels: false,
@@ -149,6 +151,7 @@ const props = withDefaults(defineProps<{
   markerIcon: false,
   legLabelStyle: 'pill',
   overlay: false,
+  dots: false,
 })
 
 /** Hotel-glyph uit de aangeleverde iconenset (24 × 24, lijnen), wit op de zwarte bol. */

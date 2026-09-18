@@ -31,6 +31,8 @@ export interface MultiHotelTripInfo {
   routeImage?: string
   /** Omgevingsfoto: standaardfoto op de dealcard (hover op een nummer toont het hotel). */
   coverImage?: string
+  /** Omgevingsfoto's (PDP-gallery na de cover); de collage-dealcard toont de eerste twee. */
+  nearbyImages?: string[]
   /** Waar de card voorlopig naartoe linkt zolang er geen vakantie-PDP is. */
   pdpHref?: string
 }

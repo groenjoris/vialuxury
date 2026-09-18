@@ -12,7 +12,7 @@
     <!-- Image area (top in grid, left in list). Grid mode renders a small
          carousel (up to 5 hotel photos) with prev/next arrows that fade
          in on hover. List mode keeps the single static image. -->
-    <div class="deal-card-v2__image" :class="{ 'deal-card-v2__image--trip-overlay': tripOverlay, 'deal-card-v2__image--trip-timeline': tripTimeline }">
+    <div class="deal-card-v2__image" :class="{ 'deal-card-v2__image--trip-overlay': tripOverlay, 'deal-card-v2__image--trip-timeline': tripTimeline, 'deal-card-v2__image--trip-collage': tripCollage }">
       <!-- Anti rage-click: the whole photo opens the deal page. Sits ABOVE the
            image (z-index 1) but BELOW the carousel arrows (z-index 2) and the
            favourite heart (z-index 3) so those still work. -->
@@ -35,11 +35,21 @@
             <span v-for="n in tripHoverStop.starRating" :key="n"><svg viewBox="0 0 18 18" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M16.963,6.786c-.088-.271-.323-.469-.605-.51l-4.62-.671L9.672,1.418c-.252-.512-1.093-.512-1.345,0l-2.066,4.186-4.62,.671c-.282,.041-.517,.239-.605,.51-.088,.271-.015,.57,.19,.769l3.343,3.258-.79,4.601c-.048,.282,.067,.566,.298,.734,.231,.167,.538,.189,.79,.057l4.132-2.173,4.132,2.173c.11,.058,.229,.086,.349,.086,.155,0,.31-.048,.441-.143,.231-.168,.347-.452,.298-.734l-.79-4.601,3.343-3.258c.205-.199,.278-.498,.19-.769Z"/></svg></span>
           </span>
         </div>
-        <MultiHotelTripRouteMap v-if="!tripTimeline" class="deal-card-v2__trip-map" :stops="tripMapStops" :overlay="tripOverlay" hoverable @stop-hover="tripHoverIndex = $event" />
+        <MultiHotelTripRouteMap v-if="!tripTimeline && !tripCollage" class="deal-card-v2__trip-map" :stops="tripMapStops" :overlay="tripOverlay" hoverable @stop-hover="tripHoverIndex = $event" />
+        <!-- Variant "collage": rechts 1/4 met drie tegels — mini-routekaartje (stipjes,
+             landcodes) en de twee omgevingsfoto's die de PDP-gallery als eerste toont. -->
+        <div v-else-if="tripCollage" class="deal-card-v2__trip-collage">
+          <div class="trip-collage__tile trip-collage__tile--map">
+            <MultiHotelTripRouteMap :stops="tripMapStops" :width="92" :height="74" :marker-radius="4" :max-scale="110" dots hoverable @stop-hover="tripHoverIndex = $event" />
+          </div>
+          <div v-for="(url, i) in tripCollagePhotos" :key="`cp-${i}`" class="trip-collage__tile">
+            <img :src="url" alt="" loading="lazy" />
+          </div>
+        </div>
         <!-- Variant "tijdlijn": onderaan de foto een schematische route — plaatsnaam,
              bolletje, "2 nachten", met tussen de stops een gestreepte lijn en een
              rijdende auto (fiets bij de fietsvakantie). Hover op een stop → foto/naam van dat hotel. -->
-        <div v-else class="deal-card-v2__trip-timeline" :style="{ '--tl-icon': `url(/icons/mht/${tripTransportIcon}.svg)` }">
+        <div v-else-if="tripTimeline" class="deal-card-v2__trip-timeline" :style="{ '--tl-icon': `url(/icons/mht/${tripTransportIcon}.svg)` }">
           <!-- Doorlopende stippellijn van de eerste tot de laatste stip; stippen en
                vervoersiconen liggen erbovenop. -->
           <span class="trip-tl__track" aria-hidden="true"></span>
@@ -387,6 +397,15 @@ const isTrip = computed(() => !!props.hotel?.trip)
 const { variant: tripCardVariant } = useMultiHotelTripCardVariant()
 const tripOverlay = computed(() => isTrip.value && tripCardVariant.value === 'overlay')
 const tripTimeline = computed(() => isTrip.value && tripCardVariant.value === 'timeline')
+const tripCollage = computed(() => isTrip.value && tripCardVariant.value === 'collage')
+/** Collage: de twee omgevingsfoto's die de PDP-gallery als eerste toont (na de cover);
+ *  zonder omgevingsfoto's de eerste hotelfoto's. */
+const tripCollagePhotos = computed(() => {
+  const trip = props.hotel?.trip
+  const nearby = (trip?.nearbyImages ?? []).slice(0, 2)
+  if (nearby.length === 2) return nearby
+  return [...nearby, ...(trip?.stops ?? []).map(s => s.image).filter((u): u is string => !!u)].slice(0, 2)
+})
 /** Tijdlijn-variant: plaatsnaam + aantal nachten per stop; auto of fiets als vervoer. */
 const tripTimelineStops = computed(() =>
   (props.hotel?.trip?.stops ?? [])
@@ -1192,6 +1211,30 @@ const includesBullets = computed<string[]>(() => {
   -webkit-mask: var(--tl-icon) center / contain no-repeat;
   mask: var(--tl-icon) center / contain no-repeat;
 }
+/* Variant "collage": hoofdfoto 3/4, rechts een kolom van drie tegels (kaartje + twee
+   omgevingsfoto's) met witte naden, als mini-versie van de PDP-gallery. */
+.deal-card-v2__image--trip-collage .deal-card-v2__trip-photo { width: 75%; }
+.deal-card-v2__image--trip-collage .deal-card-v2__trip-caption { width: 75%; }
+.deal-card-v2__trip-collage {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 25%;
+  height: 100%;
+  display: grid;
+  grid-template-rows: repeat(3, minmax(0, 1fr));
+  gap: 2px;
+  padding-left: 2px;
+  box-sizing: border-box;
+  background: #fff;
+  z-index: 2;
+  pointer-events: none;
+}
+.trip-collage__tile { position: relative; min-height: 0; overflow: hidden; background: #e9e5dc; }
+.trip-collage__tile img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.trip-collage__tile--map :deep(.trm) { width: 100%; height: 100%; }
+/* Het hartje niet over het mini-kaartje: naar de rechterrand van de hoofdfoto. */
+.deal-card-v2__image--trip-collage .deal-card-v2__favorite { right: calc(25% + var(--space-md)); }
 /* Hover-caption boven in de foto (de tijdlijn zit onderin), rechts van de kortingsbadge. */
 .deal-card-v2__image--trip-timeline .deal-card-v2__trip-caption {
   top: 0;

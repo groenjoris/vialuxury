@@ -8,14 +8,18 @@
  *                tijdlijn: plaatsnaam · bolletje · "2 nachten", met tussen de
  *                stops een gestreepte lijn en een rijdende auto (fiets bij de
  *                fietsvakantie)
+ *  - 'collage' : hoofdfoto over 3/4 van de breedte; rechts 1/4 met drie
+ *                tegels onder elkaar: mini-routekaartje (stipjes, landcodes)
+ *                en de twee omgevingsfoto's die de PDP-gallery als eerste toont
  * Keuze wordt in localStorage bewaard zodat hij tussen pagina's blijft staan.
  */
-export type TripCardVariant = '50-50' | 'overlay' | 'timeline'
+export type TripCardVariant = '50-50' | 'overlay' | 'timeline' | 'collage'
 
 export const TRIP_CARD_VARIANTS: { id: TripCardVariant; label: string }[] = [
   { id: '50-50', label: '50-50' },
   { id: 'overlay', label: 'Overlay' },
   { id: 'timeline', label: 'Tijdlijn' },
+  { id: 'collage', label: 'Collage' },
 ]
 
 const STORAGE_KEY = 'vl_mht_trip_card_variant'
@@ -28,7 +32,7 @@ export function useMultiHotelTripCardVariant() {
     onMounted(() => {
       try {
         const saved = localStorage.getItem(STORAGE_KEY)
-        if (saved === '50-50' || saved === 'overlay' || saved === 'timeline') variant.value = saved
+        if (saved === '50-50' || saved === 'overlay' || saved === 'timeline' || saved === 'collage') variant.value = saved
       } catch { /* localStorage niet beschikbaar */ }
     })
   }
