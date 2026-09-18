@@ -89,14 +89,14 @@
       <div class="container home-popular__inner">
         <div class="home-popular__col home-popular__col--press">
           <h3 class="home-popular__heading">Uitgelicht</h3>
-          <!-- Multi Hotel Trip: de vakantie "Ontdek Noord-Frankrijk en de Opaalkust" als uitgelicht. -->
+          <!-- Uitgelicht: de fietsvakantie Twente & Salland op de fietskaart —
+               routevideo die bij hover speelt, met een routelijn die meeloopt.
+               Alleen hier; de andere kaartsecties houden MhtJesseDealCard. -->
           <div v-if="featuredTrip && featuredTripDeal" class="home-popular__featured-wrap">
-            <MhtJesseDealCard
+            <MhtJesseFietsCard
               class="home-popular__featured"
               :hotel="featuredTrip"
               :deal="featuredTripDeal"
-              :grid-mode="true"
-              :hide-bar="true"
               :cta-label="isMobile ? 'Bekijk' : 'Bekijk vakantie'"
             />
           </div>
@@ -233,7 +233,7 @@ const superDeals: SearchHotel[] = [...mappedHotels]
 
 // Multi Hotel Trip — Uitgelicht: de vakantie "Ontdek Noord-Frankrijk en de
 // Opaalkust in 7 dagen" (trip 001) in plaats van een los hotelarrangement.
-const featuredTrip: SearchHotel | null = tripSearchHotels.find(h => /noord-frankrijk/.test(h.slug)) ?? null
+const featuredTrip: SearchHotel | null = tripSearchHotels.find(h => /fietsvakantie-twente/.test(h.slug)) ?? null
 const featuredTripDeal = featuredTrip ? pickPrimaryDeal(featuredTrip.deals) : null
 
 // Actuele deals: 3 × 3 kaarten — per rij één vakantie (rechts), de overige
