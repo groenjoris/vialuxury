@@ -243,7 +243,7 @@
             <h2 class="section-title">{{ tripIncludedHeading }}</h2>
             <div class="trip-incl__grid">
               <article v-for="b in tripIncluded" :key="b.title" class="trip-incl__item">
-              <div v-if="b.image" class="trip-incl__thumb"><img :src="b.image" :alt="b.title" loading="lazy" /></div>
+              <button v-if="b.image" type="button" class="trip-incl__thumb" :aria-label="`${b.title} — ${t('common.allPhotos')}`" @click="tripInclLightbox = { image: b.image, title: b.title }"><img :src="b.image" :alt="b.title" loading="lazy" /></button>
                   <span v-else class="trip-incl__icon" aria-hidden="true"><img :src="b.icon || '/icons/facilities/special.svg'" alt="" width="22" height="22" /></span>
               <div class="trip-incl__body">
                 <h3 class="trip-incl__title">
@@ -517,7 +517,7 @@
               <h2 class="section-title">{{ tripIncludedHeading }}</h2>
               <div class="trip-incl__grid">
                 <article v-for="b in tripIncluded" :key="b.title" class="trip-incl__item">
-                  <div v-if="b.image" class="trip-incl__thumb"><img :src="b.image" :alt="b.title" loading="lazy" /></div>
+                  <button v-if="b.image" type="button" class="trip-incl__thumb" :aria-label="`${b.title} — ${t('common.allPhotos')}`" @click="tripInclLightbox = { image: b.image, title: b.title }"><img :src="b.image" :alt="b.title" loading="lazy" /></button>
                   <span v-else class="trip-incl__icon" aria-hidden="true"><img :src="b.icon || '/icons/facilities/special.svg'" alt="" width="22" height="22" /></span>
                   <div class="trip-incl__body">
                     <h3 class="trip-incl__title">
@@ -1052,6 +1052,8 @@
       </Transition>
     </Teleport>
 
+    <!-- Vakantie: grotere versie van een thumbnail uit het inclusieblok -->
+    <MultiHotelTripImageLightbox v-if="tripInclLightbox" :image="tripInclLightbox.image" :title="tripInclLightbox.title" :tag="t('trip.tag.included')" @close="tripInclLightbox = null" />
     <!-- Vakantie: hotel-sidepanel (hotelnaam in de tekst, marker op de minimap, "Meer over dit
          hotel" in het dagprogramma) — zelfde panel als op de fullscreen kaart -->
     <MultiHotelTripHotelPanel v-if="isTrip" overlay :hotel="tripPanelHotel" @close="tripPanelOpen = false" />
@@ -1467,6 +1469,8 @@ const tripIntroTitle = computed(() => {
   if (own) return localized(own)
   return t(trip.type === 'fiets' ? 'trip.introTitleBike' : 'trip.introTitleAuto').replace('{days}', String(trip.nights + 1))
 })
+/** Grotere versie van een thumbnail uit het inclusieblok (zelfde pop-up als in het reisschema). */
+const tripInclLightbox = ref<{ image: string; title: string } | null>(null)
 /** Kop van het inclusieblok: "In deze autovakantie voor 2 personen is het volgende inbegrepen". */
 const tripIncludedHeading = computed(() => {
   const type = t(trip?.type === 'fiets' ? 'trip.fiets' : 'trip.auto')
@@ -2654,10 +2658,14 @@ onMounted(() => {
   width: 120px;
   aspect-ratio: 3 / 2;
   flex-shrink: 0;
+  padding: 0;
+  border: 0;
   border-radius: var(--radius-sm);
   overflow: hidden;
   background: var(--color-background-secondary);
+  cursor: zoom-in;
 }
+.trip-incl__thumb:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
 .trip-incl__thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .trip-incl__icon {
   width: 40px;

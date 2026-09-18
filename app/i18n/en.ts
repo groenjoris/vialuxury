@@ -284,6 +284,7 @@ const en: Record<string, string> = {
   'trip.mapLegendHotels': 'Hotels on this holiday',
   'trip.mapLegendHighlights': 'Surroundings and sights',
   'trip.tag.breakfast': 'Breakfast',
+  'trip.tag.included': 'Included',
   'trip.breakfastAt': 'Wake up and breakfast at {hotel}',
   'trip.breakfastText': 'Breakfast is included ({breakfast}). Start the day at leisure before heading out.',
   'trip.breakfastLastText': 'One more breakfast; early birds take a morning walk first. Then check out and head for {city}.',

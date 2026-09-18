@@ -48,8 +48,9 @@ export interface TripDaySpec {
    *  hotelbeschrijving — die zit achter "Meer over hotel …". */
   arrival?: { text: LocalizedString; image?: string }
   /** Eigen ontbijttekst voor deze ochtend (anders het vaste sjabloon; op een
-   *  uitcheckdag het "laatste ontbijt"-sjabloon). */
-  breakfast?: { text: LocalizedString }
+   *  uitcheckdag het "laatste ontbijt"-sjabloon). `false` = geen apart
+   *  ontbijtblok (het ontbijt wordt in het volgende blok genoemd). */
+  breakfast?: { text: LocalizedString } | false
   /** Uitcheckdag: wat je onderweg naar het volgende hotel kunt doen. */
   route?: TripDayBlockSpec
   /** Verblijfsdag (of aankomstdag): 1–2 blokken. */
@@ -147,16 +148,16 @@ export const TRIP_ITINERARIES: Record<string, TripItinerarySpec> = {
         image: '/images/vakanties/001/clery-1.jpg' },
       { title: l('6 dagen ontbijt', '6 days of breakfast'),
         text: l('Elke ochtend een uitgebreid ontbijtbuffet in het hotel waar je die nacht slaapt.', 'An extensive breakfast buffet every morning at the hotel where you spent the night.'),
-        image: '/images/vakanties/001/tilques-5.jpg' },
+        image: '/images/vakanties/001/extra-clery-ontbijt.jpg' },
       { title: l('3 x een 3-gangendiner', '3 x a 3-course dinner'),
         text: l('In elk hotel op de dag van aankomst: \'s avonds hoef je nergens meer heen.', 'At each hotel on the day of arrival: no need to go anywhere in the evening.'),
-        image: '/images/vakanties/001/clery-4.jpg' },
+        image: '/images/vakanties/001/extra-beaulaincourt-diner.jpg' },
       { title: l('Welkomstbubbels in Hotel Royal Beaulaincourt', 'Welcome bubbles at Hotel Royal Beaulaincourt'),
         text: l('Een glas bubbels bij aankomst op dag 1, om de vakantie mee te openen.', 'A glass of bubbles on arrival on day 1 to open the holiday.'),
-        image: '/images/vakanties/001/beaulaincourt-4.jpg' },
+        image: '/images/vakanties/001/extra-beaulaincourt-bubbels.jpg' },
       { title: l('Late check-out bij alle hotels', 'Late check-out at all hotels'),
         text: l('Rustig ontbijten en op je gemak vertrekken; in Béthune zelfs tot 15:00 uur.', 'A leisurely breakfast and an unhurried departure; in Béthune even until 15:00.'),
-        image: '/images/vakanties/001/clery-6.jpg' },
+        image: '/images/vakanties/001/extra-clery-late-checkout.jpg' },
       { title: l('Gratis parkeren bij alle hotels', 'Free parking at all hotels'),
         text: l('Bij alle drie de hotels staat je auto gratis geparkeerd, klaar voor de volgende etappe.', 'Free parking at all three hotels, ready for the next leg.'),
         image: '/images/vakanties/001/clery-3.jpg' },
@@ -173,7 +174,7 @@ export const TRIP_ITINERARIES: Record<string, TripItinerarySpec> = {
           { title: l('Ontdek Béthune', 'Discover Béthune'),
             text: l('Het belfort uit 1388 staat op de UNESCO-lijst; de art-decogevels eromheen zijn van de wederopbouw na 1918. Neem een terras onder de arcades en proef een streekbier.',
               'The belfry from 1388 is on the UNESCO list; the art-deco façades around it date from the post-1918 reconstruction. Take a terrace under the arcades and try a local beer.'),
-            image: img('001', 'bethune'),
+            image: '/images/vakanties/001/nearby-bethune.jpg',
             more: { label: l('Meer over Béthune', 'More about Béthune'), title: l('Béthune, stad van het belfort', 'Béthune, town of the belfry'), image: img('001', 'bethune'), paragraphs: [
               l('Béthune was in de Eerste Wereldoorlog een Brits garnizoensstadje vlak achter het front en werd in 1918 grotendeels verwoest. De wederopbouw in de jaren twintig leverde de Grand-Place op zoals je hem nu ziet: een plein vol art-decogevels rond het middeleeuwse belfort, dat als een van de weinige gebouwen overeind bleef.',
                 'In the First World War Béthune was a British garrison town just behind the front and was largely destroyed in 1918. The 1920s reconstruction produced today\'s Grand-Place: a square of art-deco façades around the medieval belfry, one of the few buildings left standing.'),
@@ -187,15 +188,15 @@ export const TRIP_ITINERARIES: Record<string, TripItinerarySpec> = {
           'Your first morning in France: croissants, cheese and fresh juice in the hotel\'s bright courtyard. No hurry, Arras is half an hour away.',
         ) },
         activities: [
-          { title: l('Een dag naar Arras', 'A day out in Arras'),
-            text: l('Op een half uur rijden liggen de twee barokke pleinen van Arras, omzoomd door 155 Vlaamse gevels. Onder de stad wachten de Wellington-tunnels uit 1917.',
-              'Half an hour away are the two baroque squares of Arras, lined with 155 Flemish façades. Beneath the town wait the Wellington tunnels of 1917.'),
-            image: img('001', 'arras'),
-            more: { label: l('Meer over Arras', 'More about Arras'), title: l('Arras: twee pleinen en een stad onder de stad', 'Arras: two squares and a town beneath the town'), image: img('001', 'arras'), paragraphs: [
-              l('De Grand\'Place en de Place des Héros vormen samen het grootste barokke ensemble van Frankrijk: 155 huizen in Vlaamse stijl op arcades, na 1918 steen voor steen herbouwd. Vanaf het belfort van het stadhuis (lift tot halverwege, dan trappen) overzie je beide pleinen.',
-                'Together the Grand\'Place and Place des Héros form the largest baroque ensemble in France: 155 Flemish-style houses on arcades, rebuilt stone by stone after 1918. From the town-hall belfry (lift halfway, then stairs) you overlook both squares.'),
-              l('De Carrière Wellington is een netwerk van krijtgroeven waarin Nieuw-Zeelandse tunnelgravers in 1917 plaats maakten voor 24.000 soldaten, die vandaaruit de Slag om Arras begonnen. De rondleiding duurt een uur en gaat twintig meter diep; trek een trui aan. Lunchen doe je het best onder de arcades van de Place des Héros.',
-                'The Carrière Wellington is a network of chalk quarries where New Zealand tunnellers made room for 24,000 soldiers in 1917, who launched the Battle of Arras from there. The tour takes an hour and goes twenty metres down; bring a jumper. Lunch is best under the arcades of the Place des Héros.'),
+          { title: l('Een dag naar Lille', 'A day out in Lille'),
+            text: l('Op een half uur rijden ligt Lille, de bruisende hoofdstad van Frans-Vlaanderen: de Grand-Place met de Vieille Bourse, de smalle straatjes van Vieux-Lille en de beste bakkers en brasseries van het noorden.',
+              'Half an hour away is Lille, the buzzing capital of French Flanders: the Grand-Place with the Vieille Bourse, the narrow streets of Vieux-Lille and the best bakeries and brasseries in the north.'),
+            image: '/images/vakanties/001/nearby-lille.jpg',
+            more: { label: l('Meer over Lille', 'More about Lille'), title: l('Lille, bruisende hoofdstad van Frans-Vlaanderen', 'Lille, buzzing capital of French Flanders'), image: '/images/vakanties/001/nearby-lille.jpg', paragraphs: [
+              l('Lille was ooit Vlaams, daarna Bourgondisch en Spaans, en pas sinds 1668 Frans — en dat zie je: de Grand-Place en de Vieille Bourse (1653) zijn Vlaamse barok in rode baksteen en zandsteen, de straatjes van Vieux-Lille zitten vol boetieks, kaaswinkels en estaminets. Parkeer bij het Palais des Beaux-Arts (het tweede museum van Frankrijk na het Louvre) en loop de stad in.',
+                'Lille was once Flemish, then Burgundian and Spanish, and only French since 1668 — and it shows: the Grand-Place and the Vieille Bourse (1653) are Flemish baroque in red brick and sandstone, and the streets of Vieux-Lille are full of boutiques, cheese shops and estaminets. Park at the Palais des Beaux-Arts (France\'s second museum after the Louvre) and walk into town.'),
+              l('Proef de Noord-Franse keuken: een carbonnade flamande of welsh in een estaminet, een merveilleux bij Aux Merveilleux de Fred en een wafel met vanille bij Meert, de patisserie uit 1761 waar De Gaulle klant was. Op zondagochtend is er markt op Wazemmes, een van de grootste van Frankrijk.',
+                'Taste the cuisine of the north: a carbonnade flamande or a welsh in an estaminet, a merveilleux at Aux Merveilleux de Fred and a vanilla waffle at Meert, the 1761 patisserie where De Gaulle shopped. On Sunday morning there is the Wazemmes market, one of the largest in France.'),
             ] } },
           { title: l('Avond in Béthune', 'Evening in Béthune'),
             text: l('Het diner is vanavond vrij: kies een bistro aan de Grand-Place of laat het hotel een tafel reserveren in een van de zijstraten.',
@@ -203,14 +204,11 @@ export const TRIP_ITINERARIES: Record<string, TripItinerarySpec> = {
             image: img('001', 'bethune') },
         ] },
       { day: 3,
-        breakfast: { text: l(
-          'Nog één keer genieten van het ontbijtbuffet; vroege vogels lopen eerst nog een rondje om het belfort. Daarna uitchecken en op weg naar Tilques.',
-          'One more breakfast buffet; early birds first take a turn around the belfry. Then check out and head for Tilques.',
-        ) },
+        breakfast: false,
         route: { title: l('Onderweg: per fluisterboot door het Marais audomarois', 'En route: by whisper boat through the Marais audomarois'),
-          text: l('De rit naar Tilques duurt maar 50 minuten, dus maak een omweg via Saint-Omer en stap in een fluisterboot door het laatste bewoonde moeras van Frankrijk. Lunch daarna in de stad.',
-            'The drive to Tilques takes only 50 minutes, so detour via Saint-Omer and board a whisper boat through France\'s last inhabited marsh. Lunch in town afterwards.'),
-          image: img('001', 'marais'),
+          text: l('Na een laatste ontbijt in Béthune check je uit. De rit naar Tilques duurt maar 50 minuten, dus maak een omweg via Saint-Omer en stap in een fluisterboot door het laatste bewoonde moeras van Frankrijk. Lunch daarna in de stad.',
+            'After a last breakfast in Béthune you check out. The drive to Tilques takes only 50 minutes, so detour via Saint-Omer and board a whisper boat through France\'s last inhabited marsh. Lunch in town afterwards.'),
+          image: '/images/vakanties/001/nearby-marais.jpg',
           more: { label: l('Meer over het Marais audomarois', 'More about the Marais audomarois'), title: l('Het Marais audomarois', 'The Marais audomarois'), image: img('001', 'marais'), paragraphs: [
             l('Het Marais audomarois is een moeras van 3.700 hectare met 700 kilometer aan sloten en kanalen, al sinds de middeleeuwen drooggelegd door monniken en tuinders. Het is het laatste moeras van Frankrijk waar nog gewoond en geboerd wordt: de bloemkolen van Saint-Omer komen hiervandaan en de post wordt op sommige eilandjes nog per boot bezorgd.',
               'The Marais audomarois is a 3,700-hectare marsh with 700 kilometres of ditches and canals, drained since the Middle Ages by monks and market gardeners. It is the last marsh in France that is still inhabited and farmed: Saint-Omer\'s cauliflowers come from here and on some islands the post still arrives by boat.'),
@@ -230,7 +228,7 @@ export const TRIP_ITINERARIES: Record<string, TripItinerarySpec> = {
           { title: l('Wandelen, fietsen of golfen rond het kasteel', 'Walk, cycle or golf around the château'),
             text: l('Vanaf het kasteel lopen wandel- en fietsroutes door het bocage-landschap van de Audomarois; golfers spelen op Aa Saint-Omer, vijf minuten verderop. Niets doen mag ook: het zwembad is de hele dag open.',
               'Walking and cycling routes run from the château through the bocage of the Audomarois; golfers play Aa Saint-Omer, five minutes away. Doing nothing is allowed too: the pool is open all day.'),
-            image: img('001', 'marais') },
+            image: '/images/vakanties/001/tilques-1.jpg' },
           { title: l('Saint-Omer en La Coupole', 'Saint-Omer and La Coupole'),
             text: l('In de middag naar Saint-Omer voor de kathedraal en de stadstuin, of naar La Coupole: de betonnen koepel van waaruit de Duitsers V2-raketten wilden lanceren.',
               'In the afternoon head to Saint-Omer for the cathedral and the public garden, or to La Coupole: the concrete dome from which the Germans planned to launch V2 rockets.'),
@@ -294,7 +292,7 @@ export const TRIP_ITINERARIES: Record<string, TripItinerarySpec> = {
     ],
     mapHighlights: [
       { name: l('Belfort van Béthune', 'Belfry of Béthune'), lat: 50.5305, lng: 2.641, text: l('UNESCO-belfort uit 1388 op de Grand-Place, omringd door art-decogevels uit de wederopbouw.', 'UNESCO belfry from 1388 on the Grand-Place, surrounded by art-deco façades from the reconstruction.'), image: img('001', 'bethune') },
-      { name: l('Arras', 'Arras'), lat: 50.291, lng: 2.7775, text: l('Twee barokke Vlaamse pleinen en de Wellington-tunnels onder de stad.', 'Two baroque Flemish squares and the Wellington tunnels beneath the city.'), image: img('001', 'arras') },
+      { name: l('Lille', 'Lille'), lat: 50.6372, lng: 3.0633, text: l('Bruisende hoofdstad van Frans-Vlaanderen: Grand-Place, Vieux-Lille en de beste brasseries van het noorden.', 'Buzzing capital of French Flanders: Grand-Place, Vieux-Lille and the best brasseries in the north.'), image: '/images/vakanties/001/nearby-lille.jpg' },
       { name: l('Marais audomarois', 'Marais audomarois'), lat: 50.75, lng: 2.252, text: l('Het laatste bewoonde moeras van Frankrijk, per fluisterboot langs groentetuinen en bruggetjes.', "France's last inhabited marsh, by whisper boat past vegetable gardens and little bridges."), image: img('001', 'marais') },
       { name: l('La Coupole', 'La Coupole'), lat: 50.705, lng: 2.242, text: l('Betonnen koepel voor V2-raketten, nu een indrukwekkend geschiedenismuseum.', 'Concrete dome built for V2 rockets, now an impressive history museum.'), image: img('001', 'boulogne') },
       { name: l('Cap Blanc-Nez', 'Cap Blanc-Nez'), lat: 50.924, lng: 1.712, text: l('Krijtrotsen met bij helder weer zicht op Engeland.', 'Chalk cliffs with views of England on a clear day.'), image: img('001', 'blancnez') },

@@ -289,6 +289,7 @@ const nl: Record<string, string> = {
   'trip.mapLegendHotels': 'Hotels van deze vakantie',
   'trip.mapLegendHighlights': 'Omgeving en bezienswaardigheden',
   'trip.tag.breakfast': 'Ontbijt',
+  'trip.tag.included': 'Inbegrepen',
   'trip.breakfastAt': 'Wakker worden en ontbijten bij {hotel}',
   'trip.breakfastText': 'Het ontbijt is inbegrepen ({breakfast}). Begin de dag rustig aan tafel voordat je erop uit gaat.',
   'trip.breakfastLastText': 'Nog één keer genieten van het ontbijt; vroege vogels maken eerst een ochtendwandeling. Daarna uitchecken en op weg naar {city}.',

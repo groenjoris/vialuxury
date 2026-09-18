@@ -78,23 +78,8 @@
       </Transition>
     </Teleport>
 
-    <!-- Gecentreerde foto-pop-up -->
-    <Teleport to="body">
-      <Transition name="fade">
-        <div v-if="lightbox" class="itin-lb" @click.self="lightbox = null">
-          <figure class="itin-lb__card">
-            <button type="button" class="itin-lb__close" :aria-label="t('common.close')" @click="lightbox = null">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12" /></svg>
-            </button>
-            <img :src="lightbox.image" :alt="lightbox.title" class="itin-lb__img" />
-            <figcaption class="itin-lb__caption">
-              <span class="itin-lb__tag">{{ lightbox.tag }}</span>
-              {{ lightbox.title }}
-            </figcaption>
-          </figure>
-        </div>
-      </Transition>
-    </Teleport>
+    <!-- Gecentreerde foto-pop-up (gedeeld met het inclusieblok op de PDP) -->
+    <MultiHotelTripImageLightbox v-if="lightbox && lightbox.image" :image="lightbox.image" :title="lightbox.title" :tag="lightbox.tag" @close="lightbox = null" />
   </div>
 </template>
 
@@ -345,69 +330,6 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 .itin-info__close:hover { background: #fff; }
 
 /* ── Foto-pop-up ── */
-.itin-lb {
-  position: fixed;
-  inset: 0;
-  z-index: 1200;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--space-lg);
-  background: rgba(20, 20, 20, 0.7);
-}
-.itin-lb__card {
-  position: relative;
-  margin: 0;
-  max-width: min(1100px, 100%);
-  max-height: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-.itin-lb__img {
-  display: block;
-  max-width: 100%;
-  max-height: calc(100vh - 2 * var(--space-lg) - 48px);
-  object-fit: contain;
-  border-radius: var(--radius-lg);
-  background: #000;
-}
-.itin-lb__caption {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  color: #fff;
-  font-family: var(--font-body);
-  font-size: 14px;
-  font-weight: 500;
-}
-.itin-lb__tag {
-  padding: 3px 8px;
-  border-radius: 6px;
-  background: rgba(255, 255, 255, 0.94);
-  color: #141414;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-.itin-lb__close {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  z-index: 1;
-  width: 36px;
-  height: 36px;
-  border: 0;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.94);
-  color: #141414;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-}
-.itin-lb__close:hover { background: #fff; }
 .fade-enter-active, .fade-leave-active { transition: opacity 180ms ease; }
 .fade-enter-from, .fade-leave-to { opacity: 0; }
 

@@ -115,13 +115,14 @@ export function buildTripDays(trip: MultiHotelTripDetail, content: TripItinerary
       if (arrival || d.daily) blocks.push({ kind: 'dinner', stopIndex: i, dinnerLabel: d.label, image: dinnerImageOf(stops[i]!) })
     }
     // Wakker worden en ontbijten — vanaf dag 2, in het hotel van vannacht (inbegrepen).
-    if (day > 1 && prevIdx >= 0) {
+    // `breakfast: false` in de content: geen apart blok (het ontbijt wordt in het volgende blok genoemd).
+    if (day > 1 && prevIdx >= 0 && spec?.breakfast !== false) {
       blocks.push({
         kind: 'breakfast',
         stopIndex: prevIdx,
         breakfastLabel: breakfastOf(stops[prevIdx]!),
         image: breakfastImageOf(stops[prevIdx]!),
-        text: spec?.breakfast?.text,
+        text: spec?.breakfast ? spec.breakfast.text : undefined,
         last: idx !== prevIdx,
         nextCity: idx >= 0 && idx !== prevIdx ? stops[idx]?.city : undefined,
       })
