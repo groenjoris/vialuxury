@@ -147,8 +147,9 @@
         <!-- Multi Hotel Trip: een vakantie heeft geen hotelnaam — "Autovakantie met
              3 hotels" / "Fietsvakantie met 3 hotels", zonder link en zonder sterren. -->
         <h3 v-if="isTrip" class="deal-card-v2__name-row">
-          <!-- Varianten "overlay" en "tijdlijn": auto- of fietsicoon links van de titel. -->
-          <img v-if="tripOverlay || tripTimeline" :src="`/icons/mht/${tripTransportIcon}.svg`" alt="" class="deal-card-v2__name-icon" width="18" height="18" />
+          <!-- Varianten "50-50" en "overlay": auto- of fietsicoon links van de titel
+               (de tijdlijn toont het vervoer al op de route). -->
+          <img v-if="isTrip && !tripTimeline" :src="`/icons/mht/${tripTransportIcon}.svg`" alt="" class="deal-card-v2__name-icon" width="18" height="18" />
           <span class="deal-card-v2__name">{{ tripTypeLabel }}</span>
         </h3>
         <NuxtLink v-else :to="`/multi-hotel-trip/hotel/${hotel.slug}`" :target="linkTarget" class="deal-card-v2__name-link" @click.stop>
@@ -996,7 +997,7 @@ const includesBullets = computed<string[]>(() => {
   min-width: 0;
 }
 
-/* Vervoersicoon voor de vakantietitel (overlay/tijdlijn). */
+/* Vervoersicoon voor de vakantietitel (50-50/overlay). */
 .deal-card-v2__name-icon { flex-shrink: 0; align-self: center; width: 18px; height: 18px; }
 .deal-card-v2__name {
   min-width: 0;
