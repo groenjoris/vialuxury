@@ -23,6 +23,13 @@
         >{{ v.label }}</button>
       </div>
     </div>
+    <div class="tpv__group">
+      <span class="tpv__label">Tabs</span>
+      <div class="tpv__seg">
+        <button type="button" class="tpv__btn" :class="{ 'tpv__btn--on': tabs }" :aria-pressed="tabs" @click="setTabs(true)">Aan</button>
+        <button type="button" class="tpv__btn" :class="{ 'tpv__btn--on': !tabs }" :aria-pressed="!tabs" @click="setTabs(false)">Uit</button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -30,7 +37,7 @@
 // NB: Nuxt dedupliceert het "Trip"-segment → <MultiHotelTripPdpVariantSwitch>.
 import { TRIP_INCLUDES_VARIANTS, useMultiHotelTripPdpVariant } from '~/composables-multi-hotel-trip/useMultiHotelTripPdpVariant'
 
-const { highlights, includes, setHighlights, setIncludes } = useMultiHotelTripPdpVariant()
+const { highlights, includes, tabs, setHighlights, setIncludes, setTabs } = useMultiHotelTripPdpVariant()
 </script>
 
 <style scoped>

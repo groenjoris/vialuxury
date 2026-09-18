@@ -449,7 +449,7 @@
             </div>
           </div>
         </section>
-        <section id="intro" class="container deal-page__intro-row">
+        <section id="intro" class="container deal-page__intro-row" :class="{ 'deal-page__intro-row--no-highlights': !pdpHighlights }">
           <div class="deal-page__intro-map">
             <MultiHotelTripRouteMapCard
               id="mini-map"
@@ -516,14 +516,14 @@
             <!-- Vakantie: dagprogramma — per dag 2–3 blokken, foto links, tekst rechts. -->
             <template v-if="isTrip">
               <!-- Variant "tabs": inclusies en reisschema als twee tabs, één tegelijk zichtbaar. -->
-              <div v-if="pdpIncludes === 'tabs'" class="trip-tabs" role="tablist">
+              <div v-if="pdpTabs" class="trip-tabs" role="tablist">
                 <button type="button" class="trip-tabs__btn" :class="{ 'trip-tabs__btn--on': tripTab === 'includes' }" role="tab" :aria-selected="tripTab === 'includes'" @click="tripTab = 'includes'">{{ t('trip.tabIncluded') }}</button>
                 <button type="button" class="trip-tabs__btn" :class="{ 'trip-tabs__btn--on': tripTab === 'itinerary' }" role="tab" :aria-selected="tripTab === 'itinerary'" @click="tripTab = 'itinerary'">{{ t('trip.itineraryHeading') }}</button>
               </div>
               <!-- Vakantie: "In deze autovakantie … is het volgende inbegrepen" — klein (compacte rijen),
                    groot (zoals het reisschema: grote thumb, langere tekst) of als tab. -->
-              <section v-if="tripIncluded.length && (pdpIncludes !== 'tabs' || tripTab === 'includes')" id="inbegrepen" class="trip-incl" :class="{ 'trip-incl--large': pdpIncludes === 'large', 'trip-incl--tab': pdpIncludes === 'tabs' }">
-              <h2 v-if="pdpIncludes !== 'tabs'" class="section-title">{{ tripIncludedHeading }}</h2>
+              <section v-if="tripIncluded.length && (!pdpTabs || tripTab === 'includes')" id="inbegrepen" class="trip-incl" :class="{ 'trip-incl--large': pdpIncludes === 'large', 'trip-incl--tab': pdpTabs }">
+              <h2 v-if="!pdpTabs" class="section-title">{{ tripIncludedHeading }}</h2>
               <div class="trip-incl__grid">
                 <article v-for="b in tripIncluded" :key="b.title" class="trip-incl__item">
                   <button v-if="b.image" type="button" class="trip-incl__thumb" :aria-label="`${b.title} — ${t('common.allPhotos')}`" @click="tripInclLightbox = { image: b.image, title: b.title }"><img :src="b.image" :alt="b.title" loading="lazy" /></button>
@@ -543,9 +543,15 @@
                   </div>
                 </article>
               </div>
+              <!-- Tab-variant: onderaan de inclusies door naar het reisschema — scrolt rustig
+                   terug naar de tabbalk en wisselt dan van tab (zodat je ziet hoe de tabs werken). -->
+              <button v-if="pdpTabs" type="button" class="trip-incl__to-itinerary" @click="showItineraryTab">
+                {{ t('trip.viewItinerary') }}
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+              </button>
             </section>
-              <template v-if="pdpIncludes !== 'tabs' || tripTab === 'itinerary'">
-                <h2 v-if="pdpIncludes !== 'tabs'" class="section-title">{{ t('trip.itineraryHeading') }}</h2>
+              <template v-if="!pdpTabs || tripTab === 'itinerary'">
+                <h2 v-if="!pdpTabs" class="section-title">{{ t('trip.itineraryHeading') }}</h2>
                 <p class="deal-page__itinerary-intro">{{ t('trip.itineraryIntro') }}</p>
                 <MultiHotelTripItinerary :days="tripDaysView" :hotels="tripHotelLinks" @open-hotel="openTripHotel" />
               </template>
@@ -1482,7 +1488,7 @@ const tripIntroTitle = computed(() => {
   return t(trip.type === 'fiets' ? 'trip.introTitleBike' : 'trip.introTitleAuto').replace('{days}', String(trip.nights + 1))
 })
 /** Weergavevarianten (schakelaar in de breadcrumb-rij): highlights aan/uit, inclusies klein/groot/tabs. */
-const { highlights: pdpHighlights, includes: pdpIncludes } = useMultiHotelTripPdpVariant()
+const { highlights: pdpHighlights, includes: pdpIncludes, tabs: pdpTabs } = useMultiHotelTripPdpVariant()
 /** Tab-variant: welke van de twee tabs (inclusies | reisschema) open is. */
 const tripTab = ref<'includes' | 'itinerary'>('includes')
 /** Ankertab: in de tab-variant eerst de juiste tab openen, dan naar het blok scrollen. */
@@ -1492,6 +1498,26 @@ async function goTripAnchor(id: 'inbegrepen' | 'arrangement', tab: 'includes' | 
   await nextTick()
   document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   history.replaceState(null, '', `#${id}`)
+}
+/** Onderaan de inclusies (tab-variant): rustig omhoog scrollen naar de tabbalk en dan
+ *  van tab wisselen — trager dan de browser-smooth scroll, zodat de wissel zichtbaar is. */
+function showItineraryTab() {
+  const bar = document.querySelector<HTMLElement>('.trip-tabs')
+  if (!bar) { tripTab.value = 'itinerary'; return }
+  const startY = window.scrollY
+  const targetY = bar.getBoundingClientRect().top + startY - 96
+  const dist = targetY - startY
+  const duration = Math.min(1400, Math.max(600, Math.abs(dist) * 0.6))
+  const t0 = performance.now()
+  const ease = (x: number) => (x < 0.5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2)
+  // Op een timer i.p.v. requestAnimationFrame: die staat stil in een verborgen tab/paneel.
+  const step = () => {
+    const p = Math.min(1, (performance.now() - t0) / duration)
+    window.scrollTo(0, startY + dist * ease(p))
+    if (p < 1) setTimeout(step, 16)
+    else setTimeout(() => { tripTab.value = 'itinerary' }, 150)
+  }
+  step()
 }
 /** Grotere versie van een thumbnail uit het inclusieblok (zelfde pop-up als in het reisschema). */
 const tripInclLightbox = ref<{ image: string; title: string } | null>(null)
@@ -2686,6 +2712,26 @@ onMounted(() => {
 .trip-incl--large .trip-incl__text { font-size: 15px; line-height: 1.7; }
 /* Variant "tabs": geen eigen streep onder het blok (de tabbalk scheidt al). */
 .trip-incl--tab { border-bottom: 0; padding-bottom: 0; }
+/* Tab-variant: link onderaan de inclusies naar het reisschema. */
+.trip-incl__to-itinerary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: var(--space-lg);
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-primary);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.trip-incl__to-itinerary:hover { color: var(--color-primary-hover); }
+/* Zonder highlights: witruimte tussen de gallery en de beschrijving/minimap. */
+.deal-page__intro-row--no-highlights { margin-top: var(--space-xl); }
 /* Vakantie: "Het volgende is inbegrepen" — rijen over de volle breedte, gescheiden
    door een hairline: de hotels met een foto links, de overige punten met een
    icoontegel (zoals de highlights), rechts titel + korte tekst. */
