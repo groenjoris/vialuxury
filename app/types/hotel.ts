@@ -31,6 +31,9 @@ export interface HotelImage {
   url: string
   alt: LocalizedString
   position: 'hero' | 'gallery'
+  /** Optional description shown in white above the photo in the gallery
+   *  viewer (e.g. the example cycling-route maps on cycling deals). */
+  caption?: LocalizedString
 }
 
 export interface Facility {
