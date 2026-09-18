@@ -40,6 +40,7 @@
           </button>
           <div ref="mTrack" class="pg-mphoto__track" data-scroll-lock-allow="true" @scroll.passive="onTrackScroll">
             <div v-for="img in ordered" :key="img.id" class="pg-mphoto__slide">
+              <p v-if="img.caption" class="pg-mphoto__caption">{{ localized(img.caption) }}</p>
               <img :src="img.url" :alt="localized(img.alt)" />
               <span v-if="stickerFor(img)" class="pg-sticker pg-sticker--stage">{{ stickerFor(img) }}</span>
             </div>
@@ -94,7 +95,12 @@
                 <button type="button" class="pg-iconbtn pg-iconbtn--light pg-d__arrow pg-d__arrow--prev" aria-label="Vorige" @click="setIndex(index - 1)">
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6" /></svg>
                 </button>
-                <img :src="ordered[index]?.url" :alt="ordered[index] ? localized(ordered[index].alt) : ''" class="pg-d__stage-img" />
+                <div class="pg-d__stage-body">
+                  <!-- Optional description (e.g. cycling-route maps) — white, above the photo. -->
+                  <p v-if="ordered[index]?.caption" class="pg-d__caption">{{ localized(ordered[index]!.caption!) }}</p>
+                  <img :src="ordered[index]?.url" :alt="ordered[index] ? localized(ordered[index].alt) : ''" class="pg-d__stage-img" />
+                </div>
+                <!-- MHT: trip sticker stays anchored to the stage, outside the caption/photo column. -->
                 <span v-if="ordered[index] && stickerFor(ordered[index])" class="pg-sticker pg-sticker--stage">{{ stickerFor(ordered[index]) }}</span>
                 <button type="button" class="pg-iconbtn pg-iconbtn--light pg-d__arrow pg-d__arrow--next" aria-label="Volgende" @click="setIndex(index + 1)">
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6" /></svg>
@@ -455,10 +461,22 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   width: 100%;
   scroll-snap-align: center;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 12px;
 }
-.pg-mphoto__slide img { width: 100%; height: 100%; max-height: 100%; object-fit: contain; display: block; }
+.pg-mphoto__slide img { width: 100%; flex: 1 1 0; min-height: 0; object-fit: contain; display: block; }
+/* Optional description above the photo — white on the dark viewer. */
+.pg-mphoto__caption {
+  flex-shrink: 0;
+  margin: 0;
+  padding: 0 var(--space-lg);
+  color: #fff;
+  font-size: 15px;
+  line-height: 1.4;
+  text-align: center;
+}
 .pg-mphoto__controls {
   flex-shrink: 0;
   display: flex;
@@ -572,7 +590,26 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   min-height: 0;
   padding: var(--space-lg);
 }
-.pg-d__stage-img { max-width: 100%; max-height: 100%; object-fit: contain; display: block; }
+.pg-d__stage-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+}
+.pg-d__stage-img { max-width: 100%; max-height: 100%; min-height: 0; flex: 0 1 auto; object-fit: contain; display: block; }
+/* Optional description above the photo — white on the dark stage. */
+.pg-d__caption {
+  flex-shrink: 0;
+  margin: 0;
+  color: #fff;
+  font-size: 16px;
+  line-height: 1.4;
+  text-align: center;
+}
 .pg-d__arrow { position: absolute; top: 50%; transform: translateY(-50%); }
 .pg-d__arrow--prev { left: 16px; }
 .pg-d__arrow--next { right: 16px; }

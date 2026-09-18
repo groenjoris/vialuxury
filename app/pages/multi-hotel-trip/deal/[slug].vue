@@ -61,7 +61,7 @@
         <!-- 5. Photo carousel -->
         <section class="container deal-page__gallery">
           <MultiHotelTripHeroGallery
-            :images="hotel.images"
+            :images="galleryImages"
             :labels="galleryLabels"
             :rooms-left="dealRoomsLeft"
             @open-gallery="openGallery"
@@ -426,7 +426,7 @@
       <!-- Hero Gallery -->
       <section class="container deal-page__gallery">
         <MultiHotelTripHeroGallery
-          :images="hotel.images"
+          :images="galleryImages"
           :labels="galleryLabels"
           :rooms-left="dealRoomsLeft"
           @open-gallery="openGallery"
@@ -1091,7 +1091,7 @@
     <MultiHotelTripPhotoGalleryModal
       v-if="hotel && currentDeal"
       :open="galleryOpen"
-      :images="hotel.images"
+      :images="galleryImages"
       :title="localized(currentDeal.title)"
       :view="galleryView"
       :index="galleryIndex"
@@ -1114,6 +1114,7 @@ import { useSearchNavLock } from '~/composables-multi-hotel-trip/useMobileSearch
 import { useBodyScrollLock } from '~/composables-multi-hotel-trip/useBodyScrollLock'
 import { usePinToViewportBottom } from '~/composables-multi-hotel-trip/usePinToViewportBottom'
 import { creatorForSlug } from '~/data/team-members'
+import { withFietskaarten } from '~/data/fietskaarten'
 import MultiHotelTripExperienceCreatorCard from '~/components-multi-hotel-trip/deal/ExperienceCreatorCard.vue'
 import MultiHotelTripWhyViaLuxury from '~/components-multi-hotel-trip/deal/WhyViaLuxury.vue'
 import MultiHotelTripOthersAlsoViewed from '~/components-multi-hotel-trip/deal/OthersAlsoViewed.vue'
@@ -1463,6 +1464,9 @@ const showPartnerLogo = computed(() => {
 
 const hotel = ref(initialHotel)
 const currentDeal = computed(() => store.currentDeal)
+// Gallery = hotel photos + the two example cycling-route maps (with captions)
+// on cycling deals — see ~/data/fietskaarten.ts.
+const galleryImages = computed(() => withFietskaarten(hotel.value.images, currentDeal.value))
 // The SearchHotel + SearchHotelDeal that back this deal page — looked up
 // by the route's deal permalink, i.e. the exact card the user came from.
 // Drives the gallery stickers so they match the search card.
