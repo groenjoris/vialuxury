@@ -11,7 +11,7 @@
  *   koppelt elke foto-id aan de hotelnaam voor de sticker op de foto.
  */
 import type { Deal } from '~/types/deal'
-import type { Hotel, HotelImage, Facility, HouseRule } from '~/types/hotel'
+import type { Hotel, HotelImage, Facility, HouseRule, FaqItem } from '~/types/hotel'
 import type { LocalizedString } from '~/i18n/types'
 import { tripDetailBySlug, type MultiHotelTripDetail, type MultiHotelTripDetailStop } from './mht-trips'
 import { TRIP_ITINERARIES, type TripItinerarySpec, type TripMoreInfo } from './mht-trip-itineraries'
@@ -273,6 +273,70 @@ function buildImages(trip: MultiHotelTripDetail): { images: HotelImage[]; sticke
   return { images, stickers }
 }
 
+const F = (nl: string, en: string): LocalizedString => ({ nl, en })
+
+/** Veelgestelde vragen bij een vakantie — de verwarring die een rondreis
+ *  met meerdere hotels oproept (eigen auto? groepsreis? één boeking?),
+ *  met een paar varianten voor de fietsvakantie. */
+function tripFaq(trip: MultiHotelTripDetail): FaqItem[] {
+  const bike = trip.type === 'fiets'
+  const first = trip.stops[0]
+  const n = trip.stops.length
+  const items: FaqItem[] = [
+    { id: 'trip-groep', question: F('Is dit een groepsreis?', 'Is this a group tour?'),
+      answer: F(`Nee. Je reist zelfstandig, in je eigen tempo en zonder reisleider. Wij hebben de ${n} hotels, de diners en het voorbeeldprogramma voor je geregeld; onderweg bepaal je zelf wat je doet en wanneer je vertrekt.`,
+        `No. You travel independently, at your own pace and without a tour guide. We have arranged the ${n} hotels, the dinners and the sample programme; along the way you decide what you do and when you leave.`) },
+    bike
+      ? { id: 'trip-fiets', question: F('Breng ik mijn eigen fiets mee?', 'Do I bring my own bike?'),
+          answer: F('Dat mag, maar het hoeft niet: bij het eerste hotel kun je een fiets of e-bike huren voor de hele week (reserveer bij het boeken). Je auto blijft de hele vakantie gratis bij het eerste hotel staan.',
+            'You can, but you do not have to: at the first hotel you can rent a bike or e-bike for the whole week (reserve when booking). Your car stays parked for free at the first hotel all week.') }
+      : { id: 'trip-auto', question: F('Breng ik mijn eigen auto mee?', 'Do I bring my own car?'),
+          answer: F(`Ja, dit is een vakantie met eigen vervoer: je rijdt zelf van huis naar ${first?.city ?? 'het eerste hotel'} en daarna van hotel naar hotel. Een huurauto kan natuurlijk ook. Parkeren bij de hotels is inbegrepen; laadmogelijkheden voor elektrisch rijden vind je per hotel onder "Meer over hotel".`,
+            `Yes, this is a self-drive holiday: you drive from home to ${first?.city ?? 'the first hotel'} and then from hotel to hotel. A rental car works too. Parking at the hotels is included; charging options for electric cars are listed per hotel under "More about the hotel".`) },
+    { id: 'trip-fietshuur', question: F(bike ? 'Kan ik ter plaatse een e-bike huren?' : 'Kan ik ter plaatse een fiets huren?', bike ? 'Can I rent an e-bike locally?' : 'Can I rent a bike locally?'),
+      answer: F(bike
+        ? 'Ja. Bij het eerste hotel staan fietsen en e-bikes klaar; geef bij het boeken je lengte en voorkeur door, dan staat de fiets afgesteld op je te wachten.'
+        : 'Bij de meeste hotels wel: ze verhuren fietsen of e-bikes of regelen ze voor je bij een verhuurder in het dorp. Kijk bij de faciliteiten van elk hotel (via "Meer over hotel") of vraag het bij het boeken; wij reserveren ze dan alvast.',
+        bike
+        ? 'Yes. Bikes and e-bikes are ready at the first hotel; tell us your height and preference when booking and the bike will be adjusted and waiting for you.'
+        : 'At most hotels, yes: they rent bikes or e-bikes or arrange them for you with a local rental shop. Check each hotel\'s facilities (via "More about the hotel") or ask when booking and we will reserve them for you.') },
+    { id: 'trip-programma', question: F('Moet ik het voorbeeldreisschema precies volgen?', 'Do I have to follow the sample itinerary exactly?'),
+      answer: F('Nee. Alleen de hotelnachten en de diners op de aankomstdagen liggen vast. Het dag-voor-dagprogramma is een voorbeeld met onze favoriete tips; sla gerust iets over of blijf langer hangen waar het je bevalt.',
+        'No. Only the hotel nights and the dinners on arrival days are fixed. The day-by-day programme is a sample with our favourite tips; skip something or linger wherever you like.') },
+    { id: 'trip-boeking', question: F(`Hoe werkt het boeken en inchecken bij ${n} hotels?`, `How do booking and check-in work with ${n} hotels?`),
+      answer: F('Je boekt de hele vakantie in één keer en krijgt één bevestiging met alle hotels, data en inbegrepen extra\'s. Bij elk hotel meld je je gewoon met je naam; de hotels weten dat je komt en wat er inbegrepen is.',
+        'You book the whole holiday in one go and receive one confirmation listing every hotel, the dates and the included extras. At each hotel you simply give your name; the hotels know you are coming and what is included.') },
+    { id: 'trip-vol', question: F('Wat als één van de hotels vol is op mijn datum?', 'What if one of the hotels is full on my date?'),
+      answer: F('De kalender toont alleen aankomstdata waarop alle hotels beschikbaar zijn, zodat je nooit een halve reis boekt. Is jouw voorkeursdatum niet beschikbaar, dan zie je direct de dichtstbijzijnde alternatieven.',
+        'The calendar only shows arrival dates on which all hotels are available, so you never book half a trip. If your preferred date is not available you immediately see the nearest alternatives.') },
+    { id: 'trip-maaltijden', question: F('Welke maaltijden zijn inbegrepen?', 'Which meals are included?'),
+      answer: F(bike
+        ? 'Elke ochtend het ontbijt en elke avond een 3-gangendiner in het hotel waar je slaapt. Lunch regel je zelf onderweg; in het reisschema staan onze tips.'
+        : 'Elke ochtend het ontbijt in het hotel waar je slaapt, en op elke aankomstdag een 3-gangendiner in dat hotel. De overige avonden ben je vrij; in het reisschema staan onze restauranttips.',
+        bike
+        ? 'Breakfast every morning and a 3-course dinner every evening at the hotel where you stay. Lunch is up to you along the way; the itinerary lists our tips.'
+        : 'Breakfast every morning at the hotel where you stay, and a 3-course dinner at that hotel on each arrival day. The other evenings are free; the itinerary lists our restaurant tips.') },
+    { id: 'trip-afstand', question: F(bike ? 'Hoe ver fiets ik per dag?' : 'Hoe lang rijd ik per dag?', bike ? 'How far do I cycle per day?' : 'How long do I drive per day?'),
+      answer: F(bike
+        ? 'De etappes tussen de hotels zijn 30 tot 45 kilometer over rustige fietspaden, met onderweg genoeg terrassen. Op de verblijfsdagen kies je zelf een rondje vanuit het hotel — of je laat de fiets een dag staan.'
+        : 'De etappes tussen de hotels duren bewust maar een uurtje, zodat je onderweg tijd hebt voor een stad of een kust. Alleen de heen- en terugreis vanuit huis is langer; die staat bij het kaartje.',
+        bike
+        ? 'The legs between the hotels are 30 to 45 kilometres on quiet cycle paths, with plenty of terraces along the way. On stay days you pick your own loop from the hotel — or leave the bike for a day.'
+        : 'The legs between the hotels deliberately take only about an hour, leaving time for a town or a stretch of coast on the way. Only the drive from home and back is longer; you will find it next to the map.') },
+    bike
+      ? { id: 'trip-bagage', question: F('Hoe komt mijn bagage bij het volgende hotel?', 'How does my luggage get to the next hotel?'),
+          answer: F('Je koffers reizen vooruit: zet ze voor het ontbijt klaar bij de receptie en ze staan \'s middags op je kamer in het volgende hotel. Jij fietst met alleen een dagtas.',
+            'Your luggage travels ahead: leave it at reception before breakfast and it will be in your room at the next hotel in the afternoon. You cycle with just a day bag.') }
+      : { id: 'trip-tol', question: F('Heb ik een vignet nodig of betaal ik tol?', 'Do I need a vignette or pay tolls?'),
+          answer: F('Voor Nederland, België en Frankrijk heb je geen vignet nodig. In Frankrijk betaal je tol op sommige snelwegen; de etappes tussen de hotels lopen grotendeels over tolvrije wegen. Reken voor de heenreis op een klein tolbedrag als je de snelste route neemt.',
+            'No vignette is needed for the Netherlands, Belgium or France. In France some motorways charge tolls; the legs between the hotels mostly follow toll-free roads. Allow for a small toll on the drive there if you take the fastest route.') },
+    { id: 'trip-annuleren', question: F('Kan ik annuleren of mijn datum wijzigen?', 'Can I cancel or change my date?'),
+      answer: F('Tot 30 dagen voor vertrek annuleer je kosteloos. Daarna gelden de voorwaarden van de hotels. Een andere aankomstdatum regelen we op aanvraag, afhankelijk van de beschikbaarheid bij alle hotels.',
+        'Up to 30 days before departure you can cancel free of charge. After that the hotels\' conditions apply. We arrange a different arrival date on request, subject to availability at all hotels.') },
+  ]
+  return items
+}
+
 function buildDeal(trip: MultiHotelTripDetail): Deal {
   return {
     id: `${trip.id}-deal`,
@@ -343,7 +407,7 @@ function buildHotel(trip: MultiHotelTripDetail, images: HotelImage[], content: T
     },
     individualReviews: sharedReviews,
     nearbyTips: known[0]?.nearbyTips ?? sharedNearbyTips,
-    faq: sharedFaq,
+    faq: tripFaq(trip),
     highlights: (content?.highlights ?? trip.highlights).map(text => ({ icon: '', text })),
   }
 }

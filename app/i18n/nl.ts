@@ -260,6 +260,7 @@ const nl: Record<string, string> = {
   'trip.routeLabel': 'Route',
   // Multi Hotel Trip — dagprogramma + hotel-pop-up op de vakantie-PDP
   'trip.itineraryHeading': 'Voorbeeld reisschema',
+  'trip.tabIncluded': 'Wat is inbegrepen',
   'trip.introTitleAuto': '{days}-daagse reis met eigen vervoer',
   'trip.introTitleBike': '{days}-daagse fietsreis',
   'trip.includedHeading': 'In deze {type} voor 2 personen is het volgende inbegrepen',

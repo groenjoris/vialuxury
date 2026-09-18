@@ -239,7 +239,7 @@
           <!-- Vakantie: dagprogramma (per dag 2–3 blokken, foto boven tekst). -->
           <template v-if="isTrip">
             <!-- Vakantie: "Het volgende is inbegrepen" — compacte inclusieblokken (thumb, titel, tekst). -->
-            <section v-if="tripIncluded.length" class="trip-incl">
+            <section v-if="tripIncluded.length" id="inbegrepen" class="trip-incl">
             <h2 class="section-title">{{ tripIncludedHeading }}</h2>
             <div class="trip-incl__grid">
               <article v-for="b in tripIncluded" :key="b.title" class="trip-incl__item">
@@ -352,6 +352,7 @@
       <!-- Anchor tabs -->
       <nav class="deal-page__tabs container">
         <a href="#intro" class="deal-page__tab">{{ t('deal.tabIntro') }}</a>
+        <a v-if="isTrip" href="#inbegrepen" class="deal-page__tab">{{ t('trip.tabIncluded') }}</a>
         <!-- Vakantie: "Dag voor dag" i.p.v. "Jouw arrangement"; geen tips/huisregels. -->
         <a href="#arrangement" class="deal-page__tab">{{ isTrip ? t('trip.itineraryHeading') : t('deal.tabArrangement') }}</a>
         <a v-if="!isTrip" href="#tips" class="deal-page__tab">{{ t('hotel.tabNearby') }}</a>
@@ -513,7 +514,7 @@
             <!-- Vakantie: dagprogramma — per dag 2–3 blokken, foto links, tekst rechts. -->
             <template v-if="isTrip">
               <!-- Vakantie: "Het volgende is inbegrepen" — compacte inclusieblokken (thumb, titel, tekst). -->
-              <section v-if="tripIncluded.length" class="trip-incl">
+              <section v-if="tripIncluded.length" id="inbegrepen" class="trip-incl">
               <h2 class="section-title">{{ tripIncludedHeading }}</h2>
               <div class="trip-incl__grid">
                 <article v-for="b in tripIncluded" :key="b.title" class="trip-incl__item">
@@ -947,6 +948,7 @@
       <div class="deal-page__cta-bar-inner container">
         <nav class="deal-page__tabs deal-page__tabs--in-bar">
           <a href="#intro" class="deal-page__tab" :class="{ 'deal-page__tab--active': activeAnchor === 'intro' }">{{ t('deal.tabIntro') }}</a>
+          <a v-if="isTrip" href="#inbegrepen" class="deal-page__tab" :class="{ 'deal-page__tab--active': activeAnchor === 'inbegrepen' }">{{ t('trip.tabIncluded') }}</a>
           <a href="#arrangement" class="deal-page__tab" :class="{ 'deal-page__tab--active': activeAnchor === 'arrangement' }">{{ isTrip ? t('trip.itineraryHeading') : t('deal.tabArrangement') }}</a>
           <a v-if="!isTrip" href="#tips" class="deal-page__tab" :class="{ 'deal-page__tab--active': activeAnchor === 'tips' }">{{ t('hotel.tabNearby') }}</a>
           <a v-if="!isTrip && hotel.houseRules && hotel.houseRules.length" href="#huisregels" class="deal-page__tab" :class="{ 'deal-page__tab--active': activeAnchor === 'huisregels' }">{{ t('hotel.tabHouseRules') }}</a>
@@ -1260,7 +1262,7 @@ onBeforeUnmount(() => {
 // view, drives the `.--active` modifier on the sticky-bar's anchor
 // tabs (so the current section's tab loses its underline).
 // ---------------------------------------------------------------------------
-const ANCHOR_IDS = ['intro', 'arrangement', 'tips', 'huisregels', 'veelgestelde-vragen'] as const
+const ANCHOR_IDS = ['intro', 'inbegrepen', 'arrangement', 'tips', 'huisregels', 'veelgestelde-vragen'] as const
 const activeAnchor = ref<typeof ANCHOR_IDS[number] | null>(null)
 let anchorObserver: IntersectionObserver | null = null
 
@@ -2641,6 +2643,7 @@ onMounted(() => {
    door een hairline: de hotels met een foto links, de overige punten met een
    icoontegel (zoals de highlights), rechts titel + korte tekst. */
 .trip-incl {
+  scroll-margin-top: 88px;
   margin-bottom: 40px;
   padding-bottom: 40px;
   border-bottom: 1px solid var(--color-border-light);
