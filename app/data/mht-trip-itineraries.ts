@@ -75,7 +75,7 @@ export interface TripItinerarySpec {
   /** "Het volgende is inbegrepen" — rijen over de volle breedte boven het
    *  reisschema: de hotels met een foto (`image`), de overige punten met een
    *  icoon (`icon`, /icons/facilities/…). */
-  included?: { title: LocalizedString; text: LocalizedString; image?: string; icon?: string }[]
+  included?: { title: LocalizedString; text: LocalizedString; longText?: LocalizedString; image?: string; icon?: string }[]
   /** Alinea's; de eerste is de teaser op de pagina. */
   description: LocalizedString[]
   highlights: LocalizedString[]
@@ -139,27 +139,43 @@ export const TRIP_ITINERARIES: Record<string, TripItinerarySpec> = {
     included: [
       { title: l('2 overnachtingen in Hotel Royal Beaulaincourt', '2 nights at Hotel Royal Beaulaincourt'),
         text: l('Twee nachten in het 18e-eeuwse herenhuis in het hart van Béthune, in een Privilege Room.', 'Two nights in the 18th-century mansion in the heart of Béthune, in a Privilege Room.'),
+        longText: l('Twee nachten in het 18e-eeuwse hôtel particulier in het hart van Béthune, in 2023 gerestaureerd tot een viersterrenhotel met 34 kamers. Je slaapt in een ruime Privilege Room; de Grand-Place met het belfort ligt om de hoek en de bar in de oude salons is de plek voor een glas voor het slapen.',
+          'Two nights in the 18th-century private mansion in the heart of Béthune, restored in 2023 into a four-star hotel with 34 rooms. You sleep in a spacious Privilege Room; the Grand-Place and belfry are around the corner and the bar in the old salons is the place for a nightcap.'),
         image: '/images/vakanties/001/beaulaincourt-1.jpg' },
       { title: l('2 overnachtingen in Hôtel Château Tilques', '2 nights at Hôtel Château Tilques'),
         text: l('Twee nachten in het kasteel in een park van vier hectare bij Saint-Omer, in een Chambre Charme.', 'Two nights in the château in a four-hectare park near Saint-Omer, in a Chambre Charme.'),
+        longText: l('Twee nachten in het 19e-eeuwse kasteel van rode baksteen in een park van vier hectare, net buiten Saint-Omer. Je Chambre Charme ligt in het kasteel of de voormalige stallen en kijkt uit op het park; met verwarmd binnenzwembad, tennisbaan en een golfbaan op loopafstand.',
+          'Two nights in the 19th-century red-brick château in a four-hectare park just outside Saint-Omer. Your Chambre Charme is in the château or the former stables and looks out over the park; heated indoor pool, tennis court and a golf course within walking distance.'),
         image: '/images/vakanties/001/tilques-1.jpg' },
       { title: l('2 overnachtingen in Hôtel Château Cléry', '2 nights at Hôtel Château Cléry'),
         text: l('Twee nachten op het landgoed bij Hesdin-l\'Abbé, op tien minuten van de Opaalkust.', 'Two nights on the estate near Hesdin-l\'Abbé, ten minutes from the Opal Coast.'),
+        longText: l('Twee nachten in het 18e-eeuwse kasteel op een landgoed van vijf hectare bij Hesdin-l\'Abbé, tien minuten van Boulogne-sur-Mer en de stranden van de Opaalkust. Je kamer ligt in het kasteel of een van de bijgebouwen rond de tuin met hortensia\'s; diner in de serre, ontspannen in de kleine spa met sauna.',
+          'Two nights in the 18th-century château on a five-hectare estate near Hesdin-l\'Abbé, ten minutes from Boulogne-sur-Mer and the beaches of the Opal Coast. Your room is in the château or one of the outbuildings around the hydrangea garden; dinner in the conservatory, relaxation in the small spa with sauna.'),
         image: '/images/vakanties/001/clery-1.jpg' },
       { title: l('6 dagen ontbijt', '6 days of breakfast'),
         text: l('Elke ochtend een uitgebreid ontbijtbuffet in het hotel waar je die nacht slaapt.', 'An extensive breakfast buffet every morning at the hotel where you spent the night.'),
+        longText: l('Elke ochtend staat het ontbijt klaar in het hotel waar je die nacht sliep: in Béthune op de lichte binnenplaats, in Tilques achter de glaswand met zicht op het gazon en in Cléry in de serre aan de tuin. Verse croissants, kaas en charcuterie uit de streek, jus en goede koffie — zonder haast, want de etappes zijn kort.',
+          'Breakfast is ready every morning at the hotel where you slept: in Béthune in the bright courtyard, in Tilques behind the glass wall overlooking the lawn and in Cléry in the conservatory by the garden. Fresh croissants, regional cheese and charcuterie, juice and good coffee — no hurry, the legs are short.'),
         image: '/images/vakanties/001/extra-clery-ontbijt.jpg' },
       { title: l('3 x een 3-gangendiner', '3 x a 3-course dinner'),
         text: l('In elk hotel op de dag van aankomst: \'s avonds hoef je nergens meer heen.', 'At each hotel on the day of arrival: no need to go anywhere in the evening.'),
+        longText: l('Op elke aankomstdag staat \'s avonds een 3-gangendiner voor je klaar in het restaurant van het hotel: Noord-Franse keuken met streekproducten in Béthune, kasteelkeuken met zicht op het park in Tilques en vis van de Opaalkust in de serre van Cléry. De overige avonden ben je vrij; in het reisschema staan onze tips.',
+          'On every arrival day a 3-course dinner awaits you in the hotel restaurant: northern French cooking with regional produce in Béthune, château cuisine overlooking the park in Tilques and Opal Coast fish in the conservatory at Cléry. The other evenings are free; the itinerary lists our tips.'),
         image: '/images/vakanties/001/extra-beaulaincourt-diner.jpg' },
       { title: l('Welkomstbubbels in Hotel Royal Beaulaincourt', 'Welcome bubbles at Hotel Royal Beaulaincourt'),
         text: l('Een glas bubbels bij aankomst op dag 1, om de vakantie mee te openen.', 'A glass of bubbles on arrival on day 1 to open the holiday.'),
+        longText: l('Na de rit vanuit huis word je in Hotel Royal Beaulaincourt ontvangen met een glas bubbels: op de binnenplaats als de zon schijnt, anders in de bar in de oude salons. Het moment waarop de vakantie echt begint.',
+          'After the drive from home you are welcomed at Hotel Royal Beaulaincourt with a glass of bubbles: in the courtyard when the sun is out, otherwise in the bar in the old salons. The moment the holiday really begins.'),
         image: '/images/vakanties/001/extra-beaulaincourt-bubbels.jpg' },
       { title: l('Late check-out bij alle hotels', 'Late check-out at all hotels'),
         text: l('Rustig ontbijten en op je gemak vertrekken; in Béthune zelfs tot 15:00 uur.', 'A leisurely breakfast and an unhurried departure; in Béthune even until 15:00.'),
+        longText: l('Geen wekker op de wisseldagen: bij alle drie de hotels mag je later uitchecken dan gebruikelijk, in Béthune zelfs tot 15:00 uur. Rustig ontbijten, nog een rondje door het park of de stad, en dan pas de koffers in de auto — de volgende etappe duurt toch maar een uurtje.',
+          'No alarm on changeover days: all three hotels let you check out later than usual, in Béthune even until 15:00. A leisurely breakfast, one more turn through the park or the town, and only then the bags in the car — the next leg takes only about an hour anyway.'),
         image: '/images/vakanties/001/extra-clery-late-checkout.jpg' },
       { title: l('Gratis parkeren bij alle hotels', 'Free parking at all hotels'),
         text: l('Bij alle drie de hotels staat je auto gratis geparkeerd, klaar voor de volgende etappe.', 'Free parking at all three hotels, ready for the next leg.'),
+        longText: l('Je auto staat bij alle drie de hotels gratis geparkeerd: bij de kastelen van Tilques en Cléry op eigen terrein in het park, in Béthune in de parkeergarage naast het hotel. Zo hoef je onderweg nergens naar een plek te zoeken en sta je \'s ochtends direct klaar voor de volgende etappe.',
+          'Your car is parked for free at all three hotels: at the châteaux of Tilques and Cléry on their own grounds in the park, in Béthune in the car park next to the hotel. No searching for a space along the way, and every morning you are ready for the next leg.'),
         image: '/images/vakanties/001/clery-3.jpg' },
     ],
     days: [

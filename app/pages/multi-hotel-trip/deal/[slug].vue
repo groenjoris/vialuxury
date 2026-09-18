@@ -345,16 +345,18 @@
            ============================================================ -->
       <template v-else>
       <!-- Back link + Breadcrumbs -->
-      <section class="deal-page__breadcrumbs container">
+      <section class="deal-page__breadcrumbs container" :class="{ 'deal-page__breadcrumbs--with-switch': isTrip }">
         <MultiHotelTripBreadcrumbNav :items="breadcrumbs" />
+        <!-- Vakantie: weergavevarianten voor de opdrachtgever (highlights aan/uit, inclusies klein/groot/tabs) -->
+        <MultiHotelTripPdpVariantSwitch v-if="isTrip" />
       </section>
 
       <!-- Anchor tabs -->
       <nav class="deal-page__tabs container">
         <a href="#intro" class="deal-page__tab">{{ t('deal.tabIntro') }}</a>
-        <a v-if="isTrip" href="#inbegrepen" class="deal-page__tab">{{ t('trip.tabIncluded') }}</a>
+        <a v-if="isTrip" href="#inbegrepen" class="deal-page__tab" @click.prevent="goTripAnchor('inbegrepen', 'includes')">{{ t('trip.tabIncluded') }}</a>
         <!-- Vakantie: "Dag voor dag" i.p.v. "Jouw arrangement"; geen tips/huisregels. -->
-        <a href="#arrangement" class="deal-page__tab">{{ isTrip ? t('trip.itineraryHeading') : t('deal.tabArrangement') }}</a>
+        <a href="#arrangement" class="deal-page__tab" @click="isTrip && goTripAnchor('arrangement', 'itinerary', $event)">{{ isTrip ? t('trip.itineraryHeading') : t('deal.tabArrangement') }}</a>
         <a v-if="!isTrip" href="#tips" class="deal-page__tab">{{ t('hotel.tabNearby') }}</a>
         <a v-if="!isTrip && hotel && hotel.houseRules && hotel.houseRules.length" href="#huisregels" class="deal-page__tab">{{ t('hotel.tabHouseRules') }}</a>
         <a href="#veelgestelde-vragen" class="deal-page__tab">{{ t('hotel.tabFaq') }}</a>
@@ -438,7 +440,7 @@
            links en de minimap uiterst rechts (zelfde breedte als de zijbalk,
            die pas daaronder begint). -->
       <template v-if="isTrip">
-        <section id="intro" class="container deal-page__inc-row">
+        <section v-if="pdpHighlights" class="container deal-page__inc-row">
           <div class="inc-row">
             <div v-for="hl in highlights" :key="hl.text" class="inc-row__chip">
               <img v-if="hl.icon" :src="hl.icon" class="inc-row__icon" alt="" loading="lazy" />
@@ -447,7 +449,7 @@
             </div>
           </div>
         </section>
-        <section class="container deal-page__intro-row">
+        <section id="intro" class="container deal-page__intro-row">
           <div class="deal-page__intro-map">
             <MultiHotelTripRouteMapCard
               id="mini-map"
@@ -459,7 +461,7 @@
           </div>
           <div class="deal-page__intro-desc">
             <!-- Kop boven de beschrijving: "7-daagse reis met eigen vervoer in Noord-Frankrijk". -->
-            <h2 class="section-title deal-page__intro-title">{{ tripIntroTitle }}</h2>
+            <h2 v-if="pdpHighlights" class="section-title deal-page__intro-title">{{ tripIntroTitle }}</h2>
             <!-- De eerste twee alinea's; "Lees meer" opent de pop-up met de hele tekst. -->
             <div class="deal-page__intro-desc-text" v-html="firstTwoParagraphs"></div>
             <button v-if="hasMoreDescription" type="button" class="deal-page__read-more" @click="descriptionOpen = true">{{ t('common.readMore') }}</button>
@@ -513,9 +515,15 @@
           <section id="arrangement" class="deal-page__content-blocks" :class="{ 'deal-page__content-blocks--trip': isTrip }">
             <!-- Vakantie: dagprogramma — per dag 2–3 blokken, foto links, tekst rechts. -->
             <template v-if="isTrip">
-              <!-- Vakantie: "Het volgende is inbegrepen" — compacte inclusieblokken (thumb, titel, tekst). -->
-              <section v-if="tripIncluded.length" id="inbegrepen" class="trip-incl">
-              <h2 class="section-title">{{ tripIncludedHeading }}</h2>
+              <!-- Variant "tabs": inclusies en reisschema als twee tabs, één tegelijk zichtbaar. -->
+              <div v-if="pdpIncludes === 'tabs'" class="trip-tabs" role="tablist">
+                <button type="button" class="trip-tabs__btn" :class="{ 'trip-tabs__btn--on': tripTab === 'includes' }" role="tab" :aria-selected="tripTab === 'includes'" @click="tripTab = 'includes'">{{ t('trip.tabIncluded') }}</button>
+                <button type="button" class="trip-tabs__btn" :class="{ 'trip-tabs__btn--on': tripTab === 'itinerary' }" role="tab" :aria-selected="tripTab === 'itinerary'" @click="tripTab = 'itinerary'">{{ t('trip.itineraryHeading') }}</button>
+              </div>
+              <!-- Vakantie: "In deze autovakantie … is het volgende inbegrepen" — klein (compacte rijen),
+                   groot (zoals het reisschema: grote thumb, langere tekst) of als tab. -->
+              <section v-if="tripIncluded.length && (pdpIncludes !== 'tabs' || tripTab === 'includes')" id="inbegrepen" class="trip-incl" :class="{ 'trip-incl--large': pdpIncludes === 'large', 'trip-incl--tab': pdpIncludes === 'tabs' }">
+              <h2 v-if="pdpIncludes !== 'tabs'" class="section-title">{{ tripIncludedHeading }}</h2>
               <div class="trip-incl__grid">
                 <article v-for="b in tripIncluded" :key="b.title" class="trip-incl__item">
                   <button v-if="b.image" type="button" class="trip-incl__thumb" :aria-label="`${b.title} — ${t('common.allPhotos')}`" @click="tripInclLightbox = { image: b.image, title: b.title }"><img :src="b.image" :alt="b.title" loading="lazy" /></button>
@@ -529,16 +537,18 @@
                         <span v-if="b.starRating" class="trip-incl__stars" aria-hidden="true"><span v-for="n in b.starRating" :key="n" class="trip-incl__star"><svg viewBox="0 0 18 18" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M16.963,6.786c-.088-.271-.323-.469-.605-.51l-4.62-.671L9.672,1.418c-.252-.512-1.093-.512-1.345,0l-2.066,4.186-4.62,.671c-.282,.041-.517,.239-.605,.51-.088,.271-.015,.57,.19,.769l3.343,3.258-.79,4.601c-.048,.282,.067,.566,.298,.734,.231,.167,.538,.189,.79,.057l4.132-2.173,4.132,2.173c.11,.058,.229,.086,.349,.086,.155,0,.31-.048,.441-.143,.231-.168,.347-.452,.298-.734l-.79-4.601,3.343-3.258c.205-.199,.278-.498,.19-.769Z"/></svg></span></span>
                       </span>
                     </h3>
-                    <p class="trip-incl__text">{{ b.text }}</p>
+                    <p class="trip-incl__text">{{ pdpIncludes === 'large' && b.longText ? b.longText : b.text }}</p>
                     <!-- Hotel: "Lees meer" opent het hotel-sidepanel -->
                     <button v-if="b.stopIndex != null" type="button" class="trip-incl__more" @click="openTripHotel(b.stopIndex)">{{ t('common.readMore') }}</button>
                   </div>
                 </article>
               </div>
             </section>
-              <h2 class="section-title">{{ t('trip.itineraryHeading') }}</h2>
-              <p class="deal-page__itinerary-intro">{{ t('trip.itineraryIntro') }}</p>
-              <MultiHotelTripItinerary :days="tripDaysView" :hotels="tripHotelLinks" @open-hotel="openTripHotel" />
+              <template v-if="pdpIncludes !== 'tabs' || tripTab === 'itinerary'">
+                <h2 v-if="pdpIncludes !== 'tabs'" class="section-title">{{ t('trip.itineraryHeading') }}</h2>
+                <p class="deal-page__itinerary-intro">{{ t('trip.itineraryIntro') }}</p>
+                <MultiHotelTripItinerary :days="tripDaysView" :hotels="tripHotelLinks" @open-hotel="openTripHotel" />
+              </template>
             </template>
             <template v-else>
             <h2 class="section-title">
@@ -948,8 +958,8 @@
       <div class="deal-page__cta-bar-inner container">
         <nav class="deal-page__tabs deal-page__tabs--in-bar">
           <a href="#intro" class="deal-page__tab" :class="{ 'deal-page__tab--active': activeAnchor === 'intro' }">{{ t('deal.tabIntro') }}</a>
-          <a v-if="isTrip" href="#inbegrepen" class="deal-page__tab" :class="{ 'deal-page__tab--active': activeAnchor === 'inbegrepen' }">{{ t('trip.tabIncluded') }}</a>
-          <a href="#arrangement" class="deal-page__tab" :class="{ 'deal-page__tab--active': activeAnchor === 'arrangement' }">{{ isTrip ? t('trip.itineraryHeading') : t('deal.tabArrangement') }}</a>
+          <a v-if="isTrip" href="#inbegrepen" class="deal-page__tab" :class="{ 'deal-page__tab--active': activeAnchor === 'inbegrepen' }" @click.prevent="goTripAnchor('inbegrepen', 'includes')">{{ t('trip.tabIncluded') }}</a>
+          <a href="#arrangement" class="deal-page__tab" :class="{ 'deal-page__tab--active': activeAnchor === 'arrangement' }" @click="isTrip && goTripAnchor('arrangement', 'itinerary', $event)">{{ isTrip ? t('trip.itineraryHeading') : t('deal.tabArrangement') }}</a>
           <a v-if="!isTrip" href="#tips" class="deal-page__tab" :class="{ 'deal-page__tab--active': activeAnchor === 'tips' }">{{ t('hotel.tabNearby') }}</a>
           <a v-if="!isTrip && hotel.houseRules && hotel.houseRules.length" href="#huisregels" class="deal-page__tab" :class="{ 'deal-page__tab--active': activeAnchor === 'huisregels' }">{{ t('hotel.tabHouseRules') }}</a>
           <a href="#veelgestelde-vragen" class="deal-page__tab" :class="{ 'deal-page__tab--active': activeAnchor === 'veelgestelde-vragen' }">{{ t('hotel.tabFaq') }}</a>
@@ -1471,6 +1481,18 @@ const tripIntroTitle = computed(() => {
   if (own) return localized(own)
   return t(trip.type === 'fiets' ? 'trip.introTitleBike' : 'trip.introTitleAuto').replace('{days}', String(trip.nights + 1))
 })
+/** Weergavevarianten (schakelaar in de breadcrumb-rij): highlights aan/uit, inclusies klein/groot/tabs. */
+const { highlights: pdpHighlights, includes: pdpIncludes } = useMultiHotelTripPdpVariant()
+/** Tab-variant: welke van de twee tabs (inclusies | reisschema) open is. */
+const tripTab = ref<'includes' | 'itinerary'>('includes')
+/** Ankertab: in de tab-variant eerst de juiste tab openen, dan naar het blok scrollen. */
+async function goTripAnchor(id: 'inbegrepen' | 'arrangement', tab: 'includes' | 'itinerary', e?: MouseEvent) {
+  e?.preventDefault()
+  tripTab.value = tab
+  await nextTick()
+  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  history.replaceState(null, '', `#${id}`)
+}
 /** Grotere versie van een thumbnail uit het inclusieblok (zelfde pop-up als in het reisschema). */
 const tripInclLightbox = ref<{ image: string; title: string } | null>(null)
 /** Kop van het inclusieblok: "In deze autovakantie voor 2 personen is het volgende inbegrepen". */
@@ -1490,7 +1512,7 @@ const tripIncluded = computed(() =>
     const isStay = /overnachting|night/i.test(title)
     const stopIndex = isStay ? (trip?.stops ?? []).findIndex(st => title.includes(st.hotelName)) : -1
     const stop = stopIndex >= 0 ? trip?.stops[stopIndex] : undefined
-    return { title, text: localized(b.text), image: b.image, icon: b.icon, stopIndex: stopIndex >= 0 ? stopIndex : undefined, starRating: stop?.starRating }
+    return { title, text: localized(b.text), longText: b.longText ? localized(b.longText) : undefined, image: b.image, icon: b.icon, stopIndex: stopIndex >= 0 ? stopIndex : undefined, starRating: stop?.starRating }
   }),
 )
 /** "Béthune · Tilques · Hesdin-l'Abbé" — zelfde notatie als de dealcard. */
@@ -2639,6 +2661,31 @@ onMounted(() => {
    en de ruimte van het grid eraf, zodat het direct onder de beschrijving/minimap begint
    (het hoeft niet uit te lijnen met de zijbalk). */
 .deal-page__content-blocks--trip { padding-top: 0; border-top: 0; margin-top: calc(-1 * var(--space-lg)); }
+/* Vakantie: variantenschakelaar rechts in de breadcrumb-rij. */
+.deal-page__breadcrumbs--with-switch { display: flex; align-items: center; justify-content: space-between; gap: var(--space-md); flex-wrap: wrap; }
+/* Variant "tabs": twee tabs boven het blok (inclusies | reisschema). */
+.trip-tabs { display: flex; gap: var(--space-xl); margin-bottom: var(--space-lg); border-bottom: 1px solid var(--color-border-light); }
+.trip-tabs__btn {
+  padding: 12px 0 14px;
+  margin-bottom: -1px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: none;
+  cursor: pointer;
+  font-family: var(--font-heading);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+.trip-tabs__btn:hover { color: var(--color-text-primary); }
+.trip-tabs__btn--on { color: var(--color-text-primary); border-bottom-color: var(--color-dark, #141414); }
+/* Variant "groot": zoals het reisschema — grote thumb links, meer tekst rechts. */
+.trip-incl--large .trip-incl__item { gap: var(--space-lg); padding: var(--space-lg) 0; }
+.trip-incl--large .trip-incl__thumb { width: 240px; aspect-ratio: 16 / 10; border-radius: var(--radius-lg); }
+.trip-incl--large .trip-incl__title { font-size: 18px; margin-bottom: 6px; }
+.trip-incl--large .trip-incl__text { font-size: 15px; line-height: 1.7; }
+/* Variant "tabs": geen eigen streep onder het blok (de tabbalk scheidt al). */
+.trip-incl--tab { border-bottom: 0; padding-bottom: 0; }
 /* Vakantie: "Het volgende is inbegrepen" — rijen over de volle breedte, gescheiden
    door een hairline: de hotels met een foto links, de overige punten met een
    icoontegel (zoals de highlights), rechts titel + korte tekst. */
