@@ -2686,7 +2686,9 @@ onMounted(() => {
 /* Vakantie: het inclusieblok mag omhoog — geen streep/padding boven de content-blocks
    en de ruimte van het grid eraf, zodat het direct onder de beschrijving/minimap begint
    (het hoeft niet uit te lijnen met de zijbalk). */
-.deal-page__content-blocks--trip { padding-top: 0; border-top: 0; margin-top: calc(-1 * var(--space-lg)); }
+/* Extra 64 px (2 × space-xl) omhoog: de intro-rij is zo hoog als de minimap, waardoor er
+   onder de korte beschrijving lucht overblijft; alleen de linkerkolom schuift, de zijbalk niet. */
+.deal-page__content-blocks--trip { padding-top: 0; border-top: 0; margin-top: calc(-1 * var(--space-lg) - 2 * var(--space-xl)); }
 /* Vakantie: variantenschakelaar rechts in de breadcrumb-rij. */
 .deal-page__breadcrumbs--with-switch { display: flex; align-items: center; justify-content: space-between; gap: var(--space-md); flex-wrap: wrap; }
 /* Variant "tabs": twee tabs boven het blok (inclusies | reisschema). */
