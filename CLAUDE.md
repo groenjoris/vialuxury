@@ -9,6 +9,7 @@ prefix, localStorage-keys, CSS-bestanden) zodat ze elkaar nooit raken:
 | Release 1 (R1, "Redesign") | `*-first-release` | `FirstRelease*` / `useFirstRelease*` | `/first-release/...` | `fr-*.css` |
 | Release 2 (R2, "Variable Travel Group") | `*-second-release` | `SecondRelease*` / `useSecondRelease*` | `/second-release/...` | `sr-*.css` |
 | Multi Hotel Trip (MHT) | `*-multi-hotel-trip` | `MultiHotelTrip*` / `useMultiHotelTrip*` | `/multi-hotel-trip/...` | `mht-*.css` |
+| Multi Hotel Trip - Jesse | `*-mht-jesse` | `MhtJesse*` / `useMhtJesse*` | `/mht-jesse/...` | `mhtj-*.css` |
 | Huisstijl / Northstar | bevroren oude prototypes | `Huisstijl*` / `Northstar*` | | |
 
 Startscherm: `app/pages/index.vue`. Gedeeld: `app/data`, `app/types`,
@@ -39,6 +40,11 @@ automatisch:
   alleen in de `*-multi-hotel-trip`-bestanden, nooit door R1 aan te passen.
 - R2 wordt niet automatisch gesynchroniseerd; "R1&R2"-wijzigingen worden
   handmatig in beide doorgevoerd.
+- "Multi Hotel Trip - Jesse" is een losstaande kopie van MHT (persoonlijke
+  speeltuin) en wordt evenmin automatisch gesynchroniseerd. Let op: bij het
+  kopiëren verdween de segment-deduplicatie die Nuxt op de MHT-prefix toepaste
+  (`MultiHotelTrip` + `TripRouteMap` = `MultiHotelTripRouteMap`); in deze
+  namespace heten die componenten voluit `MhtJesseTripRouteMap` etc.
 
 ## Werkwijze
 

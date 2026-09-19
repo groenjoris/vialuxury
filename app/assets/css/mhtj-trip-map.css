@@ -1,0 +1,98 @@
+/* Multi Hotel Trip — Leaflet-lagen van de vakantiekaarten (minimap op de
+   PDP en fullscreen kaart). Leaflet maakt markers en tooltips zelf aan,
+   dus deze stijlen zijn globaal (zie utils-mht-jesse/tripMapLayers.ts). */
+
+/* Genummerde hotelmarker + naam/plaats ernaast. Standaardstijl: zwarte bol,
+   oranje bij hover (zelfde als de nummers op het dealcard-kaartje). */
+.tml-hotel { pointer-events: none; }
+.tml-hotel--clickable { pointer-events: auto; cursor: pointer; }
+.tml-hotel__num {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #141414;
+  border: 2px solid #fff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 700;
+  transition: background 150ms ease;
+}
+.tml-hotel--clickable:hover .tml-hotel__num { background: var(--color-primary, #ff7e00); }
+.tml-hotel__name {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 3px 7px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  color: #141414;
+  font-family: var(--font-body);
+  font-weight: 600;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+.tml-hotel--clickable:hover .tml-hotel__name { color: var(--color-primary, #ff7e00); }
+
+/* Afstand halverwege een etappe */
+.tml-km-wrap { pointer-events: none; }
+.tml-km {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform: translate(-50%, -50%);
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: #141414;
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+}
+
+/* Highlight-pin */
+.tml-pin { cursor: pointer; filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.3)); }
+
+/* Hover-kaartje (stijl HotelMapHoverCard: oranje band, foto links, tekst rechts) */
+.leaflet-tooltip.tml-hover {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  white-space: normal;
+}
+.leaflet-tooltip.tml-hover::before { display: none; }
+.tml-card {
+  width: 300px;
+  border-radius: var(--radius-lg, 12px);
+  overflow: hidden;
+  background: var(--color-surface, #fff);
+  filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.18));
+}
+.tml-card__band { height: 4px; background: var(--color-primary, #ff7e00); }
+.tml-card__inner { display: flex; min-height: 110px; }
+.tml-card__img { width: 96px; flex-shrink: 0; align-self: stretch; object-fit: cover; display: block; }
+.tml-card__body { flex: 1; min-width: 0; padding: 10px 12px; display: flex; flex-direction: column; gap: 3px; }
+.tml-card__title {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--color-text-primary, #141414);
+}
+.tml-card__stars { color: #141414; font-size: 13px; line-height: 1; display: flex; gap: 1px; }
+.tml-card__line {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--color-text-secondary, #555);
+}
