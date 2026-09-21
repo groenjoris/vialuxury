@@ -987,6 +987,11 @@
          page (overlay variant) since internal pages don't render a
          photo hero. -->
     <FirstReleaseHeroPhotoSwitcher v-if="variant === 'overlay'" />
+
+    <!-- Helpdesk-chatwidget (dummy third-party widget) — rechtsonder in de
+         viewport op elke pagina met deze header; schuift mee met open
+         zijpanelen. Zie HelpWidget.vue. -->
+    <FirstReleaseHelpWidget />
   </header>
 </template>
 

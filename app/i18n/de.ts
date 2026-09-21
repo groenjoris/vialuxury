@@ -187,6 +187,7 @@ const de: Record<string, string> = {
   'vakantieparken.b2bButton': 'Schreib uns',
 
   // Common
+  'help.widget': 'Wie kann ich dir helfen?',
   'common.checkIn': 'Check-in',
   'common.checkOut': 'Check-out',
   'common.reviews': 'Bewertungen',

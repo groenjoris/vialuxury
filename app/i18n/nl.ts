@@ -191,6 +191,7 @@ const nl: Record<string, string> = {
   // Review labels
 
   // Common
+  'help.widget': 'Hoe kan ik je helpen?',
   'common.checkIn': 'Check-in',
   'common.checkOut': 'Check-out',
   'common.reviews': 'beoordelingen',

@@ -189,6 +189,7 @@ const en: Record<string, string> = {
   // Review labels
 
   // Common
+  'help.widget': 'How can I help you?',
   'common.checkIn': 'Check-in',
   'common.checkOut': 'Check-out',
   'common.reviews': 'reviews',
