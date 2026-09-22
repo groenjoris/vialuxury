@@ -49,7 +49,7 @@ const props = defineProps<{
   legs?: TripRouteLeg[]
   /** Label van de gestippelde terugetappe (rondje), bv. "20 km". */
   returnLabel?: string
-  /** Regels onder de kaart (al vertaald) met icoon (bestand in /icons/mht/): car, route, clock, bike, mountain, suitcase, key, … */
+  /** Regels onder de kaart (al vertaald) met icoon (bestand in /icons/mht/): car, route, clock, bike. */
   summary?: ({ icon: string; text: string } | undefined)[]
 }>()
 

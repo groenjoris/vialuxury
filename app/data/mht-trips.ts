@@ -85,9 +85,7 @@ interface TripSpec {
   loop?: boolean
   /** Afstand/tijd van die terugetappe (reisdata). */
   returnTravel?: { km: number; minutes: number }
-  /** Fietsvakantie: terrein en niveau, onder de minimap ("Licht heuvelachtig …"). */
-  terrain?: LocalizedString
-  /** Dichtstbijzijnde NS-station bij het eerste hotel (heenreis met de trein). */
+  /** Dichtstbijzijnde NS-station bij het eerste hotel (FAQ: komen met de trein). */
   station?: string
 }
 
@@ -332,12 +330,21 @@ const TRIPS: TripSpec[] = [
     id: 'trip-fietsvakantie-twente-salland',
     slug: 'fietsvakantie-twente-en-salland-delden-raalte-markelo',
     coverImage: '/images/vakanties/cover/fietsvakantie-twente-salland.jpg',
+    // Omgevingsfoto's (Joris, "Fietsvakantie/first images"): direct na de cover
+    // bovenin de gallery; de eerste vier staan bij landing in beeld.
+    nearbyImages: [
+      '/images/vakanties/007/nearby-fietsers-bos.jpg',
+      '/images/vakanties/007/nearby-twickel.jpg',
+      '/images/vakanties/007/nearby-heuvelrug.jpg',
+      '/images/vakanties/007/nearby-raalte.jpg',
+      '/images/vakanties/007/nearby-zonsopkomst.jpg',
+      '/images/vakanties/007/nearby-fietsers-stad.jpg',
+    ],
     fromHome: { city: 'Utrecht', minutes: 90 },
     // Rondje: dag 7 de laatste 20 km van Markelo terug naar Delden (auto staat daar).
     loop: true,
     returnTravel: { km: 20, minutes: 80 },
     station: 'Delden',
-    terrain: l('Licht heuvelachtig (Sallandse Heuvelrug), verharde fietspaden en knooppuntroutes, geschikt voor e-bike', 'Gently rolling (Sallandse Heuvelrug), paved cycle paths and junction routes, e-bike friendly'),
     type: 'fiets',
     stops: [
       { name: 'Hotel Wapen van Delden', city: 'Delden', region: 'Twente', province: 'Overijssel', nights: 2, stars: 4, lat: 52.2622, lng: 6.7113, image: 'https://asset.vialuxury.com/assets/9f13962b-27bb-43f9-b875-bd7b63b04c98?key=photo-full', extraImages: ['https://asset.vialuxury.com/assets/de37ddd8-3265-455d-b733-b4b123879a08?key=photo-full', 'https://asset.vialuxury.com/assets/ead7f055-ea8d-4d7b-a45b-b508d83b3396?key=photo-full'], includes: [l('2 x overnachting', '2 nights'), l('Dagelijks uitgebreid ontbijtbuffet', 'Daily extensive breakfast buffet'), l('2 x 3-gangendiner', '2 x 3-course dinner'), l('Welkomstfietstasje met water, regenponcho en bandenplaksetje', 'Welcome cycling bag with water, rain poncho and repair kit'), l('ViaLuxury welkomstcadeau', 'ViaLuxury welcome gift'), l('Bagagetransport naar Raalte', 'Luggage transfer to Raalte'), l('Gratis parkeren (gehele vakantie)', 'Free parking (whole holiday)')] },
@@ -430,7 +437,6 @@ export interface MultiHotelTripDetail {
   tags: string[]
   loop?: boolean
   returnTravel?: { km: number; minutes: number }
-  terrain?: LocalizedString
   station?: string
   routeImage?: string
   /** Omgevingsfoto — eerste foto in de gallery (sticker "Omgeving"). */
@@ -552,7 +558,6 @@ function buildTrip(spec: TripSpec): { hotel: SearchHotel; detail: MultiHotelTrip
     fromHome: spec.fromHome,
     loop: spec.loop,
     returnTravel: spec.returnTravel,
-    terrain: spec.terrain,
     station: spec.station,
     reviewScore: avgScore,
     reviewCount,

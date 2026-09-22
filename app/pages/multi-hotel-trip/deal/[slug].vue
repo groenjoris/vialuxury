@@ -1600,8 +1600,8 @@ const tripMapSummary = computed<({ icon: string; text: string } | undefined)[]>(
   const legs = tripRouteLegs.value
   const first = trip.stops[0]
   if (trip.type === 'fiets') {
-    // Fietsvakantie: etappes (incl. terugetappe van een rondje), fietstijd per
-    // etappe, terrein, bagage, heenreis (auto/trein) en fiets huren.
+    // Fietsvakantie: heenreis met de auto, de etappes (incl. terugetappe van
+    // een rondje) en de fietstijd per etappe.
     const legKm = trip.stops.slice(1).map((s, k) => s.travel?.km ?? legs.find(l => l.to === k + 1 && !l.return)?.km ?? 0)
     const legMin = trip.stops.slice(1).map((s, k) => s.travel?.minutes ?? legs.find(l => l.to === k + 1 && !l.return)?.minutes ?? 0)
     if (trip.returnTravel) { legKm.push(trip.returnTravel.km); legMin.push(trip.returnTravel.minutes) }
@@ -1609,17 +1609,10 @@ const tripMapSummary = computed<({ icon: string; text: string } | undefined)[]>(
     const mins = legMin.filter(Boolean)
     const minH = Math.max(1, Math.floor(Math.min(...mins) / 60))
     const maxH = Math.max(minH, Math.ceil(Math.max(...mins) / 60))
-    const arrival = trip.fromHome && first
-      ? (trip.station ? t('trip.bike.arrivalLineTrain') : t('trip.bike.arrivalLine'))
-          .replace('{duration}', tripDurationLabel(trip.fromHome.minutes)).replace('{city}', trip.fromHome.city).replace('{station}', trip.station ?? '')
-      : undefined
     return [
+      trip.fromHome && first ? { icon: 'car', text: t('trip.bike.arrivalLine').replace('{duration}', tripDurationLabel(trip.fromHome.minutes)).replace('{city}', trip.fromHome.city) } : undefined,
       total ? { icon: 'bike', text: t('trip.bike.stagesLine').replace('{n}', String(legKm.length)).replace('{list}', legKm.join(' · ')).replace('{total}', String(total)) } : undefined,
       mins.length ? { icon: 'clock', text: t('trip.bike.timeLine').replace('{min}', String(minH)).replace('{max}', String(maxH)) } : undefined,
-      trip.terrain ? { icon: 'mountain', text: localized(trip.terrain) } : undefined,
-      trip.tags.includes('bagagetransfer') ? { icon: 'suitcase', text: t('trip.bike.luggageLine') } : undefined,
-      arrival ? { icon: 'car', text: arrival } : undefined,
-      { icon: 'key', text: t('trip.bike.rentalLine') },
     ]
   }
   const km = trip.stops.reduce((sum, s, i) => sum + (s.travel?.km ?? legs.find(l => l.to === i && !l.return)?.km ?? 0), 0)
