@@ -87,6 +87,8 @@ export interface TripItinerarySpec {
 }
 
 const img = (nr: string, key: string) => `/images/vakanties/${nr}/${key}.jpg`
+/** Basis-URL van de foto's van de echte deal (asset.vialuxury.com). */
+const A = 'https://asset.vialuxury.com/assets/'
 const FIETS = {
   bike: 'https://asset.vialuxury.com/assets/de37ddd8-3265-455d-b733-b4b123879a08?key=photo-full',
   sunrise: 'https://asset.vialuxury.com/assets/1ea82fdb-df82-4166-a63e-552ce8f8d5a2?key=photo-full',
@@ -666,6 +668,61 @@ export const TRIP_ITINERARIES: Record<string, TripItinerarySpec> = {
   // ── Fietsvakantie Twente & Salland ────────────────────────────────────
   'trip-fietsvakantie-twente-salland': {
     introTitle: l('7-daagse fietsreis met bagagetransfer tussen hotels', '7-day cycling trip with luggage transfer between hotels'),
+    // "Het volgende is inbegrepen" — teksten en foto's naar de extra's van de
+    // oorspronkelijke dealpagina (deals.json-pakket 33960 "Fietsvakantie 2026",
+    // includesDetailed; foto's met key=include, groter via key=photo-full).
+    included: [
+      { title: l('2 overnachtingen in Hotel Wapen van Delden', '2 nights at Hotel Wapen van Delden'),
+        text: l('Twee nachten in het viersterrenhotel tegenover de Oude Blasiuskerk in Delden, in een Comfortkamer.', 'Two nights in the four-star hotel opposite the Oude Blasius church in Delden, in a Comfortkamer.'),
+        longText: l('Twee nachten in het gastvrije Hotel Wapen van Delden, midden in het centrum tegenover de Oude Blasiuskerk en op loopafstand van Landgoed Twickel. Je slaapt in een Comfortkamer met regendouche; je fiets staat veilig in de afgesloten berging met laadpunten en je auto staat de hele vakantie gratis geparkeerd.',
+          'Two nights at the welcoming Hotel Wapen van Delden, in the centre opposite the Oude Blasius church and a short walk from the Twickel estate. You sleep in a Comfortkamer with rain shower; your bike is safe in the locked storage with charging points and your car is parked for free for the whole holiday.'),
+        image: A + '96bacad2-8a3a-4829-916e-bd6a6b79e065?key=photo-full' },
+      { title: l('2 overnachtingen in Hotel de Zwaan', '2 nights at Hotel de Zwaan'),
+        text: l('Twee nachten in het familiehotel in het hart van Raalte, in een Comfortkamer.', 'Two nights in the family hotel in the heart of Raalte, in a Comfortkamer.'),
+        longText: l('Twee nachten bij Hotel de Zwaan, al generaties een begrip in Salland en bekend om restaurant Buitengewoon met zijn wijnkelder. Je Comfortkamer is klassiek ingericht in warme kleuren; het dorp en het restaurant liggen voor de deur en je fiets staat in de afgesloten berging.',
+          'Two nights at Hotel de Zwaan, a household name in Salland for generations and known for its restaurant with wine cellar. Your Comfortkamer is classically furnished in warm colours; the village and the restaurant are on the doorstep and your bike is in the locked storage.'),
+        image: A + 'ef123299-2053-479d-9bee-2f0f35e8fb35?key=photo-full' },
+      { title: l('2 overnachtingen in Landhuishotel Herikerberg', '2 nights at Landhuishotel Herikerberg'),
+        text: l('Twee nachten in het landhuishotel met rieten dak in de bossen bij Markelo, in een Landhuiskamer.', 'Two nights in the thatched country house hotel in the woods near Markelo, in a Landhuiskamer.'),
+        longText: l('Twee nachten in Landhuishotel Herikerberg, met rieten dak in de bossen van de Herikerberg, midden in het Twentse coulisselandschap. Je Landhuiskamer kijkt uit op de rododendrontuin of het bos; beneden wachten het restaurant met terras en de lounge met open haard.',
+          'Two nights at Landhuishotel Herikerberg, thatched and set in the woods of the Herikerberg in the heart of the Twente landscape. Your Landhuiskamer overlooks the rhododendron garden or the woods; downstairs the restaurant with terrace and the lounge with open fire await.'),
+        image: A + 'df215919-df2c-49a0-95e6-1b99340a131c?key=photo-full' },
+      { title: l('6 dagen ontbijt', '6 days of breakfast'),
+        text: l('Elke ochtend een uitgebreid ontbijtbuffet in het hotel waar je die nacht sliep.', 'An extensive breakfast buffet every morning at the hotel where you spent the night.'),
+        longText: l('Elke ochtend staat het ontbijtbuffet klaar in het hotel waar je die nacht sliep: een vers eitje, luxe broodjes, een rijke salade en vers fruit. Zo begin je goed voorbereid aan de etappe van die dag.',
+          'Every morning the breakfast buffet is ready at the hotel where you slept: a fresh egg, fine breads, a rich salad and fresh fruit. The right start for the day\'s leg.'),
+        image: A + 'f0ddba1a-88ae-4e1a-9a18-d5eeb16ed08d?key=photo-full' },
+      { title: l('6 x een 3-gangendiner', '6 x a 3-course dinner'),
+        text: l('Elke avond een 3-gangendiner in het restaurant van je hotel; na een fietsdag hoef je nergens meer heen.', 'A 3-course dinner every evening in your hotel restaurant; after a day of cycling there is no need to go anywhere.'),
+        longText: l('Aan het einde van iedere fietsdag staat een 3-gangendiner voor je klaar in het restaurant van het hotel: de brasserie van het Wapen van Delden, restaurant Buitengewoon met zijn wijnkelder in Raalte en het restaurant met terras van de Herikerberg. Zes avonden lang hoef je na het fietsen nergens meer heen.',
+          'At the end of every cycling day a 3-course dinner awaits in the hotel restaurant: the brasserie of the Wapen van Delden, restaurant Buitengewoon with its wine cellar in Raalte and the restaurant with terrace at the Herikerberg. Six evenings without having to go anywhere after cycling.'),
+        image: A + 'd2bb46df-74ef-43f6-baeb-af7b12abc0ec?key=photo-full' },
+      { title: l('Bagagetransfer tussen de hotels', 'Luggage transfer between the hotels'),
+        text: l('Je bagage wordt op elke wisseldag naar het volgende hotel gebracht; jij fietst licht bepakt.', 'On every changeover day your luggage is taken to the next hotel; you cycle light.'),
+        longText: l('Op de dagen dat je van hotel wisselt gaat je bagage vooruit: van Delden naar Raalte, van Raalte naar Markelo en aan het einde terug naar Delden. Jij fietst met alleen het fietstasje, en bij aankomst staan je koffers al op je kamer.',
+          'On the days you change hotel your luggage goes ahead: from Delden to Raalte, from Raalte to Markelo and back to Delden at the end. You cycle with just the cycling bag, and on arrival your suitcases are already in your room.'),
+        image: A + '1bb3dc7d-7649-46ee-8002-6be57c528495?key=photo-full' },
+      { title: l('Fietsroutes op je telefoon', 'Cycling routes on your phone'),
+        text: l('De etappes (35–45 km) en de dagrondjes rond de hotels staan als route op je telefoon.', 'The legs (35–45 km) and the day loops around the hotels are on your phone as routes.'),
+        longText: l('De etappes Delden – Raalte (45 km) en Raalte – Markelo (35 km) en de dagrondjes rond de hotels staan als gpx-route op je telefoon: via het Twentekanaal, de Sallandse Heuvelrug, het Reggedal en het coulisselandschap van Twente, over rustige fietspaden en langs charmante dorpjes.',
+          'The legs Delden – Raalte (45 km) and Raalte – Markelo (35 km) and the day loops around the hotels are on your phone as GPX routes: via the Twente canal, the Sallandse Heuvelrug, the Regge valley and the Twente landscape, along quiet cycle paths and charming villages.'),
+        image: A + '67e7df8a-15b3-49bc-bed9-6ecb18d1c435?key=photo-full' },
+      { title: l('Welkomstfietstasje', 'Welcome cycling bag'),
+        text: l('Bij aankomst in Delden: een fietstasje met flesje water, regenponcho en bandenplaksetje.', 'On arrival in Delden: a cycling bag with a bottle of water, rain poncho and repair kit.'),
+        longText: l('Bij aanvang van je fietsvakantie ontvang je in Hotel Wapen van Delden een welkomstfietstasje met een flesje water, een regenponcho en een bandenplaksetje: praktisch voor onderweg en goed voorbereid op een bui of een lekke band.',
+          'At the start of your cycling holiday you receive a welcome cycling bag at Hotel Wapen van Delden with a bottle of water, a rain poncho and a repair kit: practical on the road and prepared for a shower or a flat tyre.'),
+        image: A + '20d9f9d3-d698-4265-97ce-7f3c9ed693dc?key=photo-full' },
+      { title: l('ViaLuxury welkomstcadeau', 'ViaLuxury welcome gift'),
+        text: l('Een persoonlijke attentie voor onderweg, om de vakantie extra speciaal te beginnen.', 'A personal gift for the road, to start the holiday in style.'),
+        longText: l('Begin je reis extra speciaal met een welkomstcadeau van ViaLuxury: een luxe, persoonlijke attentie voor onderweg die bij aankomst voor je klaarligt.',
+          'Start your trip in style with a welcome gift from ViaLuxury: a luxurious, personal treat for the road, waiting for you on arrival.'),
+        image: A + '4a61d99d-8132-41d0-ae71-3b876d85426d?key=photo-full' },
+      { title: l('Gratis parkeren in Delden', 'Free parking in Delden'),
+        text: l('Je auto staat de hele vakantie gratis bij het starthotel; de route is een rondje en eindigt weer in Delden.', 'Your car is parked for free at the starting hotel for the whole holiday; the route is a loop that ends back in Delden.'),
+        longText: l('Je auto staat gedurende de hele vakantie gratis geparkeerd bij Hotel Wapen van Delden. De route is een rondje: op dag 7 fiets je de laatste 20 kilometer vanaf Markelo terug naar Delden, waar je auto klaarstaat voor de terugreis naar huis.',
+          'Your car is parked for free at Hotel Wapen van Delden for the whole holiday. The route is a loop: on day 7 you cycle the last 20 kilometres from Markelo back to Delden, where your car is waiting for the drive home.'),
+        image: A + '98db4cf0-f409-429c-af0e-53bbca9e36dd?key=photo-full' },
+    ],
     description: [
       l('Een ontspannen 7-daagse fietsvakantie waarin comfort, natuur en gastvrijheid centraal staan. Je ontdekt het afwisselende landschap van Salland en Twente met groene landerijen, schilderachtige dorpen en rustige fietspaden, en verblijft telkens twee nachten in een ander sfeervol hotel terwijl je bagage vooruit reist.',
         'A relaxed 7-day cycling holiday centred on comfort, nature and hospitality. You discover the varied landscape of Salland and Twente with green farmland, picturesque villages and quiet cycle paths, staying two nights at each charming hotel while your luggage travels ahead.'),

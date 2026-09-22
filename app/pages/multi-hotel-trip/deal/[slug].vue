@@ -1986,11 +1986,13 @@ const highlights = computed(() => {
 
 /** Vakantie-highlights (chips onder de gallery): iconen uit de core-iconenset
  *  van Joris — hotel voor de hotels/nachten, klok voor de etappes, kasteel voor
- *  stad/natuur/kust en kastelen, champagneglas voor de welkomstbubbels, koffer
- *  voor de bagagetransfer (fietsvakantie). Diner en parkeren houden het icoon
- *  van de gewone matcher. */
+ *  stad/natuur/kust en kastelen, champagneglas voor de welkomstbubbels, reistas
+ *  (travel-bag) voor de bagagetransfer en sporttas (gym-bag) voor het
+ *  welkomstfietstasje (fietsvakantie). Diner en parkeren houden het icoon van
+ *  de gewone matcher. */
 function tripHighlightIcon(text: string): string | null {
   if (/parkeren|parking|diner|dinner|ontbijt|breakfast/i.test(text)) return null
+  if (/fietstasje|welkomstcadeau|welcome (cycling )?bag|welcome gift/i.test(text)) return '/icons/mht/gym-bag.svg'
   if (/bagage|luggage|koffer/i.test(text)) return '/icons/mht/suitcase.svg'
   if (/bubbels|champagne|prosecco|bubbles/i.test(text)) return '/icons/mht/champagne.svg'
   if (/hotel|nachten|nights/i.test(text)) return '/icons/mht/hotel.svg'
