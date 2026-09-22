@@ -30,6 +30,8 @@ function clone(): Record<OverlayVariant, OverlayTune> {
 
 export function useMultiHotelTripOverlayTuner() {
   const tune = useState<Record<OverlayVariant, OverlayTune>>('mht-overlay-tune', clone)
+  /** Kleurenkiezer zichtbaar? Schakelaar naast de variantenschakelaar; standaard uit. */
+  const open = useState<boolean>('mht-overlay-tune-open', () => false)
 
   function apply() {
     if (!import.meta.client) return
@@ -68,5 +70,5 @@ export function useMultiHotelTripOverlayTuner() {
     watch(tune, () => { apply(); persist() }, { deep: true })
   }
 
-  return { tune, reset, readout, apply }
+  return { tune, open, reset, readout, apply }
 }

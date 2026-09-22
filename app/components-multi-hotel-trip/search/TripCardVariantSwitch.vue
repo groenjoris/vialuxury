@@ -15,16 +15,27 @@
         @click="setVariant(v.id)"
       >{{ v.label }}</button>
     </div>
-    <!-- Tijdelijk: kleur/dekking van de kaartlaag instellen bij Overlay en Inverse. -->
-    <MultiHotelTripOverlayTuner v-if="variant === 'overlay' || variant === 'inverse'" :variant="variant" />
+    <!-- Tijdelijk: kleurenkiezer voor de kaartlaag bij Overlay en Inverse —
+         Aan/Uit-schakelaar naast de varianten (standaard uit); aan = de
+         schuifjes eronder. -->
+    <template v-if="variant === 'overlay' || variant === 'inverse'">
+      <span class="tcv__label">Kleuren</span>
+      <div class="tcv__group" role="group" aria-label="Kleurenkiezer">
+        <button type="button" class="tcv__btn" :class="{ 'tcv__btn--on': tunerOpen }" :aria-pressed="tunerOpen" @click="tunerOpen = true">Aan</button>
+        <button type="button" class="tcv__btn" :class="{ 'tcv__btn--on': !tunerOpen }" :aria-pressed="!tunerOpen" @click="tunerOpen = false">Uit</button>
+      </div>
+      <MultiHotelTripOverlayTuner v-if="tunerOpen" :variant="variant" class="tcv__tuner" />
+    </template>
   </div>
 </template>
 
 <script setup lang="ts">
 // NB: Nuxt dedupliceert het "Trip"-segment → <MultiHotelTripCardVariantSwitch>.
 import { TRIP_CARD_VARIANTS, useMultiHotelTripCardVariant } from '~/composables-multi-hotel-trip/useMultiHotelTripCardVariant'
+import { useMultiHotelTripOverlayTuner } from '~/composables-multi-hotel-trip/useMultiHotelTripOverlayTuner'
 
 const { variant, setVariant } = useMultiHotelTripCardVariant()
+const { open: tunerOpen } = useMultiHotelTripOverlayTuner()
 </script>
 
 <style scoped>
@@ -63,4 +74,6 @@ const { variant, setVariant } = useMultiHotelTripCardVariant()
 }
 .tcv__btn:hover { background: rgba(0, 0, 0, 0.06); }
 .tcv__btn--on { background: var(--color-dark, #141414); color: #fff; }
+/* Kleurenkiezer op een eigen regel onder de schakelaars. */
+.tcv__tuner { flex-basis: 100%; }
 </style>
