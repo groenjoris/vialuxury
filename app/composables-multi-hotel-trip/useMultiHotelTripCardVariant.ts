@@ -4,6 +4,8 @@
  *  - '50-50'   : foto links, schematisch routekaartje rechts (huidige variant)
  *  - 'overlay' : foto over de volle breedte, het kaartje semi-transparant
  *                als overlay erover (route en iconen blijven dekkend)
+ *  - 'inverse' : als overlay, maar met een inverse kaart: donkere landmassa,
+ *                witte route en plaatsnamen, witte markers
  *  - 'timeline': foto over de volle breedte, onderaan een schematische
  *                tijdlijn: plaatsnaam · bolletje · "2 nachten", met tussen de
  *                stops een gestreepte lijn en een rijdende auto (fiets bij de
@@ -13,11 +15,12 @@
  *                en de twee omgevingsfoto's die de PDP-gallery als eerste toont
  * Keuze wordt in localStorage bewaard zodat hij tussen pagina's blijft staan.
  */
-export type TripCardVariant = '50-50' | 'overlay' | 'timeline' | 'collage'
+export type TripCardVariant = '50-50' | 'overlay' | 'inverse' | 'timeline' | 'collage'
 
 export const TRIP_CARD_VARIANTS: { id: TripCardVariant; label: string }[] = [
   { id: '50-50', label: '50-50' },
   { id: 'overlay', label: 'Overlay' },
+  { id: 'inverse', label: 'Inverse' },
   { id: 'timeline', label: 'Tijdlijn' },
   { id: 'collage', label: 'Collage' },
 ]
@@ -32,7 +35,7 @@ export function useMultiHotelTripCardVariant() {
     onMounted(() => {
       try {
         const saved = localStorage.getItem(STORAGE_KEY)
-        if (saved === '50-50' || saved === 'overlay' || saved === 'timeline' || saved === 'collage') variant.value = saved
+        if (saved === '50-50' || saved === 'overlay' || saved === 'inverse' || saved === 'timeline' || saved === 'collage') variant.value = saved
       } catch { /* localStorage niet beschikbaar */ }
     })
   }

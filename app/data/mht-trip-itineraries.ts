@@ -492,7 +492,7 @@ export const TRIP_ITINERARIES: Record<string, TripItinerarySpec> = {
       'Van Oys Maastricht Retreat': {
         description: l('Vijfsterren Superior hotel in een 17e-eeuws kasteel op een landgoed bij Eijsden, tien minuten van Maastricht. Lid van The Leading Hotels of the World en bekroond met een Michelin Key. Restaurant Maes staat in de Michelin-gids; de Oysana-spa met binnenbad, sauna\'s en behandelkamers ligt in de oude kasteelhoeve.',
           'Five-star Superior hotel in a 17th-century castle on an estate near Eijsden, ten minutes from Maastricht. A Leading Hotel of the World with a Michelin Key. Restaurant Maes is Michelin-listed; the Oysana spa with indoor pool, saunas and treatment rooms occupies the old castle farm.'),
-        facilities: ['Restaurant Maes (Michelin-gids)', 'Oysana spa met binnenbad', 'Sauna\'s en behandelingen', 'Fitness', 'Kasteeltuin', 'Gratis parkeren', 'Gratis wifi', 'Bar en lounge'],
+        facilities: ['Restaurant Maes (Michelin-gids)', 'Oysana spa met binnenbad', 'Sauna\'s en behandelingen', 'Fitness', 'Kasteeltuin', 'Gratis parkeren', 'Laadpalen', 'Gratis wifi', 'Bar en lounge'],
         room: { name: l('Deluxe Room', 'Deluxe Room'), description: l('Je verblijft in een Deluxe Room met kasteel- of tuinzicht: design in warme materialen, een kingsize bed, marmeren badkamer en een badjas voor de Oysana-spa.', 'You stay in a Deluxe Room with castle or garden views: design in warm materials, a king-size bed, marble bathroom and a bathrobe for the Oysana spa.') },
       },
     },
@@ -626,7 +626,7 @@ export const TRIP_ITINERARIES: Record<string, TripItinerarySpec> = {
       'Inntel Hotels Den Haag Marina Beach': {
         description: l('Splinternieuw viersterrenhotel direct aan het strand van Scheveningen, aan de jachthaven. De kamers hebben zeezicht of een whirlpool; op het dak liggen een binnen- en buitenzwembad, spa en fitness met uitzicht over de Noordzee. De Pier en de boulevard liggen op loopafstand.',
           'Brand-new four-star hotel right on Scheveningen beach, by the marina. Rooms have sea views or a whirlpool; on the roof are an indoor and outdoor pool, spa and gym overlooking the North Sea. The Pier and boulevard are a short walk away.'),
-        facilities: ['Restaurant met zeezicht', 'Binnen- en buitenzwembad', 'Spa en sauna', 'Fitness', 'Direct aan het strand', 'Parkeergarage (gereduceerd tarief)', 'Gratis wifi', 'Lift'],
+        facilities: ['Restaurant met zeezicht', 'Binnen- en buitenzwembad', 'Spa en sauna', 'Fitness', 'Direct aan het strand', 'Parkeergarage (gereduceerd tarief)', 'Laadpalen', 'Gratis wifi', 'Lift'],
         room: { name: l('Kamer met whirlpool of zeezicht', 'Kamer met whirlpool of zeezicht'), description: l('Splinternieuwe kamer met een whirlpool voor twee of een balkon met uitzicht over de Noordzee en de jachthaven. Strak design, kingsize bed en een regendouche.', 'Brand-new room with a whirlpool for two or a balcony overlooking the North Sea and the marina. Sleek design, king-size bed and a rain shower.') },
       },
       'Carlton Square': {

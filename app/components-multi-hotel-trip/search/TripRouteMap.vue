@@ -8,7 +8,7 @@
        genummerde stops. -->
   <svg
     class="trm"
-    :class="{ 'trm--overlay': overlay }"
+    :class="{ 'trm--overlay': overlay, 'trm--inverse': inverse }"
     :viewBox="`0 0 ${W} ${H}`"
     preserveAspectRatio="xMidYMid slice"
     role="img"
@@ -132,6 +132,9 @@ const props = withDefaults(defineProps<{
   /** Dealcard-variant "overlay": kaartlaag semi-transparant over de foto;
    *  route, markers en namen blijven dekkend. */
   overlay?: boolean
+  /** Dealcard-variant "inverse": overlay met donkere landmassa, witte route,
+   *  plaatsnamen en markers (gebruik samen met `overlay`). */
+  inverse?: boolean
   /** Alleen stipjes als marker (geen nummer) — mini-kaartje in de collage-variant. */
   dots?: boolean
 }>(), {
@@ -151,6 +154,7 @@ const props = withDefaults(defineProps<{
   markerIcon: false,
   legLabelStyle: 'pill',
   overlay: false,
+  inverse: false,
   dots: false,
 })
 
@@ -444,6 +448,27 @@ const ariaLabel = computed(() => `Route: ${props.stops.map((s, i) => `${i + 1}. 
 .trm--overlay .trm__province { stroke: rgba(224, 217, 204, 0.75); }
 .trm--overlay .trm__border { stroke: rgba(111, 102, 90, 0.8); }
 .trm--overlay .trm__label { fill: rgba(80, 74, 64, 0.8); }
+/* Inverse overlay (dealcard-variant "inverse"): donkere landmassa over de foto,
+   water iets lichter zodat de kustlijn leesbaar blijft; route, grenzen,
+   plaatsnamen en markers in wit. */
+.trm--inverse .trm__water { fill: rgba(22, 34, 46, 0.45); }
+.trm--inverse .trm__lake { fill: rgba(22, 34, 46, 0.45); }
+.trm--inverse .trm__land { fill: rgba(20, 20, 20, 0.74); }
+.trm--inverse .trm__province { stroke: rgba(255, 255, 255, 0.22); }
+.trm--inverse .trm__border { stroke: rgba(255, 255, 255, 0.65); }
+.trm--inverse .trm__label { fill: rgba(255, 255, 255, 0.75); }
+.trm--inverse .trm__region { fill: rgba(255, 255, 255, 0.6); }
+.trm--inverse .trm__route { stroke: #fff; }
+.trm--inverse .trm__route-halo { stroke: rgba(20, 20, 20, 0.55); }
+.trm--inverse .trm__leg rect { fill: #fff; }
+.trm--inverse .trm__leg text { fill: #141414; }
+.trm--inverse .trm__leg--plain text { fill: #fff; stroke: rgba(20, 20, 20, 0.8); }
+.trm--inverse .trm__marker circle { fill: #fff; stroke: #141414; }
+.trm--inverse .trm__marker text { fill: #141414; }
+.trm--inverse .trm__marker-icon path { stroke: #141414; }
+.trm--inverse .trm__marker--interactive.trm__marker--hover circle { fill: var(--color-primary, #ff7e00); stroke: #fff; }
+.trm--inverse .trm__marker--interactive.trm__marker--hover text { fill: #fff; }
+.trm--inverse .trm__city { fill: #fff; stroke: rgba(20, 20, 20, 0.85); }
 .trm__land {
   fill: #f3efe6;
   stroke: none;

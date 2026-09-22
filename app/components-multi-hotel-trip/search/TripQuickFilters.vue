@@ -6,8 +6,9 @@
        blijft staan. Pillen die in combinatie met de huidige selectie geen
        enkele vakantie meer opleveren worden inactief (afhankelijkheid).
        De basisrij past op desktop op één regel; na een geforceerde regel-
-       overgang (`.tqf__break`) volgen op de tweede regel de fietsopties zodra
-       "Met de fiets" aan staat (en, in de toolbar, rechts Sorteren/weergave).
+       overgang (`.tqf__break`) volgen op de tweede regel de subfilters van de
+       ouderpillen die aan staan: auto-opties bij "Met de auto", fietsopties
+       bij "Met de fiets" (en, in de toolbar, rechts Sorteren/weergave).
        `inline` maakt de root display:contents zodat de pillen directe
        flex-items van de toolbar worden. -->
   <div class="tqf" :class="{ 'tqf--inline': inline }" role="group" aria-label="Snelfilters">
@@ -43,10 +44,10 @@
     <!-- Geforceerde regelovergang: alles hierna staat op de tweede regel. -->
     <span class="tqf__break" aria-hidden="true"></span>
 
-    <!-- Fietsopties — alleen zichtbaar met "Met de fiets" aan. -->
+    <!-- Subfilters — alleen zichtbaar als hun ouderpil aan staat. -->
     <TransitionGroup name="tqf-sub">
       <button
-        v-for="f in visibleBikeOptions"
+        v-for="f in visibleSubFilters"
         :key="f.id"
         type="button"
         class="tqf__pill tqf__pill--sub"
@@ -81,7 +82,7 @@
 // NB: Nuxt dedupliceert het overlappende "Trip"-segment tussen de prefix
 // (MultiHotelTrip) en deze bestandsnaam — de component heet daardoor
 // <MultiHotelTripQuickFilters> (niet MultiHotelTripTripQuickFilters).
-import { TRIP_PRIMARY_FILTERS, tripSubFilters } from '~/utils-multi-hotel-trip/tripFilters'
+import { TRIP_PRIMARY_FILTERS, TRIP_SUB_PARENTS, tripSubFilters, type TripQuickFilter } from '~/utils-multi-hotel-trip/tripFilters'
 import { POPULAR_FILTER_ICONS } from '~/utils-multi-hotel-trip/popularFilterIcons'
 
 const props = withDefaults(defineProps<{
@@ -98,16 +99,26 @@ function isOn(id: string): boolean {
   return selectedTripFilters.value.includes(id)
 }
 
-/* Fietsopties: tweede regel, alleen met "Met de fiets" aan. Gaat de fietspil
-   uit, dan gaan actieve fietsopties mee uit (anders zouden ze onzichtbaar
-   blijven filteren). */
-const bikeOptions = tripSubFilters('fiets')
-const bikeOn = computed(() => isOn('fiets'))
-const visibleBikeOptions = computed(() => (bikeOn.value ? bikeOptions : []))
+/* Subfilters op de tweede regel: van elke ouderpil die aan staat (auto, fiets)
+   de opties, in die volgorde en zonder dubbelen ("Fiets huren" hangt onder
+   beide). Gaat een ouderpil uit, dan gaan de actieve opties mee uit die niet
+   ook onder een andere, nog aanstaande ouderpil hangen (anders zouden ze
+   onzichtbaar blijven filteren). */
+const visibleSubFilters = computed<TripQuickFilter[]>(() => {
+  const out: TripQuickFilter[] = []
+  for (const parent of TRIP_SUB_PARENTS) {
+    if (!isOn(parent)) continue
+    for (const f of tripSubFilters(parent)) if (!out.some(x => x.id === f.id)) out.push(f)
+  }
+  return out
+})
 
 function onToggle(id: string) {
-  if (id === 'fiets' && isOn('fiets')) {
-    for (const sub of bikeOptions) if (isOn(sub.id)) toggleTripFilter(sub.id)
+  if (TRIP_SUB_PARENTS.includes(id) && isOn(id)) {
+    for (const sub of tripSubFilters(id)) {
+      const otherParentOn = (sub.parents ?? []).some(p => p !== id && isOn(p))
+      if (isOn(sub.id) && !otherParentOn) toggleTripFilter(sub.id)
+    }
   }
   toggleTripFilter(id)
 }
@@ -128,6 +139,8 @@ const INLINE_ICONS: Record<string, string> = {
   route: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="19" r="3"/><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15"/><circle cx="18" cy="5" r="3"/></svg>',
   tag: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z"/><circle cx="7.5" cy="7.5" r=".5" fill="currentColor"/></svg>',
   map: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.106 5.553a2 2 0 0 0 1.788 0l3.659-1.83A1 1 0 0 1 21 4.619v12.764a1 1 0 0 1-.553.894l-4.553 2.277a2 2 0 0 1-1.788 0l-4.212-2.106a2 2 0 0 0-1.788 0l-3.659 1.83A1 1 0 0 1 3 19.381V6.618a1 1 0 0 1 .553-.894l4.553-2.277a2 2 0 0 1 1.788 0z"/><path d="M15 5.764v15"/><path d="M9 3.236v15"/></svg>',
+  parking: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 17V7h4a3 3 0 0 1 0 6H9"/></svg>',
+  charger: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></svg>',
 }
 const ICON_FOR: Record<string, string> = {
   auto: 'car',
@@ -139,6 +152,8 @@ const ICON_FOR: Record<string, string> = {
   'aan-zee': 'waves',
   natuur: 'treePine',
   culinair: 'utensils',
+  'gratis-parkeren': 'parking',
+  laadpaal: 'charger',
   bagagetransfer: 'luggage',
   'hotel-naar-hotel': 'route',
   'fiets-huren': 'tag',

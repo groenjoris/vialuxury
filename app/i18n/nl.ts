@@ -50,7 +50,7 @@ const nl: Record<string, string> = {
   'header.restaurants': 'Restaurants',
   'header.giftCard': 'Geef cadeaubon',
   // Multi Hotel Trip — hoofdnavigatie 'Vakanties' met 'Nieuw'-badge
-  'header.holidays': 'Vakanties',
+  'header.holidays': 'Rondreizen',
   'header.new': 'Nieuw',
   'header.whenAndHowLong': 'Wanneer en hoelang?',
   'header.pickDateAndDuration': 'Kies aankomstdatum en reisduur',
@@ -237,6 +237,9 @@ const nl: Record<string, string> = {
   'search.hotelDeals': 'hotelarrangementen',
   'search.hotelDealsAndHolidays': 'hotelarrangementen & vakanties',
   'search.holidaysTitle': 'Vakanties',
+  // Titel van de vakantie-zoekresultaten: "7 fiets- en autovakanties" / "1 fiets- of autovakantie"
+  'search.tripResultsOne': 'fiets- of autovakantie',
+  'search.tripResultsMany': 'fiets- en autovakanties',
   'search.holidaysHeroTitle': 'Auto- en fietsvakanties',
   'search.holidaysPitch': 'Verken een prachtige streek met auto of fiets, en verblijf in 3 verschillende hotels. Met zorg samengesteld en persoonlijk gecheckt.',
   'trip.auto': 'Autovakantie',
@@ -317,8 +320,8 @@ const nl: Record<string, string> = {
   'trip.checkInFrom': 'Inchecken vanaf {time}',
   // Multi Hotel Trip — reisduur in twee groepen (kort / lang)
   'nights.group.short': 'Kort verblijf',
-  'nights.group.long': 'Vakantie',
-  'nights.group.both': 'Kort verblijf of vakantie',
+  'nights.group.long': 'Lang verblijf of Rondreis',
+  'nights.group.both': 'Kort verblijf, lang verblijf of rondreis',
   'search.filters': 'Filters',
   'search.arrangement': 'Arrangement',
   'search.fromPrice': 'Vanaf',

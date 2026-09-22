@@ -12,7 +12,7 @@
     <!-- Image area (top in grid, left in list). Grid mode renders a small
          carousel (up to 5 hotel photos) with prev/next arrows that fade
          in on hover. List mode keeps the single static image. -->
-    <div class="deal-card-v2__image" :class="{ 'deal-card-v2__image--trip-overlay': tripOverlay, 'deal-card-v2__image--trip-timeline': tripTimeline, 'deal-card-v2__image--trip-collage': tripCollage }">
+    <div class="deal-card-v2__image" :class="{ 'deal-card-v2__image--trip-overlay': tripOverlay || tripInverse, 'deal-card-v2__image--trip-timeline': tripTimeline, 'deal-card-v2__image--trip-collage': tripCollage }">
       <!-- Anti rage-click: the whole photo opens the deal page. Sits ABOVE the
            image (z-index 1) but BELOW the carousel arrows (z-index 2) and the
            favourite heart (z-index 3) so those still work. -->
@@ -35,7 +35,7 @@
             <span v-for="n in tripHoverStop.starRating" :key="n"><svg viewBox="0 0 18 18" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M16.963,6.786c-.088-.271-.323-.469-.605-.51l-4.62-.671L9.672,1.418c-.252-.512-1.093-.512-1.345,0l-2.066,4.186-4.62,.671c-.282,.041-.517,.239-.605,.51-.088,.271-.015,.57,.19,.769l3.343,3.258-.79,4.601c-.048,.282,.067,.566,.298,.734,.231,.167,.538,.189,.79,.057l4.132-2.173,4.132,2.173c.11,.058,.229,.086,.349,.086,.155,0,.31-.048,.441-.143,.231-.168,.347-.452,.298-.734l-.79-4.601,3.343-3.258c.205-.199,.278-.498,.19-.769Z"/></svg></span>
           </span>
         </div>
-        <MultiHotelTripRouteMap v-if="!tripTimeline && !tripCollage" class="deal-card-v2__trip-map" :stops="tripMapStops" :overlay="tripOverlay" hoverable @stop-hover="tripHoverIndex = $event" />
+        <MultiHotelTripRouteMap v-if="!tripTimeline && !tripCollage" class="deal-card-v2__trip-map" :stops="tripMapStops" :overlay="tripOverlay || tripInverse" :inverse="tripInverse" hoverable @stop-hover="tripHoverIndex = $event" />
         <!-- Variant "collage": rechts 1/4 met drie tegels — mini-routekaartje (stipjes,
              landcodes) en de twee omgevingsfoto's die de PDP-gallery als eerste toont. -->
         <div v-else-if="tripCollage" class="deal-card-v2__trip-collage">
@@ -127,7 +127,7 @@
       <div
         v-if="((hotel?.labels && hotel.labels.length) || tripPromoLabel) && !hideLabels"
         class="deal-card-v2__labels"
-        :class="{ 'deal-card-v2__labels--top': tripTimeline }"
+        :class="{ 'deal-card-v2__labels--top': tripTimeline, 'deal-card-v2__labels--promo': tripPromoLabel }"
       >
         <MultiHotelTripDealLabel
           v-for="label in hotel?.labels || []"
@@ -138,7 +138,7 @@
         <MultiHotelTripDealLabel
           v-if="tripPromoLabel"
           :key-name="tripPromoLabel"
-          class="deal-card-v2__label"
+          class="deal-card-v2__label deal-card-v2__label--promo"
         />
       </div>
       <button
@@ -410,6 +410,8 @@ const isTrip = computed(() => !!props.hotel?.trip)
  *  volle breedte met het kaartje semi-transparant erover. */
 const { variant: tripCardVariant } = useMultiHotelTripCardVariant()
 const tripOverlay = computed(() => isTrip.value && tripCardVariant.value === 'overlay')
+/* Variant "inverse": overlay-opmaak met een donkere kaartlaag en witte route. */
+const tripInverse = computed(() => isTrip.value && tripCardVariant.value === 'inverse')
 const tripTimeline = computed(() => isTrip.value && tripCardVariant.value === 'timeline')
 const tripCollage = computed(() => isTrip.value && tripCardVariant.value === 'collage')
 /** Collage: de twee omgevingsfoto's die de PDP-gallery als eerste toont (na de cover);
@@ -859,6 +861,19 @@ const includesBullets = computed<string[]>(() => {
   height: 36px; /* 80% of 45 */
   width: auto;
   filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.35));
+}
+/* Promo-sticker (BAGAGETRANSFER): 0,75 × de gewone labelmaat (36 → 27 px,
+   22 → 16,5 px) en nooit breder dan de helft van de kaart. */
+.deal-card-v2__labels--promo {
+  max-width: calc(50% - var(--space-md));
+}
+.deal-card-v2__labels .deal-card-v2__label--promo {
+  height: 27px;
+  padding: 5px 12px;
+  font-size: 16.5px;
+  letter-spacing: 0.4px;
+  max-width: 100%;
+  overflow: hidden;
 }
 /* Tijdlijn-variant: onderaan ligt de route-strook, dus de stickers staan
    linksboven onder het kortingsvaantje (43 px hoog + 8 px). */

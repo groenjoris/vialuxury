@@ -3402,9 +3402,9 @@ function handleSelectHotelInPopup(slug: string) {
   margin: 0;
   /* Top-padding matches the gap between bar inner-top and search-button top
      (bar padding 8px + (64 − 56)/2 = 4px → 12px) so the label-row top-aligns
-     with the upper border of the search button. Horizontal padding kept at
-     18px for breathing room. */
-  padding: 12px 18px;
+     with the upper border of the search button. Horizontal padding 16px
+     (was 18) so the long duration label "Lang verblijf of Rondreis" fits. */
+  padding: 12px 16px;
   display: flex;
   align-items: flex-start;      /* top-align icon+label inside the field */
   gap: 8px;
@@ -3483,6 +3483,9 @@ function handleSelectHotelInPopup(slug: string) {
 .search-bar__value {
   font-size: 16px;
   font-weight: 500;
+  /* Iets strakker gespatieerd zodat het langste duurlabel ("Lang verblijf
+     of Rondreis") in het veld past zonder afkapping. */
+  letter-spacing: -0.01em;
   color: var(--color-text-primary);
   white-space: nowrap;
   overflow: hidden;

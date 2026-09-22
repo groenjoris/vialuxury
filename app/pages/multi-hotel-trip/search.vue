@@ -680,7 +680,7 @@ const tripDealCount = computed(() =>
 const resultsNoun = computed(() => {
   const total = totalDeals.value
   const trips = tripDealCount.value
-  if (isTripMode.value || (trips > 0 && trips === total)) return t(total === 1 ? 'search.holiday' : 'search.holidays')
+  if (isTripMode.value || (trips > 0 && trips === total)) return t(total === 1 ? 'search.tripResultsOne' : 'search.tripResultsMany')
   if (trips === 0) return t(total === 1 ? 'search.hotelDeal' : 'search.hotelDeals')
   return t('search.hotelDealsAndHolidays')
 })

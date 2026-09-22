@@ -130,7 +130,7 @@ const TRIPS: TripSpec[] = [
       l('Late check-out bij elk hotel', 'Late check-out at every hotel'),
       l('Gratis parkeren (Tilques en Cléry)', 'Free parking (Tilques and Cléry)'),
     ],
-    tags: ['auto', 'frankrijk', 'nieuw', 'kasteel', 'culinair', 'aan-zee', 'cultuur'],
+    tags: ['auto', 'frankrijk', 'nieuw', 'kasteel', 'culinair', 'aan-zee', 'cultuur', 'gratis-parkeren'],
     routeImage: '/images/vakanties/001/route.jpg',
   },
   // ── Original No. 002 ──────────────────────────────────────────────────
@@ -167,7 +167,7 @@ const TRIPS: TripSpec[] = [
       l("Late check-out (De Zwaan en 's Gravenhof)", "Late check-out (De Zwaan and 's Gravenhof)"),
       l('Gratis parkeren (Mooirivier)', 'Free parking (Mooirivier)'),
     ],
-    tags: ['auto', 'nederland', 'steden', 'culinair', 'wellness', 'cultuur'],
+    tags: ['auto', 'nederland', 'steden', 'culinair', 'wellness', 'cultuur', 'gratis-parkeren', 'laadpaal', 'fiets-huren'],
     routeImage: '/images/vakanties/002/route.jpg',
   },
   // ── Original No. 003 ──────────────────────────────────────────────────
@@ -204,7 +204,7 @@ const TRIPS: TripSpec[] = [
       l('Late check-out bij elk hotel', 'Late check-out at every hotel'),
       l('Gratis parkeren bij alle hotels', 'Free parking at all hotels'),
     ],
-    tags: ['auto', 'nederland', 'kasteel', 'culinair', 'superluxe', 'wellness', 'natuur', 'ontspanning', 'cultuur'],
+    tags: ['auto', 'nederland', 'kasteel', 'culinair', 'superluxe', 'wellness', 'natuur', 'ontspanning', 'cultuur', 'gratis-parkeren', 'fiets-huren'],
     routeImage: '/images/vakanties/003/route.jpg',
   },
   // ── Original No. 004 ──────────────────────────────────────────────────
@@ -242,7 +242,7 @@ const TRIPS: TripSpec[] = [
       l('Late check-out (Merici en Winselerhof)', 'Late check-out (Merici and Winselerhof)'),
       l('Gratis parkeren (Winselerhof)', 'Free parking (Winselerhof)'),
     ],
-    tags: ['auto', 'nederland', 'superluxe', 'wellness', 'culinair', 'ontspanning'],
+    tags: ['auto', 'nederland', 'superluxe', 'wellness', 'culinair', 'ontspanning', 'gratis-parkeren', 'laadpaal'],
     routeImage: '/images/vakanties/004/route.jpg',
   },
   // ── Original No. 005 ──────────────────────────────────────────────────
@@ -279,7 +279,7 @@ const TRIPS: TripSpec[] = [
       l('Late check-out bij elk hotel', 'Late check-out at every hotel'),
       l('Gratis parkeren (Winselerhof)', 'Free parking (Winselerhof)'),
     ],
-    tags: ['auto', 'nederland', 'culinair', 'steden', 'budget', 'cultuur'],
+    tags: ['auto', 'nederland', 'culinair', 'steden', 'budget', 'cultuur', 'gratis-parkeren', 'fiets-huren'],
     routeImage: '/images/vakanties/005/route.jpg',
   },
   // ── Original No. 006 ──────────────────────────────────────────────────
@@ -315,7 +315,7 @@ const TRIPS: TripSpec[] = [
       l('Late check-out (Ter Duin)', 'Late check-out (Ter Duin)'),
       l('Gereduceerd parkeertarief (Inntel)', 'Reduced parking rate (Inntel)'),
     ],
-    tags: ['auto', 'nederland', 'nieuw', 'aan-zee', 'wellness', 'steden', 'ontspanning'],
+    tags: ['auto', 'nederland', 'nieuw', 'aan-zee', 'wellness', 'steden', 'ontspanning', 'laadpaal', 'fiets-huren'],
     routeImage: '/images/vakanties/006/route.jpg',
   },
   // ── Fietsvakantie Twente & Salland (echte ViaLuxury-deal "Fietsvakantie 2026") ──
@@ -352,7 +352,7 @@ const TRIPS: TripSpec[] = [
       l('Welkomstfietstasje en ViaLuxury welkomstcadeau', 'Welcome cycling bag and ViaLuxury welcome gift'),
       l('Gratis parkeren (gehele vakantie)', 'Free parking (whole holiday)'),
     ],
-    tags: ['fiets', 'nederland', 'nieuw', 'natuur', 'culinair', 'ontspanning', 'bagagetransfer', 'hotel-naar-hotel', 'fiets-huren', 'fietsroutes'],
+    tags: ['fiets', 'nederland', 'nieuw', 'natuur', 'culinair', 'ontspanning', 'bagagetransfer', 'hotel-naar-hotel', 'fiets-huren', 'fietsroutes', 'gratis-parkeren'],
   },
 ]
 
