@@ -220,7 +220,7 @@
           <MultiHotelTripRouteMapCard
             v-if="isTrip"
             class="deal-page__minimap"
-            :stops="tripMapStops" :legs="tripRouteLegs" :summary="tripMapSummary"
+            :stops="tripMapStops" :legs="tripRouteLegs" :return-label="tripReturnLabel" :summary="tripMapSummary"
             @open="tripMapOpen = true"
             @stop-click="openTripHotel"
           />
@@ -456,7 +456,7 @@
             <MultiHotelTripRouteMapCard
               id="mini-map"
               class="deal-page__minimap deal-page__minimap--trip"
-              :stops="tripMapStops" :legs="tripRouteLegs" :summary="tripMapSummary"
+              :stops="tripMapStops" :legs="tripRouteLegs" :return-label="tripReturnLabel" :summary="tripMapSummary"
               @open="tripMapOpen = true"
               @stop-click="openTripHotel"
             />
@@ -486,7 +486,7 @@
               v-if="isTrip"
               id="mini-map"
               class="deal-page__minimap deal-page__minimap--trip"
-              :stops="tripMapStops" :legs="tripRouteLegs" :summary="tripMapSummary"
+              :stops="tripMapStops" :legs="tripRouteLegs" :return-label="tripReturnLabel" :summary="tripMapSummary"
               @open="tripMapOpen = true"
               @stop-click="openTripHotel"
             />
@@ -1082,7 +1082,7 @@
       v-if="isTrip"
       :open="tripMapOpen"
       :title="currentDeal ? localized(currentDeal.title) : ''"
-      :stops="tripMapStops" :legs="tripRouteLegs"
+      :stops="tripMapStops" :legs="tripRouteLegs" :return-label="tripReturnLabelFull"
       :highlights="tripMapHighlights"
       :nights-labels="tripMapNightsLabels"
       :hotels="tripHotelDetailsAll"
@@ -1597,18 +1597,44 @@ function tripTravelLabel(travel: { km: number; minutes: number } | undefined, i:
 }
 /** Regels onder de minimap: heenreis vanaf huis, totale route en totale rijtijd
  *  tussen de hotels (uit de reisdata, anders de berekende route). */
-const tripMapSummary = computed<({ icon: 'car' | 'route' | 'clock'; text: string } | undefined)[]>(() => {
+const tripMapSummary = computed<({ icon: string; text: string } | undefined)[]>(() => {
   if (!trip) return []
   const legs = tripRouteLegs.value
-  const km = trip.stops.reduce((sum, s, i) => sum + (s.travel?.km ?? legs.find(l => l.to === i)?.km ?? 0), 0)
-  const min = trip.stops.reduce((sum, s, i) => sum + (s.travel?.minutes ?? legs.find(l => l.to === i)?.minutes ?? 0), 0)
   const first = trip.stops[0]
+  if (trip.type === 'fiets') {
+    // Fietsvakantie: etappes (incl. terugetappe van een rondje), fietstijd per
+    // etappe, terrein, bagage, heenreis (auto/trein) en fiets huren.
+    const legKm = trip.stops.slice(1).map((s, k) => s.travel?.km ?? legs.find(l => l.to === k + 1 && !l.return)?.km ?? 0)
+    const legMin = trip.stops.slice(1).map((s, k) => s.travel?.minutes ?? legs.find(l => l.to === k + 1 && !l.return)?.minutes ?? 0)
+    if (trip.returnTravel) { legKm.push(trip.returnTravel.km); legMin.push(trip.returnTravel.minutes) }
+    const total = legKm.reduce((a, b) => a + b, 0)
+    const mins = legMin.filter(Boolean)
+    const minH = Math.max(1, Math.floor(Math.min(...mins) / 60))
+    const maxH = Math.max(minH, Math.ceil(Math.max(...mins) / 60))
+    const arrival = trip.fromHome && first
+      ? (trip.station ? t('trip.bike.arrivalLineTrain') : t('trip.bike.arrivalLine'))
+          .replace('{duration}', tripDurationLabel(trip.fromHome.minutes)).replace('{city}', trip.fromHome.city).replace('{station}', trip.station ?? '')
+      : undefined
+    return [
+      total ? { icon: 'bike', text: t('trip.bike.stagesLine').replace('{n}', String(legKm.length)).replace('{list}', legKm.join(' · ')).replace('{total}', String(total)) } : undefined,
+      mins.length ? { icon: 'clock', text: t('trip.bike.timeLine').replace('{min}', String(minH)).replace('{max}', String(maxH)) } : undefined,
+      trip.terrain ? { icon: 'mountain', text: localized(trip.terrain) } : undefined,
+      trip.tags.includes('bagagetransfer') ? { icon: 'suitcase', text: t('trip.bike.luggageLine') } : undefined,
+      arrival ? { icon: 'car', text: arrival } : undefined,
+      { icon: 'key', text: t('trip.bike.rentalLine') },
+    ]
+  }
+  const km = trip.stops.reduce((sum, s, i) => sum + (s.travel?.km ?? legs.find(l => l.to === i && !l.return)?.km ?? 0), 0)
+  const min = trip.stops.reduce((sum, s, i) => sum + (s.travel?.minutes ?? legs.find(l => l.to === i && !l.return)?.minutes ?? 0), 0)
   return [
-    trip.fromHome && first ? { icon: 'car' as const, text: t('trip.fromHomeLine').replace('{city}', trip.fromHome.city).replace('{duration}', tripDurationLabel(trip.fromHome.minutes)).replace('{to}', first.city) } : undefined,
-    km ? { icon: 'route' as const, text: t('trip.totalRouteLine').replace('{km}', String(km)) } : undefined,
-    min ? { icon: 'clock' as const, text: t('trip.totalDriveLine').replace('{duration}', tripDurationLabel(min)) } : undefined,
+    trip.fromHome && first ? { icon: 'car', text: t('trip.fromHomeLine').replace('{city}', trip.fromHome.city).replace('{duration}', tripDurationLabel(trip.fromHome.minutes)).replace('{to}', first.city) } : undefined,
+    km ? { icon: 'route', text: t('trip.totalRouteLine').replace('{km}', String(km)) } : undefined,
+    min ? { icon: 'clock', text: t('trip.totalDriveLine').replace('{duration}', tripDurationLabel(min)) } : undefined,
   ]
 })
+/** Label van de terugetappe (rondje): kort voor de minimap ("20 km"), volledig voor de grote kaart. */
+const tripReturnLabel = computed(() => (trip?.returnTravel ? `${trip.returnTravel.km} km` : undefined))
+const tripReturnLabelFull = computed(() => (trip?.returnTravel ? tripTravelLabel(trip.returnTravel, -1) : undefined))
 /** Compacte reistijd voor de minimap: "50 min", "1 uur", "2 u 30 min". */
 function tripTravelShort(travel: { km: number; minutes: number } | undefined, i: number): string | undefined {
   const minutes = travel?.minutes ?? tripRouteLegs.value.find(l => l.to === i)?.minutes
@@ -1658,6 +1684,7 @@ const tripDaysView = computed<TripDayView[]>(() => {
             tag: t('trip.tag.route'),
             title: b.title ? localized(b.title) : t('trip.checkoutAt').replace('{hotel}', name),
             text: b.text ? localized(b.text) : t('trip.checkoutText').replace('{hotel}', name),
+            meta: b.meta ? localized(b.meta) : undefined,
             image: b.image,
             stopIndex: b.stopIndex,
             hotelName: name || undefined,
@@ -1698,6 +1725,7 @@ const tripDaysView = computed<TripDayView[]>(() => {
             kind: 'homeward',
             tag: t('trip.tag.homeward'),
             title: b.title ? localized(b.title) : t('trip.homewardTitle'),
+            meta: b.meta ? localized(b.meta) : undefined,
             text: b.text ? localized(b.text) : t('trip.checkoutText').replace('{hotel}', name),
             image: b.image,
             stopIndex: b.stopIndex,
@@ -1994,6 +2022,7 @@ function tripHighlightIcon(text: string): string | null {
   if (/parkeren|parking|diner|dinner|ontbijt|breakfast/i.test(text)) return null
   if (/fietstasje|welkomstcadeau|welcome (cycling )?bag|welcome gift/i.test(text)) return '/icons/mht/gym-bag.svg'
   if (/bagage|luggage|koffer/i.test(text)) return '/icons/mht/suitcase.svg'
+  if (/etappedag|dagrondje|stage day|day loop/i.test(text)) return '/icons/mht/bike.svg'
   if (/bubbels|champagne|prosecco|bubbles/i.test(text)) return '/icons/mht/champagne.svg'
   if (/hotel|nachten|nights/i.test(text)) return '/icons/mht/hotel.svg'
   if (/etappe|minuten|minutes|rijtijd|rijden|\bkm\b/i.test(text)) return '/icons/mht/clock.svg'

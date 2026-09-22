@@ -58,6 +58,8 @@ export interface TripRawBlock {
   nextCity?: string
   /** "Meer over …"-pop-up (redactioneel blok). */
   more?: TripMoreInfo
+  /** Etappefeiten onder de kop (onderweg-/terugreisblok). */
+  meta?: LocalizedString
 }
 export interface TripRawDay {
   day: number
@@ -129,7 +131,7 @@ export function buildTripDays(trip: MultiHotelTripDetail, content: TripItinerary
     }
     if (idx === -1) {
       // Laatste dag: uitchecken en terugreis.
-      blocks.push({ kind: 'homeward', stopIndex: prevIdx, title: spec?.homeward?.title, text: spec?.homeward?.text, image: spec?.homeward?.image ?? stops[prevIdx]?.image, more: spec?.homeward?.more })
+      blocks.push({ kind: 'homeward', stopIndex: prevIdx, title: spec?.homeward?.title, text: spec?.homeward?.text, image: spec?.homeward?.image ?? stops[prevIdx]?.image, more: spec?.homeward?.more, meta: spec?.homeward?.meta })
       out.push({ day, stopIndex: null, fromStopIndex: prevIdx, blocks })
       continue
     }
@@ -143,7 +145,7 @@ export function buildTripDays(trip: MultiHotelTripDetail, content: TripItinerary
     }
     if (idx !== prevIdx) {
       // Wisseldag: eerst onderweg (uitchecken), dan inchecken, dan diner.
-      blocks.push({ kind: 'checkout', stopIndex: prevIdx, title: spec?.route?.title, text: spec?.route?.text, image: spec?.route?.image ?? stops[prevIdx]?.image, more: spec?.route?.more })
+      blocks.push({ kind: 'checkout', stopIndex: prevIdx, title: spec?.route?.title, text: spec?.route?.text, image: spec?.route?.image ?? stops[prevIdx]?.image, more: spec?.route?.more, meta: spec?.route?.meta })
       // Eigen aankomsttekst (kort; hotelinfo achter de klik) als de content die heeft.
       blocks.push({ kind: 'checkin', stopIndex: idx, image: spec?.arrival?.image ?? stops[idx]!.image, text: spec?.arrival?.text })
       pushActivities()
@@ -330,6 +332,14 @@ function tripFaq(trip: MultiHotelTripDetail): FaqItem[] {
       : { id: 'trip-tol', question: F('Heb ik een vignet nodig of betaal ik tol?', 'Do I need a vignette or pay tolls?'),
           answer: F('Voor Nederland, België en Frankrijk heb je geen vignet nodig. In Frankrijk betaal je tol op sommige snelwegen; de etappes tussen de hotels lopen grotendeels over tolvrije wegen. Reken voor de heenreis op een klein tolbedrag als je de snelste route neemt.',
             'No vignette is needed for the Netherlands, Belgium or France. In France some motorways charge tolls; the legs between the hotels mostly follow toll-free roads. Allow for a small toll on the drive there if you take the fastest route.') },
+    ...(bike ? [
+      { id: 'trip-niveau', question: F('Hoe zwaar zijn de etappes?', 'How demanding are the legs?'),
+        answer: F('Licht: de etappes zijn 20 tot 45 kilometer over verharde fietspaden en knooppuntroutes, grotendeels vlak met een paar zachte klimmen op de Sallandse Heuvelrug en naar de Herikerberg. In rustig tempo fiets je 1 tot 3 uur per etappe, met tijd voor een terras. Een e-bike is welkom, maar niet nodig.',
+          'Easy: the legs are 20 to 45 kilometres on paved cycle paths and junction routes, mostly flat with a few gentle climbs on the Sallandse Heuvelrug and up to the Herikerberg. At a relaxed pace you cycle 1 to 3 hours per leg, with time for a terrace. An e-bike is welcome but not necessary.') },
+      { id: 'trip-trein', question: F('Kan ik met de trein komen en mijn fiets meenemen?', 'Can I come by train and bring my bike?'),
+        answer: F(`Ja. Station ${trip.station ?? first?.city ?? ''} ligt op een paar minuten fietsen van het eerste hotel. Buiten de spits mag je fiets mee in de trein met een fietskaartje; reis je liever zonder fiets, dan staat er bij aankomst een huurfiets of e-bike voor je klaar.`,
+          `Yes. ${trip.station ?? first?.city ?? ''} station is a few minutes' ride from the first hotel. Outside rush hour your bike travels with you on the train with a bicycle ticket; if you prefer to travel without a bike, a rental bike or e-bike is waiting for you on arrival.`) },
+    ] as FaqItem[] : []),
     { id: 'trip-annuleren', question: F('Kan ik annuleren of mijn datum wijzigen?', 'Can I cancel or change my date?'),
       answer: F('Tot 30 dagen voor vertrek annuleer je kosteloos. Daarna gelden de voorwaarden van de hotels. Een andere aankomstdatum regelen we op aanvraag, afhankelijk van de beschikbaarheid bij alle hotels.',
         'Up to 30 days before departure you can cancel free of charge. After that the hotels\' conditions apply. We arrange a different arrival date on request, subject to availability at all hotels.') },

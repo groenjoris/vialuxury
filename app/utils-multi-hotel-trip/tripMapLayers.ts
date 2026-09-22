@@ -43,12 +43,14 @@ export interface TripRouteLeg {
   minutes: number
   /** [lat, lng] */
   coords: [number, number][]
+  /** Terugetappe van een rondje (laatste → eerste hotel): gestippeld getekend. */
+  return?: boolean
 }
 
 /** Punt halverwege een lijn (gemeten langs de lijn, niet het middelste
  *  coördinaat), zodat het afstandslabel ook op een kronkelende route
  *  netjes in het midden staat. */
-function midpointAlong(pts: [number, number][]): [number, number] {
+function midpointAlong(pts: [number, number][], frac = 0.5): [number, number] {
   if (pts.length < 2) return pts[0] ?? [0, 0]
   const cos = Math.cos((pts[0]![0] * Math.PI) / 180)
   const seg: number[] = []
@@ -61,9 +63,10 @@ function midpointAlong(pts: [number, number][]): [number, number] {
     total += d
   }
   let acc = 0
+  const target = total * frac
   for (let i = 0; i < seg.length; i++) {
-    if (acc + seg[i]! >= total / 2) {
-      const f = seg[i]! ? (total / 2 - acc) / seg[i]! : 0
+    if (acc + seg[i]! >= target) {
+      const f = seg[i]! ? (target - acc) / seg[i]! : 0
       const a = pts[i]!, b = pts[i + 1]!
       return [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f]
     }
@@ -108,7 +111,7 @@ export function addTripRoute(
   L: L,
   map: Leaflet.Map,
   stops: TripMapStop[],
-  opts: { distances?: boolean; weight?: number; legs?: TripRouteLeg[]; labelMode?: 'full' | 'short' } = {},
+  opts: { distances?: boolean; weight?: number; legs?: TripRouteLeg[]; labelMode?: 'full' | 'short'; returnLabel?: string } = {},
 ): Leaflet.LatLngBounds | null {
   if (stops.length < 2) return null
   const w = opts.weight ?? 3
@@ -137,6 +140,20 @@ export function addTripRoute(
       if (!text) continue
       const icon = L.divIcon({ className: 'tml-km-wrap', html: `<span class="tml-km">${escapeHtml(text)}</span>`, iconSize: [0, 0], iconAnchor: [0, 0] })
       L.marker(midpointAlong(seg.pts), { icon, interactive: false, keyboard: false, zIndexOffset: 500 }).addTo(map)
+    }
+  }
+  // Terugetappe van een rondje: gestippeld, met eigen label.
+  const ret = opts.legs?.find(l => l.return && l.coords.length > 1)
+  if (ret) {
+    L.polyline(ret.coords, { color: '#fff', weight: w + 4, opacity: 0.9, lineJoin: 'round', lineCap: 'round', interactive: false }).addTo(map)
+    const line = L.polyline(ret.coords, { color: '#141414', weight: w, dashArray: '8 8', lineJoin: 'round', lineCap: 'round', interactive: false }).addTo(map)
+    bounds.extend(line.getBounds())
+    if (opts.distances) {
+      const text = opts.returnLabel ?? `${ret.km} km`
+      const icon = L.divIcon({ className: 'tml-km-wrap', html: `<span class="tml-km">${escapeHtml(text)}</span>`, iconSize: [0, 0], iconAnchor: [0, 0] })
+      // Iets voorbij het midden (richting het eerste hotel), zodat het label niet
+      // onder de naam van het laatste hotel valt bij een korte terugetappe.
+      L.marker(midpointAlong(ret.coords, 0.62), { icon, interactive: false, keyboard: false, zIndexOffset: 500 }).addTo(map)
     }
   }
   return bounds

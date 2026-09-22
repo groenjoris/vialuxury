@@ -273,6 +273,13 @@ const nl: Record<string, string> = {
   'trip.fromHomeLine': 'Reistijd van {city} naar {to}: ca. {duration}',
   'trip.totalRouteLine': 'Totale route tussen hotels: {km} km',
   'trip.totalDriveLine': 'Totale rijtijd: ca. {duration}',
+  // Fietsvakantie — regels onder de minimap
+  'trip.bike.stagesLine': '{n} fietsetappes: {list} km ({total} km totaal)',
+  'trip.bike.timeLine': '{min} tot {max} uur fietsen per etappe, in rustig tempo',
+  'trip.bike.luggageLine': 'Je bagage gaat vooruit, jij fietst met alleen het fietstasje',
+  'trip.bike.arrivalLine': 'Heenreis: ca. {duration} met de auto vanuit {city}, gratis parkeren bij het starthotel',
+  'trip.bike.arrivalLineTrain': 'Heenreis: ca. {duration} met de auto vanuit {city} (gratis parkeren), of met de trein tot station {station}',
+  'trip.bike.rentalLine': 'Eigen fiets of huurfiets/e-bike, bij te boeken',
   'trip.itineraryIntro': 'Zo ziet je vakantie eruit: een voorbeeldprogramma, je bepaalt zelf het tempo.',
   'trip.moreAboutHotel': 'Meer over dit hotel',
   'trip.moreAboutHotelNamed': 'Meer over hotel {hotel}',

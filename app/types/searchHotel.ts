@@ -21,6 +21,8 @@ export interface MultiHotelTripStop {
   lng?: number
   /** NL-provincie voor het bestemmingsfilter (streeknaam kan afwijken, bv. Twente → Overijssel). */
   province?: string
+  /** Etappe vanaf het vorige hotel (voor de km/min-labels in de tijdlijn-variant). */
+  travel?: { km: number; minutes: number }
 }
 export interface MultiHotelTripInfo {
   type: MultiHotelTripType

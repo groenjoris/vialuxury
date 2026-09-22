@@ -10,6 +10,7 @@
         :stops="svgStops"
         :legs="legs"
         :leg-labels="legLabels"
+        :return-leg-label="returnLabel"
         :width="400"
         :height="300"
         :max-scale="700"
@@ -46,8 +47,10 @@ const props = defineProps<{
   stops: TripMapStop[]
   /** Rijroutes tussen de hotels (OSRM); zonder legs een rechte lijn. */
   legs?: TripRouteLeg[]
-  /** Regels onder de kaart (al vertaald) met icoon: heenreis (car), totale route (route), rijtijd (clock). */
-  summary?: ({ icon: 'car' | 'route' | 'clock'; text: string } | undefined)[]
+  /** Label van de gestippelde terugetappe (rondje), bv. "20 km". */
+  returnLabel?: string
+  /** Regels onder de kaart (al vertaald) met icoon (bestand in /icons/mht/): car, route, clock, bike, mountain, suitcase, key, … */
+  summary?: ({ icon: string; text: string } | undefined)[]
 }>()
 
 defineEmits<{ open: []; 'stop-click': [index: number] }>()
@@ -57,7 +60,7 @@ const { t } = useMultiHotelTripI18n()
 const svgStops = computed(() => props.stops.map(s => ({ lat: s.lat, lng: s.lng, label: s.label, title: s.title })))
 /** Alleen de afstand op de etappe ("45 km"); de volledige tekst staat op de grote kaart. */
 const legLabels = computed(() => props.stops.map(s => (s.travelKm ? `${s.travelKm} km` : undefined)))
-const summaryLines = computed(() => (props.summary ?? []).filter((l): l is { icon: 'car' | 'route' | 'clock'; text: string } => !!l))
+const summaryLines = computed(() => (props.summary ?? []).filter((l): l is { icon: string; text: string } => !!l))
 </script>
 
 <style scoped>

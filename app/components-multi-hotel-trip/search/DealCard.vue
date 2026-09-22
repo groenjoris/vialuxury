@@ -65,6 +65,8 @@
               <span class="trip-tl__nights">{{ s.nights }}</span>
             </div>
             <div v-if="i < tripTimelineStops.length - 1" class="trip-tl__leg" aria-hidden="true">
+              <!-- Etappelabel boven het vervoersicoon: km (fiets) of reistijd (auto). -->
+              <span v-if="tripTimelineStops[i + 1]?.legLabel" class="trip-tl__km">{{ tripTimelineStops[i + 1]?.legLabel }}</span>
               <span class="trip-tl__icon-wrap"><span class="trip-tl__icon"></span></span>
             </div>
           </template>
@@ -426,8 +428,17 @@ const tripCollagePhotos = computed(() => {
 const tripTimelineStops = computed(() =>
   (props.hotel?.trip?.stops ?? [])
     .filter(s => typeof s.lat === 'number' && typeof s.lng === 'number')
-    .map(s => ({ city: s.city, nights: nightsLabel(s.nights, locale.value) })),
+    .map(s => ({ city: s.city, nights: nightsLabel(s.nights, locale.value), legLabel: tripLegShort(s.travel) })),
 )
+/** "45 km" (fietsvakantie) of "45 min" / "1 u 20 min" (autovakantie) voor de etappe in de tijdlijn. */
+function tripLegShort(travel?: { km: number; minutes: number }): string | undefined {
+  if (!travel) return undefined
+  if (props.hotel?.trip?.type === 'fiets') return `${travel.km} km`
+  const m = travel.minutes
+  if (m < 60) return t('trip.durShort.minutes').replace('{m}', String(m))
+  const h = Math.floor(m / 60), r = m % 60
+  return r === 0 ? t('trip.durShort.hours').replace('{h}', String(h)) : t('trip.durShort.hoursMinutes').replace('{h}', String(h)).replace('{m}', String(r))
+}
 const tripTransportIcon = computed(() => (props.hotel?.trip?.type === 'fiets' ? 'bike' : 'car-side'))
 /** "Autovakantie met 3 hotels" — soort vakantie + aantal hotels, in plaats van een hotelnaam. */
 const tripTypeLabel = computed(() => {
@@ -1240,6 +1251,19 @@ const includesBullets = computed<string[]>(() => {
   padding: 3px;
   border-radius: 50%;
   background: rgba(0, 0, 0, 0.45);
+}
+/* Etappelabel ("45 km" / "45 min") boven het icoon, tussen de plaatsnamen. */
+.trip-tl__km {
+  position: absolute;
+  left: 50%;
+  bottom: calc(50% + 13px);
+  transform: translateX(-50%);
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+  color: #fff;
+  white-space: nowrap;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
 }
 .trip-tl__icon {
   width: 24px;

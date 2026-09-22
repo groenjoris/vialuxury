@@ -80,6 +80,15 @@ interface TripSpec {
   /** Heenreis vanaf huis (prototype: Utrecht) naar het eerste hotel — onder de
    *  minimap: "Vanaf Utrecht: 3 uur naar Béthune". Schatting. */
   fromHome?: { city: string; minutes: number }
+  /** Rondje: de laatste dag gaat het terug naar het eerste hotel (auto blijft
+   *  daar). De terugetappe wordt gestippeld op de kaarten getekend. */
+  loop?: boolean
+  /** Afstand/tijd van die terugetappe (reisdata). */
+  returnTravel?: { km: number; minutes: number }
+  /** Fietsvakantie: terrein en niveau, onder de minimap ("Licht heuvelachtig …"). */
+  terrain?: LocalizedString
+  /** Dichtstbijzijnde NS-station bij het eerste hotel (heenreis met de trein). */
+  station?: string
 }
 
 const l = (nl: string, en: string): LocalizedString => ({ nl, en })
@@ -324,6 +333,11 @@ const TRIPS: TripSpec[] = [
     slug: 'fietsvakantie-twente-en-salland-delden-raalte-markelo',
     coverImage: '/images/vakanties/cover/fietsvakantie-twente-salland.jpg',
     fromHome: { city: 'Utrecht', minutes: 90 },
+    // Rondje: dag 7 de laatste 20 km van Markelo terug naar Delden (auto staat daar).
+    loop: true,
+    returnTravel: { km: 20, minutes: 80 },
+    station: 'Delden',
+    terrain: l('Licht heuvelachtig (Sallandse Heuvelrug), verharde fietspaden en knooppuntroutes, geschikt voor e-bike', 'Gently rolling (Sallandse Heuvelrug), paved cycle paths and junction routes, e-bike friendly'),
     type: 'fiets',
     stops: [
       { name: 'Hotel Wapen van Delden', city: 'Delden', region: 'Twente', province: 'Overijssel', nights: 2, stars: 4, lat: 52.2622, lng: 6.7113, image: 'https://asset.vialuxury.com/assets/9f13962b-27bb-43f9-b875-bd7b63b04c98?key=photo-full', extraImages: ['https://asset.vialuxury.com/assets/de37ddd8-3265-455d-b733-b4b123879a08?key=photo-full', 'https://asset.vialuxury.com/assets/ead7f055-ea8d-4d7b-a45b-b508d83b3396?key=photo-full'], includes: [l('2 x overnachting', '2 nights'), l('Dagelijks uitgebreid ontbijtbuffet', 'Daily extensive breakfast buffet'), l('2 x 3-gangendiner', '2 x 3-course dinner'), l('Welkomstfietstasje met water, regenponcho en bandenplaksetje', 'Welcome cycling bag with water, rain poncho and repair kit'), l('ViaLuxury welkomstcadeau', 'ViaLuxury welcome gift'), l('Bagagetransport naar Raalte', 'Luggage transfer to Raalte'), l('Gratis parkeren (gehele vakantie)', 'Free parking (whole holiday)')] },
@@ -339,7 +353,7 @@ const TRIPS: TripSpec[] = [
       l('6 nachten / 3 hotels', '6 nights / 3 hotels'),
       l('Dagelijks 3-gangendiner', 'Daily 3-course dinner'),
       l('Dagelijkse bagagetransfer', 'Daily luggage transfer'),
-      l('Fietsroutes op je telefoon', 'Cycling routes on your phone'),
+      l('100 km in 3 etappes', '100 km in 3 legs'),
     ],
     inclusions: [
       l('2 x overnachting in Hotel Wapen van Delden', '2 nights at Hotel Wapen van Delden'),
@@ -414,6 +428,10 @@ export interface MultiHotelTripDetail {
   inclusions: LocalizedString[]
   stops: MultiHotelTripDetailStop[]
   tags: string[]
+  loop?: boolean
+  returnTravel?: { km: number; minutes: number }
+  terrain?: LocalizedString
+  station?: string
   routeImage?: string
   /** Omgevingsfoto — eerste foto in de gallery (sticker "Omgeving"). */
   coverImage?: string
@@ -532,6 +550,10 @@ function buildTrip(spec: TripSpec): { hotel: SearchHotel; detail: MultiHotelTrip
     coverImage: spec.coverImage,
     nearbyImages: spec.nearbyImages,
     fromHome: spec.fromHome,
+    loop: spec.loop,
+    returnTravel: spec.returnTravel,
+    terrain: spec.terrain,
+    station: spec.station,
     reviewScore: avgScore,
     reviewCount,
   }

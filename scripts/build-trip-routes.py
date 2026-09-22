@@ -33,8 +33,9 @@ def parse_trips(ts: str):
         chunk = ts[m.end(): ids[k + 1].start() if k + 1 < len(ids) else len(ts)]
         typ = re.search(r"type:\s*'(auto|fiets)'", chunk)
         pts = re.findall(r"lat:\s*(-?\d+(?:\.\d+)?),\s*lng:\s*(-?\d+(?:\.\d+)?)", chunk)
+        loop = re.search(r"\bloop:\s*true", chunk) is not None
         if typ and pts:
-            trips.append({'id': m.group(1), 'type': typ.group(1), 'stops': [(float(a), float(b)) for a, b in pts]})
+            trips.append({'id': m.group(1), 'type': typ.group(1), 'loop': loop, 'stops': [(float(a), float(b)) for a, b in pts]})
     return trips
 
 def simplify(pts, tol):
@@ -72,10 +73,15 @@ def route(profile: str, a, b):
     return {'km': round(r0['distance'] / 1000), 'minutes': round(r0['duration'] / 60), 'coords': coords}
 
 def main():
+    # Optioneel: alleen de opgegeven trip-id's opnieuw berekenen (rest blijft staan):
+    #   python3 scripts/build-trip-routes.py trip-fietsvakantie-twente-salland
+    only = set(sys.argv[1:])
     ts = open(SRC, encoding='utf-8').read()
     trips = parse_trips(ts)
-    out = {}
+    out = json.load(open(OUT, encoding='utf-8')) if only and os.path.exists(OUT) else {}
     for t in trips:
+        if only and t['id'] not in only:
+            continue
         profile = 'bike' if t['type'] == 'fiets' else 'car'
         legs = []
         for i in range(1, len(t['stops'])):
@@ -83,6 +89,12 @@ def main():
             legs.append({'from': i - 1, 'to': i, **leg})
             print(f"{t['id']} etappe {i}: {leg['km']} km, {leg['minutes']} min, {len(leg['coords'])} punten ({profile})")
             time.sleep(0.5)
+        if t['loop'] and len(t['stops']) > 1:
+            # Rondje (`loop: true` in de reisdata): terugetappe laatste → eerste hotel,
+            # gemarkeerd met `return`; de kaarten tekenen die gestippeld.
+            leg = route(profile, t['stops'][-1], t['stops'][0])
+            legs.append({'from': len(t['stops']) - 1, 'to': 0, 'return': True, **leg})
+            print(f"{t['id']} terugetappe: {leg['km']} km, {leg['minutes']} min, {len(leg['coords'])} punten ({profile})")
         out[t['id']] = {'profile': profile, 'legs': legs}
     json.dump(out, open(OUT, 'w', encoding='utf-8'), separators=(',', ':'))
     print('written', OUT, os.path.getsize(OUT), 'bytes')

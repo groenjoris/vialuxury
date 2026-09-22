@@ -73,6 +73,8 @@ const props = defineProps<{
   hotels?: TripHotelModalData[]
   /** Rijroutes tussen de hotels (OSRM); zonder legs een rechte lijn. */
   legs?: TripRouteLeg[]
+  /** Label van de gestippelde terugetappe (rondje). */
+  returnLabel?: string
 }>()
 
 const emit = defineEmits<{ close: [] }>()
@@ -96,7 +98,7 @@ async function mount() {
   map = L.map(mapEl.value, { zoomControl: false, attributionControl: true, scrollWheelZoom: true })
   addOsmTiles(L, map)
   addCountryBorders(L, map, 2)
-  const routeBounds = addTripRoute(L, map, props.stops, { distances: true, legs: props.legs })
+  const routeBounds = addTripRoute(L, map, props.stops, { distances: true, legs: props.legs, returnLabel: props.returnLabel })
   const hotelMarkers = addTripHotels(L, map, props.stops, {
     size: 30,
     labelText: s => s.title ?? s.label,

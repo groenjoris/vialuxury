@@ -40,8 +40,8 @@
     >{{ lbl.name }}</text>
     <!-- Route: de echte rijroute per etappe (legs, met witte halo) of hemelsbreed. -->
     <template v-if="legPaths.length">
-      <path v-for="(d, i) in legPaths" :key="`halo-${i}`" class="trm__route-halo" :d="d" />
-      <path v-for="(d, i) in legPaths" :key="`leg-${i}`" class="trm__route" :d="d" />
+      <path v-for="(p, i) in legPaths" :key="`halo-${i}`" class="trm__route-halo" :d="p.d" />
+      <path v-for="(p, i) in legPaths" :key="`leg-${i}`" class="trm__route" :class="{ 'trm__route--dashed': p.dashed }" :d="p.d" />
     </template>
     <polyline v-else class="trm__route" :points="routePoints" />
     <!-- Plaatsnamen naast de markers (PDP-minimap; op de card uit). -->
@@ -129,6 +129,8 @@ const props = withDefaults(defineProps<{
   markerIcon?: boolean
   /** Etappelabel: zwarte pil of alleen tekst ("45 km") boven de lijn. */
   legLabelStyle?: 'pill' | 'plain'
+  /** Label halverwege de gestippelde terugetappe (`legs[].return`), bv. "20 km". */
+  returnLegLabel?: string
   /** Dealcard-variant "overlay": kaartlaag semi-transparant over de foto;
    *  route, markers en namen blijven dekkend. */
   overlay?: boolean
@@ -373,10 +375,13 @@ const markers = computed(() => props.stops.map((s) => {
   }
 }))
 
-/** Echte rijroute per etappe als SVG-pad (geprojecteerd). */
+/** Echte rijroute per etappe als SVG-pad (geprojecteerd); de terugetappe van een rondje gestippeld. */
 const legPaths = computed(() => props.legs
   .filter(l => l.coords.length > 1)
-  .map(l => l.coords.map(([lat, lng], i) => { const [x, y] = project(lng, lat); return `${i === 0 ? 'M' : 'L'}${x.toFixed(1)} ${y.toFixed(1)}` }).join('')))
+  .map(l => ({
+    d: l.coords.map(([lat, lng], i) => { const [x, y] = project(lng, lat); return `${i === 0 ? 'M' : 'L'}${x.toFixed(1)} ${y.toFixed(1)}` }).join(''),
+    dashed: !!l.return,
+  })))
 
 /** Punt halverwege een (geprojecteerde) lijn, gemeten langs de lijn. */
 function midpointAlong(pts: [number, number][]): [number, number] {
@@ -407,6 +412,13 @@ const legLabelPos = computed(() => {
     const [x, y] = midpointAlong(pts)
     const h = props.legLabelSize * 1.7
     out.push({ i, x: Number(x.toFixed(1)), y: Number(y.toFixed(1)), w: text.length * props.legLabelSize * 0.6 + props.legLabelSize, h, text })
+  }
+  // Terugetappe van een rondje: label halverwege de gestippelde lijn.
+  const ret = props.legs.find(l => l.return && l.coords.length > 1)
+  if (ret && props.returnLegLabel) {
+    const [x, y] = midpointAlong(ret.coords.map(([lat, lng]) => project(lng, lat)))
+    const h = props.legLabelSize * 1.7
+    out.push({ i: props.stops.length, x: Number(x.toFixed(1)), y: Number(y.toFixed(1)), w: props.returnLegLabel.length * props.legLabelSize * 0.6 + props.legLabelSize, h, text: props.returnLegLabel })
   }
   return out
 })
@@ -448,27 +460,27 @@ const ariaLabel = computed(() => `Route: ${props.stops.map((s, i) => `${i + 1}. 
 .trm--overlay .trm__province { stroke: rgba(224, 217, 204, 0.75); }
 .trm--overlay .trm__border { stroke: rgba(111, 102, 90, 0.8); }
 .trm--overlay .trm__label { fill: rgba(80, 74, 64, 0.8); }
-/* Inverse overlay (dealcard-variant "inverse"): donkere landmassa over de foto,
-   water iets lichter zodat de kustlijn leesbaar blijft; route, grenzen,
-   plaatsnamen en markers in wit. */
-.trm--inverse .trm__water { fill: rgba(22, 34, 46, 0.45); }
-.trm--inverse .trm__lake { fill: rgba(22, 34, 46, 0.45); }
-.trm--inverse .trm__land { fill: rgba(20, 20, 20, 0.74); }
-.trm--inverse .trm__province { stroke: rgba(255, 255, 255, 0.22); }
-.trm--inverse .trm__border { stroke: rgba(255, 255, 255, 0.65); }
-.trm--inverse .trm__label { fill: rgba(255, 255, 255, 0.75); }
-.trm--inverse .trm__region { fill: rgba(255, 255, 255, 0.6); }
+/* Inverse overlay (dealcard-variant "inverse"): donkergroene (huisstijl, #00675f)
+   kaartlaag over de foto, water iets lichter zodat de kustlijn leesbaar blijft;
+   route, grenzen, plaatsnamen en markers in wit. */
+.trm--inverse .trm__water { fill: rgba(0, 70, 78, 0.42); }
+.trm--inverse .trm__lake { fill: rgba(0, 70, 78, 0.42); }
+.trm--inverse .trm__land { fill: rgba(0, 103, 95, 0.64); }
+.trm--inverse .trm__province { stroke: rgba(255, 255, 255, 0.25); }
+.trm--inverse .trm__border { stroke: rgba(255, 255, 255, 0.7); }
+.trm--inverse .trm__label { fill: rgba(255, 255, 255, 0.8); }
+.trm--inverse .trm__region { fill: rgba(255, 255, 255, 0.65); }
 .trm--inverse .trm__route { stroke: #fff; }
-.trm--inverse .trm__route-halo { stroke: rgba(20, 20, 20, 0.55); }
+.trm--inverse .trm__route-halo { stroke: rgba(0, 60, 56, 0.55); }
 .trm--inverse .trm__leg rect { fill: #fff; }
-.trm--inverse .trm__leg text { fill: #141414; }
-.trm--inverse .trm__leg--plain text { fill: #fff; stroke: rgba(20, 20, 20, 0.8); }
-.trm--inverse .trm__marker circle { fill: #fff; stroke: #141414; }
-.trm--inverse .trm__marker text { fill: #141414; }
-.trm--inverse .trm__marker-icon path { stroke: #141414; }
+.trm--inverse .trm__leg text { fill: #00675f; }
+.trm--inverse .trm__leg--plain text { fill: #fff; stroke: rgba(0, 60, 56, 0.85); }
+.trm--inverse .trm__marker circle { fill: #fff; stroke: #00675f; }
+.trm--inverse .trm__marker text { fill: #00675f; }
+.trm--inverse .trm__marker-icon path { stroke: #00675f; }
 .trm--inverse .trm__marker--interactive.trm__marker--hover circle { fill: var(--color-primary, #ff7e00); stroke: #fff; }
 .trm--inverse .trm__marker--interactive.trm__marker--hover text { fill: #fff; }
-.trm--inverse .trm__city { fill: #fff; stroke: rgba(20, 20, 20, 0.85); }
+.trm--inverse .trm__city { fill: #fff; stroke: rgba(0, 60, 56, 0.9); }
 .trm__land {
   fill: #f3efe6;
   stroke: none;
@@ -522,6 +534,8 @@ const ariaLabel = computed(() => `Route: ${props.stops.map((s, i) => `${i + 1}. 
   stroke-linecap: round;
   vector-effect: non-scaling-stroke;
 }
+/* Terugetappe van een rondje (laatste hotel → eerste hotel): gestippeld. */
+.trm__route--dashed { stroke-dasharray: 5 4; }
 /* Witte halo onder de echte rijroute, zodat hij leesbaar blijft over grenzen en namen. */
 .trm__route-halo {
   fill: none;
