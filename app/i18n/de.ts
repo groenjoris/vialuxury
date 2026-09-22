@@ -317,6 +317,8 @@ const de: Record<string, string> = {
   'nights.group.short': 'Kurzer Aufenthalt',
   'nights.group.long': 'Langer Aufenthalt oder Rundreise',
   'nights.group.both': 'Kurzaufenthalt, langer Aufenthalt oder Rundreise',
+  'nights.orMore': '{n} oder mehr Nächte',
+  'nights.range': '{a}-{b} Nächte',
   'search.filters': 'Filter',
   'search.arrangement': 'Arrangement',
   'search.fromPrice': 'Ab',

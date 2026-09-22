@@ -329,6 +329,9 @@ const nl: Record<string, string> = {
   'nights.group.short': 'Kort verblijf',
   'nights.group.long': 'Lang verblijf of Rondreis',
   'nights.group.both': 'Kort verblijf, lang verblijf of rondreis',
+  // Compacte veldwaarde/pill: alleen nachten
+  'nights.orMore': '{n} of meer nachten',
+  'nights.range': '{a}-{b} nachten',
   'search.filters': 'Filters',
   'search.arrangement': 'Arrangement',
   'search.fromPrice': 'Vanaf',

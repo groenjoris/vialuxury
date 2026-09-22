@@ -321,6 +321,8 @@ const en: Record<string, string> = {
   'nights.group.short': 'Short stay',
   'nights.group.long': 'Long stay or round trip',
   'nights.group.both': 'Short stay, long stay or round trip',
+  'nights.orMore': '{n} or more nights',
+  'nights.range': '{a}-{b} nights',
   'search.filters': 'Filters',
   'search.arrangement': 'Package',
   'search.fromPrice': 'From',

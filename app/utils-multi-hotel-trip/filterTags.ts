@@ -103,9 +103,17 @@ export const FILTER_TAGS: FilterTag[] = [
     category: 'thema',
     matches: themeMatch(/culinair|michelin|genieten/i),
   },
-  // Multi Hotel Trip: de vakanties als thema — "Autovakantie" (alleen de
-  // meerhotel-autoroutes) en "Fietsvakantie" (voorheen "Met fiets"; matcht
-  // ook de losse fietsarrangementen).
+  // Multi Hotel Trip: de vakanties als thema — "Rondreizen" (alle meerhotel-
+  // vakanties; geselecteerd = vakantiestand van de zoekpagina), "Autovakantie"
+  // (alleen de meerhotel-autoroutes) en "Fietsvakantie" (voorheen "Met fiets";
+  // matcht ook de losse fietsarrangementen).
+  {
+    id: 'rondreizen',
+    label: 'Rondreizen',
+    emoji: '\u{1F9ED}',
+    category: 'thema',
+    matches: (_d, h) => !!h.trip,
+  },
   {
     id: 'autovakantie',
     label: 'Autovakantie',

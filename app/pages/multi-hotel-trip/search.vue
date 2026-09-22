@@ -445,7 +445,7 @@ import { computeFilterCounts } from '~/utils-multi-hotel-trip/filterCounts'
 import { tripSearchHotels } from '~/data/mht-trips'
 import { tripMatchesQuickFilters, TRIP_QUICK_FILTERS } from '~/utils-multi-hotel-trip/tripFilters'
 import { nightKeyFor, TRIP_NIGHT_KEYS } from '~/utils-multi-hotel-trip/nights'
-import { TRIPS_DESTINATION_ID } from '~/utils-multi-hotel-trip/destinationMatch'
+import { TRIPS_THEME_ID } from '~/utils-multi-hotel-trip/destinationMatch'
 import { useMobileSearchModalControl } from '~/composables-multi-hotel-trip/useMobileSearchModalControl'
 
 const { t } = useMultiHotelTripI18n()
@@ -482,7 +482,7 @@ function isSearchRoute(p: string): boolean {
  * i.p.v. hotels: op de landing altijd, elders zodra "Vakanties" als bestemming
  * is gekozen in de zoekbalk. */
 const isTripLanding = computed(() => route.path === '/multi-hotel-trip/vakanties')
-const isTripMode = computed(() => isTripLanding.value || selectedDestinations.value.includes(TRIPS_DESTINATION_ID))
+const isTripMode = computed(() => isTripLanding.value || selectedFilterTags.value.includes(TRIPS_THEME_ID))
 /* Hero van de Vakanties-landing: Geuldal bij Stokhem (foto uit de
    voorbeeldcontent van Joris), met de locatie als eyebrow boven de titel. */
 const tripHeroBg = '/images/vakanties/geuldal-stokhem.jpg'
@@ -494,17 +494,17 @@ const sidebarVisible = computed(() => showFilters.value && !isTripMode.value)
 // verderop, ná `const route = useRoute()` (de watch leest isTripMode direct uit).
 const {
   selectedTripFilters, clearTripFilters,
-  toggleDestination: toggleDestinationShared,
+  toggleFilterTag: toggleFilterTagShared,
   setSelectedNights: setSelectedNightsShared,
 } = useMultiHotelTripSearchState()
 
-/** Landing via de hoofdlink of directe URL: bestemming "Vakanties" + reisduur
+/** Landing via de hoofdlink of directe URL: thema "Rondreizen" + reisduur
  *  5–8 nachten voorgeselecteerd (alleen als er nog geen vakantie-reisduur
  *  gekozen is), filterpaneel dicht. */
 function enterTripLanding() {
-  if (!selectedDestinations.value.includes(TRIPS_DESTINATION_ID)) {
+  if (!selectedFilterTags.value.includes(TRIPS_THEME_ID)) {
     clearDestinations()
-    toggleDestinationShared(TRIPS_DESTINATION_ID)
+    toggleFilterTagShared(TRIPS_THEME_ID)
   }
   if (!selectedNights.value.some(n => (TRIP_NIGHT_KEYS as string[]).includes(n))) {
     setSelectedNightsShared([...TRIP_NIGHT_KEYS])
@@ -950,8 +950,8 @@ function resetFilters() {
   clearFilterTags()
   clearDestinations()
   clearTripFilters()
-  // Op de Vakanties-pagina blijft "Vakanties" de bestemming.
-  if (isTripLanding.value) toggleDestinationShared(TRIPS_DESTINATION_ID)
+  // Op de Rondreizen-pagina blijft het thema "Rondreizen" aan.
+  if (isTripLanding.value) toggleFilterTagShared(TRIPS_THEME_ID)
 }
 
 /* ─── No-results state (suggestions + reasoned copy) ─────────────

@@ -454,18 +454,20 @@ const ariaLabel = computed(() => `Route: ${props.stops.map((s, i) => `${i + 1}. 
 }
 /* Overlay-variant (dealcard): de kaartlaag laat de foto doorschemeren; route,
    markers en plaatsnamen blijven volledig dekkend. */
-.trm--overlay .trm__water { fill: rgba(215, 230, 240, 0.55); }
-.trm--overlay .trm__land { fill: rgba(243, 239, 230, 0.66); }
-.trm--overlay .trm__lake { fill: rgba(215, 230, 240, 0.6); }
+/* Kleur en dekking van land/water zijn via CSS-variabelen instelbaar met de
+   (tijdelijke) kaartlaag-tuner onder de variantenschakelaar. */
+.trm--overlay .trm__water { fill: var(--trm-overlay-water, rgba(215, 230, 240, 0.55)); }
+.trm--overlay .trm__land { fill: var(--trm-overlay-land, rgba(243, 239, 230, 0.66)); }
+.trm--overlay .trm__lake { fill: var(--trm-overlay-water, rgba(215, 230, 240, 0.6)); }
 .trm--overlay .trm__province { stroke: rgba(224, 217, 204, 0.75); }
 .trm--overlay .trm__border { stroke: rgba(111, 102, 90, 0.8); }
 .trm--overlay .trm__label { fill: rgba(80, 74, 64, 0.8); }
 /* Inverse overlay (dealcard-variant "inverse"): donkergroene (huisstijl, #00675f)
    kaartlaag over de foto, water iets lichter zodat de kustlijn leesbaar blijft;
    route, grenzen, plaatsnamen en markers in wit. */
-.trm--inverse .trm__water { fill: rgba(0, 70, 78, 0.42); }
-.trm--inverse .trm__lake { fill: rgba(0, 70, 78, 0.42); }
-.trm--inverse .trm__land { fill: rgba(0, 103, 95, 0.64); }
+.trm--inverse .trm__water { fill: var(--trm-inverse-water, rgba(0, 70, 78, 0.42)); }
+.trm--inverse .trm__lake { fill: var(--trm-inverse-water, rgba(0, 70, 78, 0.42)); }
+.trm--inverse .trm__land { fill: var(--trm-inverse-land, rgba(0, 103, 95, 0.64)); }
 .trm--inverse .trm__province { stroke: rgba(255, 255, 255, 0.25); }
 .trm--inverse .trm__border { stroke: rgba(255, 255, 255, 0.7); }
 .trm--inverse .trm__label { fill: rgba(255, 255, 255, 0.8); }

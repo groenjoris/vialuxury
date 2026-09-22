@@ -1000,7 +1000,7 @@
 
 <script setup lang="ts">
 import { TRIP_NIGHT_KEYS, isNightKey, nightKeyFor, joinNightKeys, summarizeNightKeys } from '~/utils-multi-hotel-trip/nights'
-import { TRIPS_DESTINATION_ID } from '~/utils-multi-hotel-trip/destinationMatch'
+import { TRIPS_THEME_ID } from '~/utils-multi-hotel-trip/destinationMatch'
 import { useMultiHotelTripLocaleStore } from '~/stores-multi-hotel-trip/locale'
 import { searchHotels } from '~/data/mock/search-hotels'
 import { mappedHotels } from '~/data/deals-mapper'
@@ -1556,8 +1556,8 @@ function clearDurationOnly() {
 
 // --- DESTINATION ---
 const destinations = [
-  // Multi Hotel Trip: "Vakanties" als pseudo-bestemming (opent de vakantiepagina).
-  { id: 'vakanties', name: 'Vakanties', country: 'Nieuw', emoji: '\u{1F697}' },
+  // Multi Hotel Trip: de vakanties zitten als thema "Rondreizen" in de thema-lijst
+  // (filterTags.ts), niet meer als pseudo-bestemming.
   { id: 'zeeland', name: 'Zeeland', country: 'NL', emoji: '\u{1F3D6}\u{FE0F}' },
   { id: 'brabant', name: 'Noord-Brabant', country: 'NL', emoji: '\u{1F333}' },
   { id: 'limburg', name: 'Limburg', country: 'NL', emoji: '\u26F0\u{FE0F}' },
@@ -1600,7 +1600,7 @@ const selectedHotels = sharedSelectedHotels
 
 /** The popup expects an array of theme IDs that are currently active.
  *  We filter the global filter-tag list down to the Thema category. */
-const themeIds = ['aan-zee', 'natuur', 'romantisch', 'culinair', 'autovakantie', 'fiets', 'steden', 'kasteel']
+const themeIds = ['aan-zee', 'natuur', 'romantisch', 'culinair', 'rondreizen', 'autovakantie', 'fiets', 'steden', 'kasteel']
 const selectedThemes = computed(() =>
   selectedFilterTags.value.filter(id => themeIds.includes(id)),
 )
@@ -2262,9 +2262,9 @@ async function commitSearch() {
     && localDestCities.value.length === 0
     && localDestThemes.value.length === 0
   const fromSlug = localDestHotels.value[0]?.slug || (noOtherDestination ? currentDealSlug() : null)
-  // Multi Hotel Trip: met "Vakanties" als bestemming landt de zoekopdracht
-  // op de Vakanties-zoekpagina (hero + quick filters).
-  const target = localDestDestinations.value.includes(TRIPS_DESTINATION_ID)
+  // Multi Hotel Trip: met het thema "Rondreizen" landt de zoekopdracht op de
+  // Rondreizen-zoekpagina (hero + quick filters).
+  const target = localDestThemes.value.includes(TRIPS_THEME_ID)
     ? '/multi-hotel-trip/vakanties'
     : fromSlug
       ? `/multi-hotel-trip/search?from=${encodeURIComponent(fromSlug)}`
@@ -2316,19 +2316,20 @@ function applyLiveCriteria() {
   triggerSearchUpdate()
 }
 
-/* ── Multi Hotel Trip: hoofdlink "Vakanties" ──
- * Zet de zoekbalk in vakantiestand vóór de navigatie: bestemming "Vakanties"
- * (pseudo-bestemming), reisduur 5/6/7/8 nachten voorgeselecteerd, en land op
- * de Vakanties-zoekpagina (homepage-achtige hero + quick filters). */
+/* ── Multi Hotel Trip: hoofdlink "Rondreizen" ──
+ * Zet de zoekbalk in vakantiestand vóór de navigatie: thema "Rondreizen" in
+ * het Waarheen-veld, reisduur 5/6/7/8 nachten voorgeselecteerd, en land op
+ * de Rondreizen-zoekpagina (homepage-achtige hero + quick filters). */
 function enterTrips() {
   resetLocalDestinationState()
   setNoPrefPicked(false)
-  localDestDestinations.value = [TRIPS_DESTINATION_ID]
-  localDestSelectionOrder.value = [{ type: 'destination', key: TRIPS_DESTINATION_ID }]
+  localDestThemes.value = [TRIPS_THEME_ID]
+  localDestSelectionOrder.value = [{ type: 'theme', key: TRIPS_THEME_ID }]
   localNights.value = [...TRIP_NIGHT_KEYS]
   localFlexType.value = null
   clearDestinations()
-  toggleDestination(TRIPS_DESTINATION_ID)
+  clearFilterTags()
+  toggleFilterTag(TRIPS_THEME_ID)
   setSelectedNights([...TRIP_NIGHT_KEYS])
   setFlexType(null)
   saveBarSnapshot()

@@ -128,8 +128,9 @@
            onder het kortingsvaantje. -->
       <div
         v-if="((hotel?.labels && hotel.labels.length) || tripPromoLabel) && !hideLabels"
+        v-show="!tripHoverStop"
         class="deal-card-v2__labels"
-        :class="{ 'deal-card-v2__labels--top': tripTimeline, 'deal-card-v2__labels--promo': tripPromoLabel }"
+        :class="{ 'deal-card-v2__labels--top': tripTimeline }"
       >
         <MultiHotelTripDealLabel
           v-for="label in hotel?.labels || []"
@@ -874,17 +875,14 @@ const includesBullets = computed<string[]>(() => {
   filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.35));
 }
 /* Promo-sticker (BAGAGETRANSFER): 0,75 × de gewone labelmaat (36 → 27 px,
-   22 → 16,5 px) en nooit breder dan de helft van de kaart. */
-.deal-card-v2__labels--promo {
-  max-width: calc(50% - var(--space-md));
-}
+   22 → 16,5 px); wordt nooit afgebroken (mag iets over de helft van de kaart).
+   Bij hover op een hotel op het kaartje verdwijnt de hele labelrij, zodat de
+   hotelnaam in de caption vrij blijft (v-show op .deal-card-v2__labels). */
 .deal-card-v2__labels .deal-card-v2__label--promo {
   height: 27px;
   padding: 5px 12px;
   font-size: 16.5px;
   letter-spacing: 0.4px;
-  max-width: 100%;
-  overflow: hidden;
 }
 /* Tijdlijn-variant: onderaan ligt de route-strook, dus de stickers staan
    linksboven onder het kortingsvaantje (43 px hoog + 8 px). */

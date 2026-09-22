@@ -15,6 +15,8 @@
         @click="setVariant(v.id)"
       >{{ v.label }}</button>
     </div>
+    <!-- Tijdelijk: kleur/dekking van de kaartlaag instellen bij Overlay en Inverse. -->
+    <MultiHotelTripOverlayTuner v-if="variant === 'overlay' || variant === 'inverse'" :variant="variant" />
   </div>
 </template>
 
@@ -29,7 +31,8 @@ const { variant, setVariant } = useMultiHotelTripCardVariant()
 .tcv {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
+  flex-wrap: wrap;
+  gap: 10px 18px;
   font-family: var(--font-body);
 }
 .tcv__label {
