@@ -352,7 +352,7 @@ const TRIPS: TripSpec[] = [
       l('Welkomstfietstasje en ViaLuxury welkomstcadeau', 'Welcome cycling bag and ViaLuxury welcome gift'),
       l('Gratis parkeren (gehele vakantie)', 'Free parking (whole holiday)'),
     ],
-    tags: ['fiets', 'nederland', 'nieuw', 'natuur', 'culinair', 'ontspanning'],
+    tags: ['fiets', 'nederland', 'nieuw', 'natuur', 'culinair', 'ontspanning', 'bagagetransfer', 'hotel-naar-hotel', 'fiets-huren', 'fietsroutes'],
   },
 ]
 

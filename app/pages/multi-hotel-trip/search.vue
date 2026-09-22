@@ -2398,12 +2398,15 @@ onMounted(() => {
 .search-page--landing .search-page__main {
   padding-top: var(--space-2xl);
 }
-/* Toolbar in vakantiestand: quick-filterpillen + Sorteren/weergave in één
-   omlopende rij; de knoppen rechts krijgen de pilhoogte en -stijl en
-   verhuizen via margin-left:auto mee naar de laatste rij. */
+/* Toolbar in vakantiestand: de basispillen op één regel; op de tweede
+   regel (geforceerd via .tqf__break in TripQuickFilters) de fietsopties
+   links en Sorteren/weergave rechts (margin-left:auto). De knoppen rechts
+   krijgen de pilhoogte en -stijl. Geen space-between: de pillen staan
+   met vaste gap links naast elkaar. */
 .search-toolbar--trips {
   flex-wrap: wrap;
   align-items: center;
+  justify-content: flex-start;
   gap: 8px;
   padding: var(--space-md) 0 var(--space-sm);
 }
