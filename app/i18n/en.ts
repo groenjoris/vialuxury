@@ -236,7 +236,7 @@ const en: Record<string, string> = {
   'search.holidaysTitle': 'Holidays',
   'search.tripResultsOne': 'cycling or driving holiday',
   'search.tripResultsMany': 'cycling and driving holidays',
-  'search.holidaysHeroTitle': 'Road trips & cycling holidays',
+  'search.holidaysHeroTitle': 'Round trips by car or bike',
   'search.holidaysPitch': 'Explore a beautiful region by car or by bike and stay in 3 different hotels. Carefully put together and personally checked.',
   'trip.auto': 'Road trip',
   'trip.fiets': 'Cycling holiday',

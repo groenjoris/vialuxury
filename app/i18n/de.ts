@@ -232,7 +232,7 @@ const de: Record<string, string> = {
   'search.holidaysTitle': 'Urlaube',
   'search.tripResultsOne': 'Rad- oder Autoreise',
   'search.tripResultsMany': 'Rad- und Autoreisen',
-  'search.holidaysHeroTitle': 'Auto- und Radurlaube',
+  'search.holidaysHeroTitle': 'Rundreisen mit Auto oder Rad',
   'search.holidaysPitch': 'Entdecken Sie eine wunderschöne Region mit dem Auto oder dem Fahrrad und übernachten Sie in 3 verschiedenen Hotels. Sorgfältig zusammengestellt und persönlich geprüft.',
   'trip.auto': 'Autoreise',
   'trip.fiets': 'Radreise',

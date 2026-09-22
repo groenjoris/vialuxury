@@ -7,7 +7,9 @@
  *    reisschema (grote thumb, langere tekst)
  *  - tabs: inclusies en reisschema als twee tabs onder de beschrijving (één
  *    tegelijk zichtbaar) — combineerbaar met klein/groot
- * Keuzes worden in localStorage bewaard.
+ * Standaard: highlights aan, includes klein, tabs uit. Keuzes worden alleen
+ * voor de huidige tab bewaard (sessionStorage), zodat elk nieuw bezoek weer
+ * met de standaard begint.
  */
 export type TripIncludesVariant = 'small' | 'large'
 
@@ -28,19 +30,19 @@ export function useMultiHotelTripPdpVariant() {
   if (import.meta.client && getCurrentInstance()) {
     onMounted(() => {
       try {
-        const h = localStorage.getItem(KEY_HIGHLIGHTS)
+        const h = sessionStorage.getItem(KEY_HIGHLIGHTS)
         if (h === '0' || h === '1') highlights.value = h === '1'
-        const i = localStorage.getItem(KEY_INCLUDES)
+        const i = sessionStorage.getItem(KEY_INCLUDES)
         if (i === 'small' || i === 'large') includes.value = i
         // Oude waarde 'tabs' (vóór de splitsing) → tabs aan, klein.
         if (i === 'tabs') { includes.value = 'small'; tabs.value = true }
-        const t = localStorage.getItem(KEY_TABS)
+        const t = sessionStorage.getItem(KEY_TABS)
         if (t === '0' || t === '1') tabs.value = t === '1'
-      } catch { /* localStorage niet beschikbaar */ }
+      } catch { /* sessionStorage niet beschikbaar */ }
     })
   }
 
-  const save = (key: string, value: string) => { if (import.meta.client) { try { localStorage.setItem(key, value) } catch { /* noop */ } } }
+  const save = (key: string, value: string) => { if (import.meta.client) { try { sessionStorage.setItem(key, value) } catch { /* noop */ } } }
   function setHighlights(on: boolean) { highlights.value = on; save(KEY_HIGHLIGHTS, on ? '1' : '0') }
   function setIncludes(v: TripIncludesVariant) { includes.value = v; save(KEY_INCLUDES, v) }
   function setTabs(on: boolean) { tabs.value = on; save(KEY_TABS, on ? '1' : '0') }
