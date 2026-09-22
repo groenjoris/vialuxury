@@ -1611,7 +1611,7 @@ const tripMapSummary = computed<({ icon: string; text: string } | undefined)[]>(
     const maxH = Math.max(minH, Math.ceil(Math.max(...mins) / 60))
     return [
       trip.fromHome && first ? { icon: 'car', text: t('trip.bike.arrivalLine').replace('{duration}', tripDurationLabel(trip.fromHome.minutes)).replace('{city}', trip.fromHome.city) } : undefined,
-      total ? { icon: 'bike', text: t('trip.bike.stagesLine').replace('{n}', String(legKm.length)).replace('{list}', legKm.join(' · ')).replace('{total}', String(total)) } : undefined,
+      total ? { icon: 'route', text: t('trip.bike.stagesLine').replace('{n}', String(legKm.length)).replace('{list}', legKm.join(' · ')).replace('{total}', String(total)) } : undefined,
       mins.length ? { icon: 'clock', text: t('trip.bike.timeLine').replace('{min}', String(minH)).replace('{max}', String(maxH)) } : undefined,
     ]
   }

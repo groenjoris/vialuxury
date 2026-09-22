@@ -65,7 +65,7 @@
               <span class="trip-tl__nights">{{ s.nights }}</span>
             </div>
             <div v-if="i < tripTimelineStops.length - 1" class="trip-tl__leg" aria-hidden="true">
-              <!-- Etappelabel boven het vervoersicoon: km (fiets) of reistijd (auto). -->
+              <!-- Etappelabel onder het vervoersicoon: km (alleen fietsvakantie). -->
               <span v-if="tripTimelineStops[i + 1]?.legLabel" class="trip-tl__km">{{ tripTimelineStops[i + 1]?.legLabel }}</span>
               <span class="trip-tl__icon-wrap"><span class="trip-tl__icon"></span></span>
             </div>
@@ -431,14 +431,11 @@ const tripTimelineStops = computed(() =>
     .filter(s => typeof s.lat === 'number' && typeof s.lng === 'number')
     .map(s => ({ city: s.city, nights: nightsLabel(s.nights, locale.value), legLabel: tripLegShort(s.travel) })),
 )
-/** "45 km" (fietsvakantie) of "45 min" / "1 u 20 min" (autovakantie) voor de etappe in de tijdlijn. */
+/** Etappelabel in de tijdlijn: alleen de afstand bij een fietsvakantie ("45 km");
+ *  autovakanties tonen geen reistijd (te druk naast de plaatsnamen). */
 function tripLegShort(travel?: { km: number; minutes: number }): string | undefined {
-  if (!travel) return undefined
-  if (props.hotel?.trip?.type === 'fiets') return `${travel.km} km`
-  const m = travel.minutes
-  if (m < 60) return t('trip.durShort.minutes').replace('{m}', String(m))
-  const h = Math.floor(m / 60), r = m % 60
-  return r === 0 ? t('trip.durShort.hours').replace('{h}', String(h)) : t('trip.durShort.hoursMinutes').replace('{h}', String(h)).replace('{m}', String(r))
+  if (!travel || props.hotel?.trip?.type !== 'fiets') return undefined
+  return `${travel.km} km`
 }
 const tripTransportIcon = computed(() => (props.hotel?.trip?.type === 'fiets' ? 'bike' : 'car-side'))
 /** "Autovakantie met 3 hotels" — soort vakantie + aantal hotels, in plaats van een hotelnaam. */
