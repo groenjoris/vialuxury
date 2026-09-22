@@ -119,11 +119,25 @@
           class="deal-card-v2__panel-sticker"
         >{{ s }}</span>
       </div>
-      <div v-if="hotel?.labels && hotel.labels.length && !hideLabels" class="deal-card-v2__labels">
+      <!-- Linksonder op de foto: de deal-labels van het hotel en, bij een
+           vakantie met bagagetransfer (fietsvakantie), de promo-sticker
+           "BAGAGETRANSFER" in dezelfde zwarte stickerstijl. In de tijdlijn-
+           variant ligt onderaan de route-strook, dan staat hij linksboven
+           onder het kortingsvaantje. -->
+      <div
+        v-if="((hotel?.labels && hotel.labels.length) || tripPromoLabel) && !hideLabels"
+        class="deal-card-v2__labels"
+        :class="{ 'deal-card-v2__labels--top': tripTimeline }"
+      >
         <MultiHotelTripDealLabel
-          v-for="label in hotel.labels"
+          v-for="label in hotel?.labels || []"
           :key="label"
           :key-name="label"
+          class="deal-card-v2__label"
+        />
+        <MultiHotelTripDealLabel
+          v-if="tripPromoLabel"
+          :key-name="tripPromoLabel"
           class="deal-card-v2__label"
         />
       </div>
@@ -424,6 +438,9 @@ const tripStopsLabel = computed(() => (props.hotel?.trip?.stops ?? []).map(s => 
 /** Foto in de linkerhelft: de omgevingsfoto van de vakantie (zelfde als de
  *  eerste foto op de PDP); zonder cover het eerste hotel van de route. */
 const tripPhoto = computed(() => props.hotel?.trip?.coverImage || props.hotel?.trip?.stops[0]?.image || imageSrc.value)
+/** Promo-sticker linksonder op de foto: "BAGAGETRANSFER" voor vakanties met
+ *  bagagetransfer tussen de hotels (tag `bagagetransfer`, de fietsvakantie). */
+const tripPromoLabel = computed(() => (props.hotel?.trip?.tags.includes('bagagetransfer') ? 'bagagetransfer' : null))
 /** Gehoverd nummer op het kaartje → foto en naam van dat hotel in de linkerhelft. */
 const tripHoverIndex = ref<number | null>(null)
 const tripHoverStop = computed(() => {
@@ -842,6 +859,12 @@ const includesBullets = computed<string[]>(() => {
   height: 36px; /* 80% of 45 */
   width: auto;
   filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.35));
+}
+/* Tijdlijn-variant: onderaan ligt de route-strook, dus de stickers staan
+   linksboven onder het kortingsvaantje (43 px hoog + 8 px). */
+.deal-card-v2__labels--top {
+  bottom: auto;
+  top: calc(var(--space-md) + 43px + 8px);
 }
 
 .deal-card-v2__discount-badge {

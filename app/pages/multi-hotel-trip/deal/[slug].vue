@@ -206,7 +206,8 @@
           <h2 class="section-title">{{ t('deal.highlights') }}</h2>
           <div class="highlights__grid">
             <div v-for="hl in highlights" :key="hl.text" class="highlight-item">
-              <span class="highlight-item__icon">
+              <span class="highlight-item__icon" :class="{ 'highlight-item__icon--count': hl.count }">
+                <span v-if="hl.count" class="highlight-item__count">{{ hl.count }}×</span>
                 <img :src="hl.icon || '/icons/facilities/special.svg'" :alt="hl.text" width="22" height="22" />
               </span>
               <span class="highlight-item__text">{{ hl.text }}</span>
@@ -443,6 +444,7 @@
         <section v-if="pdpHighlights" class="container deal-page__inc-row">
           <div class="inc-row">
             <div v-for="hl in highlights" :key="hl.text" class="inc-row__chip">
+              <span v-if="hl.count" class="inc-row__count">{{ hl.count }}×</span>
               <img v-if="hl.icon" :src="hl.icon" class="inc-row__icon" alt="" loading="lazy" />
               <span v-else class="inc-row__check"><svg class="icon-check" viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10" style="vertical-align:-0.125em"><path d="M3 13L8 19L21 5"/></svg></span>
               <span>{{ hl.text }}</span>
@@ -1966,13 +1968,17 @@ const highlights = computed(() => {
     .filter(Boolean)
     .filter(t => !/overnachting|night/i.test(t))
   const seen = new Set<string>()
-  const out: { icon: string | null; emoji: string; text: string }[] = []
+  const out: { icon: string | null; emoji: string; text: string; count?: number }[] = []
   for (const text of titles) {
     const key = text.toLowerCase()
     if (seen.has(key)) continue
     seen.add(key)
     const m = matchIcon(text)
-    out.push({ icon: (isTrip ? tripHighlightIcon(text) : null) ?? m.iconUrl, emoji: m.emoji, text })
+    const tripIcon = isTrip ? tripHighlightIcon(text) : null
+    // Vakantie: bij de hotels/nachten-highlight (hotelicoon) het aantal hotels
+    // als "3×" vóór het (enkele) hotelicoon.
+    const count = trip && tripIcon === '/icons/mht/hotel.svg' ? trip.stops.length : undefined
+    out.push({ icon: tripIcon ?? m.iconUrl, emoji: m.emoji, text, count })
     if (out.length >= 6) break
   }
   return out
@@ -1980,10 +1986,12 @@ const highlights = computed(() => {
 
 /** Vakantie-highlights (chips onder de gallery): iconen uit de core-iconenset
  *  van Joris — hotel voor de hotels/nachten, klok voor de etappes, kasteel voor
- *  stad/natuur/kust en kastelen, champagneglas voor de welkomstbubbels. Diner en
- *  parkeren houden het icoon van de gewone matcher. */
+ *  stad/natuur/kust en kastelen, champagneglas voor de welkomstbubbels, koffer
+ *  voor de bagagetransfer (fietsvakantie). Diner en parkeren houden het icoon
+ *  van de gewone matcher. */
 function tripHighlightIcon(text: string): string | null {
   if (/parkeren|parking|diner|dinner|ontbijt|breakfast/i.test(text)) return null
+  if (/bagage|luggage|koffer/i.test(text)) return '/icons/mht/suitcase.svg'
   if (/bubbels|champagne|prosecco|bubbles/i.test(text)) return '/icons/mht/champagne.svg'
   if (/hotel|nachten|nights/i.test(text)) return '/icons/mht/hotel.svg'
   if (/etappe|minuten|minutes|rijtijd|rijden|\bkm\b/i.test(text)) return '/icons/mht/clock.svg'
@@ -2249,6 +2257,8 @@ onMounted(() => {
 }
 .inc-row__check { color: var(--color-discount); font-weight: 700; flex-shrink: 0; }
 .inc-row__icon { width: 20px; height: 20px; flex-shrink: 0; object-fit: contain; }
+/* "3×" vóór het hotelicoon (aantal hotels van de vakantie). */
+.inc-row__count { font-weight: 700; font-size: 14px; line-height: 1; margin-right: -4px; flex-shrink: 0; }
 /* Beschrijving links, minimap rechts gefloat in de breedte van de zijbalk
    (zodat de kaart precies boven de zijbalk uitlijnt). */
 .deal-page__intro-row {
@@ -2474,6 +2484,9 @@ onMounted(() => {
 .highlight-item__icon { width: 40px; height: 40px; border-radius: 6px; background: var(--color-background-secondary, #FBFAF8); border: 0; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .highlight-item__text { font-size: 14px; font-weight: 500; color: var(--color-text-primary); }
 .highlight-item__check { font-size: 18px; line-height: 1; font-weight: 700; color: var(--color-discount, #27C88D); }
+/* Vakantie: "3×" + één hotelicoon in de tegel. */
+.highlight-item__icon--count { width: auto; min-width: 40px; padding: 0 8px; gap: 3px; }
+.highlight-item__count { font-size: 13px; font-weight: 700; line-height: 1; }
 
 /* ===== CONTENT BLOCKS ===== */
 .deal-page__content-blocks { padding: var(--space-xl) 0; border-top: 1px solid var(--color-border-light); scroll-margin-top: 88px; }

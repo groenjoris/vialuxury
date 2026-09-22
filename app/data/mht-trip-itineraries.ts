@@ -665,6 +665,7 @@ export const TRIP_ITINERARIES: Record<string, TripItinerarySpec> = {
 
   // ── Fietsvakantie Twente & Salland ────────────────────────────────────
   'trip-fietsvakantie-twente-salland': {
+    introTitle: l('7-daagse fietsreis met bagagetransfer tussen hotels', '7-day cycling trip with luggage transfer between hotels'),
     description: [
       l('Een ontspannen 7-daagse fietsvakantie waarin comfort, natuur en gastvrijheid centraal staan. Je ontdekt het afwisselende landschap van Salland en Twente met groene landerijen, schilderachtige dorpen en rustige fietspaden, en verblijft telkens twee nachten in een ander sfeervol hotel terwijl je bagage vooruit reist.',
         'A relaxed 7-day cycling holiday centred on comfort, nature and hospitality. You discover the varied landscape of Salland and Twente with green farmland, picturesque villages and quiet cycle paths, staying two nights at each charming hotel while your luggage travels ahead.'),
