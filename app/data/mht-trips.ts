@@ -329,9 +329,10 @@ const TRIPS: TripSpec[] = [
   {
     id: 'trip-fietsvakantie-twente-salland',
     slug: 'fietsvakantie-twente-en-salland-delden-raalte-markelo',
-    // Cover = fietsend stel in het bos ("Fietsvakantie/first images/fietsers.jpg");
-    // ook de foto op de dealcard.
-    coverImage: '/images/vakanties/cover/fietsvakantie-twente-salland.jpg',
+    // Cover = fietsend stel in het bos (aangeleverd door Joris); ook de foto op
+    // de dealcard. Nieuwe bestandsnaam zodat browsers de oude cover niet uit de
+    // cache tonen.
+    coverImage: '/images/vakanties/cover/fietsvakantie-twente-salland-bos.jpg',
     // Omgevingsfoto's (Joris, "Fietsvakantie/first images"): direct na de cover
     // bovenin de gallery; de eerste vier staan bij landing in beeld. De oude
     // cover (fietsers op de brug bij Deventer) sluit de reeks af.
