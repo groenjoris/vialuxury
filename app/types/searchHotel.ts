@@ -14,7 +14,7 @@ export interface MultiHotelTripStop {
   /** Aantal nachten op deze stop (voor de vakantie-PDP). */
   nights?: number
   starRating?: number
-  /** Foto voor hotels buiten de dataset (public/images/vakanties/...). */
+  /** Eigen foto van deze stop (public/images/vakanties/...); wint van de datasetfoto. */
   image?: string
   /** Ligging, voor het routekaartje op de card. */
   lat?: number

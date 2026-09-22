@@ -329,16 +329,19 @@ const TRIPS: TripSpec[] = [
   {
     id: 'trip-fietsvakantie-twente-salland',
     slug: 'fietsvakantie-twente-en-salland-delden-raalte-markelo',
+    // Cover = fietsend stel in het bos ("Fietsvakantie/first images/fietsers.jpg");
+    // ook de foto op de dealcard.
     coverImage: '/images/vakanties/cover/fietsvakantie-twente-salland.jpg',
     // Omgevingsfoto's (Joris, "Fietsvakantie/first images"): direct na de cover
-    // bovenin de gallery; de eerste vier staan bij landing in beeld.
+    // bovenin de gallery; de eerste vier staan bij landing in beeld. De oude
+    // cover (fietsers op de brug bij Deventer) sluit de reeks af.
     nearbyImages: [
-      '/images/vakanties/007/nearby-fietsers-bos.jpg',
       '/images/vakanties/007/nearby-twickel.jpg',
       '/images/vakanties/007/nearby-heuvelrug.jpg',
       '/images/vakanties/007/nearby-raalte.jpg',
       '/images/vakanties/007/nearby-zonsopkomst.jpg',
       '/images/vakanties/007/nearby-fietsers-stad.jpg',
+      '/images/vakanties/007/nearby-deventer-brug.jpg',
     ],
     fromHome: { city: 'Utrecht', minutes: 90 },
     // Rondje: dag 7 de laatste 20 km van Markelo terug naar Delden (auto staat daar).
@@ -348,7 +351,7 @@ const TRIPS: TripSpec[] = [
     type: 'fiets',
     stops: [
       { name: 'Hotel Wapen van Delden', city: 'Delden', region: 'Twente', province: 'Overijssel', nights: 2, stars: 4, lat: 52.2622, lng: 6.7113, image: 'https://asset.vialuxury.com/assets/9f13962b-27bb-43f9-b875-bd7b63b04c98?key=photo-full', extraImages: ['https://asset.vialuxury.com/assets/de37ddd8-3265-455d-b733-b4b123879a08?key=photo-full', 'https://asset.vialuxury.com/assets/ead7f055-ea8d-4d7b-a45b-b508d83b3396?key=photo-full'], includes: [l('2 x overnachting', '2 nights'), l('Dagelijks uitgebreid ontbijtbuffet', 'Daily extensive breakfast buffet'), l('2 x 3-gangendiner', '2 x 3-course dinner'), l('Welkomstfietstasje met water, regenponcho en bandenplaksetje', 'Welcome cycling bag with water, rain poncho and repair kit'), l('ViaLuxury welkomstcadeau', 'ViaLuxury welcome gift'), l('Bagagetransport naar Raalte', 'Luggage transfer to Raalte'), l('Gratis parkeren (gehele vakantie)', 'Free parking (whole holiday)')] },
-      { name: 'Hotel de Zwaan', city: 'Raalte', region: 'Salland', province: 'Overijssel', nights: 2, stars: 3, lat: 52.3833, lng: 6.2667, image: 'https://asset.vialuxury.com/assets/ef123299-2053-479d-9bee-2f0f35e8fb35?key=photo-full', travel: { km: 45, minutes: 180 }, includes: [l('2 x overnachting', '2 nights'), l('Dagelijks uitgebreid ontbijtbuffet', 'Daily extensive breakfast buffet'), l('2 x 3-gangendiner', '2 x 3-course dinner'), l('Fietsroutes Salland op je telefoon', 'Salland cycling routes on your phone'), l('Bagagetransport naar Markelo', 'Luggage transfer to Markelo')] },
+      { name: 'Hotel de Zwaan', city: 'Raalte', region: 'Salland', province: 'Overijssel', nights: 2, stars: 3, lat: 52.3833, lng: 6.2667, image: '/images/vakanties/007/hotel-de-zwaan.jpg', extraImages: ['https://asset.vialuxury.com/assets/ef123299-2053-479d-9bee-2f0f35e8fb35?key=photo-full'], travel: { km: 45, minutes: 180 }, includes: [l('2 x overnachting', '2 nights'), l('Dagelijks uitgebreid ontbijtbuffet', 'Daily extensive breakfast buffet'), l('2 x 3-gangendiner', '2 x 3-course dinner'), l('Fietsroutes Salland op je telefoon', 'Salland cycling routes on your phone'), l('Bagagetransport naar Markelo', 'Luggage transfer to Markelo')] },
       { name: 'Landhuishotel Herikerberg', city: 'Markelo', region: 'Twente', province: 'Overijssel', nights: 2, stars: 4, lat: 52.2361, lng: 6.5194, image: 'https://asset.vialuxury.com/assets/61164a46-85d5-4f32-8547-9f2c5727af3f?key=photo-full', extraImages: ['https://asset.vialuxury.com/assets/d79b8fd5-75cf-49a6-b558-5f28a85d9f1c?key=photo-full'], travel: { km: 35, minutes: 150 }, includes: [l('2 x overnachting', '2 nights'), l('Dagelijks uitgebreid ontbijtbuffet', 'Daily extensive breakfast buffet'), l('2 x 3-gangendiner', '2 x 3-course dinner'), l('Fietsroutes Twente op je telefoon', 'Twente cycling routes on your phone'), l('Bagagetransport terug naar Delden', 'Luggage transfer back to Delden')] },
     ],
     title: l('7-daagse fietsvakantie Twente & Salland: Delden – Raalte – Markelo incl. dagelijks 3-gangendiner', '7-day cycling holiday Twente & Salland: Delden – Raalte – Markelo incl. daily 3-course dinner'),
@@ -459,7 +462,9 @@ function toStop(s: StopSpec, dayFrom: number): MultiHotelTripDetailStop {
     hotelSlug: h?.slug,
     nights: s.nights,
     starRating: h?.starRating ?? s.stars,
-    image: h?.heroImage ?? s.image,
+    // Een eigen foto in de reisdata wint van de datasetfoto (bv. Hotel de Zwaan
+    // in Raalte: de dataset kent een gelijknamig hotel).
+    image: s.image ?? h?.heroImage,
     lat: s.lat,
     lng: s.lng,
     includes: s.includes,

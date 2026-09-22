@@ -1250,11 +1250,12 @@ const includesBullets = computed<string[]>(() => {
   border-radius: 50%;
   background: rgba(0, 0, 0, 0.45);
 }
-/* Etappelabel ("45 km" / "45 min") boven het icoon, tussen de plaatsnamen. */
+/* Etappelabel ("45 km" / "45 min") onder het icoon, tussen de "2 nachten"-
+   labels — boven het icoon botste het met lange plaatsnamen. */
 .trip-tl__km {
   position: absolute;
   left: 50%;
-  bottom: calc(50% + 13px);
+  top: calc(50% + 13px);
   transform: translateX(-50%);
   font-size: 11px;
   font-weight: 600;
