@@ -463,8 +463,10 @@
 [data-sr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar, .booking-controls__calendar) .day-cell__number {
   justify-self: center;
   align-self: center;
-  font-size: 14px;
-  font-weight: 400;
+  /* !important: wint van de component-scoped 15px/500 in CalendarDayCell.vue
+     (gelijke specificiteit, latere cascade) — één waarde voor alle kalenders. */
+  font-size: 15px !important;
+  font-weight: 500 !important;
   line-height: 1.4;
   color: var(--color-text-primary);
 }
@@ -475,9 +477,16 @@
      the spacing) so the day+price group stays balanced. */
   position: static !important;
   text-align: center;
-  font-size: 10px;
-  font-weight: 400;
-  color: var(--color-discount) !important;   /* beats scoped --color-text-primary */
+  /* Prijs: 12px semibold in huisstijl-donkergroen (AA-contrast), tabulaire
+     cijfers zodat bedragen onder elkaar uitlijnen. 13px+ past niet in de
+     43px-cellen bij vier cijfers ("€1.059" = 42,7px). !important wint van de
+     scoped regels in CalendarDayCell.vue. NB: alle *-variant-6.css-bestanden
+     laden op elke pagina en <html> draagt alle data-*-variant-attributen, dus
+     deze regel moet in elk namespace-bestand gelijk zijn. */
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-green-dark) !important;
   line-height: 1.4;
 }
 
@@ -645,11 +654,11 @@
     padding: 5px 2px;
   }
   [data-sr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar, .booking-controls__calendar) .day-cell__number {
-    font-size: 13px;
+    font-size: 15px !important;
   }
   [data-sr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar, .booking-controls__calendar) .day-cell__price,
   [data-sr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar, .booking-controls__calendar) .day-cell__sold {
-    font-size: 9px;
+    font-size: 12px !important;
   }
   [data-sr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar, .booking-controls__calendar) .day-header {
     font-size: 12px;

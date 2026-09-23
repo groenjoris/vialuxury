@@ -337,8 +337,8 @@ useHead({ title: 'Selecteer aankomstdatum — ViaLuxury' })
 }
 /* Geselecteerde in/uit-dag: groene tegel met zwarte rand, witte tekst */
 .mcal__cell--in {
-  background: #00b67a;
-  border: 1px solid #1a1a1a;
+  background: var(--color-discount);
+  border: 1px solid var(--color-text-primary);
   box-shadow: none;
 }
 .mcal__cell--in .mcal__day,
@@ -350,7 +350,7 @@ useHead({ title: 'Selecteer aankomstdatum — ViaLuxury' })
 }
 /* Tussennachten: lichtgroene tegel zonder rand */
 .mcal__cell--range {
-  background: color-mix(in srgb, #00b67a 45%, #fff);
+  background: color-mix(in srgb, var(--color-discount) 45%, #fff);
   border-color: transparent;
   box-shadow: none;
 }
@@ -358,40 +358,42 @@ useHead({ title: 'Selecteer aankomstdatum — ViaLuxury' })
   color: #fff;
 }
 .mcal__day {
-  font-size: 13px;
-  font-weight: 400;
+  font-size: 15px;
+  font-weight: 500;
   line-height: 1.4;
 }
 .mcal__sold {
-  font-size: 9px;
-  font-weight: 400;
-  color: #00b67a;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-muted);
   line-height: 1.4;
 }
 .mcal__sold--selected {
   color: #fff;
   font-weight: 700;
 }
+/* Prijs: 12px semibold, huisstijl-donkergroen, tabulaire cijfers (als PDP). */
 .mcal__price {
-  font-size: 9px;
-  font-weight: 400;
-  color: #00b67a;
+  font-size: 12px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-green-dark, #00675f);
   line-height: 1.4;
 }
 .mcal__price--cheapest {
-  color: #ff7e00;
+  color: var(--color-primary);
 }
 .mcal__price--selected {
   color: #fff;
 }
-/* Oranje sterretje in de rechterbovenhoek van de laagste-prijs-dag */
+/* Oranje sterretje linksboven bij de laagste-prijs-dag (als PDP-kalender) */
 .mcal__star {
   position: absolute;
   top: 1px;
-  right: 1px;
+  left: 1px;
   font-size: 14px;
   line-height: 1;
-  color: #ff7e00;
+  color: var(--color-primary);
   pointer-events: none;
 }
 /* In/uit-pil: doorschijnend wit, alleen linksonder afgerond */

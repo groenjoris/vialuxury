@@ -206,12 +206,12 @@ useHead({ title: 'Kies datum — ViaLuxury' })
                 >
                   <span v-if="cellRole(cell.day) === 'in'" class="cal__badge">in</span>
                   <span v-else-if="cellRole(cell.day) === 'uit'" class="cal__badge">uit</span>
+                  <!-- Laagste prijs: oranje sterretje linksboven, zoals op de PDP-kalender. -->
+                  <span v-if="cell.price === lowestPrice && !cell.unavailable && cellRole(cell.day) === null" class="cal__star">★</span>
                   <span class="cal__day">{{ cell.day }}</span>
-                  <span v-if="cell.unavailable" class="cal__price c-mgrey">–</span>
+                  <span v-if="cell.unavailable" class="cal__price cal__price--sold">–</span>
                   <span v-else-if="cellRole(cell.day) === 'mid' || cellRole(cell.day) === 'uit'" class="cal__price">–</span>
-                  <span v-else class="cal__price">
-                    €{{ cell.price }}<span v-if="cell.price === lowestPrice" class="cal__star">★</span>
-                  </span>
+                  <span v-else class="cal__price" :class="{ 'cal__price--cheapest': cell.price === lowestPrice }">€{{ cell.price }}</span>
                 </button>
               </template>
             </div>
@@ -364,47 +364,64 @@ useHead({ title: 'Kies datum — ViaLuxury' })
 .cal__weekdays span {
   text-align: center;
 }
+/* Dagcel — identiek aan de PDP-kalender (variant 6): witte tegel met hairline
+   rand en 1px schaduw, 60px hoog, dagnummer + prijs gecentreerd. */
 .cal__cell {
-  border: 1px solid var(--c-light-grey);
-  border-radius: var(--radius-sm);
-  min-height: 72px;
+  position: relative;
+  border: 1px solid var(--color-border);
+  border-radius: 0;
+  height: 60px;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 4px;
-  background: var(--c-white);
-  transition: border-color 0.15s ease;
+  padding: 5px;
+  background: #fff;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+  transition: background 0.15s ease;
 }
 .cal__cell:hover:not(:disabled):not(.cal__cell--empty) {
-  border-color: var(--c-via-black);
+  background: #f3fbf7;
 }
 .cal__cell--empty {
   border: none;
   background: transparent;
+  box-shadow: none;
 }
+/* Niet beschikbaar: vlakke grijze tegel zonder rand/schaduw. */
 .cal__cell--unavailable {
-  background: var(--c-surface);
+  background: #dbdbdb;
+  border-color: transparent;
+  box-shadow: none;
+  opacity: 0.4;
   cursor: not-allowed;
 }
-.cal__cell--unavailable .cal__day {
-  color: var(--c-medium-grey);
-}
+/* Geselecteerde in-/uitcheckdag: groene tegel met zwarte rand, witte tekst, vet dagnummer. */
 .cal__cell--selected {
-  background: var(--c-via-green);
-  border-color: var(--c-via-green);
-  position: relative;
+  background: var(--color-discount);
+  border-color: var(--color-text-primary);
+  box-shadow: none;
 }
+.cal__cell--selected .cal__day { font-weight: 700; }
+/* In/uit-pil: doorschijnend wit, alleen linksonder afgerond, tegen de rand. */
 .cal__badge {
   position: absolute;
-  top: 0;
-  right: 0;
-  background: #00675f;
-  color: var(--c-white);
-  font-size: 10px;
+  top: -1px;
+  right: -1px;
+  min-width: 18px;
+  padding: 2px 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+  border-radius: 0 0 0 8px;
+  font-size: 9px;
+  font-weight: 400;
   line-height: 1;
-  padding: 3px 6px;
-  border-radius: 0 3px 0 4px;
+  pointer-events: none;
 }
 .cal__cta {
   display: flex;
@@ -419,21 +436,33 @@ useHead({ title: 'Kies datum — ViaLuxury' })
   color: var(--c-white);
 }
 .cal__day {
-  font-size: var(--t-body-lg);
-  color: var(--c-via-black);
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--color-text-primary);
 }
+/* Prijs: 12px semibold, huisstijl-donkergroen, tabulaire cijfers (als PDP). */
 .cal__price {
-  font-size: var(--t-body);
-  color: var(--c-via-green);
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
+  font-size: 12px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.4;
+  color: var(--color-green-dark, #00675f);
 }
+.cal__price--cheapest { color: var(--color-primary); }
+.cal__price--sold { color: var(--color-text-muted); }
+/* Oranje sterretje linksboven bij de laagste prijs. */
 .cal__star {
-  color: var(--c-via-orange);
-  font-size: 11px;
+  position: absolute;
+  top: 1px;
+  left: 1px;
+  font-size: 14px;
+  line-height: 1;
+  color: var(--color-primary);
+  pointer-events: none;
 }
 .cal__star--legend {
+  position: static;
   font-size: 14px;
 }
 .cal__legend {
@@ -453,12 +482,14 @@ useHead({ title: 'Kies datum — ViaLuxury' })
   width: 16px;
   height: 16px;
   border-radius: 3px;
-  background: var(--c-surface);
-  border: 1px solid var(--c-light-grey);
+  background: #dbdbdb;
+  border: 1px solid transparent;
+  opacity: 0.4;
 }
 .cal__swatch--selected {
-  background: var(--c-via-green);
-  border-color: var(--c-via-green);
+  background: var(--color-discount);
+  border-color: var(--color-text-primary);
+  opacity: 1;
 }
 
 /* Sidebar */
