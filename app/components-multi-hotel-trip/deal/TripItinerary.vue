@@ -4,9 +4,18 @@
        onder elkaar: altijd foto links, tekst rechts. Elke dag na de eerste
        begint met wakker worden en ontbijten (inbegrepen); inchecken toont het
        hotel met een link naar de hotel-pop-up; uitcheckdagen beginnen met wat
-       je onderweg kunt doen. `stacked` (mobiel) zet foto boven tekst. -->
+       je onderweg kunt doen. `stacked` (mobiel) zet foto boven tekst.
+       Begint met een samenvatting (één regel per dag); daarna staat alleen
+       dag 1 plus het eerste blok van dag 2 open, met "Toon meer" om de rest
+       uit te klappen (`collapsible`). -->
   <div class="itin" :class="{ 'itin--stacked': stacked }">
-    <section v-for="day in days" :key="day.day" class="itin-day">
+    <ul v-if="collapsible && days.length" class="itin-summary">
+      <li v-for="day in days" :key="`sum-${day.day}`" class="itin-summary__item">
+        <span class="itin-summary__day">{{ day.label }}</span> · <span class="itin-summary__text"><MultiHotelTripHotelText :text="summaryOf(day)" :hotels="hotels" @open-hotel="$emit('open-hotel', $event)" /></span>
+      </li>
+    </ul>
+
+    <section v-for="day in visibleDays" :key="day.day" class="itin-day">
       <header class="itin-day__head">
         <h3 class="itin-day__title">
           {{ day.label }}
@@ -59,6 +68,12 @@
         </article>
       </div>
     </section>
+
+    <!-- Ingeklapt: de rest van het schema uitklappen. -->
+    <button v-if="collapsible && !expanded && days.length > 1" type="button" class="itin__more" @click="expanded = true">
+      {{ t('trip.showMore') }}
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9" /></svg>
+    </button>
 
     <!-- Gecentreerde info-pop-up ("Meer over de Opaalkust") -->
     <Teleport to="body">
@@ -131,9 +146,27 @@ const props = withDefaults(defineProps<{
   hotels?: TripHotelLink[]
   /** Mobiel: foto boven de tekst. */
   stacked?: boolean
-}>(), { stacked: false, hotels: () => [] })
+  /** Samenvatting bovenaan en ingeklapt beginnen (dag 1 + eerste blok van dag 2, "Toon meer"). */
+  collapsible?: boolean
+}>(), { stacked: false, hotels: () => [], collapsible: true })
 
 defineEmits<{ 'open-hotel': [stopIndex: number] }>()
+
+/* Ingeklapt/uitgeklapt. Ingeklapt: dag 1 volledig en van dag 2 alleen het eerste blok. */
+const expanded = ref(false)
+const visibleDays = computed<TripDayView[]>(() => {
+  if (!props.collapsible || expanded.value || props.days.length < 2) return props.days
+  const [first, second] = props.days
+  return [first!, { ...second!, blocks: second!.blocks.slice(0, 1) }]
+})
+/** Eén regel per dag voor de samenvatting: het belangrijkste onderdeel van de
+ *  dag (onderweg/etappe, terugreis of de eerste activiteit; anders het hotel). */
+function summaryOf(day: TripDayView): string {
+  const main = day.blocks.find(b => b.kind === 'checkout' || b.kind === 'homeward')
+    ?? day.blocks.find(b => b.kind === 'activity')
+    ?? day.blocks.find(b => b.kind === 'checkin')
+  return main?.title ?? day.subtitle ?? ''
+}
 
 
 const { t } = useMultiHotelTripI18n()
@@ -157,6 +190,34 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   flex-direction: column;
   gap: var(--space-xl);
 }
+/* Samenvatting: één bullet per dag. */
+.itin-summary {
+  margin: 0;
+  padding: 0 0 0 20px;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--color-text-primary);
+}
+.itin-summary__item + .itin-summary__item { margin-top: 4px; }
+.itin-summary__day { font-weight: 700; }
+.itin-summary__text { color: var(--color-text-secondary); }
+/* "Toon meer" onder het ingeklapte schema. */
+.itin__more {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: calc(-1 * var(--space-md));
+  padding: 0;
+  border: 0;
+  background: none;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-primary);
+  cursor: pointer;
+}
+.itin__more:hover { color: var(--color-primary-hover); }
 .itin-day + .itin-day {
   padding-top: var(--space-xl);
   border-top: 1px solid var(--color-border-light);
