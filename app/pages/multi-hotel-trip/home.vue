@@ -52,18 +52,12 @@
           <p class="home-persuasion__text">15.294 gasten beoordelen ons met een 9 uit 10</p>
         </div>
         <div class="home-persuasion__col">
-          <span class="home-persuasion__award" aria-hidden="true">
-            <!-- Award / medal icon (Lucide-style). Same visual height as
-                 the Trustpilot logo so the three columns sit on a line. -->
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="8" r="6" />
-              <path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11" />
-              <!-- "1M" centred inside the medal disc. Font-size 6 fits
-                   comfortably inside the r=6 circle; stroke is removed
-                   so the letters render as solid currentColor fill. -->
-              <text x="12" y="8" text-anchor="middle" dominant-baseline="central" font-size="6" font-weight="700" font-family="var(--font-heading)" stroke="none" fill="currentColor">1M</text>
-            </svg>
-          </span>
+          <!-- "1M+" as a bold stat-style text treatment (matches the
+               Trustpilot/1M+/Klarna USP row styling) instead of the
+               medal icon — the caption below already spells out the
+               claim, so the stat is aria-hidden to avoid double
+               announcing it to screen readers. -->
+          <p class="home-persuasion__stat" aria-hidden="true">1M+</p>
           <p class="home-persuasion__text">Al meer dan 1 miljoen gasten verwelkomt</p>
         </div>
         <div class="home-persuasion__col">
@@ -720,6 +714,23 @@ onMounted(() => { setMhtNavVariant('1'); restoreHeroPhotoIndex(); restoreHomeLay
 .home-persuasion__award svg {
   height: 56px;
   width: auto;
+}
+
+/* "1M+" stat text replacing the medal icon in the middle column — same
+   56px row height as the Trustpilot logo / award icon so the three
+   columns still line up, bold sans-serif (not the serif heading font)
+   to match the Trustpilot/1M+/Klarna USP treatment. */
+.home-persuasion__stat {
+  margin: 0;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-body);
+  font-size: 40px;
+  font-weight: 800;
+  line-height: 1;
+  color: #27C88D;
 }
 
 .home-persuasion__text {
