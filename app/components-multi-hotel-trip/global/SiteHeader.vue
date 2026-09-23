@@ -2839,11 +2839,12 @@ function handleSelectHotelInPopup(slug: string) {
   height: var(--mht-nav-row-h);
 }
 
-/* ─── Variant 1 / 6 — top-align the logo with the row-1 buttons (which
- *  define row 1 height at --mht-nav-row-h). The logo is shorter than the
- *  buttons so without this it would centre. ─── */
-.site-header--nav-v1 .site-header__logo,
-.site-header--nav-v6 .site-header__logo {
+/* ─── Variant 1 / 6 — logo verticaal gecentreerd op de 44 px hoge
+ *  rij-1-knoppen en pillen (de grid-standaard). Alleen mét pay-off onder
+ *  het logo (R2-stijl / payoff-varianten-pagina) staat het logo boven, zodat
+ *  logo + pay-off samen één blok vormen. ─── */
+.site-header--nav-v1.site-header--has-payoff .site-header__logo,
+.site-header--nav-v6.site-header--has-payoff .site-header__logo {
   align-self: start;
 }
 
@@ -4159,6 +4160,13 @@ function handleSelectHotelInPopup(slug: string) {
     width: auto;
     align-self: start;
   }
+  /* Zonder pay-off: logo gecentreerd op de 44 px hoge knoppen rechts (die
+     staan absoluut, dus de rij krijgt zelf die hoogte); de telefoonregel
+     schuift niet, zie de margin-top hieronder. */
+  .site-header:not(.site-header--has-payoff) .site-header__logo {
+    min-height: 44px;
+    align-items: center;
+  }
   .site-header .site-header__logo-img {
     /* Logo and tagline are pinned to the same 204 px width
        (15 % smaller than the previous 240 px). Height follows the
@@ -4225,6 +4233,11 @@ function handleSelectHotelInPopup(slug: string) {
      the tagline's bottom and the search-pill's top. */
   .site-header.site-header--has-payoff .site-header__phone-wrap {
     margin-top: 12px;
+  }
+  /* Zonder pay-off is rij 1 nu 44 px (was ~21 px): 23 px minder marge
+     zodat de telefoonregel op dezelfde hoogte blijft. */
+  .site-header:not(.site-header--has-payoff) .site-header__phone-wrap {
+    margin-top: 11px;
   }
   /* Phone uses the SAME margin-top (12 px) across all four
      pages now — the summary card's top sits at the same Y as
