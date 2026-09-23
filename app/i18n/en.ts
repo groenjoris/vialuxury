@@ -49,7 +49,7 @@ const en: Record<string, string> = {
   'header.holidayParks': 'Holiday Parks',
   'header.restaurants': 'Restaurants',
   'header.giftCard': 'Gift card',
-  'header.holidays': 'Round trips',
+  'header.holidays': 'Road trips & Cycling holidays',
   'header.new': 'New',
   'header.whenAndHowLong': 'When & how long?',
   'header.pickDateAndDuration': 'Pick a date and duration',

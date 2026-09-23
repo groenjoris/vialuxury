@@ -49,7 +49,7 @@ const de: Record<string, string> = {
   'header.holidayParks': 'Ferienparks',
   'header.restaurants': 'Restaurants',
   'header.giftCard': 'Geschenkkarte',
-  'header.holidays': 'Rundreisen',
+  'header.holidays': 'Auto- & Radurlaube',
   'header.new': 'Neu',
   'header.whenAndHowLong': 'Wann und wie lange?',
   'header.pickDateAndDuration': 'Ankunftsdatum und Reisedauer wählen',
