@@ -256,7 +256,8 @@ const de: Record<string, string> = {
   // Multi Hotel Trip — dagprogramma + hotel-pop-up op de vakantie-PDP
   'trip.itineraryHeading': 'Beispiel-Reiseplan',
   'trip.tabIncluded': 'Was ist inbegriffen',
-  'trip.showMore': 'Mehr anzeigen',
+  'trip.showMore': 'Vollständiges Beispielprogramm anzeigen',
+  'trip.showLess': 'Weniger anzeigen',
   'trip.introTitleAuto': '{days}-tägige Reise mit eigenem Auto',
   'trip.introTitleBike': '{days}-tägige Radreise',
   'trip.includedHeading': 'Bei dieser {type} für 2 Personen ist Folgendes inbegriffen',
