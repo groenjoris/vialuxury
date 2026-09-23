@@ -73,7 +73,7 @@ const summaryHotel = computed(() => ({
   checkOutDate: checkoutDay.value?.checkOut || hotel.checkOutDate,
 }))
 
-useHead({ title: 'Kies je kamertype — ViaLuxury' })
+useHead({ title: computed(() => (checkoutTrip.value ? 'Kies je opties — ViaLuxury' : 'Kies je kamertype — ViaLuxury')) })
 </script>
 
 <template>
@@ -88,7 +88,7 @@ useHead({ title: 'Kies je kamertype — ViaLuxury' })
       <!-- Room table zonder rechterkolom + sticky kassabon -->
       <div class="page__grid">
         <div class="col-form">
-          <h1 class="t-display">{{ checkoutTrip ? 'Kies je arrangement' : 'Kies je kamertype' }}</h1>
+          <h1 class="t-display">{{ checkoutTrip ? 'Kies je opties' : 'Kies je kamertype' }}</h1>
           <MultiHotelTripCheckoutRoomTable
             ref="roomTableRef"
             :trip="checkoutTrip"

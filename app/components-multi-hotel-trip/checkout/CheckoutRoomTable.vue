@@ -346,7 +346,7 @@ const arrangementIncludes = trip.value ? trip.value.includes : [
     <table class="rt__table">
       <thead>
         <tr>
-          <th class="rt__th rt__th--type">{{ trip ? 'Hotels & kamertype' : 'Kamertype' }}</th>
+          <th class="rt__th rt__th--type">Kamertype</th>
           <th class="rt__th rt__th--guests">Aantal gasten</th>
           <th class="rt__th rt__th--price">
             <span class="rt__thprice">
@@ -355,7 +355,7 @@ const arrangementIncludes = trip.value ? trip.value.includes : [
             </span>
           </th>
           <th class="rt__th rt__th--options">Je opties</th>
-          <th class="rt__th rt__th--select">{{ trip ? 'Kies aantal arrangementen' : 'Kies aantal kamers' }}</th>
+          <th class="rt__th rt__th--select">{{ trip ? 'Kies aantal kamers per hotel' : 'Kies aantal kamers' }}</th>
           <th v-if="showReserve" class="rt__th rt__th--reserve" />
         </tr>
       </thead>
@@ -374,10 +374,7 @@ const arrangementIncludes = trip.value ? trip.value.includes : [
             <!-- Vakantie: schaarste van het arrangement bovenaan, daaronder de
                  hotel-carrousel (hotelnaam, kamernaam, foto, kamerinfo). -->
             <div v-if="trip" class="rt__type rt__type--trip">
-              <p v-if="trip.scarcity" class="rt__scarcity rt__scarcity--top">
-                <span class="rt__bullet" aria-hidden="true">•</span>
-                {{ trip.scarcity }}
-              </p>
+              <p v-if="trip.scarcity" class="rt__scarcity rt__scarcity--top">{{ trip.scarcity }}</p>
               <div class="rt__carhead">
                 <button type="button" class="rt__carbtn" aria-label="Vorig hotel" :disabled="hotelIndex === 0" @click="prevHotel">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15 6l-6 6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
@@ -395,6 +392,14 @@ const arrangementIncludes = trip.value ? trip.value.includes : [
                     <p class="rt__slidemeta t-caption c-mgrey">{{ h.city }} · {{ h.nights }} {{ h.nights === 1 ? 'nacht' : 'nachten' }}</p>
                     <img v-if="h.image" class="rt__img" :src="h.image" :alt="`${h.roomName} — ${h.name}`" />
                     <p class="rt__desc t-body c-grey">{{ shortDescription(h.roomDescription) }}</p>
+                    <div v-if="h.facilities.length" class="rt__facilities">
+                      <MultiHotelTripCheckoutFacilityItem
+                        v-for="f in h.facilities"
+                        :key="f.label"
+                        :label="f.label"
+                        :icon="f.icon"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
@@ -440,7 +445,7 @@ const arrangementIncludes = trip.value ? trip.value.includes : [
           <td class="rt__td rt__price">
             <MultiHotelTripCheckoutPriceTag :value="rowWas(row)" :show-cents="false" size="sm" bold strike color="var(--c-medium-grey)" />
             <MultiHotelTripCheckoutPriceTag :value="rowPrice(row)" :show-cents="false" size="md" bold color="var(--c-via-orange)" />
-            <p class="rt__pricenote">{{ trip ? `voor ${trip.hotels.length} kamers inclusief arrangement` : 'inclusief arrangement' }}</p>
+            <p v-if="!trip" class="rt__pricenote">inclusief arrangement</p>
           </td>
 
           <!-- Je opties (1e: zonder de vaste vinkjes, begint met de voorwaarde) -->
@@ -490,16 +495,16 @@ const arrangementIncludes = trip.value ? trip.value.includes : [
               class="rt__dropdown"
               :class="{ 'rt__dropdown--inactive': isInactive(row) }"
               :value="row.quantity"
-              :aria-label="trip ? 'Aantal arrangementen' : `Aantal kamers ${room.name}`"
+              :aria-label="trip ? 'Aantal kamers per hotel' : `Aantal kamers ${room.name}`"
               @mousedown="onDropdownMousedown(row, $event)"
               @keydown="onDropdownMousedown(row, $event)"
               @change="row.quantity = Number(($event.target as HTMLSelectElement).value)"
             >
               <!-- Het gesloten veld toont alleen het getal: het geselecteerde
                    option-label bevat geen bedrag, de rest in het menu wel. -->
-              <option :value="0">0 {{ unit(0) }}</option>
-              <!-- Vakantie: elk arrangement = 1 kamer per hotel -->
-              <option v-for="n in 5" :key="n" :value="n">{{ row.quantity === n ? `${n} ${unit(n)}` : trip ? `${n} ${unit(n)} · ${n} ${n === 1 ? 'kamer' : 'kamers'} per hotel · ${n * 2} personen` : `${n} ${unit(n)} / ${n * 2} personen` }}</option>
+              <option :value="0">0 kamers</option>
+              <!-- Vakantie: aantal kamers per hotel (elk arrangement = 1 kamer per hotel) -->
+              <option v-for="n in 5" :key="n" :value="n">{{ row.quantity === n ? `${n} ${n === 1 ? 'kamer' : 'kamers'}` : trip ? `${n} ${n === 1 ? 'kamer' : 'kamers'}, ${n * 2} personen` : `${n} ${n === 1 ? 'kamer' : 'kamers'} / ${n * 2} personen` }}</option>
             </select>
             <p v-if="row.quantity > 0" class="rt__max">
               {{ `(max.) ${row.quantity * 2} personen` }}
@@ -580,7 +585,7 @@ const arrangementIncludes = trip.value ? trip.value.includes : [
 
     <!-- Toast die naar de keuze-kolom wijst bij een lege selectie -->
     <div v-if="bottomCta && selectInvalid" class="rt__toast" role="alert">
-      {{ trip ? 'Kies één of meerdere arrangementen' : 'Kies één of meerdere kamers' }}
+      Kies één of meerdere kamers
     </div>
     </div>
 
@@ -736,12 +741,6 @@ const arrangementIncludes = trip.value ? trip.value.includes : [
 /* Breed genoeg zodat "2 nachten (i)" mét marge binnen de kolom past */
 .rt__th--price { width: 112px; }
 .rt__th--select { width: 140px; }
-/* Vakantie: "2 arrangementen" moet in het gesloten dropdown-veld passen en
-   "Flexibel annuleren" op één regel blijven — keuze-kolom breder, gasten-
-   kolom (alleen het icoon) en de dropdown-padding smaller. */
-.rt-wrap--trip .rt__th--select { width: 152px; }
-.rt-wrap--trip .rt__th--guests { width: 62px; }
-.rt-wrap--trip .rt__dropdown { padding: 8px 16px 8px 6px; }
 /* Rechterkolom: groene headercel (band loopt door), daaronder één
    doorlopend grijs paneel zonder dividers. */
 .rt__th--reserve {

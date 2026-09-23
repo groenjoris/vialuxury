@@ -3,6 +3,37 @@
 // hele reis. Gebouwd uit de reisdata (mht-trips.ts) en de redactionele
 // hotelinfo (mht-trip-itineraries.ts) via tripPdpBySlug/tripHotelDetails.
 import { tripPdpBySlug, tripHotelDetails } from '~/data/mht-trip-pdp'
+import type { Facility } from '~/data/mht-checkout/deal'
+
+// Karakteristieken (room amenities) per kamer — de reisdata kent die niet, dus
+// een plausibele set per hotel in hetzelfde ontwerp/iconenset als de hotel-deal
+// (CheckoutFacilityItem). Volgorde: bed, wifi, badkamer, uitzicht/ramen, extra's.
+const ROOM_FACILITY_SETS: Facility[][] = [
+  [
+    { label: 'Kingsize bed', icon: 'bed' },
+    { label: 'WiFi', icon: 'wifi' },
+    { label: 'Regendouche', icon: 'shower' },
+    { label: 'Smart TV', icon: 'tv' },
+    { label: 'Kluis', icon: 'safe' },
+    { label: 'Airco', icon: 'ac' },
+  ],
+  [
+    { label: 'Queensize bed', icon: 'bed' },
+    { label: 'WiFi', icon: 'wifi' },
+    { label: 'Bad of douche', icon: 'shower' },
+    { label: 'Zicht op het park', icon: 'window' },
+    { label: 'Zithoek', icon: 'sofa' },
+    { label: 'Leeslamp', icon: 'lamp' },
+  ],
+  [
+    { label: 'Kingsize bed', icon: 'bed' },
+    { label: 'WiFi', icon: 'wifi' },
+    { label: 'Inloopdouche', icon: 'shower' },
+    { label: 'Tuinzicht', icon: 'window' },
+    { label: 'Flatscreen-tv', icon: 'tv' },
+    { label: 'Kluis', icon: 'safe' },
+  ],
+]
 
 export interface TripCheckoutHotel {
   name: string
@@ -13,6 +44,8 @@ export interface TripCheckoutHotel {
   image?: string
   roomName: string
   roomDescription: string
+  /** Karakteristieken van de kamer (chips onder de beschrijving). */
+  facilities: Facility[]
 }
 
 export interface TripCheckout {
@@ -47,6 +80,7 @@ export function tripCheckoutBySlug(slug: string): TripCheckout | null {
       image: d?.room?.image ?? s.image ?? d?.images[0],
       roomName: d?.room?.name.nl ?? 'Standaardkamer',
       roomDescription: d?.room?.description.nl ?? d?.description.nl ?? '',
+      facilities: ROOM_FACILITY_SETS[i % ROOM_FACILITY_SETS.length]!,
     }
   })
   const typeLabel = trip.type === 'fiets' ? 'Fietsvakantie' : 'Autovakantie'
