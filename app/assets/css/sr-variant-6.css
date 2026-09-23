@@ -411,7 +411,7 @@
  * hotel-page date picker) stay on the legacy look.
  */
 [data-sr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar, .booking-controls__calendar) .calendar-month__grid {
-  gap: 8px;
+  gap: 4px;
   /* Fixed row tracks so a selected / in-range / check-out cell can NEVER grow
      its row and shift the rows below ("wobble"). Every cell is the same 60px
      (see .day-cell height below); rows resize only via media query.
@@ -421,7 +421,7 @@
 }
 
 [data-sr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar, .booking-controls__calendar) .calendar-month__day-headers {
-  gap: 8px;
+  gap: 4px;
   margin-bottom: var(--space-md);
 }
 
@@ -477,16 +477,18 @@
      the spacing) so the day+price group stays balanced. */
   position: static !important;
   text-align: center;
-  /* Prijs: 12px semibold in huisstijl-donkergroen (AA-contrast), tabulaire
-     cijfers zodat bedragen onder elkaar uitlijnen. 13px+ past niet in de
-     43px-cellen bij vier cijfers ("€1.059" = 42,7px). !important wint van de
-     scoped regels in CalendarDayCell.vue. NB: alle *-variant-6.css-bestanden
-     laden op elke pagina en <html> draagt alle data-*-variant-attributen, dus
-     deze regel moet in elk namespace-bestand gelijk zijn. */
-  font-size: 12px !important;
+  /* Prijs: 13px semibold in het oorspronkelijke groen (--color-discount),
+     tabulaire cijfers zodat bedragen onder elkaar uitlijnen. 13px past dankzij
+     de 4px-gap (cel ≈ 46,6px in de 350px-zijbalk; "€1.059" = 42,7px); 14px
+     (46px) zou alleen passen als de cellen elkaar bijna raken (gap ≤ 2px).
+     !important wint van de scoped regels in CalendarDayCell.vue. NB: alle
+     *-variant-6.css-bestanden laden op elke pagina en <html> draagt alle
+     data-*-variant-attributen, dus deze regel moet in elk namespace-bestand
+     gelijk zijn. */
+  font-size: 13px !important;
   font-weight: 600 !important;
   font-variant-numeric: tabular-nums;
-  color: var(--color-green-dark) !important;
+  color: var(--color-discount) !important;
   line-height: 1.4;
 }
 
@@ -658,7 +660,7 @@
   }
   [data-sr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar, .booking-controls__calendar) .day-cell__price,
   [data-sr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar, .booking-controls__calendar) .day-cell__sold {
-    font-size: 12px !important;
+    font-size: 13px !important;
   }
   [data-sr-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar, .booking-controls__calendar) .day-header {
     font-size: 12px;

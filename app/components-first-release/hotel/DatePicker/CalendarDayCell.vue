@@ -219,12 +219,12 @@ function handleClick() {
   color: white;
 }
 
-/* Prijs: 12px semibold, huisstijl-donkergroen, tabulaire cijfers (zelfde
-   waarden als de variant-6-regels, zodat elke kalender gelijk is). */
+/* Prijs: 13px semibold in het oorspronkelijke groen, tabulaire cijfers
+   (zelfde waarden als de variant-6-regels, zodat elke kalender gelijk is). */
 .day-cell__price {
   grid-row: 2;
-  font-size: 12px;
-  color: var(--color-green-dark, #00675f);
+  font-size: 13px;
+  color: var(--color-discount);
   font-weight: 600;
   font-variant-numeric: tabular-nums;
   line-height: 1;
