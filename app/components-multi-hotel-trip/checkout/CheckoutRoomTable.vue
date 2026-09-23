@@ -8,8 +8,9 @@
 // Cancellation policies can't be mixed: selecting a rate moves every other
 // selected row to that same rate (one-time explainer popup).
 import { rooms as roomsData, hotel, pricing, dealName } from '~/data/mht-checkout/deal'
-import { CHECKOUT_WAS_FACTOR } from '~/data/mht-checkout/pricing'
+import { CHECKOUT_WAS_FACTOR, CHECKOUT_NIGHTS } from '~/data/mht-checkout/pricing'
 import { useStickyFit } from '~/composables-multi-hotel-trip/useStickyFit'
+import type { TripCheckout } from '~/data/mht-checkout/trip'
 
 const props = withDefaults(defineProps<{
   // 1d: hide the built-in reservation column (the sidebar takes its place)
@@ -27,6 +28,10 @@ const props = withDefaults(defineProps<{
   // Extra CTA-knop onder de tabel (rechts uitgelijnd). Blijft actief; bij
   // een lege selectie kleurt de keuze-kolom licht rood + een toast erbij.
   bottomCta?: boolean
+  // Vakantie (meerdere hotels): één "arrangement" = een cluster van kamers,
+  // één per hotel, met één prijs voor de hele reis. De kamertype-kolom wordt
+  // een hotel-carrousel; de teksten spreken van arrangementen i.p.v. kamers.
+  trip?: TripCheckout | null
 }>(), {
   showReserve: true,
   initialCheapest: false,
@@ -34,7 +39,15 @@ const props = withDefaults(defineProps<{
   deferPolicyPopup: false,
   bookTo: undefined,
   bottomCta: false,
+  trip: null,
 })
+const trip = computed(() => props.trip ?? null)
+const nights = computed(() => trip.value?.nights ?? CHECKOUT_NIGHTS)
+/** Eenheid in de teksten: "kamer(s)" voor een hotel-deal, "arrangement(en)" voor een vakantie. */
+function unit(n: number) {
+  if (trip.value) return n === 1 ? 'arrangement' : 'arrangementen'
+  return n === 1 ? 'kamer' : 'kamers'
+}
 
 const emit = defineEmits<{
   'update:selection': [rows: {
@@ -66,7 +79,34 @@ interface TableRoom {
 }
 
 const tableRooms = reactive<TableRoom[]>(
-  roomsData.map((r) => ({
+  trip.value
+    ? [{
+        // Eén cluster: flexibel annuleren kost €15 per kamer, dus × aantal hotels.
+        id: 'trip',
+        name: trip.value.name,
+        image: trip.value.thumb,
+        description: '',
+        facilities: [],
+        rows: [
+          {
+            id: 'trip-flex',
+            baseId: 'trip',
+            rateKey: 'flexible',
+            priceWas: trip.value.priceWas + pricing.flexibilityPerRoom * trip.value.hotels.length,
+            price: trip.value.price + pricing.flexibilityPerRoom * trip.value.hotels.length,
+            quantity: 0,
+          },
+          {
+            id: 'trip-nonref',
+            baseId: 'trip',
+            rateKey: 'nonrefundable',
+            priceWas: trip.value.priceWas,
+            price: trip.value.price,
+            quantity: 0,
+          },
+        ],
+      }]
+    : roomsData.map((r) => ({
     id: r.id,
     name: r.roomName,
     image: r.image,
@@ -95,6 +135,13 @@ const tableRooms = reactive<TableRoom[]>(
   })),
 )
 
+// Hotel-carrousel in de kamertype-kolom (vakantie): pijlen bovenaan wisselen
+// van hotel zonder dat de kolom breder wordt.
+const hotelIndex = ref(0)
+const hotelCount = computed(() => trip.value?.hotels.length ?? 0)
+function prevHotel() { hotelIndex.value = Math.max(0, hotelIndex.value - 1) }
+function nextHotel() { hotelIndex.value = Math.min(hotelCount.value - 1, hotelIndex.value + 1) }
+
 const allRows = computed(() => tableRooms.flatMap((room) => room.rows))
 
 // 1d: start with the cheapest row selected.
@@ -107,7 +154,7 @@ if (props.initialCheapest) {
 // goedkoopste kamertype. Na een datumkeuze schuiven alle kamerprijzen
 // mee met het verschil t.o.v. de basisprijs.
 const journeyDay = useState<{ price: number } | null>('mht-checkout-day', () => null)
-const CHEAPEST_BASE = Math.min(...roomsData.map((r) => r.priceNow))
+const CHEAPEST_BASE = trip.value ? trip.value.price : Math.min(...roomsData.map((r) => r.priceNow))
 const priceDelta = computed(() =>
   journeyDay.value ? journeyDay.value.price - CHEAPEST_BASE : 0,
 )
@@ -117,9 +164,10 @@ function rowPrice(row: TableRow) {
 function rowWas(row: TableRow) {
   // Na een datumkeuze: zelfde kortingsfactor als de kalender, zodat het
   // besparingspercentage in elke stap gelijk is.
-  return journeyDay.value
-    ? Math.round(rowPrice(row) / CHECKOUT_WAS_FACTOR)
-    : row.priceWas
+  if (!journeyDay.value) return row.priceWas
+  // Vakantie: eigen kortingsverhouding van de reis (van-prijs uit de reisdata).
+  if (trip.value) return Math.round(rowPrice(row) * (row.priceWas / row.price))
+  return Math.round(rowPrice(row) / CHECKOUT_WAS_FACTOR)
 }
 
 // Report every selection change to the parent (drives the sidebar in 1d/v3)
@@ -253,7 +301,7 @@ function applyPolicy(policy: 'flexible' | 'nonrefundable') {
   }
 }
 
-const arrangementIncludes = [
+const arrangementIncludes = trip.value ? trip.value.includes : [
   '2 x Overnachting',
   'Dagelijks ontbijtbuffet',
   '3-Gangendiner (dag van aankomst)',
@@ -266,7 +314,7 @@ const arrangementIncludes = [
 </script>
 
 <template>
-  <div ref="rootEl" class="rt-wrap" :class="{ 'rt-wrap--hybrid': hybrid }">
+  <div ref="rootEl" class="rt-wrap" :class="{ 'rt-wrap--hybrid': hybrid, 'rt-wrap--trip': !!trip }">
     <!-- Datum-widget boven de tabel, met wijzig-link rechts ernaast
          (vervalt in 1d: de sidebar toont de data al) -->
     <div v-if="showReserve" class="rt__tophead">
@@ -298,16 +346,16 @@ const arrangementIncludes = [
     <table class="rt__table">
       <thead>
         <tr>
-          <th class="rt__th rt__th--type">Kamertype</th>
+          <th class="rt__th rt__th--type">{{ trip ? 'Hotels & kamertype' : 'Kamertype' }}</th>
           <th class="rt__th rt__th--guests">Aantal gasten</th>
           <th class="rt__th rt__th--price">
             <span class="rt__thprice">
               <span class="rt__thprice-line">Prijs voor</span>
-              <span class="rt__thprice-line">2 nachten<MultiHotelTripPriceInfoTooltip variant="deal" /></span>
+              <span class="rt__thprice-line">{{ nights }} nachten<MultiHotelTripPriceInfoTooltip variant="deal" /></span>
             </span>
           </th>
           <th class="rt__th rt__th--options">Je opties</th>
-          <th class="rt__th rt__th--select">Kies aantal kamers</th>
+          <th class="rt__th rt__th--select">{{ trip ? 'Kies aantal arrangementen' : 'Kies aantal kamers' }}</th>
           <th v-if="showReserve" class="rt__th rt__th--reserve" />
         </tr>
       </thead>
@@ -323,7 +371,47 @@ const arrangementIncludes = [
         >
           <!-- Kamertype (één cel per kamertype) -->
           <td v-if="rowIndex === 0" class="rt__td" :rowspan="room.rows.length">
-            <div class="rt__type">
+            <!-- Vakantie: schaarste van het arrangement bovenaan, daaronder de
+                 hotel-carrousel (hotelnaam, kamernaam, foto, kamerinfo). -->
+            <div v-if="trip" class="rt__type rt__type--trip">
+              <p v-if="trip.scarcity" class="rt__scarcity rt__scarcity--top">
+                <span class="rt__bullet" aria-hidden="true">•</span>
+                {{ trip.scarcity }}
+              </p>
+              <div class="rt__carhead">
+                <button type="button" class="rt__carbtn" aria-label="Vorig hotel" :disabled="hotelIndex === 0" @click="prevHotel">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15 6l-6 6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+                </button>
+                <span class="rt__carcount">Hotel {{ hotelIndex + 1 }} van {{ hotelCount }}</span>
+                <button type="button" class="rt__carbtn" aria-label="Volgend hotel" :disabled="hotelIndex >= hotelCount - 1" @click="nextHotel">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+                </button>
+              </div>
+              <div class="rt__carview">
+                <div class="rt__cartrack" :style="{ transform: `translateX(-${hotelIndex * 100}%)` }">
+                  <div v-for="(h, hi) in trip.hotels" :key="h.name" class="rt__slide" :aria-hidden="hi !== hotelIndex">
+                    <span class="rt__name">{{ h.name }}</span>
+                    <p class="rt__roomname">{{ h.roomName }}</p>
+                    <p class="rt__slidemeta t-caption c-mgrey">{{ h.city }} · {{ h.nights }} {{ h.nights === 1 ? 'nacht' : 'nachten' }}</p>
+                    <img v-if="h.image" class="rt__img" :src="h.image" :alt="`${h.roomName} — ${h.name}`" />
+                    <p class="rt__desc t-body c-grey">{{ shortDescription(h.roomDescription) }}</p>
+                  </div>
+                </div>
+              </div>
+              <div class="rt__dots" role="tablist" aria-label="Hotels">
+                <button
+                  v-for="(h, hi) in trip.hotels"
+                  :key="h.name"
+                  type="button"
+                  class="rt__dot"
+                  :class="{ 'rt__dot--on': hi === hotelIndex }"
+                  :aria-label="h.name"
+                  :aria-selected="hi === hotelIndex"
+                  @click="hotelIndex = hi"
+                />
+              </div>
+            </div>
+            <div v-else class="rt__type">
               <span class="rt__name">{{ room.name }}</span>
               <img class="rt__img" :src="room.image" :alt="room.name" />
               <p class="rt__desc t-body c-grey">{{ shortDescription(room.description) }}</p>
@@ -352,7 +440,7 @@ const arrangementIncludes = [
           <td class="rt__td rt__price">
             <MultiHotelTripCheckoutPriceTag :value="rowWas(row)" :show-cents="false" size="sm" bold strike color="var(--c-medium-grey)" />
             <MultiHotelTripCheckoutPriceTag :value="rowPrice(row)" :show-cents="false" size="md" bold color="var(--c-via-orange)" />
-            <p class="rt__pricenote">inclusief arrangement</p>
+            <p class="rt__pricenote">{{ trip ? `voor ${trip.hotels.length} kamers inclusief arrangement` : 'inclusief arrangement' }}</p>
           </td>
 
           <!-- Je opties (1e: zonder de vaste vinkjes, begint met de voorwaarde) -->
@@ -402,15 +490,16 @@ const arrangementIncludes = [
               class="rt__dropdown"
               :class="{ 'rt__dropdown--inactive': isInactive(row) }"
               :value="row.quantity"
-              :aria-label="`Aantal kamers ${room.name}`"
+              :aria-label="trip ? 'Aantal arrangementen' : `Aantal kamers ${room.name}`"
               @mousedown="onDropdownMousedown(row, $event)"
               @keydown="onDropdownMousedown(row, $event)"
               @change="row.quantity = Number(($event.target as HTMLSelectElement).value)"
             >
               <!-- Het gesloten veld toont alleen het getal: het geselecteerde
                    option-label bevat geen bedrag, de rest in het menu wel. -->
-              <option :value="0">0 kamers</option>
-              <option v-for="n in 5" :key="n" :value="n">{{ row.quantity === n ? `${n} ${n === 1 ? 'kamer' : 'kamers'}` : `${n} ${n === 1 ? 'kamer' : 'kamers'} / ${n * 2} personen` }}</option>
+              <option :value="0">0 {{ unit(0) }}</option>
+              <!-- Vakantie: elk arrangement = 1 kamer per hotel -->
+              <option v-for="n in 5" :key="n" :value="n">{{ row.quantity === n ? `${n} ${unit(n)}` : trip ? `${n} ${unit(n)} · ${n} ${n === 1 ? 'kamer' : 'kamers'} per hotel · ${n * 2} personen` : `${n} ${unit(n)} / ${n * 2} personen` }}</option>
             </select>
             <p v-if="row.quantity > 0" class="rt__max">
               {{ `(max.) ${row.quantity * 2} personen` }}
@@ -432,8 +521,8 @@ const arrangementIncludes = [
                 <div v-for="row in selectedRows" :key="row.id" class="rt__drow rt__drow--room">
                   <span class="rt__dqty t-body">{{ row.quantity }}x</span>
                   <div class="rt__dmain">
-                    <p class="t-body t-bold">Arrangement</p>
-                    <p class="t-caption c-mgrey">{{ roomNameFor(row.baseId) }}</p>
+                    <p class="t-body t-bold">{{ trip ? trip.typeLabel : 'Arrangement' }}</p>
+                    <p class="t-caption c-mgrey">{{ trip ? `${trip.hotels.length} hotels · 1 kamer per hotel` : roomNameFor(row.baseId) }}</p>
                     <p v-if="row.rateKey === 'flexible'" class="t-caption c-green">Flexibel annuleren</p>
                   </div>
                   <MultiHotelTripCheckoutPriceTag :value="row.quantity * rowPrice(row)" :show-cents="false" size="sm" />
@@ -454,7 +543,7 @@ const arrangementIncludes = [
                     <MultiHotelTripCheckoutPriceTag :value="displayTotal" size="lg" bold color="var(--c-via-green)" />
                   </div>
                 </div>
-                <p class="t-caption c-mgrey">{{ totalRooms }} {{ totalRooms === 1 ? 'kamer' : 'kamers' }} voor 2 nachten</p>
+                <p class="t-caption c-mgrey">{{ totalRooms }} {{ unit(totalRooms) }} voor {{ nights }} nachten</p>
               </div>
 
               <p class="rt__saved">
@@ -475,7 +564,7 @@ const arrangementIncludes = [
 
             <!-- 1e: arrangement-includes staan er vanaf het begin -->
             <div v-if="hybrid || totalRooms > 0" class="rt__includes">
-              <p class="t-body t-bold">{{ totalRooms > 1 ? 'Elk arrangement bevat' : 'Jouw arrangement bevat' }}</p>
+              <p class="t-body t-bold">{{ trip ? `Jouw ${trip.typeWord} bevat` : totalRooms > 1 ? 'Elk arrangement bevat' : 'Jouw arrangement bevat' }}</p>
               <p v-for="item in arrangementIncludes" :key="item" class="rt__inc t-body">
                 <svg class="rt__check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" /></svg>
                 {{ item }}
@@ -491,7 +580,7 @@ const arrangementIncludes = [
 
     <!-- Toast die naar de keuze-kolom wijst bij een lege selectie -->
     <div v-if="bottomCta && selectInvalid" class="rt__toast" role="alert">
-      Kies één of meerdere kamers
+      {{ trip ? 'Kies één of meerdere arrangementen' : 'Kies één of meerdere kamers' }}
     </div>
     </div>
 
@@ -647,6 +736,12 @@ const arrangementIncludes = [
 /* Breed genoeg zodat "2 nachten (i)" mét marge binnen de kolom past */
 .rt__th--price { width: 112px; }
 .rt__th--select { width: 140px; }
+/* Vakantie: "2 arrangementen" moet in het gesloten dropdown-veld passen en
+   "Flexibel annuleren" op één regel blijven — keuze-kolom breder, gasten-
+   kolom (alleen het icoon) en de dropdown-padding smaller. */
+.rt-wrap--trip .rt__th--select { width: 152px; }
+.rt-wrap--trip .rt__th--guests { width: 62px; }
+.rt-wrap--trip .rt__dropdown { padding: 8px 16px 8px 6px; }
 /* Rechterkolom: groene headercel (band loopt door), daaronder één
    doorlopend grijs paneel zonder dividers. */
 .rt__th--reserve {
@@ -690,6 +785,91 @@ const arrangementIncludes = [
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
+}
+/* Vakantie: hotel-carrousel in de kamertype-kolom. De kolom houdt zijn vaste
+   breedte (table-layout: fixed + overflow hidden op de viewport); de slides
+   staan naast elkaar in één rij, zodat de cel zo hoog is als de hoogste slide
+   en niet verspringt bij het wisselen. */
+.rt__type--trip {
+  gap: 8px;
+}
+.rt__scarcity--top {
+  margin: 0 0 2px;
+}
+.rt__carhead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.rt__carbtn {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  border: 1px solid var(--c-dark-grey);
+  border-radius: 50%;
+  background: var(--c-white);
+  color: var(--c-via-black);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+}
+.rt__carbtn:hover:not(:disabled) {
+  background: var(--c-surface);
+}
+.rt__carbtn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+.rt__carcount {
+  font-size: var(--t-caption);
+  font-weight: var(--w-black);
+  color: var(--c-via-black);
+}
+.rt__carview {
+  overflow: hidden;
+}
+.rt__cartrack {
+  display: flex;
+  transition: transform 0.35s ease;
+}
+.rt__slide {
+  flex: 0 0 100%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.rt__roomname {
+  font-size: var(--t-body);
+  line-height: var(--lh-body);
+  font-weight: 500;
+  color: var(--c-via-black);
+}
+.rt__slidemeta {
+  margin-top: -4px;
+}
+.rt__slide .rt__img {
+  margin-top: 2px;
+}
+.rt__dots {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+}
+.rt__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 0;
+  padding: 0;
+  background: var(--c-light-grey);
+  cursor: pointer;
+}
+.rt__dot--on {
+  background: var(--c-via-black);
 }
 
 /* Gasten */

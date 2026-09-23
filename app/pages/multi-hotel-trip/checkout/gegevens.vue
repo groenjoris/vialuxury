@@ -8,6 +8,7 @@
 import { hotel, rooms as roomsData, dealName, pricing } from '~/data/mht-checkout/deal'
 import { CHECKOUT_BOOKING_FEE } from '~/data/mht-checkout/pricing'
 import { useStickyFit } from '~/composables-multi-hotel-trip/useStickyFit'
+import { useMultiHotelTripCheckoutTrip } from '~/composables-multi-hotel-trip/useMultiHotelTripCheckoutTrip'
 
 interface SelRow {
   baseId: string
@@ -19,12 +20,20 @@ interface SelRow {
 
 const BOOKING_FEE = CHECKOUT_BOOKING_FEE
 const selection = useState<SelRow[]>('mht-checkout-selection', () => [])
-// Vakantie: de kamerkeuze is overgeslagen — één kamer (flexibel tarief) staat
-// voorgeselecteerd, zodat kassabon en "Boek nu" werken; terug gaat naar de datum.
-const checkoutIsTrip = useState<boolean>('mht-checkout-trip', () => false)
-if (checkoutIsTrip.value && selection.value.length === 0 && roomsData[0]) {
-  const r = roomsData[0]
-  selection.value = [{ baseId: r.id, rateKey: 'flexible', price: r.priceNow, priceWas: r.priceWas, quantity: 1 }]
+// Vakantie (meerdere hotels): kassabon met reisnaam, Aankomst/Vertrek en de
+// includes van de reis. Wie hier rechtstreeks landt zonder keuze krijgt één
+// flexibel arrangement voorgeselecteerd, zodat kassabon en "Boek nu" werken.
+const { trip: checkoutTrip } = useMultiHotelTripCheckoutTrip()
+const tripPopupOpen = ref(false)
+const nights = computed(() => checkoutTrip.value?.nights ?? 2)
+function unit(n: number) {
+  if (checkoutTrip.value) return n === 1 ? 'arrangement' : 'arrangementen'
+  return n === 1 ? 'kamer' : 'kamers'
+}
+if (checkoutTrip.value && selection.value.length === 0) {
+  const t = checkoutTrip.value
+  const flex = pricing.flexibilityPerRoom * t.hotels.length
+  selection.value = [{ baseId: 'trip', rateKey: 'flexible', price: t.price + flex, priceWas: t.priceWas + flex, quantity: 1 }]
 }
 const checkoutDay = useState<{ price: number; checkIn?: string; checkOut?: string } | null>(
   'mht-checkout-day',
@@ -47,8 +56,8 @@ const checkOutLabel = computed(() => checkoutDay.value?.checkOut || hotel.checkO
 
 // "Flexibel annuleren"-blok in het formulier, met een variatie op basis van
 // de gekozen flexibiliteit. De link/knop wisselt de keuze (± €15 per kamer
-// in de rijprijs).
-const FLEX_FEE = pricing.flexibilityPerRoom
+// in de rijprijs; bij een vakantie × aantal hotels).
+const FLEX_FEE = computed(() => pricing.flexibilityPerRoom * (checkoutTrip.value?.hotels.length ?? 1))
 const cancelBlock = computed<'flexible' | 'nonrefundable' | null>(() => {
   if (selection.value.length === 0) return null
   return selection.value.some((r) => r.rateKey === 'flexible') ? 'flexible' : 'nonrefundable'
@@ -61,7 +70,7 @@ function toggleFlex() {
   const toFlex = cancelBlock.value === 'nonrefundable'
   if (!toFlex && !flexAddedHere.value) return
   flexAddedHere.value = toFlex
-  const delta = toFlex ? FLEX_FEE : -FLEX_FEE
+  const delta = toFlex ? FLEX_FEE.value : -FLEX_FEE.value
   selection.value = selection.value.map((r) => ({
     ...r,
     rateKey: toFlex ? 'flexible' : 'nonrefundable',
@@ -70,12 +79,12 @@ function toggleFlex() {
   }))
 }
 
-const arrangementIncludes = [
+const arrangementIncludes = computed(() => checkoutTrip.value?.includes ?? [
   '2 x Overnachting',
   'Dagelijks ontbijtbuffet',
   '3-Gangendiner (dag van aankomst)',
   'Tasting uurtje 17:00 - 18:00',
-]
+])
 
 // Sidebar groeit met de inhoud mee; CTA onderin zichtbaar houden.
 const sideEl = ref<HTMLElement | null>(null)
@@ -100,41 +109,45 @@ useHead({ title: 'Gegevens en betaalwijze — ViaLuxury' })
           <MultiHotelTripCheckoutGegevensForm :start-at="1" :cancel-block="cancelBlock" :can-undo-flex="flexAddedHere" @toggle-flex="toggleFlex" />
 
           <div class="col-form__cta col-form__cta--split">
-            <NuxtLink class="btn-back t-body" :to="checkoutIsTrip ? '/multi-hotel-trip/checkout/datum' : '/multi-hotel-trip/checkout/kamers'">{{ checkoutIsTrip ? '← Terug naar datum' : '← Terug naar kamers' }}</NuxtLink>
+            <NuxtLink class="btn-back t-body" to="/multi-hotel-trip/checkout/kamers">{{ checkoutTrip ? '← Terug naar arrangement' : '← Terug naar kamers' }}</NuxtLink>
             <button class="btn-primary btn-primary--auto" type="button" :disabled="roomsSel === 0">
-              {{ roomsSel === 0 ? 'Selecteer een kamer' : 'Boek nu' }}
+              {{ roomsSel === 0 ? (checkoutTrip ? 'Selecteer een arrangement' : 'Selecteer een kamer') : 'Boek nu' }}
             </button>
           </div>
         </div>
 
         <div class="col-summary">
           <aside ref="sideEl" class="card side" :style="{ top: `${sideTop}px` }">
+            <!-- Vakantie: reisnaam (geen hotel-/plaatsnamen — die staan in de
+                 pop-up "Bekijk je volledige reis") -->
             <div class="side__hotel">
-              <img class="side__thumb" :src="hotel.thumb" :alt="hotel.name" />
+              <img class="side__thumb" :src="checkoutTrip ? checkoutTrip.thumb : hotel.thumb" :alt="checkoutTrip ? checkoutTrip.name : hotel.name" />
               <div>
-                <p class="t-body t-bold">{{ dealName }}</p>
-                <p class="t-body c-mgrey">{{ hotel.name }}</p>
+                <p class="t-body t-bold">{{ checkoutTrip ? checkoutTrip.name : dealName }}</p>
+                <p v-if="checkoutTrip" class="t-body c-mgrey">{{ checkoutTrip.typeLabel }} · {{ checkoutTrip.hotels.length }} hotels</p>
+                <p v-else class="t-body c-mgrey">{{ hotel.name }}</p>
               </div>
             </div>
 
             <div class="side__dates">
               <div class="side__datecell">
-                <p class="t-caption c-mgrey">Inchecken</p>
+                <p class="t-caption c-mgrey">{{ checkoutTrip ? 'Aankomst' : 'Inchecken' }}</p>
                 <p class="t-body t-bold">{{ checkInLabel }}</p>
               </div>
               <div class="side__datecell">
-                <p class="t-caption c-mgrey">Uitchecken</p>
+                <p class="t-caption c-mgrey">{{ checkoutTrip ? 'Vertrek' : 'Uitchecken' }}</p>
                 <p class="t-body t-bold">{{ checkOutLabel }}</p>
               </div>
             </div>
 
             <div class="side__includes">
-              <p class="t-body t-bold">{{ roomsSel > 1 ? 'Elk arrangement bevat' : 'Jouw arrangement bevat' }}</p>
+              <p class="t-body t-bold">{{ checkoutTrip ? `Jouw ${checkoutTrip.typeWord} bevat` : roomsSel > 1 ? 'Elk arrangement bevat' : 'Jouw arrangement bevat' }}</p>
               <p v-for="item in arrangementIncludes" :key="item" class="side__inc t-body">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" /></svg>
                 {{ item }}
               </p>
-              <a class="side__link side__link--left t-body" href="#">Bekijk je volledige arrangement</a>
+              <button v-if="checkoutTrip" class="side__link side__link--left t-body" type="button" @click="tripPopupOpen = true">Bekijk je volledige reis</button>
+              <a v-else class="side__link side__link--left t-body" href="#">Bekijk je volledige arrangement</a>
             </div>
 
             <template v-if="roomsSel > 0">
@@ -145,8 +158,8 @@ useHead({ title: 'Gegevens en betaalwijze — ViaLuxury' })
                 <div v-for="row in selection" :key="`${row.baseId}-${row.rateKey}`" class="side__row side__row--room">
                   <span class="side__qty">{{ row.quantity }}x</span>
                   <div class="side__rowmain">
-                    <p class="t-body t-bold">Arrangement</p>
-                    <p class="t-caption c-mgrey">{{ roomNameFor(row.baseId) }}</p>
+                    <p class="t-body t-bold">{{ checkoutTrip ? checkoutTrip.typeLabel : 'Arrangement' }}</p>
+                    <p class="t-caption c-mgrey">{{ checkoutTrip ? `${checkoutTrip.hotels.length} hotels · 1 kamer per hotel` : roomNameFor(row.baseId) }}</p>
                     <p v-if="row.rateKey === 'flexible'" class="t-caption c-green">Flexibel annuleren</p>
                     <p v-else class="t-caption c-grey">Niet-terugbetaalbaar</p>
                   </div>
@@ -168,7 +181,7 @@ useHead({ title: 'Gegevens en betaalwijze — ViaLuxury' })
                     <MultiHotelTripCheckoutPriceTag :value="totalPrice" size="lg" bold color="var(--c-via-green)" />
                   </div>
                 </div>
-                <p class="t-caption c-mgrey">{{ roomsSel }} {{ roomsSel === 1 ? 'kamer' : 'kamers' }} voor 2 nachten voor {{ roomsSel * 2 }} personen</p>
+                <p class="t-caption c-mgrey">{{ roomsSel }} {{ unit(roomsSel) }} voor {{ nights }} nachten voor {{ roomsSel * 2 }} personen</p>
               </div>
 
               <p class="side__saved">
@@ -187,7 +200,7 @@ useHead({ title: 'Gegevens en betaalwijze — ViaLuxury' })
             </template>
 
             <button class="btn-primary" type="button" :disabled="roomsSel === 0">
-              {{ roomsSel === 0 ? 'Selecteer een kamer' : 'Boek nu' }}
+              {{ roomsSel === 0 ? (checkoutTrip ? 'Selecteer een arrangement' : 'Selecteer een kamer') : 'Boek nu' }}
             </button>
 
             <div class="side__trust">
@@ -199,6 +212,8 @@ useHead({ title: 'Gegevens en betaalwijze — ViaLuxury' })
     </main>
 
     <MultiHotelTripCheckoutFooter />
+
+    <MultiHotelTripCheckoutTripPopup v-if="tripPopupOpen && checkoutTrip" :trip="checkoutTrip" @close="tripPopupOpen = false" />
   </div>
 </template>
 
@@ -292,6 +307,11 @@ useHead({ title: 'Gegevens en betaalwijze — ViaLuxury' })
   color: var(--c-via-black);
   text-decoration: underline;
   text-align: center;
+  background: none;
+  border: 0;
+  padding: 0;
+  font-family: inherit;
+  cursor: pointer;
 }
 /* Arrangement- en voorwaardenlinks: links uitgelijnd in de kassabon */
 .side__link--left {

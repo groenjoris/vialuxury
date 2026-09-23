@@ -1390,11 +1390,16 @@ function handleFavoriteClick() {
 // Verse start vanaf de dealpagina: eerdere kalenderkeuze wissen.
 const checkoutDayState = useState<{ price: number; checkIn?: string; checkOut?: string } | null>('mht-checkout-day', () => null)
 checkoutDayState.value = null
-/** Vakantie-checkout: geen kamerkeuze — na de datum (of direct, als die al
- *  gekozen is) door naar het gegevensscherm. De checkoutpagina's lezen deze vlag. */
+/** Vakantie-checkout: na de datum (of direct, als die al gekozen is) naar de
+ *  kamertabel met één arrangement-cluster (één kamer per hotel), dan gegevens.
+ *  De checkoutpagina's lezen deze vlag + slug (useMultiHotelTripCheckoutTrip). */
 const checkoutIsTrip = useState<boolean>('mht-checkout-trip', () => false)
+const checkoutTripSlug = useState<string | null>('mht-checkout-trip-slug', () => null)
 function goToCheckout() {
   checkoutIsTrip.value = isTrip
+  // Vakantie: de checkout leest het boekingsmodel (hotels, kamers, prijs,
+  // includes) via de slug — zie useMultiHotelTripCheckoutTrip.
+  checkoutTripSlug.value = isTrip ? routeSlug.value : null
   if (isTrip) {
     if (store.checkInDate && currentDeal.value) {
       checkoutDayState.value = {
@@ -1402,7 +1407,8 @@ function goToCheckout() {
         checkIn: formatDateWeekdayShort(store.checkInDate),
         checkOut: formatDateWeekdayShort(dayjs(store.checkInDate).add(currentDeal.value.nights, 'day').format('YYYY-MM-DD')),
       }
-      navigateTo('/multi-hotel-trip/checkout/gegevens')
+      // Met datum: naar de kamertabel (één cluster van kamers, één per hotel).
+      navigateTo('/multi-hotel-trip/checkout/kamers')
     } else {
       navigateTo('/multi-hotel-trip/checkout/datum')
     }
