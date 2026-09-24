@@ -11,10 +11,14 @@
         :title="t('search.holidaysHeroTitle')"
         :pitch="tripHeroPitch"
       />
-      <!-- Variantenschakelaar voor de vakantie-dealcards (onder het logo, voor de opdrachtgever). -->
+      <!-- Variantenschakelaar voor de vakantie-dealcards (onder het logo, voor de
+           opdrachtgever). Dealcard-variant is definitief "collage" (keuze
+           2026-09-24); de schakelaar + kleurentuner blijven in de code voor later
+           (zie ook VARIANT_SWITCHER_ENABLED in useMultiHotelTripCardVariant):
       <div class="search-page__trip-variants container">
         <MultiHotelTripCardVariantSwitch />
       </div>
+      -->
     </div>
     <MultiHotelTripSiteHeader v-else />
 

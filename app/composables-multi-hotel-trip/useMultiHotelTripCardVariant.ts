@@ -14,7 +14,14 @@
  *                tegels onder elkaar: mini-routekaartje (stipjes, landcodes)
  *                en de twee omgevingsfoto's die de PDP-gallery als eerste toont
  * Keuze wordt in localStorage bewaard zodat hij tussen pagina's blijft staan.
+ *
+ * BESLUIT 2026-09-24: 'collage' is de definitieve variant. De schakelaar staat
+ * niet meer op de zoekpagina (zie search.vue) en de variant staat vast; zet
+ * VARIANT_SWITCHER_ENABLED op true om de schakelaar + bewaarde keuze terug te
+ * krijgen.
  */
+export const VARIANT_SWITCHER_ENABLED = false
+export const DEFAULT_TRIP_CARD_VARIANT: TripCardVariant = 'collage'
 export type TripCardVariant = '50-50' | 'overlay' | 'inverse' | 'timeline' | 'collage'
 
 export const TRIP_CARD_VARIANTS: { id: TripCardVariant; label: string }[] = [
@@ -28,10 +35,11 @@ export const TRIP_CARD_VARIANTS: { id: TripCardVariant; label: string }[] = [
 const STORAGE_KEY = 'vl_mht_trip_card_variant'
 
 export function useMultiHotelTripCardVariant() {
-  const variant = useState<TripCardVariant>('mht-trip-card-variant', () => '50-50')
+  const variant = useState<TripCardVariant>('mht-trip-card-variant', () => DEFAULT_TRIP_CARD_VARIANT)
 
-  // Na hydratie de bewaarde keuze terugzetten (alleen in een component-setup).
-  if (import.meta.client && getCurrentInstance()) {
+  // Na hydratie de bewaarde keuze terugzetten (alleen in een component-setup);
+  // uitgeschakeld zolang de variant vaststaat.
+  if (VARIANT_SWITCHER_ENABLED && import.meta.client && getCurrentInstance()) {
     onMounted(() => {
       try {
         const saved = localStorage.getItem(STORAGE_KEY)
