@@ -87,7 +87,8 @@ defineEmits<{ 'open-hotel': [stopIndex: number] }>()
 const { t } = useMultiHotelTripI18n()
 
 /* Open dagen — standaard alleen dag 1. */
-const open = ref<Set<number>>(new Set(props.days[0] ? [props.days[0].day] : []))
+// Variant "Collapsed": alle dagen standaard ingeklapt (was: dag 1 open).
+const open = ref<Set<number>>(new Set())
 const isOpen = (d: number) => open.value.has(d)
 function toggle(d: number) {
   const next = new Set(open.value)

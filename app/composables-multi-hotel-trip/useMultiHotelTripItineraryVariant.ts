@@ -4,20 +4,20 @@
  * ITINERARY_VARIANT_SLUGS). Schakelen gaat via de zwevende knop linksboven
  * (<TripItineraryVariantSwitch>); de keuze blijft bewaard in localStorage.
  *
- *  - 'current' → variant 1: het bestaande reisschema (MultiHotelTripItinerary,
- *                in de linkerkolom, samenvatting + "Toon volledig …")
- *  - 'days'    → variant 2: accordeon-tijdlijn per dag (TripItineraryAccordion)
- *  - 'cities'  → variant 3: 50/50: sticky kaart links, per plaats rechts
- *                (TripItineraryCities)
- * Variant 2 en 3 staan over de volle breedte onder de twee kolommen; variant 1
- * houdt de bestaande lay-out.
+ *  - 'current' → variant 1 "Summary": het bestaande reisschema
+ *                (MultiHotelTripItinerary, linkerkolom, samenvatting + "Toon volledig …")
+ *  - 'days'    → variant 2 "Collapsed": accordeon-tijdlijn per dag
+ *                (TripItineraryAccordion), ook in de linkerkolom, alle dagen
+ *                standaard ingeklapt
+ *  - 'cities'  → variant 3 "Map": 50/50: sticky kaart links, per plaats rechts
+ *                (TripItineraryCities), over de volle breedte onder de twee kolommen
  */
 export type ItineraryVariant = 'current' | 'days' | 'cities'
 
 export const ITINERARY_VARIANTS: { id: ItineraryVariant; label: string }[] = [
-  { id: 'current', label: '1 · Huidig' },
-  { id: 'days', label: '2 · Per dag' },
-  { id: 'cities', label: '3 · Per plaats' },
+  { id: 'current', label: '1 · Summary' },
+  { id: 'days', label: '2 · Collapsed' },
+  { id: 'cities', label: '3 · Map' },
 ]
 
 /** Vakanties waarop de nieuwe varianten (en de schakelaar) actief zijn. */
