@@ -794,14 +794,16 @@ const arrangementIncludes = trip.value ? trip.value.includes : [
 .rt__type--trip {
   gap: 8px;
 }
-/* Navigator op een grijs vlak (zelfde grijs als de tabelkop in hybride modus). */
+/* Navigator op een grijs vlak (zelfde grijs als de tabelkop in hybride modus),
+   zonder ruimte eromheen: de negatieve marges overbruggen de celpadding (10px)
+   zodat het balkje tegen de boven- en zijranden van de kolom aanligt. */
 .rt__carhead {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  padding: 6px 8px;
-  border-radius: var(--radius-sm);
+  margin: -10px -10px 0;
+  padding: 6px 10px;
   background: var(--c-surface);
 }
 .rt__carbtn {
