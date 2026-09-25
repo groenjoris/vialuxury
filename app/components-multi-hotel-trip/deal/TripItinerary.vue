@@ -11,6 +11,8 @@
        de rest uit te klappen en "Toon minder" om weer in te klappen
        (`collapsible`). -->
   <div ref="rootRef" class="itin" :class="{ 'itin--stacked': stacked }">
+    <!-- Kerngetallen: dagen · tophotels · bezienswaardigheden -->
+    <TripItineraryStats v-if="days.length" class="itin__stats" :days="days.length" :hotels="hotels.length" :sights="sightsCount" />
     <ul v-if="collapsible && days.length" class="itin-summary">
       <li v-for="day in days" :key="`sum-${day.day}`" class="itin-summary__item">
         <button type="button" class="itin-summary__link" @click="goToDay(day.day)">
@@ -208,9 +210,15 @@ useBodyScrollLock().bindTo(computed(() => !!lightbox.value || !!info.value))
 function onKey(e: KeyboardEvent) { if (e.key === 'Escape') { lightbox.value = null; info.value = null } }
 onMounted(() => window.addEventListener('keydown', onKey))
 onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
+
+import TripItineraryStats from './TripItineraryStats.vue'
+import { countTripSights } from '~/utils-multi-hotel-trip/tripSights'
+/** Aantal bezienswaardigheden (zie utils tripSights). */
+const sightsCount = computed(() => countTripSights(props.days))
 </script>
 
 <style scoped>
+.itin__stats { margin-bottom: var(--space-md); }
 .itin {
   display: flex;
   flex-direction: column;

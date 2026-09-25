@@ -9,7 +9,7 @@
        foto, tekst en "Meer over …". Dag 1 staat standaard open. -->
   <div class="tia" :class="{ 'tia--stacked': stacked, 'tia--wide': wide }">
     <div class="tia__bar">
-      <span class="tia__overview">{{ overview }}</span>
+      <TripItineraryStats :days="days.length" :hotels="stops.length" :sights="sightsCount" />
       <button type="button" class="tia__all" @click="allOpen ? collapseAll() : expandAll()">
         {{ allOpen ? t('trip.itin.collapseAll') : t('trip.itin.expandAll') }}
       </button>
@@ -69,6 +69,8 @@
 
 <script setup lang="ts">
 import TripItineraryBlock from './TripItineraryBlock.vue'
+import TripItineraryStats from './TripItineraryStats.vue'
+import { countTripSights } from '~/utils-multi-hotel-trip/tripSights'
 import type { TripHotelLink } from './TripHotelText.vue'
 import type { TripDayView } from './TripItinerary.vue'
 import type { TripItineraryStop } from './TripItineraryCities.vue'
@@ -100,9 +102,8 @@ const allOpen = computed(() => props.days.length > 0 && props.days.every(d => op
 function expandAll() { open.value = new Set(props.days.map(d => d.day)) }
 function collapseAll() { open.value = new Set() }
 
-const overview = computed(() => t('trip.itin.overview')
-  .replace('{days}', String(props.days.length))
-  .replace('{hotels}', String(props.stops.length)))
+/** Aantal bezienswaardigheden (zie utils tripSights). */
+const sightsCount = computed(() => countTripSights(props.days))
 
 /** "Aankomst in Béthune" · "Béthune → Tilques" · "Een dag in en rond Tilques" · "Terug naar huis". */
 function headlineOf(day: TripDayView): string {
@@ -134,7 +135,6 @@ function thumbsOf(day: TripDayView): string[] {
   justify-content: space-between;
   gap: var(--space-md);
 }
-.tia__overview { font-size: 14px; font-weight: 600; color: var(--color-text-secondary); }
 .tia__all {
   padding: 0;
   border: 0;

@@ -268,6 +268,7 @@
             <!-- Noord-Frankrijk (schakelaar linksboven): 3 = Map, 2 = Collapsed (accordeon), 1 = Summary (bestaand). -->
             <TripItineraryCities v-if="itinNew" :days="tripDaysView" :stops="tripItinStops" :legs="tripRouteLegs" :return-label="tripReturnLabel" :hotels="tripHotelLinks" stacked @open-hotel="openTripHotel" @open-map="tripMapOpen = true" />
             <TripItineraryAccordion v-else-if="itinCollapsed" :days="tripDaysView" :stops="tripItinStops" :hotels="tripHotelLinks" stacked @open-hotel="openTripHotel" />
+            <TripItineraryPerCity v-else-if="itinCity" :chapters="tripCityChapters" :days="tripDaysView" :hotels="tripHotelLinks" stacked @open-hotel="openTripHotel" />
             <MultiHotelTripItinerary v-else :days="tripDaysView" :hotels="tripHotelLinks" stacked @open-hotel="openTripHotel" />
           </template>
           <template v-else>
@@ -544,12 +545,13 @@
             </section>
               <!-- Noord-Frankrijk variant 3 (Map): het reisschema staat in een eigen sectie
                    over de volle breedte onder de twee kolommen (zie #arrangement
-                   hieronder). Variant 1 (Summary) en 2 (Collapsed, accordeon) staan
-                   hier in de linkerkolom. -->
+                   hieronder). Variant 1 (Summary), 2 (Collapsed, accordeon) en
+                   3 (Per stad) staan hier in de linkerkolom. -->
               <template v-if="!itinNew">
                 <h2 class="section-title">{{ t('trip.itineraryHeading') }}</h2>
                 <p class="deal-page__itinerary-intro">{{ t('trip.itineraryIntro') }}</p>
                 <TripItineraryAccordion v-if="itinCollapsed" :days="tripDaysView" :stops="tripItinStops" :hotels="tripHotelLinks" @open-hotel="openTripHotel" />
+                <TripItineraryPerCity v-else-if="itinCity" :chapters="tripCityChapters" :days="tripDaysView" :hotels="tripHotelLinks" @open-hotel="openTripHotel" />
                 <MultiHotelTripItinerary v-else :days="tripDaysView" :hotels="tripHotelLinks" @open-hotel="openTripHotel" />
               </template>
             </template>
@@ -1135,6 +1137,9 @@ import { tripPdpBySlug, tripHotelDetails } from '~/data/mht-trip-pdp'
 import type { TripDayView, TripBlockView } from '~/components-multi-hotel-trip/deal/TripItinerary.vue'
 import TripItineraryAccordion from '~/components-multi-hotel-trip/deal/TripItineraryAccordion.vue'
 import TripItineraryCities from '~/components-multi-hotel-trip/deal/TripItineraryCities.vue'
+import TripItineraryPerCity from '~/components-multi-hotel-trip/deal/TripItineraryPerCity.vue'
+import type { TripCityChapter, TripCityAttraction } from '~/components-multi-hotel-trip/deal/TripItineraryPerCity.vue'
+import { isTripSight } from '~/utils-multi-hotel-trip/tripSights'
 import type { TripItineraryStop } from '~/components-multi-hotel-trip/deal/TripItineraryCities.vue'
 import TripItineraryVariantSwitch from '~/components-multi-hotel-trip/deal/TripItineraryVariantSwitch.vue'
 import { ITINERARY_VARIANT_SLUGS, useMultiHotelTripItineraryVariant } from '~/composables-multi-hotel-trip/useMultiHotelTripItineraryVariant'
@@ -1554,9 +1559,53 @@ const tripMapNightsLabels = computed(() => (trip?.stops ?? []).map(s => nightsLa
 /** Reisschema-varianten (per dag / per plaats) — alleen op de Noord-Frankrijk-vakantie. */
 const showItinVariants = computed(() => isTrip && ITINERARY_VARIANT_SLUGS.includes(routeSlug.value))
 const { variant: itinVariant } = useMultiHotelTripItineraryVariant()
-/** Variant 3 "Map" → volle breedte onder de kolommen; variant 1 "Summary" en 2 "Collapsed" staan in de linkerkolom. */
+/** Variant 4 "Map" → volle breedte onder de kolommen; variant 1 "Summary", 2 "Collapsed" en 3 "Per stad" staan in de linkerkolom. */
 const itinNew = computed(() => showItinVariants.value && itinVariant.value === 'cities')
 const itinCollapsed = computed(() => showItinVariants.value && itinVariant.value === 'days')
+const itinCity = computed(() => showItinVariants.value && itinVariant.value === 'city')
+/** Variant "Per stad": per hotel één hoofdstuk — hotel + ontbijt, extra's (het
+ *  diner op de aankomstdag) en drie uitjes (de activiteitenblokken van de dagen
+ *  in die plaats). Check-in/check-out zodra er een aankomstdatum is. */
+const tripCityChapters = computed<TripCityChapter[]>(() => {
+  if (!trip || !tripPdp) return []
+  const checkIn = store.checkInDate
+  const days = tripDaysView.value
+  const isBreakfast = (x: string) => /ontbijt|breakfast|frühstück/i.test(x)
+  const isNight = (x: string) => /overnachting|night|übernacht/i.test(x)
+  const isDinner = (x: string) => /diner|dinner|abendessen/i.test(x)
+  return trip.stops.map((s, i) => {
+    const d = tripHotelDetails(trip, tripPdp.content, i)
+    const stopDays = days.filter(day => day.stopIndex === i)
+    const dinner = stopDays.flatMap(day => day.blocks).find(b => b.kind === 'dinner')
+    const attractions: TripCityAttraction[] = stopDays
+      .flatMap(day => day.blocks.filter(isTripSight).map(b => ({ ...b, dayLabel: day.label })))
+      .map((a, k) => ({ ...a, image: a.image ?? a.more?.image ?? s.extraImages?.[k] ?? s.image }))
+      .slice(0, 3)
+    const incl = s.includes.map(x => localized(x))
+    const dayLabel = s.dayTo === s.dayFrom
+      ? t('trip.daySingle').replace('{a}', String(s.dayFrom))
+      : s.dayTo === s.dayFrom + 1
+        ? t('trip.dayAnd').replace('{a}', String(s.dayFrom)).replace('{b}', String(s.dayTo))
+        : t('trip.dayRange').replace('{a}', String(s.dayFrom)).replace('{b}', String(s.dayTo))
+    return {
+      stopIndex: i,
+      city: s.city,
+      region: s.region,
+      hotelName: s.hotelName,
+      starRating: s.starRating,
+      image: s.image,
+      nightsLabel: nightsLabel(s.nights, lang.value),
+      dayLabel,
+      checkIn: checkIn ? formatDateWeekdayShort(dayjs(checkIn).add(s.dayFrom - 1, 'day').format('YYYY-MM-DD')) : undefined,
+      checkOut: checkIn ? formatDateWeekdayShort(dayjs(checkIn).add(s.dayFrom - 1 + s.nights, 'day').format('YYYY-MM-DD')) : undefined,
+      hotelText: localized(d?.description ?? trip.pitch),
+      hotelIncludes: incl.filter(x => isNight(x) || isBreakfast(x)),
+      extras: dinner ? { title: dinner.title, text: dinner.text, image: dinner.image ?? s.dinnerImage } : undefined,
+      extraIncludes: incl.filter(x => !isNight(x) && !isBreakfast(x) && !isDinner(x)),
+      attractions,
+    }
+  })
+})
 /** Plaatsen in reisvolgorde voor de reisschema-varianten. */
 const tripItinStops = computed<TripItineraryStop[]>(() =>
   (trip?.stops ?? []).map((s, i) => ({

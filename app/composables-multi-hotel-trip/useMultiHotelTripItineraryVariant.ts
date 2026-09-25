@@ -9,15 +9,19 @@
  *  - 'days'    → variant 2 "Collapsed": accordeon-tijdlijn per dag
  *                (TripItineraryAccordion), ook in de linkerkolom, alle dagen
  *                standaard ingeklapt
- *  - 'cities'  → variant 3 "Map": 50/50: sticky kaart links, per plaats rechts
+ *  - 'city'    → variant 3 "Per stad": verticale tijdlijn met per stad/hotel één
+ *                hoofdstuk (hotel + ontbijt, extra's/diner, carrousel "Leuke
+ *                uitjes in de buurt"), in de linkerkolom (TripItineraryPerCity)
+ *  - 'cities'  → variant 4 "Map": 50/50: sticky kaart links, per plaats rechts
  *                (TripItineraryCities), over de volle breedte onder de twee kolommen
  */
-export type ItineraryVariant = 'current' | 'days' | 'cities'
+export type ItineraryVariant = 'current' | 'days' | 'city' | 'cities'
 
 export const ITINERARY_VARIANTS: { id: ItineraryVariant; label: string }[] = [
   { id: 'current', label: '1 · Summary' },
   { id: 'days', label: '2 · Collapsed' },
-  { id: 'cities', label: '3 · Map' },
+  { id: 'city', label: '3 · Per stad' },
+  { id: 'cities', label: '4 · Map' },
 ]
 
 /** Vakanties waarop de nieuwe varianten (en de schakelaar) actief zijn. */
@@ -31,7 +35,7 @@ export function useMultiHotelTripItineraryVariant() {
   function restore() {
     try {
       const v = localStorage.getItem(STORAGE_KEY)
-      if (v === 'current' || v === 'days' || v === 'cities') variant.value = v
+      if (v === 'current' || v === 'days' || v === 'city' || v === 'cities') variant.value = v
     } catch { /* ignore */ }
   }
   function setVariant(v: ItineraryVariant) {
