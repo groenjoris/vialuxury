@@ -1,10 +1,12 @@
 <template>
   <!-- Multi Hotel Trip — variant "Per stad" van het voorbeeld-reisschema:
        dezelfde verticale tijdlijn als "Collapsed" (TripItineraryAccordion), maar
-       met per stad/hotel één hoofdstuk i.p.v. per dag. Kop: plaatsnaam, aantal
+       met per stad/hotel één hoofdstuk i.p.v. per dag. Kop: een verleidelijke
+       titel ("Omgeving van het bruisende Lille"), daaronder plaatsnaam, aantal
        nachten en — als de datums bekend zijn — de check-in en check-out.
-       Uitgeklapt drie sub-blokken: het hotel (met ontbijt), de extra's (het
-       3-gangendiner op de dag van aankomst) en "Leuke uitjes in de buurt": een
+       Uitgeklapt drie sub-blokken: het hotel (ontbijt in de tekst), de extra's
+       (het 3-gangendiner op de dag van aankomst, overige extra's in de tekst)
+       en "Leuke uitjes in de buurt": een
        grijs vlak met een horizontale carrousel van drie uitjes; klikken opent
        een pop-up met foto en de volledige tekst. Hoofdstuk 1 staat standaard open. -->
   <div class="tpc" :class="{ 'tpc--stacked': stacked }">
@@ -33,12 +35,12 @@
             @click="toggle(ch.stopIndex)"
           >
             <span class="tpc-ch__main">
+              <span class="tpc-ch__title">{{ ch.title }}</span>
               <span class="tpc-ch__eyebrow">
-                <span class="tpc-ch__label">{{ t('trip.itin.stop').replace('{n}', String(ci + 1)).replace('{total}', String(chapters.length)) }}</span>
+                <span class="tpc-ch__place">{{ ch.city }}</span>
                 <span class="tpc-ch__nights">{{ ch.nightsLabel }}</span>
                 <span class="tpc-ch__dates">{{ ch.checkIn && ch.checkOut ? `${ch.checkIn} – ${ch.checkOut}` : ch.dayLabel }}</span>
               </span>
-              <span class="tpc-ch__title">{{ ch.city }}</span>
               <span class="tpc-ch__summary">{{ summaryOf(ch) }}</span>
             </span>
             <span v-if="!isOpen(ch.stopIndex)" class="tpc-ch__thumbs" aria-hidden="true">
@@ -65,12 +67,6 @@
                 {{ ch.city }}, {{ ch.region }}
               </p>
               <p class="tpc-blk__text">{{ ch.hotelText }}</p>
-              <ul class="tpc-incl" :aria-label="t('trip.itin.city.included')">
-                <li v-for="item in ch.hotelIncludes" :key="item" class="tpc-incl__item">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" /></svg>
-                  {{ item }}
-                </li>
-              </ul>
               <button type="button" class="tpc-blk__link" @click="$emit('open-hotel', ch.stopIndex)">{{ t('trip.itin.viewHotel') }}</button>
             </div>
           </article>
@@ -86,12 +82,6 @@
                 <MultiHotelTripHotelText :text="ch.extras.title" :hotels="hotels" @open-hotel="$emit('open-hotel', $event)" />
               </h4>
               <p class="tpc-blk__text">{{ ch.extras.text }}</p>
-              <ul v-if="ch.extraIncludes.length" class="tpc-incl" :aria-label="t('trip.itin.city.included')">
-                <li v-for="item in ch.extraIncludes" :key="item" class="tpc-incl__item">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" /></svg>
-                  {{ item }}
-                </li>
-              </ul>
             </div>
           </article>
 
@@ -185,6 +175,8 @@ export interface TripCityAttraction extends TripBlockView {
 /** Eén hoofdstuk (stad/hotel), al vertaald door de dealpagina. */
 export interface TripCityChapter {
   stopIndex: number
+  /** Verleidelijke kop: "Omgeving van het bruisende Lille". */
+  title: string
   city: string
   region: string
   hotelName: string
@@ -198,14 +190,10 @@ export interface TripCityChapter {
   /** "Do 20 aug" — alleen als er een aankomstdatum gekozen is. */
   checkIn?: string
   checkOut?: string
-  /** Beschrijving van het hotel. */
+  /** Beschrijving van het hotel, met het ontbijt in de tekst. */
   hotelText: string
-  /** Inbegrepen bij het hotel: het ontbijt (en de overnachtingen). */
-  hotelIncludes: string[]
-  /** Extra's-blok: het diner op de dag van aankomst (titel, tekst, foto). */
+  /** Extra's-blok: het diner op de dag van aankomst (titel, tekst incl. overige extra's, foto). */
   extras?: { title: string; text: string; image?: string }
-  /** Overige inbegrepen extra's (welkomstbubbels, late check-out, parkeren …). */
-  extraIncludes: string[]
   /** Drie uitjes in de buurt. */
   attractions: TripCityAttraction[]
 }
@@ -354,7 +342,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 .tpc-ch__head:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 4px; border-radius: 4px; }
 .tpc-ch__main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
 .tpc-ch__eyebrow { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; font-size: 13px; color: var(--color-text-secondary); }
-.tpc-ch__label { font-weight: 700; color: var(--color-text-primary); text-transform: uppercase; letter-spacing: 0.06em; font-size: 12px; }
+.tpc-ch__place { font-size: 14px; font-weight: 600; color: var(--color-text-primary); }
 .tpc-ch__nights {
   padding: 2px 8px;
   border-radius: 999px;
@@ -458,10 +446,6 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   cursor: pointer;
 }
 .tpc-blk__link:hover { color: var(--color-primary-hover); }
-/* Inbegrepen-regels (vinkjes) onder de tekst. */
-.tpc-incl { list-style: none; margin: 10px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 16px; }
-.tpc-incl__item { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--color-text-primary); }
-.tpc-incl__item svg { color: var(--color-discount, #00b67a); flex-shrink: 0; }
 
 /* Leuke uitjes in de buurt: grijs vlak met horizontale carrousel. */
 .tpc-out {

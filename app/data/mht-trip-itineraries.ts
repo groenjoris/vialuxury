@@ -18,6 +18,10 @@ const l = (nl: string, en: string): LocalizedString => ({ nl, en })
 
 export interface TripHotelInfo {
   description: LocalizedString
+  /** Verleidelijke hoofdstuktitel in het reisschema "Per stad" — de bekende
+   *  plek in de buurt i.p.v. de (onbekende) plaatsnaam van het hotel, bv.
+   *  "Omgeving van het bruisende Lille". Zonder titel: "In en rond {plaats}". */
+  chapterTitle?: LocalizedString
   /** Faciliteiten als labels; het icoon komt uit utils facilityIcon. */
   facilities: string[]
   /** Kamer(type) waarin je verblijft, voor het kamerblok in de hotel-pop-up. */
@@ -121,18 +125,21 @@ export const TRIP_ITINERARIES: Record<string, TripItinerarySpec> = {
     ],
     hotels: {
       'Hotel Royal Beaulaincourt': {
+        chapterTitle: l('Omgeving van het bruisende Lille', 'Around vibrant Lille'),
         description: l('Een 18e-eeuws hôtel particulier in het hart van Béthune, in 2023 volledig gerestaureerd tot een viersterrenhotel met 34 kamers. Achter de klassieke gevel vind je een lichte binnenplaats, een restaurant met terras en een bar in de oude salons. De Grand-Place met het belfort ligt om de hoek.',
           'An 18th-century private mansion in the heart of Béthune, fully restored in 2023 into a four-star hotel with 34 rooms. Behind the classical façade: a bright courtyard, a restaurant with terrace and a bar in the old salons. The Grand-Place and belfry are around the corner.'),
         facilities: ['Restaurant', 'Bar', 'Terras op de binnenplaats', 'Gratis wifi', 'Airconditioning', 'Lift', 'Fietsenstalling', 'Parkeergarage nabij (betaald)'],
         room: { name: l('Privilege Room', 'Privilege Room'), description: l('Verblijf in het stijlvolle Privilege Room, waar comfort en elegantie samenkomen. De kamer is ruim en smaakvol ingericht en biedt alle gemakken voor een ontspannen verblijf in het hart van Béthune.', 'Stay in the stylish Privilege Room, where comfort and elegance meet. The room is spacious and tastefully furnished and offers every convenience for a relaxed stay in the heart of Béthune.'), image: '/images/vakanties/001/beaulaincourt-3.jpg' },
       },
       'Hôtel Château Tilques': {
+        chapterTitle: l('Omgeving van het historische Saint-Omer', 'Around historic Saint-Omer'),
         description: l('Een 19e-eeuws kasteel van rode baksteen in een park van vier hectare, net buiten Saint-Omer. De 53 kamers liggen verdeeld over het kasteel en de voormalige stallen; het restaurant kijkt door een grote glaswand uit op het gazon. Met verwarmd binnenzwembad, tennisbaan en een golfbaan op loopafstand.',
           'A 19th-century red-brick château in a four-hectare park just outside Saint-Omer. The 53 rooms are spread over the château and the former stables; the restaurant looks out over the lawn through a large glass wall. Heated indoor pool, tennis court and a golf course within walking distance.'),
         facilities: ['Restaurant', 'Bar', 'Verwarmd binnenzwembad', 'Tennisbaan', 'Park van 4 hectare', 'Gratis parkeren', 'Gratis wifi', 'Golfbaan nabij'],
         room: { name: l('Chambre Charme', 'Chambre Charme'), description: l('De Chambre Charme ligt in het kasteel of de voormalige stallen en is ingericht in warme tinten met klassieke stoffen. Vanuit het raam kijk je uit over het park; de badkamer heeft een bad of ruime douche.', 'The Chambre Charme is located in the château or the former stables and is decorated in warm tones with classic fabrics. The window looks out over the park; the bathroom has a bath or a spacious shower.'), image: '/images/vakanties/001/tilques-4.jpg' },
       },
       'Hôtel Château Cléry': {
+        chapterTitle: l('Omgeving van de prachtige Opaalkust', 'Around the beautiful Opal Coast'),
         description: l('Een 18e-eeuws kasteel op een landgoed van vijf hectare in Hesdin-l\'Abbé, tien minuten van Boulogne-sur-Mer en de Opaalkust. De 28 kamers liggen in het kasteel en de bijgebouwen rond de tuin met hortensia\'s. Diner in de serre van het restaurant, ontspannen in de kleine spa met sauna.',
           'An 18th-century château on a five-hectare estate in Hesdin-l\'Abbé, ten minutes from Boulogne-sur-Mer and the Opal Coast. The 28 rooms are in the château and outbuildings around the hydrangea garden. Dinner in the restaurant\'s conservatory, relaxation in the small spa with sauna.'),
         facilities: ['Restaurant in de serre', 'Bar', 'Spa met sauna', 'Fitnessruimte', 'Landgoed van 5 hectare', 'Gratis parkeren', 'Gratis wifi', 'Fietsverhuur'],

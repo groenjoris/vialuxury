@@ -1573,6 +1573,11 @@ const tripCityChapters = computed<TripCityChapter[]>(() => {
   const isBreakfast = (x: string) => /ontbijt|breakfast|frühstück/i.test(x)
   const isNight = (x: string) => /overnachting|night|übernacht/i.test(x)
   const isDinner = (x: string) => /diner|dinner|abendessen/i.test(x)
+  /** "welkomstbubbels, late check-out en gratis parkeren" */
+  const joinList = (items: string[]) => {
+    const low = items.map(x => x.charAt(0).toLowerCase() + x.slice(1))
+    return low.length > 1 ? `${low.slice(0, -1).join(', ')}${t('trip.itin.city.and')}${low[low.length - 1]}` : (low[0] ?? '')
+  }
   return trip.stops.map((s, i) => {
     const d = tripHotelDetails(trip, tripPdp.content, i)
     const stopDays = days.filter(day => day.stopIndex === i)
@@ -1582,6 +1587,8 @@ const tripCityChapters = computed<TripCityChapter[]>(() => {
       .map((a, k) => ({ ...a, image: a.image ?? a.more?.image ?? s.extraImages?.[k] ?? s.image }))
       .slice(0, 3)
     const incl = s.includes.map(x => localized(x))
+    const extraIncl = incl.filter(x => !isNight(x) && !isBreakfast(x) && !isDinner(x))
+    const chapterTitle = tripPdp.content?.hotels[s.hotelName]?.chapterTitle
     const dayLabel = s.dayTo === s.dayFrom
       ? t('trip.daySingle').replace('{a}', String(s.dayFrom))
       : s.dayTo === s.dayFrom + 1
@@ -1589,6 +1596,7 @@ const tripCityChapters = computed<TripCityChapter[]>(() => {
         : t('trip.dayRange').replace('{a}', String(s.dayFrom)).replace('{b}', String(s.dayTo))
     return {
       stopIndex: i,
+      title: chapterTitle ? localized(chapterTitle) : t('trip.itin.city.titleFallback').replace('{city}', s.city),
       city: s.city,
       region: s.region,
       hotelName: s.hotelName,
@@ -1598,10 +1606,11 @@ const tripCityChapters = computed<TripCityChapter[]>(() => {
       dayLabel,
       checkIn: checkIn ? formatDateWeekdayShort(dayjs(checkIn).add(s.dayFrom - 1, 'day').format('YYYY-MM-DD')) : undefined,
       checkOut: checkIn ? formatDateWeekdayShort(dayjs(checkIn).add(s.dayFrom - 1 + s.nights, 'day').format('YYYY-MM-DD')) : undefined,
-      hotelText: localized(d?.description ?? trip.pitch),
-      hotelIncludes: incl.filter(x => isNight(x) || isBreakfast(x)),
-      extras: dinner ? { title: dinner.title, text: dinner.text, image: dinner.image ?? s.dinnerImage } : undefined,
-      extraIncludes: incl.filter(x => !isNight(x) && !isBreakfast(x) && !isDinner(x)),
+      // Ontbijt en overige extra's als zinnen in de tekst (geen vinkjes).
+      hotelText: `${localized(d?.description ?? trip.pitch)}${incl.some(isBreakfast) ? ` ${t('trip.itin.city.breakfastText')}` : ''}`,
+      extras: dinner
+        ? { title: dinner.title, text: `${dinner.text}${extraIncl.length ? ` ${t('trip.itin.city.alsoIncluded').replace('{items}', joinList(extraIncl))}` : ''}`, image: dinner.image ?? s.dinnerImage }
+        : undefined,
       attractions,
     }
   })
