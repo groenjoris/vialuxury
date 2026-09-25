@@ -1,6 +1,8 @@
 <template>
   <div class="deal-page">
     <MultiHotelTripSiteHeader />
+    <!-- Prototype: zwevende schakelaar voor de reisschema-varianten (alleen Noord-Frankrijk). -->
+    <TripItineraryVariantSwitch v-if="showItinVariants" target="arrangement" />
 
     <!-- Search refresh overlay -->
     <Transition name="fade-fast">
@@ -263,7 +265,12 @@
             </section>
             <h2 class="section-title">{{ t('trip.itineraryHeading') }}</h2>
             <p class="deal-page__itinerary-intro">{{ t('trip.itineraryIntro') }}</p>
-            <MultiHotelTripItinerary :days="tripDaysView" :hotels="tripHotelLinks" stacked @open-hotel="openTripHotel" />
+            <!-- Noord-Frankrijk: twee nieuwe varianten (schakelaar linksboven). -->
+            <template v-if="showItinVariants">
+              <TripItineraryAccordion v-if="itinVariant === 'days'" :days="tripDaysView" :stops="tripItinStops" :hotels="tripHotelLinks" stacked @open-hotel="openTripHotel" />
+              <TripItineraryCities v-else :days="tripDaysView" :stops="tripItinStops" :legs="tripRouteLegs" :return-label="tripReturnLabel" :hotels="tripHotelLinks" stacked @open-hotel="openTripHotel" @open-map="tripMapOpen = true" />
+            </template>
+            <MultiHotelTripItinerary v-else :days="tripDaysView" :hotels="tripHotelLinks" stacked @open-hotel="openTripHotel" />
           </template>
           <template v-else>
           <h2 class="section-title">
@@ -510,7 +517,7 @@
           </section>
 
           <!-- Content blocks: What's included -->
-          <section id="arrangement" class="deal-page__content-blocks" :class="{ 'deal-page__content-blocks--trip': isTrip }">
+          <section :id="showItinVariants ? undefined : 'arrangement'" class="deal-page__content-blocks" :class="{ 'deal-page__content-blocks--trip': isTrip }">
             <!-- Vakantie: dagprogramma — per dag 2–3 blokken, foto links, tekst rechts. -->
             <template v-if="isTrip">
               <!-- Vakantie: "In deze autovakantie … is het volgende inbegrepen" — compacte rijen
@@ -537,9 +544,13 @@
                 </article>
               </div>
             </section>
-              <h2 class="section-title">{{ t('trip.itineraryHeading') }}</h2>
-              <p class="deal-page__itinerary-intro">{{ t('trip.itineraryIntro') }}</p>
-              <MultiHotelTripItinerary :days="tripDaysView" :hotels="tripHotelLinks" @open-hotel="openTripHotel" />
+              <!-- Noord-Frankrijk: het reisschema staat in een eigen sectie over de
+                   volle breedte onder de twee kolommen (zie #arrangement hieronder). -->
+              <template v-if="!showItinVariants">
+                <h2 class="section-title">{{ t('trip.itineraryHeading') }}</h2>
+                <p class="deal-page__itinerary-intro">{{ t('trip.itineraryIntro') }}</p>
+                <MultiHotelTripItinerary :days="tripDaysView" :hotels="tripHotelLinks" @open-hotel="openTripHotel" />
+              </template>
             </template>
             <template v-else>
             <h2 class="section-title">
@@ -753,6 +764,16 @@
         </div>
         </div>
       </div>
+
+      <!-- Noord-Frankrijk (desktop): voorbeeld-reisschema over de volle breedte,
+           direct onder inhoud + boekingszijbalk en vóór reviews/FAQ. Twee
+           varianten, te wisselen met de zwevende schakelaar linksboven. -->
+      <section v-if="showItinVariants && !isMobile" id="arrangement" class="container deal-page__itinerary-full">
+        <h2 class="section-title">{{ t('trip.itineraryHeading') }}</h2>
+        <p class="deal-page__itinerary-intro">{{ t('trip.itineraryIntro') }}</p>
+        <TripItineraryAccordion v-if="itinVariant === 'days'" :days="tripDaysView" :stops="tripItinStops" :hotels="tripHotelLinks" wide @open-hotel="openTripHotel" />
+        <TripItineraryCities v-else :days="tripDaysView" :stops="tripItinStops" :legs="tripRouteLegs" :return-label="tripReturnLabel" :hotels="tripHotelLinks" @open-hotel="openTripHotel" @open-map="tripMapOpen = true" />
+      </section>
 
       <!-- Hotel-level full-width sections (desktop) — facilities / reviews / faq.
            Vakantie: geen faciliteitenblok (per hotel in het sidepanel). -->
@@ -1112,6 +1133,11 @@ import tripRoutesJson from '~/data/mht-trip-routes.json'
 import type { TripRouteLeg } from '~/utils-multi-hotel-trip/tripMapLayers'
 import { tripPdpBySlug, tripHotelDetails } from '~/data/mht-trip-pdp'
 import type { TripDayView, TripBlockView } from '~/components-multi-hotel-trip/deal/TripItinerary.vue'
+import TripItineraryAccordion from '~/components-multi-hotel-trip/deal/TripItineraryAccordion.vue'
+import TripItineraryCities from '~/components-multi-hotel-trip/deal/TripItineraryCities.vue'
+import type { TripItineraryStop } from '~/components-multi-hotel-trip/deal/TripItineraryCities.vue'
+import TripItineraryVariantSwitch from '~/components-multi-hotel-trip/deal/TripItineraryVariantSwitch.vue'
+import { ITINERARY_VARIANT_SLUGS, useMultiHotelTripItineraryVariant } from '~/composables-multi-hotel-trip/useMultiHotelTripItineraryVariant'
 import type { TripHotelModalData } from '~/components-multi-hotel-trip/deal/TripHotelDetails.vue'
 import { PRICED_PERSONS, minRoomsFor } from '~/utils-multi-hotel-trip/priceFormula'
 import { matchIcon } from '~/utils-multi-hotel-trip/iconMatcher'
@@ -1186,7 +1212,8 @@ const stickyDeLine2 = computed(() =>
  *  lands just below the sticky CTA bar. */
 function scrollToArrangement() {
   if (!import.meta.client) return
-  const el = document.getElementById('arrangement')
+  // Noord-Frankrijk: #arrangement is daar het reisschema; de inclusies staan in #inbegrepen.
+  const el = document.getElementById(showItinVariants.value ? 'inbegrepen' : 'arrangement')
   if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
 }
 
@@ -1524,6 +1551,24 @@ const tripMapStops = computed(() =>
 )
 /** "2 nachten" per hotel voor het hover-kaartje op de fullscreen kaart. */
 const tripMapNightsLabels = computed(() => (trip?.stops ?? []).map(s => nightsLabel(s.nights, lang.value)))
+/** Reisschema-varianten (per dag / per plaats) — alleen op de Noord-Frankrijk-vakantie. */
+const showItinVariants = computed(() => isTrip && ITINERARY_VARIANT_SLUGS.includes(routeSlug.value))
+const { variant: itinVariant } = useMultiHotelTripItineraryVariant()
+/** Plaatsen in reisvolgorde voor de reisschema-varianten. */
+const tripItinStops = computed<TripItineraryStop[]>(() =>
+  (trip?.stops ?? []).map((s, i) => ({
+    city: s.city,
+    region: s.region,
+    hotelName: s.hotelName,
+    starRating: s.starRating,
+    image: s.image,
+    lat: s.lat,
+    lng: s.lng,
+    nightsLabel: nightsLabel(s.nights, lang.value),
+    travelLabel: i > 0 ? tripTravelLabel(s.travel, i) : undefined,
+    travelKm: s.travel?.km,
+  })),
+)
 /** Hotelnamen → klikbaar in dagprogramma en zijbalk (TripHotelText). */
 const tripHotelLinks = computed(() => (trip?.stops ?? []).map((s, i) => ({ name: s.hotelName, stopIndex: i })))
 /** "een half uur" / "drie kwartier" / "1 uur 20 min" — reistijd in woorden. */
@@ -1691,7 +1736,8 @@ const tripDaysView = computed<TripDayView[]>(() => {
       if (b.more) view.more = { label: localized(b.more.label), title: localized(b.more.title), paragraphs: b.more.paragraphs.map(p => localized(p)), image: b.more.image }
       return view
     })
-    const view: TripDayView = { day: d.day, label: t('trip.daySingle').replace('{a}', String(d.day)), blocks }
+    const type: TripDayView['type'] = d.day === 1 && stop ? 'arrival' : (from && stop && from !== stop) ? 'transfer' : stop ? 'stay' : 'home'
+    const view: TripDayView = { day: d.day, label: t('trip.daySingle').replace('{a}', String(d.day)), blocks, stopIndex: d.stopIndex, fromStopIndex: d.fromStopIndex, type }
     if (checkIn) view.date = formatDateWeekdayShort(dayjs(checkIn).add(d.day - 1, 'day').format('YYYY-MM-DD'))
     // Informatieve ondertitel per dagtype (aankomst / wisseldag / verblijf / terugreis).
     if (d.day === 1 && stop) {
@@ -2165,6 +2211,8 @@ onMounted(() => {
 /* ===== 2-COLUMN GRID ===== */
 .deal-page__grid { display: grid; grid-template-columns: 1fr var(--mht-deal-sidebar-width, 340px); gap: var(--space-xl); padding-top: var(--space-lg); align-items: start; }
 .deal-page__col-left { min-width: 0; }
+/* Noord-Frankrijk: reisschema over de volle breedte onder de twee kolommen. */
+.deal-page__itinerary-full { padding-top: var(--space-2xl); padding-bottom: var(--space-xl); scroll-margin-top: 80px; }
 .deal-page__description { font-size: 15px; line-height: 1.75; color: var(--color-text-secondary); }
 /* Shared "orange underlined link" style — used by Lees meer / Bekijk
    details / Bekijk kaart / Bekijk andere arrangementen so they all

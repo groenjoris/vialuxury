@@ -65,7 +65,7 @@
       v-for="(m, i) in markers"
       :key="`stop-${i}`"
       class="trm__marker"
-      :class="{ 'trm__marker--interactive': interactive || hoverable, 'trm__marker--hover': hover === i }"
+      :class="{ 'trm__marker--interactive': interactive || hoverable, 'trm__marker--hover': hover === i || activeIndex === i, 'trm__marker--active': activeIndex === i }"
       :transform="`translate(${m.x} ${m.y})`"
       :tabindex="interactive ? 0 : undefined"
       :role="interactive ? 'button' : undefined"
@@ -139,6 +139,9 @@ const props = withDefaults(defineProps<{
   inverse?: boolean
   /** Alleen stipjes als marker (geen nummer) — mini-kaartje in de collage-variant. */
   dots?: boolean
+  /** Uitgelichte stop (oranje marker), bv. de plaats die in het reisschema
+   *  in beeld is (TripItineraryCities). */
+  activeIndex?: number | null
 }>(), {
   maxScale: 200,
   showLabels: false,
@@ -158,6 +161,7 @@ const props = withDefaults(defineProps<{
   overlay: false,
   inverse: false,
   dots: false,
+  activeIndex: null,
 })
 
 /** Hotel-glyph uit de aangeleverde iconenset (24 × 24, lijnen), wit op de zwarte bol. */
@@ -586,6 +590,8 @@ const ariaLabel = computed(() => `Route: ${props.stops.map((s, i) => `${i + 1}. 
    heeft (dealcard: de kaart ligt boven de klik-overlay van de foto). */
 .trm__marker--interactive { cursor: pointer; outline: none; pointer-events: auto; }
 .trm__marker--interactive.trm__marker--hover circle { fill: var(--color-primary, #ff7e00); }
+/* Actieve stop (reisschema per plaats): oranje en iets groter. */
+.trm__marker--active circle { fill: var(--color-primary, #ff7e00); transform: scale(1.18); transform-box: fill-box; transform-origin: center; transition: fill 150ms ease, transform 200ms ease; }
 /* Plaatsnaam naast de marker, met witte rand voor leesbaarheid op de kaart. */
 .trm__city {
   font-family: var(--font-body);

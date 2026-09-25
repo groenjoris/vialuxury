@@ -142,6 +142,12 @@ export interface TripDayView {
   /** "Béthune" of "Béthune → Tilques" */
   subtitle?: string
   blocks: TripBlockView[]
+  /** Hotel waar je die nacht slaapt (null op de terugreisdag). */
+  stopIndex?: number | null
+  /** Hotel waar je die ochtend vertrekt (wisseldag / terugreis). */
+  fromStopIndex?: number
+  /** Soort dag: aankomst, wisseldag, verblijf of terugreis. */
+  type?: 'arrival' | 'transfer' | 'stay' | 'home'
 }
 
 const props = withDefaults(defineProps<{
