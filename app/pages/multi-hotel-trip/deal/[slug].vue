@@ -265,8 +265,8 @@
             </section>
             <h2 class="section-title">{{ t('trip.itineraryHeading') }}</h2>
             <p class="deal-page__itinerary-intro">{{ t('trip.itineraryIntro') }}</p>
-            <!-- Noord-Frankrijk: twee nieuwe varianten (schakelaar linksboven). -->
-            <template v-if="showItinVariants">
+            <!-- Noord-Frankrijk: variant 2/3 (schakelaar linksboven); variant 1 = het bestaande schema. -->
+            <template v-if="itinNew">
               <TripItineraryAccordion v-if="itinVariant === 'days'" :days="tripDaysView" :stops="tripItinStops" :hotels="tripHotelLinks" stacked @open-hotel="openTripHotel" />
               <TripItineraryCities v-else :days="tripDaysView" :stops="tripItinStops" :legs="tripRouteLegs" :return-label="tripReturnLabel" :hotels="tripHotelLinks" stacked @open-hotel="openTripHotel" @open-map="tripMapOpen = true" />
             </template>
@@ -517,7 +517,7 @@
           </section>
 
           <!-- Content blocks: What's included -->
-          <section :id="showItinVariants ? undefined : 'arrangement'" class="deal-page__content-blocks" :class="{ 'deal-page__content-blocks--trip': isTrip }">
+          <section :id="itinNew ? undefined : 'arrangement'" class="deal-page__content-blocks" :class="{ 'deal-page__content-blocks--trip': isTrip }">
             <!-- Vakantie: dagprogramma — per dag 2–3 blokken, foto links, tekst rechts. -->
             <template v-if="isTrip">
               <!-- Vakantie: "In deze autovakantie … is het volgende inbegrepen" — compacte rijen
@@ -544,9 +544,10 @@
                 </article>
               </div>
             </section>
-              <!-- Noord-Frankrijk: het reisschema staat in een eigen sectie over de
-                   volle breedte onder de twee kolommen (zie #arrangement hieronder). -->
-              <template v-if="!showItinVariants">
+              <!-- Noord-Frankrijk variant 2/3: het reisschema staat in een eigen sectie
+                   over de volle breedte onder de twee kolommen (zie #arrangement
+                   hieronder); variant 1 (huidig) blijft hier in de linkerkolom. -->
+              <template v-if="!itinNew">
                 <h2 class="section-title">{{ t('trip.itineraryHeading') }}</h2>
                 <p class="deal-page__itinerary-intro">{{ t('trip.itineraryIntro') }}</p>
                 <MultiHotelTripItinerary :days="tripDaysView" :hotels="tripHotelLinks" @open-hotel="openTripHotel" />
@@ -768,7 +769,7 @@
       <!-- Noord-Frankrijk (desktop): voorbeeld-reisschema over de volle breedte,
            direct onder inhoud + boekingszijbalk en vóór reviews/FAQ. Twee
            varianten, te wisselen met de zwevende schakelaar linksboven. -->
-      <section v-if="showItinVariants && !isMobile" id="arrangement" class="container deal-page__itinerary-full">
+      <section v-if="itinNew && !isMobile" id="arrangement" class="container deal-page__itinerary-full">
         <h2 class="section-title">{{ t('trip.itineraryHeading') }}</h2>
         <p class="deal-page__itinerary-intro">{{ t('trip.itineraryIntro') }}</p>
         <TripItineraryAccordion v-if="itinVariant === 'days'" :days="tripDaysView" :stops="tripItinStops" :hotels="tripHotelLinks" wide @open-hotel="openTripHotel" />
@@ -1212,8 +1213,8 @@ const stickyDeLine2 = computed(() =>
  *  lands just below the sticky CTA bar. */
 function scrollToArrangement() {
   if (!import.meta.client) return
-  // Noord-Frankrijk: #arrangement is daar het reisschema; de inclusies staan in #inbegrepen.
-  const el = document.getElementById(showItinVariants.value ? 'inbegrepen' : 'arrangement')
+  // Noord-Frankrijk variant 2/3: #arrangement is daar het reisschema; de inclusies staan in #inbegrepen.
+  const el = document.getElementById(itinNew.value ? 'inbegrepen' : 'arrangement')
   if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
 }
 
@@ -1554,6 +1555,8 @@ const tripMapNightsLabels = computed(() => (trip?.stops ?? []).map(s => nightsLa
 /** Reisschema-varianten (per dag / per plaats) — alleen op de Noord-Frankrijk-vakantie. */
 const showItinVariants = computed(() => isTrip && ITINERARY_VARIANT_SLUGS.includes(routeSlug.value))
 const { variant: itinVariant } = useMultiHotelTripItineraryVariant()
+/** Variant 2/3 gekozen → nieuwe lay-out (volle breedte); variant 1 = bestaande schema in de linkerkolom. */
+const itinNew = computed(() => showItinVariants.value && itinVariant.value !== 'current')
 /** Plaatsen in reisvolgorde voor de reisschema-varianten. */
 const tripItinStops = computed<TripItineraryStop[]>(() =>
   (trip?.stops ?? []).map((s, i) => ({

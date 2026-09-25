@@ -3,8 +3,9 @@
        vakantie-PDP: wisselt het voorbeeld-reisschema tussen "Per dag"
        (accordeon-tijdlijn) en "Per plaats" (kaart + plaatsen). Klik scrolt
        meteen naar het reisschema zodat je het verschil direct ziet.
-       Inklapbaar tot een rond knopje (standaard ingeklapt, keuze bewaard)
-       zodat hij de pagina niet afdekt. Alleen voor testen/stakeholders. -->
+       Inklapbaar tot een rond knopje (bij het eerste bezoek uitgeklapt, daarna
+       wordt de in-/uitgeklapte stand bewaard) zodat hij de pagina niet afdekt.
+       Alleen voor testen/stakeholders. -->
   <div class="tivs" :class="{ 'tivs--open': open }">
     <Transition name="tivs-swap" mode="out-in">
       <button
@@ -58,7 +59,10 @@ function setOpen(v: boolean) {
 }
 onMounted(() => {
   restore()
-  try { open.value = localStorage.getItem(OPEN_KEY) === '1' } catch { /* ignore */ }
+  try {
+    const stored = localStorage.getItem(OPEN_KEY)
+    open.value = stored === null ? true : stored === '1'
+  } catch { /* ignore */ }
 })
 
 async function pick(v: ItineraryVariant) {
