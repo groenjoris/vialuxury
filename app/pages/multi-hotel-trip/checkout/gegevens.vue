@@ -156,10 +156,11 @@ useHead({ title: 'Gegevens en betaalwijze — ViaLuxury' })
               <div class="side__details">
                 <p class="t-body t-bold">Details</p>
                 <div v-for="row in selection" :key="`${row.baseId}-${row.rateKey}`" class="side__row side__row--room">
-                  <span class="side__qty">{{ row.quantity }}x</span>
+                  <!-- Vakantie: geen "Nx" — het aantal staat in de regel "3 hotels, N kamers per hotel". -->
+                  <span v-if="!checkoutTrip" class="side__qty">{{ row.quantity }}x</span>
                   <div class="side__rowmain">
                     <p class="t-body t-bold">{{ checkoutTrip ? checkoutTrip.typeLabel : 'Arrangement' }}</p>
-                    <p class="t-caption c-mgrey">{{ checkoutTrip ? `${checkoutTrip.hotels.length} hotels · 1 kamer per hotel` : roomNameFor(row.baseId) }}</p>
+                    <p class="t-caption c-mgrey">{{ checkoutTrip ? `${checkoutTrip.hotels.length} hotels, ${row.quantity} ${row.quantity === 1 ? 'kamer' : 'kamers'} per hotel` : roomNameFor(row.baseId) }}</p>
                     <p v-if="row.rateKey === 'flexible'" class="t-caption c-green">Flexibel annuleren</p>
                     <p v-else class="t-caption c-grey">Niet-terugbetaalbaar</p>
                   </div>

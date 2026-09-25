@@ -62,7 +62,7 @@ export interface TripCheckout {
   thumb: string
   includes: string[]
   hotels: TripCheckoutHotel[]
-  /** Schaarste van het arrangement (demo), bv. "Nog 2 arrangementen over". */
+  /** Schaarste van het arrangement (demo), bv. "Nog 2 beschikbaar" — in de kolom "Je opties". */
   scarcity?: string
 }
 
@@ -95,6 +95,6 @@ export function tripCheckoutBySlug(slug: string): TripCheckout | null {
     thumb: trip.coverImage ?? trip.stops[0]?.image ?? '',
     includes: trip.inclusions.map(i => i.nl),
     hotels,
-    scarcity: 'Nog 2 arrangementen over',
+    scarcity: 'Nog 2 beschikbaar',
   }
 }

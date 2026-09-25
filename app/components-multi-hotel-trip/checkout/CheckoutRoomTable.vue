@@ -95,6 +95,7 @@ const tableRooms = reactive<TableRoom[]>(
             priceWas: trip.value.priceWas + pricing.flexibilityPerRoom * trip.value.hotels.length,
             price: trip.value.price + pricing.flexibilityPerRoom * trip.value.hotels.length,
             quantity: 0,
+            scarcity: trip.value.scarcity,
           },
           {
             id: 'trip-nonref',
@@ -103,6 +104,7 @@ const tableRooms = reactive<TableRoom[]>(
             priceWas: trip.value.priceWas,
             price: trip.value.price,
             quantity: 0,
+            scarcity: trip.value.scarcity,
           },
         ],
       }]
@@ -355,7 +357,7 @@ const arrangementIncludes = trip.value ? trip.value.includes : [
             </span>
           </th>
           <th class="rt__th rt__th--options">Je opties</th>
-          <th class="rt__th rt__th--select">{{ trip ? 'Kies aantal kamers per hotel' : 'Kies aantal kamers' }}</th>
+          <th class="rt__th rt__th--select">Kies aantal kamers</th>
           <th v-if="showReserve" class="rt__th rt__th--reserve" />
         </tr>
       </thead>
@@ -371,10 +373,10 @@ const arrangementIncludes = trip.value ? trip.value.includes : [
         >
           <!-- Kamertype (één cel per kamertype) -->
           <td v-if="rowIndex === 0" class="rt__td" :rowspan="room.rows.length">
-            <!-- Vakantie: schaarste van het arrangement bovenaan, daaronder de
-                 hotel-carrousel (hotelnaam, kamernaam, foto, kamerinfo). -->
+            <!-- Vakantie: hotel-carrousel (navigator op een grijs vlak als de
+                 tabelkop; per slide hotelnaam, kamernaam, foto, kamerinfo). De
+                 schaarste staat, net als bij een hotel-deal, in "Je opties". -->
             <div v-if="trip" class="rt__type rt__type--trip">
-              <p v-if="trip.scarcity" class="rt__scarcity rt__scarcity--top">{{ trip.scarcity }}</p>
               <div class="rt__carhead">
                 <button type="button" class="rt__carbtn" aria-label="Vorig hotel" :disabled="hotelIndex === 0" @click="prevHotel">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15 6l-6 6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
@@ -495,7 +497,7 @@ const arrangementIncludes = trip.value ? trip.value.includes : [
               class="rt__dropdown"
               :class="{ 'rt__dropdown--inactive': isInactive(row) }"
               :value="row.quantity"
-              :aria-label="trip ? 'Aantal kamers per hotel' : `Aantal kamers ${room.name}`"
+              :aria-label="trip ? 'Aantal kamers' : `Aantal kamers ${room.name}`"
               @mousedown="onDropdownMousedown(row, $event)"
               @keydown="onDropdownMousedown(row, $event)"
               @change="row.quantity = Number(($event.target as HTMLSelectElement).value)"
@@ -527,7 +529,7 @@ const arrangementIncludes = trip.value ? trip.value.includes : [
                   <span class="rt__dqty t-body">{{ row.quantity }}x</span>
                   <div class="rt__dmain">
                     <p class="t-body t-bold">{{ trip ? trip.typeLabel : 'Arrangement' }}</p>
-                    <p class="t-caption c-mgrey">{{ trip ? `${trip.hotels.length} hotels · 1 kamer per hotel` : roomNameFor(row.baseId) }}</p>
+                    <p class="t-caption c-mgrey">{{ trip ? `${trip.hotels.length} hotels, ${row.quantity} ${row.quantity === 1 ? 'kamer' : 'kamers'} per hotel` : roomNameFor(row.baseId) }}</p>
                     <p v-if="row.rateKey === 'flexible'" class="t-caption c-green">Flexibel annuleren</p>
                   </div>
                   <MultiHotelTripCheckoutPriceTag :value="row.quantity * rowPrice(row)" :show-cents="false" size="sm" />
@@ -792,14 +794,15 @@ const arrangementIncludes = trip.value ? trip.value.includes : [
 .rt__type--trip {
   gap: 8px;
 }
-.rt__scarcity--top {
-  margin: 0 0 2px;
-}
+/* Navigator op een grijs vlak (zelfde grijs als de tabelkop in hybride modus). */
 .rt__carhead {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
+  padding: 6px 8px;
+  border-radius: var(--radius-sm);
+  background: var(--c-surface);
 }
 .rt__carbtn {
   width: 28px;
