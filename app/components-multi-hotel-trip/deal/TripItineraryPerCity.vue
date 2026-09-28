@@ -27,29 +27,39 @@
           :class="{ 'tpc-ch--open': isOpen(ch.stopIndex) }"
         >
           <span class="tpc-ch__node" aria-hidden="true">{{ ci + 1 }}</span>
-          <h3 class="tpc-ch__h">
+          <!-- Kop: de titel is gewone tekst; in- en uitklappen gaat alleen via het
+               pijltje rechts (en, ingeklapt, via de foto's ernaast). -->
+          <div class="tpc-ch__head">
+            <span class="tpc-ch__main">
+              <h3 class="tpc-ch__title">{{ t('trip.itin.city.outingsAt').replace('{hotel}', ch.hotelName) }}</h3>
+              <span class="tpc-ch__eyebrow">
+                <span class="tpc-ch__place">{{ ch.city }}</span>
+                <span class="tpc-ch__nights">{{ ch.nightsLabel }}</span>
+                <span class="tpc-ch__dates">{{ ch.checkIn && ch.checkOut ? `${ch.checkIn} – ${ch.checkOut}` : ch.dayLabel }}</span>
+              </span>
+              <span class="tpc-ch__summary">{{ summaryOf(ch) }}</span>
+            </span>
             <button
+              v-if="!isOpen(ch.stopIndex)"
               type="button"
-              class="tpc-ch__head"
-              :aria-expanded="isOpen(ch.stopIndex)"
-              :aria-controls="`tpc-panel-${ch.stopIndex}`"
+              class="tpc-ch__thumbs"
+              tabindex="-1"
+              aria-hidden="true"
               @click="toggle(ch.stopIndex)"
             >
-              <span class="tpc-ch__main">
-                <span class="tpc-ch__title">{{ t('trip.itin.city.outingsAt').replace('{hotel}', ch.hotelName) }}</span>
-                <span class="tpc-ch__eyebrow">
-                  <span class="tpc-ch__place">{{ ch.city }}</span>
-                  <span class="tpc-ch__nights">{{ ch.nightsLabel }}</span>
-                  <span class="tpc-ch__dates">{{ ch.checkIn && ch.checkOut ? `${ch.checkIn} – ${ch.checkOut}` : ch.dayLabel }}</span>
-                </span>
-                <span class="tpc-ch__summary">{{ summaryOf(ch) }}</span>
-              </span>
-              <span v-if="!isOpen(ch.stopIndex)" class="tpc-ch__thumbs" aria-hidden="true">
-                <img v-for="(src, i) in thumbsOf(ch)" :key="i" :src="src" alt="" loading="lazy" />
-              </span>
+              <img v-for="(src, i) in thumbsOf(ch)" :key="i" :src="src" alt="" loading="lazy" />
+            </button>
+            <button
+              type="button"
+              class="tpc-ch__toggle"
+              :aria-expanded="isOpen(ch.stopIndex)"
+              :aria-controls="`tpc-panel-${ch.stopIndex}`"
+              :aria-label="t('trip.itin.city.outingsAt').replace('{hotel}', ch.hotelName)"
+              @click="toggle(ch.stopIndex)"
+            >
               <svg class="tpc-ch__chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9" /></svg>
             </button>
-          </h3>
+          </div>
 
           <div v-show="isOpen(ch.stopIndex)" :id="`tpc-panel-${ch.stopIndex}`" class="tpc-ch__panel" role="region" :aria-label="t('trip.itin.city.outingsAt').replace('{hotel}', ch.hotelName)">
             <MultiHotelTripHotelNearbyTips :tips="tipsOf(ch)" :hotel-name="ch.hotelName" embedded />
@@ -260,23 +270,34 @@ watch(open, () => nextTick(layoutKm))
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
-.tpc-ch__h { margin: 0; font: inherit; }
 .tpc-ch__head {
   display: flex;
   align-items: center;
   gap: var(--space-md);
   width: 100%;
   padding: 12px 0 18px;
-  border: 0;
   border-bottom: 1px solid var(--color-border-light);
-  background: none;
-  font: inherit;
-  color: inherit;
-  text-align: left;
-  cursor: pointer;
 }
 .tpc-ch--open .tpc-ch__head { border-bottom-color: transparent; padding-bottom: 8px; }
-.tpc-ch__head:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 4px; border-radius: 4px; }
+/* Het enige bedieningselement: het pijltje rechts. */
+.tpc-ch__toggle {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  margin-right: -8px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+.tpc-ch__toggle:hover { background: var(--color-background-secondary, #f4f1ec); }
+.tpc-ch__toggle:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
 .tpc-ch__main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
 .tpc-ch__eyebrow { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; font-size: 13px; color: var(--color-text-secondary); }
 .tpc-ch__place { font-size: 14px; font-weight: 600; color: var(--color-text-primary); }
@@ -291,13 +312,13 @@ watch(open, () => nextTick(layoutKm))
   color: var(--color-text-primary);
 }
 .tpc-ch__title {
+  margin: 0;
   font-family: var(--font-heading);
   font-size: 22px;
   font-weight: 700;
   line-height: 1.25;
   color: var(--color-text-primary);
 }
-.tpc-ch__head:hover .tpc-ch__title { color: var(--color-primary); }
 .tpc-ch__summary {
   font-size: 14px;
   line-height: 1.5;
@@ -308,7 +329,7 @@ watch(open, () => nextTick(layoutKm))
   overflow: hidden;
 }
 .tpc-ch--open .tpc-ch__summary { display: none; }
-.tpc-ch__thumbs { display: flex; flex-shrink: 0; }
+.tpc-ch__thumbs { display: flex; flex-shrink: 0; padding: 0; border: 0; background: none; cursor: pointer; }
 .tpc-ch__thumbs img {
   width: 56px;
   height: 56px;
@@ -318,7 +339,7 @@ watch(open, () => nextTick(layoutKm))
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
 }
 .tpc-ch__thumbs img + img { margin-left: -14px; }
-.tpc-ch__chev { flex-shrink: 0; color: var(--color-text-primary); transition: transform 200ms ease; }
+.tpc-ch__chev { flex-shrink: 0; transition: transform 200ms ease; }
 .tpc-ch--open .tpc-ch__chev { transform: rotate(180deg); }
 
 .tpc-ch__panel {

@@ -1685,17 +1685,22 @@ const tripCityChapters = computed<TripCityChapter[]>(() => {
   if (!trip || !tripPdp) return []
   const checkIn = store.checkInDate
   const days = tripDaysView.value
+  const lastDay = trip.nights + 1
   return trip.stops.map((s, i) => {
-    const stopDays = days.filter(day => day.stopIndex === i)
+    // De terugreisdag (uitchecken, nog een dag op locatie) hoort bij het laatste
+    // hotel, zodat de dagen per hotel samen de hele reis beslaan (bv. 2 + 2 + 3 = 7).
+    const isLast = i === trip.stops.length - 1
+    const dayTo = isLast ? Math.max(s.dayTo, lastDay) : s.dayTo
+    const stopDays = days.filter(day => day.stopIndex === i || (isLast && day.stopIndex == null && day.day > s.dayTo))
     const attractions: TripCityAttraction[] = stopDays
       .flatMap(day => day.blocks.filter(isTripSight).map(b => ({ ...b, dayLabel: day.label })))
       .map((a, k) => ({ ...a, image: a.image ?? a.more?.image ?? s.extraImages?.[k] ?? s.image }))
       .slice(0, 3)
-    const dayLabel = s.dayTo === s.dayFrom
+    const dayLabel = dayTo === s.dayFrom
       ? t('trip.daySingle').replace('{a}', String(s.dayFrom))
-      : s.dayTo === s.dayFrom + 1
-        ? t('trip.dayAnd').replace('{a}', String(s.dayFrom)).replace('{b}', String(s.dayTo))
-        : t('trip.dayRange').replace('{a}', String(s.dayFrom)).replace('{b}', String(s.dayTo))
+      : dayTo === s.dayFrom + 1
+        ? t('trip.dayAnd').replace('{a}', String(s.dayFrom)).replace('{b}', String(dayTo))
+        : t('trip.dayRange').replace('{a}', String(s.dayFrom)).replace('{b}', String(dayTo))
     return {
       stopIndex: i,
       city: s.city,
