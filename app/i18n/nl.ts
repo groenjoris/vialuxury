@@ -264,6 +264,7 @@ const nl: Record<string, string> = {
   'trip.routeLabel': 'Route',
   // Multi Hotel Trip — dagprogramma + hotel-pop-up op de vakantie-PDP
   'trip.itineraryHeading': 'Voorbeeld reisschema',
+  'trip.itineraryFullHeading': 'Volledig reisschema',
   'trip.tabIncluded': 'Wat is inbegrepen',
   'trip.tabReviews': 'Beoordelingen',
   'trip.tabItinerary': 'Voorbeeld reisschema',

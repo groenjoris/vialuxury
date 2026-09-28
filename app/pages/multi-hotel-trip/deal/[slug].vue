@@ -216,7 +216,7 @@
 
         <!-- Vakantie met reisschema-variant Per stad/Hybrid/Reviews: dagsamenvatting onder de
              beschrijving; klik op een dag opent het sidepanel bij die dag. -->
-        <section v-if="itinHybrid || itinCity" id="reisschema" class="container deal-page__hybrid-summary deal-page__hybrid-summary--mobile deal-page__anchor">
+        <section v-if="itinSummary" id="reisschema" class="container deal-page__hybrid-summary deal-page__hybrid-summary--mobile deal-page__anchor">
           <div class="deal-page__summary-panel">
             <h2 class="section-title">{{ t('trip.itin.hybrid.summaryHeading') }}</h2>
             <TripItinerarySummary :days="tripDaysView" :hotels="tripHotelLinks" full-link :show-stats="!itinCity" @select="openItinPanelAt" @open-full="openItinPanelAt(null)" />
@@ -283,7 +283,7 @@
               </article>
             </div>
             </section>
-            <h2 class="section-title">{{ itinCity ? t('trip.itin.city.heading') : t('trip.itineraryHeading') }}</h2>
+            <h2 class="section-title">{{ itinCity ? t('trip.itin.city.heading') : itinSummary ? t('trip.itineraryFullHeading') : t('trip.itineraryHeading') }}</h2>
             <p class="deal-page__itinerary-intro">{{ itinCity ? t('trip.itin.city.intro') : t('trip.itineraryIntro') }}</p>
             <!-- Noord-Frankrijk (schakelaar linksboven): 4 = Map, 2 = Collapsed (accordeon), 3 = Per stad,
                  5 = Hybrid (accordeon zonder kerngetallen; de samenvatting staat onder de beschrijving), 1 = Summary. -->
@@ -383,8 +383,8 @@
         <!-- Vakantie: Intro · Beoordelingen · Voorbeeld reisschema · Wat te doen. -->
         <template v-if="isTrip">
           <a v-if="itinReviews" href="#beoordelingen-vakantie" class="deal-page__tab">{{ t('trip.tabReviews') }}</a>
-          <a v-if="itinHybrid || itinCity" href="#reisschema" class="deal-page__tab">{{ t('trip.tabItinerary') }}</a>
-          <a href="#arrangement" class="deal-page__tab">{{ itinCity ? t('trip.tabThingsToDo') : t('trip.itineraryHeading') }}</a>
+          <a v-if="itinSummary" href="#reisschema" class="deal-page__tab">{{ t('trip.tabItinerary') }}</a>
+          <a href="#arrangement" class="deal-page__tab">{{ itinCity ? t('trip.tabThingsToDo') : itinSummary ? t('trip.itineraryFullHeading') : t('trip.itineraryHeading') }}</a>
         </template>
         <template v-else>
           <a href="#arrangement" class="deal-page__tab">{{ t('deal.tabArrangement') }}</a>
@@ -504,7 +504,7 @@
             <TripReviewsRow v-if="itinReviews && tripReviews.length" id="beoordelingen-vakantie" class="deal-page__desc-block deal-page__anchor" :reviews="tripReviews" :plain="reviewsPlain" />
             <!-- Per stad / Hybrid / Reviews: dagsamenvatting; klik op een dag opent het
                  sidepanel met het uitgebreide schema en scrolt naar die dag. -->
-            <section v-if="itinHybrid || itinCity" id="reisschema" class="deal-page__hybrid-summary deal-page__hybrid-summary--intro deal-page__desc-block deal-page__anchor">
+            <section v-if="itinSummary" id="reisschema" class="deal-page__hybrid-summary deal-page__hybrid-summary--intro deal-page__desc-block deal-page__anchor">
               <div class="deal-page__summary-panel">
                 <h2 class="section-title">{{ t('trip.itin.hybrid.summaryHeading') }}</h2>
                 <TripItinerarySummary :days="tripDaysView" :hotels="tripHotelLinks" full-link :show-stats="!itinCity" @select="openItinPanelAt" @open-full="openItinPanelAt(null)" />
@@ -833,7 +833,7 @@
            over de volle breedte, direct onder inhoud + boekingszijbalk en vóór
            reviews/FAQ. Wisselen met de zwevende schakelaar linksboven. -->
       <section v-if="itinFull && !isMobile" id="arrangement" class="container deal-page__itinerary-full">
-        <h2 class="section-title">{{ itinCity ? t('trip.itin.city.heading') : t('trip.itineraryHeading') }}</h2>
+        <h2 class="section-title">{{ itinCity ? t('trip.itin.city.heading') : itinSummary ? t('trip.itineraryFullHeading') : t('trip.itineraryHeading') }}</h2>
         <!-- Intro met rechts de knop "Alles inklappen/uitklappen" (Per stad), zodat er 24px zit tussen de intro en de eerste stop. -->
         <div class="deal-page__itinerary-introrow">
           <p class="deal-page__itinerary-intro">{{ itinCity ? t('trip.itin.city.intro') : t('trip.itineraryIntro') }}</p>
@@ -1043,8 +1043,8 @@
           <a href="#intro" class="deal-page__tab" :class="{ 'deal-page__tab--active': activeAnchor === 'intro' }">{{ t('deal.tabIntro') }}</a>
           <template v-if="isTrip">
             <a v-if="itinReviews" href="#beoordelingen-vakantie" class="deal-page__tab" :class="{ 'deal-page__tab--active': activeAnchor === 'beoordelingen-vakantie' }">{{ t('trip.tabReviews') }}</a>
-            <a v-if="itinHybrid || itinCity" href="#reisschema" class="deal-page__tab" :class="{ 'deal-page__tab--active': activeAnchor === 'reisschema' }">{{ t('trip.tabItinerary') }}</a>
-            <a href="#arrangement" class="deal-page__tab" :class="{ 'deal-page__tab--active': activeAnchor === 'arrangement' }">{{ itinCity ? t('trip.tabThingsToDo') : t('trip.itineraryHeading') }}</a>
+            <a v-if="itinSummary" href="#reisschema" class="deal-page__tab" :class="{ 'deal-page__tab--active': activeAnchor === 'reisschema' }">{{ t('trip.tabItinerary') }}</a>
+            <a href="#arrangement" class="deal-page__tab" :class="{ 'deal-page__tab--active': activeAnchor === 'arrangement' }">{{ itinCity ? t('trip.tabThingsToDo') : itinSummary ? t('trip.itineraryFullHeading') : t('trip.itineraryHeading') }}</a>
           </template>
           <template v-else>
             <a href="#arrangement" class="deal-page__tab" :class="{ 'deal-page__tab--active': activeAnchor === 'arrangement' }">{{ t('deal.tabArrangement') }}</a>
@@ -1680,12 +1680,14 @@ const itinCity = computed(() => itinVariant.value === 'city')
 /* Sub-varianten binnen "Final" (schakelaar linksboven): reviews met/zonder grijs vlak,
    inclusies compact (rijen op een grijs vlak) of classic (als de gewone arrangementenpagina). */
 const { reviews: finalReviews, includes: finalIncludes } = useMultiHotelTripFinalOptions()
-const reviewsPlain = computed(() => itinCity.value && finalReviews.value === 'plain')
+const reviewsPlain = computed(() => finalReviews.value === 'plain') // geldt ook bij Map en Per dag
 const inclClassic = computed(() => itinCity.value && finalIncludes.value === 'classic')
 /** Hybrid-lay-out geldt ook voor variant 6 "Reviews" (= Hybrid + beoordelingen + totaalscore). */
 const itinHybrid = computed(() => itinVariant.value === 'hybrid' || itinVariant.value === 'reviews')
-/** Reviews + totaalscore: bij "Per stad" (het gekozen ontwerp) en bij variant "Reviews". */
-const itinReviews = computed(() => itinVariant.value === 'reviews' || itinVariant.value === 'city')
+/** Reviews + totaalscore: bij alle varianten in de schakelaar (Final, Map, Per dag) en bij "Reviews". */
+const itinReviews = computed(() => ['reviews', 'city', 'cities', 'hybrid'].includes(itinVariant.value))
+/** "Voorbeeld reisschema" (klikbare dagsamenvatting) bovenaan: bij Final, Map en Per dag (Hybrid). */
+const itinSummary = computed(() => itinHybrid.value || itinCity.value || itinNew.value)
 const itinFull = computed(() => itinNew.value || itinHybrid.value || itinCity.value)
 /** Drie beoordelingen van de vakantie (redactioneel), anders die van het eerste hotel. */
 const tripReviews = computed<TripReviewView[]>(() => {
