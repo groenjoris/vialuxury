@@ -41,7 +41,7 @@
           <!-- Noord-Frankrijk variant 6 (Reviews): totaalscore van de vakantie bovenin de subtitel. -->
           <div v-if="itinReviews && trip" class="deal-page__trip-score">
             <span class="deal-page__trip-score-badge">{{ trip.reviewScore.toFixed(1) }}</span>
-            <span class="deal-page__trip-score-text">{{ t(getReviewLabelKey(trip.reviewScore)) }} · {{ trip.reviewCount }} {{ t('common.reviews') }}</span>
+            <span class="deal-page__trip-score-text">{{ t(getReviewLabelKey(trip.reviewScore)) }}</span>
           </div>
           <div class="deal-page__hotel-name-wrap">
             <!-- Vakantie: de hotelnamen met een pijltje ertussen (elke naam opent het
@@ -217,8 +217,10 @@
         <!-- Vakantie met reisschema-variant Per stad/Hybrid/Reviews: dagsamenvatting onder de
              beschrijving; klik op een dag opent het sidepanel bij die dag. -->
         <section v-if="itinHybrid || itinCity" class="container deal-page__hybrid-summary deal-page__hybrid-summary--mobile">
-          <h2 class="section-title">{{ t('trip.itin.hybrid.summaryHeading') }}</h2>
-          <TripItinerarySummary :days="tripDaysView" :hotels="tripHotelLinks" full-link @select="openItinPanelAt" @open-full="openItinPanelAt(null)" />
+          <div class="deal-page__summary-panel">
+            <h2 class="section-title">{{ t('trip.itin.hybrid.summaryHeading') }}</h2>
+            <TripItinerarySummary :days="tripDaysView" :hotels="tripHotelLinks" full-link @select="openItinPanelAt" @open-full="openItinPanelAt(null)" />
+          </div>
         </section>
 
         <!-- 9. Highlights -->
@@ -412,7 +414,7 @@
           <!-- Noord-Frankrijk variant 6 (Reviews): totaalscore van de vakantie bovenin de subtitel. -->
           <div v-if="itinReviews && trip" class="deal-page__trip-score">
             <span class="deal-page__trip-score-badge">{{ trip.reviewScore.toFixed(1) }}</span>
-            <span class="deal-page__trip-score-text">{{ t(getReviewLabelKey(trip.reviewScore)) }} · {{ trip.reviewCount }} {{ t('common.reviews') }}</span>
+            <span class="deal-page__trip-score-text">{{ t(getReviewLabelKey(trip.reviewScore)) }}</span>
           </div>
           <div class="deal-page__hotel-name-wrap">
             <!-- Vakantie: de hotelnamen met een pijltje ertussen (elke naam opent het
@@ -502,8 +504,10 @@
                  beschrijving (vaste afstand, ook na "Lees meer"); klik op een dag opent het
                  sidepanel met het uitgebreide schema en scrolt naar die dag. -->
             <section v-if="itinHybrid || itinCity" class="deal-page__hybrid-summary deal-page__hybrid-summary--intro deal-page__desc-block">
-              <h2 class="section-title">{{ t('trip.itin.hybrid.summaryHeading') }}</h2>
-              <TripItinerarySummary :days="tripDaysView" :hotels="tripHotelLinks" full-link @select="openItinPanelAt" @open-full="openItinPanelAt(null)" />
+              <div class="deal-page__summary-panel">
+                <h2 class="section-title">{{ t('trip.itin.hybrid.summaryHeading') }}</h2>
+                <TripItinerarySummary :days="tripDaysView" :hotels="tripHotelLinks" full-link @select="openItinPanelAt" @open-full="openItinPanelAt(null)" />
+              </div>
             </section>
           </div>
         </section>
@@ -2357,10 +2361,19 @@ onMounted(() => {
    steeds dezelfde marge (32px) tussen elk blok, ook na "Lees meer"; de inclusies
    volgen daarna met dezelfde marge i.p.v. de negatieve marge onder de introrij. */
 .deal-page__desc-block { margin-top: var(--space-xl); }
-.deal-page__hybrid-summary--intro .section-title { margin-top: 0; }
+/* Voorbeeld reisschema op een grijs vlak (zelfde vlak als de inclusies). */
+.deal-page__summary-panel {
+  padding: var(--space-lg);
+  background: var(--color-background-secondary, #FBFAF8);
+  border-radius: var(--radius-lg);
+}
+.deal-page__summary-panel .section-title { margin-top: 0; }
 .deal-page__intro-row--summary + .deal-page__grid .deal-page__content-blocks--trip { margin-top: calc(-1 * var(--space-lg)); }
 .deal-page__hybrid-summary--mobile { margin-bottom: var(--space-lg); }
 .deal-page__reviews-mobile { margin-bottom: var(--space-lg); }
+/* Mobiel: dezelfde zijmarge (16px) als het inclusieblok, zodat de grijze vlakken uitlijnen. */
+.deal-page .deal-page__hybrid-summary--mobile,
+.deal-page .deal-page__reviews-mobile { padding-left: 16px; padding-right: 16px; }
 /* Reviews-variant: totaalscore bovenin de subtitel (badge + oordeel · aantal). */
 .deal-page__trip-score {
   /* Eigen regel tussen de titel en de hotelnamen (die wrap is inline-flex). */

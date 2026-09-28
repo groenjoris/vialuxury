@@ -24,10 +24,11 @@
  */
 export type ItineraryVariant = 'current' | 'days' | 'city' | 'cities' | 'hybrid' | 'reviews'
 
+/* Volgorde in de schakelaar: het gekozen ontwerp ("Final" = Per stad met reviews) eerst. */
 export const ITINERARY_VARIANTS: { id: ItineraryVariant; label: string }[] = [
-  { id: 'current', label: '1 · Summary' },
+  { id: 'city', label: '1 · Final' },
   { id: 'days', label: '2 · Collapsed' },
-  { id: 'city', label: '3 · Per stad' },
+  { id: 'current', label: '3 · Summary' },
   { id: 'cities', label: '4 · Map' },
   { id: 'hybrid', label: '5 · Hybrid' },
   { id: 'reviews', label: '6 · Reviews' },
