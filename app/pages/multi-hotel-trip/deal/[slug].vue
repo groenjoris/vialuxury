@@ -1560,8 +1560,18 @@ const routeSlug = computed(() => (route.params.slug as string) || defaultDealPer
 /** Deterministic Experience Creator pick — same slug always returns the
  *  same team member, so the v6 business card stays stable across reloads
  *  while different deals show different creators. */
-// Vakanties: altijd Yvette als samensteller ("Samengesteld door"-kaartje boven de gallery).
-const creator = computed(() => (tripPdpBySlug(routeSlug.value) ? (teamMembers.find(m => m.name === 'Yvette') ?? creatorForSlug(routeSlug.value)) : creatorForSlug(routeSlug.value)))
+// Vakanties: altijd Yvette als samensteller ("Samengesteld door"-kaartje boven de gallery),
+// met een specialisatie en quote die bij vakanties passen. Bij gewone hotelarrangementen
+// (ook in R1/R2) houdt ze haar eigen tekst uit data/team-members.ts.
+const TRIP_CREATOR_TEXT = {
+  specialisation: 'Vakanties en rondreizen',
+  quote: 'Een goede hotelcombinatie verzin je niet aan je bureau. Ik ga zelf op pad!',
+}
+const creator = computed(() => {
+  if (!tripPdpBySlug(routeSlug.value)) return creatorForSlug(routeSlug.value)
+  const yvette = teamMembers.find(m => m.name === 'Yvette')
+  return yvette ? { ...yvette, ...TRIP_CREATOR_TEXT } : creatorForSlug(routeSlug.value)
+})
 // Multi Hotel Trip: een vakantie-slug (zie data/mht-trips.ts) levert een
 // samengestelde Deal + Hotel ("3 fantastische hotels") — de pagina toont dan
 // de vakantieblokken (routekaart, hotels per dag) in plaats van
