@@ -220,7 +220,7 @@ useHead({ title: 'Kies datum — ViaLuxury' })
                   <span class="cal__day">{{ cell.day }}</span>
                   <span v-if="cell.unavailable" class="cal__price c-mgrey">–</span>
                   <span v-else-if="cellRole(cell.day) === 'mid' || cellRole(cell.day) === 'uit'" class="cal__price">–</span>
-                  <span v-else class="cal__price">
+                  <span v-else class="cal__price" :class="{ 'cal__price--cheapest': cell.price === lowestPrice }">
                     €{{ cell.price }}<span v-if="cell.price === lowestPrice" class="cal__star">★</span>
                   </span>
                 </button>
@@ -450,6 +450,8 @@ useHead({ title: 'Kies datum — ViaLuxury' })
   color: var(--c-via-orange);
   font-size: 11px;
 }
+/* Laagste prijs in oranje (zoals op de PDP-kalenders). */
+.cal__price--cheapest { color: var(--c-via-orange); }
 .cal__star--legend {
   font-size: 14px;
 }

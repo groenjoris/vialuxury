@@ -1,11 +1,12 @@
 <template>
   <!-- Multi Hotel Trip — drie reizigersbeoordelingen van de vakantie naast
-       elkaar (geen carrousel, geen kop), boven het voorbeeld-reisschema. Kaart:
+       elkaar (geen carrousel) met de kop "Beoordelingen", boven het voorbeeld-reisschema. Kaart:
        cijfer + oordeel, het gekozen citaat, daaronder een kleine zwarte avatar
        met naam en land, en "Meer info" → pop-up met de hele
        review: titel (klein), maand van de vakantie, score, de volledige tekst
        (scrollt als hij lang is) en de schrijver. Mobiel: horizontaal swipen. -->
   <section class="trr" :aria-label="t('trip.reviews.heading')">
+    <h2 class="trr__title">{{ t('trip.reviews.heading') }}</h2>
     <div class="trr__grid">
       <article v-for="(r, i) in reviews" :key="i" class="trr-card">
         <div class="trr-card__top">
@@ -92,6 +93,8 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 
 <style scoped>
 .trr { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+/* Kop in dezelfde stijl als de andere sectiekoppen op de pagina (22px/600). */
+.trr__title { margin: 0; font-family: var(--font-heading); font-size: 22px; font-weight: 600; line-height: 1.3; color: var(--color-text-primary); }
 /* Drie kaarten naast elkaar, even hoog. */
 .trr__grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
 .trr-card {

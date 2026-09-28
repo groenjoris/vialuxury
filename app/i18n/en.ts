@@ -298,7 +298,7 @@ const en: Record<string, string> = {
   'country.NL': 'Netherlands',
   'country.BE': 'Belgium',
   'country.DE': 'Germany',
-  'trip.reviews.heading': 'Reviews',
+  'trip.reviews.heading': 'Guest reviews',
   'trip.itin.city.hotelTag': 'Hotel',
   'trip.itin.city.extrasTag': 'Extras',
   'trip.itin.city.outings': 'Fun things to do nearby',
