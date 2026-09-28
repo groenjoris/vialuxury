@@ -218,8 +218,8 @@
              beschrijving; klik op een dag opent het sidepanel bij die dag. -->
         <section v-if="itinSummary" id="reisschema" class="container deal-page__hybrid-summary deal-page__hybrid-summary--mobile deal-page__anchor">
           <div class="deal-page__summary-panel">
-            <h2 class="section-title">{{ t('trip.itin.hybrid.summaryHeading') }}</h2>
-            <TripItinerarySummary :days="tripDaysView" :hotels="tripHotelLinks" full-link :show-stats="!itinCity" @select="openItinPanelAt" @open-full="openItinPanelAt(null)" />
+            <h2 class="section-title deal-page__summary-title"><svg class="deal-page__summary-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="19" r="3" /><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15" /><circle cx="18" cy="5" r="3" /></svg>{{ t('trip.itin.hybrid.summaryHeading') }}</h2>
+            <TripItinerarySummary :days="tripDaysView" :hotels="tripHotelLinks" full-link :show-stats="!itinCity" :lines="summaryLines" @select="openItinPanelAt" @open-full="openItinPanelAt(null)" />
           </div>
         </section>
 
@@ -506,8 +506,8 @@
                  sidepanel met het uitgebreide schema en scrolt naar die dag. -->
             <section v-if="itinSummary" id="reisschema" class="deal-page__hybrid-summary deal-page__hybrid-summary--intro deal-page__desc-block deal-page__anchor">
               <div class="deal-page__summary-panel">
-                <h2 class="section-title">{{ t('trip.itin.hybrid.summaryHeading') }}</h2>
-                <TripItinerarySummary :days="tripDaysView" :hotels="tripHotelLinks" full-link :show-stats="!itinCity" @select="openItinPanelAt" @open-full="openItinPanelAt(null)" />
+                <h2 class="section-title deal-page__summary-title"><svg class="deal-page__summary-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="19" r="3" /><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15" /><circle cx="18" cy="5" r="3" /></svg>{{ t('trip.itin.hybrid.summaryHeading') }}</h2>
+                <TripItinerarySummary :days="tripDaysView" :hotels="tripHotelLinks" full-link :show-stats="!itinCity" :lines="summaryLines" @select="openItinPanelAt" @open-full="openItinPanelAt(null)" />
               </div>
             </section>
           </section>
@@ -1689,7 +1689,9 @@ const itinCollapsed = computed(() => itinVariant.value === 'days')
 const itinCity = computed(() => itinVariant.value === 'city')
 /* Sub-varianten binnen "Final" (schakelaar linksboven): reviews met/zonder grijs vlak,
    inclusies compact (rijen op een grijs vlak) of classic (als de gewone arrangementenpagina). */
-const { reviews: finalReviews, includes: finalIncludes } = useMultiHotelTripFinalOptions()
+const { reviews: finalReviews, includes: finalIncludes, summaryStyle } = useMultiHotelTripFinalOptions()
+/** Voorbeeld reisschema: kaal of met stippellijntjes tussen de dagen (alle varianten). */
+const summaryLines = computed(() => summaryStyle.value === 'lines')
 const reviewsPlain = computed(() => finalReviews.value === 'plain') // geldt ook bij Map en Per dag
 const inclClassic = computed(() => itinCity.value && finalIncludes.value === 'classic')
 /** Hybrid-lay-out geldt ook voor variant 6 "Reviews" (= Hybrid + beoordelingen + totaalscore). */
@@ -3022,6 +3024,9 @@ onMounted(() => {
   border-radius: var(--radius-lg);
 }
 .trip-incl .section-title { margin-top: 0; }
+/* "Voorbeeld reisschema": route-icoon voor de titel. */
+.deal-page__summary-title { display: flex; align-items: center; gap: 10px; }
+.deal-page__summary-icon { flex-shrink: 0; width: 24px; height: 24px; color: var(--color-text-primary); }
 /* Final · Includes "Classic": geen grijs vlak, kaarten als op de gewone arrangementenpagina. */
 .trip-incl--classic { padding: 0; background: none; border-radius: 0; }
 .trip-incl__classic-img { display: block; width: 100%; padding: 0; border: 0; cursor: zoom-in; }

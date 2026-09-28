@@ -5,7 +5,7 @@
        opent die dag (of dat stadshoofdstuk) in het reisschema en scrolt
        ernaartoe. Met de kerngetallen erboven en, optioneel, de link "Bekijk
        uitgebreid voorbeeld reisschema" (→ sidepanel, `open-full`). -->
-  <div class="tisum">
+  <div class="tisum" :class="{ 'tisum--lines': lines }">
     <TripItineraryStats v-if="showStats && days.length" class="tisum__stats" :days="days.length" :hotels="hotels.length" :sights="sightsCount" />
     <ul v-if="days.length" class="tisum__list">
       <li v-for="day in days" :key="`sum-${day.day}`" class="tisum__item">
@@ -32,7 +32,9 @@ const props = withDefaults(defineProps<{
   showStats?: boolean
   /** Link "Bekijk uitgebreid voorbeeld reisschema" onder de lijst. */
   fullLink?: boolean
-}>(), { hotels: () => [], showStats: true, fullLink: false })
+  /** Subtiele stippellijntjes tussen de dagen (alleen onder de beschrijvingen, niet onder "Dag x"). */
+  lines?: boolean
+}>(), { hotels: () => [], showStats: true, fullLink: false, lines: false })
 
 defineEmits<{ select: [day: number]; 'open-full': [] }>()
 
@@ -52,6 +54,16 @@ const sightsCount = computed(() => countTripSights(props.days))
   color: var(--color-text-primary);
 }
 .tisum__item + .tisum__item { margin-top: 8px; }
+/* Lijntjes-variant: stippellijn tussen twee dagen, alleen over de tekstkolom (vanaf 3.6em). */
+.tisum--lines .tisum__item + .tisum__item { position: relative; margin-top: 10px; padding-top: 10px; }
+.tisum--lines .tisum__item + .tisum__item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 3.6em;
+  right: 0;
+  border-top: 1px dotted #c4bfb6;
+}
 .tisum__link {
   /* "Dag x" als bullet in een vaste kolom (zonder scheidingsteken); doorlopende tekst springt in (hangende inspringing). */
   display: grid;

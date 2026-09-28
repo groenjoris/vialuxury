@@ -20,6 +20,21 @@
         >{{ v.label }}</button>
       </div>
     </div>
+    <!-- Alle varianten: opmaak van de dagsamenvatting "Voorbeeld reisschema". -->
+    <div class="psw__section">
+      <span class="psw__label">Voorbeeld reisschema</span>
+      <div class="psw__group" role="group" aria-label="Opmaak voorbeeld reisschema">
+        <button
+          v-for="o in SUMMARY_STYLE_OPTIONS"
+          :key="o.id"
+          type="button"
+          class="psw__btn"
+          :class="{ 'psw__btn--on': summaryStyle === o.id }"
+          :aria-pressed="summaryStyle === o.id"
+          @click="pickSummary(o.id)"
+        >{{ o.label }}</button>
+      </div>
+    </div>
     <!-- Alleen bij "Final": sub-varianten voor het reviewsblok en de inclusies. -->
     <template v-if="variant === 'city'">
       <div class="psw__section">
@@ -57,11 +72,11 @@
 <script setup lang="ts">
 import PrototypeSwitchPanel from '../global/PrototypeSwitchPanel.vue'
 import { ITINERARY_VARIANTS, useMultiHotelTripItineraryVariant, type ItineraryVariant } from '~/composables-multi-hotel-trip/useMultiHotelTripItineraryVariant'
-import { FINAL_REVIEWS_OPTIONS, FINAL_INCLUDES_OPTIONS, useMultiHotelTripFinalOptions, type FinalReviewsStyle, type FinalIncludesStyle } from '~/composables-multi-hotel-trip/useMultiHotelTripFinalOptions'
+import { FINAL_REVIEWS_OPTIONS, FINAL_INCLUDES_OPTIONS, SUMMARY_STYLE_OPTIONS, useMultiHotelTripFinalOptions, type FinalReviewsStyle, type FinalIncludesStyle, type SummaryStyle } from '~/composables-multi-hotel-trip/useMultiHotelTripFinalOptions'
 
 const props = defineProps<{ /** Element-id om naartoe te scrollen na wisselen. */ target?: string }>()
 const { variant, setVariant, restore } = useMultiHotelTripItineraryVariant()
-const { reviews: finalReviews, includes: finalIncludes, restore: restoreFinal, setReviews, setIncludes } = useMultiHotelTripFinalOptions()
+const { reviews: finalReviews, includes: finalIncludes, summaryStyle, restore: restoreFinal, setReviews, setIncludes, setSummaryStyle } = useMultiHotelTripFinalOptions()
 
 onMounted(() => {
   restore()
@@ -78,6 +93,12 @@ async function pick(v: ItineraryVariant) {
   if (!props.target) return
   await nextTick()
   scrollToBlock(props.target)
+}
+
+async function pickSummary(v: SummaryStyle) {
+  setSummaryStyle(v)
+  await nextTick()
+  scrollToBlock('reisschema')
 }
 
 /** Sub-variant kiezen en naar het betreffende blok scrollen, zodat je het verschil direct ziet. */
