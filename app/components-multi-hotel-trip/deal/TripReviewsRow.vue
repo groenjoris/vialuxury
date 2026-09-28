@@ -1,8 +1,8 @@
 <template>
   <!-- Multi Hotel Trip — drie reizigersbeoordelingen van de vakantie naast
        elkaar (geen carrousel) met de kop "Beoordelingen", boven het voorbeeld-reisschema. Kaart:
-       cijfer (zwart) + oordeel, het gekozen citaat, daaronder een kleine
-       donkergrijze avatar met naam en, op een eigen regel, het land, en "Meer info" → pop-up met de hele
+       cijfer (groen) + oordeel, het gekozen citaat, daaronder de
+       naam en, op een eigen regel, het land, en "Meer info" → pop-up met de hele
        review: titel (klein), maand van de vakantie, score, de volledige tekst
        (scrollt als hij lang is) en de schrijver. Mobiel: horizontaal swipen. -->
   <section class="trr" :class="{ 'trr--plain': plain }" :aria-label="t('trip.reviews.heading')">
@@ -15,10 +15,6 @@
         </div>
         <p class="trr-card__quote">“{{ r.quote }}”</p>
         <div class="trr-card__who">
-          <span class="trr-avatar" :class="{ 'trr-avatar--img': r.avatar }" aria-hidden="true">
-            <img v-if="r.avatar" :src="r.avatar" alt="" />
-            <template v-else>{{ initialOf(r.author) }}</template>
-          </span>
           <span class="trr-card__whotext">
             <span class="trr-card__name">{{ r.author }}</span>
             <span class="trr-card__country"><span class="trr-flag" :class="`trr-flag--${r.country.toLowerCase()}`" aria-hidden="true"></span>{{ t(`country.${r.country}`) }}</span>
@@ -47,10 +43,6 @@
               <p v-for="(p, i) in paragraphsOf(info.text)" :key="i" class="trr-info__text">{{ p }}</p>
             </div>
             <footer class="trr-info__foot">
-              <span class="trr-avatar" :class="{ 'trr-avatar--img': info.avatar }" aria-hidden="true">
-                <img v-if="info.avatar" :src="info.avatar" alt="" />
-                <template v-else>{{ initialOf(info.author) }}</template>
-              </span>
               <span class="trr-card__whotext">
                 <span class="trr-card__name">{{ info.author }}</span>
                 <span class="trr-card__country"><span class="trr-flag" :class="`trr-flag--${info.country.toLowerCase()}`" aria-hidden="true"></span>{{ t(`country.${info.country}`) }}</span>
@@ -86,7 +78,6 @@ export interface TripReviewView {
 defineProps<{ reviews: TripReviewView[]; plain?: boolean }>()
 
 const { t } = useMultiHotelTripI18n()
-const initialOf = (name: string) => (name.trim().charAt(0) || '?').toUpperCase()
 const paragraphsOf = (text: string) => text.split(/\n+/).map(s => s.trim()).filter(Boolean)
 
 const info = ref<TripReviewView | null>(null)
@@ -130,7 +121,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   height: 26px;
   padding: 0 7px;
   border-radius: 6px;
-  background: var(--color-dark, #141414);
+  background: #27C88D; /* zelfde groen als de scorebadge bij de hotelreviews */
   color: #fff;
   font-family: var(--font-body);
   font-size: 13px;
@@ -158,32 +149,16 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   border: 0;
   background: none;
   font-family: var(--font-body);
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--color-primary);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text-link); /* donker onderstreept, als de ankernavigatie */
   text-decoration: underline;
   text-underline-offset: 3px;
   cursor: pointer;
+  transition: color var(--transition-fast);
 }
 .trr-card__more:hover { color: var(--color-primary-hover); }
 
-/* Kleine donkergrijze avatar: foto, anders de initiaal. */
-.trr-avatar {
-  flex-shrink: 0;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  overflow: hidden;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: #4a4a4a;
-  color: #fff;
-  font-family: var(--font-body);
-  font-size: 11px;
-  font-weight: 700;
-}
-.trr-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
 /* Vlaggetje (drie banen) per land. */
 .trr-flag { display: inline-block; width: 14px; height: 10px; border-radius: 2px; box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08); }
 .trr-flag--nl { background: linear-gradient(#ae1c28 0 33.4%, #fff 33.4% 66.7%, #21468b 66.7%); }
@@ -231,7 +206,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   height: 40px;
   padding: 0 10px;
   border-radius: 8px;
-  background: var(--color-dark, #141414);
+  background: #27C88D;
   color: #fff;
   font-family: var(--font-body);
   font-size: 18px;
