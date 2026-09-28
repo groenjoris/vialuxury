@@ -78,20 +78,20 @@ export interface TripMapHighlight {
   image?: string
 }
 
-/** Reizigersbeoordeling van de hele vakantie (onder het voorbeeld-reisschema):
- *  kaart met één citaat (`positive`) en "Meer info" → pop-up met titel, datum,
- *  score, pluspunt en minpunt (als booking.com). */
+/** Reizigersbeoordeling van de hele vakantie (carrousel onder de minimap):
+ *  kaart met een gekozen citaat (`quote`) en "Meer info" → pop-up met titel,
+ *  maand van de vakantie, score en de volledige review (`text`). */
 export interface TripReviewSpec {
   author: string
   /** Landcode voor het vlaggetje: NL, BE, DE. */
   country: 'NL' | 'BE' | 'DE'
   avatar?: string
-  /** ISO-datum (YYYY-MM-DD). */
-  date: string
+  /** Maand van de vakantie (YYYY-MM). */
+  month: string
   score: number
   title: LocalizedString
-  positive: LocalizedString
-  negative?: LocalizedString
+  quote: LocalizedString
+  text: LocalizedString
 }
 
 export interface TripItinerarySpec {
@@ -131,21 +131,21 @@ export const TRIP_ITINERARIES: Record<string, TripItinerarySpec> = {
   // ── 001 Noord-Frankrijk & Opaalkust ───────────────────────────────────
   'trip-noord-frankrijk': {
     reviews: [
-      { author: 'Marleen en Jos', country: 'NL', date: '2026-06-18', score: 9.4,
+      { author: 'Marleen en Jos', country: 'NL', month: '2026-06', score: 9.4,
         title: l('Drie kastelen, drie verrassingen', 'Three châteaux, three surprises'),
-        positive: l('Drie heel verschillende hotels en alle drie een schot in de roos. De route is precies goed: nergens lang rijden en elke dag iets nieuws.',
-          'Three very different hotels and all three spot on. The route is just right: no long drives and something new every day.'),
-        negative: l('Het diner in Tilques duurde wat lang, maar was heerlijk.', 'Dinner at Tilques took a while, but was delicious.') },
-      { author: 'Familie De Vries', country: 'NL', date: '2026-05-09', score: 9.0,
+        quote: l('De route is precies goed: nergens lang rijden en elke dag iets nieuws.', 'The route is just right: no long drives and something new every day.'),
+        text: l('Drie heel verschillende hotels en alle drie een schot in de roos. Het herenhuis in Béthune ligt om de hoek van de Grand-Place, het kasteel in Tilques heeft een park waar je \'s ochtends de reeën ziet en Cléry is een oase van rust. De route is precies goed: nergens lang rijden en elke dag iets nieuws.\n\nHet diner op de aankomstdag was elke keer een feest; in Tilques duurde het wat lang, maar het was heerlijk. De fluisterboot door het Marais audomarois en de kliffen van Cap Blanc-Nez waren voor ons de hoogtepunten. Wij gaan zeker nog eens.',
+          'Three very different hotels and all three spot on. The mansion in Béthune is around the corner from the Grand-Place, the château in Tilques has a park where you see deer in the morning and Cléry is an oasis of calm. The route is just right: no long drives and something new every day.\n\nDinner on the day of arrival was a treat every time; in Tilques it took a while, but it was delicious. The boat trip through the Marais audomarois and the cliffs of Cap Blanc-Nez were our highlights. We will certainly go again.') },
+      { author: 'Familie De Vries', country: 'NL', month: '2026-05', score: 9.0,
         title: l('Béthune was een verrassing', 'Béthune was a surprise'),
-        positive: l('Fijn dat het ontbijt en het diner op de aankomstdag al geregeld waren; \'s avonds hoef je niets meer te zoeken.',
-          'Nice that breakfast and dinner on the day of arrival were already arranged; there is nothing to look for in the evening.'),
-        negative: l('De kamer in Béthune was aan de kleine kant.', 'The room in Béthune was on the small side.') },
-      { author: 'Pieter', country: 'BE', date: '2026-04-22', score: 8.8,
+        quote: l('Fijn dat het ontbijt en het diner op de aankomstdag al geregeld waren.', 'Nice that breakfast and dinner on the day of arrival were already arranged.'),
+        text: l('Béthune kenden we niet, maar wat een verrassing: een levendig plein met terrassen en het belfort dat je \'s avonds verlicht ziet vanaf het hotel. Fijn dat het ontbijt en het diner op de aankomstdag al geregeld waren; na een dag rijden hoef je \'s avonds niets meer te zoeken.\n\nMet de kinderen was Nausicaá in Boulogne-sur-Mer het hoogtepunt, en het strand van Wissant was ideaal om uit te waaien. De kamer in Béthune was aan de kleine kant, de andere twee hotels waren ruim en rustig. Al met al een heel geslaagde week.',
+          'We had never heard of Béthune, but what a surprise: a lively square with terraces and the belfry lit up in the evening, seen from the hotel. Nice that breakfast and dinner on the day of arrival were already arranged; after a day of driving there is nothing to look for in the evening.\n\nWith the children, Nausicaá in Boulogne-sur-Mer was the highlight, and the beach at Wissant was ideal for a breath of fresh air. The room in Béthune was on the small side, the other two hotels were spacious and quiet. All in all a very successful week.') },
+      { author: 'Pieter', country: 'BE', month: '2026-04', score: 8.8,
         title: l('Ideale afsluiting aan de Opaalkust', 'Ideal finale on the Opal Coast'),
-        positive: l('Château Cléry vlak bij de kust was ideaal als afsluiting; de wandeling over de kliffen bij Cap Blanc-Nez vergeten we niet snel.',
-          'Château Cléry close to the coast was the ideal finale; we will not soon forget the walk along the cliffs at Cap Blanc-Nez.'),
-        negative: l('Parkeren in Béthune is even zoeken.', 'Parking in Béthune takes some searching.') },
+        quote: l('De wandeling over de kliffen bij Cap Blanc-Nez vergeten we niet snel.', 'We will not soon forget the walk along the cliffs at Cap Blanc-Nez.'),
+        text: l('Wij zochten een korte reis zonder lange dagen in de auto en dat is precies wat dit is. Twee nachten per hotel is genoeg om de omgeving te zien en toch tot rust te komen. Château Cléry vlak bij de kust was ideaal als afsluiting; de wandeling over de kliffen bij Cap Blanc-Nez vergeten we niet snel.\n\nKleine kanttekening: parkeren in Béthune is even zoeken, de garage ligt een paar straten verderop. Het personeel in alle drie de hotels was hartelijk en het ontbijt overal ruim. Een aanrader voor wie Noord-Frankrijk nog niet kent.',
+          'We were looking for a short trip without long days in the car and that is exactly what this is. Two nights per hotel is enough to see the area and still unwind. Château Cléry close to the coast was the ideal finale; we will not soon forget the walk along the cliffs at Cap Blanc-Nez.\n\nSmall note: parking in Béthune takes some searching, the garage is a few streets away. The staff at all three hotels were warm and breakfast was generous everywhere. Recommended for anyone who does not yet know Northern France.') },
     ],
     description: [
       l('Zeven dagen Noord-Frankrijk in drie totaal verschillende decors: het levendige Béthune met zijn UNESCO-belfort, de stille moerassen rond Saint-Omer en de krijtkust van de Opaalkust. Je slaapt twee nachten in elk hotel, rijdt tussendoor nooit langer dan een uur en eet op elke aankomstdag een 3-gangendiner in het hotel.',
@@ -717,20 +717,21 @@ export const TRIP_ITINERARIES: Record<string, TripItinerarySpec> = {
   // ── Fietsvakantie Twente & Salland ────────────────────────────────────
   'trip-fietsvakantie-twente-salland': {
     reviews: [
-      { author: 'Anneke en Wim', country: 'NL', date: '2026-07-14', score: 9.2,
+      { author: 'Anneke en Wim', country: 'NL', month: '2026-07', score: 9.2,
         title: l('Heerlijk ontspannen fietsen', 'Wonderfully relaxed cycling'),
-        positive: l('Mooie routes over rustige paden en de bagage stond elke dag netjes op de kamer. Het diner bij De Zwaan was verrassend goed.',
-          'Beautiful routes along quiet paths and our luggage was waiting in the room every day. Dinner at De Zwaan was surprisingly good.'),
-        negative: l('De etappe naar Markelo was met tegenwind best pittig.', 'The stage to Markelo was quite tough with a headwind.') },
-      { author: 'Jeroen', country: 'NL', date: '2026-06-02', score: 8.6,
+        quote: l('De bagage stond elke dag netjes op de kamer, wij fietsten met alleen een dagtas.', 'Our luggage was waiting in the room every day; we cycled with just a day bag.'),
+        text: l('Wat een ontspannen manier van vakantie vieren. Mooie routes over rustige paden langs landgoederen en door de bossen; de bagage stond elke dag netjes op de kamer, wij fietsten met alleen een dagtas. De routes op de telefoon waren duidelijk, verdwalen kan haast niet.\n\nHet diner bij De Zwaan in Raalte was verrassend goed en het ontbijt bij Herikerberg op het terras aan het bos was het mooiste moment van de week. De etappe naar Markelo was met tegenwind best pittig, maar met een pauze in Goor prima te doen.',
+          'What a relaxed way to spend a holiday. Beautiful routes along quiet paths past country estates and through the woods; our luggage was waiting in the room every day and we cycled with just a day bag. The routes on the phone were clear; you can hardly get lost.\n\nDinner at De Zwaan in Raalte was surprisingly good and breakfast at Herikerberg on the terrace by the woods was the best moment of the week. The stage to Markelo was quite tough with a headwind, but fine with a break in Goor.') },
+      { author: 'Jeroen', country: 'NL', month: '2026-06', score: 8.6,
         title: l('Goed georganiseerd', 'Well organised'),
-        positive: l('Fijne hotels en duidelijke routes op de telefoon. Twente is echt een fietsparadijs.',
-          'Nice hotels and clear routes on the phone. Twente really is a cycling paradise.'),
-        negative: l('In Delden mocht de kamer wat moderner.', 'The room in Delden could be a bit more modern.') },
-      { author: 'Els', country: 'BE', date: '2026-05-20', score: 9.5,
+        quote: l('Twente is echt een fietsparadijs.', 'Twente really is a cycling paradise.'),
+        text: l('Goed georganiseerde fietsweek: fijne hotels, duidelijke routes op de telefoon en het bagagetransport werkte foutloos. Twente is echt een fietsparadijs, met rustige wegen en overal een terras voor koffie.\n\nIn Delden mocht de kamer wat moderner, maar de ligging naast landgoed Twickel maakte veel goed. Het welkomstfietstasje was een leuke verrassing. Voor wie een actieve maar ontspannen week zoekt is dit een heel goede keuze.',
+          'Well-organised cycling week: nice hotels, clear routes on the phone and the luggage transfer worked flawlessly. Twente really is a cycling paradise, with quiet roads and a terrace for coffee everywhere.\n\nIn Delden the room could be a bit more modern, but the location next to the Twickel estate made up for a lot. The welcome bike bag was a nice surprise. For anyone looking for an active but relaxed week this is a very good choice.') },
+      { author: 'Els', country: 'BE', month: '2026-05', score: 9.5,
         title: l('Twente op zijn mooist', 'Twente at its best'),
-        positive: l('Landhuishotel Herikerberg was de kers op de taart, met een prachtig terras aan het bos. Alles klopte, van welkomstfietstasje tot ontbijt.',
-          'Landhuishotel Herikerberg was the icing on the cake, with a lovely terrace by the woods. Everything was right, from the welcome bike bag to breakfast.') },
+        quote: l('Landhuishotel Herikerberg was de kers op de taart, met een prachtig terras aan het bos.', 'Landhuishotel Herikerberg was the icing on the cake, with a lovely terrace by the woods.'),
+        text: l('Wij komen uit Gent en kenden Twente niet, maar wat een streek om te fietsen: coulisselandschap, oude boerderijen en heel weinig verkeer. De etappes van 35 tot 45 kilometer waren precies goed; onderweg altijd tijd voor een omweg of een terras.\n\nLandhuishotel Herikerberg was de kers op de taart, met een prachtig terras aan het bos en een diner om over naar huis te schrijven. Alles klopte, van welkomstfietstasje tot ontbijt. Volgend jaar doen we de Hanzestedenroute.',
+          'We are from Ghent and did not know Twente, but what a region for cycling: hedgerow landscape, old farms and very little traffic. The stages of 35 to 45 kilometres were just right; there was always time for a detour or a terrace along the way.\n\nLandhuishotel Herikerberg was the icing on the cake, with a lovely terrace by the woods and a dinner to write home about. Everything was right, from the welcome bike bag to breakfast. Next year we will do the Hanseatic cities route.') },
     ],
     introTitle: l('7-daagse fietsreis met bagagetransfer tussen hotels', '7-day cycling trip with luggage transfer between hotels'),
     // "Het volgende is inbegrepen" — teksten en foto's naar de extra's van de

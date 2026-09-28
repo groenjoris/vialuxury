@@ -213,7 +213,6 @@
         <section v-if="itinHybrid || itinCity" class="container deal-page__hybrid-summary deal-page__hybrid-summary--mobile">
           <h2 class="section-title">{{ t('trip.itin.hybrid.summaryHeading') }}</h2>
           <TripItinerarySummary :days="tripDaysView" :hotels="tripHotelLinks" full-link @select="hybridGoToDay" @open-full="itinPanelOpen = true" />
-          <TripReviewsRow v-if="itinReviews && tripReviews.length" class="deal-page__hybrid-reviews" :reviews="tripReviews" />
         </section>
 
         <!-- 9. Highlights -->
@@ -246,6 +245,11 @@
             :lng="hotel.location.coordinates.lng"
             :address="hotelStreetCity"
           />
+        </section>
+
+        <!-- Reviews: carrousel onder de minimap (vakantie met reviews). -->
+        <section v-if="itinReviews && tripReviews.length" class="container deal-page__reviews-mobile">
+          <TripReviewsRow :reviews="tripReviews" />
         </section>
 
         <!-- 11. Included cards (repeat full include section). Anchor
@@ -473,7 +477,7 @@
             </div>
           </div>
         </section>
-        <section id="intro" class="container deal-page__intro-row">
+        <section id="intro" class="container deal-page__intro-row" :class="{ 'deal-page__intro-row--summary': itinHybrid || itinCity }">
           <div class="deal-page__intro-map">
             <MultiHotelTripRouteMapCard
               id="mini-map"
@@ -482,6 +486,8 @@
               @open="tripMapOpen = true"
               @stop-click="openTripHotel"
             />
+            <!-- Reviews: carrousel onder de minimap, boven de boekingszijbalk. -->
+            <TripReviewsRow v-if="itinReviews && tripReviews.length" class="deal-page__intro-reviews" :reviews="tripReviews" />
           </div>
           <div class="deal-page__intro-desc">
             <!-- Kop boven de beschrijving: "7-daagse reis met eigen vervoer in Noord-Frankrijk". -->
@@ -490,6 +496,13 @@
                  pagina uit (blijft staan), "Lees minder" weer in. -->
             <div class="deal-page__intro-desc-text" :class="{ 'deal-page__intro-desc-text--fade': hasMoreDescription && !descExpanded }" v-html="fullDescription"></div>
             <button v-if="hasMoreDescription" type="button" class="deal-page__read-more" :aria-expanded="descExpanded" @click="descExpanded = !descExpanded">{{ descExpanded ? t('common.readLess') : t('common.readMore') }}</button>
+
+            <!-- Per stad / Hybrid / Reviews: dagsamenvatting direct onder de beschrijving
+                 (in dezelfde kolom, zodat de afstand ertussen vast is — ook na "Lees meer"). -->
+            <section v-if="itinHybrid || itinCity" class="deal-page__hybrid-summary deal-page__hybrid-summary--intro">
+              <h2 class="section-title">{{ t('trip.itin.hybrid.summaryHeading') }}</h2>
+              <TripItinerarySummary :days="tripDaysView" :hotels="tripHotelLinks" full-link @select="hybridGoToDay" @open-full="itinPanelOpen = true" />
+            </section>
           </div>
         </section>
       </template>
@@ -497,16 +510,6 @@
       <!-- Two-column layout: Content | Booking Sidebar -->
       <div class="deal-page__grid container">
         <div class="deal-page__col-left">
-          <!-- Noord-Frankrijk variant 3 (Per stad), 5 (Hybrid) en 6 (Reviews): klikbare
-               dagsamenvatting bovenaan, direct onder de beschrijving; het reisschema
-               zelf staat over de volle breedte onder de twee kolommen. -->
-          <section v-if="itinHybrid || itinCity" class="deal-page__hybrid-summary">
-            <h2 class="section-title">{{ t('trip.itin.hybrid.summaryHeading') }}</h2>
-            <TripItinerarySummary :days="tripDaysView" :hotels="tripHotelLinks" full-link @select="hybridGoToDay" @open-full="itinPanelOpen = true" />
-            <!-- Per stad / Reviews: drie reizigersbeoordelingen naast elkaar. -->
-            <TripReviewsRow v-if="itinReviews && tripReviews.length" class="deal-page__hybrid-reviews" :reviews="tripReviews" />
-          </section>
-
           <!-- Description + Mini map row. Vakantie: samenvattende beschrijving
                van de hele reis + het schematische routekaartje van de dealcard
                op de plek (en breedte) van de gewone minimap. -->
@@ -1165,7 +1168,7 @@ import { formatPrice } from '~/utils-multi-hotel-trip/formatPrice'
 import { getReviewLabelKey } from '~/utils-multi-hotel-trip/reviewLabel'
 import { generateDealAvailability } from '~/data/mock/deal-pricing'
 import dayjs from 'dayjs'
-import { formatDateWeekdayShort, formatDateLong } from '~/utils-multi-hotel-trip/formatDate'
+import { formatDateWeekdayShort, formatMonthYear } from '~/utils-multi-hotel-trip/formatDate'
 import tripRoutesJson from '~/data/mht-trip-routes.json'
 import type { TripRouteLeg } from '~/utils-multi-hotel-trip/tripMapLayers'
 import { tripPdpBySlug, tripHotelDetails } from '~/data/mht-trip-pdp'
@@ -1625,12 +1628,13 @@ const tripReviews = computed<TripReviewView[]>(() => {
   const own = tripPdp?.content?.reviews
   if (own?.length) {
     return own.slice(0, 3).map(r => ({
-      author: r.author, country: r.country, avatar: r.avatar, date: formatDateLong(r.date), score: r.score,
-      title: localized(r.title), positive: localized(r.positive), negative: r.negative ? localized(r.negative) : undefined,
+      author: r.author, country: r.country, avatar: r.avatar, month: formatMonthYear(r.month), score: r.score,
+      title: localized(r.title), quote: localized(r.quote), text: localized(r.text),
     }))
   }
   return (hotel.individualReviews ?? []).slice(0, 3).map(r => ({
-    author: r.author, country: 'NL' as const, date: formatDateLong(r.date), score: Number(r.score), title: '', positive: localized(r.text),
+    author: r.author, country: 'NL' as const, month: formatMonthYear(r.date.slice(0, 7)), score: Number(r.score),
+    title: '', quote: localized(r.text), text: localized(r.text),
   }))
 })
 /** Hybrid/Reviews/Per stad: klik in de dagsamenvatting → die dag (of dat stadshoofdstuk)
@@ -2345,14 +2349,16 @@ onMounted(() => {
   pointer-events: none;
 }
 .deal-page__description-text--fade { max-height: 150px; }
-/* Hybrid: dagsamenvatting bovenaan de linkerkolom (onder de beschrijving). Neemt
-   de plek van het inclusieblok in: dezelfde negatieve marge als
-   .deal-page__content-blocks--trip (dicht onder de introrij); het inclusieblok
-   volgt daarna in de gewone stroom. */
-.deal-page__col-left > .deal-page__hybrid-summary { margin-top: calc(-1 * var(--space-lg) - 2 * var(--space-xl)); margin-bottom: var(--space-xl); }
-.deal-page__hybrid-summary + .deal-page__content-blocks--trip { margin-top: 0; }
+/* Dagsamenvatting in de beschrijvingskolom van de introrij: vaste, kleine
+   afstand tot de beschrijving (ook uitgeklapt); de inclusies volgen daarna met
+   een gewone marge i.p.v. de negatieve marge die onder de introrij hoort. */
+.deal-page__hybrid-summary--intro { margin-top: var(--space-lg); }
+.deal-page__hybrid-summary--intro .section-title { margin-top: 0; }
+.deal-page__intro-row--summary + .deal-page__grid .deal-page__content-blocks--trip { margin-top: calc(-1 * var(--space-lg)); }
 .deal-page__hybrid-summary--mobile { margin-bottom: var(--space-lg); }
-.deal-page__hybrid-reviews { margin-top: var(--space-lg); }
+/* Reviews-carrousel onder de minimap (zijbalkbreedte) en op mobiel als eigen sectie. */
+.deal-page__intro-reviews { margin-top: var(--space-lg); }
+.deal-page__reviews-mobile { margin-bottom: var(--space-lg); }
 /* Reviews-variant: totaalscore bovenin de subtitel (badge + oordeel · aantal). */
 .deal-page__trip-score {
   /* Eigen regel tussen de titel en de hotelnamen (die wrap is inline-flex). */

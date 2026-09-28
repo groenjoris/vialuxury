@@ -35,6 +35,12 @@ export function formatDateShort(date: string): string {
 /**
  * Get Dutch month name
  */
+/** "juni 2026" uit "2026-06" (maand van een vakantie/review). */
+export function formatMonthYear(yearMonth: string): string {
+  const d = dayjs(`${yearMonth}-01`)
+  return `${DUTCH_MONTHS[d.month()]} ${d.year()}`
+}
+
 export function getDutchMonthName(month: number): string {
   return DUTCH_MONTHS[month]
 }

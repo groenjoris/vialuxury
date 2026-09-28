@@ -1,61 +1,63 @@
 <template>
-  <!-- Multi Hotel Trip — drie reizigersbeoordelingen van de vakantie naast
-       elkaar, onder het voorbeeld-reisschema. Opzet als booking.com: kaart met
-       avatar, naam en land, één citaat (het pluspunt) en "Meer info" → pop-up
-       met datum, titel, score, pluspunt (blije smiley) en minpunt (droevige
-       smiley). Geen link naar "alle beoordelingen" — die zijn er niet. -->
+  <!-- Multi Hotel Trip — reizigersbeoordelingen van de vakantie als carrousel
+       (anderhalve kaart zichtbaar), onder de minimap boven de boekingszijbalk.
+       Kaart: een gekozen citaat uit de review, daaronder een kleine zwarte
+       avatar met naam en land, en "Meer info" → pop-up met de hele review:
+       titel (klein), maand van de vakantie, score, de volledige tekst
+       (scrollt als hij lang is) en de schrijver. -->
   <section class="trr" :aria-label="t('trip.reviews.heading')">
-    <h3 class="trr__title">{{ t('trip.reviews.heading') }}</h3>
-    <div class="trr__grid">
+    <div class="trr__head">
+      <h3 class="trr__title">{{ t('trip.reviews.heading') }}</h3>
+      <div class="trr__nav">
+        <button type="button" class="trr__arrow" :aria-label="t('trip.reviews.prev')" :disabled="active === 0" @click="scrollTo(active - 1)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6" /></svg>
+        </button>
+        <button type="button" class="trr__arrow" :aria-label="t('trip.reviews.next')" :disabled="active >= reviews.length - 1" @click="scrollTo(active + 1)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 6 15 12 9 18" /></svg>
+        </button>
+      </div>
+    </div>
+    <div ref="track" class="trr__track" @scroll.passive="onScroll">
       <article v-for="(r, i) in reviews" :key="i" class="trr-card">
+        <p class="trr-card__quote">“{{ r.quote }}”</p>
         <div class="trr-card__who">
           <span class="trr-avatar" :class="{ 'trr-avatar--img': r.avatar }" aria-hidden="true">
             <img v-if="r.avatar" :src="r.avatar" alt="" />
             <template v-else>{{ initialOf(r.author) }}</template>
           </span>
-          <div class="trr-card__id">
-            <p class="trr-card__name">{{ r.author }}</p>
-            <p class="trr-card__country"><span class="trr-flag" :class="`trr-flag--${r.country.toLowerCase()}`" aria-hidden="true"></span>{{ t(`country.${r.country}`) }}</p>
-          </div>
+          <span class="trr-card__name">{{ r.author }}</span>
+          <span class="trr-card__country"><span class="trr-flag" :class="`trr-flag--${r.country.toLowerCase()}`" aria-hidden="true"></span>{{ t(`country.${r.country}`) }}</span>
         </div>
-        <p class="trr-card__quote">“{{ r.positive }}”</p>
         <button type="button" class="trr-card__more" @click="info = r">{{ t('trip.reviews.moreInfo') }}</button>
       </article>
     </div>
 
-    <!-- Pop-up met de volledige beoordeling -->
+    <!-- Pop-up met de volledige review -->
     <Teleport to="body">
       <Transition name="trr-fade">
         <div v-if="info" class="trr-info" @click.self="info = null">
-          <article class="trr-info__card" role="dialog" aria-modal="true" :aria-label="info.title || info.author" data-scroll-lock-allow="true">
+          <article class="trr-info__card" role="dialog" aria-modal="true" :aria-label="info.title" data-scroll-lock-allow="true">
             <button type="button" class="trr-info__close" :aria-label="t('common.close')" @click="info = null">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12" /></svg>
             </button>
-            <div class="trr-info__grid">
-              <div class="trr-info__who">
-                <span class="trr-avatar trr-avatar--lg" :class="{ 'trr-avatar--img': info.avatar }" aria-hidden="true">
-                  <img v-if="info.avatar" :src="info.avatar" alt="" />
-                  <template v-else>{{ initialOf(info.author) }}</template>
-                </span>
-                <div>
-                  <p class="trr-card__name trr-info__name">{{ info.author }}</p>
-                  <p class="trr-card__country"><span class="trr-flag" :class="`trr-flag--${info.country.toLowerCase()}`" aria-hidden="true"></span>{{ t(`country.${info.country}`) }}</p>
-                </div>
-              </div>
-              <div class="trr-info__main">
-                <p class="trr-info__date">{{ t('trip.reviews.reviewedOn').replace('{date}', info.date) }}</p>
-                <h3 v-if="info.title" class="trr-info__title">{{ info.title }}</h3>
-                <p class="trr-info__line">
-                  <svg class="trr-info__face trr-info__face--pos" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.5" /><path d="M8.5 14.2c.9 1.3 2.1 1.9 3.5 1.9s2.6-.6 3.5-1.9" /><path d="M9 9.5h.01M15 9.5h.01" stroke-width="2.4" /></svg>
-                  <span>{{ info.positive }}</span>
-                </p>
-                <p v-if="info.negative" class="trr-info__line">
-                  <svg class="trr-info__face trr-info__face--neg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.5" /><path d="M8.5 16.2c.9-1.3 2.1-1.9 3.5-1.9s2.6.6 3.5 1.9" /><path d="M9 9.5h.01M15 9.5h.01" stroke-width="2.4" /></svg>
-                  <span>{{ info.negative }}</span>
-                </p>
-              </div>
+            <header class="trr-info__head">
               <span class="trr-info__score" :aria-label="`${info.score.toFixed(1)}/10`">{{ info.score.toFixed(1) }}</span>
+              <div class="trr-info__headtext">
+                <h3 class="trr-info__title">{{ info.title }}</h3>
+                <p class="trr-info__meta">{{ t('trip.reviews.travelledIn').replace('{month}', info.month) }}</p>
+              </div>
+            </header>
+            <div class="trr-info__body">
+              <p v-for="(p, i) in paragraphsOf(info.text)" :key="i" class="trr-info__text">{{ p }}</p>
             </div>
+            <footer class="trr-info__foot">
+              <span class="trr-avatar" :class="{ 'trr-avatar--img': info.avatar }" aria-hidden="true">
+                <img v-if="info.avatar" :src="info.avatar" alt="" />
+                <template v-else>{{ initialOf(info.author) }}</template>
+              </span>
+              <span class="trr-card__name">{{ info.author }}</span>
+              <span class="trr-card__country"><span class="trr-flag" :class="`trr-flag--${info.country.toLowerCase()}`" aria-hidden="true"></span>{{ t(`country.${info.country}`) }}</span>
+            </footer>
           </article>
         </div>
       </Transition>
@@ -71,18 +73,43 @@ export interface TripReviewView {
   /** Landcode voor het vlaggetje en de landnaam: NL, BE, DE. */
   country: 'NL' | 'BE' | 'DE'
   avatar?: string
-  /** Al opgemaakte datum, bv. "18 juni 2026". */
-  date: string
+  /** Maand van de vakantie, al opgemaakt: "juni 2026". */
+  month: string
   score: number
   title: string
-  positive: string
-  negative?: string
+  /** Het gekozen citaat op de kaart. */
+  quote: string
+  /** De volledige review (pop-up). */
+  text: string
 }
 
-defineProps<{ reviews: TripReviewView[] }>()
+const props = defineProps<{ reviews: TripReviewView[] }>()
 
 const { t } = useMultiHotelTripI18n()
 const initialOf = (name: string) => (name.trim().charAt(0) || '?').toUpperCase()
+const paragraphsOf = (text: string) => text.split(/\n+/).map(s => s.trim()).filter(Boolean)
+
+/* Carrousel: actieve kaart voor de pijlen; scroll-snap doet de rest. */
+const track = ref<HTMLElement | null>(null)
+const active = ref(0)
+function step(): number {
+  const el = track.value
+  const card = el?.querySelector<HTMLElement>('.trr-card')
+  if (!el || !card) return 1
+  const gap = parseFloat(getComputedStyle(el).columnGap || '12') || 12
+  return card.offsetWidth + gap
+}
+function onScroll() {
+  if (!track.value) return
+  active.value = Math.max(0, Math.min(props.reviews.length - 1, Math.round(track.value.scrollLeft / step())))
+}
+function scrollTo(i: number) {
+  const el = track.value
+  if (!el) return
+  const idx = Math.max(0, Math.min(props.reviews.length - 1, i))
+  el.scrollTo({ left: idx * step(), behavior: 'smooth' })
+  active.value = idx
+}
 
 const info = ref<TripReviewView | null>(null)
 useBodyScrollLock().bindTo(computed(() => !!info.value))
@@ -92,31 +119,66 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 </script>
 
 <style scoped>
-.trr { display: flex; flex-direction: column; gap: var(--space-md); }
-.trr__title { margin: 0; font-family: var(--font-heading); font-size: 20px; font-weight: 700; line-height: 1.25; color: var(--color-text-primary); }
-.trr__grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-md); }
+.trr { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.trr__head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-md); }
+.trr__title { margin: 0; font-family: var(--font-heading); font-size: 18px; font-weight: 700; line-height: 1.25; color: var(--color-text-primary); }
+.trr__nav { display: flex; gap: 6px; flex-shrink: 0; }
+.trr__arrow {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 1px solid var(--color-border, #ddd);
+  border-radius: 50%;
+  background: #fff;
+  color: var(--color-text-primary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.trr__arrow:hover:not(:disabled) { border-color: var(--color-text-primary); }
+.trr__arrow:disabled { opacity: 0.35; cursor: default; }
+/* Anderhalve kaart zichtbaar: kaart = 62% van de breedte. */
+.trr__track {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding-bottom: 4px;
+  scrollbar-width: none;
+}
+.trr__track::-webkit-scrollbar { display: none; }
 .trr-card {
+  flex: 0 0 62%;
+  scroll-snap-align: start;
   display: flex;
   flex-direction: column;
   gap: 10px;
-  padding: var(--space-md);
+  padding: 14px;
   border: 1px solid var(--color-border-light);
   border-radius: var(--radius-lg);
   background: var(--color-surface, #fff);
 }
-.trr-card__who { display: flex; align-items: center; gap: 10px; }
-.trr-card__id { min-width: 0; }
-.trr-card__name { margin: 0; font-size: 15px; font-weight: 700; color: var(--color-text-primary); }
-.trr-card__country { display: flex; align-items: center; gap: 6px; margin: 2px 0 0; font-size: 13px; color: var(--color-text-secondary); }
-.trr-card__quote { margin: 0; font-size: 14px; line-height: 1.6; color: var(--color-text-primary); }
+.trr-card__quote {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--color-text-primary);
+  display: -webkit-box;
+  -webkit-line-clamp: 5;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.trr-card__who { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 8px; margin-top: auto; }
+.trr-card__name { font-size: 13px; font-weight: 700; color: var(--color-text-primary); }
+.trr-card__country { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; color: var(--color-text-secondary); }
 .trr-card__more {
   align-self: flex-start;
-  margin-top: auto;
   padding: 0;
   border: 0;
   background: none;
   font-family: var(--font-body);
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--color-primary);
   text-decoration: underline;
@@ -125,31 +187,30 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 }
 .trr-card__more:hover { color: var(--color-primary-hover); }
 
-/* Avatar: foto, anders de initiaal op Trustpilot-groen. */
+/* Kleine zwarte avatar: foto, anders de initiaal. */
 .trr-avatar {
   flex-shrink: 0;
-  width: 40px;
-  height: 40px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
   overflow: hidden;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: var(--color-discount, #00b67a);
+  background: var(--color-dark, #141414);
   color: #fff;
   font-family: var(--font-body);
-  font-size: 16px;
+  font-size: 11px;
   font-weight: 700;
 }
-.trr-avatar--lg { width: 56px; height: 56px; font-size: 20px; }
 .trr-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
 /* Vlaggetje (drie banen) per land. */
-.trr-flag { display: inline-block; width: 16px; height: 11px; border-radius: 2px; box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08); }
+.trr-flag { display: inline-block; width: 14px; height: 10px; border-radius: 2px; box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08); }
 .trr-flag--nl { background: linear-gradient(#ae1c28 0 33.4%, #fff 33.4% 66.7%, #21468b 66.7%); }
 .trr-flag--be { background: linear-gradient(to right, #000 0 33.4%, #fdda24 33.4% 66.7%, #ef3340 66.7%); }
 .trr-flag--de { background: linear-gradient(#000 0 33.4%, #dd0000 33.4% 66.7%, #ffce00 66.7%); }
 
-/* Pop-up */
+/* Pop-up: vaste, hoge kaart; de tekst scrolt als hij langer is. */
 .trr-info {
   position: fixed;
   inset: 0;
@@ -162,38 +223,51 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 }
 .trr-info__card {
   position: relative;
-  width: min(760px, 100%);
-  max-height: 88vh;
-  overflow: auto;
-  padding: var(--space-xl) var(--space-xl) var(--space-lg);
+  width: min(640px, 100%);
+  height: min(640px, 88vh);
+  display: flex;
+  flex-direction: column;
   border-radius: var(--radius-lg);
   background: var(--color-surface, #fff);
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
 }
-.trr-info__grid { display: grid; grid-template-columns: 180px minmax(0, 1fr) auto; gap: var(--space-lg); align-items: start; }
-.trr-info__who { display: flex; align-items: center; gap: 12px; }
-.trr-info__name { font-size: 17px; }
-.trr-info__date { margin: 0 0 4px; font-size: 13px; color: var(--color-text-secondary); }
-.trr-info__title { margin: 0 0 var(--space-md); font-family: var(--font-heading); font-size: 24px; font-weight: 700; line-height: 1.2; color: var(--color-text-primary); }
-.trr-info__line { display: flex; align-items: flex-start; gap: 10px; margin: 0 0 12px; font-size: 15px; line-height: 1.6; color: var(--color-text-primary); }
-.trr-info__line:last-child { margin-bottom: 0; }
-.trr-info__face { flex-shrink: 0; margin-top: 1px; }
-.trr-info__face--pos { color: var(--color-discount, #00b67a); }
-.trr-info__face--neg { color: var(--color-text-secondary); }
+.trr-info__head {
+  flex-shrink: 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: var(--space-xl) 64px var(--space-md) var(--space-xl);
+  border-bottom: 1px solid var(--color-border-light);
+}
+.trr-info__headtext { min-width: 0; }
+.trr-info__title { margin: 0 0 2px; font-family: var(--font-heading); font-size: 18px; font-weight: 700; line-height: 1.3; color: var(--color-text-primary); }
+.trr-info__meta { margin: 0; font-size: 13px; color: var(--color-text-secondary); }
 .trr-info__score {
+  flex-shrink: 0;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 52px;
-  height: 44px;
+  min-width: 46px;
+  height: 40px;
   padding: 0 10px;
   border-radius: 8px;
   background: var(--color-discount, #00b67a);
   color: #fff;
   font-family: var(--font-body);
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
+}
+.trr-info__body { flex: 1; min-height: 0; overflow: auto; padding: var(--space-md) var(--space-xl); }
+.trr-info__text { margin: 0 0 var(--space-sm); font-size: 15px; line-height: 1.7; color: var(--color-text-primary); }
+.trr-info__text:last-child { margin-bottom: 0; }
+.trr-info__foot {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: var(--space-md) var(--space-xl) var(--space-lg);
+  border-top: 1px solid var(--color-border-light);
 }
 .trr-info__close {
   position: absolute;
@@ -215,12 +289,9 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 .trr-fade-enter-from, .trr-fade-leave-to { opacity: 0; }
 
 @media (max-width: 767px) {
-  /* Mobiel: horizontaal swipen, kaarten 80% breed. */
-  .trr__grid { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 12px; padding-bottom: 4px; scrollbar-width: none; }
-  .trr__grid::-webkit-scrollbar { display: none; }
-  .trr-card { flex: 0 0 80%; scroll-snap-align: start; }
-  .trr-info__card { padding: var(--space-lg); }
-  .trr-info__grid { grid-template-columns: 1fr; }
-  .trr-info__score { justify-self: start; }
+  .trr-card { flex-basis: 76%; }
+  .trr-info__card { height: min(560px, 88vh); }
+  .trr-info__head { padding: var(--space-lg) 60px var(--space-md) var(--space-lg); }
+  .trr-info__body, .trr-info__foot { padding-left: var(--space-lg); padding-right: var(--space-lg); }
 }
 </style>
