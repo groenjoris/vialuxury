@@ -28,7 +28,7 @@
           <div class="home-hero__content container">
             <div class="home-hero__eyebrow">
               <span class="home-hero__eyebrow-dot" aria-hidden="true" />
-              <span>SPRING 2026</span>
+              <span>HERFST 2026</span>
             </div>
             <h1 class="home-hero__title">
               Experience<span class="home-hero__title-em"> more</span>
@@ -1085,7 +1085,7 @@ onMounted(() => { setMhtNavVariant('1'); restoreHeroPhotoIndex(); restoreHomeLay
   /* Hero copy: flow naturally below the SiteHeader's mobile search
      trigger instead of absolute-positioned at top: 300 px. Extra
      left padding (24 px vs the standard 16 px content edge) gives
-     "SPRING 2026 / Experience more / tagline" some breathing room
+     "HERFST 2026 / Experience more / tagline" some breathing room
      from the viewport edge so the headline doesn't feel pinched. */
   .home-hero__content {
     position: static;
