@@ -5,8 +5,8 @@
        als de datums bekend zijn — check-in en check-out. Uitgeklapt: de drie
        uitjes in hetzelfde ontwerp als "Tips in de buurt" op de gewone
        arrangementenpagina (HotelNearbyTips, ingebed). Op de lijn tussen twee
-       bollen staat halverwege de afstand in kilometers. Hoofdstuk 1 staat
-       standaard open. -->
+       bollen staat halverwege de afstand in kilometers. Alle hoofdstukken
+       staan standaard open. -->
   <div class="tpc" :class="{ 'tpc--stacked': stacked }">
     <div class="tpc__bar" :class="{ 'tpc__bar--end': !showStats }">
       <TripItineraryStats v-if="showStats" :days="days.length" :hotels="chapters.length" :sights="sightsCount" />
@@ -110,8 +110,8 @@ defineEmits<{ 'open-hotel': [stopIndex: number] }>()
 
 const { t } = useMultiHotelTripI18n()
 
-/* Open hoofdstukken — standaard alleen het eerste. */
-const open = ref<Set<number>>(new Set(props.chapters[0] ? [props.chapters[0].stopIndex] : []))
+/* Open hoofdstukken — standaard allemaal uitgeklapt. */
+const open = ref<Set<number>>(new Set(props.chapters.map(c => c.stopIndex)))
 const isOpen = (i: number) => open.value.has(i)
 function toggle(i: number) {
   const next = new Set(open.value)

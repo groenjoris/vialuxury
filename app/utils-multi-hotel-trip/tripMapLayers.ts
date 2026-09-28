@@ -81,6 +81,69 @@ export interface TripMapHighlight {
   lng: number
   text: string
   image?: string
+  /** Soort bezienswaardigheid (city, castle, nature, museum, …) → icoontje in de pin. */
+  kind?: string
+}
+
+/* ── POI-pin: witte druppel met daarin een icoontje dat bij de soort past ──
+   24×24-glyphs (lijnen), in de kop van de pin geschaald naar 16 px. */
+const POI_GLYPHS: Record<string, string> = {
+  city: '<path d="M3 21h18M5 21V9h5v12M10 21V5h5v16M15 21v-8h4v8"/>',
+  village: '<path d="M4 11l8-7 8 7M6 10v10h12V10M10 20v-5h4v5"/>',
+  castle: '<path d="M4 21V8h3V5h2v3h2V5h2v3h2V5h2v3h3v13H4zM10 21v-5h4v5"/>',
+  nature: '<path d="M12 3l5 7h-3l4 5H6l4-5H7l5-7zM12 15v6M9 21h6"/>',
+  museum: '<path d="M3 21h18M4 9h16l-8-5-8 5zM6 9v9M10 9v9M14 9v9M18 9v9M4 18h16"/>',
+  beach: '<path d="M3 13a9 9 0 0118 0H3zM12 13v8M9 21h6M12 4v2"/>',
+  water: '<path d="M3 9c2 0 2 2 4.5 2S10 9 12 9s2.5 2 4.5 2S19 9 21 9M3 15c2 0 2 2 4.5 2S10 15 12 15s2.5 2 4.5 2 2.5-2 4.5-2"/>',
+  tower: '<path d="M9 21V7l3-4 3 4v14M8 21h8M9 11h6M12 21v-4"/>',
+  church: '<path d="M12 2v5M10 4h4M8 21V11l4-3 4 3v10M7 21h10M11 21v-4h2v4M4 21v-6h4M20 21v-6h-4"/>',
+  shopping: '<path d="M6 8h12l1 13H5L6 8zM9 8V6a3 3 0 016 0v2"/>',
+  place: '<circle cx="12" cy="12" r="4"/>',
+}
+export const POI_PIN_SIZE: [number, number] = [33, 40]
+/** Witte pin (1,25× de oude zwarte) met icoontje; onbekende soort → stip. */
+export function poiPinSvg(kind?: string): string {
+  const glyph = POI_GLYPHS[kind ?? ''] ?? POI_GLYPHS.place
+  return `<svg width="${POI_PIN_SIZE[0]}" height="${POI_PIN_SIZE[1]}" viewBox="0 0 32 42" fill="none" aria-hidden="true">`
+    + '<path d="M16 0.8C7.6 0.8 0.8 7.6 0.8 16c0 11.4 15.2 24.8 15.2 24.8S31.2 27.4 31.2 16C31.2 7.6 24.4 0.8 16 0.8z" fill="#fff" stroke="#141414" stroke-width="1.6"/>'
+    + `<g transform="translate(8 8) scale(0.667)" stroke="#141414" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none">${glyph}</g></svg>`
+}
+export const POI_PIN_SVG = poiPinSvg()
+
+/** Markers die elkaar overlappen uit elkaar duwen (pixels, na elke zoom
+ *  opnieuw vanaf de echte coördinaten). Geografisch iets minder precies, maar
+ *  elke marker blijft zichtbaar en klikbaar. `anchor`: 'center' (hotelbol) of
+ *  'bottom' (pin met de punt op de plek). */
+export interface SpreadItem { marker: Leaflet.Marker; w: number; h: number; anchor: 'center' | 'bottom' }
+export function spreadMarkers(L: L, map: Leaflet.Map, items: SpreadItem[], margin = 4): void {
+  type Box = { x: number; y: number; it: SpreadItem }
+  const boxes: Box[] = items.map((it) => {
+    const m = it.marker as Leaflet.Marker & { __orig?: Leaflet.LatLng }
+    if (!m.__orig) m.__orig = m.getLatLng()
+    const p = map.latLngToLayerPoint(m.__orig)
+    return { x: p.x, y: p.y, it }
+  })
+  const rect = (b: Box) => (b.it.anchor === 'bottom'
+    ? { l: b.x - b.it.w / 2, r: b.x + b.it.w / 2, t: b.y - b.it.h, b: b.y }
+    : { l: b.x - b.it.w / 2, r: b.x + b.it.w / 2, t: b.y - b.it.h / 2, b: b.y + b.it.h / 2 })
+  for (let iter = 0; iter < 80; iter++) {
+    let moved = false
+    for (let i = 0; i < boxes.length; i++) {
+      for (let j = i + 1; j < boxes.length; j++) {
+        const A = boxes[i]!, B = boxes[j]!
+        const a = rect(A), b = rect(B)
+        const ox = Math.min(a.r, b.r) - Math.max(a.l, b.l) + margin
+        const oy = Math.min(a.b, b.b) - Math.max(a.t, b.t) + margin
+        if (ox <= 0 || oy <= 0) continue
+        // Kleinste verschuiving: horizontaal of verticaal uit elkaar.
+        if (ox < oy) { const s = A.x <= B.x ? 1 : -1; A.x -= s * ox / 2; B.x += s * ox / 2 }
+        else { const s = A.y <= B.y ? 1 : -1; A.y -= s * oy / 2; B.y += s * oy / 2 }
+        moved = true
+      }
+    }
+    if (!moved) break
+  }
+  boxes.forEach(b => b.it.marker.setLatLng(map.layerPointToLatLng(L.point(b.x, b.y))))
 }
 
 export function escapeHtml(s: string): string {
@@ -213,10 +276,11 @@ export function keepLabelsInView(map: Leaflet.Map, markers: Leaflet.Marker[]): v
 
 /** Omgevingshighlights als pin met hover-kaartje. */
 export function addTripHighlights(L: L, map: Leaflet.Map, highlights: TripMapHighlight[]): Leaflet.Marker[] {
-  return highlights.map((h) => {
-    const icon = L.divIcon({ className: 'tml-pin', html: PIN_SVG, iconSize: [26, 32], iconAnchor: [13, 31] })
-    const m = L.marker([h.lat, h.lng], { icon, keyboard: false }).addTo(map)
-    m.bindTooltip(hoverCardHtml({ image: h.image, title: h.name, lines: [h.text] }), { ...TOOLTIP, offset: [0, -30] })
+  const [w, h] = POI_PIN_SIZE
+  return highlights.map((hl) => {
+    const icon = L.divIcon({ className: 'tml-pin', html: poiPinSvg(hl.kind), iconSize: [w, h], iconAnchor: [w / 2, h - 1] })
+    const m = L.marker([hl.lat, hl.lng], { icon, keyboard: false, zIndexOffset: 800 }).addTo(map)
+    m.bindTooltip(hoverCardHtml({ image: hl.image, title: hl.name, lines: [hl.text] }), { ...TOOLTIP, offset: [0, -(h - 2)] })
     return m
   })
 }

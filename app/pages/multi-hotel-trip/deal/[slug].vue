@@ -1156,7 +1156,7 @@ import { useMultiHotelTripDealStore } from '~/stores-multi-hotel-trip/deal'
 import { useSearchNavLock } from '~/composables-multi-hotel-trip/useMobileSearchModalControl'
 import { useBodyScrollLock } from '~/composables-multi-hotel-trip/useBodyScrollLock'
 import { usePinToViewportBottom } from '~/composables-multi-hotel-trip/usePinToViewportBottom'
-import { creatorForSlug } from '~/data/team-members'
+import { creatorForSlug, teamMembers } from '~/data/team-members'
 import { withFietskaarten } from '~/data/fietskaarten'
 import MultiHotelTripExperienceCreatorCard from '~/components-multi-hotel-trip/deal/ExperienceCreatorCard.vue'
 import MultiHotelTripWhyViaLuxury from '~/components-multi-hotel-trip/deal/WhyViaLuxury.vue'
@@ -1502,7 +1502,8 @@ const routeSlug = computed(() => (route.params.slug as string) || defaultDealPer
 /** Deterministic Experience Creator pick — same slug always returns the
  *  same team member, so the v6 business card stays stable across reloads
  *  while different deals show different creators. */
-const creator = computed(() => creatorForSlug(routeSlug.value))
+// Vakanties: altijd Yvette als samensteller ("Samengesteld door"-kaartje boven de gallery).
+const creator = computed(() => (tripPdpBySlug(routeSlug.value) ? (teamMembers.find(m => m.name === 'Yvette') ?? creatorForSlug(routeSlug.value)) : creatorForSlug(routeSlug.value)))
 // Multi Hotel Trip: een vakantie-slug (zie data/mht-trips.ts) levert een
 // samengestelde Deal + Hotel ("3 fantastische hotels") — de pagina toont dan
 // de vakantieblokken (routekaart, hotels per dag) in plaats van
@@ -1733,11 +1734,10 @@ const tripMapSummary = computed<({ icon: string; text: string } | undefined)[]>(
     ]
   }
   const km = trip.stops.reduce((sum, s, i) => sum + (s.travel?.km ?? legs.find(l => l.to === i && !l.return)?.km ?? 0), 0)
-  const min = trip.stops.reduce((sum, s, i) => sum + (s.travel?.minutes ?? legs.find(l => l.to === i && !l.return)?.minutes ?? 0), 0)
   return [
     trip.fromHome && first ? { icon: 'car', text: t('trip.fromHomeLine').replace('{city}', trip.fromHome.city).replace('{duration}', tripDurationLabel(trip.fromHome.minutes)).replace('{to}', first.city) } : undefined,
     km ? { icon: 'route', text: t('trip.totalRouteLine').replace('{km}', String(km)) } : undefined,
-    min ? { icon: 'clock', text: t('trip.totalDriveLine').replace('{duration}', tripDurationLabel(min)) } : undefined,
+    // Geen "Totale rijtijd"-regel meer onder de minimap (2026-09-28).
   ]
 })
 /** Label van de terugetappe (rondje): kort voor de minimap ("20 km"), volledig voor de grote kaart. */
@@ -1873,6 +1873,7 @@ const tripDaysView = computed<TripDayView[]>(() => {
 const tripMapOpen = ref(false)
 const tripMapHighlights = computed(() =>
   (tripPdp?.content?.mapHighlights ?? []).map(h => ({
+    kind: h.kind,
     name: localized(h.name),
     lat: h.lat,
     lng: h.lng,

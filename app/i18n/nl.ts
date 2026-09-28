@@ -238,9 +238,9 @@ const nl: Record<string, string> = {
   'search.hotelDealsAndHolidays': 'hotelarrangementen & vakanties',
   'search.holidaysTitle': 'Vakanties',
   // Titel van de vakantie-zoekresultaten: "7 fiets- en autovakanties" / "1 fiets- of autovakantie"
-  'search.tripResultsOne': 'fiets- of autovakantie',
-  'search.tripResultsMany': 'fiets- en autovakanties',
-  'search.holidaysHeroTitle': 'Rondreizen met auto of fiets',
+  'search.tripResultsOne': 'auto- of fietsvakantie',
+  'search.tripResultsMany': 'auto- en fietsvakanties',
+  'search.holidaysHeroTitle': 'Auto- en fietsvakanties',
   'search.holidaysPitch': 'Verken een prachtige streek met auto of fiets, en verblijf in 3 verschillende hotels. Met zorg samengesteld en persoonlijk gecheckt.',
   'trip.auto': 'Autovakantie',
   'trip.fiets': 'Fietsvakantie',
@@ -361,8 +361,8 @@ const nl: Record<string, string> = {
   'trip.checkInFrom': 'Inchecken vanaf {time}',
   // Multi Hotel Trip — reisduur in twee groepen (kort / lang)
   'nights.group.short': 'Kort verblijf',
-  'nights.group.long': 'Lang verblijf of Rondreis',
-  'nights.group.both': 'Kort verblijf, lang verblijf of rondreis',
+  'nights.group.long': 'Lang verblijf of vakantie',
+  'nights.group.both': 'Kort verblijf, lang verblijf of vakantie',
   // Compacte veldwaarde/pill: alleen nachten
   'nights.orMore': '{n} of meer nachten',
   'nights.range': '{a}-{b} nachten',

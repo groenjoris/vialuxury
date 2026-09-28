@@ -109,7 +109,7 @@ export const FILTER_TAGS: FilterTag[] = [
   // matcht ook de losse fietsarrangementen).
   {
     id: 'rondreizen',
-    label: 'Rondreizen',
+    label: 'Auto- en fietsvakanties',
     emoji: '\u{1F9ED}',
     category: 'thema',
     matches: (_d, h) => !!h.trip,

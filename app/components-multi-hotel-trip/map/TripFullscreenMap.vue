@@ -19,7 +19,7 @@
             </div>
             <ul class="tfm__legend" aria-label="Legenda">
               <li><span class="tfm__legend-hotel">1</span>{{ t('trip.mapLegendHotels') }}</li>
-              <li><span class="tfm__legend-pin" v-html="PIN_SVG"></span>{{ t('trip.mapLegendHighlights') }}</li>
+              <li><span class="tfm__legend-pin" v-html="POI_PIN_SVG"></span>{{ t('trip.mapLegendHighlights') }}</li>
             </ul>
             <!-- Prominente sluitknop, zoals "Sluit kaart" op /kaart; krimpt mee met de topbalk. -->
             <button type="button" class="tfm__close" @click="$emit('close')">
@@ -27,7 +27,8 @@
               <span>{{ t('trip.closeMap') }}</span>
             </button>
           </header>
-          <div ref="mapEl" class="tfm__map"></div>
+          <!-- Zonder CARTO-key: OSM-tegels, verzacht (minder detail in beeld). -->
+          <div ref="mapEl" class="tfm__map" :class="{ 'tfm__map--soft': !cartoApiKey }"></div>
           <div class="tfm__zoom">
             <button type="button" class="tfm__zoom-btn" aria-label="Inzoomen" @click="map?.zoomIn()">+</button>
             <button type="button" class="tfm__zoom-btn" aria-label="Uitzoomen" @click="map?.zoomOut()">−</button>
@@ -46,18 +47,20 @@
 import { useBodyScrollLock } from '~/composables-multi-hotel-trip/useBodyScrollLock'
 import type { TripHotelModalData } from '~/components-multi-hotel-trip/deal/TripHotelDetails.vue'
 import {
-  PIN_SVG,
-  addOsmTiles,
+  POI_PIN_SVG,
+  POI_PIN_SIZE,
   addCountryBorders,
   addTripRoute,
   addTripHotels,
   addTripHighlights,
   hoverCardHtml,
   keepLabelsInView,
+  spreadMarkers,
   type TripMapStop,
   type TripMapHighlight,
   type TripRouteLeg,
 } from '~/utils-multi-hotel-trip/tripMapLayers'
+import { addBasemapTiles } from '~/utils/mapTiles'
 
 const props = defineProps<{
   open: boolean
@@ -81,28 +84,39 @@ const emit = defineEmits<{ close: [] }>()
 
 const { t } = useMultiHotelTripI18n()
 useBodyScrollLock().bindTo(computed(() => props.open))
+// CARTO Voyager mét key (rustiger, minder detail); anders verzachte OSM-tegels.
+const cartoApiKey = useRuntimeConfig().public.cartoApiKey as string
 
-/** Geselecteerd hotel (index) → sidepanel open; kaart schuift naar links. */
+/** Geselecteerd hotel (index) → sidepanel open; de kaart krimpt en past de
+ *  route opnieuw in het overgebleven vlak, zodat alle hotels zichtbaar blijven. */
 const selectedHotel = ref<number | null>(null)
 const panelHotel = computed(() => (selectedHotel.value != null ? props.hotels?.[selectedHotel.value] ?? null : null))
-watch(selectedHotel, () => { setTimeout(() => map?.invalidateSize({ pan: false }), 320) })
+watch(selectedHotel, () => { setTimeout(() => { map?.invalidateSize({ pan: false }); refit(true) }, 320) })
 watch(() => props.open, (on) => { if (!on) selectedHotel.value = null })
 
 const mapEl = ref<HTMLElement | null>(null)
 let map: import('leaflet').Map | null = null
+let fitBounds: import('leaflet').LatLngBounds | null = null
+/** Alle hotels + highlights opnieuw in beeld passen (na openen/sluiten van het panel). */
+function refit(animate = false) {
+  if (!map || !fitBounds) return
+  map.fitBounds(fitBounds, { padding: [72, 72], maxZoom: 13, animate })
+}
+
+const HOTEL_SIZE = 45 // 1,5× de vorige 30 px
 
 async function mount() {
   await nextTick()
   if (!mapEl.value || map) return
   const L = (await import('leaflet')).default
   map = L.map(mapEl.value, { zoomControl: false, attributionControl: true, scrollWheelZoom: true })
-  addOsmTiles(L, map)
+  addBasemapTiles(L, map, cartoApiKey)
   addCountryBorders(L, map, 2)
   const routeBounds = addTripRoute(L, map, props.stops, { distances: true, legs: props.legs, returnLabel: props.returnLabel })
   const hotelMarkers = addTripHotels(L, map, props.stops, {
-    size: 30,
+    size: HOTEL_SIZE,
     labelText: s => s.title ?? s.label,
-    labelSize: 13,
+    labelSize: 14,
     onClick: i => { selectedHotel.value = i },
     hoverHtml: (s, i) => hoverCardHtml({
       image: s.image,
@@ -111,7 +125,14 @@ async function mount() {
       lines: [s.label, props.nightsLabels?.[i] ?? ''],
     }),
   })
-  addTripHighlights(L, map, props.highlights)
+  const poiMarkers = addTripHighlights(L, map, props.highlights)
+
+  // Overlappende markers uit elkaar duwen (hotels én highlights), opnieuw na elke zoom.
+  const spreadItems = [
+    ...hotelMarkers.map(m => ({ marker: m, w: HOTEL_SIZE, h: HOTEL_SIZE, anchor: 'center' as const })),
+    ...poiMarkers.map(m => ({ marker: m, w: POI_PIN_SIZE[0], h: POI_PIN_SIZE[1], anchor: 'bottom' as const })),
+  ]
+  const relayout = () => { if (!map) return; spreadMarkers(L, map, spreadItems); keepLabelsInView(map, hotelMarkers) }
 
   const all = [
     ...props.stops.map(s => [s.lat, s.lng] as [number, number]),
@@ -120,16 +141,19 @@ async function mount() {
   if (all.length) {
     const b = L.latLngBounds(all)
     if (routeBounds?.isValid()) b.extend(routeBounds)
-    map.fitBounds(b, { padding: [72, 72], maxZoom: 13 })
+    fitBounds = b
+    refit(false)
   }
   setTimeout(() => map?.invalidateSize(), 50)
+  map.on('zoomend', relayout)
   map.on('moveend', () => { if (map) keepLabelsInView(map, hotelMarkers) })
-  setTimeout(() => { if (map) keepLabelsInView(map, hotelMarkers) }, 120)
+  setTimeout(relayout, 120)
 }
 
 function unmount() {
   map?.remove()
   map = null
+  fitBounds = null
 }
 
 watch(() => props.open, (on) => { if (on) mount(); else unmount() })
@@ -233,6 +257,9 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 }
 .tfm__close:hover { background: #2b2b2b; }
 .tfm__map { flex: 1; min-height: 0; }
+/* OSM-tegels (zonder CARTO-key) verzacht: minder kleur en contrast, zodat
+   straatnamen en kleine wegen minder opdringerig zijn. */
+.tfm__map--soft :deep(.leaflet-tile-pane) { filter: saturate(0.5) brightness(1.05) contrast(0.92); }
 
 .tfm__zoom {
   position: absolute;

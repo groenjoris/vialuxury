@@ -66,10 +66,14 @@ export interface TripDaySpec {
 }
 
 /** Omgevingshighlight op de fullscreen kaart: icoon op de kaart, hover met foto + uitleg. */
+/** Soort bezienswaardigheid — bepaalt het icoontje in de witte pin op de grote kaart. */
+export type TripPoiKind = 'city' | 'village' | 'castle' | 'nature' | 'museum' | 'beach' | 'water' | 'tower' | 'church' | 'shopping'
+
 export interface TripMapHighlight {
   name: LocalizedString
   lat: number
   lng: number
+  kind?: TripPoiKind
   text: LocalizedString
   image?: string
 }
@@ -354,14 +358,14 @@ export const TRIP_ITINERARIES: Record<string, TripItinerarySpec> = {
           image: img('001', 'wissant') } },
     ],
     mapHighlights: [
-      { name: l('Belfort van Béthune', 'Belfry of Béthune'), lat: 50.5305, lng: 2.641, text: l('UNESCO-belfort uit 1388 op de Grand-Place, omringd door art-decogevels uit de wederopbouw.', 'UNESCO belfry from 1388 on the Grand-Place, surrounded by art-deco façades from the reconstruction.'), image: img('001', 'bethune') },
-      { name: l('Lille', 'Lille'), lat: 50.6372, lng: 3.0633, text: l('Bruisende hoofdstad van Frans-Vlaanderen: Grand-Place, Vieux-Lille en de beste brasseries van het noorden.', 'Buzzing capital of French Flanders: Grand-Place, Vieux-Lille and the best brasseries in the north.'), image: '/images/vakanties/001/nearby-lille.jpg' },
-      { name: l('Marais audomarois', 'Marais audomarois'), lat: 50.75, lng: 2.252, text: l('Het laatste bewoonde moeras van Frankrijk, per fluisterboot langs groentetuinen en bruggetjes.', "France's last inhabited marsh, by whisper boat past vegetable gardens and little bridges."), image: img('001', 'marais') },
-      { name: l('La Coupole', 'La Coupole'), lat: 50.705, lng: 2.242, text: l('Betonnen koepel voor V2-raketten, nu een indrukwekkend geschiedenismuseum.', 'Concrete dome built for V2 rockets, now an impressive history museum.'), image: img('001', 'boulogne') },
-      { name: l('Cap Blanc-Nez', 'Cap Blanc-Nez'), lat: 50.924, lng: 1.712, text: l('Krijtrotsen met bij helder weer zicht op Engeland.', 'Chalk cliffs with views of England on a clear day.'), image: img('001', 'blancnez') },
-      { name: l('Wissant', 'Wissant'), lat: 50.886, lng: 1.662, text: l('Breed strand tussen de twee kapen, ideaal voor lunch met zeezicht.', 'Wide beach between the two capes, ideal for lunch by the sea.'), image: img('001', 'wissant') },
-      { name: l('Boulogne-sur-Mer', 'Boulogne-sur-Mer'), lat: 50.726, lng: 1.613, text: l('Ommuurde bovenstad met basiliek en kasteel; aan de haven Nausicaá, het grootste aquarium van Europa.', "Walled upper town with basilica and castle; Nausicaá, Europe's largest aquarium, by the harbour."), image: img('001', 'boulogne') },
-      { name: l('Montreuil-sur-Mer', 'Montreuil-sur-Mer'), lat: 50.464, lng: 1.763, text: l('Vestingstadje van Victor Hugo, drie kilometer wallen en goede restaurants.', "Victor Hugo's fortified town, three kilometres of ramparts and good restaurants."), image: img('001', 'montreuil') },
+      { kind: 'tower', name: l('Belfort van Béthune', 'Belfry of Béthune'), lat: 50.5305, lng: 2.641, text: l('UNESCO-belfort uit 1388 op de Grand-Place, omringd door art-decogevels uit de wederopbouw.', 'UNESCO belfry from 1388 on the Grand-Place, surrounded by art-deco façades from the reconstruction.'), image: img('001', 'bethune') },
+      { kind: 'city', name: l('Lille', 'Lille'), lat: 50.6372, lng: 3.0633, text: l('Bruisende hoofdstad van Frans-Vlaanderen: Grand-Place, Vieux-Lille en de beste brasseries van het noorden.', 'Buzzing capital of French Flanders: Grand-Place, Vieux-Lille and the best brasseries in the north.'), image: '/images/vakanties/001/nearby-lille.jpg' },
+      { kind: 'water', name: l('Marais audomarois', 'Marais audomarois'), lat: 50.75, lng: 2.252, text: l('Het laatste bewoonde moeras van Frankrijk, per fluisterboot langs groentetuinen en bruggetjes.', "France's last inhabited marsh, by whisper boat past vegetable gardens and little bridges."), image: img('001', 'marais') },
+      { kind: 'museum', name: l('La Coupole', 'La Coupole'), lat: 50.705, lng: 2.242, text: l('Betonnen koepel voor V2-raketten, nu een indrukwekkend geschiedenismuseum.', 'Concrete dome built for V2 rockets, now an impressive history museum.'), image: img('001', 'boulogne') },
+      { kind: 'nature', name: l('Cap Blanc-Nez', 'Cap Blanc-Nez'), lat: 50.924, lng: 1.712, text: l('Krijtrotsen met bij helder weer zicht op Engeland.', 'Chalk cliffs with views of England on a clear day.'), image: img('001', 'blancnez') },
+      { kind: 'beach', name: l('Wissant', 'Wissant'), lat: 50.886, lng: 1.662, text: l('Breed strand tussen de twee kapen, ideaal voor lunch met zeezicht.', 'Wide beach between the two capes, ideal for lunch by the sea.'), image: img('001', 'wissant') },
+      { kind: 'city', name: l('Boulogne-sur-Mer', 'Boulogne-sur-Mer'), lat: 50.726, lng: 1.613, text: l('Ommuurde bovenstad met basiliek en kasteel; aan de haven Nausicaá, het grootste aquarium van Europa.', "Walled upper town with basilica and castle; Nausicaá, Europe's largest aquarium, by the harbour."), image: img('001', 'boulogne') },
+      { kind: 'village', name: l('Montreuil-sur-Mer', 'Montreuil-sur-Mer'), lat: 50.464, lng: 1.763, text: l('Vestingstadje van Victor Hugo, drie kilometer wallen en goede restaurants.', "Victor Hugo's fortified town, three kilometres of ramparts and good restaurants."), image: img('001', 'montreuil') },
     ],
   },
 
@@ -424,13 +428,13 @@ export const TRIP_ITINERARIES: Record<string, TripItinerarySpec> = {
       { day: 7, homeward: { title: l('Late check-out en terugreis', 'Late check-out and journey home'), text: l('Ontbijt rustig en check pas rond het middaguur uit. Utrecht ligt op een uur en een kwartier; wie wil, rijdt via de Veluwe en Kasteel Rosendael.', 'Enjoy a slow breakfast and check out around noon. Utrecht is an hour and a quarter away; if you like, drive via the Veluwe and Rosendael castle.'), image: FIETS.deventer } },
     ],
     mapHighlights: [
-      { name: l('Kasteel Rechteren', 'Rechteren Castle'), lat: 52.503, lng: 6.301, text: l('Kasteel aan de Vecht, op fiets- of kanoafstand van het hotel.', 'Castle on the Vecht, within cycling or canoeing distance of the hotel.'), image: img('002', 'vecht') },
-      { name: l('Sassenpoort Zwolle', 'Sassenpoort Zwolle'), lat: 52.51, lng: 6.095, text: l('Middeleeuwse stadspoort, startpunt voor de binnenstad en de Grote Markt.', 'Medieval town gate, starting point for the old town and the Grote Markt.'), image: img('002', 'zwolle') },
-      { name: l('Museum de Fundatie', 'Museum de Fundatie'), lat: 52.511, lng: 6.093, text: l('Kunst van Mondriaan tot Marlene Dumas onder de blauw-witte wolk.', 'Art from Mondrian to Marlene Dumas beneath the blue-and-white cloud.'), image: img('002', 'fundatie') },
-      { name: l('Holterberg', 'Holterberg'), lat: 52.305, lng: 6.425, text: l('Uitkijktoren en bezoekerscentrum van de Sallandse Heuvelrug.', 'Lookout tower and visitor centre of the Sallandse Heuvelrug.'), image: img('002', 'vecht') },
-      { name: l('Deventer', 'Deventer'), lat: 52.252, lng: 6.16, text: l('De Brink, het Bergkwartier en de Lebuïnustoren; voetveer over de IJssel.', 'The Brink, the Bergkwartier and the Lebuïnus tower; foot ferry across the IJssel.'), image: img('002', 'deventer') },
-      { name: l('Bronkhorst', 'Bronkhorst'), lat: 52.079, lng: 6.199, text: l('De kleinste stad van Nederland: rieten boerderijen en het Dickens Museum.', 'The smallest town in the Netherlands: thatched farmhouses and the Dickens Museum.'), image: img('002', 'bronkhorst') },
-      { name: l('Walburgiskerk Zutphen', 'Walburgis church Zutphen'), lat: 52.138, lng: 6.201, text: l('Met de Librije, een van de weinige middeleeuwse kettingbibliotheken ter wereld.', 'With the Librije, one of the few surviving medieval chained libraries.'), image: img('002', 'zutphen') },
+      { kind: 'castle', name: l('Kasteel Rechteren', 'Rechteren Castle'), lat: 52.503, lng: 6.301, text: l('Kasteel aan de Vecht, op fiets- of kanoafstand van het hotel.', 'Castle on the Vecht, within cycling or canoeing distance of the hotel.'), image: img('002', 'vecht') },
+      { kind: 'tower', name: l('Sassenpoort Zwolle', 'Sassenpoort Zwolle'), lat: 52.51, lng: 6.095, text: l('Middeleeuwse stadspoort, startpunt voor de binnenstad en de Grote Markt.', 'Medieval town gate, starting point for the old town and the Grote Markt.'), image: img('002', 'zwolle') },
+      { kind: 'museum', name: l('Museum de Fundatie', 'Museum de Fundatie'), lat: 52.511, lng: 6.093, text: l('Kunst van Mondriaan tot Marlene Dumas onder de blauw-witte wolk.', 'Art from Mondrian to Marlene Dumas beneath the blue-and-white cloud.'), image: img('002', 'fundatie') },
+      { kind: 'nature', name: l('Holterberg', 'Holterberg'), lat: 52.305, lng: 6.425, text: l('Uitkijktoren en bezoekerscentrum van de Sallandse Heuvelrug.', 'Lookout tower and visitor centre of the Sallandse Heuvelrug.'), image: img('002', 'vecht') },
+      { kind: 'city', name: l('Deventer', 'Deventer'), lat: 52.252, lng: 6.16, text: l('De Brink, het Bergkwartier en de Lebuïnustoren; voetveer over de IJssel.', 'The Brink, the Bergkwartier and the Lebuïnus tower; foot ferry across the IJssel.'), image: img('002', 'deventer') },
+      { kind: 'village', name: l('Bronkhorst', 'Bronkhorst'), lat: 52.079, lng: 6.199, text: l('De kleinste stad van Nederland: rieten boerderijen en het Dickens Museum.', 'The smallest town in the Netherlands: thatched farmhouses and the Dickens Museum.'), image: img('002', 'bronkhorst') },
+      { kind: 'church', name: l('Walburgiskerk Zutphen', 'Walburgis church Zutphen'), lat: 52.138, lng: 6.201, text: l('Met de Librije, een van de weinige middeleeuwse kettingbibliotheken ter wereld.', 'With the Librije, one of the few surviving medieval chained libraries.'), image: img('002', 'zutphen') },
     ],
   },
 
@@ -493,13 +497,13 @@ export const TRIP_ITINERARIES: Record<string, TripItinerarySpec> = {
       { day: 7, homeward: { title: l('Uitgebreid ontbijt en terugreis', 'Leisurely breakfast and journey home'), text: l('Late check-out tot 13.00 uur, dus geniet nog even van het landgoed. Utrecht ligt op een uur en veertig minuten rijden.', 'Late check-out until 1 pm, so enjoy the estate a little longer. Utrecht is an hour and forty minutes\' drive.'), image: img('003', 'singraven') } },
     ],
     mapHighlights: [
-      { name: l('Kasteel Rosendael', 'Rosendael Castle'), lat: 52.011, lng: 5.97, text: l('Kasteel in een landschapspark met vijvers en de beroemde bedriegertjes.', 'Castle in a landscape park with ponds and the famous trick fountains.'), image: img('003', 'rosendael') },
-      { name: l('Kröller-Müller Museum', 'Kröller-Müller Museum'), lat: 52.095, lng: 5.817, text: l('Van Goghs en een grote beeldentuin midden in De Hoge Veluwe.', 'Van Goghs and a large sculpture garden in the middle of De Hoge Veluwe.'), image: img('003', 'kroller') },
-      { name: l('Landgoed Middachten', 'Middachten Estate'), lat: 52.011, lng: 6.085, text: l('Imposant kasteel met historische tuinen in De Steeg.', 'Imposing castle with historic gardens in De Steeg.'), image: img('003', 'middachten') },
-      { name: l('Zutphen', 'Zutphen'), lat: 52.14, lng: 6.2, text: l('Hanzestad met Walburgiskerk, hofjes en de IJsselkade.', 'Hanseatic town with the Walburgis church, courtyards and the IJssel quay.'), image: img('002', 'zutphen') },
-      { name: l('Kasteel Ruurlo', 'Ruurlo Castle'), lat: 52.092, lng: 6.447, text: l('Museum MORE met de collectie van Carel Willink en de grootste doolhof van Europa.', "Museum MORE with the Carel Willink collection and Europe's largest maze."), image: img('003', 'ruurlo') },
-      { name: l('Landgoed Singraven', 'Singraven Estate'), lat: 52.364, lng: 6.999, text: l('Havezate, watermolen en beukenlanen bij Denekamp.', 'Manor, watermill and beech avenues near Denekamp.'), image: img('003', 'singraven') },
-      { name: l('Ootmarsum', 'Ootmarsum'), lat: 52.408, lng: 6.901, text: l('Kunststadje met galeries, ateliers en vakwerkhuizen.', 'Art town with galleries, studios and timber-framed houses.'), image: img('003', 'ootmarsum') },
+      { kind: 'castle', name: l('Kasteel Rosendael', 'Rosendael Castle'), lat: 52.011, lng: 5.97, text: l('Kasteel in een landschapspark met vijvers en de beroemde bedriegertjes.', 'Castle in a landscape park with ponds and the famous trick fountains.'), image: img('003', 'rosendael') },
+      { kind: 'museum', name: l('Kröller-Müller Museum', 'Kröller-Müller Museum'), lat: 52.095, lng: 5.817, text: l('Van Goghs en een grote beeldentuin midden in De Hoge Veluwe.', 'Van Goghs and a large sculpture garden in the middle of De Hoge Veluwe.'), image: img('003', 'kroller') },
+      { kind: 'castle', name: l('Landgoed Middachten', 'Middachten Estate'), lat: 52.011, lng: 6.085, text: l('Imposant kasteel met historische tuinen in De Steeg.', 'Imposing castle with historic gardens in De Steeg.'), image: img('003', 'middachten') },
+      { kind: 'city', name: l('Zutphen', 'Zutphen'), lat: 52.14, lng: 6.2, text: l('Hanzestad met Walburgiskerk, hofjes en de IJsselkade.', 'Hanseatic town with the Walburgis church, courtyards and the IJssel quay.'), image: img('002', 'zutphen') },
+      { kind: 'castle', name: l('Kasteel Ruurlo', 'Ruurlo Castle'), lat: 52.092, lng: 6.447, text: l('Museum MORE met de collectie van Carel Willink en de grootste doolhof van Europa.', "Museum MORE with the Carel Willink collection and Europe's largest maze."), image: img('003', 'ruurlo') },
+      { kind: 'castle', name: l('Landgoed Singraven', 'Singraven Estate'), lat: 52.364, lng: 6.999, text: l('Havezate, watermolen en beukenlanen bij Denekamp.', 'Manor, watermill and beech avenues near Denekamp.'), image: img('003', 'singraven') },
+      { kind: 'village', name: l('Ootmarsum', 'Ootmarsum'), lat: 52.408, lng: 6.901, text: l('Kunststadje met galeries, ateliers en vakwerkhuizen.', 'Art town with galleries, studios and timber-framed houses.'), image: img('003', 'ootmarsum') },
     ],
   },
 
@@ -562,14 +566,14 @@ export const TRIP_ITINERARIES: Record<string, TripItinerarySpec> = {
       { day: 7, homeward: { title: l('Uitgebreid ontbijt en ontspannen terugreis', 'Leisurely breakfast and relaxed journey home'), text: l('Ontbijt in alle rust en rij in twee uur terug naar Utrecht. Eventueel met een laatste stop in Thorn of bij de Maasplassen.', 'Breakfast at leisure and drive back to Utrecht in two hours, perhaps with a final stop in Thorn or at the Maasplassen lakes.'), image: img('004', 'thorn') } },
     ],
     mapHighlights: [
-      { name: l('Markt van Sittard', 'Sittard Markt'), lat: 50.998, lng: 5.869, text: l('Historisch centrum met het Kloosterkwartier, stadswallen en terrassen.', 'Historic centre with the Kloosterkwartier, ramparts and terraces.'), image: img('004', 'sittard') },
-      { name: l('Maasmechelen Village', 'Maasmechelen Village'), lat: 50.966, lng: 5.689, text: l('Outletdorp met ruim honderd merken; de VIP-pas is inbegrepen.', 'Outlet village with over a hundred brands; the VIP pass is included.'), image: img('004', 'heuvelland') },
-      { name: l('Kasteel Hoensbroek', 'Hoensbroek Castle'), lat: 50.921, lng: 5.915, text: l('Een van de grootste kastelen van Nederland, veertig zalen en torens.', 'One of the largest castles in the Netherlands, forty rooms and towers.'), image: img('004', 'hoensbroek') },
-      { name: l('Geuldal', 'Geul valley'), lat: 50.772, lng: 5.908, text: l('Vakwerkhuizen, wijngaarden en glooiende heuvels rond Epen en Mechelen.', 'Half-timbered houses, vineyards and rolling hills around Epen and Mechelen.'), image: img('004', 'heuvelland') },
-      { name: l('Valkenburg', 'Valkenburg'), lat: 50.865, lng: 5.832, text: l('Kasteelruïne en mergelgrotten in het hart van het Heuvelland.', 'Castle ruin and marl caves in the heart of the hill country.'), image: img('004', 'valkenburg') },
-      { name: l('Drielandenpunt', 'Three-country point'), lat: 50.754, lng: 6.021, text: l('Het hoogste punt van Nederland, met uitzicht over drie landen.', 'The highest point in the Netherlands, with views over three countries.'), image: img('004', 'valkenburg') },
-      { name: l('Vrijthof Maastricht', 'Vrijthof Maastricht'), lat: 50.849, lng: 5.688, text: l('Sint-Servaasbasiliek, de boekhandel in de Dominicanenkerk en het Wyck-kwartier.', 'Sint Servaas basilica, the bookshop in the Dominican church and the Wyck quarter.'), image: img('004', 'maastricht') },
-      { name: l('Thorn', 'Thorn'), lat: 51.162, lng: 5.842, text: l('Het witte stadje aan de Maas, mooi voor een laatste stop op de terugweg.', 'The white town on the Maas, a nice final stop on the way home.'), image: img('004', 'thorn') },
+      { kind: 'city', name: l('Markt van Sittard', 'Sittard Markt'), lat: 50.998, lng: 5.869, text: l('Historisch centrum met het Kloosterkwartier, stadswallen en terrassen.', 'Historic centre with the Kloosterkwartier, ramparts and terraces.'), image: img('004', 'sittard') },
+      { kind: 'shopping', name: l('Maasmechelen Village', 'Maasmechelen Village'), lat: 50.966, lng: 5.689, text: l('Outletdorp met ruim honderd merken; de VIP-pas is inbegrepen.', 'Outlet village with over a hundred brands; the VIP pass is included.'), image: img('004', 'heuvelland') },
+      { kind: 'castle', name: l('Kasteel Hoensbroek', 'Hoensbroek Castle'), lat: 50.921, lng: 5.915, text: l('Een van de grootste kastelen van Nederland, veertig zalen en torens.', 'One of the largest castles in the Netherlands, forty rooms and towers.'), image: img('004', 'hoensbroek') },
+      { kind: 'nature', name: l('Geuldal', 'Geul valley'), lat: 50.772, lng: 5.908, text: l('Vakwerkhuizen, wijngaarden en glooiende heuvels rond Epen en Mechelen.', 'Half-timbered houses, vineyards and rolling hills around Epen and Mechelen.'), image: img('004', 'heuvelland') },
+      { kind: 'village', name: l('Valkenburg', 'Valkenburg'), lat: 50.865, lng: 5.832, text: l('Kasteelruïne en mergelgrotten in het hart van het Heuvelland.', 'Castle ruin and marl caves in the heart of the hill country.'), image: img('004', 'valkenburg') },
+      { kind: 'nature', name: l('Drielandenpunt', 'Three-country point'), lat: 50.754, lng: 6.021, text: l('Het hoogste punt van Nederland, met uitzicht over drie landen.', 'The highest point in the Netherlands, with views over three countries.'), image: img('004', 'valkenburg') },
+      { kind: 'city', name: l('Vrijthof Maastricht', 'Vrijthof Maastricht'), lat: 50.849, lng: 5.688, text: l('Sint-Servaasbasiliek, de boekhandel in de Dominicanenkerk en het Wyck-kwartier.', 'Sint Servaas basilica, the bookshop in the Dominican church and the Wyck quarter.'), image: img('004', 'maastricht') },
+      { kind: 'village', name: l('Thorn', 'Thorn'), lat: 51.162, lng: 5.842, text: l('Het witte stadje aan de Maas, mooi voor een laatste stop op de terugweg.', 'The white town on the Maas, a nice final stop on the way home.'), image: img('004', 'thorn') },
     ],
   },
 
@@ -632,14 +636,14 @@ export const TRIP_ITINERARIES: Record<string, TripItinerarySpec> = {
       { day: 7, homeward: { title: l('Uitgebreid ontbijt en ontspannen terugreis', 'Leisurely breakfast and relaxed journey home'), text: l('Ontbijt in de kapel en rij in ruim twee uur terug naar Utrecht, eventueel met een stop in het witte stadje Thorn.', 'Breakfast in the chapel and drive back to Utrecht in just over two hours, perhaps with a stop in the white town of Thorn.'), image: img('004', 'thorn') } },
     ],
     mapHighlights: [
-      { name: l('Markt van Sittard', 'Sittard Markt'), lat: 50.998, lng: 5.869, text: l('Historisch centrum met het Kloosterkwartier, stadswallen en terrassen.', 'Historic centre with the Kloosterkwartier, ramparts and terraces.'), image: img('004', 'sittard') },
-      { name: l('Maasmechelen Village', 'Maasmechelen Village'), lat: 50.966, lng: 5.689, text: l('Outletdorp met ruim honderd merken; de VIP-pas is inbegrepen.', 'Outlet village with over a hundred brands; the VIP pass is included.'), image: img('004', 'heuvelland') },
-      { name: l('Kasteel Hoensbroek', 'Hoensbroek Castle'), lat: 50.921, lng: 5.915, text: l('Een van de grootste kastelen van Nederland, veertig zalen en torens.', 'One of the largest castles in the Netherlands, forty rooms and towers.'), image: img('004', 'hoensbroek') },
-      { name: l('Geuldal', 'Geul valley'), lat: 50.772, lng: 5.908, text: l('Vakwerkhuizen, wijngaarden en glooiende heuvels rond Epen en Mechelen.', 'Half-timbered houses, vineyards and rolling hills around Epen and Mechelen.'), image: img('004', 'heuvelland') },
-      { name: l('Valkenburg', 'Valkenburg'), lat: 50.865, lng: 5.832, text: l('Kasteelruïne en mergelgrotten in het hart van het Heuvelland.', 'Castle ruin and marl caves in the heart of the hill country.'), image: img('004', 'valkenburg') },
-      { name: l('Vrijthof Maastricht', 'Vrijthof Maastricht'), lat: 50.849, lng: 5.688, text: l('Stokstraatkwartier, Sint Servaasbrug naar Wyck en het Bonnefantenmuseum.', 'Stokstraat quarter, the Sint Servaas bridge to Wyck and the Bonnefanten museum.'), image: img('004', 'maastricht') },
-      { name: l('Sint-Pietersberg', 'Sint-Pietersberg'), lat: 50.833, lng: 5.686, text: l('Fort Sint Pieter, mergelgrotten en uitzicht over de stad.', 'Fort Sint Pieter, marl caves and a view over the city.'), image: img('004', 'servaasbrug') },
-      { name: l('Thorn', 'Thorn'), lat: 51.162, lng: 5.842, text: l('Het witte stadje aan de Maas, mooi voor een laatste stop op de terugweg.', 'The white town on the Maas, a nice final stop on the way home.'), image: img('004', 'thorn') },
+      { kind: 'city', name: l('Markt van Sittard', 'Sittard Markt'), lat: 50.998, lng: 5.869, text: l('Historisch centrum met het Kloosterkwartier, stadswallen en terrassen.', 'Historic centre with the Kloosterkwartier, ramparts and terraces.'), image: img('004', 'sittard') },
+      { kind: 'shopping', name: l('Maasmechelen Village', 'Maasmechelen Village'), lat: 50.966, lng: 5.689, text: l('Outletdorp met ruim honderd merken; de VIP-pas is inbegrepen.', 'Outlet village with over a hundred brands; the VIP pass is included.'), image: img('004', 'heuvelland') },
+      { kind: 'castle', name: l('Kasteel Hoensbroek', 'Hoensbroek Castle'), lat: 50.921, lng: 5.915, text: l('Een van de grootste kastelen van Nederland, veertig zalen en torens.', 'One of the largest castles in the Netherlands, forty rooms and towers.'), image: img('004', 'hoensbroek') },
+      { kind: 'nature', name: l('Geuldal', 'Geul valley'), lat: 50.772, lng: 5.908, text: l('Vakwerkhuizen, wijngaarden en glooiende heuvels rond Epen en Mechelen.', 'Half-timbered houses, vineyards and rolling hills around Epen and Mechelen.'), image: img('004', 'heuvelland') },
+      { kind: 'village', name: l('Valkenburg', 'Valkenburg'), lat: 50.865, lng: 5.832, text: l('Kasteelruïne en mergelgrotten in het hart van het Heuvelland.', 'Castle ruin and marl caves in the heart of the hill country.'), image: img('004', 'valkenburg') },
+      { kind: 'city', name: l('Vrijthof Maastricht', 'Vrijthof Maastricht'), lat: 50.849, lng: 5.688, text: l('Stokstraatkwartier, Sint Servaasbrug naar Wyck en het Bonnefantenmuseum.', 'Stokstraat quarter, the Sint Servaas bridge to Wyck and the Bonnefanten museum.'), image: img('004', 'maastricht') },
+      { kind: 'nature', name: l('Sint-Pietersberg', 'Sint-Pietersberg'), lat: 50.833, lng: 5.686, text: l('Fort Sint Pieter, mergelgrotten en uitzicht over de stad.', 'Fort Sint Pieter, marl caves and a view over the city.'), image: img('004', 'servaasbrug') },
+      { kind: 'village', name: l('Thorn', 'Thorn'), lat: 51.162, lng: 5.842, text: l('Het witte stadje aan de Maas, mooi voor een laatste stop op de terugweg.', 'The white town on the Maas, a nice final stop on the way home.'), image: img('004', 'thorn') },
     ],
   },
 
@@ -700,13 +704,13 @@ export const TRIP_ITINERARIES: Record<string, TripItinerarySpec> = {
       { day: 6, homeward: { title: l('Uitgebreid ontbijt en ontspannen terugreis', 'Leisurely breakfast and relaxed journey home'), text: l('Ontbijt rustig en rij in een uur terug naar Utrecht. Of maak er nog een halve dag Haarlem van.', 'Breakfast at leisure and drive back to Utrecht in an hour. Or make it another half day in Haarlem.'), image: img('006', 'haarlem') } },
     ],
     mapHighlights: [
-      { name: l('Duinen van Westerschouwen', 'Westerschouwen dunes'), lat: 51.69, lng: 3.715, text: l('Strand, duinen en bossen op de kop van Schouwen-Duiveland.', 'Beach, dunes and woods at the tip of Schouwen-Duiveland.'), image: img('006', 'westerschouwen') },
-      { name: l('Zierikzee', 'Zierikzee'), lat: 51.65, lng: 3.917, text: l('Monumentaal havenstadje met stadspoorten en de Dikke Toren.', 'Monumental harbour town with town gates and the Dikke Toren.'), image: img('006', 'zierikzee') },
-      { name: l('Oosterscheldekering', 'Oosterschelde barrier'), lat: 51.635, lng: 3.711, text: l('Deltawerken met Neeltje Jans en het Watersnoodmuseum vlakbij.', 'Delta Works with Neeltje Jans and the Flood Museum nearby.'), image: img('006', 'delta') },
-      { name: l('Scheveningen Pier', 'Scheveningen Pier'), lat: 52.109, lng: 4.279, text: l('De boulevard, de Pier met het reuzenrad en het strand voor het hotel.', 'The boulevard, the Pier with its Ferris wheel and the beach in front of the hotel.'), image: img('006', 'scheveningen') },
-      { name: l('Noordwijk', 'Noordwijk'), lat: 52.242, lng: 4.429, text: l('Boulevard en strand onderweg naar Haarlem, met de bollenvelden in het voorjaar.', 'Boulevard and beach on the way to Haarlem, with the bulb fields in spring.'), image: img('006', 'noordwijk') },
-      { name: l('Zandvoort', 'Zandvoort'), lat: 52.374, lng: 4.53, text: l('Strand op een kwartier van Haarlem, met de Kennemerduinen ernaast.', 'Beach fifteen minutes from Haarlem, with the Kennemer dunes next door.'), image: img('006', 'zandvoort') },
-      { name: l('Grote Markt Haarlem', 'Haarlem Grote Markt'), lat: 52.381, lng: 4.636, text: l('Sint-Bavokerk, Frans Hals Museum, Teylers Museum en de Gouden Straatjes.', 'Sint Bavo church, Frans Hals Museum, Teylers Museum and the Gouden Straatjes.'), image: img('006', 'haarlem') },
+      { kind: 'nature', name: l('Duinen van Westerschouwen', 'Westerschouwen dunes'), lat: 51.69, lng: 3.715, text: l('Strand, duinen en bossen op de kop van Schouwen-Duiveland.', 'Beach, dunes and woods at the tip of Schouwen-Duiveland.'), image: img('006', 'westerschouwen') },
+      { kind: 'village', name: l('Zierikzee', 'Zierikzee'), lat: 51.65, lng: 3.917, text: l('Monumentaal havenstadje met stadspoorten en de Dikke Toren.', 'Monumental harbour town with town gates and the Dikke Toren.'), image: img('006', 'zierikzee') },
+      { kind: 'water', name: l('Oosterscheldekering', 'Oosterschelde barrier'), lat: 51.635, lng: 3.711, text: l('Deltawerken met Neeltje Jans en het Watersnoodmuseum vlakbij.', 'Delta Works with Neeltje Jans and the Flood Museum nearby.'), image: img('006', 'delta') },
+      { kind: 'beach', name: l('Scheveningen Pier', 'Scheveningen Pier'), lat: 52.109, lng: 4.279, text: l('De boulevard, de Pier met het reuzenrad en het strand voor het hotel.', 'The boulevard, the Pier with its Ferris wheel and the beach in front of the hotel.'), image: img('006', 'scheveningen') },
+      { kind: 'beach', name: l('Noordwijk', 'Noordwijk'), lat: 52.242, lng: 4.429, text: l('Boulevard en strand onderweg naar Haarlem, met de bollenvelden in het voorjaar.', 'Boulevard and beach on the way to Haarlem, with the bulb fields in spring.'), image: img('006', 'noordwijk') },
+      { kind: 'beach', name: l('Zandvoort', 'Zandvoort'), lat: 52.374, lng: 4.53, text: l('Strand op een kwartier van Haarlem, met de Kennemerduinen ernaast.', 'Beach fifteen minutes from Haarlem, with the Kennemer dunes next door.'), image: img('006', 'zandvoort') },
+      { kind: 'city', name: l('Grote Markt Haarlem', 'Haarlem Grote Markt'), lat: 52.381, lng: 4.636, text: l('Sint-Bavokerk, Frans Hals Museum, Teylers Museum en de Gouden Straatjes.', 'Sint Bavo church, Frans Hals Museum, Teylers Museum and the Gouden Straatjes.'), image: img('006', 'haarlem') },
     ],
   },
 
@@ -840,12 +844,12 @@ export const TRIP_ITINERARIES: Record<string, TripItinerarySpec> = {
       { day: 7, homeward: { title: l('Terug naar Delden en naar huis', 'Back to Delden and home'), meta: l('20 km · ca. 1 uur 20 min fietsen · vlak · of mee met de bagagetransfer', '20 km · approx. 1 hour 20 min cycling · flat · or ride along with the luggage transfer'), text: l('Na het ontbijt fiets je de laatste 20 kilometer terug naar Delden, waar je auto staat. Of laat je met de bagage meerijden. Utrecht ligt op anderhalf uur.', 'After breakfast you cycle the last 20 kilometres back to Delden, where your car is waiting. Or ride along with the luggage. Utrecht is an hour and a half away.'), image: '/images/vakanties/007/kaart-lezen.jpg' } },
     ],
     mapHighlights: [
-      { name: l('Landgoed Twickel', 'Twickel Estate'), lat: 52.276, lng: 6.718, text: l('Kasteel, watermolen en oude eiken op een van de mooiste landgoederen van Nederland.', 'Castle, watermill and ancient oaks on one of the finest estates in the Netherlands.'), image: '/images/vakanties/007/twickel-kasteel.jpg' },
-      { name: l('Zoutmuseum Delden', 'Salt Museum Delden'), lat: 52.263, lng: 6.709, text: l('Klein museum over de zoutwinning in Twente, midden in Delden.', 'Small museum on salt mining in Twente, in the centre of Delden.'), image: '/images/vakanties/007/nearby-twickel.jpg' },
-      { name: l('Holterberg', 'Holterberg'), lat: 52.305, lng: 6.425, text: l('Uitkijktoren op de Sallandse Heuvelrug, halverwege de etappe naar Raalte.', 'Lookout tower on the Sallandse Heuvelrug, halfway along the leg to Raalte.'), image: '/images/vakanties/007/nearby-heuvelrug.jpg' },
-      { name: l('Deventer', 'Deventer'), lat: 52.252, lng: 6.16, text: l('Hanzestad met de Brink, het Bergkwartier en het voetveer over de IJssel.', 'Hanseatic town with the Brink, the Bergkwartier and the foot ferry across the IJssel.'), image: '/images/vakanties/007/nearby-deventer-brug.jpg' },
-      { name: l('Kastelen rond Diepenheim', 'Castles around Diepenheim'), lat: 52.199, lng: 6.534, text: l('Nijenhuis, Weldam, Warmelo en Huis Diepenheim op één fietsrondje.', 'Nijenhuis, Weldam, Warmelo and Huis Diepenheim on a single cycling loop.'), image: '/images/vakanties/007/nearby-fietsers-stad.jpg' },
-      { name: l('Goor', 'Goor'), lat: 52.232, lng: 6.585, text: l('Het stedeke Goor, onderweg op de kastelenroute.', 'The little town of Goor, on the castle route.'), image: '/images/vakanties/007/kaart-lezen.jpg' },
+      { kind: 'castle', name: l('Landgoed Twickel', 'Twickel Estate'), lat: 52.276, lng: 6.718, text: l('Kasteel, watermolen en oude eiken op een van de mooiste landgoederen van Nederland.', 'Castle, watermill and ancient oaks on one of the finest estates in the Netherlands.'), image: '/images/vakanties/007/twickel-kasteel.jpg' },
+      { kind: 'museum', name: l('Zoutmuseum Delden', 'Salt Museum Delden'), lat: 52.263, lng: 6.709, text: l('Klein museum over de zoutwinning in Twente, midden in Delden.', 'Small museum on salt mining in Twente, in the centre of Delden.'), image: '/images/vakanties/007/nearby-twickel.jpg' },
+      { kind: 'nature', name: l('Holterberg', 'Holterberg'), lat: 52.305, lng: 6.425, text: l('Uitkijktoren op de Sallandse Heuvelrug, halverwege de etappe naar Raalte.', 'Lookout tower on the Sallandse Heuvelrug, halfway along the leg to Raalte.'), image: '/images/vakanties/007/nearby-heuvelrug.jpg' },
+      { kind: 'city', name: l('Deventer', 'Deventer'), lat: 52.252, lng: 6.16, text: l('Hanzestad met de Brink, het Bergkwartier en het voetveer over de IJssel.', 'Hanseatic town with the Brink, the Bergkwartier and the foot ferry across the IJssel.'), image: '/images/vakanties/007/nearby-deventer-brug.jpg' },
+      { kind: 'castle', name: l('Kastelen rond Diepenheim', 'Castles around Diepenheim'), lat: 52.199, lng: 6.534, text: l('Nijenhuis, Weldam, Warmelo en Huis Diepenheim op één fietsrondje.', 'Nijenhuis, Weldam, Warmelo and Huis Diepenheim on a single cycling loop.'), image: '/images/vakanties/007/nearby-fietsers-stad.jpg' },
+      { kind: 'village', name: l('Goor', 'Goor'), lat: 52.232, lng: 6.585, text: l('Het stedeke Goor, onderweg op de kastelenroute.', 'The little town of Goor, on the castle route.'), image: '/images/vakanties/007/kaart-lezen.jpg' },
     ],
   },
 }
