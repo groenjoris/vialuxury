@@ -1,29 +1,20 @@
 <template>
-  <!-- Multi Hotel Trip — reizigersbeoordelingen van de vakantie als carrousel
-       (anderhalve kaart zichtbaar), onder de minimap boven de boekingszijbalk.
-       Kaart: een gekozen citaat uit de review, daaronder een kleine zwarte
-       avatar met naam en land, en "Meer info" → pop-up met de hele review:
-       titel (klein), maand van de vakantie, score, de volledige tekst
-       (scrollt als hij lang is) en de schrijver. -->
+  <!-- Multi Hotel Trip — drie reizigersbeoordelingen van de vakantie naast
+       elkaar (geen carrousel), boven het voorbeeld-reisschema. Kaart: cijfer +
+       oordeel, het gekozen citaat, een stuk van de review, daaronder een kleine
+       zwarte avatar met naam en land, en "Meer info" → pop-up met de hele
+       review: titel (klein), maand van de vakantie, score, de volledige tekst
+       (scrollt als hij lang is) en de schrijver. Mobiel: horizontaal swipen. -->
   <section class="trr" :aria-label="t('trip.reviews.heading')">
-    <div class="trr__head">
-      <h3 class="trr__title">{{ t('trip.reviews.heading') }}</h3>
-      <div class="trr__nav">
-        <button type="button" class="trr__arrow" :aria-label="t('trip.reviews.prev')" :disabled="active === 0" @click="scrollTo(active - 1)">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6" /></svg>
-        </button>
-        <button type="button" class="trr__arrow" :aria-label="t('trip.reviews.next')" :disabled="active >= reviews.length - 1" @click="scrollTo(active + 1)">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 6 15 12 9 18" /></svg>
-        </button>
-      </div>
-    </div>
-    <div ref="track" class="trr__track" @scroll.passive="onScroll">
+    <h3 class="trr__title">{{ t('trip.reviews.heading') }}</h3>
+    <div class="trr__grid">
       <article v-for="(r, i) in reviews" :key="i" class="trr-card">
         <div class="trr-card__top">
           <span class="trr-card__score" :aria-label="`${r.score.toFixed(1)}/10`">{{ r.score.toFixed(1) }}</span>
           <span class="trr-card__verdict">{{ t(getReviewLabelKey(r.score)) }}</span>
         </div>
         <p class="trr-card__quote">“{{ r.quote }}”</p>
+        <p class="trr-card__excerpt">{{ excerptOf(r) }}</p>
         <div class="trr-card__who">
           <span class="trr-avatar" :class="{ 'trr-avatar--img': r.avatar }" aria-hidden="true">
             <img v-if="r.avatar" :src="r.avatar" alt="" />
@@ -88,32 +79,14 @@ export interface TripReviewView {
   text: string
 }
 
-const props = defineProps<{ reviews: TripReviewView[] }>()
+defineProps<{ reviews: TripReviewView[] }>()
 
 const { t } = useMultiHotelTripI18n()
 const initialOf = (name: string) => (name.trim().charAt(0) || '?').toUpperCase()
 const paragraphsOf = (text: string) => text.split(/\n+/).map(s => s.trim()).filter(Boolean)
-
-/* Carrousel: actieve kaart voor de pijlen; scroll-snap doet de rest. */
-const track = ref<HTMLElement | null>(null)
-const active = ref(0)
-function step(): number {
-  const el = track.value
-  const card = el?.querySelector<HTMLElement>('.trr-card')
-  if (!el || !card) return 1
-  const gap = parseFloat(getComputedStyle(el).columnGap || '12') || 12
-  return card.offsetWidth + gap
-}
-function onScroll() {
-  if (!track.value) return
-  active.value = Math.max(0, Math.min(props.reviews.length - 1, Math.round(track.value.scrollLeft / step())))
-}
-function scrollTo(i: number) {
-  const el = track.value
-  if (!el) return
-  const idx = Math.max(0, Math.min(props.reviews.length - 1, i))
-  el.scrollTo({ left: idx * step(), behavior: 'smooth' })
-  active.value = idx
+/** Stuk van de review op de kaart: de tekst zonder het citaat (dat staat er al boven). */
+function excerptOf(r: TripReviewView): string {
+  return r.text.replace(r.quote, '').replace(/\n+/g, ' ').replace(/\s{2,}/g, ' ').replace(/^[\s,;.]+/, '').trim()
 }
 
 const info = ref<TripReviewView | null>(null)
@@ -124,43 +97,16 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 </script>
 
 <style scoped>
-.trr { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
-.trr__head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-md); }
-.trr__title { margin: 0; font-family: var(--font-heading); font-size: 18px; font-weight: 700; line-height: 1.25; color: var(--color-text-primary); }
-.trr__nav { display: flex; gap: 6px; flex-shrink: 0; }
-.trr__arrow {
-  width: 28px;
-  height: 28px;
-  padding: 0;
-  border: 1px solid var(--color-border, #ddd);
-  border-radius: 50%;
-  background: #fff;
-  color: var(--color-text-primary);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-}
-.trr__arrow:hover:not(:disabled) { border-color: var(--color-text-primary); }
-.trr__arrow:disabled { opacity: 0.35; cursor: default; }
-/* Kaarten van vaste breedte (in de linkerkolom ±2,4 zichtbaar; mobiel 76%). */
-.trr { --trr-card-w: 300px; }
-.trr__track {
-  display: flex;
-  gap: 12px;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  padding-bottom: 4px;
-  scrollbar-width: none;
-}
-.trr__track::-webkit-scrollbar { display: none; }
+.trr { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.trr__title { margin: 0; font-family: var(--font-heading); font-size: 20px; font-weight: 700; line-height: 1.25; color: var(--color-text-primary); }
+/* Drie kaarten naast elkaar, even hoog (anderhalf keer de oude hoogte: meer tekst). */
+.trr__grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
 .trr-card {
-  flex: 0 0 var(--trr-card-w);
-  scroll-snap-align: start;
+  min-height: 340px;
   display: flex;
   flex-direction: column;
   gap: 10px;
-  padding: 14px;
+  padding: 16px;
   border: 1px solid var(--color-border-light);
   border-radius: var(--radius-lg);
   background: var(--color-surface, #fff);
@@ -184,11 +130,22 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 .trr-card__verdict { font-size: 14px; font-weight: 700; color: var(--color-text-primary); }
 .trr-card__quote {
   margin: 0;
-  font-size: 14px;
-  line-height: 1.55;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.5;
   color: var(--color-text-primary);
   display: -webkit-box;
-  -webkit-line-clamp: 5;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.trr-card__excerpt {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--color-text-secondary);
+  display: -webkit-box;
+  -webkit-line-clamp: 7;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -312,7 +269,10 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 .trr-fade-enter-from, .trr-fade-leave-to { opacity: 0; }
 
 @media (max-width: 767px) {
-  .trr { --trr-card-w: 76%; }
+  /* Mobiel: horizontaal swipen, kaarten 76% breed. */
+  .trr__grid { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 4px; scrollbar-width: none; }
+  .trr__grid::-webkit-scrollbar { display: none; }
+  .trr-card { flex: 0 0 76%; scroll-snap-align: start; min-height: 0; }
   .trr-info__card { height: min(560px, 88vh); }
   .trr-info__head { padding: var(--space-lg) 60px var(--space-md) var(--space-lg); }
   .trr-info__body, .trr-info__foot { padding-left: var(--space-lg); padding-right: var(--space-lg); }

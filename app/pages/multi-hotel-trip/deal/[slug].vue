@@ -480,28 +480,23 @@
             </div>
           </div>
         </section>
-        <section id="intro" class="container deal-page__intro-row" :class="{ 'deal-page__intro-row--summary': itinHybrid || itinCity }">
-          <div class="deal-page__intro-map">
-            <MultiHotelTripRouteMapCard
-              id="mini-map"
-              class="deal-page__minimap deal-page__minimap--trip"
-              :stops="tripMapStops" :legs="tripRouteLegs" :return-label="tripReturnLabel" :summary="tripMapSummary"
-              @open="tripMapOpen = true"
-              @stop-click="openTripHotel"
-            />
-          </div>
-          <div class="deal-page__intro-desc">
-            <!-- Kop boven de beschrijving: "7-daagse reis met eigen vervoer in Noord-Frankrijk". -->
+      </template>
+
+      <!-- Two-column layout: Content | Booking Sidebar -->
+      <div class="deal-page__grid container">
+        <div class="deal-page__col-left">
+          <!-- Vakantie: beschrijving (uitgefaded, "Lees meer" klapt uit), daaronder
+               met steeds 32px marge de beoordelingen en het voorbeeld-reisschema; de
+               inclusies volgen in dezelfde kolom. De minimap staat in de zijbalkkolom,
+               direct boven de boekingszijbalk. -->
+          <section v-if="isTrip" id="intro" class="deal-page__trip-intro">
             <h2 class="section-title deal-page__intro-title">{{ tripIntroTitle }}</h2>
-            <!-- De hele tekst, uitgefaded na ±7 regels; "Lees meer" klapt hem op de
-                 pagina uit (blijft staan), "Lees minder" weer in. -->
             <div class="deal-page__intro-desc-text" :class="{ 'deal-page__intro-desc-text--fade': hasMoreDescription && !descExpanded }" v-html="fullDescription"></div>
             <button v-if="hasMoreDescription" type="button" class="deal-page__read-more" :aria-expanded="descExpanded" @click="descExpanded = !descExpanded">{{ descExpanded ? t('common.readLess') : t('common.readMore') }}</button>
 
-            <!-- Beoordelingen (carrousel) boven het voorbeeld-reisschema, met gelijke marges. -->
+            <!-- Beoordelingen: drie kaarten naast elkaar, boven het voorbeeld-reisschema. -->
             <TripReviewsRow v-if="itinReviews && tripReviews.length" class="deal-page__desc-block" :reviews="tripReviews" />
-            <!-- Per stad / Hybrid / Reviews: dagsamenvatting in dezelfde kolom als de
-                 beschrijving (vaste afstand, ook na "Lees meer"); klik op een dag opent het
+            <!-- Per stad / Hybrid / Reviews: dagsamenvatting; klik op een dag opent het
                  sidepanel met het uitgebreide schema en scrolt naar die dag. -->
             <section v-if="itinHybrid || itinCity" class="deal-page__hybrid-summary deal-page__hybrid-summary--intro deal-page__desc-block">
               <div class="deal-page__summary-panel">
@@ -509,13 +504,8 @@
                 <TripItinerarySummary :days="tripDaysView" :hotels="tripHotelLinks" full-link @select="openItinPanelAt" @open-full="openItinPanelAt(null)" />
               </div>
             </section>
-          </div>
-        </section>
-      </template>
+          </section>
 
-      <!-- Two-column layout: Content | Booking Sidebar -->
-      <div class="deal-page__grid container">
-        <div class="deal-page__col-left">
           <!-- Description + Mini map row. Vakantie: samenvattende beschrijving
                van de hele reis + het schematische routekaartje van de dealcard
                op de plek (en breedte) van de gewone minimap. -->
@@ -684,8 +674,16 @@
           </section>
         </div>
 
-        <!-- Right column wrapper: sidebar card + Yvette banner stacked -->
+        <!-- Right column wrapper: (vakantie: minimap +) sidebar card + Yvette banner stacked -->
         <div v-if="!isMobile" class="deal-page__col-right-stack">
+        <MultiHotelTripRouteMapCard
+          v-if="isTrip"
+          id="mini-map"
+          class="deal-page__minimap deal-page__minimap--trip deal-page__sidebar-minimap"
+          :stops="tripMapStops" :legs="tripRouteLegs" :return-label="tripReturnLabel" :summary="tripMapSummary"
+          @open="tripMapOpen = true"
+          @stop-click="openTripHotel"
+        />
         <div class="deal-page__col-right">
           <!-- Inclusions -->
           <h3 class="sidebar__title">
@@ -2370,7 +2368,6 @@ onMounted(() => {
   border-radius: var(--radius-lg);
 }
 .deal-page__summary-panel .section-title { margin-top: 0; }
-.deal-page__intro-row--summary + .deal-page__grid .deal-page__content-blocks--trip { margin-top: calc(-1 * var(--space-lg)); }
 .deal-page__hybrid-summary--mobile { margin-bottom: var(--space-lg); }
 .deal-page__reviews-mobile { margin-bottom: var(--space-lg); }
 /* Mobiel: dezelfde zijmarge (16px) als het inclusieblok, zodat de grijze vlakken uitlijnen. */
@@ -2472,26 +2469,19 @@ onMounted(() => {
 .inc-row__icon { width: 20px; height: 20px; flex-shrink: 0; object-fit: contain; }
 /* Beschrijving links, minimap rechts gefloat in de breedte van de zijbalk
    (zodat de kaart precies boven de zijbalk uitlijnt). */
-.deal-page__intro-row {
-  display: flow-root;
-  margin-bottom: var(--space-xl);
-}
-.deal-page__intro-row .deal-page__intro-map {
-  float: right;
-  width: var(--mht-deal-sidebar-width, 340px);
-  margin-left: var(--space-xl);
-}
-.deal-page__intro-row .deal-page__intro-desc { display: flow-root; }
+/* Vakantie: beschrijving bovenaan de linkerkolom (de minimap staat in de zijbalkkolom). */
+.deal-page__trip-intro { min-width: 0; }
 .deal-page__intro-title { margin-bottom: var(--space-md); }
-/* Beschrijving: de eerste twee alinea's, dan "Lees meer". */
-.deal-page__intro-row .deal-page__intro-desc-text {
+.deal-page__trip-intro .deal-page__intro-desc-text {
   font-size: 15px;
   line-height: 1.75;
   color: var(--color-text-secondary);
 }
-.deal-page__intro-row .deal-page__intro-desc-text :deep(p) { margin: 0 0 var(--space-md); }
+.deal-page__trip-intro .deal-page__intro-desc-text :deep(p) { margin: 0 0 var(--space-md); }
 /* Als blok (geen inline-regelhoogte eronder), zodat de marge naar het volgende blok exact 32px is. */
-.deal-page__intro-row .deal-page__read-more { display: block; margin-top: 6px; }
+.deal-page__trip-intro .deal-page__read-more { display: block; margin-top: 6px; }
+/* Inclusies volgen de beschrijvingskolom met dezelfde 32px i.p.v. de negatieve marge. */
+.deal-page__trip-intro + .deal-page__content-blocks--trip { margin-top: var(--space-xl); }
 
 .deal-page__intro { display: grid; grid-template-columns: 1fr 220px; gap: var(--space-xl); margin-bottom: var(--space-xl); align-items: start; }
 /* Vakantie: kaartje op de helft van de kolom (beschrijving krijgt de andere helft). */

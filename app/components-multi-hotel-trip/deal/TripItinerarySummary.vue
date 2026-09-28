@@ -10,7 +10,7 @@
     <ul v-if="days.length" class="tisum__list">
       <li v-for="day in days" :key="`sum-${day.day}`" class="tisum__item">
         <button type="button" class="tisum__link" @click="$emit('select', day.day)">
-          <span class="tisum__day">{{ day.label }}</span> · <span class="tisum__text">{{ summaryOfDay(day) }}</span>
+          <span class="tisum__day">{{ day.label }}</span> · <span class="tisum__text">{{ summaryLineOfDay(day, t) }}</span>
         </button>
       </li>
     </ul>
@@ -21,7 +21,7 @@
 <script setup lang="ts">
 import TripItineraryStats from './TripItineraryStats.vue'
 import { countTripSights } from '~/utils-multi-hotel-trip/tripSights'
-import { summaryOfDay } from '~/utils-multi-hotel-trip/tripDaySummary'
+import { summaryLineOfDay } from '~/utils-multi-hotel-trip/tripDaySummary'
 import type { TripHotelLink } from './TripHotelText.vue'
 import type { TripDayView } from './TripItinerary.vue'
 
@@ -42,14 +42,16 @@ const sightsCount = computed(() => countTripSights(props.days))
 
 <style scoped>
 .tisum { display: flex; flex-direction: column; gap: var(--space-md); }
+/* Links uitgelijnd (geen inspringing), ruime regelafstand; regels mogen doorlopen op een tweede regel. */
 .tisum__list {
   margin: 0;
-  padding: 0 0 0 20px;
+  padding: 0;
+  list-style: none;
   font-size: 15px;
-  line-height: 1.6;
+  line-height: 1.8;
   color: var(--color-text-primary);
 }
-.tisum__item + .tisum__item { margin-top: 4px; }
+.tisum__item + .tisum__item { margin-top: 8px; }
 .tisum__link {
   padding: 0;
   border: 0;
