@@ -11,6 +11,7 @@ import { rooms as roomsData, hotel, pricing, dealName } from '~/data/mht-checkou
 import { CHECKOUT_WAS_FACTOR, CHECKOUT_NIGHTS } from '~/data/mht-checkout/pricing'
 import { useStickyFit } from '~/composables-multi-hotel-trip/useStickyFit'
 import type { TripCheckout } from '~/data/mht-checkout/trip'
+import { useMultiHotelTripRoomTableVariant } from '~/composables-multi-hotel-trip/useMultiHotelTripRoomTableVariant'
 
 const props = withDefaults(defineProps<{
   // 1d: hide the built-in reservation column (the sidebar takes its place)
@@ -141,6 +142,22 @@ const tableRooms = reactive<TableRoom[]>(
 // van hotel zonder dat de kolom breder wordt.
 const hotelIndex = ref(0)
 const hotelCount = computed(() => trip.value?.hotels.length ?? 0)
+// Room-table-variant (schakelaar linksboven op deze stap): Strak / Lange kolom / Carousel.
+const { variant: rtVariant } = useMultiHotelTripRoomTableVariant()
+/** Lange kolom: hotel 2 en 3 volledig zichtbaar na "Toon meer". */
+const columnOpen = ref(false)
+/** Verschuiving van de carrousel-track. Carousel: slides 88% + 6px; de laatste slide sluit rechts aan
+ *  (dan piept ±10% van het vorige hotel links). */
+const trackStyle = computed(() => {
+  if (rtVariant.value === 'column') return undefined
+  const i = hotelIndex.value
+  if (rtVariant.value === 'carousel') {
+    const n = hotelCount.value
+    const last = i >= n - 1 && n > 1
+    return { transform: last ? `translateX(calc(-1 * (${n * 88 - 100}% + ${(n - 1) * 6}px)))` : `translateX(calc(-${i} * (88% + 6px)))` }
+  }
+  return { transform: `translateX(-${i * 100}%)` }
+})
 function prevHotel() { hotelIndex.value = Math.max(0, hotelIndex.value - 1) }
 function nextHotel() { hotelIndex.value = Math.min(hotelCount.value - 1, hotelIndex.value + 1) }
 
@@ -376,8 +393,9 @@ const arrangementIncludes = trip.value ? trip.value.includes : [
             <!-- Vakantie: hotel-carrousel (navigator op een grijs vlak als de
                  tabelkop; per slide hotelnaam, kamernaam, foto, kamerinfo). De
                  schaarste staat, net als bij een hotel-deal, in "Je opties". -->
-            <div v-if="trip" class="rt__type rt__type--trip">
-              <div class="rt__carhead">
+            <div v-if="trip" class="rt__type rt__type--trip" :class="`rt__type--${rtVariant}`">
+              <!-- Strak / Carousel: navigator boven de carrousel. Lange kolom: geen navigator. -->
+              <div v-if="rtVariant !== 'column'" class="rt__carhead">
                 <button type="button" class="rt__carbtn" aria-label="Vorig hotel" :disabled="hotelIndex === 0" @click="prevHotel">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15 6l-6 6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
                 </button>
@@ -387,8 +405,18 @@ const arrangementIncludes = trip.value ? trip.value.includes : [
                 </button>
               </div>
               <div class="rt__carview">
-                <div class="rt__cartrack" :style="{ transform: `translateX(-${hotelIndex * 100}%)` }">
-                  <div v-for="(h, hi) in trip.hotels" :key="h.name" class="rt__slide" :aria-hidden="hi !== hotelIndex">
+                <!-- Carrousel-track (Strak: 100% per slide; Carousel: 90% + 10% van het volgende hotel
+                     al zichtbaar); Lange kolom: dezelfde slides onder elkaar, met divider, hotel 2
+                     halverwege de beschrijving afgebroken (fade) en hotel 3 pas na "Toon meer". -->
+                <div class="rt__cartrack" :style="trackStyle">
+                  <template v-for="(h, hi) in trip.hotels" :key="h.name">
+                  <div
+                    v-if="rtVariant !== 'column' || columnOpen || hi < 2"
+                    class="rt__slide"
+                    :class="{ 'rt__slide--cut': rtVariant === 'column' && !columnOpen && hi === 1 }"
+                    :aria-hidden="rtVariant !== 'column' && hi !== hotelIndex"
+                  >
+                    <div v-if="rtVariant === 'column' && hi > 0" class="rt__divider" aria-hidden="true"></div>
                     <span class="rt__name">{{ h.name }}</span>
                     <p class="rt__roomname">{{ h.roomName }}</p>
                     <p class="rt__slidemeta t-caption c-mgrey">{{ h.city }} · {{ h.nights }} {{ h.nights === 1 ? 'nacht' : 'nachten' }}</p>
@@ -403,9 +431,13 @@ const arrangementIncludes = trip.value ? trip.value.includes : [
                       />
                     </div>
                   </div>
+                  </template>
                 </div>
               </div>
-              <div class="rt__dots" role="tablist" aria-label="Hotels">
+              <button v-if="rtVariant === 'column'" type="button" class="rt__more" :aria-expanded="columnOpen" @click="columnOpen = !columnOpen">
+                {{ columnOpen ? 'Toon minder' : 'Toon meer' }}
+              </button>
+              <div v-else class="rt__dots" role="tablist" aria-label="Hotels">
                 <button
                   v-for="(h, hi) in trip.hotels"
                   :key="h.name"
@@ -857,6 +889,41 @@ const arrangementIncludes = trip.value ? trip.value.includes : [
 }
 .rt__slide .rt__img {
   margin-top: 2px;
+}
+/* Carousel: slides 88% breed met 6px ertussen, zodat ±10% van het volgende hotel al zichtbaar is. */
+.rt__type--carousel .rt__cartrack { gap: 6px; }
+.rt__type--carousel .rt__slide { flex-basis: 88%; }
+/* Lange kolom: geen carrousel — de hotels onder elkaar in één kolom. */
+.rt__type--column .rt__carview { overflow: visible; }
+.rt__type--column .rt__cartrack { flex-direction: column; transform: none; transition: none; }
+.rt__type--column .rt__slide { flex-basis: auto; }
+/* Divider tussen de hotels, met zijmarges zodat het één kolom blijft. */
+.rt__divider {
+  height: 1px;
+  margin: 6px 12px 8px;
+  background: var(--c-light-grey);
+}
+/* Hotel 2 (ingeklapt): beschrijving halverwege afgebroken met een fade; voorzieningen verborgen. */
+.rt__slide--cut .rt__desc {
+  max-height: 3.2em;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(#000 30%, transparent 100%);
+  mask-image: linear-gradient(#000 30%, transparent 100%);
+}
+.rt__slide--cut .rt__facilities { display: none; }
+.rt__more {
+  align-self: flex-start;
+  margin-top: -2px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-family: inherit;
+  font-size: var(--t-body);
+  font-weight: 700;
+  color: var(--c-via-black);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
 }
 .rt__dots {
   display: flex;
