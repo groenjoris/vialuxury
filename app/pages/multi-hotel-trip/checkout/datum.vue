@@ -8,10 +8,17 @@ import { hotel, dealName } from '~/data/mht-checkout/deal'
 import { CHECKOUT_NIGHTS } from '~/data/mht-checkout/pricing'
 import { useStickyFit } from '~/composables-multi-hotel-trip/useStickyFit'
 import { useMultiHotelTripCheckoutTrip } from '~/composables-multi-hotel-trip/useMultiHotelTripCheckoutTrip'
+import { useMultiHotelTripPriceVariant } from '~/composables-multi-hotel-trip/useMultiHotelTripPriceVariant'
 
 // Vakantie (meerdere hotels): kalender toont de reisprijs en het aantal
 // nachten van de reis; de kassabon de reisnaam met Aankomst/Vertrek.
 const { trip: checkoutTrip } = useMultiHotelTripCheckoutTrip()
+// Prijsweergave-variant (homepage-schakelaar): vakantie in de per-persoon-variant → de
+// kalender toont de halve (2-persoons)prijs; de gedeelde dagprijs (checkoutDay) blijft het
+// totaal, zodat de room table en de kassabon na de kamerkeuze de totaalprijs tonen.
+const { perPerson: pricePerPerson, displayPrice } = useMultiHotelTripPriceVariant()
+const ppTrip = computed(() => !!checkoutTrip.value && pricePerPerson.value)
+const shownPrice = (p: number) => (ppTrip.value ? displayPrice(p, true) : p)
 const tripPopupOpen = ref(false)
 
 const MONTH_NAMES = [
@@ -183,7 +190,9 @@ useHead({ title: 'Kies datum — ViaLuxury' })
             <header class="cal__head">
               <h2 class="t-h1">Selecteer aankomstdatum</h2>
               <p class="t-body t-bold">
-                Getoonde prijs is voor {{ checkoutTrip ? `de complete ${checkoutTrip.typeWord} (${checkoutTrip.hotels.length} hotels)` : 'het complete arrangement' }} voor 2 personen voor {{ nights }} nachten.
+                <!-- Prijs-p.p.-variant (homepage-schakelaar) bij een vakantie: prijs per persoon, min. 2 personen. -->
+                <template v-if="ppTrip && checkoutTrip">Getoonde prijs is per persoon voor de complete {{ checkoutTrip.typeWord }} ({{ checkoutTrip.hotels.length }} hotels) voor {{ nights }} nachten <span class="cal__note">(min. 2 pers.)</span></template>
+                <template v-else>Getoonde prijs is voor {{ checkoutTrip ? `de complete ${checkoutTrip.typeWord} (${checkoutTrip.hotels.length} hotels)` : 'het complete arrangement' }} voor 2 personen voor {{ nights }} nachten.</template>
               </p>
             </header>
 
@@ -221,7 +230,7 @@ useHead({ title: 'Kies datum — ViaLuxury' })
                   <span v-if="cell.unavailable" class="cal__price c-mgrey">–</span>
                   <span v-else-if="cellRole(cell.day) === 'mid' || cellRole(cell.day) === 'uit'" class="cal__price">–</span>
                   <span v-else class="cal__price" :class="{ 'cal__price--cheapest': cell.price === lowestPrice }">
-                    €{{ cell.price }}<span v-if="cell.price === lowestPrice" class="cal__star">★</span>
+                    €{{ shownPrice(cell.price) }}<span v-if="cell.price === lowestPrice" class="cal__star">★</span>
                   </span>
                 </button>
               </template>
@@ -452,6 +461,8 @@ useHead({ title: 'Kies datum — ViaLuxury' })
 }
 /* Laagste prijs in oranje (zoals op de PDP-kalenders). */
 .cal__price--cheapest { color: var(--c-via-orange); }
+/* "(min. 2 pers.)" achter de prijsnotitie: niet vet. */
+.cal__note { font-weight: 400; }
 .cal__star--legend {
   font-size: 14px;
 }

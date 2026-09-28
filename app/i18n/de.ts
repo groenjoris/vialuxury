@@ -432,6 +432,8 @@ const de: Record<string, string> = {
   'deal.highlight.cycling': 'Perfekt zum Radfahren und Wandern',
   'deal.highlight.exclusive': 'Exklusives Arrangement bei ViaLuxury',
   'deal.priceFor': 'Für {nightsLabel}, {personsLabel}, {roomsLabel}',
+  'deal.pricePerPersonFor': 'pro Person für {nightsLabel}',
+  'deal.minPersons': '(min. 2 Pers.)',
   // NL/EN's `deal.disclaimer` is REPLACED in the sidebar by the
   // structured "Zusätzliche Kosten" block — left here only as a
   // fallback in case something still renders the key.

@@ -166,12 +166,12 @@
                 class="sidebar__price-row"
                 :lead="`-${currentDeal.discountPercentage}%`"
                 :lead-is-chip="true"
-                :original="formatPrice(store.pricing.originalPrice)"
-                :amount="formatPrice(store.pricing.totalPrice)"
+                :original="formatPrice(shownOriginalPrice)"
+                :amount="formatPrice(shownTotalPrice)"
                 :show-info="!isGerman"
                 info-variant="deal"
               />
-              <p class="sidebar__price-meta">{{ priceForLabel }}</p>
+              <p class="sidebar__price-meta" :class="{ 'sidebar__price-meta--pp': ppTrip }"><template v-if="ppTrip">{{ ppForLabel }} <span class="price-meta__note">{{ t('deal.minPersons') }}</span></template><template v-else>{{ priceForLabel }}</template></p>
               <!-- German: structured extra-costs block replaces the long
                    NL/EN disclaimer. All other locales render the disclaimer. -->
               <div v-if="isGerman" class="sidebar__extra-costs">
@@ -771,12 +771,12 @@
               class="sidebar__price-row"
               :lead="`-${currentDeal.discountPercentage}%`"
               :lead-is-chip="true"
-              :original="formatPrice(store.pricing.originalPrice)"
-              :amount="formatPrice(store.pricing.totalPrice)"
+              :original="formatPrice(shownOriginalPrice)"
+              :amount="formatPrice(shownTotalPrice)"
               :show-info="!isGerman"
               info-variant="deal"
             />
-            <p class="sidebar__price-meta">{{ priceForLabel }}</p>
+            <p class="sidebar__price-meta" :class="{ 'sidebar__price-meta--pp': ppTrip }"><template v-if="ppTrip">{{ ppForLabel }} <span class="price-meta__note">{{ t('deal.minPersons') }}</span></template><template v-else>{{ priceForLabel }}</template></p>
 
             <!-- German: structured extra-costs block replaces the long
                  NL/EN disclaimer. All other locales render the disclaimer. -->
@@ -998,8 +998,8 @@
             <MultiHotelTripStickyPriceRow
               :lead="dateSelected ? `-${currentDeal.discountPercentage}%` : (isGerman ? t('deal.stickyFromPrefix') : 'Vanaf')"
               :lead-is-chip="dateSelected"
-              :original="formatPrice(store.pricing.originalPrice)"
-              :amount="formatPrice(store.pricing.totalPrice)"
+              :original="formatPrice(shownOriginalPrice)"
+              :amount="formatPrice(shownTotalPrice)"
               :show-info="!isGerman"
               info-variant="deal"
             />
@@ -1007,7 +1007,7 @@
               <span>{{ stickyDeLine1 }}</span>
               <span>{{ stickyDeLine2 }}</span>
             </span>
-            <span v-else class="deal-page__cta-bar-meta">{{ priceForLabel }}</span>
+            <span v-else class="deal-page__cta-bar-meta" :class="{ 'deal-page__cta-bar-meta--pp': ppTrip }"><template v-if="ppTrip">{{ ppForLabel }} <span class="price-meta__note">{{ t('deal.minPersons') }}</span></template><template v-else>{{ priceForLabel }}</template></span>
           </div>
           <button type="button" class="deal-page__cta-bar-btn" @click="handleMobileBook">
             {{ t('deal.bookNow') }}
@@ -1040,8 +1040,8 @@
             <MultiHotelTripStickyPriceRow
               :lead="dateSelected ? `-${currentDeal.discountPercentage}%` : (isGerman ? t('deal.stickyFromPrefix') : 'Vanaf')"
               :lead-is-chip="dateSelected"
-              :original="formatPrice(store.pricing.originalPrice)"
-              :amount="formatPrice(store.pricing.totalPrice)"
+              :original="formatPrice(shownOriginalPrice)"
+              :amount="formatPrice(shownTotalPrice)"
               :show-info="!isGerman"
               info-variant="deal"
             />
@@ -1049,7 +1049,7 @@
               <span>{{ stickyDeLine1 }}</span>
               <span>{{ stickyDeLine2 }}</span>
             </span>
-            <span v-else class="deal-page__cta-bar-meta">{{ priceForLabel }}</span>
+            <span v-else class="deal-page__cta-bar-meta" :class="{ 'deal-page__cta-bar-meta--pp': ppTrip }"><template v-if="ppTrip">{{ ppForLabel }} <span class="price-meta__note">{{ t('deal.minPersons') }}</span></template><template v-else>{{ priceForLabel }}</template></span>
           </div>
           <button type="button" class="deal-page__cta-bar-btn" @click="handleMobileBook">
             {{ t('deal.bookNow') }}
@@ -1212,6 +1212,7 @@ import { PRICED_PERSONS, minRoomsFor } from '~/utils-multi-hotel-trip/priceFormu
 import { matchIcon } from '~/utils-multi-hotel-trip/iconMatcher'
 import { roomsLeftForDeal } from '~/utils-multi-hotel-trip/scarcity'
 import { nightsLabel, nightsWord, personsLabel, roomsLabel } from '~/utils-multi-hotel-trip/plural'
+import { useMultiHotelTripPriceVariant } from '~/composables-multi-hotel-trip/useMultiHotelTripPriceVariant'
 import {
   mappedPackagesByPermalink,
   mappedHotelsByPackagePermalink,
@@ -1232,6 +1233,14 @@ const lang = computed<'nl' | 'en' | 'de'>(() => {
 
 /** Plural-aware "Voor X nacht(en), Y persoon/personen" used both under the
  *  calendar (sidebar) and in the sticky CTA bar. */
+// Prijsweergave-variant (homepage-schakelaar): vakantie in de per-persoon-variant →
+// helft van de 2-persoonsprijs (ook van-prijs en kalender), label "per persoon voor x nachten (min. 2 pers.)".
+const { perPerson: pricePerPerson, displayPrice } = useMultiHotelTripPriceVariant()
+const ppTrip = computed(() => isTrip && pricePerPerson.value)
+const ppForLabel = computed(() => t('deal.pricePerPersonFor').replace('{nightsLabel}', nightsLabel(currentDeal.value?.nights ?? 0, lang.value)))
+const shownTotalPrice = computed(() => displayPrice(store.pricing.totalPrice, isTrip))
+const shownOriginalPrice = computed(() => displayPrice(store.pricing.originalPrice, isTrip))
+
 const priceForLabel = computed(() => {
   const deal = currentDeal.value
   if (!deal) return ''
@@ -2080,7 +2089,9 @@ const calAvailability = computed(() => {
   if (!store.currentDeal) return []
   // Prototype: calendar prices always show the 2-person / 1-room price,
   // independent of the party-size picker (which only filters availability).
-  return generateDealAvailability(calMonth.value.year, calMonth.value.month, store.currentDeal, PRICED_PERSONS)
+  const days = generateDealAvailability(calMonth.value.year, calMonth.value.month, store.currentDeal, PRICED_PERSONS)
+  // Prijs-p.p.-variant bij een vakantie: de dagprijzen gehalveerd (weergave).
+  return ppTrip.value ? days.map(a => ({ ...a, totalPrice: displayPrice(a.totalPrice, true) })) : days
 })
 const calCheapestPrice = computed(() => {
   const prices = calAvailability.value.filter(a => a.available && a.totalPrice > 0).map(a => a.totalPrice)
@@ -2638,6 +2649,10 @@ onMounted(() => {
    component. */
 .sidebar__price-row { margin-bottom: 2px; }
 .sidebar__price-meta { font-size: 13px; color: var(--color-text-secondary); margin-bottom: var(--space-md); }
+/* Prijs p.p. (vakantie): "per persoon voor 7 nachten" vet, "(min. 2 pers.)" niet. */
+.sidebar__price-meta--pp { font-weight: 700; color: var(--color-text-primary); }
+.deal-page__cta-bar-meta--pp { font-weight: 700; color: var(--color-text-primary); }
+.price-meta__note { font-weight: 400; color: var(--color-text-secondary); }
 .sidebar__disclaimer { font-size: 12px; line-height: 1.5; color: var(--color-text-muted); margin-bottom: var(--space-md); }
 /* German "Zusätzliche Kosten" block — replaces the long NL/EN
    disclaimer in the sidebar. Bold title + two indented lines. */

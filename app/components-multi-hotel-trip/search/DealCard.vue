@@ -244,9 +244,11 @@
               </div>
 
               <div class="deal-card-v2__grid-price-row">
-                <p
-                  class="deal-card-v2__meta-line"
-                >{{ PRICED_PERSONS }} {{ PRICED_PERSONS === 1 ? 'persoon' : 'personen' }}, {{ deal.nights }} {{ deal.nights === 1 ? 'nacht' : 'nachten' }}</p>
+                <p class="deal-card-v2__meta-line">
+                  <!-- Vakantie in de prijs-p.p.-variant: "per persoon voor 7 nachten (min. 2 pers.)". -->
+                  <template v-if="ppTrip">{{ ppForLabel }} <span class="deal-card-v2__meta-note">{{ t('deal.minPersons') }}</span></template>
+                  <template v-else>{{ PRICED_PERSONS }} {{ PRICED_PERSONS === 1 ? 'persoon' : 'personen' }}, {{ deal.nights }} {{ deal.nights === 1 ? 'nacht' : 'nachten' }}</template>
+                </p>
                 <p class="deal-card-v2__price-line">
                   <span class="deal-card-v2__price-prefix">Vanaf</span>
                   <span class="deal-card-v2__price">{{ formatPrice(price) }}</span>
@@ -283,7 +285,8 @@
           </template>
           <template v-else>
             <p class="deal-card-v2__meta-line deal-card-v2__meta-line--small deal-card-v2__meta-line--right">
-              {{ PRICED_PERSONS }} {{ PRICED_PERSONS === 1 ? 'persoon' : 'personen' }}, {{ deal.nights }} {{ deal.nights === 1 ? 'nacht' : 'nachten' }}
+              <template v-if="ppTrip">{{ ppForLabel }} <span class="deal-card-v2__meta-note">{{ t('deal.minPersons') }}</span></template>
+              <template v-else>{{ PRICED_PERSONS }} {{ PRICED_PERSONS === 1 ? 'persoon' : 'personen' }}, {{ deal.nights }} {{ deal.nights === 1 ? 'nacht' : 'nachten' }}</template>
             </p>
             <p class="deal-card-v2__price-line deal-card-v2__price-line--right">
               <span class="deal-card-v2__price-prefix">Vanaf</span>
@@ -325,6 +328,7 @@ import { formatDateShort } from '~/utils-multi-hotel-trip/formatDate'
 import dayjs from 'dayjs'
 import { pickSmartInclusions } from '~/utils-multi-hotel-trip/smartInclusions'
 import { priceForArrival, PRICED_PERSONS } from '~/utils-multi-hotel-trip/priceFormula'
+import { useMultiHotelTripPriceVariant } from '~/composables-multi-hotel-trip/useMultiHotelTripPriceVariant'
 import { nightsLabel } from '~/utils-multi-hotel-trip/plural'
 import { arrangementSuffixFromHighlights } from '~/utils-multi-hotel-trip/arrangementType'
 import { dealHash, roomsLeftForDeal } from '~/utils-multi-hotel-trip/scarcity'
@@ -650,11 +654,16 @@ const mismatchHref = computed(() => {
 const effectiveArrival = computed(() => (props.ignoreArrival ? null : arrivalDate.value))
 // Prototype: card prices + the "X personen" label both use PRICED_PERSONS
 // (the party size the price is for). The picker doesn't scale prices yet.
+// Prijsweergave-variant (homepage-schakelaar): bij een vakantie in de
+// per-persoon-variant tonen we de helft van de 2-persoonsprijs (ook de van-prijs).
+const { perPerson: pricePerPerson, displayPrice } = useMultiHotelTripPriceVariant()
+const ppTrip = computed(() => isTrip.value && pricePerPerson.value)
+const ppForLabel = computed(() => t('deal.pricePerPersonFor').replace('{nightsLabel}', nightsLabel(props.deal.nights, locale.value as 'nl' | 'en' | 'de')))
 const price = computed(() =>
-  priceForArrival(props.deal.basePrice, props.deal.id, effectiveArrival.value, PRICED_PERSONS),
+  displayPrice(priceForArrival(props.deal.basePrice, props.deal.id, effectiveArrival.value, PRICED_PERSONS), isTrip.value),
 )
 const originalPrice = computed(() =>
-  priceForArrival(props.deal.originalPrice, props.deal.id, effectiveArrival.value, PRICED_PERSONS),
+  displayPrice(priceForArrival(props.deal.originalPrice, props.deal.id, effectiveArrival.value, PRICED_PERSONS), isTrip.value),
 )
 
 /** Cheapest deal across all sibling arrangements at this hotel — used by
@@ -1431,6 +1440,9 @@ const includesBullets = computed<string[]>(() => {
   color: var(--color-text-primary);
   margin: 0;
 }
+
+/* "(min. 2 pers.)" achter "per persoon voor 7 nachten": niet vet. */
+.deal-card-v2__meta-note { font-weight: 400; }
 
 .deal-card-v2__meta-line--small {
   font-size: 13px;
