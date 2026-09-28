@@ -39,10 +39,10 @@
         <section class="deal-page__title-section deal-page__title-section--mobile container">
           <h1 class="deal-page__package-title">{{ localized(currentDeal.title) }}</h1>
           <!-- Noord-Frankrijk variant 6 (Reviews): totaalscore van de vakantie bovenin de subtitel. -->
-          <div v-if="itinReviews && trip" class="deal-page__trip-score">
+          <a v-if="itinReviews && trip" href="#beoordelingen-vakantie" class="deal-page__trip-score">
             <span class="deal-page__trip-score-badge">{{ trip.reviewScore.toFixed(1) }}</span>
             <span class="deal-page__trip-score-text">{{ t(getReviewLabelKey(trip.reviewScore)) }}</span>
-          </div>
+          </a>
           <div class="deal-page__hotel-name-wrap">
             <!-- Vakantie: de hotelnamen met een pijltje ertussen (elke naam opent het
                  hotel-sidepanel); sterren ernaast alleen als alle hotels hetzelfde
@@ -210,13 +210,13 @@
         </section>
 
         <!-- Beoordelingen (carrousel) boven het voorbeeld-reisschema. -->
-        <section v-if="itinReviews && tripReviews.length" class="container deal-page__reviews-mobile">
+        <section v-if="itinReviews && tripReviews.length" id="beoordelingen-vakantie" class="container deal-page__reviews-mobile deal-page__anchor">
           <TripReviewsRow :reviews="tripReviews" />
         </section>
 
         <!-- Vakantie met reisschema-variant Per stad/Hybrid/Reviews: dagsamenvatting onder de
              beschrijving; klik op een dag opent het sidepanel bij die dag. -->
-        <section v-if="itinHybrid || itinCity" class="container deal-page__hybrid-summary deal-page__hybrid-summary--mobile">
+        <section v-if="itinHybrid || itinCity" id="reisschema" class="container deal-page__hybrid-summary deal-page__hybrid-summary--mobile deal-page__anchor">
           <div class="deal-page__summary-panel">
             <h2 class="section-title">{{ t('trip.itin.hybrid.summaryHeading') }}</h2>
             <TripItinerarySummary :days="tripDaysView" :hotels="tripHotelLinks" full-link @select="openItinPanelAt" @open-full="openItinPanelAt(null)" />
@@ -380,12 +380,18 @@
       <!-- Anchor tabs -->
       <nav class="deal-page__tabs container">
         <a href="#intro" class="deal-page__tab">{{ t('deal.tabIntro') }}</a>
-        <a v-if="isTrip" href="#inbegrepen" class="deal-page__tab">{{ t('trip.tabIncluded') }}</a>
-        <!-- Vakantie: "Dag voor dag" i.p.v. "Jouw arrangement"; geen tips/huisregels. -->
-        <a href="#arrangement" class="deal-page__tab">{{ isTrip ? t('trip.itineraryHeading') : t('deal.tabArrangement') }}</a>
-        <a v-if="!isTrip" href="#tips" class="deal-page__tab">{{ t('hotel.tabNearby') }}</a>
-        <a v-if="!isTrip && hotel && hotel.houseRules && hotel.houseRules.length" href="#huisregels" class="deal-page__tab">{{ t('hotel.tabHouseRules') }}</a>
-        <a href="#veelgestelde-vragen" class="deal-page__tab">{{ t('hotel.tabFaq') }}</a>
+        <!-- Vakantie: Intro · Beoordelingen · Voorbeeld reisschema · Wat te doen. -->
+        <template v-if="isTrip">
+          <a v-if="itinReviews" href="#beoordelingen-vakantie" class="deal-page__tab">{{ t('trip.tabReviews') }}</a>
+          <a v-if="itinHybrid || itinCity" href="#reisschema" class="deal-page__tab">{{ t('trip.tabItinerary') }}</a>
+          <a href="#arrangement" class="deal-page__tab">{{ itinCity ? t('trip.tabThingsToDo') : t('trip.itineraryHeading') }}</a>
+        </template>
+        <template v-else>
+          <a href="#arrangement" class="deal-page__tab">{{ t('deal.tabArrangement') }}</a>
+          <a href="#tips" class="deal-page__tab">{{ t('hotel.tabNearby') }}</a>
+          <a v-if="hotel && hotel.houseRules && hotel.houseRules.length" href="#huisregels" class="deal-page__tab">{{ t('hotel.tabHouseRules') }}</a>
+          <a href="#veelgestelde-vragen" class="deal-page__tab">{{ t('hotel.tabFaq') }}</a>
+        </template>
         <!-- Heart + share live in the anchor-nav row, right-aligned, so
              they sit at the same height as the tabs and above the grey
              divider between this row and the title section. -->
@@ -412,10 +418,10 @@
         >
           <h1 class="deal-page__package-title">{{ localized(currentDeal.title) }}</h1>
           <!-- Noord-Frankrijk variant 6 (Reviews): totaalscore van de vakantie bovenin de subtitel. -->
-          <div v-if="itinReviews && trip" class="deal-page__trip-score">
+          <a v-if="itinReviews && trip" href="#beoordelingen-vakantie" class="deal-page__trip-score">
             <span class="deal-page__trip-score-badge">{{ trip.reviewScore.toFixed(1) }}</span>
             <span class="deal-page__trip-score-text">{{ t(getReviewLabelKey(trip.reviewScore)) }}</span>
-          </div>
+          </a>
           <div class="deal-page__hotel-name-wrap">
             <!-- Vakantie: de hotelnamen met een pijltje ertussen (elke naam opent het
                  hotel-sidepanel); sterren ernaast alleen als alle hotels hetzelfde
@@ -495,10 +501,10 @@
             <button v-if="hasMoreDescription" type="button" class="deal-page__read-more" :aria-expanded="descExpanded" @click="descExpanded = !descExpanded">{{ descExpanded ? t('common.readLess') : t('common.readMore') }}</button>
 
             <!-- Beoordelingen: drie kaarten naast elkaar, boven het voorbeeld-reisschema. -->
-            <TripReviewsRow v-if="itinReviews && tripReviews.length" class="deal-page__desc-block" :reviews="tripReviews" />
+            <TripReviewsRow v-if="itinReviews && tripReviews.length" id="beoordelingen-vakantie" class="deal-page__desc-block deal-page__anchor" :reviews="tripReviews" />
             <!-- Per stad / Hybrid / Reviews: dagsamenvatting; klik op een dag opent het
                  sidepanel met het uitgebreide schema en scrolt naar die dag. -->
-            <section v-if="itinHybrid || itinCity" class="deal-page__hybrid-summary deal-page__hybrid-summary--intro deal-page__desc-block">
+            <section v-if="itinHybrid || itinCity" id="reisschema" class="deal-page__hybrid-summary deal-page__hybrid-summary--intro deal-page__desc-block deal-page__anchor">
               <div class="deal-page__summary-panel">
                 <h2 class="section-title">{{ t('trip.itin.hybrid.summaryHeading') }}</h2>
                 <TripItinerarySummary :days="tripDaysView" :hotels="tripHotelLinks" full-link @select="openItinPanelAt" @open-full="openItinPanelAt(null)" />
@@ -1011,11 +1017,17 @@
       <div class="deal-page__cta-bar-inner container">
         <nav class="deal-page__tabs deal-page__tabs--in-bar">
           <a href="#intro" class="deal-page__tab" :class="{ 'deal-page__tab--active': activeAnchor === 'intro' }">{{ t('deal.tabIntro') }}</a>
-          <a v-if="isTrip" href="#inbegrepen" class="deal-page__tab" :class="{ 'deal-page__tab--active': activeAnchor === 'inbegrepen' }">{{ t('trip.tabIncluded') }}</a>
-          <a href="#arrangement" class="deal-page__tab" :class="{ 'deal-page__tab--active': activeAnchor === 'arrangement' }">{{ isTrip ? t('trip.itineraryHeading') : t('deal.tabArrangement') }}</a>
-          <a v-if="!isTrip" href="#tips" class="deal-page__tab" :class="{ 'deal-page__tab--active': activeAnchor === 'tips' }">{{ t('hotel.tabNearby') }}</a>
-          <a v-if="!isTrip && hotel.houseRules && hotel.houseRules.length" href="#huisregels" class="deal-page__tab" :class="{ 'deal-page__tab--active': activeAnchor === 'huisregels' }">{{ t('hotel.tabHouseRules') }}</a>
-          <a href="#veelgestelde-vragen" class="deal-page__tab" :class="{ 'deal-page__tab--active': activeAnchor === 'veelgestelde-vragen' }">{{ t('hotel.tabFaq') }}</a>
+          <template v-if="isTrip">
+            <a v-if="itinReviews" href="#beoordelingen-vakantie" class="deal-page__tab" :class="{ 'deal-page__tab--active': activeAnchor === 'beoordelingen-vakantie' }">{{ t('trip.tabReviews') }}</a>
+            <a v-if="itinHybrid || itinCity" href="#reisschema" class="deal-page__tab" :class="{ 'deal-page__tab--active': activeAnchor === 'reisschema' }">{{ t('trip.tabItinerary') }}</a>
+            <a href="#arrangement" class="deal-page__tab" :class="{ 'deal-page__tab--active': activeAnchor === 'arrangement' }">{{ itinCity ? t('trip.tabThingsToDo') : t('trip.itineraryHeading') }}</a>
+          </template>
+          <template v-else>
+            <a href="#arrangement" class="deal-page__tab" :class="{ 'deal-page__tab--active': activeAnchor === 'arrangement' }">{{ t('deal.tabArrangement') }}</a>
+            <a href="#tips" class="deal-page__tab" :class="{ 'deal-page__tab--active': activeAnchor === 'tips' }">{{ t('hotel.tabNearby') }}</a>
+            <a v-if="hotel.houseRules && hotel.houseRules.length" href="#huisregels" class="deal-page__tab" :class="{ 'deal-page__tab--active': activeAnchor === 'huisregels' }">{{ t('hotel.tabHouseRules') }}</a>
+            <a href="#veelgestelde-vragen" class="deal-page__tab" :class="{ 'deal-page__tab--active': activeAnchor === 'veelgestelde-vragen' }">{{ t('hotel.tabFaq') }}</a>
+          </template>
         </nav>
         <div class="deal-page__cta-bar-cluster">
           <div class="deal-page__cta-bar-price-block">
@@ -1342,7 +1354,7 @@ onBeforeUnmount(() => {
 // view, drives the `.--active` modifier on the sticky-bar's anchor
 // tabs (so the current section's tab loses its underline).
 // ---------------------------------------------------------------------------
-const ANCHOR_IDS = ['intro', 'inbegrepen', 'arrangement', 'tips', 'huisregels', 'veelgestelde-vragen'] as const
+const ANCHOR_IDS = ['intro', 'beoordelingen-vakantie', 'reisschema', 'inbegrepen', 'arrangement', 'tips', 'huisregels', 'veelgestelde-vragen'] as const
 const activeAnchor = ref<typeof ANCHOR_IDS[number] | null>(null)
 let anchorObserver: IntersectionObserver | null = null
 
@@ -2361,6 +2373,8 @@ onMounted(() => {
    steeds dezelfde marge (32px) tussen elk blok, ook na "Lees meer"; de inclusies
    volgen daarna met dezelfde marge i.p.v. de negatieve marge onder de introrij. */
 .deal-page__desc-block { margin-top: var(--space-xl); }
+/* Ankerdoelen onder de sticky balk. */
+.deal-page__anchor { scroll-margin-top: 88px; }
 /* Voorbeeld reisschema op een grijs vlak (zelfde vlak als de inclusies). */
 .deal-page__summary-panel {
   padding: var(--space-lg);
