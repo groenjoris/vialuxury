@@ -9,9 +9,9 @@
        en "Leuke uitjes in de buurt": een
        grijs vlak met een horizontale carrousel van drie uitjes; klikken opent
        een pop-up met foto en de volledige tekst. Hoofdstuk 1 staat standaard open. -->
-  <div class="tpc" :class="{ 'tpc--stacked': stacked }">
-    <div class="tpc__bar">
-      <TripItineraryStats :days="days.length" :hotels="chapters.length" :sights="sightsCount" />
+  <div class="tpc" :class="{ 'tpc--stacked': stacked, 'tpc--wide': wide }">
+    <div class="tpc__bar" :class="{ 'tpc__bar--end': !showStats }">
+      <TripItineraryStats v-if="showStats" :days="days.length" :hotels="chapters.length" :sights="sightsCount" />
       <button type="button" class="tpc__all" @click="allOpen ? collapseAll() : expandAll()">
         {{ allOpen ? t('trip.itin.collapseAll') : t('trip.itin.expandAll') }}
       </button>
@@ -205,7 +205,11 @@ const props = withDefaults(defineProps<{
   hotels?: TripHotelLink[]
   /** Mobiel: smallere tijdlijn, foto's boven de tekst. */
   stacked?: boolean
-}>(), { hotels: () => [], stacked: false })
+  /** Volle paginabreedte: de drie uitjes naast elkaar (raster) i.p.v. een carrousel. */
+  wide?: boolean
+  /** Kerngetallen-regel in de balk (uit als de pagina die al bij de samenvatting toont). */
+  showStats?: boolean
+}>(), { hotels: () => [], stacked: false, wide: false, showStats: true })
 
 defineEmits<{ 'open-hotel': [stopIndex: number] }>()
 
@@ -223,6 +227,19 @@ function toggle(i: number) {
 const allOpen = computed(() => props.chapters.length > 0 && props.chapters.every(c => open.value.has(c.stopIndex)))
 function expandAll() { open.value = new Set(props.chapters.map(c => c.stopIndex)) }
 function collapseAll() { open.value = new Set() }
+/** Van buitenaf (dagsamenvatting): het hoofdstuk van die dag openen en in beeld
+ *  scrollen. De terugreisdag (geen hotel) hoort bij het laatste hoofdstuk. */
+async function openDay(day: number) {
+  const d = props.days.find(x => x.day === day)
+  const last = props.chapters[props.chapters.length - 1]
+  const stopIndex = d?.stopIndex ?? d?.fromStopIndex ?? last?.stopIndex
+  const ch = props.chapters.find(c => c.stopIndex === stopIndex) ?? last
+  if (!ch) return
+  if (!open.value.has(ch.stopIndex)) open.value = new Set([...open.value, ch.stopIndex])
+  await nextTick()
+  if (import.meta.client) document.getElementById(`itin-stad-${ch.stopIndex + 1}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+}
+defineExpose({ openDay })
 
 /** Aantal bezienswaardigheden (zie utils tripSights). */
 const sightsCount = computed(() => countTripSights(props.days))
@@ -274,6 +291,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 <style scoped>
 .tpc { display: flex; flex-direction: column; gap: var(--space-md); }
 .tpc__bar { display: flex; align-items: center; justify-content: space-between; gap: var(--space-md); }
+.tpc__bar--end { justify-content: flex-end; }
 .tpc__all {
   padding: 0;
   border: 0;
@@ -571,6 +589,19 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 }
 .tpc-fade-enter-active, .tpc-fade-leave-active { transition: opacity 180ms ease; }
 .tpc-fade-enter-from, .tpc-fade-leave-to { opacity: 0; }
+
+/* Volle breedte: de drie uitjes naast elkaar in een raster, zonder pijlen/stippen. */
+.tpc--wide .tpc-out__track {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-lg);
+  overflow: visible;
+  scroll-snap-type: none;
+}
+.tpc--wide .tpc-card { flex: none; width: auto; }
+.tpc--wide .tpc-out__nav,
+.tpc--wide .tpc-out__dots { display: none; }
+.tpc--wide .tpc-blk__text { max-width: 720px; }
 
 /* Mobiel / gestapeld: smallere tijdlijn, foto boven de tekst, bredere kaarten. */
 .tpc--stacked .tpc-ch { padding-left: 40px; }

@@ -77,7 +77,8 @@ const { t } = useMultiHotelTripI18n()
   height: 28px;
   padding: 0 8px;
   border-radius: 6px;
-  background: var(--color-dark, #141414);
+  /* Trustpilot-groen — dezelfde kleur als de prijzen in de kalender. */
+  background: var(--color-discount, #00b67a);
   color: #fff;
   font-family: var(--font-body);
   font-size: 14px;

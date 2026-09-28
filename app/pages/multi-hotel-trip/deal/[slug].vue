@@ -208,8 +208,8 @@
           </div>
         </section>
 
-        <!-- Noord-Frankrijk variant 5 (Hybrid): dagsamenvatting direct onder de beschrijving. -->
-        <section v-if="itinHybrid" class="container deal-page__hybrid-summary deal-page__hybrid-summary--mobile">
+        <!-- Noord-Frankrijk variant 3 (Per stad), 5 (Hybrid) en 6 (Reviews): dagsamenvatting direct onder de beschrijving. -->
+        <section v-if="itinHybrid || itinCity" class="container deal-page__hybrid-summary deal-page__hybrid-summary--mobile">
           <h2 class="section-title">{{ t('trip.itin.hybrid.summaryHeading') }}</h2>
           <TripItinerarySummary :days="tripDaysView" :hotels="tripHotelLinks" @select="hybridGoToDay" />
           <TripReviewsRow v-if="itinReviews && tripReviews.length" class="deal-page__hybrid-reviews" :reviews="tripReviews" :count="trip?.reviewCount" />
@@ -282,7 +282,7 @@
             <TripItineraryCities v-if="itinNew" :days="tripDaysView" :stops="tripItinStops" :legs="tripRouteLegs" :return-label="tripReturnLabel" :hotels="tripHotelLinks" stacked @open-hotel="openTripHotel" @open-map="tripMapOpen = true" />
             <TripItineraryAccordion v-else-if="itinHybrid" ref="hybridAccordion" :days="tripDaysView" :stops="tripItinStops" :hotels="tripHotelLinks" stacked :show-stats="false" @open-hotel="openTripHotel" />
             <TripItineraryAccordion v-else-if="itinCollapsed" :days="tripDaysView" :stops="tripItinStops" :hotels="tripHotelLinks" stacked @open-hotel="openTripHotel" />
-            <TripItineraryPerCity v-else-if="itinCity" :chapters="tripCityChapters" :days="tripDaysView" :hotels="tripHotelLinks" stacked @open-hotel="openTripHotel" />
+            <TripItineraryPerCity v-else-if="itinCity" ref="hybridAccordion" :chapters="tripCityChapters" :days="tripDaysView" :hotels="tripHotelLinks" stacked :show-stats="false" @open-hotel="openTripHotel" />
             <MultiHotelTripItinerary v-else :days="tripDaysView" :hotels="tripHotelLinks" stacked @open-hotel="openTripHotel" />
           </template>
           <template v-else>
@@ -495,10 +495,10 @@
       <!-- Two-column layout: Content | Booking Sidebar -->
       <div class="deal-page__grid container">
         <div class="deal-page__col-left">
-          <!-- Noord-Frankrijk variant 5 (Hybrid): klikbare dagsamenvatting bovenaan,
-               direct onder de beschrijving; het reisschema zelf staat als ingeklapte
-               accordeon over de volle breedte onder de twee kolommen. -->
-          <section v-if="itinHybrid" class="deal-page__hybrid-summary">
+          <!-- Noord-Frankrijk variant 3 (Per stad), 5 (Hybrid) en 6 (Reviews): klikbare
+               dagsamenvatting bovenaan, direct onder de beschrijving; het reisschema
+               zelf staat over de volle breedte onder de twee kolommen. -->
+          <section v-if="itinHybrid || itinCity" class="deal-page__hybrid-summary">
             <h2 class="section-title">{{ t('trip.itin.hybrid.summaryHeading') }}</h2>
             <TripItinerarySummary :days="tripDaysView" :hotels="tripHotelLinks" @select="hybridGoToDay" />
             <!-- Variant 6 (Reviews): drie reizigersbeoordelingen naast elkaar. -->
@@ -572,15 +572,14 @@
                 </article>
               </div>
             </section>
-              <!-- Noord-Frankrijk variant 4 (Map) en 5 (Hybrid): het reisschema staat in
-                   een eigen sectie over de volle breedte onder de twee kolommen (zie
-                   #arrangement hieronder). Variant 1 (Summary), 2 (Collapsed, accordeon)
-                   en 3 (Per stad) staan hier in de linkerkolom. -->
+              <!-- Noord-Frankrijk variant 3 (Per stad), 4 (Map), 5 (Hybrid) en 6 (Reviews):
+                   het reisschema staat in een eigen sectie over de volle breedte onder
+                   de twee kolommen (zie #arrangement hieronder). Variant 1 (Summary) en
+                   2 (Collapsed, accordeon) staan hier in de linkerkolom. -->
               <template v-if="!itinFull">
                 <h2 class="section-title">{{ t('trip.itineraryHeading') }}</h2>
                 <p class="deal-page__itinerary-intro">{{ t('trip.itineraryIntro') }}</p>
                 <TripItineraryAccordion v-if="itinCollapsed" :days="tripDaysView" :stops="tripItinStops" :hotels="tripHotelLinks" @open-hotel="openTripHotel" />
-                <TripItineraryPerCity v-else-if="itinCity" :chapters="tripCityChapters" :days="tripDaysView" :hotels="tripHotelLinks" @open-hotel="openTripHotel" />
                 <MultiHotelTripItinerary v-else :days="tripDaysView" :hotels="tripHotelLinks" @open-hotel="openTripHotel" />
               </template>
             </template>
@@ -804,6 +803,7 @@
         <h2 class="section-title">{{ t('trip.itineraryHeading') }}</h2>
         <p class="deal-page__itinerary-intro">{{ t('trip.itineraryIntro') }}</p>
         <TripItineraryAccordion v-if="itinHybrid" ref="hybridAccordion" :days="tripDaysView" :stops="tripItinStops" :hotels="tripHotelLinks" wide :show-stats="false" @open-hotel="openTripHotel" />
+        <TripItineraryPerCity v-else-if="itinCity" ref="hybridAccordion" :chapters="tripCityChapters" :days="tripDaysView" :hotels="tripHotelLinks" wide :show-stats="false" @open-hotel="openTripHotel" />
         <TripItineraryCities v-else :days="tripDaysView" :stops="tripItinStops" :legs="tripRouteLegs" :return-label="tripReturnLabel" :hotels="tripHotelLinks" @open-hotel="openTripHotel" @open-map="tripMapOpen = true" />
       </section>
 
@@ -1600,14 +1600,15 @@ const itinCity = computed(() => showItinVariants.value && itinVariant.value === 
 /** Hybrid-lay-out geldt ook voor variant 6 "Reviews" (= Hybrid + beoordelingen + totaalscore). */
 const itinHybrid = computed(() => showItinVariants.value && (itinVariant.value === 'hybrid' || itinVariant.value === 'reviews'))
 const itinReviews = computed(() => showItinVariants.value && itinVariant.value === 'reviews')
-const itinFull = computed(() => itinNew.value || itinHybrid.value)
+const itinFull = computed(() => itinNew.value || itinHybrid.value || itinCity.value)
 /** Drie beoordelingen van de vakantie (redactioneel), anders die van het eerste hotel. */
 const tripReviews = computed<TripReviewView[]>(() => {
   const own = tripPdp?.content?.reviews
   if (own?.length) return own.slice(0, 3).map(r => ({ author: r.author, city: r.city, date: r.date ? localized(r.date) : undefined, score: r.score, text: localized(r.text) }))
   return (hotel.individualReviews ?? []).slice(0, 3).map(r => ({ author: r.author, date: r.date, score: Number(r.score), text: localized(r.text) }))
 })
-/** Hybrid: klik in de dagsamenvatting → die dag openen in de accordeon en ernaartoe scrollen. */
+/** Hybrid/Reviews/Per stad: klik in de dagsamenvatting → die dag (of dat stadshoofdstuk)
+ *  openen in het reisschema over de volle breedte en ernaartoe scrollen. */
 const hybridAccordion = ref<{ openDay: (day: number) => Promise<void> } | null>(null)
 function hybridGoToDay(day: number) { hybridAccordion.value?.openDay(day) }
 /** Variant "Per stad": per hotel één hoofdstuk — hotel + ontbijt, extra's (het
@@ -2349,7 +2350,8 @@ onMounted(() => {
   height: 26px;
   padding: 0 8px;
   border-radius: 6px;
-  background: var(--color-dark, #141414);
+  /* Trustpilot-groen — dezelfde kleur als de prijzen in de kalender. */
+  background: var(--color-discount, #00b67a);
   color: #fff;
   font-size: 14px;
   font-weight: 700;
