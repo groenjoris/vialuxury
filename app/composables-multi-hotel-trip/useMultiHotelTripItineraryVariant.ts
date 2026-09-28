@@ -3,6 +3,8 @@
  * (alleen "Ontdek Noord-Frankrijk en de Opaalkust in 7 dagen", zie
  * ITINERARY_VARIANT_SLUGS). Schakelen gaat via de zwevende knop linksboven
  * (<TripItineraryVariantSwitch>); de keuze blijft bewaard in localStorage.
+ * In de schakelaar staan nog drie: 1 · Final ('city'), 2 · Map ('cities') en
+ * 3 · Per dag ('hybrid'). Hieronder alle varianten (ook de niet meer getoonde):
  *
  *  - 'current' → variant 1 "Summary": het bestaande reisschema
  *                (MultiHotelTripItinerary, linkerkolom, samenvatting + "Toon volledig …")
@@ -24,14 +26,13 @@
  */
 export type ItineraryVariant = 'current' | 'days' | 'city' | 'cities' | 'hybrid' | 'reviews'
 
-/* Volgorde in de schakelaar: het gekozen ontwerp ("Final" = Per stad met reviews) eerst. */
+/* Volgorde in de schakelaar: het gekozen ontwerp ("Final" = Per stad met reviews) eerst.
+   Sinds 2026-09-28 nog drie ter vergelijking; 'current' (Summary), 'days' (Collapsed) en
+   'reviews' staan niet meer in de schakelaar (de code erachter bestaat nog). */
 export const ITINERARY_VARIANTS: { id: ItineraryVariant; label: string }[] = [
   { id: 'city', label: '1 · Final' },
-  { id: 'days', label: '2 · Collapsed' },
-  { id: 'current', label: '3 · Summary' },
-  { id: 'cities', label: '4 · Map' },
-  { id: 'hybrid', label: '5 · Hybrid' },
-  { id: 'reviews', label: '6 · Reviews' },
+  { id: 'cities', label: '2 · Map' },
+  { id: 'hybrid', label: '3 · Per dag' },
 ]
 
 /** Vakanties waarop de nieuwe varianten (en de schakelaar) actief zijn. */
@@ -46,7 +47,8 @@ export function useMultiHotelTripItineraryVariant() {
   function restore() {
     try {
       const v = localStorage.getItem(STORAGE_KEY)
-      if (v === 'current' || v === 'days' || v === 'city' || v === 'cities' || v === 'hybrid' || v === 'reviews') variant.value = v
+      // Alleen varianten die nog in de schakelaar staan; een oude keuze (Summary/Collapsed/Reviews) valt terug op Final.
+      if (ITINERARY_VARIANTS.some(x => x.id === v)) variant.value = v as ItineraryVariant
     } catch { /* ignore */ }
   }
   function setVariant(v: ItineraryVariant) {
