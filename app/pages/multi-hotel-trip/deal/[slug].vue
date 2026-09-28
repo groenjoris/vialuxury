@@ -211,7 +211,7 @@
 
         <!-- Beoordelingen (carrousel) boven het voorbeeld-reisschema. -->
         <section v-if="itinReviews && tripReviews.length" id="beoordelingen-vakantie" class="container deal-page__reviews-mobile deal-page__anchor">
-          <TripReviewsRow :reviews="tripReviews" />
+          <TripReviewsRow :reviews="tripReviews" :plain="reviewsPlain" />
         </section>
 
         <!-- Vakantie met reisschema-variant Per stad/Hybrid/Reviews: dagsamenvatting onder de
@@ -501,7 +501,7 @@
             <button v-if="hasMoreDescription" type="button" class="deal-page__read-more" :aria-expanded="descExpanded" @click="descExpanded = !descExpanded">{{ descExpanded ? t('common.readLess') : t('common.readMore') }}</button>
 
             <!-- Beoordelingen: drie kaarten naast elkaar, boven het voorbeeld-reisschema. -->
-            <TripReviewsRow v-if="itinReviews && tripReviews.length" id="beoordelingen-vakantie" class="deal-page__desc-block deal-page__anchor" :reviews="tripReviews" />
+            <TripReviewsRow v-if="itinReviews && tripReviews.length" id="beoordelingen-vakantie" class="deal-page__desc-block deal-page__anchor" :reviews="tripReviews" :plain="reviewsPlain" />
             <!-- Per stad / Hybrid / Reviews: dagsamenvatting; klik op een dag opent het
                  sidepanel met het uitgebreide schema en scrolt naar die dag. -->
             <section v-if="itinHybrid || itinCity" id="reisschema" class="deal-page__hybrid-summary deal-page__hybrid-summary--intro deal-page__desc-block deal-page__anchor">
@@ -557,9 +557,27 @@
             <template v-if="isTrip">
               <!-- Vakantie: "In deze autovakantie … is het volgende inbegrepen" — compacte rijen
                    (thumb, titel, korte tekst) op een grijs vlak dat de kolom vult. -->
-              <section v-if="tripIncluded.length" id="inbegrepen" class="trip-incl">
+              <section v-if="tripIncluded.length" id="inbegrepen" class="trip-incl" :class="{ 'trip-incl--classic': inclClassic }">
               <h2 class="section-title">{{ tripIncludedHeading }}</h2>
-              <div class="trip-incl__grid">
+              <!-- Final · Includes "Classic": als de gewone arrangementenpagina — twee naast elkaar,
+                   foto boven de tekst, geen achtergrond. -->
+              <div v-if="inclClassic" class="content-blocks__grid">
+                <div v-for="b in tripIncluded" :key="b.title" class="content-block">
+                  <button v-if="b.image" type="button" class="content-block__image trip-incl__classic-img" :aria-label="`${b.title} — ${t('common.allPhotos')}`" @click="tripInclLightbox = { image: b.image, title: b.title }"><img :src="b.image" :alt="b.title" loading="lazy" /></button>
+                  <div class="content-block__body">
+                    <h3 class="content-block__title">
+                      <span class="content-block__check"><svg class="icon-check" viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10" style="vertical-align:-0.125em"><path d="M3 13L8 19L21 5"/></svg></span>
+                      <span>
+                        <MultiHotelTripHotelText :text="b.title" :hotels="tripHotelLinks" @open-hotel="openTripHotel" />
+                        <span v-if="b.starRating" class="trip-incl__stars" aria-hidden="true"><span v-for="n in b.starRating" :key="n" class="trip-incl__star"><svg viewBox="0 0 18 18" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M16.963,6.786c-.088-.271-.323-.469-.605-.51l-4.62-.671L9.672,1.418c-.252-.512-1.093-.512-1.345,0l-2.066,4.186-4.62,.671c-.282,.041-.517,.239-.605,.51-.088,.271-.015,.57,.19,.769l3.343,3.258-.79,4.601c-.048,.282,.067,.566,.298,.734,.231,.167,.538,.189,.79,.057l4.132-2.173,4.132,2.173c.11,.058,.229,.086,.349,.086,.155,0,.31-.048,.441-.143,.231-.168,.347-.452,.298-.734l-.79-4.601,3.343-3.258c.205-.199,.278-.498,.19-.769Z"/></svg></span></span>
+                      </span>
+                    </h3>
+                    <p class="content-block__desc">{{ b.text }}</p>
+                    <button v-if="b.stopIndex != null" type="button" class="trip-incl__more" @click="openTripHotel(b.stopIndex)">{{ t('common.readMore') }}</button>
+                  </div>
+                </div>
+              </div>
+              <div v-else class="trip-incl__grid">
                 <article v-for="b in tripIncluded" :key="b.title" class="trip-incl__item">
                   <button v-if="b.image" type="button" class="trip-incl__thumb" :aria-label="`${b.title} — ${t('common.allPhotos')}`" @click="tripInclLightbox = { image: b.image, title: b.title }"><img :src="b.image" :alt="b.title" loading="lazy" /></button>
                   <span v-else class="trip-incl__icon" aria-hidden="true"><img :src="b.icon || '/icons/facilities/special.svg'" alt="" width="22" height="22" /></span>
@@ -1206,6 +1224,7 @@ import type { TripCityChapter, TripCityAttraction } from '~/components-multi-hot
 import { isTripSight } from '~/utils-multi-hotel-trip/tripSights'
 import type { TripItineraryStop } from '~/components-multi-hotel-trip/deal/TripItineraryCities.vue'
 import TripItineraryVariantSwitch from '~/components-multi-hotel-trip/deal/TripItineraryVariantSwitch.vue'
+import { useMultiHotelTripFinalOptions } from '~/composables-multi-hotel-trip/useMultiHotelTripFinalOptions'
 import { ITINERARY_VARIANT_SLUGS, useMultiHotelTripItineraryVariant, type ItineraryVariant } from '~/composables-multi-hotel-trip/useMultiHotelTripItineraryVariant'
 import type { TripHotelModalData } from '~/components-multi-hotel-trip/deal/TripHotelDetails.vue'
 import { PRICED_PERSONS, minRoomsFor } from '~/utils-multi-hotel-trip/priceFormula'
@@ -1658,6 +1677,11 @@ const itinVariant = computed<ItineraryVariant>(() =>
 const itinNew = computed(() => itinVariant.value === 'cities')
 const itinCollapsed = computed(() => itinVariant.value === 'days')
 const itinCity = computed(() => itinVariant.value === 'city')
+/* Sub-varianten binnen "Final" (schakelaar linksboven): reviews met/zonder grijs vlak,
+   inclusies compact (rijen op een grijs vlak) of classic (als de gewone arrangementenpagina). */
+const { reviews: finalReviews, includes: finalIncludes } = useMultiHotelTripFinalOptions()
+const reviewsPlain = computed(() => itinCity.value && finalReviews.value === 'plain')
+const inclClassic = computed(() => itinCity.value && finalIncludes.value === 'classic')
 /** Hybrid-lay-out geldt ook voor variant 6 "Reviews" (= Hybrid + beoordelingen + totaalscore). */
 const itinHybrid = computed(() => itinVariant.value === 'hybrid' || itinVariant.value === 'reviews')
 /** Reviews + totaalscore: bij "Per stad" (het gekozen ontwerp) en bij variant "Reviews". */
@@ -2986,6 +3010,9 @@ onMounted(() => {
   border-radius: var(--radius-lg);
 }
 .trip-incl .section-title { margin-top: 0; }
+/* Final · Includes "Classic": geen grijs vlak, kaarten als op de gewone arrangementenpagina. */
+.trip-incl--classic { padding: 0; background: none; border-radius: 0; }
+.trip-incl__classic-img { display: block; width: 100%; padding: 0; border: 0; cursor: zoom-in; }
 .trip-incl__grid { display: flex; flex-direction: column; }
 .trip-incl__item {
   display: flex;

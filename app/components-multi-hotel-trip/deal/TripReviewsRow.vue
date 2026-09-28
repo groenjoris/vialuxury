@@ -5,7 +5,7 @@
        donkergrijze avatar met naam en, op een eigen regel, het land, en "Meer info" → pop-up met de hele
        review: titel (klein), maand van de vakantie, score, de volledige tekst
        (scrollt als hij lang is) en de schrijver. Mobiel: horizontaal swipen. -->
-  <section class="trr" :aria-label="t('trip.reviews.heading')">
+  <section class="trr" :class="{ 'trr--plain': plain }" :aria-label="t('trip.reviews.heading')">
     <h2 class="trr__title">{{ t('trip.reviews.heading') }}</h2>
     <div class="trr__grid">
       <article v-for="(r, i) in reviews" :key="i" class="trr-card">
@@ -82,7 +82,8 @@ export interface TripReviewView {
   text: string
 }
 
-defineProps<{ reviews: TripReviewView[] }>()
+/** `plain`: zonder grijs vlak (sub-variant "No background" bij reisschema-variant Final). */
+defineProps<{ reviews: TripReviewView[]; plain?: boolean }>()
 
 const { t } = useMultiHotelTripI18n()
 const initialOf = (name: string) => (name.trim().charAt(0) || '?').toUpperCase()
@@ -106,6 +107,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   background: var(--color-background-secondary, #FBFAF8);
   border-radius: var(--radius-lg);
 }
+.trr--plain { padding: 0; background: none; border-radius: 0; }
 /* Kop in dezelfde stijl als de andere sectiekoppen op de pagina (22px/600). */
 .trr__title { margin: 0; font-family: var(--font-heading); font-size: 22px; font-weight: 600; line-height: 1.3; color: var(--color-text-primary); }
 /* Drie kaarten naast elkaar, even hoog. */

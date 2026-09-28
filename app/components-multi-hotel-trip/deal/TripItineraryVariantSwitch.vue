@@ -38,6 +38,37 @@
             @click="pick(v.id)"
           >{{ v.label }}</button>
         </div>
+        <!-- Alleen bij "Final": sub-varianten voor het reviewsblok en de inclusies. -->
+        <template v-if="variant === 'city'">
+          <div class="tivs__sub">
+            <span class="tivs__label">Reviews</span>
+            <div class="tivs__group">
+              <button
+                v-for="o in FINAL_REVIEWS_OPTIONS"
+                :key="o.id"
+                type="button"
+                class="tivs__btn"
+                :class="{ 'tivs__btn--on': finalReviews === o.id }"
+                :aria-pressed="finalReviews === o.id"
+                @click="pickFinal('reviews', o.id)"
+              >{{ o.label }}</button>
+            </div>
+          </div>
+          <div class="tivs__sub">
+            <span class="tivs__label">Includes</span>
+            <div class="tivs__group">
+              <button
+                v-for="o in FINAL_INCLUDES_OPTIONS"
+                :key="o.id"
+                type="button"
+                class="tivs__btn"
+                :class="{ 'tivs__btn--on': finalIncludes === o.id }"
+                :aria-pressed="finalIncludes === o.id"
+                @click="pickFinal('includes', o.id)"
+              >{{ o.label }}</button>
+            </div>
+          </div>
+        </template>
       </div>
     </Transition>
   </div>
@@ -45,6 +76,7 @@
 
 <script setup lang="ts">
 import { ITINERARY_VARIANTS, useMultiHotelTripItineraryVariant, type ItineraryVariant } from '~/composables-multi-hotel-trip/useMultiHotelTripItineraryVariant'
+import { FINAL_REVIEWS_OPTIONS, FINAL_INCLUDES_OPTIONS, useMultiHotelTripFinalOptions, type FinalReviewsStyle, type FinalIncludesStyle } from '~/composables-multi-hotel-trip/useMultiHotelTripFinalOptions'
 
 const props = defineProps<{ /** Element-id om naartoe te scrollen na wisselen. */ target?: string }>()
 const { variant, setVariant, restore } = useMultiHotelTripItineraryVariant()
@@ -57,8 +89,20 @@ function setOpen(v: boolean) {
   open.value = v
   try { localStorage.setItem(OPEN_KEY, v ? '1' : '0') } catch { /* ignore */ }
 }
+const { reviews: finalReviews, includes: finalIncludes, restore: restoreFinal, setReviews, setIncludes } = useMultiHotelTripFinalOptions()
+/** Sub-variant kiezen en naar het betreffende blok scrollen, zodat je het verschil direct ziet. */
+async function pickFinal(kind: 'reviews' | 'includes', v: string) {
+  if (kind === 'reviews') setReviews(v as FinalReviewsStyle)
+  else setIncludes(v as FinalIncludesStyle)
+  await nextTick()
+  const id = kind === 'reviews' ? 'beoordelingen-vakantie' : 'inbegrepen'
+  const el = [...document.querySelectorAll<HTMLElement>(`#${id}`)].find(e => e.offsetParent !== null)
+  if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 100, behavior: 'smooth' })
+}
+
 onMounted(() => {
   restore()
+  restoreFinal()
   try {
     const stored = localStorage.getItem(OPEN_KEY)
     open.value = stored === null ? true : stored === '1'
@@ -153,6 +197,7 @@ async function pick(v: ItineraryVariant) {
   white-space: nowrap;
 }
 .tivs__btn:hover { background: rgba(255, 255, 255, 0.12); }
+.tivs__sub { display: flex; flex-direction: column; gap: 4px; margin-top: 4px; }
 .tivs__btn--on, .tivs__btn--on:hover { background: #fff; color: #141414; }
 
 .tivs-swap-enter-active, .tivs-swap-leave-active { transition: opacity 120ms ease, transform 120ms ease; }
