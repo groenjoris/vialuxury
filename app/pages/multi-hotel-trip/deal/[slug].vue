@@ -209,10 +209,16 @@
           </div>
         </section>
 
-        <!-- Vakantie met reisschema-variant Per stad/Hybrid/Reviews: dagsamenvatting direct onder de beschrijving. -->
+        <!-- Beoordelingen (carrousel) boven het voorbeeld-reisschema. -->
+        <section v-if="itinReviews && tripReviews.length" class="container deal-page__reviews-mobile">
+          <TripReviewsRow :reviews="tripReviews" />
+        </section>
+
+        <!-- Vakantie met reisschema-variant Per stad/Hybrid/Reviews: dagsamenvatting onder de
+             beschrijving; klik op een dag opent het sidepanel bij die dag. -->
         <section v-if="itinHybrid || itinCity" class="container deal-page__hybrid-summary deal-page__hybrid-summary--mobile">
           <h2 class="section-title">{{ t('trip.itin.hybrid.summaryHeading') }}</h2>
-          <TripItinerarySummary :days="tripDaysView" :hotels="tripHotelLinks" full-link @select="hybridGoToDay" @open-full="itinPanelOpen = true" />
+          <TripItinerarySummary :days="tripDaysView" :hotels="tripHotelLinks" full-link @select="openItinPanelAt" @open-full="openItinPanelAt(null)" />
         </section>
 
         <!-- 9. Highlights -->
@@ -245,11 +251,6 @@
             :lng="hotel.location.coordinates.lng"
             :address="hotelStreetCity"
           />
-        </section>
-
-        <!-- Reviews: carrousel onder de minimap (vakantie met reviews). -->
-        <section v-if="itinReviews && tripReviews.length" class="container deal-page__reviews-mobile">
-          <TripReviewsRow :reviews="tripReviews" />
         </section>
 
         <!-- 11. Included cards (repeat full include section). Anchor
@@ -285,9 +286,9 @@
             <!-- Noord-Frankrijk (schakelaar linksboven): 4 = Map, 2 = Collapsed (accordeon), 3 = Per stad,
                  5 = Hybrid (accordeon zonder kerngetallen; de samenvatting staat onder de beschrijving), 1 = Summary. -->
             <TripItineraryCities v-if="itinNew" :days="tripDaysView" :stops="tripItinStops" :legs="tripRouteLegs" :return-label="tripReturnLabel" :hotels="tripHotelLinks" stacked @open-hotel="openTripHotel" @open-map="tripMapOpen = true" />
-            <TripItineraryAccordion v-else-if="itinHybrid" ref="hybridAccordion" :days="tripDaysView" :stops="tripItinStops" :hotels="tripHotelLinks" stacked :show-stats="false" @open-hotel="openTripHotel" />
+            <TripItineraryAccordion v-else-if="itinHybrid" :days="tripDaysView" :stops="tripItinStops" :hotels="tripHotelLinks" stacked :show-stats="false" @open-hotel="openTripHotel" />
             <TripItineraryAccordion v-else-if="itinCollapsed" :days="tripDaysView" :stops="tripItinStops" :hotels="tripHotelLinks" stacked @open-hotel="openTripHotel" />
-            <TripItineraryPerCity v-else-if="itinCity" ref="hybridAccordion" :chapters="tripCityChapters" :days="tripDaysView" :hotels="tripHotelLinks" stacked :show-stats="false" @open-hotel="openTripHotel" />
+            <TripItineraryPerCity v-else-if="itinCity" :chapters="tripCityChapters" :days="tripDaysView" :hotels="tripHotelLinks" stacked :show-stats="false" @open-hotel="openTripHotel" />
             <MultiHotelTripItinerary v-else :days="tripDaysView" :hotels="tripHotelLinks" stacked @open-hotel="openTripHotel" />
           </template>
           <template v-else>
@@ -486,8 +487,6 @@
               @open="tripMapOpen = true"
               @stop-click="openTripHotel"
             />
-            <!-- Reviews: carrousel onder de minimap, boven de boekingszijbalk. -->
-            <TripReviewsRow v-if="itinReviews && tripReviews.length" class="deal-page__intro-reviews" :reviews="tripReviews" />
           </div>
           <div class="deal-page__intro-desc">
             <!-- Kop boven de beschrijving: "7-daagse reis met eigen vervoer in Noord-Frankrijk". -->
@@ -497,11 +496,14 @@
             <div class="deal-page__intro-desc-text" :class="{ 'deal-page__intro-desc-text--fade': hasMoreDescription && !descExpanded }" v-html="fullDescription"></div>
             <button v-if="hasMoreDescription" type="button" class="deal-page__read-more" :aria-expanded="descExpanded" @click="descExpanded = !descExpanded">{{ descExpanded ? t('common.readLess') : t('common.readMore') }}</button>
 
-            <!-- Per stad / Hybrid / Reviews: dagsamenvatting direct onder de beschrijving
-                 (in dezelfde kolom, zodat de afstand ertussen vast is — ook na "Lees meer"). -->
-            <section v-if="itinHybrid || itinCity" class="deal-page__hybrid-summary deal-page__hybrid-summary--intro">
+            <!-- Beoordelingen (carrousel) boven het voorbeeld-reisschema, met gelijke marges. -->
+            <TripReviewsRow v-if="itinReviews && tripReviews.length" class="deal-page__desc-block" :reviews="tripReviews" />
+            <!-- Per stad / Hybrid / Reviews: dagsamenvatting in dezelfde kolom als de
+                 beschrijving (vaste afstand, ook na "Lees meer"); klik op een dag opent het
+                 sidepanel met het uitgebreide schema en scrolt naar die dag. -->
+            <section v-if="itinHybrid || itinCity" class="deal-page__hybrid-summary deal-page__hybrid-summary--intro deal-page__desc-block">
               <h2 class="section-title">{{ t('trip.itin.hybrid.summaryHeading') }}</h2>
-              <TripItinerarySummary :days="tripDaysView" :hotels="tripHotelLinks" full-link @select="hybridGoToDay" @open-full="itinPanelOpen = true" />
+              <TripItinerarySummary :days="tripDaysView" :hotels="tripHotelLinks" full-link @select="openItinPanelAt" @open-full="openItinPanelAt(null)" />
             </section>
           </div>
         </section>
@@ -807,8 +809,8 @@
       <section v-if="itinFull && !isMobile" id="arrangement" class="container deal-page__itinerary-full">
         <h2 class="section-title">{{ itinCity ? t('trip.itin.city.heading') : t('trip.itineraryHeading') }}</h2>
         <p class="deal-page__itinerary-intro">{{ itinCity ? t('trip.itin.city.intro') : t('trip.itineraryIntro') }}</p>
-        <TripItineraryAccordion v-if="itinHybrid" ref="hybridAccordion" :days="tripDaysView" :stops="tripItinStops" :hotels="tripHotelLinks" wide :show-stats="false" @open-hotel="openTripHotel" />
-        <TripItineraryPerCity v-else-if="itinCity" ref="hybridAccordion" :chapters="tripCityChapters" :days="tripDaysView" :hotels="tripHotelLinks" :show-stats="false" @open-hotel="openTripHotel" />
+        <TripItineraryAccordion v-if="itinHybrid" :days="tripDaysView" :stops="tripItinStops" :hotels="tripHotelLinks" wide :show-stats="false" @open-hotel="openTripHotel" />
+        <TripItineraryPerCity v-else-if="itinCity" :chapters="tripCityChapters" :days="tripDaysView" :hotels="tripHotelLinks" :show-stats="false" @open-hotel="openTripHotel" />
         <TripItineraryCities v-else :days="tripDaysView" :stops="tripItinStops" :legs="tripRouteLegs" :return-label="tripReturnLabel" :hotels="tripHotelLinks" @open-hotel="openTripHotel" @open-map="tripMapOpen = true" />
       </section>
 
@@ -1091,7 +1093,7 @@
 
     <!-- Full description popup -->
     <!-- Uitgebreid voorbeeld reisschema (sidepanel, alleen tekst) -->
-    <TripItineraryPanel v-if="isTrip" :open="itinPanelOpen" :days="tripDaysView" @close="itinPanelOpen = false" />
+    <TripItineraryPanel v-if="isTrip" :open="itinPanelOpen" :days="tripDaysView" :focus-day="itinPanelDay" @close="itinPanelOpen = false" />
 
     <Teleport to="body">
       <Transition name="fade">
@@ -1386,8 +1388,13 @@ const descriptionOpen = ref(false)
 useBodyScrollLock().bindTo(descriptionOpen)
 /** Vakantie: de beschrijving staat uitgefaded op de pagina en klapt met "Lees meer" uit. */
 const descExpanded = ref(false)
-/** Sidepanel "Uitgebreid voorbeeld reisschema". */
+/** Sidepanel "Uitgebreid voorbeeld reisschema"; `itinPanelDay` = dag om naartoe te scrollen. */
 const itinPanelOpen = ref(false)
+const itinPanelDay = ref<number | null>(null)
+function openItinPanelAt(day: number | null) {
+  itinPanelDay.value = day
+  itinPanelOpen.value = true
+}
 const openRuleId = ref<string | null>(null)
 function toggleRule(id: string) {
   openRuleId.value = openRuleId.value === id ? null : id
@@ -1637,10 +1644,7 @@ const tripReviews = computed<TripReviewView[]>(() => {
     title: '', quote: localized(r.text), text: localized(r.text),
   }))
 })
-/** Hybrid/Reviews/Per stad: klik in de dagsamenvatting → die dag (of dat stadshoofdstuk)
- *  openen in het reisschema over de volle breedte en ernaartoe scrollen. */
-const hybridAccordion = ref<{ openDay: (day: number) => Promise<void> } | null>(null)
-function hybridGoToDay(day: number) { hybridAccordion.value?.openDay(day) }
+
 /** Variant "Per stad": per hotel één hoofdstuk — hotel + ontbijt, extra's (het
  *  diner op de aankomstdag) en drie uitjes (de activiteitenblokken van de dagen
  *  in die plaats). Check-in/check-out zodra er een aankomstdatum is. */
@@ -2349,15 +2353,13 @@ onMounted(() => {
   pointer-events: none;
 }
 .deal-page__description-text--fade { max-height: 150px; }
-/* Dagsamenvatting in de beschrijvingskolom van de introrij: vaste, kleine
-   afstand tot de beschrijving (ook uitgeklapt); de inclusies volgen daarna met
-   een gewone marge i.p.v. de negatieve marge die onder de introrij hoort. */
-.deal-page__hybrid-summary--intro { margin-top: var(--space-lg); }
+/* Blokken in de beschrijvingskolom van de introrij (beoordelingen, dagsamenvatting):
+   steeds dezelfde marge (32px) tussen elk blok, ook na "Lees meer"; de inclusies
+   volgen daarna met dezelfde marge i.p.v. de negatieve marge onder de introrij. */
+.deal-page__desc-block { margin-top: var(--space-xl); }
 .deal-page__hybrid-summary--intro .section-title { margin-top: 0; }
 .deal-page__intro-row--summary + .deal-page__grid .deal-page__content-blocks--trip { margin-top: calc(-1 * var(--space-lg)); }
 .deal-page__hybrid-summary--mobile { margin-bottom: var(--space-lg); }
-/* Reviews-carrousel onder de minimap (zijbalkbreedte) en op mobiel als eigen sectie. */
-.deal-page__intro-reviews { margin-top: var(--space-lg); }
 .deal-page__reviews-mobile { margin-bottom: var(--space-lg); }
 /* Reviews-variant: totaalscore bovenin de subtitel (badge + oordeel · aantal). */
 .deal-page__trip-score {
@@ -2473,7 +2475,8 @@ onMounted(() => {
   color: var(--color-text-secondary);
 }
 .deal-page__intro-row .deal-page__intro-desc-text :deep(p) { margin: 0 0 var(--space-md); }
-.deal-page__intro-row .deal-page__read-more { margin-top: 6px; }
+/* Als blok (geen inline-regelhoogte eronder), zodat de marge naar het volgende blok exact 32px is. */
+.deal-page__intro-row .deal-page__read-more { display: block; margin-top: 6px; }
 
 .deal-page__intro { display: grid; grid-template-columns: 1fr 220px; gap: var(--space-xl); margin-bottom: var(--space-xl); align-items: start; }
 /* Vakantie: kaartje op de helft van de kolom (beschrijving krijgt de andere helft). */

@@ -19,6 +19,10 @@
     </div>
     <div ref="track" class="trr__track" @scroll.passive="onScroll">
       <article v-for="(r, i) in reviews" :key="i" class="trr-card">
+        <div class="trr-card__top">
+          <span class="trr-card__score" :aria-label="`${r.score.toFixed(1)}/10`">{{ r.score.toFixed(1) }}</span>
+          <span class="trr-card__verdict">{{ t(getReviewLabelKey(r.score)) }}</span>
+        </div>
         <p class="trr-card__quote">“{{ r.quote }}”</p>
         <div class="trr-card__who">
           <span class="trr-avatar" :class="{ 'trr-avatar--img': r.avatar }" aria-hidden="true">
@@ -67,6 +71,7 @@
 
 <script setup lang="ts">
 import { useBodyScrollLock } from '~/composables-multi-hotel-trip/useBodyScrollLock'
+import { getReviewLabelKey } from '~/utils-multi-hotel-trip/reviewLabel'
 
 export interface TripReviewView {
   author: string
@@ -138,7 +143,8 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 }
 .trr__arrow:hover:not(:disabled) { border-color: var(--color-text-primary); }
 .trr__arrow:disabled { opacity: 0.35; cursor: default; }
-/* Anderhalve kaart zichtbaar: kaart = 62% van de breedte. */
+/* Kaarten van vaste breedte (in de linkerkolom ±2,4 zichtbaar; mobiel 76%). */
+.trr { --trr-card-w: 300px; }
 .trr__track {
   display: flex;
   gap: 12px;
@@ -149,7 +155,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 }
 .trr__track::-webkit-scrollbar { display: none; }
 .trr-card {
-  flex: 0 0 62%;
+  flex: 0 0 var(--trr-card-w);
   scroll-snap-align: start;
   display: flex;
   flex-direction: column;
@@ -159,6 +165,23 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   border-radius: var(--radius-lg);
   background: var(--color-surface, #fff);
 }
+.trr-card__top { display: flex; align-items: center; gap: 8px; }
+.trr-card__score {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 34px;
+  height: 26px;
+  padding: 0 7px;
+  border-radius: 6px;
+  background: var(--color-discount, #00b67a);
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.trr-card__verdict { font-size: 14px; font-weight: 700; color: var(--color-text-primary); }
 .trr-card__quote {
   margin: 0;
   font-size: 14px;
@@ -289,7 +312,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 .trr-fade-enter-from, .trr-fade-leave-to { opacity: 0; }
 
 @media (max-width: 767px) {
-  .trr-card { flex-basis: 76%; }
+  .trr { --trr-card-w: 76%; }
   .trr-info__card { height: min(560px, 88vh); }
   .trr-info__head { padding: var(--space-lg) 60px var(--space-md) var(--space-lg); }
   .trr-info__body, .trr-info__foot { padding-left: var(--space-lg); padding-right: var(--space-lg); }
