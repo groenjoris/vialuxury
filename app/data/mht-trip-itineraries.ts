@@ -74,13 +74,20 @@ export interface TripMapHighlight {
   image?: string
 }
 
-/** Reizigersbeoordeling van de hele vakantie (variant "Reviews" van het reisschema). */
+/** Reizigersbeoordeling van de hele vakantie (onder het voorbeeld-reisschema):
+ *  kaart met één citaat (`positive`) en "Meer info" → pop-up met titel, datum,
+ *  score, pluspunt en minpunt (als booking.com). */
 export interface TripReviewSpec {
   author: string
-  city?: string
-  date?: LocalizedString
+  /** Landcode voor het vlaggetje: NL, BE, DE. */
+  country: 'NL' | 'BE' | 'DE'
+  avatar?: string
+  /** ISO-datum (YYYY-MM-DD). */
+  date: string
   score: number
-  text: LocalizedString
+  title: LocalizedString
+  positive: LocalizedString
+  negative?: LocalizedString
 }
 
 export interface TripItinerarySpec {
@@ -120,15 +127,21 @@ export const TRIP_ITINERARIES: Record<string, TripItinerarySpec> = {
   // ── 001 Noord-Frankrijk & Opaalkust ───────────────────────────────────
   'trip-noord-frankrijk': {
     reviews: [
-      { author: 'Marleen en Jos', city: 'Amersfoort', date: l('juni 2026', 'June 2026'), score: 9.4,
-        text: l('Drie heel verschillende hotels en alle drie een schot in de roos. De route is precies goed: nergens lang rijden en elke dag iets nieuws. Het diner in Tilques was het hoogtepunt.',
-          'Three very different hotels and all three spot on. The route is just right: no long drives and something new every day. Dinner at Tilques was the highlight.') },
-      { author: 'Familie De Vries', city: 'Haarlem', date: l('mei 2026', 'May 2026'), score: 9.0,
-        text: l('Béthune kenden we niet, maar wat een verrassing. Fijn dat het ontbijt en het diner op de aankomstdag al geregeld waren, dan hoef je \'s avonds niets meer te zoeken.',
-          'We had never heard of Béthune, but what a surprise. Nice that breakfast and dinner on the day of arrival were already arranged, so there is nothing to look for in the evening.') },
-      { author: 'Pieter', city: 'Rotterdam', date: l('april 2026', 'April 2026'), score: 8.8,
-        text: l('Château Cléry vlak bij de Opaalkust was ideaal als afsluiting; de wandeling over de kliffen bij Cap Blanc-Nez vergeten we niet snel. Alleen de kamer in Béthune was aan de kleine kant.',
-          'Château Cléry close to the Opal Coast was the ideal finale; we will not soon forget the walk along the cliffs at Cap Blanc-Nez. Only the room in Béthune was on the small side.') },
+      { author: 'Marleen en Jos', country: 'NL', date: '2026-06-18', score: 9.4,
+        title: l('Drie kastelen, drie verrassingen', 'Three châteaux, three surprises'),
+        positive: l('Drie heel verschillende hotels en alle drie een schot in de roos. De route is precies goed: nergens lang rijden en elke dag iets nieuws.',
+          'Three very different hotels and all three spot on. The route is just right: no long drives and something new every day.'),
+        negative: l('Het diner in Tilques duurde wat lang, maar was heerlijk.', 'Dinner at Tilques took a while, but was delicious.') },
+      { author: 'Familie De Vries', country: 'NL', date: '2026-05-09', score: 9.0,
+        title: l('Béthune was een verrassing', 'Béthune was a surprise'),
+        positive: l('Fijn dat het ontbijt en het diner op de aankomstdag al geregeld waren; \'s avonds hoef je niets meer te zoeken.',
+          'Nice that breakfast and dinner on the day of arrival were already arranged; there is nothing to look for in the evening.'),
+        negative: l('De kamer in Béthune was aan de kleine kant.', 'The room in Béthune was on the small side.') },
+      { author: 'Pieter', country: 'BE', date: '2026-04-22', score: 8.8,
+        title: l('Ideale afsluiting aan de Opaalkust', 'Ideal finale on the Opal Coast'),
+        positive: l('Château Cléry vlak bij de kust was ideaal als afsluiting; de wandeling over de kliffen bij Cap Blanc-Nez vergeten we niet snel.',
+          'Château Cléry close to the coast was the ideal finale; we will not soon forget the walk along the cliffs at Cap Blanc-Nez.'),
+        negative: l('Parkeren in Béthune is even zoeken.', 'Parking in Béthune takes some searching.') },
     ],
     description: [
       l('Zeven dagen Noord-Frankrijk in drie totaal verschillende decors: het levendige Béthune met zijn UNESCO-belfort, de stille moerassen rond Saint-Omer en de krijtkust van de Opaalkust. Je slaapt twee nachten in elk hotel, rijdt tussendoor nooit langer dan een uur en eet op elke aankomstdag een 3-gangendiner in het hotel.',
@@ -699,6 +712,22 @@ export const TRIP_ITINERARIES: Record<string, TripItinerarySpec> = {
 
   // ── Fietsvakantie Twente & Salland ────────────────────────────────────
   'trip-fietsvakantie-twente-salland': {
+    reviews: [
+      { author: 'Anneke en Wim', country: 'NL', date: '2026-07-14', score: 9.2,
+        title: l('Heerlijk ontspannen fietsen', 'Wonderfully relaxed cycling'),
+        positive: l('Mooie routes over rustige paden en de bagage stond elke dag netjes op de kamer. Het diner bij De Zwaan was verrassend goed.',
+          'Beautiful routes along quiet paths and our luggage was waiting in the room every day. Dinner at De Zwaan was surprisingly good.'),
+        negative: l('De etappe naar Markelo was met tegenwind best pittig.', 'The stage to Markelo was quite tough with a headwind.') },
+      { author: 'Jeroen', country: 'NL', date: '2026-06-02', score: 8.6,
+        title: l('Goed georganiseerd', 'Well organised'),
+        positive: l('Fijne hotels en duidelijke routes op de telefoon. Twente is echt een fietsparadijs.',
+          'Nice hotels and clear routes on the phone. Twente really is a cycling paradise.'),
+        negative: l('In Delden mocht de kamer wat moderner.', 'The room in Delden could be a bit more modern.') },
+      { author: 'Els', country: 'BE', date: '2026-05-20', score: 9.5,
+        title: l('Twente op zijn mooist', 'Twente at its best'),
+        positive: l('Landhuishotel Herikerberg was de kers op de taart, met een prachtig terras aan het bos. Alles klopte, van welkomstfietstasje tot ontbijt.',
+          'Landhuishotel Herikerberg was the icing on the cake, with a lovely terrace by the woods. Everything was right, from the welcome bike bag to breakfast.') },
+    ],
     introTitle: l('7-daagse fietsreis met bagagetransfer tussen hotels', '7-day cycling trip with luggage transfer between hotels'),
     // "Het volgende is inbegrepen" — teksten en foto's naar de extra's van de
     // oorspronkelijke dealpagina (deals.json-pakket 33960 "Fietsvakantie 2026",

@@ -1,25 +1,27 @@
 <template>
   <!-- Multi Hotel Trip — klikbare dagsamenvatting van het voorbeeld-reisschema
-       (één regel per dag), losgemaakt uit de variant "Summary" (TripItinerary)
-       voor de variant "Hybrid": staat daar bovenaan de linkerkolom onder de
-       beschrijving, terwijl het reisschema zelf (ingeklapte accordeon) verderop
-       over de volle breedte staat. Klik → `select(dag)`; de pagina opent die dag
-       in de accordeon en scrolt ernaartoe. Met de kerngetallen erboven. -->
+       (één regel per dag), bovenaan de linkerkolom onder de beschrijving
+       (varianten Per stad, Hybrid en Reviews). Klik → `select(dag)`; de pagina
+       opent die dag (of dat stadshoofdstuk) in het reisschema en scrolt
+       ernaartoe. Met de kerngetallen erboven en, optioneel, de link "Bekijk
+       uitgebreid voorbeeld reisschema" (→ sidepanel, `open-full`). -->
   <div class="tisum">
     <TripItineraryStats v-if="showStats && days.length" class="tisum__stats" :days="days.length" :hotels="hotels.length" :sights="sightsCount" />
     <ul v-if="days.length" class="tisum__list">
       <li v-for="day in days" :key="`sum-${day.day}`" class="tisum__item">
         <button type="button" class="tisum__link" @click="$emit('select', day.day)">
-          <span class="tisum__day">{{ day.label }}</span> · <span class="tisum__text">{{ summaryOf(day) }}</span>
+          <span class="tisum__day">{{ day.label }}</span> · <span class="tisum__text">{{ summaryOfDay(day) }}</span>
         </button>
       </li>
     </ul>
+    <button v-if="fullLink" type="button" class="tisum__full" @click="$emit('open-full')">{{ t('trip.itin.fullLink') }}</button>
   </div>
 </template>
 
 <script setup lang="ts">
 import TripItineraryStats from './TripItineraryStats.vue'
 import { countTripSights } from '~/utils-multi-hotel-trip/tripSights'
+import { summaryOfDay } from '~/utils-multi-hotel-trip/tripDaySummary'
 import type { TripHotelLink } from './TripHotelText.vue'
 import type { TripDayView } from './TripItinerary.vue'
 
@@ -28,20 +30,14 @@ const props = withDefaults(defineProps<{
   /** Eén per hotel — voor het aantal hotels in de kerngetallen. */
   hotels?: TripHotelLink[]
   showStats?: boolean
-}>(), { hotels: () => [], showStats: true })
+  /** Link "Bekijk uitgebreid voorbeeld reisschema" onder de lijst. */
+  fullLink?: boolean
+}>(), { hotels: () => [], showStats: true, fullLink: false })
 
-defineEmits<{ select: [day: number] }>()
+defineEmits<{ select: [day: number]; 'open-full': [] }>()
 
+const { t } = useMultiHotelTripI18n()
 const sightsCount = computed(() => countTripSights(props.days))
-
-/** Eén regel per dag: het belangrijkste onderdeel (onderweg/etappe, terugreis of
- *  de eerste activiteit; anders het hotel) — zelfde regel als in TripItinerary. */
-function summaryOf(day: TripDayView): string {
-  const main = day.blocks.find(b => b.kind === 'checkout' || b.kind === 'homeward')
-    ?? day.blocks.find(b => b.kind === 'activity')
-    ?? day.blocks.find(b => b.kind === 'checkin')
-  return main?.title ?? day.subtitle ?? ''
-}
 </script>
 
 <style scoped>
@@ -67,4 +63,18 @@ function summaryOf(day: TripDayView): string {
 .tisum__link:focus-visible .tisum__text { color: var(--color-primary); text-decoration: underline; text-underline-offset: 3px; }
 .tisum__day { font-weight: 700; }
 .tisum__text { color: var(--color-text-secondary); transition: color var(--transition-fast); }
+.tisum__full {
+  align-self: flex-start;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-primary);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+.tisum__full:hover { color: var(--color-primary-hover); }
 </style>

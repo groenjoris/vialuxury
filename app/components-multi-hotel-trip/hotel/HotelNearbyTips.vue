@@ -1,6 +1,8 @@
 <template>
-  <section class="tips-section container">
-    <div class="tips-section__header">
+  <!-- MHT: `embedded` = zonder kop, container-padding en scheidingslijn — de
+       rij tips in het reisschema "Per stad" (kop staat daar in het hoofdstuk). -->
+  <section class="tips-section" :class="{ container: !embedded, 'tips-section--embedded': embedded }">
+    <div v-if="!embedded" class="tips-section__header">
       <h2 class="tips-section__title">{{ t('hotel.nearbyTips') }}</h2>
       <p class="tips-section__subtitle">{{ tips.length }} {{ t('hotel.nearbySubtitle') }} {{ hotelName }}</p>
     </div>
@@ -96,6 +98,8 @@ const isMobile = useMultiHotelTripIsMobile()
 const props = defineProps<{
   tips: NearbyTip[]
   hotelName: string
+  /** Zonder kop/container: ingebed in een ander blok (reisschema "Per stad"). */
+  embedded?: boolean
 }>()
 
 const topRow = computed(() => props.tips.slice(0, 3))
@@ -384,4 +388,9 @@ function toggleBottom(index: number) {
      the template, but hide defensively in case of a resize). */
   .tip-card__more { display: none; }
 }
+
+/* MHT: ingebed in het reisschema "Per stad" — geen padding/scheidingslijn (staat
+   na de media queries zodat het ook op mobiel wint). */
+.tips-section--embedded { padding: 0; }
+.tips-section--embedded::before { display: none; }
 </style>

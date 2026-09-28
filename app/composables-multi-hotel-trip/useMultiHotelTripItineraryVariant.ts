@@ -37,7 +37,8 @@ export const ITINERARY_VARIANTS: { id: ItineraryVariant; label: string }[] = [
 export const ITINERARY_VARIANT_SLUGS = ['ontdek-noord-frankrijk-en-de-opaalkust-in-7-dagen']
 
 const STORAGE_KEY = 'vl_mht_itinerary_variant'
-const variant = ref<ItineraryVariant>('current')
+// Keuze (2026-09-28): "Per stad" (met reviews) is het ontwerp; de andere varianten blijven ter vergelijking.
+const variant = ref<ItineraryVariant>('city')
 
 export function useMultiHotelTripItineraryVariant() {
   /** Na mount aanroepen (niet tijdens SSR/hydration → geen mismatch). */

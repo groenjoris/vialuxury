@@ -39,10 +39,10 @@
         <section class="deal-page__title-section deal-page__title-section--mobile container">
           <h1 class="deal-page__package-title">{{ localized(currentDeal.title) }}</h1>
           <!-- Noord-Frankrijk variant 6 (Reviews): totaalscore van de vakantie bovenin de subtitel. -->
-          <a v-if="itinReviews && trip" href="#beoordelingen" class="deal-page__trip-score">
+          <div v-if="itinReviews && trip" class="deal-page__trip-score">
             <span class="deal-page__trip-score-badge">{{ trip.reviewScore.toFixed(1) }}</span>
             <span class="deal-page__trip-score-text">{{ t(getReviewLabelKey(trip.reviewScore)) }} · {{ trip.reviewCount }} {{ t('common.reviews') }}</span>
-          </a>
+          </div>
           <div class="deal-page__hotel-name-wrap">
             <!-- Vakantie: de hotelnamen met een pijltje ertussen (elke naam opent het
                  hotel-sidepanel); sterren ernaast alleen als alle hotels hetzelfde
@@ -203,16 +203,17 @@
         <section id="intro" class="container deal-page__description-mobile">
           <h2 class="section-title">{{ isTrip ? tripIntroTitle : t('deal.descriptionHeading') }}</h2>
           <div class="deal-page__description">
-            <div v-html="firstParagraph"></div>
-            <button v-if="hasMoreDescription" type="button" class="deal-page__read-more" @click="descriptionOpen = true">{{ t('common.readMore') }}</button>
+            <!-- Vakantie: de hele tekst, uitgefaded; "Lees meer" klapt hem op de pagina uit. -->
+            <div class="deal-page__description-text" :class="{ 'deal-page__description-text--fade': isTrip && hasMoreDescription && !descExpanded }" v-html="isTrip ? fullDescription : firstParagraph"></div>
+            <button v-if="hasMoreDescription" type="button" class="deal-page__read-more" :aria-expanded="isTrip ? descExpanded : undefined" @click="isTrip ? (descExpanded = !descExpanded) : (descriptionOpen = true)">{{ isTrip && descExpanded ? t('common.readLess') : t('common.readMore') }}</button>
           </div>
         </section>
 
-        <!-- Noord-Frankrijk variant 3 (Per stad), 5 (Hybrid) en 6 (Reviews): dagsamenvatting direct onder de beschrijving. -->
+        <!-- Vakantie met reisschema-variant Per stad/Hybrid/Reviews: dagsamenvatting direct onder de beschrijving. -->
         <section v-if="itinHybrid || itinCity" class="container deal-page__hybrid-summary deal-page__hybrid-summary--mobile">
           <h2 class="section-title">{{ t('trip.itin.hybrid.summaryHeading') }}</h2>
-          <TripItinerarySummary :days="tripDaysView" :hotels="tripHotelLinks" @select="hybridGoToDay" />
-          <TripReviewsRow v-if="itinReviews && tripReviews.length" class="deal-page__hybrid-reviews" :reviews="tripReviews" :count="trip?.reviewCount" />
+          <TripItinerarySummary :days="tripDaysView" :hotels="tripHotelLinks" full-link @select="hybridGoToDay" @open-full="itinPanelOpen = true" />
+          <TripReviewsRow v-if="itinReviews && tripReviews.length" class="deal-page__hybrid-reviews" :reviews="tripReviews" />
         </section>
 
         <!-- 9. Highlights -->
@@ -275,8 +276,8 @@
               </article>
             </div>
             </section>
-            <h2 class="section-title">{{ t('trip.itineraryHeading') }}</h2>
-            <p class="deal-page__itinerary-intro">{{ t('trip.itineraryIntro') }}</p>
+            <h2 class="section-title">{{ itinCity ? t('trip.itin.city.heading') : t('trip.itineraryHeading') }}</h2>
+            <p class="deal-page__itinerary-intro">{{ itinCity ? t('trip.itin.city.intro') : t('trip.itineraryIntro') }}</p>
             <!-- Noord-Frankrijk (schakelaar linksboven): 4 = Map, 2 = Collapsed (accordeon), 3 = Per stad,
                  5 = Hybrid (accordeon zonder kerngetallen; de samenvatting staat onder de beschrijving), 1 = Summary. -->
             <TripItineraryCities v-if="itinNew" :days="tripDaysView" :stops="tripItinStops" :legs="tripRouteLegs" :return-label="tripReturnLabel" :hotels="tripHotelLinks" stacked @open-hotel="openTripHotel" @open-map="tripMapOpen = true" />
@@ -404,10 +405,10 @@
         >
           <h1 class="deal-page__package-title">{{ localized(currentDeal.title) }}</h1>
           <!-- Noord-Frankrijk variant 6 (Reviews): totaalscore van de vakantie bovenin de subtitel. -->
-          <a v-if="itinReviews && trip" href="#beoordelingen" class="deal-page__trip-score">
+          <div v-if="itinReviews && trip" class="deal-page__trip-score">
             <span class="deal-page__trip-score-badge">{{ trip.reviewScore.toFixed(1) }}</span>
             <span class="deal-page__trip-score-text">{{ t(getReviewLabelKey(trip.reviewScore)) }} · {{ trip.reviewCount }} {{ t('common.reviews') }}</span>
-          </a>
+          </div>
           <div class="deal-page__hotel-name-wrap">
             <!-- Vakantie: de hotelnamen met een pijltje ertussen (elke naam opent het
                  hotel-sidepanel); sterren ernaast alleen als alle hotels hetzelfde
@@ -485,9 +486,10 @@
           <div class="deal-page__intro-desc">
             <!-- Kop boven de beschrijving: "7-daagse reis met eigen vervoer in Noord-Frankrijk". -->
             <h2 class="section-title deal-page__intro-title">{{ tripIntroTitle }}</h2>
-            <!-- De eerste twee alinea's; "Lees meer" opent de pop-up met de hele tekst. -->
-            <div class="deal-page__intro-desc-text" v-html="firstTwoParagraphs"></div>
-            <button v-if="hasMoreDescription" type="button" class="deal-page__read-more" @click="descriptionOpen = true">{{ t('common.readMore') }}</button>
+            <!-- De hele tekst, uitgefaded na ±7 regels; "Lees meer" klapt hem op de
+                 pagina uit (blijft staan), "Lees minder" weer in. -->
+            <div class="deal-page__intro-desc-text" :class="{ 'deal-page__intro-desc-text--fade': hasMoreDescription && !descExpanded }" v-html="fullDescription"></div>
+            <button v-if="hasMoreDescription" type="button" class="deal-page__read-more" :aria-expanded="descExpanded" @click="descExpanded = !descExpanded">{{ descExpanded ? t('common.readLess') : t('common.readMore') }}</button>
           </div>
         </section>
       </template>
@@ -500,9 +502,9 @@
                zelf staat over de volle breedte onder de twee kolommen. -->
           <section v-if="itinHybrid || itinCity" class="deal-page__hybrid-summary">
             <h2 class="section-title">{{ t('trip.itin.hybrid.summaryHeading') }}</h2>
-            <TripItinerarySummary :days="tripDaysView" :hotels="tripHotelLinks" @select="hybridGoToDay" />
-            <!-- Variant 6 (Reviews): drie reizigersbeoordelingen naast elkaar. -->
-            <TripReviewsRow v-if="itinReviews && tripReviews.length" class="deal-page__hybrid-reviews" :reviews="tripReviews" :count="trip?.reviewCount" />
+            <TripItinerarySummary :days="tripDaysView" :hotels="tripHotelLinks" full-link @select="hybridGoToDay" @open-full="itinPanelOpen = true" />
+            <!-- Per stad / Reviews: drie reizigersbeoordelingen naast elkaar. -->
+            <TripReviewsRow v-if="itinReviews && tripReviews.length" class="deal-page__hybrid-reviews" :reviews="tripReviews" />
           </section>
 
           <!-- Description + Mini map row. Vakantie: samenvattende beschrijving
@@ -800,10 +802,10 @@
            over de volle breedte, direct onder inhoud + boekingszijbalk en vóór
            reviews/FAQ. Wisselen met de zwevende schakelaar linksboven. -->
       <section v-if="itinFull && !isMobile" id="arrangement" class="container deal-page__itinerary-full">
-        <h2 class="section-title">{{ t('trip.itineraryHeading') }}</h2>
-        <p class="deal-page__itinerary-intro">{{ t('trip.itineraryIntro') }}</p>
+        <h2 class="section-title">{{ itinCity ? t('trip.itin.city.heading') : t('trip.itineraryHeading') }}</h2>
+        <p class="deal-page__itinerary-intro">{{ itinCity ? t('trip.itin.city.intro') : t('trip.itineraryIntro') }}</p>
         <TripItineraryAccordion v-if="itinHybrid" ref="hybridAccordion" :days="tripDaysView" :stops="tripItinStops" :hotels="tripHotelLinks" wide :show-stats="false" @open-hotel="openTripHotel" />
-        <TripItineraryPerCity v-else-if="itinCity" ref="hybridAccordion" :chapters="tripCityChapters" :days="tripDaysView" :hotels="tripHotelLinks" wide :show-stats="false" @open-hotel="openTripHotel" />
+        <TripItineraryPerCity v-else-if="itinCity" ref="hybridAccordion" :chapters="tripCityChapters" :days="tripDaysView" :hotels="tripHotelLinks" :show-stats="false" @open-hotel="openTripHotel" />
         <TripItineraryCities v-else :days="tripDaysView" :stops="tripItinStops" :legs="tripRouteLegs" :return-label="tripReturnLabel" :hotels="tripHotelLinks" @open-hotel="openTripHotel" @open-map="tripMapOpen = true" />
       </section>
 
@@ -1085,6 +1087,9 @@
     </MultiHotelTripMobileFullscreen>
 
     <!-- Full description popup -->
+    <!-- Uitgebreid voorbeeld reisschema (sidepanel, alleen tekst) -->
+    <TripItineraryPanel v-if="isTrip" :open="itinPanelOpen" :days="tripDaysView" @close="itinPanelOpen = false" />
+
     <Teleport to="body">
       <Transition name="fade">
         <div v-if="descriptionOpen && hotel && currentDeal" class="desc-modal" @click.self="descriptionOpen = false">
@@ -1171,11 +1176,12 @@ import TripItineraryPerCity from '~/components-multi-hotel-trip/deal/TripItinera
 import TripItinerarySummary from '~/components-multi-hotel-trip/deal/TripItinerarySummary.vue'
 import TripReviewsRow from '~/components-multi-hotel-trip/deal/TripReviewsRow.vue'
 import type { TripReviewView } from '~/components-multi-hotel-trip/deal/TripReviewsRow.vue'
+import TripItineraryPanel from '~/components-multi-hotel-trip/deal/TripItineraryPanel.vue'
 import type { TripCityChapter, TripCityAttraction } from '~/components-multi-hotel-trip/deal/TripItineraryPerCity.vue'
 import { isTripSight } from '~/utils-multi-hotel-trip/tripSights'
 import type { TripItineraryStop } from '~/components-multi-hotel-trip/deal/TripItineraryCities.vue'
 import TripItineraryVariantSwitch from '~/components-multi-hotel-trip/deal/TripItineraryVariantSwitch.vue'
-import { ITINERARY_VARIANT_SLUGS, useMultiHotelTripItineraryVariant } from '~/composables-multi-hotel-trip/useMultiHotelTripItineraryVariant'
+import { ITINERARY_VARIANT_SLUGS, useMultiHotelTripItineraryVariant, type ItineraryVariant } from '~/composables-multi-hotel-trip/useMultiHotelTripItineraryVariant'
 import type { TripHotelModalData } from '~/components-multi-hotel-trip/deal/TripHotelDetails.vue'
 import { PRICED_PERSONS, minRoomsFor } from '~/utils-multi-hotel-trip/priceFormula'
 import { matchIcon } from '~/utils-multi-hotel-trip/iconMatcher'
@@ -1375,6 +1381,10 @@ const isFavorited = computed(() => isFav(hotel.value?.slug))
 const descriptionOpen = ref(false)
 // Lock the underlying page while the description modal is open.
 useBodyScrollLock().bindTo(descriptionOpen)
+/** Vakantie: de beschrijving staat uitgefaded op de pagina en klapt met "Lees meer" uit. */
+const descExpanded = ref(false)
+/** Sidepanel "Uitgebreid voorbeeld reisschema". */
+const itinPanelOpen = ref(false)
 const openRuleId = ref<string | null>(null)
 function toggleRule(id: string) {
   openRuleId.value = openRuleId.value === id ? null : id
@@ -1589,23 +1599,38 @@ const tripMapStops = computed(() =>
 )
 /** "2 nachten" per hotel voor het hover-kaartje op de fullscreen kaart. */
 const tripMapNightsLabels = computed(() => (trip?.stops ?? []).map(s => nightsLabel(s.nights, lang.value)))
-/** Reisschema-varianten (per dag / per plaats) — alleen op de Noord-Frankrijk-vakantie. */
+/** Reisschema-varianten: de schakelaar staat alleen op de Noord-Frankrijk-vakantie;
+ *  de fietsvakantie heeft vast het gekozen ontwerp "Per stad" (met reviews);
+ *  andere vakanties het bestaande schema. */
+const FIXED_ITIN_VARIANT: Record<string, ItineraryVariant> = {
+  'fietsvakantie-twente-en-salland-delden-raalte-markelo': 'city',
+}
 const showItinVariants = computed(() => isTrip && ITINERARY_VARIANT_SLUGS.includes(routeSlug.value))
-const { variant: itinVariant } = useMultiHotelTripItineraryVariant()
+const { variant: itinVariantChosen } = useMultiHotelTripItineraryVariant()
+const itinVariant = computed<ItineraryVariant>(() =>
+  showItinVariants.value ? itinVariantChosen.value : (isTrip ? (FIXED_ITIN_VARIANT[routeSlug.value] ?? 'current') : 'current'))
 /** Variant 4 "Map" en 5 "Hybrid" → reisschema over de volle breedte onder de kolommen (`itinFull`);
  *  variant 1 "Summary", 2 "Collapsed" en 3 "Per stad" staan in de linkerkolom. */
-const itinNew = computed(() => showItinVariants.value && itinVariant.value === 'cities')
-const itinCollapsed = computed(() => showItinVariants.value && itinVariant.value === 'days')
-const itinCity = computed(() => showItinVariants.value && itinVariant.value === 'city')
+const itinNew = computed(() => itinVariant.value === 'cities')
+const itinCollapsed = computed(() => itinVariant.value === 'days')
+const itinCity = computed(() => itinVariant.value === 'city')
 /** Hybrid-lay-out geldt ook voor variant 6 "Reviews" (= Hybrid + beoordelingen + totaalscore). */
-const itinHybrid = computed(() => showItinVariants.value && (itinVariant.value === 'hybrid' || itinVariant.value === 'reviews'))
-const itinReviews = computed(() => showItinVariants.value && itinVariant.value === 'reviews')
+const itinHybrid = computed(() => itinVariant.value === 'hybrid' || itinVariant.value === 'reviews')
+/** Reviews + totaalscore: bij "Per stad" (het gekozen ontwerp) en bij variant "Reviews". */
+const itinReviews = computed(() => itinVariant.value === 'reviews' || itinVariant.value === 'city')
 const itinFull = computed(() => itinNew.value || itinHybrid.value || itinCity.value)
 /** Drie beoordelingen van de vakantie (redactioneel), anders die van het eerste hotel. */
 const tripReviews = computed<TripReviewView[]>(() => {
   const own = tripPdp?.content?.reviews
-  if (own?.length) return own.slice(0, 3).map(r => ({ author: r.author, city: r.city, date: r.date ? localized(r.date) : undefined, score: r.score, text: localized(r.text) }))
-  return (hotel.individualReviews ?? []).slice(0, 3).map(r => ({ author: r.author, date: r.date, score: Number(r.score), text: localized(r.text) }))
+  if (own?.length) {
+    return own.slice(0, 3).map(r => ({
+      author: r.author, country: r.country, avatar: r.avatar, date: formatDateLong(r.date), score: r.score,
+      title: localized(r.title), positive: localized(r.positive), negative: r.negative ? localized(r.negative) : undefined,
+    }))
+  }
+  return (hotel.individualReviews ?? []).slice(0, 3).map(r => ({
+    author: r.author, country: 'NL' as const, date: formatDateLong(r.date), score: Number(r.score), title: '', positive: localized(r.text),
+  }))
 })
 /** Hybrid/Reviews/Per stad: klik in de dagsamenvatting → die dag (of dat stadshoofdstuk)
  *  openen in het reisschema over de volle breedte en ernaartoe scrollen. */
@@ -1618,25 +1643,12 @@ const tripCityChapters = computed<TripCityChapter[]>(() => {
   if (!trip || !tripPdp) return []
   const checkIn = store.checkInDate
   const days = tripDaysView.value
-  const isBreakfast = (x: string) => /ontbijt|breakfast|frühstück/i.test(x)
-  const isNight = (x: string) => /overnachting|night|übernacht/i.test(x)
-  const isDinner = (x: string) => /diner|dinner|abendessen/i.test(x)
-  /** "welkomstbubbels, late check-out en gratis parkeren" */
-  const joinList = (items: string[]) => {
-    const low = items.map(x => x.charAt(0).toLowerCase() + x.slice(1))
-    return low.length > 1 ? `${low.slice(0, -1).join(', ')}${t('trip.itin.city.and')}${low[low.length - 1]}` : (low[0] ?? '')
-  }
   return trip.stops.map((s, i) => {
-    const d = tripHotelDetails(trip, tripPdp.content, i)
     const stopDays = days.filter(day => day.stopIndex === i)
-    const dinner = stopDays.flatMap(day => day.blocks).find(b => b.kind === 'dinner')
     const attractions: TripCityAttraction[] = stopDays
       .flatMap(day => day.blocks.filter(isTripSight).map(b => ({ ...b, dayLabel: day.label })))
       .map((a, k) => ({ ...a, image: a.image ?? a.more?.image ?? s.extraImages?.[k] ?? s.image }))
       .slice(0, 3)
-    const incl = s.includes.map(x => localized(x))
-    const extraIncl = incl.filter(x => !isNight(x) && !isBreakfast(x) && !isDinner(x))
-    const chapterTitle = tripPdp.content?.hotels[s.hotelName]?.chapterTitle
     const dayLabel = s.dayTo === s.dayFrom
       ? t('trip.daySingle').replace('{a}', String(s.dayFrom))
       : s.dayTo === s.dayFrom + 1
@@ -1644,7 +1656,6 @@ const tripCityChapters = computed<TripCityChapter[]>(() => {
         : t('trip.dayRange').replace('{a}', String(s.dayFrom)).replace('{b}', String(s.dayTo))
     return {
       stopIndex: i,
-      title: chapterTitle ? localized(chapterTitle) : t('trip.itin.city.titleFallback').replace('{city}', s.city),
       city: s.city,
       region: s.region,
       hotelName: s.hotelName,
@@ -1654,11 +1665,7 @@ const tripCityChapters = computed<TripCityChapter[]>(() => {
       dayLabel,
       checkIn: checkIn ? formatDateWeekdayShort(dayjs(checkIn).add(s.dayFrom - 1, 'day').format('YYYY-MM-DD')) : undefined,
       checkOut: checkIn ? formatDateWeekdayShort(dayjs(checkIn).add(s.dayFrom - 1 + s.nights, 'day').format('YYYY-MM-DD')) : undefined,
-      // Ontbijt en overige extra's als zinnen in de tekst (geen vinkjes).
-      hotelText: `${localized(d?.description ?? trip.pitch)}${incl.some(isBreakfast) ? ` ${t('trip.itin.city.breakfastText')}` : ''}`,
-      extras: dinner
-        ? { title: dinner.title, text: `${dinner.text}${extraIncl.length ? ` ${t('trip.itin.city.alsoIncluded').replace('{items}', joinList(extraIncl))}` : ''}`, image: dinner.image ?? s.dinnerImage }
-        : undefined,
+      travelKm: s.travel?.km,
       attractions,
     }
   })
@@ -2322,6 +2329,21 @@ onMounted(() => {
 .deal-page__col-left { min-width: 0; }
 /* Noord-Frankrijk: reisschema over de volle breedte onder de twee kolommen. */
 .deal-page__itinerary-full { padding-top: var(--space-2xl); padding-bottom: var(--space-xl); scroll-margin-top: 80px; }
+/* Vakantie-beschrijving: uitgefaded na ±7 regels; "Lees meer" klapt uit op de pagina. */
+.deal-page__intro-desc-text--fade,
+.deal-page__description-text--fade { position: relative; max-height: 190px; overflow: hidden; }
+.deal-page__intro-desc-text--fade::after,
+.deal-page__description-text--fade::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 80px;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0), var(--color-surface, #fff) 85%);
+  pointer-events: none;
+}
+.deal-page__description-text--fade { max-height: 150px; }
 /* Hybrid: dagsamenvatting bovenaan de linkerkolom (onder de beschrijving). Neemt
    de plek van het inclusieblok in: dezelfde negatieve marge als
    .deal-page__content-blocks--trip (dicht onder de introrij); het inclusieblok
