@@ -816,9 +816,15 @@
            reviews/FAQ. Wisselen met de zwevende schakelaar linksboven. -->
       <section v-if="itinFull && !isMobile" id="arrangement" class="container deal-page__itinerary-full">
         <h2 class="section-title">{{ itinCity ? t('trip.itin.city.heading') : t('trip.itineraryHeading') }}</h2>
-        <p class="deal-page__itinerary-intro">{{ itinCity ? t('trip.itin.city.intro') : t('trip.itineraryIntro') }}</p>
+        <!-- Intro met rechts de knop "Alles inklappen/uitklappen" (Per stad), zodat er 24px zit tussen de intro en de eerste stop. -->
+        <div class="deal-page__itinerary-introrow">
+          <p class="deal-page__itinerary-intro">{{ itinCity ? t('trip.itin.city.intro') : t('trip.itineraryIntro') }}</p>
+          <button v-if="itinCity" type="button" class="deal-page__itinerary-toggle" @click="perCityAllOpen ? perCityRef?.collapseAll() : perCityRef?.expandAll()">
+            {{ perCityAllOpen ? t('trip.itin.collapseAll') : t('trip.itin.expandAll') }}
+          </button>
+        </div>
         <TripItineraryAccordion v-if="itinHybrid" :days="tripDaysView" :stops="tripItinStops" :hotels="tripHotelLinks" wide :show-stats="false" @open-hotel="openTripHotel" />
-        <TripItineraryPerCity v-else-if="itinCity" :chapters="tripCityChapters" :days="tripDaysView" :hotels="tripHotelLinks" :show-stats="false" @open-hotel="openTripHotel" />
+        <TripItineraryPerCity v-else-if="itinCity" ref="perCityRef" :chapters="tripCityChapters" :days="tripDaysView" :hotels="tripHotelLinks" :show-stats="false" :show-toggle="false" @open-hotel="openTripHotel" />
         <TripItineraryCities v-else :days="tripDaysView" :stops="tripItinStops" :legs="tripRouteLegs" :return-label="tripReturnLabel" :hotels="tripHotelLinks" @open-hotel="openTripHotel" @open-map="tripMapOpen = true" />
       </section>
 
@@ -1627,6 +1633,10 @@ const tripMapNightsLabels = computed(() => (trip?.stops ?? []).map(s => nightsLa
 /** Reisschema-varianten: de schakelaar staat alleen op de Noord-Frankrijk-vakantie;
  *  de fietsvakantie heeft vast het gekozen ontwerp "Per stad" (met reviews);
  *  andere vakanties het bestaande schema. */
+/* "Wat te doen tijdens je vakantie" (desktop): de knop "Alles inklappen" staat naast de intro. */
+const perCityRef = ref<InstanceType<typeof TripItineraryPerCity> | null>(null)
+const perCityAllOpen = computed(() => perCityRef.value?.allOpen ?? true)
+
 const FIXED_ITIN_VARIANT: Record<string, ItineraryVariant> = {
   'fietsvakantie-twente-en-salland-delden-raalte-markelo': 'city',
 }
@@ -2506,6 +2516,23 @@ onMounted(() => {
 .deal-page__minimap--trip { --vl-minimap-aspect: 4 / 3; }
 /* Vakantie: intro onder de dagprogramma-kop. */
 .deal-page__itinerary-intro { margin: calc(-1 * var(--space-md)) 0 var(--space-lg); font-size: 14px; color: var(--color-text-secondary); }
+/* Introregel van "Wat te doen": tekst links, "Alles inklappen" rechts; 24px tot de eerste stop. */
+.deal-page__itinerary-introrow { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-md); margin: calc(-1 * var(--space-md)) 0 var(--space-lg); }
+.deal-page__itinerary-introrow .deal-page__itinerary-intro { margin: 0; }
+.deal-page__itinerary-toggle {
+  flex-shrink: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-primary);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+.deal-page__itinerary-toggle:hover { color: var(--color-primary-hover); }
 
 /* Mini map */
 /* Map preview + below-the-map footer (address left, "Bekijk kaart"

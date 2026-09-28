@@ -8,9 +8,9 @@
        bollen staat halverwege de afstand in kilometers. Alle hoofdstukken
        staan standaard open. -->
   <div class="tpc" :class="{ 'tpc--stacked': stacked }">
-    <div class="tpc__bar" :class="{ 'tpc__bar--end': !showStats }">
+    <div v-if="showStats || showToggle" class="tpc__bar" :class="{ 'tpc__bar--end': !showStats }">
       <TripItineraryStats v-if="showStats" :days="days.length" :hotels="chapters.length" :sights="sightsCount" />
-      <button type="button" class="tpc__all" @click="allOpen ? collapseAll() : expandAll()">
+      <button v-if="showToggle" type="button" class="tpc__all" @click="allOpen ? collapseAll() : expandAll()">
         {{ allOpen ? t('trip.itin.collapseAll') : t('trip.itin.expandAll') }}
       </button>
     </div>
@@ -104,7 +104,10 @@ const props = withDefaults(defineProps<{
   stacked?: boolean
   /** Kerngetallen-regel in de balk (uit als de pagina die al bij de samenvatting toont). */
   showStats?: boolean
-}>(), { hotels: () => [], stacked: false, showStats: true })
+  /** Knop "Alles inklappen/uitklappen" in de balk boven de lijst; uit als de pagina hem zelf
+   *  toont (naast de intro van "Wat te doen tijdens je vakantie") — gebruik dan `allOpen`/`expandAll`/`collapseAll`. */
+  showToggle?: boolean
+}>(), { hotels: () => [], stacked: false, showStats: true, showToggle: true })
 
 defineEmits<{ 'open-hotel': [stopIndex: number] }>()
 
@@ -134,7 +137,7 @@ async function openDay(day: number) {
   await nextTick()
   if (import.meta.client) document.getElementById(`itin-stad-${ch.stopIndex + 1}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
 }
-defineExpose({ openDay })
+defineExpose({ openDay, allOpen, expandAll, collapseAll })
 
 const sightsCount = computed(() => countTripSights(props.days))
 
