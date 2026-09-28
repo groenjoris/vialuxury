@@ -283,7 +283,7 @@ const de: Record<string, string> = {
   'trip.itin.fullLink': 'Ausführlichen Beispiel-Reiseplan ansehen',
   'trip.itin.sum.arrival': 'Ankunft im {hotel}',
   'trip.itin.sum.and': ' und ',
-  'trip.itin.panelIntro': 'Tag für Tag in Kürze – Sie bestimmen das Tempo.',
+  'trip.itin.panelIntro': 'Dies ist nur ein Beispiel – folgen Sie gern Ihrem eigenen Plan.',
   'trip.itin.city.heading': 'Was Sie während Ihres Urlaubs unternehmen können',
   'trip.itin.city.intro': 'Drei Tipps für die Umgebung jedes Hotels – klicken Sie auf einen Tipp für mehr.',
   'trip.itin.city.outingsAt': 'Schöne Ausflüge in der Nähe von {hotel}',

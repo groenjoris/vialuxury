@@ -292,7 +292,7 @@ const nl: Record<string, string> = {
   'trip.itin.fullLink': 'Bekijk uitgebreid voorbeeld reisschema',
   'trip.itin.sum.arrival': 'Aankomst in {hotel}',
   'trip.itin.sum.and': ' en ',
-  'trip.itin.panelIntro': 'Dag voor dag in het kort — je bepaalt zelf het tempo.',
+  'trip.itin.panelIntro': 'Dit is slechts een voorbeeld, voel je vrij om je eigen schema te volgen.',
   'trip.itin.city.heading': 'Wat te doen tijdens je vakantie',
   'trip.itin.city.intro': 'Per hotel drie tips voor in de buurt — klik op een tip voor meer.',
   'trip.itin.city.outingsAt': 'Leuke uitjes in de buurt van {hotel}',

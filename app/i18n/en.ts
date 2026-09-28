@@ -287,7 +287,7 @@ const en: Record<string, string> = {
   'trip.itin.fullLink': 'View the detailed sample itinerary',
   'trip.itin.sum.arrival': 'Arrival at {hotel}',
   'trip.itin.sum.and': ' and ',
-  'trip.itin.panelIntro': 'Day by day in brief — you set the pace.',
+  'trip.itin.panelIntro': 'This is just an example; feel free to follow your own schedule.',
   'trip.itin.city.heading': 'Things to do during your holiday',
   'trip.itin.city.intro': 'Three nearby tips for each hotel — click a tip for more.',
   'trip.itin.city.outingsAt': 'Fun things to do near {hotel}',
