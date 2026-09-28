@@ -87,17 +87,50 @@ useBodyScrollLock().bindTo(computed(() => props.open))
 // CARTO Voyager mét key (rustiger, minder detail); anders verzachte OSM-tegels.
 const cartoApiKey = useRuntimeConfig().public.cartoApiKey as string
 
-/** Geselecteerd hotel (index) → sidepanel open; de kaart krimpt en past de
- *  route opnieuw in het overgebleven vlak, zodat alle hotels zichtbaar blijven. */
+/** Geselecteerd hotel (index) → sidepanel open. Het panel duwt de kaart opzij:
+ *  zelfde zoomniveau, de kaart schuift naar links — zo mogelijk de volle
+ *  panelbreedte, maar niet verder dan de route toelaat (de linkerrand van de
+ *  route blijft in beeld); past de route niet meer in het overgebleven vlak,
+ *  dan wordt hij daarin gecentreerd. Bij sluiten schuift hij terug. */
 const selectedHotel = ref<number | null>(null)
 const panelHotel = computed(() => (selectedHotel.value != null ? props.hotels?.[selectedHotel.value] ?? null : null))
-watch(selectedHotel, () => { setTimeout(() => { map?.invalidateSize({ pan: false }); refit(true) }, 320) })
+const PANEL_W = 440
+let panelShift = 0
+function computePanelShift(): number {
+  if (!map) return 0
+  if (window.innerWidth <= 767) return 0 // mobiel: panel over de hele breedte
+  const W = map.getSize().x
+  const Wn = W - PANEL_W
+  if (!fitBounds) return PANEL_W / 2
+  const pad = 24, markerPad = 70 // ruimte voor markers en hotelnamen
+  const bl = map.latLngToContainerPoint(fitBounds.getNorthWest()).x - markerPad
+  const br = map.latLngToContainerPoint(fitBounds.getSouthEast()).x + markerPad
+  const minShift = br - (Wn - pad) // nodig om onder het panel vandaan te komen
+  const maxShift = bl - pad        // niet verder: linkerrand blijft zichtbaar
+  if (maxShift < minShift) return Math.round((bl + br) / 2 - Wn / 2) // past niet: centreren
+  return Math.round(Math.max(0, Math.min(PANEL_W, maxShift, Math.max(minShift, PANEL_W))))
+}
+watch(selectedHotel, (sel, prev) => {
+  if (!map) return
+  const opening = sel != null && prev == null
+  const closing = sel == null && prev != null
+  if (opening) {
+    panelShift = computePanelShift()
+    if (panelShift) map.panBy([panelShift, 0], { animate: true, duration: 0.3 })
+  } else if (closing) {
+    if (panelShift) map.panBy([-panelShift, 0], { animate: true, duration: 0.3 })
+    panelShift = 0
+  }
+  // Na de breedte-transitie van het stage: Leaflet de nieuwe maat laten meten,
+  // zonder te pannen (het verschuiven is al gedaan).
+  setTimeout(() => map?.invalidateSize({ pan: false }), 320)
+})
 watch(() => props.open, (on) => { if (!on) selectedHotel.value = null })
 
 const mapEl = ref<HTMLElement | null>(null)
 let map: import('leaflet').Map | null = null
 let fitBounds: import('leaflet').LatLngBounds | null = null
-/** Alle hotels + highlights opnieuw in beeld passen (na openen/sluiten van het panel). */
+/** Alle hotels + highlights in beeld passen (bij openen van de kaart). */
 function refit(animate = false) {
   if (!map || !fitBounds) return
   map.fitBounds(fitBounds, { padding: [72, 72], maxZoom: 13, animate })
