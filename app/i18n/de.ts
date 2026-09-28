@@ -277,6 +277,8 @@ const de: Record<string, string> = {
   'trip.itin.stats.hotels': '{n} Top-Hotels',
   'trip.itin.stats.sights': '{n} Sehenswürdigkeiten',
   'trip.itin.hybrid.summaryHeading': 'Ihre Reise auf einen Blick',
+  'trip.reviews.heading': 'Das sagen Reisende',
+  'trip.reviews.all': 'Alle {n} Bewertungen',
   'trip.itin.city.hotelTag': 'Hotel',
   'trip.itin.city.extrasTag': 'Extras',
   'trip.itin.city.titleFallback': 'In und um {city}',

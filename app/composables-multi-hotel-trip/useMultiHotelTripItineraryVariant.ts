@@ -18,8 +18,11 @@
  *                bovenaan de linkerkolom onder de beschrijving, dan de includes,
  *                en het ingeklapte reisschema (accordeon uit Collapsed) over de
  *                volle breedte onder de twee kolommen
+ *  - 'reviews' → variant 6 "Reviews": als Hybrid, plus drie reizigersbeoordelingen
+ *                (naast elkaar) onder "Je reis in het kort" en de totaalscore
+ *                bovenin bij de subtitel
  */
-export type ItineraryVariant = 'current' | 'days' | 'city' | 'cities' | 'hybrid'
+export type ItineraryVariant = 'current' | 'days' | 'city' | 'cities' | 'hybrid' | 'reviews'
 
 export const ITINERARY_VARIANTS: { id: ItineraryVariant; label: string }[] = [
   { id: 'current', label: '1 · Summary' },
@@ -27,6 +30,7 @@ export const ITINERARY_VARIANTS: { id: ItineraryVariant; label: string }[] = [
   { id: 'city', label: '3 · Per stad' },
   { id: 'cities', label: '4 · Map' },
   { id: 'hybrid', label: '5 · Hybrid' },
+  { id: 'reviews', label: '6 · Reviews' },
 ]
 
 /** Vakanties waarop de nieuwe varianten (en de schakelaar) actief zijn. */
@@ -40,7 +44,7 @@ export function useMultiHotelTripItineraryVariant() {
   function restore() {
     try {
       const v = localStorage.getItem(STORAGE_KEY)
-      if (v === 'current' || v === 'days' || v === 'city' || v === 'cities' || v === 'hybrid') variant.value = v
+      if (v === 'current' || v === 'days' || v === 'city' || v === 'cities' || v === 'hybrid' || v === 'reviews') variant.value = v
     } catch { /* ignore */ }
   }
   function setVariant(v: ItineraryVariant) {

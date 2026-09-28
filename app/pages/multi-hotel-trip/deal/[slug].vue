@@ -38,6 +38,11 @@
         <!-- 3. Deal intro: title + hotel + location + "Bekijk op kaart" -->
         <section class="deal-page__title-section deal-page__title-section--mobile container">
           <h1 class="deal-page__package-title">{{ localized(currentDeal.title) }}</h1>
+          <!-- Noord-Frankrijk variant 6 (Reviews): totaalscore van de vakantie bovenin de subtitel. -->
+          <a v-if="itinReviews && trip" href="#beoordelingen" class="deal-page__trip-score">
+            <span class="deal-page__trip-score-badge">{{ trip.reviewScore.toFixed(1) }}</span>
+            <span class="deal-page__trip-score-text">{{ t(getReviewLabelKey(trip.reviewScore)) }} · {{ trip.reviewCount }} {{ t('common.reviews') }}</span>
+          </a>
           <div class="deal-page__hotel-name-wrap">
             <!-- Vakantie: de hotelnamen met een pijltje ertussen (elke naam opent het
                  hotel-sidepanel); sterren ernaast alleen als alle hotels hetzelfde
@@ -207,6 +212,7 @@
         <section v-if="itinHybrid" class="container deal-page__hybrid-summary deal-page__hybrid-summary--mobile">
           <h2 class="section-title">{{ t('trip.itin.hybrid.summaryHeading') }}</h2>
           <TripItinerarySummary :days="tripDaysView" :hotels="tripHotelLinks" @select="hybridGoToDay" />
+          <TripReviewsRow v-if="itinReviews && tripReviews.length" class="deal-page__hybrid-reviews" :reviews="tripReviews" :count="trip?.reviewCount" />
         </section>
 
         <!-- 9. Highlights -->
@@ -397,6 +403,11 @@
           :class="{ 'deal-page__title-left--with-partner': showPartnerLogo }"
         >
           <h1 class="deal-page__package-title">{{ localized(currentDeal.title) }}</h1>
+          <!-- Noord-Frankrijk variant 6 (Reviews): totaalscore van de vakantie bovenin de subtitel. -->
+          <a v-if="itinReviews && trip" href="#beoordelingen" class="deal-page__trip-score">
+            <span class="deal-page__trip-score-badge">{{ trip.reviewScore.toFixed(1) }}</span>
+            <span class="deal-page__trip-score-text">{{ t(getReviewLabelKey(trip.reviewScore)) }} · {{ trip.reviewCount }} {{ t('common.reviews') }}</span>
+          </a>
           <div class="deal-page__hotel-name-wrap">
             <!-- Vakantie: de hotelnamen met een pijltje ertussen (elke naam opent het
                  hotel-sidepanel); sterren ernaast alleen als alle hotels hetzelfde
@@ -490,6 +501,8 @@
           <section v-if="itinHybrid" class="deal-page__hybrid-summary">
             <h2 class="section-title">{{ t('trip.itin.hybrid.summaryHeading') }}</h2>
             <TripItinerarySummary :days="tripDaysView" :hotels="tripHotelLinks" @select="hybridGoToDay" />
+            <!-- Variant 6 (Reviews): drie reizigersbeoordelingen naast elkaar. -->
+            <TripReviewsRow v-if="itinReviews && tripReviews.length" class="deal-page__hybrid-reviews" :reviews="tripReviews" :count="trip?.reviewCount" />
           </section>
 
           <!-- Description + Mini map row. Vakantie: samenvattende beschrijving
@@ -1156,6 +1169,8 @@ import TripItineraryAccordion from '~/components-multi-hotel-trip/deal/TripItine
 import TripItineraryCities from '~/components-multi-hotel-trip/deal/TripItineraryCities.vue'
 import TripItineraryPerCity from '~/components-multi-hotel-trip/deal/TripItineraryPerCity.vue'
 import TripItinerarySummary from '~/components-multi-hotel-trip/deal/TripItinerarySummary.vue'
+import TripReviewsRow from '~/components-multi-hotel-trip/deal/TripReviewsRow.vue'
+import type { TripReviewView } from '~/components-multi-hotel-trip/deal/TripReviewsRow.vue'
 import type { TripCityChapter, TripCityAttraction } from '~/components-multi-hotel-trip/deal/TripItineraryPerCity.vue'
 import { isTripSight } from '~/utils-multi-hotel-trip/tripSights'
 import type { TripItineraryStop } from '~/components-multi-hotel-trip/deal/TripItineraryCities.vue'
@@ -1582,8 +1597,16 @@ const { variant: itinVariant } = useMultiHotelTripItineraryVariant()
 const itinNew = computed(() => showItinVariants.value && itinVariant.value === 'cities')
 const itinCollapsed = computed(() => showItinVariants.value && itinVariant.value === 'days')
 const itinCity = computed(() => showItinVariants.value && itinVariant.value === 'city')
-const itinHybrid = computed(() => showItinVariants.value && itinVariant.value === 'hybrid')
+/** Hybrid-lay-out geldt ook voor variant 6 "Reviews" (= Hybrid + beoordelingen + totaalscore). */
+const itinHybrid = computed(() => showItinVariants.value && (itinVariant.value === 'hybrid' || itinVariant.value === 'reviews'))
+const itinReviews = computed(() => showItinVariants.value && itinVariant.value === 'reviews')
 const itinFull = computed(() => itinNew.value || itinHybrid.value)
+/** Drie beoordelingen van de vakantie (redactioneel), anders die van het eerste hotel. */
+const tripReviews = computed<TripReviewView[]>(() => {
+  const own = tripPdp?.content?.reviews
+  if (own?.length) return own.slice(0, 3).map(r => ({ author: r.author, city: r.city, date: r.date ? localized(r.date) : undefined, score: r.score, text: localized(r.text) }))
+  return (hotel.individualReviews ?? []).slice(0, 3).map(r => ({ author: r.author, date: r.date, score: Number(r.score), text: localized(r.text) }))
+})
 /** Hybrid: klik in de dagsamenvatting → die dag openen in de accordeon en ernaartoe scrollen. */
 const hybridAccordion = ref<{ openDay: (day: number) => Promise<void> } | null>(null)
 function hybridGoToDay(day: number) { hybridAccordion.value?.openDay(day) }
@@ -2305,6 +2328,34 @@ onMounted(() => {
 .deal-page__col-left > .deal-page__hybrid-summary { margin-top: calc(-1 * var(--space-lg) - 2 * var(--space-xl)); margin-bottom: var(--space-xl); }
 .deal-page__hybrid-summary + .deal-page__content-blocks--trip { margin-top: 0; }
 .deal-page__hybrid-summary--mobile { margin-bottom: var(--space-lg); }
+.deal-page__hybrid-reviews { margin-top: var(--space-lg); }
+/* Reviews-variant: totaalscore bovenin de subtitel (badge + oordeel · aantal). */
+.deal-page__trip-score {
+  /* Eigen regel tussen de titel en de hotelnamen (die wrap is inline-flex). */
+  display: flex;
+  width: fit-content;
+  align-items: center;
+  gap: 8px;
+  margin: 2px 0 8px;
+  color: var(--color-text-primary);
+  text-decoration: none;
+}
+.deal-page__trip-score:hover .deal-page__trip-score-text { text-decoration: underline; text-underline-offset: 3px; }
+.deal-page__trip-score-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  height: 26px;
+  padding: 0 8px;
+  border-radius: 6px;
+  background: var(--color-dark, #141414);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.deal-page__trip-score-text { font-size: 14px; font-weight: 600; }
 .deal-page__description { font-size: 15px; line-height: 1.75; color: var(--color-text-secondary); }
 /* Shared "orange underlined link" style — used by Lees meer / Bekijk
    details / Bekijk kaart / Bekijk andere arrangementen so they all

@@ -74,7 +74,19 @@ export interface TripMapHighlight {
   image?: string
 }
 
+/** Reizigersbeoordeling van de hele vakantie (variant "Reviews" van het reisschema). */
+export interface TripReviewSpec {
+  author: string
+  city?: string
+  date?: LocalizedString
+  score: number
+  text: LocalizedString
+}
+
 export interface TripItinerarySpec {
+  /** Drie beoordelingen van de vakantie onder "Je reis in het kort" (variant
+   *  "Reviews"); zonder eigen reviews vallen we terug op die van het eerste hotel. */
+  reviews?: TripReviewSpec[]
   /** Kop boven de beschrijving ("7-daagse reis met eigen vervoer in Noord-Frankrijk");
    *  zonder eigen titel het sjabloon `trip.introTitleAuto/Bike`. */
   introTitle?: LocalizedString
@@ -107,6 +119,17 @@ const FIETS = {
 export const TRIP_ITINERARIES: Record<string, TripItinerarySpec> = {
   // ── 001 Noord-Frankrijk & Opaalkust ───────────────────────────────────
   'trip-noord-frankrijk': {
+    reviews: [
+      { author: 'Marleen en Jos', city: 'Amersfoort', date: l('juni 2026', 'June 2026'), score: 9.4,
+        text: l('Drie heel verschillende hotels en alle drie een schot in de roos. De route is precies goed: nergens lang rijden en elke dag iets nieuws. Het diner in Tilques was het hoogtepunt.',
+          'Three very different hotels and all three spot on. The route is just right: no long drives and something new every day. Dinner at Tilques was the highlight.') },
+      { author: 'Familie De Vries', city: 'Haarlem', date: l('mei 2026', 'May 2026'), score: 9.0,
+        text: l('Béthune kenden we niet, maar wat een verrassing. Fijn dat het ontbijt en het diner op de aankomstdag al geregeld waren, dan hoef je \'s avonds niets meer te zoeken.',
+          'We had never heard of Béthune, but what a surprise. Nice that breakfast and dinner on the day of arrival were already arranged, so there is nothing to look for in the evening.') },
+      { author: 'Pieter', city: 'Rotterdam', date: l('april 2026', 'April 2026'), score: 8.8,
+        text: l('Château Cléry vlak bij de Opaalkust was ideaal als afsluiting; de wandeling over de kliffen bij Cap Blanc-Nez vergeten we niet snel. Alleen de kamer in Béthune was aan de kleine kant.',
+          'Château Cléry close to the Opal Coast was the ideal finale; we will not soon forget the walk along the cliffs at Cap Blanc-Nez. Only the room in Béthune was on the small side.') },
+    ],
     description: [
       l('Zeven dagen Noord-Frankrijk in drie totaal verschillende decors: het levendige Béthune met zijn UNESCO-belfort, de stille moerassen rond Saint-Omer en de krijtkust van de Opaalkust. Je slaapt twee nachten in elk hotel, rijdt tussendoor nooit langer dan een uur en eet op elke aankomstdag een 3-gangendiner in het hotel.',
         'Seven days of Northern France in three very different settings: lively Béthune with its UNESCO belfry, the quiet marshes around Saint-Omer and the chalk cliffs of the Opal Coast. Two nights in each hotel, never more than an hour on the road in between, and a 3-course dinner on every arrival day.'),
