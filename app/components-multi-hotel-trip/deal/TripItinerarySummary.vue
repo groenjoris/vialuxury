@@ -10,7 +10,7 @@
     <ul v-if="days.length" class="tisum__list">
       <li v-for="day in days" :key="`sum-${day.day}`" class="tisum__item">
         <button type="button" class="tisum__link" @click="$emit('select', day.day)">
-          <span class="tisum__day">{{ day.label }} ·</span><span class="tisum__text">{{ summaryLineOfDay(day, t) }}</span>
+          <span class="tisum__day">{{ day.label }}</span><span class="tisum__text">{{ summaryLineOfDay(day, t) }}</span>
         </button>
       </li>
     </ul>
@@ -53,9 +53,9 @@ const sightsCount = computed(() => countTripSights(props.days))
 }
 .tisum__item + .tisum__item { margin-top: 8px; }
 .tisum__link {
-  /* "Dag x ·" als bullet in een vaste kolom; doorlopende tekst springt in (hangende inspringing). */
+  /* "Dag x" als bullet in een vaste kolom (zonder scheidingsteken); doorlopende tekst springt in (hangende inspringing). */
   display: grid;
-  grid-template-columns: 4.1em minmax(0, 1fr);
+  grid-template-columns: 3.6em minmax(0, 1fr);
   align-items: start;
   width: 100%;
   padding: 0;

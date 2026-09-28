@@ -233,7 +233,7 @@ const de: Record<string, string> = {
   'search.tripResultsOne': 'Auto- oder Radreise',
   'search.tripResultsMany': 'Auto- und Radreisen',
   'search.holidaysHeroTitle': 'Auto- und Radurlaube',
-  'search.holidaysPitch': 'Entdecken Sie eine wunderschöne Region mit dem Auto oder dem Fahrrad und übernachten Sie in 3 verschiedenen Hotels. Sorgfältig zusammengestellt und persönlich geprüft.',
+  'search.holidaysPitch': 'Entdecken Sie eine wunderschöne Region mit dem Auto oder dem Fahrrad und übernachten Sie in verschiedenen Hotels. Sorgfältig zusammengestellt und persönlich geprüft.',
   'trip.auto': 'Autoreise',
   'trip.fiets': 'Radreise',
   'trip.autoIncl': 'Autoreise inklusive',

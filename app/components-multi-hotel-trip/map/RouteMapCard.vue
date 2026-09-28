@@ -15,11 +15,11 @@
         :height="300"
         :max-scale="700"
         :marker-radius="17"
+        :number-size="14"
         :label-size="13"
         :leg-label-size="13"
         show-labels
         geo-names
-        marker-icon
         leg-label-style="plain"
         interactive
         @stop-click="$emit('stop-click', $event)"

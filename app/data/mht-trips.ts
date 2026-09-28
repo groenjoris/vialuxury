@@ -20,6 +20,7 @@
 import type { LocalizedString } from '~/i18n/types'
 import type { SearchHotel, SearchHotelDeal, MultiHotelTripType, MultiHotelTripStop } from '~/types/searchHotel'
 import { mappedHotels } from '~/data/deals-mapper'
+import { TRIP_ITINERARIES } from '~/data/mht-trip-itineraries'
 
 interface StopSpec {
   /** Hotelnaam. Staat het hotel in deals.json (exacte `hotelName`), dan
@@ -493,9 +494,14 @@ function buildTrip(spec: TripSpec): { hotel: SearchHotel; detail: MultiHotelTrip
   const nights = stops.reduce((n, s) => n + s.nights, 0)
   const stars = stops.map(s => s.starRating ?? 4)
   const avgStars = Math.round(stars.reduce((a, b) => a + b, 0) / stars.length)
-  const avgScore = known.length
-    ? Math.round((known.reduce((s, h) => s + h.reviewScore, 0) / known.length) * 10) / 10
-    : 8.8
+  // Vakantiescore = het gemiddelde van de reizigersbeoordelingen van de vakantie
+  // (de drie reviews op de PDP); zonder reviews het gemiddelde van de hotelscores.
+  const tripReviews = TRIP_ITINERARIES[spec.id]?.reviews ?? []
+  const avgScore = tripReviews.length
+    ? Math.round((tripReviews.reduce((s, r) => s + r.score, 0) / tripReviews.length) * 10) / 10
+    : known.length
+      ? Math.round((known.reduce((s, h) => s + h.reviewScore, 0) / known.length) * 10) / 10
+      : 8.8
   const reviewCount = known.length ? known.reduce((s, h) => s + h.reviewCount, 0) : 164
   const discount = spec.discountPercentage ?? Math.round((1 - spec.price / spec.originalPrice) * 100)
   const pdpHref = `/multi-hotel-trip/deal/${spec.slug}`

@@ -241,7 +241,7 @@ const nl: Record<string, string> = {
   'search.tripResultsOne': 'auto- of fietsvakantie',
   'search.tripResultsMany': 'auto- en fietsvakanties',
   'search.holidaysHeroTitle': 'Auto- en fietsvakanties',
-  'search.holidaysPitch': 'Verken een prachtige streek met auto of fiets, en verblijf in 3 verschillende hotels. Met zorg samengesteld en persoonlijk gecheckt.',
+  'search.holidaysPitch': 'Verken een prachtige streek met auto of fiets, en verblijf in verschillende hotels. Met zorg samengesteld en persoonlijk gecheckt.',
   'trip.auto': 'Autovakantie',
   'trip.fiets': 'Fietsvakantie',
   // Dealcard: label boven de inclusies

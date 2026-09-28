@@ -1,8 +1,8 @@
 <template>
   <!-- Multi Hotel Trip — drie reizigersbeoordelingen van de vakantie naast
        elkaar (geen carrousel) met de kop "Beoordelingen", boven het voorbeeld-reisschema. Kaart:
-       cijfer + oordeel, het gekozen citaat, daaronder een kleine zwarte avatar
-       met naam en land, en "Meer info" → pop-up met de hele
+       cijfer (zwart) + oordeel, het gekozen citaat, daaronder een kleine
+       donkergrijze avatar met naam en, op een eigen regel, het land, en "Meer info" → pop-up met de hele
        review: titel (klein), maand van de vakantie, score, de volledige tekst
        (scrollt als hij lang is) en de schrijver. Mobiel: horizontaal swipen. -->
   <section class="trr" :aria-label="t('trip.reviews.heading')">
@@ -19,8 +19,10 @@
             <img v-if="r.avatar" :src="r.avatar" alt="" />
             <template v-else>{{ initialOf(r.author) }}</template>
           </span>
-          <span class="trr-card__name">{{ r.author }}</span>
-          <span class="trr-card__country"><span class="trr-flag" :class="`trr-flag--${r.country.toLowerCase()}`" aria-hidden="true"></span>{{ t(`country.${r.country}`) }}</span>
+          <span class="trr-card__whotext">
+            <span class="trr-card__name">{{ r.author }}</span>
+            <span class="trr-card__country"><span class="trr-flag" :class="`trr-flag--${r.country.toLowerCase()}`" aria-hidden="true"></span>{{ t(`country.${r.country}`) }}</span>
+          </span>
         </div>
         <button type="button" class="trr-card__more" @click="info = r">{{ t('trip.reviews.moreInfo') }}</button>
       </article>
@@ -49,8 +51,10 @@
                 <img v-if="info.avatar" :src="info.avatar" alt="" />
                 <template v-else>{{ initialOf(info.author) }}</template>
               </span>
-              <span class="trr-card__name">{{ info.author }}</span>
-              <span class="trr-card__country"><span class="trr-flag" :class="`trr-flag--${info.country.toLowerCase()}`" aria-hidden="true"></span>{{ t(`country.${info.country}`) }}</span>
+              <span class="trr-card__whotext">
+                <span class="trr-card__name">{{ info.author }}</span>
+                <span class="trr-card__country"><span class="trr-flag" :class="`trr-flag--${info.country.toLowerCase()}`" aria-hidden="true"></span>{{ t(`country.${info.country}`) }}</span>
+              </span>
             </footer>
           </article>
         </div>
@@ -124,7 +128,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   height: 26px;
   padding: 0 7px;
   border-radius: 6px;
-  background: var(--color-discount, #00b67a);
+  background: var(--color-dark, #141414);
   color: #fff;
   font-family: var(--font-body);
   font-size: 13px;
@@ -142,9 +146,10 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
-.trr-card__who { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 8px; margin-top: auto; }
-.trr-card__name { font-size: 13px; font-weight: 700; color: var(--color-text-primary); }
-.trr-card__country { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; color: var(--color-text-secondary); }
+.trr-card__who { display: flex; align-items: center; gap: 8px; margin-top: auto; }
+.trr-card__whotext { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.trr-card__name { font-size: 13px; font-weight: 700; line-height: 1.2; color: var(--color-text-primary); }
+.trr-card__country { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; line-height: 1.2; color: var(--color-text-secondary); }
 .trr-card__more {
   align-self: flex-start;
   padding: 0;
@@ -160,7 +165,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 }
 .trr-card__more:hover { color: var(--color-primary-hover); }
 
-/* Kleine zwarte avatar: foto, anders de initiaal. */
+/* Kleine donkergrijze avatar: foto, anders de initiaal. */
 .trr-avatar {
   flex-shrink: 0;
   width: 24px;
@@ -170,7 +175,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: var(--color-dark, #141414);
+  background: #4a4a4a;
   color: #fff;
   font-family: var(--font-body);
   font-size: 11px;
@@ -224,7 +229,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   height: 40px;
   padding: 0 10px;
   border-radius: 8px;
-  background: var(--color-discount, #00b67a);
+  background: var(--color-dark, #141414);
   color: #fff;
   font-family: var(--font-body);
   font-size: 18px;
