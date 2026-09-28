@@ -144,11 +144,13 @@ useHead({ title: computed(() => (checkoutTrip.value ? 'Kies je opties — ViaLux
               <div class="side__details">
                 <p class="t-body t-bold">Details</p>
                 <div v-for="row in tableSelection" :key="`${row.baseId}-${row.rateKey}`" class="side__row side__row--room">
-                  <!-- Vakantie: geen "Nx" — het aantal staat in de regel "3 hotels, N kamers per hotel". -->
-                  <span v-if="!checkoutTrip" class="side__qty">{{ row.quantity }}x</span>
+                  <!-- Vakantie: "Nx" alleen bij meer dan één kamer per hotel (meer dan 2 personen);
+                       dan ook een regel "6 nachten, 4 personen" onder "3 hotels, 2 kamers per hotel". -->
+                  <span v-if="!checkoutTrip || row.quantity > 1" class="side__qty">{{ row.quantity }}x</span>
                   <div class="side__rowmain">
                     <p class="t-body t-bold">{{ checkoutTrip ? checkoutTrip.typeLabel : 'Arrangement' }}</p>
                     <p class="t-caption c-mgrey">{{ checkoutTrip ? `${checkoutTrip.hotels.length} hotels, ${row.quantity} ${row.quantity === 1 ? 'kamer' : 'kamers'} per hotel` : roomNameFor(row.baseId) }}</p>
+                    <p v-if="checkoutTrip && row.quantity > 1" class="t-caption c-mgrey">{{ nights }} nachten, {{ row.quantity * 2 }} personen</p>
                     <p v-if="row.rateKey === 'flexible'" class="t-caption c-green">Flexibel annuleren</p>
                     <p v-else class="t-caption c-grey">Niet-terugbetaalbaar</p>
                   </div>

@@ -416,7 +416,7 @@ const arrangementIncludes = trip.value ? trip.value.includes : [
         <tr
           v-for="(row, rowIndex) in room.rows"
           :key="row.id"
-          :class="{ 'rt__tr--divide': roomIndex > 0 && rowIndex === 0 }"
+          :class="{ 'rt__tr--divide': roomIndex > 0 && rowIndex === 0, 'rt__tr--colfirst': trip && rtVariant === 'column' && rowIndex === 0 && room.rows.length > 1 }"
           :style="trip && rtVariant === 'column' && rowIndex === room.rows.length - 1 && columnLastRowHeight > 0 ? { height: `${columnLastRowHeight}px` } : undefined"
         >
           <!-- Kamertype (één cel per kamertype). Lange kolom: de hotelkolom staat buiten de
@@ -930,6 +930,9 @@ const arrangementIncludes = trip.value ? trip.value.includes : [
 /* Lange kolom: geen carrousel — de hotels onder elkaar in één kolom (14px ertussen, geen divider).
    De kolom staat absoluut in de cel (zie fitColumn) zodat de rijen hun eigen hoogte houden. */
 .rt__td--column { position: relative; }
+/* Lange kolom: de eerste rij (flexibel annuleren) 200px hoger; de onderste rij krijgt via
+   fitColumn() nog steeds de resthoogte van de hotelkolom. */
+.rt__tr--colfirst > .rt__td:not(.rt__td--column) { padding-bottom: 210px; }
 .rt__type--column { position: absolute; top: 10px; left: 10px; right: 10px; }
 .rt__type--column .rt__carview { overflow: visible; }
 .rt__type--column .rt__cartrack { flex-direction: column; gap: 14px; transform: none; transition: none; }
