@@ -149,6 +149,33 @@ const { variant: rtVariant } = useMultiHotelTripRoomTableVariant()
 const { perPerson: pricePerPerson } = useMultiHotelTripPriceVariant()
 /** Lange kolom: hotel 2 en 3 volledig zichtbaar na "Toon meer". */
 const columnOpen = ref(false)
+/* Lange kolom: de hotelkolom staat absoluut in de rowspan-cel (telt niet mee in de rijhoogtes,
+ * anders verdeelt de browser de overhoogte over beide rijen en zakt "niet-annuleerbaar" omlaag).
+ * De onderste rij krijgt de resthoogte: kolomhoogte + celpadding − hoogte van de andere rijen. */
+const columnContentEl = ref<HTMLElement | HTMLElement[] | null>(null)
+const columnLastRowHeight = ref(0)
+let columnObserver: ResizeObserver | null = null
+function fitColumn() {
+  const content = Array.isArray(columnContentEl.value) ? columnContentEl.value[0] : columnContentEl.value
+  const root = rootEl.value
+  if (!content || !root || rtVariant.value !== 'column') { columnLastRowHeight.value = 0; return }
+  const rows = [...root.querySelectorAll<HTMLTableRowElement>('tbody tr')]
+  if (rows.length < 2) { columnLastRowHeight.value = 0; return }
+  const others = rows.slice(0, -1).reduce((sum, r) => sum + r.getBoundingClientRect().height, 0)
+  columnLastRowHeight.value = Math.max(0, Math.ceil(content.getBoundingClientRect().height + 20 + 2 - others))
+}
+function watchColumn() {
+  columnObserver?.disconnect(); columnObserver = null
+  if (rtVariant.value !== 'column' || !import.meta.client) { columnLastRowHeight.value = 0; return }
+  columnObserver = new ResizeObserver(() => fitColumn())
+  const content = Array.isArray(columnContentEl.value) ? columnContentEl.value[0] : columnContentEl.value
+  if (content) columnObserver.observe(content)
+  rootEl.value?.querySelectorAll<HTMLTableRowElement>('tbody tr').forEach((r, i, all) => { if (i < all.length - 1) columnObserver!.observe(r) })
+  fitColumn()
+}
+watch([rtVariant, columnOpen], () => nextTick(watchColumn))
+onMounted(() => nextTick(watchColumn))
+onBeforeUnmount(() => { columnObserver?.disconnect() })
 /** Verschuiving van de carrousel-track. Carousel: slides 88% + 6px; de laatste slide sluit rechts aan
  *  (dan piept ±10% van het vorige hotel links). */
 const trackStyle = computed(() => {
@@ -390,13 +417,16 @@ const arrangementIncludes = trip.value ? trip.value.includes : [
           v-for="(row, rowIndex) in room.rows"
           :key="row.id"
           :class="{ 'rt__tr--divide': roomIndex > 0 && rowIndex === 0 }"
+          :style="trip && rtVariant === 'column' && rowIndex === room.rows.length - 1 && columnLastRowHeight > 0 ? { height: `${columnLastRowHeight}px` } : undefined"
         >
-          <!-- Kamertype (één cel per kamertype) -->
-          <td v-if="rowIndex === 0" class="rt__td" :rowspan="room.rows.length">
+          <!-- Kamertype (één cel per kamertype). Lange kolom: de hotelkolom staat buiten de
+               rijstroom (absoluut in de cel), zodat de rijen hun eigen hoogte houden; de onderste
+               rij (niet-annuleerbaar) krijgt via fitColumn() de resthoogte van de kolom. -->
+          <td v-if="rowIndex === 0" class="rt__td" :class="{ 'rt__td--column': trip && rtVariant === 'column' }" :rowspan="room.rows.length">
             <!-- Vakantie: hotel-carrousel (navigator op een grijs vlak als de
                  tabelkop; per slide hotelnaam, kamernaam, foto, kamerinfo). De
                  schaarste staat, net als bij een hotel-deal, in "Je opties". -->
-            <div v-if="trip" class="rt__type rt__type--trip" :class="`rt__type--${rtVariant}`">
+            <div v-if="trip" ref="columnContentEl" class="rt__type rt__type--trip" :class="`rt__type--${rtVariant}`">
               <!-- Strak / Carousel: navigator boven de carrousel. Lange kolom: geen navigator. -->
               <div v-if="rtVariant !== 'column'" class="rt__carhead">
                 <button type="button" class="rt__carbtn" aria-label="Vorig hotel" :disabled="hotelIndex === 0" @click="prevHotel">
@@ -409,7 +439,7 @@ const arrangementIncludes = trip.value ? trip.value.includes : [
               </div>
               <div class="rt__carview">
                 <!-- Carrousel-track (Strak: 100% per slide; Carousel: 90% + 10% van het volgende hotel
-                     al zichtbaar); Lange kolom: dezelfde slides onder elkaar, met divider, hotel 2
+                     al zichtbaar); Lange kolom: dezelfde slides onder elkaar (14px ertussen), hotel 2
                      halverwege de beschrijving afgebroken (fade) en hotel 3 pas na "Toon meer". -->
                 <div class="rt__cartrack" :style="trackStyle">
                   <template v-for="(h, hi) in trip.hotels" :key="h.name">
@@ -419,7 +449,6 @@ const arrangementIncludes = trip.value ? trip.value.includes : [
                     :class="{ 'rt__slide--cut': rtVariant === 'column' && !columnOpen && hi === 1 }"
                     :aria-hidden="rtVariant !== 'column' && hi !== hotelIndex"
                   >
-                    <div v-if="rtVariant === 'column' && hi > 0" class="rt__divider" aria-hidden="true"></div>
                     <span class="rt__name">{{ h.name }}</span>
                     <p class="rt__roomname">{{ h.roomName }}</p>
                     <p class="rt__slidemeta t-caption c-mgrey">{{ h.city }} · {{ h.nights }} {{ h.nights === 1 ? 'nacht' : 'nachten' }}</p>
@@ -898,16 +927,13 @@ const arrangementIncludes = trip.value ? trip.value.includes : [
 /* Carousel: slides 88% breed met 6px ertussen, zodat ±10% van het volgende hotel al zichtbaar is. */
 .rt__type--carousel .rt__cartrack { gap: 6px; }
 .rt__type--carousel .rt__slide { flex-basis: 88%; }
-/* Lange kolom: geen carrousel — de hotels onder elkaar in één kolom. */
+/* Lange kolom: geen carrousel — de hotels onder elkaar in één kolom (14px ertussen, geen divider).
+   De kolom staat absoluut in de cel (zie fitColumn) zodat de rijen hun eigen hoogte houden. */
+.rt__td--column { position: relative; }
+.rt__type--column { position: absolute; top: 10px; left: 10px; right: 10px; }
 .rt__type--column .rt__carview { overflow: visible; }
-.rt__type--column .rt__cartrack { flex-direction: column; transform: none; transition: none; }
+.rt__type--column .rt__cartrack { flex-direction: column; gap: 14px; transform: none; transition: none; }
 .rt__type--column .rt__slide { flex-basis: auto; }
-/* Divider tussen de hotels, met zijmarges zodat het één kolom blijft. */
-.rt__divider {
-  height: 1px;
-  margin: 6px 12px 8px;
-  background: var(--c-light-grey);
-}
 /* Hotel 2 (ingeklapt): beschrijving halverwege afgebroken met een fade; voorzieningen verborgen. */
 .rt__slide--cut .rt__desc {
   max-height: 3.2em;
