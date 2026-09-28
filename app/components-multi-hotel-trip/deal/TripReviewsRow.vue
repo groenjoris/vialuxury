@@ -92,7 +92,16 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 </script>
 
 <style scoped>
-.trr { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+/* Grijs vlak, zoals het voorbeeld-reisschema en de inclusies. */
+.trr {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+  padding: var(--space-lg);
+  background: var(--color-background-secondary, #FBFAF8);
+  border-radius: var(--radius-lg);
+}
 /* Kop in dezelfde stijl als de andere sectiekoppen op de pagina (22px/600). */
 .trr__title { margin: 0; font-family: var(--font-heading); font-size: 22px; font-weight: 600; line-height: 1.3; color: var(--color-text-primary); }
 /* Drie kaarten naast elkaar, even hoog. */
@@ -253,7 +262,8 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 .trr-fade-enter-from, .trr-fade-leave-to { opacity: 0; }
 
 @media (max-width: 767px) {
-  /* Mobiel: horizontaal swipen, kaarten 76% breed. */
+  /* Mobiel: horizontaal swipen, kaarten 76% breed (de rij loopt tot de rand van het vlak). */
+  .trr { padding: var(--space-md); }
   .trr__grid { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 4px; scrollbar-width: none; }
   .trr__grid::-webkit-scrollbar { display: none; }
   .trr-card { flex: 0 0 76%; scroll-snap-align: start; }
