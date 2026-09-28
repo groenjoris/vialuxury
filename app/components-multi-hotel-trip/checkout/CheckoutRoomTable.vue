@@ -12,6 +12,7 @@ import { CHECKOUT_WAS_FACTOR, CHECKOUT_NIGHTS } from '~/data/mht-checkout/pricin
 import { useStickyFit } from '~/composables-multi-hotel-trip/useStickyFit'
 import type { TripCheckout } from '~/data/mht-checkout/trip'
 import { useMultiHotelTripRoomTableVariant } from '~/composables-multi-hotel-trip/useMultiHotelTripRoomTableVariant'
+import { useMultiHotelTripPriceVariant } from '~/composables-multi-hotel-trip/useMultiHotelTripPriceVariant'
 
 const props = withDefaults(defineProps<{
   // 1d: hide the built-in reservation column (the sidebar takes its place)
@@ -144,6 +145,8 @@ const hotelIndex = ref(0)
 const hotelCount = computed(() => trip.value?.hotels.length ?? 0)
 // Room-table-variant (schakelaar linksboven op deze stap): Strak / Lange kolom / Carousel.
 const { variant: rtVariant } = useMultiHotelTripRoomTableVariant()
+// Prijsweergave-variant: bij "prijs p.p." staat onder de (totaal)prijs in de tabel "voor 2 personen".
+const { perPerson: pricePerPerson } = useMultiHotelTripPriceVariant()
 /** Lange kolom: hotel 2 en 3 volledig zichtbaar na "Toon meer". */
 const columnOpen = ref(false)
 /** Verschuiving van de carrousel-track. Carousel: slides 88% + 6px; de laatste slide sluit rechts aan
@@ -480,6 +483,8 @@ const arrangementIncludes = trip.value ? trip.value.includes : [
             <MultiHotelTripCheckoutPriceTag :value="rowWas(row)" :show-cents="false" size="sm" bold strike color="var(--c-medium-grey)" />
             <MultiHotelTripCheckoutPriceTag :value="rowPrice(row)" :show-cents="false" size="md" bold color="var(--c-via-orange)" />
             <p v-if="!trip" class="rt__pricenote">inclusief arrangement</p>
+            <!-- Prijs-p.p.-variant (homepage-schakelaar): de tabel toont de totaalprijs, dus "voor 2 personen" erbij. -->
+            <p v-else-if="pricePerPerson" class="rt__pricenote">voor 2 personen</p>
           </td>
 
           <!-- Je opties (1e: zonder de vaste vinkjes, begint met de voorwaarde) -->
