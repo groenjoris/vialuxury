@@ -204,7 +204,7 @@ useHead({ title: computed(() => (checkoutTrip.value ? 'Kies je opties — ViaLux
 
     <MultiHotelTripCheckoutFooter />
 
-    <MultiHotelTripCheckoutTripPopup v-if="tripPopupOpen && checkoutTrip" :trip="checkoutTrip" @close="tripPopupOpen = false" />
+    <MultiHotelTripCheckoutTripPanel v-if="tripPopupOpen && checkoutTrip" :trip="checkoutTrip" @close="tripPopupOpen = false" />
   </div>
 </template>
 

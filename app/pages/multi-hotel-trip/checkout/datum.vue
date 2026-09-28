@@ -313,7 +313,7 @@ useHead({ title: 'Kies datum — ViaLuxury' })
 
     <MultiHotelTripCheckoutFooter />
 
-    <MultiHotelTripCheckoutTripPopup v-if="tripPopupOpen && checkoutTrip" :trip="checkoutTrip" @close="tripPopupOpen = false" />
+    <MultiHotelTripCheckoutTripPanel v-if="tripPopupOpen && checkoutTrip" :trip="checkoutTrip" @close="tripPopupOpen = false" />
   </div>
 </template>
 
