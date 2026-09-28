@@ -5,7 +5,7 @@
        bij "Final", de sub-varianten voor het reviewsblok en de inclusies. Een
        klik scrolt meteen naar het betreffende blok zodat je het verschil ziet.
        Alleen voor testen/stakeholders. -->
-  <PrototypeSwitchPanel title="Prototype" storage-key="vl_mht_itinerary_switch_open">
+  <PrototypeSwitchPanel title="Prototype" storage-key="vl_mht_itinerary_switch_open_v2">
     <div class="psw__section">
       <span class="psw__label">Reisschema</span>
       <div class="psw__group" role="group" aria-label="Variant voorbeeld reisschema">

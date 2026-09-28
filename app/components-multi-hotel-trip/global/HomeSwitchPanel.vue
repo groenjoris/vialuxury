@@ -3,7 +3,7 @@
        zwevende paneel linksboven (zelfde systeem als op de vakantie-PDP):
        prijsweergave vakanties (totaalprijs / prijs p.p., geldt op alle
        pagina's) en de hero-foto (‹ 1/8 ›). -->
-  <PrototypeSwitchPanel title="Prototype" storage-key="vl_mht_home_switch_open">
+  <PrototypeSwitchPanel title="Prototype" storage-key="vl_mht_home_switch_open_v2">
     <div class="psw__section">
       <span class="psw__label">Prijs vakanties</span>
       <div class="psw__group" role="group" aria-label="Prijsweergave vakanties">

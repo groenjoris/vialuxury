@@ -2,8 +2,8 @@
   <!-- Multi Hotel Trip — zwevend prototype-schakelpaneel linksboven (homepage en
        vakantie-PDP). Ingeklapt een klein rond icoon; uitgeklapt alle
        schakelaars (via de slot), met rechtsboven "× Sluiten" om weer in te
-       klappen. Bij het eerste bezoek uitgeklapt; daarna wordt de stand per
-       paneel (storageKey) bewaard. Alleen voor testen/stakeholders.
+       klappen. Standaard ingeklapt; daarna wordt de stand per paneel
+       (storageKey) bewaard. Alleen voor testen/stakeholders.
        De slot-inhoud gebruikt de klassen .psw__section, .psw__label,
        .psw__group en .psw__btn(--on) (ongescoped hieronder). -->
   <div class="psw" :class="{ 'psw--open': open }">
@@ -50,7 +50,7 @@ function setOpen(v: boolean) {
 onMounted(() => {
   try {
     const stored = localStorage.getItem(props.storageKey)
-    open.value = stored === null ? true : stored === '1'
+    open.value = stored === '1' // standaard ingeklapt
   } catch { /* ignore */ }
 })
 </script>

@@ -1,9 +1,8 @@
 /**
  * Multi Hotel Trip — prijsweergave van de vakanties (multi-hotel deals), om aan
- * de opdrachtgever te tonen (schakelaar rechtsonder op de homepage, boven de
- * hero-fotoschakelaar):
- *  - 'total' : totaalprijs voor 2 personen (huidige weergave)
- *  - 'pp'    : prijs per persoon — ALLEEN bij vakanties: de prijs (en de
+ * de opdrachtgever te tonen (schakelaarpaneel linksboven op de homepage):
+ *  - 'total' : totaalprijs voor 2 personen
+ *  - 'pp'    : prijs per persoon (standaard) — ALLEEN bij vakanties: de prijs (en de
  *              van-prijs) gehalveerd, erboven "per persoon voor x nachten
  *              (min. 2 pers.)"; ook in de kalenders (PDP + checkout-datumstap)
  *              en onder de prijs in de PDP-zijbalk. Gewone hotelarrangementen
@@ -18,12 +17,13 @@ export const PRICE_VARIANTS: { id: PriceVariant; label: string }[] = [
   { id: 'pp', label: 'Prijs p.p.' },
 ]
 
-const STORAGE_KEY = 'vl_mht_price_variant'
+// v2: nieuwe standaard (prijs p.p.) — oude bewaarde keuzes tellen niet meer mee.
+const STORAGE_KEY = 'vl_mht_price_variant_v2'
 /** De prijs per persoon gaat uit van 2 personen (minimum). */
 export const PRICE_PP_PERSONS = 2
 
 export function useMultiHotelTripPriceVariant() {
-  const variant = useState<PriceVariant>('mht-price-variant', () => 'total')
+  const variant = useState<PriceVariant>('mht-price-variant', () => 'pp')
 
   // Na hydratie de bewaarde keuze terugzetten (alleen in een component-setup).
   if (import.meta.client && getCurrentInstance()) {

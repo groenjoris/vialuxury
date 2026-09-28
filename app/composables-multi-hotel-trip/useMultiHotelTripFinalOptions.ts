@@ -1,8 +1,8 @@
 /**
  * Multi Hotel Trip — sub-varianten binnen reisschema-variant "1 · Final" op de
  * vakantie-PDP (tweede en derde rij in de zwevende schakelaar linksboven):
- *  - Reviews : 'background' (grijs vlak, huidig) of 'plain' (zonder vlak)
- *  - Includes: 'compact' (rijen met thumb op een grijs vlak, huidig) of 'classic'
+ *  - Reviews : 'plain' (zonder vlak, standaard) of 'background' (grijs vlak)
+ *  - Includes: 'compact' (rijen met thumb op een grijs vlak, standaard) of 'classic'
  *              (als de gewone arrangementenpagina: twee naast elkaar, foto boven
  *              de tekst, geen achtergrond)
  * Keuzes worden in localStorage bewaard.
@@ -19,11 +19,12 @@ export const FINAL_INCLUDES_OPTIONS: { id: FinalIncludesStyle; label: string }[]
   { id: 'compact', label: 'Compact' },
 ]
 
-const REVIEWS_KEY = 'vl_mht_final_reviews'
-const INCLUDES_KEY = 'vl_mht_final_includes'
+// v2: nieuwe standaarden (reviews zonder vlak, includes compact) — oude bewaarde keuzes tellen niet meer mee.
+const REVIEWS_KEY = 'vl_mht_final_reviews_v2'
+const INCLUDES_KEY = 'vl_mht_final_includes_v2'
 
 export function useMultiHotelTripFinalOptions() {
-  const reviews = useState<FinalReviewsStyle>('mht-final-reviews', () => 'background')
+  const reviews = useState<FinalReviewsStyle>('mht-final-reviews', () => 'plain')
   const includes = useState<FinalIncludesStyle>('mht-final-includes', () => 'compact')
 
   /** Na mount aanroepen (niet tijdens SSR/hydration → geen mismatch). */
