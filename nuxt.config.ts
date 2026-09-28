@@ -5,6 +5,14 @@ export default defineNuxtConfig({
 
   ssr: true,
 
+  runtimeConfig: {
+    public: {
+      // CARTO-basemap API-key voor de Leaflet-kaarten (zet NUXT_PUBLIC_CARTO_API_KEY
+      // in .env; leeg = OpenStreetMap-tegels). Zie app/utils/mapTiles.ts.
+      cartoApiKey: '',
+    },
+  },
+
   components: [
     {
       path: '~/components',

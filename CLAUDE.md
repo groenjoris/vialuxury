@@ -46,6 +46,14 @@ automatisch:
   (`MultiHotelTrip` + `TripRouteMap` = `MultiHotelTripRouteMap`); in deze
   namespace heten die componenten voluit `MhtJesseTripRouteMap` etc.
 
+## Kaarten (Leaflet)
+
+De kaartweergave van de zoekresultaten (`*/map/HotelBrowseMap.vue`) haalt
+basiskaart-tegels via `app/utils/mapTiles.ts`: CARTO Voyager mét API-key
+(`NUXT_PUBLIC_CARTO_API_KEY` in `.env`, zie `.env.example`; gratis via
+carto.com/basemaps/api-key), zonder key OpenStreetMap-tegels. CARTO geeft
+sinds sept. 2026 zonder key alleen "API KEY REQUIRED"-tegels terug.
+
 ## Werkwijze
 
 - Verifieer wijzigingen in de browser (dev server `npm run dev`, poort 3000,

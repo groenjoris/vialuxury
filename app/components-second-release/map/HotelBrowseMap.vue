@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { addBasemapTiles } from '~/utils/mapTiles'
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import Supercluster from 'supercluster'
 import type { SearchHotel } from '~/types/searchHotel'
@@ -43,6 +44,9 @@ const { selectedHotelId, selectHotel, clearSelection, setHover, scheduleHover } 
 let lastMarkerClickAt = 0
 
 const mapEl = ref<HTMLDivElement | null>(null)
+// CARTO-basemap-key uit .env (leeg = OpenStreetMap-tegels).
+const cartoApiKey = useRuntimeConfig().public.cartoApiKey as string
+
 let map: import('leaflet').Map | null = null
 let leaflet: typeof import('leaflet') | null = null
 
@@ -274,12 +278,9 @@ async function initMap() {
     preferCanvas: false,
   })
 
-  // CartoDB Voyager — fresh palette, no wave texture on water bodies.
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-    attribution: '© OpenStreetMap contributors © CARTO',
-    subdomains: 'abcd',
-    maxZoom: 19,
-  }).addTo(map)
+  // Basiskaart: CARTO Voyager met API-key (NUXT_PUBLIC_CARTO_API_KEY), anders
+  // OpenStreetMap — zie app/utils/mapTiles.ts.
+  addBasemapTiles(L, map, cartoApiKey)
 
   markersLayer = L.layerGroup().addTo(map)
 
