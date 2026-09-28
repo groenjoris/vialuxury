@@ -2342,6 +2342,8 @@ onMounted(() => {
 .deal-page__col-left { min-width: 0; }
 /* Noord-Frankrijk: reisschema over de volle breedte onder de twee kolommen. */
 .deal-page__itinerary-full { padding-top: var(--space-2xl); padding-bottom: var(--space-xl); scroll-margin-top: 80px; }
+/* Kop "Wat te doen tijdens je vakantie" even groot als de paginatitel (26px/700). */
+.deal-page__itinerary-full > .section-title { font-size: 26px; font-weight: 700; line-height: 1.3; }
 /* Vakantie-beschrijving: uitgefaded na ±7 regels; "Lees meer" klapt uit op de pagina. */
 .deal-page__intro-desc-text--fade,
 .deal-page__description-text--fade { position: relative; max-height: 190px; overflow: hidden; }
