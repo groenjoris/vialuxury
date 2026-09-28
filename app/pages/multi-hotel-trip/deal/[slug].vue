@@ -2654,10 +2654,11 @@ onMounted(() => {
    component. */
 .sidebar__price-row { margin-bottom: 2px; }
 .sidebar__price-meta { font-size: 13px; color: var(--color-text-secondary); margin-bottom: var(--space-md); }
-/* Vakantie, prijs p.p.: licht (als "Vanaf"), "(minimaal 2 personen)" op de regel eronder. */
-.sidebar__price-meta--pp { font-weight: 400; color: var(--color-text-muted); line-height: 1.35; }
-.deal-page__cta-bar-meta--pp { font-weight: 400; color: var(--color-text-muted); }
-.price-meta__note { display: block; margin-top: 4px; font-weight: 400; color: inherit; }
+/* Vakantie, prijs p.p.: "prijs per persoon voor 7 nachten" zwart en vet; "(minimaal 2 personen)"
+   op de regel eronder, licht als "Vanaf". */
+.sidebar__price-meta--pp { font-weight: 700; color: var(--color-text-primary); }
+.deal-page__cta-bar-meta--pp { font-weight: 700; color: var(--color-text-primary); }
+.price-meta__note { display: block; margin-top: 4px; font-weight: 400; color: var(--color-text-muted); }
 .sidebar__disclaimer { font-size: 12px; line-height: 1.5; color: var(--color-text-muted); margin-bottom: var(--space-md); }
 /* German "Zusätzliche Kosten" block — replaces the long NL/EN
    disclaimer in the sidebar. Bold title + two indented lines. */

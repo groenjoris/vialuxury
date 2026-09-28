@@ -244,7 +244,7 @@
               </div>
 
               <div class="deal-card-v2__grid-price-row">
-                <p class="deal-card-v2__meta-line" :class="{ 'deal-card-v2__meta-line--pp': ppTrip }">
+                <p class="deal-card-v2__meta-line">
                   <!-- Vakantie in de prijs-p.p.-variant: "prijs per persoon voor 7 nachten" + op de regel eronder "(minimaal 2 personen)". -->
                   <template v-if="ppTrip">{{ ppForLabel }} <span class="deal-card-v2__meta-note">{{ t('deal.minPersons') }}</span></template>
                   <template v-else>{{ PRICED_PERSONS }} {{ PRICED_PERSONS === 1 ? 'persoon' : 'personen' }}, {{ deal.nights }} {{ deal.nights === 1 ? 'nacht' : 'nachten' }}</template>
@@ -284,7 +284,7 @@
             <p class="deal-card-v2__unavailable">Niet beschikbaar voor jouw zoekopdracht</p>
           </template>
           <template v-else>
-            <p class="deal-card-v2__meta-line deal-card-v2__meta-line--small deal-card-v2__meta-line--right" :class="{ 'deal-card-v2__meta-line--pp': ppTrip }">
+            <p class="deal-card-v2__meta-line deal-card-v2__meta-line--small deal-card-v2__meta-line--right">
               <template v-if="ppTrip">{{ ppForLabel }} <span class="deal-card-v2__meta-note">{{ t('deal.minPersons') }}</span></template>
               <template v-else>{{ PRICED_PERSONS }} {{ PRICED_PERSONS === 1 ? 'persoon' : 'personen' }}, {{ deal.nights }} {{ deal.nights === 1 ? 'nacht' : 'nachten' }}</template>
             </p>
@@ -1441,10 +1441,9 @@ const includesBullets = computed<string[]>(() => {
   margin: 0;
 }
 
-/* Vakantie, prijs p.p.: "prijs per persoon voor 7 nachten" met "(minimaal 2 personen)" als geheel
-   op de regel eronder — licht, als het woord "Vanaf". */
-.deal-card-v2__meta-line.deal-card-v2__meta-line--pp { font-weight: 400; color: var(--color-text-muted); line-height: 1.35; }
-.deal-card-v2__meta-note { display: block; margin-top: 4px; white-space: nowrap; font-weight: 400; }
+/* Vakantie, prijs p.p.: "prijs per persoon voor 7 nachten" zwart en vet, met "(minimaal 2 personen)"
+   als geheel op de regel eronder — licht, als het woord "Vanaf". */
+.deal-card-v2__meta-note { display: block; margin-top: 4px; white-space: nowrap; font-weight: 400; color: var(--color-text-muted); }
 
 /* Kaartenraster (zoekresultaten + homepage, desktop): de secties van de kaart (foto ·
    hotelinfo · lijn · titel · body) zijn subgrid-rijen van het raster. Daardoor worden alle
