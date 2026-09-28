@@ -8,8 +8,8 @@
        Uitgeklapt: de ondertitel (met klikbare hotelnaam) en alle blokken met
        foto, tekst en "Meer over …". Dag 1 staat standaard open. -->
   <div class="tia" :class="{ 'tia--stacked': stacked, 'tia--wide': wide }">
-    <div class="tia__bar">
-      <TripItineraryStats :days="days.length" :hotels="stops.length" :sights="sightsCount" />
+    <div class="tia__bar" :class="{ 'tia__bar--end': !showStats }">
+      <TripItineraryStats v-if="showStats" :days="days.length" :hotels="stops.length" :sights="sightsCount" />
       <button type="button" class="tia__all" @click="allOpen ? collapseAll() : expandAll()">
         {{ allOpen ? t('trip.itin.collapseAll') : t('trip.itin.expandAll') }}
       </button>
@@ -82,7 +82,9 @@ const props = withDefaults(defineProps<{
   stacked?: boolean
   /** Volle paginabreedte: blokken als kaarten naast elkaar (foto boven). */
   wide?: boolean
-}>(), { hotels: () => [], stacked: false, wide: false })
+  /** Kerngetallen-regel in de balk (uit als de pagina die al elders toont, bv. Hybrid). */
+  showStats?: boolean
+}>(), { hotels: () => [], stacked: false, wide: false, showStats: true })
 
 defineEmits<{ 'open-hotel': [stopIndex: number] }>()
 
@@ -101,6 +103,13 @@ function toggle(d: number) {
 const allOpen = computed(() => props.days.length > 0 && props.days.every(d => open.value.has(d.day)))
 function expandAll() { open.value = new Set(props.days.map(d => d.day)) }
 function collapseAll() { open.value = new Set() }
+/** Van buitenaf (dagsamenvatting in Hybrid): dag openen en in beeld scrollen. */
+async function openDay(day: number) {
+  if (!open.value.has(day)) open.value = new Set([...open.value, day])
+  await nextTick()
+  if (import.meta.client) document.getElementById(`itin-dag-${day}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+}
+defineExpose({ openDay })
 
 /** Aantal bezienswaardigheden (zie utils tripSights). */
 const sightsCount = computed(() => countTripSights(props.days))
@@ -135,6 +144,7 @@ function thumbsOf(day: TripDayView): string[] {
   justify-content: space-between;
   gap: var(--space-md);
 }
+.tia__bar--end { justify-content: flex-end; }
 .tia__all {
   padding: 0;
   border: 0;

@@ -14,14 +14,19 @@
  *                uitjes in de buurt"), in de linkerkolom (TripItineraryPerCity)
  *  - 'cities'  → variant 4 "Map": 50/50: sticky kaart links, per plaats rechts
  *                (TripItineraryCities), over de volle breedte onder de twee kolommen
+ *  - 'hybrid'  → variant 5 "Hybrid": de klikbare dagsamenvatting (uit Summary)
+ *                bovenaan de linkerkolom onder de beschrijving, dan de includes,
+ *                en het ingeklapte reisschema (accordeon uit Collapsed) over de
+ *                volle breedte onder de twee kolommen
  */
-export type ItineraryVariant = 'current' | 'days' | 'city' | 'cities'
+export type ItineraryVariant = 'current' | 'days' | 'city' | 'cities' | 'hybrid'
 
 export const ITINERARY_VARIANTS: { id: ItineraryVariant; label: string }[] = [
   { id: 'current', label: '1 · Summary' },
   { id: 'days', label: '2 · Collapsed' },
   { id: 'city', label: '3 · Per stad' },
   { id: 'cities', label: '4 · Map' },
+  { id: 'hybrid', label: '5 · Hybrid' },
 ]
 
 /** Vakanties waarop de nieuwe varianten (en de schakelaar) actief zijn. */
@@ -35,7 +40,7 @@ export function useMultiHotelTripItineraryVariant() {
   function restore() {
     try {
       const v = localStorage.getItem(STORAGE_KEY)
-      if (v === 'current' || v === 'days' || v === 'city' || v === 'cities') variant.value = v
+      if (v === 'current' || v === 'days' || v === 'city' || v === 'cities' || v === 'hybrid') variant.value = v
     } catch { /* ignore */ }
   }
   function setVariant(v: ItineraryVariant) {

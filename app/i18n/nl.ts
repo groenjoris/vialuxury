@@ -285,6 +285,7 @@ const nl: Record<string, string> = {
   'trip.itin.stats.days': '{n} dagen',
   'trip.itin.stats.hotels': '{n} tophotels',
   'trip.itin.stats.sights': '{n} bezienswaardigheden',
+  'trip.itin.hybrid.summaryHeading': 'Je reis in het kort',
   'trip.itin.city.hotelTag': 'Hotel',
   'trip.itin.city.extrasTag': "Extra's",
   'trip.itin.city.titleFallback': 'In en rond {city}',

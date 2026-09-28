@@ -280,6 +280,7 @@ const en: Record<string, string> = {
   'trip.itin.stats.days': '{n} days',
   'trip.itin.stats.hotels': '{n} top hotels',
   'trip.itin.stats.sights': '{n} sights',
+  'trip.itin.hybrid.summaryHeading': 'Your trip at a glance',
   'trip.itin.city.hotelTag': 'Hotel',
   'trip.itin.city.extrasTag': 'Extras',
   'trip.itin.city.titleFallback': 'In and around {city}',
