@@ -1862,6 +1862,14 @@ onMounted(() => {
 .search-page__result-list--grid-3 {
   grid-template-columns: repeat(3, 1fr);
 }
+/* Kaarten als subgrid (zie DealCard.vue): de afstand tussen de rijen komt van de kaartmarge,
+   niet van row-gap (die zou anders tussen de secties van de kaart zelf komen). */
+@supports (grid-template-rows: subgrid) {
+  @media (min-width: 801px) {
+    .search-page__result-list--grid { row-gap: 0; margin-bottom: calc(-1 * var(--space-lg)); }
+    .search-page__result-list--grid > .deal-card-v2 { margin-bottom: var(--space-lg); }
+  }
+}
 
 /* ===== TOOLBAR ===== */
 /* No fixed height — the header (title + avatars) sizes to its

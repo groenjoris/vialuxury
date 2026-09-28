@@ -1016,6 +1016,14 @@ onMounted(() => { setMhtNavVariant('1'); restoreHeroPhotoIndex(); restoreHomeLay
 .home-deals__grid--3 {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
+/* Kaarten als subgrid (zie DealCard.vue): de afstand tussen de rijen komt van de kaartmarge,
+   niet van row-gap (die zou anders tussen de secties van de kaart zelf komen). */
+@supports (grid-template-rows: subgrid) {
+  @media (min-width: 801px) {
+    .home-deals__grid--3 { row-gap: 0; margin-bottom: calc(-1 * var(--space-lg)); }
+    .home-deals__grid--3 > .deal-card-v2 { margin-bottom: var(--space-lg); }
+  }
+}
 
 @media (max-width: 1024px) {
   .home-deals__grid--3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }

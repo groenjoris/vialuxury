@@ -1441,8 +1441,32 @@ const includesBullets = computed<string[]>(() => {
   margin: 0;
 }
 
-/* "(min. 2 pers.)" achter "per persoon voor 7 nachten": niet vet. */
-.deal-card-v2__meta-note { font-weight: 400; }
+/* "(min. 2 pers.)" onder "per persoon voor 7 nachten": als geheel op de tweede regel, niet vet. */
+.deal-card-v2__meta-note { display: block; white-space: nowrap; font-weight: 400; }
+
+/* Kaartenraster (zoekresultaten + homepage, desktop): de secties van de kaart (foto ·
+   hotelinfo · lijn · titel · body) zijn subgrid-rijen van het raster. Daardoor worden alle
+   kaarten van een rij even hoog én staan de oranje includes-titel (begin van de body) en
+   het prijsblok overal op dezelfde hoogte — ook als een naam of "per persoon … (min. 2 pers.)"
+   in één kaart twee regels nodig heeft. De rasters zetten hun row-gap op 0 en geven de
+   kaarten een margin-bottom (search.vue, home.vue), anders komt de raster-gap tussen de rijen
+   van de kaart zelf. */
+@supports (grid-template-rows: subgrid) {
+  @media (min-width: 801px) {
+    .search-page__result-list--grid > .deal-card-v2--grid,
+    .home-deals__grid--3 > .deal-card-v2--grid {
+      display: grid;
+      grid-template-rows: subgrid;
+      grid-row: span 5;
+    }
+    .search-page__result-list--grid > .deal-card-v2--grid > .deal-card-v2__content,
+    .home-deals__grid--3 > .deal-card-v2--grid > .deal-card-v2__content {
+      display: grid;
+      grid-template-rows: subgrid;
+      grid-row: span 4;
+    }
+  }
+}
 
 .deal-card-v2__meta-line--small {
   font-size: 13px;
