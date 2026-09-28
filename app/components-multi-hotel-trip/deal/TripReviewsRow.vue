@@ -50,6 +50,7 @@
               </span>
               <span class="trr-info__who">
                 <span class="trr-info__name">{{ info.author }}</span>
+                <span class="trr-info__dot" aria-hidden="true">•</span>
                 <span class="trr-info__country"><span class="trr-flag trr-flag--lg" :class="`trr-flag--${info.country.toLowerCase()}`" aria-hidden="true"></span>{{ t(`country.${info.country}`) }}</span>
               </span>
             </footer>
@@ -250,6 +251,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 /* Naam en land op één regel; op een smal scherm valt alleen het land eronder (naast de avatar). */
 .trr-info__who { display: flex; align-items: center; flex-wrap: wrap; gap: 2px 10px; min-width: 0; }
 .trr-info__name { font-size: 15px; font-weight: 700; color: var(--color-text-primary); }
+.trr-info__dot { font-size: 15px; line-height: 1; color: var(--color-text-secondary); }
 .trr-info__country { display: inline-flex; align-items: center; gap: 6px; font-size: 15px; color: var(--color-text-secondary); }
 .trr-flag--lg { width: 18px; height: 13px; }
 .trr-info__close {
