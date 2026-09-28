@@ -1,12 +1,11 @@
 <template>
   <!-- Multi Hotel Trip — drie reizigersbeoordelingen van de vakantie naast
-       elkaar (geen carrousel), boven het voorbeeld-reisschema. Kaart: cijfer +
-       oordeel, het gekozen citaat, een stuk van de review, daaronder een kleine
-       zwarte avatar met naam en land, en "Meer info" → pop-up met de hele
+       elkaar (geen carrousel, geen kop), boven het voorbeeld-reisschema. Kaart:
+       cijfer + oordeel, het gekozen citaat, daaronder een kleine zwarte avatar
+       met naam en land, en "Meer info" → pop-up met de hele
        review: titel (klein), maand van de vakantie, score, de volledige tekst
        (scrollt als hij lang is) en de schrijver. Mobiel: horizontaal swipen. -->
   <section class="trr" :aria-label="t('trip.reviews.heading')">
-    <h3 class="trr__title">{{ t('trip.reviews.heading') }}</h3>
     <div class="trr__grid">
       <article v-for="(r, i) in reviews" :key="i" class="trr-card">
         <div class="trr-card__top">
@@ -14,7 +13,6 @@
           <span class="trr-card__verdict">{{ t(getReviewLabelKey(r.score)) }}</span>
         </div>
         <p class="trr-card__quote">“{{ r.quote }}”</p>
-        <p class="trr-card__excerpt">{{ excerptOf(r) }}</p>
         <div class="trr-card__who">
           <span class="trr-avatar" :class="{ 'trr-avatar--img': r.avatar }" aria-hidden="true">
             <img v-if="r.avatar" :src="r.avatar" alt="" />
@@ -84,10 +82,6 @@ defineProps<{ reviews: TripReviewView[] }>()
 const { t } = useMultiHotelTripI18n()
 const initialOf = (name: string) => (name.trim().charAt(0) || '?').toUpperCase()
 const paragraphsOf = (text: string) => text.split(/\n+/).map(s => s.trim()).filter(Boolean)
-/** Stuk van de review op de kaart: de tekst zonder het citaat (dat staat er al boven). */
-function excerptOf(r: TripReviewView): string {
-  return r.text.replace(r.quote, '').replace(/\n+/g, ' ').replace(/\s{2,}/g, ' ').replace(/^[\s,;.]+/, '').trim()
-}
 
 const info = ref<TripReviewView | null>(null)
 useBodyScrollLock().bindTo(computed(() => !!info.value))
@@ -98,15 +92,13 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 
 <style scoped>
 .trr { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
-.trr__title { margin: 0; font-family: var(--font-heading); font-size: 20px; font-weight: 700; line-height: 1.25; color: var(--color-text-primary); }
-/* Drie kaarten naast elkaar, even hoog (anderhalf keer de oude hoogte: meer tekst). */
+/* Drie kaarten naast elkaar, even hoog. */
 .trr__grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
 .trr-card {
-  min-height: 340px;
   display: flex;
   flex-direction: column;
   gap: 10px;
-  padding: 16px;
+  padding: 14px;
   border: 1px solid var(--color-border-light);
   border-radius: var(--radius-lg);
   background: var(--color-surface, #fff);
@@ -130,22 +122,11 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 .trr-card__verdict { font-size: 14px; font-weight: 700; color: var(--color-text-primary); }
 .trr-card__quote {
   margin: 0;
-  font-size: 15px;
-  font-weight: 600;
-  line-height: 1.5;
+  font-size: 14px;
+  line-height: 1.55;
   color: var(--color-text-primary);
   display: -webkit-box;
-  -webkit-line-clamp: 4;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-.trr-card__excerpt {
-  margin: 0;
-  font-size: 14px;
-  line-height: 1.6;
-  color: var(--color-text-secondary);
-  display: -webkit-box;
-  -webkit-line-clamp: 7;
+  -webkit-line-clamp: 5;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -272,7 +253,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   /* Mobiel: horizontaal swipen, kaarten 76% breed. */
   .trr__grid { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 4px; scrollbar-width: none; }
   .trr__grid::-webkit-scrollbar { display: none; }
-  .trr-card { flex: 0 0 76%; scroll-snap-align: start; min-height: 0; }
+  .trr-card { flex: 0 0 76%; scroll-snap-align: start; }
   .trr-info__card { height: min(560px, 88vh); }
   .trr-info__head { padding: var(--space-lg) 60px var(--space-md) var(--space-lg); }
   .trr-info__body, .trr-info__foot { padding-left: var(--space-lg); padding-right: var(--space-lg); }
