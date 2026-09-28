@@ -42,10 +42,15 @@
             <div class="trr-info__body">
               <p v-for="(p, i) in paragraphsOf(info.text)" :key="i" class="trr-info__text">{{ p }}</p>
             </div>
+            <!-- Schrijver: avatar, naam en land op één regel. -->
             <footer class="trr-info__foot">
-              <span class="trr-card__whotext">
-                <span class="trr-card__name">{{ info.author }}</span>
-                <span class="trr-card__country"><span class="trr-flag" :class="`trr-flag--${info.country.toLowerCase()}`" aria-hidden="true"></span>{{ t(`country.${info.country}`) }}</span>
+              <span class="trr-info__avatar" aria-hidden="true">
+                <img v-if="info.avatar" :src="info.avatar" alt="" />
+                <template v-else>{{ initialOf(info.author) }}</template>
+              </span>
+              <span class="trr-info__who">
+                <span class="trr-info__name">{{ info.author }}</span>
+                <span class="trr-info__country"><span class="trr-flag trr-flag--lg" :class="`trr-flag--${info.country.toLowerCase()}`" aria-hidden="true"></span>{{ t(`country.${info.country}`) }}</span>
               </span>
             </footer>
           </article>
@@ -78,6 +83,7 @@ export interface TripReviewView {
 defineProps<{ reviews: TripReviewView[]; plain?: boolean }>()
 
 const { t } = useMultiHotelTripI18n()
+const initialOf = (name: string) => (name.trim().charAt(0) || '?').toUpperCase()
 const paragraphsOf = (text: string) => text.split(/\n+/).map(s => s.trim()).filter(Boolean)
 
 const info = ref<TripReviewView | null>(null)
@@ -179,7 +185,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 .trr-info__card {
   position: relative;
   width: min(640px, 100%);
-  height: min(640px, 88vh);
+  max-height: 88vh; /* zo hoog als de tekst; alleen lange reviews scrollen */
   display: flex;
   flex-direction: column;
   border-radius: var(--radius-lg);
@@ -202,14 +208,14 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 46px;
-  height: 40px;
-  padding: 0 10px;
-  border-radius: 8px;
+  min-width: 40px;
+  height: 30px;
+  padding: 0 8px;
+  border-radius: 6px;
   background: #27C88D;
   color: #fff;
   font-family: var(--font-body);
-  font-size: 18px;
+  font-size: 15px;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
@@ -220,10 +226,32 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   flex-shrink: 0;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
   padding: var(--space-md) var(--space-xl) var(--space-lg);
   border-top: 1px solid var(--color-border-light);
 }
+/* Avatar op social-media-formaat (40px); naam en land in dezelfde grootte ernaast. */
+.trr-info__avatar {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #4a4a4a;
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 16px;
+  font-weight: 700;
+}
+.trr-info__avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+/* Naam en land op één regel; op een smal scherm valt alleen het land eronder (naast de avatar). */
+.trr-info__who { display: flex; align-items: center; flex-wrap: wrap; gap: 2px 10px; min-width: 0; }
+.trr-info__name { font-size: 15px; font-weight: 700; color: var(--color-text-primary); }
+.trr-info__country { display: inline-flex; align-items: center; gap: 6px; font-size: 15px; color: var(--color-text-secondary); }
+.trr-flag--lg { width: 18px; height: 13px; }
 .trr-info__close {
   position: absolute;
   top: 14px;
@@ -249,7 +277,6 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   .trr__grid { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 4px; scrollbar-width: none; }
   .trr__grid::-webkit-scrollbar { display: none; }
   .trr-card { flex: 0 0 76%; scroll-snap-align: start; }
-  .trr-info__card { height: min(560px, 88vh); }
   .trr-info__head { padding: var(--space-lg) 60px var(--space-md) var(--space-lg); }
   .trr-info__body, .trr-info__foot { padding-left: var(--space-lg); padding-right: var(--space-lg); }
 }
