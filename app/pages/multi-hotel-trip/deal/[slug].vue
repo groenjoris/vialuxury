@@ -2351,7 +2351,11 @@ onMounted(() => {
 .deal-page__grid { display: grid; grid-template-columns: 1fr var(--mht-deal-sidebar-width, 340px); gap: var(--space-xl); padding-top: var(--space-lg); align-items: start; }
 .deal-page__col-left { min-width: 0; }
 /* Noord-Frankrijk: reisschema over de volle breedte onder de twee kolommen. */
-.deal-page__itinerary-full { padding-top: var(--space-2xl); padding-bottom: var(--space-xl); scroll-margin-top: 80px; }
+/* 32px tussen het inclusieblok en "Wat te doen": geen extra marge onder het
+   inclusieblok/contentblok, en de sectie zelf begint met de standaardmarge. */
+.deal-page__itinerary-full { padding-top: var(--space-xl); padding-bottom: var(--space-xl); scroll-margin-top: 80px; }
+.deal-page__content-blocks--trip .trip-incl:last-child { margin-bottom: 0; }
+.deal-page__trip-intro + .deal-page__content-blocks--trip { padding-bottom: 0; }
 /* Kop "Wat te doen tijdens je vakantie" even groot als de paginatitel (26px/700). */
 .deal-page__itinerary-full > .section-title { font-size: 26px; font-weight: 700; line-height: 1.3; }
 /* Vakantie-beschrijving: uitgefaded na ±7 regels; "Lees meer" klapt uit op de pagina. */
