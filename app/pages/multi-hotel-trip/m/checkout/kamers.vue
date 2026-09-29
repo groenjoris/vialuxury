@@ -205,24 +205,33 @@ const carElement = () => (Array.isArray(carEl.value) ? carEl.value[0] ?? null : 
 const hotelIndex = ref(0)
 const hotelCount = computed(() => trip.value?.hotels.length ?? 0)
 let programmaticScrollAt = 0
+/** Afstand tussen twee slides (slidebreedte + gap): slides zijn 88% breed zodat de volgende al piept. */
+function slideStride(el: HTMLElement) {
+  const first = el.firstElementChild as HTMLElement | null
+  return (first?.offsetWidth ?? el.clientWidth) + 8
+}
+function indexFromScroll(el: HTMLElement) {
+  if (el.scrollLeft >= el.scrollWidth - el.clientWidth - 2) return hotelCount.value - 1 // laatste sluit rechts aan
+  return Math.max(0, Math.min(hotelCount.value - 1, Math.round(el.scrollLeft / slideStride(el))))
+}
 function goHotel(i: number) {
   const el = carElement()
   if (!el) return
   const idx = Math.max(0, Math.min(hotelCount.value - 1, i))
   programmaticScrollAt = Date.now()
   hotelIndex.value = idx
-  el.scrollTo({ left: idx * el.clientWidth, behavior: 'smooth' })
+  el.scrollTo({ left: idx * slideStride(el), behavior: 'smooth' })
 }
 /** Swipen: de scrollpositie bepaalt de actieve slide (niet tijdens het programmatisch scrollen). */
 function onCarScroll() {
   const el = carElement()
   if (!el || !el.clientWidth || Date.now() - programmaticScrollAt < 700) return
-  hotelIndex.value = Math.round(el.scrollLeft / el.clientWidth)
+  hotelIndex.value = indexFromScroll(el)
 }
 /** Na afloop van elke scroll (swipe of knop) de index definitief zetten. */
 function onCarScrollEnd() {
   const el = carElement()
-  if (el && el.clientWidth) hotelIndex.value = Math.round(el.scrollLeft / el.clientWidth)
+  if (el && el.clientWidth) hotelIndex.value = indexFromScroll(el)
 }
 
 useHead({ title: trip.value ? 'Kies je opties — ViaLuxury' : 'Kies je kamer — ViaLuxury' })
@@ -397,8 +406,8 @@ useHead({ title: trip.value ? 'Kies je opties — ViaLuxury' : 'Kies je kamer �
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M9 7V5a1 1 0 011-1h4a1 1 0 011 1v2M6 7l1 13a1 1 0 001 1h8a1 1 0 001-1l1-13M10 11v6M14 11v6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" /></svg>
                     </button>
                   </div>
-                  <!-- Max personen schaalt mee met het aantal kamers (2 p.p. kamer) -->
-                  <p class="mrate__max t-caption c-mgrey">(Max) {{ row.quantity * 2 }} personen</p>
+                  <!-- "1 kamer, max. 2 personen" — schaalt mee met het aantal kamers (2 p.p. kamer) -->
+                  <p class="mrate__max t-caption c-mgrey">{{ row.quantity }} {{ row.quantity === 1 ? 'kamer' : 'kamers' }}, max. {{ row.quantity * 2 }} personen</p>
                 </template>
               </div>
             </div>
@@ -638,6 +647,7 @@ useHead({ title: trip.value ? 'Kies je opties — ViaLuxury' : 'Kies je kamer �
 .mcar__count { font-size: var(--t-caption); font-weight: var(--w-black); color: var(--c-via-black); }
 .mcar__view {
   display: flex;
+  gap: 8px;
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
@@ -645,7 +655,8 @@ useHead({ title: trip.value ? 'Kies je opties — ViaLuxury' : 'Kies je kamer �
 }
 .mcar__view::-webkit-scrollbar { display: none; }
 .mcar__slide {
-  flex: 0 0 100%;
+  /* 88% breed: ±12% van de volgende kamer is al zichtbaar (swipe-hint), als de desktopvariant Carousel. */
+  flex: 0 0 88%;
   min-width: 0;
   scroll-snap-align: start;
   display: flex;
