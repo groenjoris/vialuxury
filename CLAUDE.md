@@ -15,6 +15,13 @@ prefix, localStorage-keys, CSS-bestanden) zodat ze elkaar nooit raken:
 Startscherm: `app/pages/index.vue`. Gedeeld: `app/data`, `app/types`,
 `app/i18n`, `app/assets/css/{variables,base,typography,fonts}.css`.
 
+R1 heeft sinds 2026-09-29 ook de checkout met room table (`app/pages/first-release/checkout/*`,
+mobiele site `app/pages/first-release/m/checkout/*`, `components-first-release/checkout/*`,
+`app/data/fr-checkout/`, `fr-checkout.css` gescoped onder `.fr-checkout`, middleware
+`fr-mobile.global.ts`). Het is een poort van de MHT-checkout zónder vakantielogica; de
+MHT-checkout wijkt daardoor sterk af, dus R1-checkoutwijzigingen leveren bij de automatische
+sync (zie hieronder) vaak conflicten op — die in de MHT-bestanden oplossen.
+
 ## Multi Hotel Trip (MHT) = kopie van R1 — houd ze in sync
 
 MHT is een namespaced kopie van R1 (gemaakt met `scripts/sync-r1-to-mht.sh init`)
