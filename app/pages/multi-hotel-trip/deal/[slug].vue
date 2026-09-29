@@ -2,7 +2,8 @@
   <div class="deal-page">
     <MultiHotelTripSiteHeader />
     <!-- Prototype: zwevende schakelaar voor de reisschema-varianten (alleen Noord-Frankrijk). -->
-    <TripItineraryVariantSwitch v-if="showItinVariants" target="arrangement" />
+    <!-- Prototype-schakelaarpaneel: alleen op desktop (op mobiel viel het over de hotelnamen). -->
+    <TripItineraryVariantSwitch v-if="showItinVariants && !isMobile" target="arrangement" />
 
     <!-- Search refresh overlay -->
     <Transition name="fade-fast">
