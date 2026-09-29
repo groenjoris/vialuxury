@@ -219,7 +219,7 @@
         <section v-if="itinSummary" id="reisschema" class="container deal-page__hybrid-summary deal-page__hybrid-summary--mobile deal-page__anchor">
           <div class="deal-page__summary-panel">
             <h2 class="section-title deal-page__summary-title"><svg class="deal-page__summary-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="19" r="3" /><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15" /><circle cx="18" cy="5" r="3" /></svg>{{ t('trip.itin.hybrid.summaryHeading') }}</h2>
-            <TripItinerarySummary :days="tripDaysView" :hotels="tripHotelLinks" full-link :show-stats="!itinCity" :lines="summaryLines" @select="openItinPanelAt" @open-full="openItinPanelAt(null)" />
+            <TripItinerarySummary :days="tripDaysView" :hotels="tripHotelLinks" full-link :show-stats="summaryStats" :lines="summaryLines" @select="openItinPanelAt" @open-full="openItinPanelAt(null)" />
           </div>
         </section>
 
@@ -507,7 +507,7 @@
             <section v-if="itinSummary" id="reisschema" class="deal-page__hybrid-summary deal-page__hybrid-summary--intro deal-page__desc-block deal-page__anchor">
               <div class="deal-page__summary-panel">
                 <h2 class="section-title deal-page__summary-title"><svg class="deal-page__summary-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="19" r="3" /><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15" /><circle cx="18" cy="5" r="3" /></svg>{{ t('trip.itin.hybrid.summaryHeading') }}</h2>
-                <TripItinerarySummary :days="tripDaysView" :hotels="tripHotelLinks" full-link :show-stats="!itinCity" :lines="summaryLines" @select="openItinPanelAt" @open-full="openItinPanelAt(null)" />
+                <TripItinerarySummary :days="tripDaysView" :hotels="tripHotelLinks" full-link :show-stats="summaryStats" :lines="summaryLines" @select="openItinPanelAt" @open-full="openItinPanelAt(null)" />
               </div>
             </section>
           </section>
@@ -1689,7 +1689,9 @@ const itinCollapsed = computed(() => itinVariant.value === 'days')
 const itinCity = computed(() => itinVariant.value === 'city')
 /* Sub-varianten binnen "Final" (schakelaar linksboven): reviews met/zonder grijs vlak,
    inclusies compact (rijen op een grijs vlak) of classic (als de gewone arrangementenpagina). */
-const { reviews: finalReviews, includes: finalIncludes, summaryStyle } = useMultiHotelTripFinalOptions()
+const { reviews: finalReviews, includes: finalIncludes, summaryStyle, stats } = useMultiHotelTripFinalOptions()
+/** Kerngetallen (dagen · hotels · bezienswaardigheden) boven de dagsamenvatting: schakelaar "Stats" (alle varianten). */
+const summaryStats = computed(() => stats.value === 'on')
 /** Voorbeeld reisschema: kaal of met stippellijntjes tussen de dagen (alle varianten). */
 const summaryLines = computed(() => summaryStyle.value === 'lines')
 const reviewsPlain = computed(() => finalReviews.value === 'plain') // geldt ook bij Map en Per dag

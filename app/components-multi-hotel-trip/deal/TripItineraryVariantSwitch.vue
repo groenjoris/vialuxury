@@ -35,6 +35,21 @@
         >{{ o.label }}</button>
       </div>
     </div>
+    <!-- Alle varianten: kerngetallen boven de dagsamenvatting aan/uit. -->
+    <div class="psw__section">
+      <span class="psw__label">Stats</span>
+      <div class="psw__group" role="group" aria-label="Kerngetallen boven het voorbeeld reisschema">
+        <button
+          v-for="o in STATS_OPTIONS"
+          :key="o.id"
+          type="button"
+          class="psw__btn"
+          :class="{ 'psw__btn--on': stats === o.id }"
+          :aria-pressed="stats === o.id"
+          @click="pickStats(o.id)"
+        >{{ o.label }}</button>
+      </div>
+    </div>
     <!-- Alleen bij "Final": sub-varianten voor het reviewsblok en de inclusies. -->
     <template v-if="variant === 'city'">
       <div class="psw__section">
@@ -72,11 +87,11 @@
 <script setup lang="ts">
 import PrototypeSwitchPanel from '../global/PrototypeSwitchPanel.vue'
 import { ITINERARY_VARIANTS, useMultiHotelTripItineraryVariant, type ItineraryVariant } from '~/composables-multi-hotel-trip/useMultiHotelTripItineraryVariant'
-import { FINAL_REVIEWS_OPTIONS, FINAL_INCLUDES_OPTIONS, SUMMARY_STYLE_OPTIONS, useMultiHotelTripFinalOptions, type FinalReviewsStyle, type FinalIncludesStyle, type SummaryStyle } from '~/composables-multi-hotel-trip/useMultiHotelTripFinalOptions'
+import { FINAL_REVIEWS_OPTIONS, FINAL_INCLUDES_OPTIONS, SUMMARY_STYLE_OPTIONS, STATS_OPTIONS, useMultiHotelTripFinalOptions, type FinalReviewsStyle, type FinalIncludesStyle, type SummaryStyle, type StatsSetting } from '~/composables-multi-hotel-trip/useMultiHotelTripFinalOptions'
 
 const props = defineProps<{ /** Element-id om naartoe te scrollen na wisselen. */ target?: string }>()
 const { variant, setVariant, restore } = useMultiHotelTripItineraryVariant()
-const { reviews: finalReviews, includes: finalIncludes, summaryStyle, restore: restoreFinal, setReviews, setIncludes, setSummaryStyle } = useMultiHotelTripFinalOptions()
+const { reviews: finalReviews, includes: finalIncludes, summaryStyle, stats, restore: restoreFinal, setReviews, setIncludes, setSummaryStyle, setStats } = useMultiHotelTripFinalOptions()
 
 onMounted(() => {
   restore()
@@ -93,6 +108,12 @@ async function pick(v: ItineraryVariant) {
   if (!props.target) return
   await nextTick()
   scrollToBlock(props.target)
+}
+
+async function pickStats(v: StatsSetting) {
+  setStats(v)
+  await nextTick()
+  scrollToBlock('reisschema')
 }
 
 async function pickSummary(v: SummaryStyle) {
