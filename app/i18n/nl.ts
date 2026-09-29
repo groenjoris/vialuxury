@@ -447,7 +447,7 @@ const nl: Record<string, string> = {
   'deal.highlight.cycling': 'Perfect voor fietsen en wandelen',
   'deal.highlight.exclusive': 'Exclusief arrangement via ViaLuxury',
   'deal.priceFor': 'Voor {nightsLabel}, {personsLabel}, {roomsLabel}',
-  'deal.pricePerPersonFor': 'prijs per persoon voor {nightsLabel}',
+  'deal.pricePerPersonFor': 'Prijs per persoon voor {nightsLabel}',
   'deal.minPersons': '(minimaal 2 personen)',
   'deal.pricePerPersonForShort': 'Prijs p.p. voor {nightsLabel}',
   'deal.minPersonsShort': '(min. 2 pers.)',

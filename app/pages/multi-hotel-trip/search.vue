@@ -486,7 +486,10 @@ function isSearchRoute(p: string): boolean {
  * i.p.v. hotels: op de landing altijd, elders zodra "Vakanties" als bestemming
  * is gekozen in de zoekbalk. */
 const isTripLanding = computed(() => route.path === '/multi-hotel-trip/vakanties')
-const isTripMode = computed(() => isTripLanding.value || selectedFilterTags.value.includes(TRIPS_THEME_ID))
+// Vakantiestand (hero-loze toolbar met quick filters, alleen vakanties, zijfilter dicht) ALLEEN op de
+// landingspagina /multi-hotel-trip/vakanties. Het thema "Auto- en fietsvakanties" (en Autovakantie /
+// Fietsvakantie) in het filter of de zoekbalk filtert de gewone resultaten, zoals elk ander thema.
+const isTripMode = computed(() => isTripLanding.value)
 /* Hero van de Vakanties-landing: Geuldal bij Stokhem (foto uit de
    voorbeeldcontent van Joris), met de locatie als eyebrow boven de titel. */
 const tripHeroBg = '/images/vakanties/geuldal-stokhem.jpg'

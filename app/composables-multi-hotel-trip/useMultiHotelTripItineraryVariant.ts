@@ -37,9 +37,9 @@ export const ITINERARY_VARIANTS: { id: ItineraryVariant; label: string }[] = [
 
 /** Vakanties waarop de nieuwe varianten (en de schakelaar) actief zijn. */
 export const ITINERARY_VARIANT_SLUGS = ['ontdek-noord-frankrijk-en-de-opaalkust-in-7-dagen']
-/** BESLUIT 2026-09-29: "Per stad" (Final) is het ontwerp; het zwevende schakelknopje (icoon
- *  linksboven op de PDP) staat uit. Zet op true om de schakelaar + bewaarde keuze terug te krijgen. */
-export const ITINERARY_SWITCHER_ENABLED = false
+/** "Per stad" (Final) is het ontwerp; het zwevende schakelknopje linksboven op de PDP blijft ter
+ *  vergelijking. Zet op false om de schakelaar te verbergen (vaste variant uit FIXED_ITIN_VARIANT). */
+export const ITINERARY_SWITCHER_ENABLED = true
 
 const STORAGE_KEY = 'vl_mht_itinerary_variant'
 // Keuze (2026-09-28): "Per stad" (met reviews) is het ontwerp; de andere varianten blijven ter vergelijking.

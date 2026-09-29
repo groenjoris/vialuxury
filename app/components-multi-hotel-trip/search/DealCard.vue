@@ -1443,7 +1443,9 @@ const includesBullets = computed<string[]>(() => {
 
 /* Vakantie, prijs p.p.: "prijs per persoon voor 7 nachten" zwart en vet, met "(minimaal 2 personen)"
    als geheel op de regel eronder — licht, als het woord "Vanaf". */
-.deal-card-v2__meta-note { display: block; margin-top: 4px; white-space: nowrap; font-weight: 400; color: var(--color-text-muted); }
+/* 2px extra onder de tweede regel: dan is de afstand tot de prijs gelijk aan die van een hotelcard
+   ("2 personen, x nachten" → prijs), waar de hogere knop de prijs 2px lager zet. */
+.deal-card-v2__meta-note { display: block; margin-top: 4px; margin-bottom: 2px; white-space: nowrap; font-weight: 400; color: var(--color-text-muted); }
 
 /* Kaartenraster (zoekresultaten + homepage, desktop): de secties van de kaart (foto ·
    hotelinfo · lijn · titel · body) zijn subgrid-rijen van het raster. Daardoor worden alle

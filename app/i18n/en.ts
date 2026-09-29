@@ -438,7 +438,7 @@ const en: Record<string, string> = {
   'deal.highlight.cycling': 'Perfect for cycling and hiking',
   'deal.highlight.exclusive': 'Exclusive package via ViaLuxury',
   'deal.priceFor': 'For {nightsLabel}, {personsLabel}, {roomsLabel}',
-  'deal.pricePerPersonFor': 'price per person for {nightsLabel}',
+  'deal.pricePerPersonFor': 'Price per person for {nightsLabel}',
   'deal.minPersons': '(minimum 2 people)',
   'deal.pricePerPersonForShort': 'Price p.p. for {nightsLabel}',
   'deal.minPersonsShort': '(min. 2 pers.)',

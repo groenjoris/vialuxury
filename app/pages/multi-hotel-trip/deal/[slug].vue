@@ -133,10 +133,9 @@
                 :cheapest-price="calCheapestPrice"
                 :show-prev-button="true" :show-next-button="true"
                 :show-legend="true"
+                :note="ppTrip ? t('deal.calendarPerPersonNote') : undefined"
                 @select-date="handleDateSelect" @prev-month="calPrev" @next-month="calNext"
               />
-              <!-- Prijs-p.p.-variant (vakantie): toelichting onder de legenda, in de USP-stijl. -->
-              <p v-if="ppTrip" class="sidebar__cal-note">{{ t('deal.calendarPerPersonNote') }}</p>
             </div>
 
             <template v-if="!store.checkInDate">
@@ -220,7 +219,7 @@
              beschrijving; klik op een dag opent het sidepanel bij die dag. -->
         <section v-if="itinSummary" id="reisschema" class="container deal-page__hybrid-summary deal-page__hybrid-summary--mobile deal-page__anchor">
           <div class="deal-page__summary-panel">
-            <h2 class="section-title deal-page__summary-title"><svg class="deal-page__summary-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="19" r="3" /><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15" /><circle cx="18" cy="5" r="3" /></svg>{{ t('trip.itin.hybrid.summaryHeading') }}</h2>
+            <h2 class="section-title deal-page__summary-title"><svg class="deal-page__summary-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-miterlimit="10" stroke-linecap="square" aria-hidden="true"><path d="M15 5h7M15 15h7M15 9h2M15 19h2" /><circle cx="6.5" cy="17.5" r="3.5" /><circle cx="6.5" cy="6.5" r="3.5" /></svg>{{ t('trip.itin.hybrid.summaryHeading') }}</h2>
             <TripItinerarySummary :days="tripDaysView" :hotels="tripHotelLinks" full-link :show-stats="summaryStats" :lines="summaryLines" @select="openItinPanelAt" @open-full="openItinPanelAt(null)" />
           </div>
         </section>
@@ -509,7 +508,7 @@
                  sidepanel met het uitgebreide schema en scrolt naar die dag. -->
             <section v-if="itinSummary" id="reisschema" class="deal-page__hybrid-summary deal-page__hybrid-summary--intro deal-page__desc-block deal-page__anchor">
               <div class="deal-page__summary-panel">
-                <h2 class="section-title deal-page__summary-title"><svg class="deal-page__summary-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="19" r="3" /><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15" /><circle cx="18" cy="5" r="3" /></svg>{{ t('trip.itin.hybrid.summaryHeading') }}</h2>
+                <h2 class="section-title deal-page__summary-title"><svg class="deal-page__summary-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-miterlimit="10" stroke-linecap="square" aria-hidden="true"><path d="M15 5h7M15 15h7M15 9h2M15 19h2" /><circle cx="6.5" cy="17.5" r="3.5" /><circle cx="6.5" cy="6.5" r="3.5" /></svg>{{ t('trip.itin.hybrid.summaryHeading') }}</h2>
                 <TripItinerarySummary :days="tripDaysView" :hotels="tripHotelLinks" full-link :show-stats="summaryStats" :lines="summaryLines" @select="openItinPanelAt" @open-full="openItinPanelAt(null)" />
               </div>
             </section>
@@ -696,6 +695,7 @@
               :cheapest-price="calCheapestPrice"
               :show-prev-button="true" :show-next-button="true"
               :show-legend="true"
+              :note="ppTrip ? t('deal.calendarPerPersonNote') : undefined"
               @select-date="handleDateSelect" @prev-month="calPrev" @next-month="calNext"
             />
           </section>
@@ -756,10 +756,9 @@
               :cheapest-price="calCheapestPrice"
               :show-prev-button="true" :show-next-button="true"
               :show-legend="true"
+              :note="ppTrip ? t('deal.calendarPerPersonNote') : undefined"
               @select-date="handleDateSelect" @prev-month="calPrev" @next-month="calNext"
             />
-            <!-- Prijs-p.p.-variant (vakantie): toelichting onder de legenda, in de USP-stijl. -->
-            <p v-if="ppTrip" class="sidebar__cal-note">{{ t('deal.calendarPerPersonNote') }}</p>
           </div>
 
           <template v-if="!store.checkInDate">
@@ -1687,7 +1686,7 @@ const FIXED_ITIN_VARIANT: Record<string, ItineraryVariant> = {
   'ontdek-noord-frankrijk-en-de-opaalkust-in-7-dagen': 'city',
   'fietsvakantie-twente-en-salland-delden-raalte-markelo': 'city',
 }
-// Schakelaar (zwevend icoon linksboven) staat uit — zie ITINERARY_SWITCHER_ENABLED.
+// Schakelaarpaneel linksboven (varianten/opmaak/stats) blijft ter vergelijking — uit te zetten via ITINERARY_SWITCHER_ENABLED.
 const showItinVariants = computed(() => ITINERARY_SWITCHER_ENABLED && isTrip && ITINERARY_VARIANT_SLUGS.includes(routeSlug.value))
 const { variant: itinVariantChosen } = useMultiHotelTripItineraryVariant()
 const itinVariant = computed<ItineraryVariant>(() =>
@@ -2675,8 +2674,6 @@ onMounted(() => {
 
 /* Calendar */
 .sidebar__calendar { margin-bottom: var(--space-md); }
-/* Onder de kalenderlegenda (prijs p.p.): zelfde stijl als de USP's onder de knop. */
-.sidebar__cal-note { margin: 8px 0 0; font-size: 13px; line-height: 1.4; color: var(--color-text-secondary); }
 .sidebar__cal-title { font-family: var(--font-heading); font-size: 16px; font-weight: 700; color: var(--color-text-primary); margin-bottom: var(--space-sm); }
 
 /* Book button */
