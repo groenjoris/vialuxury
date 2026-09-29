@@ -1221,6 +1221,7 @@ import tripRoutesJson from '~/data/mht-trip-routes.json'
 import type { TripRouteLeg } from '~/utils-multi-hotel-trip/tripMapLayers'
 import { tripPdpBySlug, tripHotelDetails } from '~/data/mht-trip-pdp'
 import type { TripDayBlockSpec } from '~/data/mht-trip-itineraries'
+import { useMultiHotelTripCheckoutTrip } from '~/composables-multi-hotel-trip/useMultiHotelTripCheckoutTrip'
 import type { TripDayView, TripBlockView } from '~/components-multi-hotel-trip/deal/TripItinerary.vue'
 import TripItineraryAccordion from '~/components-multi-hotel-trip/deal/TripItineraryAccordion.vue'
 import TripItineraryCities from '~/components-multi-hotel-trip/deal/TripItineraryCities.vue'
@@ -1532,13 +1533,9 @@ function handleFavoriteClick() {
 // kalenderstap; met datum direct naar de kamerkeuze. Op een telefoon stuurt
 // de mht-mobile middleware door naar de mobiele checkout-site.
 // Verse start vanaf de dealpagina: eerdere kalenderkeuze wissen.
-const checkoutDayState = useState<{ price: number; checkIn?: string; checkOut?: string; checkInYmd?: { year: number; month: number; day: number } } | null>('mht-checkout-day', () => null)
-checkoutDayState.value = null
-/** Vakantie-checkout: na de datum (of direct, als die al gekozen is) naar de
- *  kamertabel met één arrangement-cluster (één kamer per hotel), dan gegevens.
- *  De checkoutpagina's lezen deze vlag + slug (useMultiHotelTripCheckoutTrip). */
-const checkoutIsTrip = useState<boolean>('mht-checkout-trip', () => false)
-const checkoutTripSlug = useState<string | null>('mht-checkout-trip-slug', () => null)
+// Vakantie-checkout: vlag, slug en gekozen datum — gedeeld met de checkoutstappen én in een cookie
+// gespiegeld (zie useMultiHotelTripCheckoutTrip), zodat herladen/terugknop de vakantie houdt.
+const { isTrip: checkoutIsTrip, slug: checkoutTripSlug, day: checkoutDayState } = useMultiHotelTripCheckoutTrip()
 function goToCheckout() {
   checkoutIsTrip.value = isTrip
   // Vakantie: de checkout leest het boekingsmodel (hotels, kamers, prijs,
