@@ -540,7 +540,12 @@ function buildTrip(spec: TripSpec): { hotel: SearchHotel; detail: MultiHotelTrip
     reviewCount,
     pitch: spec.pitch,
     deals: [deal],
-    coordinates: known[0]?.coordinates,
+    // Kaartpositie: het middelpunt van de hotels (zwaartepunt van de driehoek),
+    // niet het eerste hotel — de pin staat "tussen" de hotels van de reis.
+    coordinates: {
+      lat: stops.reduce((sum, s) => sum + (s.lat ?? 0), 0) / stops.length,
+      lng: stops.reduce((sum, s) => sum + (s.lng ?? 0), 0) / stops.length,
+    },
     trip: {
       type: spec.type,
       stops,

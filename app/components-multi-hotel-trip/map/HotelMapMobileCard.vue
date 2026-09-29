@@ -16,16 +16,19 @@
         <div class="mapcard__bar" aria-hidden="true"></div>
 
         <!-- Part 1 — hotel info: landscape photo + name + stars -->
-        <header class="mapcard__head">
+        <!-- Vakantie (meerdere hotels): naam van de reis en de plaatsnamen van
+             de hotels i.p.v. hotelnaam + sterren; de kop mag dan hoger worden. -->
+        <header class="mapcard__head" :class="{ 'mapcard__head--trip': !!trip }">
           <img
             v-if="hotel.heroImage"
             :src="hotel.heroImage"
-            :alt="hotel.name"
+            :alt="titleText"
             class="mapcard__photo"
           />
           <div class="mapcard__head-text">
-            <h2 class="mapcard__name">{{ hotel.name }}</h2>
-            <div class="mapcard__stars" aria-hidden="true">
+            <h2 class="mapcard__name">{{ titleText }}</h2>
+            <p v-if="trip" class="mapcard__stops">{{ tripStopsLabel }}</p>
+            <div v-else class="mapcard__stars" aria-hidden="true">
               <span v-for="n in hotel.starRating" :key="n"><svg class="icon-star" viewBox="0 0 18 18" width="1em" height="1em" fill="currentColor" style="vertical-align:-0.125em" aria-hidden="true"><path d="M16.963,6.786c-.088-.271-.323-.469-.605-.51l-4.62-.671L9.672,1.418c-.252-.512-1.093-.512-1.345,0l-2.066,4.186-4.62,.671c-.282,.041-.517,.239-.605,.51-.088,.271-.015,.57,.19,.769l3.343,3.258-.79,4.601c-.048,.282,.067,.566,.298,.734,.231,.167,.538,.189,.79,.057l4.132-2.173,4.132,2.173c.11,.058,.229,.086,.349,.086,.155,0,.31-.048,.441-.143,.231-.168,.347-.452,.298-.734l-.79-4.601,3.343-3.258c.205-.199,.278-.498,.19-.769Z"/></svg></span>
             </div>
           </div>
@@ -57,7 +60,7 @@
             <!-- First row: title + stacked price -->
             <div class="mdeal__top">
               <p class="mdeal__title">
-                <span class="mdeal__lead">Arrangement</span>{{ ' ' }}<span class="mdeal__title-rest">{{ nightsLabel(d.deal.nights, locale as 'nl' | 'en' | 'de') }}, {{ personsLabel(PRICED_PERSONS, locale as 'nl' | 'en' | 'de') }}</span>
+                <span class="mdeal__lead">{{ trip ? t(trip.type === 'fiets' ? 'trip.fiets' : 'trip.auto') : 'Arrangement' }}</span>{{ ' ' }}<span class="mdeal__title-rest">{{ nightsLabel(d.deal.nights, locale as 'nl' | 'en' | 'de') }}, {{ personsLabel(PRICED_PERSONS, locale as 'nl' | 'en' | 'de') }}</span>
               </p>
               <div class="mdeal__price">
                 <div class="mdeal__price-top">
@@ -121,6 +124,11 @@ const emit = defineEmits<{
 
 const cardRef = ref<HTMLElement | null>(null)
 let ro: ResizeObserver | null = null
+
+/** Vakantie (meerdere hotels): reisnaam, plaatsnamen en "Autovakantie"/"Fietsvakantie" als lead. */
+const trip = computed(() => props.hotel?.trip ?? null)
+const titleText = computed(() => (props.hotel ? (trip.value ? localized(props.hotel.deals[0]!.title) : props.hotel.name) : ''))
+const tripStopsLabel = computed(() => (trip.value?.stops ?? []).map(s => s.city).join(' · '))
 
 // Keyboard focus trap + Escape-to-close + focus restore on close.
 useFocusTrap(cardRef, toRef(props, 'isOpen'), { onEscape: () => emit('close') })
@@ -264,6 +272,30 @@ const dealViews = computed(() => {
   letter-spacing: 1px;
   line-height: 1;
 }
+/* Vakantie: kop groeit mee (reisnaam op twee regels + plaatsnamen); de foto staat
+   absoluut en vult de hele hoogte (zonder zelf de hoogte te bepalen). */
+.mapcard__head--trip {
+  height: auto;
+  min-height: 80px;
+  padding-left: 160px; /* 150px foto + 10px */
+}
+.mapcard__head--trip .mapcard__photo {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+}
+.mapcard__stops {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 13px;
+  line-height: 1.25;
+  color: var(--color-text-secondary);
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
 .mapcard__close {
   position: absolute;
   top: 6px;
@@ -293,16 +325,20 @@ const dealViews = computed(() => {
 }
 .mapcard__rail::-webkit-scrollbar { display: none; }
 
-/* Single deal → fill the full width (no carousel). */
+/* Single deal → fill the full width (no carousel). Basis 0 + min-width 0: een
+   lange inclusieregel (nowrap, ellipsis) mag het kaartje niet breder maken dan
+   de rail — anders schuiven prijs en pijlknop buiten beeld. */
 .mapcard__rail--single .mdeal {
-  flex: 1 1 auto;
-  width: auto;
+  flex: 1 1 0;
+  width: 0;
+  min-width: 0;
 }
 
 .mdeal {
   scroll-snap-align: start;
   flex: 0 0 290px;
   width: 290px;
+  min-width: 0;
   background: #fff;
   border: 1px solid #f5f5f5;
   border-radius: 6px;

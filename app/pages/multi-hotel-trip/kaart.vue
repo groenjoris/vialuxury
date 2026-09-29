@@ -3,6 +3,7 @@ import { matchesNightKeys } from '~/utils-multi-hotel-trip/nights'
 import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { searchHotels } from '~/data/mock/search-hotels'
+import { tripSearchHotels } from '~/data/mht-trips'
 import { useMultiHotelTripHotelMap } from '~/composables-multi-hotel-trip/useMultiHotelTripHotelMap'
 import { useMultiHotelTripHomeVariant } from '~/composables-multi-hotel-trip/useMultiHotelTripHomeVariant'
 import { dealMatchesAllTags, getFilterTag } from '~/utils-multi-hotel-trip/filterTags'
@@ -38,10 +39,14 @@ const { homeHref } = useMultiHotelTripHomeVariant()
  *     hide it (this hotel is the user's anchor)
  *   - auto-open the sidepanel for it when `?open=1` is also present
  *  Lives as a computed (not a ref) so navigating away wipes it. */
+// Alles wat op de kaart kan staan: de hotels én de meerhotel-vakanties (één
+// pin per vakantie op het middelpunt van haar hotels, met auto-/fietsicoon).
+const mapPool: SearchHotel[] = [...searchHotels, ...tripSearchHotels]
+
 const focusedHotel = computed<SearchHotel | null>(() => {
   const slug = (route.query.focus as string | undefined) || ''
   if (!slug) return null
-  return searchHotels.find(h => h.slug === slug) ?? null
+  return mapPool.find(h => h.slug === slug) ?? null
 })
 
 const {
@@ -131,7 +136,7 @@ const mapHotels = computed<SearchHotel[]>(() => {
     return price >= sharedBudgetMin.value && price <= sharedBudgetMax.value
   }
   const result: SearchHotel[] = []
-  for (const h of searchHotels) {
+  for (const h of mapPool) {
     // Destination is NOT a filter on the map — it only drives initial zoom.
     // Every hotel stays on the map; we just tag it as `unmatched` when none
     // of its deals satisfy the active filters so the pin renders disabled

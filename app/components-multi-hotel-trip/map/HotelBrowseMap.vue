@@ -4,7 +4,7 @@ import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import Supercluster from 'supercluster'
 import type { SearchHotel } from '~/types/searchHotel'
 import { useMultiHotelTripHotelMap } from '~/composables-multi-hotel-trip/useMultiHotelTripHotelMap'
-import { clusterHtml, pinHtml, pinSize, pinAnchor, type PinState } from './pinTemplates'
+import { clusterHtml, pinHtml, tripPinHtml, pinSize, pinAnchor, type PinState } from './pinTemplates'
 
 /**
  * HotelBrowseMap — Leaflet wrapper with Supercluster-driven clustering.
@@ -88,8 +88,10 @@ function pinStateFor(hotelId: string): PinState {
 
 function makeHotelIcon(L: typeof import('leaflet'), hotelId: string) {
   const state = pinStateFor(hotelId)
+  // Vakantie (meerdere hotels): auto- of fietsicoon i.p.v. de ster.
+  const trip = props.hotels.find((h) => h.id === hotelId)?.trip
   return L.divIcon({
-    html: pinHtml(state),
+    html: trip ? tripPinHtml(trip.type, state) : pinHtml(state),
     className: 'hotel-pin-icon',
     iconSize: pinSize(state),
     iconAnchor: pinAnchor(state),

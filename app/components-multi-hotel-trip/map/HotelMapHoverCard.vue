@@ -52,6 +52,13 @@ const props = defineProps<{
 }>()
 
 const { arrivalDate: globalArrivalDate } = useMultiHotelTripSearchState()
+const { t, localized } = useMultiHotelTripI18n()
+
+/** Vakantie (meerdere hotels): naam van de reis i.p.v. hotelnaam, plaatsnamen
+ *  i.p.v. sterren en "Autovakantie voor / 6 nachten, 2 personen". */
+const trip = computed(() => props.hotel.trip ?? null)
+const titleText = computed(() => (trip.value ? localized(props.hotel.deals[0]!.title) : props.hotel.name))
+const tripStopsLabel = computed(() => (trip.value?.stops ?? []).map(s => s.city).join(' · '))
 const { selectHotel, setHover, scheduleHover, keepHover } = useMultiHotelTripHotelMap()
 
 /** Cancel any pending hide while the cursor is inside the preview. */
@@ -158,6 +165,14 @@ const dealsLabel = computed(() => {
   }
   const ns = nights.value
   if (ns.length === 0) return { top: '', bottom: '' }
+  if (trip.value) {
+    const n = props.hotel.deals[0]!.nights
+    const p = PRICED_PERSONS
+    return {
+      top: `${t(trip.value.type === 'fiets' ? 'trip.fiets' : 'trip.auto')} voor`,
+      bottom: `${n} ${n === 1 ? 'nacht' : 'nachten'}, ${p} ${p === 1 ? 'persoon' : 'personen'}`,
+    }
+  }
   // Single arrangement → singular, including the persons count.
   if (props.hotel.deals.length === 1) {
     const n = props.hotel.deals[0].nights
@@ -245,10 +260,11 @@ const cardStyle = computed(() => {
       <div class="hover-card__box">
         <div class="hover-card__band" />
         <div class="hover-card__inner">
-          <img :src="hotel.heroImage" :alt="hotel.name" class="hover-card__image" />
+          <img :src="hotel.heroImage" :alt="titleText" class="hover-card__image" />
           <div class="hover-card__body">
-            <h4 class="hover-card__title">{{ hotel.name }}</h4>
-            <div class="hover-card__stars" aria-hidden="true">
+            <h4 class="hover-card__title">{{ titleText }}</h4>
+            <p v-if="trip" class="hover-card__stops">{{ tripStopsLabel }}</p>
+            <div v-else class="hover-card__stars" aria-hidden="true">
               <span v-for="n in hotel.starRating" :key="n"><svg class="icon-star" viewBox="0 0 18 18" width="1em" height="1em" fill="currentColor" style="vertical-align:-0.125em" aria-hidden="true"><path d="M16.963,6.786c-.088-.271-.323-.469-.605-.51l-4.62-.671L9.672,1.418c-.252-.512-1.093-.512-1.345,0l-2.066,4.186-4.62,.671c-.282,.041-.517,.239-.605,.51-.088,.271-.015,.57,.19,.769l3.343,3.258-.79,4.601c-.048,.282,.067,.566,.298,.734,.231,.167,.538,.189,.79,.057l4.132-2.173,4.132,2.173c.11,.058,.229,.086,.349,.086,.155,0,.31-.048,.441-.143,.231-.168,.347-.452,.298-.734l-.79-4.601,3.343-3.258c.205-.199,.278-.498,.19-.769Z"/></svg></span>
             </div>
             <p class="hover-card__deals">
@@ -374,6 +390,18 @@ const cardStyle = computed(() => {
   letter-spacing: 1px;
   line-height: 1;
   margin-top: 4px;
+}
+
+/* Vakantie: de plaatsnamen van de hotels op de plek van de sterren. */
+.hover-card__stops {
+  margin: 2px 0 0;
+  font-family: var(--font-body);
+  font-size: 12px;
+  line-height: 1.25;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .hover-card__deals {
