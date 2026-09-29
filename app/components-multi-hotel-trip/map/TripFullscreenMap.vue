@@ -42,20 +42,21 @@
                met foto, naam en sluitknop rechtsboven; bij een hotel een knop naar het hotelpanel. -->
           <Transition name="tfm-sheet">
             <div v-if="sheet" class="tfm__sheet" role="dialog" :aria-label="sheetTitle">
-              <div class="tfm__sheet-bar" aria-hidden="true"></div>
-              <header class="tfm__sheet-head">
-                <img v-if="sheetImage" class="tfm__sheet-img" :src="sheetImage" alt="" />
-                <span v-else class="tfm__sheet-icon" aria-hidden="true" v-html="poiPinSvg(sheetKind)"></span>
-                <div class="tfm__sheet-text">
+              <!-- Foto over de hele hoogte links; rechts naam (max. 2 regels), sterren + nachten (hotel)
+                   of afstand tot het dichtstbijzijnde hotel (bezienswaardigheid), en de beschrijving. -->
+              <img v-if="sheetImage" class="tfm__sheet-img" :src="sheetImage" alt="" />
+              <span v-else class="tfm__sheet-imgph" aria-hidden="true" v-html="poiPinSvg(sheetKind)"></span>
+              <div class="tfm__sheet-main">
+                <div class="tfm__sheet-head">
                   <h3 class="tfm__sheet-title">{{ sheetTitle }}</h3>
-                  <p v-if="sheetSub" class="tfm__sheet-sub">{{ sheetSub }}</p>
+                  <button type="button" class="tfm__sheet-close" :aria-label="t('common.close')" @click="sheet = null">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12" /></svg>
+                  </button>
                 </div>
-                <button type="button" class="tfm__sheet-close" :aria-label="t('common.close')" @click="sheet = null">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12" /></svg>
-                </button>
-              </header>
-              <p v-if="sheetText" class="tfm__sheet-body">{{ sheetText }}</p>
-              <button v-if="sheet.kind === 'hotel'" type="button" class="tfm__sheet-btn" @click="openSheetHotel">{{ t('trip.moreAboutHotel') }}</button>
+                <div v-if="sheetStars" class="tfm__sheet-stars" aria-hidden="true"><span v-for="n in sheetStars" :key="n">★</span></div>
+                <p v-if="sheetSub" class="tfm__sheet-sub">{{ sheetSub }}</p>
+                <p v-if="sheetText" class="tfm__sheet-body">{{ sheetText }}</p>
+              </div>
             </div>
           </Transition>
         </div>
@@ -159,24 +160,26 @@ const isMobileViewport = () => typeof window !== 'undefined' && window.innerWidt
 const sheetHotel = computed(() => (sheet.value?.kind === 'hotel' ? props.hotels?.[sheet.value.index] ?? null : null))
 const sheetPoi = computed(() => (sheet.value?.kind === 'poi' ? props.highlights[sheet.value.index] ?? null : null))
 const sheetTitle = computed(() => sheetHotel.value?.name ?? sheetPoi.value?.name ?? '')
+const sheetStars = computed(() => sheetHotel.value?.starRating ?? 0)
+/** Afstand (km, hemelsbreed) tussen twee punten. */
+function distanceKm(a: { lat: number; lng: number }, b: { lat: number; lng: number }): number {
+  const R = 6371, dLat = ((b.lat - a.lat) * Math.PI) / 180, dLng = ((b.lng - a.lng) * Math.PI) / 180
+  const h = Math.sin(dLat / 2) ** 2 + Math.cos((a.lat * Math.PI) / 180) * Math.cos((b.lat * Math.PI) / 180) * Math.sin(dLng / 2) ** 2
+  return 2 * R * Math.asin(Math.sqrt(h))
+}
+/** Onder de naam: hotel → aantal nachten; bezienswaardigheid → "12 km van {dichtstbijzijnde hotel}". */
 const sheetSub = computed(() => {
-  if (!sheetHotel.value || !sheet.value) return ''
-  return [sheetHotel.value.location, props.nightsLabels?.[sheet.value.index]].filter(Boolean).join(' · ')
+  if (sheetHotel.value && sheet.value) return props.nightsLabels?.[sheet.value.index] ?? ''
+  const poi = sheetPoi.value
+  if (!poi || !props.stops.length) return ''
+  let best = props.stops[0]!, bestKm = Infinity
+  for (const st of props.stops) { const d = distanceKm(poi, st); if (d < bestKm) { bestKm = d; best = st } }
+  const km = bestKm < 1 ? '< 1' : String(Math.round(bestKm))
+  return t('trip.map.kmFrom').replace('{km}', km).replace('{hotel}', best.title ?? best.label)
 })
 const sheetImage = computed(() => sheetHotel.value?.images?.[0] ?? sheetPoi.value?.image ?? '')
 const sheetKind = computed(() => sheetPoi.value?.kind)
-function shorten(text: string, max = 120): string {
-  if (text.length <= max) return text
-  const cut = text.slice(0, max)
-  return `${cut.slice(0, Math.max(cut.lastIndexOf(' '), 80)).replace(/[,.;:]$/, '')}…`
-}
-const sheetText = computed(() => (sheetHotel.value ? shorten(sheetHotel.value.description) : sheetPoi.value?.text ?? ''))
-/** "Meer over dit hotel" in het paneel → het hotel-sidepanel. */
-function openSheetHotel() {
-  const i = sheet.value?.index
-  sheet.value = null
-  if (i != null) selectedHotel.value = i
-}
+const sheetText = computed(() => sheetHotel.value?.description ?? sheetPoi.value?.text ?? '')
 
 const mapEl = ref<HTMLElement | null>(null)
 let map: import('leaflet').Map | null = null
@@ -202,7 +205,8 @@ async function mount() {
     labelText: s => s.title ?? s.label,
     labelSize: 14,
     onClick: i => { if (isMobileViewport()) sheet.value = { kind: 'hotel', index: i }; else selectedHotel.value = i },
-    hoverHtml: (s, i) => hoverCardHtml({
+    // Mobiel: geen hover-kaartjes (pop-ups) — alleen het onderpaneel bij een tik.
+    hoverHtml: isMobileViewport() ? undefined : (s, i) => hoverCardHtml({
       image: s.image,
       title: s.title ?? s.label,
       stars: s.starRating,
@@ -210,8 +214,10 @@ async function mount() {
     }),
   })
   const poiMarkers = addTripHighlights(L, map, props.highlights, {
+    tooltips: !isMobileViewport(),
     onClick: i => { if (isMobileViewport()) sheet.value = { kind: 'poi', index: i } },
   })
+  map.on('click', () => { sheet.value = null })
 
   // Overlappende markers uit elkaar duwen (hotels én highlights), opnieuw na elke zoom.
   const spreadItems = [
@@ -375,31 +381,46 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 
 /* Mobiel: sluitknop op de kaart (alleen < 768px zichtbaar). */
 .tfm__close--map { display: none; position: absolute; top: 12px; right: 12px; z-index: 1000; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2); }
-/* Mobiel: paneel onderaan de kaart voor hotel/bezienswaardigheid. */
+/* Mobiel: paneel onderaan de kaart voor hotel/bezienswaardigheid — oranje bovenrand (als de
+   zoekkaart), foto over de hele hoogte links, inhoud rechts. */
 .tfm__sheet {
   position: absolute;
   left: 0;
   right: 0;
   bottom: 0;
   z-index: 1001;
-  max-height: 62%;
-  overflow: auto;
-  padding: 8px 16px 16px;
+  display: flex;
+  align-items: stretch;
+  min-height: 150px;
   background: #fff;
-  border-radius: 16px 16px 0 0;
+  border-top: 3px solid var(--color-primary);
   box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.18);
 }
-.tfm__sheet-bar { width: 40px; height: 4px; margin: 0 auto 12px; border-radius: 2px; background: var(--color-border-light); }
-.tfm__sheet-head { display: flex; align-items: flex-start; gap: 12px; }
-.tfm__sheet-img { flex-shrink: 0; width: 72px; height: 72px; border-radius: 10px; object-fit: cover; }
-.tfm__sheet-icon { flex-shrink: 0; display: inline-flex; width: 33px; height: 40px; }
-.tfm__sheet-text { flex: 1; min-width: 0; padding-top: 4px; }
-.tfm__sheet-title { margin: 0; font-family: var(--font-heading); font-size: 17px; font-weight: 700; line-height: 1.25; }
-.tfm__sheet-sub { margin: 3px 0 0; font-size: 13px; color: var(--color-text-secondary); }
+.tfm__sheet-img { flex: 0 0 36%; width: 36%; align-self: stretch; object-fit: cover; }
+.tfm__sheet-imgph { flex: 0 0 36%; width: 36%; display: flex; align-items: center; justify-content: center; background: var(--color-background-secondary); }
+.tfm__sheet-imgph :deep(svg) { width: 44px; height: 52px; }
+.tfm__sheet-main { flex: 1; min-width: 0; padding: 12px 12px 14px 14px; display: flex; flex-direction: column; gap: 4px; }
+.tfm__sheet-head { display: flex; align-items: flex-start; gap: 8px; }
+.tfm__sheet-title {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.25;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.tfm__sheet-stars { display: flex; gap: 1px; font-size: 14px; line-height: 1; color: var(--color-text-primary); }
+.tfm__sheet-sub { margin: 0; font-size: 13px; color: var(--color-text-secondary); }
 .tfm__sheet-close {
   flex-shrink: 0;
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
+  margin: -4px -4px 0 0;
   border: 0;
   border-radius: 50%;
   background: var(--color-background-secondary);
@@ -409,19 +430,15 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   justify-content: center;
   cursor: pointer;
 }
-.tfm__sheet-body { margin: 10px 0 0; font-size: 14px; line-height: 1.5; color: var(--color-text-secondary); }
-.tfm__sheet-btn {
-  margin-top: 12px;
-  width: 100%;
-  height: 44px;
-  border: 0;
-  border-radius: var(--radius-md, 8px);
-  background: var(--color-primary);
-  color: #fff;
-  font-family: var(--font-body);
-  font-size: 15px;
-  font-weight: 700;
-  cursor: pointer;
+.tfm__sheet-body {
+  margin: 4px 0 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--color-text-secondary);
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 .tfm-sheet-enter-active, .tfm-sheet-leave-active { transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1); }
 .tfm-sheet-enter-from, .tfm-sheet-leave-to { transform: translateY(100%); }

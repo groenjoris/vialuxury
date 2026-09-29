@@ -169,4 +169,8 @@ onBeforeUnmount(() => {
   .help-widget__label { font-size: 14px; }
   .help-widget__btn { width: 50px; height: 50px; }
 }
+/* Mobiel: geen zwevende helpdesk-widget (Joris, 2026-09-29). */
+@media (max-width: 767px) {
+  .help-widget { display: none !important; }
+}
 </style>

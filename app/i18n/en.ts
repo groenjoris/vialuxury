@@ -334,6 +334,7 @@ const en: Record<string, string> = {
   'trip.dinnerText': 'No need to go anywhere tonight: an included {dinner} awaits you in the hotel restaurant.',
   'trip.homewardTitle': 'Check-out and journey home',
   'trip.mapTitle': 'Route and surroundings',
+  'trip.map.kmFrom': '{km} km from {hotel}',
   'trip.closeMap': 'Close map',
   'trip.mapLegendHotels': 'Hotels on this holiday',
   'trip.mapLegendHighlights': 'Surroundings and sights',
