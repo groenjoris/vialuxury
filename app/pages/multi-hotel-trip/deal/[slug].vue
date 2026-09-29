@@ -1576,7 +1576,7 @@ const routeSlug = computed(() => (route.params.slug as string) || defaultDealPer
 // (ook in R1/R2) houdt ze haar eigen tekst uit data/team-members.ts.
 const TRIP_CREATOR_TEXT = {
   specialisation: 'Vakanties en rondreizen',
-  quote: 'Een goede hotelcombinatie verzin je niet aan je bureau. Ik ga zelf op pad!',
+  quote: 'Een goede roadtrip verzin je niet aan je bureau. Daarom ga ik overal persoonlijk langs voor een perfecte vakantie.',
 }
 const creator = computed(() => {
   if (!tripPdpBySlug(routeSlug.value)) return creatorForSlug(routeSlug.value)

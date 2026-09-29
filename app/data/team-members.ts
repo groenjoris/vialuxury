@@ -34,7 +34,7 @@ export const teamMembers: readonly TeamMember[] = [
     pronoun: 'haar',
     avgScore: '9.8',
     specialisation: 'Hotels met een verhaal',
-    quote: 'Een goed hotel verzin je niet aan een bureau — dat ontdek je ter plekke, soms op de meest onverwachte plaatsen.',
+    quote: 'Een goede roadtrip verzin je niet aan je bureau. Daarom ga ik overal persoonlijk langs voor een perfecte vakantie.',
   },
   {
     name: 'Jan',
