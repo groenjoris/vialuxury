@@ -2262,13 +2262,12 @@ async function commitSearch() {
     && localDestCities.value.length === 0
     && localDestThemes.value.length === 0
   const fromSlug = localDestHotels.value[0]?.slug || (noOtherDestination ? currentDealSlug() : null)
-  // Multi Hotel Trip: met het thema "Rondreizen" landt de zoekopdracht op de
-  // Rondreizen-zoekpagina (hero + quick filters).
-  const target = localDestThemes.value.includes(TRIPS_THEME_ID)
-    ? '/multi-hotel-trip/vakanties'
-    : fromSlug
-      ? `/multi-hotel-trip/search?from=${encodeURIComponent(fromSlug)}`
-      : '/multi-hotel-trip/search'
+  // Multi Hotel Trip: het thema "Auto- en fietsvakanties" werkt als een gewoon
+  // thema — de zoekopdracht landt op de zoekresultaten (gefilterd op vakanties),
+  // niet op de speciale vakantiepagina (die blijft bereikbaar via de hoofdlink).
+  const target = fromSlug
+    ? `/multi-hotel-trip/search?from=${encodeURIComponent(fromSlug)}`
+    : '/multi-hotel-trip/search'
   // Take the search-nav lock BEFORE navigating so the deal
   // page's `store.queryParams` watcher (which would otherwise
   // race and call `router.replace`, cancelling our nav) skips

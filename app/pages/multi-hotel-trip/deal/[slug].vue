@@ -261,7 +261,7 @@
           <!-- Vakantie: dagprogramma (per dag 2–3 blokken, foto boven tekst). -->
           <template v-if="isTrip">
             <!-- Vakantie: "Het volgende is inbegrepen" — compacte inclusieblokken (thumb, titel, tekst). -->
-            <section v-if="tripIncluded.length" id="inbegrepen" class="trip-incl">
+            <section v-if="tripIncluded.length" id="inbegrepen" class="trip-incl deal-page__anchor">
             <h2 class="section-title">{{ tripIncludedHeading }}</h2>
             <div class="trip-incl__grid">
               <article v-for="b in tripIncluded" :key="b.title" class="trip-incl__item">
@@ -384,6 +384,7 @@
         <template v-if="isTrip">
           <a v-if="itinReviews" href="#beoordelingen-vakantie" class="deal-page__tab">{{ t('trip.tabReviews') }}</a>
           <a v-if="itinSummary" href="#reisschema" class="deal-page__tab">{{ t('trip.tabItinerary') }}</a>
+          <a v-if="tripIncluded.length" href="#inbegrepen" class="deal-page__tab">{{ t('trip.tabIncluded') }}</a>
           <a href="#arrangement" class="deal-page__tab">{{ itinCity ? t('trip.tabThingsToDo') : itinSummary ? t('trip.itineraryFullHeading') : t('trip.itineraryHeading') }}</a>
         </template>
         <template v-else>
@@ -557,7 +558,7 @@
             <template v-if="isTrip">
               <!-- Vakantie: "In deze autovakantie … is het volgende inbegrepen" — compacte rijen
                    (thumb, titel, korte tekst) op een grijs vlak dat de kolom vult. -->
-              <section v-if="tripIncluded.length" id="inbegrepen" class="trip-incl" :class="{ 'trip-incl--classic': inclClassic }">
+              <section v-if="tripIncluded.length" id="inbegrepen" class="trip-incl deal-page__anchor" :class="{ 'trip-incl--classic': inclClassic }">
               <h2 class="section-title">{{ tripIncludedHeading }}</h2>
               <!-- Final · Includes "Classic": als de gewone arrangementenpagina — twee naast elkaar,
                    foto boven de tekst, geen achtergrond. -->
@@ -1025,7 +1026,7 @@
               <span>{{ stickyDeLine1 }}</span>
               <span>{{ stickyDeLine2 }}</span>
             </span>
-            <span v-else class="deal-page__cta-bar-meta" :class="{ 'deal-page__cta-bar-meta--pp': ppTrip }"><template v-if="ppTrip">{{ ppForLabel }} <span class="price-meta__note">{{ t('deal.minPersons') }}</span></template><template v-else>{{ priceForLabel }}</template></span>
+            <span v-else class="deal-page__cta-bar-meta" :class="{ 'deal-page__cta-bar-meta--pp': ppTrip }"><template v-if="ppTrip">{{ ppForLabelShort }} <span class="price-meta__note">{{ t('deal.minPersonsShort') }}</span></template><template v-else>{{ priceForLabel }}</template></span>
           </div>
           <button type="button" class="deal-page__cta-bar-btn" @click="handleMobileBook">
             {{ t('deal.bookNow') }}
@@ -1044,6 +1045,7 @@
           <template v-if="isTrip">
             <a v-if="itinReviews" href="#beoordelingen-vakantie" class="deal-page__tab" :class="{ 'deal-page__tab--active': activeAnchor === 'beoordelingen-vakantie' }">{{ t('trip.tabReviews') }}</a>
             <a v-if="itinSummary" href="#reisschema" class="deal-page__tab" :class="{ 'deal-page__tab--active': activeAnchor === 'reisschema' }">{{ t('trip.tabItinerary') }}</a>
+            <a v-if="tripIncluded.length" href="#inbegrepen" class="deal-page__tab" :class="{ 'deal-page__tab--active': activeAnchor === 'inbegrepen' }">{{ t('trip.tabIncluded') }}</a>
             <a href="#arrangement" class="deal-page__tab" :class="{ 'deal-page__tab--active': activeAnchor === 'arrangement' }">{{ itinCity ? t('trip.tabThingsToDo') : itinSummary ? t('trip.itineraryFullHeading') : t('trip.itineraryHeading') }}</a>
           </template>
           <template v-else>
@@ -1067,7 +1069,7 @@
               <span>{{ stickyDeLine1 }}</span>
               <span>{{ stickyDeLine2 }}</span>
             </span>
-            <span v-else class="deal-page__cta-bar-meta" :class="{ 'deal-page__cta-bar-meta--pp': ppTrip }"><template v-if="ppTrip">{{ ppForLabel }} <span class="price-meta__note">{{ t('deal.minPersons') }}</span></template><template v-else>{{ priceForLabel }}</template></span>
+            <span v-else class="deal-page__cta-bar-meta" :class="{ 'deal-page__cta-bar-meta--pp': ppTrip }"><template v-if="ppTrip">{{ ppForLabelShort }} <span class="price-meta__note">{{ t('deal.minPersonsShort') }}</span></template><template v-else>{{ priceForLabel }}</template></span>
           </div>
           <button type="button" class="deal-page__cta-bar-btn" @click="handleMobileBook">
             {{ t('deal.bookNow') }}
@@ -1257,6 +1259,8 @@ const lang = computed<'nl' | 'en' | 'de'>(() => {
 const { perPerson: pricePerPerson, displayPrice } = useMultiHotelTripPriceVariant()
 const ppTrip = computed(() => isTrip && pricePerPerson.value)
 const ppForLabel = computed(() => t('deal.pricePerPersonFor').replace('{nightsLabel}', nightsLabel(currentDeal.value?.nights ?? 0, lang.value)))
+// Sticky prijsbalk: korte vorm op één regel — "Prijs p.p. voor 6 nachten (min. 2 p.)".
+const ppForLabelShort = computed(() => t('deal.pricePerPersonForShort').replace('{nightsLabel}', nightsLabel(currentDeal.value?.nights ?? 0, lang.value)))
 const shownTotalPrice = computed(() => displayPrice(store.pricing.totalPrice, isTrip))
 const shownOriginalPrice = computed(() => displayPrice(store.pricing.originalPrice, isTrip))
 
@@ -2698,6 +2702,8 @@ onMounted(() => {
    op de regel eronder, licht als "Vanaf". */
 .sidebar__price-meta--pp { font-weight: 700; color: var(--color-text-primary); }
 .deal-page__cta-bar-meta--pp { font-weight: 700; color: var(--color-text-primary); }
+/* Sticky balk: "(min. 2 p.)" achter de tekst op dezelfde regel (de balk zet spans standaard als blok). */
+.deal-page__cta-bar-meta--pp .price-meta__note { display: inline; }
 .price-meta__note { display: block; margin-top: 4px; font-weight: 400; color: var(--color-text-muted); }
 .sidebar__disclaimer { font-size: 12px; line-height: 1.5; color: var(--color-text-muted); margin-bottom: var(--space-md); }
 /* German "Zusätzliche Kosten" block — replaces the long NL/EN

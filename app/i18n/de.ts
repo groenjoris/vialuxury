@@ -259,6 +259,7 @@ const de: Record<string, string> = {
   'trip.tabReviews': 'Bewertungen',
   'trip.tabItinerary': 'Beispiel-Reiseplan',
   'trip.tabThingsToDo': 'Unternehmungen',
+  'trip.tabIncluded': 'Inbegriffen',
   'trip.tabIncluded': 'Was ist inbegriffen',
   'trip.showMore': 'Vollständiges Beispielprogramm anzeigen',
   'trip.showLess': 'Weniger anzeigen',
@@ -435,6 +436,8 @@ const de: Record<string, string> = {
   'deal.priceFor': 'Für {nightsLabel}, {personsLabel}, {roomsLabel}',
   'deal.pricePerPersonFor': 'Preis pro Person für {nightsLabel}',
   'deal.minPersons': '(mindestens 2 Personen)',
+  'deal.pricePerPersonForShort': 'Preis p. P. für {nightsLabel}',
+  'deal.minPersonsShort': '(min. 2 P.)',
   // NL/EN's `deal.disclaimer` is REPLACED in the sidebar by the
   // structured "Zusätzliche Kosten" block — left here only as a
   // fallback in case something still renders the key.
