@@ -275,7 +275,8 @@
                renders for ≥ 800 px.
                ============================================================ -->
           <template v-if="isMobile">
-            <section class="search-page__mobile-toolbar">
+            <!-- Vakantiestand (/vakanties): geen sticky toolbar met Sorteren/zoekicoon op mobiel. -->
+            <section v-if="!isTripMode" class="search-page__mobile-toolbar">
               <button
                 v-if="!isTripMode"
                 class="m-toolbar-btn"

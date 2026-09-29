@@ -268,6 +268,9 @@ function iconFor(id: string): string {
   .tqf {
     gap: 8px;
   }
+  /* Mobiel: geen onderscheid tussen regel 1 en 2 — de subfilters (auto-/fietsopties) lopen
+     gewoon door na de laatste basispil. */
+  .tqf__break { display: none; }
   .tqf__pill {
     height: 40px;
     padding: 0 12px;

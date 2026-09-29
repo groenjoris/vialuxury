@@ -103,12 +103,13 @@
               :key="ri"
               class="home-popular__pill-row"
             >
-              <!-- HEMA partner pill leads the FIRST row (its own row made
-                   mobile render it as a lonely fourth swipe-row). Desktop is
-                   unaffected: the row wrappers are display:contents there. -->
-              <button v-if="ri === 0" type="button" class="home-pill home-pill--partner" @click="goPartnerActie('hema')">
-                <img src="/images/partners/hema.png" alt="HEMA" class="home-pill__logo" />
-                <span class="home-pill__label">HEMA actie</span>
+              <!-- Multi Hotel Trip: "Auto- en fietsvakanties" als allereerste snelzoekknop, met
+                   Nieuw-sticker (zelfde stickertje als in de hoofdnavigatie); opent de vakantiepagina
+                   met schone filters. -->
+              <button v-if="ri === 0" type="button" class="home-pill home-pill--new" @click="goVakanties()">
+                <span class="home-pill__icon" v-html="POPULAR_FILTER_ICONS.car || POPULAR_FILTER_ICONS.star" />
+                <span class="home-pill__label">{{ t('header.holidays') }}</span>
+                <span class="home-pill__badge">{{ t('header.new') }}</span>
               </button>
               <button
                 v-for="f in row"
@@ -119,6 +120,11 @@
               >
                 <span class="home-pill__icon" v-html="POPULAR_FILTER_ICONS[ICON_FOR[f.id]] || POPULAR_FILTER_ICONS.star" />
                 <span class="home-pill__label">{{ f.label }}</span>
+              </button>
+              <!-- HEMA partner pill: achteraan de laatste rij (was de eerste knop). -->
+              <button v-if="ri === homeFilterRows.length - 1" type="button" class="home-pill home-pill--partner" @click="goPartnerActie('hema')">
+                <img src="/images/partners/hema.png" alt="HEMA" class="home-pill__logo" />
+                <span class="home-pill__label">HEMA actie</span>
               </button>
             </div>
           </div>
@@ -247,7 +253,8 @@ for (let row = 0; row < 3; row++) {
 // in sync with the filter sidebar everywhere else.
 import { FILTER_TAGS } from '~/utils-multi-hotel-trip/filterTags'
 
-const homeFilters = FILTER_TAGS
+// Zonder het thema 'rondreizen' (Auto- en fietsvakanties): dat is nu de vaste eerste knop (goVakanties).
+const homeFilters = FILTER_TAGS.filter(f => f.id !== 'rondreizen')
 
 // Mobile lays the quick-search pills out in 3 horizontally-scrolling rows.
 // Splitting them into explicit rows (rather than a column-flow grid) lets
@@ -286,6 +293,7 @@ const ICON_FOR: Record<string, string> = {
   'new-hotels': 'star',
 }
 
+const { t } = useMultiHotelTripI18n()
 const {
   toggleFilterTag,
   clearFilterTags,
@@ -293,6 +301,7 @@ const {
   clearArrivalDate,
   clearDuration,
   resetBudget,
+  clearTripFilters,
 } = useMultiHotelTripSearchState()
 
 function pickFilter(tagId: string) {
@@ -315,6 +324,7 @@ function goVakanties() {
   clearArrivalDate()
   clearDuration()
   resetBudget()
+  clearTripFilters() // ook de vakantie-snelfilters (Met de auto, Nederland, …) niet onthouden
   navigateTo('/multi-hotel-trip/vakanties')
 }
 
@@ -960,6 +970,27 @@ onMounted(() => { setMhtNavVariant('1'); restoreHeroPhotoIndex(); restoreHomeLay
 }
 
 /* Partner pill (e.g. "HEMA actie") — the brand logo replaces the icon. */
+/* "Nieuw"-stickertje op de vakantiepil, zoals in de hoofdnavigatie: rechtsboven, iets uitstekend. */
+.home-pill--new { position: relative; }
+.home-pill__badge {
+  position: absolute;
+  top: -7px;
+  right: 10px;
+  display: inline-flex;
+  align-items: center;
+  height: 14px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: var(--color-primary);
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
 .home-pill__logo {
   height: 16px;
   width: auto;
