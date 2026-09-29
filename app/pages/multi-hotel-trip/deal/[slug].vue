@@ -135,6 +135,8 @@
                 :show-legend="true"
                 @select-date="handleDateSelect" @prev-month="calPrev" @next-month="calNext"
               />
+              <!-- Prijs-p.p.-variant (vakantie): toelichting onder de legenda, in de USP-stijl. -->
+              <p v-if="ppTrip" class="sidebar__cal-note">{{ t('deal.calendarPerPersonNote') }}</p>
             </div>
 
             <template v-if="!store.checkInDate">
@@ -756,6 +758,8 @@
               :show-legend="true"
               @select-date="handleDateSelect" @prev-month="calPrev" @next-month="calNext"
             />
+            <!-- Prijs-p.p.-variant (vakantie): toelichting onder de legenda, in de USP-stijl. -->
+            <p v-if="ppTrip" class="sidebar__cal-note">{{ t('deal.calendarPerPersonNote') }}</p>
           </div>
 
           <template v-if="!store.checkInDate">
@@ -1259,7 +1263,7 @@ const lang = computed<'nl' | 'en' | 'de'>(() => {
 const { perPerson: pricePerPerson, displayPrice } = useMultiHotelTripPriceVariant()
 const ppTrip = computed(() => isTrip && pricePerPerson.value)
 const ppForLabel = computed(() => t('deal.pricePerPersonFor').replace('{nightsLabel}', nightsLabel(currentDeal.value?.nights ?? 0, lang.value)))
-// Sticky prijsbalk: korte vorm op één regel — "Prijs p.p. voor 6 nachten (min. 2 p.)".
+// Sticky prijsbalk: korte vorm op één regel — "Prijs p.p. voor 6 nachten (min. 2 pers.)".
 const ppForLabelShort = computed(() => t('deal.pricePerPersonForShort').replace('{nightsLabel}', nightsLabel(currentDeal.value?.nights ?? 0, lang.value)))
 const shownTotalPrice = computed(() => displayPrice(store.pricing.totalPrice, isTrip))
 const shownOriginalPrice = computed(() => displayPrice(store.pricing.originalPrice, isTrip))
@@ -2669,6 +2673,8 @@ onMounted(() => {
 
 /* Calendar */
 .sidebar__calendar { margin-bottom: var(--space-md); }
+/* Onder de kalenderlegenda (prijs p.p.): zelfde stijl als de USP's onder de knop. */
+.sidebar__cal-note { margin: 8px 0 0; font-size: 13px; line-height: 1.4; color: var(--color-text-secondary); }
 .sidebar__cal-title { font-family: var(--font-heading); font-size: 16px; font-weight: 700; color: var(--color-text-primary); margin-bottom: var(--space-sm); }
 
 /* Book button */

@@ -437,7 +437,8 @@ const de: Record<string, string> = {
   'deal.pricePerPersonFor': 'Preis pro Person für {nightsLabel}',
   'deal.minPersons': '(mindestens 2 Personen)',
   'deal.pricePerPersonForShort': 'Preis p. P. für {nightsLabel}',
-  'deal.minPersonsShort': '(min. 2 P.)',
+  'deal.minPersonsShort': '(min. 2 Pers.)',
+  'deal.calendarPerPersonNote': 'Preise pro Person (min. 2 Pers.)',
   // NL/EN's `deal.disclaimer` is REPLACED in the sidebar by the
   // structured "Zusätzliche Kosten" block — left here only as a
   // fallback in case something still renders the key.
