@@ -561,21 +561,24 @@ const arrangementIncludes = trip.value ? trip.value.includes : [
           <!-- Kies kamers: dropdown 0-5. Bij een selectie van de andere policy
                wordt de dropdown inactief; klikken opent dan de keuze-popup. -->
           <td class="rt__td rt__select" :class="{ 'rt__select--invalid': selectInvalid }">
-            <select
-              class="rt__dropdown"
-              :class="{ 'rt__dropdown--inactive': isInactive(row) }"
-              :value="row.quantity"
-              :aria-label="trip ? 'Aantal kamers' : `Aantal kamers ${room.name}`"
-              @mousedown="onDropdownMousedown(row, $event)"
-              @keydown="onDropdownMousedown(row, $event)"
-              @change="row.quantity = Number(($event.target as HTMLSelectElement).value)"
-            >
-              <!-- Het gesloten veld toont alleen het getal: het geselecteerde
-                   option-label bevat geen bedrag, de rest in het menu wel. -->
-              <option :value="0">0 kamers</option>
-              <!-- Vakantie: aantal kamers per hotel (elk arrangement = 1 kamer per hotel) -->
-              <option v-for="n in 5" :key="n" :value="n">{{ row.quantity === n ? `${n} ${n === 1 ? 'kamer' : 'kamers'}` : trip ? `${n} ${n === 1 ? 'kamer' : 'kamers'}, ${n * 2} personen` : `${n} ${n === 1 ? 'kamer' : 'kamers'} / ${n * 2} personen` }}</option>
-            </select>
+            <!-- De opties in het menu noemen altijd het aantal personen; het gesloten veld toont na
+                 een keuze alleen "x kamers" (overlay-label, de eigen tekst van de select is dan transparant). -->
+            <div class="rt__dropdownwrap">
+              <select
+                class="rt__dropdown"
+                :class="{ 'rt__dropdown--inactive': isInactive(row), 'rt__dropdown--masked': row.quantity > 0 }"
+                :value="row.quantity"
+                :aria-label="trip ? 'Aantal kamers' : `Aantal kamers ${room.name}`"
+                @mousedown="onDropdownMousedown(row, $event)"
+                @keydown="onDropdownMousedown(row, $event)"
+                @change="row.quantity = Number(($event.target as HTMLSelectElement).value)"
+              >
+                <option :value="0">0 kamers</option>
+                <!-- Vakantie: aantal kamers per hotel (elk arrangement = 1 kamer per hotel) -->
+                <option v-for="n in 5" :key="n" :value="n">{{ trip ? `${n} ${n === 1 ? 'kamer' : 'kamers'}, ${n * 2} personen` : `${n} ${n === 1 ? 'kamer' : 'kamers'} / ${n * 2} personen` }}</option>
+              </select>
+              <span v-if="row.quantity > 0" class="rt__dropdown-face" :class="{ 'rt__dropdown-face--inactive': isInactive(row) }" aria-hidden="true">{{ row.quantity }} {{ row.quantity === 1 ? 'kamer' : 'kamers' }}</span>
+            </div>
             <p v-if="row.quantity > 0" class="rt__max">
               {{ `(max.) ${row.quantity * 2} personen` }}
             </p>
@@ -1089,6 +1092,23 @@ const arrangementIncludes = trip.value ? trip.value.includes : [
   background-repeat: no-repeat;
   background-position: right 4px center;
 }
+/* Gesloten veld na een keuze: alleen "x kamers" (overlay), de select-tekst zelf transparant;
+   de opties in het menu houden hun eigen kleur en noemen altijd het aantal personen. */
+.rt__dropdownwrap { position: relative; }
+.rt__dropdown--masked { color: transparent; }
+.rt__dropdown--masked option { color: var(--c-via-black); }
+.rt__dropdown-face {
+  position: absolute;
+  left: 9px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  font-family: inherit;
+  font-size: var(--t-body);
+  color: var(--c-via-black);
+  white-space: nowrap;
+}
+.rt__dropdown-face--inactive { color: var(--c-medium-grey); }
 /* Max personen onder de dropdown (2 regels) zodra er kamers gekozen zijn */
 /* Donker font: het maximum is belangrijke informatie */
 .rt__max {

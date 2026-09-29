@@ -9,6 +9,7 @@ import { hotel, rooms as roomsData, dealName, pricing } from '~/data/mht-checkou
 import { CHECKOUT_BOOKING_FEE } from '~/data/mht-checkout/pricing'
 import { useStickyFit } from '~/composables-multi-hotel-trip/useStickyFit'
 import { useMultiHotelTripCheckoutTrip } from '~/composables-multi-hotel-trip/useMultiHotelTripCheckoutTrip'
+import { useMultiHotelTripPriceVariant } from '~/composables-multi-hotel-trip/useMultiHotelTripPriceVariant'
 
 interface SelRow {
   baseId: string
@@ -24,6 +25,8 @@ const selection = useState<SelRow[]>('mht-checkout-selection', () => [])
 // includes van de reis. Wie hier rechtstreeks landt zonder keuze krijgt één
 // flexibel arrangement voorgeselecteerd, zodat kassabon en "Boek nu" werken.
 const { trip: checkoutTrip } = useMultiHotelTripCheckoutTrip()
+// Prijsweergave-variant: kassabontitel "Autovakantie 8 personen" (zie kamers.vue).
+const { perPerson: pricePerPerson } = useMultiHotelTripPriceVariant()
 const tripPopupOpen = ref(false)
 const nights = computed(() => checkoutTrip.value?.nights ?? 2)
 function unit(n: number) {
@@ -159,7 +162,7 @@ useHead({ title: 'Gegevens en betaalwijze — ViaLuxury' })
                   <!-- Vakantie: geen "Nx" — het aantal staat in de regel "3 hotels, N kamers per hotel". -->
                   <span v-if="!checkoutTrip" class="side__qty">{{ row.quantity }}x</span>
                   <div class="side__rowmain">
-                    <p class="t-body t-bold">{{ checkoutTrip ? checkoutTrip.typeLabel : 'Arrangement' }}</p>
+                    <p class="t-body t-bold">{{ checkoutTrip ? (pricePerPerson ? `${checkoutTrip.typeLabel} ${row.quantity * 2} personen` : checkoutTrip.typeLabel) : 'Arrangement' }}</p>
                     <p class="t-caption c-mgrey">{{ checkoutTrip ? `${checkoutTrip.hotels.length} hotels, ${row.quantity} ${row.quantity === 1 ? 'kamer' : 'kamers'} per hotel` : roomNameFor(row.baseId) }}</p>
                     <p v-if="row.rateKey === 'flexible'" class="t-caption c-green">Flexibel annuleren</p>
                     <p v-else class="t-caption c-grey">Niet-terugbetaalbaar</p>
