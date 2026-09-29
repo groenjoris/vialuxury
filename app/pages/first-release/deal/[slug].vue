@@ -124,7 +124,7 @@
             </div>
 
             <template v-if="!store.checkInDate">
-              <button class="btn btn-primary sidebar__book">{{ t('deal.bookNow') }}</button>
+              <button class="btn btn-primary sidebar__book" @click="goToCheckout">{{ t('deal.bookNow') }}</button>
               <FirstReleaseSidebarPaymentLogos />
             </template>
 
@@ -166,7 +166,7 @@
                 <p class="sidebar__extra-costs-line">{{ t('deal.extraCostsVerwaltung') }}</p>
               </div>
               <p v-else class="sidebar__disclaimer">{{ t('deal.disclaimer') }}</p>
-              <button class="btn btn-primary sidebar__book" @click="() => {}">{{ t('deal.bookNow') }}</button>
+              <button class="btn btn-primary sidebar__book" @click="goToCheckout">{{ t('deal.bookNow') }}</button>
               <FirstReleaseSidebarPaymentLogos />
             </div>
 
@@ -549,7 +549,7 @@
           </div>
 
           <template v-if="!store.checkInDate">
-            <button class="btn btn-primary sidebar__book">{{ t('deal.bookNow') }}</button>
+            <button class="btn btn-primary sidebar__book" @click="goToCheckout">{{ t('deal.bookNow') }}</button>
             <FirstReleaseSidebarPaymentLogos />
           </template>
 
@@ -596,7 +596,7 @@
             </div>
             <p v-else class="sidebar__disclaimer">{{ t('deal.disclaimer') }}</p>
 
-            <button class="btn btn-primary sidebar__book" @click="() => {}">{{ t('deal.bookNow') }}</button>
+            <button class="btn btn-primary sidebar__book" @click="goToCheckout">{{ t('deal.bookNow') }}</button>
             <FirstReleaseSidebarPaymentLogos />
           </div>
 
@@ -1216,9 +1216,15 @@ function handleFavoriteClick() {
   })
 }
 
+// "Boek nu" → checkout (room table): met een gekozen datum direct naar de
+// kamerkeuze, anders eerst de kalenderstap. Op een telefoon leidt de
+// fr-mobile middleware de stappen door naar de mobiele checkout-site.
+function goToCheckout() {
+  navigateTo(store.checkInDate ? '/first-release/checkout/kamers' : '/first-release/checkout/datum')
+}
+
 function handleMobileBook() {
-  // Scroll to top of page / open booking flow (same as sidebar book button)
-  // For now: no-op, mirrors desktop Boek nu behavior
+  goToCheckout()
 }
 
 // Resolve permalink from route — fallback to first available if invalid
@@ -1521,10 +1527,9 @@ function openGalleryPhoto(i: number) {
   galleryIndex.value = i
   galleryOpen.value = true
 }
-/** Mobile gallery "Ik ga boeken" → will go to checkout once that exists.
- *  Idle for now (no scroll-back). */
+/** Mobile gallery "Ik ga boeken" → checkout (zelfde als de Boek nu-knop). */
 function handleGalleryBook() {
-  // intentionally a no-op until checkout is built
+  goToCheckout()
 }
 
 // Sync FR nav-bar variant with the user's last homepage pick so the

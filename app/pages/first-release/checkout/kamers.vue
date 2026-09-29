@@ -1,24 +1,15 @@
 <script setup lang="ts">
-// Multi Hotel Trip checkout — stap 2: kamertype kiezen met de room table.
+// First Release checkout — stap 2: kamertype kiezen met de room table.
 // Overgenomen uit het flexibel-annuleren prototype (variant "Flexibel
 // annuleren A — Room table": tabel zonder rechterkolom + sticky kassabon).
 // Bereikt via "Ik ga boeken" op de dealpagina (met datum) of via de
 // kalenderstap; "Opslaan en doorgaan" leidt naar de gegevenspagina.
-import { hotel, rooms as roomsData, dealName } from '~/data/mht-checkout/deal'
-import { CHECKOUT_BOOKING_FEE } from '~/data/mht-checkout/pricing'
-import { useStickyFit } from '~/composables-multi-hotel-trip/useStickyFit'
-import { useMultiHotelTripCheckoutTrip } from '~/composables-multi-hotel-trip/useMultiHotelTripCheckoutTrip'
-import { useMultiHotelTripPriceVariant } from '~/composables-multi-hotel-trip/useMultiHotelTripPriceVariant'
+import { hotel, rooms as roomsData, dealName } from '~/data/fr-checkout/deal'
+import { CHECKOUT_BOOKING_FEE } from '~/data/fr-checkout/pricing'
+import { useFirstReleaseStickyFit } from '~/composables-first-release/useFirstReleaseStickyFit'
 
-// Vakantie (meerdere hotels) of gewone hotel-deal? Bepaalt de room table
-// (arrangementen-cluster met hotel-carrousel) en de teksten in de kassabon.
-const { trip: checkoutTrip } = useMultiHotelTripCheckoutTrip()
-// Prijsweergave-variant (homepage-schakelaar): in de kassabon dan "Autovakantie 8 personen" i.p.v. "4x Autovakantie".
-const { perPerson: pricePerPerson } = useMultiHotelTripPriceVariant()
-const tripPopupOpen = ref(false)
-const nights = computed(() => checkoutTrip.value?.nights ?? 2)
+const nights = computed(() => 2)
 function unit(n: number) {
-  if (checkoutTrip.value) return n === 1 ? 'arrangement' : 'arrangementen'
   return n === 1 ? 'kamer' : 'kamers'
 }
 
@@ -40,7 +31,7 @@ function onSidebarBook() {
     roomTableRef.value?.promptSelection()
     return
   }
-  navigateTo('/multi-hotel-trip/checkout/gegevens')
+  navigateTo('/first-release/checkout/gegevens')
 }
 const roomsSel = computed(() => tableSelection.value.reduce((s, r) => s + r.quantity, 0))
 const roomsPrice = computed(() => tableSelection.value.reduce((s, r) => s + r.quantity * r.price, 0))
@@ -53,7 +44,7 @@ function roomNameFor(baseId: string) {
   return roomsData.find((r) => r.id === baseId)?.roomName ?? ''
 }
 
-const arrangementIncludes = computed(() => checkoutTrip.value?.includes ?? [
+const arrangementIncludes = computed(() => [
   '2 x Overnachting',
   'Dagelijks ontbijtbuffet',
   '3-Gangendiner (dag van aankomst)',
@@ -63,11 +54,11 @@ const arrangementIncludes = computed(() => checkoutTrip.value?.includes ?? [
 // Sidebar groeit na een kamerselectie: laat de sticky-offset meeschuiven
 // zodat de CTA onderin zichtbaar blijft op lagere schermen.
 const sideEl = ref<HTMLElement | null>(null)
-const sideTop = useStickyFit(sideEl, 16)
+const sideTop = useFirstReleaseStickyFit(sideEl, 16)
 
 // Kassabon volgt de gekozen kalenderdatums (gedeelde state met de kalenderstap).
 const checkoutDay = useState<{ price: number; checkIn?: string; checkOut?: string; checkInYmd?: { year: number; month: number; day: number } } | null>(
-  'mht-checkout-day',
+  'fr-checkout-day',
   () => null,
 )
 const summaryHotel = computed(() => ({
@@ -76,69 +67,62 @@ const summaryHotel = computed(() => ({
   checkOutDate: checkoutDay.value?.checkOut || hotel.checkOutDate,
 }))
 
-useHead({ title: computed(() => (checkoutTrip.value ? 'Kies je opties — ViaLuxury' : 'Kies je kamertype — ViaLuxury')) })
+useHead({ title: 'Kies je kamertype — ViaLuxury' })
 </script>
 
 <template>
-  <div class="mht-checkout page page--white">
-    <MultiHotelTripCheckoutTopNav />
+  <div class="fr-checkout page page--white">
+    <FirstReleaseCheckoutTopNav />
 
     <div class="page__stepper">
-      <MultiHotelTripCheckoutStepper :active="2" />
+      <FirstReleaseCheckoutStepper :active="2" />
     </div>
 
     <main class="page__main container">
       <!-- Room table zonder rechterkolom + sticky kassabon -->
       <div class="page__grid">
         <div class="col-form">
-          <h1 class="t-display">{{ checkoutTrip ? 'Kies je opties' : 'Kies je kamertype' }}</h1>
-          <!-- Prototype-schakelaar room-table-variant (Strak / Lange kolom / Carousel), alleen bij een vakantie. -->
-          <MultiHotelTripCheckoutRoomTableVariantSwitch v-if="checkoutTrip" />
-          <MultiHotelTripCheckoutRoomTable
+          <h1 class="t-display">Kies je kamertype</h1>
+          <FirstReleaseCheckoutRoomTable
             ref="roomTableRef"
-            :trip="checkoutTrip"
             :show-reserve="false"
             bottom-cta
-            book-to="/multi-hotel-trip/checkout/gegevens"
+            book-to="/first-release/checkout/gegevens"
             @update:selection="tableSelection = $event"
           />
         </div>
 
         <div class="col-summary">
           <aside ref="sideEl" class="card side" :style="{ top: `${sideTop}px` }">
-            <!-- Vakantie: reisnaam (geen hotel-/plaatsnamen — die staan in de
-                 pop-up "Bekijk je volledige reis") -->
             <div class="side__hotel">
-              <img class="side__thumb" :src="checkoutTrip ? checkoutTrip.thumb : hotel.thumb" :alt="checkoutTrip ? checkoutTrip.name : hotel.name" />
+              <img class="side__thumb" :src="hotel.thumb" :alt="hotel.name" />
               <div>
-                <p class="t-body t-bold">{{ checkoutTrip ? checkoutTrip.name : dealName }}</p>
-                <p v-if="checkoutTrip" class="t-body c-mgrey">{{ checkoutTrip.typeLabel }} · {{ checkoutTrip.hotels.length }} hotels</p>
-                <p v-else class="t-body c-mgrey">{{ hotel.name }}</p>
+                <p class="t-body t-bold">{{ dealName }}</p>
+                <p class="t-body c-mgrey">{{ hotel.name }}</p>
               </div>
             </div>
 
             <div class="side__dates">
               <div class="side__datecell">
-                <p class="t-caption c-mgrey">{{ checkoutTrip ? 'Aankomst' : 'Inchecken' }}</p>
+                <p class="t-caption c-mgrey">Inchecken</p>
                 <p class="t-body t-bold">{{ summaryHotel.checkInDate }}</p>
               </div>
               <div class="side__datecell">
-                <p class="t-caption c-mgrey">{{ checkoutTrip ? 'Vertrek' : 'Uitchecken' }}</p>
+                <p class="t-caption c-mgrey">Uitchecken</p>
                 <p class="t-body t-bold">{{ summaryHotel.checkOutDate }}</p>
               </div>
             </div>
-            <NuxtLink class="side__link side__link--center t-body" to="/multi-hotel-trip/checkout/datum">
+            <NuxtLink class="side__link side__link--center t-body" to="/first-release/checkout/datum">
               Verander data
             </NuxtLink>
 
             <div class="side__includes">
-              <p class="t-body t-bold">{{ checkoutTrip ? `Jouw ${checkoutTrip.typeWord} bevat` : roomsSel > 1 ? 'Elk arrangement bevat' : 'Jouw arrangement bevat' }}</p>
+              <p class="t-body t-bold">{{ roomsSel > 1 ? 'Elk arrangement bevat' : 'Jouw arrangement bevat' }}</p>
               <p v-for="item in arrangementIncludes" :key="item" class="side__inc t-body">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" /></svg>
                 {{ item }}
               </p>
-              <button v-if="checkoutTrip" class="side__link side__link--left t-body" type="button" @click="tripPopupOpen = true">Bekijk je volledige reis</button>
-              <a v-else class="side__link side__link--left t-body" href="#">Bekijk je volledige arrangement</a>
+              <a class="side__link side__link--left t-body" href="#">Bekijk je volledige arrangement</a>
             </div>
 
             <template v-if="roomsSel > 0">
@@ -147,22 +131,18 @@ useHead({ title: computed(() => (checkoutTrip.value ? 'Kies je opties — ViaLux
               <div class="side__details">
                 <p class="t-body t-bold">Details</p>
                 <div v-for="row in tableSelection" :key="`${row.baseId}-${row.rateKey}`" class="side__row side__row--room">
-                  <!-- Vakantie: "Nx" alleen bij meer dan één kamer per hotel (meer dan 2 personen);
-                       dan ook een regel "4 personen" onder "3 hotels, 2 kamers, 6 nachten". -->
-                  <!-- Prijs-p.p.-variant: geen "Nx" maar "Autovakantie 8 personen" als titel. -->
-                  <span v-if="!checkoutTrip || (row.quantity > 1 && !pricePerPerson)" class="side__qty">{{ row.quantity }}x</span>
+                  <span class="side__qty">{{ row.quantity }}x</span>
                   <div class="side__rowmain">
-                    <p class="t-body t-bold">{{ checkoutTrip ? (pricePerPerson ? `${checkoutTrip.typeLabel} ${row.quantity * 2} personen` : checkoutTrip.typeLabel) : 'Arrangement' }}</p>
-                    <p class="t-caption c-mgrey">{{ checkoutTrip ? `${checkoutTrip.hotels.length} hotels, ${row.quantity} ${row.quantity === 1 ? 'kamer' : 'kamers'}, ${nights} nachten` : `${row.quantity}x ${roomNameFor(row.baseId)}` }}</p>
-                    <p v-if="checkoutTrip && row.quantity > 1 && !pricePerPerson" class="t-caption c-mgrey">{{ row.quantity * 2 }} personen</p>
+                    <p class="t-body t-bold">Arrangement</p>
+                    <p class="t-caption c-mgrey">{{ row.quantity }}x {{ roomNameFor(row.baseId) }}</p>
                     <p v-if="row.rateKey === 'flexible'" class="t-caption c-green">Flexibel annuleren</p>
                     <p v-else class="t-caption c-grey">Niet-terugbetaalbaar</p>
                   </div>
-                  <MultiHotelTripCheckoutPriceTag :value="row.quantity * row.price" :show-cents="false" size="sm" />
+                  <FirstReleaseCheckoutPriceTag :value="row.quantity * row.price" :show-cents="false" size="sm" />
                 </div>
                 <div class="side__row">
                   <span class="t-body">Boekingskosten</span>
-                  <MultiHotelTripCheckoutPriceTag :value="BOOKING_FEE" size="sm" />
+                  <FirstReleaseCheckoutPriceTag :value="BOOKING_FEE" size="sm" />
                 </div>
               </div>
 
@@ -172,17 +152,17 @@ useHead({ title: computed(() => (checkoutTrip.value ? 'Kies je opties — ViaLux
                 <div class="side__totalrow">
                   <span class="t-h2">Totaalprijs</span>
                   <div class="side__totalprices">
-                    <MultiHotelTripCheckoutPriceTag :value="wasTotal" size="sm" strike color="var(--c-medium-grey)" />
-                    <MultiHotelTripCheckoutPriceTag :value="totalPrice" size="lg" bold color="var(--c-via-green)" />
+                    <FirstReleaseCheckoutPriceTag :value="wasTotal" size="sm" strike color="var(--c-medium-grey)" />
+                    <FirstReleaseCheckoutPriceTag :value="totalPrice" size="lg" bold color="var(--c-via-green)" />
                   </div>
                 </div>
-                <p class="t-caption c-mgrey">{{ checkoutTrip ? `${roomsSel} ${unit(roomsSel)} voor ${nights} nachten voor ${roomsSel * 2} personen` : `${roomsSel} ${unit(roomsSel)}, ${nights} nachten, ${roomsSel * 2} personen` }}</p>
+                <p class="t-caption c-mgrey">{{ roomsSel }} {{ unit(roomsSel) }}, {{ nights }} nachten, {{ roomsSel * 2 }} personen</p>
               </div>
 
               <p class="side__saved">
-                <MultiHotelTripCheckoutSmileyIcon />
+                <FirstReleaseCheckoutSmileyIcon />
                 <span class="t-body">Je hebt al</span>
-                <MultiHotelTripCheckoutPriceTag :value="saved" :show-cents="false" size="sm" bold color="var(--c-via-orange)" />
+                <FirstReleaseCheckoutPriceTag :value="saved" :show-cents="false" size="sm" bold color="var(--c-via-orange)" />
                 <span class="t-caption c-grey">({{ savedPct }}%)</span>
                 <span class="t-body">bespaard.</span>
               </p>
@@ -206,18 +186,7 @@ useHead({ title: computed(() => (checkoutTrip.value ? 'Kies je opties — ViaLux
       </div>
     </main>
 
-    <MultiHotelTripCheckoutFooter />
-
-    <MultiHotelTripCheckoutTripPanel
-      v-if="tripPopupOpen && checkoutTrip"
-      :trip="checkoutTrip"
-      :check-in="checkoutDay?.checkIn"
-      :check-out="checkoutDay?.checkOut"
-      :check-in-ymd="checkoutDay?.checkInYmd ?? null"
-      :rooms-per-hotel="tableSelection[0]?.quantity ?? 1"
-      :rate-key="tableSelection[0]?.rateKey ?? null"
-      @close="tripPopupOpen = false"
-    />
+    <FirstReleaseCheckoutFooter />
   </div>
 </template>
 

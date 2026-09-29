@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// Multi Hotel Trip checkout — room table, overgenomen uit het
+// First Release checkout — room table, overgenomen uit het
 // flexibel-annuleren prototype (JourneyRoomTable, variant "Flexibel
 // annuleren A — Room table").
 // Basis: 1c — Room table (Booking.com-style) in the checkout design system.
@@ -7,12 +7,9 @@
 // the reservation panel lives in the last column instead of a sidebar.
 // Cancellation policies can't be mixed: selecting a rate moves every other
 // selected row to that same rate (one-time explainer popup).
-import { rooms as roomsData, hotel, pricing, dealName } from '~/data/mht-checkout/deal'
-import { CHECKOUT_WAS_FACTOR, CHECKOUT_NIGHTS } from '~/data/mht-checkout/pricing'
-import { useStickyFit } from '~/composables-multi-hotel-trip/useStickyFit'
-import type { TripCheckout } from '~/data/mht-checkout/trip'
-import { useMultiHotelTripRoomTableVariant } from '~/composables-multi-hotel-trip/useMultiHotelTripRoomTableVariant'
-import { useMultiHotelTripPriceVariant } from '~/composables-multi-hotel-trip/useMultiHotelTripPriceVariant'
+import { rooms as roomsData, hotel, pricing, dealName } from '~/data/fr-checkout/deal'
+import { CHECKOUT_WAS_FACTOR } from '~/data/fr-checkout/pricing'
+import { useFirstReleaseStickyFit } from '~/composables-first-release/useFirstReleaseStickyFit'
 
 const props = withDefaults(defineProps<{
   // 1d: hide the built-in reservation column (the sidebar takes its place)
@@ -30,10 +27,6 @@ const props = withDefaults(defineProps<{
   // Extra CTA-knop onder de tabel (rechts uitgelijnd). Blijft actief; bij
   // een lege selectie kleurt de keuze-kolom licht rood + een toast erbij.
   bottomCta?: boolean
-  // Vakantie (meerdere hotels): één "arrangement" = een cluster van kamers,
-  // één per hotel, met één prijs voor de hele reis. De kamertype-kolom wordt
-  // een hotel-carrousel; de teksten spreken van arrangementen i.p.v. kamers.
-  trip?: TripCheckout | null
 }>(), {
   showReserve: true,
   initialCheapest: false,
@@ -41,15 +34,7 @@ const props = withDefaults(defineProps<{
   deferPolicyPopup: false,
   bookTo: undefined,
   bottomCta: false,
-  trip: null,
 })
-const trip = computed(() => props.trip ?? null)
-const nights = computed(() => trip.value?.nights ?? CHECKOUT_NIGHTS)
-/** Eenheid in de teksten: "kamer(s)" voor een hotel-deal, "arrangement(en)" voor een vakantie. */
-function unit(n: number) {
-  if (trip.value) return n === 1 ? 'arrangement' : 'arrangementen'
-  return n === 1 ? 'kamer' : 'kamers'
-}
 
 const emit = defineEmits<{
   'update:selection': [rows: {
@@ -81,36 +66,7 @@ interface TableRoom {
 }
 
 const tableRooms = reactive<TableRoom[]>(
-  trip.value
-    ? [{
-        // Eén cluster: flexibel annuleren kost €15 per kamer, dus × aantal hotels.
-        id: 'trip',
-        name: trip.value.name,
-        image: trip.value.thumb,
-        description: '',
-        facilities: [],
-        rows: [
-          {
-            id: 'trip-flex',
-            baseId: 'trip',
-            rateKey: 'flexible',
-            priceWas: trip.value.priceWas + pricing.flexibilityPerRoom * trip.value.hotels.length,
-            price: trip.value.price + pricing.flexibilityPerRoom * trip.value.hotels.length,
-            quantity: 0,
-            scarcity: trip.value.scarcity,
-          },
-          {
-            id: 'trip-nonref',
-            baseId: 'trip',
-            rateKey: 'nonrefundable',
-            priceWas: trip.value.priceWas,
-            price: trip.value.price,
-            quantity: 0,
-            scarcity: trip.value.scarcity,
-          },
-        ],
-      }]
-    : roomsData.map((r) => ({
+  roomsData.map((r) => ({
     id: r.id,
     name: r.roomName,
     image: r.image,
@@ -139,59 +95,6 @@ const tableRooms = reactive<TableRoom[]>(
   })),
 )
 
-// Hotel-carrousel in de kamertype-kolom (vakantie): pijlen bovenaan wisselen
-// van hotel zonder dat de kolom breder wordt.
-const hotelIndex = ref(0)
-const hotelCount = computed(() => trip.value?.hotels.length ?? 0)
-// Room-table-variant (schakelaar linksboven op deze stap): Strak / Lange kolom / Carousel.
-const { variant: rtVariant } = useMultiHotelTripRoomTableVariant()
-// Prijsweergave-variant: bij "prijs p.p." toont de tabel bij een vakantie de prijs per persoon.
-const { perPerson: pricePerPerson, displayPrice } = useMultiHotelTripPriceVariant()
-const ppTrip = computed(() => !!trip.value && pricePerPerson.value)
-/** Lange kolom: hotel 2 en 3 volledig zichtbaar na "Toon meer". */
-const columnOpen = ref(false)
-/* Lange kolom: de hotelkolom staat absoluut in de rowspan-cel (telt niet mee in de rijhoogtes,
- * anders verdeelt de browser de overhoogte over beide rijen en zakt "niet-annuleerbaar" omlaag).
- * De onderste rij krijgt de resthoogte: kolomhoogte + celpadding − hoogte van de andere rijen. */
-const columnContentEl = ref<HTMLElement | HTMLElement[] | null>(null)
-const columnLastRowHeight = ref(0)
-let columnObserver: ResizeObserver | null = null
-function fitColumn() {
-  const content = Array.isArray(columnContentEl.value) ? columnContentEl.value[0] : columnContentEl.value
-  const root = rootEl.value
-  if (!content || !root || rtVariant.value !== 'column') { columnLastRowHeight.value = 0; return }
-  const rows = [...root.querySelectorAll<HTMLTableRowElement>('tbody tr')]
-  if (rows.length < 2) { columnLastRowHeight.value = 0; return }
-  const others = rows.slice(0, -1).reduce((sum, r) => sum + r.getBoundingClientRect().height, 0)
-  columnLastRowHeight.value = Math.max(0, Math.ceil(content.getBoundingClientRect().height + 20 + 2 - others))
-}
-function watchColumn() {
-  columnObserver?.disconnect(); columnObserver = null
-  if (rtVariant.value !== 'column' || !import.meta.client) { columnLastRowHeight.value = 0; return }
-  columnObserver = new ResizeObserver(() => fitColumn())
-  const content = Array.isArray(columnContentEl.value) ? columnContentEl.value[0] : columnContentEl.value
-  if (content) columnObserver.observe(content)
-  rootEl.value?.querySelectorAll<HTMLTableRowElement>('tbody tr').forEach((r, i, all) => { if (i < all.length - 1) columnObserver!.observe(r) })
-  fitColumn()
-}
-watch([rtVariant, columnOpen], () => nextTick(watchColumn))
-onMounted(() => nextTick(watchColumn))
-onBeforeUnmount(() => { columnObserver?.disconnect() })
-/** Verschuiving van de carrousel-track. Carousel: slides 88% + 6px; de laatste slide sluit rechts aan
- *  (dan piept ±10% van het vorige hotel links). */
-const trackStyle = computed(() => {
-  if (rtVariant.value === 'column') return undefined
-  const i = hotelIndex.value
-  if (rtVariant.value === 'carousel') {
-    const n = hotelCount.value
-    const last = i >= n - 1 && n > 1
-    return { transform: last ? `translateX(calc(-1 * (${n * 88 - 100}% + ${(n - 1) * 6}px)))` : `translateX(calc(-${i} * (88% + 6px)))` }
-  }
-  return { transform: `translateX(-${i * 100}%)` }
-})
-function prevHotel() { hotelIndex.value = Math.max(0, hotelIndex.value - 1) }
-function nextHotel() { hotelIndex.value = Math.min(hotelCount.value - 1, hotelIndex.value + 1) }
-
 const allRows = computed(() => tableRooms.flatMap((room) => room.rows))
 
 // 1d: start with the cheapest row selected.
@@ -203,8 +106,8 @@ if (props.initialCheapest) {
 // Kalenderkoppeling: de kalender toont de arrangementsprijs van het
 // goedkoopste kamertype. Na een datumkeuze schuiven alle kamerprijzen
 // mee met het verschil t.o.v. de basisprijs.
-const journeyDay = useState<{ price: number } | null>('mht-checkout-day', () => null)
-const CHEAPEST_BASE = trip.value ? trip.value.price : Math.min(...roomsData.map((r) => r.priceNow))
+const journeyDay = useState<{ price: number } | null>('fr-checkout-day', () => null)
+const CHEAPEST_BASE = Math.min(...roomsData.map((r) => r.priceNow))
 const priceDelta = computed(() =>
   journeyDay.value ? journeyDay.value.price - CHEAPEST_BASE : 0,
 )
@@ -214,17 +117,16 @@ function rowPrice(row: TableRow) {
 function rowWas(row: TableRow) {
   // Na een datumkeuze: zelfde kortingsfactor als de kalender, zodat het
   // besparingspercentage in elke stap gelijk is.
-  if (!journeyDay.value) return row.priceWas
-  // Vakantie: eigen kortingsverhouding van de reis (van-prijs uit de reisdata).
-  if (trip.value) return Math.round(rowPrice(row) * (row.priceWas / row.price))
-  return Math.round(rowPrice(row) / CHECKOUT_WAS_FACTOR)
+  return journeyDay.value
+    ? Math.round(rowPrice(row) / CHECKOUT_WAS_FACTOR)
+    : row.priceWas
 }
 
 // Report every selection change to the parent (drives the sidebar in 1d/v3)
 // en deel de selectie via state met de gegevenspagina (laatste stap).
 const journeySelection = useState<
   { baseId: string; rateKey: 'nonrefundable' | 'flexible'; price: number; priceWas: number; quantity: number }[]
->('mht-checkout-selection', () => [])
+>('fr-checkout-selection', () => [])
 watch(
   [allRows, priceDelta],
   ([rows]) => {
@@ -264,7 +166,7 @@ function roomNameFor(baseId: string) {
 // onderkant (CTA) zichtbaar blijft als het paneel hoger is dan de viewport.
 // NB: de ref staat binnen een v-for, dus Vue vult hem als array.
 const reserveSticky = ref<HTMLElement | HTMLElement[] | null>(null)
-const reserveTop = useStickyFit(reserveSticky, 68)
+const reserveTop = useFirstReleaseStickyFit(reserveSticky, 68)
 
 // Truncate the description to max 300 characters.
 function shortDescription(text: string) {
@@ -351,7 +253,7 @@ function applyPolicy(policy: 'flexible' | 'nonrefundable') {
   }
 }
 
-const arrangementIncludes = trip.value ? trip.value.includes : [
+const arrangementIncludes = [
   '2 x Overnachting',
   'Dagelijks ontbijtbuffet',
   '3-Gangendiner (dag van aankomst)',
@@ -364,7 +266,7 @@ const arrangementIncludes = trip.value ? trip.value.includes : [
 </script>
 
 <template>
-  <div ref="rootEl" class="rt-wrap" :class="{ 'rt-wrap--hybrid': hybrid, 'rt-wrap--trip': !!trip }">
+  <div ref="rootEl" class="rt-wrap" :class="{ 'rt-wrap--hybrid': hybrid }">
     <!-- Datum-widget boven de tabel, met wijzig-link rechts ernaast
          (vervalt in 1d: de sidebar toont de data al) -->
     <div v-if="showReserve" class="rt__tophead">
@@ -401,7 +303,7 @@ const arrangementIncludes = trip.value ? trip.value.includes : [
           <th class="rt__th rt__th--price">
             <span class="rt__thprice">
               <span class="rt__thprice-line">Prijs voor</span>
-              <span class="rt__thprice-line">{{ nights }} nachten<MultiHotelTripPriceInfoTooltip variant="deal" /></span>
+              <span class="rt__thprice-line">2 nachten<FirstReleasePriceInfoTooltip variant="deal" /></span>
             </span>
           </th>
           <th class="rt__th rt__th--options">Je opties</th>
@@ -417,78 +319,16 @@ const arrangementIncludes = trip.value ? trip.value.includes : [
         <tr
           v-for="(row, rowIndex) in room.rows"
           :key="row.id"
-          :class="{ 'rt__tr--divide': roomIndex > 0 && rowIndex === 0, 'rt__tr--colfirst': trip && rtVariant === 'column' && rowIndex === 0 && room.rows.length > 1 }"
-          :style="trip && rtVariant === 'column' && rowIndex === room.rows.length - 1 && columnLastRowHeight > 0 ? { height: `${columnLastRowHeight}px` } : undefined"
+          :class="{ 'rt__tr--divide': roomIndex > 0 && rowIndex === 0 }"
         >
-          <!-- Kamertype (één cel per kamertype). Lange kolom: de hotelkolom staat buiten de
-               rijstroom (absoluut in de cel), zodat de rijen hun eigen hoogte houden; de onderste
-               rij (niet-annuleerbaar) krijgt via fitColumn() de resthoogte van de kolom. -->
-          <td v-if="rowIndex === 0" class="rt__td" :class="{ 'rt__td--column': trip && rtVariant === 'column' }" :rowspan="room.rows.length">
-            <!-- Vakantie: hotel-carrousel (navigator op een grijs vlak als de
-                 tabelkop; per slide hotelnaam, kamernaam, foto, kamerinfo). De
-                 schaarste staat, net als bij een hotel-deal, in "Je opties". -->
-            <div v-if="trip" ref="columnContentEl" class="rt__type rt__type--trip" :class="`rt__type--${rtVariant}`">
-              <!-- Strak / Carousel: navigator boven de carrousel. Lange kolom: geen navigator. -->
-              <div v-if="rtVariant !== 'column'" class="rt__carhead">
-                <button type="button" class="rt__carbtn" aria-label="Vorig hotel" :disabled="hotelIndex === 0" @click="prevHotel">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15 6l-6 6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
-                </button>
-                <span class="rt__carcount">Hotel {{ hotelIndex + 1 }} van {{ hotelCount }}</span>
-                <button type="button" class="rt__carbtn" aria-label="Volgend hotel" :disabled="hotelIndex >= hotelCount - 1" @click="nextHotel">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
-                </button>
-              </div>
-              <div class="rt__carview">
-                <!-- Carrousel-track (Strak: 100% per slide; Carousel: 90% + 10% van het volgende hotel
-                     al zichtbaar); Lange kolom: dezelfde slides onder elkaar (14px ertussen), hotel 2
-                     halverwege de beschrijving afgebroken (fade) en hotel 3 pas na "Toon meer". -->
-                <div class="rt__cartrack" :style="trackStyle">
-                  <template v-for="(h, hi) in trip.hotels" :key="h.name">
-                  <div
-                    v-if="rtVariant !== 'column' || columnOpen || hi < 2"
-                    class="rt__slide"
-                    :class="{ 'rt__slide--cut': rtVariant === 'column' && !columnOpen && hi === 1 }"
-                    :aria-hidden="rtVariant !== 'column' && hi !== hotelIndex"
-                  >
-                    <span class="rt__name">{{ h.name }}</span>
-                    <p class="rt__roomname">{{ h.roomName }}</p>
-                    <p class="rt__slidemeta t-caption c-mgrey">{{ h.city }} · {{ h.nights }} {{ h.nights === 1 ? 'nacht' : 'nachten' }}</p>
-                    <img v-if="h.image" class="rt__img" :src="h.image" :alt="`${h.roomName} — ${h.name}`" />
-                    <p class="rt__desc t-body c-grey">{{ shortDescription(h.roomDescription) }}</p>
-                    <div v-if="h.facilities.length" class="rt__facilities">
-                      <MultiHotelTripCheckoutFacilityItem
-                        v-for="f in h.facilities"
-                        :key="f.label"
-                        :label="f.label"
-                        :icon="f.icon"
-                      />
-                    </div>
-                  </div>
-                  </template>
-                </div>
-              </div>
-              <button v-if="rtVariant === 'column'" type="button" class="rt__more" :aria-expanded="columnOpen" @click="columnOpen = !columnOpen">
-                {{ columnOpen ? 'Toon minder' : 'Toon meer' }}
-              </button>
-              <div v-else class="rt__dots" role="tablist" aria-label="Hotels">
-                <button
-                  v-for="(h, hi) in trip.hotels"
-                  :key="h.name"
-                  type="button"
-                  class="rt__dot"
-                  :class="{ 'rt__dot--on': hi === hotelIndex }"
-                  :aria-label="h.name"
-                  :aria-selected="hi === hotelIndex"
-                  @click="hotelIndex = hi"
-                />
-              </div>
-            </div>
-            <div v-else class="rt__type">
+          <!-- Kamertype (één cel per kamertype) -->
+          <td v-if="rowIndex === 0" class="rt__td" :rowspan="room.rows.length">
+            <div class="rt__type">
               <span class="rt__name">{{ room.name }}</span>
               <img class="rt__img" :src="room.image" :alt="room.name" />
               <p class="rt__desc t-body c-grey">{{ shortDescription(room.description) }}</p>
               <div class="rt__facilities">
-                <MultiHotelTripCheckoutFacilityItem
+                <FirstReleaseCheckoutFacilityItem
                   v-for="f in room.facilities"
                   :key="f.label"
                   :label="f.label"
@@ -510,12 +350,9 @@ const arrangementIncludes = trip.value ? trip.value.includes : [
 
           <!-- Prijs; de boekingskosten-toelichting staat 1x in de kolomkop -->
           <td class="rt__td rt__price">
-            <!-- Prijs-p.p.-variant (homepage-schakelaar) bij een vakantie: prijs per persoon (helft van de
-                 2-persoonsprijs) met "Per persoon (min. 2 pers.)"; de kassabon rekent met de totaalprijs. -->
-            <MultiHotelTripCheckoutPriceTag :value="ppTrip ? displayPrice(rowWas(row), true) : rowWas(row)" :show-cents="false" size="sm" bold strike color="var(--c-medium-grey)" />
-            <MultiHotelTripCheckoutPriceTag :value="ppTrip ? displayPrice(rowPrice(row), true) : rowPrice(row)" :show-cents="false" size="md" bold color="var(--c-via-orange)" />
-            <p v-if="!trip" class="rt__pricenote">inclusief arrangement</p>
-            <p v-else-if="ppTrip" class="rt__pricenote">Per persoon<br>(min. 2 pers.)</p>
+            <FirstReleaseCheckoutPriceTag :value="rowWas(row)" :show-cents="false" size="sm" bold strike color="var(--c-medium-grey)" />
+            <FirstReleaseCheckoutPriceTag :value="rowPrice(row)" :show-cents="false" size="md" bold color="var(--c-via-orange)" />
+            <p class="rt__pricenote">inclusief arrangement</p>
           </td>
 
           <!-- Je opties (1e: zonder de vaste vinkjes, begint met de voorwaarde) -->
@@ -568,14 +405,13 @@ const arrangementIncludes = trip.value ? trip.value.includes : [
                 class="rt__dropdown"
                 :class="{ 'rt__dropdown--inactive': isInactive(row), 'rt__dropdown--masked': row.quantity > 0 }"
                 :value="row.quantity"
-                :aria-label="trip ? 'Aantal kamers' : `Aantal kamers ${room.name}`"
+                :aria-label="`Aantal kamers ${room.name}`"
                 @mousedown="onDropdownMousedown(row, $event)"
                 @keydown="onDropdownMousedown(row, $event)"
                 @change="row.quantity = Number(($event.target as HTMLSelectElement).value)"
               >
                 <option :value="0">0 kamers</option>
-                <!-- Vakantie: aantal kamers per hotel (elk arrangement = 1 kamer per hotel) -->
-                <option v-for="n in 5" :key="n" :value="n">{{ trip ? `${n} ${n === 1 ? 'kamer' : 'kamers'}, ${n * 2} personen` : `${n} ${n === 1 ? 'kamer' : 'kamers'} / ${n * 2} personen` }}</option>
+                <option v-for="n in 5" :key="n" :value="n">{{ `${n} ${n === 1 ? 'kamer' : 'kamers'} / ${n * 2} personen` }}</option>
               </select>
               <span v-if="row.quantity > 0" class="rt__dropdown-face" :class="{ 'rt__dropdown-face--inactive': isInactive(row) }" aria-hidden="true">{{ row.quantity }} {{ row.quantity === 1 ? 'kamer' : 'kamers' }}</span>
             </div>
@@ -599,15 +435,15 @@ const arrangementIncludes = trip.value ? trip.value.includes : [
                 <div v-for="row in selectedRows" :key="row.id" class="rt__drow rt__drow--room">
                   <span class="rt__dqty t-body">{{ row.quantity }}x</span>
                   <div class="rt__dmain">
-                    <p class="t-body t-bold">{{ trip ? trip.typeLabel : 'Arrangement' }}</p>
-                    <p class="t-caption c-mgrey">{{ trip ? `${trip.hotels.length} hotels, ${row.quantity} ${row.quantity === 1 ? 'kamer' : 'kamers'}, ${nights} nachten` : `${row.quantity}x ${roomNameFor(row.baseId)}` }}</p>
+                    <p class="t-body t-bold">Arrangement</p>
+                    <p class="t-caption c-mgrey">{{ row.quantity }}x {{ roomNameFor(row.baseId) }}</p>
                     <p v-if="row.rateKey === 'flexible'" class="t-caption c-green">Flexibel annuleren</p>
                   </div>
-                  <MultiHotelTripCheckoutPriceTag :value="row.quantity * rowPrice(row)" :show-cents="false" size="sm" />
+                  <FirstReleaseCheckoutPriceTag :value="row.quantity * rowPrice(row)" :show-cents="false" size="sm" />
                 </div>
                 <div class="rt__drow">
                   <span class="t-body">Boekingskosten</span>
-                  <MultiHotelTripCheckoutPriceTag :value="BOOKING_FEE" size="sm" />
+                  <FirstReleaseCheckoutPriceTag :value="BOOKING_FEE" size="sm" />
                 </div>
               </div>
 
@@ -617,17 +453,17 @@ const arrangementIncludes = trip.value ? trip.value.includes : [
                 <div class="rt__totalrow">
                   <span class="t-h2">Totaalprijs</span>
                   <div class="rt__totalprices">
-                    <MultiHotelTripCheckoutPriceTag :value="displayWas" size="sm" strike color="var(--c-medium-grey)" />
-                    <MultiHotelTripCheckoutPriceTag :value="displayTotal" size="lg" bold color="var(--c-via-green)" />
+                    <FirstReleaseCheckoutPriceTag :value="displayWas" size="sm" strike color="var(--c-medium-grey)" />
+                    <FirstReleaseCheckoutPriceTag :value="displayTotal" size="lg" bold color="var(--c-via-green)" />
                   </div>
                 </div>
-                <p class="t-caption c-mgrey">{{ trip ? `${totalRooms} ${unit(totalRooms)} voor ${nights} nachten` : `${totalRooms} ${unit(totalRooms)}, ${nights} nachten, ${totalRooms * 2} personen` }}</p>
+                <p class="t-caption c-mgrey">{{ totalRooms }} {{ totalRooms === 1 ? 'kamer' : 'kamers' }}, 2 nachten, {{ totalRooms * 2 }} personen</p>
               </div>
 
               <p class="rt__saved">
-                <MultiHotelTripCheckoutSmileyIcon />
+                <FirstReleaseCheckoutSmileyIcon />
                 <span class="t-body">Je hebt al</span>
-                <MultiHotelTripCheckoutPriceTag :value="totalSaved" :show-cents="false" size="sm" bold color="var(--c-via-orange)" />
+                <FirstReleaseCheckoutPriceTag :value="totalSaved" :show-cents="false" size="sm" bold color="var(--c-via-orange)" />
                 <span class="t-caption c-grey">({{ savedPct }}%)</span>
                 <span class="t-body">bespaard.</span>
               </p>
@@ -642,7 +478,7 @@ const arrangementIncludes = trip.value ? trip.value.includes : [
 
             <!-- 1e: arrangement-includes staan er vanaf het begin -->
             <div v-if="hybrid || totalRooms > 0" class="rt__includes">
-              <p class="t-body t-bold">{{ trip ? `Jouw ${trip.typeWord} bevat` : totalRooms > 1 ? 'Elk arrangement bevat' : 'Jouw arrangement bevat' }}</p>
+              <p class="t-body t-bold">{{ totalRooms > 1 ? 'Elk arrangement bevat' : 'Jouw arrangement bevat' }}</p>
               <p v-for="item in arrangementIncludes" :key="item" class="rt__inc t-body">
                 <svg class="rt__check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" /></svg>
                 {{ item }}
@@ -669,7 +505,7 @@ const arrangementIncludes = trip.value ? trip.value.includes : [
       </button>
     </div>
 
-    <MultiHotelTripCheckoutPolicyChoicePopup
+    <FirstReleaseCheckoutPolicyChoicePopup
       v-if="policyPopupOpen"
       @choose="applyPolicy"
       @close="policyPopupOpen = false"
@@ -859,129 +695,6 @@ const arrangementIncludes = trip.value ? trip.value.includes : [
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
-}
-/* Vakantie: hotel-carrousel in de kamertype-kolom. De kolom houdt zijn vaste
-   breedte (table-layout: fixed + overflow hidden op de viewport); de slides
-   staan naast elkaar in één rij, zodat de cel zo hoog is als de hoogste slide
-   en niet verspringt bij het wisselen. */
-.rt__type--trip {
-  gap: 8px;
-}
-/* Navigator op een grijs vlak (zelfde grijs als de tabelkop in hybride modus),
-   zonder ruimte eromheen: de negatieve marges overbruggen de celpadding (10px)
-   zodat het balkje tegen de boven- en zijranden van de kolom aanligt. */
-.rt__carhead {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  margin: -10px -10px 0;
-  padding: 6px 10px;
-  background: var(--c-surface);
-}
-.rt__carbtn {
-  width: 28px;
-  height: 28px;
-  flex-shrink: 0;
-  border: 1px solid var(--c-dark-grey);
-  border-radius: 50%;
-  background: var(--c-white);
-  color: var(--c-via-black);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  padding: 0;
-}
-.rt__carbtn:hover:not(:disabled) {
-  background: var(--c-surface);
-}
-.rt__carbtn:disabled {
-  opacity: 0.3;
-  cursor: default;
-}
-.rt__carcount {
-  font-size: var(--t-caption);
-  font-weight: var(--w-black);
-  color: var(--c-via-black);
-}
-.rt__carview {
-  overflow: hidden;
-}
-.rt__cartrack {
-  display: flex;
-  transition: transform 0.35s ease;
-}
-.rt__slide {
-  flex: 0 0 100%;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-.rt__roomname {
-  font-size: var(--t-body);
-  line-height: var(--lh-body);
-  font-weight: 500;
-  color: var(--c-via-black);
-}
-.rt__slidemeta {
-  margin-top: -4px;
-}
-.rt__slide .rt__img {
-  margin-top: 2px;
-}
-/* Carousel: slides 88% breed met 6px ertussen, zodat ±10% van het volgende hotel al zichtbaar is. */
-.rt__type--carousel .rt__cartrack { gap: 6px; }
-.rt__type--carousel .rt__slide { flex-basis: 88%; }
-/* Lange kolom: geen carrousel — de hotels onder elkaar in één kolom (14px ertussen, geen divider).
-   De kolom staat absoluut in de cel (zie fitColumn) zodat de rijen hun eigen hoogte houden. */
-.rt__td--column { position: relative; }
-/* Lange kolom: de eerste rij (flexibel annuleren) 200px hoger; de onderste rij krijgt via
-   fitColumn() nog steeds de resthoogte van de hotelkolom. */
-.rt__tr--colfirst > .rt__td:not(.rt__td--column) { padding-bottom: 210px; }
-.rt__type--column { position: absolute; top: 10px; left: 10px; right: 10px; }
-.rt__type--column .rt__carview { overflow: visible; }
-.rt__type--column .rt__cartrack { flex-direction: column; gap: 14px; transform: none; transition: none; }
-.rt__type--column .rt__slide { flex-basis: auto; }
-/* Hotel 2 (ingeklapt): beschrijving halverwege afgebroken met een fade; voorzieningen verborgen. */
-.rt__slide--cut .rt__desc {
-  max-height: 3.2em;
-  overflow: hidden;
-  -webkit-mask-image: linear-gradient(#000 30%, transparent 100%);
-  mask-image: linear-gradient(#000 30%, transparent 100%);
-}
-.rt__slide--cut .rt__facilities { display: none; }
-.rt__more {
-  align-self: flex-start;
-  margin-top: -2px;
-  padding: 0;
-  border: 0;
-  background: none;
-  font-family: inherit;
-  font-size: var(--t-body);
-  font-weight: 700;
-  color: var(--c-via-black);
-  text-decoration: underline;
-  text-underline-offset: 3px;
-  cursor: pointer;
-}
-.rt__dots {
-  display: flex;
-  justify-content: center;
-  gap: 6px;
-}
-.rt__dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  border: 0;
-  padding: 0;
-  background: var(--c-light-grey);
-  cursor: pointer;
-}
-.rt__dot--on {
-  background: var(--c-via-black);
 }
 
 /* Gasten */

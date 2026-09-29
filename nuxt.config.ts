@@ -112,6 +112,7 @@ export default defineNuxtConfig({
     '~/assets/css/mhtj-variant-6.css',
     '~/assets/css/mhtj-home-variants.css',
     // Checkout (room table) design system, scoped under .mht-checkout.
+    '~/assets/css/fr-checkout.css',
     '~/assets/css/mht-checkout.css',
     '~/assets/css/mhtj-checkout.css',
     '~/assets/css/home-categories.css',
