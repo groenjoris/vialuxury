@@ -148,13 +148,13 @@ useHead({ title: computed(() => (checkoutTrip.value ? 'Kies je opties — ViaLux
                 <p class="t-body t-bold">Details</p>
                 <div v-for="row in tableSelection" :key="`${row.baseId}-${row.rateKey}`" class="side__row side__row--room">
                   <!-- Vakantie: "Nx" alleen bij meer dan één kamer per hotel (meer dan 2 personen);
-                       dan ook een regel "6 nachten, 4 personen" onder "3 hotels, 2 kamers per hotel". -->
+                       dan ook een regel "4 personen" onder "3 hotels, 2 kamers, 6 nachten". -->
                   <!-- Prijs-p.p.-variant: geen "Nx" maar "Autovakantie 8 personen" als titel. -->
                   <span v-if="!checkoutTrip || (row.quantity > 1 && !pricePerPerson)" class="side__qty">{{ row.quantity }}x</span>
                   <div class="side__rowmain">
                     <p class="t-body t-bold">{{ checkoutTrip ? (pricePerPerson ? `${checkoutTrip.typeLabel} ${row.quantity * 2} personen` : checkoutTrip.typeLabel) : 'Arrangement' }}</p>
-                    <p class="t-caption c-mgrey">{{ checkoutTrip ? `${checkoutTrip.hotels.length} hotels, ${row.quantity} ${row.quantity === 1 ? 'kamer' : 'kamers'} per hotel` : roomNameFor(row.baseId) }}</p>
-                    <p v-if="checkoutTrip && row.quantity > 1 && !pricePerPerson" class="t-caption c-mgrey">{{ nights }} nachten, {{ row.quantity * 2 }} personen</p>
+                    <p class="t-caption c-mgrey">{{ checkoutTrip ? `${checkoutTrip.hotels.length} hotels, ${row.quantity} ${row.quantity === 1 ? 'kamer' : 'kamers'}, ${nights} nachten` : roomNameFor(row.baseId) }}</p>
+                    <p v-if="checkoutTrip && row.quantity > 1 && !pricePerPerson" class="t-caption c-mgrey">{{ row.quantity * 2 }} personen</p>
                     <p v-if="row.rateKey === 'flexible'" class="t-caption c-green">Flexibel annuleren</p>
                     <p v-else class="t-caption c-grey">Niet-terugbetaalbaar</p>
                   </div>

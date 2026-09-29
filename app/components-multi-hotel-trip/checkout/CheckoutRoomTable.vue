@@ -600,7 +600,7 @@ const arrangementIncludes = trip.value ? trip.value.includes : [
                   <span class="rt__dqty t-body">{{ row.quantity }}x</span>
                   <div class="rt__dmain">
                     <p class="t-body t-bold">{{ trip ? trip.typeLabel : 'Arrangement' }}</p>
-                    <p class="t-caption c-mgrey">{{ trip ? `${trip.hotels.length} hotels, ${row.quantity} ${row.quantity === 1 ? 'kamer' : 'kamers'} per hotel` : roomNameFor(row.baseId) }}</p>
+                    <p class="t-caption c-mgrey">{{ trip ? `${trip.hotels.length} hotels, ${row.quantity} ${row.quantity === 1 ? 'kamer' : 'kamers'}, ${nights} nachten` : roomNameFor(row.baseId) }}</p>
                     <p v-if="row.rateKey === 'flexible'" class="t-caption c-green">Flexibel annuleren</p>
                   </div>
                   <MultiHotelTripCheckoutPriceTag :value="row.quantity * rowPrice(row)" :show-cents="false" size="sm" />

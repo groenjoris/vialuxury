@@ -425,7 +425,7 @@ useHead({ title: trip.value ? 'Kies je opties â€” ViaLuxury' : 'Kies je kamer â€
                   <span v-if="!trip || (row.quantity > 1 && !ppTrip)" class="mdetails__qty">{{ row.quantity }}x</span>
                   <div class="mdetails__main">
                     <p class="t-body t-bold">{{ trip ? (ppTrip ? `${trip.typeLabel} ${row.quantity * 2} personen` : trip.typeLabel) : 'Arrangement' }}</p>
-                    <p class="t-caption c-mgrey">{{ trip ? `${trip.hotels.length} hotels, ${row.quantity} ${row.quantity === 1 ? 'kamer' : 'kamers'} per hotel` : roomNameFor(row.baseId) }}</p>
+                    <p class="t-caption c-mgrey">{{ trip ? `${trip.hotels.length} hotels, ${row.quantity} ${row.quantity === 1 ? 'kamer' : 'kamers'}, ${nights} nachten` : roomNameFor(row.baseId) }}</p>
                   </div>
                   <!-- Prijs met daaronder het annuleringslabel, rechts uitgelijnd
                        op de regel van de kamernaam -->
@@ -450,7 +450,7 @@ useHead({ title: trip.value ? 'Kies je opties â€” ViaLuxury' : 'Kies je kamer â€
                       <MultiHotelTripCheckoutPriceTag :value="displayTotal" size="lg" bold color="var(--c-via-green)" />
                     </div>
                   </div>
-                  <p v-if="trip" class="t-caption c-mgrey">{{ trip.hotels.length }} hotels, {{ totalRooms }} {{ totalRooms === 1 ? 'kamer' : 'kamers' }} per hotel, {{ nights }} nachten</p>
+                  <p v-if="trip" class="t-caption c-mgrey">{{ trip.hotels.length }} hotels, {{ totalRooms }} {{ totalRooms === 1 ? 'kamer' : 'kamers' }}, {{ nights }} nachten</p>
                   <p v-else class="t-caption c-mgrey">{{ totalRooms }} {{ totalRooms === 1 ? 'kamer' : 'kamers' }} voor 2 nachten</p>
                 </div>
 
