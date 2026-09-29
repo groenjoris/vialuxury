@@ -145,8 +145,9 @@ const hotelIndex = ref(0)
 const hotelCount = computed(() => trip.value?.hotels.length ?? 0)
 // Room-table-variant (schakelaar linksboven op deze stap): Strak / Lange kolom / Carousel.
 const { variant: rtVariant } = useMultiHotelTripRoomTableVariant()
-// Prijsweergave-variant: bij "prijs p.p." staat onder de (totaal)prijs in de tabel "voor 2 personen".
-const { perPerson: pricePerPerson } = useMultiHotelTripPriceVariant()
+// Prijsweergave-variant: bij "prijs p.p." toont de tabel bij een vakantie de prijs per persoon.
+const { perPerson: pricePerPerson, displayPrice } = useMultiHotelTripPriceVariant()
+const ppTrip = computed(() => !!trip.value && pricePerPerson.value)
 /** Lange kolom: hotel 2 en 3 volledig zichtbaar na "Toon meer". */
 const columnOpen = ref(false)
 /* Lange kolom: de hotelkolom staat absoluut in de rowspan-cel (telt niet mee in de rijhoogtes,
@@ -509,11 +510,12 @@ const arrangementIncludes = trip.value ? trip.value.includes : [
 
           <!-- Prijs; de boekingskosten-toelichting staat 1x in de kolomkop -->
           <td class="rt__td rt__price">
-            <MultiHotelTripCheckoutPriceTag :value="rowWas(row)" :show-cents="false" size="sm" bold strike color="var(--c-medium-grey)" />
-            <MultiHotelTripCheckoutPriceTag :value="rowPrice(row)" :show-cents="false" size="md" bold color="var(--c-via-orange)" />
+            <!-- Prijs-p.p.-variant (homepage-schakelaar) bij een vakantie: prijs per persoon (helft van de
+                 2-persoonsprijs) met "Per persoon (min. 2 pers.)"; de kassabon rekent met de totaalprijs. -->
+            <MultiHotelTripCheckoutPriceTag :value="ppTrip ? displayPrice(rowWas(row), true) : rowWas(row)" :show-cents="false" size="sm" bold strike color="var(--c-medium-grey)" />
+            <MultiHotelTripCheckoutPriceTag :value="ppTrip ? displayPrice(rowPrice(row), true) : rowPrice(row)" :show-cents="false" size="md" bold color="var(--c-via-orange)" />
             <p v-if="!trip" class="rt__pricenote">inclusief arrangement</p>
-            <!-- Prijs-p.p.-variant (homepage-schakelaar): de tabel toont de totaalprijs, dus "voor 2 personen" erbij. -->
-            <p v-else-if="pricePerPerson" class="rt__pricenote">voor 2 personen</p>
+            <p v-else-if="ppTrip" class="rt__pricenote">Per persoon<br>(min. 2 pers.)</p>
           </td>
 
           <!-- Je opties (1e: zonder de vaste vinkjes, begint met de voorwaarde) -->
@@ -799,16 +801,18 @@ const arrangementIncludes = trip.value ? trip.value.includes : [
 }
 .rt__th:first-child { border-top-left-radius: var(--radius); }
 .rt__th:last-child { border-top-right-radius: var(--radius); }
-.rt__th--type { width: 260px; }
+/* Kolombreedtes: gasten en prijs vast; de extra ruimte van de brede pagina gaat naar
+   Kamertype, Je opties en Kies aantal kamers (percentages van de tabelbreedte). */
+.rt__th--type { width: 36%; }
 /* Smallere gasten-kolom zodat "Je opties" (Flexibel annuleren op 1 regel)
    en de prijskolom genoeg breedte houden */
 .rt__th--guests { width: 74px; }
-.rt__th--options { width: 24%; }
+.rt__th--options { width: 25%; }
 /* Prijskolom smaller (36px naar de keuze-kolom); van-prijs dichter op
    de eindprijs zodat het blijft passen */
 /* Breed genoeg zodat "2 nachten (i)" mét marge binnen de kolom past */
 .rt__th--price { width: 112px; }
-.rt__th--select { width: 140px; }
+.rt__th--select { width: 19%; }
 /* Rechterkolom: groene headercel (band loopt door), daaronder één
    doorlopend grijs paneel zonder dividers. */
 .rt__th--reserve {

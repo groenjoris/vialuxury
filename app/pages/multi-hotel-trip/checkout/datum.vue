@@ -332,9 +332,12 @@ useHead({ title: 'Kies datum — ViaLuxury' })
 .page__main {
   flex: 1;
 }
+/* Zo breed als de afrekenbalk (--page-max, 40px zijmarge): de inhoud begint waar het logo begint;
+   de kassabon is maximaal 392px, de rest gaat naar de linkerkolom. */
+.page__main.container { max-width: var(--page-max); padding-left: 40px; padding-right: 40px; }
 .page__grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 350px;
+  grid-template-columns: minmax(0, 1fr) 392px;
   gap: 48px;
   align-items: start;
 }
