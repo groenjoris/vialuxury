@@ -1211,8 +1211,10 @@ onMounted(() => { setMhtNavVariant('1'); restoreHeroPhotoIndex(); restoreHomeLay
     gap: 8px;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
-    margin: 0 -16px;
-    padding: 0 16px 4px;
+    /* 8px ruimte bovenin het scrollvlak (met negatieve marge gecompenseerd), anders knipt
+       de horizontale scroller de Nieuw-sticker af die boven de eerste knop uitsteekt. */
+    margin: -8px -16px 0;
+    padding: 8px 16px 4px;
   }
   .home-popular__pill-row {
     display: flex;
