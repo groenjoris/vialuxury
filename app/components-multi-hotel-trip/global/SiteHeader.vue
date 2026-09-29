@@ -346,9 +346,9 @@
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#141414" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2" /><circle cx="7" cy="17" r="2" /><path d="M9 17h6" /><circle cx="17" cy="17" r="2" /></svg>
                       </span>
                       <span class="menu-panel__row-text">
-                        <span class="menu-panel__row-title">
+                        <span class="menu-panel__row-title menu-panel__row-title--new">
                           {{ t('header.holidays') }}
-                          <span class="menu-panel__row-title-accent">{{ t('header.new') }}</span>
+                          <span class="menu-panel__badge">{{ t('header.new') }}</span>
                         </span>
                         <span class="menu-panel__row-sub">Meerdere hotels in één reis, met de auto of de fiets</span>
                       </span>
@@ -4657,6 +4657,29 @@ function handleSelectHotelInPopup(slug: string) {
   font-size: 14.5px;
   font-weight: 500;
   letter-spacing: -0.072px;
+}
+/* "Nieuw"-stickertje zoals in de hoofdnavigatie (.verticals__badge): rechtsboven het woord,
+   steekt iets buiten de tekst uit, kapitalen. De titel krimpt tot de tekstbreedte zodat het
+   stickertje aan het einde van het woord hangt. */
+.menu-panel__row-title--new { position: relative; align-self: flex-start; }
+.menu-panel__badge {
+  position: absolute;
+  top: -8px;
+  right: -16px;
+  display: inline-flex;
+  align-items: center;
+  height: 14px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: var(--color-primary);
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
 }
 .menu-panel__row-title-accent {
   /* Recoleta, bold — visually pops the "+ more" qualifier next to
