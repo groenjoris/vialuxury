@@ -10,6 +10,7 @@ import { CHECKOUT_BOOKING_FEE } from '~/data/mht-checkout/pricing'
 import { useStickyFit } from '~/composables-multi-hotel-trip/useStickyFit'
 import { useMultiHotelTripCheckoutTrip } from '~/composables-multi-hotel-trip/useMultiHotelTripCheckoutTrip'
 import { useMultiHotelTripPriceVariant } from '~/composables-multi-hotel-trip/useMultiHotelTripPriceVariant'
+import { useMultiHotelTripMobileUa } from '~/composables-multi-hotel-trip/useMultiHotelTripMobileUa'
 
 interface SelRow {
   baseId: string
@@ -28,6 +29,8 @@ const { trip: checkoutTrip } = useMultiHotelTripCheckoutTrip()
 // Prijsweergave-variant: kassabontitel "Autovakantie 8 personen" (zie kamers.vue).
 const { perPerson: pricePerPerson } = useMultiHotelTripPriceVariant()
 const tripPopupOpen = ref(false)
+// Telefoon → mobiele kop + eenkoloms-opmaak (zelfde UA-check als de omleiding van datum/kamers).
+const isMobileUa = useMultiHotelTripMobileUa()
 const nights = computed(() => checkoutTrip.value?.nights ?? 2)
 function unit(n: number) {
   if (checkoutTrip.value) return n === 1 ? 'arrangement' : 'arrangementen'
@@ -38,7 +41,7 @@ if (checkoutTrip.value && selection.value.length === 0) {
   const flex = pricing.flexibilityPerRoom * t.hotels.length
   selection.value = [{ baseId: 'trip', rateKey: 'flexible', price: t.price + flex, priceWas: t.priceWas + flex, quantity: 1 }]
 }
-const checkoutDay = useState<{ price: number; checkIn?: string; checkOut?: string } | null>(
+const checkoutDay = useState<{ price: number; checkIn?: string; checkOut?: string; checkInYmd?: { year: number; month: number; day: number } } | null>(
   'mht-checkout-day',
   () => null,
 )
@@ -97,21 +100,25 @@ useHead({ title: 'Gegevens en betaalwijze — ViaLuxury' })
 </script>
 
 <template>
-  <div class="mht-checkout page page--white">
-    <MultiHotelTripCheckoutTopNav />
-
-    <div class="page__stepper">
-      <MultiHotelTripCheckoutStepper :active="3" />
-    </div>
+  <div class="mht-checkout page page--white" :class="{ 'page--m': isMobileUa }">
+    <!-- Telefoon: de mobiele checkout-kop met voortgang (stap 3), zoals de stappen datum/kamers
+         op de mobiele site; desktop: de donkere afrekenbalk + stepper. -->
+    <MultiHotelTripCheckoutMobileHeader v-if="isMobileUa" :step="3" />
+    <template v-else>
+      <MultiHotelTripCheckoutTopNav />
+      <div class="page__stepper">
+        <MultiHotelTripCheckoutStepper :active="3" />
+      </div>
+    </template>
 
     <main class="page__main container">
       <div class="page__grid">
         <div class="col-form">
-          <h1 class="t-display">Gegevens en betaalwijze</h1>
+          <h1 v-if="!isMobileUa" class="t-display">Gegevens en betaalwijze</h1>
           <!-- Nummering start op 1; het Flexibel annuleren-blok volgt na Jouw gegevens -->
           <MultiHotelTripCheckoutGegevensForm :start-at="1" :cancel-block="cancelBlock" :can-undo-flex="flexAddedHere" @toggle-flex="toggleFlex" />
 
-          <div class="col-form__cta col-form__cta--split">
+          <div v-if="!isMobileUa" class="col-form__cta col-form__cta--split">
             <NuxtLink class="btn-back t-body" to="/multi-hotel-trip/checkout/kamers">{{ checkoutTrip ? '← Terug naar arrangement' : '← Terug naar kamers' }}</NuxtLink>
             <button class="btn-primary btn-primary--auto" type="button" :disabled="roomsSel === 0">
               {{ roomsSel === 0 ? (checkoutTrip ? 'Selecteer een arrangement' : 'Selecteer een kamer') : 'Boek nu' }}
@@ -217,7 +224,16 @@ useHead({ title: 'Gegevens en betaalwijze — ViaLuxury' })
 
     <MultiHotelTripCheckoutFooter />
 
-    <MultiHotelTripCheckoutTripPanel v-if="tripPopupOpen && checkoutTrip" :trip="checkoutTrip" @close="tripPopupOpen = false" />
+    <MultiHotelTripCheckoutTripPanel
+      v-if="tripPopupOpen && checkoutTrip"
+      :trip="checkoutTrip"
+      :check-in="checkInLabel"
+      :check-out="checkOutLabel"
+      :check-in-ymd="checkoutDay?.checkInYmd ?? null"
+      :rooms-per-hotel="selection[0]?.quantity ?? 1"
+      :rate-key="selection[0]?.rateKey ?? null"
+      @close="tripPopupOpen = false"
+    />
   </div>
 </template>
 
@@ -398,5 +414,21 @@ useHead({ title: 'Gegevens en betaalwijze — ViaLuxury' })
 }
 .side__trust img {
   height: 80px;
+}
+
+/* ── Mobiel (telefoon, .page--m): één kolom in de stijl van de mobiele checkout-site — formulier
+   bovenaan, daaronder de kassabon zonder kaartrand; 20px zijmarge, max. 520px breed. ── */
+.page--m .page__main.container { max-width: 520px; padding-left: 20px; padding-right: 20px; }
+.page--m .page__grid { display: flex; flex-direction: column; gap: 24px; }
+.page--m .col-form { gap: 20px; }
+.page--m .col-summary { padding-top: 0; align-self: auto; }
+.page--m .side {
+  position: static;
+  top: auto;
+  padding: 24px 0 0;
+  border: 0;
+  border-top: 1px solid var(--c-light-grey);
+  border-radius: 0;
+  box-shadow: none;
 }
 </style>

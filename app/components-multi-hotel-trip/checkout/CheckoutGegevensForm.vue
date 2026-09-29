@@ -47,7 +47,7 @@ defineEmits<{ 'toggle-flex': [] }>()
 
       <p class="gf__note">Het hotel heeft onderstaande gegevens nodig om de reservering te verwerken.</p>
 
-      <div class="gf__row gf__row--3">
+      <div class="gf__row gf__row--3 gf__row--address">
         <div class="gf__field">
           <label class="gf__label" for="gf-postcode">Postcode</label>
           <input id="gf-postcode" class="gf__input" type="text" />
@@ -62,7 +62,7 @@ defineEmits<{ 'toggle-flex': [] }>()
         </div>
       </div>
 
-      <div class="gf__row gf__row--3">
+      <div class="gf__row gf__row--3 gf__row--place">
         <div class="gf__field">
           <label class="gf__label" for="gf-straat">Straat</label>
           <input id="gf-straat" class="gf__input" type="text" />
@@ -251,6 +251,13 @@ defineEmits<{ 'toggle-flex': [] }>()
 }
 .gf__row--2 { grid-template-columns: 1fr 1fr; }
 .gf__row--3 { grid-template-columns: 2fr 1.2fr 1fr; }
+/* Mobiel (gegevensstap op een telefoon): velden onder elkaar zoals in de echte checkout —
+   alleen huisnummer + toevoeging blijven naast elkaar. */
+@media (max-width: 767px) {
+  .gf__row--2, .gf__row--place { grid-template-columns: 1fr; }
+  .gf__row--address { grid-template-columns: 1fr 1fr; }
+  .gf__row--address > :first-child { grid-column: 1 / -1; }
+}
 .gf__note {
   font-size: var(--t-body);
   color: var(--c-via-black);

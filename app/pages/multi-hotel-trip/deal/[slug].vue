@@ -1532,7 +1532,7 @@ function handleFavoriteClick() {
 // kalenderstap; met datum direct naar de kamerkeuze. Op een telefoon stuurt
 // de mht-mobile middleware door naar de mobiele checkout-site.
 // Verse start vanaf de dealpagina: eerdere kalenderkeuze wissen.
-const checkoutDayState = useState<{ price: number; checkIn?: string; checkOut?: string } | null>('mht-checkout-day', () => null)
+const checkoutDayState = useState<{ price: number; checkIn?: string; checkOut?: string; checkInYmd?: { year: number; month: number; day: number } } | null>('mht-checkout-day', () => null)
 checkoutDayState.value = null
 /** Vakantie-checkout: na de datum (of direct, als die al gekozen is) naar de
  *  kamertabel met één arrangement-cluster (één kamer per hotel), dan gegevens.
@@ -1546,10 +1546,13 @@ function goToCheckout() {
   checkoutTripSlug.value = isTrip ? routeSlug.value : null
   if (isTrip) {
     if (store.checkInDate && currentDeal.value) {
+      const d = dayjs(store.checkInDate)
       checkoutDayState.value = {
         price: currentDeal.value.basePrice,
         checkIn: formatDateWeekdayShort(store.checkInDate),
-        checkOut: formatDateWeekdayShort(dayjs(store.checkInDate).add(currentDeal.value.nights, 'day').format('YYYY-MM-DD')),
+        checkOut: formatDateWeekdayShort(d.add(currentDeal.value.nights, 'day').format('YYYY-MM-DD')),
+        // Voor de datums per hotel in "Bekijk je volledige reis".
+        checkInYmd: { year: d.year(), month: d.month(), day: d.date() },
       }
       // Met datum: naar de kamertabel (één cluster van kamers, één per hotel).
       navigateTo('/multi-hotel-trip/checkout/kamers')

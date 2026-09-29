@@ -66,7 +66,7 @@ const sideEl = ref<HTMLElement | null>(null)
 const sideTop = useStickyFit(sideEl, 16)
 
 // Kassabon volgt de gekozen kalenderdatums (gedeelde state met de kalenderstap).
-const checkoutDay = useState<{ price: number; checkIn?: string; checkOut?: string } | null>(
+const checkoutDay = useState<{ price: number; checkIn?: string; checkOut?: string; checkInYmd?: { year: number; month: number; day: number } } | null>(
   'mht-checkout-day',
   () => null,
 )
@@ -208,7 +208,16 @@ useHead({ title: computed(() => (checkoutTrip.value ? 'Kies je opties — ViaLux
 
     <MultiHotelTripCheckoutFooter />
 
-    <MultiHotelTripCheckoutTripPanel v-if="tripPopupOpen && checkoutTrip" :trip="checkoutTrip" @close="tripPopupOpen = false" />
+    <MultiHotelTripCheckoutTripPanel
+      v-if="tripPopupOpen && checkoutTrip"
+      :trip="checkoutTrip"
+      :check-in="checkoutDay?.checkIn"
+      :check-out="checkoutDay?.checkOut"
+      :check-in-ymd="checkoutDay?.checkInYmd ?? null"
+      :rooms-per-hotel="tableSelection[0]?.quantity ?? 1"
+      :rate-key="tableSelection[0]?.rateKey ?? null"
+      @close="tripPopupOpen = false"
+    />
   </div>
 </template>
 
