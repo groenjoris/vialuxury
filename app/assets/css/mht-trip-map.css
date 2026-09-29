@@ -99,3 +99,9 @@
   line-height: 1.45;
   color: var(--color-text-secondary, #555);
 }
+
+/* Mobiel: geen hotelnamen naast de genummerde markers op de fullscreen kaart
+   (de naam staat in het onderpaneel na een tik). */
+@media (max-width: 767px) {
+  .tfm .tml-hotel__name { display: none; }
+}
