@@ -276,7 +276,7 @@
                 <div class="content-block__body">
                   <h3 class="content-block__title">
                     <span class="content-block__check"><svg class="icon-check" viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10" style="vertical-align:-0.125em"><path d="M3 13L8 19L21 5"/></svg></span>
-                    <span>
+                    <span class="trip-incl__classic-text">
                       <MultiHotelTripHotelText :text="b.title" :hotels="tripHotelLinks" @open-hotel="openTripHotel" />
                       <span v-if="b.starRating" class="trip-incl__stars" aria-hidden="true"><span v-for="n in b.starRating" :key="n" class="trip-incl__star"><svg viewBox="0 0 18 18" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M16.963,6.786c-.088-.271-.323-.469-.605-.51l-4.62-.671L9.672,1.418c-.252-.512-1.093-.512-1.345,0l-2.066,4.186-4.62,.671c-.282,.041-.517,.239-.605,.51-.088,.271-.015,.57,.19,.769l3.343,3.258-.79,4.601c-.048,.282,.067,.566,.298,.734,.231,.167,.538,.189,.79,.057l4.132-2.173,4.132,2.173c.11,.058,.229,.086,.349,.086,.155,0,.31-.048,.441-.143,.231-.168,.347-.452,.298-.734l-.79-4.601,3.343-3.258c.205-.199,.278-.498,.19-.769Z"/></svg></span></span>
                     </span>
@@ -572,7 +572,7 @@
                   <div class="content-block__body">
                     <h3 class="content-block__title">
                       <span class="content-block__check"><svg class="icon-check" viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10" style="vertical-align:-0.125em"><path d="M3 13L8 19L21 5"/></svg></span>
-                      <span>
+                      <span class="trip-incl__classic-text">
                         <MultiHotelTripHotelText :text="b.title" :hotels="tripHotelLinks" @open-hotel="openTripHotel" />
                         <span v-if="b.starRating" class="trip-incl__stars" aria-hidden="true"><span v-for="n in b.starRating" :key="n" class="trip-incl__star"><svg viewBox="0 0 18 18" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M16.963,6.786c-.088-.271-.323-.469-.605-.51l-4.62-.671L9.672,1.418c-.252-.512-1.093-.512-1.345,0l-2.066,4.186-4.62,.671c-.282,.041-.517,.239-.605,.51-.088,.271-.015,.57,.19,.769l3.343,3.258-.79,4.601c-.048,.282,.067,.566,.298,.734,.231,.167,.538,.189,.79,.057l4.132-2.173,4.132,2.173c.11,.058,.229,.086,.349,.086,.155,0,.31-.048,.441-.143,.231-.168,.347-.452,.298-.734l-.79-4.601,3.343-3.258c.205-.199,.278-.498,.19-.769Z"/></svg></span></span>
                       </span>
@@ -3081,6 +3081,13 @@ onMounted(() => {
 /* Final · Includes "Classic": geen grijs vlak, kaarten als op de gewone arrangementenpagina. */
 .trip-incl--classic { padding: 0; background: none; border-radius: 0; }
 .trip-incl__classic-img { display: block; width: 100%; padding: 0; border: 0; cursor: zoom-in; }
+/* Classic-inclusies (mobiel altijd): als de kaarten van een gewoon arrangement — het vinkje staat op
+   de eerste regel van de titel (top-uitgelijnd); bij een hotel staan de sterren op een eigen regel,
+   ingesprongen onder de titeltekst (niet onder het vinkje). */
+.trip-incl--classic .content-block__title { align-items: flex-start; }
+.trip-incl--classic .content-block__check { line-height: inherit; flex-shrink: 0; }
+.trip-incl--classic .trip-incl__classic-text { display: block; min-width: 0; }
+.trip-incl--classic .trip-incl__classic-text .trip-incl__stars { display: flex; margin: 4px 0 0; vertical-align: baseline; }
 .trip-incl__grid { display: flex; flex-direction: column; }
 .trip-incl__item {
   display: flex;
