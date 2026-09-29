@@ -4664,7 +4664,8 @@ function handleSelectHotelInPopup(slug: string) {
 .menu-panel__row-title--new { position: relative; align-self: flex-start; }
 .menu-panel__badge {
   position: absolute;
-  top: -8px;
+  /* Boven de tekstregel (raakt de letters niet), steekt rechts iets uit. */
+  top: -14px;
   right: -16px;
   display: inline-flex;
   align-items: center;
@@ -4725,7 +4726,8 @@ function handleSelectHotelInPopup(slug: string) {
 }
 .verticals__badge {
   position: absolute;
-  top: 1px;
+  /* Boven de tekstregel (raakt de letters niet), rechtsboven het woord. */
+  top: -3px;
   right: 6px;
   display: inline-flex;
   align-items: center;
