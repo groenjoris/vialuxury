@@ -191,7 +191,8 @@ const dealViews = computed(() => {
         // Prototype: always the PRICED_PERSONS / 1-room price (party size doesn't scale it).
         price: priceForArrival(deal.basePrice, deal.id, effArrival, PRICED_PERSONS),
         originalPrice: priceForArrival(deal.originalPrice, deal.id, effArrival, PRICED_PERSONS),
-        includes: (deal.inclusions || []).slice(0, 2).map(i => localized(i)),
+        // Vier inclusies, zoals op de live site (was twee).
+        includes: (deal.inclusions || []).slice(0, 4).map(i => localized(i)),
         href,
       }
     })
