@@ -187,7 +187,9 @@ let fitBounds: import('leaflet').LatLngBounds | null = null
 /** Alle hotels + highlights in beeld passen (bij openen van de kaart). */
 function refit(animate = false) {
   if (!map || !fitBounds) return
-  map.fitBounds(fitBounds, { padding: [72, 72], maxZoom: 13, animate })
+  // Mobiel: krappere marge en verder inzoomen — de route zo groot mogelijk in beeld.
+  const mobile = isMobileViewport()
+  map.fitBounds(fitBounds, { padding: mobile ? [28, 28] : [72, 72], maxZoom: mobile ? 14 : 13, animate })
 }
 
 const HOTEL_SIZE = 45 // 1,5× de vorige 30 px
@@ -196,7 +198,9 @@ async function mount() {
   await nextTick()
   if (!mapEl.value || map) return
   const L = (await import('leaflet')).default
-  map = L.map(mapEl.value, { zoomControl: false, attributionControl: true, scrollWheelZoom: true })
+  // Mobiel: fractioneel zoomniveau (zoomSnap 0.1), zodat fitBounds de route écht zo groot mogelijk
+  // toont — met hele zoomstappen viel het kader net buiten niveau 9 en zakte de kaart naar 8.
+  map = L.map(mapEl.value, { zoomControl: false, attributionControl: true, scrollWheelZoom: true, zoomSnap: isMobileViewport() ? 0.1 : 1 })
   addBasemapTiles(L, map, cartoApiKey)
   addCountryBorders(L, map, 2)
   const routeBounds = addTripRoute(L, map, props.stops, { distances: true, legs: props.legs, returnLabel: props.returnLabel })
@@ -226,9 +230,11 @@ async function mount() {
   ]
   const relayout = () => { if (!map) return; spreadMarkers(L, map, spreadItems); keepLabelsInView(map, hotelMarkers) }
 
+  // Mobiel: alleen de hotels + route bepalen het kader (bezienswaardigheden hoeven niet allemaal
+  // direct in beeld), zodat de route zo groot mogelijk wordt getoond.
   const all = [
     ...props.stops.map(s => [s.lat, s.lng] as [number, number]),
-    ...props.highlights.map(h => [h.lat, h.lng] as [number, number]),
+    ...(isMobileViewport() ? [] : props.highlights.map(h => [h.lat, h.lng] as [number, number])),
   ]
   if (all.length) {
     const b = L.latLngBounds(all)
@@ -236,7 +242,9 @@ async function mount() {
     fitBounds = b
     refit(false)
   }
-  setTimeout(() => map?.invalidateSize(), 50)
+  // Na de eerste layout (de container heeft dan zijn definitieve maat): maat opnieuw meten én het
+  // kader opnieuw passen — anders is het zoomniveau gebaseerd op een nog niet uitgemeten container.
+  setTimeout(() => { if (!map) return; map.invalidateSize(); refit(false) }, 50)
   map.on('zoomend', relayout)
   map.on('moveend', () => { if (map) keepLabelsInView(map, hotelMarkers) })
   setTimeout(relayout, 120)

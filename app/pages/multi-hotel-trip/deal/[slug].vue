@@ -1576,7 +1576,7 @@ const routeSlug = computed(() => (route.params.slug as string) || defaultDealPer
 // (ook in R1/R2) houdt ze haar eigen tekst uit data/team-members.ts.
 const TRIP_CREATOR_TEXT = {
   specialisation: 'Vakanties en rondreizen',
-  quote: 'Een goede roadtrip verzin je niet aan je bureau. Daarom ga ik overal persoonlijk langs voor een perfecte vakantie.',
+  quote: 'Een goede roadtrip verzin je niet aan je bureau. Daarom ga ik overal zelf langs.',
 }
 const creator = computed(() => {
   if (!tripPdpBySlug(routeSlug.value)) return creatorForSlug(routeSlug.value)
@@ -3081,13 +3081,13 @@ onMounted(() => {
 /* Final · Includes "Classic": geen grijs vlak, kaarten als op de gewone arrangementenpagina. */
 .trip-incl--classic { padding: 0; background: none; border-radius: 0; }
 .trip-incl__classic-img { display: block; width: 100%; padding: 0; border: 0; cursor: zoom-in; }
-/* Classic-inclusies (mobiel altijd): als de kaarten van een gewoon arrangement — het vinkje staat op
-   de eerste regel van de titel (top-uitgelijnd); bij een hotel staan de sterren op een eigen regel,
-   ingesprongen onder de titeltekst (niet onder het vinkje). */
-.trip-incl--classic .content-block__title { align-items: flex-start; }
-.trip-incl--classic .content-block__check { line-height: inherit; flex-shrink: 0; }
-.trip-incl--classic .trip-incl__classic-text { display: block; min-width: 0; }
-.trip-incl--classic .trip-incl__classic-text .trip-incl__stars { display: flex; margin: 4px 0 0; vertical-align: baseline; }
+/* Classic-inclusies (mobiel altijd): als de kaarten van een gewoon arrangement — de titel is
+   doorlopende tekst met het vinkje inline vooraan: een tweede/derde regel begint gewoon links
+   (geen inspringing); bij een hotel staan de sterren direct achter de naam. */
+.trip-incl--classic .content-block__title { display: block; }
+.trip-incl--classic .content-block__check { display: inline; margin-right: 8px; }
+.trip-incl--classic .trip-incl__classic-text { display: inline; }
+.trip-incl--classic .trip-incl__classic-text .trip-incl__stars { display: inline-flex; margin: 0 0 0 6px; vertical-align: -1px; white-space: nowrap; }
 .trip-incl__grid { display: flex; flex-direction: column; }
 .trip-incl__item {
   display: flex;
