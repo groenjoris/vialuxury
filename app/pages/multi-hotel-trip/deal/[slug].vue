@@ -3772,6 +3772,17 @@ onMounted(() => {
     padding-top: 0 !important;
     padding-bottom: 0 !important;
   }
+  /* Geen dubbele lijn onder de FAQ: de laatste vraag heeft geen eigen onderlijn, de
+     scheidingslijn komt van het volgende blok ("Anderen bekeken ook"). */
+  .deal-page__faq--mobile :deep(.faq-item:last-child) {
+    border-bottom: 0;
+  }
+  /* FAQ mobiel: 24px zijmarge (als "Anderen bekeken ook" eronder en de FAQ op desktop) — met 16px
+     stonden de vragen te ver naar links. */
+  .deal-page__faq--mobile {
+    padding-left: 24px;
+    padding-right: 24px;
+  }
   /* "Waarom boeken bij ViaLuxury" — the class IS the component root, so target
      it directly. 24px top so its gap matches the rest (was 0, which combined
      with the faq-section's old 32px padding read as too big). */
