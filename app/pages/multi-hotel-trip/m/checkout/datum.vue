@@ -4,6 +4,15 @@
 // alleen de kalender, geen samenvatting. Een datumkeuze scrollt naar de CTA.
 // Op een telefoon stuurt de mht-mobile middleware hier automatisch naartoe.
 import { CHECKOUT_NIGHTS } from '~/data/mht-checkout/pricing'
+import { useMultiHotelTripCheckoutTrip } from '~/composables-multi-hotel-trip/useMultiHotelTripCheckoutTrip'
+import { useMultiHotelTripPriceVariant } from '~/composables-multi-hotel-trip/useMultiHotelTripPriceVariant'
+
+// Vakantie (meerdere hotels): prijs en aantal nachten van de reis, zoals de desktop-datumstap.
+const { trip: checkoutTrip } = useMultiHotelTripCheckoutTrip()
+const { perPerson: pricePerPerson, displayPrice } = useMultiHotelTripPriceVariant()
+const ppTrip = computed(() => !!checkoutTrip.value && pricePerPerson.value)
+/** Kalenderprijs zoals getoond: in de p.p.-variant bij een vakantie de helft (per persoon). */
+const shownPrice = (v: number) => (ppTrip.value ? displayPrice(v, true) : v)
 
 const MONTH_NAMES = [
   'Januari', 'Februari', 'Maart', 'April', 'Mei', 'Juni',
@@ -31,9 +40,14 @@ function nextMonth() {
 }
 
 const PRICE_BY_WEEKDAY = [459, 469, 469, 469, 489, 509, 479] // zo..za
+/** Vakantie: de reisprijs plus dezelfde weekdag-opslag als het hotel. */
+function priceForWeekday(weekday: number) {
+  const base = PRICE_BY_WEEKDAY[weekday]!
+  return checkoutTrip.value ? checkoutTrip.value.price + (base - PRICE_BY_WEEKDAY[0]!) : base
+}
 
 function priceFor(day: number) {
-  return PRICE_BY_WEEKDAY[new Date(view.year, view.month, day).getDay()]
+  return priceForWeekday(new Date(view.year, view.month, day).getDay())
 }
 
 function isUnavailable(day: number) {
@@ -66,7 +80,7 @@ const lowestPrice = computed(() =>
   Math.min(...cells.value.filter((c) => c.day && !c.unavailable).map((c) => c.price ?? Infinity)),
 )
 
-const NIGHTS = CHECKOUT_NIGHTS
+const NIGHTS = checkoutTrip.value?.nights ?? CHECKOUT_NIGHTS
 
 function cellRole(day: number): 'in' | 'mid' | 'uit' | null {
   const s = selected.value
@@ -88,7 +102,7 @@ function pick(cell: CalendarCell) {
 
 const dayPrice = computed(() => {
   const s = selected.value
-  return s ? PRICE_BY_WEEKDAY[new Date(s.year, s.month, s.day).getDay()] : 0
+  return s ? priceForWeekday(new Date(s.year, s.month, s.day).getDay()) : 0
 })
 
 // Datumlabels voor de samenvatting op de volgende stap.
@@ -102,8 +116,6 @@ function formatDay(offset: number) {
 }
 
 // Kalenderprijs + datums delen met de kamerkeuze (zelfde state als desktop).
-// Vakantie (vlag van de dealpagina): geen kamerkeuze, direct naar gegevens.
-const checkoutIsTrip = useState<boolean>('mht-checkout-trip', () => false)
 const checkoutDay = useState<{
   price: number
   checkIn?: string
@@ -138,7 +150,9 @@ useHead({ title: 'Selecteer aankomstdatum — ViaLuxury' })
 
         <section class="mcal">
           <p class="mcal__intro">
-            Getoonde prijs is voor het complete arrangement voor 2 personen voor 2 nachten.
+            <template v-if="ppTrip && checkoutTrip">Getoonde prijs is per persoon voor de complete {{ checkoutTrip.typeWord }} ({{ checkoutTrip.hotels.length }} hotels) voor {{ NIGHTS }} nachten (min. 2 pers.)</template>
+            <template v-else-if="checkoutTrip">Getoonde prijs is voor de complete {{ checkoutTrip.typeWord }} ({{ checkoutTrip.hotels.length }} hotels) voor 2 personen voor {{ NIGHTS }} nachten.</template>
+            <template v-else>Getoonde prijs is voor het complete arrangement voor 2 personen voor 2 nachten.</template>
           </p>
 
           <!-- Zelfde kalenderlayout als op de dealpagina (CalendarMonth/DayCell) -->
@@ -179,13 +193,13 @@ useHead({ title: 'Selecteer aankomstdatum — ViaLuxury' })
                 >★</span>
                 <span class="mcal__day">{{ cell.day }}</span>
                 <span v-if="cell.unavailable" class="mcal__sold">-</span>
-                <span v-else-if="cellRole(cell.day) === 'in'" class="mcal__price mcal__price--selected">€{{ cell.price }}</span>
+                <span v-else-if="cellRole(cell.day) === 'in'" class="mcal__price mcal__price--selected">€{{ shownPrice(cell.price) }}</span>
                 <span v-else-if="cellRole(cell.day) === 'uit'" class="mcal__sold mcal__sold--selected">-</span>
                 <span
                   v-else-if="cellRole(cell.day) === null"
                   class="mcal__price"
                   :class="{ 'mcal__price--cheapest': cell.price === lowestPrice }"
-                >€{{ cell.price }}</span>
+                >€{{ shownPrice(cell.price) }}</span>
               </button>
             </template>
           </div>
@@ -201,7 +215,7 @@ useHead({ title: 'Selecteer aankomstdatum — ViaLuxury' })
             class="btn-primary mcta__btn"
             type="button"
             :disabled="selected === null"
-            @click="navigateTo(checkoutIsTrip ? '/multi-hotel-trip/checkout/gegevens' : '/multi-hotel-trip/m/checkout/kamers')"
+            @click="navigateTo('/multi-hotel-trip/m/checkout/kamers')"
           >
             {{ selected === null ? 'Selecteer eerst een datum' : 'Opslaan en doorgaan' }}
           </button>
@@ -357,13 +371,14 @@ useHead({ title: 'Selecteer aankomstdatum — ViaLuxury' })
 .mcal__cell--range .mcal__day {
   color: #fff;
 }
+/* Zelfde lettergroottes als de kalender op de PDP (CalendarDayCell): dag 15px/500, prijs 13px/600. */
 .mcal__day {
-  font-size: 13px;
-  font-weight: 400;
-  line-height: 1.4;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.3;
 }
 .mcal__sold {
-  font-size: 9px;
+  font-size: 13px;
   font-weight: 400;
   color: #00b67a;
   line-height: 1.4;
@@ -373,8 +388,8 @@ useHead({ title: 'Selecteer aankomstdatum — ViaLuxury' })
   font-weight: 700;
 }
 .mcal__price {
-  font-size: 9px;
-  font-weight: 400;
+  font-size: 13px;
+  font-weight: 600;
   color: #00b67a;
   line-height: 1.4;
 }

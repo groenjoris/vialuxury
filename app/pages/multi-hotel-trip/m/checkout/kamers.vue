@@ -6,13 +6,24 @@
 // Boven de kamers een samenvatting van de boeking.
 import { hotel, rooms as roomsData, dealName, pricing } from '~/data/mht-checkout/deal'
 import { CHECKOUT_WAS_FACTOR, CHECKOUT_BOOKING_FEE } from '~/data/mht-checkout/pricing'
+import { useMultiHotelTripCheckoutTrip } from '~/composables-multi-hotel-trip/useMultiHotelTripCheckoutTrip'
+import { useMultiHotelTripPriceVariant } from '~/composables-multi-hotel-trip/useMultiHotelTripPriceVariant'
+
+// Vakantie (meerdere hotels): één cluster i.p.v. losse kamers — zelfde teksten en prijsregels
+// als de desktop-room-table (CheckoutRoomTable.vue), met een carrousel van alle kamers van alle hotels.
+const { trip } = useMultiHotelTripCheckoutTrip()
+const nights = computed(() => trip.value?.nights ?? 2)
+const { perPerson: pricePerPerson, displayPrice } = useMultiHotelTripPriceVariant()
+const ppTrip = computed(() => !!trip.value && pricePerPerson.value)
+/** Toonprijs in de tariefkaart: bij een vakantie in de p.p.-variant de helft (per persoon). */
+const shownPrice = (v: number) => (ppTrip.value ? displayPrice(v, true) : v)
 
 // Kalenderkoppeling: zelfde state + delta-patroon als de desktop-tabel.
 const checkoutDay = useState<{ price: number; checkIn?: string; checkOut?: string } | null>(
   'mht-checkout-day',
   () => null,
 )
-const CHEAPEST_BASE = Math.min(...roomsData.map((r) => r.priceNow))
+const CHEAPEST_BASE = trip.value ? trip.value.price : Math.min(...roomsData.map((r) => r.priceNow))
 const priceDelta = computed(() =>
   checkoutDay.value ? checkoutDay.value.price - CHEAPEST_BASE : 0,
 )
@@ -37,7 +48,20 @@ interface ListRoom {
 }
 
 const listRooms = reactive<ListRoom[]>(
-  roomsData.map((r) => ({
+  trip.value
+    ? [{
+        // Eén cluster: flexibel annuleren kost €15 per kamer, dus × aantal hotels.
+        id: 'trip',
+        name: trip.value.name,
+        image: trip.value.thumb,
+        description: '',
+        facilities: [],
+        rows: [
+          { id: 'trip-flex', baseId: 'trip', rateKey: 'flexible', priceWas: trip.value.priceWas + pricing.flexibilityPerRoom * trip.value.hotels.length, price: trip.value.price + pricing.flexibilityPerRoom * trip.value.hotels.length, quantity: 0, scarcity: trip.value.scarcity },
+          { id: 'trip-nonref', baseId: 'trip', rateKey: 'nonrefundable', priceWas: trip.value.priceWas, price: trip.value.price, quantity: 0, scarcity: trip.value.scarcity },
+        ],
+      }]
+    : roomsData.map((r) => ({
     id: r.id,
     name: r.roomName,
     image: r.image,
@@ -173,7 +197,35 @@ const arrangementIncludes = [
 const checkInLabel = computed(() => checkoutDay.value?.checkIn || hotel.checkInDate)
 const checkOutLabel = computed(() => checkoutDay.value?.checkOut || hotel.checkOutDate)
 
-useHead({ title: 'Kies je kamer — ViaLuxury' })
+/* Hotelcarrousel (vakantie): alle kamers van alle hotels, swipebaar (scroll-snap) met navigator en
+   stippen; de knoppen scrollen naar de slide, het scrollen zelf bepaalt de actieve index. */
+// De ref staat in de v-for van de kamerlijst → Vue levert een array; het cluster is er maar één.
+const carEl = ref<HTMLElement | HTMLElement[] | null>(null)
+const carElement = () => (Array.isArray(carEl.value) ? carEl.value[0] ?? null : carEl.value)
+const hotelIndex = ref(0)
+const hotelCount = computed(() => trip.value?.hotels.length ?? 0)
+let programmaticScrollAt = 0
+function goHotel(i: number) {
+  const el = carElement()
+  if (!el) return
+  const idx = Math.max(0, Math.min(hotelCount.value - 1, i))
+  programmaticScrollAt = Date.now()
+  hotelIndex.value = idx
+  el.scrollTo({ left: idx * el.clientWidth, behavior: 'smooth' })
+}
+/** Swipen: de scrollpositie bepaalt de actieve slide (niet tijdens het programmatisch scrollen). */
+function onCarScroll() {
+  const el = carElement()
+  if (!el || !el.clientWidth || Date.now() - programmaticScrollAt < 700) return
+  hotelIndex.value = Math.round(el.scrollLeft / el.clientWidth)
+}
+/** Na afloop van elke scroll (swipe of knop) de index definitief zetten. */
+function onCarScrollEnd() {
+  const el = carElement()
+  if (el && el.clientWidth) hotelIndex.value = Math.round(el.scrollLeft / el.clientWidth)
+}
+
+useHead({ title: trip.value ? 'Kies je opties — ViaLuxury' : 'Kies je kamer — ViaLuxury' })
 </script>
 
 <template>
@@ -187,20 +239,22 @@ useHead({ title: 'Kies je kamer — ViaLuxury' })
         <!-- Samenvatting van de boeking -->
         <section class="msum">
           <div class="msum__hotel">
-            <img class="msum__thumb" :src="hotel.thumb" :alt="hotel.name" />
+            <img class="msum__thumb" :src="trip ? trip.thumb : hotel.thumb" :alt="trip ? trip.name : hotel.name" />
             <div class="msum__hotelmain">
-              <p class="msum__name">{{ hotel.name }}</p>
-              <p class="msum__loc">
+              <p class="msum__name">{{ trip ? trip.name : hotel.name }}</p>
+              <!-- Vakantie: "Autovakantie · 3 hotels" i.p.v. de plaats -->
+              <p v-if="trip" class="msum__loc">{{ trip.typeLabel }} · {{ trip.hotels.length }} hotels</p>
+              <p v-else class="msum__loc">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.2 7-11a7 7 0 10-14 0c0 4.8 7 11 7 11z" stroke="currentColor" stroke-width="2" stroke-linejoin="round" /><circle cx="12" cy="10" r="2.5" stroke="currentColor" stroke-width="2" /></svg>
                 {{ hotel.location }}
               </p>
               <div class="msum__dates">
                 <div class="msum__datecell">
-                  <span class="t-caption c-mgrey">Check in</span>
+                  <span class="t-caption c-mgrey">{{ trip ? 'Aankomst' : 'Check in' }}</span>
                   <span class="t-body t-bold">{{ checkInLabel }}</span>
                 </div>
                 <div class="msum__datecell">
-                  <span class="t-caption c-mgrey">Check out</span>
+                  <span class="t-caption c-mgrey">{{ trip ? 'Vertrek' : 'Check out' }}</span>
                   <span class="t-body t-bold">{{ checkOutLabel }}</span>
                 </div>
               </div>
@@ -212,9 +266,9 @@ useHead({ title: 'Kies je kamer — ViaLuxury' })
 
         <!-- Arrangement -->
         <section class="mincl">
-          <h2 class="msectiontitle">Jouw arrangement</h2>
-          <p class="t-body c-grey">{{ dealName }}</p>
-          <p v-for="item in arrangementIncludes" :key="item" class="mincl__item">
+          <h2 class="msectiontitle">{{ trip ? `Jouw ${trip.typeWord} bevat` : 'Jouw arrangement' }}</h2>
+          <p v-if="!trip" class="t-body c-grey">{{ dealName }}</p>
+          <p v-for="item in (trip ? trip.includes : arrangementIncludes)" :key="item" class="mincl__item">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" /></svg>
             {{ item }}
           </p>
@@ -225,17 +279,46 @@ useHead({ title: 'Kies je kamer — ViaLuxury' })
         <!-- Kamerlijst -->
         <section class="mrooms">
           <div>
-            <h2 class="msectiontitle">Kies je kamer(s)</h2>
-            <p class="t-body c-grey">Je krijgt één van de beste kamers, voor veel minder dan normaal!</p>
+            <h2 class="msectiontitle">{{ trip ? 'Kies je opties' : 'Kies je kamer(s)' }}</h2>
+            <p v-if="!trip" class="t-body c-grey">Je krijgt één van de beste kamers, voor veel minder dan normaal!</p>
           </div>
 
           <article v-for="room in listRooms" :key="room.id" class="mroom" :data-room="room.id">
-            <h3 class="mroom__name">{{ room.name }}</h3>
-            <img class="mroom__img" :src="room.image" :alt="room.name" />
-            <p class="t-body c-grey">{{ room.description }}</p>
-            <div class="mroom__pills">
-              <span v-for="f in room.facilities" :key="f.label" class="mroom__pill">{{ f.label }}</span>
-            </div>
+            <!-- Vakantie: carrousel met de kamer van elk hotel (swipen, navigator, stippen) -->
+            <template v-if="trip">
+              <div class="mcar__head">
+                <button type="button" class="mcar__btn" aria-label="Vorig hotel" :disabled="hotelIndex === 0" @click="goHotel(hotelIndex - 1)">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15 6l-6 6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+                </button>
+                <span class="mcar__count">Hotel {{ hotelIndex + 1 }} van {{ hotelCount }}</span>
+                <button type="button" class="mcar__btn" aria-label="Volgend hotel" :disabled="hotelIndex >= hotelCount - 1" @click="goHotel(hotelIndex + 1)">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+                </button>
+              </div>
+              <div ref="carEl" class="mcar__view" @scroll.passive="onCarScroll" @scrollend="onCarScrollEnd">
+                <div v-for="(h, hi) in trip.hotels" :key="h.name" class="mcar__slide" :aria-hidden="hi !== hotelIndex">
+                  <h3 class="mroom__name">{{ h.name }}</h3>
+                  <p class="mcar__room">{{ h.roomName }}</p>
+                  <p class="t-caption c-mgrey">{{ h.city }} · {{ h.nights }} {{ h.nights === 1 ? 'nacht' : 'nachten' }}</p>
+                  <img class="mroom__img" :src="h.image || trip.thumb" :alt="`${h.roomName} — ${h.name}`" />
+                  <p class="t-body c-grey">{{ h.roomDescription }}</p>
+                  <div v-if="h.facilities.length" class="mroom__pills">
+                    <span v-for="f in h.facilities" :key="f.label" class="mroom__pill">{{ f.label }}</span>
+                  </div>
+                </div>
+              </div>
+              <div class="mcar__dots" role="tablist" aria-label="Hotels">
+                <button v-for="(h, hi) in trip.hotels" :key="h.name" type="button" class="mcar__dot" :class="{ 'mcar__dot--on': hi === hotelIndex }" :aria-label="h.name" :aria-selected="hi === hotelIndex" @click="goHotel(hi)" />
+              </div>
+            </template>
+            <template v-else>
+              <h3 class="mroom__name">{{ room.name }}</h3>
+              <img class="mroom__img" :src="room.image" :alt="room.name" />
+              <p class="t-body c-grey">{{ room.description }}</p>
+              <div class="mroom__pills">
+                <span v-for="f in room.facilities" :key="f.label" class="mroom__pill">{{ f.label }}</span>
+              </div>
+            </template>
 
             <!-- Horizontale rij tariefkaarten (Booking.com-patroon) -->
             <div class="mrates">
@@ -265,11 +348,14 @@ useHead({ title: 'Kies je kamer — ViaLuxury' })
 
                 <div class="mrate__pricing">
                   <p class="mrate__prices">
-                    <MultiHotelTripCheckoutPriceTag :value="rowWas(row)" :show-cents="false" size="sm" strike color="var(--c-medium-grey)" />
-                    <MultiHotelTripCheckoutPriceTag :value="rowPrice(row)" :show-cents="false" size="lg" bold color="var(--c-via-orange)" />
+                    <MultiHotelTripCheckoutPriceTag :value="shownPrice(rowWas(row))" :show-cents="false" size="sm" strike color="var(--c-medium-grey)" />
+                    <MultiHotelTripCheckoutPriceTag :value="shownPrice(rowPrice(row))" :show-cents="false" size="lg" bold color="var(--c-via-orange)" />
                     <MultiHotelTripPriceInfoTooltip variant="deal" />
                   </p>
-                  <p class="t-caption c-mgrey">Prijs voor 2 nachten + compleet arrangement</p>
+                  <!-- Vakantie: "Prijs voor 6 nachten + complete autovakantie (3 hotels)"; p.p.-variant: per persoon. -->
+                  <p v-if="ppTrip" class="t-caption c-mgrey">Per persoon (min. 2 pers.)</p>
+                  <p v-else-if="trip" class="t-caption c-mgrey">Prijs voor {{ nights }} nachten + complete {{ trip.typeWord }} ({{ trip.hotels.length }} hotels)</p>
+                  <p v-else class="t-caption c-mgrey">Prijs voor 2 nachten + compleet arrangement</p>
                 </div>
 
                 <!-- Eerst een "Kies"-knop; na de keuze de aantal-selector (op 1)
@@ -326,10 +412,11 @@ useHead({ title: 'Kies je kamer — ViaLuxury' })
               <div class="mroomsum">
                 <h3 class="mroomsum__title">Prijsopbouw</h3>
                 <div v-for="row in selectedRows" :key="row.id" class="mdetails__row mdetails__row--room">
-                  <span class="mdetails__qty">{{ row.quantity }}x</span>
+                  <!-- Vakantie: "Nx" alleen bij meer dan één kamer per hotel (niet in de p.p.-variant). -->
+                  <span v-if="!trip || (row.quantity > 1 && !ppTrip)" class="mdetails__qty">{{ row.quantity }}x</span>
                   <div class="mdetails__main">
-                    <p class="t-body t-bold">Arrangement</p>
-                    <p class="t-caption c-mgrey">{{ roomNameFor(row.baseId) }}</p>
+                    <p class="t-body t-bold">{{ trip ? (ppTrip ? `${trip.typeLabel} ${row.quantity * 2} personen` : trip.typeLabel) : 'Arrangement' }}</p>
+                    <p class="t-caption c-mgrey">{{ trip ? `${trip.hotels.length} hotels, ${row.quantity} ${row.quantity === 1 ? 'kamer' : 'kamers'} per hotel` : roomNameFor(row.baseId) }}</p>
                   </div>
                   <!-- Prijs met daaronder het annuleringslabel, rechts uitgelijnd
                        op de regel van de kamernaam -->
@@ -354,7 +441,8 @@ useHead({ title: 'Kies je kamer — ViaLuxury' })
                       <MultiHotelTripCheckoutPriceTag :value="displayTotal" size="lg" bold color="var(--c-via-green)" />
                     </div>
                   </div>
-                  <p class="t-caption c-mgrey">{{ totalRooms }} {{ totalRooms === 1 ? 'kamer' : 'kamers' }} voor 2 nachten</p>
+                  <p v-if="trip" class="t-caption c-mgrey">{{ trip.hotels.length }} hotels, {{ totalRooms }} {{ totalRooms === 1 ? 'kamer' : 'kamers' }} per hotel, {{ nights }} nachten</p>
+                  <p v-else class="t-caption c-mgrey">{{ totalRooms }} {{ totalRooms === 1 ? 'kamer' : 'kamers' }} voor 2 nachten</p>
                 </div>
 
                 <p class="msaved">
@@ -521,6 +609,53 @@ useHead({ title: 'Kies je kamer — ViaLuxury' })
   object-fit: cover;
   border-radius: var(--radius-sm);
 }
+/* Hotelcarrousel (vakantie): navigator op een grijs vlak, swipebare slides, stippen. */
+.mcar__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin: -16px -16px 0;
+  padding: 6px 12px;
+  background: var(--c-surface);
+  border-radius: var(--radius) var(--radius) 0 0;
+}
+.mcar__btn {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  border: 1px solid var(--c-dark-grey);
+  border-radius: 50%;
+  background: var(--c-white);
+  color: var(--c-via-black);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+}
+.mcar__btn:disabled { opacity: 0.3; cursor: default; }
+.mcar__count { font-size: var(--t-caption); font-weight: var(--w-black); color: var(--c-via-black); }
+.mcar__view {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.mcar__view::-webkit-scrollbar { display: none; }
+.mcar__slide {
+  flex: 0 0 100%;
+  min-width: 0;
+  scroll-snap-align: start;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.mcar__room { font-size: var(--t-body); line-height: var(--lh-body); font-weight: 500; color: var(--c-via-black); margin-top: -4px; }
+.mcar__dots { display: flex; justify-content: center; gap: 6px; }
+.mcar__dot { width: 8px; height: 8px; border-radius: 50%; border: 0; padding: 0; background: var(--c-light-grey); cursor: pointer; }
+.mcar__dot--on { background: var(--c-via-black); }
 .mroom__pills {
   display: flex;
   flex-wrap: wrap;
