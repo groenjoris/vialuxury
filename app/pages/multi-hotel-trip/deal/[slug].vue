@@ -1231,7 +1231,7 @@ import { isTripSight } from '~/utils-multi-hotel-trip/tripSights'
 import type { TripItineraryStop } from '~/components-multi-hotel-trip/deal/TripItineraryCities.vue'
 import TripItineraryVariantSwitch from '~/components-multi-hotel-trip/deal/TripItineraryVariantSwitch.vue'
 import { useMultiHotelTripFinalOptions } from '~/composables-multi-hotel-trip/useMultiHotelTripFinalOptions'
-import { ITINERARY_VARIANT_SLUGS, useMultiHotelTripItineraryVariant, type ItineraryVariant } from '~/composables-multi-hotel-trip/useMultiHotelTripItineraryVariant'
+import { ITINERARY_SWITCHER_ENABLED, ITINERARY_VARIANT_SLUGS, useMultiHotelTripItineraryVariant, type ItineraryVariant } from '~/composables-multi-hotel-trip/useMultiHotelTripItineraryVariant'
 import type { TripHotelModalData } from '~/components-multi-hotel-trip/deal/TripHotelDetails.vue'
 import { PRICED_PERSONS, minRoomsFor } from '~/utils-multi-hotel-trip/priceFormula'
 import { matchIcon } from '~/utils-multi-hotel-trip/iconMatcher'
@@ -1684,9 +1684,11 @@ const perCityRef = ref<InstanceType<typeof TripItineraryPerCity> | null>(null)
 const perCityAllOpen = computed(() => perCityRef.value?.allOpen ?? true)
 
 const FIXED_ITIN_VARIANT: Record<string, ItineraryVariant> = {
+  'ontdek-noord-frankrijk-en-de-opaalkust-in-7-dagen': 'city',
   'fietsvakantie-twente-en-salland-delden-raalte-markelo': 'city',
 }
-const showItinVariants = computed(() => isTrip && ITINERARY_VARIANT_SLUGS.includes(routeSlug.value))
+// Schakelaar (zwevend icoon linksboven) staat uit — zie ITINERARY_SWITCHER_ENABLED.
+const showItinVariants = computed(() => ITINERARY_SWITCHER_ENABLED && isTrip && ITINERARY_VARIANT_SLUGS.includes(routeSlug.value))
 const { variant: itinVariantChosen } = useMultiHotelTripItineraryVariant()
 const itinVariant = computed<ItineraryVariant>(() =>
   showItinVariants.value ? itinVariantChosen.value : (isTrip ? (FIXED_ITIN_VARIANT[routeSlug.value] ?? 'current') : 'current'))
