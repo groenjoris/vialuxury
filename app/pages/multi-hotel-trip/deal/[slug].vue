@@ -47,7 +47,10 @@
             <!-- Vakantie: de hotelnamen met een pijltje ertussen (elke naam opent het
                  hotel-sidepanel); sterren ernaast alleen als alle hotels hetzelfde
                  aantal hebben (anders starRating 0). -->
-            <span v-if="isTrip" class="deal-page__hotel-subtitle deal-page__hotel-subtitle--trip"><MultiHotelTripHotelText :text="tripHotelsLabel" :hotels="tripHotelLinks" @open-hotel="openTripHotel" /></span>
+            <!-- Mobiel: elk hotel op een eigen regel (geen pijltjes); klik opent het hotelpanel. -->
+            <span v-if="isTrip && trip" class="deal-page__hotel-subtitle deal-page__hotel-subtitle--trip deal-page__hotel-stack">
+              <button v-for="(st, i) in trip.stops" :key="st.hotelName" type="button" class="deal-page__hotel-stack-item" @click="openTripHotel(i)">{{ st.hotelName }}</button>
+            </span>
             <NuxtLink v-else :to="`/multi-hotel-trip/hotel/${hotel.slug}`" class="deal-page__hotel-link">
               <span class="deal-page__hotel-subtitle">{{ hotel.name }}</span>
             </NuxtLink>
@@ -262,26 +265,25 @@
           <!-- Vakantie: dagprogramma (per dag 2–3 blokken, foto boven tekst). -->
           <template v-if="isTrip">
             <!-- Vakantie: "Het volgende is inbegrepen" — compacte inclusieblokken (thumb, titel, tekst). -->
-            <section v-if="tripIncluded.length" id="inbegrepen" class="trip-incl deal-page__anchor">
+            <!-- Mobiel: altijd de klassieke opmaak (als de arrangementenpagina: foto boven de tekst,
+                 geen grijs vlak); hoteltekst ingekort tot 120 tekens, "Lees meer" opent het hotelpanel. -->
+            <section v-if="tripIncluded.length" id="inbegrepen" class="trip-incl trip-incl--classic deal-page__anchor">
             <h2 class="section-title">{{ tripIncludedHeading }}</h2>
-            <div class="trip-incl__grid">
-              <article v-for="b in tripIncluded" :key="b.title" class="trip-incl__item">
-              <button v-if="b.image" type="button" class="trip-incl__thumb" :aria-label="`${b.title} — ${t('common.allPhotos')}`" @click="tripInclLightbox = { image: b.image, title: b.title }"><img :src="b.image" :alt="b.title" loading="lazy" /></button>
-                  <span v-else class="trip-incl__icon" aria-hidden="true"><img :src="b.icon || '/icons/facilities/special.svg'" alt="" width="22" height="22" /></span>
-              <div class="trip-incl__body">
-                <h3 class="trip-incl__title">
-                  <span class="trip-incl__check" aria-hidden="true"><svg class="icon-check" viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10"><path d="M3 13L8 19L21 5"/></svg></span>
-                  <span class="trip-incl__title-text">
-                    <MultiHotelTripHotelText :text="b.title" :hotels="tripHotelLinks" @open-hotel="openTripHotel" />
-                    <!-- Hotel: sterren achter de naam -->
-                    <span v-if="b.starRating" class="trip-incl__stars" aria-hidden="true"><span v-for="n in b.starRating" :key="n" class="trip-incl__star"><svg viewBox="0 0 18 18" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M16.963,6.786c-.088-.271-.323-.469-.605-.51l-4.62-.671L9.672,1.418c-.252-.512-1.093-.512-1.345,0l-2.066,4.186-4.62,.671c-.282,.041-.517,.239-.605,.51-.088,.271-.015,.57,.19,.769l3.343,3.258-.79,4.601c-.048,.282,.067,.566,.298,.734,.231,.167,.538,.189,.79,.057l4.132-2.173,4.132,2.173c.11,.058,.229,.086,.349,.086,.155,0,.31-.048,.441-.143,.231-.168,.347-.452,.298-.734l-.79-4.601,3.343-3.258c.205-.199,.278-.498,.19-.769Z"/></svg></span></span>
-                  </span>
-                </h3>
-                <p class="trip-incl__text">{{ b.text }}</p>
-                <!-- Hotel: "Lees meer" opent het hotel-sidepanel -->
-                <button v-if="b.stopIndex != null" type="button" class="trip-incl__more" @click="openTripHotel(b.stopIndex)">{{ t('common.readMore') }}</button>
+            <div class="content-blocks__grid">
+              <div v-for="b in tripIncluded" :key="b.title" class="content-block">
+                <button v-if="b.image" type="button" class="content-block__image trip-incl__classic-img" :aria-label="`${b.title} — ${t('common.allPhotos')}`" @click="tripInclLightbox = { image: b.image, title: b.title }"><img :src="b.image" :alt="b.title" loading="lazy" /></button>
+                <div class="content-block__body">
+                  <h3 class="content-block__title">
+                    <span class="content-block__check"><svg class="icon-check" viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10" style="vertical-align:-0.125em"><path d="M3 13L8 19L21 5"/></svg></span>
+                    <span>
+                      <MultiHotelTripHotelText :text="b.title" :hotels="tripHotelLinks" @open-hotel="openTripHotel" />
+                      <span v-if="b.starRating" class="trip-incl__stars" aria-hidden="true"><span v-for="n in b.starRating" :key="n" class="trip-incl__star"><svg viewBox="0 0 18 18" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M16.963,6.786c-.088-.271-.323-.469-.605-.51l-4.62-.671L9.672,1.418c-.252-.512-1.093-.512-1.345,0l-2.066,4.186-4.62,.671c-.282,.041-.517,.239-.605,.51-.088,.271-.015,.57,.19,.769l3.343,3.258-.79,4.601c-.048,.282,.067,.566,.298,.734,.231,.167,.538,.189,.79,.057l4.132-2.173,4.132,2.173c.11,.058,.229,.086,.349,.086,.155,0,.31-.048,.441-.143,.231-.168,.347-.452,.298-.734l-.79-4.601,3.343-3.258c.205-.199,.278-.498,.19-.769Z"/></svg></span></span>
+                    </span>
+                  </h3>
+                  <p class="content-block__desc">{{ b.stopIndex != null ? shortInclText(b.text) : b.text }}</p>
+                  <button v-if="b.stopIndex != null" type="button" class="trip-incl__more" @click="openTripHotel(b.stopIndex)">{{ t('common.readMore') }}</button>
+                </div>
               </div>
-              </article>
             </div>
             </section>
             <h2 class="section-title">{{ itinCity ? t('trip.itin.city.heading') : itinSummary ? t('trip.itineraryFullHeading') : t('trip.itineraryHeading') }}</h2>
@@ -291,7 +293,7 @@
             <TripItineraryCities v-if="itinNew" :days="tripDaysView" :stops="tripItinStops" :legs="tripRouteLegs" :return-label="tripReturnLabel" :hotels="tripHotelLinks" stacked @open-hotel="openTripHotel" @open-map="tripMapOpen = true" />
             <TripItineraryAccordion v-else-if="itinHybrid" :days="tripDaysView" :stops="tripItinStops" :hotels="tripHotelLinks" stacked :show-stats="false" @open-hotel="openTripHotel" />
             <TripItineraryAccordion v-else-if="itinCollapsed" :days="tripDaysView" :stops="tripItinStops" :hotels="tripHotelLinks" stacked @open-hotel="openTripHotel" />
-            <TripItineraryPerCity v-else-if="itinCity" :chapters="tripCityChapters" :days="tripDaysView" :hotels="tripHotelLinks" stacked :show-stats="false" @open-hotel="openTripHotel" />
+            <TripItineraryPerCity v-else-if="itinCity" :chapters="tripCityChapters" :days="tripDaysView" :hotels="tripHotelLinks" stacked :show-stats="false" :show-toggle="false" @open-hotel="openTripHotel" />
             <MultiHotelTripItinerary v-else :days="tripDaysView" :hotels="tripHotelLinks" stacked @open-hotel="openTripHotel" />
           </template>
           <template v-else>
@@ -1136,7 +1138,7 @@
 
     <!-- Full description popup -->
     <!-- Uitgebreid voorbeeld reisschema (sidepanel, alleen tekst) -->
-    <TripItineraryPanel v-if="isTrip" :open="itinPanelOpen" :days="tripDaysView" :focus-day="itinPanelDay" @close="itinPanelOpen = false" />
+    <TripItineraryPanel v-if="isTrip" :open="itinPanelOpen" :days="tripDaysView" :focus-day="itinPanelDay" :trip-name="currentDeal ? localized(currentDeal.title) : ''" @close="itinPanelOpen = false" />
 
     <Teleport to="body">
       <Transition name="fade">
@@ -1217,6 +1219,7 @@ import { formatDateWeekdayShort, formatMonthYear } from '~/utils-multi-hotel-tri
 import tripRoutesJson from '~/data/mht-trip-routes.json'
 import type { TripRouteLeg } from '~/utils-multi-hotel-trip/tripMapLayers'
 import { tripPdpBySlug, tripHotelDetails } from '~/data/mht-trip-pdp'
+import type { TripDayBlockSpec } from '~/data/mht-trip-itineraries'
 import type { TripDayView, TripBlockView } from '~/components-multi-hotel-trip/deal/TripItinerary.vue'
 import TripItineraryAccordion from '~/components-multi-hotel-trip/deal/TripItineraryAccordion.vue'
 import TripItineraryCities from '~/components-multi-hotel-trip/deal/TripItineraryCities.vue'
@@ -1966,6 +1969,24 @@ const tripDaysView = computed<TripDayView[]>(() => {
 
 /** Fullscreen kaart (klik op het kaartje): route + hotels + omgevingshighlights. */
 const tripMapOpen = ref(false)
+/** Foto voor een bezienswaardigheid zonder eigen foto: het dagprogramma-blok (route/activiteit/
+ *  terugreis) waarvan de titel of tekst de naam noemt (mobiel onderpaneel op de kaart). */
+function poiImageFallback(name: string): string | undefined {
+  const needle = name.toLowerCase()
+  for (const d of tripPdp?.days ?? []) {
+    const blocks = [d.route, ...(d.activities ?? []), d.homeward].filter((b): b is TripDayBlockSpec => !!b)
+    for (const b of blocks) {
+      if (b.image && (localized(b.title).toLowerCase().includes(needle) || localized(b.text).toLowerCase().includes(needle))) return b.image
+    }
+  }
+  return undefined
+}
+/** Mobiel inclusieblok: hoteltekst ingekort tot 120 tekens (op een woordgrens). */
+function shortInclText(text: string, max = 120): string {
+  if (text.length <= max) return text
+  const cut = text.slice(0, max)
+  return `${cut.slice(0, Math.max(cut.lastIndexOf(' '), 80)).replace(/[,.;:]$/, '')}…`
+}
 const tripMapHighlights = computed(() =>
   (tripPdp?.content?.mapHighlights ?? []).map(h => ({
     kind: h.kind,
@@ -1973,7 +1994,7 @@ const tripMapHighlights = computed(() =>
     lat: h.lat,
     lng: h.lng,
     text: localized(h.text),
-    image: h.image,
+    image: h.image ?? poiImageFallback(localized(h.name)),
   })),
 )
 
@@ -3016,6 +3037,22 @@ onMounted(() => {
 /* ===== FACILITIES ===== */
 /* Vakantie: hotelnamen met pijltjes mogen over meer regels lopen. */
 .deal-page__hotel-subtitle--trip { white-space: normal; line-height: 1.4; }
+/* Mobiel: de hotelnamen onder elkaar, elk als link (zelfde stijl als de hotelnaam-links in de tekst). */
+.deal-page__hotel-stack { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; }
+.deal-page__hotel-stack-item {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-color: var(--color-border, #c7c2b8);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+.deal-page__hotel-stack-item:hover { color: var(--color-primary); text-decoration-color: currentColor; }
 /* Vakantie: het inclusieblok mag omhoog — geen streep/padding boven de content-blocks
    en de ruimte van het grid eraf, zodat het direct onder de beschrijving/minimap begint
    (het hoeft niet uit te lijnen met de zijbalk). */
@@ -3598,6 +3635,9 @@ onMounted(() => {
     margin-top: 16px;
     margin-bottom: 8px;
   }
+  /* Plaatsnamen + "Bekijk kaart": past de link niet meer naast de plaatsnamen, dan op een eigen regel, links. */
+  .deal-page__title-section--mobile .deal-page__meta { padding-right: 0; row-gap: 4px; }
+  .deal-page__title-section--mobile .deal-page__meta .deal-page__view-map-link { margin-left: 0; }
   /* Sidebar block inline on mobile — drop the desktop sticky/width
      constraints, let it flow with the page body. */
   .deal-page__sidebar-mobile {

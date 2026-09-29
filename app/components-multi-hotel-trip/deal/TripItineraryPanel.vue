@@ -12,7 +12,8 @@
         <div class="tipn__header">
           <div>
             <h3 class="tipn__title">{{ t('trip.itineraryHeading') }}</h3>
-            <p class="tipn__meta">{{ t('trip.itin.panelIntro') }}</p>
+            <!-- Naam van de vakantie (max. 2 regels) i.p.v. de intro-zin. -->
+            <p class="tipn__meta" :class="{ 'tipn__meta--name': !!tripName }">{{ tripName || t('trip.itin.panelIntro') }}</p>
           </div>
           <button type="button" class="tipn__close" :aria-label="t('common.close')" @click="$emit('close')">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12" /></svg>
@@ -42,6 +43,8 @@ const props = defineProps<{
   days: TripDayView[]
   /** Dag waar het panel naartoe scrolt bij openen (klik in de dagsamenvatting). */
   focusDay?: number | null
+  /** Naam van de vakantie in de kop (max. 2 regels, afgebroken); zonder naam de intro-zin. */
+  tripName?: string
 }>()
 const emit = defineEmits<{ close: [] }>()
 
@@ -91,6 +94,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 }
 .tipn__title { margin: 0; font-family: var(--font-heading); font-size: 22px; font-weight: 700; line-height: 1.25; }
 .tipn__meta { margin: 4px 0 0; font-size: 13px; color: var(--color-text-secondary); }
+.tipn__meta--name { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .tipn__close {
   flex-shrink: 0;
   width: 36px;
@@ -124,6 +128,8 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 .tipn-fade-enter-active, .tipn-fade-leave-active { transition: opacity 200ms ease; }
 .tipn-fade-enter-from, .tipn-fade-leave-to { opacity: 0; }
 @media (max-width: 767px) {
-  .tipn { width: 100%; max-width: none; }
+  /* Mobiel: als het panel "Andere arrangementen": laat links een strook vrij, schuift rustiger in. */
+  .tipn { width: 95vw; max-width: none; }
+  .tipn-slide-enter-active, .tipn-slide-leave-active { transition-duration: 450ms; }
 }
 </style>

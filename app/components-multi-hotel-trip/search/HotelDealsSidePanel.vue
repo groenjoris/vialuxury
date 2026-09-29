@@ -580,4 +580,9 @@ onUnmounted(() => {
 .panel-leave-to .panel {
   transform: translateX(100%);
 }
+@media (max-width: 767px) {
+  /* Mobiel: alle sidepanels schuiven in 450ms in. */
+  .panel-enter-active .panel,
+  .panel-leave-active .panel { transition-duration: 450ms; }
+}
 </style>

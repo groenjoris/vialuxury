@@ -334,8 +334,9 @@ function toggleBottom(index: number) {
     height: auto;
   }
   .tip-card {
-    flex: 0 0 80vw !important;
-    max-width: 80vw;
+    /* 20px smaller dan 80vw: de volgende attractie piept duidelijker in beeld (swipe-hint). */
+    flex: 0 0 calc(80vw - 20px) !important;
+    max-width: calc(80vw - 20px);
     height: auto !important;
     display: flex;
     flex-direction: column;

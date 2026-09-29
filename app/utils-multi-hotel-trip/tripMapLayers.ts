@@ -275,12 +275,13 @@ export function keepLabelsInView(map: Leaflet.Map, markers: Leaflet.Marker[]): v
 }
 
 /** Omgevingshighlights als pin met hover-kaartje. */
-export function addTripHighlights(L: L, map: Leaflet.Map, highlights: TripMapHighlight[]): Leaflet.Marker[] {
+export function addTripHighlights(L: L, map: Leaflet.Map, highlights: TripMapHighlight[], opts: { onClick?: (index: number) => void } = {}): Leaflet.Marker[] {
   const [w, h] = POI_PIN_SIZE
-  return highlights.map((hl) => {
+  return highlights.map((hl, i) => {
     const icon = L.divIcon({ className: 'tml-pin', html: poiPinSvg(hl.kind), iconSize: [w, h], iconAnchor: [w / 2, h - 1] })
     const m = L.marker([hl.lat, hl.lng], { icon, keyboard: false, zIndexOffset: 800 }).addTo(map)
     m.bindTooltip(hoverCardHtml({ image: hl.image, title: hl.name, lines: [hl.text] }), { ...TOOLTIP, offset: [0, -(h - 2)] })
+    if (opts.onClick) m.on('click', () => opts.onClick!(i))
     return m
   })
 }
