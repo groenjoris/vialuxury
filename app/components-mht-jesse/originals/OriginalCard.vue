@@ -258,22 +258,22 @@ function onCardClick(e: MouseEvent) {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 14px;
-  height: 64px;
-  padding: 10px 20px 0;
+  gap: 12px;
+  height: 46px;
+  padding: 6px 20px 0;
   background: var(--c, var(--color-dark));
   color: var(--on, #fff);
-  clip-path: polygon(0% 34%, 100% 0%, 100% 100%, 0% 100%);
+  clip-path: polygon(0% 38%, 100% 0%, 100% 100%, 0% 100%);
 }
 .original-card__band-label {
   font-family: var(--font-body);
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 400;
   line-height: 1;
 }
 .original-card__band-icon {
-  width: 26px;
-  height: 26px;
+  width: 22px;
+  height: 22px;
   flex: none;
   background: currentColor;
   -webkit-mask: url(/icons/mhtj-originals/champagne-glass.svg) center/contain no-repeat;
