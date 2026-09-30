@@ -3,7 +3,7 @@ import { matchesNightKeys } from '~/utils-multi-hotel-trip/nights'
 import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { searchHotels } from '~/data/mock/search-hotels'
-import { tripSearchHotels } from '~/data/mht-trips'
+import { tripMapHotels } from '~/data/mht-trips'
 import { useMultiHotelTripHotelMap } from '~/composables-multi-hotel-trip/useMultiHotelTripHotelMap'
 import { useMultiHotelTripHomeVariant } from '~/composables-multi-hotel-trip/useMultiHotelTripHomeVariant'
 import { dealMatchesAllTags, getFilterTag } from '~/utils-multi-hotel-trip/filterTags'
@@ -40,8 +40,9 @@ const { homeHref } = useMultiHotelTripHomeVariant()
  *   - auto-open the sidepanel for it when `?open=1` is also present
  *  Lives as a computed (not a ref) so navigating away wipes it. */
 // Alles wat op de kaart kan staan: de hotels én de meerhotel-vakanties (één
-// pin per vakantie op het middelpunt van haar hotels, met auto-/fietsicoon).
-const mapPool: SearchHotel[] = [...searchHotels, ...tripSearchHotels]
+// pin per route op het middelpunt van haar hotels, met auto-/fietsicoon;
+// reizen met dezelfde hotels delen één pin met meerdere dealkaartjes).
+const mapPool: SearchHotel[] = [...searchHotels, ...tripMapHotels]
 
 const focusedHotel = computed<SearchHotel | null>(() => {
   const slug = (route.query.focus as string | undefined) || ''

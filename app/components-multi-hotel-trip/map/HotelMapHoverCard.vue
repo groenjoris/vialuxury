@@ -57,7 +57,10 @@ const { t, localized } = useMultiHotelTripI18n()
 /** Vakantie (meerdere hotels): naam van de reis i.p.v. hotelnaam, plaatsnamen
  *  i.p.v. sterren en "Autovakantie voor / 6 nachten, 2 personen". */
 const trip = computed(() => props.hotel.trip ?? null)
-const titleText = computed(() => (trip.value ? localized(props.hotel.deals[0]!.title) : props.hotel.name))
+/** Meerdere reizen over dezelfde hotels delen één pin: dan de soortnaam
+ *  ("Autovakantie met 3 hotels") i.p.v. de naam van één reis. */
+const tripCombined = computed(() => !!trip.value && props.hotel.deals.length > 1)
+const titleText = computed(() => (trip.value && !tripCombined.value ? localized(props.hotel.deals[0]!.title) : props.hotel.name))
 const tripStopsLabel = computed(() => (trip.value?.stops ?? []).map(s => s.city).join(' · '))
 const { selectHotel, setHover, scheduleHover, keepHover } = useMultiHotelTripHotelMap()
 
@@ -166,10 +169,15 @@ const dealsLabel = computed(() => {
   const ns = nights.value
   if (ns.length === 0) return { top: '', bottom: '' }
   if (trip.value) {
+    const typeLabel = t(trip.value.type === 'fiets' ? 'trip.fiets' : 'trip.auto')
+    if (tripCombined.value) {
+      const suffix = ns.length === 1 && ns[0] === 1 ? 'nacht' : 'nachten'
+      return { top: `${typeLabel}s voor`, bottom: `${formatNights(ns)} ${suffix}` }
+    }
     const n = props.hotel.deals[0]!.nights
     const p = PRICED_PERSONS
     return {
-      top: `${t(trip.value.type === 'fiets' ? 'trip.fiets' : 'trip.auto')} voor`,
+      top: `${typeLabel} voor`,
       bottom: `${n} ${n === 1 ? 'nacht' : 'nachten'}, ${p} ${p === 1 ? 'persoon' : 'personen'}`,
     }
   }

@@ -5,6 +5,7 @@ import Supercluster from 'supercluster'
 import type { SearchHotel } from '~/types/searchHotel'
 import { useMultiHotelTripHotelMap } from '~/composables-multi-hotel-trip/useMultiHotelTripHotelMap'
 import { clusterHtml, pinHtml, tripPinHtml, pinSize, pinAnchor, type PinState } from './pinTemplates'
+import { spreadMarkers, type SpreadItem } from '~/utils-multi-hotel-trip/tripMapLayers'
 
 /**
  * HotelBrowseMap — Leaflet wrapper with Supercluster-driven clustering.
@@ -122,6 +123,10 @@ function renderMarkers() {
   ]
   const zoom = Math.round(map.getZoom())
   const items = cluster.getClusters(bbox, zoom)
+  // Pins mogen elkaar niet overlappen: clusters ontstaan pas vanaf 4, dus twee
+  // of drie pins vlak bij elkaar (bv. twee vakanties met bijna hetzelfde
+  // middelpunt) worden na het tekenen een paar pixels uit elkaar geduwd.
+  const spreadItems: SpreadItem[] = []
 
   for (const f of items) {
     const [lng, lat] = f.geometry.coordinates
@@ -150,6 +155,7 @@ function renderMarkers() {
         map!.setView([lat, lng], expansionZoom, { animate: true })
       })
       m.addTo(markersLayer)
+      spreadItems.push({ marker: m, w: 38, h: 38, anchor: 'center' })
     } else {
       // Individual hotel pin
       const hotelId = featureProps.hotelId as string
@@ -181,7 +187,9 @@ function renderMarkers() {
             const state = pinStateFor(hotelId)
             const [iconW, iconH] = pinSize(state)
             const [, iconAnchorY] = pinAnchor(state)
-            const anchorPx = map!.latLngToContainerPoint([lat, lng])
+            // De marker kan een paar pixels verschoven zijn (spreadMarkers):
+            // ankeren op de getekende positie, niet op de coördinaat.
+            const anchorPx = map!.latLngToContainerPoint(m.getLatLng())
             const anchorX = anchorPx.x + rect.left
             const anchorY = anchorPx.y + rect.top
             // anchorOffsetY = how far the anchor is from the TOP of the icon.
@@ -217,8 +225,12 @@ function renderMarkers() {
         })
       }
       m.addTo(markersLayer)
+      const st = pinStateFor(hotelId)
+      const [w, h] = pinSize(st)
+      spreadItems.push({ marker: m, w, h, anchor: st === 'focused' || st === 'focusedHover' ? 'bottom' : 'center' })
     }
   }
+  spreadMarkers(L, map, spreadItems)
 }
 
 function buildClusterIndex() {

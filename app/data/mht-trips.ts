@@ -590,6 +590,31 @@ const built = TRIPS
 /** Alle meerhotel-vakanties als SearchHotel-records (met `trip` gezet). */
 export const tripSearchHotels: SearchHotel[] = built.map(b => b.hotel)
 
+/** Vakanties voor de zoekkaart: reizen met exact dezelfde hotels (dezelfde route)
+ *  worden één record met meerdere deals — één pin, en in het sidepanel /
+ *  mobiele kaartje de dealkaartjes van alle reizen onder/naast elkaar (zoals een
+ *  hotel met meerdere arrangementen). Andere reizen blijven losse records. */
+export const tripMapHotels: SearchHotel[] = (() => {
+  const groups = new Map<string, SearchHotel[]>()
+  for (const h of tripSearchHotels) {
+    const key = (h.trip?.stops ?? []).map(s => s.hotelName).sort().join('|')
+    const g = groups.get(key)
+    if (g) g.push(h)
+    else groups.set(key, [h])
+  }
+  return [...groups.values()].map((g) => {
+    if (g.length === 1) return g[0]!
+    const first = g[0]!
+    return {
+      ...first,
+      id: g.map(h => h.id).join('+'),
+      deals: g.flatMap(h => h.deals).sort((a, b) => a.basePrice - b.basePrice),
+      // Geen vaste PDP-link op het record: elk dealkaartje linkt via zijn eigen slug.
+      trip: first.trip ? { ...first.trip, pdpHref: undefined } : undefined,
+    }
+  })
+})()
+
 /** Vakantie-slug → detailrecord voor de vakantie-PDP. */
 export const tripDetailBySlug: Record<string, MultiHotelTripDetail> = Object.fromEntries(
   built.map(b => [b.detail.slug, b.detail]),
