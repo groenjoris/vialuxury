@@ -1,0 +1,59 @@
+/* ------------------------------------------------------------------
+   ViaLuxury Originals — collectiekleuren.
+
+   Overgenomen uit VIALUXURY-ORIGINALS-COLLECTIEKLEUREN_1.md. De zes
+   collecties hebben elk één kleur die net zo helder en warm is als het
+   merkoranje, zodat ze één familie vormen.
+
+   Gescoped onder `.mhtj-originals` in plaats van op `:root`, zodat de
+   kleuren alleen gelden op de Originals-pagina van Multi Hotel Trip -
+   Jesse en geen enkel ander prototype raken.
+
+   Regels uit het document die hier zijn vastgelegd:
+   - Oranje blijft voor knoppen en sterren. Nooit voor een collectie.
+   - Heritage krijgt donkere tekst; wit is op geel niet leesbaar.
+   - Versie "licht" is alleen voor lichte achtergronden.
+------------------------------------------------------------------- */
+
+.mhtj-originals {
+  /* Hoofdkleur per collectie */
+  --col-culinary: #C94754;
+  --col-retreat:  #11A22F;
+  --col-heritage: #FFD60A;
+  --col-seasonal: #007C59;
+  --col-routes:   #029BC3;
+  --col-events:   #A454B6;
+
+  /* Lichte tint per collectie */
+  --col-culinary-tint: #F4E1E1;
+  --col-retreat-tint:  #DAEEDC;
+  --col-heritage-tint: #FCF5D7;
+  --col-seasonal-tint: #D8E8E2;
+  --col-routes-tint:   #D8EDF1;
+  --col-events-tint:   #EFE3EF;
+}
+
+/* `--c` is de collectiekleur, `--on` de tekstkleur die daarop leesbaar is,
+   `--t` de lichte tint en `--ink` de tekst die op die tint leesbaar is. */
+.mhtj-originals [data-collection="culinary"] { --c: var(--col-culinary); --t: var(--col-culinary-tint); --on: #FFFFFF;          --ink: var(--col-culinary); }
+.mhtj-originals [data-collection="retreat"]  { --c: var(--col-retreat);  --t: var(--col-retreat-tint);  --on: #FFFFFF;          --ink: var(--col-retreat); }
+.mhtj-originals [data-collection="heritage"] { --c: var(--col-heritage); --t: var(--col-heritage-tint); --on: var(--color-dark); --ink: var(--color-dark); }
+.mhtj-originals [data-collection="seasonal"] { --c: var(--col-seasonal); --t: var(--col-seasonal-tint); --on: #FFFFFF;          --ink: var(--col-seasonal); }
+.mhtj-originals [data-collection="routes"]   { --c: var(--col-routes);   --t: var(--col-routes-tint);   --on: #FFFFFF;          --ink: var(--col-routes); }
+.mhtj-originals [data-collection="events"]   { --c: var(--col-events);   --t: var(--col-events-tint);   --on: #FFFFFF;          --ink: var(--col-events); }
+
+/* Losstaand label, voor de collectierij bovenaan de pagina. */
+.mhtj-originals .col-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+.mhtj-originals[data-variant="vol"]   .col-label { background: var(--c); color: var(--on); }
+.mhtj-originals[data-variant="licht"] .col-label { background: var(--t); color: var(--ink); }

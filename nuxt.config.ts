@@ -115,6 +115,7 @@ export default defineNuxtConfig({
     '~/assets/css/fr-checkout.css',
     '~/assets/css/mht-checkout.css',
     '~/assets/css/mhtj-checkout.css',
+    '~/assets/css/mhtj-originals.css',
     '~/assets/css/home-categories.css',
   ],
 
