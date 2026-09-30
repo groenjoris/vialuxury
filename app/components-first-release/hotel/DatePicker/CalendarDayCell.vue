@@ -219,18 +219,20 @@ function handleClick() {
   color: white;
 }
 
-/* Default price color: black */
+/* Prijs: 13px semibold in het oorspronkelijke groen, tabulaire cijfers
+   (zelfde waarden als de variant-6-regels, zodat elke kalender gelijk is). */
 .day-cell__price {
   grid-row: 2;
-  font-size: 12px;
-  color: var(--color-text-primary);
+  font-size: 13px;
+  color: var(--color-discount);
   font-weight: 600;
+  font-variant-numeric: tabular-nums;
   line-height: 1;
 }
 
-/* Cheapest price: green */
+/* Laagste prijs: oranje (met sterretje) */
 .day-cell__price--cheapest {
-  color: var(--color-discount);
+  color: var(--color-primary);
 }
 
 /* Selected (check-in) price: white */

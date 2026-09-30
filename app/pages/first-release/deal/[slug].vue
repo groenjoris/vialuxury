@@ -56,7 +56,7 @@
         <!-- 5. Photo carousel -->
         <section class="container deal-page__gallery">
           <FirstReleaseHeroGallery
-            :images="hotel.images"
+            :images="galleryImages"
             :labels="galleryLabels"
             :rooms-left="dealRoomsLeft"
             @open-gallery="openGallery"
@@ -124,7 +124,7 @@
             </div>
 
             <template v-if="!store.checkInDate">
-              <button class="btn btn-primary sidebar__book">{{ t('deal.bookNow') }}</button>
+              <button class="btn btn-primary sidebar__book" @click="goToCheckout">{{ t('deal.bookNow') }}</button>
               <FirstReleaseSidebarPaymentLogos />
             </template>
 
@@ -166,7 +166,7 @@
                 <p class="sidebar__extra-costs-line">{{ t('deal.extraCostsVerwaltung') }}</p>
               </div>
               <p v-else class="sidebar__disclaimer">{{ t('deal.disclaimer') }}</p>
-              <button class="btn btn-primary sidebar__book" @click="() => {}">{{ t('deal.bookNow') }}</button>
+              <button class="btn btn-primary sidebar__book" @click="goToCheckout">{{ t('deal.bookNow') }}</button>
               <FirstReleaseSidebarPaymentLogos />
             </div>
 
@@ -370,7 +370,7 @@
       <!-- Hero Gallery -->
       <section class="container deal-page__gallery">
         <FirstReleaseHeroGallery
-          :images="hotel.images"
+          :images="galleryImages"
           :labels="galleryLabels"
           :rooms-left="dealRoomsLeft"
           @open-gallery="openGallery"
@@ -549,7 +549,7 @@
           </div>
 
           <template v-if="!store.checkInDate">
-            <button class="btn btn-primary sidebar__book">{{ t('deal.bookNow') }}</button>
+            <button class="btn btn-primary sidebar__book" @click="goToCheckout">{{ t('deal.bookNow') }}</button>
             <FirstReleaseSidebarPaymentLogos />
           </template>
 
@@ -596,7 +596,7 @@
             </div>
             <p v-else class="sidebar__disclaimer">{{ t('deal.disclaimer') }}</p>
 
-            <button class="btn btn-primary sidebar__book" @click="() => {}">{{ t('deal.bookNow') }}</button>
+            <button class="btn btn-primary sidebar__book" @click="goToCheckout">{{ t('deal.bookNow') }}</button>
             <FirstReleaseSidebarPaymentLogos />
           </div>
 
@@ -922,7 +922,7 @@
     <FirstReleasePhotoGalleryModal
       v-if="hotel && currentDeal"
       :open="galleryOpen"
-      :images="hotel.images"
+      :images="galleryImages"
       :title="localized(currentDeal.title)"
       :view="galleryView"
       :index="galleryIndex"
@@ -944,6 +944,7 @@ import { useSearchNavLock } from '~/composables-first-release/useMobileSearchMod
 import { useBodyScrollLock } from '~/composables-first-release/useBodyScrollLock'
 import { usePinToViewportBottom } from '~/composables-first-release/usePinToViewportBottom'
 import { creatorForSlug } from '~/data/team-members'
+import { withFietskaarten } from '~/data/fietskaarten'
 import FirstReleaseExperienceCreatorCard from '~/components-first-release/deal/ExperienceCreatorCard.vue'
 import FirstReleaseWhyViaLuxury from '~/components-first-release/deal/WhyViaLuxury.vue'
 import FirstReleaseOthersAlsoViewed from '~/components-first-release/deal/OthersAlsoViewed.vue'
@@ -1215,9 +1216,15 @@ function handleFavoriteClick() {
   })
 }
 
+// "Boek nu" → checkout (room table): met een gekozen datum direct naar de
+// kamerkeuze, anders eerst de kalenderstap. Op een telefoon leidt de
+// fr-mobile middleware de stappen door naar de mobiele checkout-site.
+function goToCheckout() {
+  navigateTo(store.checkInDate ? '/first-release/checkout/kamers' : '/first-release/checkout/datum')
+}
+
 function handleMobileBook() {
-  // Scroll to top of page / open booking flow (same as sidebar book button)
-  // For now: no-op, mirrors desktop Boek nu behavior
+  goToCheckout()
 }
 
 // Resolve permalink from route — fallback to first available if invalid
@@ -1247,6 +1254,9 @@ const showPartnerLogo = computed(() => {
 
 const hotel = ref(initialHotel)
 const currentDeal = computed(() => store.currentDeal)
+// Gallery = hotel photos + the two example cycling-route maps (with captions)
+// on cycling deals — see ~/data/fietskaarten.ts.
+const galleryImages = computed(() => withFietskaarten(hotel.value.images, currentDeal.value))
 // The SearchHotel + SearchHotelDeal that back this deal page — looked up
 // by the route's deal permalink, i.e. the exact card the user came from.
 // Drives the gallery stickers so they match the search card.
@@ -1517,10 +1527,9 @@ function openGalleryPhoto(i: number) {
   galleryIndex.value = i
   galleryOpen.value = true
 }
-/** Mobile gallery "Ik ga boeken" → will go to checkout once that exists.
- *  Idle for now (no scroll-back). */
+/** Mobile gallery "Ik ga boeken" → checkout (zelfde als de Boek nu-knop). */
 function handleGalleryBook() {
-  // intentionally a no-op until checkout is built
+  goToCheckout()
 }
 
 // Sync FR nav-bar variant with the user's last homepage pick so the

@@ -191,7 +191,8 @@ const dealViews = computed(() => {
         // Prototype: always the PRICED_PERSONS / 1-room price (party size doesn't scale it).
         price: priceForArrival(deal.basePrice, deal.id, effArrival, PRICED_PERSONS),
         originalPrice: priceForArrival(deal.originalPrice, deal.id, effArrival, PRICED_PERSONS),
-        includes: (deal.inclusions || []).slice(0, 2).map(i => localized(i)),
+        // Vier inclusies, zoals op de live site (was twee).
+        includes: (deal.inclusions || []).slice(0, 4).map(i => localized(i)),
         href,
       }
     })
@@ -292,16 +293,20 @@ const dealViews = computed(() => {
 }
 .mapcard__rail::-webkit-scrollbar { display: none; }
 
-/* Single deal → fill the full width (no carousel). */
+/* Single deal → fill the full width (no carousel). Basis 0 + min-width 0: een
+   lange inclusieregel (nowrap, ellipsis) mag het kaartje niet breder maken dan
+   de rail — anders schuiven prijs en pijlknop buiten beeld. */
 .mapcard__rail--single .mdeal {
-  flex: 1 1 auto;
-  width: auto;
+  flex: 1 1 0;
+  width: 0;
+  min-width: 0;
 }
 
 .mdeal {
   scroll-snap-align: start;
   flex: 0 0 290px;
   width: 290px;
+  min-width: 0;
   background: #fff;
   border: 1px solid #f5f5f5;
   border-radius: 6px;

@@ -6,6 +6,8 @@
   --color-primary-hover: #d4621f;
   --color-primary-light: #F5F5F5;
   --color-discount: #00B67A;
+  /* Donkergroen uit de huisstijl — o.a. prijzen in de kalenders (AA-contrast op wit). */
+  --color-green-dark: #00675f;
   --color-discount-light: #E8F5E9;
   --color-text-primary: #1A1A1A;
   --color-text-link: #4A4A4A;

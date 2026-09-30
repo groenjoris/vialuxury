@@ -14,13 +14,15 @@ export interface MultiHotelTripStop {
   /** Aantal nachten op deze stop (voor de vakantie-PDP). */
   nights?: number
   starRating?: number
-  /** Foto voor hotels buiten de dataset (public/images/vakanties/...). */
+  /** Eigen foto van deze stop (public/images/vakanties/...); wint van de datasetfoto. */
   image?: string
   /** Ligging, voor het routekaartje op de card. */
   lat?: number
   lng?: number
   /** NL-provincie voor het bestemmingsfilter (streeknaam kan afwijken, bv. Twente → Overijssel). */
   province?: string
+  /** Etappe vanaf het vorige hotel (voor de km/min-labels in de tijdlijn-variant). */
+  travel?: { km: number; minutes: number }
 }
 export interface MultiHotelTripInfo {
   type: MultiHotelTripType
@@ -29,6 +31,10 @@ export interface MultiHotelTripInfo {
   tags: string[]
   /** Routekaart uit de briefing (voor de vakantie-PDP). */
   routeImage?: string
+  /** Omgevingsfoto: standaardfoto op de dealcard (hover op een nummer toont het hotel). */
+  coverImage?: string
+  /** Omgevingsfoto's (PDP-gallery na de cover); de collage-dealcard toont de eerste twee. */
+  nearbyImages?: string[]
   /** Waar de card voorlopig naartoe linkt zolang er geen vakantie-PDP is. */
   pdpHref?: string
 }
