@@ -302,11 +302,12 @@ const TRIPS: TripSpec[] = [
     coverImage: '/images/vakanties/cover/kustroute.jpg',
     fromHome: { city: 'Utrecht', minutes: 100 },
     // Omgevingsfoto's (PDP-gallery na de cover, collage op de dealcard), zoals bij Noord-Frankrijk:
-    // Westerschouwen en Zierikzee (Zeeland), de Pier van Scheveningen, Haarlem en de kust.
+    // Westerschouwen en Zierikzee (Zeeland), de Pier van Scheveningen, Haarlem en de kust — uit de
+    // deals van de drie hotels, aangevuld met streekfoto's van Wikimedia (CREDITS.md). Geen PDF-materiaal.
     nearbyImages: [
       A + '2d92ea4c-8fe1-4c69-b6fe-4fa1037931f6?key=photo-full',
       A + 'f6d194e2-9c00-4977-9a69-8f32abee465c?key=photo-full',
-      '/images/vakanties/006/haarlem.jpg',
+      A + '0814e824-42f5-4e02-b12f-6c558fe1c1a3?key=photo-full',
       A + '31e45de3-6e12-42f9-97b6-528b7b123db9?key=photo-full',
       '/images/vakanties/006/delta.jpg',
       '/images/vakanties/006/noordwijk.jpg',
@@ -327,12 +328,18 @@ const TRIPS: TripSpec[] = [
         image: A + '631d38dd-198f-4d0d-9c1b-665ff0a101ba?key=photo-full', extraImages: [A + '75c82728-aac9-4fb7-ae69-ca7ca6dbf503?key=photo-full', A + 'c0a1294d-23ef-44b6-8c95-4ad3a4570d01?key=photo-full', A + '11cebafa-193f-48c4-944f-c79be05a5a08?key=photo-full', A + 'bdd222fd-818b-489c-abd5-f20a6d5ce30c?key=photo-full', A + '96d891bd-537f-43ec-9efd-4dda86ad9ac3?key=photo-full'],
         dinnerImage: A + '0c737cc6-43d2-4b54-8b7a-9d108e7363fa?key=photo-full', breakfastImage: A + '7be54ce9-fb67-4ca4-85b4-4346f65af93c?key=photo-full',
         includes: [l('1 x overnachting', '1 night'), l('Uitgebreid ontbijtbuffet met bubbels', 'Extensive breakfast buffet with bubbles'), l('3-gangen verrassingsdiner (Bar & Brasserie Willem I)', '3-course surprise dinner (Bar & Brasserie Willem I)'), l('Gratis gebruik van binnen- en buitenzwembad', 'Free use of indoor and outdoor pool'), l('Onbeperkt gebruik van de spa', 'Unlimited use of the spa'), l('Onbeperkt gebruik van fitness', 'Unlimited use of the gym'), l('Gereduceerd parkeertarief', 'Reduced parking rate')] },
-      { name: 'Carlton Square', city: 'Haarlem', region: 'Noord-Holland', nights: 2, stars: 4, lat: 52.3874, lng: 4.6462, image: '/images/vakanties/006/hotel-3.jpg', travel: { km: 55, minutes: 60 }, includes: [l('2 x overnachting', '2 nights'), l('Dagelijks uitgebreid ontbijt', 'Daily extensive breakfast'), l('3-gangenverrassingsmenu van de chef (dag van aankomst)', "Chef's 3-course surprise menu (day of arrival)"), l('Gratis plattegrond van de omgeving', 'Free map of the area')] },
+      // Courtyard by Marriott (Hoofddorp, 7,5 km van Haarlem): ViaLuxury-deal "Verken en beleef Haarlem
+      // en Amsterdam" (pkg 48) — vervangt Carlton Square (alleen PDF-materiaal, niet in de dataset).
+      { name: 'Courtyard by Marriott', city: 'Hoofddorp', region: 'Noord-Holland', nights: 2, stars: 4, lat: 52.32137, lng: 4.66641, travel: { km: 53, minutes: 50 },
+        image: A + '42d24dc5-9aae-4714-8476-e072499d366a?key=photo-full', extraImages: [A + '46b7b6fd-b154-44b3-854d-37b0c8690a2c?key=photo-full', A + '9ccd751f-f557-42f7-b408-71c1a18536f6?key=photo-full', A + '9e71bbcb-d471-4fe3-a430-fd8f91784810?key=photo-full', A + '5dc39750-064f-48e0-8153-ec453fa3f6ce?key=photo-full'],
+        dinnerImage: A + '3a697262-cbf9-4ee3-a2ca-3dca21730eea?key=photo-full', breakfastImage: A + '05f376be-bc80-449b-8661-f9f77431c8c4?key=photo-full',
+        includes: [l('2 x overnachting', '2 nights'), l('Kamerupgrade naar de nieuwe Comfort King kamer', 'Room upgrade to the new Comfort King room'), l('Dagelijks ontbijtbuffet', 'Daily breakfast buffet'), l('3-gangendiner in de Courtyard Brasserie (dag van aankomst)', '3-course dinner in the Courtyard Brasserie (day of arrival)'), l('Welkomstdrankje', 'Welcome drink'), l('Late check-out tot 14:00 uur (o.b.v.b.)', 'Late check-out until 14:00 (subject to availability)'), l('Gratis parkeren', 'Free parking')] },
     ],
     title: l('Nederlandse kustroute: 6 dagen langs Zeeland, Scheveningen en Noord-Holland', 'Dutch coastal route: 6 days along Zeeland, Scheveningen and North Holland'),
-    pitch: l('Van de Zeeuwse stranden via Scheveningen naar Haarlem, Zandvoort en Bloemendaal — strand, wellness en stad in één kustvakantie.', 'From the Zeeland beaches via Scheveningen to Haarlem, Zandvoort and Bloemendaal: beach, wellness and city in one coastal holiday.'),
-    price: 899,
-    originalPrice: 1583,
+    pitch: l('Van de Zeeuwse stranden via Scheveningen naar Haarlem en Zandvoort — strand, wellness en stad in één kustvakantie.', 'From the Zeeland beaches via Scheveningen to Haarlem and Zandvoort: beach, wellness and city in one coastal holiday.'),
+    // Prijs = som van de drie ViaLuxury-deals (Ter Zand €299/€581, Inntel €199/€326, Courtyard €239/€538).
+    price: 737,
+    originalPrice: 1445,
     highlights: [
       l('5 nachten / 3 hotels', '5 nights / 3 hotels'),
       l('3 x 3-gangendiner', '3 x 3-course dinner'),
@@ -342,16 +349,15 @@ const TRIPS: TripSpec[] = [
     inclusions: [
       l('2 x overnachting in Hotel Ter Zand (luxer kamertype)', '2 nights at Hotel Ter Zand (upgraded room)'),
       l('1 x overnachting in Inntel Hotels Den Haag Marina Beach', '1 night at Inntel Hotels Den Haag Marina Beach'),
-      l('2 x overnachting in Carlton Square', '2 nights at Carlton Square'),
+      l('2 x overnachting in Courtyard by Marriott (Comfort King kamer)', '2 nights at Courtyard by Marriott (Comfort King room)'),
       l('Dagelijks ontbijtbuffet (met bubbels bij Inntel)', 'Daily breakfast buffet (with bubbles at Inntel)'),
       l('3 x 3-gangendiner (dag van aankomst)', '3 x 3-course dinner (day of arrival)'),
-      l('Welkomstdrankje en tasting uurtje (Ter Zand)', 'Welcome drink and tasting hour (Ter Zand)'),
+      l('Welkomstdrankje (Ter Zand en Courtyard), tasting uurtje (Ter Zand)', 'Welcome drink (Ter Zand and Courtyard), tasting hour (Ter Zand)'),
       l('Zwembad, wellness en fitness (Ter Zand en Inntel)', 'Pool, wellness and fitness (Ter Zand and Inntel)'),
-      l('Late check-out tot 12:00 uur (Ter Zand)', 'Late check-out until 12:00 (Ter Zand)'),
-      l('Gratis parkeren (Ter Zand), korting bij Inntel', 'Free parking (Ter Zand), discount at Inntel'),
+      l('Late check-out (Ter Zand en Courtyard)', 'Late check-out (Ter Zand and Courtyard)'),
+      l('Gratis parkeren (Ter Zand en Courtyard), korting bij Inntel', 'Free parking (Ter Zand and Courtyard), discount at Inntel'),
     ],
     tags: ['auto', 'nederland', 'nieuw', 'aan-zee', 'wellness', 'steden', 'ontspanning', 'laadpaal', 'fiets-huren'],
-    routeImage: '/images/vakanties/006/route.jpg',
   },
   // ── Fietsvakantie Twente & Salland (echte ViaLuxury-deal "Fietsvakantie 2026") ──
   {
