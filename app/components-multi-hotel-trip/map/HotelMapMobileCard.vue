@@ -61,8 +61,6 @@
             <div class="mdeal__top">
               <p class="mdeal__title">
                 <span class="mdeal__lead">{{ d.trip ? t(d.trip.type === 'fiets' ? 'trip.fiets' : 'trip.auto') : 'Arrangement' }}</span>{{ ' ' }}<span class="mdeal__title-rest">{{ nightsLabel(d.deal.nights, locale as 'nl' | 'en' | 'de') }}, {{ d.pp ? 'min. ' : '' }}{{ personsLabel(PRICED_PERSONS, locale as 'nl' | 'en' | 'de') }}</span>
-                <!-- Naam van de reis: bij een gedeelde vakantiepin en bij een vakantie onder een hotel. -->
-                <span v-if="d.tripName" class="mdeal__tripname">{{ d.tripName }}</span>
               </p>
               <div class="mdeal__price">
                 <div class="mdeal__price-top">
@@ -184,7 +182,8 @@ function hrefFor(deal: SearchHotelDeal): string {
 }
 
 /** Eén kaartje: een arrangement van het hotel, of een vakantie (eigen pin of onder een hotel). */
-function dealView(deal: SearchHotelDeal, tripInfo: MultiHotelTripInfo | null, tripName: string | null) {
+// Geen reisnaam op het kaartje (past niet): alleen soort, nachten, personen, inclusies en prijs.
+function dealView(deal: SearchHotelDeal, tripInfo: MultiHotelTripInfo | null) {
   const pp = !!tripInfo && pricePerPerson.value
   const soldOut = !!arrivalDate.value
     && !isDealAvailableInWindow(deal.id, arrivalDate.value, selectedFlexibility.value)
@@ -203,7 +202,6 @@ function dealView(deal: SearchHotelDeal, tripInfo: MultiHotelTripInfo | null, tr
   return {
     deal,
     trip: tripInfo,
-    tripName,
     pp,
     soldOut,
     // Vakantie in de p.p.-variant: de helft (per persoon).
@@ -220,10 +218,10 @@ const dealViews = computed(() => {
   if (!h) return []
   const own = [...h.deals]
     .sort((a, b) => a.basePrice - b.basePrice)
-    .map(deal => dealView(deal, h.trip ?? null, tripCombined.value ? localized(deal.title) : null))
-  // Hotel met vakanties: die komen achter de arrangementen, elk met de naam van de reis.
+    .map(deal => dealView(deal, h.trip ?? null))
+  // Hotel met vakanties: die komen achter de arrangementen.
   const trips = (h.trip ? [] : (props.trips ?? []))
-    .flatMap(tr => tr.deals.map(deal => dealView(deal, tr.trip ?? null, localized(deal.title))))
+    .flatMap(tr => tr.deals.map(deal => dealView(deal, tr.trip ?? null)))
   return [...own, ...trips]
 })
 </script>
@@ -392,18 +390,6 @@ const dealViews = computed(() => {
   font-family: var(--font-body);
   font-weight: 700;
   color: var(--color-text-primary);
-}
-.mdeal__tripname {
-  display: block;
-  margin-top: 2px;
-  font-family: var(--font-body);
-  font-size: 12px;
-  font-weight: 400;
-  color: var(--color-text-secondary);
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
 }
 
 .mdeal__price {
