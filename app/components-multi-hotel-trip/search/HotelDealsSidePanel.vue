@@ -75,6 +75,25 @@
                 :ignore-arrival="entry.dateMismatch"
               />
             </div>
+            <!-- Kaart: vakanties waarin dit hotel een stop is, onder de arrangementen van het hotel.
+                 Kaartje met de kop van de vakantie (soort + plaatsnamen) en een link naar de vakantie. -->
+            <template v-if="trips && trips.length">
+              <h3 class="panel__trips-title">{{ t('trip.withThisHotel') }}</h3>
+              <div class="panel__deal-list">
+                <template v-for="tr in trips" :key="tr.id">
+                  <MultiHotelTripDealCard
+                    v-for="d in tr.deals"
+                    :key="d.id"
+                    :deal="d"
+                    :hotel="tr"
+                    hide-labels
+                    grid-mode
+                    panel-mode
+                    :map-mode="mapMode"
+                  />
+                </template>
+              </div>
+            </template>
           </div>
         </aside>
       </div>
@@ -113,6 +132,8 @@ const props = defineProps<{
    *  (so the user doesn't see their own arrangement among the
    *  alternatives). Used by the v6 deal page. */
   currentDealId?: string
+  /** Kaart: vakanties waarin dit hotel een stop is (onder de arrangementen). */
+  trips?: SearchHotel[]
 }>()
 
 const emit = defineEmits<{
@@ -439,6 +460,16 @@ onUnmounted(() => {
   font-size: 13px;
   font-weight: 600;
   text-decoration: underline;
+}
+
+/* Kop boven de vakanties waarin dit hotel een stop is. */
+.panel__trips-title {
+  margin: var(--space-sm) 0 0;
+  font-family: var(--font-heading);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  line-height: 1.2;
 }
 
 /* Scrollable body */

@@ -240,6 +240,7 @@ const en: Record<string, string> = {
   'search.holidaysPitch': 'Explore a beautiful region by car or by bike and stay in several different hotels. Carefully put together and personally checked.',
   'trip.auto': 'Road trip',
   'trip.fiets': 'Cycling holiday',
+  'trip.withThisHotel': 'Holidays with this hotel',
   'trip.autoIncl': 'Road trip including',
   'trip.fietsIncl': 'Cycling holiday including',
   'trip.multipleHotels': 'Multiple hotels',

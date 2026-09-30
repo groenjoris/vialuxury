@@ -244,6 +244,7 @@ const nl: Record<string, string> = {
   'search.holidaysPitch': 'Verken een prachtige streek met auto of fiets, en verblijf in verschillende hotels. Met zorg samengesteld en persoonlijk gecheckt.',
   'trip.auto': 'Autovakantie',
   'trip.fiets': 'Fietsvakantie',
+  'trip.withThisHotel': 'Vakanties met dit hotel',
   // Dealcard: label boven de inclusies
   'trip.autoIncl': 'Autovakantie inclusief',
   'trip.fietsIncl': 'Fietsvakantie inclusief',

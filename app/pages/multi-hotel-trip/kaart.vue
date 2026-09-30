@@ -249,6 +249,16 @@ const selectedHotel = computed(() =>
   mapHotels.value.find((h) => h.id === selectedHotelId.value) ?? null,
 )
 
+/** Vakanties waarin het geselecteerde hotel een van de stops is — ze staan in het
+ *  sidepanel (desktop) en het onderkaartje (mobiel) naast de arrangementen van het hotel.
+ *  Zo komt een vakantie vier keer terug: als eigen pin én onder elk van haar hotels.
+ *  Alleen vakanties die ook als pin op de kaart staan (zelfde filters). */
+const tripsForSelected = computed<SearchHotel[]>(() => {
+  const h = selectedHotel.value
+  if (!h || h.trip) return []
+  return mapHotels.value.filter(t => !!t.trip && t.trip.stops.some(s => s.hotelSlug === h.slug))
+})
+
 // Live height (px) of the open mobile bottom-sheet, reported by
 // HotelMapMobileCard. Drives the map's upward slide so the panel
 // "pushes" the map by exactly its own height (no grey gap).
@@ -365,6 +375,7 @@ onMounted(() => {
         v-if="!isMobile"
         :is-open="!!selectedHotel"
         :hotel="selectedHotel"
+        :trips="tripsForSelected"
         :map-mode="true"
         @close="clearSelection"
       />
@@ -436,6 +447,7 @@ onMounted(() => {
       <HotelMapMobileCard
         :is-open="!!selectedHotel"
         :hotel="selectedHotel"
+        :trips="tripsForSelected"
         @close="clearSelection"
         @height="cardHeight = $event"
       />

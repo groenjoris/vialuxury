@@ -60,9 +60,9 @@
             <!-- First row: title + stacked price -->
             <div class="mdeal__top">
               <p class="mdeal__title">
-                <span class="mdeal__lead">{{ trip ? t(trip.type === 'fiets' ? 'trip.fiets' : 'trip.auto') : 'Arrangement' }}</span>{{ ' ' }}<span class="mdeal__title-rest">{{ nightsLabel(d.deal.nights, locale as 'nl' | 'en' | 'de') }}, {{ ppTrip ? 'min. ' : '' }}{{ personsLabel(PRICED_PERSONS, locale as 'nl' | 'en' | 'de') }}</span>
-                <!-- Gedeelde pin: per kaartje de naam van de reis, anders zijn ze niet uit elkaar te houden. -->
-                <span v-if="tripCombined" class="mdeal__tripname">{{ localized(d.deal.title) }}</span>
+                <span class="mdeal__lead">{{ d.trip ? t(d.trip.type === 'fiets' ? 'trip.fiets' : 'trip.auto') : 'Arrangement' }}</span>{{ ' ' }}<span class="mdeal__title-rest">{{ nightsLabel(d.deal.nights, locale as 'nl' | 'en' | 'de') }}, {{ d.pp ? 'min. ' : '' }}{{ personsLabel(PRICED_PERSONS, locale as 'nl' | 'en' | 'de') }}</span>
+                <!-- Naam van de reis: bij een gedeelde vakantiepin en bij een vakantie onder een hotel. -->
+                <span v-if="d.tripName" class="mdeal__tripname">{{ d.tripName }}</span>
               </p>
               <div class="mdeal__price">
                 <div class="mdeal__price-top">
@@ -71,7 +71,7 @@
                 </div>
                 <div class="mdeal__price-bot">
                   <span class="mdeal__amount">{{ priceNum(d.price) }}</span>
-                  <span v-if="ppTrip" class="mdeal__pp">p.p.</span>
+                  <span v-if="d.pp" class="mdeal__pp">p.p.</span>
                   <MultiHotelTripPriceInfoTooltip variant="card" />
                 </div>
               </div>
@@ -102,7 +102,7 @@
 </template>
 
 <script setup lang="ts">
-import type { SearchHotel, SearchHotelDeal } from '~/types/searchHotel'
+import type { SearchHotel, SearchHotelDeal, MultiHotelTripInfo } from '~/types/searchHotel'
 import { formatPrice } from '~/utils-multi-hotel-trip/formatPrice'
 import { nightsLabel, personsLabel } from '~/utils-multi-hotel-trip/plural'
 import { priceForArrival, PRICED_PERSONS } from '~/utils-multi-hotel-trip/priceFormula'
@@ -116,6 +116,8 @@ const { persons, arrivalDate, selectedFlexibility } = useMultiHotelTripSearchSta
 const props = defineProps<{
   isOpen: boolean
   hotel: SearchHotel | null
+  /** Vakanties waarin dit hotel een stop is: extra kaartjes achter de arrangementen. */
+  trips?: SearchHotel[]
 }>()
 
 const emit = defineEmits<{
@@ -134,7 +136,6 @@ const trip = computed(() => props.hotel?.trip ?? null)
 // Prijsweergave-variant (homepage-schakelaar): bij "prijs p.p." toont het vakantiekaartje de
 // prijs per persoon met "p.p." achter het bedrag en "min. 2 personen" in de titel.
 const { perPerson: pricePerPerson, displayPrice } = useMultiHotelTripPriceVariant()
-const ppTrip = computed(() => !!trip.value && pricePerPerson.value)
 /** Meerdere reizen over dezelfde hotels op één pin: soortnaam in de kop, reisnaam per kaartje. */
 const tripCombined = computed(() => !!trip.value && (props.hotel?.deals.length ?? 0) > 1)
 const titleText = computed(() => (props.hotel ? (trip.value && !tripCombined.value ? localized(props.hotel.deals[0]!.title) : props.hotel.name) : ''))
@@ -182,39 +183,48 @@ function hrefFor(deal: SearchHotelDeal): string {
   return `/multi-hotel-trip/deal/${deal.slug}${q ? '?' + q : ''}`
 }
 
+/** Eén kaartje: een arrangement van het hotel, of een vakantie (eigen pin of onder een hotel). */
+function dealView(deal: SearchHotelDeal, tripInfo: MultiHotelTripInfo | null, tripName: string | null) {
+  const pp = !!tripInfo && pricePerPerson.value
+  const soldOut = !!arrivalDate.value
+    && !isDealAvailableInWindow(deal.id, arrivalDate.value, selectedFlexibility.value)
+  const effArrival = soldOut ? null : arrivalDate.value
+  let href: string
+  if (soldOut) {
+    const p = new URLSearchParams()
+    if (persons.value !== 2) p.set('persons', String(persons.value))
+    p.set('cal', '1')
+    href = `/multi-hotel-trip/deal/${deal.slug}?${p.toString()}`
+  } else {
+    href = hrefFor(deal)
+  }
+  const price = priceForArrival(deal.basePrice, deal.id, effArrival, PRICED_PERSONS)
+  const original = priceForArrival(deal.originalPrice, deal.id, effArrival, PRICED_PERSONS)
+  return {
+    deal,
+    trip: tripInfo,
+    tripName,
+    pp,
+    soldOut,
+    // Vakantie in de p.p.-variant: de helft (per persoon).
+    price: pp ? displayPrice(price, true) : price,
+    originalPrice: pp ? displayPrice(original, true) : original,
+    // Vier inclusies, zoals op de live site (was twee).
+    includes: (deal.inclusions || []).slice(0, 4).map(i => localized(i)),
+    href,
+  }
+}
+
 const dealViews = computed(() => {
   const h = props.hotel
   if (!h) return []
-  return [...h.deals]
+  const own = [...h.deals]
     .sort((a, b) => a.basePrice - b.basePrice)
-    .map((deal) => {
-      const soldOut = !!arrivalDate.value
-        && !isDealAvailableInWindow(deal.id, arrivalDate.value, selectedFlexibility.value)
-      const effArrival = soldOut ? null : arrivalDate.value
-      // Sold-out → "beschikbare datums": land on the deal page's calendar
-      // (cal=1) WITHOUT a checkin (the page applies ?checkin to the store, so
-      // carrying the unavailable date would pre-select it). Empty calendar.
-      let href: string
-      if (soldOut) {
-        const p = new URLSearchParams()
-        if (persons.value !== 2) p.set('persons', String(persons.value))
-        p.set('cal', '1')
-        href = `/multi-hotel-trip/deal/${deal.slug}?${p.toString()}`
-      } else {
-        href = hrefFor(deal)
-      }
-      return {
-        deal,
-        soldOut,
-        // Prototype: always the PRICED_PERSONS / 1-room price (party size doesn't scale it).
-        // Vakantie in de p.p.-variant: de helft (per persoon).
-        price: ppTrip.value ? displayPrice(priceForArrival(deal.basePrice, deal.id, effArrival, PRICED_PERSONS), true) : priceForArrival(deal.basePrice, deal.id, effArrival, PRICED_PERSONS),
-        originalPrice: ppTrip.value ? displayPrice(priceForArrival(deal.originalPrice, deal.id, effArrival, PRICED_PERSONS), true) : priceForArrival(deal.originalPrice, deal.id, effArrival, PRICED_PERSONS),
-        // Vier inclusies, zoals op de live site (was twee).
-        includes: (deal.inclusions || []).slice(0, 4).map(i => localized(i)),
-        href,
-      }
-    })
+    .map(deal => dealView(deal, h.trip ?? null, tripCombined.value ? localized(deal.title) : null))
+  // Hotel met vakanties: die komen achter de arrangementen, elk met de naam van de reis.
+  const trips = (h.trip ? [] : (props.trips ?? []))
+    .flatMap(tr => tr.deals.map(deal => dealView(deal, tr.trip ?? null, localized(deal.title))))
+  return [...own, ...trips]
 })
 </script>
 

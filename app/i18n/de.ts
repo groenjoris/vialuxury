@@ -236,6 +236,7 @@ const de: Record<string, string> = {
   'search.holidaysPitch': 'Entdecken Sie eine wunderschöne Region mit dem Auto oder dem Fahrrad und übernachten Sie in verschiedenen Hotels. Sorgfältig zusammengestellt und persönlich geprüft.',
   'trip.auto': 'Autoreise',
   'trip.fiets': 'Radreise',
+  'trip.withThisHotel': 'Reisen mit diesem Hotel',
   'trip.autoIncl': 'Autoreise inklusive',
   'trip.fietsIncl': 'Radreise inklusive',
   'trip.multipleHotels': 'Mehrere Hotels',
