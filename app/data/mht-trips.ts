@@ -26,6 +26,9 @@ interface StopSpec {
   /** Hotelnaam. Staat het hotel in deals.json (exacte `hotelName`), dan
    *  komen slug, foto en sterren uit de dataset; anders uit dit object. */
   name: string
+  /** Naam in deals.json als die afwijkt van de (kortere) weergavenaam `name`,
+   *  bv. "Hotel Ter Zand - Handwritten Collection" → getoond als "Hotel Ter Zand". */
+  dataset?: string
   city: string
   /** Streek/provincie voor de locatieregel op de PDP ("Béthune, Noord-Frankrijk"). */
   region: string
@@ -91,6 +94,8 @@ interface TripSpec {
 }
 
 const l = (nl: string, en: string): LocalizedString => ({ nl, en })
+/** Basis-URL van de foto's van ViaLuxury-deals (asset.vialuxury.com). */
+const A = 'https://asset.vialuxury.com/assets/'
 
 const TRIPS: TripSpec[] = [
   // ── Original No. 001 ──────────────────────────────────────────────────
@@ -296,10 +301,32 @@ const TRIPS: TripSpec[] = [
     slug: 'nederlandse-kustroute-6-daagse-autoroute',
     coverImage: '/images/vakanties/cover/kustroute.jpg',
     fromHome: { city: 'Utrecht', minutes: 100 },
+    // Omgevingsfoto's (PDP-gallery na de cover, collage op de dealcard), zoals bij Noord-Frankrijk:
+    // Westerschouwen en Zierikzee (Zeeland), de Pier van Scheveningen, Haarlem en de kust.
+    nearbyImages: [
+      A + '2d92ea4c-8fe1-4c69-b6fe-4fa1037931f6?key=photo-full',
+      A + 'f6d194e2-9c00-4977-9a69-8f32abee465c?key=photo-full',
+      '/images/vakanties/006/haarlem.jpg',
+      A + '31e45de3-6e12-42f9-97b6-528b7b123db9?key=photo-full',
+      '/images/vakanties/006/delta.jpg',
+      '/images/vakanties/006/noordwijk.jpg',
+      '/images/vakanties/006/zandvoort.jpg',
+      A + '141edb02-0aa9-45bc-85bd-68ddcae52b80?key=photo-full',
+    ],
     type: 'auto',
     stops: [
-      { name: 'Grand Hotel Ter Duin', city: 'Burgh-Haamstede', region: 'Zeeland', nights: 2, stars: 4, lat: 51.7058, lng: 3.7494, image: '/images/vakanties/006/hotel-1.jpg', includes: [l('2 x overnachting', '2 nights'), l('Dagelijks ontbijtbuffet', 'Daily breakfast buffet'), l('3-gangendiner (dag van aankomst)', '3-course dinner (day of arrival)'), l('Tasting uurtje 17:00–18:00 uur', 'Tasting hour 17:00–18:00'), l('Welkomstdrankje', 'Welcome drink'), l('Gebruik van zwembad', 'Use of the pool'), l('Gebruik van wellness & fitness', 'Use of wellness & fitness'), l('Late check-out tot 12:00 uur', 'Late check-out until 12:00')] },
-      { name: 'Inntel Hotels Den Haag Marina Beach', city: 'Scheveningen', region: 'Zuid-Holland', nights: 1, stars: 4, lat: 52.1078, lng: 4.2731, travel: { km: 95, minutes: 80 }, includes: [l('1 x overnachting', '1 night'), l('Uitgebreid ontbijtbuffet met bubbels', 'Extensive breakfast buffet with bubbles'), l('3-gangen verrassingsdiner', '3-course surprise dinner'), l('Gratis gebruik van binnen- en buitenzwembad', 'Free use of indoor and outdoor pool'), l('Onbeperkt gebruik van de spa en fitness', 'Unlimited use of the spa and fitness'), l('Gereduceerd parkeertarief', 'Reduced parking rate')] },
+      // Hotel Ter Zand en Inntel Den Haag: ViaLuxury-hotels uit deals.json — foto's, inclusies,
+      // kamer en faciliteiten komen uit hun bestaande deals (Ter Zand: 3 dagen Zeeland,
+      // pkg 19852; Inntel: 1 nacht met diner, pkg 111). Ter Zand heet hier kort "Hotel Ter Zand"
+      // (datasetnaam "Hotel Ter Zand - Handwritten Collection" via `dataset`).
+      { name: 'Hotel Ter Zand', dataset: 'Hotel Ter Zand - Handwritten Collection', city: 'Burgh-Haamstede', region: 'Zeeland', nights: 2, stars: 4, lat: 51.68264, lng: 3.72149,
+        image: A + '09b83ed2-0c2d-4521-9c2a-2b30395fe6ca?key=photo-full', extraImages: [A + 'f021edcd-4e63-4d41-8cb2-a7bf42a74bd5?key=photo-full', A + '24a658bb-3bf3-48fa-a9b6-73fc6661c637?key=photo-full', A + '8f2b7b4f-9b2e-4588-a1f3-e33d2c91ef4d?key=photo-full', A + '345f4ba3-8589-4b2d-aad2-b3cd196046a1?key=photo-full'],
+        dinnerImage: A + 'c432da79-a555-44df-b055-65318427fec0?key=photo-full', breakfastImage: A + '7784c9d3-cacd-4e45-8a40-bc6fb26b1aaf?key=photo-full',
+        includes: [l('2 x overnachting', '2 nights'), l('Upgrade naar een luxer kamertype', 'Upgrade to a more luxurious room type'), l('Dagelijks ontbijtbuffet', 'Daily breakfast buffet'), l('Culinair 3-gangendiner (1 avond)', 'Culinary 3-course dinner (1 evening)'), l('Welkomstdrankje', 'Welcome drink'), l('Tasting uurtje 15:00–16:00 uur', 'Tasting hour 15:00–16:00'), l('Gebruik van wellness en fitness (Grand Hotel Ter Duin)', 'Use of wellness and fitness (Grand Hotel Ter Duin)'), l('Gebruik van het binnenzwembad (Grand Hotel Ter Duin)', 'Use of the indoor pool (Grand Hotel Ter Duin)'), l('Late check-out tot 12:00 uur', 'Late check-out until 12:00'), l('Gratis parkeren', 'Free parking')] },
+      { name: 'Inntel Hotels Den Haag Marina Beach', city: 'Scheveningen', region: 'Zuid-Holland', nights: 1, stars: 4, lat: 52.10232, lng: 4.26339, travel: { km: 85, minutes: 80 },
+        image: A + '631d38dd-198f-4d0d-9c1b-665ff0a101ba?key=photo-full', extraImages: [A + '75c82728-aac9-4fb7-ae69-ca7ca6dbf503?key=photo-full', A + 'c0a1294d-23ef-44b6-8c95-4ad3a4570d01?key=photo-full', A + '11cebafa-193f-48c4-944f-c79be05a5a08?key=photo-full', A + 'bdd222fd-818b-489c-abd5-f20a6d5ce30c?key=photo-full', A + '96d891bd-537f-43ec-9efd-4dda86ad9ac3?key=photo-full'],
+        dinnerImage: A + '0c737cc6-43d2-4b54-8b7a-9d108e7363fa?key=photo-full', breakfastImage: A + '7be54ce9-fb67-4ca4-85b4-4346f65af93c?key=photo-full',
+        includes: [l('1 x overnachting', '1 night'), l('Uitgebreid ontbijtbuffet met bubbels', 'Extensive breakfast buffet with bubbles'), l('3-gangen verrassingsdiner (Bar & Brasserie Willem I)', '3-course surprise dinner (Bar & Brasserie Willem I)'), l('Gratis gebruik van binnen- en buitenzwembad', 'Free use of indoor and outdoor pool'), l('Onbeperkt gebruik van de spa', 'Unlimited use of the spa'), l('Onbeperkt gebruik van fitness', 'Unlimited use of the gym'), l('Gereduceerd parkeertarief', 'Reduced parking rate')] },
       { name: 'Carlton Square', city: 'Haarlem', region: 'Noord-Holland', nights: 2, stars: 4, lat: 52.3874, lng: 4.6462, image: '/images/vakanties/006/hotel-3.jpg', travel: { km: 55, minutes: 60 }, includes: [l('2 x overnachting', '2 nights'), l('Dagelijks uitgebreid ontbijt', 'Daily extensive breakfast'), l('3-gangenverrassingsmenu van de chef (dag van aankomst)', "Chef's 3-course surprise menu (day of arrival)"), l('Gratis plattegrond van de omgeving', 'Free map of the area')] },
     ],
     title: l('Nederlandse kustroute: 6 dagen langs Zeeland, Scheveningen en Noord-Holland', 'Dutch coastal route: 6 days along Zeeland, Scheveningen and North Holland'),
@@ -313,15 +340,15 @@ const TRIPS: TripSpec[] = [
       l('Zwembad en wellness', 'Pool and wellness'),
     ],
     inclusions: [
-      l('2 x overnachting in Grand Hotel Ter Duin', '2 nights at Grand Hotel Ter Duin'),
+      l('2 x overnachting in Hotel Ter Zand (luxer kamertype)', '2 nights at Hotel Ter Zand (upgraded room)'),
       l('1 x overnachting in Inntel Hotels Den Haag Marina Beach', '1 night at Inntel Hotels Den Haag Marina Beach'),
       l('2 x overnachting in Carlton Square', '2 nights at Carlton Square'),
       l('Dagelijks ontbijtbuffet (met bubbels bij Inntel)', 'Daily breakfast buffet (with bubbles at Inntel)'),
       l('3 x 3-gangendiner (dag van aankomst)', '3 x 3-course dinner (day of arrival)'),
-      l('Tasting uurtje en welkomstdrankje (Ter Duin)', 'Tasting hour and welcome drink (Ter Duin)'),
-      l('Zwembad, wellness en fitness (Ter Duin en Inntel)', 'Pool, wellness and fitness (Ter Duin and Inntel)'),
-      l('Late check-out (Ter Duin)', 'Late check-out (Ter Duin)'),
-      l('Gereduceerd parkeertarief (Inntel)', 'Reduced parking rate (Inntel)'),
+      l('Welkomstdrankje en tasting uurtje (Ter Zand)', 'Welcome drink and tasting hour (Ter Zand)'),
+      l('Zwembad, wellness en fitness (Ter Zand en Inntel)', 'Pool, wellness and fitness (Ter Zand and Inntel)'),
+      l('Late check-out tot 12:00 uur (Ter Zand)', 'Late check-out until 12:00 (Ter Zand)'),
+      l('Gratis parkeren (Ter Zand), korting bij Inntel', 'Free parking (Ter Zand), discount at Inntel'),
     ],
     tags: ['auto', 'nederland', 'nieuw', 'aan-zee', 'wellness', 'steden', 'ontspanning', 'laadpaal', 'fiets-huren'],
     routeImage: '/images/vakanties/006/route.jpg',
@@ -456,12 +483,12 @@ export interface MultiHotelTripDetail {
 }
 
 function toStop(s: StopSpec, dayFrom: number): MultiHotelTripDetailStop {
-  const h = findHotel(s.name)
+  const h = findHotel(s.dataset ?? s.name)
   return {
     city: s.city || h?.city || '',
     region: s.region || h?.province || h?.region || '',
     province: s.province ?? (h?.province || (isNlProvince(s.region) ? s.region : undefined)),
-    hotelName: h?.name ?? s.name,
+    hotelName: s.dataset ? s.name : (h?.name ?? s.name),
     hotelSlug: h?.slug,
     nights: s.nights,
     starRating: h?.starRating ?? s.stars,
@@ -489,7 +516,7 @@ function buildTrip(spec: TripSpec): { hotel: SearchHotel; detail: MultiHotelTrip
     day += s.nights
   }
   if (stops.length < 2) return null
-  const known = spec.stops.map(s => findHotel(s.name)).filter((h): h is SearchHotel => !!h)
+  const known = spec.stops.map(s => findHotel(s.dataset ?? s.name)).filter((h): h is SearchHotel => !!h)
   const first = stops[0]!
   const nights = stops.reduce((n, s) => n + s.nights, 0)
   const stars = stops.map(s => s.starRating ?? 4)

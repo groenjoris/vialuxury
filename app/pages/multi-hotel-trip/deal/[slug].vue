@@ -1689,6 +1689,8 @@ const perCityAllOpen = computed(() => perCityRef.value?.allOpen ?? true)
 const FIXED_ITIN_VARIANT: Record<string, ItineraryVariant> = {
   'ontdek-noord-frankrijk-en-de-opaalkust-in-7-dagen': 'city',
   'fietsvakantie-twente-en-salland-delden-raalte-markelo': 'city',
+  // Kustroute (sinds 2026-09-30 met Hotel Ter Zand): zelfde ontwerp als de Opaalkust-route.
+  'nederlandse-kustroute-6-daagse-autoroute': 'city',
 }
 // Schakelaarpaneel linksboven (varianten/opmaak/stats) blijft ter vergelijking — uit te zetten via ITINERARY_SWITCHER_ENABLED.
 const showItinVariants = computed(() => ITINERARY_SWITCHER_ENABLED && isTrip && ITINERARY_VARIANT_SLUGS.includes(routeSlug.value))
