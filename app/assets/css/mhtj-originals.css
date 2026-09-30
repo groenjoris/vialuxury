@@ -34,13 +34,16 @@
 }
 
 /* `--c` is de collectiekleur, `--on` de tekstkleur die daarop leesbaar is,
-   `--t` de lichte tint en `--ink` de tekst die op die tint leesbaar is. */
-.mhtj-originals [data-collection="culinary"] { --c: var(--col-culinary); --t: var(--col-culinary-tint); --on: #FFFFFF;          --ink: var(--col-culinary); }
-.mhtj-originals [data-collection="retreat"]  { --c: var(--col-retreat);  --t: var(--col-retreat-tint);  --on: #FFFFFF;          --ink: var(--col-retreat); }
-.mhtj-originals [data-collection="heritage"] { --c: var(--col-heritage); --t: var(--col-heritage-tint); --on: var(--color-dark); --ink: var(--color-dark); }
-.mhtj-originals [data-collection="seasonal"] { --c: var(--col-seasonal); --t: var(--col-seasonal-tint); --on: #FFFFFF;          --ink: var(--col-seasonal); }
-.mhtj-originals [data-collection="routes"]   { --c: var(--col-routes);   --t: var(--col-routes-tint);   --on: #FFFFFF;          --ink: var(--col-routes); }
-.mhtj-originals [data-collection="events"]   { --c: var(--col-events);   --t: var(--col-events-tint);   --on: #FFFFFF;          --ink: var(--col-events); }
+   `--t` de lichte tint, `--ink` de tekst die op die tint leesbaar is, en
+   `--icon` het icoon van de collectie. De iconen zijn witte lijntekeningen
+   en worden als masker ingezet, zodat ze meekleuren met de tekst ernaast:
+   wit op een volle band, donker bij Heritage. */
+.mhtj-originals [data-collection="culinary"] { --icon: url(/icons/mhtj-originals/culinary.svg); --c: var(--col-culinary); --t: var(--col-culinary-tint); --on: #FFFFFF;          --ink: var(--col-culinary); }
+.mhtj-originals [data-collection="retreat"]  { --icon: url(/icons/mhtj-originals/retreat.svg); --c: var(--col-retreat);  --t: var(--col-retreat-tint);  --on: #FFFFFF;          --ink: var(--col-retreat); }
+.mhtj-originals [data-collection="heritage"] { --icon: url(/icons/mhtj-originals/heritage.svg); --c: var(--col-heritage); --t: var(--col-heritage-tint); --on: var(--color-dark); --ink: var(--color-dark); }
+.mhtj-originals [data-collection="seasonal"] { --icon: url(/icons/mhtj-originals/seasonal.svg); --c: var(--col-seasonal); --t: var(--col-seasonal-tint); --on: #FFFFFF;          --ink: var(--col-seasonal); }
+.mhtj-originals [data-collection="routes"]   { --icon: url(/icons/mhtj-originals/routes.svg); --c: var(--col-routes);   --t: var(--col-routes-tint);   --on: #FFFFFF;          --ink: var(--col-routes); }
+.mhtj-originals [data-collection="events"]   { --icon: url(/icons/mhtj-originals/events.svg); --c: var(--col-events);   --t: var(--col-events-tint);   --on: #FFFFFF;          --ink: var(--col-events); }
 
 /* Losstaand label, voor de collectierij bovenaan de pagina. */
 .mhtj-originals .col-label {

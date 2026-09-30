@@ -25,7 +25,10 @@
             @click="toggleCollection(c.id)"
           >
             <span class="originals__collection-icon" aria-hidden="true"></span>
-            {{ c.label }}
+            <span class="originals__collection-text">
+              <b>{{ c.label }}</b>
+              <i>Collection</i>
+            </span>
           </button>
         </div>
 
@@ -193,20 +196,33 @@ function iconFor(id: string): string {
 .originals__collection {
   border: 0;
   cursor: pointer;
-  font-size: 14px;
-  padding: 8px 16px;
+  gap: 9px;
+  padding: 7px 16px;
+  border-radius: var(--radius-lg);
   transition: opacity var(--transition-fast);
 }
 /* Eén collectie aan: de andere vijf blijven zichtbaar maar treden terug. */
 .originals__collection--off { opacity: 0.32; }
 .originals__collection-icon {
-  width: 15px;
-  height: 15px;
+  width: 22px;
+  height: 22px;
   flex: none;
   background: currentColor;
-  -webkit-mask: url(/icons/mhtj-originals/champagne-glass.svg) center/contain no-repeat;
-  mask: url(/icons/mhtj-originals/champagne-glass.svg) center/contain no-repeat;
+  /* `--icon` komt via data-collection uit mhtj-originals.css. */
+  -webkit-mask: var(--icon) center/contain no-repeat;
+  mask: var(--icon) center/contain no-repeat;
 }
+/* Twee regels, zoals op de aangeleverde collectiebanners. */
+.originals__collection-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1.1;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.originals__collection-text b { font-weight: 700; font-size: 13px; }
+.originals__collection-text i { font-style: normal; font-weight: 400; font-size: 11px; }
 
 .originals__themes {
   display: flex;

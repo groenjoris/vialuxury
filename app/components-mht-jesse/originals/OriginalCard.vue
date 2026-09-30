@@ -276,8 +276,9 @@ function onCardClick(e: MouseEvent) {
   height: 22px;
   flex: none;
   background: currentColor;
-  -webkit-mask: url(/icons/mhtj-originals/champagne-glass.svg) center/contain no-repeat;
-  mask: url(/icons/mhtj-originals/champagne-glass.svg) center/contain no-repeat;
+  /* `--icon` komt via data-collection uit mhtj-originals.css. */
+  -webkit-mask: var(--icon) center/contain no-repeat;
+  mask: var(--icon) center/contain no-repeat;
 }
 
 /* ── tekstblok ── */
