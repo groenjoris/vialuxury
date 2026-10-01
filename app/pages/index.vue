@@ -43,7 +43,7 @@
       <section class="start-section">
         <h2 class="start-section__title">Multi Hotel Trip</h2>
         <p class="start-section__lead">
-          Kopie van release één + checkout met room table (flexibel annuleren).
+          Design voor auto- en fietsvakanties met meerdere hotels
         </p>
         <div class="start-section__buttons">
           <button
@@ -51,34 +51,6 @@
             class="start-btn start-btn--primary"
             @click="startMultiHotelTripFromHome"
           >Homepage</button>
-          <button
-            type="button"
-            class="start-btn"
-            @click="startMultiHotelTripCheckout"
-          >Direct naar checkout</button>
-        </div>
-      </section>
-
-      <!-- Multi Hotel Trip - Jesse — losstaande kopie van MHT in een eigen
-           namespace (components/composables/stores/utils -mht-jesse, mhtj-*.css,
-           routes /mht-jesse/...). Persoonlijke speeltuin: wijzigingen hier
-           raken het MHT-prototype niet, en worden er ook niet mee gesynct. -->
-      <section class="start-section">
-        <h2 class="start-section__title">Multi Hotel Trip - Jesse</h2>
-        <p class="start-section__lead">
-          Kopie van release één + checkout met room table (flexibel annuleren).
-        </p>
-        <div class="start-section__buttons">
-          <button
-            type="button"
-            class="start-btn start-btn--primary"
-            @click="startMhtJesseFromHome"
-          >Homepage</button>
-          <button
-            type="button"
-            class="start-btn"
-            @click="startMhtJesseCheckout"
-          >Direct naar checkout</button>
         </div>
       </section>
 
@@ -224,19 +196,6 @@ const {
   clearDestinations: clearDestinationsMht,
 } = useMultiHotelTripSearchState()
 
-// Multi Hotel Trip - Jesse mirror — eigen kopie met eigen composables.
-const { setHeroPhotoIndex: setHeroPhotoIndexMhtj } = useMhtJesseHomeVariant()
-const { clear: clearMhtj } = useMhtJessePartner()
-const {
-  clearArrivalDate: clearArrivalDateMhtj,
-  setSearchGroup: setSearchGroupMhtj,
-  clearDuration: clearDurationMhtj,
-  setFlexibility: setFlexibilityMhtj,
-  resetBudget: resetBudgetMhtj,
-  clearFilterTags: clearFilterTagsMhtj,
-  clearDestinations: clearDestinationsMhtj,
-} = useMhtJesseSearchState()
-
 // Northstar mirror — separate state lives in its own composables.
 const { clear: clearNs } = useNorthstarPartner()
 const {
@@ -372,38 +331,6 @@ function startMultiHotelTripFromHome() {
   resetAllMultiHotelTrip()
   setHeroPhotoIndexMht(0)
   navigateTo('/multi-hotel-trip/home')
-}
-
-/** Multi Hotel Trip — jump straight into the merged checkout (room table
- *  flow from the flexibel-annuleren prototype): kalenderstap eerst. */
-function startMultiHotelTripCheckout() {
-  resetAllMultiHotelTrip()
-  navigateTo('/multi-hotel-trip/checkout/datum')
-}
-
-/** Reset Multi Hotel Trip - Jesse session state so each run starts clean. */
-function resetAllMhtJesse() {
-  clearMhtj()
-  clearArrivalDateMhtj()
-  setSearchGroupMhtj(2, 1)
-  clearDurationMhtj()
-  setFlexibilityMhtj(0)
-  resetBudgetMhtj()
-  clearFilterTagsMhtj()
-  clearDestinationsMhtj()
-}
-
-/** Multi Hotel Trip - Jesse — start on its own /mht-jesse/home page. */
-function startMhtJesseFromHome() {
-  resetAllMhtJesse()
-  setHeroPhotoIndexMhtj(0)
-  navigateTo('/mht-jesse/home')
-}
-
-/** Multi Hotel Trip - Jesse — straight into its own checkout, datumstap eerst. */
-function startMhtJesseCheckout() {
-  resetAllMhtJesse()
-  navigateTo('/mht-jesse/checkout/datum')
 }
 
 /** "Start with ad" for the experimental homepage variants. Same static
