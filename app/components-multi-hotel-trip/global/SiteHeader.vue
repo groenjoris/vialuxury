@@ -1008,8 +1008,9 @@
 
     <!-- Prototype-schakelaars van de homepage (prijsweergave vakanties + hero-foto),
          samen in het zwevende paneel linksboven — zelfde systeem als op de
-         vakantie-PDP. Alleen op de homepage (overlay variant). -->
-    <MultiHotelTripHomeSwitchPanel v-if="variant === 'overlay'" />
+         vakantie-PDP. Alleen bij de overlay-variant (homepage en Vakanties-pagina);
+         op mobiel alleen op de homepage — daar liggen geen filterknoppen onder. -->
+    <MultiHotelTripHomeSwitchPanel v-if="variant === 'overlay'" :class="{ 'site-header__psw--offhome': !isHomeRoute }" />
 
     <!-- Helpdesk-chatwidget (dummy third-party widget) — rechtsonder in de
          viewport op elke pagina met deze header; schuift mee met open
@@ -1135,6 +1136,8 @@ const verticals = computed(() => {
 })
 // Route-aware: 'vakantieparken' on /vakantieparken*, otherwise 'hotels' (home/search/deal/hotel)
 const _route = useRoute()
+/** Homepage van het prototype (ook /home-varianten): alleen daar het schakelpaneel op mobiel. */
+const isHomeRoute = computed(() => _route.path.startsWith('/multi-hotel-trip/home'))
 
 /** Deal-page context: the hotel + deal the user is looking at. Drives the
  *  bar's prefill (destination = this hotel, duration = the deal's nights)
@@ -3897,6 +3900,12 @@ function handleSelectHotelInPopup(slug: string) {
 /* These rules are TELEPORTED to <body>, so Vue's scoped data-v-*
    attribute won't match the rendered markup. Declare them in a
    global style block below. */
+
+/* Prototype-schakelpaneel: op mobiel alleen op de homepage (Joris: geen schakelaars op mobiel
+   buiten home) — op de Vakanties-pagina lag het knopje over de filterknoppen. */
+@media (max-width: 767px) {
+  .site-header__psw--offhome { display: none; }
+}
 </style>
 
 <style>
