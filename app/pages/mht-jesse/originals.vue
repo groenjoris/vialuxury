@@ -51,28 +51,6 @@
           </button>
         </div>
 
-        <!-- Alle bestaande sitethema's. -->
-        <div class="originals__themes" role="group" aria-label="Thema's">
-          <button
-            v-for="t in themeTags"
-            :key="t.id"
-            type="button"
-            class="originals__theme"
-            :class="{ 'originals__theme--on': activeThemes.includes(t.id) }"
-            :aria-pressed="activeThemes.includes(t.id)"
-            @click="toggleTheme(t.id)"
-          >
-            <span class="originals__theme-icon" v-html="iconFor(t.id)" />
-            {{ t.label }}
-          </button>
-          <button
-            v-if="activeThemes.length > 0 || activeCollection"
-            type="button"
-            class="originals__reset"
-            @click="resetFilters"
-          >Wis filters</button>
-        </div>
-
         <p class="originals__count">
           {{ shown.length }} {{ shown.length === 1 ? 'original' : 'originals' }}
         </p>
@@ -103,8 +81,7 @@
  *
  * Zoekpagina met alle arrangementen als genummerde "Originals". Elke kaart
  * hoort bij één van de zes collecties uit de kleurnota; die collectie bepaalt
- * de kleur van de band. Daarnaast staan alle negentien bestaande sitethema's
- * als filterrij, zodat beide indelingen naast elkaar te zien zijn.
+ * de kleur van de band en is tevens het enige filter op deze pagina.
  *
  * `data-variant="vol"` op de wrapper kiest labelversie 1 (vlak in de
  * collectiekleur). Zet hem op "licht" voor versie 2 uit de nota.
@@ -113,8 +90,6 @@ import { mappedHotels } from '~/data/deals-mapper'
 import { tripSearchHotels } from '~/data/mhtj-trips'
 import type { SearchHotel, SearchHotelDeal } from '~/types/searchHotel'
 import { pickPrimaryDeal } from '~/utils-mht-jesse/primaryDeal'
-import { FILTER_TAGS } from '~/utils-mht-jesse/filterTags'
-import { POPULAR_FILTER_ICONS } from '~/utils-mht-jesse/popularFilterIcons'
 import { COLLECTIONS_IN_ORDER, assignCollections, originalNumber, type CollectionId } from '~/utils-mht-jesse/originals'
 
 useHead({ title: 'Originals — ViaLuxury' })
@@ -139,8 +114,6 @@ const allRows: OriginalRow[] = pairs.map((r, i) => ({
   collection: assigned.get(r.deal.id)!,
 }))
 
-const themeTags = FILTER_TAGS
-
 /** 'vol' = versie 1 uit de nota, 'licht' = versie 2. Bewaard in
  *  localStorage zodat de keuze een herlaadbeurt overleeft. */
 const VARIANT_KEY = 'vl_mhtj_originals_variant'
@@ -155,38 +128,19 @@ watch(variant, v => {
 })
 
 const activeCollection = ref<CollectionId | null>(null)
-const activeThemes = ref<string[]>([])
 
 function toggleCollection(id: CollectionId) {
   activeCollection.value = activeCollection.value === id ? null : id
 }
-function toggleTheme(id: string) {
-  const i = activeThemes.value.indexOf(id)
-  if (i === -1) activeThemes.value.push(id)
-  else activeThemes.value.splice(i, 1)
-}
 function resetFilters() {
   activeCollection.value = null
-  activeThemes.value = []
 }
 
-/** Filters stapelen: eerst de collectie, daarna elk aangezet thema. */
-const shown = computed(() => {
-  let rows = allRows
-  if (activeCollection.value) {
-    rows = rows.filter(r => r.collection === activeCollection.value)
-  }
-  for (const id of activeThemes.value) {
-    const tag = FILTER_TAGS.find(t => t.id === id)
-    if (!tag) continue
-    rows = rows.filter(r => tag.matches(r.deal, r.hotel))
-  }
-  return rows
-})
-
-function iconFor(id: string): string {
-  return POPULAR_FILTER_ICONS[id] || POPULAR_FILTER_ICONS.star || ''
-}
+const shown = computed(() =>
+  activeCollection.value
+    ? allRows.filter(r => r.collection === activeCollection.value)
+    : allRows,
+)
 </script>
 
 <style scoped>
@@ -287,51 +241,6 @@ function iconFor(id: string): string {
   line-height: 1;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-}
-
-.originals__themes {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 22px;
-}
-.originals__theme {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  height: 40px;
-  padding: 0 15px;
-  background: var(--color-surface);
-  border: 1px solid #e5e2da;
-  border-radius: var(--radius-sm);
-  color: var(--color-text-primary);
-  font-family: inherit;
-  font-size: 14px;
-  line-height: 1;
-  white-space: nowrap;
-  cursor: pointer;
-  transition: background var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
-}
-.originals__theme:hover { background: var(--color-border); }
-.originals__theme--on {
-  background: var(--color-dark);
-  border-color: var(--color-dark);
-  color: #fff;
-}
-.originals__theme-icon { display: inline-flex; width: 14px; height: 14px; flex: none; }
-.originals__theme-icon :deep(svg) { width: 100%; height: 100%; }
-
-.originals__reset {
-  height: 40px;
-  padding: 0 12px;
-  border: 0;
-  background: none;
-  color: var(--color-text-link);
-  font-family: inherit;
-  font-size: 14px;
-  text-decoration: underline;
-  text-underline-offset: 3px;
-  cursor: pointer;
 }
 
 .originals__count {
