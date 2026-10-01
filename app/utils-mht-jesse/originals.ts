@@ -105,6 +105,10 @@ const SIGNALS: Record<CollectionId, Signal[]> = {
   ],
 }
 
+/** De titel wint altijd van de puntentelling: "Culinair verblijf in
+ *  monumentale villa" is Culinary, niet Heritage. */
+const CULINAIR_IN_TITEL = /culinair/i
+
 /** Bij een gelijke stand wint de collectie die hier het eerst staat; Events
  *  sluit de rij, zodat "stedentrip" alleen wint als er niets anders is. */
 const TIE_BREAK: readonly CollectionId[] = ['culinary', 'heritage', 'retreat', 'routes', 'seasonal', 'events']
@@ -127,7 +131,17 @@ export function assignCollections(
     // mag afbakenen (`/^autovakantie$/`) en niet per ongeluk midden in de
     // samengevoegde lijst aanslaat.
     const themes = deal.themes || []
-    const naamText = `${deal.title?.nl ?? ''} ${deal.title?.en ?? ''} ${hotel.name ?? ''}`
+    const titelText = `${deal.title?.nl ?? ''} ${deal.title?.en ?? ''}`
+    const naamText = `${titelText} ${hotel.name ?? ''}`
+
+    // Vaste regel: staat "culinair" in de titel van het arrangement, dan is
+    // het Culinary — ongeacht wat het gebouw of de omgeving verder zegt.
+    // Let op: alleen de titel telt, niet de hotelnaam, anders zou Culinair
+    // Landgoed Parc Broekhuizen ("19e-eeuws kasteelhotel") hier ook landen.
+    if (CULINAIR_IN_TITEL.test(titelText)) {
+      out.set(deal.id, 'culinary')
+      continue
+    }
 
     let best: CollectionId | null = null
     let bestScore = 0
