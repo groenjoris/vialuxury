@@ -11,7 +11,8 @@
       <aside v-if="open" class="tipn" role="dialog" aria-modal="true" :aria-label="t('trip.itineraryHeading')" data-scroll-lock-allow="true">
         <div class="tipn__header">
           <div>
-            <h3 class="tipn__title">{{ t('trip.itineraryHeading') }}</h3>
+            <!-- Zelfde route-icoon als voor de titel "Voorbeeld reisschema" op de pagina. -->
+            <h3 class="tipn__title"><svg class="tipn__title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-miterlimit="10" stroke-linecap="square" aria-hidden="true"><path d="M15 5h7M15 15h7M15 9h2M15 19h2" /><circle cx="6.5" cy="17.5" r="3.5" /><circle cx="6.5" cy="6.5" r="3.5" /></svg>{{ t('trip.itineraryHeading') }}</h3>
             <!-- Naam van de vakantie (max. 2 regels) i.p.v. de intro-zin. -->
             <p class="tipn__meta" :class="{ 'tipn__meta--name': !!tripName }">{{ tripName || t('trip.itin.panelIntro') }}</p>
           </div>
@@ -92,7 +93,8 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   padding: var(--space-lg) var(--space-lg) var(--space-md);
   border-bottom: 1px solid var(--color-border-light);
 }
-.tipn__title { margin: 0; font-family: var(--font-heading); font-size: 22px; font-weight: 700; line-height: 1.25; }
+.tipn__title { margin: 0; display: flex; align-items: center; gap: 10px; font-family: var(--font-heading); font-size: 22px; font-weight: 700; line-height: 1.25; }
+.tipn__title-icon { flex-shrink: 0; width: 22px; height: 22px; color: var(--color-text-primary); }
 .tipn__meta { margin: 4px 0 0; font-size: 13px; color: var(--color-text-secondary); }
 .tipn__meta--name { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .tipn__close {
