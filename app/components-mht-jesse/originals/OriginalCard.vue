@@ -199,26 +199,33 @@ function onCardClick(e: MouseEvent) {
   display: block;
 }
 
-/* Dezelfde schuine badge als de rest van het prototype. */
+/* Exact de badge van de rest van het prototype (zie DealCard.vue): de
+   getekende banner als inline SVG, in een vaste doos met de eigen
+   verhouding 145:104 van de tekening. De padding is asymmetrisch omdat het
+   rechteruiteinde schuin toeloopt — geometrisch centreren leest dan als
+   "naar rechts geduwd", de extra rechterpadding herstelt het optische
+   midden. */
 .original-card__discount {
   position: absolute;
   top: var(--space-md);
-  left: 0;
+  left: var(--space-md);
   z-index: 3;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 145 104'%3E%3Cpath d='M123.24 100.853L144.909 4.88359C145.524 2.16058 143.231 -0.33886 140.466 0.0394912L3.4576 18.7817C1.47641 19.0527 -0.000259399 20.7451 -0.000259399 22.7448V90.5564C-0.000259399 92.6393 1.59824 94.3736 3.67427 94.5431L119.013 103.959C120.999 104.121 122.801 102.797 123.24 100.853Z' fill='%23141414'/%3E%3C/svg%3E");
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  width: 60px;
+  height: 43px;
+  box-sizing: border-box;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 78px;
-  height: 46px;
-  padding: 0 16px 2px 14px;
-  background: var(--color-dark);
   color: #fff;
   font-family: var(--font-heading);
+  font-size: 15px;
   font-weight: 700;
-  font-size: 17px;
-  line-height: 1;
-  letter-spacing: 0.3px;
-  clip-path: polygon(0% 14%, 100% 0%, 88% 100%, 0% 88%);
+  padding: 0 13px 0 6px;
+  letter-spacing: 0.5px;
 }
 
 .original-card__heart {
