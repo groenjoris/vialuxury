@@ -47,10 +47,7 @@
             @click="toggleCollection(c.id)"
           >
             <span class="originals__collection-icon" aria-hidden="true"></span>
-            <span class="originals__collection-text">
-              <b>{{ c.label }}</b>
-              <i>Collection</i>
-            </span>
+            <span class="originals__collection-text">{{ c.label }}</span>
           </button>
         </div>
 
@@ -283,17 +280,14 @@ function iconFor(id: string): string {
   -webkit-mask: var(--icon) center/contain no-repeat;
   mask: var(--icon) center/contain no-repeat;
 }
-/* Twee regels, zoals op de aangeleverde collectiebanners. */
+/* Eén regel: alleen de naam van de collectie, zonder het woord Collection. */
 .originals__collection-text {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  line-height: 1.1;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1;
   text-transform: uppercase;
   letter-spacing: 0.06em;
 }
-.originals__collection-text b { font-weight: 700; font-size: 13px; }
-.originals__collection-text i { font-style: normal; font-weight: 400; font-size: 11px; }
 
 .originals__themes {
   display: flex;
