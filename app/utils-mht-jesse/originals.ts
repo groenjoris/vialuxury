@@ -30,7 +30,8 @@ export const COLLECTIONS: readonly Collection[] = [
 export const COLLECTIONS_IN_ORDER: readonly Collection[] = COLLECTIONS
 
 /**
- * De aanwijzingen per collectie, met hun gewicht.
+ * De aanwijzingen per collectie, met hun gewicht. Routes staat er niet bij:
+ * die wordt bepaald door de productsoort (zie ROUTEPRODUCT_* hieronder).
  *
  * Waarom niet de bestaande filterthema's? Die zijn gemaakt om te filteren,
  * niet om in te delen: "Overnachting met diner" zit op 30 van de 37
@@ -54,16 +55,7 @@ interface Signal {
   weight: number
 }
 
-const SIGNALS: Record<CollectionId, Signal[]> = {
-  // Meerdaagse routes, fiets- en autovakanties, en de kust.
-  routes: [
-    { in: 'theme', re: /^autovakantie$|^fietsvakantie$/i, weight: 10 },
-    { in: 'naam',  re: /roadtrip|autoroute|kustroute|fietsroute|fietsvakantie|autovakantie/i, weight: 7 },
-    { in: 'theme', re: /fietsarrangement/i, weight: 6 },
-    { in: 'naam',  re: /aan zee|aan het strand|kust|opaalkust/i, weight: 4 },
-    { in: 'theme', re: /aan zee|experience aan zee/i, weight: 3 },
-    { in: 'theme', re: /wandelarrangement/i, weight: 2 },
-  ],
+const SIGNALS: Record<Exclude<CollectionId, 'routes'>, Signal[]> = {
   // Tafel voorop: Michelin, wijn, bourgondisch.
   culinary: [
     { in: 'naam',  re: /michelin|gastronom/i, weight: 9 },
@@ -83,6 +75,8 @@ const SIGNALS: Record<CollectionId, Signal[]> = {
   retreat: [
     { in: 'theme', re: /wellness|spa\b|therme/i, weight: 7 },
     { in: 'naam',  re: /wellness|spa\b|therme|sanadome|retreat|oase van rust|ontspanning|onthaasten/i, weight: 6 },
+    { in: 'naam',  re: /aan zee|aan het strand|kust/i, weight: 4 },
+    { in: 'theme', re: /aan zee/i, weight: 3 },
     { in: 'naam',  re: /\bresort\b/i, weight: 3 },
     { in: 'theme', re: /jacuzzi|bubbelbad/i, weight: 3 },
     { in: 'theme', re: /hotels met zwembad/i, weight: 2 },
@@ -105,13 +99,25 @@ const SIGNALS: Record<CollectionId, Signal[]> = {
   ],
 }
 
-/** De titel wint altijd van de puntentelling: "Culinair verblijf in
- *  monumentale villa" is Culinary, niet Heritage. */
+/**
+ * Routes is een productsoort, geen sfeer: alleen de meerdaagse fiets- en
+ * autovakanties horen er thuis. Een los hotel met een fietsarrangement of
+ * een ligging aan zee dus niet — dat zijn gewoon hotels, die vinden hun
+ * collectie via de puntentelling hieronder.
+ *
+ * Let op dat `fietsroute` hier NIET in staat: "de mooiste fietsroutes langs
+ * de Maas" is een hotelarrangement, geen fietsvakantie.
+ */
+const ROUTEPRODUCT_THEMA = /^(autovakantie|fietsvakantie)$/i
+const ROUTEPRODUCT_NAAM = /autovakantie|fietsvakantie|autoroute|roadtrip/i
+
+/** De titel wint van de puntentelling: "Culinair verblijf in monumentale
+ *  villa" is Culinary, niet Heritage. Alleen Routes gaat hier nog voor. */
 const CULINAIR_IN_TITEL = /culinair/i
 
 /** Bij een gelijke stand wint de collectie die hier het eerst staat; Events
  *  sluit de rij, zodat "stedentrip" alleen wint als er niets anders is. */
-const TIE_BREAK: readonly CollectionId[] = ['culinary', 'heritage', 'retreat', 'routes', 'seasonal', 'events']
+const TIE_BREAK: readonly Exclude<CollectionId, 'routes'>[] = ['culinary', 'heritage', 'retreat', 'seasonal', 'events']
 
 /**
  * Deelt alle Originals in over de collecties: per arrangement de collectie
@@ -134,16 +140,23 @@ export function assignCollections(
     const titelText = `${deal.title?.nl ?? ''} ${deal.title?.en ?? ''}`
     const naamText = `${titelText} ${hotel.name ?? ''}`
 
-    // Vaste regel: staat "culinair" in de titel van het arrangement, dan is
-    // het Culinary — ongeacht wat het gebouw of de omgeving verder zegt.
-    // Let op: alleen de titel telt, niet de hotelnaam, anders zou Culinair
-    // Landgoed Parc Broekhuizen ("19e-eeuws kasteelhotel") hier ook landen.
+    // Een fiets- of autovakantie is altijd een Route, ook als hij
+    // "culinaire autoroute" heet.
+    if (themes.some(t => ROUTEPRODUCT_THEMA.test(t)) || ROUTEPRODUCT_NAAM.test(naamText)) {
+      out.set(deal.id, 'routes')
+      continue
+    }
+
+    // Staat "culinair" in de titel van het arrangement, dan is het Culinary —
+    // ongeacht wat het gebouw of de omgeving verder zegt. Alleen de titel
+    // telt, niet de hotelnaam, anders zou Culinair Landgoed Parc Broekhuizen
+    // ("19e-eeuws kasteelhotel") hier ook landen.
     if (CULINAIR_IN_TITEL.test(titelText)) {
       out.set(deal.id, 'culinary')
       continue
     }
 
-    let best: CollectionId | null = null
+    let best: Exclude<CollectionId, 'routes'> | null = null
     let bestScore = 0
     for (const id of TIE_BREAK) {
       let score = 0
