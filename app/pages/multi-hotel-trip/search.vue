@@ -2381,8 +2381,8 @@ onMounted(() => {
   font-weight: 700;
   color: var(--color-primary);
 }
-/* Red dot when one or more filters are active. Sits top-right inside
-   the Filter button (Figma "New" indicator, 10 × 10 px, 4 px inset). */
+/* Oranje stip (merkkleur) als er een of meer filters aan staan. Rechtsboven in
+   de Filter-knop (Figma "New"-indicator, 10 × 10 px, 4 px inset). Was rood. */
 .m-toolbar-btn__dot {
   position: absolute;
   top: 4px;
@@ -2390,7 +2390,7 @@ onMounted(() => {
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  background: #e53935;
+  background: var(--color-primary, #FB862C);
 }
 /* Drop the Sort button when horizontal room runs out. */
 @media (max-width: 360px) {
