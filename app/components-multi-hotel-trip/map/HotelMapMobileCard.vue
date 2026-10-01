@@ -105,6 +105,7 @@ import { formatPrice } from '~/utils-multi-hotel-trip/formatPrice'
 import { nightsLabel, personsLabel } from '~/utils-multi-hotel-trip/plural'
 import { priceForArrival, PRICED_PERSONS } from '~/utils-multi-hotel-trip/priceFormula'
 import { isDealAvailableInWindow } from '~/utils-multi-hotel-trip/availability'
+import { pickSmartInclusions } from '~/utils-multi-hotel-trip/smartInclusions'
 import { useFocusTrap } from '~/composables-multi-hotel-trip/useFocusTrap'
 import { useMultiHotelTripPriceVariant } from '~/composables-multi-hotel-trip/useMultiHotelTripPriceVariant'
 
@@ -183,7 +184,7 @@ function hrefFor(deal: SearchHotelDeal): string {
 
 /** Eén kaartje: een arrangement van het hotel, of een vakantie (eigen pin of onder een hotel). */
 // Geen reisnaam op het kaartje (past niet): alleen soort, nachten, personen, inclusies en prijs.
-function dealView(deal: SearchHotelDeal, tripInfo: MultiHotelTripInfo | null) {
+function dealView(deal: SearchHotelDeal, tripInfo: MultiHotelTripInfo | null, siblingInclusions: SearchHotelDeal['inclusions'][] = []) {
   const pp = !!tripInfo && pricePerPerson.value
   const soldOut = !!arrivalDate.value
     && !isDealAvailableInWindow(deal.id, arrivalDate.value, selectedFlexibility.value)
@@ -207,8 +208,12 @@ function dealView(deal: SearchHotelDeal, tripInfo: MultiHotelTripInfo | null) {
     // Vakantie in de p.p.-variant: de helft (per persoon).
     price: pp ? displayPrice(price, true) : price,
     originalPrice: pp ? displayPrice(original, true) : original,
-    // Vier inclusies, zoals op de live site (was twee).
-    includes: (deal.inclusions || []).slice(0, 4).map(i => localized(i)),
+    // De eerste vier highlights zoals op de dealcard: bij een vakantie haar vier highlights
+    // ("5 nachten / 3 hotels", …), bij een hotel dezelfde keuze als de dealcard (zonder de
+    // overnachting, onderscheidende punten eerst) — niet de eerste vier van de inclusielijst.
+    includes: tripInfo
+      ? deal.highlights.slice(0, 4).map(i => localized(i))
+      : pickSmartInclusions(deal.inclusions || [], siblingInclusions, locale.value as 'nl' | 'en', 4).map(i => localized(i)),
     href,
   }
 }
@@ -218,7 +223,7 @@ const dealViews = computed(() => {
   if (!h) return []
   const own = [...h.deals]
     .sort((a, b) => a.basePrice - b.basePrice)
-    .map(deal => dealView(deal, h.trip ?? null))
+    .map(deal => dealView(deal, h.trip ?? null, h.deals.map(d => d.inclusions || [])))
   // Hotel met vakanties: die komen achter de arrangementen.
   const trips = (h.trip ? [] : (props.trips ?? []))
     .flatMap(tr => tr.deals.map(deal => dealView(deal, tr.trip ?? null)))
