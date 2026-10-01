@@ -44,15 +44,10 @@
             <span class="deal-page__trip-score-badge">{{ trip.reviewScore.toFixed(1) }}</span>
             <span class="deal-page__trip-score-text">{{ t(getReviewLabelKey(trip.reviewScore)) }}</span>
           </a>
-          <div class="deal-page__hotel-name-wrap">
-            <!-- Vakantie: de hotelnamen met een pijltje ertussen (elke naam opent het
-                 hotel-sidepanel); sterren ernaast alleen als alle hotels hetzelfde
-                 aantal hebben (anders starRating 0). -->
-            <!-- Mobiel: elk hotel op een eigen regel (geen pijltjes); klik opent het hotelpanel. -->
-            <span v-if="isTrip && trip" class="deal-page__hotel-subtitle deal-page__hotel-subtitle--trip deal-page__hotel-stack">
-              <button v-for="(st, i) in trip.stops" :key="st.hotelName" type="button" class="deal-page__hotel-stack-item" @click="openTripHotel(i)">{{ st.hotelName }}</button>
-            </span>
-            <NuxtLink v-else :to="`/multi-hotel-trip/hotel/${hotel.slug}`" class="deal-page__hotel-link">
+          <!-- Mobiel: bij een vakantie geen hotelnamen (en sterren) in de kop — de plaatsnamen
+               staan in de regel hieronder, de hotels in de inclusies en het reisschema. -->
+          <div v-if="!isTrip" class="deal-page__hotel-name-wrap">
+            <NuxtLink :to="`/multi-hotel-trip/hotel/${hotel.slug}`" class="deal-page__hotel-link">
               <span class="deal-page__hotel-subtitle">{{ hotel.name }}</span>
             </NuxtLink>
             <div v-if="hotel.starRating > 0" class="deal-page__stars-adjacent" aria-hidden="true">
@@ -3040,22 +3035,6 @@ onMounted(() => {
 /* ===== FACILITIES ===== */
 /* Vakantie: hotelnamen met pijltjes mogen over meer regels lopen. */
 .deal-page__hotel-subtitle--trip { white-space: normal; line-height: 1.4; }
-/* Mobiel: de hotelnamen onder elkaar, elk als link (zelfde stijl als de hotelnaam-links in de tekst). */
-.deal-page__hotel-stack { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; }
-.deal-page__hotel-stack-item {
-  padding: 0;
-  border: 0;
-  background: none;
-  font: inherit;
-  color: inherit;
-  text-align: left;
-  cursor: pointer;
-  text-decoration: underline;
-  text-decoration-color: var(--color-border, #c7c2b8);
-  text-decoration-thickness: 1px;
-  text-underline-offset: 3px;
-}
-.deal-page__hotel-stack-item:hover { color: var(--color-primary); text-decoration-color: currentColor; }
 /* Vakantie: het inclusieblok mag omhoog — geen streep/padding boven de content-blocks
    en de ruimte van het grid eraf, zodat het direct onder de beschrijving/minimap begint
    (het hoeft niet uit te lijnen met de zijbalk). */

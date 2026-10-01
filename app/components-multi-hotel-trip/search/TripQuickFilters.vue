@@ -276,5 +276,23 @@ function iconFor(id: string): string {
     padding: 0 12px;
     font-size: 13px;
   }
+  /* Mobiel (Vakanties-pagina): maximaal twee rijen. De pillen vullen kolom voor kolom
+     (boven, onder) en de rest schuift horizontaal; de rij loopt door tot de schermrand,
+     zodat zichtbaar is dat er meer is. Per kolom zijn beide pillen even breed. */
+  .tqf:not(.tqf--inline) {
+    display: grid;
+    grid-auto-flow: column;
+    grid-template-rows: repeat(2, auto);
+    grid-auto-columns: max-content;
+    justify-content: start;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    margin-right: -16px;
+    padding-right: 16px;
+  }
+  .tqf:not(.tqf--inline)::-webkit-scrollbar { display: none; }
+  .tqf:not(.tqf--inline) .tqf__pill { width: 100%; }
 }
 </style>
