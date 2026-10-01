@@ -25,11 +25,11 @@
   --col-events:   #A454B6;
 
   /* Lichte tint per collectie */
-  --col-culinary-tint: #F4E1E1;
+  --col-culinary-tint: #FBE2E6;
   --col-retreat-tint:  #DAEEDC;
   --col-heritage-tint: #FCF5D7;
   --col-seasonal-tint: #D8E8E2;
-  --col-routes-tint:   #D8EDF1;
+  --col-routes-tint:   #DCE7FB;
   --col-events-tint:   #EFE3EF;
 }
 
@@ -60,3 +60,9 @@
 }
 .mhtj-originals[data-variant="vol"]   .col-label { background: var(--c); color: var(--on); }
 .mhtj-originals[data-variant="licht"] .col-label { background: var(--t); color: var(--ink); }
+
+/* De band op de kaart volgt dezelfde twee versies. Staat hier en niet in het
+   component, omdat `data-variant` op de pagina-wrapper zit: een gescopete
+   regel kan geen voorouder aanspreken. */
+.mhtj-originals[data-variant="vol"]   .original-card__band { background: var(--c); color: var(--on); }
+.mhtj-originals[data-variant="licht"] .original-card__band { background: var(--t); color: var(--ink); }

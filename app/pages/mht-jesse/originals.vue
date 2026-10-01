@@ -1,5 +1,5 @@
 <template>
-  <div class="mhtj-originals" data-variant="vol">
+  <div class="mhtj-originals" :data-variant="variant">
     <MhtJesseSiteHeader />
 
     <main class="originals">
@@ -11,6 +11,28 @@
             Arrangementen die je alleen bij ons vindt, genummerd en ingedeeld in zes collecties.
           </p>
         </header>
+
+        <!-- Versie 1 (vol) of versie 2 (licht) uit de kleurnota, zodat beide
+             naast elkaar te beoordelen zijn. De keuze blijft bewaard. -->
+        <div class="originals__switch" role="group" aria-label="Labelversie">
+          <span class="originals__switch-label">Labelversie</span>
+          <div class="originals__switch-track">
+            <button
+              type="button"
+              class="originals__switch-btn"
+              :class="{ 'originals__switch-btn--on': variant === 'vol' }"
+              :aria-pressed="variant === 'vol'"
+              @click="variant = 'vol'"
+            >Vol</button>
+            <button
+              type="button"
+              class="originals__switch-btn"
+              :class="{ 'originals__switch-btn--on': variant === 'licht' }"
+              :aria-pressed="variant === 'licht'"
+              @click="variant = 'licht'"
+            >Licht</button>
+          </div>
+        </div>
 
         <!-- De zes collecties. Klikken filtert; nog een keer klikken zet hem uit. -->
         <div class="originals__collections" role="group" aria-label="Collecties">
@@ -122,6 +144,19 @@ const allRows: OriginalRow[] = pairs.map((r, i) => ({
 
 const themeTags = FILTER_TAGS
 
+/** 'vol' = versie 1 uit de nota, 'licht' = versie 2. Bewaard in
+ *  localStorage zodat de keuze een herlaadbeurt overleeft. */
+const VARIANT_KEY = 'vl_mhtj_originals_variant'
+const variant = ref<'vol' | 'licht'>('vol')
+
+onMounted(() => {
+  const saved = localStorage.getItem(VARIANT_KEY)
+  if (saved === 'vol' || saved === 'licht') variant.value = saved
+})
+watch(variant, v => {
+  if (import.meta.client) localStorage.setItem(VARIANT_KEY, v)
+})
+
 const activeCollection = ref<CollectionId | null>(null)
 const activeThemes = ref<string[]>([])
 
@@ -185,6 +220,42 @@ function iconFor(id: string): string {
   max-width: 60ch;
   font-size: 16px;
   color: var(--color-text-secondary);
+}
+
+.originals__switch {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.originals__switch-label {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+.originals__switch-track {
+  display: inline-flex;
+  padding: 3px;
+  background: var(--color-surface);
+  border: 1px solid #e5e2da;
+  border-radius: var(--radius-lg);
+}
+.originals__switch-btn {
+  border: 0;
+  background: none;
+  padding: 6px 16px;
+  border-radius: var(--radius-sm);
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+.originals__switch-btn--on {
+  background: var(--color-dark);
+  color: #fff;
 }
 
 .originals__collections {
