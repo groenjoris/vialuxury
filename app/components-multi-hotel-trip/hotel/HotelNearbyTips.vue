@@ -1,24 +1,29 @@
 <template>
   <!-- MHT: `embedded` = zonder kop, container-padding en scheidingslijn — de
        rij tips in het reisschema "Per stad" (kop staat daar in het hoofdstuk). -->
-  <section class="tips-section" :class="{ container: !embedded, 'tips-section--embedded': embedded, 'tips-section--carousel': carousel }">
+  <section class="tips-section" :class="{ container: !embedded, 'tips-section--embedded': embedded, 'tips-section--mobile-single': mobileSingleRow }">
     <div v-if="!embedded" class="tips-section__header">
       <h2 class="tips-section__title">{{ t('hotel.nearbyTips') }}</h2>
       <p class="tips-section__subtitle">{{ tips.length }} {{ t('hotel.nearbySubtitle') }} {{ hotelName }}</p>
     </div>
 
     <div class="tips-section__grid">
-      <!-- Row 1: first 3 tips -->
-      <div class="tips-row tips-row--top">
+      <!-- Rijen van drie (arrangementenpagina: 3 + 2). Een kaart klapt uit binnen zijn eigen rij. -->
+      <div
+        v-for="(row, ri) in rows"
+        :key="ri"
+        class="tips-row"
+        :class="[ri === 0 ? 'tips-row--top' : 'tips-row--bottom', `tips-row--n${row.length}`]"
+      >
         <div
-          v-for="(tip, index) in topRow"
+          v-for="(tip, index) in row"
           :key="tip.id"
           class="tip-card"
           :class="{
-            'tip-card--active': isMobile || activeTop === index,
-            'tip-card--inactive': !isMobile && activeTop !== null && activeTop !== index,
+            'tip-card--active': isMobile || active[ri] === index,
+            'tip-card--inactive': !isMobile && active[ri] != null && active[ri] !== index,
           }"
-          @click="toggleTop(index)"
+          @click="toggle(ri, index)"
         >
           <!-- Image layer (always visible, fills card) -->
           <div class="tip-card__image">
@@ -27,7 +32,7 @@
 
           <!-- Collapsed overlay: number + title -->
           <div class="tip-card__overlay">
-            <span class="tip-card__number">{{ String(index + 1).padStart(2, '0') }}</span>
+            <span class="tip-card__number">{{ String(ri * 3 + index + 1).padStart(2, '0') }}</span>
             <h3 class="tip-card__title">{{ localized(tip.title) }}</h3>
           </div>
 
@@ -41,46 +46,8 @@
                 v-if="!isMobile"
                 type="button"
                 class="tip-card__more"
-                @click.stop="toggleTop(index)"
-              >{{ activeTop === index ? t('common.readLess') : t('common.readMore') }}</button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Row 2: last 2 tips — hidden when there are none, otherwise the
-           fixed 280 px row height leaves a ghost empty band below. -->
-      <div v-if="bottomRow.length > 0" class="tips-row tips-row--bottom">
-        <div
-          v-for="(tip, index) in bottomRow"
-          :key="tip.id"
-          class="tip-card"
-          :class="{
-            'tip-card--active': isMobile || activeBottom === index,
-            'tip-card--inactive': !isMobile && activeBottom !== null && activeBottom !== index,
-          }"
-          @click="toggleBottom(index)"
-        >
-          <div class="tip-card__image">
-            <img :src="tip.image" :alt="localized(tip.title)" loading="lazy" />
-          </div>
-
-          <div class="tip-card__overlay">
-            <span class="tip-card__number">{{ String(index + 4).padStart(2, '0') }}</span>
-            <h3 class="tip-card__title">{{ localized(tip.title) }}</h3>
-          </div>
-
-          <div class="tip-card__panel">
-            <div class="tip-card__panel-inner">
-              <div class="tip-card__accent"></div>
-              <h3 class="tip-card__panel-title">{{ localized(tip.title) }}</h3>
-              <p class="tip-card__desc">{{ localized(tip.description) }}</p>
-              <button
-                v-if="!isMobile"
-                type="button"
-                class="tip-card__more"
-                @click.stop="toggleBottom(index)"
-              >{{ activeBottom === index ? t('common.readLess') : t('common.readMore') }}</button>
+                @click.stop="toggle(ri, index)"
+              >{{ active[ri] === index ? t('common.readLess') : t('common.readMore') }}</button>
             </div>
           </div>
         </div>
@@ -100,30 +67,32 @@ const props = defineProps<{
   hotelName: string
   /** Zonder kop/container: ingebed in een ander blok (reisschema "Per stad"). */
   embedded?: boolean
-  /** Maximaal aantal tips (twee rijen van drie); standaard 5 zoals op de hotelpagina. */
+  /** Maximaal aantal tips; standaard 5 zoals op de hotelpagina (rij van 3 + rij van 2). */
   max?: number
-  /** Eén veegbare rij met alle tips (reisschema "Per stad"): op desktop drie naast elkaar
-   *  met de volgende al in beeld, geen uitklappende kaart; mobiel zoals altijd. */
-  carousel?: boolean
+  /** Mobiel alle rijen als één veegbare rij (reisschema "Per stad", meer dan drie tips);
+   *  desktop blijft rijen van drie. */
+  mobileSingleRow?: boolean
 }>()
 
-const topRow = computed(() => (props.carousel ? props.tips.slice(0, props.max ?? props.tips.length) : props.tips.slice(0, 3)))
-const bottomRow = computed(() => (props.carousel ? [] : props.tips.slice(3, props.max ?? 5)))
+/** Tips in rijen van drie: 5 tips = 3 + 2 (zoals de arrangementenpagina), 7 tips = 3 + 3 + 1. */
+const rows = computed(() => {
+  const list = props.tips.slice(0, props.max ?? 5)
+  const out: NearbyTip[][] = []
+  for (let i = 0; i < list.length; i += 3) out.push(list.slice(i, i + 3))
+  return out
+})
 
-const activeTop = ref<number | null>(null)
-const activeBottom = ref<number | null>(null)
+/** Uitgeklapte kaart per rij (index binnen de rij). */
+const active = ref<(number | null)[]>([])
 
 /** Mobile turns the component into a horizontal swipe carousel with
  *  every card always expanded — no toggle. Click handlers no-op so
  *  the text panel stays visible on tap. */
-function toggleTop(index: number) {
+function toggle(row: number, index: number) {
   if (isMobile.value) return
-  activeTop.value = activeTop.value === index ? null : index
-}
-
-function toggleBottom(index: number) {
-  if (isMobile.value) return
-  activeBottom.value = activeBottom.value === index ? null : index
+  const next = [...active.value]
+  next[row] = next[row] === index ? null : index
+  active.value = next
 }
 </script>
 
@@ -196,18 +165,18 @@ function toggleBottom(index: number) {
   cursor: pointer;
   transition: flex-basis 450ms cubic-bezier(0.4, 0, 0.2, 1);
 }
-/* Initial state: every card the SAME width in BOTH rows — a third of the
-   row minus the two 14px gaps. flex-grow:0 keeps the 2-card bottom row from
+/* Initial state: every card the SAME width in EVERY row — a third of the
+   row minus the two 14px gaps. flex-grow:0 keeps a shorter row from
    stretching to fill (cards match the top row, left-aligned). */
-.tips-row--top .tip-card,
-.tips-row--bottom .tip-card { flex-basis: calc((100% - 28px) / 3); }
+.tips-row .tip-card { flex-basis: calc((100% - 28px) / 3); }
 /* Clicked card grows (Lees meer), its row-mates shrink — animated via
    flex-basis. (Mobile pins flex to 80vw !important, so none of this applies
    there.) */
-.tips-row--top .tip-card--active { flex-basis: 56%; }
-.tips-row--top .tip-card--inactive { flex-basis: 22%; }
-.tips-row--bottom .tip-card--active { flex-basis: 64%; }
-.tips-row--bottom .tip-card--inactive { flex-basis: 36%; }
+.tips-row--n3 .tip-card--active { flex-basis: 56%; }
+.tips-row--n3 .tip-card--inactive { flex-basis: 22%; }
+.tips-row--n2 .tip-card--active,
+.tips-row--n1 .tip-card--active { flex-basis: 64%; }
+.tips-row--n2 .tip-card--inactive { flex-basis: 36%; }
 
 /* ── Image: top of the card, fixed height ── */
 .tip-card__image {
@@ -273,25 +242,6 @@ function toggleBottom(index: number) {
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
-/* Carrousel (reisschema "Per stad"): één rij, kaarten vast iets smaller dan een derde zodat de
-   volgende al piept; geen uitklappende kaart, de hele tekst staat er meteen. */
-.tips-section--carousel .tips-row--top {
-  overflow-x: auto;
-  overscroll-behavior-x: contain;
-  scroll-snap-type: x mandatory;
-  scrollbar-width: none;
-  padding-bottom: 4px;
-}
-.tips-section--carousel .tips-row--top::-webkit-scrollbar { display: none; }
-.tips-section--carousel .tips-row--top .tip-card,
-.tips-section--carousel .tips-row--top .tip-card--active,
-.tips-section--carousel .tips-row--top .tip-card--inactive {
-  flex: 0 0 calc((100% - 28px) / 3 - 18px);
-  scroll-snap-align: start;
-  cursor: default;
-}
-.tips-section--carousel .tip-card__desc { -webkit-line-clamp: initial; display: block; }
-.tips-section--carousel .tip-card__more { display: none; }
 /* Expanded card shows the full description. */
 .tip-card--active .tip-card__desc {
   -webkit-line-clamp: initial;
@@ -412,6 +362,17 @@ function toggleBottom(index: number) {
   /* The "Lees meer" toggle is desktop-only (it's also gated with v-if in
      the template, but hide defensively in case of a resize). */
   .tip-card__more { display: none; }
+  /* Reisschema "Per stad": alle rijen als één veegbare rij (de rijen vallen weg in de grid). */
+  .tips-section--mobile-single .tips-section__grid {
+    flex-direction: row;
+    gap: 12px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+    margin: 0 -16px 0 0;
+    padding: 0 0 8px;
+  }
+  .tips-section--mobile-single .tips-row { display: contents; }
 }
 
 /* MHT: ingebed in het reisschema "Per stad" — geen padding/scheidingslijn (staat

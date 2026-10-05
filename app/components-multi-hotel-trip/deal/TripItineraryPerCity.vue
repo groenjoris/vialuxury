@@ -62,7 +62,7 @@
           </div>
 
           <div v-show="isOpen(ch.stopIndex)" :id="`tpc-panel-${ch.stopIndex}`" class="tpc-ch__panel" role="region" :aria-label="t('trip.itin.city.outingsAt').replace('{hotel}', ch.hotelName)">
-            <MultiHotelTripHotelNearbyTips :tips="tipsOf(ch)" :hotel-name="ch.hotelName" embedded :carousel="ch.attractions.length > 3" :max="8" />
+            <MultiHotelTripHotelNearbyTips :tips="tipsOf(ch)" :hotel-name="ch.hotelName" embedded mobile-single-row :max="8" />
           </div>
         </li>
       </template>
