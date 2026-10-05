@@ -318,8 +318,8 @@ const nl: Record<string, string> = {
   'trip.introTitleBike': '{days}-daagse fietsreis',
   'trip.includedHeading': 'In deze {type} voor 2 personen is het volgende inbegrepen',
   // Onder de minimap
-  'trip.fromHomeLine': 'Reistijd van {city} naar {to}: ca. {duration}',
-  'trip.fromHomeLineKm': 'Reistijd vanaf {city} naar {to}: ca. {duration} ({km} km)',
+  'trip.fromHomeShort': '{city} → {to}: {duration} ({km} km)',
+  'trip.fromHomeShortNoKm': '{city} → {to}: {duration}',
   'trip.totalRouteLine': 'Totale route tussen hotels: {km} km',
   'trip.totalDriveLine': 'Totale rijtijd: ca. {duration}',
   // Fietsvakantie — regels onder de minimap
@@ -370,6 +370,7 @@ const nl: Record<string, string> = {
   'trip.durShort.minutes': '{m} min',
   'trip.durShort.hours': '{h} uur',
   'trip.durShort.hoursMinutes': '{h} u {m} min',
+  'trip.durCompact.hoursMinutes': '{h} u {m} min',
   'trip.roomHeading': 'Jouw kamer',
   'trip.checkInFrom': 'Inchecken vanaf {time}',
   // Multi Hotel Trip — reisduur in twee groepen (kort / lang)

@@ -1798,6 +1798,13 @@ function tripDurationLabel(minutes: number): string {
   const h = Math.floor(minutes / 60), m = minutes % 60
   return m === 0 ? t('trip.dur.hours').replace('{h}', String(h)) : t('trip.dur.hoursMinutes').replace('{h}', String(h)).replace('{m}', String(m))
 }
+/** Korte reistijd voor op één regel: "45 min", "3 uur", "3 u 45 min" (de: "4:30 h"). */
+function tripDurationShort(minutes: number): string {
+  if (minutes < 60) return t('trip.durShort.minutes').replace('{m}', String(minutes))
+  const h = Math.floor(minutes / 60), m = minutes % 60
+  if (m === 0) return t('trip.durShort.hours').replace('{h}', String(h))
+  return t('trip.durCompact.hoursMinutes').replace('{h}', String(h)).replace('{m}', String(m)).replace('{mm}', String(m).padStart(2, '0'))
+}
 /** Rijroutes tussen de hotels (OSRM, vooraf berekend — scripts/build-trip-routes.py). */
 const tripRouteLegs = computed<TripRouteLeg[]>(() =>
   (tripRoutesJson as Record<string, { legs: TripRouteLeg[] }>)[trip?.id ?? '']?.legs ?? [],
@@ -1834,15 +1841,18 @@ const tripMapSummary = computed<({ icon: string; text: string } | undefined)[]>(
       mins.length ? { icon: 'clock', text: t('trip.bike.timeLine').replace('{min}', String(minH)).replace('{max}', String(maxH)) } : undefined,
     ]
   }
-  // Vertrekplaats per taalinstelling (nl Utrecht, nl-BE Brussel, de Düsseldorf): alleen die regel.
+  // Vertrekplaats per taalinstelling (nl Utrecht, nl-BE Brussel, de Düsseldorf), kort zodat het
+  // op één regel past: "Utrecht → Tilques: ca. 3 u 45 min (332 km)".
   const byLocale = trip.fromHomeByLocale
   const origin = byLocale ? (byLocale[locale.value as keyof typeof byLocale] ?? byLocale.nl) : undefined
-  if (origin && first) {
-    return [{ icon: 'car', text: t('trip.fromHomeLineKm').replace('{city}', origin.city).replace('{to}', first.city).replace('{duration}', tripDurationLabel(origin.minutes)).replace('{km}', String(origin.km)) }]
-  }
   const km = trip.stops.reduce((sum, s, i) => sum + (s.travel?.km ?? legs.find(l => l.to === i && !l.return)?.km ?? 0), 0)
+  const fromHomeLine = origin && first
+    ? { icon: 'car', text: t('trip.fromHomeShort').replace('{city}', origin.city).replace('{to}', first.city).replace('{duration}', tripDurationShort(origin.minutes)).replace('{km}', String(origin.km)) }
+    : trip.fromHome && first
+      ? { icon: 'car', text: t('trip.fromHomeShortNoKm').replace('{city}', trip.fromHome.city).replace('{duration}', tripDurationShort(trip.fromHome.minutes)).replace('{to}', first.city) }
+      : undefined
   return [
-    trip.fromHome && first ? { icon: 'car', text: t('trip.fromHomeLine').replace('{city}', trip.fromHome.city).replace('{duration}', tripDurationLabel(trip.fromHome.minutes)).replace('{to}', first.city) } : undefined,
+    fromHomeLine,
     km ? { icon: 'route', text: t('trip.totalRouteLine').replace('{km}', String(km)) } : undefined,
     // Geen "Totale rijtijd"-regel meer onder de minimap (2026-09-28).
   ]

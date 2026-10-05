@@ -312,8 +312,8 @@ const en: Record<string, string> = {
   'trip.introTitleAuto': '{days}-day trip by car',
   'trip.introTitleBike': '{days}-day cycling trip',
   'trip.includedHeading': 'This {type} for 2 people includes',
-  'trip.fromHomeLine': 'Travel time from {city} to {to}: approx. {duration}',
-  'trip.fromHomeLineKm': 'Travel time from {city} to {to}: approx. {duration} ({km} km)',
+  'trip.fromHomeShort': '{city} → {to}: {duration} ({km} km)',
+  'trip.fromHomeShortNoKm': '{city} → {to}: {duration}',
   'trip.totalRouteLine': 'Total route between hotels: {km} km',
   'trip.totalDriveLine': 'Total driving time: approx. {duration}',
   'trip.bike.stagesLine': '{n} cycling legs: {list} km ({total} km in total)',
@@ -362,6 +362,7 @@ const en: Record<string, string> = {
   'trip.durShort.minutes': '{m} min',
   'trip.durShort.hours': '{h} h',
   'trip.durShort.hoursMinutes': '{h} h {m} min',
+  'trip.durCompact.hoursMinutes': '{h} h {m} min',
   'trip.roomHeading': 'Your room',
   'trip.checkInFrom': 'Check-in from {time}',
   // Multi Hotel Trip — reisduur in twee groepen (kort / lang)
