@@ -96,7 +96,7 @@
              inbegrepen + kalender/boekknop → beschrijving → highlights → beoordelingen → samengesteld door
              → voorbeeld reisschema. -->
         <section v-if="isTrip" id="mini-map" class="container deal-page__mini-map-mobile deal-page__mini-map-mobile--trip">
-          <h2 v-if="trip" class="deal-page__trip-brand"><img :src="`/icons/mht/${trip.type === 'fiets' ? 'bike' : 'car-side'}.svg`" alt="" class="deal-page__trip-brand-icon" width="20" height="20" /><span class="deal-page__trip-brand-type">{{ t(trip.type === 'fiets' ? 'trip.ownTransport.fiets' : 'trip.ownTransport.auto') }}<span class="deal-page__trip-brand-badge">{{ t('header.new') }}</span></span></h2>
+          <h2 v-if="trip" class="deal-page__trip-brand"><img :src="`/icons/mht/${trip.type === 'fiets' ? 'bike' : 'car-side'}.svg`" alt="" class="deal-page__trip-brand-icon" width="20" height="20" /><span class="deal-page__trip-brand-type">{{ tripMapTitle.head }}<span class="deal-page__trip-brand-last">{{ tripMapTitle.last }}<span class="deal-page__trip-brand-badge">{{ t('header.new') }}</span></span></span></h2>
           <MultiHotelTripRouteMapCard
             class="deal-page__minimap"
             :stops="tripMapStops" :legs="tripRouteLegs" :return-label="tripReturnLabel" :summary="tripMapSummary"
@@ -1816,6 +1816,17 @@ function tripDurationShort(minutes: number): string {
   if (m === 0) return t('trip.durShort.hours').replace('{h}', String(h))
   return t('trip.durCompact.hoursMinutes').replace('{h}', String(h)).replace('{m}', String(m)).replace('{mm}', String(m).padStart(2, '0'))
 }
+/** Mobiel, titel boven de routekaart: "Autovakantie met 3 hotels" / "Fiets van hotel naar hotel, wij
+ *  brengen je bagage" — gesplitst in kop + laatste woord, zodat het Nieuw-stickertje aan het laatste
+ *  woord hangt (als in de navigatie), ook als de titel over twee regels loopt. */
+const tripMapTitle = computed(() => {
+  if (!trip) return { head: '', last: '' }
+  const full = trip.type === 'fiets'
+    ? t('trip.mapTitle.fiets')
+    : t('trip.typeWithHotels').replace('{type}', t('trip.auto')).replace('{n}', String(trip.stops.length))
+  const i = full.lastIndexOf(' ')
+  return i < 0 ? { head: '', last: full } : { head: full.slice(0, i + 1), last: full.slice(i + 1) }
+})
 /** Rijroutes tussen de hotels (OSRM, vooraf berekend — scripts/build-trip-routes.py). */
 const tripRouteLegs = computed<TripRouteLeg[]>(() =>
   (tripRoutesJson as Record<string, { legs: TripRouteLeg[] }>)[trip?.id ?? '']?.legs ?? [],
@@ -3659,7 +3670,8 @@ onMounted(() => {
     margin-top: 16px;
     margin-bottom: 8px;
   }
-  /* Vakantie: kleine titel boven de routekaart ("Autovakantie met eigen vervoer") met het auto-/fietsicoon
+  /* Vakantie: kleine titel boven de routekaart ("Autovakantie met 3 hotels" / "Fiets van hotel naar hotel,
+     wij brengen je bagage") met het auto-/fietsicoon
      van de dealcard en het Nieuw-stickertje uit de navigatie (.verticals__badge) rechtsboven de tekst. */
   .deal-page__trip-brand {
     display: flex;
@@ -3674,12 +3686,12 @@ onMounted(() => {
     color: var(--color-text-primary);
   }
   .deal-page__trip-brand-icon { flex-shrink: 0; width: 20px; height: 20px; }
-  .deal-page__trip-brand-type { position: relative; }
+  /* Het stickertje staat direct achter het laatste woord, bovenaan de regel (zodat het bij een titel
+     over twee regels niet door de regel erboven loopt); laatste woord + stickertje breken niet af. */
+  .deal-page__trip-brand-last { white-space: nowrap; }
   .deal-page__trip-brand-badge {
-    position: absolute;
-    /* Boven de tekstregel (raakt de letters niet), steekt rechts iets uit. */
-    top: -13px;
-    right: -20px;
+    vertical-align: top;
+    margin-left: 6px;
     display: inline-flex;
     align-items: center;
     height: 14px;
