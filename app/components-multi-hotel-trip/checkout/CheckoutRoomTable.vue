@@ -672,6 +672,7 @@ const arrangementIncludes = trip.value ? trip.value.includes : [
 
     <MultiHotelTripCheckoutPolicyChoicePopup
       v-if="policyPopupOpen"
+      :trip-hotels="trip?.hotels.length ?? 0"
       @choose="applyPolicy"
       @close="policyPopupOpen = false"
     />

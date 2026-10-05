@@ -489,6 +489,7 @@ useHead({ title: trip.value ? 'Kies je opties â€” ViaLuxury' : 'Kies je kamer â€
 
       <MultiHotelTripCheckoutPolicyChoicePopup
         v-if="policyPopupOpen"
+        :trip-hotels="trip?.hotels.length ?? 0"
         @choose="applyPolicy"
         @close="policyPopupOpen = false"
       />

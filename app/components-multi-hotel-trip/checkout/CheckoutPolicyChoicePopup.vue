@@ -1,6 +1,8 @@
 <script setup lang="ts">
 // Room table: opens when the guest clicks a selector of the "other"
 // cancellation policy. Two wide buttons decide the policy for ALL rooms.
+// Vakantie (tripHotels > 0): de keuze geldt voor alle personen en alle hotels — geen kamers.
+defineProps<{ tripHotels?: number }>()
 const emit = defineEmits<{
   choose: [value: 'flexible' | 'nonrefundable']
   close: []
@@ -17,15 +19,16 @@ const emit = defineEmits<{
       <h2 id="pc-title" class="t-h2 pc__title">
         Je kan geen combinatie van gratis annuleren en niet-terugbetaalbaar boeken.
       </h2>
-      <p class="t-body c-grey">Wat heeft je voorkeur?</p>
+      <p v-if="tripHotels" class="t-body c-grey">De keuze geldt voor alle personen en alle {{ tripHotels }} hotels. Wat heeft je voorkeur?</p>
+      <p v-else class="t-body c-grey">Wat heeft je voorkeur?</p>
 
       <div class="pc__actions">
         <button class="pc__btn pc__btn--flex" type="button" @click="emit('choose', 'flexible')">
-          Alle kamers gratis annuleren
+          {{ tripHotels ? 'Gratis annuleren voor alle personen' : 'Alle kamers gratis annuleren' }}
           <span class="pc__btnsub">(aanbevolen)</span>
         </button>
         <button class="pc__btn pc__btn--nonref" type="button" @click="emit('choose', 'nonrefundable')">
-          Alle kamers niet-terugbetaalbaar
+          {{ tripHotels ? 'Niet-terugbetaalbaar voor alle personen' : 'Alle kamers niet-terugbetaalbaar' }}
         </button>
       </div>
     </div>
