@@ -14,10 +14,11 @@ import { tripDetailBySlug } from '~/data/mhtj-trips'
 import {
   PLAIN_COLORS,
   addPlainBase,
-  addTripRoute,
-  addTripHotels,
-  addTripHighlights,
-  hoverCardHtml,
+  addRegionLabels,
+  addSceneryIcons,
+  addDottedRoute,
+  addIllustratedStops,
+  provinceBounds,
 } from '~/utils-mht-jesse/tripMapLayers'
 
 const route = useRoute()
@@ -70,31 +71,23 @@ async function build() {
   if (!el) return
   const L = (await import('leaflet')).default
   map?.remove()
-  // Geen tegellaag: de ondergrond is een vlakke tekening, zodat er geen
-  // wegen, plaatsnamen of terrein door de route heen lopen.
+  // Geen tegellaag: de kaart is een tekening, geen atlas. Wegen,
+  // plaatsnamen en terrein zouden de illustratie alleen in de weg zitten.
   map = L.map(el, { zoomControl: true, attributionControl: false, scrollWheelZoom: true })
-  // addPlainBase tekent de landsgrens zelf, afgeleid uit de provincievormen;
-  // de losse grenzenlaag (addCountryBorders) loopt daar niet gelijk mee.
-  addPlainBase(L, map, { highlightStops: stops.value })
-  addTripRoute(L, map, stops.value, { distances: true })
-  addTripHotels(L, map, stops.value, {
-    size: 30,
-    labelText: s => s.title ?? s.label,
-    labelSize: 13,
-    hoverHtml: (s, i) => hoverCardHtml({
-      image: s.image,
-      title: s.title ?? s.label,
-      stars: s.starRating,
-      lines: [s.label, `${s.nights ?? 0} nachten`],
-    }),
-  })
-  addTripHighlights(L, map, highlights.value)
+  const lit = addPlainBase(L, map, { highlightStops: stops.value })
+  addRegionLabels(L, map, lit)
+  addSceneryIcons(L, map, { provinces: lit, stops: stops.value, highlights: highlights.value })
+  addDottedRoute(L, map, stops.value)
+  addIllustratedStops(L, map, stops.value)
 
-  const all = [
+  // Kadreren op de provincie, niet op de route: de tekening is het
+  // onderwerp. Zonder provincie (een reis buiten Nederland) op de route.
+  const box = provinceBounds(lit)
+  const all = box ? [box[0], box[1]] : [
     ...stops.value.map(s => [s.lat, s.lng] as [number, number]),
     ...highlights.value.map(h => [h.lat, h.lng] as [number, number]),
   ]
-  if (all.length) map.fitBounds(L.latLngBounds(all), { padding: [72, 72], maxZoom: 13 })
+  if (all.length) map.fitBounds(L.latLngBounds(all as [number, number][]), { padding: [40, 40], maxZoom: 13 })
   map.invalidateSize()
 }
 
