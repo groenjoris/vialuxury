@@ -175,14 +175,23 @@ export function addPlainBase(
       fillColor: color, fillOpacity: 1, stroke: false, interactive: false,
     }).addTo(map)
 
-  // 1. Al het land in één kleur: eerst de landenlaag, dan de provincies
-  //    eroverheen. De drie lagen zijn los van elkaar vereenvoudigd en delen
-  //    geen enkel punt, dus tussen het Nederlandse provinciesilhouet en het
-  //    Duitse landvlak vallen smalle kieren. Omdat alles dezelfde landkleur
-  //    heeft zie je die niet; de landenlaag eronder vult ze op. Alleen de
-  //    randen die we daarna tekenen zijn zichtbaar, en die komen allemaal
-  //    uit de provincievormen.
-  for (const c of SHAPES.countries ?? []) for (const ring of c.rings) fill(ring, PLAIN_COLORS.land)
+  // 1. Al het land in één kleur. Nederland komt volledig uit de provincies —
+  //    silhouet, kust en landsgrens zijn daarmee dezelfde punten als de
+  //    vulling en de randen hieronder. De buurlanden komen uit de landenlaag;
+  //    die is apart vereenvoudigd en deelt geen enkel punt met de provincies,
+  //    dus tussen Nederland en Duitsland zou een smalle kier vallen. Een rand
+  //    in de landkleur om die landvlakken overbrugt dat. Dat verdikt de
+  //    buitenlandse kustlijn een paar tiende millimeter; die tekenen we toch
+  //    niet als lijn, dus dat valt niet op.
+  for (const c of SHAPES.countries ?? []) {
+    if (c.id === 'NL') continue
+    for (const ring of c.rings) {
+      L.polygon(ringToLatLngs(ring), {
+        fillColor: PLAIN_COLORS.land, fillOpacity: 1,
+        color: PLAIN_COLORS.land, weight: 3, interactive: false,
+      }).addTo(map)
+    }
+  }
   for (const prov of SHAPES.provinces ?? []) for (const ring of prov.rings) fill(ring, PLAIN_COLORS.land)
 
   // 2. De uitgelichte provincies, nog onder de lijnen.
