@@ -95,7 +95,7 @@
              navigatie, rechtsboven het soort vakantie), daarna kaart → inbegrepen + kalender/boekknop →
              beschrijving → highlights → beoordelingen → samengesteld door → voorbeeld reisschema. -->
         <section v-if="isTrip && trip" class="container deal-page__trip-brand-mobile">
-          <h2 class="deal-page__trip-brand">ViaLuxury <span class="deal-page__trip-brand-type">{{ t(trip.type === 'fiets' ? 'trip.fiets' : 'trip.auto') }}<span class="deal-page__trip-brand-badge">{{ t('header.new') }}</span></span></h2>
+          <h2 class="deal-page__trip-brand"><img :src="`/icons/mht/${trip.type === 'fiets' ? 'bike' : 'car-side'}.svg`" alt="" class="deal-page__trip-brand-icon" width="20" height="20" />ViaLuxury <span class="deal-page__trip-brand-type">{{ t(trip.type === 'fiets' ? 'trip.fiets' : 'trip.auto') }}<span class="deal-page__trip-brand-badge">{{ t('header.new') }}</span></span></h2>
         </section>
         <section v-if="isTrip" id="mini-map" class="container deal-page__mini-map-mobile deal-page__mini-map-mobile--trip">
           <MultiHotelTripRouteMapCard
@@ -3675,6 +3675,15 @@ onMounted(() => {
     font-weight: 700;
     line-height: 1.25;
     color: #fff;
+  }
+  /* Auto- of fietsicoon (zelfde als op de dealcard), wit op de zwarte banner. */
+  .deal-page__trip-brand-icon {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+    vertical-align: -3px;
+    filter: brightness(0) invert(1);
   }
   .deal-page__trip-brand-type { position: relative; display: inline-block; }
   .deal-page__trip-brand-badge {
