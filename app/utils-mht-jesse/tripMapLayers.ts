@@ -21,7 +21,9 @@ const BORDERS = (SHAPES.borders ?? []).flatMap(s => s.rings)
  *  schematische kaartje op de dealcard (TripRouteMap), zodat de kaarten bij
  *  elkaar horen. */
 export const PLAIN_COLORS = {
-  water: '#d7e6f0',
+  /** Gelijk aan de achtergrond die leaflet-overrides.css aan elke kaart
+   *  geeft, zodat het IJsselmeer dezelfde kleur heeft als de zee. */
+  water: '#aadaff',
   land: '#f3efe6',
   provinceLine: '#e0d9cc',
   border: '#6f665a',
@@ -165,6 +167,24 @@ function ringToLatLngs(ring: number[][]): [number, number][] {
  *
  * Geeft de namen van de gekleurde provincies terug.
  */
+/** Breedte van de band die de naad tussen de provincies en de buurlanden
+ *  dicht. De gemeten kier is maximaal 2,4 km; de band ligt gecentreerd op de
+ *  grens, dus de helft daarvan telt. */
+const SEAM_KM = 6
+
+/** Hoeveel pixels is `km` op de huidige kaart? Null zolang de kaart nog geen
+ *  middelpunt en zoomniveau heeft; Leaflet gooit daar een fout op. */
+function kmToPixels(map: Leaflet.Map, km: number): number | null {
+  let lat: number
+  try {
+    lat = map.getCenter().lat
+  } catch {
+    return null
+  }
+  const metersPerPixel = (40075016.686 * Math.cos((lat * Math.PI) / 180)) / 2 ** (map.getZoom() + 8)
+  return Math.min(Math.max((km * 1000) / metersPerPixel, 1), 600)
+}
+
 export function addPlainBase(
   L: L,
   map: Leaflet.Map,
@@ -175,37 +195,50 @@ export function addPlainBase(
       fillColor: color, fillOpacity: 1, stroke: false, interactive: false,
     }).addTo(map)
 
-  // 1. Al het land in één kleur. Nederland komt volledig uit de provincies —
-  //    silhouet, kust en landsgrens zijn daarmee dezelfde punten als de
-  //    vulling en de randen hieronder. De buurlanden komen uit de landenlaag;
-  //    die is apart vereenvoudigd en deelt geen enkel punt met de provincies,
-  //    dus tussen Nederland en Duitsland zou een smalle kier vallen. Een rand
-  //    in de landkleur om die landvlakken overbrugt dat. Dat verdikt de
-  //    buitenlandse kustlijn een paar tiende millimeter; die tekenen we toch
-  //    niet als lijn, dus dat valt niet op.
+  // 1. De buurlanden uit de landenlaag. Nederland niet: dat komt volledig uit
+  //    de provincies, zodat silhouet, kust, landsgrens en vulling dezelfde
+  //    punten delen.
   for (const c of SHAPES.countries ?? []) {
     if (c.id === 'NL') continue
-    for (const ring of c.rings) {
-      L.polygon(ringToLatLngs(ring), {
-        fillColor: PLAIN_COLORS.land, fillOpacity: 1,
-        color: PLAIN_COLORS.land, weight: 3, interactive: false,
-      }).addTo(map)
-    }
+    for (const ring of c.rings) fill(ring, PLAIN_COLORS.land)
   }
+
+  // 2. De naad dichten. De landenlaag en de provincies zijn apart
+  //    vereenvoudigd en delen geen enkel punt, dus langs de landsgrens valt
+  //    een kier van maximaal 2,4 km waar de waterkleur doorheen schijnt. We
+  //    leggen daar een band in de landkleur overheen, breed genoeg om die
+  //    kier te dekken. De band ligt vóór de provincies, zodat de vulling van
+  //    een uitgelichte provincie de binnenhelft weer overneemt, en hij is
+  //    opgegeven in kilometers: een vaste lijndikte in pixels dekt de kier
+  //    wel ver uitgezoomd maar niet ingezoomd, want de kier zelf groeit mee.
+  const seams = nlLandBorderChains().map(chain =>
+    L.polyline(ringToLatLngs(chain), {
+      color: PLAIN_COLORS.land, weight: 1, lineCap: 'butt', lineJoin: 'round', interactive: false,
+    }).addTo(map),
+  )
+  // De aanroeper zet het beeld (fitBounds) pas ná deze functie, dus de eerste
+  // meting kan nog niet; 'zoom' vangt die meteen daarna op.
+  const resizeSeams = () => {
+    const w = kmToPixels(map, SEAM_KM)
+    if (w != null) for (const seam of seams) seam.setStyle({ weight: w })
+  }
+  resizeSeams()
+  map.on('zoom zoomend load', resizeSeams)
+
   for (const prov of SHAPES.provinces ?? []) for (const ring of prov.rings) fill(ring, PLAIN_COLORS.land)
 
-  // 2. De uitgelichte provincies, nog onder de lijnen.
+  // 3. De uitgelichte provincies, nog onder de lijnen.
   const ids = opts.highlightStops ? provincesOnRoute(opts.highlightStops) : []
   const color = opts.highlightColor ?? PLAIN_COLORS.highlight
   for (const prov of SHAPES.provinces ?? []) {
     if (ids.includes(prov.id)) for (const ring of prov.rings) fill(ring, color)
   }
 
-  // 3. Meren bovenop de vulling: water blijft water, ook binnen een
+  // 4. Meren bovenop de vulling: water blijft water, ook binnen een
   //    uitgelichte provincie.
   for (const lake of SHAPES.lakes ?? []) for (const ring of lake.rings) fill(ring, PLAIN_COLORS.water)
 
-  // 4. Provinciegrenzen, uit dezelfde ringen als de vulling, dus precies op
+  // 5. Provinciegrenzen, uit dezelfde ringen als de vulling, dus precies op
   //    de rand ervan.
   for (const prov of SHAPES.provinces ?? []) {
     for (const ring of prov.rings) {
@@ -215,7 +248,7 @@ export function addPlainBase(
     }
   }
 
-  // 5. De landsgrens, afgeleid uit diezelfde provincieranden.
+  // 6. De landsgrens, afgeleid uit diezelfde provincieranden.
   for (const chain of nlLandBorderChains()) {
     L.polyline(ringToLatLngs(chain), {
       color: PLAIN_COLORS.border, weight: 1.6, dashArray: '5 3',
