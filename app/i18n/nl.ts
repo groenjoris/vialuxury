@@ -244,6 +244,8 @@ const nl: Record<string, string> = {
   'search.holidaysPitch': 'Verken een prachtige streek met auto of fiets, en verblijf in verschillende hotels. Met zorg samengesteld en persoonlijk gecheckt.',
   'trip.auto': 'Autovakantie',
   'trip.fiets': 'Fietsvakantie',
+  'trip.ownTransport.auto': 'Autovakantie met eigen vervoer',
+  'trip.ownTransport.fiets': 'Fietsvakantie met eigen fiets',
   'trip.withThisHotel': 'Vakanties met dit hotel',
   'trip.disclaimer': 'Je dient ter plaatse alleen de lokale belastingen, eventuele service-/administratiekosten van de hotels en parkeerkosten te betalen (indien dit niet is inbegrepen in de vakantie).',
   // Dealcard: label boven de inclusies

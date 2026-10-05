@@ -91,13 +91,12 @@
           <MultiHotelTripExperienceCreatorCard :creator="creator" />
         </section>
 
-        <!-- Vakantie: onder de gallery de titel "ViaLuxury Autovakantie" (Nieuw-stickertje als in de
-             navigatie, rechtsboven het soort vakantie), daarna kaart → inbegrepen + kalender/boekknop →
-             beschrijving → highlights → beoordelingen → samengesteld door → voorbeeld reisschema. -->
-        <section v-if="isTrip && trip" class="container deal-page__trip-brand-mobile">
-          <h2 class="deal-page__trip-brand"><img :src="`/icons/mht/${trip.type === 'fiets' ? 'bike' : 'car-side'}.svg`" alt="" class="deal-page__trip-brand-icon" width="20" height="20" />ViaLuxury <span class="deal-page__trip-brand-type">{{ t(trip.type === 'fiets' ? 'trip.fiets' : 'trip.auto') }}<span class="deal-page__trip-brand-badge">{{ t('header.new') }}</span></span></h2>
-        </section>
+        <!-- Vakantie: onder de gallery de routekaart met erboven een kleine titel die bij de kaart hoort
+             ("Autovakantie met eigen vervoer", auto-icoon, Nieuw-stickertje als in de navigatie); daarna
+             inbegrepen + kalender/boekknop → beschrijving → highlights → beoordelingen → samengesteld door
+             → voorbeeld reisschema. -->
         <section v-if="isTrip" id="mini-map" class="container deal-page__mini-map-mobile deal-page__mini-map-mobile--trip">
+          <h2 v-if="trip" class="deal-page__trip-brand"><img :src="`/icons/mht/${trip.type === 'fiets' ? 'bike' : 'car-side'}.svg`" alt="" class="deal-page__trip-brand-icon" width="20" height="20" /><span class="deal-page__trip-brand-type">{{ t(trip.type === 'fiets' ? 'trip.ownTransport.fiets' : 'trip.ownTransport.auto') }}<span class="deal-page__trip-brand-badge">{{ t('header.new') }}</span></span></h2>
           <MultiHotelTripRouteMapCard
             class="deal-page__minimap"
             :stops="tripMapStops" :legs="tripRouteLegs" :return-label="tripReturnLabel" :summary="tripMapSummary"
@@ -3660,32 +3659,22 @@ onMounted(() => {
     margin-top: 16px;
     margin-bottom: 8px;
   }
-  /* Vakantie: "ViaLuxury Autovakantie" als zwarte banner direct onder de (randloze) gallery, met het
-     Nieuw-stickertje uit de navigatie (.verticals__badge) rechtsboven het soort vakantie. */
-  .deal-page__trip-brand-mobile {
-    margin-top: 0;
-    padding-top: 18px;
-    padding-bottom: 12px;
-    background: var(--color-dark);
-  }
+  /* Vakantie: kleine titel boven de routekaart ("Autovakantie met eigen vervoer") met het auto-/fietsicoon
+     van de dealcard en het Nieuw-stickertje uit de navigatie (.verticals__badge) rechtsboven de tekst. */
   .deal-page__trip-brand {
-    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 10px;
+    padding-top: 10px;
     font-family: var(--font-heading);
     font-size: 17px;
     font-weight: 700;
     line-height: 1.25;
-    color: #fff;
+    color: var(--color-text-primary);
   }
-  /* Auto- of fietsicoon (zelfde als op de dealcard), wit op de zwarte banner. */
-  .deal-page__trip-brand-icon {
-    display: inline-block;
-    width: 20px;
-    height: 20px;
-    margin-right: 8px;
-    vertical-align: -3px;
-    filter: brightness(0) invert(1);
-  }
-  .deal-page__trip-brand-type { position: relative; display: inline-block; }
+  .deal-page__trip-brand-icon { flex-shrink: 0; width: 20px; height: 20px; }
+  .deal-page__trip-brand-type { position: relative; }
   .deal-page__trip-brand-badge {
     position: absolute;
     /* Boven de tekstregel (raakt de letters niet), steekt rechts iets uit. */
@@ -3708,7 +3697,7 @@ onMounted(() => {
   }
   /* Routekaart direct onder de titel; daaronder een scheidingslijn (zoals tussen de andere blokken)
      naar "inbegrepen + kalender". */
-  .deal-page__mini-map-mobile--trip { margin-top: 16px; position: relative; padding-bottom: 24px; }
+  .deal-page__mini-map-mobile--trip { margin-top: 20px; position: relative; padding-bottom: 24px; }
   .deal-page__mini-map-mobile--trip::after {
     content: '';
     position: absolute;
