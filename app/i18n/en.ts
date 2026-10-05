@@ -240,7 +240,7 @@ const en: Record<string, string> = {
   'search.holidaysPitch': 'Explore a beautiful region by car or by bike and stay in several different hotels. Carefully put together and personally checked.',
   'trip.auto': 'Road trip',
   'trip.fiets': 'Cycling holiday',
-  'trip.mapTitle.fiets': 'Cycle from hotel to hotel, we move your luggage',
+  'trip.mapTitle.fiets': 'Bike trip with luggage transfer',
   'trip.withThisHotel': 'Holidays with this hotel',
   'trip.disclaimer': 'You only need to pay local taxes, any service/administration fees of the hotels and parking costs on-site (if not included in the holiday).',
   'trip.autoIncl': 'Road trip including',

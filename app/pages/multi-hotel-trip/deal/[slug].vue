@@ -1816,9 +1816,8 @@ function tripDurationShort(minutes: number): string {
   if (m === 0) return t('trip.durShort.hours').replace('{h}', String(h))
   return t('trip.durCompact.hoursMinutes').replace('{h}', String(h)).replace('{m}', String(m)).replace('{mm}', String(m).padStart(2, '0'))
 }
-/** Mobiel, titel boven de routekaart: "Autovakantie met 3 hotels" / "Fiets van hotel naar hotel, wij
- *  brengen je bagage" — gesplitst in kop + laatste woord, zodat het Nieuw-stickertje aan het laatste
- *  woord hangt (als in de navigatie), ook als de titel over twee regels loopt. */
+/** Mobiel, titel boven de routekaart: "Autovakantie met 3 hotels" / "Fietsvakantie met bagagetransfer"
+ *  — gesplitst in kop + laatste woord, zodat het Nieuw-stickertje met het laatste woord meegaat. */
 const tripMapTitle = computed(() => {
   if (!trip) return { head: '', last: '' }
   const full = trip.type === 'fiets'
@@ -3670,8 +3669,8 @@ onMounted(() => {
     margin-top: 16px;
     margin-bottom: 8px;
   }
-  /* Vakantie: kleine titel boven de routekaart ("Autovakantie met 3 hotels" / "Fiets van hotel naar hotel,
-     wij brengen je bagage") met het auto-/fietsicoon
+  /* Vakantie: kleine titel boven de routekaart ("Autovakantie met 3 hotels" / "Fietsvakantie met
+     bagagetransfer", één regel) met het auto-/fietsicoon
      van de dealcard en het Nieuw-stickertje uit de navigatie (.verticals__badge) rechtsboven de tekst. */
   .deal-page__trip-brand {
     display: flex;
@@ -3680,18 +3679,20 @@ onMounted(() => {
     margin: 0 0 10px;
     padding-top: 10px;
     font-family: var(--font-heading);
-    font-size: 17px;
+    /* 16px: ook "Fietsvakantie met bagagetransfer" blijft op 360 px één regel. */
+    font-size: 16px;
     font-weight: 700;
     line-height: 1.25;
     color: var(--color-text-primary);
   }
   .deal-page__trip-brand-icon { flex-shrink: 0; width: 20px; height: 20px; }
-  /* Het stickertje staat direct achter het laatste woord, bovenaan de regel (zodat het bij een titel
-     over twee regels niet door de regel erboven loopt); laatste woord + stickertje breken niet af. */
-  .deal-page__trip-brand-last { white-space: nowrap; }
+  /* Het stickertje hangt rechtsboven het laatste woord (als in de navigatie) en neemt geen ruimte in
+     de regel in — de titel is altijd één regel. */
+  .deal-page__trip-brand-last { position: relative; white-space: nowrap; }
   .deal-page__trip-brand-badge {
-    vertical-align: top;
-    margin-left: 6px;
+    position: absolute;
+    top: -11px;
+    right: -22px;
     display: inline-flex;
     align-items: center;
     height: 14px;

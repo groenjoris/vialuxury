@@ -236,7 +236,7 @@ const de: Record<string, string> = {
   'search.holidaysPitch': 'Entdecken Sie eine wunderschöne Region mit dem Auto oder dem Fahrrad und übernachten Sie in verschiedenen Hotels. Sorgfältig zusammengestellt und persönlich geprüft.',
   'trip.auto': 'Autoreise',
   'trip.fiets': 'Radreise',
-  'trip.mapTitle.fiets': 'Radeln Sie von Hotel zu Hotel, wir bringen Ihr Gepäck',
+  'trip.mapTitle.fiets': 'Radreise mit Gepäcktransfer',
   'trip.withThisHotel': 'Reisen mit diesem Hotel',
   'trip.disclaimer': 'Vor Ort sind nur lokale Steuern, eventuelle Service-/Verwaltungskosten der Hotels und Parkkosten zu zahlen (sofern nicht in der Reise enthalten).',
   'trip.autoIncl': 'Autoreise inklusive',
