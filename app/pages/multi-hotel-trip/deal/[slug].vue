@@ -86,9 +86,24 @@
         </section>
 
         <!-- 6b. Samengesteld door — shown if a creator is set AND the
-             footer's prototype toggle hasn't hidden the card. -->
-        <section v-if="creator && showCreatorCard" class="container deal-page__creator-mobile">
+             footer's prototype toggle hasn't hidden the card. Vakantie: lager, na de beoordelingen. -->
+        <section v-if="creator && showCreatorCard && !isTrip" class="container deal-page__creator-mobile">
           <MultiHotelTripExperienceCreatorCard :creator="creator" />
+        </section>
+
+        <!-- Vakantie: onder de gallery de titel "ViaLuxury Autovakantie" (Nieuw-stickertje als in de
+             navigatie, rechtsboven het soort vakantie), daarna kaart → inbegrepen + kalender/boekknop →
+             beschrijving → highlights → beoordelingen → samengesteld door → voorbeeld reisschema. -->
+        <section v-if="isTrip && trip" class="container deal-page__trip-brand-mobile">
+          <h2 class="deal-page__trip-brand">ViaLuxury <span class="deal-page__trip-brand-type">{{ t(trip.type === 'fiets' ? 'trip.fiets' : 'trip.auto') }}<span class="deal-page__trip-brand-badge">{{ t('header.new') }}</span></span></h2>
+        </section>
+        <section v-if="isTrip" id="mini-map" class="container deal-page__mini-map-mobile deal-page__mini-map-mobile--trip">
+          <MultiHotelTripRouteMapCard
+            class="deal-page__minimap"
+            :stops="tripMapStops" :legs="tripRouteLegs" :return-label="tripReturnLabel" :summary="tripMapSummary"
+            @open="tripMapOpen = true"
+            @stop-click="openTripHotel"
+          />
         </section>
 
         <!-- 7. Arrangement / sidebar content. Anchor `#arrangement`
@@ -209,20 +224,6 @@
           </div>
         </section>
 
-        <!-- Beoordelingen (carrousel) boven het voorbeeld-reisschema. -->
-        <section v-if="itinReviews && tripReviews.length" id="beoordelingen-vakantie" class="container deal-page__reviews-mobile deal-page__anchor">
-          <TripReviewsRow :reviews="tripReviews" :plain="reviewsPlain" />
-        </section>
-
-        <!-- Vakantie met reisschema-variant Per stad/Hybrid/Reviews: dagsamenvatting onder de
-             beschrijving; klik op een dag opent het sidepanel bij die dag. -->
-        <section v-if="itinSummary" id="reisschema" class="container deal-page__hybrid-summary deal-page__hybrid-summary--mobile deal-page__anchor">
-          <div class="deal-page__summary-panel">
-            <h2 class="section-title deal-page__summary-title"><svg class="deal-page__summary-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-miterlimit="10" stroke-linecap="square" aria-hidden="true"><path d="M15 5h7M15 15h7M15 9h2M15 19h2" /><circle cx="6.5" cy="17.5" r="3.5" /><circle cx="6.5" cy="6.5" r="3.5" /></svg>{{ t('trip.itin.hybrid.summaryHeading') }}</h2>
-            <TripItinerarySummary :days="tripDaysView" :hotels="tripHotelLinks" full-link :show-stats="summaryStats" :lines="summaryLines" @select="openItinPanelAt" @open-full="openItinPanelAt(null)" />
-          </div>
-        </section>
-
         <!-- 9. Highlights -->
         <section class="container deal-page__highlights deal-page__highlights--mobile">
           <h2 class="section-title">{{ t('deal.highlights') }}</h2>
@@ -236,17 +237,28 @@
           </div>
         </section>
 
-        <!-- 10. Mini map — vakantie: routekaart met alle hotels -->
-        <section id="mini-map" class="container deal-page__mini-map-mobile">
-          <MultiHotelTripRouteMapCard
-            v-if="isTrip"
-            class="deal-page__minimap"
-            :stops="tripMapStops" :legs="tripRouteLegs" :return-label="tripReturnLabel" :summary="tripMapSummary"
-            @open="tripMapOpen = true"
-            @stop-click="openTripHotel"
-          />
+        <!-- Beoordelingen (carrousel) boven het voorbeeld-reisschema. -->
+        <section v-if="itinReviews && tripReviews.length" id="beoordelingen-vakantie" class="container deal-page__reviews-mobile deal-page__anchor">
+          <TripReviewsRow :reviews="tripReviews" :plain="reviewsPlain" />
+        </section>
+
+        <!-- Vakantie: Samengesteld door na de beoordelingen. -->
+        <section v-if="creator && showCreatorCard && isTrip" class="container deal-page__creator-mobile deal-page__creator-mobile--trip">
+          <MultiHotelTripExperienceCreatorCard :creator="creator" />
+        </section>
+
+        <!-- Vakantie met reisschema-variant Per stad/Hybrid/Reviews: dagsamenvatting onder de
+             beschrijving; klik op een dag opent het sidepanel bij die dag. -->
+        <section v-if="itinSummary" id="reisschema" class="container deal-page__hybrid-summary deal-page__hybrid-summary--mobile deal-page__anchor">
+          <div class="deal-page__summary-panel">
+            <h2 class="section-title deal-page__summary-title"><svg class="deal-page__summary-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-miterlimit="10" stroke-linecap="square" aria-hidden="true"><path d="M15 5h7M15 15h7M15 9h2M15 19h2" /><circle cx="6.5" cy="17.5" r="3.5" /><circle cx="6.5" cy="6.5" r="3.5" /></svg>{{ t('trip.itin.hybrid.summaryHeading') }}</h2>
+            <TripItinerarySummary :days="tripDaysView" :hotels="tripHotelLinks" full-link :show-stats="summaryStats" :lines="summaryLines" @select="openItinPanelAt" @open-full="openItinPanelAt(null)" />
+          </div>
+        </section>
+
+        <!-- 10. Mini map (hotel-deal; de routekaart van een vakantie staat bovenaan) -->
+        <section v-if="!isTrip" id="mini-map" class="container deal-page__mini-map-mobile">
           <MultiHotelTripMiniMapCard
-            v-else
             class="deal-page__minimap"
             :slug="hotel.slug"
             :lat="hotel.location.coordinates.lat"
@@ -3648,6 +3660,53 @@ onMounted(() => {
     margin-top: 16px;
     margin-bottom: 8px;
   }
+  /* Vakantie: "ViaLuxury Autovakantie" onder de gallery, met het Nieuw-stickertje uit de
+     navigatie (.verticals__badge) rechtsboven het soort vakantie. */
+  .deal-page__trip-brand-mobile { margin-top: 24px; }
+  .deal-page__trip-brand {
+    margin: 0;
+    padding-top: 8px;
+    font-family: var(--font-heading);
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1.25;
+    color: var(--color-text-primary);
+  }
+  .deal-page__trip-brand-type { position: relative; display: inline-block; }
+  .deal-page__trip-brand-badge {
+    position: absolute;
+    top: -9px;
+    right: -18px;
+    display: inline-flex;
+    align-items: center;
+    height: 14px;
+    padding: 0 5px;
+    border-radius: 999px;
+    background: var(--color-primary);
+    color: #fff;
+    font-family: var(--font-body);
+    font-size: 9px;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  /* Routekaart direct onder de titel; daaronder een scheidingslijn (zoals tussen de andere blokken)
+     naar "inbegrepen + kalender". */
+  .deal-page__mini-map-mobile--trip { margin-top: 12px; position: relative; padding-bottom: 24px; }
+  .deal-page__mini-map-mobile--trip::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: var(--space-lg);
+    right: var(--space-lg);
+    height: 1px;
+    background: var(--color-border-light);
+  }
+  .deal-page__mini-map-mobile--trip + .deal-page__sidebar-mobile { margin-top: 24px; }
+  /* Samengesteld door tussen de beoordelingen en het voorbeeld-reisschema: 24px lucht aan beide kanten. */
+  .deal-page__creator-mobile--trip { margin-top: 0; margin-bottom: 24px; }
   /* Plaatsnamen + "Bekijk kaart": past de link niet meer naast de plaatsnamen, dan op een eigen regel, links. */
   .deal-page__title-section--mobile .deal-page__meta { padding-right: 0; row-gap: 4px; }
   .deal-page__title-section--mobile .deal-page__meta .deal-page__view-map-link { margin-left: 0; }
