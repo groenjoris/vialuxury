@@ -14,7 +14,6 @@ import { tripDetailBySlug } from '~/data/mhtj-trips'
 import {
   PLAIN_COLORS,
   addPlainBase,
-  addCountryBorders,
   addTripRoute,
   addTripHotels,
   addTripHighlights,
@@ -74,8 +73,9 @@ async function build() {
   // Geen tegellaag: de ondergrond is een vlakke tekening, zodat er geen
   // wegen, plaatsnamen of terrein door de route heen lopen.
   map = L.map(el, { zoomControl: true, attributionControl: false, scrollWheelZoom: true })
+  // addPlainBase tekent de landsgrens zelf, afgeleid uit de provincievormen;
+  // de losse grenzenlaag (addCountryBorders) loopt daar niet gelijk mee.
   addPlainBase(L, map, { highlightStops: stops.value })
-  addCountryBorders(L, map, 2)
   addTripRoute(L, map, stops.value, { distances: true })
   addTripHotels(L, map, stops.value, {
     size: 30,

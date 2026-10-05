@@ -175,8 +175,15 @@ export function addPlainBase(
       fillColor: color, fillOpacity: 1, stroke: false, interactive: false,
     }).addTo(map)
 
-  // 1. Land.
+  // 1. Al het land in één kleur: eerst de landenlaag, dan de provincies
+  //    eroverheen. De drie lagen zijn los van elkaar vereenvoudigd en delen
+  //    geen enkel punt, dus tussen het Nederlandse provinciesilhouet en het
+  //    Duitse landvlak vallen smalle kieren. Omdat alles dezelfde landkleur
+  //    heeft zie je die niet; de landenlaag eronder vult ze op. Alleen de
+  //    randen die we daarna tekenen zijn zichtbaar, en die komen allemaal
+  //    uit de provincievormen.
   for (const c of SHAPES.countries ?? []) for (const ring of c.rings) fill(ring, PLAIN_COLORS.land)
+  for (const prov of SHAPES.provinces ?? []) for (const ring of prov.rings) fill(ring, PLAIN_COLORS.land)
 
   // 2. De uitgelichte provincies, nog onder de lijnen.
   const ids = opts.highlightStops ? provincesOnRoute(opts.highlightStops) : []
@@ -189,8 +196,8 @@ export function addPlainBase(
   //    uitgelichte provincie.
   for (const lake of SHAPES.lakes ?? []) for (const ring of lake.rings) fill(ring, PLAIN_COLORS.water)
 
-  // 4. Provinciegrenzen als laatste, uit dezelfde ringen als de vulling, dus
-  //    precies op de rand ervan.
+  // 4. Provinciegrenzen, uit dezelfde ringen als de vulling, dus precies op
+  //    de rand ervan.
   for (const prov of SHAPES.provinces ?? []) {
     for (const ring of prov.rings) {
       L.polyline(ringToLatLngs(ring), {
@@ -198,7 +205,98 @@ export function addPlainBase(
       }).addTo(map)
     }
   }
+
+  // 5. De landsgrens, afgeleid uit diezelfde provincieranden.
+  for (const chain of nlLandBorderChains()) {
+    L.polyline(ringToLatLngs(chain), {
+      color: PLAIN_COLORS.border, weight: 1.6, dashArray: '5 3',
+      lineCap: 'round', interactive: false,
+    }).addTo(map)
+  }
   return ids
+}
+
+/**
+ * De landsgrens van Nederland, afgeleid uit de provincievormen zelf.
+ *
+ * De losse grenzenlaag in `mhtj-route-map-shapes.json` is apart
+ * vereenvoudigd — geen enkel punt valt samen met een provinciepunt — dus die
+ * lijn loopt zichtbaar naast de rand van een gekleurde provincie. Daarom
+ * bouwen we de grens hier op uit de provincieranden:
+ *
+ *   1. elk randsegment dat twee provincies delen is binnenland en valt af;
+ *   2. van wat overblijft (de buitenrand van Nederland) houden we de stukken
+ *      waar aan de andere kant een buurland ligt — de rest is kust;
+ *   3. die stukken worden aan elkaar geregen tot doorlopende lijnen, anders
+ *      begint het streepjespatroon bij elk segment opnieuw.
+ */
+let LAND_BORDER_CHAINS: number[][][] | null = null
+function nlLandBorderChains(): number[][][] {
+  if (LAND_BORDER_CHAINS) return LAND_BORDER_CHAINS
+  const key = (p: number[]) => `${p[0]!.toFixed(5)},${p[1]!.toFixed(5)}`
+  const seen = new Map<string, { a: number[]; b: number[]; n: number }>()
+  for (const prov of SHAPES.provinces ?? []) {
+    for (const ring of prov.rings) {
+      for (let i = 0; i < ring.length; i++) {
+        const a = ring[i]!, b = ring[(i + 1) % ring.length]!
+        const k = [key(a), key(b)].sort().join('|')
+        const hit = seen.get(k)
+        if (hit) hit.n++
+        else seen.set(k, { a, b, n: 1 })
+      }
+    }
+  }
+
+  const abroad = (SHAPES.countries ?? []).filter(c => c.id !== 'NL')
+  const outside = (lng: number, lat: number) =>
+    abroad.some(c => c.rings.some(r => pointInRing(lng, lat, r)))
+
+  // Een segment is landsgrens als vlak naast het midden ervan een buurland
+  // ligt; bij de kust is daar water en valt het af.
+  const edges: [number[], number[]][] = []
+  for (const { a, b, n } of seen.values()) {
+    if (n > 1) continue
+    const mx = (a[0]! + b[0]!) / 2, my = (a[1]! + b[1]!) / 2
+    const dx = b[0]! - a[0]!, dy = b[1]! - a[1]!
+    const len = Math.hypot(dx, dy) || 1
+    const e = 0.02
+    if (outside(mx + (dy / len) * e, my - (dx / len) * e) || outside(mx - (dy / len) * e, my + (dx / len) * e)) {
+      edges.push([a, b])
+    }
+  }
+
+  // Aaneenrijgen op gedeelde eindpunten, zodat de streepjes doorlopen.
+  const byPoint = new Map<string, [number[], number[]][]>()
+  for (const e of edges) {
+    for (const p of e) {
+      const k = key(p)
+      const list = byPoint.get(k)
+      if (list) list.push(e)
+      else byPoint.set(k, [e])
+    }
+  }
+  const used = new Set<[number[], number[]]>()
+  const chains: number[][][] = []
+  for (const start of edges) {
+    if (used.has(start)) continue
+    used.add(start)
+    const chain = [start[0]!, start[1]!]
+    // Beide kanten op doorlopen tot er geen aansluitend segment meer is.
+    for (const end of [0, 1]) {
+      for (;;) {
+        const tip = end === 0 ? chain[0]! : chain[chain.length - 1]!
+        const next = (byPoint.get(key(tip)) ?? []).find(e => !used.has(e))
+        if (!next) break
+        used.add(next)
+        const other = key(next[0]!) === key(tip) ? next[1]! : next[0]!
+        if (end === 0) chain.unshift(other)
+        else chain.push(other)
+      }
+    }
+    chains.push(chain)
+  }
+  LAND_BORDER_CHAINS = chains
+  return chains
 }
 
 /** Ray casting: ligt [lng, lat] binnen deze ring? */
