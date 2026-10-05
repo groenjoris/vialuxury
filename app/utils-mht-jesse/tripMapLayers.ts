@@ -156,24 +156,41 @@ function ringToLatLngs(ring: number[][]): [number, number][] {
  *
  * Zet de achtergrond van de kaart-container op `PLAIN_COLORS.water`; dat is
  * het water buiten de landvlakken.
+ *
+ * Met `highlightStops` kleuren de provincies waar die route doorheen gaat.
+ * Die vulling hoort hier thuis en niet in een losse aanroep erna, want de
+ * volgorde luistert nauw: de vulling gaat eronder en de provincielijnen
+ * gaan er bovenop, uit exact dezelfde vormen. Andersom dekt de vulling de
+ * lijn af en lijkt de gekleurde rand naast de provinciegrens te liggen.
+ *
+ * Geeft de namen van de gekleurde provincies terug.
  */
-export function addPlainBase(L: L, map: Leaflet.Map): void {
-  for (const c of SHAPES.countries ?? []) {
-    for (const ring of c.rings) {
-      L.polygon(ringToLatLngs(ring), {
-        fillColor: PLAIN_COLORS.land, fillOpacity: 1,
-        color: PLAIN_COLORS.land, weight: 1, interactive: false,
-      }).addTo(map)
-    }
+export function addPlainBase(
+  L: L,
+  map: Leaflet.Map,
+  opts: { highlightStops?: TripMapStop[]; highlightColor?: string } = {},
+): string[] {
+  const fill = (ring: number[][], color: string) =>
+    L.polygon(ringToLatLngs(ring), {
+      fillColor: color, fillOpacity: 1, stroke: false, interactive: false,
+    }).addTo(map)
+
+  // 1. Land.
+  for (const c of SHAPES.countries ?? []) for (const ring of c.rings) fill(ring, PLAIN_COLORS.land)
+
+  // 2. De uitgelichte provincies, nog onder de lijnen.
+  const ids = opts.highlightStops ? provincesOnRoute(opts.highlightStops) : []
+  const color = opts.highlightColor ?? PLAIN_COLORS.highlight
+  for (const prov of SHAPES.provinces ?? []) {
+    if (ids.includes(prov.id)) for (const ring of prov.rings) fill(ring, color)
   }
-  for (const lake of SHAPES.lakes ?? []) {
-    for (const ring of lake.rings) {
-      L.polygon(ringToLatLngs(ring), {
-        fillColor: PLAIN_COLORS.water, fillOpacity: 1,
-        color: PLAIN_COLORS.water, weight: 1, interactive: false,
-      }).addTo(map)
-    }
-  }
+
+  // 3. Meren bovenop de vulling: water blijft water, ook binnen een
+  //    uitgelichte provincie.
+  for (const lake of SHAPES.lakes ?? []) for (const ring of lake.rings) fill(ring, PLAIN_COLORS.water)
+
+  // 4. Provinciegrenzen als laatste, uit dezelfde ringen als de vulling, dus
+  //    precies op de rand ervan.
   for (const prov of SHAPES.provinces ?? []) {
     for (const ring of prov.rings) {
       L.polyline(ringToLatLngs(ring), {
@@ -181,6 +198,7 @@ export function addPlainBase(L: L, map: Leaflet.Map): void {
       }).addTo(map)
     }
   }
+  return ids
 }
 
 /** Ray casting: ligt [lng, lat] binnen deze ring? */
@@ -218,23 +236,6 @@ export function provincesOnRoute(stops: TripMapStop[], samplesPerLeg = 24): stri
     if (pts.some(([lng, lat]) => prov.rings.some(r => pointInRing(lng, lat, r)))) hit.add(prov.id)
   }
   return [...hit]
-}
-
-/** Vult de provincies waar de route doorheen gaat. Roep dit aan ná
- *  `addPlainBase` en vóór de route, zodat de lijn er bovenop ligt. */
-export function addProvinceHighlight(
-  L: L, map: Leaflet.Map, stops: TripMapStop[], color = PLAIN_COLORS.highlight,
-): string[] {
-  const ids = provincesOnRoute(stops)
-  for (const prov of SHAPES.provinces ?? []) {
-    if (!ids.includes(prov.id)) continue
-    for (const ring of prov.rings) {
-      L.polygon(ringToLatLngs(ring), {
-        fillColor: color, fillOpacity: 1, color, weight: 1, interactive: false,
-      }).addTo(map)
-    }
-  }
-  return ids
 }
 
 /** Standaard OpenStreetMap-tegels (de CARTO-basemaps vragen een API-key). */
