@@ -187,8 +187,8 @@
           <svg class="deal-card-v2__loc-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M4.5 9.75768C4.5 15.5 12 22 12 22C12 22 19.5 15.5 19.5 9.75768C19.5 4.81181 15.6559 2 12 2C8.34409 2 4.5 4.81181 4.5 9.75768Z" /><path d="M12 12C13.3807 12 14.5 10.8807 14.5 9.5C14.5 8.11929 13.3807 7 12 7C10.6193 7 9.5 8.11929 9.5 9.5C9.5 10.8807 10.6193 12 12 12Z" />
           </svg>
-          <!-- Multi Hotel Trip: naast de score past maar één plaats — de eerste, met "+2" voor de rest. -->
-          <span v-if="isTrip" class="deal-card-v2__location" :title="tripStopsLabel">{{ tripStopsShort }}</span>
+          <!-- Multi Hotel Trip: zoveel plaatsen als op de regel passen, de rest als "+1"/"+2" (fitTripCities). -->
+          <span v-if="isTrip" ref="tripLocEl" class="deal-card-v2__location" :title="tripStopsLabel">{{ tripStopsShort }}</span>
           <span v-else class="deal-card-v2__location">
             <span>{{ hotel.city }}</span>
             <span v-if="!hideRegion" class="deal-card-v2__location-region">, {{ hotel.region }}</span>
@@ -447,12 +447,31 @@ const tripTypeLabel = computed(() => {
 })
 /** "Landgraaf · Eijsden · Sittard" — plaatsnamen van de hotels in reisvolgorde (tooltip). */
 const tripStopsLabel = computed(() => (props.hotel?.trip?.stops ?? []).map(s => s.city).join(' · '))
-/** "Landgraaf +2" — eerste plaats en het aantal overige hotels (naast het reviewcijfer). */
+/** Aantal plaatsnamen dat op de regel past (fitTripCities); SSR toont ze allemaal. */
+const tripCityCount = ref(Number.POSITIVE_INFINITY)
+/** "Landgraaf · Eijsden +1" — de plaatsen die passen, de rest als "+N" (naast het reviewcijfer). */
 const tripStopsShort = computed(() => {
   const stops = props.hotel?.trip?.stops ?? []
   if (!stops.length) return ''
-  return stops.length > 1 ? `${stops[0]!.city} +${stops.length - 1}` : stops[0]!.city
+  const n = Math.max(1, Math.min(tripCityCount.value, stops.length))
+  const shown = stops.slice(0, n).map(s => s.city).join(' · ')
+  return n < stops.length ? `${shown} +${stops.length - n}` : shown
 })
+const tripLocEl = ref<HTMLElement | null>(null)
+let tripFitRun = 0
+/** Begin met alle plaatsen en haal er één af (met "+N") tot de regel niet meer wordt afgekapt. */
+async function fitTripCities() {
+  const total = props.hotel?.trip?.stops.length ?? 0
+  if (!total) return
+  const run = ++tripFitRun
+  for (let n = total; n >= 1; n--) {
+    tripCityCount.value = n
+    await nextTick()
+    const el = tripLocEl.value
+    if (run !== tripFitRun || !el) return
+    if (el.scrollWidth <= el.clientWidth + 1) return
+  }
+}
 /** Foto in de linkerhelft: de omgevingsfoto van de vakantie (zelfde als de
  *  eerste foto op de PDP); zonder cover het eerste hotel van de route. */
 const tripPhoto = computed(() => props.hotel?.trip?.coverImage || props.hotel?.trip?.stops[0]?.image || imageSrc.value)
@@ -556,8 +575,11 @@ function checkRegionFit() {
 let ro: ResizeObserver | null = null
 onMounted(() => {
   checkRegionFit()
+  fitTripCities()
+  // Webfont kan later binnenkomen en de tekst breder maken.
+  document.fonts?.ready.then(() => fitTripCities())
   if (typeof ResizeObserver !== 'undefined' && metaEl.value) {
-    ro = new ResizeObserver(() => checkRegionFit())
+    ro = new ResizeObserver(() => { checkRegionFit(); fitTripCities() })
     ro.observe(metaEl.value)
   }
 })
