@@ -248,6 +248,36 @@ export function provincesOnRoute(stops: TripMapStop[], samplesPerLeg = 24): stri
   return [...hit]
 }
 
+/**
+ * De provincie(s) van de reis als gekleurd vlak óver een echte kaart.
+ *
+ * Anders dan `addPlainBase` vervangt dit de kaart niet maar legt het er een
+ * laag overheen: half doorzichtige vulling, zodat plaatsnamen en wegen
+ * eronder leesbaar blijven, en een stevige contour op de grens. De vormen
+ * komen uit `mhtj-map-shapes.json`, dezelfde bron als de rest.
+ *
+ * Geeft de namen van de gekleurde provincies terug.
+ */
+export function addProvinceOverlay(
+  L: L,
+  map: Leaflet.Map,
+  stops: TripMapStop[],
+  opts: { color?: string; fillOpacity?: number } = {},
+): string[] {
+  const ids = provincesOnRoute(stops)
+  const rings = MAP.units.filter(u => ids.includes(u.id)).flatMap(u => u.rings)
+  if (!rings.length) return ids
+  const color = opts.color ?? PLAIN_COLORS.highlight
+  L.polygon(rings.map(r => [ringToLatLngs(r)]), {
+    fillColor: color,
+    fillOpacity: opts.fillOpacity ?? 0.3,
+    color: PLAIN_COLORS.highlightLine,
+    weight: 2.5,
+    interactive: false,
+  }).addTo(map)
+  return ids
+}
+
 /** Standaard OpenStreetMap-tegels (de CARTO-basemaps vragen een API-key). */
 export function addOsmTiles(L: L, map: Leaflet.Map, attribution = true): void {
   L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {

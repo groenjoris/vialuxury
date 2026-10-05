@@ -11,9 +11,9 @@
 <script setup lang="ts">
 import { tripPdpBySlug } from '~/data/mhtj-trip-pdp'
 import { tripDetailBySlug } from '~/data/mhtj-trips'
+import { addBasemapTiles } from '~/utils/mapTiles'
 import {
-  PLAIN_COLORS,
-  addPlainBase,
+  addProvinceOverlay,
   addTripRoute,
   addTripHotels,
   addTripHighlights,
@@ -70,12 +70,12 @@ async function build() {
   if (!el) return
   const L = (await import('leaflet')).default
   map?.remove()
-  // Geen tegellaag: de ondergrond is een vlakke tekening, zodat er geen
-  // wegen, plaatsnamen of terrein door de route heen lopen.
-  map = L.map(el, { zoomControl: true, attributionControl: false, scrollWheelZoom: true })
-  // addPlainBase tekent de landsgrens zelf, afgeleid uit de provincievormen;
-  // de losse grenzenlaag (addCountryBorders) loopt daar niet gelijk mee.
-  addPlainBase(L, map, { highlightStops: stops.value })
+  map = L.map(el, { zoomControl: true, attributionControl: true, scrollWheelZoom: true })
+  // Dezelfde basiskaart als /kaart: CARTO Voyager met een API-key, anders
+  // OpenStreetMap. Daarover het gekleurde vlak van de provincie, half
+  // doorzichtig zodat plaatsnamen en wegen eronder leesbaar blijven.
+  addBasemapTiles(L, map, useRuntimeConfig().public.cartoApiKey as string)
+  addProvinceOverlay(L, map, stops.value)
   addTripRoute(L, map, stops.value, { distances: true })
   addTripHotels(L, map, stops.value, {
     size: 30,
@@ -122,8 +122,6 @@ onBeforeUnmount(() => {
 .routekaart :deep(.leaflet-container) {
   width: 100%;
   height: 100%;
-  /* Alles buiten de landvlakken is water. */
-  background: v-bind('PLAIN_COLORS.water');
   font-family: var(--font-body);
 }
 </style>
