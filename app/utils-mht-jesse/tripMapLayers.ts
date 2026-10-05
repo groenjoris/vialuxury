@@ -9,6 +9,7 @@
  */
 import type * as Leaflet from 'leaflet'
 import shapes from '~/data/mhtj-route-map-shapes.json'
+import mapShapes from '~/data/mhtj-map-shapes.json'
 
 type L = typeof Leaflet
 
@@ -16,6 +17,15 @@ interface Shape { id: string; rings: number[][][] }
 interface Shapes { countries?: Shape[]; provinces?: Shape[]; lakes?: Shape[]; borders?: Shape[] }
 const SHAPES = shapes as unknown as Shapes
 const BORDERS = (SHAPES.borders ?? []).flatMap(s => s.rings)
+
+/**
+ * De kaartvormen voor de vlakke kaart: Natural Earth 1:10m admin-1, één laag
+ * voor heel Europa. Zie `scripts/build-mhtj-map-shapes.py` — daar staat ook
+ * waarom het één bron moet zijn.
+ */
+interface MapUnit { id: string; country: string; rings: number[][][] }
+interface MapShapes { units: MapUnit[]; provinceLines: number[][][]; countryLines: number[][][] }
+const MAP = mapShapes as unknown as MapShapes
 
 /** Kleuren van de vlakke kaart. */
 export const PLAIN_COLORS = {
@@ -26,6 +36,8 @@ export const PLAIN_COLORS = {
    *  zodat de twee kaarten bij elkaar horen. */
   land: '#f3efe6',
   provinceLine: '#e0d9cc',
+  /** Landsgrenzen: donkerder dan een provinciegrens. */
+  border: '#6f665a',
   /** Vulkleur van de provincie(s) waar de route doorheen gaat. */
   highlight: '#5fc4b5',
 }
@@ -154,16 +166,13 @@ function ringToLatLngs(ring: number[][]): [number, number][] {
  * plaatsnamen of terrein — alleen het silhouet, zodat de route het beeld
  * bepaalt.
  *
- * Alles komt uit één laag: de twaalf provincies uit
- * `mhtj-route-map-shapes.json`. Vulling, randen, kustlijn en landsgrens zijn
- * daarmee dezelfde punten en kunnen niet uit elkaar lopen. De landenlaag en
- * de merenlaag uit datzelfde bestand gebruiken we niet: die zijn apart
- * vereenvoudigd — tot 2,4 km verschil met de provincies, wat zich liet zien
- * als blauwe kieren langs de landsgrens — en het IJsselmeer is er één grove
- * vlek van dertig punten die Flevoland opslokt.
+ * Alles komt uit één bron: `mhtj-map-shapes.json`, de admin-1-laag van
+ * Natural Earth voor heel Europa. Land, provinciegrenzen en landsgrenzen
+ * delen daar hun punten, dus ze kunnen niet uit elkaar lopen — de reden dat
+ * dit bestand bestaat staat in `scripts/build-mhtj-map-shapes.py`.
  *
- * Alles buiten de provincies is water: zet de achtergrond van de
- * kaart-container op `PLAIN_COLORS.water`.
+ * Alles buiten het land is water: zet de achtergrond van de kaart-container
+ * op `PLAIN_COLORS.water`.
  *
  * Met `highlightStops` kleuren de provincies waar de route doorheen gaat;
  * die vulling gaat onder de randen door, anders dekt ze de lijn af en lijkt
@@ -174,29 +183,33 @@ export function addPlainBase(
   map: Leaflet.Map,
   opts: { highlightStops?: TripMapStop[]; highlightColor?: string } = {},
 ): string[] {
-  const fill = (ring: number[][], color: string) =>
-    L.polygon(ringToLatLngs(ring), {
+  // Elke laag in één vorm. Europa telt ruim 1600 eenheden; die los
+  // toevoegen levert duizenden SVG-paden op en dat maakt slepen stroperig.
+  // Leaflet tekent een lijst ringen als één multipolygoon in één pad.
+  const fillAll = (rings: number[][][], color: string) =>
+    L.polygon(rings.map(r => [ringToLatLngs(r)]), {
       fillColor: color, fillOpacity: 1, stroke: false, interactive: false,
     }).addTo(map)
 
-  // 1. Al het land: de twaalf provincies, en verder niets.
-  for (const prov of SHAPES.provinces ?? []) for (const ring of prov.rings) fill(ring, PLAIN_COLORS.land)
+  // 1. Al het land van Europa.
+  fillAll(MAP.units.flatMap(u => u.rings), PLAIN_COLORS.land)
 
   // 2. De uitgelichte provincies, nog onder de lijnen.
   const ids = opts.highlightStops ? provincesOnRoute(opts.highlightStops) : []
-  const color = opts.highlightColor ?? PLAIN_COLORS.highlight
-  for (const prov of SHAPES.provinces ?? []) {
-    if (ids.includes(prov.id)) for (const ring of prov.rings) fill(ring, color)
-  }
+  const lit = MAP.units.filter(u => ids.includes(u.id)).flatMap(u => u.rings)
+  if (lit.length) fillAll(lit, opts.highlightColor ?? PLAIN_COLORS.highlight)
 
-  // 3. De randen, uit dezelfde ringen als de vulling en dus precies erop.
-  for (const prov of SHAPES.provinces ?? []) {
-    for (const ring of prov.rings) {
-      L.polyline(ringToLatLngs(ring), {
-        color: PLAIN_COLORS.provinceLine, weight: 1, interactive: false,
-      }).addTo(map)
-    }
-  }
+  // 3. Provinciegrenzen: dun en licht.
+  L.polyline(MAP.provinceLines.map(ringToLatLngs), {
+    color: PLAIN_COLORS.provinceLine, weight: 1, interactive: false,
+  }).addTo(map)
+
+  // 4. Landsgrenzen: donkerder en gestreept, zodat ze van een provinciegrens
+  //    te onderscheiden zijn.
+  L.polyline(MAP.countryLines.map(ringToLatLngs), {
+    color: PLAIN_COLORS.border, weight: 1.2, dashArray: '5 3',
+    lineCap: 'round', interactive: false,
+  }).addTo(map)
   return ids
 }
 
@@ -212,12 +225,9 @@ function pointInRing(lng: number, lat: number, ring: number[][]): boolean {
 }
 
 /**
- * De provincies waar de route doorheen gaat. We toetsen niet alleen de
- * hotels maar ook punten ónderweg: een etappe kan een provincie doorkruisen
- * zonder er te overnachten, en die hoort er net zo goed bij.
- *
- * Buiten Nederland levert dit niets op — de vormen in
- * `mhtj-route-map-shapes.json` zijn alleen de twaalf Nederlandse provincies.
+ * De Nederlandse provincies waar de route doorheen gaat. We toetsen niet
+ * alleen de hotels maar ook punten ónderweg: een etappe kan een provincie
+ * doorkruisen zonder er te overnachten, en die hoort er net zo goed bij.
  */
 export function provincesOnRoute(stops: TripMapStop[], samplesPerLeg = 24): string[] {
   const pts: [number, number][] = []
@@ -231,8 +241,9 @@ export function provincesOnRoute(stops: TripMapStop[], samplesPerLeg = 24): stri
     }
   })
   const hit = new Set<string>()
-  for (const prov of SHAPES.provinces ?? []) {
-    if (pts.some(([lng, lat]) => prov.rings.some(r => pointInRing(lng, lat, r)))) hit.add(prov.id)
+  for (const unit of MAP.units) {
+    if (unit.country !== 'NLD') continue
+    if (pts.some(([lng, lat]) => unit.rings.some(r => pointInRing(lng, lat, r)))) hit.add(unit.id)
   }
   return [...hit]
 }
