@@ -1636,7 +1636,7 @@ const tripIncludedHeading = computed(() => {
   const type = t(trip?.type === 'fiets' ? 'trip.fiets' : 'trip.auto')
   return t('trip.includedHeading').replace('{type}', type.charAt(0).toLowerCase() + type.slice(1))
 })
-/** "Hotel Royal Beaulaincourt → Hôtel Château Tilques → Hôtel Château Cléry" op de plek van de hotelnaam. */
+/** "Château Tilques → Château Cléry → Hotel Royal Beaulaincourt" op de plek van de hotelnaam. */
 const tripHotelsLabel = computed(() => trip ? trip.stops.map(s => s.hotelName).join(' → ') : '')
 /** "Het volgende is inbegrepen": compacte blokken uit de redactionele inhoud (mht-trip-itineraries.ts). */
 const tripIncluded = computed(() =>
@@ -1742,10 +1742,15 @@ const tripCityChapters = computed<TripCityChapter[]>(() => {
     const isLast = i === trip.stops.length - 1
     const dayTo = isLast ? Math.max(s.dayTo, lastDay) : s.dayTo
     const stopDays = days.filter(day => day.stopIndex === i || (isLast && day.stopIndex == null && day.day > s.dayTo))
-    const attractions: TripCityAttraction[] = stopDays
-      .flatMap(day => day.blocks.filter(isTripSight).map(b => ({ ...b, dayLabel: day.label })))
-      .map((a, k) => ({ ...a, image: a.image ?? a.more?.image ?? s.extraImages?.[k] ?? s.image }))
-      .slice(0, 3)
+    // Eigen "Tips tijdens je reis" uit de content (alle tips, max. 6 in beeld); anders de
+    // uitjes uit het dagprogramma (max. 3).
+    const ownTips = tripPdp.content?.hotels[s.hotelName]?.tips
+    const attractions: TripCityAttraction[] = ownTips?.length
+      ? ownTips.map(tip => ({ kind: 'activity', tag: t('trip.tag.activity'), title: localized(tip.title), text: localized(tip.text), image: tip.image ?? s.image, dayLabel: '' }))
+      : stopDays
+        .flatMap(day => day.blocks.filter(isTripSight).map(b => ({ ...b, dayLabel: day.label })))
+        .map((a, k) => ({ ...a, image: a.image ?? a.more?.image ?? s.extraImages?.[k] ?? s.image }))
+        .slice(0, 3)
     const dayLabel = dayTo === s.dayFrom
       ? t('trip.daySingle').replace('{a}', String(s.dayFrom))
       : dayTo === s.dayFrom + 1
@@ -1829,6 +1834,12 @@ const tripMapSummary = computed<({ icon: string; text: string } | undefined)[]>(
       mins.length ? { icon: 'clock', text: t('trip.bike.timeLine').replace('{min}', String(minH)).replace('{max}', String(maxH)) } : undefined,
     ]
   }
+  // Vertrekplaats per taalinstelling (nl Utrecht, nl-BE Brussel, de Düsseldorf): alleen die regel.
+  const byLocale = trip.fromHomeByLocale
+  const origin = byLocale ? (byLocale[locale.value as keyof typeof byLocale] ?? byLocale.nl) : undefined
+  if (origin && first) {
+    return [{ icon: 'car', text: t('trip.fromHomeLineKm').replace('{city}', origin.city).replace('{to}', first.city).replace('{duration}', tripDurationLabel(origin.minutes)).replace('{km}', String(origin.km)) }]
+  }
   const km = trip.stops.reduce((sum, s, i) => sum + (s.travel?.km ?? legs.find(l => l.to === i && !l.return)?.km ?? 0), 0)
   return [
     trip.fromHome && first ? { icon: 'car', text: t('trip.fromHomeLine').replace('{city}', trip.fromHome.city).replace('{duration}', tripDurationLabel(trip.fromHome.minutes)).replace('{to}', first.city) } : undefined,
@@ -1899,7 +1910,7 @@ const tripDaysView = computed<TripDayView[]>(() => {
             kind: 'dinner',
             tag: t('trip.tag.dinner'),
             title: cap(t('trip.dinnerAt').replace('{dinner}', dl).replace('{hotel}', name)),
-            text: t('trip.dinnerText').replace('{dinner}', dl),
+            text: b.text ? localized(b.text) : t('trip.dinnerText').replace('{dinner}', dl),
             image: b.image,
             stopIndex: b.stopIndex,
             hotelName: name || undefined,
@@ -1961,6 +1972,9 @@ const tripDaysView = computed<TripDayView[]>(() => {
     } else if (from) {
       view.subtitle = t('trip.subtitle.home').replace('{hotel}', from.hotelName)
     }
+    // Eigen dagkop (sidepanel) en samenvattingsregel uit de content (Opaalkust: het reisdocument).
+    if (d.heading) view.heading = localized(d.heading)
+    if (d.summary) view.summary = localized(d.summary)
     return view
   })
 })

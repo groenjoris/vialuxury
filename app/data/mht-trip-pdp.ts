@@ -63,6 +63,9 @@ export interface TripRawBlock {
 }
 export interface TripRawDay {
   day: number
+  /** Eigen samenvattingsregel en dagkop uit de content (anders afgeleid). */
+  summary?: LocalizedString
+  heading?: LocalizedString
   /** Hotel van vannacht (null op de laatste dag). */
   stopIndex: number | null
   /** Op een uitcheckdag: het hotel dat je verlaat. */
@@ -102,7 +105,9 @@ function breakfastImageOf(stop: MultiHotelTripDetailStop): string | undefined {
 export function buildTripDays(trip: MultiHotelTripDetail, content: TripItinerarySpec | null): TripRawDay[] {
   const stops = trip.stops
   const stopOn = (day: number) => stops.findIndex(s => day >= s.dayFrom && day <= s.dayTo)
-  const out: TripRawDay[] = []
+  const raw: TripRawDay[] = []
+  // Elke dag krijgt de eigen samenvattingsregel en dagkop uit de content mee.
+  const out = { push: (d: TripRawDay) => { const sp = content?.days.find(x => x.day === d.day); raw.push({ ...d, summary: sp?.summary, heading: sp?.heading }) } }
   for (let day = 1; day <= trip.nights + 1; day++) {
     const idx = stopOn(day)
     const prevIdx = day > 1 ? stopOn(day - 1) : -1
@@ -114,7 +119,7 @@ export function buildTripDays(trip: MultiHotelTripDetail, content: TripItinerary
     const pushDinner = (i: number, arrival: boolean) => {
       const d = dinnerOf(stops[i]!)
       if (!d) return
-      if (arrival || d.daily) blocks.push({ kind: 'dinner', stopIndex: i, dinnerLabel: d.label, image: dinnerImageOf(stops[i]!) })
+      if (arrival || d.daily) blocks.push({ kind: 'dinner', stopIndex: i, dinnerLabel: d.label, image: dinnerImageOf(stops[i]!), text: spec?.dinner?.text })
     }
     // Wakker worden en ontbijten — vanaf dag 2, in het hotel van vannacht (inbegrepen).
     // `breakfast: false` in de content: geen apart blok (het ontbijt wordt in het volgende blok genoemd).
@@ -158,7 +163,7 @@ export function buildTripDays(trip: MultiHotelTripDetail, content: TripItinerary
     pushDinner(idx, false)
     out.push({ day, stopIndex: idx, blocks })
   }
-  return out
+  return raw
 }
 
 /* ── Hotel-pop-up ─────────────────────────────────────────────────────── */
@@ -226,6 +231,37 @@ const COVER_STICKER = 'Omgeving'
 function buildImages(trip: MultiHotelTripDetail): { images: HotelImage[]; stickers: Record<string, string> } {
   const images: HotelImage[] = []
   const stickers: Record<string, string> = {}
+  // Beeldplan (TripSpec.gallery): het hoofdbeeld en daarna precies de opgegeven volgorde van
+  // sfeerbeelden en hotelblokken ({ stop, count }: de eerste `count` hotelfoto's van die stop).
+  if (trip.gallery?.length) {
+    if (trip.coverImage) {
+      const id = `${trip.id}-cover`
+      images.push({ id, url: trip.coverImage, alt: trip.title, position: 'hero' })
+      stickers[id] = COVER_STICKER
+    }
+    const seen = new Set(images.map(img => img.url.split('?')[0]))
+    trip.gallery.forEach((entry, k) => {
+      if (typeof entry === 'string') {
+        if (seen.has(entry.split('?')[0])) return
+        seen.add(entry.split('?')[0])
+        const id = `${trip.id}-plan-${k}`
+        images.push({ id, url: entry, alt: trip.title, position: images.length === 0 ? 'hero' : 'gallery' })
+        stickers[id] = COVER_STICKER
+        return
+      }
+      const stop = trip.stops[entry.stop]
+      if (!stop) return
+      const urls = [stop.image, ...(stop.extraImages ?? [])].filter((u): u is string => !!u).slice(0, entry.count ?? 3)
+      urls.forEach((url, j) => {
+        if (seen.has(url.split('?')[0])) return
+        seen.add(url.split('?')[0])
+        const id = `${trip.id}-plan-${k}-${j}`
+        images.push({ id, url, alt: l(stop.hotelName), position: images.length === 0 ? 'hero' : 'gallery' })
+        stickers[id] = stop.hotelName
+      })
+    })
+    return { images, stickers }
+  }
   // 0. Omgevingsfoto als eerste (hero) — dezelfde foto als op de dealcard,
   //    met sticker "Omgeving" (niet aan een hotel gekoppeld).
   if (trip.coverImage) {

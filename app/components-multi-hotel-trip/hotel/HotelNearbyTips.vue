@@ -1,7 +1,7 @@
 <template>
   <!-- MHT: `embedded` = zonder kop, container-padding en scheidingslijn — de
        rij tips in het reisschema "Per stad" (kop staat daar in het hoofdstuk). -->
-  <section class="tips-section" :class="{ container: !embedded, 'tips-section--embedded': embedded }">
+  <section class="tips-section" :class="{ container: !embedded, 'tips-section--embedded': embedded, 'tips-section--carousel': carousel }">
     <div v-if="!embedded" class="tips-section__header">
       <h2 class="tips-section__title">{{ t('hotel.nearbyTips') }}</h2>
       <p class="tips-section__subtitle">{{ tips.length }} {{ t('hotel.nearbySubtitle') }} {{ hotelName }}</p>
@@ -100,10 +100,15 @@ const props = defineProps<{
   hotelName: string
   /** Zonder kop/container: ingebed in een ander blok (reisschema "Per stad"). */
   embedded?: boolean
+  /** Maximaal aantal tips (twee rijen van drie); standaard 5 zoals op de hotelpagina. */
+  max?: number
+  /** Eén veegbare rij met alle tips (reisschema "Per stad"): op desktop drie naast elkaar
+   *  met de volgende al in beeld, geen uitklappende kaart; mobiel zoals altijd. */
+  carousel?: boolean
 }>()
 
-const topRow = computed(() => props.tips.slice(0, 3))
-const bottomRow = computed(() => props.tips.slice(3, 5))
+const topRow = computed(() => (props.carousel ? props.tips.slice(0, props.max ?? props.tips.length) : props.tips.slice(0, 3)))
+const bottomRow = computed(() => (props.carousel ? [] : props.tips.slice(3, props.max ?? 5)))
 
 const activeTop = ref<number | null>(null)
 const activeBottom = ref<number | null>(null)
@@ -268,6 +273,25 @@ function toggleBottom(index: number) {
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+/* Carrousel (reisschema "Per stad"): één rij, kaarten vast iets smaller dan een derde zodat de
+   volgende al piept; geen uitklappende kaart, de hele tekst staat er meteen. */
+.tips-section--carousel .tips-row--top {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  padding-bottom: 4px;
+}
+.tips-section--carousel .tips-row--top::-webkit-scrollbar { display: none; }
+.tips-section--carousel .tips-row--top .tip-card,
+.tips-section--carousel .tips-row--top .tip-card--active,
+.tips-section--carousel .tips-row--top .tip-card--inactive {
+  flex: 0 0 calc((100% - 28px) / 3 - 18px);
+  scroll-snap-align: start;
+  cursor: default;
+}
+.tips-section--carousel .tip-card__desc { -webkit-line-clamp: initial; display: block; }
+.tips-section--carousel .tip-card__more { display: none; }
 /* Expanded card shows the full description. */
 .tip-card--active .tip-card__desc {
   -webkit-line-clamp: initial;

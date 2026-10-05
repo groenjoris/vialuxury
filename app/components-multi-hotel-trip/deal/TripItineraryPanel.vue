@@ -23,7 +23,7 @@
         <div ref="bodyEl" class="tipn__body">
           <section v-for="day in days" :key="day.day" :id="`itin-panel-dag-${day.day}`" class="tipn__day" :class="{ 'tipn__day--focus': focusDay === day.day }">
             <h4 class="tipn__dayhead">
-              <span class="tipn__daylabel">{{ day.label }}</span> · {{ summaryLineOfDay(day, t) }}
+              <span class="tipn__daylabel">{{ day.label }}</span> · {{ day.heading ?? summaryLineOfDay(day, t) }}
             </h4>
             <p v-if="day.date" class="tipn__date">{{ day.date }}</p>
             <p class="tipn__text">{{ textOfDay(day) }}</p>

@@ -137,6 +137,10 @@ export interface TripMoreInfoView {
 
 export interface TripDayView {
   day: number
+  /** Eigen regel voor de dagsamenvatting (uit de content); anders afgeleid uit de blokken. */
+  summary?: string
+  /** Eigen dagkop voor het uitgebreide reisschema (sidepanel), uit de content. */
+  heading?: string
   /** "Dag 1" */
   label: string
   /** "do 18 sep" — alleen met gekozen aankomstdatum. */

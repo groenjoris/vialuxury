@@ -297,7 +297,7 @@ const nl: Record<string, string> = {
   'trip.itin.sum.and': ' en ',
   'trip.itin.panelIntro': 'Dit is slechts een voorbeeld, voel je vrij om je eigen schema te volgen.',
   'trip.itin.city.heading': 'Wat te doen tijdens je vakantie',
-  'trip.itin.city.intro': 'Per hotel drie tips voor in de buurt — klik op een tip voor meer.',
+  'trip.itin.city.intro': 'Per hotel onze tips voor in de buurt.',
   'trip.itin.city.outingsAt': 'Leuke uitjes in de buurt van {hotel}',
   'trip.reviews.moreInfo': 'Meer info',
   'trip.reviews.travelledIn': 'Op vakantie in {month}',
@@ -318,6 +318,7 @@ const nl: Record<string, string> = {
   'trip.includedHeading': 'In deze {type} voor 2 personen is het volgende inbegrepen',
   // Onder de minimap
   'trip.fromHomeLine': 'Reistijd van {city} naar {to}: ca. {duration}',
+  'trip.fromHomeLineKm': 'Reistijd vanaf {city} naar {to}: ca. {duration} ({km} km)',
   'trip.totalRouteLine': 'Totale route tussen hotels: {km} km',
   'trip.totalDriveLine': 'Totale rijtijd: ca. {duration}',
   // Fietsvakantie — regels onder de minimap

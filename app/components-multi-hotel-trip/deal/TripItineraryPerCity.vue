@@ -62,7 +62,7 @@
           </div>
 
           <div v-show="isOpen(ch.stopIndex)" :id="`tpc-panel-${ch.stopIndex}`" class="tpc-ch__panel" role="region" :aria-label="t('trip.itin.city.outingsAt').replace('{hotel}', ch.hotelName)">
-            <MultiHotelTripHotelNearbyTips :tips="tipsOf(ch)" :hotel-name="ch.hotelName" embedded />
+            <MultiHotelTripHotelNearbyTips :tips="tipsOf(ch)" :hotel-name="ch.hotelName" embedded :carousel="ch.attractions.length > 3" :max="8" />
           </div>
         </li>
       </template>
@@ -155,9 +155,9 @@ const sightsCount = computed(() => countTripSights(props.days))
 function summaryOf(ch: TripCityChapter): string {
   return ch.attractions.map(a => a.title).join(' · ')
 }
-/** Maximaal drie foto's voor de ingeklapte kop. */
+/** Maximaal drie foto's voor de ingeklapte kop (zonder placeholders). */
 function thumbsOf(ch: TripCityChapter): string[] {
-  return ch.attractions.map(a => a.image).filter((s): s is string => !!s).slice(0, 3)
+  return ch.attractions.map(a => a.image).filter((s): s is string => !!s && !s.includes('/placeholder-')).slice(0, 3)
 }
 /** De uitjes in het formaat van "Tips in de buurt" (teksten zijn al vertaald). */
 function tipsOf(ch: TripCityChapter): NearbyTip[] {

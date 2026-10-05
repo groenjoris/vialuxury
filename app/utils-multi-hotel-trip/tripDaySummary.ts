@@ -25,6 +25,7 @@ function lowerFirst(s: string): string {
  *  ontdek Béthune en 3-gangendiner" — inchecken, onderweg/activiteiten, diner,
  *  terugreis (geen ontbijt). `t` = vertaalfunctie van de pagina. */
 export function summaryLineOfDay(day: TripDayView, t: (key: string) => string): string {
+  if (day.summary) return day.summary
   const parts: string[] = []
   for (const b of day.blocks) {
     if (b.kind === 'checkin') parts.push(t('trip.itin.sum.arrival').replace('{hotel}', b.hotelName ?? b.title))
@@ -39,7 +40,8 @@ export function summaryLineOfDay(day: TripDayView, t: (key: string) => string): 
 /** Lopende tekst van een dag voor het uitgebreide reisschema (sidepanel):
  *  de ondertitel gevolgd door de tekst van elk blok. */
 export function textOfDay(day: TripDayView): string {
-  return [day.subtitle, ...day.blocks.map(b => b.text)]
+  // Met een eigen dagkop (content) staat de ondertitel al in de kop: alleen de bloktekst.
+  return [day.heading ? undefined : day.subtitle, ...day.blocks.map(b => b.text)]
     .map(s => (s ?? '').trim())
     .filter(Boolean)
     .map(s => (/[.!?…]$/.test(s) ? s : `${s}.`))
