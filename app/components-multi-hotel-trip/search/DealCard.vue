@@ -178,11 +178,17 @@
           </h3>
         </NuxtLink>
         <div ref="metaEl" class="deal-card-v2__meta">
+          <!-- Multi Hotel Trip: reviewcijfer + label vóór de plaats (als Northstar). -->
+          <template v-if="isTrip && hotel.reviewScore">
+            <span class="deal-card-v2__score">{{ hotel.reviewScore.toFixed(1) }}</span>
+            <span class="deal-card-v2__score-label">{{ t(getReviewLabelKey(hotel.reviewScore)) }}</span>
+            <span class="deal-card-v2__sep" aria-hidden="true">|</span>
+          </template>
           <svg class="deal-card-v2__loc-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M4.5 9.75768C4.5 15.5 12 22 12 22C12 22 19.5 15.5 19.5 9.75768C19.5 4.81181 15.6559 2 12 2C8.34409 2 4.5 4.81181 4.5 9.75768Z" /><path d="M12 12C13.3807 12 14.5 10.8807 14.5 9.5C14.5 8.11929 13.3807 7 12 7C10.6193 7 9.5 8.11929 9.5 9.5C9.5 10.8807 10.6193 12 12 12Z" />
           </svg>
-          <!-- Multi Hotel Trip: plaatsnamen van de twee of drie hotels i.p.v. één plaats. -->
-          <span v-if="isTrip" class="deal-card-v2__location deal-card-v2__location--trip">{{ tripStopsLabel }}</span>
+          <!-- Multi Hotel Trip: naast de score past maar één plaats — de eerste, met "+2" voor de rest. -->
+          <span v-if="isTrip" class="deal-card-v2__location" :title="tripStopsLabel">{{ tripStopsShort }}</span>
           <span v-else class="deal-card-v2__location">
             <span>{{ hotel.city }}</span>
             <span v-if="!hideRegion" class="deal-card-v2__location-region">, {{ hotel.region }}</span>
@@ -323,6 +329,7 @@ import { nightsLabel } from '~/utils-multi-hotel-trip/plural'
 import { arrangementSuffixFromHighlights } from '~/utils-multi-hotel-trip/arrangementType'
 import { dealHash, roomsLeftForDeal } from '~/utils-multi-hotel-trip/scarcity'
 import { useMultiHotelTripHomeVariant } from '~/composables-multi-hotel-trip/useMultiHotelTripHomeVariant'
+import { getReviewLabelKey } from '~/utils-multi-hotel-trip/reviewLabel'
 
 const { t, localized, locale } = useMultiHotelTripI18n()
 const isMobile = useMultiHotelTripIsMobile()
@@ -438,8 +445,14 @@ const tripTypeLabel = computed(() => {
   if (!trip) return ''
   return t('trip.typeWithHotels').replace('{type}', t(`trip.${trip.type}`)).replace('{n}', String(trip.stops.length))
 })
-/** "Landgraaf · Eijsden · Sittard" — plaatsnamen van de hotels in reisvolgorde. */
+/** "Landgraaf · Eijsden · Sittard" — plaatsnamen van de hotels in reisvolgorde (tooltip). */
 const tripStopsLabel = computed(() => (props.hotel?.trip?.stops ?? []).map(s => s.city).join(' · '))
+/** "Landgraaf +2" — eerste plaats en het aantal overige hotels (naast het reviewcijfer). */
+const tripStopsShort = computed(() => {
+  const stops = props.hotel?.trip?.stops ?? []
+  if (!stops.length) return ''
+  return stops.length > 1 ? `${stops[0]!.city} +${stops.length - 1}` : stops[0]!.city
+})
 /** Foto in de linkerhelft: de omgevingsfoto van de vakantie (zelfde als de
  *  eerste foto op de PDP); zonder cover het eerste hotel van de route. */
 const tripPhoto = computed(() => props.hotel?.trip?.coverImage || props.hotel?.trip?.stops[0]?.image || imageSrc.value)
@@ -1283,22 +1296,6 @@ const includesBullets = computed<string[]>(() => {
 .trip-collage__tile--map :deep(.trm) { width: 100%; height: 100%; }
 /* Het hartje niet over het mini-kaartje: naar de rechterrand van de hoofdfoto. */
 .deal-card-v2__image--trip-collage .deal-card-v2__favorite { right: calc(25% + var(--space-md)); }
-
-/* Multi Hotel Trip: plaatsnamen van 2–3 hotels mogen over twee regels lopen. */
-.deal-card-v2__meta:has(.deal-card-v2__location--trip) {
-  white-space: normal;
-  align-items: flex-start;
-  overflow: visible;
-}
-.deal-card-v2__location--trip {
-  white-space: normal;
-  overflow: visible;
-  text-overflow: clip;
-  line-height: 1.35;
-}
-.deal-card-v2__meta:has(.deal-card-v2__location--trip) .deal-card-v2__loc-icon {
-  margin-top: 2px;
-}
 
 /* Divider between hotel info and deal pitch */
 .deal-card-v2__divider {
