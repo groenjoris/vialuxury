@@ -27,19 +27,22 @@ interface MapUnit { id: string; country: string; rings: number[][][] }
 interface MapShapes { units: MapUnit[]; provinceLines: number[][][]; countryLines: number[][][] }
 const MAP = mapShapes as unknown as MapShapes
 
-/** Kleuren van de vlakke kaart. */
+/**
+ * Kleuren van de vlakke kaart. Eén tint voor al het land, één voor het
+ * water: zonder wegen, plaatsnamen en terrein is de contour het enige wat
+ * de kaart nog vertelt, en die moet dus scherp zijn.
+ */
 export const PLAIN_COLORS = {
-  /** Alles buiten de provincies. Gelijk aan de kaartachtergrond uit
-   *  leaflet-overrides.css, zodat er geen naad tussen de twee zit. */
-  water: '#aadaff',
-  /** Landkleur van het schematische kaartje op de dealcard (TripRouteMap),
-   *  zodat de twee kaarten bij elkaar horen. */
-  land: '#f3efe6',
-  provinceLine: '#e0d9cc',
-  /** Landsgrenzen: donkerder dan een provinciegrens. */
-  border: '#6f665a',
+  /** Alles buiten het land. */
+  water: '#ffffff',
+  /** Al het land, waar ook ter wereld — één kleur. */
+  land: '#e9e9e9',
+  /** Grens tussen twee landgebieden: een witte snee, geen lijn erbovenop. */
+  line: '#ffffff',
   /** Vulkleur van de provincie(s) waar de route doorheen gaat. */
   highlight: '#5fc4b5',
+  /** Contour om die provincie. */
+  highlightLine: '#1f6f66',
 }
 
 export interface TripMapStop {
@@ -199,17 +202,18 @@ export function addPlainBase(
   const lit = MAP.units.filter(u => ids.includes(u.id)).flatMap(u => u.rings)
   if (lit.length) fillAll(lit, opts.highlightColor ?? PLAIN_COLORS.highlight)
 
-  // 3. Provinciegrenzen: dun en licht.
-  L.polyline(MAP.provinceLines.map(ringToLatLngs), {
-    color: PLAIN_COLORS.provinceLine, weight: 1, interactive: false,
+  // 3. Provincie- en landsgrenzen als een witte snee door het grijs.
+  L.polyline([...MAP.provinceLines, ...MAP.countryLines].map(ringToLatLngs), {
+    color: PLAIN_COLORS.line, weight: 1.5, interactive: false,
   }).addTo(map)
 
-  // 4. Landsgrenzen: donkerder en gestreept, zodat ze van een provinciegrens
-  //    te onderscheiden zijn.
-  L.polyline(MAP.countryLines.map(ringToLatLngs), {
-    color: PLAIN_COLORS.border, weight: 1.2, dashArray: '5 3',
-    lineCap: 'round', interactive: false,
-  }).addTo(map)
+  // 4. De contour om de provincie van de reis, uit dezelfde ringen als de
+  //    vulling en dus precies op de grens.
+  if (lit.length) {
+    L.polyline(lit.map(ringToLatLngs), {
+      color: PLAIN_COLORS.highlightLine, weight: 2, interactive: false,
+    }).addTo(map)
+  }
   return ids
 }
 

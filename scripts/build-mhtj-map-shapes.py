@@ -32,10 +32,14 @@ SOURCE = 'https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/
 BBOX = (-11.0, 34.0, 32.0, 61.5)   # Europa
 OUT = os.path.join(os.path.dirname(__file__), '..', 'app', 'data', 'mhtj-map-shapes.json')
 
-# Fijner tekenen waar de routes spelen, grover waar het alleen achtergrond is.
-TOL_NEAR = 0.004         # ~300 m — Nederland en de buurlanden
-TOL_FAR = 0.04           # ~3 km — de rest van Europa, puur decor
-NEAR = {'NLD', 'BEL', 'LUX', 'DEU', 'FRA', 'GBR'}
+# Drie niveaus van detail. De kaart wordt vlak ingekleurd, dus de contour is
+# het enige wat je ziet — die moet in Nederland net zo scherp zijn als op een
+# echte kaart. Verder weg mag het grover; dat is alleen achtergrond.
+TOL_HOME = 0.0004        # ~30 m — Nederland
+TOL_NEAR = 0.003         # ~230 m — de buurlanden
+TOL_FAR = 0.04           # ~3 km — de rest van Europa
+HOME = {'NLD'}
+NEAR = {'BEL', 'LUX', 'DEU', 'FRA', 'GBR'}
 # Provinciegrenzen tekenen we alleen waar ze iets betekenen; de binnengrenzen
 # van 53 landen zijn ruis en kosten driekwart van het bestand.
 PROVINCE_LINES_FOR = {'NLD'}
@@ -201,7 +205,11 @@ def main():
                 own = set()
                 for k in seg:
                     own |= owners[k]
-                tol = TOL_NEAR if any(units[i]['country'] in NEAR for i in own) else TOL_FAR
+                landen = {units[i]['country'] for i in own}
+                # Een gedeelde rand krijgt het fijnste niveau van zijn
+                # eigenaren, anders zou dezelfde lijn aan twee kanten
+                # verschillend vereenvoudigd worden.
+                tol = TOL_HOME if landen & HOME else TOL_NEAR if landen & NEAR else TOL_FAR
                 pts = [point_of[k] for k in key]
                 simplified[key] = simplify(pts, tol)
 
