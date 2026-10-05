@@ -3,8 +3,9 @@
        (440 px, rechts), op mobiel een pop-up over het hele scherm (zoals "Bekijk je
        volledige arrangement" bij een gewoon arrangement). Toont de reis én alle keuzes:
        reisnaam, aankomst/vertrek, de route (per hotel plaats, nachten en de datums),
-       wat er inbegrepen is, per hotel een kamerkaart (aantal kamers, kamerfoto,
-       faciliteiten) en de gekozen annuleringsoptie. Klik op de achtergrond, "Sluit",
+       wat er inbegrepen is, per hotel een kamerkaart (kamertype, kamerfoto,
+       faciliteiten — geen aantal kamers: een vakantie telt in personen) en de
+       gekozen annuleringsoptie. Klik op de achtergrond, "Sluit",
        Escape of "Doorgaan met boeken" sluit. Krijgt de .mht-checkout-klasse mee zodat
        de checkout-tokens ook na de Teleport gelden. -->
   <Teleport to="body">
@@ -24,7 +25,7 @@
 
             <!-- De reis -->
             <p class="ctp__tripname">{{ trip.name }}</p>
-            <p class="t-caption c-mgrey ctp__tripmeta">{{ trip.typeLabel }} · {{ trip.hotels.length }} hotels · {{ trip.nights }} nachten</p>
+            <p class="t-caption c-mgrey ctp__tripmeta">{{ trip.typeLabel }} · {{ trip.hotels.length }} hotels · {{ trip.nights }} nachten · {{ roomsPerHotel * 2 }} personen</p>
             <div v-if="checkIn || checkOut" class="ctp__dates">
               <div class="ctp__datecell">
                 <span class="t-caption c-mgrey">Aankomst</span>
@@ -61,12 +62,11 @@
               </li>
             </ul>
 
-            <!-- Per hotel de gekozen kamer (aantal = kamers per hotel), foto, faciliteiten -->
+            <!-- Per hotel het kamertype, foto, faciliteiten -->
             <p class="t-body t-bold ctp__sechead">Jouw kamers</p>
             <div class="ctp__rooms">
               <article v-for="(h, i) in trip.hotels" :key="`room-${h.name}`" class="ctp__room">
                 <div class="ctp__roomhead">
-                  <span class="ctp__qty">{{ roomsPerHotel }}x</span>
                   <div class="ctp__roomtext">
                     <p class="ctp__roomname">{{ h.roomName }}</p>
                     <p class="t-caption c-mgrey">Hotel {{ i + 1 }} · {{ h.name }}<template v-if="stayLabels[i]"> · {{ stayLabels[i] }}</template></p>
@@ -108,7 +108,7 @@ const props = withDefaults(defineProps<{
   checkOut?: string
   /** Aankomstdatum als jaar/maand(0-based)/dag — voor de datums per hotel. */
   checkInYmd?: { year: number; month: number; day: number } | null
-  /** Gekozen kamers (uit de room table): aantal per hotel en de annuleringsoptie. */
+  /** Keuze uit de room table: kamers per hotel (= personen / 2) en de annuleringsoptie. */
   roomsPerHotel?: number
   rateKey?: 'flexible' | 'nonrefundable' | null
 }>(), { checkIn: '', checkOut: '', checkInYmd: null, roomsPerHotel: 1, rateKey: null })
@@ -220,7 +220,6 @@ onBeforeUnmount(() => {
 .ctp__rooms { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
 .ctp__room { border: 1px solid var(--c-light-grey, #e6e6e6); border-radius: var(--radius, 8px); padding: 14px; display: flex; flex-direction: column; gap: 10px; }
 .ctp__roomhead { display: flex; align-items: flex-start; gap: 12px; }
-.ctp__qty { flex-shrink: 0; min-width: 34px; height: 30px; padding: 0 8px; border-radius: 6px; background: var(--c-surface, #f4f4f4); font-size: 15px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; }
 .ctp__roomtext { min-width: 0; }
 .ctp__roomname { margin: 0 0 2px; font-size: 16px; font-weight: 700; line-height: 1.3; color: var(--c-via-black, #1a1e1e); }
 .ctp__roomimg { display: block; width: 100%; aspect-ratio: 3 / 2; object-fit: cover; border-radius: var(--radius-sm, 6px); }

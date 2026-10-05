@@ -350,7 +350,7 @@ useHead({ title: trip.value ? 'Kies je opties — ViaLuxury' : 'Kies je kamer �
                 <!-- Zelfde vlakke stijl als de nonref-regel (geen vinkjes),
                      met een vaste afbreking na de datum -->
                 <p v-if="row.rateKey === 'flexible'" class="mrate__line mrate__line--block">
-                  Bij annuleren voor 17 mei 23:59<br />krijg je de volledige arrangementsprijs terug
+                  Bij annuleren voor 17 mei 23:59<br />krijg je de volledige {{ trip ? 'vakantieprijs' : 'arrangementsprijs' }} terug
                 </p>
                 <p v-else class="mrate__line">Geen geld terug bij annuleren of wijzigen</p>
                 <p v-if="row.scarcity" class="mrate__line mrate__line--red">· {{ row.scarcity }}</p>
@@ -382,18 +382,19 @@ useHead({ title: trip.value ? 'Kies je opties — ViaLuxury' : 'Kies je kamer �
                     <button
                       class="mrate__btn"
                       type="button"
-                      aria-label="Minder kamers"
+                      :aria-label="trip ? 'Minder personen' : 'Minder kamers'"
                       @click="setQty(row, row.quantity - 1)"
                     >
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 12h14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" /></svg>
                     </button>
-                    <!-- Het aantal mét "kamer(s)" erbij: mensen lazen het getal als aantal personen. -->
-                    <span class="mrate__val">{{ row.quantity }} {{ row.quantity === 1 ? 'kamer' : 'kamers' }}</span>
+                    <!-- Het aantal mét "kamer(s)" erbij: mensen lazen het getal als aantal personen.
+                         Vakantie: alleen personen, in stappen van 2 (0, 2, 4 … 10). -->
+                    <span class="mrate__val">{{ trip ? `${row.quantity * 2} personen` : `${row.quantity} ${row.quantity === 1 ? 'kamer' : 'kamers'}` }}</span>
                     <button
                       class="mrate__btn"
                       type="button"
                       :disabled="row.quantity >= 5"
-                      aria-label="Meer kamers"
+                      :aria-label="trip ? 'Meer personen' : 'Meer kamers'"
                       @click="setQty(row, row.quantity + 1)"
                     >
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" /></svg>
@@ -408,7 +409,7 @@ useHead({ title: trip.value ? 'Kies je opties — ViaLuxury' : 'Kies je kamer �
                     </button>
                   </div>
                   <!-- "1 kamer, max. 2 personen" — schaalt mee met het aantal kamers (2 p.p. kamer) -->
-                  <p class="mrate__max t-caption c-mgrey">{{ row.quantity }} {{ row.quantity === 1 ? 'kamer' : 'kamers' }} voor maximaal {{ row.quantity * 2 }} personen</p>
+                  <p v-if="!trip" class="mrate__max t-caption c-mgrey">{{ row.quantity }} {{ row.quantity === 1 ? 'kamer' : 'kamers' }} voor maximaal {{ row.quantity * 2 }} personen</p>
                 </template>
               </div>
             </div>
@@ -422,11 +423,11 @@ useHead({ title: trip.value ? 'Kies je opties — ViaLuxury' : 'Kies je kamer �
               <div class="mroomsum">
                 <h3 class="mroomsum__title">Prijsopbouw</h3>
                 <div v-for="row in selectedRows" :key="row.id" class="mdetails__row mdetails__row--room">
-                  <!-- Vakantie: "Nx" alleen bij meer dan één kamer per hotel (niet in de p.p.-variant). -->
-                  <span v-if="!trip || (row.quantity > 1 && !ppTrip)" class="mdetails__qty">{{ row.quantity }}x</span>
+                  <!-- Vakantie: geen "Nx" en geen kamers — "3 hotels, 6 nachten, 2 personen". -->
+                  <span v-if="!trip" class="mdetails__qty">{{ row.quantity }}x</span>
                   <div class="mdetails__main">
-                    <p class="t-body t-bold">{{ trip ? (ppTrip ? `${trip.typeLabel} ${row.quantity * 2} personen` : trip.typeLabel) : 'Arrangement' }}</p>
-                    <p class="t-caption c-mgrey">{{ trip ? `${trip.hotels.length} hotels, ${row.quantity} ${row.quantity === 1 ? 'kamer' : 'kamers'}, ${nights} nachten` : `${row.quantity}x ${roomNameFor(row.baseId)}` }}</p>
+                    <p class="t-body t-bold">{{ trip ? trip.typeLabel : 'Arrangement' }}</p>
+                    <p class="t-caption c-mgrey">{{ trip ? `${trip.hotels.length} hotels, ${nights} nachten, ${row.quantity * 2} personen` : `${row.quantity}x ${roomNameFor(row.baseId)}` }}</p>
                   </div>
                   <!-- Prijs met daaronder het annuleringslabel, rechts uitgelijnd
                        op de regel van de kamernaam -->
@@ -451,7 +452,7 @@ useHead({ title: trip.value ? 'Kies je opties — ViaLuxury' : 'Kies je kamer �
                       <MultiHotelTripCheckoutPriceTag :value="displayTotal" size="lg" bold color="var(--c-via-green)" />
                     </div>
                   </div>
-                  <p v-if="trip" class="t-caption c-mgrey">{{ trip.hotels.length }} hotels, {{ totalRooms }} {{ totalRooms === 1 ? 'kamer' : 'kamers' }}, {{ nights }} nachten, {{ totalRooms * 2 }} personen</p>
+                  <p v-if="trip" class="t-caption c-mgrey">{{ trip.hotels.length }} hotels, {{ nights }} nachten, {{ totalRooms * 2 }} personen</p>
                   <p v-else class="t-caption c-mgrey">{{ totalRooms }} {{ totalRooms === 1 ? 'kamer' : 'kamers' }}, 2 nachten, {{ totalRooms * 2 }} personen</p>
                 </div>
 
@@ -465,8 +466,8 @@ useHead({ title: trip.value ? 'Kies je opties — ViaLuxury' : 'Kies je kamer �
 
                 <p class="msmallprint">
                   Je dient ter plaatse alleen de lokale belastingen, eventuele
-                  service-/administratiekosten van het hotel en parkeerkosten te betalen
-                  (indien dit niet is inbegrepen in het arrangement).
+                  service-/administratiekosten van {{ trip ? 'de hotels' : 'het hotel' }} en parkeerkosten te betalen
+                  (indien dit niet is inbegrepen in {{ trip ? `de ${trip.typeWord}` : 'het arrangement' }}).
                 </p>
 
                 <div class="mcta">

@@ -237,6 +237,7 @@ const de: Record<string, string> = {
   'trip.auto': 'Autoreise',
   'trip.fiets': 'Radreise',
   'trip.withThisHotel': 'Reisen mit diesem Hotel',
+  'trip.disclaimer': 'Vor Ort sind nur lokale Steuern, eventuelle Service-/Verwaltungskosten der Hotels und Parkkosten zu zahlen (sofern nicht in der Reise enthalten).',
   'trip.autoIncl': 'Autoreise inklusive',
   'trip.fietsIncl': 'Radreise inklusive',
   'trip.multipleHotels': 'Mehrere Hotels',

@@ -8,17 +8,13 @@ import { hotel, rooms as roomsData, dealName } from '~/data/mht-checkout/deal'
 import { CHECKOUT_BOOKING_FEE } from '~/data/mht-checkout/pricing'
 import { useStickyFit } from '~/composables-multi-hotel-trip/useStickyFit'
 import { useMultiHotelTripCheckoutTrip } from '~/composables-multi-hotel-trip/useMultiHotelTripCheckoutTrip'
-import { useMultiHotelTripPriceVariant } from '~/composables-multi-hotel-trip/useMultiHotelTripPriceVariant'
 
 // Vakantie (meerdere hotels) of gewone hotel-deal? Bepaalt de room table
-// (arrangementen-cluster met hotel-carrousel) en de teksten in de kassabon.
+// (cluster met hotel-carrousel, keuze in personen) en de teksten in de kassabon.
 const { trip: checkoutTrip } = useMultiHotelTripCheckoutTrip()
-// Prijsweergave-variant (homepage-schakelaar): in de kassabon dan "Autovakantie 8 personen" i.p.v. "4x Autovakantie".
-const { perPerson: pricePerPerson } = useMultiHotelTripPriceVariant()
 const tripPopupOpen = ref(false)
 const nights = computed(() => checkoutTrip.value?.nights ?? 2)
 function unit(n: number) {
-  if (checkoutTrip.value) return n === 1 ? 'arrangement' : 'arrangementen'
   return n === 1 ? 'kamer' : 'kamers'
 }
 
@@ -147,14 +143,11 @@ useHead({ title: computed(() => (checkoutTrip.value ? 'Kies je opties — ViaLux
               <div class="side__details">
                 <p class="t-body t-bold">Details</p>
                 <div v-for="row in tableSelection" :key="`${row.baseId}-${row.rateKey}`" class="side__row side__row--room">
-                  <!-- Vakantie: "Nx" alleen bij meer dan één kamer per hotel (meer dan 2 personen);
-                       dan ook een regel "4 personen" onder "3 hotels, 2 kamers, 6 nachten". -->
-                  <!-- Prijs-p.p.-variant: geen "Nx" maar "Autovakantie 8 personen" als titel. -->
-                  <span v-if="!checkoutTrip || (row.quantity > 1 && !pricePerPerson)" class="side__qty">{{ row.quantity }}x</span>
+                  <!-- Vakantie: geen "Nx" en geen kamers — "3 hotels, 6 nachten, 2 personen". -->
+                  <span v-if="!checkoutTrip" class="side__qty">{{ row.quantity }}x</span>
                   <div class="side__rowmain">
-                    <p class="t-body t-bold">{{ checkoutTrip ? (pricePerPerson ? `${checkoutTrip.typeLabel} ${row.quantity * 2} personen` : checkoutTrip.typeLabel) : 'Arrangement' }}</p>
-                    <p class="t-caption c-mgrey">{{ checkoutTrip ? `${checkoutTrip.hotels.length} hotels, ${row.quantity} ${row.quantity === 1 ? 'kamer' : 'kamers'}, ${nights} nachten` : `${row.quantity}x ${roomNameFor(row.baseId)}` }}</p>
-                    <p v-if="checkoutTrip && row.quantity > 1 && !pricePerPerson" class="t-caption c-mgrey">{{ row.quantity * 2 }} personen</p>
+                    <p class="t-body t-bold">{{ checkoutTrip ? checkoutTrip.typeLabel : 'Arrangement' }}</p>
+                    <p class="t-caption c-mgrey">{{ checkoutTrip ? `${checkoutTrip.hotels.length} hotels, ${nights} nachten, ${row.quantity * 2} personen` : `${row.quantity}x ${roomNameFor(row.baseId)}` }}</p>
                     <p v-if="row.rateKey === 'flexible'" class="t-caption c-green">Flexibel annuleren</p>
                     <p v-else class="t-caption c-grey">Niet-terugbetaalbaar</p>
                   </div>
@@ -176,7 +169,7 @@ useHead({ title: computed(() => (checkoutTrip.value ? 'Kies je opties — ViaLux
                     <MultiHotelTripCheckoutPriceTag :value="totalPrice" size="lg" bold color="var(--c-via-green)" />
                   </div>
                 </div>
-                <p class="t-caption c-mgrey">{{ checkoutTrip ? `${roomsSel} ${unit(roomsSel)} voor ${nights} nachten voor ${roomsSel * 2} personen` : `${roomsSel} ${unit(roomsSel)}, ${nights} nachten, ${roomsSel * 2} personen` }}</p>
+                <p class="t-caption c-mgrey">{{ checkoutTrip ? `${checkoutTrip.hotels.length} hotels, ${nights} nachten, ${roomsSel * 2} personen` : `${roomsSel} ${unit(roomsSel)}, ${nights} nachten, ${roomsSel * 2} personen` }}</p>
               </div>
 
               <p class="side__saved">
@@ -189,8 +182,8 @@ useHead({ title: computed(() => (checkoutTrip.value ? 'Kies je opties — ViaLux
 
               <p class="side__smallprint">
                 Je dient ter plaatse alleen de lokale belastingen, eventuele
-                service-/administratiekosten van het hotel en parkeerkosten te betalen
-                (indien dit niet is inbegrepen in het arrangement).
+                service-/administratiekosten van {{ checkoutTrip ? 'de hotels' : 'het hotel' }} en parkeerkosten te betalen
+                (indien dit niet is inbegrepen in {{ checkoutTrip ? `de ${checkoutTrip.typeWord}` : 'het arrangement' }}).
               </p>
             </template>
 

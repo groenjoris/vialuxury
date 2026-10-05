@@ -245,6 +245,7 @@ const nl: Record<string, string> = {
   'trip.auto': 'Autovakantie',
   'trip.fiets': 'Fietsvakantie',
   'trip.withThisHotel': 'Vakanties met dit hotel',
+  'trip.disclaimer': 'Je dient ter plaatse alleen de lokale belastingen, eventuele service-/administratiekosten van de hotels en parkeerkosten te betalen (indien dit niet is inbegrepen in de vakantie).',
   // Dealcard: label boven de inclusies
   'trip.autoIncl': 'Autovakantie inclusief',
   'trip.fietsIncl': 'Fietsvakantie inclusief',

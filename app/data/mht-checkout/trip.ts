@@ -1,6 +1,6 @@
-// Multi Hotel Trip checkout — vakantie (meerdere hotels) als boekbaar
-// "arrangement": één cluster van kamers (één per hotel) met één prijs voor de
-// hele reis. Gebouwd uit de reisdata (mht-trips.ts) en de redactionele
+// Multi Hotel Trip checkout — vakantie (meerdere hotels) als boekbare reis:
+// één cluster van kamers (één per hotel) met één prijs voor de hele reis; de
+// gast kiest het aantal personen (2 per kamer). Gebouwd uit de reisdata (mht-trips.ts) en de redactionele
 // hotelinfo (mht-trip-itineraries.ts) via tripPdpBySlug/tripHotelDetails.
 import { tripPdpBySlug, tripHotelDetails } from '~/data/mht-trip-pdp'
 import type { Facility } from '~/data/mht-checkout/deal'
@@ -56,13 +56,13 @@ export interface TripCheckout {
   typeLabel: string
   typeWord: string
   nights: number
-  /** Prijs van het hele arrangement (alle hotels, 2 personen). */
+  /** Prijs van de hele vakantie (alle hotels, 2 personen). */
   price: number
   priceWas: number
   thumb: string
   includes: string[]
   hotels: TripCheckoutHotel[]
-  /** Schaarste van het arrangement (demo), bv. "Nog 2 beschikbaar" — in de kolom "Je opties". */
+  /** Schaarste van de vakantie (demo), bv. "Nog 2 beschikbaar" — in de kolom "Je opties". */
   scarcity?: string
 }
 

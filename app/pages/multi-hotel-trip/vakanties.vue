@@ -11,4 +11,7 @@
 
 <script setup lang="ts">
 import MultiHotelTripSearchResultsPage from './search.vue'
+
+// Eigen tabtitel: de standaardtitel ("Luxe Hotel Arrangementen") past niet bij vakanties.
+useHead({ title: 'Vakanties met meerdere hotels — ViaLuxury' })
 </script>

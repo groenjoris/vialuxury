@@ -30,9 +30,10 @@ const props = withDefaults(defineProps<{
   // Extra CTA-knop onder de tabel (rechts uitgelijnd). Blijft actief; bij
   // een lege selectie kleurt de keuze-kolom licht rood + een toast erbij.
   bottomCta?: boolean
-  // Vakantie (meerdere hotels): één "arrangement" = een cluster van kamers,
+  // Vakantie (meerdere hotels): één boekbare reis = een cluster van kamers,
   // één per hotel, met één prijs voor de hele reis. De kamertype-kolom wordt
-  // een hotel-carrousel; de teksten spreken van arrangementen i.p.v. kamers.
+  // een hotel-carrousel; de gast kiest het aantal personen (2 per kamer), niet
+  // het aantal kamers.
   trip?: TripCheckout | null
 }>(), {
   showReserve: true,
@@ -45,9 +46,8 @@ const props = withDefaults(defineProps<{
 })
 const trip = computed(() => props.trip ?? null)
 const nights = computed(() => trip.value?.nights ?? CHECKOUT_NIGHTS)
-/** Eenheid in de teksten: "kamer(s)" voor een hotel-deal, "arrangement(en)" voor een vakantie. */
+/** Eenheid in de teksten van een hotel-deal: "kamer(s)". Een vakantie telt in personen. */
 function unit(n: number) {
-  if (trip.value) return n === 1 ? 'arrangement' : 'arrangementen'
   return n === 1 ? 'kamer' : 'kamers'
 }
 
@@ -405,7 +405,7 @@ const arrangementIncludes = trip.value ? trip.value.includes : [
             </span>
           </th>
           <th class="rt__th rt__th--options">Je opties</th>
-          <th class="rt__th rt__th--select">Kies aantal kamers</th>
+          <th class="rt__th rt__th--select">{{ trip ? 'Kies aantal personen' : 'Kies aantal kamers' }}</th>
           <th v-if="showReserve" class="rt__th rt__th--reserve" />
         </tr>
       </thead>
@@ -538,7 +538,7 @@ const arrangementIncludes = trip.value ? trip.value.includes : [
               <p class="rt__optsub">tot 3 mei 23:59</p>
               <p class="rt__optsub rt__optsub--flush rt__optsub--icon">
                 <svg class="rt__check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" /></svg>
-                Volledige terugbetaling van arrangementsprijs
+                Volledige terugbetaling van {{ trip ? 'vakantieprijs' : 'arrangementsprijs' }}
               </p>
               <span class="rt__rec">Aanbevolen</span>
             </template>
@@ -562,24 +562,25 @@ const arrangementIncludes = trip.value ? trip.value.includes : [
                wordt de dropdown inactief; klikken opent dan de keuze-popup. -->
           <td class="rt__td rt__select" :class="{ 'rt__select--invalid': selectInvalid }">
             <!-- De opties in het menu noemen altijd het aantal personen; het gesloten veld toont na
-                 een keuze alleen "x kamers" (overlay-label, de eigen tekst van de select is dan transparant). -->
+                 een keuze alleen "x kamers" (overlay-label, de eigen tekst van de select is dan transparant).
+                 Vakantie: de waarde blijft het aantal kamers per hotel, maar menu en veld tonen alleen
+                 personen (0, 2, 4 … 10). -->
             <div class="rt__dropdownwrap">
               <select
                 class="rt__dropdown"
                 :class="{ 'rt__dropdown--inactive': isInactive(row), 'rt__dropdown--masked': row.quantity > 0 }"
                 :value="row.quantity"
-                :aria-label="trip ? 'Aantal kamers' : `Aantal kamers ${room.name}`"
+                :aria-label="trip ? 'Aantal personen' : `Aantal kamers ${room.name}`"
                 @mousedown="onDropdownMousedown(row, $event)"
                 @keydown="onDropdownMousedown(row, $event)"
                 @change="row.quantity = Number(($event.target as HTMLSelectElement).value)"
               >
-                <option :value="0">0 kamers</option>
-                <!-- Vakantie: aantal kamers per hotel (elk arrangement = 1 kamer per hotel) -->
-                <option v-for="n in 5" :key="n" :value="n">{{ trip ? `${n} ${n === 1 ? 'kamer' : 'kamers'}, ${n * 2} personen` : `${n} ${n === 1 ? 'kamer' : 'kamers'} / ${n * 2} personen` }}</option>
+                <option :value="0">{{ trip ? '0 personen' : '0 kamers' }}</option>
+                <option v-for="n in 5" :key="n" :value="n">{{ trip ? `${n * 2} personen` : `${n} ${n === 1 ? 'kamer' : 'kamers'} / ${n * 2} personen` }}</option>
               </select>
-              <span v-if="row.quantity > 0" class="rt__dropdown-face" :class="{ 'rt__dropdown-face--inactive': isInactive(row) }" aria-hidden="true">{{ row.quantity }} {{ row.quantity === 1 ? 'kamer' : 'kamers' }}</span>
+              <span v-if="row.quantity > 0" class="rt__dropdown-face" :class="{ 'rt__dropdown-face--inactive': isInactive(row) }" aria-hidden="true">{{ trip ? `${row.quantity * 2} personen` : `${row.quantity} ${row.quantity === 1 ? 'kamer' : 'kamers'}` }}</span>
             </div>
-            <p v-if="row.quantity > 0" class="rt__max">
+            <p v-if="row.quantity > 0 && !trip" class="rt__max">
               {{ `(max.) ${row.quantity * 2} personen` }}
             </p>
           </td>
@@ -597,10 +598,10 @@ const arrangementIncludes = trip.value ? trip.value.includes : [
               <div class="rt__details">
                 <p class="t-body t-bold">Details</p>
                 <div v-for="row in selectedRows" :key="row.id" class="rt__drow rt__drow--room">
-                  <span class="rt__dqty t-body">{{ row.quantity }}x</span>
+                  <span v-if="!trip" class="rt__dqty t-body">{{ row.quantity }}x</span>
                   <div class="rt__dmain">
                     <p class="t-body t-bold">{{ trip ? trip.typeLabel : 'Arrangement' }}</p>
-                    <p class="t-caption c-mgrey">{{ trip ? `${trip.hotels.length} hotels, ${row.quantity} ${row.quantity === 1 ? 'kamer' : 'kamers'}, ${nights} nachten` : `${row.quantity}x ${roomNameFor(row.baseId)}` }}</p>
+                    <p class="t-caption c-mgrey">{{ trip ? `${trip.hotels.length} hotels, ${nights} nachten, ${row.quantity * 2} personen` : `${row.quantity}x ${roomNameFor(row.baseId)}` }}</p>
                     <p v-if="row.rateKey === 'flexible'" class="t-caption c-green">Flexibel annuleren</p>
                   </div>
                   <MultiHotelTripCheckoutPriceTag :value="row.quantity * rowPrice(row)" :show-cents="false" size="sm" />
@@ -621,7 +622,7 @@ const arrangementIncludes = trip.value ? trip.value.includes : [
                     <MultiHotelTripCheckoutPriceTag :value="displayTotal" size="lg" bold color="var(--c-via-green)" />
                   </div>
                 </div>
-                <p class="t-caption c-mgrey">{{ trip ? `${totalRooms} ${unit(totalRooms)} voor ${nights} nachten` : `${totalRooms} ${unit(totalRooms)}, ${nights} nachten, ${totalRooms * 2} personen` }}</p>
+                <p class="t-caption c-mgrey">{{ trip ? `${trip.hotels.length} hotels, ${nights} nachten, ${totalPeople} personen` : `${totalRooms} ${unit(totalRooms)}, ${nights} nachten, ${totalRooms * 2} personen` }}</p>
               </div>
 
               <p class="rt__saved">
@@ -633,14 +634,14 @@ const arrangementIncludes = trip.value ? trip.value.includes : [
               </p>
               <p class="rt__smallprint">
                 Je dient ter plaatse alleen de lokale belastingen, eventuele
-                service-/administratiekosten van het hotel en parkeerkosten te betalen
-                (indien dit niet is inbegrepen in het arrangement).
+                service-/administratiekosten van {{ trip ? 'de hotels' : 'het hotel' }} en parkeerkosten te betalen
+                (indien dit niet is inbegrepen in {{ trip ? `de ${trip.typeWord}` : 'het arrangement' }}).
               </p>
             </div>
 
             <button class="btn-primary rt__book" type="button" @click="onBook">Ik ga boeken</button>
 
-            <!-- 1e: arrangement-includes staan er vanaf het begin -->
+            <!-- 1e: de includes staan er vanaf het begin -->
             <div v-if="hybrid || totalRooms > 0" class="rt__includes">
               <p class="t-body t-bold">{{ trip ? `Jouw ${trip.typeWord} bevat` : totalRooms > 1 ? 'Elk arrangement bevat' : 'Jouw arrangement bevat' }}</p>
               <p v-for="item in arrangementIncludes" :key="item" class="rt__inc t-body">
@@ -658,7 +659,7 @@ const arrangementIncludes = trip.value ? trip.value.includes : [
 
     <!-- Toast die naar de keuze-kolom wijst bij een lege selectie -->
     <div v-if="bottomCta && selectInvalid" class="rt__toast" role="alert">
-      Kies één of meerdere kamers
+      {{ trip ? 'Kies het aantal personen' : 'Kies één of meerdere kamers' }}
     </div>
     </div>
 
@@ -816,6 +817,9 @@ const arrangementIncludes = trip.value ? trip.value.includes : [
 /* Breed genoeg zodat "2 nachten (i)" mét marge binnen de kolom past */
 .rt__th--price { width: 112px; }
 .rt__th--select { width: 19%; }
+/* Vakantie: "10 personen" moet in het gesloten keuzeveld passen — 3% van de hotelkolom erbij. */
+.rt-wrap--trip .rt__th--type { width: 33%; }
+.rt-wrap--trip .rt__th--select { width: 22%; }
 /* Rechterkolom: groene headercel (band loopt door), daaronder één
    doorlopend grijs paneel zonder dividers. */
 .rt__th--reserve {

@@ -179,7 +179,7 @@
                 <p class="sidebar__extra-costs-line">{{ t('deal.extraCostsKurtaxe') }}</p>
                 <p class="sidebar__extra-costs-line">{{ t('deal.extraCostsVerwaltung') }}</p>
               </div>
-              <p v-else class="sidebar__disclaimer">{{ t('deal.disclaimer') }}</p>
+              <p v-else class="sidebar__disclaimer">{{ t(isTrip ? 'trip.disclaimer' : 'deal.disclaimer') }}</p>
               <button class="btn btn-primary sidebar__book" @click="goToCheckout">{{ t('deal.bookNow') }}</button>
               <MultiHotelTripSidebarPaymentLogos />
             </div>
@@ -805,7 +805,7 @@
               <p class="sidebar__extra-costs-line">{{ t('deal.extraCostsKurtaxe') }}</p>
               <p class="sidebar__extra-costs-line">{{ t('deal.extraCostsVerwaltung') }}</p>
             </div>
-            <p v-else class="sidebar__disclaimer">{{ t('deal.disclaimer') }}</p>
+            <p v-else class="sidebar__disclaimer">{{ t(isTrip ? 'trip.disclaimer' : 'deal.disclaimer') }}</p>
 
             <button class="btn btn-primary sidebar__book" @click="goToCheckout">{{ t('deal.bookNow') }}</button>
             <MultiHotelTripSidebarPaymentLogos />
