@@ -12,7 +12,9 @@
 import { tripPdpBySlug } from '~/data/mhtj-trip-pdp'
 import { tripDetailBySlug } from '~/data/mhtj-trips'
 import {
-  addOsmTiles,
+  PLAIN_COLORS,
+  addPlainBase,
+  addProvinceHighlight,
   addCountryBorders,
   addTripRoute,
   addTripHotels,
@@ -70,8 +72,11 @@ async function build() {
   if (!el) return
   const L = (await import('leaflet')).default
   map?.remove()
-  map = L.map(el, { zoomControl: true, attributionControl: true, scrollWheelZoom: true })
-  addOsmTiles(L, map)
+  // Geen tegellaag: de ondergrond is een vlakke tekening, zodat er geen
+  // wegen, plaatsnamen of terrein door de route heen lopen.
+  map = L.map(el, { zoomControl: true, attributionControl: false, scrollWheelZoom: true })
+  addPlainBase(L, map)
+  addProvinceHighlight(L, map, stops.value)
   addCountryBorders(L, map, 2)
   addTripRoute(L, map, stops.value, { distances: true })
   addTripHotels(L, map, stops.value, {
@@ -115,12 +120,12 @@ onBeforeUnmount(() => {
 .routekaart {
   position: fixed;
   inset: 0;
-  background: #e9e5dc;
 }
 .routekaart :deep(.leaflet-container) {
   width: 100%;
   height: 100%;
-  background: #e9e5dc;
+  /* Alles buiten de landvlakken is water. */
+  background: v-bind('PLAIN_COLORS.water');
   font-family: var(--font-body);
 }
 </style>
