@@ -25,6 +25,15 @@ SRC = os.path.join(ROOT, 'app/data/mht-trips.ts')
 OUT = os.path.join(ROOT, 'app/data/mht-trip-routes.json')
 BASE = 'https://routing.openstreetmap.de/routed-{profile}/route/v1/driving/'
 
+# Tussenpunten per etappe (trip-id → index van het doelhotel → [(lat, lng), …]) voor
+# etappes waarvan de snelste route over een eerdere etappe terugloopt, zodat de kaart
+# duidelijk 1 → 2 → 3 toont.
+VIA = {
+    # Opaalkust: Cléry → Béthune zou via de A26 langs Tilques (hotel 1) terugrijden;
+    # binnendoor via Thérouanne.
+    'trip-noord-frankrijk': {2: [(50.6366, 2.2586)]},
+}
+
 def parse_trips(ts: str):
     """Grof maar afdoende: per `id: 'trip-…'` het type en de lat/lng-paren tot de volgende id."""
     trips = []
@@ -59,8 +68,9 @@ def simplify(pts, tol):
             stack.append((i, k)); stack.append((k, j))
     return [p for p, k in zip(pts, keep) if k]
 
-def route(profile: str, a, b):
-    url = f"{BASE.format(profile=profile)}{a[1]},{a[0]};{b[1]},{b[0]}?overview=full&geometries=geojson"
+def route(profile: str, a, b, via=()):
+    pts = ';'.join(f"{p[1]},{p[0]}" for p in (a, *via, b))
+    url = f"{BASE.format(profile=profile)}{pts}?overview=full&geometries=geojson"
     # Via curl: de Python van de Xcode Command Line Tools (LibreSSL) krijgt op
     # deze server een TLS-handshakefout; curl niet.
     raw = subprocess.run(['curl', '-sS', '--max-time', '40', '-A', 'vialuxury-prototype/1.0 (build-trip-routes)', url],
@@ -85,7 +95,7 @@ def main():
         profile = 'bike' if t['type'] == 'fiets' else 'car'
         legs = []
         for i in range(1, len(t['stops'])):
-            leg = route(profile, t['stops'][i - 1], t['stops'][i])
+            leg = route(profile, t['stops'][i - 1], t['stops'][i], VIA.get(t['id'], {}).get(i, ()))
             legs.append({'from': i - 1, 'to': i, **leg})
             print(f"{t['id']} etappe {i}: {leg['km']} km, {leg['minutes']} min, {len(leg['coords'])} punten ({profile})")
             time.sleep(0.5)

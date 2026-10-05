@@ -387,14 +387,14 @@ const legPaths = computed(() => props.legs
     dashed: !!l.return,
   })))
 
-/** Punt halverwege een (geprojecteerde) lijn, gemeten langs de lijn. */
-function midpointAlong(pts: [number, number][]): [number, number] {
+/** Punt op een fractie (standaard halverwege) van een (geprojecteerde) lijn, gemeten langs de lijn. */
+function midpointAlong(pts: [number, number][], frac = 0.5): [number, number] {
   let total = 0
   const seg = pts.slice(1).map((p, i) => { const d = Math.hypot(p[0] - pts[i]![0], p[1] - pts[i]![1]); total += d; return d })
   let acc = 0
   for (let i = 0; i < seg.length; i++) {
-    if (acc + seg[i]! >= total / 2) {
-      const f = seg[i]! ? (total / 2 - acc) / seg[i]! : 0
+    if (acc + seg[i]! >= total * frac) {
+      const f = seg[i]! ? (total * frac - acc) / seg[i]! : 0
       const a = pts[i]!, b = pts[i + 1]!
       return [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f]
     }
@@ -402,6 +402,20 @@ function midpointAlong(pts: [number, number][]): [number, number] {
   }
   return pts[pts.length - 1] ?? [0, 0]
 }
+
+type Box = { x0: number; y0: number; x1: number; y1: number }
+const overlaps = (a: Box, b: Box) => a.x0 < b.x1 && b.x0 < a.x1 && a.y0 < b.y1 && b.y0 < a.y1
+/** Markers en plaatsnamen als vlakken waar een etappelabel niet overheen mag. */
+const stopBoxes = computed<Box[]>(() => markers.value.flatMap((m, i) => {
+  const r = props.markerRadius
+  const tw = (props.stops[i]?.label?.length ?? 0) * props.labelSize * 0.58
+  const th = props.labelSize * 0.75
+  const lx0 = m.labelAnchor === 'start' ? m.labelX : m.labelX - tw
+  return [{ x0: m.x - r, y0: m.y - r, x1: m.x + r, y1: m.y + r }, { x0: lx0, y0: m.y - th, x1: lx0 + tw, y1: m.y + th }]
+}))
+/** Halverwege de etappe, tenzij het label dan over een marker, plaatsnaam of ander label valt:
+ *  dan schuift het langs de route op (60 %, 40 %, 70 % …) naar de eerste vrije plek. */
+const LABEL_FRACS = [0.5, 0.6, 0.4, 0.7, 0.3, 0.8, 0.2]
 
 /** Reistijdlabels halverwege elke etappe (langs de echte route of de rechte lijn). */
 const legLabelPos = computed(() => {
@@ -413,9 +427,17 @@ const legLabelPos = computed(() => {
     const pts: [number, number][] = leg && leg.coords.length > 1
       ? leg.coords.map(([lat, lng]) => project(lng, lat))
       : [project(props.stops[i - 1]!.lng, props.stops[i - 1]!.lat), project(props.stops[i]!.lng, props.stops[i]!.lat)]
-    const [x, y] = midpointAlong(pts)
     const h = props.legLabelSize * 1.7
-    out.push({ i, x: Number(x.toFixed(1)), y: Number(y.toFixed(1)), w: text.length * props.legLabelSize * 0.6 + props.legLabelSize, h, text })
+    const w = text.length * props.legLabelSize * 0.6 + props.legLabelSize
+    // `plain`: de tekst staat iets boven de lijn (zie template) — daar meten.
+    const dy = props.legLabelStyle === 'plain' ? -props.legLabelSize * 0.9 : 0
+    const boxAt = (cx: number, cy: number): Box => ({ x0: cx - w / 2, y0: cy + dy - h / 2, x1: cx + w / 2, y1: cy + dy + h / 2 })
+    const taken = [...stopBoxes.value, ...out.map(o => boxAt(o.x, o.y))]
+    const free = LABEL_FRACS
+      .map(f => midpointAlong(pts, f))
+      .find(([cx, cy]) => !taken.some(b => overlaps(boxAt(cx, cy), b)))
+    const [x, y] = free ?? midpointAlong(pts)
+    out.push({ i, x: Number(x.toFixed(1)), y: Number(y.toFixed(1)), w, h, text })
   }
   // Terugetappe van een rondje: label halverwege de gestippelde lijn.
   const ret = props.legs.find(l => l.return && l.coords.length > 1)
