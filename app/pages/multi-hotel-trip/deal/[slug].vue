@@ -3660,23 +3660,28 @@ onMounted(() => {
     margin-top: 16px;
     margin-bottom: 8px;
   }
-  /* Vakantie: "ViaLuxury Autovakantie" onder de gallery, met het Nieuw-stickertje uit de
-     navigatie (.verticals__badge) rechtsboven het soort vakantie. */
-  .deal-page__trip-brand-mobile { margin-top: 24px; }
+  /* Vakantie: "ViaLuxury Autovakantie" als zwarte banner direct onder de (randloze) gallery, met het
+     Nieuw-stickertje uit de navigatie (.verticals__badge) rechtsboven het soort vakantie. */
+  .deal-page__trip-brand-mobile {
+    margin-top: 0;
+    padding-top: 18px;
+    padding-bottom: 12px;
+    background: var(--color-dark);
+  }
   .deal-page__trip-brand {
     margin: 0;
-    padding-top: 8px;
     font-family: var(--font-heading);
-    font-size: 24px;
+    font-size: 17px;
     font-weight: 700;
     line-height: 1.25;
-    color: var(--color-text-primary);
+    color: #fff;
   }
   .deal-page__trip-brand-type { position: relative; display: inline-block; }
   .deal-page__trip-brand-badge {
     position: absolute;
-    top: -9px;
-    right: -18px;
+    /* Boven de tekstregel (raakt de letters niet), steekt rechts iets uit. */
+    top: -13px;
+    right: -20px;
     display: inline-flex;
     align-items: center;
     height: 14px;
@@ -3694,7 +3699,7 @@ onMounted(() => {
   }
   /* Routekaart direct onder de titel; daaronder een scheidingslijn (zoals tussen de andere blokken)
      naar "inbegrepen + kalender". */
-  .deal-page__mini-map-mobile--trip { margin-top: 12px; position: relative; padding-bottom: 24px; }
+  .deal-page__mini-map-mobile--trip { margin-top: 16px; position: relative; padding-bottom: 24px; }
   .deal-page__mini-map-mobile--trip::after {
     content: '';
     position: absolute;
