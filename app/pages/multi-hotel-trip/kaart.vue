@@ -282,6 +282,8 @@ function closeMap() {
 // arrived from a deal page (?focus=<slug>) so the map gets the
 // full width. The user can re-open it via the floating chip.
 const showFilter = ref(!route.query.focus)
+// Vanaf de Vakanties-zoekpagina (?fit=trips): beginweergave met alle vakantie-pins in beeld.
+const fitTo = computed<'trips' | null>(() => (route.query.fit === 'trips' ? 'trips' : null))
 
 // Sync FR nav-bar variant with the user's last homepage pick so the
 // SiteHeader on this internal page matches the chosen variant. Reads
@@ -365,6 +367,7 @@ onMounted(() => {
           ref="mapRef"
           :hotels="mapHotels"
           :initial-focus="initialFocus"
+          :fit-to="fitTo"
           :focused-hotel-id="focusedHotel?.id ?? null"
           :disable-hover="isMobile"
         />

@@ -2500,8 +2500,10 @@ onMounted(() => {
   white-space: nowrap;
 }
 /* Desktop-kop: zelfde plek als de hotelnamen bij een gewoon arrangement (onder de reisnaam,
-   boven de plaatsnamen). */
+   boven de plaatsnamen); het Nieuw-stickertje staat hier gewoon rechts naast de titel. */
 .deal-page__trip-brand--header { margin: 0; padding-top: 0; }
+.deal-page__trip-brand--header .deal-page__trip-brand-last { display: inline-flex; align-items: center; gap: 8px; }
+.deal-page__trip-brand--header .deal-page__trip-brand-badge { position: static; }
 
 @media (max-width: 800px) {
   .deal-page__breadcrumbs { padding-top: var(--space-xs); padding-bottom: 0; }

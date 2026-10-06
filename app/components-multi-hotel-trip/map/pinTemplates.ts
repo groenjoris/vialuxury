@@ -94,6 +94,21 @@ export function pinSize(state: PinState): [number, number] {
   return [32, 32]
 }
 
+/** Vakantie-pins (auto/fiets) zijn 1,5× zo groot als de arrangementenpins; de
+ *  focus-teardrop (hotel waar je vandaan kwam) blijft gelijk. De svg schaalt mee
+ *  met de iconSize (.hotel-pin-img is 100%/100%). */
+export const TRIP_PIN_SCALE = 1.5
+export function tripPinSize(state: PinState): [number, number] {
+  const [w, h] = pinSize(state)
+  if (state === 'focused' || state === 'focusedHover') return [w, h]
+  return [Math.round(w * TRIP_PIN_SCALE), Math.round(h * TRIP_PIN_SCALE)]
+}
+export function tripPinAnchor(state: PinState): [number, number] {
+  const [w, h] = tripPinSize(state)
+  if (state === 'focused' || state === 'focusedHover') return [w / 2, h]
+  return [w / 2, h / 2]
+}
+
 /** Anchor (px from top-left) so the pin's centre sits on the coordinate.
  *  Focused teardrops anchor at the TIP (bottom-centre); every other
  *  state stays centre-anchored on its icon. */

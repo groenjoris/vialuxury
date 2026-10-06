@@ -945,7 +945,8 @@ watch(() => [sharedBudgetMin.value, sharedBudgetMax.value], onFilterChange)
 const mobileFilterOpen = ref(false)
 
 function handleMapClick() {
-  navigateTo('/multi-hotel-trip/kaart')
+  // Vakanties-pagina: de kaart opent zó uitgezoomd dat alle vakanties in beeld zijn.
+  navigateTo(isTripMode.value ? '/multi-hotel-trip/kaart?fit=trips' : '/multi-hotel-trip/kaart')
 }
 
 function handleFilterButtonClick() {
