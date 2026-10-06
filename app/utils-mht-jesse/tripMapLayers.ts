@@ -316,11 +316,11 @@ function ruis(x: number, y: number, zout = 0): number {
   return n - Math.floor(n)
 }
 
-function plaatsIcoon(
-  L: L, map: Leaflet.Map, lng: number, lat: number, naam: string, size: number, label?: string,
-): void {
+function maakIcoon(
+  L: L, lng: number, lat: number, naam: string, size: number, label?: string,
+): Leaflet.Marker {
   const tekst = label ? `<span class="tml-ill__naam">${escapeHtml(label)}</span>` : ''
-  L.marker([lat, lng], {
+  return L.marker([lat, lng], {
     icon: L.divIcon({
       className: 'tml-ill',
       html: `<img src="${KAART_ICOON(naam)}" width="${size}" height="${size}" alt="">${tekst}`,
@@ -328,7 +328,19 @@ function plaatsIcoon(
       iconAnchor: [size / 2, size],
     }),
     interactive: false, keyboard: false, zIndexOffset: -300,
-  }).addTo(map)
+  })
+}
+
+/** Een kandidaat-illustratie; of hij echt getekend wordt hangt van het
+ *  zoomniveau af. */
+interface Illustratie {
+  marker: Leaflet.Marker
+  lng: number
+  lat: number
+  /** Lager = belangrijker. Plekken met een naam gaan vóór sfeericonen. */
+  prio: number
+  /** Hoeveel pixels deze illustratie om zich heen nodig heeft. */
+  ruimte: number
 }
 
 /**
@@ -388,6 +400,7 @@ export function addRouteScenery(
   }
 
   const bezet: [number, number][] = stops.map(s => [s.lng, s.lat])
+  const kandidaten: Illustratie[] = []
 
   // 1. De plekken uit het dagprogramma die langs de route liggen.
   // Plekken die vlak bij elkaar liggen zouden elkaars naam onleesbaar maken;
@@ -399,7 +412,10 @@ export function addRouteScenery(
     if (totRoute(h.lng, h.lat) > corridor) continue
     if (plekken.some(([bx, by]) => km(h.lng, h.lat, bx, by) < 9)) continue
     if (stops.some(st => km(h.lng, h.lat, st.lng, st.lat) < 6)) continue
-    plaatsIcoon(L, map, h.lng, h.lat, icoonVoor(`${h.name} ${h.text}`), 48, h.name)
+    kandidaten.push({
+      marker: maakIcoon(L, h.lng, h.lat, icoonVoor(`${h.name} ${h.text}`), 48, h.name),
+      lng: h.lng, lat: h.lat, prio: 0, ruimte: 58 + h.name.length * 3.2,
+    })
     plekken.push([h.lng, h.lat])
     bezet.push([h.lng, h.lat])
   }
@@ -421,11 +437,66 @@ export function addRouteScenery(
       if (d < 5 || d > corridor) continue
       if (bezet.some(([bx, by]) => km(jx, jy, bx, by) < 9)) continue
       const naam = SFEER_ICONEN[Math.floor(ruis(x, y, 3) * SFEER_ICONEN.length)]!
-      plaatsIcoon(L, map, jx, jy, naam, 28 + Math.round(ruis(x, y, 4) * 10))
+      const size = 28 + Math.round(ruis(x, y, 4) * 10)
+      kandidaten.push({ marker: maakIcoon(L, jx, jy, naam, size), lng: jx, lat: jy, prio: 1, ruimte: size + 26 })
       bezet.push([jx, jy])
       geplaatst++
     }
   }
+
+  // 3. Wie er te zien is, hangt van het zoomniveau af.
+  //
+  // Uitgezoomd kruipen de illustraties op het scherm naar elkaar toe en
+  // gaan ze over de route heen liggen, ook al staan ze in kilometers ruim
+  // uit elkaar. Daarom toetsen we in pixels en niet in kilometers: bij elke
+  // zoomstap houden we de belangrijkste over en laten we de rest weg.
+  // Ingezoomd komt er vanzelf weer ruimte en verschijnen ze terug.
+  const laag = L.layerGroup().addTo(map)
+  const volgorde = [...kandidaten].sort((a, b) => a.prio - b.prio)
+
+  const kies = () => {
+    // De aanroeper zet het beeld (fitBounds) pas ná deze functie; zolang de
+    // kaart nog geen middelpunt heeft kan Leaflet niet naar pixels rekenen.
+    // getZoom() klaagt daar niet over, getCenter() wel — en dat is precies
+    // de controle die Leaflet zelf ook doet. De 'zoom'-gebeurtenis vangt die
+    // eerste keer op.
+    try {
+      map.getCenter()
+    } catch {
+      return
+    }
+    laag.clearLayers()
+    const punt = (lng: number, lat: number) => map.latLngToLayerPoint([lat, lng])
+    const routePunten = stops.map(s => punt(s.lng, s.lat))
+    /** Afstand in pixels tot de getekende route. */
+    const totRoutePx = (p: Leaflet.Point) => {
+      if (routePunten.length < 2) return routePunten[0] ? p.distanceTo(routePunten[0]) : Infinity
+      let min = Infinity
+      for (let i = 1; i < routePunten.length; i++) {
+        const a = routePunten[i - 1]!, b = routePunten[i]!
+        const dx = b.x - a.x, dy = b.y - a.y
+        const len = dx * dx + dy * dy
+        let t = len ? ((p.x - a.x) * dx + (p.y - a.y) * dy) / len : 0
+        t = Math.max(0, Math.min(1, t))
+        min = Math.min(min, Math.hypot(p.x - (a.x + t * dx), p.y - (a.y + t * dy)))
+      }
+      return min
+    }
+
+    const gekozen: { p: Leaflet.Point; ruimte: number }[] = []
+    for (const k of volgorde) {
+      const p = punt(k.lng, k.lat)
+      // Niet over de route heen.
+      if (totRoutePx(p) < 46) continue
+      // Niet over een andere illustratie heen.
+      if (gekozen.some(g => p.distanceTo(g.p) < Math.max(k.ruimte, g.ruimte))) continue
+      gekozen.push({ p, ruimte: k.ruimte })
+      laag.addLayer(k.marker)
+    }
+  }
+
+  kies()
+  map.on('zoom zoomend load', kies)
 }
 
 function icoonVoor(tekst: string): string {
