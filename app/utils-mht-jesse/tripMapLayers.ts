@@ -282,6 +282,157 @@ export function addProvinceOverlay(
   return ids
 }
 
+// ── Illustraties langs de route ─────────────────────────────────────────────
+
+const KAART_ICOON = (naam: string) => `/icons/mhtj-kaart/${naam}.svg`
+
+/** Welk icoon past bij een plek langs de route? Op trefwoord in naam en
+ *  tekst, eerste treffer wint; wat nergens op past wordt een gebouw. */
+const PLEK_ICONEN: [RegExp, string][] = [
+  [/kaste+l|château|chateau|burcht|slot/i, 'kasteel'],
+  [/landgoed|estate|havezate|buitenplaats/i, 'landhuis'],
+  [/molen|mill/i, 'molen'],
+  [/kerk|kathedraal|abdij|klooster|belfort|church/i, 'kerk'],
+  [/museum/i, 'museum'],
+  [/veer|pont|haven|boot|rivier|ferry|ijssel|meer\b/i, 'boot'],
+  [/uitkijktoren|toren|heuvelrug|berg|duin|tower|hill/i, 'toren'],
+  [/brug|bridge/i, 'brug'],
+  [/fiets|cycl/i, 'fiets'],
+  [/boerderij|hoeve|farm/i, 'boerderij'],
+  [/wild|hert|safari|dieren/i, 'hert'],
+  [/bos|natuur|park|heide|nature/i, 'boom'],
+]
+
+/** Sfeericonen: wat je onderweg in het landschap tegenkomt. Bomen en
+ *  struiken staan er vaker in; de rest is accent. */
+const SFEER_ICONEN = [
+  'boom', 'boom', 'boom', 'struik', 'struik', 'cipres', 'gras', 'gras',
+  'koe', 'konijn', 'hert', 'akker', 'bank', 'picknick', 'wegwijzer', 'boerderij',
+]
+
+/** Herhaalbare pseudo-toevalswaarde: dezelfde route geeft dezelfde tekening. */
+function ruis(x: number, y: number, zout = 0): number {
+  const n = Math.sin(x * 127.1 + y * 311.7 + zout * 74.7) * 43758.5453
+  return n - Math.floor(n)
+}
+
+function plaatsIcoon(
+  L: L, map: Leaflet.Map, lng: number, lat: number, naam: string, size: number, label?: string,
+): void {
+  const tekst = label ? `<span class="tml-ill__naam">${escapeHtml(label)}</span>` : ''
+  L.marker([lat, lng], {
+    icon: L.divIcon({
+      className: 'tml-ill',
+      html: `<img src="${KAART_ICOON(naam)}" width="${size}" height="${size}" alt="">${tekst}`,
+      iconSize: [size, size],
+      iconAnchor: [size / 2, size],
+    }),
+    interactive: false, keyboard: false, zIndexOffset: -300,
+  }).addTo(map)
+}
+
+/**
+ * Illustraties langs de route: de plekken uit het dagprogramma die in de
+ * buurt van de route liggen, met hun naam eronder, en daartussen een handvol
+ * sfeericonen.
+ *
+ * Bewust zuinig. De kaart moet over de route gaan, dus alles blijft binnen
+ * een strook langs de route, houdt afstand tot de lijn zelf en tot de
+ * hotels, en het aantal sfeericonen is gemaximeerd — anders wordt het een
+ * kluwen waarin je de route kwijtraakt.
+ *
+ * Raakt de route en de hotelmarkers niet aan: die worden elders getekend.
+ */
+export function addRouteScenery(
+  L: L,
+  map: Leaflet.Map,
+  opts: {
+    stops: TripMapStop[]
+    highlights?: TripMapHighlight[]
+    /** Alleen binnen deze provincies tekenen; leeg = overal. */
+    provinces?: string[]
+    /** Breedte van de strook naast de route, in km. */
+    corridorKm?: number
+    /** Hoeveel sfeericonen maximaal. */
+    maxSfeer?: number
+  },
+): void {
+  const { stops } = opts
+  if (stops.length < 1) return
+  const corridor = opts.corridorKm ?? 18
+  const maxSfeer = opts.maxSfeer ?? 10
+
+  const rings = opts.provinces?.length
+    ? MAP.units.filter(u => opts.provinces!.includes(u.id)).flatMap(u => u.rings)
+    : []
+  const inProvincie = (x: number, y: number) => !rings.length || rings.some(r => pointInRing(x, y, r))
+
+  const km = (ax: number, ay: number, bx: number, by: number) =>
+    Math.hypot((bx - ax) * 0.61, by - ay) * 111
+
+  const legs: [number, number, number, number][] = []
+  stops.forEach((s, i) => {
+    const n = stops[i + 1]
+    if (n) legs.push([s.lng, s.lat, n.lng, n.lat])
+  })
+  /** Afstand tot de routelijn; zonder etappes tot het enige hotel. */
+  const totRoute = (x: number, y: number) => {
+    if (!legs.length) return km(x, y, stops[0]!.lng, stops[0]!.lat)
+    return Math.min(...legs.map(([ax, ay, bx, by]) => {
+      const dx = bx - ax, dy = by - ay
+      const len = dx * dx + dy * dy
+      let t = len ? ((x - ax) * dx + (y - ay) * dy) / len : 0
+      t = Math.max(0, Math.min(1, t))
+      return km(x, y, ax + t * dx, ay + t * dy)
+    }))
+  }
+
+  const bezet: [number, number][] = stops.map(s => [s.lng, s.lat])
+
+  // 1. De plekken uit het dagprogramma die langs de route liggen.
+  // Plekken die vlak bij elkaar liggen zouden elkaars naam onleesbaar maken;
+  // dan houden we er één. Een hotelmarker is kleiner dan zo'n illustratie,
+  // dus daar hoeft minder ruimte tussen te zitten.
+  const plekken: [number, number][] = []
+  for (const h of opts.highlights ?? []) {
+    if (!inProvincie(h.lng, h.lat)) continue
+    if (totRoute(h.lng, h.lat) > corridor) continue
+    if (plekken.some(([bx, by]) => km(h.lng, h.lat, bx, by) < 9)) continue
+    if (stops.some(st => km(h.lng, h.lat, st.lng, st.lat) < 6)) continue
+    plaatsIcoon(L, map, h.lng, h.lat, icoonVoor(`${h.name} ${h.text}`), 48, h.name)
+    plekken.push([h.lng, h.lat])
+    bezet.push([h.lng, h.lat])
+  }
+
+  // 2. Sfeericonen in de ruimte die overblijft, op een raster met speling.
+  const xs = stops.map(s => s.lng), ys = stops.map(s => s.lat)
+  const marge = corridor / 90
+  const x0 = Math.min(...xs) - marge, x1 = Math.max(...xs) + marge
+  const y0 = Math.min(...ys) - marge, y1 = Math.max(...ys) + marge
+  const stap = Math.max((x1 - x0) / 9, 0.05)
+  let geplaatst = 0
+  for (let x = x0; x <= x1 && geplaatst < maxSfeer; x += stap) {
+    for (let y = y0; y <= y1 && geplaatst < maxSfeer; y += stap * 0.62) {
+      const jx = x + (ruis(x, y, 1) - 0.5) * stap * 0.8
+      const jy = y + (ruis(x, y, 2) - 0.5) * stap * 0.5
+      if (!inProvincie(jx, jy)) continue
+      const d = totRoute(jx, jy)
+      // Niet op de lijn en niet buiten de strook.
+      if (d < 5 || d > corridor) continue
+      if (bezet.some(([bx, by]) => km(jx, jy, bx, by) < 9)) continue
+      const naam = SFEER_ICONEN[Math.floor(ruis(x, y, 3) * SFEER_ICONEN.length)]!
+      plaatsIcoon(L, map, jx, jy, naam, 28 + Math.round(ruis(x, y, 4) * 10))
+      bezet.push([jx, jy])
+      geplaatst++
+    }
+  }
+}
+
+function icoonVoor(tekst: string): string {
+  for (const [re, naam] of PLEK_ICONEN) if (re.test(tekst)) return naam
+  return 'museum'
+}
+
 /** Standaard OpenStreetMap-tegels (de CARTO-basemaps vragen een API-key). */
 export function addOsmTiles(L: L, map: Leaflet.Map, attribution = true): void {
   L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {

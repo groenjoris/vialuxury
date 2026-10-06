@@ -96,3 +96,22 @@
   line-height: 1.45;
   color: var(--color-text-secondary, #555);
 }
+
+/* ── Illustraties langs de route (pages/mht-jesse/routekaart.vue) ──────────
+   Leaflet maakt deze elementen zelf aan, dus de stijl kan niet scoped in de
+   pagina staan. */
+.tml-ill {
+  pointer-events: none;
+  text-align: center;
+}
+.tml-ill img { display: block; margin: 0 auto; }
+.tml-ill__naam {
+  display: block;
+  margin-top: 3px;
+  font-family: 'Recoleta', Georgia, serif;
+  font-weight: 700;
+  font-size: 15px;
+  line-height: 1.1;
+  color: #111;
+  white-space: nowrap;
+}

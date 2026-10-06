@@ -14,9 +14,9 @@ import { tripDetailBySlug } from '~/data/mhtj-trips'
 import {
   PLAIN_COLORS,
   addPlainBase,
+  addRouteScenery,
   addTripRoute,
   addTripHotels,
-  addTripHighlights,
   hoverCardHtml,
 } from '~/utils-mht-jesse/tripMapLayers'
 
@@ -74,7 +74,9 @@ async function build() {
   // het land, de provincie van de reis in het groen, en de contouren in het
   // detail dat de vormen toelaten.
   map = L.map(el, { zoomControl: true, attributionControl: false, scrollWheelZoom: true })
-  addPlainBase(L, map, { highlightStops: stops.value })
+  const lit = addPlainBase(L, map, { highlightStops: stops.value })
+  // Illustraties eerst, zodat de route en de hotelmarkers er bovenop liggen.
+  addRouteScenery(L, map, { stops: stops.value, highlights: highlights.value, provinces: lit })
   addTripRoute(L, map, stops.value, { distances: true })
   addTripHotels(L, map, stops.value, {
     size: 30,
@@ -87,7 +89,6 @@ async function build() {
       lines: [s.label, `${s.nights ?? 0} nachten`],
     }),
   })
-  addTripHighlights(L, map, highlights.value)
 
   const all = [
     ...stops.value.map(s => [s.lat, s.lng] as [number, number]),
