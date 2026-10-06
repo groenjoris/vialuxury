@@ -410,6 +410,8 @@ useHead({ title: trip.value ? 'Kies je opties — ViaLuxury' : 'Kies je kamer �
                   </div>
                   <!-- "1 kamer, max. 2 personen" — schaalt mee met het aantal kamers (2 p.p. kamer) -->
                   <p v-if="!trip" class="mrate__max t-caption c-mgrey">{{ row.quantity }} {{ row.quantity === 1 ? 'kamer' : 'kamers' }} voor maximaal {{ row.quantity * 2 }} personen</p>
+                  <!-- Vakantie: het aantal kamers per hotel onder de personen-selector. -->
+                  <p v-else class="mrate__max t-caption c-mgrey">{{ row.quantity }} {{ row.quantity === 1 ? 'kamer' : 'kamers' }} per hotel</p>
                 </template>
               </div>
             </div>

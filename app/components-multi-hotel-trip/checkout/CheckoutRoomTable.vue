@@ -583,6 +583,8 @@ const arrangementIncludes = trip.value ? trip.value.includes : [
             <p v-if="row.quantity > 0 && !trip" class="rt__max">
               {{ `(max.) ${row.quantity * 2} personen` }}
             </p>
+            <!-- Vakantie: het aantal kamers per hotel, klein en grijs zoals de noot onder de prijs. -->
+            <p v-else-if="row.quantity > 0" class="rt__pricenote rt__pricenote--select">{{ row.quantity }} {{ row.quantity === 1 ? 'kamer' : 'kamers' }} per hotel</p>
           </td>
 
           <!-- Reserveringspaneel (één cel over de hele tabel) -->
@@ -818,9 +820,6 @@ const arrangementIncludes = trip.value ? trip.value.includes : [
 /* Breed genoeg zodat "2 nachten (i)" mét marge binnen de kolom past */
 .rt__th--price { width: 112px; }
 .rt__th--select { width: 19%; }
-/* Vakantie: "10 personen" moet in het gesloten keuzeveld passen — 3% van de hotelkolom erbij. */
-.rt-wrap--trip .rt__th--type { width: 33%; }
-.rt-wrap--trip .rt__th--select { width: 22%; }
 /* Rechterkolom: groene headercel (band loopt door), daaronder één
    doorlopend grijs paneel zonder dividers. */
 .rt__th--reserve {
@@ -1007,6 +1006,12 @@ const arrangementIncludes = trip.value ? trip.value.includes : [
   white-space: normal;
   margin-top: 2px;
 }
+/* Zelfde noot onder de personen-selector (vakantie): "2 kamers per hotel". */
+.rt__pricenote--select { margin-top: 8px; }
+/* Vakantie: dezelfde kolombreedtes als de gewone room table; "10 personen" past in het gesloten
+   keuzeveld door iets minder padding en 13px (de kolom is op 1200 px maar ±117 px breed). */
+.rt-wrap--trip .rt__dropdown { padding: 8px 16px 8px 5px; font-size: 13px; background-position: right 3px center; }
+.rt-wrap--trip .rt__dropdown-face { left: 6px; font-size: 13px; }
 /* Boekingskosten-toelichting (i) naast de kolomkop-tekst */
 /* Kolomkop "Prijs voor 2 nachten": altijd 2 regels, (i) na "nachten" */
 .rt__thprice {
