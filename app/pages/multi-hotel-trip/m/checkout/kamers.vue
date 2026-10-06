@@ -454,7 +454,8 @@ useHead({ title: trip.value ? 'Kies je opties â€” ViaLuxury' : 'Kies je kamer â€
                       <MultiHotelTripCheckoutPriceTag :value="displayTotal" size="lg" bold color="var(--c-via-green)" />
                     </div>
                   </div>
-                  <p v-if="trip" class="t-caption c-mgrey">{{ trip.hotels.length }} hotels, {{ nights }} nachten, {{ totalRooms * 2 }} personen</p>
+                  <!-- Vakantie: alleen het aantal personen (hotels en nachten staan al in de prijsopbouw). -->
+                  <p v-if="trip" class="t-caption c-mgrey">{{ totalRooms * 2 }} personen</p>
                   <p v-else class="t-caption c-mgrey">{{ totalRooms }} {{ totalRooms === 1 ? 'kamer' : 'kamers' }}, 2 nachten, {{ totalRooms * 2 }} personen</p>
                 </div>
 

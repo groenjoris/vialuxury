@@ -159,7 +159,10 @@
           <!-- ============================================================
                DESKTOP toolbar: filter toggle, sort, view switch
                ============================================================ -->
-          <div v-if="!isMobile" class="search-toolbar" :class="{ 'search-toolbar--trips': isTripMode }">
+          <div v-if="!isMobile" class="search-toolbar" :class="{ 'search-toolbar--trips': isTripMode, 'search-toolbar--trips-map': isTripMode && vakantiesMap }">
+            <!-- Vakanties-variant "Map": linksboven hetzelfde kaartje als in de zijbalk van de
+                 gewone zoekpagina (knop "Tonen op kaart"), 75% zo hoog; de pillen staan ernaast. -->
+            <MultiHotelTripMapPreviewCard v-if="isTripMode && vakantiesMap" class="search-toolbar__trip-map" @click="handleMapClick" />
             <div class="search-toolbar__left">
               <!-- Map button: only when filter hidden on desktop (sidebar map is otherwise visible) -->
               <button
@@ -198,8 +201,11 @@
             <MultiHotelTripFilterPills v-if="!isTripMode" class="search-toolbar__pills" />
             <!-- Vakantiestand: de quick filters staan als losse flex-items in
                  deze rij; Sorteren/weergave sluiten er rechts op aan en
-                 verhuizen mee naar de tweede rij als de pillen omlopen. -->
-            <MultiHotelTripQuickFilters v-else inline :counts="tripQuickFilterCounts" />
+                 verhuizen mee naar de tweede rij als de pillen omlopen.
+                 De wrapper is display:contents (standaard) of, in de variant
+                 "Map", het omlopende vak rechts naast het kaartje. -->
+            <div class="search-toolbar__trip-pills">
+            <MultiHotelTripQuickFilters v-if="isTripMode" inline :counts="tripQuickFilterCounts" />
 
             <div class="search-toolbar__right">
               <!-- Sort dropdown -->
@@ -259,6 +265,7 @@
                   </svg>
                 </button>
               </div>
+            </div>
             </div>
           </div>
 
@@ -498,6 +505,8 @@ const tripHeroCaption = 'Geuldal bij Stokhem, Limburg'
 const tripHeroPitch = computed(() => t('search.holidaysPitch'))
 /** Het verticale filterpaneel bestaat niet in vakantiestand. */
 const sidebarVisible = computed(() => showFilters.value && !isTripMode.value)
+// Variant van de Vakanties-pagina (schakelaarpaneel linksboven): "Map" = kaartje in de toolbar.
+const { showMap: vakantiesMap } = useMultiHotelTripVakantiesVariant()
 // NB: de watch die het paneel sluit zodra de vakantiestand aangaat staat
 // verderop, ná `const route = useRoute()` (de watch leest isTripMode direct uit).
 const {
@@ -2453,6 +2462,34 @@ onMounted(() => {
   width: 42px;
   height: 42px;
 }
+
+/* De wrapper om pillen + Sorteren/weergave: standaard onzichtbaar (display:contents), zodat de
+   toolbar zich gedraagt als voorheen. */
+.search-toolbar__trip-pills { display: contents; }
+
+/* Vakanties-variant "Map": het kaartje van de gewone zoekpagina (280 px breed, zijbalkbreedte)
+   linksboven, 75% van de normale hoogte (9:5 → 156 px, hier 117 px). De pillen staan ernaast in
+   een omlopend vak en gebruiken twee regels; de geforceerde regelovergang vervalt daar — de
+   auto-/fietsopties lopen gewoon door en Sorteren/weergave sluiten rechts op de laatste regel aan. */
+.search-toolbar--trips-map {
+  align-items: flex-start;
+  gap: var(--space-md);
+}
+.search-toolbar--trips-map .search-toolbar__trip-map {
+  flex: 0 0 280px;
+  width: 280px;
+  height: 117px;
+  aspect-ratio: auto;
+}
+.search-toolbar--trips-map .search-toolbar__trip-pills {
+  display: flex;
+  flex: 1 1 0;
+  min-width: 0;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.search-toolbar--trips-map .search-toolbar__trip-pills :deep(.tqf__break) { display: none; }
 
 /* Multi Hotel Trip: variantenschakelaar onder het logo in de Vakanties-hero. */
 .search-page__trip-hero { position: relative; }

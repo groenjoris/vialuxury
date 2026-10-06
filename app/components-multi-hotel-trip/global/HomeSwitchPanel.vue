@@ -2,7 +2,8 @@
   <!-- Multi Hotel Trip — prototype-schakelaars van de homepage, samen in het
        zwevende paneel linksboven (zelfde systeem als op de vakantie-PDP):
        prijsweergave vakanties (totaalprijs / prijs p.p., geldt op alle
-       pagina's) en de hero-foto (‹ 1/8 ›). -->
+       pagina's), de variant van de Vakanties-zoekpagina (Standaard / Map) en de
+       hero-foto (‹ 1/8 ›). -->
   <PrototypeSwitchPanel title="Prototype" storage-key="vl_mht_home_switch_open_v2">
     <div class="psw__section">
       <span class="psw__label">Prijs vakanties</span>
@@ -15,6 +16,20 @@
           :class="{ 'psw__btn--on': priceVariant === v.id }"
           :aria-pressed="priceVariant === v.id"
           @click="setPriceVariant(v.id)"
+        >{{ v.label }}</button>
+      </div>
+    </div>
+    <div class="psw__section">
+      <span class="psw__label">Vakanties-pagina</span>
+      <div class="psw__group" role="group" aria-label="Variant Vakanties-zoekpagina">
+        <button
+          v-for="v in VAKANTIES_VARIANTS"
+          :key="v.id"
+          type="button"
+          class="psw__btn"
+          :class="{ 'psw__btn--on': vakantiesVariant === v.id }"
+          :aria-pressed="vakantiesVariant === v.id"
+          @click="setVakantiesVariant(v.id)"
         >{{ v.label }}</button>
       </div>
     </div>
@@ -37,8 +52,11 @@
 import PrototypeSwitchPanel from './PrototypeSwitchPanel.vue'
 import { PRICE_VARIANTS, useMultiHotelTripPriceVariant } from '~/composables-multi-hotel-trip/useMultiHotelTripPriceVariant'
 import { useMultiHotelTripHomeVariant } from '~/composables-multi-hotel-trip/useMultiHotelTripHomeVariant'
+import { VAKANTIES_VARIANTS, useMultiHotelTripVakantiesVariant } from '~/composables-multi-hotel-trip/useMultiHotelTripVakantiesVariant'
 
 const { variant: priceVariant, setVariant: setPriceVariant } = useMultiHotelTripPriceVariant()
+// Vakanties-zoekpagina: Standaard of Map (kaartje linksboven in de toolbar, desktop).
+const { variant: vakantiesVariant, setVariant: setVakantiesVariant } = useMultiHotelTripVakantiesVariant()
 // setHeroPhotoIndex rekent zelf rond (modulo), dus -1 en +1 lopen door.
 const { heroPhotos, heroPhotoIndex, setHeroPhotoIndex } = useMultiHotelTripHomeVariant()
 </script>

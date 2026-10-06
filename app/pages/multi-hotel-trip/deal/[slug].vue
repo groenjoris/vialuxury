@@ -434,14 +434,13 @@
             <span class="deal-page__trip-score-text">{{ t(getReviewLabelKey(trip.reviewScore)) }}</span>
           </a>
           <div class="deal-page__hotel-name-wrap">
-            <!-- Vakantie: de hotelnamen met een pijltje ertussen (elke naam opent het
-                 hotel-sidepanel); sterren ernaast alleen als alle hotels hetzelfde
-                 aantal hebben (anders starRating 0). -->
-            <span v-if="isTrip" class="deal-page__hotel-subtitle deal-page__hotel-subtitle--trip"><MultiHotelTripHotelText :text="tripHotelsLabel" :hotels="tripHotelLinks" @open-hotel="openTripHotel" /></span>
+            <!-- Vakantie: als op mobiel — auto-/fietsicoon, "Autovakantie met 3 hotels" en het
+                 Nieuw-stickertje (de hotelnamen staan in de inclusies en het reisschema). -->
+            <span v-if="isTrip && trip" class="deal-page__trip-brand deal-page__trip-brand--header"><img :src="`/icons/mht/${trip.type === 'fiets' ? 'bike' : 'car-side'}.svg`" alt="" class="deal-page__trip-brand-icon" width="20" height="20" /><span class="deal-page__trip-brand-type">{{ tripMapTitle.head }}<span class="deal-page__trip-brand-last">{{ tripMapTitle.last }}<span class="deal-page__trip-brand-badge">{{ t('header.new') }}</span></span></span></span>
             <NuxtLink v-else :to="`/multi-hotel-trip/hotel/${hotel.slug}`" class="deal-page__hotel-link">
               <span class="deal-page__hotel-subtitle">{{ hotel.name }}</span>
             </NuxtLink>
-            <div v-if="hotel.starRating > 0" class="deal-page__stars-adjacent" aria-hidden="true">
+            <div v-if="!isTrip && hotel.starRating > 0" class="deal-page__stars-adjacent" aria-hidden="true">
               <span v-for="n in hotel.starRating" :key="n" class="star-adj"><svg class="icon-star" viewBox="0 0 18 18" width="1em" height="1em" fill="currentColor" style="vertical-align:-0.125em" aria-hidden="true"><path d="M16.963,6.786c-.088-.271-.323-.469-.605-.51l-4.62-.671L9.672,1.418c-.252-.512-1.093-.512-1.345,0l-2.066,4.186-4.62,.671c-.282,.041-.517,.239-.605,.51-.088,.271-.015,.57,.19,.769l3.343,3.258-.79,4.601c-.048,.282,.067,.566,.298,.734,.231,.167,.538,.189,.79,.057l4.132-2.173,4.132,2.173c.11,.058,.229,.086,.349,.086,.155,0,.31-.048,.441-.143,.231-.168,.347-.452,.298-.734l-.79-4.601,3.343-3.258c.205-.199,.278-.498,.19-.769Z"/></svg></span>
             </div>
           </div>
@@ -2461,7 +2460,49 @@ onMounted(() => {
 .deal-page__breadcrumbs { padding-top: var(--space-md); }
 
 /* Mobile: tighten the gap under the nav search bar + show the share/favorite
-   icons (no labels) right-aligned between the breadcrumb and the title. */
+   icons (no labels) right-aligned between the breadcrumb and the title. *//* Vakantie: "Autovakantie met 3 hotels" / "Fietsvakantie met bagagetransfer" (één regel) met het
+   auto-/fietsicoon — mobiel boven de routekaart, desktop in de kop onder de reisnaam —
+   van de dealcard en het Nieuw-stickertje uit de navigatie (.verticals__badge) rechtsboven de tekst. */
+.deal-page__trip-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 10px;
+  padding-top: 10px;
+  font-family: var(--font-heading);
+  /* 16px: ook "Fietsvakantie met bagagetransfer" blijft op 360 px één regel. */
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--color-text-primary);
+}
+.deal-page__trip-brand-icon { flex-shrink: 0; width: 20px; height: 20px; }
+/* Het stickertje hangt rechtsboven het laatste woord (als in de navigatie) en neemt geen ruimte in
+   de regel in — de titel is altijd één regel. */
+.deal-page__trip-brand-last { position: relative; white-space: nowrap; }
+.deal-page__trip-brand-badge {
+  position: absolute;
+  top: -11px;
+  right: -22px;
+  display: inline-flex;
+  align-items: center;
+  height: 14px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: var(--color-primary);
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+/* Desktop-kop: zelfde plek als de hotelnamen bij een gewoon arrangement (onder de reisnaam,
+   boven de plaatsnamen). */
+.deal-page__trip-brand--header { margin: 0; padding-top: 0; }
+
 @media (max-width: 800px) {
   .deal-page__breadcrumbs { padding-top: var(--space-xs); padding-bottom: 0; }
 }
@@ -3668,45 +3709,6 @@ onMounted(() => {
   .deal-page__creator-mobile {
     margin-top: 16px;
     margin-bottom: 8px;
-  }
-  /* Vakantie: kleine titel boven de routekaart ("Autovakantie met 3 hotels" / "Fietsvakantie met
-     bagagetransfer", één regel) met het auto-/fietsicoon
-     van de dealcard en het Nieuw-stickertje uit de navigatie (.verticals__badge) rechtsboven de tekst. */
-  .deal-page__trip-brand {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin: 0 0 10px;
-    padding-top: 10px;
-    font-family: var(--font-heading);
-    /* 16px: ook "Fietsvakantie met bagagetransfer" blijft op 360 px één regel. */
-    font-size: 16px;
-    font-weight: 700;
-    line-height: 1.25;
-    color: var(--color-text-primary);
-  }
-  .deal-page__trip-brand-icon { flex-shrink: 0; width: 20px; height: 20px; }
-  /* Het stickertje hangt rechtsboven het laatste woord (als in de navigatie) en neemt geen ruimte in
-     de regel in — de titel is altijd één regel. */
-  .deal-page__trip-brand-last { position: relative; white-space: nowrap; }
-  .deal-page__trip-brand-badge {
-    position: absolute;
-    top: -11px;
-    right: -22px;
-    display: inline-flex;
-    align-items: center;
-    height: 14px;
-    padding: 0 5px;
-    border-radius: 999px;
-    background: var(--color-primary);
-    color: #fff;
-    font-family: var(--font-body);
-    font-size: 9px;
-    font-weight: 700;
-    line-height: 1;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    white-space: nowrap;
   }
   /* Routekaart direct onder de titel; daaronder een scheidingslijn (zoals tussen de andere blokken)
      naar "inbegrepen + kalender". */

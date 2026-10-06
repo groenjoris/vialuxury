@@ -169,7 +169,7 @@ useHead({ title: computed(() => (checkoutTrip.value ? 'Kies je opties — ViaLux
                     <MultiHotelTripCheckoutPriceTag :value="totalPrice" size="lg" bold color="var(--c-via-green)" />
                   </div>
                 </div>
-                <p class="t-caption c-mgrey">{{ checkoutTrip ? `${checkoutTrip.hotels.length} hotels, ${nights} nachten, ${roomsSel * 2} personen` : `${roomsSel} ${unit(roomsSel)}, ${nights} nachten, ${roomsSel * 2} personen` }}</p>
+                <p class="t-caption c-mgrey">{{ checkoutTrip ? `${roomsSel * 2} personen` : `${roomsSel} ${unit(roomsSel)}, ${nights} nachten, ${roomsSel * 2} personen` }}</p>
               </div>
 
               <p class="side__saved">

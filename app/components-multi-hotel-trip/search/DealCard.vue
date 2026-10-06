@@ -168,6 +168,8 @@
                (de tijdlijn toont het vervoer al op de route). -->
           <img v-if="isTrip && !tripTimeline" :src="`/icons/mht/${tripTransportIcon}.svg`" alt="" class="deal-card-v2__name-icon" width="18" height="18" />
           <span class="deal-card-v2__name">{{ tripTypeLabel }}</span>
+          <!-- Nieuw-stickertje (als in de navigatie en de kop van de vakantie-PDP). -->
+          <span class="deal-card-v2__new-badge">{{ t('header.new') }}</span>
         </h3>
         <NuxtLink v-else :to="`/multi-hotel-trip/hotel/${hotel.slug}`" :target="linkTarget" class="deal-card-v2__name-link" @click.stop>
           <h3 class="deal-card-v2__name-row">
@@ -1090,6 +1092,26 @@ const includesBullets = computed<string[]>(() => {
 
 /* Vervoersicoon voor de vakantietitel (50-50/overlay). */
 .deal-card-v2__name-icon { flex-shrink: 0; align-self: center; width: 18px; height: 18px; }
+/* Nieuw-stickertje achter "Autovakantie met 3 hotels", bovenaan de regel (als in de navigatie). */
+.deal-card-v2__new-badge {
+  flex-shrink: 0;
+  align-self: flex-start;
+  margin-top: -3px;
+  display: inline-flex;
+  align-items: center;
+  height: 14px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: var(--color-primary);
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
 .deal-card-v2__name {
   min-width: 0;
   overflow: hidden;

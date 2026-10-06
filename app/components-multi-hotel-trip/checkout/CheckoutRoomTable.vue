@@ -624,7 +624,7 @@ const arrangementIncludes = trip.value ? trip.value.includes : [
                     <MultiHotelTripCheckoutPriceTag :value="displayTotal" size="lg" bold color="var(--c-via-green)" />
                   </div>
                 </div>
-                <p class="t-caption c-mgrey">{{ trip ? `${trip.hotels.length} hotels, ${nights} nachten, ${totalPeople} personen` : `${totalRooms} ${unit(totalRooms)}, ${nights} nachten, ${totalRooms * 2} personen` }}</p>
+                <p class="t-caption c-mgrey">{{ trip ? `${totalPeople} personen` : `${totalRooms} ${unit(totalRooms)}, ${nights} nachten, ${totalRooms * 2} personen` }}</p>
               </div>
 
               <p class="rt__saved">
