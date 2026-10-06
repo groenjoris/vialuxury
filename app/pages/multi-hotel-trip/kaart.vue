@@ -29,6 +29,9 @@ useHead({ title: 'Kaart — Via Luxury' })
 
 const router = useRouter()
 const route = useRoute()
+// Vanaf de Vakanties-zoekpagina (?fit=trips): alleen de vakanties op de kaart, zó
+// uitgezoomd dat ze allemaal in beeld zijn, zonder enig actief filter.
+const tripsOnly = computed(() => route.query.fit === 'trips')
 const { homeHref } = useMultiHotelTripHomeVariant()
 
 /** When the user arrives from a deal page via "Bekijk kaart", the
@@ -138,6 +141,8 @@ const mapHotels = computed<SearchHotel[]>(() => {
   }
   const result: SearchHotel[] = []
   for (const h of mapPool) {
+    // Vakanties-kaart: de hotels blijven weg, alleen de vakantie-pins.
+    if (tripsOnly.value && !h.trip) continue
     // Destination is NOT a filter on the map — it only drives initial zoom.
     // Every hotel stays on the map; we just tag it as `unmatched` when none
     // of its deals satisfy the active filters so the pin renders disabled
@@ -282,8 +287,8 @@ function closeMap() {
 // arrived from a deal page (?focus=<slug>) so the map gets the
 // full width. The user can re-open it via the floating chip.
 const showFilter = ref(!route.query.focus)
-// Vanaf de Vakanties-zoekpagina (?fit=trips): beginweergave met alle vakantie-pins in beeld.
-const fitTo = computed<'trips' | null>(() => (route.query.fit === 'trips' ? 'trips' : null))
+// Beginweergave met alle vakantie-pins in beeld (zie tripsOnly).
+const fitTo = computed<'trips' | null>(() => (tripsOnly.value ? 'trips' : null))
 
 // Sync FR nav-bar variant with the user's last homepage pick so the
 // SiteHeader on this internal page matches the chosen variant. Reads
@@ -296,7 +301,9 @@ onMounted(() => {
   // active filters so the map shows every hotel with no filter pills —
   // the user is exploring around the focused hotel, not continuing a
   // filtered search. (Persisted query stays intact for /search.)
-  if (route.query.focus) {
+  // Idem vanaf de Vakanties-zoekpagina (?fit=trips): alle vakanties, geen enkel
+  // filter aan (ook niet de "5 of meer nachten" uit de zoekbalk daar).
+  if (route.query.focus || tripsOnly.value) {
     resetFilters()
   }
 
