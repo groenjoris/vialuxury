@@ -124,7 +124,8 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 /* "Goed om te weten" bovenaan: licht vlak met vier bullets. */
 .tipn__gtk { margin: 0 0 var(--space-lg); padding: 14px 16px; background: var(--color-background-secondary, #f6f4ef); border-radius: var(--radius-sm); }
 .tipn__gtk-title { margin: 0 0 6px; font-size: 14px; font-weight: 700; color: var(--color-text-primary); }
-.tipn__gtk-list { margin: 0; padding-left: 18px; font-size: 14px; line-height: 1.5; color: var(--color-text-secondary); }
+.tipn__gtk-list { margin: 0; padding-left: 18px; list-style: disc outside; font-size: 14px; line-height: 1.5; color: var(--color-text-secondary); }
+.tipn__gtk-list li { display: list-item; }
 .tipn__gtk-list li + li { margin-top: 4px; }
 .tipn__day { padding: var(--space-md) 0; border-bottom: 1px solid var(--color-border-light); }
 .tipn__day:last-child { border-bottom: 0; }
