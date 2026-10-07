@@ -25,8 +25,6 @@
       </span>
     </div>
 
-    <span v-if="deal.discountPercentage" class="photo-card__discount">-{{ deal.discountPercentage }}%</span>
-
     <button
       type="button"
       class="photo-card__heart"
@@ -48,11 +46,14 @@
         </li>
       </ul>
 
-      <p class="photo-card__price">
-        <span class="photo-card__from">Vanaf</span>
-        <span class="photo-card__now">{{ formatPrice(price) }}</span>
-        <span v-if="originalPrice > price" class="photo-card__was">{{ formatPrice(originalPrice) }}</span>
-      </p>
+      <div class="photo-card__price">
+        <span v-if="deal.discountPercentage" class="photo-card__discount">-{{ deal.discountPercentage }}%</span>
+        <span class="photo-card__amounts">
+          <span class="photo-card__from">Vanaf</span>
+          <span class="photo-card__now">{{ formatPrice(price) }}</span>
+          <span v-if="originalPrice > price" class="photo-card__was">{{ formatPrice(originalPrice) }}</span>
+        </span>
+      </div>
     </div>
   </article>
 </template>
@@ -257,16 +258,12 @@ function onCardClick(e: MouseEvent) {
 .photo-card__collection-name { font-weight: 700; }
 .photo-card__collection-word { font-weight: 400; opacity: 0.82; }
 
-/* Dezelfde getekende banner als op de andere kaarten, maar rechtsboven
-   naast het hart in plaats van linksboven: daar zit nu de vlag. Onder de
-   vlag kan hij niet, want het tekstblok groeit vanaf de onderkant omhoog en
-   loopt er op een smalle kaart tegenaan; en onderin zou zwart op het
-   donkere verloop verdwijnen. */
+/* Dezelfde getekende banner als op de andere kaarten, hier links in de
+   prijsregel. Zwart op het donkere verloop zou wegvallen, dus krijgt hij
+   een smalle lichte rand mee die de vorm terugzet. */
 .photo-card__discount {
-  position: absolute;
-  top: 16px;
-  right: 54px;
-  z-index: 3;
+  flex: none;
+  filter: drop-shadow(0 0 1px rgba(255, 255, 255, 0.55));
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 145 104'%3E%3Cpath d='M123.24 100.853L144.909 4.88359C145.524 2.16058 143.231 -0.33886 140.466 0.0394912L3.4576 18.7817C1.47641 19.0527 -0.000259399 20.7451 -0.000259399 22.7448V90.5564C-0.000259399 92.6393 1.59824 94.3736 3.67427 94.5431L119.013 103.959C120.999 104.121 122.801 102.797 123.24 100.853Z' fill='%23141414'/%3E%3C/svg%3E");
   background-size: contain;
   background-position: center;
@@ -375,24 +372,30 @@ function onCardClick(e: MouseEvent) {
    het rood van de oude prijs is daar niet leesbaar genoeg voor. */
 .photo-card__price {
   display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 12px 0 0;
+}
+.photo-card__amounts {
+  display: flex;
   align-items: baseline;
   gap: 8px;
-  margin: 12px 0 0;
+  min-width: 0;
 }
 .photo-card__from {
   font-family: var(--font-heading);
   font-style: italic;
   font-size: 14px;
-  color: rgba(255, 255, 255, 0.82);
+  color: rgba(255, 255, 255, 0.78);
 }
 .photo-card__now {
   font-family: var(--font-heading);
   font-weight: 700;
-  font-size: 24px;
+  font-size: 30px;
   line-height: 1;
 }
 .photo-card__was {
-  font-size: 14px;
+  font-size: 15px;
   color: rgba(255, 255, 255, 0.72);
   text-decoration: line-through;
 }
