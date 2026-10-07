@@ -223,6 +223,7 @@ function onCardClick(e: MouseEvent) {
   padding: 13px 0 14px 18px;
   display: flex;
   flex-direction: column;
+  justify-content: center;
   gap: 11px;
   background: var(--c, var(--color-dark));
   color: var(--on, #fff);
@@ -259,12 +260,11 @@ function onCardClick(e: MouseEvent) {
 .photo-card__collection-word { font-weight: 400; opacity: 0.82; }
 
 /* Dezelfde getekende banner als op de andere kaarten, hier links in de
-   prijsregel. Zwart op het donkere verloop zou wegvallen, dus krijgt hij
-   een smalle lichte rand mee die de vorm terugzet. */
+   prijsregel en in wit in plaats van zwart: op het donkere verloop onderin
+   valt zwart weg. De tekst erin wordt dan donker. */
 .photo-card__discount {
   flex: none;
-  filter: drop-shadow(0 0 1px rgba(255, 255, 255, 0.55));
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 145 104'%3E%3Cpath d='M123.24 100.853L144.909 4.88359C145.524 2.16058 143.231 -0.33886 140.466 0.0394912L3.4576 18.7817C1.47641 19.0527 -0.000259399 20.7451 -0.000259399 22.7448V90.5564C-0.000259399 92.6393 1.59824 94.3736 3.67427 94.5431L119.013 103.959C120.999 104.121 122.801 102.797 123.24 100.853Z' fill='%23141414'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 145 104'%3E%3Cpath d='M123.24 100.853L144.909 4.88359C145.524 2.16058 143.231 -0.33886 140.466 0.0394912L3.4576 18.7817C1.47641 19.0527 -0.000259399 20.7451 -0.000259399 22.7448V90.5564C-0.000259399 92.6393 1.59824 94.3736 3.67427 94.5431L119.013 103.959C120.999 104.121 122.801 102.797 123.24 100.853Z' fill='%23FFFFFF'/%3E%3C/svg%3E");
   background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
@@ -274,12 +274,13 @@ function onCardClick(e: MouseEvent) {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: #fff;
+  color: var(--color-dark);
   font-family: var(--font-heading);
   font-size: 15px;
   font-weight: 700;
   padding: 0 13px 0 6px;
   letter-spacing: 0.5px;
+  text-shadow: none;
 }
 
 .photo-card__heart {
