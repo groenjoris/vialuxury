@@ -1092,11 +1092,11 @@ const includesBullets = computed<string[]>(() => {
 
 /* Vervoersicoon voor de vakantietitel (50-50/overlay). */
 .deal-card-v2__name-icon { flex-shrink: 0; align-self: center; width: 18px; height: 18px; }
-/* Nieuw-stickertje achter "Autovakantie met 3 hotels", bovenaan de regel (als in de navigatie). */
+/* Nieuw-stickertje rechts naast "Autovakantie met 3 hotels", op de tekstregel gecentreerd
+   (zelfde uitlijning als in de kop van de vakantie-PDP). */
 .deal-card-v2__new-badge {
   flex-shrink: 0;
-  align-self: flex-start;
-  margin-top: -3px;
+  align-self: center;
   display: inline-flex;
   align-items: center;
   height: 14px;

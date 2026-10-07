@@ -245,7 +245,7 @@ const de: Record<string, string> = {
   'trip.typeWithHotels': '{type} mit {n} Hotels',
   // Multi Hotel Trip — vakantie-PDP
   'trip.fantasticHotels': '{n} fantastische Hotels',
-  'trip.freeCancel30': 'Kostenlose Stornierung bis 30 Tage vor Abreise',
+  'trip.easyCancel': 'Einfach stornieren',
   'trip.freeCancelLine': 'Kostenlose Stornierung bis 30 Tage vor Abreise.',
   'trip.freeCancelLineDate': 'Kostenlose Stornierung bis {date} (30 Tage vor Abreise).',
   'trip.hotelsIncludedHeading': 'Diese Hotels sind in diesem Urlaub inbegriffen:',
