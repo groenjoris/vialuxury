@@ -1,22 +1,20 @@
 <script setup lang="ts">
 // Multi Hotel Trip checkout — bevestigingspagina na het boeken van een vakantie
 // (prototype: "Boek nu" op de gegevenspagina = betaald, geen validatie).
-// Opbouw volgens skills/How_to_design_thank_you_pages.md, in deze volgorde:
-// 1 bevestiging + dank, 2 samenvatting met boekingsnummer, 3 e-mailbevestiging,
-// 4 waarde van de keuze, 5 wat gebeurt er nu, 6 wat je zelf doet (met de
-// "Goed om te weten"-disclaimer van het dagprogramma), 7 vervolgstap, 8 contact.
-// Drie varianten (schakelaar linksboven): Rustig / Beeld / Reis — zie
-// useMultiHotelTripConfirmationVariant.
+// Opbouw volgens skills/How_to_design_thank_you_pages.md, gekozen variant "Beeld"
+// (2026-10-07): hoofdfoto van de reis als kop met alleen de bevestiging; daaronder
+// links (⅔) het productblok met alle praktische informatie (hotels in- en uitklapbaar,
+// flexibel annuleren als onderdeel van het pakket, betaald bedrag, boekingsnummer) en
+// rechts (⅓) "Goed om te weten"; dan de banner "Goede keuze"; dan "Wat er nu gebeurt"
+// naast "Wat je zelf doet"; dan je account (bestaat al, inloggen zonder wachtwoord),
+// veelgestelde vragen en contact. Vooraf een preloader van 3 seconden.
 import { tripCheckoutBySlug } from '~/data/mht-checkout/trip'
 import { pricing } from '~/data/mht-checkout/deal'
 import { CHECKOUT_BOOKING_FEE } from '~/data/mht-checkout/pricing'
 import { useMultiHotelTripCheckoutTrip } from '~/composables-multi-hotel-trip/useMultiHotelTripCheckoutTrip'
-import { useMultiHotelTripConfirmationVariant } from '~/composables-multi-hotel-trip/useMultiHotelTripConfirmationVariant'
 import { useMultiHotelTripMobileUa } from '~/composables-multi-hotel-trip/useMultiHotelTripMobileUa'
 
-const { t } = useMultiHotelTripI18n()
 const isMobileUa = useMultiHotelTripMobileUa()
-const { variant } = useMultiHotelTripConfirmationVariant()
 
 /* ── Boekingsgegevens (gedeelde checkout-state; zonder checkout de Opaalkust-demo) ── */
 const DEMO_SLUG = 'ontdek-noord-frankrijk-en-de-opaalkust-in-7-dagen'
@@ -25,15 +23,15 @@ const trip = computed(() => checkoutTrip.value ?? tripCheckoutBySlug(DEMO_SLUG)!
 
 interface SelRow { baseId: string; rateKey: 'nonrefundable' | 'flexible'; price: number; priceWas: number; quantity: number }
 const selection = useState<SelRow[]>('mht-checkout-selection', () => [])
+/* Flexibel annuleren is onderdeel van het pakket (uitgangspunt van de bevestiging). */
 const row = computed<SelRow>(() => {
   const r = selection.value[0]
-  if (r) return r
   const flex = pricing.flexibilityPerRoom * trip.value.hotels.length
+  if (r) return r.rateKey === 'flexible' ? r : { ...r, rateKey: 'flexible', price: r.price + flex, priceWas: r.priceWas + flex }
   return { baseId: 'trip', rateKey: 'flexible', price: trip.value.price + flex, priceWas: trip.value.priceWas + flex, quantity: 1 }
 })
 const persons = computed(() => row.value.quantity * 2)
 const roomsPerHotel = computed(() => row.value.quantity)
-const flexible = computed(() => row.value.rateKey === 'flexible')
 const BOOKING_FEE = CHECKOUT_BOOKING_FEE
 const tripTotal = computed(() => row.value.price * row.value.quantity)
 const total = computed(() => tripTotal.value + BOOKING_FEE)
@@ -49,7 +47,7 @@ const fmt = (d: Date) => `${WEEKDAYS[d.getDay()]} ${d.getDate()} ${MONTHS[d.getM
 const checkInYmd = computed(() => checkoutDay.value?.checkInYmd ?? DEMO_YMD)
 const checkIn = computed(() => checkoutDay.value?.checkIn || fmt(new Date(checkInYmd.value.year, checkInYmd.value.month, checkInYmd.value.day)))
 const checkOut = computed(() => checkoutDay.value?.checkOut || fmt(new Date(checkInYmd.value.year, checkInYmd.value.month, checkInYmd.value.day + trip.value.nights)))
-/** Per hotel "di 20 – do 22 mei" op basis van de aankomstdatum en de nachten per hotel. */
+/** Per hotel "di 18 – do 20 mei" op basis van de aankomstdatum en de nachten per hotel. */
 const stays = computed(() => {
   const ymd = checkInYmd.value
   let offset = 0
@@ -60,8 +58,9 @@ const stays = computed(() => {
     return { ...h, from: fmt(from), to: fmt(to) }
   })
 })
-/** Datum 14 dagen voor vertrek (reisdocument). */
+/** Datum 14 dagen voor vertrek (reisdocument) en 72 uur ervoor (annuleren). */
 const docsDate = computed(() => { const y = checkInYmd.value; return fmt(new Date(y.year, y.month, y.day - 14)) })
+const cancelDate = computed(() => { const y = checkInYmd.value; return fmt(new Date(y.year, y.month, y.day - 3)) })
 
 /* Gast: voornaam + e-mail uit het formulier ("Boek nu"); anders de demo-gast. */
 const guest = useState<{ firstName: string; email: string } | null>('mht-checkout-guest', () => null)
@@ -75,34 +74,44 @@ const bookingRef = computed(() => {
   return `VL-${String(27000 + h).slice(0, 2)} ${String(h).padStart(5, '0').slice(0, 3)} ${String(h * 7 % 1000).padStart(3, '0')}`
 })
 
-/* "Goed om te weten" (dezelfde vier punten als bovenaan het dagprogramma). */
-const GTK = ['trip.itin.gtk1', 'trip.itin.gtk2', 'trip.itin.gtk3', 'trip.itin.gtk4']
+/* Hotels in het productblok: ingeklapt (alleen de namen) of uitgeklapt (foto, datums, kamer). */
+const hotelsOpen = ref(false)
+const hotelNames = computed(() => trip.value.hotels.map((h) => h.name).join(' · '))
 
-/* Wat gebeurt er nu — chronologisch. */
+/* "Goed om te weten" — eigen tekst voor de bevestiging (niet die van het dagprogramma). */
+const goodToKnow = [
+  'De tips per hotel zijn inspiratie: jij bepaalt het tempo en wat je doet, de hotels zijn je thuisbasis.',
+  'Entree van attracties is niet inbegrepen, zo betaal je alleen voor wat jij kiest.',
+  'Check vooraf even de openingstijden van restaurants en attracties, dan sta je nergens voor een dichte deur.',
+  'Museumkaart of andere kortingspas? Neem hem mee: bij vakanties in Nederland levert dat vaak gratis of voordelige entree op.',
+]
+
+/* Wat er nu gebeurt — chronologisch. */
 const nextSteps = computed(() => [
   { when: 'Nu', title: 'Bevestiging in je mailbox', text: `Binnen een paar minuten staat deze bevestiging op ${email.value}, met je boekingsnummer en alles wat je hier ziet.` },
-  { when: 'Binnen 1 werkdag', title: 'De hotels bevestigen je kamers', text: `Wij reserveren ${roomsPerHotel.value === 1 ? 'je kamer' : `je ${roomsPerHotel.value} kamers`} bij alle ${trip.value.hotels.length} hotels. Je ontvangt per hotel een bevestiging met de kamer en de inbegrepen onderdelen.` },
-  { when: `Rond ${docsDate.value}`, title: 'Je reisdocument', text: 'Twee weken voor vertrek mailen we je reisdocument: adressen, parkeren, inchecktijden en het dagprogramma met de tips van Yvette.' },
-  { when: checkIn.value, title: `Inchecken bij ${trip.value.hotels[0]?.name}`, text: `Vanaf 15:00 uur staat je eerste kamer klaar. Je hoeft niets te printen; je naam en boekingsnummer zijn genoeg.` },
+  { when: `Rond ${docsDate.value}`, title: 'Je reisdocument', text: 'Twee weken voor vertrek mailen we je reisdocument: adressen, parkeren, inchecktijden en de tips van Yvette per hotel.' },
+  { when: checkIn.value, title: `Inchecken bij ${trip.value.hotels[0]?.name}`, text: 'Vanaf 15:00 uur staat je eerste kamer klaar. Je hoeft niets te printen; je naam en boekingsnummer zijn genoeg.' },
   { when: checkOut.value, title: 'Weer thuis', text: 'Na je vakantie ontvang je een mail met de vraag hoe het was. Daar helpen we andere reizigers mee.' },
 ])
 
 /* Wat je zelf doet. */
 const todos = computed(() => [
-  `Nu: niets. Je boeking is rond en je ${flexible.value ? 'kunt tot 72 uur voor vertrek kosteloos annuleren of wijzigen' : 'bent verzekerd van je kamers'}.`,
+  `Nu: niets. Je boeking is rond; tot ${cancelDate.value} (72 uur voor vertrek) kun je kosteloos annuleren of wijzigen.`,
+  'Je kunt deze boeking altijd bekijken in je account: inloggen met je e-mailadres, je krijgt een inloglink, geen wachtwoord nodig.',
   'Zet de aankomst- en vertrekdatum in je agenda en check de inchecktijd per hotel in je reisdocument.',
   'Neem een geldig identiteitsbewijs mee; de hotels vragen daar bij het inchecken om.',
-  `Betaal ter plaatse alleen lokale belastingen en eventuele parkeerkosten, als die niet zijn inbegrepen.`,
 ])
 
-/* Vervolgstap (één primaire): lidmaatschap, per variant een andere invalshoek uit het
-   ontwerpdocument — Rustig: concreet voordeel; Beeld: nieuwsgierigheid + sociaal bewijs;
-   Reis: "nog één stap". Secundair: delen met je reisgenoot en het reisschema bekijken. */
-const followUp = computed(() => ({
-  calm: { title: 'Volgende keer in 2 minuten geboekt', text: 'Sla je gegevens op in een gratis ViaLuxury-account. Je vult nooit meer een formulier in en ziet als eerste de nieuwe vakanties.', cta: 'Maak mijn account aan' },
-  photo: { title: 'Reizigers die deze vakantie boekten, bekijken ook …', text: 'Als lid zie je de vakanties en arrangementen die niet op de website staan — alleen voor leden, met tot 40% korting.', cta: 'Laat zien wat ik mis' },
-  journey: { title: 'Nog één stap om je reis compleet te maken', text: 'Zet je gegevens om in een gratis account, dan staan je reisdocumenten en vouchers straks op één plek, ook op je telefoon.', cta: 'Rond het af' },
-})[variant.value])
+/* Veelgestelde vragen (accordeon). */
+const faq = computed(() => [
+  { q: 'Hoe kan ik annuleren of wijzigen?', a: `Via je account. Log in met ${email.value}, open deze boeking en kies "Annuleren" of "Datum wijzigen". Tot ${cancelDate.value} (72 uur voor vertrek) is dat kosteloos; je krijgt het volledige bedrag terug.` },
+  { q: 'Hoe log ik in op mijn account?', a: 'Je hebt geen wachtwoord nodig. Vul op vialuxury.com je e-mailadres in, je ontvangt direct een inloglink per mail. Eén klik en je bent binnen.' },
+  { q: 'Hoe werkt het inchecken bij drie hotels?', a: 'Elk hotel heeft je naam en boekingsnummer. Je meldt je bij de receptie met een geldig identiteitsbewijs; uitchecken en doorrijden naar het volgende hotel regel je gewoon ter plekke.' },
+  { q: 'Zijn de attracties uit de tips inbegrepen?', a: 'Nee. De tips per hotel zijn inspiratie; entree betaal je ter plaatse en alleen voor wat je zelf kiest. Een Museumkaart of kortingspas loont bij vakanties in Nederland.' },
+  { q: 'Ik heb mijn e-mailadres verkeerd ingevuld', a: `Mail ons op service@vialuxury.com met boekingsnummer ${bookingRef.value} en het juiste adres. We sturen de bevestiging en je reisdocument dan opnieuw.` },
+])
+const openFaq = ref<number | null>(null)
+
 const pdpHref = computed(() => `/multi-hotel-trip/deal/${trip.value.slug}`)
 const shareHref = computed(() => `mailto:?subject=${encodeURIComponent(`Onze vakantie: ${trip.value.name}`)}&body=${encodeURIComponent(`We gaan! ${trip.value.name}, ${checkIn.value} t/m ${checkOut.value}. Boekingsnummer ${bookingRef.value}.`)}`)
 
@@ -130,10 +139,9 @@ useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
 </script>
 
 <template>
-  <div class="mht-checkout page page--white cf" :class="[`cf--${variant}`, { 'page--m': isMobileUa }]">
+  <div class="mht-checkout page page--white cf" :class="{ 'page--m': isMobileUa }">
     <MultiHotelTripCheckoutMobileHeader v-if="isMobileUa" :step="3" />
     <MultiHotelTripCheckoutTopNav v-else />
-    <MultiHotelTripCheckoutConfirmationVariantSwitch />
 
     <!-- Preloader: 3 seconden "boeking bevestigen" voordat de bevestiging verschijnt. -->
     <Transition name="cf-load">
@@ -153,80 +161,82 @@ useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
     </Transition>
 
     <main v-show="!loading" class="cf__main">
-      <!-- ── 1. Bevestiging + dank ─────────────────────────────────────── -->
-      <!-- Beeld: hoofdfoto van de reis als kop, bevestiging erover. -->
-      <section v-if="variant === 'photo'" class="cf__hero" :style="{ backgroundImage: `url(${trip.thumb})` }">
+      <!-- ── 1. Bevestiging: hoofdfoto met alleen vinkje + kop ──────────────── -->
+      <section class="cf__hero" :style="{ backgroundImage: `url(${trip.thumb})` }">
         <div class="cf__hero-inner container">
-          <span class="cf__check cf__check--light" aria-hidden="true">
+          <span class="cf__check" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none"><path class="cf__check-path" d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" /></svg>
           </span>
           <h1 class="cf__title">Je {{ trip.typeWord }} is geboekt, {{ firstName }}!</h1>
-          <p class="cf__lead">{{ trip.name }} · {{ checkIn }} t/m {{ checkOut }} · {{ persons }} personen</p>
-          <p class="cf__ref">Boekingsnummer <b>{{ bookingRef }}</b></p>
         </div>
         <span v-for="n in 14" :key="n" class="cf__confetti" :style="{ left: `${(n * 7.1) % 100}%`, animationDelay: `${(n % 5) * 0.18}s`, background: n % 3 === 0 ? 'var(--c-via-green)' : n % 3 === 1 ? 'var(--c-via-orange)' : '#fff' }" aria-hidden="true" />
       </section>
-      <section v-else class="cf__head container">
-        <span class="cf__check" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none"><path class="cf__check-path" d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" /></svg>
-        </span>
-        <h1 class="cf__title">Je {{ trip.typeWord }} is geboekt, {{ firstName }}!</h1>
-        <p class="cf__lead">Bedankt voor je vertrouwen. Wij regelen nu de kamers bij alle {{ trip.hotels.length }} hotels, jij hoeft alleen nog af te tellen.</p>
-        <p class="cf__ref">Boekingsnummer <b>{{ bookingRef }}</b></p>
-      </section>
 
-      <div class="cf__grid container">
-        <div class="cf__col cf__col--main">
-          <!-- ── 2. Samenvatting ───────────────────────────────────────── -->
-          <section class="card cf__summary">
-            <div class="cf__summary-head">
-              <img v-if="variant !== 'photo'" class="cf__thumb" :src="trip.thumb" :alt="trip.name" />
+      <div class="container cf__body">
+        <!-- ── 2. Productblok (⅔) + Goed om te weten (⅓) ───────────────────── -->
+        <div class="cf__row cf__row--product">
+          <section class="card cf__product">
+            <div class="cf__product-head">
               <div>
                 <p class="t-caption c-mgrey">{{ trip.typeLabel }} · {{ trip.hotels.length }} hotels · {{ trip.nights }} nachten</p>
-                <h2 class="cf__summary-title">{{ trip.name }}</h2>
-                <p class="t-body">{{ checkIn }} t/m {{ checkOut }} · {{ persons }} personen</p>
+                <h2 class="cf__product-title">{{ trip.name }}</h2>
+                <p class="t-body"><b>{{ checkIn }} t/m {{ checkOut }}</b> · {{ persons }} personen · {{ roomsPerHotel }} {{ roomsPerHotel === 1 ? 'kamer' : 'kamers' }} per hotel</p>
               </div>
+              <p class="cf__ref">Boekingsnummer<br><b>{{ bookingRef }}</b></p>
             </div>
 
-            <!-- Per hotel: datums, kamer, aantal kamers (Beeld: met hotelfoto) -->
-            <ol class="cf__hotels" :class="{ 'cf__hotels--photos': variant === 'photo' }">
-              <li v-for="(h, i) in stays" :key="h.name" class="cf__hotel">
-                <img v-if="variant === 'photo' && h.image" class="cf__hotel-img" :src="h.image" :alt="h.name" />
-                <span v-else class="cf__num">{{ i + 1 }}</span>
-                <div class="cf__hotel-body">
-                  <p class="t-body t-bold">{{ h.name }} <span v-if="h.starRating" class="cf__stars" aria-hidden="true">{{ '★'.repeat(h.starRating) }}</span></p>
-                  <p class="t-caption c-mgrey">{{ h.city }} · {{ h.from }} – {{ h.to }} · {{ h.nights }} {{ h.nights === 1 ? 'nacht' : 'nachten' }}</p>
-                  <p class="t-caption c-grey">{{ roomsPerHotel }}× {{ h.roomName }}, ontbijt en 3-gangendiner op de dag van aankomst</p>
-                </div>
-              </li>
-            </ol>
+            <!-- Hotels: ingeklapt alleen de namen, uitgeklapt per hotel foto, datums, kamer en wat je krijgt -->
+            <div class="cf__hotels-wrap">
+              <button type="button" class="cf__hotels-toggle" :aria-expanded="hotelsOpen" @click="hotelsOpen = !hotelsOpen">
+                <span class="cf__hotels-names"><b>Je {{ trip.hotels.length }} hotels:</b> {{ hotelNames }}</span>
+                <span class="cf__hotels-more">{{ hotelsOpen ? 'Verberg details' : 'Bekijk details' }}
+                  <svg class="cf__chev" :class="{ 'cf__chev--open': hotelsOpen }" width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" /></svg>
+                </span>
+              </button>
+              <ol v-show="hotelsOpen" class="cf__hotels">
+                <li v-for="h in stays" :key="h.name" class="cf__hotel">
+                  <img v-if="h.image" class="cf__hotel-img" :src="h.image" :alt="h.name" />
+                  <div class="cf__hotel-body">
+                    <p class="t-body t-bold">{{ h.name }} <span v-if="h.starRating" class="cf__stars" aria-hidden="true">{{ '★'.repeat(h.starRating) }}</span></p>
+                    <p class="t-caption c-mgrey">{{ h.city }} · {{ h.from }} – {{ h.to }} · {{ h.nights }} {{ h.nights === 1 ? 'nacht' : 'nachten' }}</p>
+                    <p class="t-caption c-grey">{{ roomsPerHotel }}× {{ h.roomName }} · dagelijks ontbijt · 3-gangendiner op de dag van aankomst</p>
+                  </div>
+                </li>
+              </ol>
+            </div>
+
+            <!-- Flexibel annuleren: onderdeel van het pakket -->
+            <p class="cf__flex">
+              <svg class="cf__flex-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3l7 3v5c0 5-3.5 8.5-7 10-3.5-1.5-7-5-7-10V6l7-3z" stroke="currentColor" stroke-width="2" stroke-linejoin="round" /><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+              <span class="t-body"><b>Flexibel annuleren</b> — tot {{ cancelDate }} (72 uur voor vertrek) kosteloos annuleren of wijzigen, bij alle {{ trip.hotels.length }} hotels.</span>
+            </p>
 
             <div class="cf__price">
-              <div class="cf__price-row"><span class="t-body">{{ trip.typeLabel }}, {{ persons }} personen</span><span class="t-body">{{ money(tripTotal) }}</span></div>
+              <div class="cf__price-row"><span class="t-body">{{ trip.typeLabel }}, {{ persons }} personen, incl. flexibel annuleren</span><span class="t-body">{{ money(tripTotal) }}</span></div>
               <div class="cf__price-row"><span class="t-body">Boekingskosten</span><span class="t-body">{{ money(BOOKING_FEE) }}</span></div>
               <div class="cf__price-row cf__price-row--total"><span class="t-body t-bold">Betaald</span><span class="t-body t-bold">{{ money(total) }}</span></div>
-              <p class="t-caption" :class="flexible ? 'c-green' : 'c-grey'">
-                <template v-if="flexible">Flexibel annuleren: tot 72 uur voor vertrek kosteloos wijzigen of annuleren.</template>
-                <template v-else>Niet-terugbetaalbaar tarief.</template>
-                <a class="cf__link" :href="`mailto:service@vialuxury.com?subject=Boeking ${bookingRef}`">Wijzigen of annuleren</a>
-              </p>
             </div>
           </section>
 
-          <!-- ── 3. E-mailbevestiging ──────────────────────────────────── -->
-          <section class="cf__mail">
-            <svg class="cf__mail-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="2" /><path d="M3 7l9 6 9-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
-            <p class="t-body">Deze bevestiging staat ook in je mailbox: <b>{{ email }}</b>. Verkeerd adres? <a class="cf__link" :href="`mailto:service@vialuxury.com?subject=E-mailadres wijzigen ${bookingRef}`">Wijzig het hier</a>. Je hoeft niets op te schrijven.</p>
-          </section>
-
-          <!-- ── 4. Waarde van de keuze ────────────────────────────────── -->
-          <section class="cf__value">
-            <p class="t-body"><b>Goede keuze.</b> Je betaalde {{ money(saved) }} ({{ savedPct }}%) minder dan wanneer je de {{ trip.hotels.length }} hotels, de diners en de extra's los had geboekt. En Yvette heeft elk hotel zelf bezocht: je weet dus precies wat je krijgt.</p>
-          </section>
+          <aside class="card cf__gtk">
+            <h2 class="cf__h2 cf__h2--icon">
+              <svg class="cf__gtk-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.6.5 1 1.2 1.1 2V17h5v-1.2c.1-.8.5-1.5 1.1-2A6 6 0 0 0 12 3z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+              Goed om te weten
+            </h2>
+            <ul class="cf__list">
+              <li v-for="item in goodToKnow" :key="item" class="t-body">{{ item }}</li>
+            </ul>
+          </aside>
         </div>
 
-        <aside class="cf__col cf__col--side">
-          <!-- ── 5. Wat gebeurt er nu ──────────────────────────────────── -->
+        <!-- ── 3. Goede keuze (banner) ──────────────────────────────────────── -->
+        <section class="cf__value">
+          <svg class="cf__value-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2l2.9 6.3 6.9.7-5.2 4.7 1.5 6.8L12 17l-6.1 3.5 1.5-6.8L2.2 9l6.9-.7L12 2z" stroke="currentColor" stroke-width="2" stroke-linejoin="round" /></svg>
+          <p class="t-body-lg"><b>Goede keuze.</b> Je betaalde {{ money(saved) }} ({{ savedPct }}%) minder dan wanneer je de {{ trip.hotels.length }} hotels, de diners en de extra's los had geboekt. En Yvette heeft elk hotel zelf bezocht: je weet dus precies wat je krijgt.</p>
+        </section>
+
+        <!-- ── 4. Wat er nu gebeurt | Wat je zelf doet ─────────────────────── -->
+        <div class="cf__row cf__row--next">
           <section class="card cf__steps">
             <h2 class="cf__h2">Wat er nu gebeurt</h2>
             <ol class="cf__timeline">
@@ -241,42 +251,45 @@ useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
             </ol>
           </section>
 
-          <!-- ── 6. Wat je zelf doet + Goed om te weten ────────────────── -->
           <section class="card cf__todo">
             <h2 class="cf__h2">Wat je zelf doet</h2>
             <ul class="cf__list">
               <li v-for="item in todos" :key="item" class="t-body">{{ item }}</li>
             </ul>
-            <div class="cf__gtk">
-              <h3 class="cf__h3">Goed om te weten</h3>
-              <ul class="cf__list cf__list--gtk">
-                <li v-for="k in GTK" :key="k" class="t-body">{{ t(k) }}</li>
-              </ul>
-            </div>
           </section>
-        </aside>
-      </div>
-
-      <!-- ── 7. Vervolgstap ──────────────────────────────────────────────── -->
-      <section class="cf__next container">
-        <div class="cf__next-card">
-          <div class="cf__next-text">
-            <p class="t-caption c-mgrey">Voor straks</p>
-            <h2 class="cf__h2">{{ followUp.title }}</h2>
-            <p class="t-body c-grey">{{ followUp.text }}</p>
-          </div>
-          <div class="cf__next-actions">
-            <NuxtLink class="btn-primary cf__cta" to="/multi-hotel-trip/leden">{{ followUp.cta }}</NuxtLink>
-            <a class="cf__link cf__secondary" :href="shareHref">Deel met je reisgenoot</a>
-            <NuxtLink class="cf__link cf__secondary" :to="pdpHref">Bekijk het dagprogramma</NuxtLink>
-          </div>
         </div>
-      </section>
 
-      <!-- ── 8. Contact ──────────────────────────────────────────────────── -->
-      <section class="cf__support container">
-        <p class="t-body">Vragen over je boeking? Bel <a class="cf__link" href="tel:+31207052222">+31 20 705 2222</a> (ma–vr 9–17 uur) of mail <a class="cf__link" href="mailto:service@vialuxury.com">service@vialuxury.com</a>. Noem je boekingsnummer <b>{{ bookingRef }}</b>, dan helpen we je direct.</p>
-      </section>
+        <!-- ── 5. Je account (bestaat al) + delen / tips ───────────────────── -->
+        <section class="cf__account">
+          <div class="cf__account-text">
+            <p class="t-caption c-mgrey">Je account</p>
+            <h2 class="cf__h2">Je boeking staat in je ViaLuxury-account</h2>
+            <p class="t-body c-grey">Als klant heb je nu een account op {{ email }}, en je ontvangt onze nieuwsbrief met de nieuwe vakanties. Inloggen doe je zonder wachtwoord: je krijgt een inloglink per mail.</p>
+          </div>
+          <div class="cf__account-actions">
+            <a class="btn-primary cf__cta" href="#" @click.prevent>Bekijk je boeking in je account</a>
+            <a class="cf__link cf__secondary" :href="shareHref">Deel met je reisgenoot</a>
+            <NuxtLink class="cf__link cf__secondary" :to="pdpHref">Bekijk de tips per hotel</NuxtLink>
+          </div>
+        </section>
+
+        <!-- ── 6. Veelgestelde vragen ──────────────────────────────────────── -->
+        <section class="cf__faq">
+          <h2 class="cf__h2">Veelgestelde vragen</h2>
+          <div v-for="(f, i) in faq" :key="f.q" class="cf__faq-item" :class="{ 'cf__faq-item--open': openFaq === i }">
+            <button type="button" class="cf__faq-q" :aria-expanded="openFaq === i" @click="openFaq = openFaq === i ? null : i">
+              <span>{{ f.q }}</span>
+              <svg class="cf__chev" :class="{ 'cf__chev--open': openFaq === i }" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" /></svg>
+            </button>
+            <p v-show="openFaq === i" class="cf__faq-a t-body c-grey">{{ f.a }}</p>
+          </div>
+        </section>
+
+        <!-- ── 7. Contact ──────────────────────────────────────────────────── -->
+        <section class="cf__support">
+          <p class="t-body">Vragen over je boeking? Bel <a class="cf__link" href="tel:+31207052222">+31 20 705 2222</a> (ma–vr 9–17 uur) of mail <a class="cf__link" href="mailto:service@vialuxury.com">service@vialuxury.com</a>. Noem je boekingsnummer <b>{{ bookingRef }}</b>, dan helpen we je direct.</p>
+        </section>
+      </div>
     </main>
 
     <MultiHotelTripCheckoutFooter />
@@ -285,6 +298,15 @@ useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
 
 <style scoped>
 .page { min-height: 100vh; display: flex; flex-direction: column; }
+.page--white { background: var(--c-white); }
+.cf__main { flex: 1; padding-bottom: 56px; }
+.cf__body { padding-top: 32px; display: flex; flex-direction: column; gap: 24px; }
+.cf__h2 { margin: 0 0 12px; font-size: var(--t-h2); font-weight: var(--w-black); line-height: 1.25; }
+.cf__h2--icon { display: flex; align-items: center; gap: 10px; }
+.cf__link { color: var(--c-via-orange); text-decoration: underline; text-underline-offset: 2px; font-weight: var(--w-medium); }
+.card { border: 1px solid var(--c-light-grey); border-radius: var(--radius); padding: var(--card-pad, 24px); background: var(--c-white); }
+.cf__chev { flex-shrink: 0; transition: transform 200ms ease; }
+.cf__chev--open { transform: rotate(180deg); }
 
 /* Preloader */
 .cf__loader {
@@ -316,132 +338,116 @@ useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
 .cf-step-enter-active, .cf-step-leave-active { transition: opacity 200ms ease, transform 200ms ease; }
 .cf-step-enter-from { opacity: 0; transform: translateY(6px); }
 .cf-step-leave-to { opacity: 0; transform: translateY(-6px); }
-.page--white { background: var(--c-white); }
-.cf__main { flex: 1; padding-bottom: 56px; }
-.cf__h2 { margin: 0 0 12px; font-size: var(--t-h2); font-weight: var(--w-black); line-height: 1.25; }
-.cf__h3 { margin: 0 0 8px; font-size: var(--t-body-lg); font-weight: var(--w-black); }
-.cf__link { color: var(--c-via-orange); text-decoration: underline; text-underline-offset: 2px; font-weight: var(--w-medium); }
 
-/* 1. Kop */
-.cf__head { padding-top: 40px; padding-bottom: 28px; text-align: center; max-width: 720px; }
+/* 1. Hoofdfoto als kop */
+.cf__hero {
+  position: relative; overflow: hidden; min-height: 340px; display: flex; align-items: flex-end;
+  background-size: cover; background-position: center; color: #fff;
+}
+.cf__hero::before { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0, 0, 0, 0.05) 0%, rgba(0, 0, 0, 0.6) 100%); }
+.cf__hero-inner { position: relative; padding-top: 48px; padding-bottom: 36px; max-width: 760px; }
 .cf__check {
   display: inline-flex; align-items: center; justify-content: center;
   width: 64px; height: 64px; margin-bottom: 16px; border-radius: 50%;
-  background: var(--c-green-pale); color: var(--c-via-green);
+  background: var(--c-white); color: var(--c-via-green);
   animation: cf-pop 500ms cubic-bezier(0.2, 1.4, 0.4, 1) both;
 }
 .cf__check svg { width: 34px; height: 34px; }
 .cf__check-path { stroke-dasharray: 24; stroke-dashoffset: 24; animation: cf-draw 450ms 250ms ease-out forwards; }
-.cf__check--light { background: var(--c-white); }
-.cf__title { margin: 0 0 10px; font-size: var(--t-display); font-weight: var(--w-black); line-height: 1.15; }
-.cf__lead { margin: 0 0 10px; font-size: var(--t-body-lg); color: var(--c-dark-grey); }
-.cf__ref { margin: 0; font-size: var(--t-body); color: var(--c-medium-grey); }
-.cf__ref b { color: var(--c-via-black); letter-spacing: 0.02em; }
+.cf__title { margin: 0; font-size: var(--t-display); font-weight: var(--w-black); line-height: 1.15; color: #fff; }
 @keyframes cf-pop { from { transform: scale(0.6); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 @keyframes cf-draw { to { stroke-dashoffset: 0; } }
+.cf__confetti { position: absolute; top: -12px; width: 8px; height: 12px; border-radius: 2px; opacity: 0; animation: cf-fall 2.4s ease-in forwards; }
+@keyframes cf-fall { 0% { transform: translateY(0) rotate(0); opacity: 0.95; } 100% { transform: translateY(420px) rotate(260deg); opacity: 0; } }
 
-/* 2–6. Twee kolommen (Rustig/Beeld), één kolom (Reis) */
-.cf__grid { display: grid; grid-template-columns: minmax(0, 1fr) 392px; gap: 32px 48px; align-items: start; }
-.cf__col { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
-.card { border: 1px solid var(--c-light-grey); border-radius: var(--radius); padding: var(--card-pad, 24px); background: var(--c-white); }
+/* 2. Productblok ⅔ + Goed om te weten ⅓; 4. twee blokken naast elkaar */
+.cf__row { display: grid; gap: 24px; align-items: start; }
+.cf__row--product { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); }
+.cf__row--next { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
 
-/* Samenvatting */
-.cf__summary-head { display: flex; gap: 16px; align-items: center; }
-.cf__thumb { width: 96px; height: 72px; object-fit: cover; border-radius: var(--radius-sm); flex-shrink: 0; }
-.cf__summary-title { margin: 2px 0 4px; font-size: var(--t-h2); font-weight: var(--w-black); line-height: 1.25; }
-.cf__hotels { list-style: none; margin: 20px 0 0; padding: 0; display: flex; flex-direction: column; gap: 14px; }
-.cf__hotel { display: flex; gap: 12px; align-items: flex-start; }
-.cf__num {
-  flex-shrink: 0; width: 28px; height: 28px; border-radius: 50%;
-  background: var(--c-via-black); color: #fff; font-size: 13px; font-weight: var(--w-black);
-  display: inline-flex; align-items: center; justify-content: center;
+.cf__product-head { display: flex; justify-content: space-between; gap: 24px; align-items: flex-start; }
+.cf__product-title { margin: 2px 0 6px; font-size: var(--t-h2); font-weight: var(--w-black); line-height: 1.25; }
+.cf__ref { margin: 0; flex-shrink: 0; text-align: right; font-size: var(--t-caption); color: var(--c-medium-grey); line-height: 1.4; }
+.cf__ref b { display: inline-block; margin-top: 2px; font-size: var(--t-body); color: var(--c-via-black); letter-spacing: 0.02em; }
+
+.cf__hotels-wrap { margin-top: 18px; padding: 14px 16px; border-radius: var(--radius-sm); background: var(--c-surface); }
+.cf__hotels-toggle {
+  display: flex; justify-content: space-between; align-items: center; gap: 16px; width: 100%;
+  padding: 0; background: none; border: 0; cursor: pointer; text-align: left; font-family: inherit; color: var(--c-via-black);
 }
+.cf__hotels-names { font-size: var(--t-body); line-height: 1.4; }
+.cf__hotels-more { display: inline-flex; align-items: center; gap: 6px; flex-shrink: 0; font-size: var(--t-body); font-weight: var(--w-medium); color: var(--c-via-orange); text-decoration: underline; text-underline-offset: 2px; }
+.cf__hotels { list-style: none; margin: 16px 0 0; padding: 16px 0 0; border-top: 1px solid var(--c-light-grey); display: flex; flex-direction: column; gap: 14px; }
+.cf__hotel { display: flex; gap: 14px; align-items: flex-start; }
 .cf__hotel-img { flex-shrink: 0; width: 112px; height: 80px; object-fit: cover; border-radius: var(--radius-sm); }
 .cf__hotel-body { min-width: 0; }
 .cf__stars { color: #e3a008; font-size: 12px; letter-spacing: 1px; }
-.cf__price { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--c-light-grey); }
+
+.cf__flex { display: flex; gap: 10px; align-items: flex-start; margin: 16px 0 0; color: var(--c-via-black); }
+.cf__flex-icon { flex-shrink: 0; width: 22px; height: 22px; margin-top: 1px; color: var(--c-via-green); }
+
+.cf__price { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--c-light-grey); }
 .cf__price-row { display: flex; justify-content: space-between; gap: 12px; padding: 3px 0; }
 .cf__price-row--total { margin-top: 4px; padding-top: 10px; border-top: 1px solid var(--c-light-grey); font-size: var(--t-body-lg); }
-.cf__price .t-caption { margin-top: 10px; }
-.cf__price .cf__link { margin-left: 6px; }
 
-/* E-mail en waarde */
-.cf__mail { display: flex; gap: 12px; align-items: flex-start; padding: 14px 16px; border-radius: var(--radius-sm); background: var(--c-surface); }
-.cf__mail-icon { flex-shrink: 0; width: 22px; height: 22px; margin-top: 2px; color: var(--c-via-black); }
-.cf__value { padding: 0 4px; }
+/* Goed om te weten */
+.cf__gtk { background: #fff7f0; border-color: #f6dcc6; }
+.cf__gtk-icon { flex-shrink: 0; width: 26px; height: 26px; color: var(--c-via-orange); }
+.cf__list { margin: 0; padding-left: 20px; list-style: disc outside; display: flex; flex-direction: column; gap: 8px; }
+.cf__list li { display: list-item; }
 
-/* Wat er nu gebeurt */
+/* 3. Goede keuze als banner */
+.cf__value {
+  display: flex; gap: 14px; align-items: flex-start; padding: 18px 22px;
+  border-radius: var(--radius); background: var(--c-green-pale); color: var(--c-via-black);
+}
+.cf__value p { margin: 0; }
+.cf__value-icon { flex-shrink: 0; width: 26px; height: 26px; margin-top: 2px; color: var(--c-via-green); }
+
+/* 4. Wat er nu gebeurt */
 .cf__timeline { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 14px; }
 .cf__step { position: relative; display: flex; gap: 12px; }
 .cf__step-dot { flex-shrink: 0; width: 12px; height: 12px; margin-top: 5px; border-radius: 50%; background: var(--c-via-green); box-shadow: 0 0 0 3px var(--c-green-pale); }
 .cf__step:not(:last-child)::before { content: ''; position: absolute; left: 5px; top: 20px; bottom: -14px; width: 2px; background: var(--c-light-grey); }
-.cf__step .t-caption + .t-body { margin-top: 1px; }
 
-/* Wat je zelf doet + Goed om te weten */
-.cf__list { margin: 0; padding-left: 20px; list-style: disc outside; display: flex; flex-direction: column; gap: 6px; }
-.cf__list li { display: list-item; }
-.cf__gtk { margin-top: 18px; padding: 14px 16px; border-radius: var(--radius-sm); background: var(--c-surface); }
-.cf__list--gtk { gap: 4px; color: var(--c-dark-grey); font-size: var(--t-body); }
-
-/* 7. Vervolgstap */
-.cf__next { margin-top: 40px; }
-.cf__next-card {
+/* 5. Account */
+.cf__account {
   display: flex; align-items: center; justify-content: space-between; gap: 32px;
   padding: 28px 32px; border-radius: var(--radius); background: var(--c-via-black); color: #fff;
 }
-.cf__next-card .c-mgrey { color: rgba(255, 255, 255, 0.65); }
-.cf__next-card .c-grey { color: rgba(255, 255, 255, 0.85); }
-.cf__next-text { max-width: 620px; }
-.cf__next-actions { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; flex-shrink: 0; }
+.cf__account .cf__h2 { color: #fff; }
+.cf__account .c-mgrey { color: rgba(255, 255, 255, 0.65); }
+.cf__account .c-grey { color: rgba(255, 255, 255, 0.85); }
+.cf__account-text { max-width: 620px; }
+.cf__account-actions { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; flex-shrink: 0; }
 .cf__cta { display: inline-flex; align-items: center; justify-content: center; width: auto; min-width: 254px; text-decoration: none; }
 .cf__secondary { color: #fff; font-size: var(--t-body); }
 
-/* 8. Contact */
-.cf__support { margin-top: 28px; color: var(--c-dark-grey); }
-
-/* ── Variant Beeld: hoofdfoto als kop ── */
-.cf__hero {
-  position: relative; overflow: hidden; min-height: 380px; display: flex; align-items: flex-end;
-  background-size: cover; background-position: center; color: #fff;
+/* 6. FAQ */
+.cf__faq { max-width: 760px; }
+.cf__faq-item { border-bottom: 1px solid var(--c-light-grey); }
+.cf__faq-q {
+  display: flex; justify-content: space-between; align-items: center; gap: 16px; width: 100%; padding: 14px 0;
+  background: none; border: 0; cursor: pointer; text-align: left; font-family: inherit; font-size: var(--t-body-lg); font-weight: var(--w-medium); color: var(--c-via-black);
 }
-.cf__hero::before { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0, 0, 0, 0.05) 0%, rgba(0, 0, 0, 0.65) 100%); }
-.cf__hero-inner { position: relative; padding-top: 48px; padding-bottom: 36px; max-width: 760px; }
-.cf__hero .cf__title { color: #fff; }
-.cf__hero .cf__lead, .cf__hero .cf__ref { color: rgba(255, 255, 255, 0.9); }
-.cf__hero .cf__ref b { color: #fff; }
-.cf__confetti {
-  position: absolute; top: -12px; width: 8px; height: 12px; border-radius: 2px; opacity: 0;
-  animation: cf-fall 2.4s ease-in forwards;
-}
-@keyframes cf-fall { 0% { transform: translateY(0) rotate(0); opacity: 0.95; } 100% { transform: translateY(420px) rotate(260deg); opacity: 0; } }
-.cf--photo .cf__grid { margin-top: 32px; }
-.cf__hotels--photos { gap: 16px; }
+.cf__faq-a { margin: 0 0 16px; max-width: 680px; }
 
-/* ── Variant Reis: één kolom, kop links, alles als één verhaal ── */
-.cf--journey .cf__head { text-align: left; max-width: none; padding-bottom: 20px; }
-.cf--journey .cf__check { width: 48px; height: 48px; margin-bottom: 12px; }
-.cf--journey .cf__check svg { width: 26px; height: 26px; }
-.cf--journey .cf__grid { grid-template-columns: minmax(0, 760px); }
-.cf--journey .cf__steps, .cf--journey .cf__todo { border: none; padding: 0; }
-.cf--journey .cf__steps { padding-top: 8px; }
-.cf--journey .cf__timeline { gap: 18px; }
-.cf--journey .cf__step-dot { width: 14px; height: 14px; }
-.cf--journey .cf__step:not(:last-child)::before { left: 6px; top: 22px; bottom: -18px; }
-.cf--journey .cf__next-card { max-width: 760px; }
+/* 7. Contact */
+.cf__support { color: var(--c-dark-grey); }
 
-/* ── Mobiel (telefoon: één kolom, kaarten zonder rand) ── */
+/* Mobiel: één kolom */
 @media (max-width: 800px) {
-  .cf__head { padding-top: 28px; padding-bottom: 20px; }
-  .cf__title { font-size: var(--t-h1); }
-  .cf__grid { grid-template-columns: 1fr; gap: 20px; }
-  .cf__hero { min-height: 300px; }
+  .cf__body { padding-top: 20px; gap: 16px; }
+  .cf__hero { min-height: 280px; }
   .cf__hero-inner { padding-top: 36px; padding-bottom: 24px; }
-  .cf__summary-head { align-items: flex-start; }
-  .cf__thumb { width: 72px; height: 56px; }
+  .cf__title { font-size: var(--t-h1); }
+  .cf__row--product, .cf__row--next { grid-template-columns: 1fr; gap: 16px; }
+  .cf__product-head { flex-direction: column; gap: 10px; }
+  .cf__ref { text-align: left; }
+  .cf__hotels-toggle { flex-direction: column; align-items: flex-start; gap: 6px; }
   .cf__hotel-img { width: 88px; height: 64px; }
-  .cf__next { margin-top: 28px; }
-  .cf__next-card { flex-direction: column; align-items: stretch; padding: 22px 20px; gap: 18px; }
+  .cf__account { flex-direction: column; align-items: stretch; padding: 22px 20px; gap: 18px; }
   .cf__cta { width: 100%; }
-  .cf__next-actions { align-items: stretch; text-align: center; }
+  .cf__account-actions { align-items: stretch; text-align: center; }
 }
 </style>
