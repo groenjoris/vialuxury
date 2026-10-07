@@ -92,6 +92,19 @@ const arrangementIncludes = computed(() => checkoutTrip.value?.includes ?? [
 const sideEl = ref<HTMLElement | null>(null)
 const sideTop = useStickyFit(sideEl, 16)
 
+// "Boek nu" (prototype: geen validatie, klikken = betaald): voornaam en e-mail uit het
+// formulier meenemen naar de bevestigingspagina; alleen bij een vakantie.
+const checkoutGuest = useState<{ firstName: string; email: string } | null>('mht-checkout-guest', () => null)
+function bookNow() {
+  if (!checkoutTrip.value) return
+  if (import.meta.client) {
+    const firstName = (document.getElementById('gf-first') as HTMLInputElement | null)?.value.trim() ?? ''
+    const email = (document.getElementById('gf-email') as HTMLInputElement | null)?.value.trim() ?? ''
+    checkoutGuest.value = { firstName, email }
+  }
+  navigateTo('/multi-hotel-trip/checkout/bevestiging')
+}
+
 useHead({ title: 'Gegevens en betaalwijze — ViaLuxury' })
 </script>
 
@@ -116,7 +129,7 @@ useHead({ title: 'Gegevens en betaalwijze — ViaLuxury' })
 
           <div v-if="!isMobileUa" class="col-form__cta col-form__cta--split">
             <NuxtLink class="btn-back t-body" to="/multi-hotel-trip/checkout/kamers">{{ checkoutTrip ? '← Terug naar opties' : '← Terug naar kamers' }}</NuxtLink>
-            <button class="btn-primary btn-primary--auto" type="button" :disabled="roomsSel === 0">
+            <button class="btn-primary btn-primary--auto" type="button" :disabled="roomsSel === 0" @click="bookNow">
               {{ roomsSel === 0 ? (checkoutTrip ? 'Kies het aantal personen' : 'Selecteer een kamer') : 'Boek nu' }}
             </button>
           </div>
@@ -206,7 +219,7 @@ useHead({ title: 'Gegevens en betaalwijze — ViaLuxury' })
               </p>
             </template>
 
-            <button class="btn-primary" type="button" :disabled="roomsSel === 0">
+            <button class="btn-primary" type="button" :disabled="roomsSel === 0" @click="bookNow">
               {{ roomsSel === 0 ? (checkoutTrip ? 'Kies het aantal personen' : 'Selecteer een kamer') : 'Boek nu' }}
             </button>
 
