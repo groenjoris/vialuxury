@@ -211,13 +211,13 @@ function onCardClick(e: MouseEvent) {
   left: 0;
   z-index: 2;
   width: 62%;
-  min-height: 98px;
+  min-height: 78px;
   box-sizing: border-box;
-  padding: 13px 0 14px 18px;
+  padding: 11px 0 12px 18px;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 11px;
+  gap: 9px;
   background: var(--c, var(--color-dark));
   color: var(--on, #fff);
   clip-path: polygon(0 0, 100% 0, 68% 100%, 0 100%);
@@ -232,8 +232,8 @@ function onCardClick(e: MouseEvent) {
 }
 .photo-card__collection { display: flex; align-items: center; gap: 10px; }
 .photo-card__collection-icon {
-  width: 25px;
-  height: 25px;
+  width: 23px;
+  height: 23px;
   flex: none;
   background: currentColor;
   /* `--icon` komt via data-collection uit mhtj-originals.css. */
