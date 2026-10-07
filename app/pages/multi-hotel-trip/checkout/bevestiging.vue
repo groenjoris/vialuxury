@@ -438,6 +438,7 @@ useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
 /* Mobiel: één kolom */
 @media (max-width: 800px) {
   .cf__body { padding-top: 20px; gap: 16px; }
+  .card { padding: 16px; }
   .cf__hero { min-height: 280px; }
   .cf__hero-inner { padding-top: 36px; padding-bottom: 24px; }
   .cf__title { font-size: var(--t-h1); }
