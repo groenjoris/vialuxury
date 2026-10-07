@@ -171,7 +171,7 @@ function onCardClick(e: MouseEvent) {
 .photo-card {
   position: relative;
   display: block;
-  aspect-ratio: 1 / 1;
+  aspect-ratio: 7 / 8;
   min-width: 0;
   border-radius: var(--radius-lg);
   overflow: hidden;
@@ -192,18 +192,25 @@ function onCardClick(e: MouseEvent) {
   object-fit: cover;
   display: block;
 }
-/* Het verloop houdt de onderste helft donker genoeg voor witte tekst,
-   zonder de foto erboven te dempen. */
+/* Het verloop houdt de onderkant donker genoeg voor witte tekst, zonder de
+   foto erboven te dempen. Vaste hoogte en niet een percentage van de kaart:
+   het tekstblok is altijd even hoog, dus een hogere kaart hoort méér foto
+   te laten zien, niet meer verloop. */
 .photo-card__scrim {
   position: absolute;
-  inset: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 270px;
+  max-height: 85%;
   background: linear-gradient(
     to top,
     rgba(0, 0, 0, 0.90) 0%,
-    rgba(0, 0, 0, 0.80) 26%,
-    rgba(0, 0, 0, 0.58) 44%,
-    rgba(0, 0, 0, 0.24) 62%,
-    rgba(0, 0, 0, 0) 84%
+    rgba(0, 0, 0, 0.84) 28%,
+    rgba(0, 0, 0, 0.70) 50%,
+    rgba(0, 0, 0, 0.42) 72%,
+    rgba(0, 0, 0, 0.15) 88%,
+    rgba(0, 0, 0, 0) 100%
   );
 }
 
