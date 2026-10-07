@@ -110,6 +110,22 @@ function money(v: number) {
   return `€${v.toLocaleString('nl-NL', { minimumFractionDigits: v % 1 ? 2 : 0, maximumFractionDigits: 2 })}`
 }
 
+/* Preloader (ontwerpdocument, principe 5): de betaling/boeking wordt "bevestigd" — hier een
+   gesimuleerde 3 seconden met een rustige animatie en wisselende teksten, zodat niemand naar een
+   leeg scherm kijkt. Server én eerste client-render tonen de loader (geen flits), daarna de pagina. */
+const loading = ref(true)
+const loadStep = ref(0)
+const loadSteps = computed(() => [
+  'Betaling ontvangen',
+  ...trip.value.hotels.map((h) => `Kamer bevestigen bij ${h.name}…`),
+  'Bevestiging klaarzetten…',
+])
+onMounted(() => {
+  const per = 3000 / loadSteps.value.length
+  const tick = setInterval(() => { loadStep.value = Math.min(loadStep.value + 1, loadSteps.value.length - 1) }, per)
+  setTimeout(() => { clearInterval(tick); loading.value = false; window.scrollTo(0, 0) }, 3000)
+})
+
 useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
 </script>
 
@@ -119,7 +135,24 @@ useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
     <MultiHotelTripCheckoutTopNav v-else />
     <MultiHotelTripCheckoutConfirmationVariantSwitch />
 
-    <main class="cf__main">
+    <!-- Preloader: 3 seconden "boeking bevestigen" voordat de bevestiging verschijnt. -->
+    <Transition name="cf-load">
+      <div v-if="loading" class="cf__loader" role="status" aria-live="polite">
+        <div class="cf__loader-inner">
+          <span class="cf__spinner" aria-hidden="true" />
+          <p class="cf__loader-title">Je boeking wordt bevestigd</p>
+          <Transition name="cf-step" mode="out-in">
+            <p :key="loadStep" class="cf__loader-step">{{ loadSteps[loadStep] }}</p>
+          </Transition>
+          <ol class="cf__loader-list" aria-hidden="true">
+            <li v-for="(st, i) in loadSteps" :key="st" :class="{ 'cf__loader-item--done': i < loadStep, 'cf__loader-item--on': i === loadStep }">{{ st.replace('…', '') }}</li>
+          </ol>
+          <p class="cf__loader-note">Dit duurt een paar seconden. Sluit de pagina niet.</p>
+        </div>
+      </div>
+    </Transition>
+
+    <main v-show="!loading" class="cf__main">
       <!-- ── 1. Bevestiging + dank ─────────────────────────────────────── -->
       <!-- Beeld: hoofdfoto van de reis als kop, bevestiging erover. -->
       <section v-if="variant === 'photo'" class="cf__hero" :style="{ backgroundImage: `url(${trip.thumb})` }">
@@ -252,6 +285,37 @@ useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
 
 <style scoped>
 .page { min-height: 100vh; display: flex; flex-direction: column; }
+
+/* Preloader */
+.cf__loader {
+  position: fixed; inset: 0; z-index: 1000; display: flex; align-items: center; justify-content: center;
+  background: var(--c-white); padding: 24px; text-align: center;
+}
+.cf__loader-inner { max-width: 420px; }
+.cf__spinner {
+  display: inline-block; width: 56px; height: 56px; margin-bottom: 20px; border-radius: 50%;
+  border: 4px solid var(--c-light-grey); border-top-color: var(--c-via-orange);
+  animation: cf-spin 900ms linear infinite;
+}
+@keyframes cf-spin { to { transform: rotate(360deg); } }
+.cf__loader-title { margin: 0 0 6px; font-size: var(--t-h1); font-weight: var(--w-black); line-height: 1.2; }
+.cf__loader-step { margin: 0 0 20px; min-height: 24px; font-size: var(--t-body-lg); color: var(--c-dark-grey); }
+.cf__loader-list { list-style: none; margin: 0 auto 20px; padding: 0; display: inline-flex; flex-direction: column; align-items: flex-start; gap: 6px; text-align: left; }
+.cf__loader-list li { position: relative; padding-left: 24px; font-size: var(--t-body); color: var(--c-medium-grey); }
+.cf__loader-list li::before {
+  content: ''; position: absolute; left: 0; top: 4px; width: 14px; height: 14px; border-radius: 50%;
+  border: 2px solid var(--c-light-grey); box-sizing: border-box;
+}
+.cf__loader-item--on { color: var(--c-via-black); }
+.cf__loader-item--on::before { border-color: var(--c-via-orange); }
+.cf__loader-item--done { color: var(--c-via-black); }
+.cf__loader-item--done::before { border-color: var(--c-via-green); background: var(--c-via-green); }
+.cf__loader-note { margin: 0; font-size: var(--t-caption); color: var(--c-medium-grey); }
+.cf-load-leave-active { transition: opacity 350ms ease; }
+.cf-load-leave-to { opacity: 0; }
+.cf-step-enter-active, .cf-step-leave-active { transition: opacity 200ms ease, transform 200ms ease; }
+.cf-step-enter-from { opacity: 0; transform: translateY(6px); }
+.cf-step-leave-to { opacity: 0; transform: translateY(-6px); }
 .page--white { background: var(--c-white); }
 .cf__main { flex: 1; padding-bottom: 56px; }
 .cf__h2 { margin: 0 0 12px; font-size: var(--t-h2); font-weight: var(--w-black); line-height: 1.25; }
