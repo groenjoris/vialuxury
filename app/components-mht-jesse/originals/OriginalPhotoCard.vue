@@ -25,6 +25,8 @@
       </span>
     </div>
 
+    <span v-if="deal.discountPercentage" class="photo-card__discount">-{{ deal.discountPercentage }}%</span>
+
     <button
       type="button"
       class="photo-card__heart"
@@ -45,6 +47,12 @@
           <span>{{ f.label }}</span>
         </li>
       </ul>
+
+      <p class="photo-card__price">
+        <span class="photo-card__from">Vanaf</span>
+        <span class="photo-card__now">{{ formatPrice(price) }}</span>
+        <span v-if="originalPrice > price" class="photo-card__was">{{ formatPrice(originalPrice) }}</span>
+      </p>
     </div>
   </article>
 </template>
@@ -74,6 +82,8 @@
  */
 import type { SearchHotel, SearchHotelDeal } from '~/types/searchHotel'
 import { COLLECTIONS, type CollectionId } from '~/utils-mht-jesse/originals'
+import { formatPrice } from '~/utils-mht-jesse/formatPrice'
+import { priceForArrival, PRICED_PERSONS } from '~/utils-mht-jesse/priceFormula'
 import { nightsLabel } from '~/utils-mht-jesse/plural'
 import { pickSmartInclusions } from '~/utils-mht-jesse/smartInclusions'
 import { matchIcon } from '~/utils-mht-jesse/iconMatcher'
@@ -128,6 +138,13 @@ const facts = computed(() => {
   return out
 })
 
+const price = computed(() =>
+  priceForArrival(props.deal.basePrice, props.deal.id, arrivalDate.value, PRICED_PERSONS),
+)
+const originalPrice = computed(() =>
+  priceForArrival(props.deal.originalPrice, props.deal.id, arrivalDate.value, PRICED_PERSONS),
+)
+
 const linkTarget = computed(() => (isMobile.value ? '_self' : '_blank'))
 
 const dealHref = computed(() => {
@@ -153,7 +170,7 @@ function onCardClick(e: MouseEvent) {
 .photo-card {
   position: relative;
   display: block;
-  aspect-ratio: 6 / 5;
+  aspect-ratio: 1 / 1;
   min-width: 0;
   border-radius: var(--radius-lg);
   overflow: hidden;
@@ -240,6 +257,34 @@ function onCardClick(e: MouseEvent) {
 .photo-card__collection-name { font-weight: 700; }
 .photo-card__collection-word { font-weight: 400; opacity: 0.82; }
 
+/* Dezelfde getekende banner als op de andere kaarten, maar rechtsboven
+   naast het hart in plaats van linksboven: daar zit nu de vlag. Onder de
+   vlag kan hij niet, want het tekstblok groeit vanaf de onderkant omhoog en
+   loopt er op een smalle kaart tegenaan; en onderin zou zwart op het
+   donkere verloop verdwijnen. */
+.photo-card__discount {
+  position: absolute;
+  top: 16px;
+  right: 54px;
+  z-index: 3;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 145 104'%3E%3Cpath d='M123.24 100.853L144.909 4.88359C145.524 2.16058 143.231 -0.33886 140.466 0.0394912L3.4576 18.7817C1.47641 19.0527 -0.000259399 20.7451 -0.000259399 22.7448V90.5564C-0.000259399 92.6393 1.59824 94.3736 3.67427 94.5431L119.013 103.959C120.999 104.121 122.801 102.797 123.24 100.853Z' fill='%23141414'/%3E%3C/svg%3E");
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  width: 60px;
+  height: 43px;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-family: var(--font-heading);
+  font-size: 15px;
+  font-weight: 700;
+  padding: 0 13px 0 6px;
+  letter-spacing: 0.5px;
+}
+
 .photo-card__heart {
   position: absolute;
   top: 12px;
@@ -325,8 +370,34 @@ function onCardClick(e: MouseEvent) {
   mask: var(--i) center/contain no-repeat;
 }
 
+/* De prijsregel in dezelfde opbouw als op de andere kaarten (cursief
+   "Vanaf", dik bedrag, doorgestreepte oude prijs), maar in wit op de foto;
+   het rood van de oude prijs is daar niet leesbaar genoeg voor. */
+.photo-card__price {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 12px 0 0;
+}
+.photo-card__from {
+  font-family: var(--font-heading);
+  font-style: italic;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.82);
+}
+.photo-card__now {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 1;
+}
+.photo-card__was {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.72);
+  text-decoration: line-through;
+}
+
 @media (max-width: 767px) {
-  .photo-card { aspect-ratio: 5 / 4; }
   .photo-card__band { width: 56%; }
 }
 </style>
