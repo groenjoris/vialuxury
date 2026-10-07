@@ -14,8 +14,8 @@
 
         <!-- Versie 1 (vol) of versie 2 (licht) uit de kleurnota, zodat beide
              naast elkaar te beoordelen zijn. De keuze blijft bewaard. -->
-        <div class="originals__switch" role="group" aria-label="Labelversie">
-          <span class="originals__switch-label">Labelversie</span>
+        <div class="originals__switch" role="group" aria-label="Kaartversie">
+          <span class="originals__switch-label">Kaartversie</span>
           <div class="originals__switch-track">
             <button
               type="button"
@@ -31,6 +31,13 @@
               :aria-pressed="variant === 'licht'"
               @click="variant = 'licht'"
             >Licht</button>
+            <button
+              type="button"
+              class="originals__switch-btn"
+              :class="{ 'originals__switch-btn--on': variant === 'foto' }"
+              :aria-pressed="variant === 'foto'"
+              @click="variant = 'foto'"
+            >Foto</button>
           </div>
         </div>
 
@@ -56,14 +63,22 @@
         </p>
 
         <div v-if="shown.length > 0" class="originals__grid">
-          <MhtJesseOriginalCard
-            v-for="row in shown"
-            :key="row.deal.id"
-            :hotel="row.hotel"
-            :deal="row.deal"
-            :number="row.number"
-            :collection="row.collection"
-          />
+          <template v-for="row in shown" :key="row.deal.id">
+            <MhtJesseOriginalPhotoCard
+              v-if="variant === 'foto'"
+              :hotel="row.hotel"
+              :deal="row.deal"
+              :number="row.number"
+              :collection="row.collection"
+            />
+            <MhtJesseOriginalCard
+              v-else
+              :hotel="row.hotel"
+              :deal="row.deal"
+              :number="row.number"
+              :collection="row.collection"
+            />
+          </template>
         </div>
         <p v-else class="originals__empty">
           Geen originals met deze filters. <button type="button" class="originals__empty-link" @click="resetFilters">Wis de filters</button>
@@ -83,8 +98,9 @@
  * hoort bij één van de zes collecties uit de kleurnota; die collectie bepaalt
  * de kleur van de band en is tevens het enige filter op deze pagina.
  *
- * `data-variant="vol"` op de wrapper kiest labelversie 1 (vlak in de
- * collectiekleur). Zet hem op "licht" voor versie 2 uit de nota.
+ * `data-variant` op de wrapper kiest de kaartversie: "vol" (vlak in de
+ * collectiekleur) en "licht" zijn de twee versies uit de kleurnota;
+ * "foto" is de beeldvullende kaart met het donkere palet.
  */
 import { mappedHotels } from '~/data/deals-mapper'
 import { tripSearchHotels } from '~/data/mhtj-trips'
@@ -114,14 +130,17 @@ const allRows: OriginalRow[] = pairs.map((r, i) => ({
   collection: assigned.get(r.deal.id)!,
 }))
 
-/** 'vol' = versie 1 uit de nota, 'licht' = versie 2. Bewaard in
- *  localStorage zodat de keuze een herlaadbeurt overleeft. */
+/** 'vol' = versie 1 uit de nota, 'licht' = versie 2, 'foto' = de
+ *  fotokaart met het donkere palet. Bewaard in localStorage zodat de
+ *  keuze een herlaadbeurt overleeft. */
+type Variant = 'vol' | 'licht' | 'foto'
+const VARIANTS: Variant[] = ['vol', 'licht', 'foto']
 const VARIANT_KEY = 'vl_mhtj_originals_variant'
-const variant = ref<'vol' | 'licht'>('vol')
+const variant = ref<Variant>('vol')
 
 onMounted(() => {
   const saved = localStorage.getItem(VARIANT_KEY)
-  if (saved === 'vol' || saved === 'licht') variant.value = saved
+  if (VARIANTS.includes(saved as Variant)) variant.value = saved as Variant
 })
 watch(variant, v => {
   if (import.meta.client) localStorage.setItem(VARIANT_KEY, v)
@@ -253,6 +272,12 @@ const shown = computed(() =>
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: 24px;
+}
+/* De fotokaart is breder dan hoog en heeft geen tekstblok eronder, dus
+   daar passen er meer naast elkaar. */
+.mhtj-originals[data-variant="foto"] .originals__grid {
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
 }
 
 .originals__empty { font-size: 15px; color: var(--color-text-secondary); }
