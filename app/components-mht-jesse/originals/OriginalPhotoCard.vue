@@ -210,13 +210,13 @@ function onCardClick(e: MouseEvent) {
   left: 0;
   z-index: 2;
   width: 62%;
-  min-height: 78px;
+  min-height: 68px;
   box-sizing: border-box;
-  padding: 11px 0 12px 18px;
+  padding: 9px 0 10px 18px;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 9px;
+  gap: 7px;
   background: var(--c, var(--color-dark));
   color: var(--on, #fff);
   clip-path: polygon(0 0, 100% 0, 68% 100%, 0 100%);
