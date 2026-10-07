@@ -113,8 +113,9 @@ const TRIPS: TripSpec[] = [
   {
     id: 'trip-noord-frankrijk',
     slug: 'ontdek-noord-frankrijk-en-de-opaalkust-in-7-dagen',
-    // Hoofdbeeld: Les Deux Caps (Cap Blanc-Nez, Wikimedia — zie CREDITS.md).
-    coverImage: '/images/vakanties/001/blancnez.jpg',
+    // Definitieve beelden (map "Opaalkust Final", 2026-10-07): hoofdbeeld 1, dan 2 en 3,
+    // daarna per hotel vijf foto's (T1–5 Tilques, C1–5 Cléry, B1–5 Beaulaincourt).
+    coverImage: '/images/vakanties/001/opaalkust-1.jpg',
     fromHome: { city: 'Utrecht', minutes: 225 },
     // Onder de minimap per taal: nl Utrecht, nl-BE Brussel (uit het document), de Düsseldorf (OSRM).
     fromHomeByLocale: {
@@ -127,29 +128,20 @@ const TRIPS: TripSpec[] = [
       '/images/vakanties/001/nearby-saint-omer.jpg',
       '/images/vakanties/001/nearby-marais.jpg',
     ],
-    // Beeldplan uit het document (na het hoofdbeeld): ⅓ hotel, ⅔ bestemming/beleving.
+    // Gallery na het hoofdbeeld: 2, 3 en dan de vijf foto's van elk hotel. De PDP toont
+    // bovenin de eerste vijf (1, 2, 3, T1, T2).
     gallery: [
-      '/images/vakanties/001/nearby-saint-omer.jpg',
-      '/images/vakanties/001/nearby-marais.jpg',
-      { stop: 0, count: 3 },
-      '/images/vakanties/001/placeholder-restaurant-bacove.svg',
-      { stop: 1, count: 3 },
-      '/images/vakanties/001/placeholder-hardelot.svg',
-      '/images/vakanties/001/nearby-boulogne.jpg',
-      '/images/vakanties/001/placeholder-crypte.svg',
-      '/images/vakanties/001/placeholder-ambachtslieden.svg',
-      '/images/vakanties/001/wissant.jpg',
-      '/images/vakanties/001/arras.jpg',
-      { stop: 2, count: 3 },
-      '/images/vakanties/001/nearby-bethune.jpg',
-      '/images/vakanties/001/placeholder-louvre-lens.svg',
-      '/images/vakanties/001/placeholder-maison-renard.svg',
+      '/images/vakanties/001/opaalkust-2.jpg',
+      '/images/vakanties/001/opaalkust-3.jpg',
+      { stop: 0, count: 5 },
+      { stop: 1, count: 5 },
+      { stop: 2, count: 5 },
     ],
     type: 'auto',
     stops: [
-      { name: 'Château Tilques', city: 'Tilques', region: 'Noord-Frankrijk', nights: 2, stars: 3, lat: 50.7797, lng: 2.2010, image: '/images/vakanties/001/tilques-1.jpg', extraImages: ['/images/vakanties/001/tilques-3.jpg', '/images/vakanties/001/tilques-4.jpg', '/images/vakanties/001/tilques-6.jpg', '/images/vakanties/001/tilques-5.jpg', '/images/vakanties/001/tilques-2.jpg'], dinnerImage: '/images/vakanties/001/extra-tilques-restaurant.jpg', breakfastImage: '/images/vakanties/001/extra-tilques-ontbijt.jpg', includes: [l('2 x overnachting', '2 nights'), l('Dagelijks uitgebreid ontbijtbuffet', 'Daily extensive breakfast buffet'), l('3-gangendiner bij Le Vert Mesnil (dag van aankomst)', '3-course dinner at Le Vert Mesnil (day of arrival)'), l('Gebruik van het binnenzwembad', 'Use of the indoor pool'), l('Tennis & jeu de boules', 'Tennis & pétanque'), l('Late check-out tot 14:00 uur', 'Late check-out until 14:00'), l('Gratis parkeren', 'Free parking')] },
-      { name: 'Château Cléry', city: "Hesdin-l'Abbé", region: 'Opaalkust', nights: 2, stars: 3, lat: 50.6725, lng: 1.7365, image: '/images/vakanties/001/clery-1.jpg', extraImages: ['/images/vakanties/001/clery-6.jpg', '/images/vakanties/001/clery-9.jpg', '/images/vakanties/001/clery-5.jpg', '/images/vakanties/001/clery-2.jpg', '/images/vakanties/001/clery-3.jpg', '/images/vakanties/001/clery-4.jpg', '/images/vakanties/001/clery-7.jpg', '/images/vakanties/001/clery-8.jpg'], dinnerImage: '/images/vakanties/001/extra-clery-diner.jpg', breakfastImage: '/images/vakanties/001/extra-clery-ontbijt.jpg', travel: { km: 53, minutes: 45 }, includes: [l('2 x overnachting', '2 nights'), l('Dagelijks uitgebreid ontbijtbuffet', 'Daily extensive breakfast buffet'), l('3-gangendiner bij Le Berthier (dag van aankomst)', '3-course dinner at Le Berthier (day of arrival)'), l('Gebruik van de sauna', 'Use of the sauna'), l('Late check-out tot 14:00 uur', 'Late check-out until 14:00'), l('Gratis parkeren', 'Free parking')] },
-      { name: 'Hotel Royal Beaulaincourt', city: 'Béthune', region: 'Noord-Frankrijk', nights: 2, stars: 4, lat: 50.5305, lng: 2.6406, image: '/images/vakanties/001/beaulaincourt-1.jpg', extraImages: ['/images/vakanties/001/beaulaincourt-3.jpg', '/images/vakanties/001/beaulaincourt-4.jpg', '/images/vakanties/001/beaulaincourt-2.jpg'], dinnerImage: '/images/vakanties/001/extra-beaulaincourt-diner.jpg', checkIn: '14:00', breakfastImage: '/images/vakanties/001/extra-beaulaincourt-ontbijt.jpg', travel: { km: 90, minutes: 65 }, includes: [l('2 x overnachting', '2 nights'), l('Dagelijks ontbijt', 'Daily breakfast'), l('3-gangendiner in het restaurant van het hotel (dag van aankomst)', '3-course dinner in the hotel restaurant (day of arrival)'), l('Welkomstbubbels', 'Welcome bubbles'), l('Late check-out tot 15:00 uur', 'Late check-out until 15:00')] },
+      { name: 'Château Tilques', city: 'Tilques', region: 'Noord-Frankrijk', nights: 2, stars: 3, lat: 50.7797, lng: 2.2010, image: '/images/vakanties/001/tilques-t1.jpg', extraImages: ['/images/vakanties/001/tilques-t2.jpg', '/images/vakanties/001/tilques-t3.jpg', '/images/vakanties/001/tilques-t4.jpg', '/images/vakanties/001/tilques-t5.jpg'], dinnerImage: '/images/vakanties/001/extra-tilques-restaurant.jpg', breakfastImage: '/images/vakanties/001/extra-tilques-ontbijt.jpg', includes: [l('2 x overnachting', '2 nights'), l('Dagelijks uitgebreid ontbijtbuffet', 'Daily extensive breakfast buffet'), l('3-gangendiner bij Le Vert Mesnil (dag van aankomst)', '3-course dinner at Le Vert Mesnil (day of arrival)'), l('Gebruik van het binnenzwembad', 'Use of the indoor pool'), l('Tennis & jeu de boules', 'Tennis & pétanque'), l('Late check-out tot 14:00 uur', 'Late check-out until 14:00'), l('Gratis parkeren', 'Free parking')] },
+      { name: 'Château Cléry', city: "Hesdin-l'Abbé", region: 'Opaalkust', nights: 2, stars: 3, lat: 50.6725, lng: 1.7365, image: '/images/vakanties/001/clery-c1.jpg', extraImages: ['/images/vakanties/001/clery-c2.jpg', '/images/vakanties/001/clery-c3.jpg', '/images/vakanties/001/clery-c4.jpg', '/images/vakanties/001/clery-c5.jpg'], dinnerImage: '/images/vakanties/001/extra-clery-diner.jpg', breakfastImage: '/images/vakanties/001/extra-clery-ontbijt.jpg', travel: { km: 53, minutes: 45 }, includes: [l('2 x overnachting', '2 nights'), l('Dagelijks uitgebreid ontbijtbuffet', 'Daily extensive breakfast buffet'), l('3-gangendiner bij Le Berthier (dag van aankomst)', '3-course dinner at Le Berthier (day of arrival)'), l('Gebruik van de sauna', 'Use of the sauna'), l('Late check-out tot 14:00 uur', 'Late check-out until 14:00'), l('Gratis parkeren', 'Free parking')] },
+      { name: 'Hotel Royal Beaulaincourt', city: 'Béthune', region: 'Noord-Frankrijk', nights: 2, stars: 4, lat: 50.5305, lng: 2.6406, image: '/images/vakanties/001/beaulaincourt-b1.jpg', extraImages: ['/images/vakanties/001/beaulaincourt-b2.jpg', '/images/vakanties/001/beaulaincourt-b3.jpg', '/images/vakanties/001/beaulaincourt-b4.jpg', '/images/vakanties/001/beaulaincourt-b5.jpg'], dinnerImage: '/images/vakanties/001/extra-beaulaincourt-diner.jpg', checkIn: '14:00', breakfastImage: '/images/vakanties/001/extra-beaulaincourt-ontbijt.jpg', travel: { km: 90, minutes: 65 }, includes: [l('2 x overnachting', '2 nights'), l('Dagelijks ontbijt', 'Daily breakfast'), l('3-gangendiner in het restaurant van het hotel (dag van aankomst)', '3-course dinner in the hotel restaurant (day of arrival)'), l('Welkomstbubbels', 'Welcome bubbles'), l('Late check-out tot 15:00 uur', 'Late check-out until 15:00')] },
     ],
     title: l('Ontdek Noord-Frankrijk en de Opaalkust in 7 dagen', 'Discover Northern France and the Opal Coast in 7 days'),
     pitch: l('De moerassen rond Saint-Omer, de krijtkust van de Opaalkust en het levendige Béthune — natuur, kust en stad in drie bijzondere hotels.', 'The marshes around Saint-Omer, the chalk cliffs of the Opal Coast and lively Béthune: nature, coast and city in three special hotels.'),
