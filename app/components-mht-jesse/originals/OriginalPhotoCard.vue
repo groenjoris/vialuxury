@@ -1,39 +1,40 @@
 <template>
   <article class="photo-card" :data-collection="collection" @click="onCardClick">
-    <NuxtLink
-      :to="dealHref"
-      :target="linkTarget"
-      rel="noopener"
-      class="photo-card__link"
-      :aria-label="hotel?.name || title"
-      @click.stop
-    />
+    <div class="photo-card__media">
+      <NuxtLink
+        :to="dealHref"
+        :target="linkTarget"
+        rel="noopener"
+        class="photo-card__link"
+        :aria-label="hotel?.name || title"
+        @click.stop
+      />
 
-    <img class="photo-card__img" :src="image" :alt="hotel?.name || title" loading="lazy" />
-    <span class="photo-card__scrim" aria-hidden="true"></span>
+      <img class="photo-card__img" :src="image" :alt="hotel?.name || title" loading="lazy" />
 
-    <!-- De vlag linksboven: volgnummer, collectie-icoon en collectienaam.
-         De rechterkant loopt schuin naar binnen. -->
-    <div class="photo-card__band">
-      <span class="photo-card__no">Original NO. {{ number }}</span>
-      <span class="photo-card__collection">
-        <span class="photo-card__collection-icon" aria-hidden="true"></span>
-        <span class="photo-card__collection-text">
-          <span class="photo-card__collection-name">{{ collectionLabel }}</span>
-          <span class="photo-card__collection-word">Collection</span>
+      <!-- De vlag linksboven: volgnummer, collectie-icoon en collectienaam.
+           De rechterkant loopt schuin naar binnen. -->
+      <div class="photo-card__band">
+        <span class="photo-card__no">Original NO. {{ number }}</span>
+        <span class="photo-card__collection">
+          <span class="photo-card__collection-icon" aria-hidden="true"></span>
+          <span class="photo-card__collection-text">
+            <span class="photo-card__collection-name">{{ collectionLabel }}</span>
+            <span class="photo-card__collection-word">Collection</span>
+          </span>
         </span>
-      </span>
-    </div>
+      </div>
 
-    <button
-      type="button"
-      class="photo-card__heart"
-      :aria-pressed="isFavorite"
-      :aria-label="isFavorite ? 'Verwijder uit favorieten' : 'Bewaar als favoriet'"
-      @click.stop="toggleFav(favKey)"
-    >
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.5-7 10-7 10z" /></svg>
-    </button>
+      <button
+        type="button"
+        class="photo-card__heart"
+        :aria-pressed="isFavorite"
+        :aria-label="isFavorite ? 'Verwijder uit favorieten' : 'Bewaar als favoriet'"
+        @click.stop="toggleFav(favKey)"
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.5-7 10-7 10z" /></svg>
+      </button>
+    </div>
 
     <div class="photo-card__text">
       <h3 class="photo-card__title">{{ title }}</h3>
@@ -62,10 +63,10 @@
 /**
  * Multi Hotel Trip - Jesse — Original-kaart, versie "foto".
  *
- * Eén beeldvlak in plaats van foto-plus-tekstblok: de foto loopt door tot
- * de rand, met een verloop naar donker onderin waar de titel en de drie
- * kenmerken op staan. Linksboven een vlag in de collectiekleur met het
- * volgnummer en de collectienaam.
+ * De foto in zijn eigen verhouding, met daaronder een wit tekstblok; niets
+ * van de tekst ligt over het beeld. Alleen de vlag in de collectiekleur
+ * (linksboven, met volgnummer en collectienaam) en het favorietenhart
+ * (rechtsboven) staan op de foto.
  *
  * Twee dingen wijken bewust af van het aangeleverde ontwerp, omdat de
  * dealdata anders is dan de voorbeelden daarin:
@@ -76,8 +77,7 @@
  *    had geredigeerde regels. Past er niet alles op één rij, dan loopt de
  *    rij door op een tweede.
  *
- * De kleur komt via `data-collection` uit mhtj-originals.css, waar
- * `data-variant="foto"` het donkere palet aanzet.
+ * De collectiekleur komt via `data-collection` uit mhtj-originals.css.
  *
  * Alleen in gebruik op /mht-jesse/originals.
  */
@@ -169,49 +169,35 @@ function onCardClick(e: MouseEvent) {
 
 <style scoped>
 .photo-card {
-  position: relative;
-  display: block;
-  aspect-ratio: 7 / 8;
+  display: flex;
+  flex-direction: column;
   min-width: 0;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-light);
   border-radius: var(--radius-lg);
-  overflow: hidden;
-  background: var(--color-dark);
-  cursor: pointer;
   box-shadow: var(--shadow-card);
+  overflow: hidden;
+  cursor: pointer;
   transition: box-shadow var(--transition-fast);
-  isolation: isolate;
+  color: var(--color-text-primary);
 }
 .photo-card:hover { box-shadow: var(--shadow-hover); }
-.photo-card__link { position: absolute; inset: 0; z-index: 1; }
 
+/* ── beeldvlak ──
+   De foto staat in zijn eigen verhouding en wordt niet opgerekt naar de
+   hoogte van de kaart; daar werd hij onscherp van. */
+.photo-card__media {
+  position: relative;
+  aspect-ratio: 3 / 2;
+  overflow: hidden;
+  background: var(--color-background-secondary);
+}
+.photo-card__link { position: absolute; inset: 0; z-index: 1; }
 .photo-card__img {
-  position: absolute;
-  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
-}
-/* Het verloop houdt de onderkant donker genoeg voor witte tekst, zonder de
-   foto erboven te dempen. Vaste hoogte en niet een percentage van de kaart:
-   het tekstblok is altijd even hoog, dus een hogere kaart hoort méér foto
-   te laten zien, niet meer verloop. */
-.photo-card__scrim {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 270px;
-  max-height: 85%;
-  background: linear-gradient(
-    to top,
-    rgba(0, 0, 0, 0.90) 0%,
-    rgba(0, 0, 0, 0.84) 28%,
-    rgba(0, 0, 0, 0.70) 50%,
-    rgba(0, 0, 0, 0.42) 72%,
-    rgba(0, 0, 0, 0.15) 88%,
-    rgba(0, 0, 0, 0) 100%
-  );
 }
 
 /* ── de vlag linksboven ──
@@ -266,30 +252,6 @@ function onCardClick(e: MouseEvent) {
 .photo-card__collection-name { font-weight: 700; }
 .photo-card__collection-word { font-weight: 400; opacity: 0.82; }
 
-/* Dezelfde getekende banner als op de andere kaarten, hier links in de
-   prijsregel en in wit in plaats van zwart: op het donkere verloop onderin
-   valt zwart weg. De tekst erin wordt dan donker. */
-.photo-card__discount {
-  flex: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 145 104'%3E%3Cpath d='M123.24 100.853L144.909 4.88359C145.524 2.16058 143.231 -0.33886 140.466 0.0394912L3.4576 18.7817C1.47641 19.0527 -0.000259399 20.7451 -0.000259399 22.7448V90.5564C-0.000259399 92.6393 1.59824 94.3736 3.67427 94.5431L119.013 103.959C120.999 104.121 122.801 102.797 123.24 100.853Z' fill='%23FFFFFF'/%3E%3C/svg%3E");
-  background-size: contain;
-  background-position: center;
-  background-repeat: no-repeat;
-  width: 60px;
-  height: 43px;
-  box-sizing: border-box;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--color-dark);
-  font-family: var(--font-heading);
-  font-size: 15px;
-  font-weight: 700;
-  padding: 0 13px 0 6px;
-  letter-spacing: 0.5px;
-  text-shadow: none;
-}
-
 .photo-card__heart {
   position: absolute;
   top: 12px;
@@ -315,22 +277,16 @@ function onCardClick(e: MouseEvent) {
 }
 .photo-card__heart[aria-pressed="true"] svg { fill: currentColor; }
 
-/* ── titel en kenmerken onderin ── */
+/* ── tekstblok, op wit onder de foto ── */
 .photo-card__text {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 2;
-  padding: 0 20px 18px;
-  color: #fff;
-  pointer-events: none;
-  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.6);
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: 18px 20px 20px;
 }
 .photo-card__title {
   margin: 0;
-  /* typography.css zet een kleur op h1-h6; die wint van overerving. */
-  color: inherit;
+  color: var(--color-text-primary);
   font-family: var(--font-heading);
   font-weight: 700;
   font-size: 22px;
@@ -342,12 +298,12 @@ function onCardClick(e: MouseEvent) {
   overflow: hidden;
 }
 .photo-card__hotel {
-  margin: 4px 0 0;
+  margin: 5px 0 0;
   font-family: var(--font-heading);
   font-weight: 600;
   font-size: 16px;
   line-height: 1.25;
-  color: rgba(255, 255, 255, 0.88);
+  color: var(--color-text-secondary);
 }
 .photo-card__facts {
   list-style: none;
@@ -355,16 +311,16 @@ function onCardClick(e: MouseEvent) {
   padding: 0;
   display: flex;
   flex-wrap: wrap;
-  gap: 7px 16px;
+  gap: 8px 16px;
 }
 .photo-card__facts li {
   display: flex;
   align-items: center;
   gap: 7px;
   min-width: 0;
-  font-size: 12px;
+  font-size: 13px;
   line-height: 1.25;
-  color: rgba(255, 255, 255, 0.92);
+  color: var(--color-text-secondary);
 }
 .photo-card__fact-icon {
   width: 16px;
@@ -375,14 +331,34 @@ function onCardClick(e: MouseEvent) {
   mask: var(--i) center/contain no-repeat;
 }
 
-/* De prijsregel in dezelfde opbouw als op de andere kaarten (cursief
-   "Vanaf", dik bedrag, doorgestreepte oude prijs), maar in wit op de foto;
-   het rood van de oude prijs is daar niet leesbaar genoeg voor. */
+/* ── prijsregel, met de kortingsbanner ernaast ──
+   De banner is weer zwart: wit op het witte tekstblok zou verdwijnen. De
+   witte versie hoorde bij het donkere verloop, dat er niet meer is. */
 .photo-card__price {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin: 12px 0 0;
+  margin-top: auto;
+  padding-top: 16px;
+}
+.photo-card__discount {
+  flex: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 145 104'%3E%3Cpath d='M123.24 100.853L144.909 4.88359C145.524 2.16058 143.231 -0.33886 140.466 0.0394912L3.4576 18.7817C1.47641 19.0527 -0.000259399 20.7451 -0.000259399 22.7448V90.5564C-0.000259399 92.6393 1.59824 94.3736 3.67427 94.5431L119.013 103.959C120.999 104.121 122.801 102.797 123.24 100.853Z' fill='%23141414'/%3E%3C/svg%3E");
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  width: 60px;
+  height: 43px;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-family: var(--font-heading);
+  font-size: 15px;
+  font-weight: 700;
+  padding: 0 13px 0 6px;
+  letter-spacing: 0.5px;
 }
 .photo-card__amounts {
   display: flex;
@@ -394,7 +370,7 @@ function onCardClick(e: MouseEvent) {
   font-family: var(--font-heading);
   font-style: italic;
   font-size: 14px;
-  color: rgba(255, 255, 255, 0.78);
+  color: var(--color-text-secondary);
 }
 .photo-card__now {
   font-family: var(--font-heading);
@@ -404,7 +380,7 @@ function onCardClick(e: MouseEvent) {
 }
 .photo-card__was {
   font-size: 15px;
-  color: rgba(255, 255, 255, 0.72);
+  color: var(--color-error);
   text-decoration: line-through;
 }
 
