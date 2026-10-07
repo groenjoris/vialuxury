@@ -119,16 +119,15 @@ const isFavorite = computed(() => isFav(favKey.value))
 const BED = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 19v-6h18v6'/%3E%3Cpath d='M3 13V6'/%3E%3Cpath d='M21 19v-6'/%3E%3Cpath d='M7 13v-2a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v2'/%3E%3C/svg%3E"
 const CHECK = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 12.5 9.5 18 20 6.5'/%3E%3C/svg%3E"
 
-/** Het aantal nachten plus de twee sterkste inclusies, zoals de drie
- *  kenmerken onderin het ontwerp. */
+/** Het aantal nachten plus de drie sterkste inclusies: vier kenmerken. */
 const facts = computed(() => {
   const all = props.hotel?.deals.map(d => d.inclusions) ?? [props.deal.inclusions]
-  const picks = pickSmartInclusions(props.deal.inclusions, all, locale.value as 'nl' | 'en', 4)
+  const picks = pickSmartInclusions(props.deal.inclusions, all, locale.value as 'nl' | 'en', 6)
   const css = (url: string) => `url("${url}")`
   const out = [{ icon: css(BED), label: nightsLabel(props.deal.nights) }]
   const seen = new Set<string>()
   for (const p of picks) {
-    if (out.length >= 3) break
+    if (out.length >= 4) break
     const text = localized(p).trim()
     if (!text) continue
     const key = text.toLowerCase()
