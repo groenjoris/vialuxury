@@ -67,33 +67,6 @@
 .mhtj-originals[data-variant="vol"]   .original-card__band { background: var(--c); color: var(--on); }
 .mhtj-originals[data-variant="licht"] .original-card__band { background: var(--t); color: var(--ink); }
 
-/* ------------------------------------------------------------------
-   Versie "foto" — de donkere kleurstelling uit Jesse's fotokaart.
-
-   Dit is een eigen palet, niet een variant op de nota hierboven: de
-   kleuren zijn gemeten uit het aangeleverde ontwerp. Ze zijn allemaal
-   gedempt en donker genoeg om wit op te dragen, ook Heritage — dat in de
-   nota juist geel is en daarom donkere tekst krijgt.
-
-   Alleen van kracht als `data-variant="foto"` op de pagina staat; de
-   twee versies uit de nota blijven ongemoeid.
-------------------------------------------------------------------- */
-.mhtj-originals {
-  --col-culinary-donker: #6D2B30;
-  --col-retreat-donker:  #838A6F;
-  --col-heritage-donker: #162A1F;
-  --col-seasonal-donker: #A35B36;
-  --col-routes-donker:   #4E6372;
-  --col-events-donker:   #AE8345;
-}
-
-.mhtj-originals[data-variant="foto"] [data-collection="culinary"] { --c: var(--col-culinary-donker); --on: #FFFFFF; }
-.mhtj-originals[data-variant="foto"] [data-collection="retreat"]  { --c: var(--col-retreat-donker);  --on: #FFFFFF; }
-.mhtj-originals[data-variant="foto"] [data-collection="heritage"] { --c: var(--col-heritage-donker); --on: #FFFFFF; }
-.mhtj-originals[data-variant="foto"] [data-collection="seasonal"] { --c: var(--col-seasonal-donker); --on: #FFFFFF; }
-.mhtj-originals[data-variant="foto"] [data-collection="routes"]   { --c: var(--col-routes-donker);   --on: #FFFFFF; }
-.mhtj-originals[data-variant="foto"] [data-collection="events"]   { --c: var(--col-events-donker);   --on: #FFFFFF; }
-
-/* De filterrij bovenaan draagt hetzelfde palet, zodat de knop en de kaart
-   die hij filtert dezelfde kleur hebben. */
+/* De fotokaart (versie "foto") gebruikt dezelfde collectiekleuren als
+   versie "vol": vol vlak, met de tekstkleur die daarop leesbaar is. */
 .mhtj-originals[data-variant="foto"] .col-label { background: var(--c); color: var(--on); }
