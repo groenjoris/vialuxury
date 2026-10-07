@@ -21,6 +21,13 @@
           </button>
         </div>
         <div ref="bodyEl" class="tipn__body">
+          <!-- "Goed om te weten": voorbeeld, entree niet inbegrepen, openingstijden, kortingspas. -->
+          <div class="tipn__gtk">
+            <p class="tipn__gtk-title">{{ t('trip.itin.goodToKnow') }}</p>
+            <ul class="tipn__gtk-list">
+              <li v-for="k in GTK_KEYS" :key="k">{{ t(k) }}</li>
+            </ul>
+          </div>
           <section v-for="day in days" :key="day.day" :id="`itin-panel-dag-${day.day}`" class="tipn__day" :class="{ 'tipn__day--focus': focusDay === day.day }">
             <h4 class="tipn__dayhead">
               <span class="tipn__daylabel">{{ day.label }}</span> · {{ day.heading ?? summaryLineOfDay(day, t) }}
@@ -50,6 +57,8 @@ const props = defineProps<{
 const emit = defineEmits<{ close: [] }>()
 
 const { t } = useMultiHotelTripI18n()
+/** Bullets van "Goed om te weten" bovenaan het dagprogramma. */
+const GTK_KEYS = ['trip.itin.gtk1', 'trip.itin.gtk2', 'trip.itin.gtk3', 'trip.itin.gtk4']
 useBodyScrollLock().bindTo(computed(() => props.open))
 
 /* Bij openen (of een andere dag terwijl het panel open is): naar die dag scrollen. */
@@ -112,6 +121,11 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 }
 .tipn__close:hover { background: var(--color-border-light); }
 .tipn__body { flex: 1; min-height: 0; overflow: auto; padding: var(--space-md) var(--space-lg) var(--space-xl); }
+/* "Goed om te weten" bovenaan: licht vlak met vier bullets. */
+.tipn__gtk { margin: 0 0 var(--space-lg); padding: 14px 16px; background: var(--color-background-secondary, #f6f4ef); border-radius: var(--radius-sm); }
+.tipn__gtk-title { margin: 0 0 6px; font-size: 14px; font-weight: 700; color: var(--color-text-primary); }
+.tipn__gtk-list { margin: 0; padding-left: 18px; font-size: 14px; line-height: 1.5; color: var(--color-text-secondary); }
+.tipn__gtk-list li + li { margin-top: 4px; }
 .tipn__day { padding: var(--space-md) 0; border-bottom: 1px solid var(--color-border-light); }
 .tipn__day:last-child { border-bottom: 0; }
 /* De aangeklikte dag licht even op. */
