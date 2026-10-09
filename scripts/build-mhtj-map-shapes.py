@@ -40,9 +40,11 @@ TOL_NEAR = 0.003         # ~230 m — de buurlanden
 TOL_FAR = 0.04           # ~3 km — de rest van Europa
 HOME = {'NLD'}
 NEAR = {'BEL', 'LUX', 'DEU', 'FRA', 'GBR'}
-# Provinciegrenzen tekenen we alleen waar ze iets betekenen; de binnengrenzen
-# van 53 landen zijn ruis en kosten driekwart van het bestand.
-PROVINCE_LINES_FOR = {'NLD'}
+# Provinciegrenzen tekenen we alleen waar de routes komen; de binnengrenzen
+# van 53 landen zijn ruis en kosten driekwart van het bestand. Frankrijk
+# heeft in deze bron départements en België provincies — dat is in beide
+# gevallen het niveau dat je op een kaart verwacht.
+PROVINCE_LINES_FOR = {'NLD', 'BEL', 'FRA'}
 ROUND = 5
 ROUND_OUT = 4
 
