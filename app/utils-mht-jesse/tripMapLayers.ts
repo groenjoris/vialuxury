@@ -28,6 +28,24 @@ interface MapShapes { units: MapUnit[]; provinceLines: number[][][]; countryLine
 const MAP = mapShapes as unknown as MapShapes
 
 /**
+ * Landnamen in het Nederlands, op de ISO-code uit `mhtj-map-shapes.json`.
+ * Alleen de landen die in dat bestand staan; wat hier niet in staat krijgt
+ * geen naam op de kaart.
+ */
+const LANDNAMEN: Record<string, string> = {
+  ALB: 'Albanië', AND: 'Andorra', AUT: 'Oostenrijk', BEL: 'België', BGR: 'Bulgarije',
+  BIH: 'Bosnië en Herzegovina', BLR: 'Wit-Rusland', CHE: 'Zwitserland', CZE: 'Tsjechië',
+  DEU: 'Duitsland', DNK: 'Denemarken', DZA: 'Algerije', ESP: 'Spanje', EST: 'Estland',
+  FIN: 'Finland', FRA: 'Frankrijk', FRO: 'Faeröer', GBR: 'Verenigd Koninkrijk',
+  GRC: 'Griekenland', HRV: 'Kroatië', HUN: 'Hongarije', IRL: 'Ierland', ITA: 'Italië',
+  KOS: 'Kosovo', LIE: 'Liechtenstein', LTU: 'Litouwen', LUX: 'Luxemburg', LVA: 'Letland',
+  MAR: 'Marokko', MCO: 'Monaco', MDA: 'Moldavië', MKD: 'Noord-Macedonië', MLT: 'Malta',
+  MNE: 'Montenegro', NLD: 'Nederland', NOR: 'Noorwegen', POL: 'Polen', PRT: 'Portugal',
+  ROU: 'Roemenië', RUS: 'Rusland', SMR: 'San Marino', SRB: 'Servië', SVK: 'Slowakije',
+  SVN: 'Slovenië', SWE: 'Zweden', TUN: 'Tunesië', TUR: 'Turkije', UKR: 'Oekraïne',
+}
+
+/**
  * Kleuren van de vlakke kaart. Eén tint voor al het land, één voor het
  * water: zonder wegen, plaatsnamen en terrein is de contour het enige wat
  * de kaart nog vertelt, en die moet dus scherp zijn.
@@ -43,6 +61,8 @@ export const PLAIN_COLORS = {
   highlight: '#5fc4b5',
   /** Contour om die provincie. */
   highlightLine: '#1f6f66',
+  /** Landnaam op de kaart. */
+  label: '#8a8a8a',
 }
 
 export interface TripMapStop {
@@ -502,6 +522,138 @@ export function addRouteScenery(
 function icoonVoor(tekst: string): string {
   for (const [re, naam] of PLEK_ICONEN) if (re.test(tekst)) return naam
   return 'museum'
+}
+
+/**
+ * Landnamen op de kaart, zoals een atlas of Google Maps het doet: in het
+ * land zelf, grijs, en meeschalend met het zoomniveau.
+ *
+ * Twee dingen maken dit lastiger dan een marker neerzetten:
+ *
+ *  - Het zwaartepunt van een land ligt lang niet altijd ín dat land (denk
+ *    aan Noorwegen of Kroatië). We zoeken daarom op een raster het punt dat
+ *    het verst van elke rand ligt.
+ *  - Uitgezoomd passen niet alle namen; ingezoomd valt het punt vaak buiten
+ *    beeld. Daarom kiezen we bij elke beweging opnieuw: grootste land eerst,
+ *    alleen als het land genoeg beeld vult, alleen als de naam niet over een
+ *    andere naam valt, en de naam schuift mee naar het midden van het
+ *    zichtbare deel van het land.
+ */
+export function addCountryLabels(L: L, map: Leaflet.Map): void {
+  interface Land { code: string; naam: string; opp: number; rings: number[][][] }
+  const landen: Land[] = []
+  const perLand = new Map<string, number[][][]>()
+  for (const u of MAP.units) {
+    const r = perLand.get(u.country)
+    if (r) r.push(...u.rings)
+    else perLand.set(u.country, [...u.rings])
+  }
+  for (const [code, rings] of perLand) {
+    const naam = LANDNAMEN[code]
+    if (!naam) continue
+    landen.push({ code, naam, opp: rings.reduce((a, r) => a + ringOppervlak(r), 0), rings })
+  }
+  // Grootste land eerst: bij ruimtegebrek wint Frankrijk van Luxemburg.
+  landen.sort((a, b) => b.opp - a.opp)
+
+  const laag = L.layerGroup().addTo(map)
+  const markers = new Map<string, Leaflet.Marker>()
+
+  const kies = () => {
+    try {
+      map.getCenter()
+    } catch {
+      return
+    }
+    laag.clearLayers()
+    const beeld = map.getBounds()
+    const zoom = map.getZoom()
+    // Namen groeien mee met het zoomniveau, maar blijven leesbaar en
+    // bescheiden: 12 tot 22 px.
+    const grootte = Math.round(Math.min(Math.max(4 + zoom * 1.1, 12), 22))
+    const gekozen: { p: Leaflet.Point; w: number }[] = []
+
+    for (const land of landen) {
+      // Alleen het deel van het land dat in beeld is telt; daarbinnen zoeken
+      // we het punt dat het verst van de rand ligt.
+      const spot = labelPunt(land.rings, beeld.getWest(), beeld.getSouth(), beeld.getEast(), beeld.getNorth())
+      if (!spot) continue
+
+      const p = map.latLngToLayerPoint([spot.lat, spot.lng])
+      // Vult het land genoeg van het scherm om een naam te verdienen? Meet
+      // de ruimte rond het punt in pixels, niet in graden: een graad is bij
+      // elk zoomniveau een ander aantal pixels.
+      const rand = map.latLngToLayerPoint([spot.lat + spot.graden, spot.lng])
+      if (Math.abs(p.y - rand.y) < 42) continue
+      const breedte = land.naam.length * grootte * 0.55
+      if (gekozen.some(g => Math.abs(p.x - g.p.x) < (breedte + g.w) / 2 && Math.abs(p.y - g.p.y) < grootte * 1.6)) continue
+      gekozen.push({ p, w: breedte })
+
+      let m = markers.get(land.code)
+      if (!m) {
+        m = L.marker([spot.lat, spot.lng], {
+          icon: L.divIcon({ className: 'tml-land', html: escapeHtml(land.naam), iconSize: [0, 0] }),
+          interactive: false, keyboard: false, zIndexOffset: -500,
+        })
+        markers.set(land.code, m)
+      } else {
+        m.setLatLng([spot.lat, spot.lng])
+      }
+      laag.addLayer(m)
+      const el = m.getElement()
+      if (el) el.style.fontSize = `${grootte}px`
+    }
+  }
+
+  kies()
+  map.on('zoomend moveend load', kies)
+}
+
+function ringOppervlak(ring: number[][]): number {
+  let a = 0
+  for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+    a += ring[j]![0]! * ring[i]![1]! - ring[i]![0]! * ring[j]![1]!
+  }
+  return Math.abs(a / 2)
+}
+
+/**
+ * Het punt binnen deze ringen dat het verst van elke rand ligt, gezocht op
+ * een raster over het zichtbare venster. Levert die afstand in graden mee,
+ * zodat de aanroeper hem naar pixels kan omrekenen en kan besluiten dat een
+ * land te klein in beeld is voor een naam.
+ */
+function labelPunt(
+  rings: number[][][], west: number, zuid: number, oost: number, noord: number,
+): { lng: number; lat: number; graden: number } | null {
+  const N = 20
+  let beste: { lng: number; lat: number; d: number } | null = null
+  for (let i = 1; i < N; i++) {
+    for (let j = 1; j < N; j++) {
+      const lng = west + ((oost - west) * i) / N
+      const lat = zuid + ((noord - zuid) * j) / N
+      if (!rings.some(r => pointInRing(lng, lat, r))) continue
+      const d = Math.min(...rings.map(r => afstandTotRing(lng, lat, r)))
+      if (!beste || d > beste.d) beste = { lng, lat, d }
+    }
+  }
+  if (!beste) return null
+  return { lng: beste.lng, lat: beste.lat, graden: beste.d }
+}
+
+function afstandTotRing(px: number, py: number, ring: number[][]): number {
+  let min = Infinity
+  for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+    const [ax, ay] = ring[j] as [number, number]
+    const [bx, by] = ring[i] as [number, number]
+    const dx = bx - ax, dy = by - ay
+    const len = dx * dx + dy * dy
+    let t = len ? ((px - ax) * dx + (py - ay) * dy) / len : 0
+    t = Math.max(0, Math.min(1, t))
+    const ex = (ax + t * dx - px) * 0.61, ey = ay + t * dy - py
+    min = Math.min(min, Math.hypot(ex, ey))
+  }
+  return min
 }
 
 /** Standaard OpenStreetMap-tegels (de CARTO-basemaps vragen een API-key). */

@@ -14,6 +14,7 @@ import { tripDetailBySlug } from '~/data/mhtj-trips'
 import {
   PLAIN_COLORS,
   addPlainBase,
+  addCountryLabels,
   addRouteScenery,
   addTripRoute,
   addTripHotels,
@@ -75,6 +76,7 @@ async function build() {
   // detail dat de vormen toelaten.
   map = L.map(el, { zoomControl: true, attributionControl: false, scrollWheelZoom: true })
   const lit = addPlainBase(L, map, { highlightStops: stops.value })
+  addCountryLabels(L, map)
   // Illustraties eerst, zodat de route en de hotelmarkers er bovenop liggen.
   addRouteScenery(L, map, { stops: stops.value, highlights: highlights.value, provinces: lit })
   addTripRoute(L, map, stops.value, { distances: true })
