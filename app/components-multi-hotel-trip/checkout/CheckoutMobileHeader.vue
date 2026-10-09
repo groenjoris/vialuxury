@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// Multi Hotel Trip checkout — mobiele site: donkere balk (gestapeld logo, "Veilig uitchecken", hamburger)
+// Multi Hotel Trip checkout — mobiele site: donkere balk (horizontaal logo, "Veilig uitchecken"; geen hamburger)
 // met daaronder de voortgangsbalkjes (terug-pijl, 3 segmenten, koffertje).
 withDefaults(defineProps<{ step?: number }>(), { step: 1 })
 
@@ -12,7 +12,7 @@ function goBack() {
   <div>
     <header class="mnav">
       <NuxtLink to="/multi-hotel-trip/home" aria-label="Naar de homepage">
-        <img class="mnav__logo" src="/images/logo-vialuxury.svg" alt="ViaLuxury" />
+        <img class="mnav__logo" src="/images/logo-vialuxury-horizontal.svg" alt="ViaLuxury" />
       </NuxtLink>
       <div class="mnav__right">
         <span class="mnav__safe">
@@ -22,9 +22,6 @@ function goBack() {
           </svg>
           Veilig uitchecken
         </span>
-        <button class="mnav__menu" type="button" aria-label="Menu">
-          <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" /></svg>
-        </button>
       </div>
     </header>
 
@@ -57,7 +54,7 @@ function goBack() {
   justify-content: space-between;
 }
 .mnav__logo {
-  height: 44px;
+  height: 18px;
   width: auto;
   display: block;
   /* Zwart woordmerk -> wit op de donkere balk */
@@ -74,10 +71,6 @@ function goBack() {
   gap: 8px;
   font-size: 16px;
   font-weight: 500;
-}
-.mnav__menu {
-  color: var(--c-white);
-  display: inline-flex;
 }
 
 .mprogress {

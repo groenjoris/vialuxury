@@ -46,11 +46,14 @@ export function toggleNightGroup(selected: readonly string[], group: NightGroup)
   return nightGroupState(selected, group) === 'all' ? rest : [...rest, ...group.keys]
 }
 
+const MAX_NIGHT_KEY = 8
+
 /**
- * Korte samenvatting van een selectie voor veldwaarden en pills:
- * een volledige groep heet bij haar naam ("Kort verblijf", "Vakantie",
- * beide → "Kort of lang verblijf"); anders de losse nachten ("5, 6 of 7
- * nachten"). `t` levert de vertalingen.
+ * Korte samenvatting van een selectie voor veldwaarden en pills — alleen
+ * aantallen nachten, in de kortst mogelijke vorm (geen groepsnamen): een
+ * aaneengesloten reeks tot en met 8 → "5 of meer nachten"; een reeks →
+ * "2-5 nachten"; één nacht → "3 nachten"; anders de losse nachten
+ * ("2, 4 of 6 nachten"). `t` levert de vertalingen.
  */
 export function summarizeNightKeys(
   keys: readonly string[],
@@ -58,15 +61,14 @@ export function summarizeNightKeys(
   words: { night: string; nights: string; or: string },
 ): string {
   if (keys.length === 0) return ''
-  const full = NIGHT_GROUPS.filter(g => nightGroupState(keys, g) === 'all')
-  const covered = full.flatMap(g => g.keys as string[])
-  if (full.length === NIGHT_GROUPS.length) return t('nights.group.both')
-  if (full.length === 1 && keys.every(k => covered.includes(k))) return t(full[0]!.labelKey)
-  if (keys.length === 1) return nightKeyLabel(keys[0]!, words.night, words.nights)
+  const nums = [...new Set(keys.map(Number).filter(n => Number.isFinite(n)))].sort((a, b) => a - b)
+  const first = nums[0]!, last = nums[nums.length - 1]!
+  const contiguous = nums.every((n, i) => i === 0 || n === nums[i - 1]! + 1)
+  if (contiguous && last >= MAX_NIGHT_KEY) return t('nights.orMore').replace('{n}', String(first))
+  if (nums.length === 1) return nightKeyLabel(keys[0]!, words.night, words.nights)
+  if (contiguous) return t('nights.range').replace('{a}', String(first)).replace('{b}', String(last))
   return `${joinNightKeys(keys, words.or)} ${words.nights}`
 }
-
-const MAX_NIGHT_KEY = 8
 
 /** Reisduur-key voor een deal: 1…7 exact, 8 = acht nachten of langer. */
 export function nightKeyFor(nights: number): string {

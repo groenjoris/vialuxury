@@ -156,6 +156,8 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 .thp-fade-enter-from, .thp-fade-leave-to { opacity: 0; }
 
 @media (max-width: 767px) {
-  .thp { width: 100%; max-width: none; }
+  /* Mobiel: als het panel "Andere arrangementen": strook links vrij, 450ms. */
+  .thp { width: 95vw; max-width: none; }
+  .thp-slide-enter-active, .thp-slide-leave-active { transition-duration: 450ms; }
 }
 </style>

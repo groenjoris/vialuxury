@@ -1,79 +1,66 @@
 <template>
   <!-- Multi Hotel Trip — minimap naast de beschrijving op de vakantie-PDP.
-       Echte kaart (Leaflet, OpenStreetMap-tegels, niet te slepen of te
-       zoomen) met de route, per etappe de afstand op de lijn en genummerde
-       hotelmarkers met de plaatsnaam ernaast (zelfde markers als de
-       fullscreen kaart). Klik op een marker of plaatsnaam → hotel-sidepanel;
-       klik elders op de kaart of op "Bekijk kaart" → fullscreen kaart. -->
+       Schematisch kaartje (zelfde vormgeving als op de dealcard: water, land,
+       grenzen, zwarte genummerde markers) met de echte rijroutes per etappe,
+       de reistijd op de lijn en de plaatsnamen naast de markers. Klik op een
+       marker → hotel-sidepanel; klik elders of op "Bekijk kaart" → fullscreen kaart. -->
   <div class="route-map">
-    <div ref="mapEl" class="route-map__box" role="button" tabindex="0" :aria-label="t('common.viewMap')" @keydown.enter.prevent="$emit('open')"></div>
+    <div class="route-map__box" role="button" tabindex="0" :aria-label="t('common.viewMap')" @click="$emit('open')" @keydown.enter.prevent="$emit('open')">
+      <MultiHotelTripRouteMap
+        :stops="svgStops"
+        :legs="legs"
+        :leg-labels="legLabels"
+        :return-leg-label="returnLabel"
+        :width="400"
+        :height="300"
+        :max-scale="700"
+        :marker-radius="17"
+        :number-size="14"
+        :label-size="13"
+        :leg-label-size="13"
+        show-labels
+        geo-names
+        leg-label-style="plain"
+        interactive
+        @stop-click="$emit('stop-click', $event)"
+      />
+    </div>
     <div class="route-map__footer">
-      <span class="route-map__route">
-        <template v-for="(s, i) in stops" :key="`r-${i}`">
-          <span class="route-map__route-stop">{{ s.label }}</span>
-          <span v-if="i < stops.length - 1" class="route-map__route-arrow" aria-hidden="true">→</span>
-        </template>
-      </span>
+      <!-- Reissamenvatting, elke regel met een eigen icoon uit de core-iconenset:
+           auto (heenreis), pijlen (totale route), klok (totale rijtijd). -->
+      <ul v-if="summaryLines.length" class="route-map__summary">
+        <li v-for="(line, i) in summaryLines" :key="i" class="route-map__summary-line">
+          <img :src="`/icons/mht/${line.icon}.svg`" alt="" class="route-map__summary-icon" width="22" height="22" />
+          <span>{{ line.text }}</span>
+        </li>
+      </ul>
       <button type="button" class="route-map__view-link" @click="$emit('open')">{{ t('common.viewMap') }}</button>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { addOsmTiles, addCountryBorders, addTripRoute, addTripHotels, type TripMapStop } from '~/utils-multi-hotel-trip/tripMapLayers'
+import type { TripMapStop, TripRouteLeg } from '~/utils-multi-hotel-trip/tripMapLayers'
 
 const props = defineProps<{
-  /** Hotels in reisvolgorde (met plaatsnaam, hotelnaam en afstand vanaf het vorige hotel). */
+  /** Hotels in reisvolgorde (met plaatsnaam, hotelnaam en reistijd vanaf het vorige hotel). */
   stops: TripMapStop[]
+  /** Rijroutes tussen de hotels (OSRM); zonder legs een rechte lijn. */
+  legs?: TripRouteLeg[]
+  /** Label van de gestippelde terugetappe (rondje), bv. "20 km". */
+  returnLabel?: string
+  /** Regels onder de kaart (al vertaald) met icoon (bestand in /icons/mht/): car, route, clock, bike. */
+  summary?: ({ icon: string; text: string } | undefined)[]
 }>()
 
-const emit = defineEmits<{ open: []; 'stop-click': [index: number] }>()
+defineEmits<{ open: []; 'stop-click': [index: number] }>()
 
 const { t } = useMultiHotelTripI18n()
 
-const mapEl = ref<HTMLElement | null>(null)
-let map: import('leaflet').Map | null = null
-let ro: ResizeObserver | null = null
-
-function fit(L: typeof import('leaflet')) {
-  if (!map || !props.stops.length) return
-  map.fitBounds(L.latLngBounds(props.stops.map(s => [s.lat, s.lng] as [number, number])), { padding: [36, 36], maxZoom: 11 })
-}
-
-onMounted(async () => {
-  if (!mapEl.value) return
-  const L = (await import('leaflet')).default
-  map = L.map(mapEl.value, {
-    zoomControl: false,
-    attributionControl: false,
-    dragging: false,
-    scrollWheelZoom: false,
-    doubleClickZoom: false,
-    touchZoom: false,
-    boxZoom: false,
-    keyboard: false,
-    zoomSnap: 0.25,
-  })
-  addOsmTiles(L, map, false)
-  addCountryBorders(L, map, 1.5)
-  addTripRoute(L, map, props.stops, { distances: true, weight: 2.5 })
-  addTripHotels(L, map, props.stops, {
-    size: 30,
-    labelText: s => s.label,
-    labelSize: 14,
-    onClick: i => emit('stop-click', i),
-  })
-  map.on('click', () => emit('open'))
-  fit(L)
-  ro = new ResizeObserver(() => { map?.invalidateSize(); fit(L) })
-  ro.observe(mapEl.value)
-})
-
-onBeforeUnmount(() => {
-  ro?.disconnect()
-  map?.remove()
-  map = null
-})
+const svgStops = computed(() => props.stops.map(s => ({ lat: s.lat, lng: s.lng, label: s.label, title: s.title })))
+/** Alleen de afstand op de etappe ("45 km"); de volledige tekst staat op de grote kaart. */
+const legLabels = computed(() => props.stops.map(s => (s.travelKm ? `${s.travelKm} km` : undefined)))
+const summaryLines = computed(() => (props.summary ?? []).filter((l): l is { icon: string; text: string } => !!l))
 </script>
 
 <style scoped>
@@ -92,29 +79,30 @@ onBeforeUnmount(() => {
   border-radius: var(--radius-lg);
   overflow: hidden;
   border: 1px solid var(--color-border-light);
-  background: #e9e5dc;
+  background: #d7e6f0;
   cursor: pointer;
 }
 .route-map__box:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
-/* Leaflet zelf krijgt de klikcursor van de kaart als geheel. */
-.route-map__box :deep(.leaflet-container) { cursor: pointer; background: #e9e5dc; font-family: var(--font-body); }
-/* Kaartje is smal: route en link onder elkaar, links uitgelijnd. */
+.route-map__box :deep(.trm) { width: 100%; height: 100%; display: block; }
+/* Onder de kaart: samenvatting en link onder elkaar, links uitgelijnd. */
 .route-map__footer {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 4px;
+  gap: 8px;
 }
-.route-map__route {
-  display: inline;
-  font-family: var(--font-body);
-  font-size: 13px;
+/* Zelfde letter als de beschrijving (15 px / 1.75), per regel een icoon. */
+.route-map__summary { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+.route-map__summary-line {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.75;
   color: var(--color-text-secondary);
-  line-height: 1.4;
-  min-width: 0;
 }
-.route-map__route-stop { white-space: nowrap; }
-.route-map__route-arrow { margin: 0 4px; color: var(--color-text-muted, #9a958c); }
+.route-map__summary-icon { flex-shrink: 0; margin-top: 2px; }
 .route-map__view-link {
   padding: 0;
   border: 0;

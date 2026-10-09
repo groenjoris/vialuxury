@@ -32,9 +32,10 @@
                 </div>
               </template>
               <template v-else>
+                <!-- Vakantie (meerdere hotels): naam van de reis, geen sterren; eronder de plaatsnamen. -->
                 <h2 class="panel__name-row">
-                  <span class="panel__hotel-name">{{ hotel.name }}</span>
-                  <span class="panel__stars" aria-hidden="true">
+                  <span class="panel__hotel-name">{{ hotel.trip && hotel.deals.length === 1 ? localized(hotel.deals[0]!.title) : hotel.name }}</span>
+                  <span v-if="!hotel.trip" class="panel__stars" aria-hidden="true">
                     <span v-for="n in hotel.starRating" :key="n"><svg class="icon-star" viewBox="0 0 18 18" width="1em" height="1em" fill="currentColor" style="vertical-align:-0.125em" aria-hidden="true"><path d="M16.963,6.786c-.088-.271-.323-.469-.605-.51l-4.62-.671L9.672,1.418c-.252-.512-1.093-.512-1.345,0l-2.066,4.186-4.62,.671c-.282,.041-.517,.239-.605,.51-.088,.271-.015,.57,.19,.769l3.343,3.258-.79,4.601c-.048,.282,.067,.566,.298,.734,.231,.167,.538,.189,.79,.057l4.132-2.173,4.132,2.173c.11,.058,.229,.086,.349,.086,.155,0,.31-.048,.441-.143,.231-.168,.347-.452,.298-.734l-.79-4.601,3.343-3.258c.205-.199,.278-.498,.19-.769Z"/></svg></span>
                   </span>
                 </h2>
@@ -42,7 +43,7 @@
                   <svg class="panel__loc-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <path d="M4.5 9.75768C4.5 15.5 12 22 12 22C12 22 19.5 15.5 19.5 9.75768C19.5 4.81181 15.6559 2 12 2C8.34409 2 4.5 4.81181 4.5 9.75768Z" /><path d="M12 12C13.3807 12 14.5 10.8807 14.5 9.5C14.5 8.11929 13.3807 7 12 7C10.6193 7 9.5 8.11929 9.5 9.5C9.5 10.8807 10.6193 12 12 12Z" />
                   </svg>
-                  <span class="panel__location">{{ hotel.city }}, {{ hotel.region }}</span>
+                  <span class="panel__location">{{ hotel.trip ? tripStopsLabel : `${hotel.city}, ${hotel.region}` }}</span>
                 </div>
               </template>
             </div>
@@ -74,6 +75,25 @@
                 :ignore-arrival="entry.dateMismatch"
               />
             </div>
+            <!-- Kaart: vakanties waarin dit hotel een stop is, onder de arrangementen van het hotel.
+                 Kaartje met de kop van de vakantie (soort + plaatsnamen) en een link naar de vakantie. -->
+            <template v-if="trips && trips.length">
+              <h3 class="panel__trips-title">{{ t('trip.withThisHotel') }}</h3>
+              <div class="panel__deal-list">
+                <template v-for="tr in trips" :key="tr.id">
+                  <MultiHotelTripDealCard
+                    v-for="d in tr.deals"
+                    :key="d.id"
+                    :deal="d"
+                    :hotel="tr"
+                    hide-labels
+                    grid-mode
+                    panel-mode
+                    :map-mode="mapMode"
+                  />
+                </template>
+              </div>
+            </template>
           </div>
         </aside>
       </div>
@@ -89,7 +109,7 @@ import type { SearchHotel } from '~/types/searchHotel'
 import { mappedHotels } from '~/data/deals-mapper'
 import { isDealAvailableInWindow } from '~/utils-multi-hotel-trip/availability'
 
-const { t } = useMultiHotelTripI18n()
+const { t, localized } = useMultiHotelTripI18n()
 // Use the *selected* (live) arrival date + flex — same source the deal
 // cards use for their pricing — so the heading matches what the user just
 // picked, even when they haven't re-submitted a search.
@@ -112,11 +132,16 @@ const props = defineProps<{
    *  (so the user doesn't see their own arrangement among the
    *  alternatives). Used by the v6 deal page. */
   currentDealId?: string
+  /** Kaart: vakanties waarin dit hotel een stop is (onder de arrangementen). */
+  trips?: SearchHotel[]
 }>()
 
 const emit = defineEmits<{
   (e: 'close'): void
 }>()
+
+/** Vakantie: plaatsnamen van de hotels ("Béthune · Tilques · Hesdin-l'Abbé"). */
+const tripStopsLabel = computed(() => (props.hotel?.trip?.stops ?? []).map(s => s.city).join(' · '))
 
 // Keyboard focus trap + Escape-to-close + focus restore on close.
 const panelRef = ref<HTMLElement | null>(null)
@@ -437,6 +462,16 @@ onUnmounted(() => {
   text-decoration: underline;
 }
 
+/* Kop boven de vakanties waarin dit hotel een stop is. */
+.panel__trips-title {
+  margin: var(--space-sm) 0 0;
+  font-family: var(--font-heading);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  line-height: 1.2;
+}
+
 /* Scrollable body */
 .panel__deal-list {
   display: flex;
@@ -579,5 +614,10 @@ onUnmounted(() => {
 .panel-enter-from .panel,
 .panel-leave-to .panel {
   transform: translateX(100%);
+}
+@media (max-width: 767px) {
+  /* Mobiel: alle sidepanels schuiven in 450ms in. */
+  .panel-enter-active .panel,
+  .panel-leave-active .panel { transition-duration: 450ms; }
 }
 </style>

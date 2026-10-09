@@ -7,9 +7,11 @@
 // wisselt de keuze via het toggle-flex event.
 // canUndoFlex: alleen wie flexibel op DEZE pagina heeft toegevoegd mag
 // terug (undo); wie al flexibel binnenkwam ziet geen switch-link.
+// tripWord/flexFee: vakantie (meerdere hotels) — "deze autovakantie", de
+// vakantieprijs en de toeslag per 2 personen (€15 × aantal hotels) i.p.v. per kamer.
 withDefaults(
-  defineProps<{ startAt?: number; cancelBlock?: 'flexible' | 'nonrefundable' | null; canUndoFlex?: boolean }>(),
-  { startAt: 2, cancelBlock: null, canUndoFlex: false },
+  defineProps<{ startAt?: number; cancelBlock?: 'flexible' | 'nonrefundable' | null; canUndoFlex?: boolean; tripWord?: string; flexFee?: number }>(),
+  { startAt: 2, cancelBlock: null, canUndoFlex: false, tripWord: '', flexFee: 15 },
 )
 defineEmits<{ 'toggle-flex': [] }>()
 </script>
@@ -47,7 +49,7 @@ defineEmits<{ 'toggle-flex': [] }>()
 
       <p class="gf__note">Het hotel heeft onderstaande gegevens nodig om de reservering te verwerken.</p>
 
-      <div class="gf__row gf__row--3">
+      <div class="gf__row gf__row--3 gf__row--address">
         <div class="gf__field">
           <label class="gf__label" for="gf-postcode">Postcode</label>
           <input id="gf-postcode" class="gf__input" type="text" />
@@ -62,7 +64,7 @@ defineEmits<{ 'toggle-flex': [] }>()
         </div>
       </div>
 
-      <div class="gf__row gf__row--3">
+      <div class="gf__row gf__row--3 gf__row--place">
         <div class="gf__field">
           <label class="gf__label" for="gf-straat">Straat</label>
           <input id="gf-straat" class="gf__input" type="text" />
@@ -102,8 +104,8 @@ defineEmits<{ 'toggle-flex': [] }>()
           {{ startAt + 1 }} — Flexibel annuleren
         </h2>
         <p class="gf__note">
-          Je kunt dit arrangement tot <strong>24 oktober 2026 23:59:59</strong> annuleren.
-          Je ontvangt dan het arrangementsbedrag plus eventueel bijgeboekte extra's terug.
+          Je kunt {{ tripWord ? `deze ${tripWord}` : 'dit arrangement' }} tot <strong>24 oktober 2026 23:59:59</strong> annuleren.
+          Je ontvangt dan {{ tripWord ? 'de vakantieprijs' : 'het arrangementsbedrag' }} plus eventueel bijgeboekte extra's terug.
         </p>
         <!-- Undo: alleen zichtbaar als flexibel zojuist hier is toegevoegd -->
         <p v-if="canUndoFlex" class="gf__note">
@@ -117,7 +119,7 @@ defineEmits<{ 'toggle-flex': [] }>()
         <h2 class="gf__title">{{ startAt + 1 }} — Kies voor flexibel annuleren</h2>
         <p class="gf__note">
           Je staat op het punt om een niet-terugbetaalbaar tarief te boeken, bij annulering of
-          wijziging ontvang je geen bedrag retour. Voor slechts €15 extra (per kamer) kun je tot
+          wijziging ontvang je geen bedrag retour. Voor slechts €{{ flexFee }} extra ({{ tripWord ? 'per 2 personen' : 'per kamer' }}) kun je tot
           72 uur voor dag van aankomst flexibel annuleren.
         </p>
         <div class="gf__flexcta">
@@ -251,6 +253,13 @@ defineEmits<{ 'toggle-flex': [] }>()
 }
 .gf__row--2 { grid-template-columns: 1fr 1fr; }
 .gf__row--3 { grid-template-columns: 2fr 1.2fr 1fr; }
+/* Mobiel (gegevensstap op een telefoon): velden onder elkaar zoals in de echte checkout —
+   alleen huisnummer + toevoeging blijven naast elkaar. */
+@media (max-width: 767px) {
+  .gf__row--2, .gf__row--place { grid-template-columns: 1fr; }
+  .gf__row--address { grid-template-columns: 1fr 1fr; }
+  .gf__row--address > :first-child { grid-column: 1 / -1; }
+}
 .gf__note {
   font-size: var(--t-body);
   color: var(--c-via-black);

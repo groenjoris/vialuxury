@@ -37,6 +37,9 @@
         <span class="legend-swatch legend-swatch--unavailable" aria-hidden="true"></span>
         <span class="legend-label">{{ t('calendar.unavailable') }}</span>
       </span>
+      <!-- Optionele toelichting (b.v. "Prijzen per persoon (min. 2 pers.)") op een eigen regel
+           onder de legenda, nog vóór de scheidingslijn. -->
+      <span v-if="note" class="legend-note">{{ note }}</span>
     </div>
   </div>
 </template>
@@ -58,6 +61,8 @@ const props = defineProps<{
   showPrevButton?: boolean
   showNextButton?: boolean
   showLegend?: boolean
+  /** Toelichting onder de legenda, vóór de scheidingslijn (zelfde stijl als de legenda). */
+  note?: string
 }>()
 
 defineEmits<{
@@ -189,6 +194,9 @@ const days = computed(() => {
   font-size: 13px;
   color: var(--color-text-secondary);
 }
+
+/* Toelichtingsregel onder de legenda-items, boven de scheidingslijn. */
+.legend-note { flex-basis: 100%; margin-top: -6px; }
 
 .legend-swatch {
   display: inline-block;

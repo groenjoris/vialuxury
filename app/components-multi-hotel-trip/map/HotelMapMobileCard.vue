@@ -16,16 +16,19 @@
         <div class="mapcard__bar" aria-hidden="true"></div>
 
         <!-- Part 1 — hotel info: landscape photo + name + stars -->
-        <header class="mapcard__head">
+        <!-- Vakantie (meerdere hotels): naam van de reis en de plaatsnamen van
+             de hotels i.p.v. hotelnaam + sterren; de kop mag dan hoger worden. -->
+        <header class="mapcard__head" :class="{ 'mapcard__head--trip': !!trip }">
           <img
             v-if="hotel.heroImage"
             :src="hotel.heroImage"
-            :alt="hotel.name"
+            :alt="titleText"
             class="mapcard__photo"
           />
           <div class="mapcard__head-text">
-            <h2 class="mapcard__name">{{ hotel.name }}</h2>
-            <div class="mapcard__stars" aria-hidden="true">
+            <h2 class="mapcard__name">{{ titleText }}</h2>
+            <p v-if="trip" class="mapcard__stops">{{ tripStopsLabel }}</p>
+            <div v-else class="mapcard__stars" aria-hidden="true">
               <span v-for="n in hotel.starRating" :key="n"><svg class="icon-star" viewBox="0 0 18 18" width="1em" height="1em" fill="currentColor" style="vertical-align:-0.125em" aria-hidden="true"><path d="M16.963,6.786c-.088-.271-.323-.469-.605-.51l-4.62-.671L9.672,1.418c-.252-.512-1.093-.512-1.345,0l-2.066,4.186-4.62,.671c-.282,.041-.517,.239-.605,.51-.088,.271-.015,.57,.19,.769l3.343,3.258-.79,4.601c-.048,.282,.067,.566,.298,.734,.231,.167,.538,.189,.79,.057l4.132-2.173,4.132,2.173c.11,.058,.229,.086,.349,.086,.155,0,.31-.048,.441-.143,.231-.168,.347-.452,.298-.734l-.79-4.601,3.343-3.258c.205-.199,.278-.498,.19-.769Z"/></svg></span>
             </div>
           </div>
@@ -57,7 +60,7 @@
             <!-- First row: title + stacked price -->
             <div class="mdeal__top">
               <p class="mdeal__title">
-                <span class="mdeal__lead">Arrangement</span>{{ ' ' }}<span class="mdeal__title-rest">{{ nightsLabel(d.deal.nights, locale as 'nl' | 'en' | 'de') }}, {{ personsLabel(PRICED_PERSONS, locale as 'nl' | 'en' | 'de') }}</span>
+                <span class="mdeal__lead">{{ d.trip ? t(d.trip.type === 'fiets' ? 'trip.fiets' : 'trip.auto') : 'Arrangement' }}</span>{{ ' ' }}<span class="mdeal__title-rest">{{ nightsLabel(d.deal.nights, locale as 'nl' | 'en' | 'de') }}, {{ d.pp ? 'min. ' : '' }}{{ personsLabel(PRICED_PERSONS, locale as 'nl' | 'en' | 'de') }}</span>
               </p>
               <div class="mdeal__price">
                 <div class="mdeal__price-top">
@@ -66,6 +69,7 @@
                 </div>
                 <div class="mdeal__price-bot">
                   <span class="mdeal__amount">{{ priceNum(d.price) }}</span>
+                  <span v-if="d.pp" class="mdeal__pp">p.p.</span>
                   <MultiHotelTripPriceInfoTooltip variant="card" />
                 </div>
               </div>
@@ -96,12 +100,14 @@
 </template>
 
 <script setup lang="ts">
-import type { SearchHotel, SearchHotelDeal } from '~/types/searchHotel'
+import type { SearchHotel, SearchHotelDeal, MultiHotelTripInfo } from '~/types/searchHotel'
 import { formatPrice } from '~/utils-multi-hotel-trip/formatPrice'
 import { nightsLabel, personsLabel } from '~/utils-multi-hotel-trip/plural'
 import { priceForArrival, PRICED_PERSONS } from '~/utils-multi-hotel-trip/priceFormula'
 import { isDealAvailableInWindow } from '~/utils-multi-hotel-trip/availability'
+import { pickSmartInclusions } from '~/utils-multi-hotel-trip/smartInclusions'
 import { useFocusTrap } from '~/composables-multi-hotel-trip/useFocusTrap'
+import { useMultiHotelTripPriceVariant } from '~/composables-multi-hotel-trip/useMultiHotelTripPriceVariant'
 
 const { t, localized, locale } = useMultiHotelTripI18n()
 const { persons, arrivalDate, selectedFlexibility } = useMultiHotelTripSearchState()
@@ -109,6 +115,8 @@ const { persons, arrivalDate, selectedFlexibility } = useMultiHotelTripSearchSta
 const props = defineProps<{
   isOpen: boolean
   hotel: SearchHotel | null
+  /** Vakanties waarin dit hotel een stop is: extra kaartjes achter de arrangementen. */
+  trips?: SearchHotel[]
 }>()
 
 const emit = defineEmits<{
@@ -121,6 +129,16 @@ const emit = defineEmits<{
 
 const cardRef = ref<HTMLElement | null>(null)
 let ro: ResizeObserver | null = null
+
+/** Vakantie (meerdere hotels): reisnaam, plaatsnamen en "Autovakantie"/"Fietsvakantie" als lead. */
+const trip = computed(() => props.hotel?.trip ?? null)
+// Prijsweergave-variant (homepage-schakelaar): bij "prijs p.p." toont het vakantiekaartje de
+// prijs per persoon met "p.p." achter het bedrag en "min. 2 personen" in de titel.
+const { perPerson: pricePerPerson, displayPrice } = useMultiHotelTripPriceVariant()
+/** Meerdere reizen over dezelfde hotels op één pin: soortnaam in de kop, reisnaam per kaartje. */
+const tripCombined = computed(() => !!trip.value && (props.hotel?.deals.length ?? 0) > 1)
+const titleText = computed(() => (props.hotel ? (trip.value && !tripCombined.value ? localized(props.hotel.deals[0]!.title) : props.hotel.name) : ''))
+const tripStopsLabel = computed(() => (trip.value?.stops ?? []).map(s => s.city).join(' · '))
 
 // Keyboard focus trap + Escape-to-close + focus restore on close.
 useFocusTrap(cardRef, toRef(props, 'isOpen'), { onEscape: () => emit('close') })
@@ -164,37 +182,52 @@ function hrefFor(deal: SearchHotelDeal): string {
   return `/multi-hotel-trip/deal/${deal.slug}${q ? '?' + q : ''}`
 }
 
+/** Eén kaartje: een arrangement van het hotel, of een vakantie (eigen pin of onder een hotel). */
+// Geen reisnaam op het kaartje (past niet): alleen soort, nachten, personen, inclusies en prijs.
+function dealView(deal: SearchHotelDeal, tripInfo: MultiHotelTripInfo | null, siblingInclusions: SearchHotelDeal['inclusions'][] = []) {
+  const pp = !!tripInfo && pricePerPerson.value
+  const soldOut = !!arrivalDate.value
+    && !isDealAvailableInWindow(deal.id, arrivalDate.value, selectedFlexibility.value)
+  const effArrival = soldOut ? null : arrivalDate.value
+  let href: string
+  if (soldOut) {
+    const p = new URLSearchParams()
+    if (persons.value !== 2) p.set('persons', String(persons.value))
+    p.set('cal', '1')
+    href = `/multi-hotel-trip/deal/${deal.slug}?${p.toString()}`
+  } else {
+    href = hrefFor(deal)
+  }
+  const price = priceForArrival(deal.basePrice, deal.id, effArrival, PRICED_PERSONS)
+  const original = priceForArrival(deal.originalPrice, deal.id, effArrival, PRICED_PERSONS)
+  return {
+    deal,
+    trip: tripInfo,
+    pp,
+    soldOut,
+    // Vakantie in de p.p.-variant: de helft (per persoon).
+    price: pp ? displayPrice(price, true) : price,
+    originalPrice: pp ? displayPrice(original, true) : original,
+    // De eerste vier highlights zoals op de dealcard: bij een vakantie haar vier highlights
+    // ("5 nachten / 3 hotels", …), bij een hotel dezelfde keuze als de dealcard (zonder de
+    // overnachting, onderscheidende punten eerst) — niet de eerste vier van de inclusielijst.
+    includes: tripInfo
+      ? deal.highlights.slice(0, 4).map(i => localized(i))
+      : pickSmartInclusions(deal.inclusions || [], siblingInclusions, locale.value as 'nl' | 'en', 4).map(i => localized(i)),
+    href,
+  }
+}
+
 const dealViews = computed(() => {
   const h = props.hotel
   if (!h) return []
-  return [...h.deals]
+  const own = [...h.deals]
     .sort((a, b) => a.basePrice - b.basePrice)
-    .map((deal) => {
-      const soldOut = !!arrivalDate.value
-        && !isDealAvailableInWindow(deal.id, arrivalDate.value, selectedFlexibility.value)
-      const effArrival = soldOut ? null : arrivalDate.value
-      // Sold-out → "beschikbare datums": land on the deal page's calendar
-      // (cal=1) WITHOUT a checkin (the page applies ?checkin to the store, so
-      // carrying the unavailable date would pre-select it). Empty calendar.
-      let href: string
-      if (soldOut) {
-        const p = new URLSearchParams()
-        if (persons.value !== 2) p.set('persons', String(persons.value))
-        p.set('cal', '1')
-        href = `/multi-hotel-trip/deal/${deal.slug}?${p.toString()}`
-      } else {
-        href = hrefFor(deal)
-      }
-      return {
-        deal,
-        soldOut,
-        // Prototype: always the PRICED_PERSONS / 1-room price (party size doesn't scale it).
-        price: priceForArrival(deal.basePrice, deal.id, effArrival, PRICED_PERSONS),
-        originalPrice: priceForArrival(deal.originalPrice, deal.id, effArrival, PRICED_PERSONS),
-        includes: (deal.inclusions || []).slice(0, 2).map(i => localized(i)),
-        href,
-      }
-    })
+    .map(deal => dealView(deal, h.trip ?? null, h.deals.map(d => d.inclusions || [])))
+  // Hotel met vakanties: die komen achter de arrangementen.
+  const trips = (h.trip ? [] : (props.trips ?? []))
+    .flatMap(tr => tr.deals.map(deal => dealView(deal, tr.trip ?? null)))
+  return [...own, ...trips]
 })
 </script>
 
@@ -263,6 +296,30 @@ const dealViews = computed(() => {
   letter-spacing: 1px;
   line-height: 1;
 }
+/* Vakantie: kop groeit mee (reisnaam op twee regels + plaatsnamen); de foto staat
+   absoluut en vult de hele hoogte (zonder zelf de hoogte te bepalen). */
+.mapcard__head--trip {
+  height: auto;
+  min-height: 80px;
+  padding-left: 160px; /* 150px foto + 10px */
+}
+.mapcard__head--trip .mapcard__photo {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+}
+.mapcard__stops {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 13px;
+  line-height: 1.25;
+  color: var(--color-text-secondary);
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
 .mapcard__close {
   position: absolute;
   top: 6px;
@@ -292,16 +349,20 @@ const dealViews = computed(() => {
 }
 .mapcard__rail::-webkit-scrollbar { display: none; }
 
-/* Single deal → fill the full width (no carousel). */
+/* Single deal → fill the full width (no carousel). Basis 0 + min-width 0: een
+   lange inclusieregel (nowrap, ellipsis) mag het kaartje niet breder maken dan
+   de rail — anders schuiven prijs en pijlknop buiten beeld. */
 .mapcard__rail--single .mdeal {
-  flex: 1 1 auto;
-  width: auto;
+  flex: 1 1 0;
+  width: 0;
+  min-width: 0;
 }
 
 .mdeal {
   scroll-snap-align: start;
   flex: 0 0 290px;
   width: 290px;
+  min-width: 0;
   background: #fff;
   border: 1px solid #f5f5f5;
   border-radius: 6px;
@@ -374,6 +435,15 @@ const dealViews = computed(() => {
   color: #141414;
 }
 .mdeal__price-bot :deep(.price-info) { align-self: flex-end; margin-bottom: 1px; }
+/* Vakantie, prijs-p.p.-variant: "p.p." achter het bedrag, vóór het i-tje. */
+.mdeal__pp {
+  align-self: flex-end;
+  margin-bottom: 2px;
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 600;
+  color: #141414;
+}
 
 /* Bottom row: includes (left) + arrow button (right) */
 .mdeal__bottom {

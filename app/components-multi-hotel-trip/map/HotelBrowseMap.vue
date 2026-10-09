@@ -1,9 +1,11 @@
 <script setup lang="ts">
+import { addBasemapTiles } from '~/utils/mapTiles'
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import Supercluster from 'supercluster'
 import type { SearchHotel } from '~/types/searchHotel'
 import { useMultiHotelTripHotelMap } from '~/composables-multi-hotel-trip/useMultiHotelTripHotelMap'
-import { clusterHtml, pinHtml, pinSize, pinAnchor, type PinState } from './pinTemplates'
+import { clusterHtml, pinHtml, tripPinHtml, pinSize, pinAnchor, tripPinSize, tripPinAnchor, type PinState } from './pinTemplates'
+import { spreadMarkers, type SpreadItem } from '~/utils-multi-hotel-trip/tripMapLayers'
 
 /**
  * HotelBrowseMap — Leaflet wrapper with Supercluster-driven clustering.
@@ -32,7 +34,18 @@ const props = defineProps<{
    *  pin never fires `selectHotel`. With hover off, the element stays
    *  stable through the tap and `click` fires on the first tap. */
   disableHover?: boolean
+  /** 'trips': beginweergave zó uitgezoomd dat alle vakantie-pins in beeld zijn
+   *  (vanaf de Vakanties-zoekpagina); gaat vóór initialFocus en de NL-fit. */
+  fitTo?: 'trips' | null
 }>()
+
+/** Pinmaat/anker per hotel: vakanties 1,5× zo groot als arrangementen. */
+function sizeFor(hotelId: string, state: PinState): [number, number] {
+  return props.hotels.find((h) => h.id === hotelId)?.trip ? tripPinSize(state) : pinSize(state)
+}
+function anchorFor(hotelId: string, state: PinState): [number, number] {
+  return props.hotels.find((h) => h.id === hotelId)?.trip ? tripPinAnchor(state) : pinAnchor(state)
+}
 
 const { selectedHotelId, selectHotel, clearSelection, setHover, scheduleHover } = useMultiHotelTripHotelMap()
 
@@ -43,6 +56,9 @@ const { selectedHotelId, selectHotel, clearSelection, setHover, scheduleHover } 
 let lastMarkerClickAt = 0
 
 const mapEl = ref<HTMLDivElement | null>(null)
+// CARTO-basemap-key uit .env (leeg = OpenStreetMap-tegels).
+const cartoApiKey = useRuntimeConfig().public.cartoApiKey as string
+
 let map: import('leaflet').Map | null = null
 let leaflet: typeof import('leaflet') | null = null
 
@@ -84,11 +100,13 @@ function pinStateFor(hotelId: string): PinState {
 
 function makeHotelIcon(L: typeof import('leaflet'), hotelId: string) {
   const state = pinStateFor(hotelId)
+  // Vakantie (meerdere hotels): auto- of fietsicoon i.p.v. de ster.
+  const trip = props.hotels.find((h) => h.id === hotelId)?.trip
   return L.divIcon({
-    html: pinHtml(state),
+    html: trip ? tripPinHtml(trip.type, state) : pinHtml(state),
     className: 'hotel-pin-icon',
-    iconSize: pinSize(state),
-    iconAnchor: pinAnchor(state),
+    iconSize: sizeFor(hotelId, state),
+    iconAnchor: anchorFor(hotelId, state),
   })
 }
 
@@ -116,6 +134,10 @@ function renderMarkers() {
   ]
   const zoom = Math.round(map.getZoom())
   const items = cluster.getClusters(bbox, zoom)
+  // Pins mogen elkaar niet overlappen: clusters ontstaan pas vanaf 4, dus twee
+  // of drie pins vlak bij elkaar (bv. twee vakanties met bijna hetzelfde
+  // middelpunt) worden na het tekenen een paar pixels uit elkaar geduwd.
+  const spreadItems: SpreadItem[] = []
 
   for (const f of items) {
     const [lng, lat] = f.geometry.coordinates
@@ -144,6 +166,7 @@ function renderMarkers() {
         map!.setView([lat, lng], expansionZoom, { animate: true })
       })
       m.addTo(markersLayer)
+      spreadItems.push({ marker: m, w: 38, h: 38, anchor: 'center' })
     } else {
       // Individual hotel pin
       const hotelId = featureProps.hotelId as string
@@ -173,9 +196,11 @@ function renderMarkers() {
             // cursor — that way a tall focused-pin doesn't get covered
             // by the card.
             const state = pinStateFor(hotelId)
-            const [iconW, iconH] = pinSize(state)
-            const [, iconAnchorY] = pinAnchor(state)
-            const anchorPx = map!.latLngToContainerPoint([lat, lng])
+            const [iconW, iconH] = sizeFor(hotelId, state)
+            const [, iconAnchorY] = anchorFor(hotelId, state)
+            // De marker kan een paar pixels verschoven zijn (spreadMarkers):
+            // ankeren op de getekende positie, niet op de coördinaat.
+            const anchorPx = map!.latLngToContainerPoint(m.getLatLng())
             const anchorX = anchorPx.x + rect.left
             const anchorY = anchorPx.y + rect.top
             // anchorOffsetY = how far the anchor is from the TOP of the icon.
@@ -211,8 +236,12 @@ function renderMarkers() {
         })
       }
       m.addTo(markersLayer)
+      const st = pinStateFor(hotelId)
+      const [w, h] = sizeFor(hotelId, st)
+      spreadItems.push({ marker: m, w, h, anchor: st === 'focused' || st === 'focusedHover' ? 'bottom' : 'center' })
     }
   }
+  spreadMarkers(L, map, spreadItems)
 }
 
 function buildClusterIndex() {
@@ -274,12 +303,9 @@ async function initMap() {
     preferCanvas: false,
   })
 
-  // CartoDB Voyager — fresh palette, no wave texture on water bodies.
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-    attribution: '© OpenStreetMap contributors © CARTO',
-    subdomains: 'abcd',
-    maxZoom: 19,
-  }).addTo(map)
+  // Basiskaart: CARTO Voyager met API-key (NUXT_PUBLIC_CARTO_API_KEY), anders
+  // OpenStreetMap — zie app/utils/mapTiles.ts.
+  addBasemapTiles(L, map, cartoApiKey)
 
   markersLayer = L.layerGroup().addTo(map)
 
@@ -288,7 +314,13 @@ async function initMap() {
   // ensure the map has measured itself, and pick the smallest zoom that
   // contains the bbox (fitBounds picks largest zoom with both axes inside,
   // which can leave a lot of empty space east-west).
-  if (props.initialFocus) {
+  const tripCoords = props.hotels.filter((h) => h.trip && h.coordinates).map((h) => h.coordinates!)
+  if (props.fitTo === 'trips' && tripCoords.length) {
+    // Vanaf de Vakanties-zoekpagina: alle vakanties (ook die buiten NL) in beeld, met marge
+    // voor de grotere vakantie-pins en de filterkolom links.
+    map.invalidateSize()
+    map.fitBounds(L.latLngBounds(tripCoords.map((c) => [c.lat, c.lng] as [number, number])), { padding: [72, 72], animate: false })
+  } else if (props.initialFocus) {
     // Destination input → zoom to that hotel/city.
     const f = props.initialFocus
     map.invalidateSize()

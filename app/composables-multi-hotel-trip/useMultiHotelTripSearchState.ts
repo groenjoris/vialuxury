@@ -164,7 +164,9 @@ export function useMultiHotelTripSearchState() {
     try {
       if (!selectedDestinations.value.length) {
         const v = localStorage.getItem(SS_DESTINATIONS)
-        if (v) selectedDestinations.value = JSON.parse(v)
+        // De vroegere pseudo-bestemming "vakanties" (nu thema "Rondreizen") uit
+        // oude sessies weglaten — hotels matchen er nooit op.
+        if (v) selectedDestinations.value = (JSON.parse(v) as string[]).filter(id => id !== 'vakanties')
       }
       if (!selectedCities.value.length) {
         const v = localStorage.getItem(SS_CITIES)

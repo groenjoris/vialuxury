@@ -28,7 +28,7 @@
           <div class="home-hero__content container">
             <div class="home-hero__eyebrow">
               <span class="home-hero__eyebrow-dot" aria-hidden="true" />
-              <span>SPRING 2026</span>
+              <span>HERFST 2026</span>
             </div>
             <h1 class="home-hero__title">
               Experience<span class="home-hero__title-em"> more</span>
@@ -52,18 +52,12 @@
           <p class="home-persuasion__text">15.294 gasten beoordelen ons met een 9 uit 10</p>
         </div>
         <div class="home-persuasion__col">
-          <span class="home-persuasion__award" aria-hidden="true">
-            <!-- Award / medal icon (Lucide-style). Same visual height as
-                 the Trustpilot logo so the three columns sit on a line. -->
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="8" r="6" />
-              <path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11" />
-              <!-- "1M" centred inside the medal disc. Font-size 6 fits
-                   comfortably inside the r=6 circle; stroke is removed
-                   so the letters render as solid currentColor fill. -->
-              <text x="12" y="8" text-anchor="middle" dominant-baseline="central" font-size="6" font-weight="700" font-family="var(--font-heading)" stroke="none" fill="currentColor">1M</text>
-            </svg>
-          </span>
+          <!-- "1M+" as a bold stat-style text treatment (matches the
+               Trustpilot/1M+/Klarna USP row styling) instead of the
+               medal icon — the caption below already spells out the
+               claim, so the stat is aria-hidden to avoid double
+               announcing it to screen readers. -->
+          <p class="home-persuasion__stat" aria-hidden="true">1M+</p>
           <p class="home-persuasion__text">Al meer dan 1 miljoen gasten verwelkomt</p>
         </div>
         <div class="home-persuasion__col">
@@ -109,12 +103,13 @@
               :key="ri"
               class="home-popular__pill-row"
             >
-              <!-- HEMA partner pill leads the FIRST row (its own row made
-                   mobile render it as a lonely fourth swipe-row). Desktop is
-                   unaffected: the row wrappers are display:contents there. -->
-              <button v-if="ri === 0" type="button" class="home-pill home-pill--partner" @click="goPartnerActie('hema')">
-                <img src="/images/partners/hema.png" alt="HEMA" class="home-pill__logo" />
-                <span class="home-pill__label">HEMA actie</span>
+              <!-- Multi Hotel Trip: "Auto- en fietsvakanties" als allereerste snelzoekknop, met
+                   Nieuw-sticker (zelfde stickertje als in de hoofdnavigatie); opent de vakantiepagina
+                   met schone filters. -->
+              <button v-if="ri === 0" type="button" class="home-pill home-pill--new" @click="goVakanties()">
+                <span class="home-pill__icon" v-html="POPULAR_FILTER_ICONS.car || POPULAR_FILTER_ICONS.star" />
+                <span class="home-pill__label">{{ t('header.holidays') }}</span>
+                <span class="home-pill__badge">{{ t('header.new') }}</span>
               </button>
               <button
                 v-for="f in row"
@@ -125,6 +120,11 @@
               >
                 <span class="home-pill__icon" v-html="POPULAR_FILTER_ICONS[ICON_FOR[f.id]] || POPULAR_FILTER_ICONS.star" />
                 <span class="home-pill__label">{{ f.label }}</span>
+              </button>
+              <!-- HEMA partner pill: achteraan de laatste rij (was de eerste knop). -->
+              <button v-if="ri === homeFilterRows.length - 1" type="button" class="home-pill home-pill--partner" @click="goPartnerActie('hema')">
+                <img src="/images/partners/hema.png" alt="HEMA" class="home-pill__logo" />
+                <span class="home-pill__label">HEMA actie</span>
               </button>
             </div>
           </div>
@@ -146,24 +146,7 @@
       </div>
     </section>
 
-    <!-- Super Hotel Deals: 3 hand-picked luxury hotels -->
-    <section class="home-deals">
-      <div class="container">
-        <h2 class="home-deals__title">Eerder bekeken</h2>
-        <div class="home-deals__grid home-deals__grid--3">
-          <MultiHotelTripDealCard
-            v-for="hotel in superDeals"
-            :key="hotel.id"
-            :hotel="hotel"
-            :deal="pickPrimaryDeal(hotel.deals)"
-            :grid-mode="true"
-            :hide-bar="true"
-          />
-        </div>
-      </div>
-    </section>
-
-    <!-- Category banners: 3 clickable banners below "Eerder bekeken" -->
+    <!-- Category banners: 3 clickable banners — boven "Eerder bekeken" (Joris: promorij en Eerder bekeken verwisseld) -->
     <section class="home-categories">
       <div class="container home-categories__grid">
         <button type="button" class="home-category" :style="{ backgroundImage: `url('/images/categories/bikepackages.jpg')` }" @click="pickFilter('fiets')">
@@ -182,6 +165,23 @@ AAN ZEE</span>
 MET 3 HOTELS</span>
           <span class="home-category__btn">Bekijk</span>
         </button>
+      </div>
+    </section>
+
+    <!-- Super Hotel Deals: 3 hand-picked luxury hotels -->
+    <section class="home-deals">
+      <div class="container">
+        <h2 class="home-deals__title">Eerder bekeken</h2>
+        <div class="home-deals__grid home-deals__grid--3">
+          <MultiHotelTripDealCard
+            v-for="hotel in superDeals"
+            :key="hotel.id"
+            :hotel="hotel"
+            :deal="pickPrimaryDeal(hotel.deals)"
+            :grid-mode="true"
+            :hide-bar="true"
+          />
+        </div>
       </div>
     </section>
 
@@ -253,7 +253,8 @@ for (let row = 0; row < 3; row++) {
 // in sync with the filter sidebar everywhere else.
 import { FILTER_TAGS } from '~/utils-multi-hotel-trip/filterTags'
 
-const homeFilters = FILTER_TAGS
+// Zonder het thema 'rondreizen' (Auto- en fietsvakanties): dat is nu de vaste eerste knop (goVakanties).
+const homeFilters = FILTER_TAGS.filter(f => f.id !== 'rondreizen')
 
 // Mobile lays the quick-search pills out in 3 horizontally-scrolling rows.
 // Splitting them into explicit rows (rather than a column-flow grid) lets
@@ -292,6 +293,7 @@ const ICON_FOR: Record<string, string> = {
   'new-hotels': 'star',
 }
 
+const { t } = useMultiHotelTripI18n()
 const {
   toggleFilterTag,
   clearFilterTags,
@@ -299,6 +301,7 @@ const {
   clearArrivalDate,
   clearDuration,
   resetBudget,
+  clearTripFilters,
 } = useMultiHotelTripSearchState()
 
 function pickFilter(tagId: string) {
@@ -321,6 +324,7 @@ function goVakanties() {
   clearArrivalDate()
   clearDuration()
   resetBudget()
+  clearTripFilters() // ook de vakantie-snelfilters (Met de auto, Nederland, …) niet onthouden
   navigateTo('/multi-hotel-trip/vakanties')
 }
 
@@ -722,6 +726,23 @@ onMounted(() => { setMhtNavVariant('1'); restoreHeroPhotoIndex(); restoreHomeLay
   width: auto;
 }
 
+/* "1M+" stat text replacing the medal icon in the middle column — same
+   56px row height as the Trustpilot logo / award icon so the three
+   columns still line up, bold sans-serif (not the serif heading font)
+   to match the Trustpilot/1M+/Klarna USP treatment. */
+.home-persuasion__stat {
+  margin: 0;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-body);
+  font-size: 40px;
+  font-weight: 800;
+  line-height: 1;
+  color: #27C88D;
+}
+
 .home-persuasion__text {
   margin: 0;
   font-family: var(--font-body);
@@ -949,6 +970,27 @@ onMounted(() => { setMhtNavVariant('1'); restoreHeroPhotoIndex(); restoreHomeLay
 }
 
 /* Partner pill (e.g. "HEMA actie") — the brand logo replaces the icon. */
+/* "Nieuw"-stickertje op de vakantiepil, zoals in de hoofdnavigatie: rechtsboven, iets uitstekend. */
+.home-pill--new { position: relative; }
+.home-pill__badge {
+  position: absolute;
+  top: -7px;
+  right: 10px;
+  display: inline-flex;
+  align-items: center;
+  height: 14px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: var(--color-primary);
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
 .home-pill__logo {
   height: 16px;
   width: auto;
@@ -1004,6 +1046,14 @@ onMounted(() => { setMhtNavVariant('1'); restoreHeroPhotoIndex(); restoreHomeLay
 
 .home-deals__grid--3 {
   grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+/* Kaarten als subgrid (zie DealCard.vue): de afstand tussen de rijen komt van de kaartmarge,
+   niet van row-gap (die zou anders tussen de secties van de kaart zelf komen). */
+@supports (grid-template-rows: subgrid) {
+  @media (min-width: 801px) {
+    .home-deals__grid--3 { row-gap: 0; margin-bottom: calc(-1 * var(--space-lg)); }
+    .home-deals__grid--3 > .deal-card-v2 { margin-bottom: var(--space-lg); }
+  }
 }
 
 @media (max-width: 1024px) {
@@ -1085,7 +1135,7 @@ onMounted(() => { setMhtNavVariant('1'); restoreHeroPhotoIndex(); restoreHomeLay
   /* Hero copy: flow naturally below the SiteHeader's mobile search
      trigger instead of absolute-positioned at top: 300 px. Extra
      left padding (24 px vs the standard 16 px content edge) gives
-     "SPRING 2026 / Experience more / tagline" some breathing room
+     "HERFST 2026 / Experience more / tagline" some breathing room
      from the viewport edge so the headline doesn't feel pinched. */
   .home-hero__content {
     position: static;
@@ -1161,8 +1211,10 @@ onMounted(() => { setMhtNavVariant('1'); restoreHeroPhotoIndex(); restoreHomeLay
     gap: 8px;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
-    margin: 0 -16px;
-    padding: 0 16px 4px;
+    /* 8px ruimte bovenin het scrollvlak (met negatieve marge gecompenseerd), anders knipt
+       de horizontale scroller de Nieuw-sticker af die boven de eerste knop uitsteekt. */
+    margin: -8px -16px 0;
+    padding: 8px 16px 4px;
   }
   .home-popular__pill-row {
     display: flex;

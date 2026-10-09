@@ -73,30 +73,6 @@ const pronounCapitalised = computed(() =>
    a touch taller (130 px) and every text element +2 pt so it
    reads comfortably on a phone — photo on the left, text column
    flexes. */
-@media (max-width: 800px) {
-  .creator-card {
-    width: 100%;
-    height: 150px;
-  }
-  .creator-card__avatar {
-    width: 116px;
-    height: 116px;
-  }
-  .creator-card__lede,
-  .creator-card__field-label,
-  .creator-card__score-line {
-    font-size: 17px;
-  }
-  .creator-card__name {
-    font-size: 22px;
-  }
-  .creator-card__field-value {
-    font-size: 18px;
-  }
-  .creator-card__score {
-    font-size: 19px;
-  }
-}
 
 .creator-card:focus-visible {
   outline: 2px solid var(--color-primary);
@@ -259,5 +235,33 @@ const pronounCapitalised = computed(() =>
   font-size: 14px;
   color: var(--color-text-primary, #141414);
   line-height: 1;
+}
+/* Mobiel-overrides staan onderaan, ná de basisregels (zelfde specificiteit). */
+@media (max-width: 800px) {
+  /* Mobiel: dezelfde maat en binnenmarges als desktop (110 px hoog), over de volle breedte;
+     de tekst iets groter en gecentreerd zodat de bredere kaart geen lege ruimte toont. */
+  .creator-card {
+    width: 100%;
+    height: 110px;
+  }
+  .creator-card__body {
+    justify-content: center;
+    gap: 2px;
+    padding: 10px 14px;
+  }
+  .creator-card__lede,
+  .creator-card__field-label,
+  .creator-card__score-line {
+    font-size: 13px;
+  }
+  .creator-card__name {
+    font-size: 22px;
+  }
+  .creator-card__field-value {
+    font-size: 14px;
+  }
+  .creator-card__score {
+    font-size: 15px;
+  }
 }
 </style>

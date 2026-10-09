@@ -3,6 +3,7 @@ import { matchesNightKeys } from '~/utils-multi-hotel-trip/nights'
 import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { searchHotels } from '~/data/mock/search-hotels'
+import { tripMapHotels } from '~/data/mht-trips'
 import { useMultiHotelTripHotelMap } from '~/composables-multi-hotel-trip/useMultiHotelTripHotelMap'
 import { useMultiHotelTripHomeVariant } from '~/composables-multi-hotel-trip/useMultiHotelTripHomeVariant'
 import { dealMatchesAllTags, getFilterTag } from '~/utils-multi-hotel-trip/filterTags'
@@ -28,6 +29,9 @@ useHead({ title: 'Kaart — Via Luxury' })
 
 const router = useRouter()
 const route = useRoute()
+// Vanaf de Vakanties-zoekpagina (?fit=trips): alleen de vakanties op de kaart, zó
+// uitgezoomd dat ze allemaal in beeld zijn, zonder enig actief filter.
+const tripsOnly = computed(() => route.query.fit === 'trips')
 const { homeHref } = useMultiHotelTripHomeVariant()
 
 /** When the user arrives from a deal page via "Bekijk kaart", the
@@ -38,10 +42,15 @@ const { homeHref } = useMultiHotelTripHomeVariant()
  *     hide it (this hotel is the user's anchor)
  *   - auto-open the sidepanel for it when `?open=1` is also present
  *  Lives as a computed (not a ref) so navigating away wipes it. */
+// Alles wat op de kaart kan staan: de hotels én de meerhotel-vakanties (één
+// pin per route op het middelpunt van haar hotels, met auto-/fietsicoon;
+// reizen met dezelfde hotels delen één pin met meerdere dealkaartjes).
+const mapPool: SearchHotel[] = [...searchHotels, ...tripMapHotels]
+
 const focusedHotel = computed<SearchHotel | null>(() => {
   const slug = (route.query.focus as string | undefined) || ''
   if (!slug) return null
-  return searchHotels.find(h => h.slug === slug) ?? null
+  return mapPool.find(h => h.slug === slug) ?? null
 })
 
 const {
@@ -131,7 +140,9 @@ const mapHotels = computed<SearchHotel[]>(() => {
     return price >= sharedBudgetMin.value && price <= sharedBudgetMax.value
   }
   const result: SearchHotel[] = []
-  for (const h of searchHotels) {
+  for (const h of mapPool) {
+    // Vakanties-kaart: de hotels blijven weg, alleen de vakantie-pins.
+    if (tripsOnly.value && !h.trip) continue
     // Destination is NOT a filter on the map — it only drives initial zoom.
     // Every hotel stays on the map; we just tag it as `unmatched` when none
     // of its deals satisfy the active filters so the pin renders disabled
@@ -243,6 +254,16 @@ const selectedHotel = computed(() =>
   mapHotels.value.find((h) => h.id === selectedHotelId.value) ?? null,
 )
 
+/** Vakanties waarin het geselecteerde hotel een van de stops is — ze staan in het
+ *  sidepanel (desktop) en het onderkaartje (mobiel) naast de arrangementen van het hotel.
+ *  Zo komt een vakantie vier keer terug: als eigen pin én onder elk van haar hotels.
+ *  Alleen vakanties die ook als pin op de kaart staan (zelfde filters). */
+const tripsForSelected = computed<SearchHotel[]>(() => {
+  const h = selectedHotel.value
+  if (!h || h.trip) return []
+  return mapHotels.value.filter(t => !!t.trip && t.trip.stops.some(s => s.hotelSlug === h.slug))
+})
+
 // Live height (px) of the open mobile bottom-sheet, reported by
 // HotelMapMobileCard. Drives the map's upward slide so the panel
 // "pushes" the map by exactly its own height (no grey gap).
@@ -266,6 +287,8 @@ function closeMap() {
 // arrived from a deal page (?focus=<slug>) so the map gets the
 // full width. The user can re-open it via the floating chip.
 const showFilter = ref(!route.query.focus)
+// Beginweergave met alle vakantie-pins in beeld (zie tripsOnly).
+const fitTo = computed<'trips' | null>(() => (tripsOnly.value ? 'trips' : null))
 
 // Sync FR nav-bar variant with the user's last homepage pick so the
 // SiteHeader on this internal page matches the chosen variant. Reads
@@ -278,7 +301,9 @@ onMounted(() => {
   // active filters so the map shows every hotel with no filter pills —
   // the user is exploring around the focused hotel, not continuing a
   // filtered search. (Persisted query stays intact for /search.)
-  if (route.query.focus) {
+  // Idem vanaf de Vakanties-zoekpagina (?fit=trips): alle vakanties, geen enkel
+  // filter aan (ook niet de "5 of meer nachten" uit de zoekbalk daar).
+  if (route.query.focus || tripsOnly.value) {
     resetFilters()
   }
 
@@ -349,6 +374,7 @@ onMounted(() => {
           ref="mapRef"
           :hotels="mapHotels"
           :initial-focus="initialFocus"
+          :fit-to="fitTo"
           :focused-hotel-id="focusedHotel?.id ?? null"
           :disable-hover="isMobile"
         />
@@ -359,6 +385,7 @@ onMounted(() => {
         v-if="!isMobile"
         :is-open="!!selectedHotel"
         :hotel="selectedHotel"
+        :trips="tripsForSelected"
         :map-mode="true"
         @close="clearSelection"
       />
@@ -430,6 +457,7 @@ onMounted(() => {
       <HotelMapMobileCard
         :is-open="!!selectedHotel"
         :hotel="selectedHotel"
+        :trips="tripsForSelected"
         @close="clearSelection"
         @height="cardHeight = $event"
       />

@@ -335,6 +335,26 @@
                       <svg class="menu-panel__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
                     </NuxtLink>
 
+                    <!-- Multi Hotel Trip: Auto- & Fietsvakanties (zelfde gedrag als de hoofdlink: enterTrips → vakantiepagina). -->
+                    <NuxtLink
+                      to="/multi-hotel-trip/vakanties"
+                      class="menu-panel__row menu-panel__row--lg"
+                      @click="hamburgerDropdownOpen = false; onVerticalClick({ id: 'vakanties' }, $event)"
+                    >
+                      <span class="menu-panel__icon-tile">
+                        <!-- car glyph (Lucide) -->
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#141414" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2" /><circle cx="7" cy="17" r="2" /><path d="M9 17h6" /><circle cx="17" cy="17" r="2" /></svg>
+                      </span>
+                      <span class="menu-panel__row-text">
+                        <span class="menu-panel__row-title menu-panel__row-title--new">
+                          {{ t('header.holidays') }}
+                          <span class="menu-panel__badge">{{ t('header.new') }}</span>
+                        </span>
+                        <span class="menu-panel__row-sub">Meerdere hotels in één reis, met de auto of de fiets</span>
+                      </span>
+                      <svg class="menu-panel__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+                    </NuxtLink>
+
                     <a
                       v-if="effectiveNavVariant !== '1'"
                       href="https://restaurants.vialuxury.com/"
@@ -986,16 +1006,22 @@
       @search="handleMobileSearch"
     />
 
-    <!-- Bottom-right floating hero-photo switcher. Only on the home
-         page (overlay variant) since internal pages don't render a
-         photo hero. -->
-    <MultiHotelTripHeroPhotoSwitcher v-if="variant === 'overlay'" />
+    <!-- Prototype-schakelaars van de homepage (prijsweergave vakanties + hero-foto),
+         samen in het zwevende paneel linksboven — zelfde systeem als op de
+         vakantie-PDP. Alleen bij de overlay-variant (homepage en Vakanties-pagina);
+         op mobiel alleen op de homepage — daar liggen geen filterknoppen onder. -->
+    <MultiHotelTripHomeSwitchPanel v-if="variant === 'overlay'" :class="{ 'site-header__psw--offhome': !isHomeRoute }" />
+
+    <!-- Helpdesk-chatwidget (dummy third-party widget) — rechtsonder in de
+         viewport op elke pagina met deze header; schuift mee met open
+         zijpanelen. Zie HelpWidget.vue. -->
+    <MultiHotelTripHelpWidget />
   </header>
 </template>
 
 <script setup lang="ts">
 import { TRIP_NIGHT_KEYS, isNightKey, nightKeyFor, joinNightKeys, summarizeNightKeys } from '~/utils-multi-hotel-trip/nights'
-import { TRIPS_DESTINATION_ID } from '~/utils-multi-hotel-trip/destinationMatch'
+import { TRIPS_THEME_ID } from '~/utils-multi-hotel-trip/destinationMatch'
 import { useMultiHotelTripLocaleStore } from '~/stores-multi-hotel-trip/locale'
 import { searchHotels } from '~/data/mock/search-hotels'
 import { mappedHotels } from '~/data/deals-mapper'
@@ -1110,6 +1136,8 @@ const verticals = computed(() => {
 })
 // Route-aware: 'vakantieparken' on /vakantieparken*, otherwise 'hotels' (home/search/deal/hotel)
 const _route = useRoute()
+/** Homepage van het prototype (ook /home-varianten): alleen daar het schakelpaneel op mobiel. */
+const isHomeRoute = computed(() => _route.path.startsWith('/multi-hotel-trip/home'))
 
 /** Deal-page context: the hotel + deal the user is looking at. Drives the
  *  bar's prefill (destination = this hotel, duration = the deal's nights)
@@ -1551,8 +1579,8 @@ function clearDurationOnly() {
 
 // --- DESTINATION ---
 const destinations = [
-  // Multi Hotel Trip: "Vakanties" als pseudo-bestemming (opent de vakantiepagina).
-  { id: 'vakanties', name: 'Vakanties', country: 'Nieuw', emoji: '\u{1F697}' },
+  // Multi Hotel Trip: de vakanties zitten als thema "Rondreizen" in de thema-lijst
+  // (filterTags.ts), niet meer als pseudo-bestemming.
   { id: 'zeeland', name: 'Zeeland', country: 'NL', emoji: '\u{1F3D6}\u{FE0F}' },
   { id: 'brabant', name: 'Noord-Brabant', country: 'NL', emoji: '\u{1F333}' },
   { id: 'limburg', name: 'Limburg', country: 'NL', emoji: '\u26F0\u{FE0F}' },
@@ -1595,7 +1623,7 @@ const selectedHotels = sharedSelectedHotels
 
 /** The popup expects an array of theme IDs that are currently active.
  *  We filter the global filter-tag list down to the Thema category. */
-const themeIds = ['aan-zee', 'natuur', 'romantisch', 'culinair', 'autovakantie', 'fiets', 'steden', 'kasteel']
+const themeIds = ['aan-zee', 'natuur', 'romantisch', 'culinair', 'rondreizen', 'autovakantie', 'fiets', 'steden', 'kasteel']
 const selectedThemes = computed(() =>
   selectedFilterTags.value.filter(id => themeIds.includes(id)),
 )
@@ -2257,13 +2285,12 @@ async function commitSearch() {
     && localDestCities.value.length === 0
     && localDestThemes.value.length === 0
   const fromSlug = localDestHotels.value[0]?.slug || (noOtherDestination ? currentDealSlug() : null)
-  // Multi Hotel Trip: met "Vakanties" als bestemming landt de zoekopdracht
-  // op de Vakanties-zoekpagina (hero + quick filters).
-  const target = localDestDestinations.value.includes(TRIPS_DESTINATION_ID)
-    ? '/multi-hotel-trip/vakanties'
-    : fromSlug
-      ? `/multi-hotel-trip/search?from=${encodeURIComponent(fromSlug)}`
-      : '/multi-hotel-trip/search'
+  // Multi Hotel Trip: het thema "Auto- en fietsvakanties" werkt als een gewoon
+  // thema — de zoekopdracht landt op de zoekresultaten (gefilterd op vakanties),
+  // niet op de speciale vakantiepagina (die blijft bereikbaar via de hoofdlink).
+  const target = fromSlug
+    ? `/multi-hotel-trip/search?from=${encodeURIComponent(fromSlug)}`
+    : '/multi-hotel-trip/search'
   // Take the search-nav lock BEFORE navigating so the deal
   // page's `store.queryParams` watcher (which would otherwise
   // race and call `router.replace`, cancelling our nav) skips
@@ -2311,19 +2338,20 @@ function applyLiveCriteria() {
   triggerSearchUpdate()
 }
 
-/* ── Multi Hotel Trip: hoofdlink "Vakanties" ──
- * Zet de zoekbalk in vakantiestand vóór de navigatie: bestemming "Vakanties"
- * (pseudo-bestemming), reisduur 5/6/7/8 nachten voorgeselecteerd, en land op
- * de Vakanties-zoekpagina (homepage-achtige hero + quick filters). */
+/* ── Multi Hotel Trip: hoofdlink "Rondreizen" ──
+ * Zet de zoekbalk in vakantiestand vóór de navigatie: thema "Rondreizen" in
+ * het Waarheen-veld, reisduur 5/6/7/8 nachten voorgeselecteerd, en land op
+ * de Rondreizen-zoekpagina (homepage-achtige hero + quick filters). */
 function enterTrips() {
   resetLocalDestinationState()
   setNoPrefPicked(false)
-  localDestDestinations.value = [TRIPS_DESTINATION_ID]
-  localDestSelectionOrder.value = [{ type: 'destination', key: TRIPS_DESTINATION_ID }]
+  localDestThemes.value = [TRIPS_THEME_ID]
+  localDestSelectionOrder.value = [{ type: 'theme', key: TRIPS_THEME_ID }]
   localNights.value = [...TRIP_NIGHT_KEYS]
   localFlexType.value = null
   clearDestinations()
-  toggleDestination(TRIPS_DESTINATION_ID)
+  clearFilterTags()
+  toggleFilterTag(TRIPS_THEME_ID)
   setSelectedNights([...TRIP_NIGHT_KEYS])
   setFlexType(null)
   saveBarSnapshot()
@@ -2833,11 +2861,12 @@ function handleSelectHotelInPopup(slug: string) {
   height: var(--mht-nav-row-h);
 }
 
-/* ─── Variant 1 / 6 — top-align the logo with the row-1 buttons (which
- *  define row 1 height at --mht-nav-row-h). The logo is shorter than the
- *  buttons so without this it would centre. ─── */
-.site-header--nav-v1 .site-header__logo,
-.site-header--nav-v6 .site-header__logo {
+/* ─── Variant 1 / 6 — logo verticaal gecentreerd op de 44 px hoge
+ *  rij-1-knoppen en pillen (de grid-standaard). Alleen mét pay-off onder
+ *  het logo (R2-stijl / payoff-varianten-pagina) staat het logo boven, zodat
+ *  logo + pay-off samen één blok vormen. ─── */
+.site-header--nav-v1.site-header--has-payoff .site-header__logo,
+.site-header--nav-v6.site-header--has-payoff .site-header__logo {
   align-self: start;
 }
 
@@ -3397,9 +3426,9 @@ function handleSelectHotelInPopup(slug: string) {
   margin: 0;
   /* Top-padding matches the gap between bar inner-top and search-button top
      (bar padding 8px + (64 − 56)/2 = 4px → 12px) so the label-row top-aligns
-     with the upper border of the search button. Horizontal padding kept at
-     18px for breathing room. */
-  padding: 12px 18px;
+     with the upper border of the search button. Horizontal padding 16px
+     (was 18) so the long duration label "Lang verblijf of Rondreis" fits. */
+  padding: 12px 16px;
   display: flex;
   align-items: flex-start;      /* top-align icon+label inside the field */
   gap: 8px;
@@ -3478,6 +3507,9 @@ function handleSelectHotelInPopup(slug: string) {
 .search-bar__value {
   font-size: 16px;
   font-weight: 500;
+  /* Iets strakker gespatieerd zodat het langste duurlabel ("Lang verblijf
+     of Rondreis") in het veld past zonder afkapping. */
+  letter-spacing: -0.01em;
   color: var(--color-text-primary);
   white-space: nowrap;
   overflow: hidden;
@@ -3868,6 +3900,12 @@ function handleSelectHotelInPopup(slug: string) {
 /* These rules are TELEPORTED to <body>, so Vue's scoped data-v-*
    attribute won't match the rendered markup. Declare them in a
    global style block below. */
+
+/* Prototype-schakelpaneel: op mobiel alleen op de homepage (Joris: geen schakelaars op mobiel
+   buiten home) — op de Vakanties-pagina lag het knopje over de filterknoppen. */
+@media (max-width: 767px) {
+  .site-header__psw--offhome { display: none; }
+}
 </style>
 
 <style>
@@ -4150,6 +4188,13 @@ function handleSelectHotelInPopup(slug: string) {
     width: auto;
     align-self: start;
   }
+  /* Zonder pay-off: logo gecentreerd op de 44 px hoge knoppen rechts (die
+     staan absoluut, dus de rij krijgt zelf die hoogte); de telefoonregel
+     schuift niet, zie de margin-top hieronder. */
+  .site-header:not(.site-header--has-payoff) .site-header__logo {
+    min-height: 44px;
+    align-items: center;
+  }
   .site-header .site-header__logo-img {
     /* Logo and tagline are pinned to the same 204 px width
        (15 % smaller than the previous 240 px). Height follows the
@@ -4216,6 +4261,11 @@ function handleSelectHotelInPopup(slug: string) {
      the tagline's bottom and the search-pill's top. */
   .site-header.site-header--has-payoff .site-header__phone-wrap {
     margin-top: 12px;
+  }
+  /* Zonder pay-off is rij 1 nu 44 px (was ~21 px): 23 px minder marge
+     zodat de telefoonregel op dezelfde hoogte blijft. */
+  .site-header:not(.site-header--has-payoff) .site-header__phone-wrap {
+    margin-top: 11px;
   }
   /* Phone uses the SAME margin-top (12 px) across all four
      pages now — the summary card's top sits at the same Y as
@@ -4617,6 +4667,30 @@ function handleSelectHotelInPopup(slug: string) {
   font-weight: 500;
   letter-spacing: -0.072px;
 }
+/* "Nieuw"-stickertje zoals in de hoofdnavigatie (.verticals__badge): rechtsboven het woord,
+   steekt iets buiten de tekst uit, kapitalen. De titel krimpt tot de tekstbreedte zodat het
+   stickertje aan het einde van het woord hangt. */
+.menu-panel__row-title--new { position: relative; align-self: flex-start; }
+.menu-panel__badge {
+  position: absolute;
+  /* Boven de tekstregel (raakt de letters niet), steekt rechts iets uit. */
+  top: -14px;
+  right: -16px;
+  display: inline-flex;
+  align-items: center;
+  height: 14px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: var(--color-primary);
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
 .menu-panel__row-title-accent {
   /* Recoleta, bold — visually pops the "+ more" qualifier next to
      the heading-styled Verblijven label. */
@@ -4661,7 +4735,8 @@ function handleSelectHotelInPopup(slug: string) {
 }
 .verticals__badge {
   position: absolute;
-  top: 1px;
+  /* Boven de tekstregel (raakt de letters niet), rechtsboven het woord. */
+  top: -3px;
   right: 6px;
   display: inline-flex;
   align-items: center;

@@ -2,15 +2,24 @@
   <div class="search-page" :class="{ 'search-page--landing': isTripLanding, 'search-page--trips': isTripMode }">
     <!-- Multi Hotel Trip: de Vakanties-landing krijgt de homepage-achtige hero
          (foto + zoekbalk eronder, zoals de themapagina's in R2). -->
-    <MultiHotelTripLandingHero
-      v-if="isTripLanding"
-      search-below
-      compact-title
-      :bg-url="tripHeroBg"
-      :eyebrow="tripHeroCaption"
-      :title="t('search.holidaysHeroTitle')"
-      :pitch="tripHeroPitch"
-    />
+    <div v-if="isTripLanding" class="search-page__trip-hero">
+      <MultiHotelTripLandingHero
+        search-below
+        compact-title
+        :bg-url="tripHeroBg"
+        :eyebrow="tripHeroCaption"
+        :title="t('search.holidaysHeroTitle')"
+        :pitch="tripHeroPitch"
+      />
+      <!-- Variantenschakelaar voor de vakantie-dealcards (onder het logo, voor de
+           opdrachtgever). Dealcard-variant is definitief "collage" (keuze
+           2026-09-24); de schakelaar + kleurentuner blijven in de code voor later
+           (zie ook VARIANT_SWITCHER_ENABLED in useMultiHotelTripCardVariant):
+      <div class="search-page__trip-variants container">
+        <MultiHotelTripCardVariantSwitch />
+      </div>
+      -->
+    </div>
     <MultiHotelTripSiteHeader v-else />
 
     <main class="search-page__main">
@@ -150,7 +159,10 @@
           <!-- ============================================================
                DESKTOP toolbar: filter toggle, sort, view switch
                ============================================================ -->
-          <div v-if="!isMobile" class="search-toolbar" :class="{ 'search-toolbar--trips': isTripMode }">
+          <div v-if="!isMobile" class="search-toolbar" :class="{ 'search-toolbar--trips': isTripMode, 'search-toolbar--trips-map': isTripMode && vakantiesMap }">
+            <!-- Vakanties-variant "Map": linksboven hetzelfde kaartje als in de zijbalk van de
+                 gewone zoekpagina (knop "Tonen op kaart"), 75% zo hoog; de pillen staan ernaast. -->
+            <MultiHotelTripMapPreviewCard v-if="isTripMode && vakantiesMap" class="search-toolbar__trip-map" @click="handleMapClick" />
             <div class="search-toolbar__left">
               <!-- Map button: only when filter hidden on desktop (sidebar map is otherwise visible) -->
               <button
@@ -189,8 +201,11 @@
             <MultiHotelTripFilterPills v-if="!isTripMode" class="search-toolbar__pills" />
             <!-- Vakantiestand: de quick filters staan als losse flex-items in
                  deze rij; Sorteren/weergave sluiten er rechts op aan en
-                 verhuizen mee naar de tweede rij als de pillen omlopen. -->
-            <MultiHotelTripQuickFilters v-else inline :counts="tripQuickFilterCounts" />
+                 verhuizen mee naar de tweede rij als de pillen omlopen.
+                 De wrapper is display:contents (standaard) of, in de variant
+                 "Map", het omlopende vak rechts naast het kaartje. -->
+            <div class="search-toolbar__trip-pills">
+            <MultiHotelTripQuickFilters v-if="isTripMode" inline :counts="tripQuickFilterCounts" />
 
             <div class="search-toolbar__right">
               <!-- Sort dropdown -->
@@ -251,6 +266,7 @@
                 </button>
               </div>
             </div>
+            </div>
           </div>
 
           </div><!-- /.search-page__above-cards -->
@@ -266,7 +282,8 @@
                renders for ≥ 800 px.
                ============================================================ -->
           <template v-if="isMobile">
-            <section class="search-page__mobile-toolbar">
+            <!-- Vakantiestand (/vakanties): geen sticky toolbar met Sorteren/zoekicoon op mobiel. -->
+            <section v-if="!isTripMode" class="search-page__mobile-toolbar">
               <button
                 v-if="!isTripMode"
                 class="m-toolbar-btn"
@@ -440,7 +457,7 @@ import { computeFilterCounts } from '~/utils-multi-hotel-trip/filterCounts'
 import { tripSearchHotels } from '~/data/mht-trips'
 import { tripMatchesQuickFilters, TRIP_QUICK_FILTERS } from '~/utils-multi-hotel-trip/tripFilters'
 import { nightKeyFor, TRIP_NIGHT_KEYS } from '~/utils-multi-hotel-trip/nights'
-import { TRIPS_DESTINATION_ID } from '~/utils-multi-hotel-trip/destinationMatch'
+import { TRIPS_THEME_ID } from '~/utils-multi-hotel-trip/destinationMatch'
 import { useMobileSearchModalControl } from '~/composables-multi-hotel-trip/useMobileSearchModalControl'
 
 const { t } = useMultiHotelTripI18n()
@@ -477,7 +494,10 @@ function isSearchRoute(p: string): boolean {
  * i.p.v. hotels: op de landing altijd, elders zodra "Vakanties" als bestemming
  * is gekozen in de zoekbalk. */
 const isTripLanding = computed(() => route.path === '/multi-hotel-trip/vakanties')
-const isTripMode = computed(() => isTripLanding.value || selectedDestinations.value.includes(TRIPS_DESTINATION_ID))
+// Vakantiestand (hero-loze toolbar met quick filters, alleen vakanties, zijfilter dicht) ALLEEN op de
+// landingspagina /multi-hotel-trip/vakanties. Het thema "Auto- en fietsvakanties" (en Autovakantie /
+// Fietsvakantie) in het filter of de zoekbalk filtert de gewone resultaten, zoals elk ander thema.
+const isTripMode = computed(() => isTripLanding.value)
 /* Hero van de Vakanties-landing: Geuldal bij Stokhem (foto uit de
    voorbeeldcontent van Joris), met de locatie als eyebrow boven de titel. */
 const tripHeroBg = '/images/vakanties/geuldal-stokhem.jpg'
@@ -485,21 +505,23 @@ const tripHeroCaption = 'Geuldal bij Stokhem, Limburg'
 const tripHeroPitch = computed(() => t('search.holidaysPitch'))
 /** Het verticale filterpaneel bestaat niet in vakantiestand. */
 const sidebarVisible = computed(() => showFilters.value && !isTripMode.value)
+// Variant van de Vakanties-pagina (schakelaarpaneel linksboven): "Map" = kaartje in de toolbar.
+const { showMap: vakantiesMap } = useMultiHotelTripVakantiesVariant()
 // NB: de watch die het paneel sluit zodra de vakantiestand aangaat staat
 // verderop, ná `const route = useRoute()` (de watch leest isTripMode direct uit).
 const {
   selectedTripFilters, clearTripFilters,
-  toggleDestination: toggleDestinationShared,
+  toggleFilterTag: toggleFilterTagShared,
   setSelectedNights: setSelectedNightsShared,
 } = useMultiHotelTripSearchState()
 
-/** Landing via de hoofdlink of directe URL: bestemming "Vakanties" + reisduur
+/** Landing via de hoofdlink of directe URL: thema "Rondreizen" + reisduur
  *  5–8 nachten voorgeselecteerd (alleen als er nog geen vakantie-reisduur
  *  gekozen is), filterpaneel dicht. */
 function enterTripLanding() {
-  if (!selectedDestinations.value.includes(TRIPS_DESTINATION_ID)) {
+  if (!selectedFilterTags.value.includes(TRIPS_THEME_ID)) {
     clearDestinations()
-    toggleDestinationShared(TRIPS_DESTINATION_ID)
+    toggleFilterTagShared(TRIPS_THEME_ID)
   }
   if (!selectedNights.value.some(n => (TRIP_NIGHT_KEYS as string[]).includes(n))) {
     setSelectedNightsShared([...TRIP_NIGHT_KEYS])
@@ -675,7 +697,7 @@ const tripDealCount = computed(() =>
 const resultsNoun = computed(() => {
   const total = totalDeals.value
   const trips = tripDealCount.value
-  if (isTripMode.value || (trips > 0 && trips === total)) return t(total === 1 ? 'search.holiday' : 'search.holidays')
+  if (isTripMode.value || (trips > 0 && trips === total)) return t(total === 1 ? 'search.tripResultsOne' : 'search.tripResultsMany')
   if (trips === 0) return t(total === 1 ? 'search.hotelDeal' : 'search.hotelDeals')
   return t('search.hotelDealsAndHolidays')
 })
@@ -923,7 +945,8 @@ watch(() => [sharedBudgetMin.value, sharedBudgetMax.value], onFilterChange)
 const mobileFilterOpen = ref(false)
 
 function handleMapClick() {
-  navigateTo('/multi-hotel-trip/kaart')
+  // Vakanties-pagina: de kaart opent zó uitgezoomd dat alle vakanties in beeld zijn.
+  navigateTo(isTripMode.value ? '/multi-hotel-trip/kaart?fit=trips' : '/multi-hotel-trip/kaart')
 }
 
 function handleFilterButtonClick() {
@@ -945,8 +968,8 @@ function resetFilters() {
   clearFilterTags()
   clearDestinations()
   clearTripFilters()
-  // Op de Vakanties-pagina blijft "Vakanties" de bestemming.
-  if (isTripLanding.value) toggleDestinationShared(TRIPS_DESTINATION_ID)
+  // Op de Rondreizen-pagina blijft het thema "Rondreizen" aan.
+  if (isTripLanding.value) toggleFilterTagShared(TRIPS_THEME_ID)
 }
 
 /* ─── No-results state (suggestions + reasoned copy) ─────────────
@@ -1853,6 +1876,14 @@ onMounted(() => {
 .search-page__result-list--grid-3 {
   grid-template-columns: repeat(3, 1fr);
 }
+/* Kaarten als subgrid (zie DealCard.vue): de afstand tussen de rijen komt van de kaartmarge,
+   niet van row-gap (die zou anders tussen de secties van de kaart zelf komen). */
+@supports (grid-template-rows: subgrid) {
+  @media (min-width: 801px) {
+    .search-page__result-list--grid { row-gap: 0; margin-bottom: calc(-1 * var(--space-lg)); }
+    .search-page__result-list--grid > .deal-card-v2 { margin-bottom: var(--space-lg); }
+  }
+}
 
 /* ===== TOOLBAR ===== */
 /* No fixed height — the header (title + avatars) sizes to its
@@ -2360,8 +2391,8 @@ onMounted(() => {
   font-weight: 700;
   color: var(--color-primary);
 }
-/* Red dot when one or more filters are active. Sits top-right inside
-   the Filter button (Figma "New" indicator, 10 × 10 px, 4 px inset). */
+/* Oranje stip (merkkleur) als er een of meer filters aan staan. Rechtsboven in
+   de Filter-knop (Figma "New"-indicator, 10 × 10 px, 4 px inset). Was rood. */
 .m-toolbar-btn__dot {
   position: absolute;
   top: 4px;
@@ -2369,7 +2400,7 @@ onMounted(() => {
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  background: #e53935;
+  background: var(--color-primary, #FB862C);
 }
 /* Drop the Sort button when horizontal room runs out. */
 @media (max-width: 360px) {
@@ -2393,12 +2424,15 @@ onMounted(() => {
 .search-page--landing .search-page__main {
   padding-top: var(--space-2xl);
 }
-/* Toolbar in vakantiestand: quick-filterpillen + Sorteren/weergave in één
-   omlopende rij; de knoppen rechts krijgen de pilhoogte en -stijl en
-   verhuizen via margin-left:auto mee naar de laatste rij. */
+/* Toolbar in vakantiestand: de basispillen op één regel; op de tweede
+   regel (geforceerd via .tqf__break in TripQuickFilters) de fietsopties
+   links en Sorteren/weergave rechts (margin-left:auto). De knoppen rechts
+   krijgen de pilhoogte en -stijl. Geen space-between: de pillen staan
+   met vaste gap links naast elkaar. */
 .search-toolbar--trips {
   flex-wrap: wrap;
   align-items: center;
+  justify-content: flex-start;
   gap: 8px;
   padding: var(--space-md) 0 var(--space-sm);
 }
@@ -2428,5 +2462,48 @@ onMounted(() => {
   /* 42 + 2 × 1px rand van de toggle = 44px, gelijk aan de pillen. */
   width: 42px;
   height: 42px;
+}
+
+/* De wrapper om pillen + Sorteren/weergave: standaard onzichtbaar (display:contents), zodat de
+   toolbar zich gedraagt als voorheen. */
+.search-toolbar__trip-pills { display: contents; }
+
+/* Vakanties-variant "Map": het kaartje van de gewone zoekpagina (280 px breed, zijbalkbreedte)
+   linksboven, 75% van de normale hoogte (9:5 → 156 px, hier 117 px). De pillen staan ernaast in
+   een omlopend vak en gebruiken twee regels; de geforceerde regelovergang vervalt daar — de
+   auto-/fietsopties lopen gewoon door en Sorteren/weergave sluiten rechts op de laatste regel aan. */
+.search-toolbar--trips-map {
+  align-items: flex-start;
+  gap: var(--space-md);
+}
+.search-toolbar--trips-map .search-toolbar__trip-map {
+  flex: 0 0 280px;
+  width: 280px;
+  height: 117px;
+  aspect-ratio: auto;
+}
+.search-toolbar--trips-map .search-toolbar__trip-pills {
+  display: flex;
+  flex: 1 1 0;
+  min-width: 0;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.search-toolbar--trips-map .search-toolbar__trip-pills :deep(.tqf__break) { display: none; }
+
+/* Multi Hotel Trip: variantenschakelaar onder het logo in de Vakanties-hero. */
+.search-page__trip-hero { position: relative; }
+.search-page__trip-variants {
+  position: absolute;
+  top: 58px;
+  left: 0;
+  right: 0;
+  z-index: 5;
+  pointer-events: none;
+}
+.search-page__trip-variants > * { pointer-events: auto; }
+@media (max-width: 800px) {
+  .search-page__trip-variants { display: none; }
 }
 </style>

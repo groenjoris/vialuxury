@@ -267,42 +267,6 @@
 [data-mht-variant="6"] .desc-modal__body p {
   margin: 0 0 var(--space-md);
 }
-/* Multi Hotel Trip: in de linkerkolom één foto per hotel (reisvolgorde),
-   gestapeld over de volle hoogte, met de hotelnaam als sticker linksboven
-   (zelfde sticker als in de foto-pop-up). */
-[data-mht-variant="6"] .desc-modal__photo--trip {
-  display: grid;
-  grid-auto-rows: 1fr;
-  gap: 4px;
-  background: #fff;
-}
-[data-mht-variant="6"] .desc-modal__trip-photo {
-  position: relative;
-  margin: 0;
-  min-height: 0;
-  overflow: hidden;
-  background: #f5f5f5;
-}
-[data-mht-variant="6"] .desc-modal__sticker {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  z-index: 2;
-  max-width: calc(100% - 20px);
-  padding: 4px 8px;
-  border-radius: 6px;
-  background: rgba(255, 255, 255, 0.94);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
-  color: var(--color-text-primary, #141414);
-  font-family: var(--font-body);
-  font-size: 12px;
-  font-weight: 600;
-  line-height: 1.2;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  pointer-events: none;
-}
 
 /* Mobile: plain vertical scroll — only the header is sticky; the photo AND
    the text scroll together underneath it. (Drop the desktop grid; a grid with
@@ -350,10 +314,6 @@
     overflow: visible;
     padding: var(--space-lg);
   }
-  /* Vakantie: de drie hotelfoto's onder elkaar in vaste verhouding. */
-  [data-mht-variant="6"] .desc-modal__photo--trip { display: grid; grid-auto-rows: auto; }
-  [data-mht-variant="6"] .desc-modal__trip-photo { aspect-ratio: 3 / 2; }
-  [data-mht-variant="6"] .desc-modal__trip-photo img { height: 100%; object-fit: cover; }
 }
 
 /* ─── Arrival-date sidebar block (v6 only) ───
@@ -451,7 +411,7 @@
  * hotel-page date picker) stay on the legacy look.
  */
 [data-mht-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar) .calendar-month__grid {
-  gap: 8px;
+  gap: 4px;
   /* Fixed row tracks so a selected / in-range / check-out cell can NEVER grow
      its row and shift the rows below ("wobble"). Every cell is the same 60px
      (see .day-cell height below); rows resize only via media query.
@@ -461,7 +421,7 @@
 }
 
 [data-mht-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar) .calendar-month__day-headers {
-  gap: 8px;
+  gap: 4px;
   margin-bottom: var(--space-md);
 }
 
@@ -503,8 +463,10 @@
 [data-mht-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar) .day-cell__number {
   justify-self: center;
   align-self: center;
-  font-size: 14px;
-  font-weight: 400;
+  /* !important: wint van de component-scoped 15px/500 in CalendarDayCell.vue
+     (gelijke specificiteit, latere cascade) — één waarde voor alle kalenders. */
+  font-size: 15px !important;
+  font-weight: 500 !important;
   line-height: 1.4;
   color: var(--color-text-primary);
 }
@@ -515,9 +477,18 @@
      the spacing) so the day+price group stays balanced. */
   position: static !important;
   text-align: center;
-  font-size: 10px;
-  font-weight: 400;
-  color: var(--color-discount) !important;   /* beats scoped --color-text-primary */
+  /* Prijs: 13px semibold in het oorspronkelijke groen (--color-discount),
+     tabulaire cijfers zodat bedragen onder elkaar uitlijnen. 13px past dankzij
+     de 4px-gap (cel ≈ 46,6px in de 350px-zijbalk; "€1.059" = 42,7px); 14px
+     (46px) zou alleen passen als de cellen elkaar bijna raken (gap ≤ 2px).
+     !important wint van de scoped regels in CalendarDayCell.vue. NB: alle
+     *-variant-6.css-bestanden laden op elke pagina en <html> draagt alle
+     data-*-variant-attributen, dus deze regel moet in elk namespace-bestand
+     gelijk zijn. */
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-discount) !important;
   line-height: 1.4;
 }
 
@@ -685,11 +656,11 @@
     padding: 5px 2px;
   }
   [data-mht-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar) .day-cell__number {
-    font-size: 13px;
+    font-size: 15px !important;
   }
   [data-mht-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar) .day-cell__price,
   [data-mht-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar) .day-cell__sold {
-    font-size: 9px;
+    font-size: 13px !important;
   }
   [data-mht-variant="6"] :where(.sidebar__calendar, .deal-page__mobile-calendar) .day-header {
     font-size: 12px;

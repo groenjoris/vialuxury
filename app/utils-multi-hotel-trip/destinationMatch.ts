@@ -29,9 +29,11 @@ export const NL_PROVINCE_BY_ID: Record<string, string> = {
  *  country-level test against `region`. Good enough for the prototype. */
 export const BE_DESTINATION_IDS = new Set(['ardennen', 'vlaanderen', 'belgische-kust', 'wallonie'])
 
-/** Multi Hotel Trip: "Vakanties" is een pseudo-bestemming in het
- *  Waarheen-veld. Geselecteerd = de zoekpagina toont meerhotel-vakanties
- *  i.p.v. hotels (zie search.vue). Hotels matchen er nooit op. */
+/** Multi Hotel Trip: het thema "Rondreizen" (filterTags.ts) zet de zoekpagina
+ *  in vakantiestand — het vervangt de vroegere pseudo-bestemming "Vakanties".
+ *  Geselecteerd = de zoekpagina toont meerhotel-vakanties i.p.v. hotels. */
+export const TRIPS_THEME_ID = 'rondreizen'
+/** Oude pseudo-bestemming; alleen nog als label-fallback voor oude sessies. */
 export const TRIPS_DESTINATION_ID = 'vakanties'
 
 /** Human-readable label per destination ID — used by the filter pills. */

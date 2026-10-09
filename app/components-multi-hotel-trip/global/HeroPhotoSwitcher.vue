@@ -43,7 +43,9 @@ function goto(idx: number) {
    so it doesn't overlap. */
 .hps {
   position: fixed;
-  bottom: 20px;
+  /* Boven de helpdesk-chatwidget (MultiHotelTripHelpWidget, 56 px hoog,
+     20 px vanaf de onderrand) zodat beide zichtbaar blijven. */
+  bottom: 92px;
   right: 20px;
   z-index: 900;
   display: flex;

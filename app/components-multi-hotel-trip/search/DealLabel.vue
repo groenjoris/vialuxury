@@ -27,6 +27,8 @@ const LABEL_TEXT: Record<string, string> = {
   'exclusief': 'EXCLUSIEF',
   'last-minute': 'LAST MINUTE',
   'nieuw': 'NIEUW!',
+  // Vakantie-promo (fietsvakantie met bagagetransfer tussen de hotels).
+  'bagagetransfer': 'BAGAGETRANSFER',
 }
 
 const VARIANT: Record<string, Variant> = {
@@ -36,6 +38,7 @@ const VARIANT: Record<string, Variant> = {
   'exclusief': 'black',
   'last-minute': 'black',
   'nieuw': 'black',
+  'bagagetransfer': 'black',
 }
 
 const text = computed(() => LABEL_TEXT[props.keyName] || props.keyName.replace(/-/g, ' ').toUpperCase())

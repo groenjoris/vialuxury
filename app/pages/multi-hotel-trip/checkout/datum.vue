@@ -7,6 +7,19 @@
 import { hotel, dealName } from '~/data/mht-checkout/deal'
 import { CHECKOUT_NIGHTS } from '~/data/mht-checkout/pricing'
 import { useStickyFit } from '~/composables-multi-hotel-trip/useStickyFit'
+import { useMultiHotelTripCheckoutTrip } from '~/composables-multi-hotel-trip/useMultiHotelTripCheckoutTrip'
+import { useMultiHotelTripPriceVariant } from '~/composables-multi-hotel-trip/useMultiHotelTripPriceVariant'
+
+// Vakantie (meerdere hotels): kalender toont de reisprijs en het aantal
+// nachten van de reis; de kassabon de reisnaam met Aankomst/Vertrek.
+const { trip: checkoutTrip } = useMultiHotelTripCheckoutTrip()
+// Prijsweergave-variant (homepage-schakelaar): vakantie in de per-persoon-variant → de
+// kalender toont de halve (2-persoons)prijs; de gedeelde dagprijs (checkoutDay) blijft het
+// totaal, zodat de room table en de kassabon na de kamerkeuze de totaalprijs tonen.
+const { perPerson: pricePerPerson, displayPrice } = useMultiHotelTripPriceVariant()
+const ppTrip = computed(() => !!checkoutTrip.value && pricePerPerson.value)
+const shownPrice = (p: number) => (ppTrip.value ? displayPrice(p, true) : p)
+const tripPopupOpen = ref(false)
 
 const MONTH_NAMES = [
   'januari', 'februari', 'maart', 'april', 'mei', 'juni',
@@ -36,8 +49,13 @@ function nextMonth() {
 // Prijs per weekdag (patroon uit het screenshot: zo het laagst, vr het hoogst).
 const PRICE_BY_WEEKDAY = [459, 469, 469, 469, 489, 509, 479] // zo, ma, di, wo, do, vr, za
 
+// Vakantie: reisprijs met dezelfde weekdag-variatie (t.o.v. de zondagprijs).
+function priceForWeekday(weekday: number) {
+  const base = PRICE_BY_WEEKDAY[weekday]!
+  return checkoutTrip.value ? checkoutTrip.value.price + (base - PRICE_BY_WEEKDAY[0]!) : base
+}
 function priceFor(day: number) {
-  return PRICE_BY_WEEKDAY[new Date(view.year, view.month, day).getDay()]
+  return priceForWeekday(new Date(view.year, view.month, day).getDay())
 }
 
 // Niet-beschikbare dagen: augustus 2026 exact als het screenshot; overige
@@ -73,15 +91,16 @@ const lowestPrice = computed(() =>
   Math.min(...cells.value.filter((c) => c.day && !c.unavailable).map((c) => c.price ?? Infinity)),
 )
 
-// Verblijf is 2 nachten: aankomstdag "in", tussendag, vertrekdag "uit".
-const NIGHTS = CHECKOUT_NIGHTS
+// Verblijf is 2 nachten (vakantie: aantal nachten van de reis): aankomstdag
+// "in", tussendagen, vertrekdag "uit".
+const nights = computed(() => checkoutTrip.value?.nights ?? CHECKOUT_NIGHTS)
 
 function cellRole(day: number): 'in' | 'mid' | 'uit' | null {
   const s = selected.value
   if (!s || s.year !== view.year || s.month !== view.month) return null
   if (day === s.day) return 'in'
-  if (day > s.day && day < s.day + NIGHTS) return 'mid'
-  if (day === s.day + NIGHTS) return 'uit'
+  if (day > s.day && day < s.day + nights.value) return 'mid'
+  if (day === s.day + nights.value) return 'uit'
   return null
 }
 
@@ -92,7 +111,7 @@ function pick(cell: CalendarCell) {
 
 const dayPrice = computed(() => {
   const s = selected.value
-  return s ? PRICE_BY_WEEKDAY[new Date(s.year, s.month, s.day).getDay()] : 0
+  return s ? priceForWeekday(new Date(s.year, s.month, s.day).getDay()) : 0
 })
 
 const WEEKDAY_LABELS = ['Zo', 'Ma', 'Di', 'Wo', 'Do', 'Vr', 'Za']
@@ -104,7 +123,7 @@ function formatDay(offset: number) {
   return `${WEEKDAY_LABELS[d.getDay()]} ${d.getDate()} ${MONTH_SHORT[d.getMonth()]}`
 }
 const checkInLabel = computed(() => formatDay(0))
-const checkOutLabel = computed(() => formatDay(NIGHTS))
+const checkOutLabel = computed(() => formatDay(nights.value))
 
 // Kalenderprijs + datums delen met de room table en de gegevenspagina:
 // het goedkoopste kamertype volgt de gekozen dag.
@@ -121,7 +140,7 @@ watch(
       ? {
           price: dayPrice.value,
           checkIn: formatDay(0),
-          checkOut: formatDay(NIGHTS),
+          checkOut: formatDay(nights.value),
           checkInYmd: { ...selected.value },
         }
       : null
@@ -138,16 +157,17 @@ const ctaDisabled = computed(() => selected.value === null)
 const ctaText = computed(() =>
   selected.value === null ? 'Selecteer eerst een datum' : 'Opslaan en doorgaan',
 )
+// Ook bij een vakantie door naar de kamertabel (één cluster van kamers).
 function onCta() {
   if (selected.value) navigateTo('/multi-hotel-trip/checkout/kamers')
 }
 
-const arrangementIncludes = [
+const arrangementIncludes = computed(() => checkoutTrip.value?.includes ?? [
   '2 x Overnachting',
   'Dagelijks ontbijtbuffet',
   '3-Gangendiner (dag van aankomst)',
   'Tasting uurtje 17:00 - 18:00',
-]
+])
 
 useHead({ title: 'Kies datum — ViaLuxury' })
 </script>
@@ -170,7 +190,9 @@ useHead({ title: 'Kies datum — ViaLuxury' })
             <header class="cal__head">
               <h2 class="t-h1">Selecteer aankomstdatum</h2>
               <p class="t-body t-bold">
-                Getoonde prijs is voor het complete arrangement voor 2 personen voor 2 nachten.
+                <!-- Prijs-p.p.-variant (homepage-schakelaar) bij een vakantie: prijs per persoon, min. 2 personen. -->
+                <template v-if="ppTrip && checkoutTrip">Getoonde prijs is per persoon voor de complete {{ checkoutTrip.typeWord }} ({{ checkoutTrip.hotels.length }} hotels) voor {{ nights }} nachten <span class="cal__note">(min. 2 pers.)</span></template>
+                <template v-else>Getoonde prijs is voor {{ checkoutTrip ? `de complete ${checkoutTrip.typeWord} (${checkoutTrip.hotels.length} hotels)` : 'het complete arrangement' }} voor 2 personen voor {{ nights }} nachten.</template>
               </p>
             </header>
 
@@ -207,8 +229,8 @@ useHead({ title: 'Kies datum — ViaLuxury' })
                   <span class="cal__day">{{ cell.day }}</span>
                   <span v-if="cell.unavailable" class="cal__price c-mgrey">–</span>
                   <span v-else-if="cellRole(cell.day) === 'mid' || cellRole(cell.day) === 'uit'" class="cal__price">–</span>
-                  <span v-else class="cal__price">
-                    €{{ cell.price }}<span v-if="cell.price === lowestPrice" class="cal__star">★</span>
+                  <span v-else class="cal__price" :class="{ 'cal__price--cheapest': cell.price === lowestPrice }">
+                    €{{ shownPrice(cell.price) }}<span v-if="cell.price === lowestPrice" class="cal__star">★</span>
                   </span>
                 </button>
               </template>
@@ -231,11 +253,14 @@ useHead({ title: 'Kies datum — ViaLuxury' })
         <!-- Sidebar -->
         <div class="col-summary">
           <aside ref="sideEl" class="card side" :style="{ top: `${sideTop}px` }">
+            <!-- Vakantie: reisnaam (geen hotel-/plaatsnamen — die staan in de
+                 pop-up "Bekijk je volledige reis") -->
             <div class="side__hotel">
-              <img class="side__thumb" :src="hotel.thumb" :alt="hotel.name" />
+              <img class="side__thumb" :src="checkoutTrip ? checkoutTrip.thumb : hotel.thumb" :alt="checkoutTrip ? checkoutTrip.name : hotel.name" />
               <div>
-                <p class="t-body t-bold">{{ dealName }}</p>
-                <p class="t-body c-mgrey">{{ hotel.name }}</p>
+                <p class="t-body t-bold">{{ checkoutTrip ? checkoutTrip.name : dealName }}</p>
+                <p v-if="checkoutTrip" class="t-body c-mgrey">{{ checkoutTrip.typeLabel }} · {{ checkoutTrip.hotels.length }} hotels</p>
+                <p v-else class="t-body c-mgrey">{{ hotel.name }}</p>
               </div>
             </div>
 
@@ -243,11 +268,11 @@ useHead({ title: 'Kies datum — ViaLuxury' })
             <template v-if="selected">
               <div class="side__dates">
                 <div class="side__datecell">
-                  <p class="t-caption c-mgrey">Check in</p>
+                  <p class="t-caption c-mgrey">{{ checkoutTrip ? 'Aankomst' : 'Check in' }}</p>
                   <p class="t-body t-bold">{{ checkInLabel }}</p>
                 </div>
                 <div class="side__datecell">
-                  <p class="t-caption c-mgrey">Check out</p>
+                  <p class="t-caption c-mgrey">{{ checkoutTrip ? 'Vertrek' : 'Check out' }}</p>
                   <p class="t-body t-bold">{{ checkOutLabel }}</p>
                 </div>
               </div>
@@ -257,12 +282,13 @@ useHead({ title: 'Kies datum — ViaLuxury' })
             </template>
 
             <div class="side__includes">
-              <p class="t-body t-bold">Jouw arrangement bevat</p>
+              <p class="t-body t-bold">{{ checkoutTrip ? `Jouw ${checkoutTrip.typeWord} bevat` : 'Jouw arrangement bevat' }}</p>
               <p v-for="item in arrangementIncludes" :key="item" class="side__inc t-body">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" /></svg>
                 {{ item }}
               </p>
-              <a v-if="selected" class="side__link side__link--left t-body" href="#">Bekijk je volledige arrangement</a>
+              <button v-if="checkoutTrip" class="side__link side__link--left t-body" type="button" @click="tripPopupOpen = true">Bekijk je volledige reis</button>
+              <a v-else-if="selected" class="side__link side__link--left t-body" href="#">Bekijk je volledige arrangement</a>
             </div>
 
             <!-- Geen prijsblok in deze stap (room-table variant): de prijs
@@ -286,6 +312,8 @@ useHead({ title: 'Kies datum — ViaLuxury' })
     </main>
 
     <MultiHotelTripCheckoutFooter />
+
+    <MultiHotelTripCheckoutTripPanel v-if="tripPopupOpen && checkoutTrip" :trip="checkoutTrip" @close="tripPopupOpen = false" />
   </div>
 </template>
 
@@ -304,9 +332,12 @@ useHead({ title: 'Kies datum — ViaLuxury' })
 .page__main {
   flex: 1;
 }
+/* Zo breed als de afrekenbalk (--page-max, 40px zijmarge): de inhoud begint waar het logo begint;
+   de kassabon is maximaal 392px, de rest gaat naar de linkerkolom. */
+.page__main.container { max-width: var(--page-max); padding-left: 40px; padding-right: 40px; }
 .page__grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 350px;
+  grid-template-columns: minmax(0, 1fr) 392px;
   gap: 48px;
   align-items: start;
 }
@@ -431,6 +462,10 @@ useHead({ title: 'Kies datum — ViaLuxury' })
   color: var(--c-via-orange);
   font-size: 11px;
 }
+/* Laagste prijs in oranje (zoals op de PDP-kalenders). */
+.cal__price--cheapest { color: var(--c-via-orange); }
+/* "(min. 2 pers.)" achter de prijsnotitie: niet vet. */
+.cal__note { font-weight: 400; }
 .cal__star--legend {
   font-size: 14px;
 }

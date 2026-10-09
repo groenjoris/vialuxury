@@ -244,6 +244,9 @@ const nl: Record<string, string> = {
   'search.holidaysPitch': 'Verken een prachtige streek met auto of fiets, en verblijf in verschillende hotels. Met zorg samengesteld en persoonlijk gecheckt.',
   'trip.auto': 'Autovakantie',
   'trip.fiets': 'Fietsvakantie',
+  'trip.mapTitle.fiets': 'Fietsvakantie met bagagetransfer',
+  'trip.withThisHotel': 'Vakanties met dit hotel',
+  'trip.disclaimer': 'Je dient ter plaatse alleen de lokale belastingen, eventuele service-/administratiekosten van de hotels en parkeerkosten te betalen (indien dit niet is inbegrepen in de vakantie).',
   // Dealcard: label boven de inclusies
   'trip.autoIncl': 'Autovakantie inclusief',
   'trip.fietsIncl': 'Fietsvakantie inclusief',
@@ -251,7 +254,7 @@ const nl: Record<string, string> = {
   'trip.typeWithHotels': '{type} met {n} hotels',
   // Multi Hotel Trip — vakantie-PDP
   'trip.fantasticHotels': '{n} fantastische hotels',
-  'trip.freeCancel30': 'Kosteloos annuleren tot 30 dagen voor vertrek',
+  'trip.easyCancel': 'Gemakkelijk annuleren',
   'trip.freeCancelLine': 'Gratis annuleren tot 30 dagen voor vertrek.',
   'trip.freeCancelLineDate': 'Gratis annuleren tot {date} (30 dagen voor vertrek).',
   'trip.hotelsIncludedHeading': 'In deze vakantie zijn deze hotels inbegrepen:',
@@ -296,7 +299,7 @@ const nl: Record<string, string> = {
   'trip.itin.sum.and': ' en ',
   'trip.itin.panelIntro': 'Dit is slechts een voorbeeld, voel je vrij om je eigen schema te volgen.',
   'trip.itin.city.heading': 'Wat te doen tijdens je vakantie',
-  'trip.itin.city.intro': 'Per hotel drie tips voor in de buurt — klik op een tip voor meer.',
+  'trip.itin.city.intro': 'Per hotel onze tips voor in de buurt.',
   'trip.itin.city.outingsAt': 'Leuke uitjes in de buurt van {hotel}',
   'trip.reviews.moreInfo': 'Meer info',
   'trip.reviews.travelledIn': 'Op vakantie in {month}',
@@ -316,7 +319,8 @@ const nl: Record<string, string> = {
   'trip.introTitleBike': '{days}-daagse fietsreis',
   'trip.includedHeading': 'In deze {type} voor 2 personen is het volgende inbegrepen',
   // Onder de minimap
-  'trip.fromHomeLine': 'Reistijd van {city} naar {to}: ca. {duration}',
+  'trip.fromHomeShort': '{city} → {to}: {duration} ({km} km)',
+  'trip.fromHomeShortNoKm': '{city} → {to}: {duration}',
   'trip.totalRouteLine': 'Totale route tussen hotels: {km} km',
   'trip.totalDriveLine': 'Totale rijtijd: ca. {duration}',
   // Fietsvakantie — regels onder de minimap
@@ -324,6 +328,11 @@ const nl: Record<string, string> = {
   'trip.bike.timeLine': '{min} tot {max} uur fietsen per etappe, in rustig tempo',
   'trip.bike.arrivalLine': 'Heenreis: ca. {duration} met de auto vanuit {city}',
   'trip.itineraryIntro': 'Zo ziet je vakantie eruit: een voorbeeldprogramma, je bepaalt zelf het tempo.',
+  'trip.itin.goodToKnow': 'Goed om te weten',
+  'trip.itin.gtk1': 'Dit reisschema is een voorbeeld vol inspiratie: jij bepaalt het tempo en wat je doet, de hotels zijn je thuisbasis.',
+  'trip.itin.gtk2': 'Entree van de genoemde attracties is niet inbegrepen, zo betaal je alleen voor wat jij kiest.',
+  'trip.itin.gtk3': 'Check vooraf even de openingstijden van restaurants en attracties, dan sta je nergens voor een dichte deur.',
+  'trip.itin.gtk4': 'Museumkaart of andere kortingspas? Neem hem mee: bij vakanties in Nederland levert dat vaak gratis of voordelige entree op.',
   'trip.moreAboutHotel': 'Meer over dit hotel',
   'trip.moreAboutHotelNamed': 'Meer over hotel {hotel}',
   'trip.moreAbout': 'Meer over {hotel}',
@@ -367,6 +376,7 @@ const nl: Record<string, string> = {
   'trip.durShort.minutes': '{m} min',
   'trip.durShort.hours': '{h} uur',
   'trip.durShort.hoursMinutes': '{h} u {m} min',
+  'trip.durCompact.hoursMinutes': '{h} u {m} min',
   'trip.roomHeading': 'Jouw kamer',
   'trip.checkInFrom': 'Inchecken vanaf {time}',
   // Multi Hotel Trip — reisduur in twee groepen (kort / lang)

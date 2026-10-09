@@ -528,7 +528,10 @@ const hasSelection = computed(() => !!props.selectedDate || props.nights.length 
   border-radius: 1px;
   background: #fff;
 }
-.dur-check--group .dur-check__label { font-weight: 600; }
+/* Categoriekop in dezelfde letter als "Maakt niet uit": niet vet, en ook
+   geselecteerd niet oranje (alleen het vinkje kleurt). */
+.dur-check--group .dur-check__label { font-weight: 400; }
+.dur-check--group.dur-check--selected .dur-check__label { color: var(--color-text-primary); }
 /* Losse nachten ingesprongen onder de categoriekop, iets kleiner. */
 .dur-check--night {
   padding-left: 28px;

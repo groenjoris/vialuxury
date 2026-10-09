@@ -12,7 +12,7 @@
     <!-- Image area (top in grid, left in list). Grid mode renders a small
          carousel (up to 5 hotel photos) with prev/next arrows that fade
          in on hover. List mode keeps the single static image. -->
-    <div class="deal-card-v2__image">
+    <div class="deal-card-v2__image" :class="{ 'deal-card-v2__image--trip-overlay': tripOverlay || tripInverse, 'deal-card-v2__image--trip-timeline': tripTimeline, 'deal-card-v2__image--trip-collage': tripCollage }">
       <!-- Anti rage-click: the whole photo opens the deal page. Sits ABOVE the
            image (z-index 1) but BELOW the carousel arrows (z-index 2) and the
            favourite heart (z-index 3) so those still work. -->
@@ -27,15 +27,41 @@
       <!-- Multi Hotel Trip: linkerhelft de foto van het eerste hotel,
            rechterhelft een schematisch routekaartje met genummerde stops. -->
       <template v-if="isTrip">
-        <!-- Hover op een nummer op het kaartje: foto + naam en sterren van dát hotel. -->
-        <img class="deal-card-v2__trip-photo" :src="tripHoverStop?.image || tripPhoto" :alt="tripHoverStop?.hotelName || localized(deal.title)" loading="lazy" />
-        <div v-if="tripHoverStop" class="deal-card-v2__trip-caption">
-          <span class="deal-card-v2__trip-caption-name">{{ tripHoverStop.hotelName }}</span>
-          <span v-if="tripHoverStop.starRating" class="deal-card-v2__trip-caption-stars" aria-hidden="true">
-            <span v-for="n in tripHoverStop.starRating" :key="n"><svg viewBox="0 0 18 18" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M16.963,6.786c-.088-.271-.323-.469-.605-.51l-4.62-.671L9.672,1.418c-.252-.512-1.093-.512-1.345,0l-2.066,4.186-4.62,.671c-.282,.041-.517,.239-.605,.51-.088,.271-.015,.57,.19,.769l3.343,3.258-.79,4.601c-.048,.282,.067,.566,.298,.734,.231,.167,.538,.189,.79,.057l4.132-2.173,4.132,2.173c.11,.058,.229,.086,.349,.086,.155,0,.31-.048,.441-.143,.231-.168,.347-.452,.298-.734l-.79-4.601,3.343-3.258c.205-.199,.278-.498,.19-.769Z"/></svg></span>
-          </span>
+        <img class="deal-card-v2__trip-photo" :src="tripPhoto" :alt="localized(deal.title)" loading="lazy" />
+        <MultiHotelTripRouteMap v-if="!tripTimeline && !tripCollage" class="deal-card-v2__trip-map" :stops="tripMapStops" :overlay="tripOverlay || tripInverse" :inverse="tripInverse" />
+        <!-- Variant "collage": rechts 1/4 met drie tegels — mini-routekaartje (stipjes,
+             landcodes) en de twee omgevingsfoto's die de PDP-gallery als eerste toont. -->
+        <div v-else-if="tripCollage" class="deal-card-v2__trip-collage">
+          <div class="trip-collage__tile trip-collage__tile--map">
+            <MultiHotelTripRouteMap :stops="tripMapStops" :width="92" :height="74" :marker-radius="4" :max-scale="110" dots />
+          </div>
+          <div v-for="(url, i) in tripCollagePhotos" :key="`cp-${i}`" class="trip-collage__tile">
+            <img :src="url" alt="" loading="lazy" />
+          </div>
         </div>
-        <MultiHotelTripRouteMap class="deal-card-v2__trip-map" :stops="tripMapStops" hoverable @stop-hover="tripHoverIndex = $event" />
+        <!-- Variant "tijdlijn": onderaan de foto een schematische route — plaatsnaam,
+             bolletje, "2 nachten", met tussen de stops een gestreepte lijn en een
+             rijdende auto (fiets bij de fietsvakantie). -->
+        <div v-else-if="tripTimeline" class="deal-card-v2__trip-timeline" :style="{ '--tl-icon': `url(/icons/mht/${tripTransportIcon}.svg)` }">
+          <!-- Doorlopende stippellijn van de eerste tot de laatste stip; stippen en
+               vervoersiconen liggen erbovenop. -->
+          <span class="trip-tl__track" aria-hidden="true"></span>
+          <template v-for="(s, i) in tripTimelineStops" :key="`tl-${i}`">
+            <div
+              class="trip-tl__stop"
+              :class="{ 'trip-tl__stop--first': i === 0, 'trip-tl__stop--last': i === tripTimelineStops.length - 1 }"
+            >
+              <span class="trip-tl__city">{{ s.city }}</span>
+              <span class="trip-tl__dot" aria-hidden="true"></span>
+              <span class="trip-tl__nights">{{ s.nights }}</span>
+            </div>
+            <div v-if="i < tripTimelineStops.length - 1" class="trip-tl__leg" aria-hidden="true">
+              <!-- Etappelabel onder het vervoersicoon: km (alleen fietsvakantie). -->
+              <span v-if="tripTimelineStops[i + 1]?.legLabel" class="trip-tl__km">{{ tripTimelineStops[i + 1]?.legLabel }}</span>
+              <span class="trip-tl__icon-wrap"><span class="trip-tl__icon"></span></span>
+            </div>
+          </template>
+        </div>
       </template>
       <img v-else :src="displayedImage" :alt="hotel?.name || localized(deal.title)" loading="lazy" />
       <!-- Sidepanel cards (deal-page and map) lock to a single
@@ -86,12 +112,26 @@
           class="deal-card-v2__panel-sticker"
         >{{ s }}</span>
       </div>
-      <div v-if="hotel?.labels && hotel.labels.length && !hideLabels" class="deal-card-v2__labels">
+      <!-- Linksonder op de foto: de deal-labels van het hotel en, bij een
+           vakantie met bagagetransfer (fietsvakantie), de promo-sticker
+           "BAGAGETRANSFER" in dezelfde zwarte stickerstijl. In de tijdlijn-
+           variant ligt onderaan de route-strook, dan staat hij linksboven
+           onder het kortingsvaantje. -->
+      <div
+        v-if="((hotel?.labels && hotel.labels.length) || tripPromoLabel) && !hideLabels"
+        class="deal-card-v2__labels"
+        :class="{ 'deal-card-v2__labels--top': tripTimeline }"
+      >
         <MultiHotelTripDealLabel
-          v-for="label in hotel.labels"
+          v-for="label in hotel?.labels || []"
           :key="label"
           :key-name="label"
           class="deal-card-v2__label"
+        />
+        <MultiHotelTripDealLabel
+          v-if="tripPromoLabel"
+          :key-name="tripPromoLabel"
+          class="deal-card-v2__label deal-card-v2__label--promo"
         />
       </div>
       <button
@@ -124,7 +164,12 @@
         <!-- Multi Hotel Trip: een vakantie heeft geen hotelnaam — "Autovakantie met
              3 hotels" / "Fietsvakantie met 3 hotels", zonder link en zonder sterren. -->
         <h3 v-if="isTrip" class="deal-card-v2__name-row">
+          <!-- Varianten "50-50" en "overlay": auto- of fietsicoon links van de titel
+               (de tijdlijn toont het vervoer al op de route). -->
+          <img v-if="isTrip && !tripTimeline" :src="`/icons/mht/${tripTransportIcon}.svg`" alt="" class="deal-card-v2__name-icon" width="18" height="18" />
           <span class="deal-card-v2__name">{{ tripTypeLabel }}</span>
+          <!-- Nieuw-stickertje (als in de navigatie en de kop van de vakantie-PDP). -->
+          <span class="deal-card-v2__new-badge">{{ t('header.new') }}</span>
         </h3>
         <NuxtLink v-else :to="`/multi-hotel-trip/hotel/${hotel.slug}`" :target="linkTarget" class="deal-card-v2__name-link" @click.stop>
           <h3 class="deal-card-v2__name-row">
@@ -135,11 +180,17 @@
           </h3>
         </NuxtLink>
         <div ref="metaEl" class="deal-card-v2__meta">
+          <!-- Multi Hotel Trip: reviewcijfer + label vóór de plaats (als Northstar). -->
+          <template v-if="isTrip && hotel.reviewScore">
+            <span class="deal-card-v2__score">{{ hotel.reviewScore.toFixed(1) }}</span>
+            <span class="deal-card-v2__score-label">{{ t(getReviewLabelKey(hotel.reviewScore)) }}</span>
+            <span class="deal-card-v2__sep" aria-hidden="true">|</span>
+          </template>
           <svg class="deal-card-v2__loc-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M4.5 9.75768C4.5 15.5 12 22 12 22C12 22 19.5 15.5 19.5 9.75768C19.5 4.81181 15.6559 2 12 2C8.34409 2 4.5 4.81181 4.5 9.75768Z" /><path d="M12 12C13.3807 12 14.5 10.8807 14.5 9.5C14.5 8.11929 13.3807 7 12 7C10.6193 7 9.5 8.11929 9.5 9.5C9.5 10.8807 10.6193 12 12 12Z" />
           </svg>
-          <!-- Multi Hotel Trip: plaatsnamen van de twee of drie hotels i.p.v. één plaats. -->
-          <span v-if="isTrip" class="deal-card-v2__location deal-card-v2__location--trip">{{ tripStopsLabel }}</span>
+          <!-- Multi Hotel Trip: zoveel plaatsen als op de regel passen, de rest als "+1"/"+2" (fitTripCities). -->
+          <span v-if="isTrip" ref="tripLocEl" class="deal-card-v2__location" :title="tripStopsLabel">{{ tripStopsShort }}</span>
           <span v-else class="deal-card-v2__location">
             <span>{{ hotel.city }}</span>
             <span v-if="!hideRegion" class="deal-card-v2__location-region">, {{ hotel.region }}</span>
@@ -191,9 +242,11 @@
               </div>
 
               <div class="deal-card-v2__grid-price-row">
-                <p
-                  class="deal-card-v2__meta-line"
-                >{{ PRICED_PERSONS }} {{ PRICED_PERSONS === 1 ? 'persoon' : 'personen' }}, {{ deal.nights }} {{ deal.nights === 1 ? 'nacht' : 'nachten' }}</p>
+                <p class="deal-card-v2__meta-line">
+                  <!-- Vakantie in de prijs-p.p.-variant: "prijs per persoon voor 7 nachten" + op de regel eronder "(minimaal 2 personen)". -->
+                  <template v-if="ppTrip">{{ ppForLabel }} <span class="deal-card-v2__meta-note">{{ t('deal.minPersons') }}</span></template>
+                  <template v-else>{{ PRICED_PERSONS }} {{ PRICED_PERSONS === 1 ? 'persoon' : 'personen' }}, {{ deal.nights }} {{ deal.nights === 1 ? 'nacht' : 'nachten' }}</template>
+                </p>
                 <p class="deal-card-v2__price-line">
                   <span class="deal-card-v2__price-prefix">Vanaf</span>
                   <span class="deal-card-v2__price">{{ formatPrice(price) }}</span>
@@ -230,7 +283,8 @@
           </template>
           <template v-else>
             <p class="deal-card-v2__meta-line deal-card-v2__meta-line--small deal-card-v2__meta-line--right">
-              {{ PRICED_PERSONS }} {{ PRICED_PERSONS === 1 ? 'persoon' : 'personen' }}, {{ deal.nights }} {{ deal.nights === 1 ? 'nacht' : 'nachten' }}
+              <template v-if="ppTrip">{{ ppForLabel }} <span class="deal-card-v2__meta-note">{{ t('deal.minPersons') }}</span></template>
+              <template v-else>{{ PRICED_PERSONS }} {{ PRICED_PERSONS === 1 ? 'persoon' : 'personen' }}, {{ deal.nights }} {{ deal.nights === 1 ? 'nacht' : 'nachten' }}</template>
             </p>
             <p class="deal-card-v2__price-line deal-card-v2__price-line--right">
               <span class="deal-card-v2__price-prefix">Vanaf</span>
@@ -272,10 +326,12 @@ import { formatDateShort } from '~/utils-multi-hotel-trip/formatDate'
 import dayjs from 'dayjs'
 import { pickSmartInclusions } from '~/utils-multi-hotel-trip/smartInclusions'
 import { priceForArrival, PRICED_PERSONS } from '~/utils-multi-hotel-trip/priceFormula'
+import { useMultiHotelTripPriceVariant } from '~/composables-multi-hotel-trip/useMultiHotelTripPriceVariant'
 import { nightsLabel } from '~/utils-multi-hotel-trip/plural'
 import { arrangementSuffixFromHighlights } from '~/utils-multi-hotel-trip/arrangementType'
 import { dealHash, roomsLeftForDeal } from '~/utils-multi-hotel-trip/scarcity'
 import { useMultiHotelTripHomeVariant } from '~/composables-multi-hotel-trip/useMultiHotelTripHomeVariant'
+import { getReviewLabelKey } from '~/utils-multi-hotel-trip/reviewLabel'
 
 const { t, localized, locale } = useMultiHotelTripI18n()
 const isMobile = useMultiHotelTripIsMobile()
@@ -288,9 +344,9 @@ const linkTarget = computed(() => (isMobile.value ? '_self' : '_blank'))
 const isGerman = computed(() => locale.value === 'de')
 /** "Arrangement" / "Package" label above the includes list. */
 const packageLabel = computed(() => {
-  // Multi Hotel Trip: "Autovakantie" / "Fietsvakantie" i.p.v. "Arrangement".
+  // Multi Hotel Trip: "Autovakantie inclusief" / "Fietsvakantie inclusief" i.p.v. "Arrangement".
   const trip = props.hotel?.trip
-  if (trip) return t(trip.type === 'fiets' ? 'trip.fiets' : 'trip.auto')
+  if (trip) return t(trip.type === 'fiets' ? 'trip.fietsIncl' : 'trip.autoIncl')
   return locale.value === 'en' ? 'Package' : 'Arrangement'
 })
 
@@ -356,22 +412,74 @@ defineEmits<{ 'view-siblings': [] }>()
 
 /** Multi Hotel Trip: dit record is een meerhotel-vakantie (twee of drie hotels). */
 const isTrip = computed(() => !!props.hotel?.trip)
+/** Dealcard-variant (schakelaar op de Vakanties-pagina): 'overlay' = foto over de
+ *  volle breedte met het kaartje semi-transparant erover. */
+const { variant: tripCardVariant } = useMultiHotelTripCardVariant()
+const tripOverlay = computed(() => isTrip.value && tripCardVariant.value === 'overlay')
+/* Variant "inverse": overlay-opmaak met een donkere kaartlaag en witte route. */
+const tripInverse = computed(() => isTrip.value && tripCardVariant.value === 'inverse')
+const tripTimeline = computed(() => isTrip.value && tripCardVariant.value === 'timeline')
+const tripCollage = computed(() => isTrip.value && tripCardVariant.value === 'collage')
+/** Collage: de twee omgevingsfoto's die de PDP-gallery als eerste toont (na de cover);
+ *  zonder omgevingsfoto's de eerste hotelfoto's. */
+const tripCollagePhotos = computed(() => {
+  const trip = props.hotel?.trip
+  const nearby = (trip?.nearbyImages ?? []).slice(0, 2)
+  if (nearby.length === 2) return nearby
+  return [...nearby, ...(trip?.stops ?? []).map(s => s.image).filter((u): u is string => !!u)].slice(0, 2)
+})
+/** Tijdlijn-variant: plaatsnaam + aantal nachten per stop; auto of fiets als vervoer. */
+const tripTimelineStops = computed(() =>
+  (props.hotel?.trip?.stops ?? [])
+    .filter(s => typeof s.lat === 'number' && typeof s.lng === 'number')
+    .map(s => ({ city: s.city, nights: nightsLabel(s.nights, locale.value), legLabel: tripLegShort(s.travel) })),
+)
+/** Etappelabel in de tijdlijn: alleen de afstand bij een fietsvakantie ("45 km");
+ *  autovakanties tonen geen reistijd (te druk naast de plaatsnamen). */
+function tripLegShort(travel?: { km: number; minutes: number }): string | undefined {
+  if (!travel || props.hotel?.trip?.type !== 'fiets') return undefined
+  return `${travel.km} km`
+}
+const tripTransportIcon = computed(() => (props.hotel?.trip?.type === 'fiets' ? 'bike' : 'car-side'))
 /** "Autovakantie met 3 hotels" — soort vakantie + aantal hotels, in plaats van een hotelnaam. */
 const tripTypeLabel = computed(() => {
   const trip = props.hotel?.trip
   if (!trip) return ''
   return t('trip.typeWithHotels').replace('{type}', t(`trip.${trip.type}`)).replace('{n}', String(trip.stops.length))
 })
-/** "Landgraaf · Eijsden · Sittard" — plaatsnamen van de hotels in reisvolgorde. */
+/** "Landgraaf · Eijsden · Sittard" — plaatsnamen van de hotels in reisvolgorde (tooltip). */
 const tripStopsLabel = computed(() => (props.hotel?.trip?.stops ?? []).map(s => s.city).join(' · '))
-/** Foto in de linkerhelft: het eerste hotel van de route. */
-const tripPhoto = computed(() => props.hotel?.trip?.stops[0]?.image || imageSrc.value)
-/** Gehoverd nummer op het kaartje → foto en naam van dat hotel in de linkerhelft. */
-const tripHoverIndex = ref<number | null>(null)
-const tripHoverStop = computed(() => {
-  const stops = (props.hotel?.trip?.stops ?? []).filter(s => typeof s.lat === 'number' && typeof s.lng === 'number')
-  return tripHoverIndex.value != null ? stops[tripHoverIndex.value] ?? null : null
+/** Aantal plaatsnamen dat op de regel past (fitTripCities); SSR toont ze allemaal. */
+const tripCityCount = ref(Number.POSITIVE_INFINITY)
+/** "Landgraaf · Eijsden +1" — de plaatsen die passen, de rest als "+N" (naast het reviewcijfer). */
+const tripStopsShort = computed(() => {
+  const stops = props.hotel?.trip?.stops ?? []
+  if (!stops.length) return ''
+  const n = Math.max(1, Math.min(tripCityCount.value, stops.length))
+  const shown = stops.slice(0, n).map(s => s.city).join(' · ')
+  return n < stops.length ? `${shown} +${stops.length - n}` : shown
 })
+const tripLocEl = ref<HTMLElement | null>(null)
+let tripFitRun = 0
+/** Begin met alle plaatsen en haal er één af (met "+N") tot de regel niet meer wordt afgekapt. */
+async function fitTripCities() {
+  const total = props.hotel?.trip?.stops.length ?? 0
+  if (!total) return
+  const run = ++tripFitRun
+  for (let n = total; n >= 1; n--) {
+    tripCityCount.value = n
+    await nextTick()
+    const el = tripLocEl.value
+    if (run !== tripFitRun || !el) return
+    if (el.scrollWidth <= el.clientWidth + 1) return
+  }
+}
+/** Foto in de linkerhelft: de omgevingsfoto van de vakantie (zelfde als de
+ *  eerste foto op de PDP); zonder cover het eerste hotel van de route. */
+const tripPhoto = computed(() => props.hotel?.trip?.coverImage || props.hotel?.trip?.stops[0]?.image || imageSrc.value)
+/** Promo-sticker linksonder op de foto: "BAGAGETRANSFER" voor vakanties met
+ *  bagagetransfer tussen de hotels (tag `bagagetransfer`, de fietsvakantie). */
+const tripPromoLabel = computed(() => (props.hotel?.trip?.tags.includes('bagagetransfer') ? 'bagagetransfer' : null))
 /** Stops met ligging voor het routekaartje (rechterhelft). */
 const tripMapStops = computed(() =>
   (props.hotel?.trip?.stops ?? [])
@@ -469,8 +577,11 @@ function checkRegionFit() {
 let ro: ResizeObserver | null = null
 onMounted(() => {
   checkRegionFit()
+  fitTripCities()
+  // Webfont kan later binnenkomen en de tekst breder maken.
+  document.fonts?.ready.then(() => fitTripCities())
   if (typeof ResizeObserver !== 'undefined' && metaEl.value) {
-    ro = new ResizeObserver(() => checkRegionFit())
+    ro = new ResizeObserver(() => { checkRegionFit(); fitTripCities() })
     ro.observe(metaEl.value)
   }
 })
@@ -564,11 +675,16 @@ const mismatchHref = computed(() => {
 const effectiveArrival = computed(() => (props.ignoreArrival ? null : arrivalDate.value))
 // Prototype: card prices + the "X personen" label both use PRICED_PERSONS
 // (the party size the price is for). The picker doesn't scale prices yet.
+// Prijsweergave-variant (homepage-schakelaar): bij een vakantie in de
+// per-persoon-variant tonen we de helft van de 2-persoonsprijs (ook de van-prijs).
+const { perPerson: pricePerPerson, displayPrice } = useMultiHotelTripPriceVariant()
+const ppTrip = computed(() => isTrip.value && pricePerPerson.value)
+const ppForLabel = computed(() => t('deal.pricePerPersonFor').replace('{nightsLabel}', nightsLabel(props.deal.nights, locale.value as 'nl' | 'en' | 'de')))
 const price = computed(() =>
-  priceForArrival(props.deal.basePrice, props.deal.id, effectiveArrival.value, PRICED_PERSONS),
+  displayPrice(priceForArrival(props.deal.basePrice, props.deal.id, effectiveArrival.value, PRICED_PERSONS), isTrip.value),
 )
 const originalPrice = computed(() =>
-  priceForArrival(props.deal.originalPrice, props.deal.id, effectiveArrival.value, PRICED_PERSONS),
+  displayPrice(priceForArrival(props.deal.originalPrice, props.deal.id, effectiveArrival.value, PRICED_PERSONS), isTrip.value),
 )
 
 /** Cheapest deal across all sibling arrangements at this hotel — used by
@@ -785,6 +901,22 @@ const includesBullets = computed<string[]>(() => {
   width: auto;
   filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.35));
 }
+/* Promo-sticker (BAGAGETRANSFER): 0,75 × de gewone labelmaat (36 → 27 px,
+   22 → 16,5 px); wordt nooit afgebroken (mag iets over de helft van de kaart).
+   Bij hover op een hotel op het kaartje verdwijnt de hele labelrij, zodat de
+   hotelnaam in de caption vrij blijft (v-show op .deal-card-v2__labels). */
+.deal-card-v2__labels .deal-card-v2__label--promo {
+  height: 27px;
+  padding: 5px 12px;
+  font-size: 16.5px;
+  letter-spacing: 0.4px;
+}
+/* Tijdlijn-variant: onderaan ligt de route-strook, dus de stickers staan
+   linksboven onder het kortingsvaantje (43 px hoog + 8 px). */
+.deal-card-v2__labels--top {
+  bottom: auto;
+  top: calc(var(--space-md) + 43px + 8px);
+}
 
 .deal-card-v2__discount-badge {
   position: absolute;
@@ -958,6 +1090,28 @@ const includesBullets = computed<string[]>(() => {
   min-width: 0;
 }
 
+/* Vervoersicoon voor de vakantietitel (50-50/overlay). */
+.deal-card-v2__name-icon { flex-shrink: 0; align-self: center; width: 18px; height: 18px; }
+/* Nieuw-stickertje rechts naast "Autovakantie met 3 hotels", op de tekstregel gecentreerd
+   (zelfde uitlijning als in de kop van de vakantie-PDP). */
+.deal-card-v2__new-badge {
+  flex-shrink: 0;
+  align-self: center;
+  display: inline-flex;
+  align-items: center;
+  height: 14px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: var(--color-primary);
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
 .deal-card-v2__name {
   min-width: 0;
   overflow: hidden;
@@ -1050,43 +1204,142 @@ const includesBullets = computed<string[]>(() => {
   z-index: 2;
   pointer-events: none;
 }
-/* Hover op een nummer: naam + sterren van dat hotel onderin de foto. */
-.deal-card-v2__trip-caption {
+/* Variant "overlay": foto over de volle breedte, het kaartje rechts met een
+   zachte linkerrand (mask) en semi-transparante kaartlaag (TripRouteMap
+   `overlay`), zodat het met de foto mengt; route en markers blijven dekkend. */
+.deal-card-v2__image--trip-overlay .deal-card-v2__trip-photo { width: 100%; }
+.deal-card-v2__image--trip-overlay .deal-card-v2__trip-map {
+  width: 64%;
+  border-left: 0;
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 28%);
+  mask-image: linear-gradient(to right, transparent 0, #000 28%);
+}
+/* Variant "tijdlijn": foto over de volle breedte, onderaan een donkere verloop
+   met de schematische route (plaatsnaam · bolletje · nachten, gestreepte lijnen
+   met een rijdende auto/fiets ertussen). De hover-caption gaat dan naar boven. */
+.deal-card-v2__image--trip-timeline .deal-card-v2__trip-photo { width: 100%; }
+.deal-card-v2__trip-timeline {
   position: absolute;
   left: 0;
+  right: 0;
   bottom: 0;
-  width: 50%;
-  padding: 28px 10px 10px;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0));
-  color: #fff;
+  z-index: 2;
   display: flex;
-  flex-direction: column;
-  gap: 2px;
+  align-items: center;
+  padding: 48px 14px 12px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.72) 0%, rgba(0, 0, 0, 0.4) 55%, rgba(0, 0, 0, 0) 100%);
+  color: #fff;
   pointer-events: none;
 }
-.deal-card-v2__trip-caption-name {
+.trip-tl__stop {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  pointer-events: auto;
+  cursor: default;
+}
+/* De lijn loopt op de hoogte van de stippen: de kolommen staan gecentreerd in het
+   contentvak van de strook (padding 48 boven, 12 onder), de stippen in het midden
+   van de kolom; 20 px = padding 14 + halve stip. */
+.trip-tl__track {
+  position: absolute;
+  left: 20px;
+  right: 20px;
+  top: calc(48px + (100% - 60px) / 2 - 1px);
+  border-top: 2px dashed rgba(255, 255, 255, 0.85);
+  pointer-events: none;
+}
+.trip-tl__stop--first { align-items: flex-start; }
+.trip-tl__stop--last { align-items: flex-end; }
+.trip-tl__city {
   font-family: var(--font-body);
-  font-size: 13px;
-  font-weight: 600;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.1;
+  white-space: nowrap;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.5);
+}
+.trip-tl__dot {
+  display: block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.25);
+  transition: background 150ms ease;
+}
+.trip-tl__nights {
+  font-family: var(--font-body);
+  font-size: 14px;
   line-height: 1.2;
+  white-space: nowrap;
+  color: rgba(255, 255, 255, 0.92);
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.5);
 }
-.deal-card-v2__trip-caption-stars { display: inline-flex; gap: 1px; font-size: 11px; line-height: 1; }
-
-/* Multi Hotel Trip: plaatsnamen van 2–3 hotels mogen over twee regels lopen. */
-.deal-card-v2__meta:has(.deal-card-v2__location--trip) {
-  white-space: normal;
-  align-items: flex-start;
-  overflow: visible;
+.trip-tl__leg {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-.deal-card-v2__location--trip {
-  white-space: normal;
-  overflow: visible;
-  text-overflow: clip;
-  line-height: 1.35;
+/* Donker rondje achter het icoon zodat het zich aftekent tegen de stippellijn. */
+.trip-tl__icon-wrap {
+  display: inline-flex;
+  padding: 3px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.45);
 }
-.deal-card-v2__meta:has(.deal-card-v2__location--trip) .deal-card-v2__loc-icon {
-  margin-top: 2px;
+/* Etappelabel ("45 km" / "45 min") onder het icoon, tussen de "2 nachten"-
+   labels — boven het icoon botste het met lange plaatsnamen. */
+.trip-tl__km {
+  position: absolute;
+  left: 50%;
+  top: calc(50% + 13px);
+  transform: translateX(-50%);
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+  color: #fff;
+  white-space: nowrap;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
 }
+.trip-tl__icon {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  background: #fff;
+  -webkit-mask: var(--tl-icon) center / contain no-repeat;
+  mask: var(--tl-icon) center / contain no-repeat;
+}
+/* Variant "collage": hoofdfoto 3/4, rechts een kolom van drie tegels (kaartje + twee
+   omgevingsfoto's) met witte naden, als mini-versie van de PDP-gallery. */
+.deal-card-v2__image--trip-collage .deal-card-v2__trip-photo { width: 75%; }
+.deal-card-v2__trip-collage {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 25%;
+  height: 100%;
+  display: grid;
+  grid-template-rows: repeat(3, minmax(0, 1fr));
+  gap: 2px;
+  padding-left: 2px;
+  box-sizing: border-box;
+  background: #fff;
+  z-index: 2;
+  pointer-events: none;
+}
+.trip-collage__tile { position: relative; min-height: 0; overflow: hidden; background: #e9e5dc; }
+.trip-collage__tile img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.trip-collage__tile--map :deep(.trm) { width: 100%; height: 100%; }
+/* Het hartje niet over het mini-kaartje: naar de rechterrand van de hoofdfoto. */
+.deal-card-v2__image--trip-collage .deal-card-v2__favorite { right: calc(25% + var(--space-md)); }
 
 /* Divider between hotel info and deal pitch */
 .deal-card-v2__divider {
@@ -1178,6 +1431,36 @@ const includesBullets = computed<string[]>(() => {
   font-weight: 700;
   color: var(--color-text-primary);
   margin: 0;
+}
+
+/* Vakantie, prijs p.p.: "prijs per persoon voor 7 nachten" zwart en vet, met "(minimaal 2 personen)"
+   als geheel op de regel eronder — licht, als het woord "Vanaf". */
+/* 2px extra onder de tweede regel: dan is de afstand tot de prijs gelijk aan die van een hotelcard
+   ("2 personen, x nachten" → prijs), waar de hogere knop de prijs 2px lager zet. */
+.deal-card-v2__meta-note { display: block; margin-top: 4px; margin-bottom: 2px; white-space: nowrap; font-weight: 400; color: var(--color-text-muted); }
+
+/* Kaartenraster (zoekresultaten + homepage, desktop): de secties van de kaart (foto ·
+   hotelinfo · lijn · titel · body) zijn subgrid-rijen van het raster. Daardoor worden alle
+   kaarten van een rij even hoog én staan de oranje includes-titel (begin van de body) en
+   het prijsblok overal op dezelfde hoogte — ook als een naam of "per persoon … (min. 2 pers.)"
+   in één kaart twee regels nodig heeft. De rasters zetten hun row-gap op 0 en geven de
+   kaarten een margin-bottom (search.vue, home.vue), anders komt de raster-gap tussen de rijen
+   van de kaart zelf. */
+@supports (grid-template-rows: subgrid) {
+  @media (min-width: 801px) {
+    .search-page__result-list--grid > .deal-card-v2--grid,
+    .home-deals__grid--3 > .deal-card-v2--grid {
+      display: grid;
+      grid-template-rows: subgrid;
+      grid-row: span 5;
+    }
+    .search-page__result-list--grid > .deal-card-v2--grid > .deal-card-v2__content,
+    .home-deals__grid--3 > .deal-card-v2--grid > .deal-card-v2__content {
+      display: grid;
+      grid-template-rows: subgrid;
+      grid-row: span 4;
+    }
+  }
 }
 
 .deal-card-v2__meta-line--small {

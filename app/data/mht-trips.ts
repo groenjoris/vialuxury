@@ -20,11 +20,15 @@
 import type { LocalizedString } from '~/i18n/types'
 import type { SearchHotel, SearchHotelDeal, MultiHotelTripType, MultiHotelTripStop } from '~/types/searchHotel'
 import { mappedHotels } from '~/data/deals-mapper'
+import { TRIP_ITINERARIES } from '~/data/mht-trip-itineraries'
 
 interface StopSpec {
   /** Hotelnaam. Staat het hotel in deals.json (exacte `hotelName`), dan
    *  komen slug, foto en sterren uit de dataset; anders uit dit object. */
   name: string
+  /** Naam in deals.json als die afwijkt van de (kortere) weergavenaam `name`,
+   *  bv. "Hotel Ter Zand - Handwritten Collection" → getoond als "Hotel Ter Zand". */
+  dataset?: string
   city: string
   /** Streek/provincie voor de locatieregel op de PDP ("Béthune, Noord-Frankrijk"). */
   region: string
@@ -68,23 +72,79 @@ interface TripSpec {
   inclusions: LocalizedString[]
   tags: string[]
   routeImage?: string
+  /** Omgevingsfoto (aangeleverd door Joris, "first images"): de eerste foto op
+   *  de dealcard én in de PDP-gallery — straalt de vakantie uit, niet één hotel.
+   *  In de gallery met sticker "Omgeving"; zonder cover valt hij terug op de
+   *  foto van het eerste hotel. */
+  coverImage?: string
+  /** Omgevingsfoto's (sticker "Omgeving"), in deze volgorde direct na de cover
+   *  in de PDP-gallery — de eerste vier staan dus bij landing in beeld; de
+   *  hotelfoto's komen daarna (alleen in de foto-pop-up). */
+  nearbyImages?: string[]
+  /** Heenreis vanaf huis (prototype: Utrecht) naar het eerste hotel — onder de
+   *  minimap: "Vanaf Utrecht: 3 uur naar Béthune". Schatting. */
+  fromHome?: { city: string; minutes: number }
+  /** Reistijd naar het eerste hotel per taalinstelling (onder de minimap): nl → Utrecht,
+   *  nl-BE → Brussel, de → Düsseldorf; en valt terug op nl. Vervangt dan ook de regel
+   *  met de totale routelengte. */
+  fromHomeByLocale?: Partial<Record<'nl' | 'nl-BE' | 'de' | 'en', { city: string; km: number; minutes: number }>>
+  /** Beeldplan van de PDP-gallery na het hoofdbeeld (coverImage): sfeerbeelden (url) en
+   *  hotelblokken ({ stop, count }) in deze volgorde. Zonder plan: omgevingsfoto's + hotels. */
+  gallery?: (string | { stop: number; count?: number })[]
+  /** Rondje: de laatste dag gaat het terug naar het eerste hotel (auto blijft
+   *  daar). De terugetappe wordt gestippeld op de kaarten getekend. */
+  loop?: boolean
+  /** Afstand/tijd van die terugetappe (reisdata). */
+  returnTravel?: { km: number; minutes: number }
+  /** Dichtstbijzijnde NS-station bij het eerste hotel (FAQ: komen met de trein). */
+  station?: string
 }
 
 const l = (nl: string, en: string): LocalizedString => ({ nl, en })
+/** Basis-URL van de foto's van ViaLuxury-deals (asset.vialuxury.com). */
+const A = 'https://asset.vialuxury.com/assets/'
 
 const TRIPS: TripSpec[] = [
   // ── Original No. 001 ──────────────────────────────────────────────────
+  // Inhoud sinds 2026-10-05 volgens het reisdocument van Joris ("Info docu"): route
+  // Château Tilques → Château Cléry → Hotel Royal Beaulaincourt, reistijden, inclusies per hotel,
+  // beeldplan (hoofdbeeld Les Deux Caps). Ontbrekende beelden = kleurvlak (placeholder-*.svg) tot
+  // ze worden aangeleverd.
   {
     id: 'trip-noord-frankrijk',
     slug: 'ontdek-noord-frankrijk-en-de-opaalkust-in-7-dagen',
+    // Definitieve beelden (map "Opaalkust Final", 2026-10-07): hoofdbeeld 1, dan 2 en 3,
+    // daarna per hotel vijf foto's (T1–5 Tilques, C1–5 Cléry, B1–5 Beaulaincourt).
+    coverImage: '/images/vakanties/001/opaalkust-1.jpg',
+    fromHome: { city: 'Utrecht', minutes: 225 },
+    // Onder de minimap per taal: nl Utrecht, nl-BE Brussel (uit het document), de Düsseldorf (OSRM).
+    fromHomeByLocale: {
+      nl: { city: 'Utrecht', km: 332, minutes: 225 },
+      'nl-BE': { city: 'Brussel', km: 194, minutes: 135 },
+      de: { city: 'Düsseldorf', km: 396, minutes: 270 },
+    },
+    // Dealcard-collage: de eerste twee sfeerbeelden uit het beeldplan.
+    nearbyImages: [
+      '/images/vakanties/001/nearby-saint-omer.jpg',
+      '/images/vakanties/001/nearby-marais.jpg',
+    ],
+    // Gallery na het hoofdbeeld: 2, 3 en dan de vijf foto's van elk hotel. De PDP toont
+    // bovenin de eerste vijf (1, 2, 3, T1, T2).
+    gallery: [
+      '/images/vakanties/001/opaalkust-2.jpg',
+      '/images/vakanties/001/opaalkust-3.jpg',
+      { stop: 0, count: 5 },
+      { stop: 1, count: 5 },
+      { stop: 2, count: 5 },
+    ],
     type: 'auto',
     stops: [
-      { name: 'Hotel Royal Beaulaincourt', city: 'Béthune', region: 'Noord-Frankrijk', nights: 2, stars: 4, lat: 50.5305, lng: 2.6406, image: '/images/vakanties/001/beaulaincourt-1.jpg', extraImages: ['/images/vakanties/001/beaulaincourt-2.jpg', '/images/vakanties/001/beaulaincourt-3.jpg', '/images/vakanties/001/beaulaincourt-4.jpg'], dinnerImage: '/images/vakanties/001/beaulaincourt-4.jpg', checkIn: '14:00', breakfastImage: '/images/vakanties/001/beaulaincourt-4.jpg', includes: [l('2 x overnachting', '2 nights'), l('Dagelijks ontbijtbuffet', 'Daily breakfast buffet'), l('3-gangendiner (dag van aankomst)', '3-course dinner (day of arrival)'), l('Welkomstbubbels', 'Welcome bubbles'), l('Late check-out tot 15:00 uur', 'Late check-out until 15:00')] },
-      { name: 'Hôtel Château Tilques', city: 'Tilques', region: 'Noord-Frankrijk', nights: 2, stars: 3, lat: 50.7797, lng: 2.2010, image: '/images/vakanties/001/tilques-1.jpg', extraImages: ['/images/vakanties/001/tilques-2.jpg', '/images/vakanties/001/tilques-3.jpg', '/images/vakanties/001/tilques-4.jpg', '/images/vakanties/001/tilques-5.jpg', '/images/vakanties/001/tilques-6.jpg'], dinnerImage: '/images/vakanties/001/tilques-2.jpg', travel: { km: 50, minutes: 50 }, breakfastImage: '/images/vakanties/001/tilques-5.jpg', includes: [l('2 x overnachting', '2 nights'), l('Dagelijks ontbijtbuffet', 'Daily breakfast buffet'), l('3-gangendiner (dag van aankomst)', '3-course dinner (day of arrival)'), l('Late check-out', 'Late check-out'), l('Gratis parkeren', 'Free parking')] },
-      { name: 'Hôtel Château Cléry', city: "Hesdin-l'Abbé", region: 'Opaalkust', nights: 2, stars: 3, lat: 50.6725, lng: 1.7365, image: '/images/vakanties/001/clery-1.jpg', extraImages: ['/images/vakanties/001/clery-2.jpg', '/images/vakanties/001/clery-3.jpg', '/images/vakanties/001/clery-4.jpg', '/images/vakanties/001/clery-5.jpg', '/images/vakanties/001/clery-6.jpg', '/images/vakanties/001/clery-7.jpg', '/images/vakanties/001/clery-8.jpg', '/images/vakanties/001/clery-9.jpg'], dinnerImage: '/images/vakanties/001/clery-4.jpg', travel: { km: 45, minutes: 50 }, breakfastImage: '/images/vakanties/001/clery-8.jpg', includes: [l('2 x overnachting', '2 nights'), l('Dagelijks ontbijtbuffet', 'Daily breakfast buffet'), l('3-gangendiner (dag van aankomst)', '3-course dinner (day of arrival)'), l('Late check-out', 'Late check-out'), l('Gratis parkeren', 'Free parking')] },
+      { name: 'Château Tilques', city: 'Tilques', region: 'Noord-Frankrijk', nights: 2, stars: 3, lat: 50.7797, lng: 2.2010, image: '/images/vakanties/001/tilques-t1.jpg', extraImages: ['/images/vakanties/001/tilques-t2.jpg', '/images/vakanties/001/tilques-t3.jpg', '/images/vakanties/001/tilques-t4.jpg', '/images/vakanties/001/tilques-t5.jpg'], dinnerImage: '/images/vakanties/001/extra-tilques-restaurant.jpg', breakfastImage: '/images/vakanties/001/extra-tilques-ontbijt.jpg', includes: [l('2 x overnachting', '2 nights'), l('Dagelijks uitgebreid ontbijtbuffet', 'Daily extensive breakfast buffet'), l('3-gangendiner bij Le Vert Mesnil (dag van aankomst)', '3-course dinner at Le Vert Mesnil (day of arrival)'), l('Gebruik van het binnenzwembad', 'Use of the indoor pool'), l('Tennis & jeu de boules', 'Tennis & pétanque'), l('Late check-out tot 14:00 uur', 'Late check-out until 14:00'), l('Gratis parkeren', 'Free parking')] },
+      { name: 'Château Cléry', city: "Hesdin-l'Abbé", region: 'Opaalkust', nights: 2, stars: 3, lat: 50.6725, lng: 1.7365, image: '/images/vakanties/001/clery-c1.jpg', extraImages: ['/images/vakanties/001/clery-c2.jpg', '/images/vakanties/001/clery-c3.jpg', '/images/vakanties/001/clery-c4.jpg', '/images/vakanties/001/clery-c5.jpg'], dinnerImage: '/images/vakanties/001/extra-clery-diner.jpg', breakfastImage: '/images/vakanties/001/extra-clery-ontbijt.jpg', travel: { km: 53, minutes: 45 }, includes: [l('2 x overnachting', '2 nights'), l('Dagelijks uitgebreid ontbijtbuffet', 'Daily extensive breakfast buffet'), l('3-gangendiner bij Le Berthier (dag van aankomst)', '3-course dinner at Le Berthier (day of arrival)'), l('Gebruik van de sauna', 'Use of the sauna'), l('Late check-out tot 14:00 uur', 'Late check-out until 14:00'), l('Gratis parkeren', 'Free parking')] },
+      { name: 'Hotel Royal Beaulaincourt', city: 'Béthune', region: 'Noord-Frankrijk', nights: 2, stars: 4, lat: 50.5305, lng: 2.6406, image: '/images/vakanties/001/beaulaincourt-b1.jpg', extraImages: ['/images/vakanties/001/beaulaincourt-b2.jpg', '/images/vakanties/001/beaulaincourt-b3.jpg', '/images/vakanties/001/beaulaincourt-b4.jpg', '/images/vakanties/001/beaulaincourt-b5.jpg'], dinnerImage: '/images/vakanties/001/extra-beaulaincourt-diner.jpg', checkIn: '14:00', breakfastImage: '/images/vakanties/001/extra-beaulaincourt-ontbijt.jpg', travel: { km: 90, minutes: 65 }, includes: [l('2 x overnachting', '2 nights'), l('Dagelijks ontbijt', 'Daily breakfast'), l('3-gangendiner in het restaurant van het hotel (dag van aankomst)', '3-course dinner in the hotel restaurant (day of arrival)'), l('Welkomstbubbels', 'Welcome bubbles'), l('Late check-out tot 15:00 uur', 'Late check-out until 15:00')] },
     ],
     title: l('Ontdek Noord-Frankrijk en de Opaalkust in 7 dagen', 'Discover Northern France and the Opal Coast in 7 days'),
-    pitch: l('Béthune, de moerassen van Saint-Omer en de kastelen aan de Opaalkust — stad, natuur en kust in drie bijzondere hotels.', 'Béthune, the marshes of Saint-Omer and the castles of the Opal Coast in three special hotels.'),
+    pitch: l('De moerassen rond Saint-Omer, de krijtkust van de Opaalkust en het levendige Béthune — natuur, kust en stad in drie bijzondere hotels.', 'The marshes around Saint-Omer, the chalk cliffs of the Opal Coast and lively Béthune: nature, coast and city in three special hotels.'),
     price: 919,
     originalPrice: 1490,
     discountPercentage: 35,
@@ -92,25 +152,28 @@ const TRIPS: TripSpec[] = [
       l('6 nachten / 3 hotels', '6 nights / 3 hotels'),
       l('3 x 3-gangendiner', '3 x 3-course dinner'),
       l('Dagelijks ontbijtbuffet', 'Daily breakfast buffet'),
-      l('Gratis parkeren', 'Free parking'),
+      l('Gratis parkeren bij de kastelen', 'Free parking at the châteaux'),
     ],
     inclusions: [
+      l('2 x overnachting in Château Tilques', '2 nights at Château Tilques'),
+      l('2 x overnachting in Château Cléry', '2 nights at Château Cléry'),
       l('2 x overnachting in Hotel Royal Beaulaincourt', '2 nights at Hotel Royal Beaulaincourt'),
-      l('2 x overnachting in Hôtel Château Tilques', '2 nights at Hôtel Château Tilques'),
-      l('2 x overnachting in Hôtel Château Cléry', '2 nights at Hôtel Château Cléry'),
-      l('Dagelijks ontbijtbuffet', 'Daily breakfast buffet'),
+      l('Dagelijks ontbijt', 'Daily breakfast'),
       l('3 x 3-gangendiner (dag van aankomst)', '3 x 3-course dinner (day of arrival)'),
+      l('Binnenzwembad, tennis en jeu de boules (Tilques)', 'Indoor pool, tennis and pétanque (Tilques)'),
+      l('Sauna (Cléry)', 'Sauna (Cléry)'),
       l('Welkomstbubbels (Beaulaincourt)', 'Welcome bubbles (Beaulaincourt)'),
-      l('Late check-out bij elk hotel', 'Late check-out at every hotel'),
+      l('Late check-out bij elk hotel (tot 14:00 of 15:00 uur)', 'Late check-out at every hotel (until 14:00 or 15:00)'),
       l('Gratis parkeren (Tilques en Cléry)', 'Free parking (Tilques and Cléry)'),
     ],
-    tags: ['auto', 'frankrijk', 'nieuw', 'kasteel', 'culinair', 'aan-zee', 'cultuur'],
-    routeImage: '/images/vakanties/001/route.jpg',
+    tags: ['auto', 'frankrijk', 'nieuw', 'kasteel', 'culinair', 'aan-zee', 'cultuur', 'gratis-parkeren'],
   },
   // ── Original No. 002 ──────────────────────────────────────────────────
   {
     id: 'trip-hanzesteden',
     slug: '7-daagse-roadtrip-langs-de-hanzesteden-zwolle-deventer-zutphen',
+    coverImage: '/images/vakanties/cover/hanzesteden.jpg',
+    fromHome: { city: 'Utrecht', minutes: 75 },
     type: 'auto',
     stops: [
       { name: 'Hotel Mooirivier', city: 'Dalfsen', region: 'Overijssel', nights: 2, stars: 4, lat: 52.5108, lng: 6.2589, image: '/images/vakanties/002/hotel-1.jpg', includes: [l('2 x overnachting', '2 nights'), l('Dagelijks ontbijtbuffet', 'Daily breakfast buffet'), l('3-gangendiner (dag van aankomst)', '3-course dinner (day of arrival)'), l('Gebruik van de wellness', 'Use of the wellness'), l('Gratis parkeren', 'Free parking')] },
@@ -139,13 +202,15 @@ const TRIPS: TripSpec[] = [
       l("Late check-out (De Zwaan en 's Gravenhof)", "Late check-out (De Zwaan and 's Gravenhof)"),
       l('Gratis parkeren (Mooirivier)', 'Free parking (Mooirivier)'),
     ],
-    tags: ['auto', 'nederland', 'steden', 'culinair', 'wellness', 'cultuur'],
+    tags: ['auto', 'nederland', 'steden', 'culinair', 'wellness', 'cultuur', 'gratis-parkeren', 'laadpaal', 'fiets-huren'],
     routeImage: '/images/vakanties/002/route.jpg',
   },
   // ── Original No. 003 ──────────────────────────────────────────────────
   {
     id: 'trip-kastelen-landgoederen',
     slug: 'kastelen-en-landgoederen-7-daagse-autoroute',
+    coverImage: '/images/vakanties/cover/kastelen-landgoederen.jpg',
+    fromHome: { city: 'Utrecht', minutes: 60 },
     type: 'auto',
     stops: [
       { name: 'Landgoed Groot Warnsborn', city: 'Arnhem', region: 'Gelderland', nights: 2, stars: 4, lat: 52.0247, lng: 5.8672, image: '/images/vakanties/003/hotel-1.jpg', includes: [l('2 x overnachting', '2 nights'), l('Kamerupgrade naar een luxe kamer', 'Room upgrade to a luxury room'), l('Dagelijks ontbijtbuffet', 'Daily breakfast buffet'), l('Culinair 3-gangendiner', 'Culinary 3-course dinner'), l('Welkomstdrankje met een lekkernij', 'Welcome drink with a treat'), l('Badjas en slippers', 'Bathrobe and slippers'), l('Late check-out tot 12:00 uur', 'Late check-out until 12:00'), l('Gratis parkeren', 'Free parking')] },
@@ -174,13 +239,15 @@ const TRIPS: TripSpec[] = [
       l('Late check-out bij elk hotel', 'Late check-out at every hotel'),
       l('Gratis parkeren bij alle hotels', 'Free parking at all hotels'),
     ],
-    tags: ['auto', 'nederland', 'kasteel', 'culinair', 'superluxe', 'wellness', 'natuur', 'ontspanning', 'cultuur'],
+    tags: ['auto', 'nederland', 'kasteel', 'culinair', 'superluxe', 'wellness', 'natuur', 'ontspanning', 'cultuur', 'gratis-parkeren', 'fiets-huren'],
     routeImage: '/images/vakanties/003/route.jpg',
   },
   // ── Original No. 004 ──────────────────────────────────────────────────
   {
     id: 'trip-zuid-limburg-luxe',
     slug: 'bourgondisch-zuid-limburg-luxe-en-wellness-7-daagse-autoroute',
+    coverImage: '/images/vakanties/cover/zuid-limburg-luxe.jpg',
+    fromHome: { city: 'Utrecht', minutes: 105 },
     type: 'auto',
     stops: [
       { name: 'Hotel Merici', city: 'Sittard', region: 'Limburg', nights: 2, stars: 4, lat: 50.9994, lng: 5.8689, includes: [l('2 x overnachting', '2 nights'), l('Kamerupgrade naar luxer kamertype (o.b.v.b.)', 'Room upgrade (subject to availability)'), l('Dagelijks ontbijtbuffet', 'Daily breakfast buffet'), l("Culinair 3-gangendiner in Restaurant George's (dag van aankomst)", "Culinary 3-course dinner at Restaurant George's (day of arrival)"), l('VIP-pas voor Maasmechelen Village Outlet', 'VIP pass for Maasmechelen Village Outlet'), l('Late check-out tot 12:00 uur (o.b.v.b.)', 'Late check-out until 12:00 (subject to availability)')] },
@@ -210,13 +277,15 @@ const TRIPS: TripSpec[] = [
       l('Late check-out (Merici en Winselerhof)', 'Late check-out (Merici and Winselerhof)'),
       l('Gratis parkeren (Winselerhof)', 'Free parking (Winselerhof)'),
     ],
-    tags: ['auto', 'nederland', 'superluxe', 'wellness', 'culinair', 'ontspanning'],
+    tags: ['auto', 'nederland', 'superluxe', 'wellness', 'culinair', 'ontspanning', 'gratis-parkeren', 'laadpaal'],
     routeImage: '/images/vakanties/004/route.jpg',
   },
   // ── Original No. 005 ──────────────────────────────────────────────────
   {
     id: 'trip-zuid-limburg',
     slug: 'bourgondisch-zuid-limburg-7-daagse-culinaire-autoroute',
+    coverImage: '/images/vakanties/cover/zuid-limburg.jpg',
+    fromHome: { city: 'Utrecht', minutes: 105 },
     type: 'auto',
     stops: [
       { name: 'Hotel Merici', city: 'Sittard', region: 'Limburg', nights: 2, stars: 4, lat: 50.9994, lng: 5.8689, includes: [l('2 x overnachting', '2 nights'), l('Kamerupgrade naar luxer kamertype (o.b.v.b.)', 'Room upgrade (subject to availability)'), l('Dagelijks ontbijtbuffet', 'Daily breakfast buffet'), l("Culinair 3-gangendiner in Restaurant George's (dag van aankomst)", "Culinary 3-course dinner at Restaurant George's (day of arrival)"), l('VIP-pas voor Maasmechelen Village Outlet', 'VIP pass for Maasmechelen Village Outlet'), l('Late check-out tot 12:00 uur (o.b.v.b.)', 'Late check-out until 12:00 (subject to availability)')] },
@@ -245,23 +314,54 @@ const TRIPS: TripSpec[] = [
       l('Late check-out bij elk hotel', 'Late check-out at every hotel'),
       l('Gratis parkeren (Winselerhof)', 'Free parking (Winselerhof)'),
     ],
-    tags: ['auto', 'nederland', 'culinair', 'steden', 'budget', 'cultuur'],
+    tags: ['auto', 'nederland', 'culinair', 'steden', 'budget', 'cultuur', 'gratis-parkeren', 'fiets-huren'],
     routeImage: '/images/vakanties/005/route.jpg',
   },
   // ── Original No. 006 ──────────────────────────────────────────────────
   {
     id: 'trip-kustroute',
     slug: 'nederlandse-kustroute-6-daagse-autoroute',
+    coverImage: '/images/vakanties/cover/kustroute.jpg',
+    fromHome: { city: 'Utrecht', minutes: 100 },
+    // Omgevingsfoto's (PDP-gallery na de cover, collage op de dealcard), zoals bij Noord-Frankrijk:
+    // Westerschouwen en Zierikzee (Zeeland), de Pier van Scheveningen, Haarlem en de kust — uit de
+    // deals van de drie hotels, aangevuld met streekfoto's van Wikimedia (CREDITS.md). Geen PDF-materiaal.
+    nearbyImages: [
+      A + '2d92ea4c-8fe1-4c69-b6fe-4fa1037931f6?key=photo-full',
+      A + 'f6d194e2-9c00-4977-9a69-8f32abee465c?key=photo-full',
+      A + '0814e824-42f5-4e02-b12f-6c558fe1c1a3?key=photo-full',
+      A + '31e45de3-6e12-42f9-97b6-528b7b123db9?key=photo-full',
+      '/images/vakanties/006/delta.jpg',
+      '/images/vakanties/006/noordwijk.jpg',
+      '/images/vakanties/006/zandvoort.jpg',
+      A + '141edb02-0aa9-45bc-85bd-68ddcae52b80?key=photo-full',
+    ],
     type: 'auto',
     stops: [
-      { name: 'Grand Hotel Ter Duin', city: 'Burgh-Haamstede', region: 'Zeeland', nights: 2, stars: 4, lat: 51.7058, lng: 3.7494, image: '/images/vakanties/006/hotel-1.jpg', includes: [l('2 x overnachting', '2 nights'), l('Dagelijks ontbijtbuffet', 'Daily breakfast buffet'), l('3-gangendiner (dag van aankomst)', '3-course dinner (day of arrival)'), l('Tasting uurtje 17:00–18:00 uur', 'Tasting hour 17:00–18:00'), l('Welkomstdrankje', 'Welcome drink'), l('Gebruik van zwembad', 'Use of the pool'), l('Gebruik van wellness & fitness', 'Use of wellness & fitness'), l('Late check-out tot 12:00 uur', 'Late check-out until 12:00')] },
-      { name: 'Inntel Hotels Den Haag Marina Beach', city: 'Scheveningen', region: 'Zuid-Holland', nights: 1, stars: 4, lat: 52.1078, lng: 4.2731, travel: { km: 95, minutes: 80 }, includes: [l('1 x overnachting', '1 night'), l('Uitgebreid ontbijtbuffet met bubbels', 'Extensive breakfast buffet with bubbles'), l('3-gangen verrassingsdiner', '3-course surprise dinner'), l('Gratis gebruik van binnen- en buitenzwembad', 'Free use of indoor and outdoor pool'), l('Onbeperkt gebruik van de spa en fitness', 'Unlimited use of the spa and fitness'), l('Gereduceerd parkeertarief', 'Reduced parking rate')] },
-      { name: 'Carlton Square', city: 'Haarlem', region: 'Noord-Holland', nights: 2, stars: 4, lat: 52.3874, lng: 4.6462, image: '/images/vakanties/006/hotel-3.jpg', travel: { km: 55, minutes: 60 }, includes: [l('2 x overnachting', '2 nights'), l('Dagelijks uitgebreid ontbijt', 'Daily extensive breakfast'), l('3-gangenverrassingsmenu van de chef (dag van aankomst)', "Chef's 3-course surprise menu (day of arrival)"), l('Gratis plattegrond van de omgeving', 'Free map of the area')] },
+      // Hotel Ter Zand en Inntel Den Haag: ViaLuxury-hotels uit deals.json — foto's, inclusies,
+      // kamer en faciliteiten komen uit hun bestaande deals (Ter Zand: 3 dagen Zeeland,
+      // pkg 19852; Inntel: 1 nacht met diner, pkg 111). Ter Zand heet hier kort "Hotel Ter Zand"
+      // (datasetnaam "Hotel Ter Zand - Handwritten Collection" via `dataset`).
+      { name: 'Hotel Ter Zand', dataset: 'Hotel Ter Zand - Handwritten Collection', city: 'Burgh-Haamstede', region: 'Zeeland', nights: 2, stars: 4, lat: 51.68264, lng: 3.72149,
+        image: A + '09b83ed2-0c2d-4521-9c2a-2b30395fe6ca?key=photo-full', extraImages: [A + 'f021edcd-4e63-4d41-8cb2-a7bf42a74bd5?key=photo-full', A + '24a658bb-3bf3-48fa-a9b6-73fc6661c637?key=photo-full', A + '8f2b7b4f-9b2e-4588-a1f3-e33d2c91ef4d?key=photo-full', A + '345f4ba3-8589-4b2d-aad2-b3cd196046a1?key=photo-full'],
+        dinnerImage: A + 'c432da79-a555-44df-b055-65318427fec0?key=photo-full', breakfastImage: A + '7784c9d3-cacd-4e45-8a40-bc6fb26b1aaf?key=photo-full',
+        includes: [l('2 x overnachting', '2 nights'), l('Upgrade naar een luxer kamertype', 'Upgrade to a more luxurious room type'), l('Dagelijks ontbijtbuffet', 'Daily breakfast buffet'), l('Culinair 3-gangendiner (1 avond)', 'Culinary 3-course dinner (1 evening)'), l('Welkomstdrankje', 'Welcome drink'), l('Tasting uurtje 15:00–16:00 uur', 'Tasting hour 15:00–16:00'), l('Gebruik van wellness en fitness (Grand Hotel Ter Duin)', 'Use of wellness and fitness (Grand Hotel Ter Duin)'), l('Gebruik van het binnenzwembad (Grand Hotel Ter Duin)', 'Use of the indoor pool (Grand Hotel Ter Duin)'), l('Late check-out tot 12:00 uur', 'Late check-out until 12:00'), l('Gratis parkeren', 'Free parking')] },
+      { name: 'Inntel Hotels Den Haag Marina Beach', city: 'Scheveningen', region: 'Zuid-Holland', nights: 1, stars: 4, lat: 52.10232, lng: 4.26339, travel: { km: 85, minutes: 80 },
+        image: A + '631d38dd-198f-4d0d-9c1b-665ff0a101ba?key=photo-full', extraImages: [A + '75c82728-aac9-4fb7-ae69-ca7ca6dbf503?key=photo-full', A + 'c0a1294d-23ef-44b6-8c95-4ad3a4570d01?key=photo-full', A + '11cebafa-193f-48c4-944f-c79be05a5a08?key=photo-full', A + 'bdd222fd-818b-489c-abd5-f20a6d5ce30c?key=photo-full', A + '96d891bd-537f-43ec-9efd-4dda86ad9ac3?key=photo-full'],
+        dinnerImage: A + '0c737cc6-43d2-4b54-8b7a-9d108e7363fa?key=photo-full', breakfastImage: A + '7be54ce9-fb67-4ca4-85b4-4346f65af93c?key=photo-full',
+        includes: [l('1 x overnachting', '1 night'), l('Uitgebreid ontbijtbuffet met bubbels', 'Extensive breakfast buffet with bubbles'), l('3-gangen verrassingsdiner (Bar & Brasserie Willem I)', '3-course surprise dinner (Bar & Brasserie Willem I)'), l('Gratis gebruik van binnen- en buitenzwembad', 'Free use of indoor and outdoor pool'), l('Onbeperkt gebruik van de spa', 'Unlimited use of the spa'), l('Onbeperkt gebruik van fitness', 'Unlimited use of the gym'), l('Gereduceerd parkeertarief', 'Reduced parking rate')] },
+      // Courtyard by Marriott (Hoofddorp, 7,5 km van Haarlem): ViaLuxury-deal "Verken en beleef Haarlem
+      // en Amsterdam" (pkg 48) — vervangt Carlton Square (alleen PDF-materiaal, niet in de dataset).
+      { name: 'Courtyard by Marriott', city: 'Hoofddorp', region: 'Noord-Holland', nights: 2, stars: 4, lat: 52.32137, lng: 4.66641, travel: { km: 53, minutes: 50 },
+        image: A + '42d24dc5-9aae-4714-8476-e072499d366a?key=photo-full', extraImages: [A + '46b7b6fd-b154-44b3-854d-37b0c8690a2c?key=photo-full', A + '9ccd751f-f557-42f7-b408-71c1a18536f6?key=photo-full', A + '9e71bbcb-d471-4fe3-a430-fd8f91784810?key=photo-full', A + '5dc39750-064f-48e0-8153-ec453fa3f6ce?key=photo-full'],
+        dinnerImage: A + '3a697262-cbf9-4ee3-a2ca-3dca21730eea?key=photo-full', breakfastImage: A + '05f376be-bc80-449b-8661-f9f77431c8c4?key=photo-full',
+        includes: [l('2 x overnachting', '2 nights'), l('Kamerupgrade naar de nieuwe Comfort King kamer', 'Room upgrade to the new Comfort King room'), l('Dagelijks ontbijtbuffet', 'Daily breakfast buffet'), l('3-gangendiner in de Courtyard Brasserie (dag van aankomst)', '3-course dinner in the Courtyard Brasserie (day of arrival)'), l('Welkomstdrankje', 'Welcome drink'), l('Late check-out tot 14:00 uur (o.b.v.b.)', 'Late check-out until 14:00 (subject to availability)'), l('Gratis parkeren', 'Free parking')] },
     ],
     title: l('Nederlandse kustroute: 6 dagen langs Zeeland, Scheveningen en Noord-Holland', 'Dutch coastal route: 6 days along Zeeland, Scheveningen and North Holland'),
-    pitch: l('Van de Zeeuwse stranden via Scheveningen naar Haarlem, Zandvoort en Bloemendaal — strand, wellness en stad in één kustvakantie.', 'From the Zeeland beaches via Scheveningen to Haarlem, Zandvoort and Bloemendaal: beach, wellness and city in one coastal holiday.'),
-    price: 899,
-    originalPrice: 1583,
+    pitch: l('Van de Zeeuwse stranden via Scheveningen naar Haarlem en Zandvoort — strand, wellness en stad in één kustvakantie.', 'From the Zeeland beaches via Scheveningen to Haarlem and Zandvoort: beach, wellness and city in one coastal holiday.'),
+    // Prijs = som van de drie ViaLuxury-deals (Ter Zand €299/€581, Inntel €199/€326, Courtyard €239/€538).
+    price: 737,
+    originalPrice: 1445,
     highlights: [
       l('5 nachten / 3 hotels', '5 nights / 3 hotels'),
       l('3 x 3-gangendiner', '3 x 3-course dinner'),
@@ -269,28 +369,48 @@ const TRIPS: TripSpec[] = [
       l('Zwembad en wellness', 'Pool and wellness'),
     ],
     inclusions: [
-      l('2 x overnachting in Grand Hotel Ter Duin', '2 nights at Grand Hotel Ter Duin'),
+      l('2 x overnachting in Hotel Ter Zand (luxer kamertype)', '2 nights at Hotel Ter Zand (upgraded room)'),
       l('1 x overnachting in Inntel Hotels Den Haag Marina Beach', '1 night at Inntel Hotels Den Haag Marina Beach'),
-      l('2 x overnachting in Carlton Square', '2 nights at Carlton Square'),
+      l('2 x overnachting in Courtyard by Marriott (Comfort King kamer)', '2 nights at Courtyard by Marriott (Comfort King room)'),
       l('Dagelijks ontbijtbuffet (met bubbels bij Inntel)', 'Daily breakfast buffet (with bubbles at Inntel)'),
       l('3 x 3-gangendiner (dag van aankomst)', '3 x 3-course dinner (day of arrival)'),
-      l('Tasting uurtje en welkomstdrankje (Ter Duin)', 'Tasting hour and welcome drink (Ter Duin)'),
-      l('Zwembad, wellness en fitness (Ter Duin en Inntel)', 'Pool, wellness and fitness (Ter Duin and Inntel)'),
-      l('Late check-out (Ter Duin)', 'Late check-out (Ter Duin)'),
-      l('Gereduceerd parkeertarief (Inntel)', 'Reduced parking rate (Inntel)'),
+      l('Welkomstdrankje (Ter Zand en Courtyard), tasting uurtje (Ter Zand)', 'Welcome drink (Ter Zand and Courtyard), tasting hour (Ter Zand)'),
+      l('Zwembad, wellness en fitness (Ter Zand en Inntel)', 'Pool, wellness and fitness (Ter Zand and Inntel)'),
+      l('Late check-out (Ter Zand en Courtyard)', 'Late check-out (Ter Zand and Courtyard)'),
+      l('Gratis parkeren (Ter Zand en Courtyard), korting bij Inntel', 'Free parking (Ter Zand and Courtyard), discount at Inntel'),
     ],
-    tags: ['auto', 'nederland', 'nieuw', 'aan-zee', 'wellness', 'steden', 'ontspanning'],
-    routeImage: '/images/vakanties/006/route.jpg',
+    tags: ['auto', 'nederland', 'nieuw', 'aan-zee', 'wellness', 'steden', 'ontspanning', 'laadpaal', 'fiets-huren'],
   },
   // ── Fietsvakantie Twente & Salland (echte ViaLuxury-deal "Fietsvakantie 2026") ──
   {
     id: 'trip-fietsvakantie-twente-salland',
     slug: 'fietsvakantie-twente-en-salland-delden-raalte-markelo',
+    // Cover = fietsend stel in het bos (aangeleverd door Joris); ook de foto op
+    // de dealcard. Nieuwe bestandsnaam zodat browsers de oude cover niet uit de
+    // cache tonen.
+    coverImage: '/images/vakanties/cover/fietsvakantie-twente-salland-bos.jpg',
+    // Omgevingsfoto's (Joris, "Fietsvakantie/first images"): direct na de cover
+    // bovenin de gallery; de eerste vier staan bij landing in beeld. De oude
+    // cover (fietsers op de brug bij Deventer) sluit de reeks af.
+    nearbyImages: [
+      '/images/vakanties/007/nearby-twickel.jpg',
+      '/images/vakanties/007/nearby-heuvelrug.jpg',
+      '/images/vakanties/007/nearby-raalte.jpg',
+      '/images/vakanties/007/nearby-zonsopkomst.jpg',
+      '/images/vakanties/007/nearby-fietsers-stad.jpg',
+      '/images/vakanties/007/deventer-ijssel.jpg',
+      '/images/vakanties/007/nearby-deventer-brug.jpg',
+    ],
+    fromHome: { city: 'Utrecht', minutes: 90 },
+    // Rondje: dag 7 de laatste 20 km van Markelo terug naar Delden (auto staat daar).
+    loop: true,
+    returnTravel: { km: 20, minutes: 80 },
+    station: 'Delden',
     type: 'fiets',
     stops: [
-      { name: 'Hotel Wapen van Delden', city: 'Delden', region: 'Twente', province: 'Overijssel', nights: 2, stars: 4, lat: 52.2622, lng: 6.7113, image: 'https://asset.vialuxury.com/assets/9f13962b-27bb-43f9-b875-bd7b63b04c98?key=photo-full', extraImages: ['https://asset.vialuxury.com/assets/de37ddd8-3265-455d-b733-b4b123879a08?key=photo-full', 'https://asset.vialuxury.com/assets/ead7f055-ea8d-4d7b-a45b-b508d83b3396?key=photo-full'], includes: [l('2 x overnachting', '2 nights'), l('Dagelijks uitgebreid ontbijtbuffet', 'Daily extensive breakfast buffet'), l('2 x 3-gangendiner', '2 x 3-course dinner'), l('Welkomstfietstasje met water, regenponcho en bandenplaksetje', 'Welcome cycling bag with water, rain poncho and repair kit'), l('ViaLuxury welkomstcadeau', 'ViaLuxury welcome gift'), l('Bagagetransport naar Raalte', 'Luggage transfer to Raalte'), l('Gratis parkeren (gehele vakantie)', 'Free parking (whole holiday)')] },
-      { name: 'Hotel de Zwaan', city: 'Raalte', region: 'Salland', province: 'Overijssel', nights: 2, stars: 3, lat: 52.3833, lng: 6.2667, travel: { km: 45, minutes: 180 }, includes: [l('2 x overnachting', '2 nights'), l('Dagelijks uitgebreid ontbijtbuffet', 'Daily extensive breakfast buffet'), l('2 x 3-gangendiner', '2 x 3-course dinner'), l('Fietsroutes Salland op je telefoon', 'Salland cycling routes on your phone'), l('Bagagetransport naar Markelo', 'Luggage transfer to Markelo')] },
-      { name: 'Landhuishotel Herikerberg', city: 'Markelo', region: 'Twente', province: 'Overijssel', nights: 2, stars: 4, lat: 52.2361, lng: 6.5194, image: 'https://asset.vialuxury.com/assets/61164a46-85d5-4f32-8547-9f2c5727af3f?key=photo-full', extraImages: ['https://asset.vialuxury.com/assets/d79b8fd5-75cf-49a6-b558-5f28a85d9f1c?key=photo-full'], travel: { km: 35, minutes: 150 }, includes: [l('2 x overnachting', '2 nights'), l('Dagelijks uitgebreid ontbijtbuffet', 'Daily extensive breakfast buffet'), l('2 x 3-gangendiner', '2 x 3-course dinner'), l('Fietsroutes Twente op je telefoon', 'Twente cycling routes on your phone'), l('Bagagetransport terug naar Delden', 'Luggage transfer back to Delden')] },
+      { name: 'Hotel Wapen van Delden', city: 'Delden', region: 'Twente', province: 'Overijssel', nights: 2, stars: 4, lat: 52.2622, lng: 6.7113, image: '/images/vakanties/007/hotel-wapen-van-delden.jpg', extraImages: ['https://asset.vialuxury.com/assets/de37ddd8-3265-455d-b733-b4b123879a08?key=photo-full', 'https://asset.vialuxury.com/assets/ead7f055-ea8d-4d7b-a45b-b508d83b3396?key=photo-full'], dinnerImage: '/images/vakanties/007/wapen-van-delden-culinair.jpg', breakfastImage: '/images/vakanties/007/ontbijt.jpg', includes: [l('2 x overnachting', '2 nights'), l('Dagelijks uitgebreid ontbijtbuffet', 'Daily extensive breakfast buffet'), l('2 x 3-gangendiner', '2 x 3-course dinner'), l('Welkomstfietstasje met water, regenponcho en bandenplaksetje', 'Welcome cycling bag with water, rain poncho and repair kit'), l('ViaLuxury welkomstcadeau', 'ViaLuxury welcome gift'), l('Bagagetransport naar Raalte', 'Luggage transfer to Raalte'), l('Gratis parkeren (gehele vakantie)', 'Free parking (whole holiday)')] },
+      { name: 'Hotel de Zwaan', city: 'Raalte', region: 'Salland', province: 'Overijssel', nights: 2, stars: 3, lat: 52.3833, lng: 6.2667, image: '/images/vakanties/007/hotel-de-zwaan-gebouw.jpg', dinnerImage: '/images/vakanties/007/diner.jpg', breakfastImage: '/images/vakanties/007/ontbijt.jpg', travel: { km: 45, minutes: 180 }, includes: [l('2 x overnachting', '2 nights'), l('Dagelijks uitgebreid ontbijtbuffet', 'Daily extensive breakfast buffet'), l('2 x 3-gangendiner', '2 x 3-course dinner'), l('Fietsroutes Salland op je telefoon', 'Salland cycling routes on your phone'), l('Bagagetransport naar Markelo', 'Luggage transfer to Markelo')] },
+      { name: 'Landhuishotel Herikerberg', city: 'Markelo', region: 'Twente', province: 'Overijssel', nights: 2, stars: 4, lat: 52.2361, lng: 6.5194, image: '/images/vakanties/007/hotel-herikerberg.jpg', extraImages: ['https://asset.vialuxury.com/assets/d79b8fd5-75cf-49a6-b558-5f28a85d9f1c?key=photo-full'], dinnerImage: '/images/vakanties/007/diner.jpg', breakfastImage: '/images/vakanties/007/ontbijt.jpg', travel: { km: 35, minutes: 150 }, includes: [l('2 x overnachting', '2 nights'), l('Dagelijks uitgebreid ontbijtbuffet', 'Daily extensive breakfast buffet'), l('2 x 3-gangendiner', '2 x 3-course dinner'), l('Fietsroutes Twente op je telefoon', 'Twente cycling routes on your phone'), l('Bagagetransport terug naar Delden', 'Luggage transfer back to Delden')] },
     ],
     title: l('7-daagse fietsvakantie Twente & Salland: Delden – Raalte – Markelo incl. dagelijks 3-gangendiner', '7-day cycling holiday Twente & Salland: Delden – Raalte – Markelo incl. daily 3-course dinner'),
     pitch: l('Rustige fietspaden, schilderachtige dorpen en elke twee nachten een ander hotel — je bagage reist vooruit.', 'Quiet cycle paths, picturesque villages and a different hotel every two nights; your luggage travels ahead.'),
@@ -300,8 +420,8 @@ const TRIPS: TripSpec[] = [
     highlights: [
       l('6 nachten / 3 hotels', '6 nights / 3 hotels'),
       l('Dagelijks 3-gangendiner', 'Daily 3-course dinner'),
-      l('Dagelijkse bagagetransfer', 'Daily luggage transfer'),
-      l('Fietsroutes op je telefoon', 'Cycling routes on your phone'),
+      l('Bagagetransfer tussen de hotels', 'Luggage transfer between the hotels'),
+      l('100 km in 3 etappes', '100 km in 3 legs'),
     ],
     inclusions: [
       l('2 x overnachting in Hotel Wapen van Delden', '2 nights at Hotel Wapen van Delden'),
@@ -314,7 +434,7 @@ const TRIPS: TripSpec[] = [
       l('Welkomstfietstasje en ViaLuxury welkomstcadeau', 'Welcome cycling bag and ViaLuxury welcome gift'),
       l('Gratis parkeren (gehele vakantie)', 'Free parking (whole holiday)'),
     ],
-    tags: ['fiets', 'nederland', 'nieuw', 'natuur', 'culinair', 'ontspanning'],
+    tags: ['fiets', 'nederland', 'nieuw', 'natuur', 'culinair', 'ontspanning', 'bagagetransfer', 'hotel-naar-hotel', 'fiets-huren', 'fietsroutes', 'gratis-parkeren'],
   },
 ]
 
@@ -376,22 +496,35 @@ export interface MultiHotelTripDetail {
   inclusions: LocalizedString[]
   stops: MultiHotelTripDetailStop[]
   tags: string[]
+  loop?: boolean
+  returnTravel?: { km: number; minutes: number }
+  station?: string
   routeImage?: string
+  /** Omgevingsfoto — eerste foto in de gallery (sticker "Omgeving"). */
+  coverImage?: string
+  /** Extra omgevingsfoto's na de cover (sticker "Omgeving"); hotelfoto's volgen daarna. */
+  nearbyImages?: string[]
+  /** Heenreis vanaf huis naar het eerste hotel (schatting). */
+  fromHome?: { city: string; minutes: number }
+  fromHomeByLocale?: TripSpec['fromHomeByLocale']
+  gallery?: TripSpec['gallery']
   reviewScore: number
   reviewCount: number
 }
 
 function toStop(s: StopSpec, dayFrom: number): MultiHotelTripDetailStop {
-  const h = findHotel(s.name)
+  const h = findHotel(s.dataset ?? s.name)
   return {
     city: s.city || h?.city || '',
     region: s.region || h?.province || h?.region || '',
     province: s.province ?? (h?.province || (isNlProvince(s.region) ? s.region : undefined)),
-    hotelName: h?.name ?? s.name,
+    hotelName: s.dataset ? s.name : (h?.name ?? s.name),
     hotelSlug: h?.slug,
     nights: s.nights,
     starRating: h?.starRating ?? s.stars,
-    image: h?.heroImage ?? s.image,
+    // Een eigen foto in de reisdata wint van de datasetfoto (bv. Hotel de Zwaan
+    // in Raalte: de dataset kent een gelijknamig hotel).
+    image: s.image ?? h?.heroImage,
     lat: s.lat,
     lng: s.lng,
     includes: s.includes,
@@ -413,14 +546,19 @@ function buildTrip(spec: TripSpec): { hotel: SearchHotel; detail: MultiHotelTrip
     day += s.nights
   }
   if (stops.length < 2) return null
-  const known = spec.stops.map(s => findHotel(s.name)).filter((h): h is SearchHotel => !!h)
+  const known = spec.stops.map(s => findHotel(s.dataset ?? s.name)).filter((h): h is SearchHotel => !!h)
   const first = stops[0]!
   const nights = stops.reduce((n, s) => n + s.nights, 0)
   const stars = stops.map(s => s.starRating ?? 4)
   const avgStars = Math.round(stars.reduce((a, b) => a + b, 0) / stars.length)
-  const avgScore = known.length
-    ? Math.round((known.reduce((s, h) => s + h.reviewScore, 0) / known.length) * 10) / 10
-    : 8.8
+  // Vakantiescore = het gemiddelde van de reizigersbeoordelingen van de vakantie
+  // (de drie reviews op de PDP); zonder reviews het gemiddelde van de hotelscores.
+  const tripReviews = TRIP_ITINERARIES[spec.id]?.reviews ?? []
+  const avgScore = tripReviews.length
+    ? Math.round((tripReviews.reduce((s, r) => s + r.score, 0) / tripReviews.length) * 10) / 10
+    : known.length
+      ? Math.round((known.reduce((s, h) => s + h.reviewScore, 0) / known.length) * 10) / 10
+      : 8.8
   const reviewCount = known.length ? known.reduce((s, h) => s + h.reviewCount, 0) : 164
   const discount = spec.discountPercentage ?? Math.round((1 - spec.price / spec.originalPrice) * 100)
   const pdpHref = `/multi-hotel-trip/deal/${spec.slug}`
@@ -435,7 +573,7 @@ function buildTrip(spec: TripSpec): { hotel: SearchHotel; detail: MultiHotelTrip
     highlights: spec.highlights,
     inclusions: spec.inclusions,
     detailedInclusions: spec.inclusions,
-    heroImage: first.image,
+    heroImage: spec.coverImage ?? first.image,
     hasDinner: spec.inclusions.some(i => /diner/i.test(i.nl)),
     themes: [
       spec.type === 'fiets' ? 'Fietsvakantie' : 'Autovakantie',
@@ -452,19 +590,26 @@ function buildTrip(spec: TripSpec): { hotel: SearchHotel; detail: MultiHotelTrip
     city: first.city,
     region: known[0]?.region ?? 'Nederland',
     province: known[0]?.province,
-    heroImage: first.image ?? '',
+    heroImage: spec.coverImage ?? first.image ?? '',
     // Carrousel: één foto per hotel, in reisvolgorde.
     galleryImages: stops.map(s => s.image).filter((u): u is string => !!u),
     reviewScore: avgScore,
     reviewCount,
     pitch: spec.pitch,
     deals: [deal],
-    coordinates: known[0]?.coordinates,
+    // Kaartpositie: het middelpunt van de hotels (zwaartepunt van de driehoek),
+    // niet het eerste hotel — de pin staat "tussen" de hotels van de reis.
+    coordinates: {
+      lat: stops.reduce((sum, s) => sum + (s.lat ?? 0), 0) / stops.length,
+      lng: stops.reduce((sum, s) => sum + (s.lng ?? 0), 0) / stops.length,
+    },
     trip: {
       type: spec.type,
       stops,
       tags: spec.tags,
       routeImage: spec.routeImage,
+      coverImage: spec.coverImage,
+      nearbyImages: spec.nearbyImages,
       pdpHref,
     },
   }
@@ -483,6 +628,14 @@ function buildTrip(spec: TripSpec): { hotel: SearchHotel; detail: MultiHotelTrip
     stops,
     tags: spec.tags,
     routeImage: spec.routeImage,
+    coverImage: spec.coverImage,
+    nearbyImages: spec.nearbyImages,
+    fromHome: spec.fromHome,
+    fromHomeByLocale: spec.fromHomeByLocale,
+    gallery: spec.gallery,
+    loop: spec.loop,
+    returnTravel: spec.returnTravel,
+    station: spec.station,
     reviewScore: avgScore,
     reviewCount,
   }
@@ -495,6 +648,31 @@ const built = TRIPS
 
 /** Alle meerhotel-vakanties als SearchHotel-records (met `trip` gezet). */
 export const tripSearchHotels: SearchHotel[] = built.map(b => b.hotel)
+
+/** Vakanties voor de zoekkaart: reizen met exact dezelfde hotels (dezelfde route)
+ *  worden één record met meerdere deals — één pin, en in het sidepanel /
+ *  mobiele kaartje de dealkaartjes van alle reizen onder/naast elkaar (zoals een
+ *  hotel met meerdere arrangementen). Andere reizen blijven losse records. */
+export const tripMapHotels: SearchHotel[] = (() => {
+  const groups = new Map<string, SearchHotel[]>()
+  for (const h of tripSearchHotels) {
+    const key = (h.trip?.stops ?? []).map(s => s.hotelName).sort().join('|')
+    const g = groups.get(key)
+    if (g) g.push(h)
+    else groups.set(key, [h])
+  }
+  return [...groups.values()].map((g) => {
+    if (g.length === 1) return g[0]!
+    const first = g[0]!
+    return {
+      ...first,
+      id: g.map(h => h.id).join('+'),
+      deals: g.flatMap(h => h.deals).sort((a, b) => a.basePrice - b.basePrice),
+      // Geen vaste PDP-link op het record: elk dealkaartje linkt via zijn eigen slug.
+      trip: first.trip ? { ...first.trip, pdpHref: undefined } : undefined,
+    }
+  })
+})()
 
 /** Vakantie-slug → detailrecord voor de vakantie-PDP. */
 export const tripDetailBySlug: Record<string, MultiHotelTripDetail> = Object.fromEntries(
