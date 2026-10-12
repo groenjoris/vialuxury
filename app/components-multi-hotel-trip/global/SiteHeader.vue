@@ -37,6 +37,8 @@
             alt="ViaLuxury"
             class="site-header__logo-img site-header__logo-img--horizontal"
           />
+          <!-- Prototype-sticker (subtiel) onder het logo. -->
+          <span class="site-header__proto" aria-hidden="true">R1</span>
         </NuxtLink>
 
         <!-- Opt-in pay-off under the logo (grid row 2, col 1 on desktop;
@@ -2903,6 +2905,15 @@ function handleSelectHotelInPopup(slug: string) {
    the horizontal one) for V4 on home/search/deal/hotel. */
 .site-header__logo-img--vertical {
   display: none;
+}
+
+/* Subtiele prototype-sticker onder het logo (absoluut, dus geen invloed op de layout). */
+.site-header__logo { position: relative; }
+.site-header__proto {
+  position: absolute; left: 0; top: 100%; margin-top: 4px; pointer-events: none;
+  font-family: var(--font-body, inherit); font-size: 9px; line-height: 1; font-weight: 600;
+  letter-spacing: 0.14em; text-transform: uppercase; white-space: nowrap;
+  color: rgba(255, 255, 255, 0.5); border: 1px solid rgba(255, 255, 255, 0.22); border-radius: 3px; padding: 2px 5px;
 }
 
 /* Pay-off block (grid row 2, col 1) — vertical stack: main tagline on
