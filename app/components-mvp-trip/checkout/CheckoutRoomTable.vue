@@ -433,9 +433,9 @@ const arrangementIncludes = trip.value ? trip.value.includes : [
               <span class="rt__name">Standaardkamer</span>
               <p class="rt__slidemeta t-caption c-mgrey">In elk van de {{ trip.hotels.length }} hotels</p>
               <img v-if="trip.hotels[0]?.image" class="rt__img" :src="trip.hotels[0].image" :alt="`Standaardkamer — ${trip.hotels[0].name}`" />
-              <p class="rt__desc t-body c-grey">{{ shortDescription(trip.hotels[0]?.roomDescription ?? '') }}</p>
+              <!-- Geen kamerbeschrijving: in plaats daarvan de toelichting, daaronder de kamerfaciliteiten. -->
+              <p class="rt__desc rt__note t-body c-grey">Let op: de afbeelding is uitsluitend ter illustratie en toont een standaardkamer van {{ trip.hotels[0]?.name }}. De standaardkamers van de overige hotels kunnen qua inrichting en uitstraling afwijken.</p>
               <p class="rt__facilities-title t-body t-bold">Kamerfaciliteiten</p>
-              <p class="rt__note t-caption c-mgrey">Let op: de afbeelding is uitsluitend ter illustratie en toont een standaardkamer van {{ trip.hotels[0]?.name }}. De standaardkamers van de overige hotels kunnen qua inrichting en uitstraling afwijken.</p>
               <div v-if="trip.hotels[0]?.facilities.length" class="rt__facilities">
                 <MvpTripCheckoutFacilityItem
                   v-for="f in trip.hotels[0].facilities"
@@ -1068,7 +1068,7 @@ const arrangementIncludes = trip.value ? trip.value.includes : [
    de opties in het menu houden hun eigen kleur en noemen altijd het aantal personen. */
 /* MVP: standaardkamer-blok */
 .rt__facilities-title { margin-top: 12px; }
-.rt__note { margin: 4px 0 8px; line-height: 1.4; }
+.rt__note { line-height: 1.45; }
 .rt__dropdownwrap { position: relative; }
 .rt__dropdown--masked { color: transparent; }
 .rt__dropdown--masked option { color: var(--c-via-black); }

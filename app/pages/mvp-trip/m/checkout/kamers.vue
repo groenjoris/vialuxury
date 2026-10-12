@@ -299,9 +299,9 @@ useHead({ title: trip.value ? 'Kies je opties â€” ViaLuxury' : 'Kies je kamer â€
               <h3 class="mroom__name">Standaardkamer</h3>
               <p class="t-caption c-mgrey">In elk van de {{ trip.hotels.length }} hotels</p>
               <img class="mroom__img" :src="trip.hotels[0]?.image || trip.thumb" :alt="`Standaardkamer â€” ${trip.hotels[0]?.name}`" />
-              <p class="t-body c-grey">{{ trip.hotels[0]?.roomDescription }}</p>
+              <!-- Geen kamerbeschrijving: in plaats daarvan de toelichting, daaronder de kamerfaciliteiten. -->
+              <p class="t-body c-grey mroom__note">Let op: de afbeelding is uitsluitend ter illustratie en toont een standaardkamer van {{ trip.hotels[0]?.name }}. De standaardkamers van de overige hotels kunnen qua inrichting en uitstraling afwijken.</p>
               <p class="t-body t-bold mroom__factitle">Kamerfaciliteiten</p>
-              <p class="t-caption c-mgrey mroom__note">Let op: de afbeelding is uitsluitend ter illustratie en toont een standaardkamer van {{ trip.hotels[0]?.name }}. De standaardkamers van de overige hotels kunnen qua inrichting en uitstraling afwijken.</p>
               <div v-if="trip.hotels[0]?.facilities.length" class="mroom__pills">
                 <span v-for="f in trip.hotels[0].facilities" :key="f.label" class="mroom__pill">{{ f.label }}</span>
               </div>
@@ -588,7 +588,7 @@ useHead({ title: trip.value ? 'Kies je opties â€” ViaLuxury' : 'Kies je kamer â€
 
 /* MVP: standaardkamer-blok */
 .mroom__factitle { margin-top: 10px; }
-.mroom__note { margin: 4px 0 8px; line-height: 1.4; }
+.mroom__note { line-height: 1.45; }
 /* Kamerlijst */
 .mrooms {
   display: flex;

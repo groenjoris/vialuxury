@@ -1,3 +1,4 @@
+import { isNightKey } from '~/utils-mvp-trip/nights'
 /**
  * Shared search state composable.
  * Exposes search-bar selections (arrival date, travel group, nights) so the
