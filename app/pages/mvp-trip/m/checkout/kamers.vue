@@ -295,29 +295,15 @@ useHead({ title: trip.value ? 'Kies je opties — ViaLuxury' : 'Kies je kamer �
           <article v-for="room in listRooms" :key="room.id" class="mroom" :data-room="room.id">
             <!-- Vakantie: carrousel met de kamer van elk hotel (swipen, navigator, stippen) -->
             <template v-if="trip">
-              <div class="mcar__head">
-                <button type="button" class="mcar__btn" aria-label="Vorig hotel" :disabled="hotelIndex === 0" @click="goHotel(hotelIndex - 1)">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15 6l-6 6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
-                </button>
-                <span class="mcar__count">Hotel {{ hotelIndex + 1 }} van {{ hotelCount }}</span>
-                <button type="button" class="mcar__btn" aria-label="Volgend hotel" :disabled="hotelIndex >= hotelCount - 1" @click="goHotel(hotelIndex + 1)">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
-                </button>
-              </div>
-              <div ref="carEl" class="mcar__view" @scroll.passive="onCarScroll" @scrollend="onCarScrollEnd">
-                <div v-for="(h, hi) in trip.hotels" :key="h.name" class="mcar__slide" :aria-hidden="hi !== hotelIndex">
-                  <h3 class="mroom__name">{{ h.name }}</h3>
-                  <p class="mcar__room">{{ h.roomName }}</p>
-                  <p class="t-caption c-mgrey">{{ h.city }} · {{ h.nights }} {{ h.nights === 1 ? 'nacht' : 'nachten' }}</p>
-                  <img class="mroom__img" :src="h.image || trip.thumb" :alt="`${h.roomName} — ${h.name}`" />
-                  <p class="t-body c-grey">{{ h.roomDescription }}</p>
-                  <div v-if="h.facilities.length" class="mroom__pills">
-                    <span v-for="f in h.facilities" :key="f.label" class="mroom__pill">{{ f.label }}</span>
-                  </div>
-                </div>
-              </div>
-              <div class="mcar__dots" role="tablist" aria-label="Hotels">
-                <button v-for="(h, hi) in trip.hotels" :key="h.name" type="button" class="mcar__dot" :class="{ 'mcar__dot--on': hi === hotelIndex }" :aria-label="h.name" :aria-selected="hi === hotelIndex" @click="goHotel(hi)" />
+              <!-- MVP: geen hotelcarrousel — één standaardkamer (foto eerste hotel) met toelichting. -->
+              <h3 class="mroom__name">Standaardkamer</h3>
+              <p class="t-caption c-mgrey">In elk van de {{ trip.hotels.length }} hotels</p>
+              <img class="mroom__img" :src="trip.hotels[0]?.image || trip.thumb" :alt="`Standaardkamer — ${trip.hotels[0]?.name}`" />
+              <p class="t-body c-grey">{{ trip.hotels[0]?.roomDescription }}</p>
+              <p class="t-body t-bold mroom__factitle">Kamerfaciliteiten</p>
+              <p class="t-caption c-mgrey mroom__note">Let op: de afbeelding is uitsluitend ter illustratie en toont een standaardkamer van {{ trip.hotels[0]?.name }}. De standaardkamers van de overige hotels kunnen qua inrichting en uitstraling afwijken.</p>
+              <div v-if="trip.hotels[0]?.facilities.length" class="mroom__pills">
+                <span v-for="f in trip.hotels[0].facilities" :key="f.label" class="mroom__pill">{{ f.label }}</span>
               </div>
             </template>
             <template v-else>
@@ -600,6 +586,9 @@ useHead({ title: trip.value ? 'Kies je opties — ViaLuxury' : 'Kies je kamer �
   flex-shrink: 0;
 }
 
+/* MVP: standaardkamer-blok */
+.mroom__factitle { margin-top: 10px; }
+.mroom__note { margin: 4px 0 8px; line-height: 1.4; }
 /* Kamerlijst */
 .mrooms {
   display: flex;

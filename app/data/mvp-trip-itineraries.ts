@@ -108,6 +108,9 @@ export interface TripItinerarySpec {
   /** Drie beoordelingen van de vakantie onder "Je reis in het kort" (variant
    *  "Reviews"); zonder eigen reviews vallen we terug op die van het eerste hotel. */
   reviews?: TripReviewSpec[]
+  /** MVP: samengevat voorbeeld reisschema als vrije tekst (CMS-tekstveld); zonder deze tekst worden
+   *  de dagregels als doorlopende tekst getoond. */
+  summaryText?: LocalizedString
   /** Kop boven de beschrijving ("7-daagse reis met eigen vervoer in Noord-Frankrijk");
    *  zonder eigen titel het sjabloon `trip.introTitleAuto/Bike`. */
   introTitle?: LocalizedString
@@ -258,6 +261,10 @@ export const TRIP_ITINERARIES: Record<string, TripItinerarySpec> = {
       },
     },
     introTitle: l('7-daagse reis met eigen vervoer in Noord-Frankrijk', '7-day trip by car in Northern France'),
+    summaryText: l(
+      'Je rijdt op dag 1 van Utrecht naar Château Tilques bij Saint-Omer (ca. 3 uur 45) en dineert er in het kasteelrestaurant. Dag 2 verken je de historische stad Saint-Omer en de moerassen, dag 3 rijd je in drie kwartier naar Château Cléry aan de Opaalkust. Dag 4 is voor de kust: Hardelot-Plage, Boulogne en de krijtrotsen van Les Deux Caps. Dag 5 rijd je in ruim een uur naar Hotel Royal Beaulaincourt in Béthune, dag 6 ontdek je Béthune, Louvre-Lens of Lille, en na het ontbijt en een late check-out op dag 7 rijd je in ca. 3 uur 35 terug naar Utrecht.',
+      'On day 1 you drive from Utrecht to Château Tilques near Saint-Omer (approx. 3 h 45) and dine in the castle restaurant. Day 2 you explore the historic town of Saint-Omer and the marshes, day 3 you drive to Château Cléry on the Opal Coast in three quarters of an hour. Day 4 is for the coast: Hardelot-Plage, Boulogne and the chalk cliffs of Les Deux Caps. Day 5 you drive to Hotel Royal Beaulaincourt in Béthune in just over an hour, day 6 you discover Béthune, Louvre-Lens or Lille, and after breakfast and a late check-out on day 7 you drive back to Utrecht in approx. 3 h 35.',
+    ),
     included: [
       { title: l('2 overnachtingen in Château Tilques', '2 nights at Château Tilques'),
         text: l('Twee nachten in het karaktervolle 19e-eeuwse kasteel in een groen park vlak bij Saint-Omer.', 'Two nights in the characterful 19th-century château in a green park near Saint-Omer.'),

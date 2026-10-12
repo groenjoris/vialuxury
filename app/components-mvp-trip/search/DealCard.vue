@@ -33,7 +33,8 @@
              landcodes) en de twee omgevingsfoto's die de PDP-gallery als eerste toont. -->
         <div v-else-if="tripCollage" class="deal-card-v2__trip-collage">
           <div class="trip-collage__tile trip-collage__tile--map">
-            <MvpTripRouteMap :stops="tripMapStops" :width="92" :height="74" :marker-radius="4" :max-scale="110" dots />
+            <!-- MVP: handmatig gemaakt routekaartje (PNG per route) i.p.v. een gegenereerde kaart. -->
+            <img class="trip-collage__map-img" :src="tripMapPng" alt="" loading="lazy" />
           </div>
           <div v-for="(url, i) in tripCollagePhotos" :key="`cp-${i}`" class="trip-collage__tile">
             <img :src="url" alt="" loading="lazy" />
@@ -181,11 +182,7 @@
         </NuxtLink>
         <div ref="metaEl" class="deal-card-v2__meta">
           <!-- Multi Hotel Trip: reviewcijfer + label vóór de plaats (als Northstar). -->
-          <template v-if="isTrip && hotel.reviewScore">
-            <span class="deal-card-v2__score">{{ hotel.reviewScore.toFixed(1) }}</span>
-            <span class="deal-card-v2__score-label">{{ t(getReviewLabelKey(hotel.reviewScore)) }}</span>
-            <span class="deal-card-v2__sep" aria-hidden="true">|</span>
-          </template>
+          <!-- MVP: geen reviewscore op de vakantie-dealcard (komt na de MVP). -->
           <svg class="deal-card-v2__loc-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M4.5 9.75768C4.5 15.5 12 22 12 22C12 22 19.5 15.5 19.5 9.75768C19.5 4.81181 15.6559 2 12 2C8.34409 2 4.5 4.81181 4.5 9.75768Z" /><path d="M12 12C13.3807 12 14.5 10.8807 14.5 9.5C14.5 8.11929 13.3807 7 12 7C10.6193 7 9.5 8.11929 9.5 9.5C9.5 10.8807 10.6193 12 12 12Z" />
           </svg>
@@ -441,6 +438,8 @@ function tripLegShort(travel?: { km: number; minutes: number }): string | undefi
   return `${travel.km} km`
 }
 const tripTransportIcon = computed(() => (props.hotel?.trip?.type === 'fiets' ? 'bike' : 'car-side'))
+/** MVP: het routekaartje op de card is een PNG per route (public/images/vakanties/maps). */
+const tripMapPng = computed(() => `/images/vakanties/maps/${props.hotel?.id ?? ''}-card.png`)
 /** "Autovakantie met 3 hotels" — soort vakantie + aantal hotels, in plaats van een hotelnaam. */
 const tripTypeLabel = computed(() => {
   const trip = props.hotel?.trip
@@ -1338,6 +1337,7 @@ const includesBullets = computed<string[]>(() => {
 .trip-collage__tile { position: relative; min-height: 0; overflow: hidden; background: #e9e5dc; }
 .trip-collage__tile img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .trip-collage__tile--map :deep(.trm) { width: 100%; height: 100%; }
+.trip-collage__map-img { width: 100%; height: 100%; object-fit: cover; display: block; }
 /* Het hartje niet over het mini-kaartje: naar de rechterrand van de hoofdfoto. */
 .deal-card-v2__image--trip-collage .deal-card-v2__favorite { right: calc(25% + var(--space-md)); }
 

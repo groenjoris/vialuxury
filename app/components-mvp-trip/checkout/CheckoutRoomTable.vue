@@ -427,59 +427,21 @@ const arrangementIncludes = trip.value ? trip.value.includes : [
             <!-- Vakantie: hotel-carrousel (navigator op een grijs vlak als de
                  tabelkop; per slide hotelnaam, kamernaam, foto, kamerinfo). De
                  schaarste staat, net als bij een hotel-deal, in "Je opties". -->
-            <div v-if="trip" ref="columnContentEl" class="rt__type rt__type--trip" :class="`rt__type--${rtVariant}`">
-              <!-- Strak / Carousel: navigator boven de carrousel. Lange kolom: geen navigator. -->
-              <div v-if="rtVariant !== 'column'" class="rt__carhead">
-                <button type="button" class="rt__carbtn" aria-label="Vorig hotel" :disabled="hotelIndex === 0" @click="prevHotel">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15 6l-6 6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
-                </button>
-                <span class="rt__carcount">Hotel {{ hotelIndex + 1 }} van {{ hotelCount }}</span>
-                <button type="button" class="rt__carbtn" aria-label="Volgend hotel" :disabled="hotelIndex >= hotelCount - 1" @click="nextHotel">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
-                </button>
-              </div>
-              <div class="rt__carview">
-                <!-- Carrousel-track (Strak: 100% per slide; Carousel: 90% + 10% van het volgende hotel
-                     al zichtbaar); Lange kolom: dezelfde slides onder elkaar (14px ertussen), hotel 2
-                     halverwege de beschrijving afgebroken (fade) en hotel 3 pas na "Toon meer". -->
-                <div class="rt__cartrack" :style="trackStyle">
-                  <template v-for="(h, hi) in trip.hotels" :key="h.name">
-                  <div
-                    v-if="rtVariant !== 'column' || columnOpen || hi < 2"
-                    class="rt__slide"
-                    :class="{ 'rt__slide--cut': rtVariant === 'column' && !columnOpen && hi === 1 }"
-                    :aria-hidden="rtVariant !== 'column' && hi !== hotelIndex"
-                  >
-                    <span class="rt__name">{{ h.name }}</span>
-                    <p class="rt__roomname">{{ h.roomName }}</p>
-                    <p class="rt__slidemeta t-caption c-mgrey">{{ h.city }} · {{ h.nights }} {{ h.nights === 1 ? 'nacht' : 'nachten' }}</p>
-                    <img v-if="h.image" class="rt__img" :src="h.image" :alt="`${h.roomName} — ${h.name}`" />
-                    <p class="rt__desc t-body c-grey">{{ shortDescription(h.roomDescription) }}</p>
-                    <div v-if="h.facilities.length" class="rt__facilities">
-                      <MvpTripCheckoutFacilityItem
-                        v-for="f in h.facilities"
-                        :key="f.label"
-                        :label="f.label"
-                        :icon="f.icon"
-                      />
-                    </div>
-                  </div>
-                  </template>
-                </div>
-              </div>
-              <button v-if="rtVariant === 'column'" type="button" class="rt__more" :aria-expanded="columnOpen" @click="columnOpen = !columnOpen">
-                {{ columnOpen ? 'Toon minder' : 'Toon meer' }}
-              </button>
-              <div v-else class="rt__dots" role="tablist" aria-label="Hotels">
-                <button
-                  v-for="(h, hi) in trip.hotels"
-                  :key="h.name"
-                  type="button"
-                  class="rt__dot"
-                  :class="{ 'rt__dot--on': hi === hotelIndex }"
-                  :aria-label="h.name"
-                  :aria-selected="hi === hotelIndex"
-                  @click="hotelIndex = hi"
+            <!-- MVP: geen hotelcarrousel — in elk hotel krijg je een kamer vergelijkbaar met de
+                 standaardkamer; één foto (eerste hotel) met toelichting en de kamerfaciliteiten. -->
+            <div v-if="trip" class="rt__type rt__type--trip">
+              <span class="rt__name">Standaardkamer</span>
+              <p class="rt__slidemeta t-caption c-mgrey">In elk van de {{ trip.hotels.length }} hotels</p>
+              <img v-if="trip.hotels[0]?.image" class="rt__img" :src="trip.hotels[0].image" :alt="`Standaardkamer — ${trip.hotels[0].name}`" />
+              <p class="rt__desc t-body c-grey">{{ shortDescription(trip.hotels[0]?.roomDescription ?? '') }}</p>
+              <p class="rt__facilities-title t-body t-bold">Kamerfaciliteiten</p>
+              <p class="rt__note t-caption c-mgrey">Let op: de afbeelding is uitsluitend ter illustratie en toont een standaardkamer van {{ trip.hotels[0]?.name }}. De standaardkamers van de overige hotels kunnen qua inrichting en uitstraling afwijken.</p>
+              <div v-if="trip.hotels[0]?.facilities.length" class="rt__facilities">
+                <MvpTripCheckoutFacilityItem
+                  v-for="f in trip.hotels[0].facilities"
+                  :key="f.label"
+                  :label="f.label"
+                  :icon="f.icon"
                 />
               </div>
             </div>
@@ -1104,6 +1066,9 @@ const arrangementIncludes = trip.value ? trip.value.includes : [
 }
 /* Gesloten veld na een keuze: alleen "x kamers" (overlay), de select-tekst zelf transparant;
    de opties in het menu houden hun eigen kleur en noemen altijd het aantal personen. */
+/* MVP: standaardkamer-blok */
+.rt__facilities-title { margin-top: 12px; }
+.rt__note { margin: 4px 0 8px; line-height: 1.4; }
 .rt__dropdownwrap { position: relative; }
 .rt__dropdown--masked { color: transparent; }
 .rt__dropdown--masked option { color: var(--c-via-black); }

@@ -9,6 +9,7 @@ prefix, localStorage-keys, CSS-bestanden) zodat ze elkaar nooit raken:
 | Release 1 (R1, "Redesign") | `*-first-release` | `FirstRelease*` / `useFirstRelease*` | `/first-release/...` | `fr-*.css` |
 | Release 2 (R2, "Variable Travel Group") | `*-second-release` | `SecondRelease*` / `useSecondRelease*` | `/second-release/...` | `sr-*.css` |
 | Multi Hotel Trip (MHT) | `*-multi-hotel-trip` | `MultiHotelTrip*` / `useMultiHotelTrip*` | `/multi-hotel-trip/...` | `mht-*.css` |
+| MVP 12-11-2026 (MVP) | `*-mvp-trip` | `MvpTrip*` / `useMvpTrip*` | `/mvp-trip/...` | `mvp-*.css` |
 | Huisstijl / Northstar | bevroren oude prototypes | `Huisstijl*` / `Northstar*` | | |
 
 Startscherm: `app/pages/index.vue`. Gedeeld: `app/data`, `app/types`,
@@ -20,6 +21,18 @@ mobiele site `app/pages/first-release/m/checkout/*`, `components-first-release/c
 `fr-mobile.global.ts`). Het is een poort van de MHT-checkout zónder vakantielogica; de
 MHT-checkout wijkt daardoor sterk af, dus R1-checkoutwijzigingen leveren bij de automatische
 sync (zie hieronder) vaak conflicten op — die in de MHT-bestanden oplossen.
+
+## MVP 12-11-2026 = losstaande kopie van MHT (niet gesynchroniseerd)
+
+Gemaakt met `scripts/copy-mht-to-mvp.sh` (eenmalig) en daarna teruggeschaald naar de
+MVP-definitie in `vakanties voorbeeld content/MVP-scope multi-hotel vakanties.md`: geen
+hoofdlink/speciale Vakanties-pagina (thema "Auto- en fietsvakanties" op de gewone
+zoekpagina), nachten 1–4, geen reviewscores/gastbeoordelingen, routekaartjes als PNG
+(`public/images/vakanties/maps/<tripId>-card.png` en `-pdp.png`), samengevat reisschema
+als vrije tekst (`summaryText`) + sidepanel als één tekstblok, includes classic, geen
+POI's op de grote kaart, room table met één standaardkamer, geen bevestigingspagina,
+geen prototype-schakelaars. Data in `app/data/mvp-*`. MVP-wijzigingen alleen in de
+`*-mvp-trip`-bestanden; MHT blijft ongewijzigd.
 
 ## Multi Hotel Trip (MHT) = kopie van R1 — houd ze in sync
 

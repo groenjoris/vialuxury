@@ -96,13 +96,7 @@ const sideTop = useStickyFit(sideEl, 16)
 // formulier meenemen naar de bevestigingspagina; alleen bij een vakantie.
 const checkoutGuest = useState<{ firstName: string; email: string } | null>('mvp-checkout-guest', () => null)
 function bookNow() {
-  if (!checkoutTrip.value) return
-  if (import.meta.client) {
-    const firstName = (document.getElementById('gf-first') as HTMLInputElement | null)?.value.trim() ?? ''
-    const email = (document.getElementById('gf-email') as HTMLInputElement | null)?.value.trim() ?? ''
-    checkoutGuest.value = { firstName, email }
-  }
-  navigateTo('/mvp-trip/checkout/bevestiging')
+  // MVP: geen bevestigingspagina — "Boek nu" doet hier (nog) niets.
 }
 
 useHead({ title: 'Gegevens en betaalwijze — ViaLuxury' })

@@ -6,7 +6,10 @@
        marker → hotel-sidepanel; klik elders of op "Bekijk kaart" → fullscreen kaart. -->
   <div class="route-map">
     <div class="route-map__box" role="button" tabindex="0" :aria-label="t('common.viewMap')" @click="$emit('open')" @keydown.enter.prevent="$emit('open')">
+      <!-- MVP: handmatig gemaakte PNG per route i.p.v. een gegenereerde, interactieve kaart. -->
+      <img v-if="image" class="route-map__img" :src="image" alt="" />
       <MvpTripRouteMap
+        v-else
         :stops="svgStops"
         :legs="legs"
         :leg-labels="legLabels"
@@ -51,6 +54,8 @@ const props = defineProps<{
   returnLabel?: string
   /** Regels onder de kaart (al vertaald) met icoon (bestand in /icons/mht/): car, route, clock, bike. */
   summary?: ({ icon: string; text: string } | undefined)[]
+  /** MVP: PNG van de route (handmatig gemaakt); vervangt de gegenereerde kaart. */
+  image?: string
 }>()
 
 defineEmits<{ open: []; 'stop-click': [index: number] }>()
@@ -64,6 +69,7 @@ const summaryLines = computed(() => (props.summary ?? []).filter((l): l is { ico
 </script>
 
 <style scoped>
+.route-map__img { display: block; width: 100%; height: 100%; object-fit: cover; }
 .route-map {
   display: flex;
   flex-direction: column;

@@ -89,7 +89,6 @@ useHead({ title: computed(() => (checkoutTrip.value ? 'Kies je opties — ViaLux
         <div class="col-form">
           <h1 class="t-display">{{ checkoutTrip ? 'Kies je opties' : 'Kies je kamertype' }}</h1>
           <!-- Prototype-schakelaar room-table-variant (Strak / Lange kolom / Carousel), alleen bij een vakantie. -->
-          <MvpTripCheckoutRoomTableVariantSwitch v-if="checkoutTrip" />
           <MvpTripCheckoutRoomTable
             ref="roomTableRef"
             :trip="checkoutTrip"

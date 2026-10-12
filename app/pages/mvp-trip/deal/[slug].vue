@@ -3,7 +3,7 @@
     <MvpTripSiteHeader />
     <!-- Prototype: zwevende schakelaar voor de reisschema-varianten (alleen Noord-Frankrijk). -->
     <!-- Prototype-schakelaarpaneel: alleen op desktop (op mobiel viel het over de hotelnamen). -->
-    <TripItineraryVariantSwitch v-if="showItinVariants && !isMobile" target="arrangement" />
+    <!-- MVP: geen variantenschakelaar — reisschema "Per stad", includes classic. -->
 
     <!-- Search refresh overlay -->
     <Transition name="fade-fast">
@@ -99,7 +99,7 @@
           <h2 v-if="trip" class="deal-page__trip-brand"><img :src="`/icons/mht/${trip.type === 'fiets' ? 'bike' : 'car-side'}.svg`" alt="" class="deal-page__trip-brand-icon" width="20" height="20" /><span class="deal-page__trip-brand-type">{{ tripMapTitle.head }}<span class="deal-page__trip-brand-last">{{ tripMapTitle.last }}<span class="deal-page__trip-brand-badge">{{ t('header.new') }}</span></span></span></h2>
           <MvpTripRouteMapCard
             class="deal-page__minimap"
-            :stops="tripMapStops" :legs="tripRouteLegs" :return-label="tripReturnLabel" :summary="tripMapSummary"
+            :image="tripMapPng" :stops="tripMapStops" :legs="tripRouteLegs" :return-label="tripReturnLabel" :summary="tripMapSummary"
             @open="tripMapOpen = true"
             @stop-click="openTripHotel"
           />
@@ -251,7 +251,9 @@
         <section v-if="itinSummary" id="reisschema" class="container deal-page__hybrid-summary deal-page__hybrid-summary--mobile deal-page__anchor">
           <div class="deal-page__summary-panel">
             <h2 class="section-title deal-page__summary-title"><svg class="deal-page__summary-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-miterlimit="10" stroke-linecap="square" aria-hidden="true"><path d="M15 5h7M15 15h7M15 9h2M15 19h2" /><circle cx="6.5" cy="17.5" r="3.5" /><circle cx="6.5" cy="6.5" r="3.5" /></svg>{{ t('trip.itin.hybrid.summaryHeading') }}</h2>
-            <TripItinerarySummary :days="tripDaysView" :hotels="tripHotelLinks" full-link :show-stats="summaryStats" :lines="summaryLines" @select="openItinPanelAt" @open-full="openItinPanelAt(null)" />
+            <!-- MVP: samenvatting als vrije tekst (CMS-tekstveld) met een link naar het uitgebreide schema; dagen niet klikbaar. -->
+            <p class="deal-page__summary-text">{{ tripSummaryText }}</p>
+            <button type="button" class="deal-page__summary-link" @click="openItinPanelAt(null)">{{ t('trip.itin.fullLink') }}</button>
           </div>
         </section>
 
@@ -517,7 +519,9 @@
             <section v-if="itinSummary" id="reisschema" class="deal-page__hybrid-summary deal-page__hybrid-summary--intro deal-page__desc-block deal-page__anchor">
               <div class="deal-page__summary-panel">
                 <h2 class="section-title deal-page__summary-title"><svg class="deal-page__summary-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-miterlimit="10" stroke-linecap="square" aria-hidden="true"><path d="M15 5h7M15 15h7M15 9h2M15 19h2" /><circle cx="6.5" cy="17.5" r="3.5" /><circle cx="6.5" cy="6.5" r="3.5" /></svg>{{ t('trip.itin.hybrid.summaryHeading') }}</h2>
-                <TripItinerarySummary :days="tripDaysView" :hotels="tripHotelLinks" full-link :show-stats="summaryStats" :lines="summaryLines" @select="openItinPanelAt" @open-full="openItinPanelAt(null)" />
+                <!-- MVP: samenvatting als vrije tekst (CMS-tekstveld) met een link naar het uitgebreide schema; dagen niet klikbaar. -->
+                <p class="deal-page__summary-text">{{ tripSummaryText }}</p>
+                <button type="button" class="deal-page__summary-link" @click="openItinPanelAt(null)">{{ t('trip.itin.fullLink') }}</button>
               </div>
             </section>
           </section>
@@ -534,7 +538,7 @@
               v-if="isTrip"
               id="mini-map"
               class="deal-page__minimap deal-page__minimap--trip"
-              :stops="tripMapStops" :legs="tripRouteLegs" :return-label="tripReturnLabel" :summary="tripMapSummary"
+              :image="tripMapPng" :stops="tripMapStops" :legs="tripRouteLegs" :return-label="tripReturnLabel" :summary="tripMapSummary"
               @open="tripMapOpen = true"
               @stop-click="openTripHotel"
             />
@@ -715,7 +719,7 @@
           v-if="isTrip"
           id="mini-map"
           class="deal-page__minimap deal-page__minimap--trip deal-page__sidebar-minimap"
-          :stops="tripMapStops" :legs="tripRouteLegs" :return-label="tripReturnLabel" :summary="tripMapSummary"
+          :image="tripMapPng" :stops="tripMapStops" :legs="tripRouteLegs" :return-label="tripReturnLabel" :summary="tripMapSummary"
           @open="tripMapOpen = true"
           @stop-click="openTripHotel"
         />
@@ -1698,7 +1702,7 @@ const FIXED_ITIN_VARIANT: Record<string, ItineraryVariant> = {
   'nederlandse-kustroute-6-daagse-autoroute': 'city',
 }
 // Schakelaarpaneel linksboven (varianten/opmaak/stats) blijft ter vergelijking — uit te zetten via ITINERARY_SWITCHER_ENABLED.
-const showItinVariants = computed(() => ITINERARY_SWITCHER_ENABLED && isTrip && ITINERARY_VARIANT_SLUGS.includes(routeSlug.value))
+const showItinVariants = computed(() => false) // MVP: vaste keuzes, geen schakelaar
 const { variant: itinVariantChosen } = useMvpTripItineraryVariant()
 const itinVariant = computed<ItineraryVariant>(() =>
   showItinVariants.value ? itinVariantChosen.value : (isTrip ? (FIXED_ITIN_VARIANT[routeSlug.value] ?? 'current') : 'current'))
@@ -1715,11 +1719,11 @@ const summaryStats = computed(() => stats.value === 'on')
 /** Voorbeeld reisschema: kaal of met stippellijntjes tussen de dagen (alle varianten). */
 const summaryLines = computed(() => summaryStyle.value === 'lines')
 const reviewsPlain = computed(() => finalReviews.value === 'plain') // geldt ook bij Map en Per dag
-const inclClassic = computed(() => itinCity.value && finalIncludes.value === 'classic')
+const inclClassic = computed(() => itinCity.value) // MVP: includes altijd in de klassieke vormgeving
 /** Hybrid-lay-out geldt ook voor variant 6 "Reviews" (= Hybrid + beoordelingen + totaalscore). */
 const itinHybrid = computed(() => itinVariant.value === 'hybrid' || itinVariant.value === 'reviews')
 /** Reviews + totaalscore: bij alle varianten in de schakelaar (Final, Map, Per dag) en bij "Reviews". */
-const itinReviews = computed(() => ['reviews', 'city', 'cities', 'hybrid'].includes(itinVariant.value))
+const itinReviews = computed(() => false) // MVP: geen reviewscore en geen gastbeoordelingen (komen na de MVP)
 /** "Voorbeeld reisschema" (klikbare dagsamenvatting) bovenaan: bij Final, Map en Per dag (Hybrid). */
 const itinSummary = computed(() => itinHybrid.value || itinCity.value || itinNew.value)
 const itinFull = computed(() => itinNew.value || itinHybrid.value || itinCity.value)
@@ -1815,6 +1819,15 @@ function tripDurationShort(minutes: number): string {
   if (m === 0) return t('trip.durShort.hours').replace('{h}', String(h))
   return t('trip.durCompact.hoursMinutes').replace('{h}', String(h)).replace('{m}', String(m)).replace('{mm}', String(m).padStart(2, '0'))
 }
+/** MVP: de minikaart is een handmatig gemaakte PNG per route (public/images/vakanties/maps). */
+const tripMapPng = computed(() => `/images/vakanties/maps/${trip?.id ?? ''}-pdp.png`)
+/** MVP: het samengevatte voorbeeld reisschema is vrije tekst (CMS-tekstveld): de eigen tekst van de
+ *  reis (summaryText) of anders de dagregels als doorlopende tekst. */
+const tripSummaryText = computed(() => {
+  const own = tripPdp?.content?.summaryText
+  if (own) return localized(own)
+  return tripDaysView.value.map(d => `${d.label}: ${d.summary ?? d.heading ?? ''}`.replace(/\.?$/, '.')).join(' ')
+})
 /** Mobiel, titel boven de routekaart: "Autovakantie met 3 hotels" / "Fietsvakantie met bagagetransfer"
  *  — gesplitst in kop + laatste woord, zodat het Nieuw-stickertje met het laatste woord meegaat. */
 const tripMapTitle = computed(() => {
@@ -2030,7 +2043,8 @@ function shortInclText(text: string, max = 120): string {
   return `${cut.slice(0, Math.max(cut.lastIndexOf(' '), 80)).replace(/[,.;:]$/, '')}…`
 }
 const tripMapHighlights = computed(() =>
-  (tripPdp?.content?.mapHighlights ?? []).map(h => ({
+  // MVP: geen bezienswaardigheden (POI's) op de grote kaart — komen later.
+  ([] as NonNullable<NonNullable<typeof tripPdp>['content']['mapHighlights']>).map(h => ({
     kind: h.kind,
     name: localized(h.name),
     lat: h.lat,
@@ -2463,6 +2477,9 @@ onMounted(() => {
    icons (no labels) right-aligned between the breadcrumb and the title. *//* Vakantie: "Autovakantie met 3 hotels" / "Fietsvakantie met bagagetransfer" (één regel) met het
    auto-/fietsicoon — mobiel boven de routekaart, desktop in de kop onder de reisnaam —
    van de dealcard en het Nieuw-stickertje uit de navigatie (.verticals__badge) rechtsboven de tekst. */
+/* MVP: samengevat reisschema als vrije tekst + link. */
+.deal-page__summary-text { margin: 0 0 12px; font-size: 15px; line-height: 1.6; color: var(--color-text-secondary); }
+.deal-page__summary-link { padding: 0; background: none; border: 0; cursor: pointer; font-family: inherit; font-size: 15px; font-weight: 600; color: var(--color-primary); text-decoration: underline; text-underline-offset: 2px; }
 .deal-page__trip-brand {
   display: flex;
   align-items: center;

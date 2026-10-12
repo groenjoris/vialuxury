@@ -27,9 +27,9 @@ export interface NightGroup {
   /** i18n-key voor de groepsnaam. */
   labelKey: string
 }
+// MVP: de vakantie-reisduren 5/6/7/8 komen later; de pickers tonen alleen 1 t/m 4 nachten.
 export const NIGHT_GROUPS: NightGroup[] = [
   { id: 'short', keys: ['1', '2', '3', '4'], labelKey: 'nights.group.short' },
-  { id: 'long', keys: ['5', '6', '7', '8'], labelKey: 'nights.group.long' },
 ]
 
 /** Hoeveel van de groep is geselecteerd: niets, een deel of alles. */

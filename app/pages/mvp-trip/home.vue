@@ -132,21 +132,7 @@
       </div>
     </section>
 
-    <!-- "Gezien in:" press-logos band — decoupled from the Uitgelicht
-         card so it reads as its own credibility row beneath the
-         quick-filter pills. -->
-    <section class="home-press-banner">
-      <div class="container home-press-banner__inner">
-        <span class="home-press-banner__label">Gezien in:</span>
-        <div class="home-press-banner__logos">
-          <img src="/images/logos/nrc.png" alt="NRC" class="home-press-banner__logo" />
-          <img src="/images/logos/volkskrant.svg" alt="de Volkskrant" class="home-press-banner__logo" />
-          <img src="/images/logos/nu.svg" alt="NU.nl" class="home-press-banner__logo" />
-        </div>
-      </div>
-    </section>
-
-    <!-- Category banners: 3 clickable banners — boven "Eerder bekeken" (Joris: promorij en Eerder bekeken verwisseld) -->
+    <!-- Category banners (MVP: direct onder Uitgelicht + Snel zoeken) -->
     <section class="home-categories">
       <div class="container home-categories__grid">
         <button type="button" class="home-category" :style="{ backgroundImage: `url('/images/categories/bikepackages.jpg')` }" @click="pickFilter('fiets')">
@@ -167,6 +153,21 @@ MET 3 HOTELS</span>
         </button>
       </div>
     </section>
+
+    <!-- "Gezien in:" press-logos band — decoupled from the Uitgelicht
+         card so it reads as its own credibility row beneath the
+         quick-filter pills. -->
+    <section class="home-press-banner">
+      <div class="container home-press-banner__inner">
+        <span class="home-press-banner__label">Gezien in:</span>
+        <div class="home-press-banner__logos">
+          <img src="/images/logos/nrc.png" alt="NRC" class="home-press-banner__logo" />
+          <img src="/images/logos/volkskrant.svg" alt="de Volkskrant" class="home-press-banner__logo" />
+          <img src="/images/logos/nu.svg" alt="NU.nl" class="home-press-banner__logo" />
+        </div>
+      </div>
+    </section>
+
 
     <!-- Super Hotel Deals: 3 hand-picked luxury hotels -->
     <section class="home-deals">
@@ -210,6 +211,7 @@ MET 3 HOTELS</span>
 
 <script setup lang="ts">
 import { POPULAR_FILTER_ICONS } from '~/utils-mvp-trip/popularFilterIcons'
+import { TRIPS_THEME_ID } from '~/utils-mvp-trip/destinationMatch'
 import { mappedHotels } from '~/data/deals-mapper'
 import { tripSearchHotels } from '~/data/mvp-trips'
 import type { SearchHotel } from '~/types/searchHotel'
@@ -319,13 +321,15 @@ function pickFilter(tagId: string) {
 /** Multi Hotel Trip: ankeiler "Roadtrip Nederland met 3 hotels" → de
  *  vakantie-resultaten, met schone filters. */
 function goVakanties() {
+  // MVP: geen speciale vakantiepagina — de gewone zoekpagina, gefilterd op het thema
+  // "Auto- en fietsvakanties" (zoals elk ander thema in het filter).
   clearFilterTags()
   clearDestinations()
   clearArrivalDate()
   clearDuration()
   resetBudget()
-  clearTripFilters() // ook de vakantie-snelfilters (Met de auto, Nederland, …) niet onthouden
-  navigateTo('/mvp-trip/vakanties')
+  toggleFilterTag(TRIPS_THEME_ID)
+  navigateTo('/mvp-trip/search')
 }
 
 /** Partner co-brand entry (e.g. "HEMA actie"): start clean and land on the

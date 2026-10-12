@@ -335,26 +335,7 @@
                       <svg class="menu-panel__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
                     </NuxtLink>
 
-                    <!-- Multi Hotel Trip: Auto- & Fietsvakanties (zelfde gedrag als de hoofdlink: enterTrips → vakantiepagina). -->
-                    <NuxtLink
-                      to="/mvp-trip/vakanties"
-                      class="menu-panel__row menu-panel__row--lg"
-                      @click="hamburgerDropdownOpen = false; onVerticalClick({ id: 'vakanties' }, $event)"
-                    >
-                      <span class="menu-panel__icon-tile">
-                        <!-- car glyph (Lucide) -->
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#141414" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2" /><circle cx="7" cy="17" r="2" /><path d="M9 17h6" /><circle cx="17" cy="17" r="2" /></svg>
-                      </span>
-                      <span class="menu-panel__row-text">
-                        <span class="menu-panel__row-title menu-panel__row-title--new">
-                          {{ t('header.holidays') }}
-                          <span class="menu-panel__badge">{{ t('header.new') }}</span>
-                        </span>
-                        <span class="menu-panel__row-sub">Meerdere hotels in één reis, met de auto of de fiets</span>
-                      </span>
-                      <svg class="menu-panel__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
-                    </NuxtLink>
-
+                    
                     <a
                       v-if="effectiveNavVariant !== '1'"
                       href="https://restaurants.vialuxury.com/"
@@ -1010,7 +991,7 @@
          samen in het zwevende paneel linksboven — zelfde systeem als op de
          vakantie-PDP. Alleen bij de overlay-variant (homepage en Vakanties-pagina);
          op mobiel alleen op de homepage — daar liggen geen filterknoppen onder. -->
-    <MvpTripHomeSwitchPanel v-if="variant === 'overlay'" :class="{ 'site-header__psw--offhome': !isHomeRoute }" />
+    <!-- MVP: geen prototype-schakelpaneel. -->
 
     <!-- Helpdesk-chatwidget (dummy third-party widget) — rechtsonder in de
          viewport op elke pagina met deze header; schuift mee met open
@@ -1123,7 +1104,6 @@ const verticals = computed(() => {
     { id: 'hotels', label: t('header.hotels'), href: homeHref.value, external: false },
     // Multi Hotel Trip: nieuwe hoofdlink "Vakanties" (met Nieuw-badge) tussen
     // Hotels + more en Geef cadeaubon — opent de Vakanties-zoekpagina.
-    { id: 'vakanties', label: t('header.holidays'), href: '/mvp-trip/vakanties', external: false, badge: t('header.new') },
     { id: 'restaurants', label: t('header.restaurants'), href: 'https://restaurants.vialuxury.com/', external: true },
     { id: 'cadeaubon', label: t('header.giftCard'), href: 'https://cadeaukaart.vialuxury.com/Product/Products', external: true },
   ]
