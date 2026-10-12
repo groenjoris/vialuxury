@@ -150,7 +150,9 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
-.ctp { position: fixed; inset: 0; z-index: 1300; }
+/* Geen eigen achtergrond/hoogte uit de checkout-scope (die zou de pagina erachter
+   wit maken): de pagina blijft zichtbaar achter de backdrop en het sidepanel. */
+.ctp { position: fixed; inset: 0; z-index: 1300; background: transparent; min-height: 0; }
 .ctp__backdrop { position: absolute; inset: 0; background: rgba(0, 0, 0, 0.4); }
 .ctp__panel {
   position: absolute;
