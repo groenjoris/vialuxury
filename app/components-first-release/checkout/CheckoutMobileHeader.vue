@@ -13,6 +13,7 @@ function goBack() {
     <header class="mnav">
       <NuxtLink to="/first-release/home" aria-label="Naar de homepage">
         <img class="mnav__logo" src="/images/logo-vialuxury-horizontal.svg" alt="ViaLuxury" />
+        <span class="mnav__proto" aria-hidden="true">R1</span>
       </NuxtLink>
       <div class="mnav__right">
         <span class="mnav__safe">
@@ -59,6 +60,15 @@ function goBack() {
   display: block;
   /* Zwart woordmerk -> wit op de donkere balk */
   filter: brightness(0) invert(1);
+}
+/* Subtiele prototype-sticker onder het logo; de balk krijgt 2px extra onderrand zodat hij erbinnen past. */
+.mnav { padding-bottom: 16px; }
+.mnav > a { position: relative; display: block; }
+.mnav__proto {
+  position: absolute; left: 0; top: 100%; margin-top: 1px; pointer-events: none;
+  font-family: var(--font-body, inherit); font-size: 8px; line-height: 1; font-weight: 600;
+  letter-spacing: 0.14em; text-transform: uppercase; white-space: nowrap;
+  color: rgba(255, 255, 255, 0.5); border: 1px solid rgba(255, 255, 255, 0.22); border-radius: 3px; padding: 1px 4px;
 }
 .mnav__right {
   display: flex;
