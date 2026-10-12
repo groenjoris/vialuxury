@@ -292,6 +292,7 @@ const de: Record<string, string> = {
   'trip.itin.city.heading': 'Was Sie während Ihres Urlaubs unternehmen können',
   'trip.itin.city.intro': 'Unsere Tipps für die Umgebung jedes Hotels.',
   'trip.itin.city.outingsAt': 'Schöne Ausflüge in der Nähe von {hotel}',
+  'trip.itin.city.tipsAt': 'Tipps in der Nähe von {hotel}',
   'trip.reviews.moreInfo': 'Mehr Infos',
   'trip.reviews.travelledIn': 'Urlaub im {month}',
   'trip.reviews.prev': 'Vorherige Bewertung',

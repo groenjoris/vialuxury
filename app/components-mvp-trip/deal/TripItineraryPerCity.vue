@@ -1,6 +1,6 @@
 <template>
   <!-- Multi Hotel Trip — "Wat te doen tijdens je vakantie" (variant "Per stad"):
-       verticale tijdlijn met per hotel één hoofdstuk "Leuke uitjes in de buurt
+       verticale tijdlijn met per hotel één hoofdstuk "Tips in de buurt (MVP; MHT: Leuke uitjes)
        van {hotel}". Kop: die titel, daaronder plaatsnaam, aantal nachten en —
        als de datums bekend zijn — check-in en check-out. Uitgeklapt: de drie
        uitjes in hetzelfde ontwerp als "Tips in de buurt" op de gewone
@@ -31,7 +31,7 @@
                pijltje rechts (en, ingeklapt, via de foto's ernaast). -->
           <div class="tpc-ch__head">
             <span class="tpc-ch__main">
-              <h3 class="tpc-ch__title">{{ t('trip.itin.city.outingsAt').replace('{hotel}', ch.hotelName) }}</h3>
+              <h3 class="tpc-ch__title">{{ t('trip.itin.city.tipsAt').replace('{hotel}', ch.hotelName) }}</h3>
               <span class="tpc-ch__eyebrow">
                 <span class="tpc-ch__place">{{ ch.city }}</span>
                 <span class="tpc-ch__nights">{{ ch.nightsLabel }}</span>
@@ -54,14 +54,14 @@
               class="tpc-ch__toggle"
               :aria-expanded="isOpen(ch.stopIndex)"
               :aria-controls="`tpc-panel-${ch.stopIndex}`"
-              :aria-label="t('trip.itin.city.outingsAt').replace('{hotel}', ch.hotelName)"
+              :aria-label="t('trip.itin.city.tipsAt').replace('{hotel}', ch.hotelName)"
               @click="toggle(ch.stopIndex)"
             >
               <svg class="tpc-ch__chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9" /></svg>
             </button>
           </div>
 
-          <div v-show="isOpen(ch.stopIndex)" :id="`tpc-panel-${ch.stopIndex}`" class="tpc-ch__panel" role="region" :aria-label="t('trip.itin.city.outingsAt').replace('{hotel}', ch.hotelName)">
+          <div v-show="isOpen(ch.stopIndex)" :id="`tpc-panel-${ch.stopIndex}`" class="tpc-ch__panel" role="region" :aria-label="t('trip.itin.city.tipsAt').replace('{hotel}', ch.hotelName)">
             <MvpTripHotelNearbyTips :tips="tipsOf(ch)" :hotel-name="ch.hotelName" embedded mobile-single-row :max="8" />
           </div>
         </li>

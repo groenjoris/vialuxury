@@ -296,6 +296,7 @@ const en: Record<string, string> = {
   'trip.itin.city.heading': 'Things to do during your holiday',
   'trip.itin.city.intro': 'Our tips near each hotel.',
   'trip.itin.city.outingsAt': 'Fun things to do near {hotel}',
+  'trip.itin.city.tipsAt': 'Tips near {hotel}',
   'trip.reviews.moreInfo': 'More info',
   'trip.reviews.travelledIn': 'Holiday in {month}',
   'trip.reviews.prev': 'Previous review',
