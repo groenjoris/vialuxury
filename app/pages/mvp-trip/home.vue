@@ -147,7 +147,7 @@ AAN ZEE</span>
         <!-- Multi Hotel Trip: ankeiler naar de vakanties (Kasteel Rosendael, foto uit trip 003). -->
         <button type="button" class="home-category" :style="{ backgroundImage: `url('/images/vakanties/003/rosendael.jpg')` }" @click="goVakanties()">
           <span class="home-category__sticker">Nieuw</span>
-          <span class="home-category__title">ROADTRIP NEDERLAND
+          <span class="home-category__title">AUTOVAKANTIES
 MET 3 HOTELS</span>
           <span class="home-category__btn">Bekijk</span>
         </button>
