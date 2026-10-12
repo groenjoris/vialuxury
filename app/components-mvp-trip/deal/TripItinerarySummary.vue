@@ -51,8 +51,6 @@ const sightsCount = computed(() => countTripSights(props.days))
 
 <style scoped>
 .tisum { display: flex; flex-direction: column; gap: var(--space-md); }
-/* Statisch (MVP): geen knop-gedrag. */
-.tisum__link--static { display: inline; cursor: default; }
 /* Links uitgelijnd (geen inspringing), ruime regelafstand; regels mogen doorlopen op een tweede regel. */
 .tisum__list {
   margin: 0;
@@ -87,8 +85,12 @@ const sightsCount = computed(() => countTripSights(props.days))
   text-align: left;
   cursor: pointer;
 }
-.tisum__link:hover .tisum__text,
-.tisum__link:focus-visible .tisum__text { color: var(--color-primary); text-decoration: underline; text-underline-offset: 3px; }
+/* Hover/focus-effect alleen op de klikbare variant (knop); de statische MVP-regels
+   blijven gewone tekst. */
+button.tisum__link:hover .tisum__text,
+button.tisum__link:focus-visible .tisum__text { color: var(--color-primary); text-decoration: underline; text-underline-offset: 3px; }
+/* Statisch (MVP): zelfde opmaak, maar geen knop-gedrag en geen linkcursor. */
+.tisum__link--static { cursor: default; }
 .tisum__day { font-weight: 700; white-space: nowrap; }
 .tisum__text { color: var(--color-text-secondary); transition: color var(--transition-fast); }
 .tisum__full {
