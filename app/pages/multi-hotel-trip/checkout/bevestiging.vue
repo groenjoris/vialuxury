@@ -169,6 +169,8 @@ useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
           </span>
           <h1 class="cf__title">Je {{ trip.typeWord }} is geboekt, {{ firstName }}!</h1>
         </div>
+        <!-- Sticker (2026-10-12): deze pagina is een probeersel, nog geen voorstel. -->
+        <div class="cf__sticker" role="note">Dit is nog geen voorstel, probeersel met Claude</div>
         <span v-for="n in 14" :key="n" class="cf__confetti" :style="{ left: `${(n * 7.1) % 100}%`, animationDelay: `${(n % 5) * 0.18}s`, background: n % 3 === 0 ? 'var(--c-via-green)' : n % 3 === 1 ? 'var(--c-via-orange)' : '#fff' }" aria-hidden="true" />
       </section>
 
@@ -346,6 +348,18 @@ useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
 }
 .cf__hero::before { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0, 0, 0, 0.05) 0%, rgba(0, 0, 0, 0.6) 100%); }
 .cf__hero-inner { position: relative; padding-top: 48px; padding-bottom: 36px; max-width: 760px; }
+/* Sticker: groot, geel, scheef geplakt rechtsboven op de hoofdfoto. */
+.cf__sticker {
+  position: absolute; top: 28px; right: 32px; z-index: 3;
+  max-width: 400px; padding: 18px 26px;
+  transform: rotate(-6deg);
+  background: #ffe34d; color: #111; border: 3px solid #111; border-radius: 8px;
+  box-shadow: 4px 6px 0 rgba(0, 0, 0, 0.35);
+  font-size: 26px; font-weight: var(--w-black); line-height: 1.2; text-align: center;
+}
+@media (max-width: 800px) {
+  .cf__sticker { top: 12px; right: 12px; max-width: 250px; padding: 12px 16px; font-size: 17px; }
+}
 .cf__check {
   display: inline-flex; align-items: center; justify-content: center;
   width: 64px; height: 64px; margin-bottom: 16px; border-radius: 50%;
