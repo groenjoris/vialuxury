@@ -335,6 +335,26 @@
                       <svg class="menu-panel__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
                     </NuxtLink>
 
+                    <!-- MVP: Auto- & Fietsvakanties (zelfde gedrag als de hoofdlink: enterTrips → gefilterde zoekpagina). -->
+                    <NuxtLink
+                      to="/mvp-trip/search"
+                      class="menu-panel__row menu-panel__row--lg"
+                      @click="hamburgerDropdownOpen = false; onVerticalClick({ id: 'vakanties' }, $event)"
+                    >
+                      <span class="menu-panel__icon-tile">
+                        <!-- car glyph (Lucide) -->
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#141414" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2" /><circle cx="7" cy="17" r="2" /><path d="M9 17h6" /><circle cx="17" cy="17" r="2" /></svg>
+                      </span>
+                      <span class="menu-panel__row-text">
+                        <span class="menu-panel__row-title menu-panel__row-title--new">
+                          {{ t('header.holidays') }}
+                          <span class="menu-panel__badge">{{ t('header.new') }}</span>
+                        </span>
+                        <span class="menu-panel__row-sub">Meerdere hotels in één reis, met de auto of de fiets</span>
+                      </span>
+                      <svg class="menu-panel__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+                    </NuxtLink>
+
                     
                     <a
                       v-if="effectiveNavVariant !== '1'"
@@ -1001,7 +1021,7 @@
 </template>
 
 <script setup lang="ts">
-import { TRIP_NIGHT_KEYS, isNightKey, nightKeyFor, joinNightKeys, summarizeNightKeys } from '~/utils-mvp-trip/nights'
+import { isNightKey, nightKeyFor, joinNightKeys, summarizeNightKeys } from '~/utils-mvp-trip/nights'
 import { TRIPS_THEME_ID } from '~/utils-mvp-trip/destinationMatch'
 import { useMvpTripLocaleStore } from '~/stores-mvp-trip/locale'
 import { searchHotels } from '~/data/mock/search-hotels'
@@ -1102,8 +1122,9 @@ const effectiveNavVariant = computed(() => props.navVariant ?? mvpNavVariant.val
 const verticals = computed(() => {
   const all = [
     { id: 'hotels', label: t('header.hotels'), href: homeHref.value, external: false },
-    // Multi Hotel Trip: nieuwe hoofdlink "Vakanties" (met Nieuw-badge) tussen
-    // Hotels + more en Geef cadeaubon — opent de Vakanties-zoekpagina.
+    // MVP: hoofdlink "Auto- & Fietsvakanties" (met Nieuw-badge) tussen Hotels + more
+    // en Geef cadeaubon — leidt naar de gewone zoekpagina, gefilterd op het thema.
+    { id: 'vakanties', label: t('header.holidays'), href: '/mvp-trip/search', external: false, badge: t('header.new') },
     { id: 'restaurants', label: t('header.restaurants'), href: 'https://restaurants.vialuxury.com/', external: true },
     { id: 'cadeaubon', label: t('header.giftCard'), href: 'https://cadeaukaart.vialuxury.com/Product/Products', external: true },
   ]
@@ -1134,7 +1155,9 @@ const isDealPage = !!dealPageHotel
 /** Nights key for the duration picker ('1' … '8', zie utils-mvp-trip/nights.ts). */
 const dealNightsKey = dealPageDeal ? nightKeyFor(dealPageDeal.nights) : null
 const activeVertical = computed(() => {
-  if (_route.path.startsWith('/mvp-trip/vakanties')) return 'vakanties'
+  // MVP: geen eigen vakantiepagina — de hoofdlink is actief op de zoekpagina zodra
+  // het thema "Auto- en fietsvakanties" in het filter staat.
+  if (_route.path.startsWith('/mvp-trip/search') && selectedFilterTags.value.includes(TRIPS_THEME_ID)) return 'vakanties'
   if (_route.path.startsWith('/vakantieparken')) return 'vakantieparken'
   return 'hotels'
 })
@@ -2318,25 +2341,26 @@ function applyLiveCriteria() {
   triggerSearchUpdate()
 }
 
-/* ── Multi Hotel Trip: hoofdlink "Rondreizen" ──
- * Zet de zoekbalk in vakantiestand vóór de navigatie: thema "Rondreizen" in
- * het Waarheen-veld, reisduur 5/6/7/8 nachten voorgeselecteerd, en land op
- * de Rondreizen-zoekpagina (homepage-achtige hero + quick filters). */
+/* ── MVP: hoofdlink "Auto- & Fietsvakanties" ──
+ * Geen speciale vakantiepagina: de gewone zoekpagina, gefilterd op het thema
+ * "Auto- en fietsvakanties" (zelfde gedrag als de snelzoekknop op de homepage).
+ * Zet de zoekbalk schoon met alleen dat thema in het Waarheen-veld; geen
+ * reisduur voorgeselecteerd. */
 function enterTrips() {
   resetLocalDestinationState()
   setNoPrefPicked(false)
   localDestThemes.value = [TRIPS_THEME_ID]
   localDestSelectionOrder.value = [{ type: 'theme', key: TRIPS_THEME_ID }]
-  localNights.value = [...TRIP_NIGHT_KEYS]
+  localNights.value = []
   localFlexType.value = null
   clearDestinations()
   clearFilterTags()
   toggleFilterTag(TRIPS_THEME_ID)
-  setSelectedNights([...TRIP_NIGHT_KEYS])
+  setSelectedNights([])
   setFlexType(null)
   saveBarSnapshot()
   triggerSearchUpdate()
-  navigateTo('/mvp-trip/vakanties')
+  navigateTo('/mvp-trip/search')
 }
 function onVerticalClick(v: { id: string }, e?: Event) {
   if (v.id !== 'vakanties') return
