@@ -497,7 +497,7 @@ const arrangementIncludes = trip.value ? trip.value.includes : [
                 <svg class="rt__check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" /></svg>
                 Flexibel annuleren
               </p>
-              <p class="rt__optsub">tot 3 mei 23:59</p>
+              <p class="rt__optsub">Gratis annuleren tot 30 dagen voor aankomst</p>
               <p class="rt__optsub rt__optsub--flush rt__optsub--icon">
                 <svg class="rt__check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" /></svg>
                 Volledige terugbetaling van {{ trip ? 'vakantieprijs' : 'arrangementsprijs' }}

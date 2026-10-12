@@ -336,7 +336,7 @@ useHead({ title: trip.value ? 'Kies je opties — ViaLuxury' : 'Kies je kamer �
                 <!-- Zelfde vlakke stijl als de nonref-regel (geen vinkjes),
                      met een vaste afbreking na de datum -->
                 <p v-if="row.rateKey === 'flexible'" class="mrate__line mrate__line--block">
-                  Bij annuleren voor 17 mei 23:59<br />krijg je de volledige {{ trip ? 'vakantieprijs' : 'arrangementsprijs' }} terug
+                  Gratis annuleren tot 30 dagen voor aankomst:<br />je krijgt de volledige {{ trip ? 'vakantieprijs' : 'arrangementsprijs' }} terug
                 </p>
                 <p v-else class="mrate__line">Geen geld terug bij annuleren of wijzigen</p>
                 <p v-if="row.scarcity" class="mrate__line mrate__line--red">· {{ row.scarcity }}</p>
