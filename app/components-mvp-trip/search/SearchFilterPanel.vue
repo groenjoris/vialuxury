@@ -66,24 +66,22 @@
       </button>
       <Transition name="filter-expand">
         <div v-if="group.open" class="filter-group__body">
-          <template>
-            <label
-              v-for="item in group.items"
-              :key="item.value || item.label"
-              class="filter-item"
-              :class="{ 'filter-item--disabled': itemCount(item.value) === 0 && !isItemChecked(group.id, item.value) }"
-            >
-              <input
-                type="checkbox"
-                class="filter-item__checkbox"
-                :checked="isItemChecked(group.id, item.value)"
-                :disabled="!isItemWired(group.id) || (itemCount(item.value) === 0 && !isItemChecked(group.id, item.value))"
-                @change="onItemToggle(group.id, item.value)"
-              />
-              <span class="filter-item__label">{{ item.label }}</span>
-              <span v-if="counts" class="filter-item__count">({{ itemCount(item.value) }})</span>
-            </label>
-          </template>
+          <label
+            v-for="item in group.items"
+            :key="item.value || item.label"
+            class="filter-item"
+            :class="{ 'filter-item--disabled': itemCount(item.value) === 0 && !isItemChecked(group.id, item.value) }"
+          >
+            <input
+              type="checkbox"
+              class="filter-item__checkbox"
+              :checked="isItemChecked(group.id, item.value)"
+              :disabled="!isItemWired(group.id) || (itemCount(item.value) === 0 && !isItemChecked(group.id, item.value))"
+              @change="onItemToggle(group.id, item.value)"
+            />
+            <span class="filter-item__label">{{ item.label }}</span>
+            <span v-if="counts" class="filter-item__count">({{ itemCount(item.value) }})</span>
+          </label>
         </div>
       </Transition>
       </div>
@@ -191,9 +189,6 @@ const {
   selectedFilterTags, toggleFilterTag,
 } = useMvpTripSearchState()
 
-/* Reisduur in twee groepen (zie utils-mvp-trip/nights.ts). */
-/** Som van de nacht-tellingen: de nachten sluiten elkaar uit, dus dit is het
- *  aantal deals dat de groep zou opleveren. */
 
 function isItemWired(groupId: string): boolean {
   return groupId === 'travelDuration'
