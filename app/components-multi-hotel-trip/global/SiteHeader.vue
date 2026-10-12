@@ -38,7 +38,7 @@
             class="site-header__logo-img site-header__logo-img--horizontal"
           />
           <!-- Prototype-sticker (subtiel) onder het logo. -->
-          <span class="site-header__proto" aria-hidden="true">R1</span>
+          <span class="site-header__proto" aria-hidden="true">MHR</span>
         </NuxtLink>
 
         <!-- Opt-in pay-off under the logo (grid row 2, col 1 on desktop;

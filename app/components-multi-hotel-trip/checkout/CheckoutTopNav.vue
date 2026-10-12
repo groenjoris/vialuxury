@@ -10,7 +10,7 @@
             src="/images/logos/logo-vialuxury-horizontal-black.svg"
             alt="ViaLuxury"
           />
-          <span class="nav__proto" aria-hidden="true">R1</span>
+          <span class="nav__proto" aria-hidden="true">MHR</span>
         </NuxtLink>
       </div>
 

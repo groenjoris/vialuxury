@@ -13,7 +13,7 @@ function goBack() {
     <header class="mnav">
       <NuxtLink to="/multi-hotel-trip/home" aria-label="Naar de homepage">
         <img class="mnav__logo" src="/images/logo-vialuxury-horizontal.svg" alt="ViaLuxury" />
-        <span class="mnav__proto" aria-hidden="true">R1</span>
+        <span class="mnav__proto" aria-hidden="true">MHR</span>
       </NuxtLink>
       <div class="mnav__right">
         <span class="mnav__safe">
