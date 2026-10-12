@@ -37,24 +37,39 @@ export function nightKeyLabel(key: string, nightWord: string, nightsWord: string
 
 const keyNum = (k: string) => (k === PLUS_KEY ? PLUS_FROM : Number(k))
 
-/** "2, 3 of 5+" — gesorteerde keys met komma's en het "of" van de taal ervoor. */
-export function joinNightKeys(keys: readonly string[], orWord: string): string {
-  const sorted = [...keys].sort((a, b) => keyNum(a) - keyNum(b))
-  if (sorted.length <= 1) return sorted[0] ?? ''
-  return `${sorted.slice(0, -1).join(', ')} ${orWord} ${sorted[sorted.length - 1]}`
+/**
+ * Zo kort mogelijk (voor in het zoekveld): opeenvolgende nachten als bereik
+ * ("1–3"), een reeks die doorloopt tot "5+" als "3+", losse groepen met komma's
+ * ("1, 3–4"). Eén key → die key ("3", "5+").
+ */
+export function joinNightKeys(keys: readonly string[]): string {
+  const nums = [...new Set(keys.map(keyNum))].sort((a, b) => a - b)
+  const groups: string[] = []
+  let i = 0
+  while (i < nums.length) {
+    let j = i
+    while (j + 1 < nums.length && nums[j + 1] === nums[j]! + 1) j++
+    const from = nums[i]!
+    const to = nums[j]!
+    if (to === PLUS_FROM) groups.push(`${from}+`)
+    else if (from === to) groups.push(String(from))
+    else groups.push(`${from}\u2013${to}`)
+    i = j + 1
+  }
+  return groups.join(', ')
 }
 
 /**
  * Korte samenvatting van een selectie voor veldwaarden en pills: alleen "5+" →
- * "5 nachten of meer"; één nacht → "3 nachten"; anders de losse nachten
- * ("2, 4 of 5+ nachten"). `t` levert de vertalingen.
+ * "5 nachten of meer"; één nacht → "3 nachten"; anders zo kort mogelijk
+ * ("1–3 nachten", "3+ nachten", "1, 3–4 nachten"). `t` levert de vertalingen.
  */
 export function summarizeNightKeys(
   keys: readonly string[],
   t: (key: string) => string,
-  words: { night: string; nights: string; or: string },
+  words: { night: string; nights: string; or?: string },
 ): string {
   if (keys.length === 0) return ''
   if (keys.length === 1) return keys[0] === PLUS_KEY ? t('header.duration.5plusLong') : nightKeyLabel(keys[0]!, words.night, words.nights)
-  return `${joinNightKeys(keys, words.or)} ${words.nights}`
+  return `${joinNightKeys(keys)} ${words.nights}`
 }
