@@ -28,11 +28,13 @@
               <li v-for="k in GTK_KEYS" :key="k">{{ t(k) }}</li>
             </ul>
           </div>
-          <!-- MVP: het uitgebreide reisschema is één tekstblok (CMS-tekstveld, alleen titel en linkje als
-               opmaak): per dag een alinea als doorlopende tekst; de dagen zijn niet klikbaar. -->
-          <div class="tipn__block">
-            <p v-for="day in days" :key="day.day" class="tipn__text">{{ day.label }} – {{ (day.heading ?? summaryLineOfDay(day, t)).replace(/[.\s]+$/, '') }}. {{ textOfDay(day) }}</p>
-          </div>
+          <section v-for="day in days" :key="day.day" :id="`itin-panel-dag-${day.day}`" class="tipn__day" :class="{ 'tipn__day--focus': focusDay === day.day }">
+            <h4 class="tipn__dayhead">
+              <span class="tipn__daylabel">{{ day.label }}</span> · {{ day.heading ?? summaryLineOfDay(day, t) }}
+            </h4>
+            <p v-if="day.date" class="tipn__date">{{ day.date }}</p>
+            <p class="tipn__text">{{ textOfDay(day) }}</p>
+          </section>
         </div>
       </aside>
     </Transition>
@@ -125,7 +127,6 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 .tipn__gtk-list { margin: 0; padding-left: 18px; list-style: disc outside; font-size: 14px; line-height: 1.5; color: var(--color-text-secondary); }
 .tipn__gtk-list li { display: list-item; }
 .tipn__gtk-list li + li { margin-top: 4px; }
-.tipn__block { display: flex; flex-direction: column; gap: 14px; }
 .tipn__day { padding: var(--space-md) 0; border-bottom: 1px solid var(--color-border-light); }
 .tipn__day:last-child { border-bottom: 0; }
 /* De aangeklikte dag licht even op. */

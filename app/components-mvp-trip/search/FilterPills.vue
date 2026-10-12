@@ -29,7 +29,6 @@
 import { computed } from 'vue'
 import { getFilterTag } from '~/utils-mvp-trip/filterTags'
 import { DESTINATION_LABEL_BY_ID } from '~/utils-mvp-trip/destinationMatch'
-import { NIGHT_GROUPS, nightGroupState, toggleNightGroup } from '~/utils-mvp-trip/nights'
 
 /**
  * FilterPills — single row of removable filter chips for the "soft" filters
@@ -127,23 +126,11 @@ const pills = computed<Pill[]>(() => {
       onRemove: () => toggleFilterTag(id),
     })
   }
-  // Nights — een volledige groep als één pil ("Lange vakantie"), de
-  // overige nachten los.
-  const covered = new Set<string>()
-  for (const g of NIGHT_GROUPS) {
-    if (nightGroupState(selectedNights.value, g) !== 'all') continue
-    g.keys.forEach(k => covered.add(k))
-    out.push({
-      key: `nights-${g.id}`,
-      label: t(g.labelKey),
-      onRemove: () => setSelectedNights(toggleNightGroup(selectedNights.value, g)),
-    })
-  }
+  // Nights — één pil per geselecteerde reisduur (als in het Redesign).
   for (const n of selectedNights.value) {
-    if (covered.has(n)) continue
     out.push({
       key: `night-${n}`,
-      label: `${n} ${n === '1' ? 'nacht' : 'nachten'}`,
+      label: n === '5+' ? '5+ nachten' : `${n} ${n === '1' ? 'nacht' : 'nachten'}`,
       onRemove: () => toggleNight(n),
     })
   }

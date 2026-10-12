@@ -251,9 +251,8 @@
         <section v-if="itinSummary" id="reisschema" class="container deal-page__hybrid-summary deal-page__hybrid-summary--mobile deal-page__anchor">
           <div class="deal-page__summary-panel">
             <h2 class="section-title deal-page__summary-title"><svg class="deal-page__summary-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-miterlimit="10" stroke-linecap="square" aria-hidden="true"><path d="M15 5h7M15 15h7M15 9h2M15 19h2" /><circle cx="6.5" cy="17.5" r="3.5" /><circle cx="6.5" cy="6.5" r="3.5" /></svg>{{ t('trip.itin.hybrid.summaryHeading') }}</h2>
-            <!-- MVP: samenvatting als vrije tekst (CMS-tekstveld) met een link naar het uitgebreide schema; dagen niet klikbaar. -->
-            <p class="deal-page__summary-text">{{ tripSummaryText }}</p>
-            <button type="button" class="deal-page__summary-link" @click="openItinPanelAt(null)">{{ t('trip.itin.fullLink') }}</button>
+            <!-- MVP: dagsamenvatting als voorheen, maar de dagen zijn niet klikbaar (alleen de link naar het uitgebreide schema). -->
+            <TripItinerarySummary :days="tripDaysView" :hotels="tripHotelLinks" full-link static :show-stats="summaryStats" :lines="summaryLines" @open-full="openItinPanelAt(null)" />
           </div>
         </section>
 
@@ -519,9 +518,8 @@
             <section v-if="itinSummary" id="reisschema" class="deal-page__hybrid-summary deal-page__hybrid-summary--intro deal-page__desc-block deal-page__anchor">
               <div class="deal-page__summary-panel">
                 <h2 class="section-title deal-page__summary-title"><svg class="deal-page__summary-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-miterlimit="10" stroke-linecap="square" aria-hidden="true"><path d="M15 5h7M15 15h7M15 9h2M15 19h2" /><circle cx="6.5" cy="17.5" r="3.5" /><circle cx="6.5" cy="6.5" r="3.5" /></svg>{{ t('trip.itin.hybrid.summaryHeading') }}</h2>
-                <!-- MVP: samenvatting als vrije tekst (CMS-tekstveld) met een link naar het uitgebreide schema; dagen niet klikbaar. -->
-                <p class="deal-page__summary-text">{{ tripSummaryText }}</p>
-                <button type="button" class="deal-page__summary-link" @click="openItinPanelAt(null)">{{ t('trip.itin.fullLink') }}</button>
+                <!-- MVP: dagsamenvatting als voorheen, maar de dagen zijn niet klikbaar (alleen de link naar het uitgebreide schema). -->
+                <TripItinerarySummary :days="tripDaysView" :hotels="tripHotelLinks" full-link static :show-stats="summaryStats" :lines="summaryLines" @open-full="openItinPanelAt(null)" />
               </div>
             </section>
           </section>
@@ -1821,13 +1819,6 @@ function tripDurationShort(minutes: number): string {
 }
 /** MVP: de minikaart is een handmatig gemaakte PNG per route (public/images/vakanties/maps). */
 const tripMapPng = computed(() => `/images/vakanties/maps/${trip?.id ?? ''}-pdp.png`)
-/** MVP: het samengevatte voorbeeld reisschema is vrije tekst (CMS-tekstveld): de eigen tekst van de
- *  reis (summaryText) of anders de dagregels als doorlopende tekst. */
-const tripSummaryText = computed(() => {
-  const own = tripPdp?.content?.summaryText
-  if (own) return localized(own)
-  return tripDaysView.value.map(d => `${d.label}: ${d.summary ?? d.heading ?? ''}`.replace(/\.?$/, '.')).join(' ')
-})
 /** Mobiel, titel boven de routekaart: "Autovakantie met 3 hotels" / "Fietsvakantie met bagagetransfer"
  *  — gesplitst in kop + laatste woord, zodat het Nieuw-stickertje met het laatste woord meegaat. */
 const tripMapTitle = computed(() => {
@@ -2343,9 +2334,7 @@ useHead({ title: `${currentDeal.value?.title ? localized(currentDeal.value.title
 
 const breadcrumbs = computed(() => [
   { label: t('search.home'), href: '/' },
-  isTrip
-    ? { label: t('header.holidays'), href: '/mvp-trip/vakanties' }
-    : { label: t('search.arrangements'), href: '/mvp-trip/search' },
+  { label: t('search.arrangements'), href: '/mvp-trip/search' }, // MVP: als het Redesign
   { label: currentDeal.value ? localized(currentDeal.value.title) : hotel.value.name },
 ])
 
@@ -2477,9 +2466,6 @@ onMounted(() => {
    icons (no labels) right-aligned between the breadcrumb and the title. *//* Vakantie: "Autovakantie met 3 hotels" / "Fietsvakantie met bagagetransfer" (één regel) met het
    auto-/fietsicoon — mobiel boven de routekaart, desktop in de kop onder de reisnaam —
    van de dealcard en het Nieuw-stickertje uit de navigatie (.verticals__badge) rechtsboven de tekst. */
-/* MVP: samengevat reisschema als vrije tekst + link. */
-.deal-page__summary-text { margin: 0 0 12px; font-size: 15px; line-height: 1.6; color: var(--color-text-secondary); }
-.deal-page__summary-link { padding: 0; background: none; border: 0; cursor: pointer; font-family: inherit; font-size: 15px; font-weight: 600; color: var(--color-primary); text-decoration: underline; text-underline-offset: 2px; }
 .deal-page__trip-brand {
   display: flex;
   align-items: center;

@@ -118,65 +118,31 @@
             </span>
             <span class="dur-check__label">{{ t('header.duration.noMatter') }}</span>
           </label>
-          <!-- Multi Hotel Trip: reisduur in twee categorieën — "Kort verblijf"
-               (1 t/m 4 nachten) en "Vakantie" (5 t/m 8 nachten), zonder bereik-toelichting. De categorie-
-               kop vinkt in één keer alle nachten eronder aan; de losse nachten
-               staan als verticale lijst ingesprongen eronder. -->
-          <div v-for="group in NIGHT_GROUPS" :key="group.id" class="dur-group">
-            <label
-              class="dur-check dur-check--group"
-              :class="{
-                'dur-check--selected': groupState(group) === 'all',
-                'dur-check--partial': groupState(group) === 'some',
-              }"
-            >
-              <input
-                type="checkbox"
-                class="dur-check__input"
-                :checked="groupState(group) === 'all'"
-                @change="toggleGroup(group)"
-              />
-              <span class="dur-check__box" aria-hidden="true">
-                <svg
-                  v-if="groupState(group) === 'all'"
-                  width="12" height="12" viewBox="0 0 24 24"
-                  fill="none" stroke="currentColor" stroke-width="3"
-                  stroke-linecap="round" stroke-linejoin="round"
-                >
-                  <polyline points="5 12 10 17 19 7" />
-                </svg>
-                <span v-else-if="groupState(group) === 'some'" class="dur-check__dash"></span>
-              </span>
-              <span class="dur-check__label">
-                {{ t(group.labelKey) }}
-              </span>
-            </label>
-            <!-- Losse nachten: verticale lijst, ingesprongen onder de categorie. -->
-            <label
-              v-for="key in group.keys"
-              :key="key"
-              class="dur-check dur-check--night"
-              :class="{ 'dur-check--selected': nights.includes(key) }"
-            >
-              <input
-                type="checkbox"
-                class="dur-check__input"
-                :checked="nights.includes(key)"
-                @change="$emit('toggle-night', key)"
-              />
-              <span class="dur-check__box" aria-hidden="true">
-                <svg
-                  v-if="nights.includes(key)"
-                  width="12" height="12" viewBox="0 0 24 24"
-                  fill="none" stroke="currentColor" stroke-width="3"
-                  stroke-linecap="round" stroke-linejoin="round"
-                >
-                  <polyline points="5 12 10 17 19 7" />
-                </svg>
-              </span>
-              <span class="dur-check__label">{{ nightKeyLabel(key, t('common.night'), t('common.nights')) }}</span>
-            </label>
-          </div>
+          <!-- MVP: platte lijst als in het Redesign — 1, 2, 3, 4 nachten en 5+ (5 nachten of meer). -->
+          <label
+            v-for="opt in nightOptions"
+            :key="opt.value"
+            class="dur-check"
+            :class="{ 'dur-check--selected': nights.includes(opt.value) }"
+          >
+            <input
+              type="checkbox"
+              class="dur-check__input"
+              :checked="nights.includes(opt.value)"
+              @change="$emit('toggle-night', opt.value)"
+            />
+            <span class="dur-check__box" aria-hidden="true">
+              <svg
+                v-if="nights.includes(opt.value)"
+                width="12" height="12" viewBox="0 0 24 24"
+                fill="none" stroke="currentColor" stroke-width="3"
+                stroke-linecap="round" stroke-linejoin="round"
+              >
+                <polyline points="5 12 10 17 19 7" />
+              </svg>
+            </span>
+            <span class="dur-check__label">{{ opt.label }}</span>
+          </label>
         </div>
       </section>
     </div>
@@ -196,7 +162,6 @@
 </template>
 
 <script setup lang="ts">
-import { NIGHT_GROUPS, nightGroupState, nightKeyLabel, type NightGroup } from '~/utils-mvp-trip/nights'
 
 const { t } = useMvpTripI18n()
 
@@ -295,18 +260,18 @@ function handleSelectDate(date: string) {
   emit('update:selectedDate', props.selectedDate === date ? null : date)
 }
 
-const groupState = (group: NightGroup) => nightGroupState(props.nights, group)
 /** Groepskop: alles aan → alles uit; anders alle ontbrekende nachten aan.
  *  Loopt via losse `toggle-night`-events zodat de ouders (zoekbalk, mobiele
  *  modal, hotelpagina) hun bestaande toggle-logica houden. */
-function toggleGroup(group: NightGroup) {
-  const all = groupState(group) === 'all'
-  for (const key of group.keys) {
-    const on = props.nights.includes(key)
-    if (all ? on : !on) emit('toggle-night', key)
-  }
-}
 
+/* MVP: reisduur-opties precies als in het Redesign (R1). */
+const nightOptions = computed(() => [
+  { label: t('header.duration.1night'), value: '1' },
+  { label: t('header.duration.2nights'), value: '2' },
+  { label: t('header.duration.3nights'), value: '3' },
+  { label: t('header.duration.4nights'), value: '4' },
+  { label: t('header.duration.5plusLong'), value: '5+' },
+])
 const hasSelection = computed(() => !!props.selectedDate || props.nights.length > 0 || flexible.value)
 </script>
 

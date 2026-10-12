@@ -66,46 +66,7 @@
       </button>
       <Transition name="filter-expand">
         <div v-if="group.open" class="filter-group__body">
-          <!-- Multi Hotel Trip: reisduur in twee categorieën (Kort verblijf 1–4 /
-               Vakantie 5–8; geen bereik-toelichting). De categorie vinkt alle nachten eronder in één
-               keer aan; de losse nachten staan ingesprongen eronder. -->
-          <template v-if="group.id === 'travelDuration'">
-            <div v-for="ng in NIGHT_GROUPS" :key="ng.id" class="filter-nights">
-              <label
-                class="filter-item"
-                :class="{ 'filter-item--disabled': groupCount(ng) === 0 && groupState(ng) === 'none' }"
-              >
-                <input
-                  type="checkbox"
-                  class="filter-item__checkbox"
-                  :class="{ 'filter-item__checkbox--partial': groupState(ng) === 'some' }"
-                  :checked="groupState(ng) === 'all'"
-                  :disabled="groupCount(ng) === 0 && groupState(ng) === 'none'"
-                  @change="onNightGroupToggle(ng)"
-                />
-                <span class="filter-item__label filter-item__label--group">{{ t(ng.labelKey) }}</span>
-                <span v-if="counts" class="filter-item__count">({{ groupCount(ng) }})</span>
-              </label>
-              <!-- Losse nachten: verticale lijst, ingesprongen onder de categorie. -->
-              <label
-                v-for="key in ng.keys"
-                :key="key"
-                class="filter-item filter-item--night"
-                :class="{ 'filter-item--disabled': itemCount(key) === 0 && !selectedNights.includes(key) }"
-              >
-                <input
-                  type="checkbox"
-                  class="filter-item__checkbox"
-                  :checked="selectedNights.includes(key)"
-                  :disabled="itemCount(key) === 0 && !selectedNights.includes(key)"
-                  @change="toggleNight(key)"
-                />
-                <span class="filter-item__label">{{ key === '1' ? t('filter.1day') : `${key} ${t('common.nights')}` }}</span>
-                <span v-if="counts" class="filter-item__count">({{ itemCount(key) }})</span>
-              </label>
-            </div>
-          </template>
-          <template v-else>
+          <template>
             <label
               v-for="item in group.items"
               :key="item.value || item.label"
@@ -132,7 +93,6 @@
 
 <script setup lang="ts">
 import { formatPrice } from '~/utils-mvp-trip/formatPrice'
-import { NIGHT_GROUPS, nightGroupState, toggleNightGroup, type NightGroup } from '~/utils-mvp-trip/nights'
 
 const { t } = useMvpTripI18n()
 
@@ -232,13 +192,8 @@ const {
 } = useMvpTripSearchState()
 
 /* Reisduur in twee groepen (zie utils-mvp-trip/nights.ts). */
-const groupState = (ng: NightGroup) => nightGroupState(selectedNights.value, ng)
 /** Som van de nacht-tellingen: de nachten sluiten elkaar uit, dus dit is het
  *  aantal deals dat de groep zou opleveren. */
-const groupCount = (ng: NightGroup) => ng.keys.reduce((sum, k) => sum + itemCount(k), 0)
-function onNightGroupToggle(ng: NightGroup) {
-  setSelectedNights(toggleNightGroup(selectedNights.value, ng))
-}
 
 function isItemWired(groupId: string): boolean {
   return groupId === 'travelDuration'
@@ -281,8 +236,14 @@ const filterGroups = computed<FilterGroup[]>(() => [
     id: 'travelDuration',
     title: t('filter.travelDuration'),
     open: openState.travelDuration,
-    // Wordt als twee groepen (kort / lang) met nacht-chips gerenderd, zie template.
-    items: [],
+    // MVP: platte lijst als in het Redesign (R1).
+    items: [
+      { label: t('filter.1day'), value: '1' },
+      { label: t('filter.2days'), value: '2' },
+      { label: t('filter.3days'), value: '3' },
+      { label: t('filter.4days'), value: '4' },
+      { label: t('filter.5plusDays'), value: '5+' },
+    ],
   },
   // Budget / Totaalprijs slider is rendered inline before the
   // 'specials' group via a `v-if` in the template, so the visible

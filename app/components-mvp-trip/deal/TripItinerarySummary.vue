@@ -9,7 +9,11 @@
     <TripItineraryStats v-if="showStats && days.length" class="tisum__stats" :days="days.length" :hotels="hotels.length" :sights="sightsCount" />
     <ul v-if="days.length" class="tisum__list">
       <li v-for="day in days" :key="`sum-${day.day}`" class="tisum__item">
-        <button type="button" class="tisum__link" @click="$emit('select', day.day)">
+        <!-- MVP: `static` — zelfde opmaak, maar de dagen zijn niet klikbaar. -->
+        <span v-if="isStatic" class="tisum__link tisum__link--static">
+          <span class="tisum__day">{{ day.label }}</span><span class="tisum__text">{{ summaryLineOfDay(day, t) }}</span>
+        </span>
+        <button v-else type="button" class="tisum__link" @click="$emit('select', day.day)">
           <span class="tisum__day">{{ day.label }}</span><span class="tisum__text">{{ summaryLineOfDay(day, t) }}</span>
         </button>
       </li>
@@ -34,7 +38,10 @@ const props = withDefaults(defineProps<{
   fullLink?: boolean
   /** Subtiele stippellijntjes tussen de dagen (alleen onder de beschrijvingen, niet onder "Dag x"). */
   lines?: boolean
-}>(), { hotels: () => [], showStats: true, fullLink: false, lines: false })
+  /** MVP: dagen niet klikbaar (geen select-event). */
+  static?: boolean
+}>(), { hotels: () => [], showStats: true, fullLink: false, lines: false, static: false })
+const isStatic = computed(() => props.static)
 
 defineEmits<{ select: [day: number]; 'open-full': [] }>()
 
@@ -44,6 +51,8 @@ const sightsCount = computed(() => countTripSights(props.days))
 
 <style scoped>
 .tisum { display: flex; flex-direction: column; gap: var(--space-md); }
+/* Statisch (MVP): geen knop-gedrag. */
+.tisum__link--static { display: inline; cursor: default; }
 /* Links uitgelijnd (geen inspringing), ruime regelafstand; regels mogen doorlopen op een tweede regel. */
 .tisum__list {
   margin: 0;

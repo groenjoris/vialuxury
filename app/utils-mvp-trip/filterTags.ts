@@ -115,14 +115,6 @@ export const FILTER_TAGS: FilterTag[] = [
     matches: (_d, h) => !!h.trip,
   },
   {
-    id: 'autovakantie',
-    label: 'Autovakantie',
-    emoji: '🚗',
-    icon: '/images/icons/car.png',
-    category: 'thema',
-    matches: themeMatch(/autovakantie/i),
-  },
-  {
     id: 'fiets',
     label: 'Fietsvakantie',
     emoji: '🚴',

@@ -1603,7 +1603,7 @@ const selectedHotels = sharedSelectedHotels
 
 /** The popup expects an array of theme IDs that are currently active.
  *  We filter the global filter-tag list down to the Thema category. */
-const themeIds = ['aan-zee', 'natuur', 'romantisch', 'culinair', 'rondreizen', 'autovakantie', 'fiets', 'steden', 'kasteel']
+const themeIds = ['aan-zee', 'natuur', 'romantisch', 'culinair', 'rondreizen', 'fiets', 'steden', 'kasteel']
 const selectedThemes = computed(() =>
   selectedFilterTags.value.filter(id => themeIds.includes(id)),
 )

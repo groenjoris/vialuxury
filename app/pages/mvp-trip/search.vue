@@ -680,9 +680,7 @@ watch(() => [
 
 const breadcrumbs = computed(() => [
   { label: t('search.home'), href: '/' },
-  isTripMode.value
-    ? { label: t('search.holidaysTitle'), href: '/mvp-trip/vakanties' }
-    : { label: t('search.arrangements'), href: '/mvp-trip/search' },
+  { label: t('search.arrangements'), href: '/mvp-trip/search' },
 ])
 
 const totalDeals = computed(() => {

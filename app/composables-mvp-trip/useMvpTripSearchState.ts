@@ -144,7 +144,8 @@ export function useMvpTripSearchState() {
         const v = localStorage.getItem(SS_NIGHTS)
         if (v) {
           const parsed = JSON.parse(v)
-          if (Array.isArray(parsed)) selectedNights.value = parsed
+          // MVP: alleen geldige reisduur-keys (1–4, 5+) terugzetten; oude 5/6/7/8-keys vervallen.
+          if (Array.isArray(parsed)) selectedNights.value = parsed.filter((k: unknown): k is string => typeof k === 'string' && isNightKey(k))
         }
       }
       if (!selectedFlexType.value) {

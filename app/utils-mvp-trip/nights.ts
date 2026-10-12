@@ -1,78 +1,20 @@
 /**
- * Multi Hotel Trip — reisduur-opties (aantal nachten) voor alle pickers.
- *
- * R1 kende '1'…'4' + '5+'. Vakanties (twee of drie hotels achter elkaar)
- * duren langer, dus de reisduur is uitgebreid naar losse categorieën
- * 5, 6, 7 en 8 nachten — overal (zoekbalk, mobiele modal, filterpaneel,
- * pills, kaart, hotelpagina). '8' dekt ook langere verblijven.
+ * MVP — reisduur-opties (aantal nachten) voor alle pickers, precies als in het
+ * Redesign-prototype (R1): 1, 2, 3, 4 nachten en "5+" (5 nachten of meer), als
+ * platte lijst zonder categorieën. De vakantie-reisduren 5/6/7/8 uit MHT komen later.
  */
-export const NIGHT_KEYS = ['1', '2', '3', '4', '5', '6', '7', '8'] as const
+export const NIGHT_KEYS = ['1', '2', '3', '4', '5+'] as const
 export type NightKey = (typeof NIGHT_KEYS)[number]
 
-/** De reisduren die bij "Vakanties" horen — automatisch voorgeselecteerd
- *  wanneer de gebruiker via de hoofdnavigatie op Vakanties klikt. */
-export const TRIP_NIGHT_KEYS: NightKey[] = ['5', '6', '7', '8']
+/** De reisduur die bij de vakanties hoort (6 nachten → "5+"). */
+export const TRIP_NIGHT_KEYS: NightKey[] = ['5+']
 
-/**
- * Reisduur in twee groepen i.p.v. één lange lijst van acht: "Kort verblijf"
- * (1 t/m 4 nachten) en "Vakantie" (5 t/m 8 nachten). Alle pickers
- * (zoekbalk, filterpaneel, mobiele modal, hotelpagina) tonen de groep als
- * kop (zonder bereik-toelichting) met de losse nachten als verticale lijst
- * eronder; de opgeslagen state blijft de lijst night-keys.
- */
-export type NightGroupId = 'short' | 'long'
-export interface NightGroup {
-  id: NightGroupId
-  keys: NightKey[]
-  /** i18n-key voor de groepsnaam. */
-  labelKey: string
-}
-// MVP: de vakantie-reisduren 5/6/7/8 komen later; de pickers tonen alleen 1 t/m 4 nachten.
-export const NIGHT_GROUPS: NightGroup[] = [
-  { id: 'short', keys: ['1', '2', '3', '4'], labelKey: 'nights.group.short' },
-]
+const PLUS_KEY = '5+'
+const PLUS_FROM = 5
 
-/** Hoeveel van de groep is geselecteerd: niets, een deel of alles. */
-export function nightGroupState(selected: readonly string[], group: NightGroup): 'none' | 'some' | 'all' {
-  const n = group.keys.filter(k => selected.includes(k)).length
-  if (n === 0) return 'none'
-  return n === group.keys.length ? 'all' : 'some'
-}
-
-/** Groepstoggle: alles aan → groep leeg; anders de hele groep aan. Geeft de
- *  nieuwe selectie terug (andere groep blijft ongemoeid). */
-export function toggleNightGroup(selected: readonly string[], group: NightGroup): string[] {
-  const rest = selected.filter(k => !(group.keys as string[]).includes(k))
-  return nightGroupState(selected, group) === 'all' ? rest : [...rest, ...group.keys]
-}
-
-const MAX_NIGHT_KEY = 8
-
-/**
- * Korte samenvatting van een selectie voor veldwaarden en pills — alleen
- * aantallen nachten, in de kortst mogelijke vorm (geen groepsnamen): een
- * aaneengesloten reeks tot en met 8 → "5 of meer nachten"; een reeks →
- * "2-5 nachten"; één nacht → "3 nachten"; anders de losse nachten
- * ("2, 4 of 6 nachten"). `t` levert de vertalingen.
- */
-export function summarizeNightKeys(
-  keys: readonly string[],
-  t: (key: string) => string,
-  words: { night: string; nights: string; or: string },
-): string {
-  if (keys.length === 0) return ''
-  const nums = [...new Set(keys.map(Number).filter(n => Number.isFinite(n)))].sort((a, b) => a - b)
-  const first = nums[0]!, last = nums[nums.length - 1]!
-  const contiguous = nums.every((n, i) => i === 0 || n === nums[i - 1]! + 1)
-  if (contiguous && last >= MAX_NIGHT_KEY) return t('nights.orMore').replace('{n}', String(first))
-  if (nums.length === 1) return nightKeyLabel(keys[0]!, words.night, words.nights)
-  if (contiguous) return t('nights.range').replace('{a}', String(first)).replace('{b}', String(last))
-  return `${joinNightKeys(keys, words.or)} ${words.nights}`
-}
-
-/** Reisduur-key voor een deal: 1…7 exact, 8 = acht nachten of langer. */
+/** Reisduur-key voor een deal: 1…4 exact, 5 nachten of meer = "5+". */
 export function nightKeyFor(nights: number): string {
-  if (nights >= MAX_NIGHT_KEY) return String(MAX_NIGHT_KEY)
+  if (nights >= PLUS_FROM) return PLUS_KEY
   return String(Math.max(1, nights))
 }
 
@@ -87,15 +29,32 @@ export function isNightKey(value: string): value is NightKey {
   return (NIGHT_KEYS as readonly string[]).includes(value)
 }
 
-/** "1 nacht" / "6 nachten" — locale-agnostisch via de meegegeven woorden. */
+/** "1 nacht" / "3 nachten" / "5+ nachten" — locale-agnostisch via de meegegeven woorden. */
 export function nightKeyLabel(key: string, nightWord: string, nightsWord: string): string {
+  if (key === PLUS_KEY) return `${PLUS_KEY} ${nightsWord}`
   return key === '1' ? `1 ${nightWord}` : `${key} ${nightsWord}`
 }
 
-/** "5, 6, 7 of 8" — sorted keys joined with commas and the locale's "or"
- *  before the last one (single key returns as-is). */
+const keyNum = (k: string) => (k === PLUS_KEY ? PLUS_FROM : Number(k))
+
+/** "2, 3 of 5+" — gesorteerde keys met komma's en het "of" van de taal ervoor. */
 export function joinNightKeys(keys: readonly string[], orWord: string): string {
-  const sorted = [...keys].sort((a, b) => Number(a) - Number(b))
+  const sorted = [...keys].sort((a, b) => keyNum(a) - keyNum(b))
   if (sorted.length <= 1) return sorted[0] ?? ''
   return `${sorted.slice(0, -1).join(', ')} ${orWord} ${sorted[sorted.length - 1]}`
+}
+
+/**
+ * Korte samenvatting van een selectie voor veldwaarden en pills: alleen "5+" →
+ * "5 nachten of meer"; één nacht → "3 nachten"; anders de losse nachten
+ * ("2, 4 of 5+ nachten"). `t` levert de vertalingen.
+ */
+export function summarizeNightKeys(
+  keys: readonly string[],
+  t: (key: string) => string,
+  words: { night: string; nights: string; or: string },
+): string {
+  if (keys.length === 0) return ''
+  if (keys.length === 1) return keys[0] === PLUS_KEY ? t('header.duration.5plusLong') : nightKeyLabel(keys[0]!, words.night, words.nights)
+  return `${joinNightKeys(keys, words.or)} ${words.nights}`
 }
