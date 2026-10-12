@@ -56,6 +56,11 @@
             class="start-btn"
             @click="startMultiHotelTripConfirmation"
           >Bevestigingspagina</button>
+          <button
+            type="button"
+            class="start-btn"
+            @click="startMvpTrip"
+          >MVP 12-11-2026</button>
         </div>
       </section>
 
@@ -337,6 +342,23 @@ function startMultiHotelTripFromHome() {
   resetAllMultiHotelTrip()
   setHeroPhotoIndexMht(0)
   navigateTo('/multi-hotel-trip/home')
+}
+
+/** MVP 12-11-2026 — losstaande kopie van MHT, teruggeschaald naar de MVP-definitie. */
+function startMvpTrip() {
+  const { clear } = useMvpTripPartner()
+  const { clearArrivalDate, setSearchGroup, clearDuration, setFlexibility, resetBudget, clearFilterTags, clearDestinations } = useMvpTripSearchState()
+  const { setHeroPhotoIndex } = useMvpTripHomeVariant()
+  clear()
+  clearArrivalDate()
+  setSearchGroup(2, 1)
+  clearDuration()
+  setFlexibility(0)
+  resetBudget()
+  clearFilterTags()
+  clearDestinations()
+  setHeroPhotoIndex(0)
+  navigateTo('/mvp-trip/home')
 }
 
 /** Multi Hotel Trip — direct naar de bevestigingspagina na het boeken van een vakantie
