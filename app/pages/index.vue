@@ -70,7 +70,7 @@
         </div>
         <!-- E-mails van de vakantie (bron: email-designs/, react-email; gehost als statische
              HTML onder /multi-hotel-trip/emails). Linkjes, geen knoppen; de mails die nog
-             volgen staan er grijs bij, in de volgorde van "Wat er nu gebeurt". -->
+             volgen staan er grijs bij, in de volgorde van de flow (/multi-hotel-trip/flow). -->
         <p class="start-section__sublead">E-mails</p>
         <ul class="start-section__links">
           <li>
@@ -79,8 +79,9 @@
           <li>
             <NuxtLink class="start-section__link" to="/multi-hotel-trip/emails/vakantie-pre-travel">Pre-travel (14 dagen voor vertrek)</NuxtLink>
           </li>
-          <li class="start-section__link--todo">Routes-mail (tips &amp; routes) · volgt</li>
-          <li class="start-section__link--todo">Welkom thuis (hoe was het?) · volgt</li>
+          <li class="start-section__link--todo">Incheck hotel 1 · volgt</li>
+          <li class="start-section__link--todo">Incheck hotel 2 · volgt</li>
+          <li class="start-section__link--todo">Incheck hotel 3 · volgt</li>
         </ul>
       </section>
 

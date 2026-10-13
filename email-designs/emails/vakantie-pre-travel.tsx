@@ -42,6 +42,10 @@ type Props = {
     mapsUrl: string;
   };
   tollEstimate: string;
+  /** Hoofdfoto van de reis bovenin. */
+  heroImage: string;
+  /** Drie thumbs boven "De mooiste uitjes en routes": twee uitjes en de routekaart. */
+  thumbs: { image: string; alt: string }[];
   routesUrl: string;
   bookingUrl: string;
   mode?: EmailMode;
@@ -63,6 +67,7 @@ const responsiveCss = `
   .m-logo { width: 143px !important; }
   .m-trustpilot { width: 80px !important; height: auto !important; }
   .m-hotelimg { width: 100% !important; height: auto !important; margin-bottom: 12px !important; }
+  .m-thumb { width: 100% !important; height: auto !important; }
 }
 `;
 
@@ -77,6 +82,8 @@ export default function VakantiePreTravel({
   homeCity,
   firstHotel,
   tollEstimate,
+  heroImage,
+  thumbs,
   routesUrl,
   bookingUrl,
   mode = "light",
@@ -128,10 +135,13 @@ export default function VakantiePreTravel({
         <Container style={{ width: "100%", maxWidth: "626px" }}>
           <NewsletterHeader mode={mode} />
 
+          {/* Hoofdfoto van de reis */}
+          <Img src={heroImage} alt={tripName} width="626" height="300" style={{ display: "block", width: "100%", height: "auto", objectFit: "cover" }} />
+
           {/* Kop + intro */}
-          <Section className="m-pad" style={{ padding: "32px 32px 0" }}>
+          <Section className="m-pad" style={{ padding: "28px 32px 0" }}>
             <Heading as="h1" className="m-h1" style={h1}>
-              Checklist voor je reis naar {region}
+              Ben je klaar voor je vakantie?
             </Heading>
             <Text style={{ ...body14, margin: "16px 0 0" }}>Beste {recipientName},</Text>
             <Text style={body14}>
@@ -190,25 +200,28 @@ export default function VakantiePreTravel({
               </Row>
               <Text style={subkop}>Parkeren bij het hotel</Text>
               <Text style={{ ...body14, margin: "4px 0 0" }}>{firstHotel.parking}</Text>
+              <Text style={subkop}>Wat moet ik nog betalen?</Text>
+              <Text style={{ ...body14, margin: "4px 0 0" }}>
+                Niets voor de reis zelf: die is volledig betaald. Ter plekke betaal je alleen nog de lokale toeristenbelasting,
+                die rekent elk hotel bij het uitchecken af.
+              </Text>
+              <Text style={{ ...body14, margin: "6px 0 0" }}>
+                Vertrek je vanuit {homeCity}, houd dan rekening met tolwegen (ongeveer {tollEstimate} voor de heen- en terugreis).
+              </Text>
             </Section>
-          </Section>
-
-          {/* Wat moet ik nog betalen? */}
-          <Section className="m-pad" style={{ padding: "32px 32px 0" }}>
-            <Text className="m-kop" style={kop}>Wat moet ik nog betalen?</Text>
-            <Text style={body14}>
-              Niets voor de reis zelf: die is volledig betaald. Ter plekke betaal je alleen nog de lokale toeristenbelasting, die
-              rekent elk hotel bij het uitchecken af.
-            </Text>
-            <Text style={body14}>
-              Vertrek je vanuit {homeCity}, houd dan rekening met tolwegen (ongeveer {tollEstimate} voor de heen- en terugreis).
-            </Text>
           </Section>
 
           {/* De mooiste routes en leukste uitjes */}
           <Section className="m-pad" style={{ padding: "32px 32px 0" }}>
             <Section style={{ backgroundColor: beige, borderRadius: "8px", padding: "20px" }}>
-              <Text className="m-kop" style={kop}>De mooiste routes en leukste uitjes</Text>
+              <Row>
+                {thumbs.map((th, i) => (
+                  <Column key={th.alt} className="stack m-nopad" style={{ width: "33.33%", paddingLeft: i === 0 ? 0 : "6px", paddingRight: i === thumbs.length - 1 ? 0 : "6px", verticalAlign: "top" }}>
+                    <Img src={th.image} alt={th.alt} width="178" height="120" className="m-thumb" style={{ display: "block", width: "100%", height: "auto", borderRadius: "6px", objectFit: "cover", marginBottom: "8px" }} />
+                  </Column>
+                ))}
+              </Row>
+              <Text className="m-kop" style={{ ...kop, marginTop: "8px" }}>De mooiste uitjes en routes</Text>
               <Text style={body14}>
                 We hebben een pagina speciaal voor jouw reis gemaakt: de route tussen de hotels, routes rondom elk hotel en de
                 leukste uitjes, met pdf's en gpx-bestanden voor je navigatie, het voorbeeld reisschema en de weersverwachting.
@@ -273,6 +286,12 @@ VakantiePreTravel.PreviewProps = {
     mapsUrl: "https://www.google.com/maps/dir/?api=1&destination=Ch%C3%A2teau+Tilques%2C+Rue+du+Ch%C3%A2teau%2C+62500+Tilques",
   },
   tollEstimate: "€24",
+  heroImage: `${baseUrl}/images/mail/vakantie/opaalkust-hero.jpg`,
+  thumbs: [
+    { image: `${baseUrl}/images/mail/vakantie/uitje-blancnez.jpg`, alt: "Cap Blanc-Nez" },
+    { image: `${baseUrl}/images/mail/vakantie/uitje-boulogne.jpg`, alt: "Boulogne-sur-Mer" },
+    { image: `${baseUrl}/images/mail/vakantie/routekaart.jpg`, alt: "Routekaart van de vakantie" },
+  ],
   routesUrl: "https://vialuxury.vercel.app/multi-hotel-trip/checkout/routes",
   bookingUrl: "https://vialuxury.vercel.app/multi-hotel-trip/checkout/bevestiging",
 } satisfies Props;
