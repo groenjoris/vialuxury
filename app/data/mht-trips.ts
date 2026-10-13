@@ -155,7 +155,9 @@ const TRIPS: TripSpec[] = [
         '/images/vakanties/001/beaulaincourt-b1.jpg',      //    het stadspaleis met binnenplaats
         '/images/vakanties/001/beaulaincourt-b2.jpg',      //    kamer
       ] },
-      '/images/vakanties/001/nearby-bethune.jpg',          // 14 slot: de Grand'Place van Bethune
+      '/images/vakanties/001/bethune.jpg',                 // 14 slot: de gevels van Bethune
+      // nearby-bethune.jpg toont hetzelfde plein maar is 1024 px breed; de
+      // checklist vraagt minimaal 1600 px, dus dit is de bruikbare versie.
     ],
     type: 'auto',
     stops: [
