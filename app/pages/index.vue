@@ -75,7 +75,9 @@
           <li>
             <NuxtLink class="start-section__link" to="/multi-hotel-trip/emails/vakantie-bevestiging">Boekingsbevestiging</NuxtLink>
           </li>
-          <li class="start-section__link--todo">Mail vol tips (twee weken voor vertrek) · volgt</li>
+          <li>
+            <NuxtLink class="start-section__link" to="/multi-hotel-trip/emails/vakantie-pre-travel">Pre-travel (14 dagen voor vertrek)</NuxtLink>
+          </li>
           <li class="start-section__link--todo">Routes-mail (tips &amp; routes) · volgt</li>
           <li class="start-section__link--todo">Welkom thuis (hoe was het?) · volgt</li>
         </ul>

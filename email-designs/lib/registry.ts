@@ -1,5 +1,6 @@
 import type * as React from "react";
 import VakantieBevestiging from "../emails/vakantie-bevestiging";
+import VakantiePreTravel from "../emails/vakantie-pre-travel";
 
 export type EmailSection = "designs" | "inspiration";
 
@@ -22,6 +23,13 @@ export const emails: EmailEntry[] = [
     description: "Bevestiging na het boeken van een auto- of fietsvakantie met meerdere hotels: kassabon per hotel (adres, nachten, inclusies, check-in/out), flexibel annuleren, prijs, routes, boeking terugvinden, cadeaukaart en FAQ.",
     section: "designs",
     Component: VakantieBevestiging,
+  },
+  {
+    slug: "vakantie-pre-travel",
+    title: "Pre-travel (14 dagen voor vertrek)",
+    description: "Checklist voor je reis: identiteitsbewijs en boekingsnummer, inchecken bij het eerste hotel (adres, route, parkeren), wat je nog betaalt, de persoonlijke pagina met routes en tips, en veelgestelde vragen.",
+    section: "designs",
+    Component: VakantiePreTravel,
   },
 ];
 
