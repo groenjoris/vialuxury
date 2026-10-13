@@ -89,8 +89,10 @@ interface TripSpec {
    *  met de totale routelengte. */
   fromHomeByLocale?: Partial<Record<'nl' | 'nl-BE' | 'de' | 'en', { city: string; km: number; minutes: number }>>
   /** Beeldplan van de PDP-gallery na het hoofdbeeld (coverImage): sfeerbeelden (url) en
-   *  hotelblokken ({ stop, count }) in deze volgorde. Zonder plan: omgevingsfoto's + hotels. */
-  gallery?: (string | { stop: number; count?: number })[]
+   *  hotelblokken in deze volgorde. Een hotelblok neemt de eerste `count` foto's van die
+   *  stop, of precies de foto's uit `images` wanneer de volgorde binnen het blok ertoe
+   *  doet (hotel, kamer, eten, USP). Zonder plan: omgevingsfoto's + hotels. */
+  gallery?: (string | { stop: number; count?: number; images?: string[] })[]
   /** Rondje: de laatste dag gaat het terug naar het eerste hotel (auto blijft
    *  daar). De terugetappe wordt gestippeld op de kaarten getekend. */
   loop?: boolean
@@ -128,14 +130,33 @@ const TRIPS: TripSpec[] = [
       '/images/vakanties/001/nearby-saint-omer.jpg',
       '/images/vakanties/001/nearby-marais.jpg',
     ],
-    // Gallery na het hoofdbeeld: 2, 3 en dan de vijf foto's van elk hotel. De PDP toont
-    // bovenin de eerste vijf (1, 2, 3, T1, T2).
+    // Beeldplan volgens de beeldredactie: 1 bestemming (coverImage), 2 een
+    // belevingsmoment onderweg, 3 de belangrijkste include, 4 de routekaart en
+    // 5 het mooiste hotelbeeld — daarna per hotel maximaal vier foto's in de
+    // volgorde hotel, kamer, eten, USP, en als slot de laatste stop.
+    // Tilques staat met zijn hotelfoto al op plek 5, dus dat blok slaat die over.
     gallery: [
-      '/images/vakanties/001/opaalkust-2.jpg',
-      '/images/vakanties/001/opaalkust-3.jpg',
-      { stop: 0, count: 5 },
-      { stop: 1, count: 5 },
-      { stop: 2, count: 5 },
+      '/images/vakanties/001/nearby-marais.jpg',        // 2 platbodem in het Marais audomarois
+      '/images/vakanties/001/clery-c4.jpg',             // 3 dessert — het 3-gangendiner
+      '/images/vakanties/001/route.jpg',                // 4 routekaart
+      { stop: 0, images: [                              // 5-8 Château Tilques
+        '/images/vakanties/001/tilques-t1.jpg',         //   het kasteel vanuit de lucht
+        '/images/vakanties/001/tilques-t2.jpg',         //   kamer
+        '/images/vakanties/001/tilques-t3.jpg',         //   restaurant met uitzicht op het kasteel
+        '/images/vakanties/001/tilques-t5.jpg',         //   het binnenzwembad
+      ] },
+      { stop: 1, images: [                              // 9-12 Château Clery
+        '/images/vakanties/001/clery-c1.jpg',           //   het kasteel met het gazon
+        '/images/vakanties/001/clery-c2.jpg',           //   kamer
+        '/images/vakanties/001/extra-clery-diner.jpg',  //   het serrerestaurant
+        '/images/vakanties/001/clery-c5.jpg',           //   de sauna
+      ] },
+      { stop: 2, images: [                              // 13-15 Hotel Royal Beaulaincourt
+        '/images/vakanties/001/beaulaincourt-b1.jpg',   //   het stadspaleis
+        '/images/vakanties/001/beaulaincourt-b2.jpg',   //   kamer
+        '/images/vakanties/001/extra-beaulaincourt-diner.jpg', // aan tafel
+      ] },
+      '/images/vakanties/001/nearby-bethune.jpg',       // 16 slot: de Grand'Place van Bethune
     ],
     type: 'auto',
     stops: [

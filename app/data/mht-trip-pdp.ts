@@ -232,7 +232,8 @@ function buildImages(trip: MultiHotelTripDetail): { images: HotelImage[]; sticke
   const images: HotelImage[] = []
   const stickers: Record<string, string> = {}
   // Beeldplan (TripSpec.gallery): het hoofdbeeld en daarna precies de opgegeven volgorde van
-  // sfeerbeelden en hotelblokken ({ stop, count }: de eerste `count` hotelfoto's van die stop).
+  // sfeerbeelden en hotelblokken ({ stop, count }: de eerste `count` hotelfoto's van die stop,
+  // of { stop, images }: precies deze foto's van die stop, in deze volgorde).
   if (trip.gallery?.length) {
     if (trip.coverImage) {
       const id = `${trip.id}-cover`
@@ -251,7 +252,9 @@ function buildImages(trip: MultiHotelTripDetail): { images: HotelImage[]; sticke
       }
       const stop = trip.stops[entry.stop]
       if (!stop) return
-      const urls = [stop.image, ...(stop.extraImages ?? [])].filter((u): u is string => !!u).slice(0, entry.count ?? 3)
+      const urls = entry.images?.length
+        ? entry.images
+        : [stop.image, ...(stop.extraImages ?? [])].filter((u): u is string => !!u).slice(0, entry.count ?? 3)
       urls.forEach((url, j) => {
         if (seen.has(url.split('?')[0])) return
         seen.add(url.split('?')[0])
