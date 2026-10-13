@@ -66,6 +66,7 @@
             class="start-btn"
             @click="startMvpTrip"
           >MVP 12-11-2026</button>
+          <NuxtLink class="start-btn" to="/multi-hotel-trip/flow">Flow</NuxtLink>
         </div>
         <!-- E-mails van de vakantie (bron: email-designs/, react-email; gehost als statische
              HTML onder /multi-hotel-trip/emails). Linkjes, geen knoppen; de mails die nog
