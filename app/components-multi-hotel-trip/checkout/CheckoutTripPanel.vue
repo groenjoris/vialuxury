@@ -46,7 +46,7 @@
                 <div class="ctp__hotelbody">
                   <p class="t-body t-bold ctp__hotelname">
                     {{ h.name }}
-                    <span v-if="h.starRating" class="ctp__stars" aria-hidden="true">{{ '★'.repeat(h.starRating) }}</span>
+                    <span v-if="h.starRating" class="ctp__stars" aria-hidden="true"><span v-for="n in h.starRating" :key="n"><svg class="icon-star" viewBox="0 0 18 18" width="1em" height="1em" fill="currentColor" style="vertical-align:-0.125em" aria-hidden="true"><path d="M16.963,6.786c-.088-.271-.323-.469-.605-.51l-4.62-.671L9.672,1.418c-.252-.512-1.093-.512-1.345,0l-2.066,4.186-4.62,.671c-.282,.041-.517,.239-.605,.51-.088,.271-.015,.57,.19,.769l3.343,3.258-.79,4.601c-.048,.282,.067,.566,.298,.734,.231,.167,.538,.189,.79,.057l4.132-2.173,4.132,2.173c.11,.058,.229,.086,.349,.086,.155,0,.31-.048,.441-.143,.231-.168,.347-.452,.298-.734l-.79-4.601,3.343-3.258c.205-.199,.278-.498,.19-.769Z"/></svg></span></span>
                   </p>
                   <p class="t-caption c-mgrey">{{ h.city }} · {{ h.nights }} {{ h.nights === 1 ? 'nacht' : 'nachten' }}<template v-if="stayLabels[i]"> · {{ stayLabels[i] }}</template></p>
                 </div>
@@ -214,7 +214,9 @@ onBeforeUnmount(() => {
 }
 .ctp__hotelbody { min-width: 0; }
 .ctp__hotelname { margin: 0 0 2px; }
-.ctp__stars { font-size: 12px; margin-left: 4px; color: var(--c-via-black, #1a1e1e); }
+/* Sterren als op de dealcards (zwart, 13px, letterspatiëring 1px). */
+.ctp__stars { font-size: 13px; letter-spacing: 1px; margin-left: 4px; color: #141414; font-weight: 400; }
+.ctp__stars svg { display: inline-block; }
 .ctp__includes { list-style: none; margin: 0 0 24px; padding: 0; display: flex; flex-direction: column; gap: 6px; }
 .ctp__inc { display: flex; align-items: flex-start; gap: 8px; }
 .ctp__inc svg { flex-shrink: 0; margin-top: 4px; color: var(--c-via-green, #36c890); }
