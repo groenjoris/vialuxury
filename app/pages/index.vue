@@ -59,6 +59,11 @@
           <button
             type="button"
             class="start-btn"
+            @click="startMultiHotelTripRoutes"
+          >Reispagina (tips &amp; routes)</button>
+          <button
+            type="button"
+            class="start-btn"
             @click="startMvpTrip"
           >MVP 12-11-2026</button>
         </div>
@@ -378,6 +383,21 @@ function startMvpTrip() {
 
 /** Multi Hotel Trip — direct naar de bevestigingspagina na het boeken van een vakantie
  *  (Opaalkust, 2 personen, flexibel annuleren, demo-datum), zonder de checkout te doorlopen. */
+/** Multi Hotel Trip — direct naar de persoonlijke reispagina (tips & routes) na het boeken,
+ *  met dezelfde demo-boeking als de bevestigingspagina. */
+function startMultiHotelTripRoutes() {
+  seedMultiHotelTripDemoBooking()
+  navigateTo('/multi-hotel-trip/checkout/routes')
+}
+function seedMultiHotelTripDemoBooking() {
+  const { isTrip, slug, day } = useMultiHotelTripCheckoutTrip()
+  isTrip.value = true
+  slug.value = 'ontdek-noord-frankrijk-en-de-opaalkust-in-7-dagen'
+  day.value = { price: 919, checkIn: 'di 18 mei', checkOut: 'ma 24 mei', checkInYmd: { year: 2027, month: 4, day: 18 } }
+  useState<{ baseId: string; rateKey: 'nonrefundable' | 'flexible'; price: number; priceWas: number; quantity: number }[]>('mht-checkout-selection', () => []).value =
+    [{ baseId: 'trip', rateKey: 'flexible', price: 964, priceWas: 1535, quantity: 1 }]
+  useState<{ firstName: string; email: string } | null>('mht-checkout-guest', () => null).value = { firstName: 'Rijo', email: 'rijo.verburg@gmail.com' }
+}
 function startMultiHotelTripConfirmation() {
   const { isTrip, slug, day } = useMultiHotelTripCheckoutTrip()
   isTrip.value = true

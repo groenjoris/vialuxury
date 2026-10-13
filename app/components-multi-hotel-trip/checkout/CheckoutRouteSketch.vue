@@ -3,15 +3,15 @@
        (OSRM-etappes) als witte lijn, witte genummerde bolletjes en de plaatsnamen
        ernaast, zonder kaartlaag. Zelfde equirectangular projectie als het routekaartje;
        de SVG mag buiten zijn viewBox tekenen (lange plaatsnamen). -->
-  <svg class="crs" :viewBox="viewBox" overflow="visible" role="img" :aria-label="ariaLabel">
+  <svg class="crs" :class="{ 'crs--dark': tone === 'dark' }" :viewBox="viewBox" overflow="visible" role="img" :aria-label="ariaLabel">
     <template v-if="legPaths.length">
-      <path v-for="(p, i) in legPaths" :key="`leg-${i}`" class="crs__route" :class="{ 'crs__route--dashed': p.dashed }" :d="p.d" />
+      <path v-for="(p, i) in legPaths" :key="`leg-${i}`" class="crs__route" :class="{ 'crs__route--dashed': p.dashed }" :d="p.d" :style="{ strokeWidth }" />
     </template>
-    <polyline v-else class="crs__route" :points="markers.map(m => `${m.x},${m.y}`).join(' ')" />
+    <polyline v-else class="crs__route" :points="markers.map(m => `${m.x},${m.y}`).join(' ')" :style="{ strokeWidth }" />
     <g v-for="(m, i) in markers" :key="`stop-${i}`" :transform="`translate(${m.x} ${m.y})`">
       <circle class="crs__dot" :r="R" />
-      <text class="crs__num" y="0.36em" text-anchor="middle">{{ i + 1 }}</text>
-      <text class="crs__label" :x="m.labelX" y="0.36em" :text-anchor="m.anchor">{{ stops[i]?.label }}</text>
+      <text class="crs__num" y="0.36em" text-anchor="middle" :style="{ fontSize: `${Math.round(R * 0.95)}px` }">{{ i + 1 }}</text>
+      <text v-if="labels" class="crs__label" :x="m.labelX" y="0.36em" :text-anchor="m.anchor">{{ stops[i]?.label }}</text>
     </g>
   </svg>
 </template>
@@ -29,11 +29,18 @@ const props = withDefaults(defineProps<{
   height?: number
   /** Kant van de plaatsnaam per stop (anders automatisch: weg van de route). */
   labelSides?: ('left' | 'right' | undefined)[]
-}>(), { legs: () => [], width: 380, height: 320, labelSides: () => [] })
+  /** Wit op een foto (standaard) of donker op een licht vlak. */
+  tone?: 'light' | 'dark'
+  /** Plaatsnamen tonen (uit voor mini-kaartjes). */
+  labels?: boolean
+  /** Bolstraal en lijndikte in viewBox-px. */
+  radius?: number
+  strokeWidth?: number
+}>(), { legs: () => [], width: 380, height: 320, labelSides: () => [], tone: 'light', labels: true, radius: 16, strokeWidth: 5 })
 
 const W = computed(() => props.width)
 const H = computed(() => props.height)
-const R = 16
+const R = computed(() => props.radius)
 const LABEL_SIZE = 17
 const PAD = 0.16
 
@@ -65,8 +72,8 @@ const legPaths = computed(() => props.legs
 /** Plaatsnaam aan de kant waar de route níet heen loopt (en binnen het kader). */
 const markers = computed(() => props.stops.map((s, i) => {
   const [x, y] = project(s.lng, s.lat)
-  const textW = (s.label?.length ?? 0) * LABEL_SIZE * 0.6
-  const gap = R + 10
+  const textW = props.labels ? (s.label?.length ?? 0) * LABEL_SIZE * 0.6 : 0
+  const gap = R.value + 10
   // Richting van de route rond deze stop: gemiddelde horizontale afwijking van de dichtstbijzijnde routepunten.
   let dx = 0, n = 0
   for (const l of props.legs) {
@@ -88,8 +95,8 @@ const markers = computed(() => props.stops.map((s, i) => {
 const viewBox = computed(() => {
   let minX = 0, maxX = W.value
   for (const m of markers.value) {
-    const left = m.anchor === 'end' ? m.x - m.gap - m.textW : m.x - R
-    const right = m.anchor === 'start' ? m.x + m.gap + m.textW : m.x + R
+    const left = props.labels && m.anchor === 'end' ? m.x - m.gap - m.textW : m.x - R.value
+    const right = props.labels && m.anchor === 'start' ? m.x + m.gap + m.textW : m.x + R.value
     minX = Math.min(minX, left - 6); maxX = Math.max(maxX, right + 6)
   }
   return `${minX.toFixed(1)} 0 ${(maxX - minX).toFixed(1)} ${H.value}`
@@ -105,4 +112,10 @@ const ariaLabel = computed(() => `Route: ${props.stops.map((s, i) => `${i + 1}. 
 .crs__dot { fill: #fff; }
 .crs__num { fill: var(--c-via-black, #1a1e1e); font-family: var(--font-body, inherit); font-size: 15px; font-weight: 700; }
 .crs__label { fill: #fff; font-family: var(--font-body, inherit); font-size: 17px; font-weight: 700; letter-spacing: 0.01em; }
+/* Donkere variant op een licht vlak (mini-kaartjes in lijsten). */
+.crs--dark { filter: none; }
+.crs--dark .crs__route { stroke: var(--c-via-black, #1a1e1e); }
+.crs--dark .crs__dot { fill: var(--c-via-black, #1a1e1e); }
+.crs--dark .crs__num { fill: #fff; }
+.crs--dark .crs__label { fill: var(--c-via-black, #1a1e1e); }
 </style>
