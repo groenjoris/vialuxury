@@ -76,6 +76,8 @@ const stays = computed(() => {
     const to = dateAt(offset + h.nights)
     offset += h.nights
     const incl = (stop?.includes ?? []).map(x => x.nl)
+    // Alleen ontbijt en diner (de rest van de inclusies staat in de mail en op de dealpagina).
+    const meals = incl.filter(t => /ontbijt|diner|dinner|breakfast/i.test(t))
     const lateOut = incl.map(t => t.match(/check-?out[^0-9]*(\d{1,2})[:.](\d{2})/i)).find(Boolean)
     return {
       ...h,
@@ -83,7 +85,7 @@ const stays = computed(() => {
       to: fmt(to),
       checkInTime: stop?.checkIn ?? '15:00',
       checkOutTime: lateOut ? `${lateOut[1]}:${lateOut[2]}` : '11:00',
-      items: [`${roomsPerHotel.value}× ${h.roomName}`, ...incl.filter(t => !/overnachting|check-?in|check-?out/i.test(t))],
+      items: [`${roomsPerHotel.value}× ${h.roomName}`, ...meals],
     }
   })
 })
@@ -122,8 +124,6 @@ const faq = computed(() => [
   { q: 'Ik heb mijn e-mailadres verkeerd ingevuld', a: `Mail ons op service@vialuxury.com met boekingsnummer ${bookingRef.value} en het juiste adres. We sturen de bevestiging en je reisdocument dan opnieuw.` },
 ])
 const openFaq = ref<number | null>(null)
-
-const shareHref = computed(() => `mailto:?subject=${encodeURIComponent(`Onze vakantie: ${trip.value.name}`)}&body=${encodeURIComponent(`We gaan! ${trip.value.name}, ${checkIn.value} t/m ${checkOut.value}. Boekingsnummer ${bookingRef.value}.`)}`)
 
 function money(v: number) {
   return `€${v.toLocaleString('nl-NL', { minimumFractionDigits: v % 1 ? 2 : 0, maximumFractionDigits: 2 })}`
@@ -206,10 +206,7 @@ useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
                     <p class="cf__stay-name">{{ h.name }} <span v-if="h.starRating" class="cf__stars" aria-hidden="true"><span v-for="n in h.starRating" :key="n"><svg class="icon-star" viewBox="0 0 18 18" width="1em" height="1em" fill="currentColor" style="vertical-align:-0.125em" aria-hidden="true"><path d="M16.963,6.786c-.088-.271-.323-.469-.605-.51l-4.62-.671L9.672,1.418c-.252-.512-1.093-.512-1.345,0l-2.066,4.186-4.62,.671c-.282,.041-.517,.239-.605,.51-.088,.271-.015,.57,.19,.769l3.343,3.258-.79,4.601c-.048,.282,.067,.566,.298,.734,.231,.167,.538,.189,.79,.057l4.132-2.173,4.132,2.173c.11,.058,.229,.086,.349,.086,.155,0,.31-.048,.441-.143,.231-.168,.347-.452,.298-.734l-.79-4.601,3.343-3.258c.205-.199,.278-.498,.19-.769Z"/></svg></span></span></p>
                     <p class="t-caption c-mgrey cf__stay-meta">{{ h.city }} · {{ h.nights }} {{ h.nights === 1 ? 'nacht' : 'nachten' }}</p>
                     <ul class="cf__stay-items">
-                      <li v-for="item in h.items" :key="item" class="t-caption c-grey">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" /></svg>
-                        {{ item }}
-                      </li>
+                      <li v-for="item in h.items" :key="item" class="t-caption c-grey">{{ item }}</li>
                     </ul>
                     <div class="cf__stay-times">
                       <div class="cf__stay-time">
@@ -300,7 +297,6 @@ useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
               <h2 class="cf__h2">Boeking terugvinden</h2>
               <p class="t-body c-grey">Je boeking staat in je ViaLuxury-account op <b>{{ email }}</b>. Inloggen doe je zonder wachtwoord: je krijgt een inloglink per mail.</p>
               <a class="cf__link cf__cta-link" href="#" @click.prevent>Bekijk je boeking</a>
-              <p class="t-caption c-mgrey cf__find-note">Geen mail ontvangen? Zoek je boeking op met je boekingsnummer en e-mailadres, of <a class="cf__link" :href="shareHref">deel de boeking met je reisgenoot</a>.</p>
             </section>
           </aside>
 
@@ -438,9 +434,10 @@ useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
 .cf__stars { color: #141414; font-size: 13px; letter-spacing: 1px; margin-left: 4px; font-weight: 400; }
 .cf__stars svg { display: inline-block; }
 .cf__stay-meta { margin: 2px 0 8px; }
-.cf__stay-items { list-style: none; margin: 0 0 8px; padding: 0; display: flex; flex-wrap: wrap; gap: 4px 14px; }
-.cf__stay-items li { display: inline-flex; align-items: flex-start; gap: 6px; }
-.cf__stay-items svg { flex-shrink: 0; margin-top: 2px; color: var(--c-via-green); }
+/* Kamer · ontbijt · diner: doorlopend, met een bulletje ertussen (geen vinkjes). */
+.cf__stay-items { list-style: none; margin: 0 0 8px; padding: 0; display: flex; flex-wrap: wrap; gap: 2px 0; }
+.cf__stay-items li { display: inline; }
+.cf__stay-items li + li::before { content: '·'; margin: 0 6px; color: var(--c-medium-grey); }
 .cf__stay-times { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 16px; max-width: 380px; margin-top: 8px; }
 .cf__stay-time { display: flex; flex-direction: column; gap: 1px; }
 .cf__stay-time-label { font-size: var(--t-caption); font-weight: var(--w-medium); letter-spacing: 0.04em; text-transform: uppercase; color: var(--c-medium-grey); }
@@ -467,13 +464,12 @@ useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
 .cf__todos { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
 .cf__todo { display: flex; gap: 10px; align-items: flex-start; }
 .cf__todo-icon { flex-shrink: 0; width: 22px; height: 22px; color: var(--c-via-black); }
-.cf__todo-icon--check { color: var(--c-via-green); }
+.cf__todo-icon--check { color: var(--c-via-black); }
 .cf__timeline { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 14px; }
 .cf__step { position: relative; display: flex; gap: 12px; }
 .cf__step p { margin: 0; }
 .cf__step-dot { flex-shrink: 0; width: 12px; height: 12px; margin-top: 5px; border-radius: 50%; background: var(--c-medium-grey); box-shadow: 0 0 0 3px #f0f0f0; }
 .cf__step:not(:last-child)::before { content: ''; position: absolute; left: 5px; top: 20px; bottom: -14px; width: 2px; background: var(--c-light-grey); }
-.cf__find-note { margin: 10px 0 0; }
 
 /* 4. Cadeaukaart */
 /* Wit blok met rand: de productfoto heeft een witte achtergrond. */
