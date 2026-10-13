@@ -1237,6 +1237,7 @@ import type { TripReviewView } from '~/components-multi-hotel-trip/deal/TripRevi
 import TripItineraryPanel from '~/components-multi-hotel-trip/deal/TripItineraryPanel.vue'
 import type { TripCityChapter, TripCityAttraction } from '~/components-multi-hotel-trip/deal/TripItineraryPerCity.vue'
 import { isTripSight } from '~/utils-multi-hotel-trip/tripSights'
+import { buildTripDaysView } from '~/composables-multi-hotel-trip/useMultiHotelTripDaysView'
 import type { TripItineraryStop } from '~/components-multi-hotel-trip/deal/TripItineraryCities.vue'
 import TripItineraryVariantSwitch from '~/components-multi-hotel-trip/deal/TripItineraryVariantSwitch.vue'
 import { useMultiHotelTripFinalOptions } from '~/composables-multi-hotel-trip/useMultiHotelTripFinalOptions'
@@ -1899,115 +1900,7 @@ function tripDistanceLabel(travel?: { km: number; minutes: number }): string {
  *  onderweg/uitchecken, diner, terugreis) krijgen hier hun tekst; met een
  *  gekozen aankomstdatum krijgt elke dag zijn datum. */
 const cap = (str: string) => (str ? str.charAt(0).toUpperCase() + str.slice(1) : str)
-const tripDaysView = computed<TripDayView[]>(() => {
-  if (!tripPdp || !trip) return []
-  const checkIn = store.checkInDate
-  const content = tripPdp.content
-  return tripPdp.days.map((d) => {
-    const stop = d.stopIndex != null ? trip.stops[d.stopIndex] : undefined
-    const from = d.fromStopIndex != null ? trip.stops[d.fromStopIndex] : undefined
-    const blocks: TripBlockView[] = d.blocks.map((b) => {
-      const st = b.stopIndex != null ? trip.stops[b.stopIndex] : undefined
-      const name = st?.hotelName ?? ''
-      const view: TripBlockView = (() => { switch (b.kind) {
-        case 'checkin':
-          return {
-            kind: 'checkin',
-            tag: t('trip.tag.checkin'),
-            title: t('trip.checkinAt').replace('{hotel}', name),
-            // Dag 1 met eigen aankomsttekst (heenreis, inchecktijd); anders de hotelbeschrijving.
-            text: b.text ? localized(b.text) : localized(content?.hotels[name]?.description ?? trip.pitch),
-            image: b.image,
-            starRating: st?.starRating,
-            meta: st ? `${st.city}, ${st.region}` : undefined,
-            stopIndex: b.stopIndex,
-            hotelName: name || undefined,
-          }
-        case 'checkout':
-          return {
-            kind: 'checkout',
-            tag: t('trip.tag.route'),
-            title: b.title ? localized(b.title) : t('trip.checkoutAt').replace('{hotel}', name),
-            text: b.text ? localized(b.text) : t('trip.checkoutText').replace('{hotel}', name),
-            meta: b.meta ? localized(b.meta) : undefined,
-            image: b.image,
-            stopIndex: b.stopIndex,
-            hotelName: name || undefined,
-          }
-        case 'dinner': {
-          const dl = b.dinnerLabel ? localized(b.dinnerLabel) : t('trip.tag.dinner').toLowerCase()
-          return {
-            kind: 'dinner',
-            tag: t('trip.tag.dinner'),
-            title: cap(t('trip.dinnerAt').replace('{dinner}', dl).replace('{hotel}', name)),
-            text: b.text ? localized(b.text) : t('trip.dinnerText').replace('{dinner}', dl),
-            image: b.image,
-            stopIndex: b.stopIndex,
-            hotelName: name || undefined,
-          }
-        }
-        case 'breakfast': {
-          const bl = b.breakfastLabel ? localized(b.breakfastLabel) : t('trip.tag.breakfast')
-          return {
-            kind: 'breakfast',
-            tag: t('trip.tag.breakfast'),
-            title: t('trip.breakfastAt').replace('{hotel}', name),
-            // Eigen tekst uit de content; anders op een uitcheckdag het "laatste
-            // ontbijt"-sjabloon (met de volgende plaats), op de vertrekdag het
-            // thuis-sjabloon, en op een verblijfsdag het gewone sjabloon.
-            text: b.text
-              ? localized(b.text)
-              : b.last
-                ? (b.nextCity ? t('trip.breakfastLastText').replace('{city}', b.nextCity) : t('trip.breakfastHomeText'))
-                : t('trip.breakfastText').replace('{breakfast}', bl.charAt(0).toLowerCase() + bl.slice(1)),
-            image: b.image,
-            stopIndex: b.stopIndex,
-            hotelName: name || undefined,
-          }
-        }
-        case 'homeward':
-          return {
-            kind: 'homeward',
-            tag: t('trip.tag.homeward'),
-            title: b.title ? localized(b.title) : t('trip.homewardTitle'),
-            meta: b.meta ? localized(b.meta) : undefined,
-            text: b.text ? localized(b.text) : t('trip.checkoutText').replace('{hotel}', name),
-            image: b.image,
-            stopIndex: b.stopIndex,
-            hotelName: name || undefined,
-          }
-        default:
-          return {
-            kind: 'activity',
-            tag: t('trip.tag.activity'),
-            title: b.title ? localized(b.title) : '',
-            text: b.text ? localized(b.text) : '',
-            image: b.image,
-          }
-      } })()
-      // "Meer over …"-pop-up: korte tekst in het blok, achtergrond achter een klik.
-      if (b.more) view.more = { label: localized(b.more.label), title: localized(b.more.title), paragraphs: b.more.paragraphs.map(p => localized(p)), image: b.more.image }
-      return view
-    })
-    const type: TripDayView['type'] = d.day === 1 && stop ? 'arrival' : (from && stop && from !== stop) ? 'transfer' : stop ? 'stay' : 'home'
-    const view: TripDayView = { day: d.day, label: t('trip.daySingle').replace('{a}', String(d.day)), blocks, stopIndex: d.stopIndex, fromStopIndex: d.fromStopIndex, type }
-    if (checkIn) view.date = formatDateWeekdayShort(dayjs(checkIn).add(d.day - 1, 'day').format('YYYY-MM-DD'))
-    // Informatieve ondertitel per dagtype (aankomst / wisseldag / verblijf / terugreis).
-    if (d.day === 1 && stop) {
-      view.subtitle = t('trip.subtitle.arrival').replace('{city}', stop.city).replace('{region}', stop.region).replace('{hotel}', stop.hotelName).replace('{time}', stop.checkIn)
-    } else if (from && stop && from !== stop) {
-      view.subtitle = t('trip.subtitle.transfer').replace('{distance}', tripDistanceLabel(stop.travel)).replace('{city}', stop.city).replace('{hotel}', stop.hotelName).replace('{time}', stop.checkIn)
-    } else if (stop) {
-      view.subtitle = t('trip.subtitle.stay').replace('{city}', stop.city).replace('{hotel}', stop.hotelName)
-    } else if (from) {
-      view.subtitle = t('trip.subtitle.home').replace('{hotel}', from.hotelName)
-    }
-    // Eigen dagkop (sidepanel) en samenvattingsregel uit de content (Opaalkust: het reisdocument).
-    if (d.heading) view.heading = localized(d.heading)
-    if (d.summary) view.summary = localized(d.summary)
-    return view
-  })
-})
+const tripDaysView = computed<TripDayView[]>(() => buildTripDaysView(tripPdp, trip, store.checkInDate, t, localized))
 
 /** Fullscreen kaart (klik op het kaartje): route + hotels + omgevingshighlights. */
 const tripMapOpen = ref(false)
