@@ -64,6 +64,25 @@
         </div>
       </section>
 
+      <!-- E-mails — ontwerpen in het losse e-mailproject (vialuxury-emails, react-email
+           gallery op Vercel). Linkjes, geen knoppen; de lijst groeit per e-mail. -->
+      <section class="start-section">
+        <h2 class="start-section__title">E-mails</h2>
+        <p class="start-section__lead">
+          E-mailontwerpen voor de multi-hotel vakanties, in de e-mailgallery op Vercel
+        </p>
+        <ul class="start-section__links">
+          <li>
+            <a
+              class="start-section__link"
+              href="https://vialuxury-emails.vercel.app/emails/vakantie-bevestiging"
+              target="_blank"
+              rel="noopener"
+            >Boekingsbevestiging vakantie</a>
+          </li>
+        </ul>
+      </section>
+
       <!-- Second release — full independent copy of First Release, the
            next iteration the client will build on. -->
       <section class="start-section">
@@ -501,6 +520,17 @@ definePageMeta({ layout: false })
   display: flex;
   flex-direction: column;
   gap: var(--space-sm);
+}
+
+/* Lijst met linkjes (E-mails-box): geen knoppen, één link per regel. */
+.start-section__links {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  font-size: 15px;
 }
 
 .start-btn {
