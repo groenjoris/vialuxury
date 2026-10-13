@@ -228,7 +228,7 @@ useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
                   <svg class="cf__extra-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3l7 3v5c0 5-3.5 8.5-7 10-3.5-1.5-7-5-7-10V6l7-3z" stroke="currentColor" stroke-width="2" stroke-linejoin="round" /><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" /></svg>
                   <div>
                     <p class="cf__stay-name">Flexibel annuleren</p>
-                    <p class="t-caption c-grey">Tot {{ cancelDate }} (30 dagen voor aankomst) gratis annuleren of wijzigen, bij alle {{ trip.hotels.length }} hotels.</p>
+                    <p class="t-caption c-grey">Tot {{ cancelDate }} (30 dagen voor aankomst) kosteloos annuleren van de gehele vakantie.</p>
                   </div>
                 </li>
                 <li v-if="hasBaggage" class="cf__extra">
