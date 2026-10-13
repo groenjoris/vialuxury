@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // Multi Hotel Trip checkout — de routes van je vakantie: aparte pagina ná het boeken
 // (knop "Bekijk de routes" op de bevestiging). Per etappe (thuis → hotel 1 → … → thuis)
-// de afstand en reistijd uit de reisdata, met "Download GPX" en "Open in Google Maps"
+// de afstand en reistijd uit de reisdata, met "Download GPX", "Download PDF" en "Open in Google Maps"
 // (prototype: knoppen zonder werking).
 import { tripCheckoutBySlug } from '~/data/mht-checkout/trip'
 import { tripPdpBySlug } from '~/data/mht-trip-pdp'
@@ -50,7 +50,7 @@ useHead({ title: 'De routes van je vakantie — ViaLuxury' })
       <h1 class="rp__title">De routes van je {{ trip.typeWord }}</h1>
       <p class="t-body c-grey rp__intro">
         Yvette heeft per etappe een mooie route samengesteld{{ byBike ? ', zo veel mogelijk over rustige fietspaden' : ', liefst over de mooie weg in plaats van de snelste' }}.
-        Download ze als GPX voor je navigatie of open ze direct in Google Maps. Je krijgt deze routes ook per mail.
+        Download ze als GPX voor je navigatie, als PDF om te printen, of open ze direct in Google Maps. Je krijgt deze routes ook per mail.
       </p>
 
       <ol class="rp__legs">
@@ -62,7 +62,11 @@ useHead({ title: 'De routes van je vakantie — ViaLuxury' })
           </div>
           <div class="rp__leg-actions">
             <a class="btn-primary rp__btn" href="#" @click.prevent>Download GPX</a>
-            <a class="rp__link" href="#" @click.prevent>Open in Google Maps</a>
+            <span class="rp__links">
+              <a class="rp__link" href="#" @click.prevent>Download PDF</a>
+              <span class="rp__sep" aria-hidden="true">·</span>
+              <a class="rp__link" href="#" @click.prevent>Open in Google Maps</a>
+            </span>
           </div>
         </li>
       </ol>
@@ -95,12 +99,15 @@ useHead({ title: 'De routes van je vakantie — ViaLuxury' })
 .rp__leg-title { font-size: var(--t-body-lg); font-weight: 700; line-height: 1.3; }
 .rp__leg-actions { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
 .rp__btn { display: inline-flex; align-items: center; justify-content: center; width: auto; min-width: 160px; text-decoration: none; }
+.rp__links { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+.rp__sep { color: var(--c-medium-grey); font-size: var(--t-caption); }
 .rp__link { font-size: var(--t-caption); color: var(--c-via-orange); text-decoration: underline; text-underline-offset: 2px; font-weight: var(--w-medium); }
 .rp__note { margin: 20px 0 0; }
 @media (max-width: 800px) {
   .rp__title { font-size: var(--t-h1); }
   .rp__leg { grid-template-columns: 28px minmax(0, 1fr); padding: 14px 16px; }
-  .rp__leg-actions { grid-column: 2; flex-direction: row; align-items: center; justify-content: space-between; }
-  .rp__btn { min-width: 0; }
+  .rp__leg-actions { grid-column: 2; align-items: stretch; gap: 8px; }
+  .rp__btn { min-width: 0; width: 100%; }
+  .rp__links { white-space: normal; flex-wrap: wrap; justify-content: center; }
 }
 </style>
