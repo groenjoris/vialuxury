@@ -300,20 +300,19 @@ useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
             </section>
           </aside>
 
+          <!-- ── 4. Cadeaukaart (⅔, onder de kassabon): iemand anders blij maken ── -->
+          <section class="cf__gift">
+            <!-- Productfoto (witte achtergrond, dus het blok is wit met een rand). -->
+            <img class="cf__gift-img" src="/images/checkout/giftcard.jpg" alt="ViaLuxury cadeaukaart met envelop" />
+            <div class="cf__gift-text">
+              <p class="cf__eyebrow">Cadeautip</p>
+              <h2 class="cf__gift-title">Maak iemand anders blij met een ViaLuxury-experience</h2>
+              <p class="t-body c-grey">Een verjaardag, een jubileum of gewoon omdat het kan: met een ViaLuxury-cadeaukaart geef je een verblijf in een van onze handgekozen hotels, met alle extra's erbij.</p>
+              <p class="t-body c-grey">De ontvanger kiest zelf het hotel, de datum en het arrangement. De kaart is drie jaar geldig en komt digitaal of in een mooie envelop.</p>
+              <a class="btn-primary cf__cta cf__gift-cta" href="https://cadeaukaart.vialuxury.com/Product/Products" target="_blank" rel="noopener">Bekijk onze cadeaukaarten</a>
+            </div>
+          </section>
         </div>
-
-        <!-- ── 4. Cadeaukaart (volle breedte): iemand anders blij maken ────────── -->
-        <section class="cf__gift">
-          <div class="cf__gift-text">
-            <p class="cf__eyebrow">Cadeautip</p>
-            <h2 class="cf__gift-title">Maak iemand anders blij met een ViaLuxury-experience</h2>
-            <p class="t-body c-grey">Een verjaardag, een jubileum of gewoon omdat het kan: met een ViaLuxury-cadeaukaart geef je een verblijf in een van onze handgekozen hotels, met alle extra's erbij.</p>
-            <p class="t-body c-grey">De ontvanger kiest zelf het hotel, de datum en het arrangement. De kaart is drie jaar geldig en komt digitaal of in een mooie envelop.</p>
-            <a class="btn-primary cf__cta cf__gift-cta" href="https://cadeaukaart.vialuxury.com/Product/Products" target="_blank" rel="noopener">Bekijk onze cadeaukaarten</a>
-          </div>
-          <!-- Productfoto (witte achtergrond, dus het blok is wit met een rand). -->
-          <img class="cf__gift-img" src="/images/checkout/giftcard.jpg" alt="ViaLuxury cadeaukaart met envelop" />
-        </section>
 
         <!-- ── 5. Veelgestelde vragen ──────────────────────────────────────── -->
         <section class="cf__faq">
@@ -407,8 +406,10 @@ useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
 
 /* 2 + 3. Kolommen ⅔ / ⅓ */
 .cf__cols { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: 24px; align-items: start; }
-.cf__receipt-wrap { grid-column: 1; }
-.cf__side { grid-column: 2; }
+/* Expliciete plaatsing: kassabon en cadeaukaartblok links (⅔), de rechterkolom loopt over beide rijen. */
+.cf__receipt-wrap { grid-column: 1; grid-row: 1; }
+.cf__gift { grid-column: 1; grid-row: 2; }
+.cf__side { grid-column: 2; grid-row: 1 / span 2; }
 
 /* Kassabon: grijs kader met wit vlak erin */
 .cf__receipt-wrap { padding: 16px; border-radius: var(--radius); background: var(--c-surface); }
@@ -473,12 +474,13 @@ useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
 
 /* 4. Cadeaukaart */
 /* Wit blok met rand: de productfoto heeft een witte achtergrond. */
+/* Foto links, tekst + knop rechts. */
 .cf__gift {
-  display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 40px; align-items: center;
-  padding: 28px 36px; border-radius: var(--radius); background: var(--c-white); border: 1px solid var(--c-light-grey);
+  display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 28px; align-items: center;
+  padding: 24px 28px; border-radius: var(--radius); background: var(--c-white); border: 1px solid var(--c-light-grey);
 }
 .cf__gift-img { display: block; width: 100%; height: auto; }
-.cf__gift-title { margin: 0 0 10px; font-size: var(--t-h1); font-weight: var(--w-black); line-height: 1.2; }
+.cf__gift-title { margin: 0 0 10px; font-size: var(--t-h2); font-weight: var(--w-black); line-height: 1.2; }
 .cf__gift-text p { margin: 0 0 10px; }
 .cf__gift-cta { width: auto; min-width: 260px; margin-top: 6px; }
 
@@ -500,7 +502,7 @@ useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
   .cf__hero-route { order: -1; height: 190px; width: auto; max-width: 100%; margin: 0 0 0 auto; }
   .cf__title { font-size: var(--t-h1); }
   .cf__cols { grid-template-columns: 1fr; gap: 20px; }
-  .cf__receipt-wrap, .cf__side { grid-column: auto; }
+  .cf__receipt-wrap, .cf__gift, .cf__side { grid-column: auto; grid-row: auto; }
   .cf__receipt-wrap { padding: 10px; }
   .cf__receipt { padding: 20px 16px; }
   .cf__trip-title { font-size: var(--t-h2); }
