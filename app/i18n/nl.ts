@@ -301,6 +301,7 @@ const nl: Record<string, string> = {
   'trip.itin.city.heading': 'Wat te doen tijdens je vakantie',
   'trip.itin.city.intro': 'Per hotel onze tips voor in de buurt.',
   'trip.itin.city.outingsAt': 'Leuke uitjes in de buurt van {hotel}',
+  'trip.itin.city.tipsAt': 'Tips in de buurt van {hotel}',
   'trip.reviews.moreInfo': 'Meer info',
   'trip.reviews.travelledIn': 'Op vakantie in {month}',
   'trip.reviews.prev': 'Vorige beoordeling',

@@ -10,6 +10,7 @@
             src="/images/logos/logo-vialuxury-horizontal-black.svg"
             alt="ViaLuxury"
           />
+          <span class="nav__proto" aria-hidden="true">MHR</span>
         </NuxtLink>
       </div>
 
@@ -60,6 +61,14 @@
   width: auto;
   /* Black wordmark -> white for the dark bar */
   filter: brightness(0) invert(1);
+}
+/* Subtiele prototype-sticker onder het logo. */
+.nav__brand a { position: relative; display: block; }
+.nav__proto {
+  position: absolute; left: 0; top: 100%; margin-top: 4px; pointer-events: none;
+  font-family: var(--font-body, inherit); font-size: 9px; line-height: 1; font-weight: 600;
+  letter-spacing: 0.14em; text-transform: uppercase; white-space: nowrap;
+  color: rgba(255, 255, 255, 0.5); border: 1px solid rgba(255, 255, 255, 0.22); border-radius: 3px; padding: 2px 5px;
 }
 .nav__service {
   display: inline-flex;
