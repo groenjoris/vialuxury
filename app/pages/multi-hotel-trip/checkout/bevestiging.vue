@@ -328,7 +328,8 @@ useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
       </div>
     </main>
 
-    <MultiHotelTripCheckoutFooter />
+    <!-- Uitgebreide sitefooter (zoals op de homepage en de dealpagina), niet de compacte checkout-footer. -->
+    <MultiHotelTripSiteFooter />
   </div>
 </template>
 
