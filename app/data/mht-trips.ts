@@ -148,7 +148,7 @@ const TRIPS: TripSpec[] = [
     gallery: [
       '/images/vakanties/001/nearby-marais.jpg',           //  2 platbodem in het Marais audomarois
       '/images/vakanties/001/clery-c4.jpg',                //  3 dessert - de drie 3-gangendiners
-      '/images/vakanties/001/route.jpg',                   //  4 kaart van de route
+      '/images/vakanties/001/routekaart-opaalkust.png',    //  4 kaart van de route
       { stop: 0, images: [                                 //  5-7 Chateau Tilques
         '/images/vakanties/001/tilques-t1.jpg',            //    gebouw: het kasteel vanuit de lucht
         '/images/vakanties/001/tilques-t2.jpg',            //    kamer
@@ -174,7 +174,7 @@ const TRIPS: TripSpec[] = [
       // Staat op plek 3 als sfeerbeeld, dus hier ook het hotel erbij; anders
       // zou er "Omgeving" boven staan.
       'clery-c4.jpg':               'Ch\u00e2teau Cl\u00e9ry|Dessert uit de keuken van Le Berthier',
-      'route.jpg':                  'Routekaart|De hele route langs de drie kastelen',
+      'routekaart-opaalkust.png':   'Routekaart|De hele route langs de drie kastelen',
       'tilques-t1.jpg':             'het kasteel in zijn park',
       'tilques-t2.jpg':             'kamer in het kasteel',
       'tilques-t5.jpg':             'het binnenzwembad',
