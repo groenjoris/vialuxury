@@ -41,7 +41,7 @@ useHead({ title: `${entry.value?.title ?? 'E-mail'} — ViaLuxury e-maildesigns`
   <div class="ev">
     <header class="ev__bar">
       <div class="ev__bar-left">
-        <NuxtLink class="ev__back" to="/multi-hotel-trip/emails">‹ Alle e-mails</NuxtLink>
+        <NuxtLink class="ev__back" to="/">‹ Startscherm</NuxtLink>
         <h1 class="ev__title">{{ entry?.title }}</h1>
       </div>
       <div class="ev__controls">

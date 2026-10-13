@@ -67,22 +67,20 @@
             @click="startMvpTrip"
           >MVP 12-11-2026</button>
         </div>
-      </section>
-
-      <!-- E-mails — ontwerpen uit email-designs/ (react-email), als statische HTML gehost
-           onder /multi-hotel-trip/emails. Linkjes, geen knoppen; de lijst groeit per e-mail. -->
-      <section class="start-section">
-        <h2 class="start-section__title">E-mails</h2>
-        <p class="start-section__lead">
-          E-mailontwerpen voor de multi-hotel vakanties
-          (<NuxtLink class="start-section__link" to="/multi-hotel-trip/emails">alle e-mails</NuxtLink>)
-        </p>
+        <!-- E-mails van de vakantie (bron: email-designs/, react-email; gehost als statische
+             HTML onder /multi-hotel-trip/emails). Linkjes, geen knoppen; de mails die nog
+             volgen staan er grijs bij, in de volgorde van "Wat er nu gebeurt". -->
+        <p class="start-section__sublead">E-mails</p>
         <ul class="start-section__links">
           <li>
-            <NuxtLink class="start-section__link" to="/multi-hotel-trip/emails/vakantie-bevestiging">Boekingsbevestiging vakantie</NuxtLink>
+            <NuxtLink class="start-section__link" to="/multi-hotel-trip/emails/vakantie-bevestiging">Boekingsbevestiging</NuxtLink>
           </li>
+          <li class="start-section__link--todo">Mail vol tips (twee weken voor vertrek) · volgt</li>
+          <li class="start-section__link--todo">Routes-mail (tips &amp; routes) · volgt</li>
+          <li class="start-section__link--todo">Welkom thuis (hoe was het?) · volgt</li>
         </ul>
       </section>
+
 
       <!-- Second release — full independent copy of First Release, the
            next iteration the client will build on. -->
@@ -538,16 +536,26 @@ definePageMeta({ layout: false })
   gap: var(--space-sm);
 }
 
-/* Lijst met linkjes (E-mails-box): geen knoppen, één link per regel. */
+/* Lijst met linkjes (e-mails in de Multi Hotel Trip-box): geen knoppen, één link per regel;
+   mails die nog volgen staan grijs zonder link. */
+.start-section__sublead {
+  margin: var(--space-md) 0 var(--space-xs);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+}
 .start-section__links {
   list-style: none;
   margin: 0;
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: var(--space-sm);
+  gap: 6px;
   font-size: 15px;
 }
+.start-section__link--todo { color: var(--color-text-muted, #9a9a9a); }
 
 .start-btn {
   display: flex;

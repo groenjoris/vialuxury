@@ -25,7 +25,10 @@ HFVR project
 /advertisement
 /backlog
 
-# E-mailontwerpen (email-designs/): alleen tooling-output negeren
+# Los e-mailproject met eigen git-repo (overige ViaLuxury-mails)
+/vialuxury-emails
+
+# E-mailontwerpen van de multi-hotel vakanties (email-designs/): alleen tooling-output negeren
 /email-designs/.react-email
 *.tsbuildinfo
 
@@ -33,6 +36,3 @@ HFVR project
 .env
 .env.*
 !.env.example
-
-# Bronmateriaal van de mailtemplates (29 MB), niet nodig voor hosting
-/email-designs/dc-templates/Folder uitwerken en formulier

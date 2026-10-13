@@ -60,17 +60,17 @@ automatisch:
 - R2 wordt niet automatisch gesynchroniseerd; "R1&R2"-wijzigingen worden
   handmatig in beide doorgevoerd.
 
-## E-mailontwerpen (`email-designs/`)
+## E-mails van de vakanties (`email-designs/`)
 
-De react-email-ontwerpen (voorheen het losse project `vialuxury-emails` op een eigen Vercel-URL)
-staan in `email-designs/` en worden als statische HTML gehost onder de prototype-URL:
-`npm run export` in `email-designs/` rendert elke e-mail (licht + donker) naar
-`public/emails/<slug>[.dark].html` en de lijst naar `app/data/mht-emails.json`; de gallery
-is `app/pages/multi-hotel-trip/emails/{index,[slug]}.vue` (licht/donker, desktop/mobiel,
-Kopieer/Download HTML met absolute afbeeldings-URL's). Afbeeldingen voor de mails staan in
+Alleen de e-mails van de multi-hotel vakanties (react-email) staan in `email-designs/`; de
+overige ViaLuxury-mails blijven in het losse, git-genegeerde project `vialuxury-emails/`
+(eigen repo + eigen Vercel-URL). `npm run export` in `email-designs/` rendert elke e-mail (licht
++ donker) naar `public/emails/<slug>[.dark].html` en de lijst naar `app/data/mht-emails.json`;
+de preview is `app/pages/multi-hotel-trip/emails/[slug].vue`. Afbeeldingen voor de mails in
 `public/images/mail/`. Na elke wijziging aan een e-mail: exporteren én het resultaat committen.
-Startscherm: box "E-mails" met linkjes per e-mail. Links in e-mails naar het prototype
-gebruiken `https://vialuxury.vercel.app/...`.
+Links naar de mails staan in het vakje "Multi Hotel Trip" op het startscherm (mails die nog
+volgen staan er grijs bij). Links in e-mails naar het prototype gebruiken
+`https://vialuxury.vercel.app/...`.
 
 ## Kaarten (Leaflet)
 
