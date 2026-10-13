@@ -135,19 +135,20 @@ function money(v: number) {
 }
 
 /* Preloader (ontwerpdocument, principe 5): de betaling/boeking wordt "bevestigd" — hier een
-   gesimuleerde 3 seconden met een rustige animatie en wisselende teksten, zodat niemand naar een
-   leeg scherm kijkt. Server én eerste client-render tonen de loader (geen flits), daarna de pagina. */
+   gesimuleerde 6 seconden met een rustige animatie en wisselende teksten (betaling + per hotel
+   de kamer), zodat niemand naar een leeg scherm kijkt. Server én eerste client-render tonen de
+   loader (geen flits), daarna de pagina. */
+const LOAD_MS = 6000
 const loading = ref(true)
 const loadStep = ref(0)
 const loadSteps = computed(() => [
   'Betaling ontvangen',
   ...trip.value.hotels.map((h) => `Kamer bevestigen bij ${h.name}…`),
-  'Bevestiging klaarzetten…',
 ])
 onMounted(() => {
-  const per = 3000 / loadSteps.value.length
+  const per = LOAD_MS / loadSteps.value.length
   const tick = setInterval(() => { loadStep.value = Math.min(loadStep.value + 1, loadSteps.value.length - 1) }, per)
-  setTimeout(() => { clearInterval(tick); loading.value = false; window.scrollTo(0, 0) }, 3000)
+  setTimeout(() => { clearInterval(tick); loading.value = false; window.scrollTo(0, 0) }, LOAD_MS)
 })
 
 useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
