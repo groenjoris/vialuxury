@@ -346,6 +346,10 @@ watch(open, () => nextTick(layoutKm))
   padding: 0 0 var(--space-xl);
   border-bottom: 1px solid var(--color-border-light);
 }
+/* Laatste hoofdstuk: geen sluitlijn onder "Wat te doen tijdens je vakantie" — de sectie
+   erna heeft zijn eigen scheidingslijn, anders staan er twee lijnen onder elkaar. */
+.tpc-ch:last-child .tpc-ch__panel { border-bottom: 0; }
+.tpc-ch:last-child .tpc-ch__head { border-bottom-color: transparent; }
 
 /* Mobiel / gestapeld: smallere tijdlijn. */
 .tpc--stacked .tpc-ch { padding-left: 40px; }
