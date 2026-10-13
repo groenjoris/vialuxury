@@ -17,9 +17,9 @@
               <h2 class="tfm__title">{{ t('trip.mapTitle') }}</h2>
               <p v-if="title" class="tfm__subtitle">{{ title }}</p>
             </div>
+            <!-- MVP: alleen hotels in de legenda — er staan geen bezienswaardigheden (POI's) op de kaart. -->
             <ul class="tfm__legend" aria-label="Legenda">
               <li><span class="tfm__legend-hotel">1</span>{{ t('trip.mapLegendHotels') }}</li>
-              <li><span class="tfm__legend-pin" v-html="POI_PIN_SVG"></span>{{ t('trip.mapLegendHighlights') }}</li>
             </ul>
             <!-- Prominente sluitknop, zoals "Sluit kaart" op /kaart; krimpt mee met de topbalk. -->
             <button type="button" class="tfm__close" @click="$emit('close')">
@@ -73,7 +73,6 @@
 import { useBodyScrollLock } from '~/composables-mvp-trip/useBodyScrollLock'
 import type { TripHotelModalData } from '~/components-mvp-trip/deal/TripHotelDetails.vue'
 import {
-  POI_PIN_SVG,
   POI_PIN_SIZE,
   poiPinSvg,
   addCountryBorders,
