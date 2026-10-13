@@ -103,8 +103,8 @@ const bookingRef = computed(() => {
 /* Wat er nu gebeurt — chronologisch (verticale tijdlijn). */
 const nextSteps = computed(() => [
   { when: 'Nu', title: 'Bevestiging in je mailbox', text: `Binnen een paar minuten staat deze bevestiging op ${email.value}, met je boekingsnummer en alles wat je hier ziet.` },
-  { when: `Rond ${docsDate.value}`, title: 'Een mail vol tips', text: 'Twee weken voor vertrek mailen we je de tips van Yvette per hotel: wat je niet mag missen, waar je lekker eet en wat je beter vooraf reserveert. Zo bereid je je ontspannen voor.' },
-  { when: checkIn.value, title: `Inchecken bij ${trip.value.hotels[0]?.name}`, text: `Vanaf ${stays.value[0]?.checkInTime} uur staat je eerste kamer klaar. Je hoeft niets te printen; je naam en boekingsnummer zijn genoeg.` },
+  { when: `Rond ${docsDate.value}`, title: 'Een mail vol tips', text: 'Twee weken voor vertrek mailen we je tips zodat je je perfect kan voorbereiden op je reis.' },
+  { when: checkIn.value, title: `Inchecken bij ${trip.value.hotels[0]?.name}`, text: `Vanaf ${stays.value[0]?.checkInTime} uur. Je hoeft niets te printen, je naam en identiteitsbewijs zijn genoeg.` },
   { when: checkOut.value, title: 'Weer thuis', text: 'Na je vakantie ontvang je een mail met de vraag hoe het was. Daar helpen we andere reizigers mee.' },
 ])
 
