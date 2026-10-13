@@ -273,7 +273,7 @@ useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
               </ol>
             </section>
 
-            <section class="card">
+            <section class="card card--tint">
               <h2 class="cf__h2">Wat je zelf doet</h2>
               <ul class="cf__todos">
                 <li class="cf__todo">
@@ -293,7 +293,7 @@ useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
               <NuxtLink class="cf__link cf__cta-link" :to="routesHref">Bekijk de routes</NuxtLink>
             </section>
 
-            <section class="card">
+            <section class="card card--tint">
               <h2 class="cf__h2">Boeking terugvinden</h2>
               <p class="t-body c-grey">Je boeking staat in je ViaLuxury-account op <b>{{ email }}</b>. Inloggen doe je zonder wachtwoord: je krijgt een inloglink per mail.</p>
               <a class="cf__link cf__cta-link" href="#" @click.prevent>Bekijk je boeking</a>
@@ -342,6 +342,8 @@ useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
 .cf__eyebrow { margin: 0 0 4px; font-size: var(--t-caption); font-weight: var(--w-medium); letter-spacing: 0.06em; text-transform: uppercase; color: var(--c-medium-grey); }
 .cf__link { color: var(--c-via-orange); text-decoration: underline; text-underline-offset: 2px; font-weight: var(--w-medium); }
 .card { border: 1px solid var(--c-light-grey); border-radius: var(--radius); padding: var(--card-pad, 20px); background: var(--c-white); }
+/* Beige vlak (zelfde tint als het boekingsnummer) voor "Wat je zelf doet" en "Boeking terugvinden". */
+.card--tint { background: #f4f1ec; border-color: #f4f1ec; }
 .cf__chev { flex-shrink: 0; transition: transform 200ms ease; }
 .cf__chev--open { transform: rotate(180deg); }
 .cf__cta { display: inline-flex; align-items: center; justify-content: center; width: 100%; margin-top: 14px; text-decoration: none; }
