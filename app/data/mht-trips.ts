@@ -130,33 +130,32 @@ const TRIPS: TripSpec[] = [
       '/images/vakanties/001/nearby-saint-omer.jpg',
       '/images/vakanties/001/nearby-marais.jpg',
     ],
-    // Beeldplan volgens de beeldredactie: 1 bestemming (coverImage), 2 een
-    // belevingsmoment onderweg, 3 de belangrijkste include, 4 de routekaart en
-    // 5 het mooiste hotelbeeld — daarna per hotel maximaal vier foto's in de
-    // volgorde hotel, kamer, eten, USP, en als slot de laatste stop.
-    // Tilques staat met zijn hotelfoto al op plek 5, dus dat blok slaat die over.
+    // Beeldplan volgens de checklist. Verplicht op 1 t/m 5: droombeeld van de
+    // route, een belevingsmoment onderweg, de belangrijkste include, een
+    // hoogtepunt onderweg en pas dan het mooiste hotelbeeld. Daarna verblijf en
+    // beleving om en om, de op een na belangrijkste include (het ontbijt) een
+    // keer, en als slot een omgevingsbeeld van de laatste stop. Veertien foto's,
+    // het maximum. De routekaart hoort volgens de checklist niet in de reeks.
     gallery: [
-      '/images/vakanties/001/nearby-marais.jpg',        // 2 platbodem in het Marais audomarois
-      '/images/vakanties/001/clery-c4.jpg',             // 3 dessert — het 3-gangendiner
-      '/images/vakanties/001/route.jpg',                // 4 routekaart
-      { stop: 0, images: [                              // 5-8 Château Tilques
-        '/images/vakanties/001/tilques-t1.jpg',         //   het kasteel vanuit de lucht
-        '/images/vakanties/001/tilques-t2.jpg',         //   kamer
-        '/images/vakanties/001/tilques-t3.jpg',         //   restaurant met uitzicht op het kasteel
-        '/images/vakanties/001/tilques-t5.jpg',         //   het binnenzwembad
+      '/images/vakanties/001/nearby-marais.jpg',           //  2 platbodem in het Marais audomarois
+      '/images/vakanties/001/clery-c4.jpg',                //  3 dessert - de drie 3-gangendiners
+      '/images/vakanties/001/nearby-boulogne.jpg',         //  4 hoogtepunt onderweg: Boulogne-sur-Mer
+      { stop: 0, images: [                                 //  5-7 Chateau Tilques
+        '/images/vakanties/001/tilques-t1.jpg',            //    het kasteel vanuit de lucht
+        '/images/vakanties/001/tilques-t2.jpg',            //    kamer
+        '/images/vakanties/001/extra-tilques-ontbijt.jpg', //    ontbijt in de tuin - include nr. 2
       ] },
-      { stop: 1, images: [                              // 9-12 Château Clery
-        '/images/vakanties/001/clery-c1.jpg',           //   het kasteel met het gazon
-        '/images/vakanties/001/clery-c2.jpg',           //   kamer
-        '/images/vakanties/001/extra-clery-diner.jpg',  //   het serrerestaurant
-        '/images/vakanties/001/clery-c5.jpg',           //   de sauna
+      '/images/vakanties/001/opaalkust-2.jpg',             //  8 onderweg: strandhuisjes aan de Opaalkust
+      { stop: 1, images: [                                 //  9-10 Chateau Clery
+        '/images/vakanties/001/clery-c1.jpg',              //    het kasteel met het gazon
+        '/images/vakanties/001/clery-c2.jpg',              //    kamer
       ] },
-      { stop: 2, images: [                              // 13-15 Hotel Royal Beaulaincourt
-        '/images/vakanties/001/beaulaincourt-b1.jpg',   //   het stadspaleis
-        '/images/vakanties/001/beaulaincourt-b2.jpg',   //   kamer
-        '/images/vakanties/001/extra-beaulaincourt-diner.jpg', // aan tafel
+      '/images/vakanties/001/opaalkust-3.jpg',             // 11 onderweg: oude straat aan de kust
+      { stop: 2, images: [                                 // 12-13 Hotel Royal Beaulaincourt
+        '/images/vakanties/001/beaulaincourt-b1.jpg',      //    het stadspaleis met binnenplaats
+        '/images/vakanties/001/beaulaincourt-b2.jpg',      //    kamer
       ] },
-      '/images/vakanties/001/nearby-bethune.jpg',       // 16 slot: de Grand'Place van Bethune
+      '/images/vakanties/001/nearby-bethune.jpg',          // 14 slot: de Grand'Place van Bethune
     ],
     type: 'auto',
     stops: [
