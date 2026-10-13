@@ -3,7 +3,7 @@
        (OSRM-etappes) als witte lijn, witte genummerde bolletjes en de plaatsnamen
        ernaast, zonder kaartlaag. Zelfde equirectangular projectie als het routekaartje;
        de SVG mag buiten zijn viewBox tekenen (lange plaatsnamen). -->
-  <svg class="crs" :viewBox="`0 0 ${W} ${H}`" overflow="visible" role="img" :aria-label="ariaLabel">
+  <svg class="crs" :viewBox="viewBox" overflow="visible" role="img" :aria-label="ariaLabel">
     <template v-if="legPaths.length">
       <path v-for="(p, i) in legPaths" :key="`leg-${i}`" class="crs__route" :class="{ 'crs__route--dashed': p.dashed }" :d="p.d" />
     </template>
@@ -27,7 +27,9 @@ const props = withDefaults(defineProps<{
   /** Tekenruimte (viewBox) in px; de SVG schaalt mee met zijn container. */
   width?: number
   height?: number
-}>(), { legs: () => [], width: 380, height: 320 })
+  /** Kant van de plaatsnaam per stop (anders automatisch: weg van de route). */
+  labelSides?: ('left' | 'right' | undefined)[]
+}>(), { legs: () => [], width: 380, height: 320, labelSides: () => [] })
 
 const W = computed(() => props.width)
 const H = computed(() => props.height)
@@ -76,17 +78,28 @@ const markers = computed(() => props.stops.map((s, i) => {
     const other = props.stops[i === props.stops.length - 1 ? i - 1 : i + 1]!
     dx = project(other.lng, other.lat)[0] - x; n = 1
   }
-  let right = n ? dx / n < 0 : true
-  if (right && x + gap + textW > W.value + 24) right = false
-  if (!right && x - gap - textW < -24) right = true
-  return { x: Number(x.toFixed(1)), y: Number(y.toFixed(1)), labelX: right ? gap : -gap, anchor: right ? 'start' : 'end' }
+  const forced = props.labelSides[i]
+  const right = forced ? forced === 'right' : (n ? dx / n < 0 : true)
+  return { x: Number(x.toFixed(1)), y: Number(y.toFixed(1)), labelX: right ? gap : -gap, anchor: right ? 'start' : 'end', textW, gap }
 }))
+
+/** De viewBox groeit mee met de plaatsnamen (links of rechts buiten het kader), zodat de
+ *  SVG als geheel — inclusief namen — binnen zijn container blijft. */
+const viewBox = computed(() => {
+  let minX = 0, maxX = W.value
+  for (const m of markers.value) {
+    const left = m.anchor === 'end' ? m.x - m.gap - m.textW : m.x - R
+    const right = m.anchor === 'start' ? m.x + m.gap + m.textW : m.x + R
+    minX = Math.min(minX, left - 6); maxX = Math.max(maxX, right + 6)
+  }
+  return `${minX.toFixed(1)} 0 ${(maxX - minX).toFixed(1)} ${H.value}`
+})
 
 const ariaLabel = computed(() => `Route: ${props.stops.map((s, i) => `${i + 1}. ${s.label}`).join(' – ')}`)
 </script>
 
 <style scoped>
-.crs { display: block; width: 100%; height: auto; overflow: visible; filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.35)); }
+.crs { display: block; overflow: visible; filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.35)); }
 .crs__route { fill: none; stroke: #fff; stroke-width: 5; stroke-linecap: round; stroke-linejoin: round; }
 .crs__route--dashed { stroke-dasharray: 2 10; }
 .crs__dot { fill: #fff; }

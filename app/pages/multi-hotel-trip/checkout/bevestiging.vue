@@ -103,36 +103,19 @@ const bookingRef = computed(() => {
 /* Wat er nu gebeurt — chronologisch (verticale tijdlijn). */
 const nextSteps = computed(() => [
   { when: 'Nu', title: 'Bevestiging in je mailbox', text: `Binnen een paar minuten staat deze bevestiging op ${email.value}, met je boekingsnummer en alles wat je hier ziet.` },
-  { when: `Rond ${docsDate.value}`, title: 'Je reisdocument', text: 'Twee weken voor vertrek mailen we je reisdocument: adressen, parkeren, inchecktijden en de tips van Yvette per hotel.' },
+  { when: `Rond ${docsDate.value}`, title: 'Een mail vol tips', text: 'Twee weken voor vertrek mailen we je de tips van Yvette per hotel: wat je niet mag missen, waar je lekker eet en wat je beter vooraf reserveert. Zo bereid je je ontspannen voor.' },
   { when: checkIn.value, title: `Inchecken bij ${trip.value.hotels[0]?.name}`, text: `Vanaf ${stays.value[0]?.checkInTime} uur staat je eerste kamer klaar. Je hoeft niets te printen; je naam en boekingsnummer zijn genoeg.` },
   { when: checkOut.value, title: 'Weer thuis', text: 'Na je vakantie ontvang je een mail met de vraag hoe het was. Daar helpen we andere reizigers mee.' },
 ])
 
-/* Wat je zelf doet. */
-const todos = computed(() => [
-  `Nu: niets. Je boeking is rond; tot ${cancelDate.value} (30 dagen voor aankomst) kun je gratis annuleren of wijzigen.`,
-  'Zet de aankomst- en vertrekdatum in je agenda; de inchecktijd per hotel staat hiernaast in je boeking.',
-  'Download de routes voor je navigatie (hieronder) of plan ze in je eigen app.',
-  'Neem een geldig identiteitsbewijs mee; de hotels vragen daar bij het inchecken om.',
-])
+/* Wat je zelf doet: kort — niets, en een identiteitsbewijs meenemen. */
+const todos = [
+  'Je hoeft niets te doen: je boeking is rond.',
+  'Zorg dat je op vakantie een geldig identiteitsbewijs bij je hebt (paspoort, rijbewijs of ID-kaart); de hotels vragen daar bij het inchecken om.',
+]
 
-/* Download routes — per etappe (thuis → hotel 1 → … → thuis), met afstand/reistijd uit de reisdata. */
-const routeDownloads = computed(() => {
-  const d = detail.value
-  const names = trip.value.hotels.map(h => h.name)
-  const home = d?.fromHome?.city ? `Thuis (${d.fromHome.city})` : 'Thuis'
-  const fmtTravel = (t?: { km?: number; minutes: number }) => {
-    if (!t) return ''
-    const hrs = Math.floor(t.minutes / 60), min = t.minutes % 60
-    const time = hrs ? `${hrs} u${min ? ` ${min} min` : ''}` : `${min} min`
-    return t.km ? `${t.km} km · ${time}` : time
-  }
-  const legs: { from: string; to: string; meta: string }[] = []
-  if (names[0]) legs.push({ from: home, to: names[0], meta: fmtTravel(d?.fromHomeByLocale?.nl ?? (d?.fromHome ? { minutes: d.fromHome.minutes } : undefined)) })
-  for (let i = 1; i < names.length; i++) legs.push({ from: names[i - 1]!, to: names[i]!, meta: fmtTravel(d?.stops[i]?.travel) })
-  if (names.length) legs.push({ from: names[names.length - 1]!, to: d?.loop ? names[0]! : home, meta: fmtTravel(d?.returnTravel) })
-  return legs
-})
+/** Routepagina (aparte pagina ná het boeken, knop "Bekijk de routes"). */
+const routesHref = '/multi-hotel-trip/checkout/routes'
 
 /* Veelgestelde vragen (accordeon). */
 const faq = computed(() => [
@@ -232,10 +215,16 @@ useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
                         {{ item }}
                       </li>
                     </ul>
-                    <p class="t-caption cf__stay-times">
-                      <span><b>Check-in</b> {{ h.from }} vanaf {{ h.checkInTime }} uur</span>
-                      <span><b>Check-out</b> {{ h.to }} tot {{ h.checkOutTime }} uur</span>
-                    </p>
+                    <div class="cf__stay-times">
+                      <div class="cf__stay-time">
+                        <span class="cf__stay-time-label">Check-in</span>
+                        <span class="t-body">{{ h.from }} · vanaf {{ h.checkInTime }} uur</span>
+                      </div>
+                      <div class="cf__stay-time">
+                        <span class="cf__stay-time-label">Check-out</span>
+                        <span class="t-body">{{ h.to }} · tot {{ h.checkOutTime }} uur</span>
+                      </div>
+                    </div>
                   </div>
                 </li>
               </ol>
@@ -262,16 +251,18 @@ useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
               <div class="cf__price">
                 <div class="cf__price-row"><span class="t-body">{{ trip.typeLabel }}, {{ persons }} personen, incl. flexibel annuleren</span><span class="t-body">{{ money(tripTotal) }}</span></div>
                 <div class="cf__price-row"><span class="t-body">Boekingskosten</span><span class="t-body">{{ money(BOOKING_FEE) }}</span></div>
-                <div class="cf__price-row cf__price-row--total"><span class="t-body t-bold">Betaald</span><span class="t-body t-bold">{{ money(total) }}</span></div>
-                <p class="t-caption c-mgrey cf__price-note">In de hotels betaal je alleen de lokale toeristenbelasting.</p>
+                <div class="cf__price-row cf__price-row--total"><span class="t-body t-bold">Totaal</span><span class="t-body t-bold">{{ money(total) }}</span></div>
+                <div class="cf__price-row"><span class="t-body">Betaald</span><span class="t-body">{{ money(total) }}</span></div>
+                <div class="cf__price-row cf__price-row--due"><span class="t-body t-bold">Te betalen</span><span class="t-body t-bold">{{ money(0) }}</span></div>
+                <p class="t-caption c-mgrey cf__price-note">In de hotels betaal je alleen<br>de lokale toeristenbelasting.</p>
               </div>
             </div>
           </section>
 
           <!-- ── 3. Rechterkolom (⅓) ─────────────────────────────────────────── -->
           <aside class="cf__side">
-            <section class="card cf__ref">
-              <p class="t-caption c-mgrey">Boekingsnummer</p>
+            <section class="cf__ref">
+              <p class="t-body">Boekingsnummer</p>
               <p class="cf__ref-number">{{ bookingRef }}</p>
             </section>
 
@@ -298,16 +289,8 @@ useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
 
             <section class="card">
               <h2 class="cf__h2">Download routes</h2>
-              <p class="t-caption c-grey cf__card-intro">Per etappe voor je navigatie, als GPX of direct in Google Maps. De routes staan ook in je reisdocument.</p>
-              <ul class="cf__routes">
-                <li v-for="leg in routeDownloads" :key="`${leg.from}-${leg.to}`" class="cf__route">
-                  <svg class="cf__route-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="6" cy="5" r="2.5" stroke="currentColor" stroke-width="2" /><circle cx="18" cy="19" r="2.5" stroke="currentColor" stroke-width="2" /><path d="M6 7.5V13a3 3 0 0 0 3 3h6a3 3 0 0 1 3 3v-2.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></svg>
-                  <div class="cf__route-body">
-                    <p class="t-body cf__route-title">{{ leg.from }} → {{ leg.to }}</p>
-                    <p class="t-caption c-mgrey"><template v-if="leg.meta">{{ leg.meta }} · </template><a class="cf__link" href="#" @click.prevent>GPX</a> · <a class="cf__link" href="#" @click.prevent>Google Maps</a></p>
-                  </div>
-                </li>
-              </ul>
+              <p class="t-body c-grey">Yvette heeft mooie routes voor je samengesteld. Je kunt ze nu alvast downloaden; je krijgt hierover ook nog een aparte mail.</p>
+              <NuxtLink class="btn-primary cf__cta" :to="routesHref">Bekijk de routes</NuxtLink>
             </section>
 
             <section class="card">
@@ -317,24 +300,24 @@ useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
               <p class="t-caption c-mgrey cf__find-note">Geen mail ontvangen? Zoek je boeking op met je boekingsnummer en e-mailadres, of <a class="cf__link" :href="shareHref">deel de boeking met je reisgenoot</a>.</p>
             </section>
           </aside>
-        </div>
 
-        <!-- ── 4. Cadeaukaart: iemand anders blij maken ────────────────────── -->
-        <section class="cf__gift">
-          <div class="cf__gift-text">
-            <p class="cf__eyebrow">Cadeautip</p>
-            <h2 class="cf__gift-title">Maak iemand anders blij met een ViaLuxury-experience</h2>
-            <p class="t-body c-grey">Een verjaardag, een jubileum of gewoon omdat het kan: met een ViaLuxury-cadeaukaart geef je een verblijf in een van onze handgekozen hotels, met alle extra's erbij.</p>
-            <p class="t-body c-grey">De ontvanger kiest zelf het hotel, de datum en het arrangement. De kaart is drie jaar geldig en komt digitaal of in een mooie envelop.</p>
-            <a class="btn-primary cf__cta cf__gift-cta" href="https://cadeaukaart.vialuxury.com/Product/Products" target="_blank" rel="noopener">Bekijk onze cadeaukaarten</a>
-          </div>
-          <!-- Placeholder-afbeelding van de cadeaukaart (TODO: echte productfoto). -->
-          <div class="cf__giftcard" aria-hidden="true">
-            <img src="/images/logo-vialuxury-horizontal.svg" alt="" class="cf__giftcard-logo" />
-            <span class="cf__giftcard-label">Cadeaukaart</span>
-            <span class="cf__giftcard-sub">Experience more</span>
-          </div>
-        </section>
+            <!-- ── 4. Cadeaukaart (⅔, onder de kassabon): iemand anders blij maken ── -->
+          <section class="cf__gift">
+            <div class="cf__gift-text">
+              <p class="cf__eyebrow">Cadeautip</p>
+              <h2 class="cf__gift-title">Maak iemand anders blij met een ViaLuxury-experience</h2>
+              <p class="t-body c-grey">Een verjaardag, een jubileum of gewoon omdat het kan: met een ViaLuxury-cadeaukaart geef je een verblijf in een van onze handgekozen hotels, met alle extra's erbij.</p>
+              <p class="t-body c-grey">De ontvanger kiest zelf het hotel, de datum en het arrangement. De kaart is drie jaar geldig en komt digitaal of in een mooie envelop.</p>
+              <a class="btn-primary cf__cta cf__gift-cta" href="https://cadeaukaart.vialuxury.com/Product/Products" target="_blank" rel="noopener">Bekijk onze cadeaukaarten</a>
+            </div>
+            <!-- Placeholder-afbeelding van de cadeaukaart (TODO: echte productfoto). -->
+            <div class="cf__giftcard" aria-hidden="true">
+              <img src="/images/logo-vialuxury-horizontal.svg" alt="" class="cf__giftcard-logo" />
+              <span class="cf__giftcard-label">Cadeaukaart</span>
+              <span class="cf__giftcard-sub">Experience more</span>
+            </div>
+          </section>
+        </div>
 
         <!-- ── 5. Veelgestelde vragen ──────────────────────────────────────── -->
         <section class="cf__faq">
@@ -405,11 +388,12 @@ useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
 }
 .cf__hero::before { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0, 0, 0, 0.12) 0%, rgba(0, 0, 0, 0.62) 100%); }
 .cf__hero-inner {
-  position: relative; display: grid; grid-template-columns: minmax(0, 1fr) 400px; gap: 40px; align-items: end;
+  position: relative; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 40px; align-items: end;
   padding-top: 48px; padding-bottom: 40px; width: 100%;
 }
 .cf__hero-text { max-width: 640px; }
-.cf__hero-route { align-self: center; width: 400px; max-width: 100%; margin-top: 16px; }
+/* De route schaalt op hoogte; de viewBox omvat ook de plaatsnamen, dus alles blijft binnen de contentbreedte. */
+.cf__hero-route { align-self: center; justify-self: end; height: 320px; width: auto; max-width: 100%; margin-top: 16px; }
 .cf__check {
   display: inline-flex; align-items: center; justify-content: center;
   width: 64px; height: 64px; margin-bottom: 16px; border-radius: 50%;
@@ -426,6 +410,10 @@ useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
 
 /* 2 + 3. Kolommen ⅔ / ⅓ */
 .cf__cols { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: 24px; align-items: start; }
+/* Expliciete plaatsing: kassabon en cadeaukaartblok links (⅔), de rechterkolom loopt over beide rijen. */
+.cf__receipt-wrap { grid-column: 1; grid-row: 1; }
+.cf__gift { grid-column: 1; grid-row: 2; }
+.cf__side { grid-column: 2; grid-row: 1 / span 2; }
 
 /* Kassabon: grijs kader met wit vlak erin */
 .cf__receipt-wrap { padding: 16px; border-radius: var(--radius); background: var(--c-surface); }
@@ -452,12 +440,12 @@ useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
 .cf__stay-items { list-style: none; margin: 0 0 8px; padding: 0; display: flex; flex-direction: column; gap: 3px; }
 .cf__stay-items li { display: flex; align-items: flex-start; gap: 6px; }
 .cf__stay-items svg { flex-shrink: 0; margin-top: 2px; color: var(--c-via-green); }
-.cf__stay-times { margin: 0; display: flex; flex-wrap: wrap; gap: 4px 18px; color: var(--c-dark-grey); }
-.cf__stay-times b { color: var(--c-via-black); }
+.cf__stay-times { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 12px; max-width: 380px; margin-top: 10px; }
+.cf__stay-time { display: flex; flex-direction: column; gap: 2px; padding: 8px 12px; border: 1px solid var(--c-light-grey); border-radius: var(--radius-sm); }
+.cf__stay-time-label { font-size: var(--t-caption); font-weight: var(--w-medium); letter-spacing: 0.04em; text-transform: uppercase; color: var(--c-medium-grey); }
 
-/* Flexibel annuleren / bagagetransfer: de tekst lijnt uit met de hotelnamen (kolom 3, 192px),
-   het icoon (22px + 10px) staat ervoor in de fotokolom. */
-.cf__extras { list-style: none; margin: 24px 0 0; padding: 20px 0 0 160px; border-top: 1px solid var(--c-light-grey); display: flex; flex-direction: column; gap: 14px; }
+/* Flexibel annuleren / bagagetransfer: de rij (icoon + tekst) begint in de kolom van de hotelnamen (192px). */
+.cf__extras { list-style: none; margin: 24px 0 0; padding: 20px 0 0 192px; border-top: 1px solid var(--c-light-grey); display: flex; flex-direction: column; gap: 14px; }
 .cf__extra { display: flex; gap: 10px; align-items: flex-start; }
 .cf__extra p { margin: 0; }
 .cf__extra-icon { flex-shrink: 0; width: 22px; height: 22px; margin-top: 1px; color: var(--c-via-green); }
@@ -465,35 +453,31 @@ useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
 .cf__price { margin-top: 20px; padding-top: 14px; border-top: 1px solid var(--c-light-grey); }
 .cf__price-row { display: flex; justify-content: space-between; gap: 12px; padding: 3px 0; }
 .cf__price-row--total { margin-top: 4px; padding-top: 10px; border-top: 1px solid var(--c-light-grey); font-size: var(--t-body-lg); }
-.cf__price-note { margin: 6px 0 0; }
+.cf__price-row--due { padding-top: 6px; }
+.cf__price-note { margin: 2px 0 0; text-align: right; line-height: 1.4; }
 
 /* Rechterkolom */
 .cf__side { display: flex; flex-direction: column; gap: 16px; }
-.cf__ref { text-align: center; }
+.cf__ref { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 18px; border-radius: var(--radius); background: #f4f1ec; }
 .cf__ref p { margin: 0; }
-.cf__ref-number { margin-top: 2px; font-size: var(--t-h2); font-weight: var(--w-black); letter-spacing: 0.04em; }
+.cf__ref-number { font-size: var(--t-body-lg); font-weight: var(--w-black); letter-spacing: 0.04em; }
+.cf__side .card { padding: 16px 20px 20px; }
+.cf__side .cf__h2 { margin-bottom: 8px; }
 .cf__list { margin: 0; padding-left: 20px; list-style: disc outside; display: flex; flex-direction: column; gap: 8px; }
 .cf__list li { display: list-item; }
-.cf__card-intro { margin: -4px 0 12px; }
 .cf__timeline { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 14px; }
 .cf__step { position: relative; display: flex; gap: 12px; }
 .cf__step p { margin: 0; }
 .cf__step-dot { flex-shrink: 0; width: 12px; height: 12px; margin-top: 5px; border-radius: 50%; background: var(--c-via-green); box-shadow: 0 0 0 3px var(--c-green-pale); }
 .cf__step:not(:last-child)::before { content: ''; position: absolute; left: 5px; top: 20px; bottom: -14px; width: 2px; background: var(--c-light-grey); }
-.cf__routes { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
-.cf__route { display: flex; gap: 10px; align-items: flex-start; }
-.cf__route p { margin: 0; }
-.cf__route-icon { flex-shrink: 0; width: 20px; height: 20px; margin-top: 1px; color: var(--c-via-black); }
-.cf__route-body { min-width: 0; }
-.cf__route-title { font-weight: var(--w-medium); }
 .cf__find-note { margin: 10px 0 0; }
 
 /* 4. Cadeaukaart */
 .cf__gift {
-  display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 40px; align-items: center;
-  padding: 32px 36px; border-radius: var(--radius); background: var(--c-surface);
+  display: grid; grid-template-columns: minmax(0, 1fr) 240px; gap: 32px; align-items: center;
+  padding: 28px 32px; border-radius: var(--radius); background: var(--c-surface);
 }
-.cf__gift-title { margin: 0 0 10px; font-size: var(--t-h1); font-weight: var(--w-black); line-height: 1.2; }
+.cf__gift-title { margin: 0 0 10px; font-size: var(--t-h2); font-weight: var(--w-black); line-height: 1.2; }
 .cf__gift-text p { margin: 0 0 10px; }
 .cf__gift-cta { width: auto; min-width: 260px; margin-top: 6px; }
 .cf__giftcard {
@@ -521,9 +505,10 @@ useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
   .card { padding: 16px; }
   .cf__hero { min-height: 440px; }
   .cf__hero-inner { grid-template-columns: 1fr; gap: 20px; padding-top: 28px; padding-bottom: 24px; }
-  .cf__hero-route { order: -1; width: 68%; max-width: 280px; margin: 0 0 0 auto; }
+  .cf__hero-route { order: -1; height: 190px; width: auto; max-width: 100%; margin: 0 0 0 auto; }
   .cf__title { font-size: var(--t-h1); }
   .cf__cols { grid-template-columns: 1fr; gap: 20px; }
+  .cf__receipt-wrap, .cf__gift, .cf__side { grid-column: auto; grid-row: auto; }
   .cf__receipt-wrap { padding: 10px; }
   .cf__receipt { padding: 20px 16px; }
   .cf__trip-title { font-size: var(--t-h2); }
