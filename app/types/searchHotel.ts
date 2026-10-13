@@ -35,6 +35,11 @@ export interface MultiHotelTripInfo {
   coverImage?: string
   /** Omgevingsfoto's (PDP-gallery na de cover); de collage-dealcard toont de eerste twee. */
   nearbyImages?: string[]
+  /** De twee tegels rechts op de collage-dealcard, onder het routekaartje:
+   *  eerst de belangrijkste package include (lukt dat niet, dan een
+   *  omgevingsbeeld), daarna het mooiste hotel van de route (of een kamer als
+   *  het gebouw niets is). Zonder deze lijst vallen we terug op nearbyImages. */
+  cardPhotos?: string[]
   /** Waar de card voorlopig naartoe linkt zolang er geen vakantie-PDP is. */
   pdpHref?: string
 }

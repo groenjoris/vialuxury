@@ -420,11 +420,16 @@ const tripOverlay = computed(() => isTrip.value && tripCardVariant.value === 'ov
 const tripInverse = computed(() => isTrip.value && tripCardVariant.value === 'inverse')
 const tripTimeline = computed(() => isTrip.value && tripCardVariant.value === 'timeline')
 const tripCollage = computed(() => isTrip.value && tripCardVariant.value === 'collage')
-/** Collage: de twee omgevingsfoto's die de PDP-gallery als eerste toont (na de cover);
- *  zonder omgevingsfoto's de eerste hotelfoto's. */
+/** Collage: de twee tegels onder het routekaartje. `cardPhotos` legt ze
+ *  redactioneel vast — eerst de belangrijkste package include (lukt dat niet,
+ *  dan een omgevingsbeeld), daarna het mooiste hotel van de route. Staat die
+ *  lijst er niet, dan vallen we terug op de omgevingsfoto's en anders op de
+ *  eerste hotelfoto's. */
 const tripCollagePhotos = computed(() => {
   const trip = props.hotel?.trip
-  const nearby = (trip?.nearbyImages ?? []).slice(0, 2)
+  const gekozen = (trip?.cardPhotos ?? []).slice(0, 2)
+  if (gekozen.length === 2) return gekozen
+  const nearby = [...gekozen, ...(trip?.nearbyImages ?? [])].slice(0, 2)
   if (nearby.length === 2) return nearby
   return [...nearby, ...(trip?.stops ?? []).map(s => s.image).filter((u): u is string => !!u)].slice(0, 2)
 })

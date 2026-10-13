@@ -81,6 +81,9 @@ interface TripSpec {
    *  in de PDP-gallery — de eerste vier staan dus bij landing in beeld; de
    *  hotelfoto's komen daarna (alleen in de foto-pop-up). */
   nearbyImages?: string[]
+  /** De twee tegels rechts op de collage-dealcard, onder het routekaartje:
+   *  de belangrijkste package include en het mooiste hotelbeeld. */
+  cardPhotos?: string[]
   /** Heenreis vanaf huis (prototype: Utrecht) naar het eerste hotel — onder de
    *  minimap: "Vanaf Utrecht: 3 uur naar Béthune". Schatting. */
   fromHome?: { city: string; minutes: number }
@@ -122,6 +125,11 @@ const TRIPS: TripSpec[] = [
     // Definitieve beelden (map "Opaalkust Final", 2026-10-07): hoofdbeeld 1, dan 2 en 3,
     // daarna per hotel vijf foto's (T1–5 Tilques, C1–5 Cléry, B1–5 Beaulaincourt).
     coverImage: '/images/vakanties/001/opaalkust-1.jpg',
+    // De twee tegels rechts op de dealcard, onder het routekaartje.
+    cardPhotos: [
+      '/images/vakanties/001/clery-c4.jpg',          // het dessert van Le Berthier
+      '/images/vakanties/001/tilques-t1.jpg',        // Chateau Tilques vanuit de lucht
+    ],
     fromHome: { city: 'Utrecht', minutes: 225 },
     // Onder de minimap per taal: nl Utrecht, nl-BE Brussel (uit het document), de Düsseldorf (OSRM).
     fromHomeByLocale: {
@@ -224,6 +232,11 @@ const TRIPS: TripSpec[] = [
     id: 'trip-hanzesteden',
     slug: '7-daagse-roadtrip-langs-de-hanzesteden-zwolle-deventer-zutphen',
     coverImage: '/images/vakanties/cover/hanzesteden.jpg',
+    // De twee tegels rechts op de dealcard, onder het routekaartje.
+    cardPhotos: [
+      'https://asset.vialuxury.com/assets/4057689f-b08a-406e-a5f5-219efc9b81b0', // een gerecht onder de stolp
+      '/images/vakanties/002/hotel-1.jpg',           // Hotel Mooirivier aan de Vecht
+    ],
     fromHome: { city: 'Utrecht', minutes: 75 },
     type: 'auto',
     stops: [
@@ -328,6 +341,11 @@ const TRIPS: TripSpec[] = [
     // Het oude hoofdbeeld was een luchtfoto van een van de landgoederen, dus
     // een hotelbeeld; dat mag niet op plek 1. Nu Kasteel Ruurlo.
     coverImage: '/images/vakanties/003/ruurlo.jpg',
+    // De twee tegels rechts op de dealcard, onder het routekaartje.
+    cardPhotos: [
+      '/images/vakanties/003/rosendael.jpg',         // Kasteel Rosendael - deze reis heeft geen eetfoto
+      '/images/vakanties/003/hotel-2.jpg',           // Kasteel Engelenburg
+    ],
     gallery: [
       '/images/vakanties/003/singraven.jpg',         // 2 zomerse drukte voor Huis Singraven - beleving onderweg
       // Plek 3 hoort de belangrijkste include te zijn, maar deze reis heeft
@@ -401,6 +419,11 @@ const TRIPS: TripSpec[] = [
     // Het oude hoofdbeeld was het buitenbad van de spa, dus een hotelbeeld;
     // dat mag niet op plek 1. Nu het Heuvelland.
     coverImage: '/images/vakanties/004/heuvelland.jpg',
+    // De twee tegels rechts op de dealcard, onder het routekaartje.
+    cardPhotos: [
+      'https://asset.vialuxury.com/assets/cf21b84a-363c-4c95-9e27-fd49d5a7e564', // het culinaire diner
+      'https://asset.vialuxury.com/assets/3b6c8760-29ca-4701-85f3-32ae3ba23c24', // Hotel Merici, het voormalige klooster
+    ],
     gallery: [
       'https://asset.vialuxury.com/assets/466d681d-82d3-4f6d-857b-1e82c79cdb1c', // 2 de barman schenkt een aperitief in - beleving onderweg
       'https://asset.vialuxury.com/assets/cf21b84a-363c-4c95-9e27-fd49d5a7e564', // 3 twee gerechten met wijn - het culinaire diner
@@ -448,6 +471,11 @@ const TRIPS: TripSpec[] = [
     id: 'trip-zuid-limburg',
     slug: 'bourgondisch-zuid-limburg-7-daagse-culinaire-autoroute',
     coverImage: '/images/vakanties/cover/zuid-limburg.jpg',
+    // De twee tegels rechts op de dealcard, onder het routekaartje.
+    cardPhotos: [
+      'https://asset.vialuxury.com/assets/cf21b84a-363c-4c95-9e27-fd49d5a7e564', // het culinaire diner
+      'https://asset.vialuxury.com/assets/3b6c8760-29ca-4701-85f3-32ae3ba23c24', // Hotel Merici, het voormalige klooster
+    ],
     fromHome: { city: 'Utrecht', minutes: 105 },
     type: 'auto',
     stops: [
@@ -522,6 +550,11 @@ const TRIPS: TripSpec[] = [
     id: 'trip-kustroute',
     slug: 'nederlandse-kustroute-6-daagse-autoroute',
     coverImage: '/images/vakanties/cover/kustroute.jpg',
+    // De twee tegels rechts op de dealcard, onder het routekaartje.
+    cardPhotos: [
+      'https://asset.vialuxury.com/assets/345f4ba3-8589-4b2d-aad2-b3cd196046a1', // een gerecht van de chef
+      'https://asset.vialuxury.com/assets/13edb591-9d4d-4d36-8251-33efecbf90cb', // geen van de hotels heeft een gebouwfoto, dus een kamerbeeld
+    ],
     fromHome: { city: 'Utrecht', minutes: 100 },
     // Omgevingsfoto's (PDP-gallery na de cover, collage op de dealcard), zoals bij Noord-Frankrijk:
     // Westerschouwen en Zierikzee (Zeeland), de Pier van Scheveningen, Haarlem en de kust — uit de
@@ -634,6 +667,11 @@ const TRIPS: TripSpec[] = [
     // de dealcard. Nieuwe bestandsnaam zodat browsers de oude cover niet uit de
     // cache tonen.
     coverImage: '/images/vakanties/cover/fietsvakantie-twente-salland-bos.jpg',
+    // De twee tegels rechts op de dealcard, onder het routekaartje.
+    cardPhotos: [
+      'https://asset.vialuxury.com/assets/4057689f-b08a-406e-a5f5-219efc9b81b0', // een gerecht onder de stolp
+      '/images/vakanties/007/hotel-herikerberg.jpg', // Landhuishotel Herikerberg
+    ],
     // Omgevingsfoto's (Joris, "Fietsvakantie/first images"): direct na de cover
     // bovenin de gallery; de eerste vier staan bij landing in beeld. De oude
     // cover (fietsers op de brug bij Deventer) sluit de reeks af.
@@ -786,6 +824,9 @@ export interface MultiHotelTripDetail {
   coverImage?: string
   /** Extra omgevingsfoto's na de cover (sticker "Omgeving"); hotelfoto's volgen daarna. */
   nearbyImages?: string[]
+  /** De twee tegels rechts op de collage-dealcard, onder het routekaartje:
+   *  de belangrijkste package include en het mooiste hotelbeeld. */
+  cardPhotos?: string[]
   /** Heenreis vanaf huis naar het eerste hotel (schatting). */
   fromHome?: { city: string; minutes: number }
   fromHomeByLocale?: TripSpec['fromHomeByLocale']
@@ -893,6 +934,7 @@ function buildTrip(spec: TripSpec): { hotel: SearchHotel; detail: MultiHotelTrip
       routeImage: spec.routeImage,
       coverImage: spec.coverImage,
       nearbyImages: spec.nearbyImages,
+      cardPhotos: spec.cardPhotos,
       pdpHref,
     },
   }
