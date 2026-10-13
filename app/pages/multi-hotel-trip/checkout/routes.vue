@@ -2,19 +2,21 @@
 // Multi Hotel Trip — persoonlijke reispagina na het boeken ("Tips & routes speciaal voor
 // <voornaam>"), bereikbaar via de bevestigingspagina, de bevestigingsmail en het startscherm,
 // en bedoeld om de hele reis bij de hand te hebben: hero met de reis en (nog gefakete)
-// weersverwachting; "Vandaag" met het dagprogramma en het weer van die dag; de route tussen
-// de hotels (lijst met afstand/duur/mini-kaartje + witte routeschets); routes rondom elk hotel
-// (type, afstand, duur, schematisch rondje) met een ingang naar alle tips op de dealpagina;
-// het voorbeeld reisschema (sidepanel + pdf); je hotels; en "Handig onderweg". De links
-// Download pdf / Download gpx zijn in het prototype zonder werking.
+// weersverwachting; "Vandaag" (aan/uit met de schakelaar linksboven) met het dagprogramma en
+// het weer van die dag; de route tussen de hotels (per etappe de hotelfoto, afstand/duur en
+// links) naast de minimap van de dealpagina; routes rondom elk hotel met foto-thumbs en een
+// ingang naar alle tips op de dealpagina; het voorbeeld reisschema zoals op de dealpagina
+// (dagen klikbaar → sidepanel) met Bekijken / Download pdf; "Boeking terugvinden" (als op de
+// bevestigingspagina) en "Handig onderweg". Download pdf / gpx zijn in het prototype zonder werking.
 import { tripCheckoutBySlug } from '~/data/mht-checkout/trip'
 import { tripPdpBySlug } from '~/data/mht-trip-pdp'
 import tripRoutesJson from '~/data/mht-trip-routes.json'
-import type { TripRouteLeg } from '~/utils-multi-hotel-trip/tripMapLayers'
+import type { TripRouteLeg, TripMapStop } from '~/utils-multi-hotel-trip/tripMapLayers'
 import { useMultiHotelTripCheckoutTrip } from '~/composables-multi-hotel-trip/useMultiHotelTripCheckoutTrip'
 import { useMultiHotelTripI18n } from '~/composables-multi-hotel-trip/useMultiHotelTripI18n'
-import { buildTripDaysView, tripDistanceLabelFn } from '~/composables-multi-hotel-trip/useMultiHotelTripDaysView'
+import { buildTripDaysView, tripDistanceLabelFn, tripDurationLabel } from '~/composables-multi-hotel-trip/useMultiHotelTripDaysView'
 import TripItineraryPanel from '~/components-multi-hotel-trip/deal/TripItineraryPanel.vue'
+import TripItinerarySummary from '~/components-multi-hotel-trip/deal/TripItinerarySummary.vue'
 
 const { t, localized } = useMultiHotelTripI18n()
 
@@ -26,8 +28,12 @@ const tripPdp = computed(() => tripPdpBySlug(checkout.value.slug))
 const trip = computed(() => tripPdp.value?.trip ?? null)
 const guest = useState<{ firstName: string; email: string } | null>('mht-checkout-guest', () => null)
 const firstName = computed(() => guest.value?.firstName || 'Rijo')
+const email = computed(() => guest.value?.email || 'rijo.verburg@gmail.com')
 const isBike = computed(() => trip.value?.type === 'fiets')
 const pdpHref = computed(() => `/multi-hotel-trip/deal/${checkout.value.slug}`)
+
+/* ── Prototype-schakelaar: het Vandaag-blok aan of uit ── */
+const showToday = useState<boolean>('mht-trip-page-today', () => true)
 
 /* ── Datums ── */
 const DEMO_YMD = { year: 2027, month: 4, day: 18 }
@@ -54,93 +60,102 @@ const weatherDays = computed(() => Array.from({ length: nights.value + 1 }, (_, 
 }))
 const weatherRegion = computed(() => trip.value?.stops[0]?.region ?? trip.value?.stops[0]?.city ?? '')
 
-/* ── De route tussen de hotels: per etappe titel, afstand/duur en de geometrie voor het mini-kaartje ── */
+/* ── Minimap als op de dealpagina: stops met reistijd, rijroutes, regels eronder ── */
 const routeLegs = computed<TripRouteLeg[]>(() => (tripRoutesJson as Record<string, { legs: TripRouteLeg[] }>)[trip.value?.id ?? '']?.legs ?? [])
 const routeStops = computed(() => (trip.value?.stops ?? []).map(s => ({ lat: s.lat, lng: s.lng, label: s.city })))
-interface LegItem { title: string; meta: string; kind: 'auto' | 'fiets'; mini?: { stops: { lat: number; lng: number; label: string }[]; legs: TripRouteLeg[] } }
+function travelShort(travel: { km: number; minutes: number } | undefined, i: number): string | undefined {
+  const minutes = travel?.minutes ?? routeLegs.value.find(l => l.to === i)?.minutes
+  if (!minutes) return undefined
+  if (minutes < 60) return t('trip.durShort.minutes').replace('{m}', String(minutes))
+  const h = Math.floor(minutes / 60), m = minutes % 60
+  return m === 0 ? t('trip.durShort.hours').replace('{h}', String(h)) : t('trip.durShort.hoursMinutes').replace('{h}', String(h)).replace('{m}', String(m))
+}
+const mapStops = computed<TripMapStop[]>(() => (trip.value?.stops ?? []).map((s, i) => ({
+  lat: s.lat, lng: s.lng, label: s.city, title: s.hotelName, starRating: s.starRating, nights: s.nights, image: s.image,
+  travelKm: s.travel?.km ?? routeLegs.value.find(l => l.to === i && !l.return)?.km,
+  travelShort: travelShort(s.travel, i),
+})))
+const mapReturnLabel = computed(() => (trip.value?.returnTravel ? `${trip.value.returnTravel.km} km` : undefined))
+const mapSummary = computed<({ icon: string; text: string } | undefined)[]>(() => {
+  const d = trip.value
+  if (!d) return []
+  const first = d.stops[0]
+  const legs = routeLegs.value
+  if (d.type === 'fiets') {
+    const legKm = d.stops.slice(1).map((s, k) => s.travel?.km ?? legs.find(l => l.to === k + 1 && !l.return)?.km ?? 0)
+    if (d.returnTravel) legKm.push(d.returnTravel.km)
+    const total = legKm.reduce((a, b) => a + b, 0)
+    return [
+      d.fromHome && first ? { icon: 'car', text: t('trip.bike.arrivalLine').replace('{duration}', tripDurationLabel(d.fromHome.minutes, t)).replace('{city}', d.fromHome.city) } : undefined,
+      total ? { icon: 'route', text: t('trip.bike.stagesLine').replace('{n}', String(legKm.length)).replace('{list}', legKm.join(' · ')).replace('{total}', String(total)) } : undefined,
+    ]
+  }
+  const origin = d.fromHomeByLocale?.nl
+  const km = d.stops.reduce((sum, s, i) => sum + (s.travel?.km ?? legs.find(l => l.to === i && !l.return)?.km ?? 0), 0)
+  const fromHomeLine = origin && first
+    ? { icon: 'car', text: t('trip.fromHomeShort').replace('{city}', origin.city).replace('{to}', first.city).replace('{duration}', durationShort(origin.minutes)).replace('{km}', String(origin.km)) }
+    : d.fromHome && first
+      ? { icon: 'car', text: t('trip.fromHomeShortNoKm').replace('{city}', d.fromHome.city).replace('{duration}', durationShort(d.fromHome.minutes)).replace('{to}', first.city) }
+      : undefined
+  return [fromHomeLine, km ? { icon: 'route', text: t('trip.totalRouteLine').replace('{km}', String(km)) } : undefined]
+})
+
+/* ── De route tussen de hotels: alleen de etappes van hotel naar hotel, met de foto van het volgende hotel ── */
+interface LegItem { toIndex: number; title: string; meta: string; image?: string }
 const legs = computed<LegItem[]>(() => {
   const d = trip.value
   if (!d) return []
-  const names = d.stops.map(s => s.hotelName)
-  const home = d.fromHome?.city ? `Thuis (${d.fromHome.city})` : 'Thuis'
-  const kind = isBike.value ? 'fiets' : 'auto'
-  const meta = (travel?: { km: number; minutes: number }) => (travel ? tripDistanceLabelFn(travel, t, isBike.value) : '')
+  const kindLabel = isBike.value ? 'Fietsroute' : 'Met de auto'
   const out: LegItem[] = []
-  const fromHome = d.fromHomeByLocale?.nl ?? (d.fromHome ? { km: 0, minutes: d.fromHome.minutes } : undefined)
-  if (names[0]) out.push({ title: `${home} → ${names[0]}`, meta: fromHome?.km ? meta(fromHome) : '', kind: 'auto' })
-  for (let i = 1; i < names.length; i++) {
-    const leg = routeLegs.value.find(l => l.from === i - 1 && l.to === i)
-    out.push({
-      title: `${names[i - 1]} → ${names[i]}`,
-      meta: meta(d.stops[i]?.travel),
-      kind,
-      mini: leg ? { stops: [routeStops.value[i - 1]!, routeStops.value[i]!], legs: [{ ...leg, from: 0, to: 1 }] } : undefined,
-    })
+  for (let i = 1; i < d.stops.length; i++) {
+    const s = d.stops[i]!
+    const travel = s.travel ?? (() => { const l = routeLegs.value.find(x => x.to === i && !x.return); return l ? { km: l.km, minutes: l.minutes } : undefined })()
+    out.push({ toIndex: i, title: `${d.stops[i - 1]!.hotelName} → ${s.hotelName}`, meta: travel ? `${kindLabel} · ${tripDistanceLabelFn(travel, t, isBike.value)}` : kindLabel, image: s.image })
   }
-  if (names.length) {
+  if (d.loop && d.stops.length > 1) {
     const back = routeLegs.value.find(l => l.return)
-    out.push({
-      title: `${names[names.length - 1]} → ${d.loop ? names[0] : home}`,
-      meta: meta(d.returnTravel),
-      kind: d.loop ? kind : 'auto',
-      mini: d.loop && back ? { stops: [routeStops.value[names.length - 1]!, routeStops.value[0]!], legs: [{ ...back, from: 0, to: 1, return: false }] } : undefined,
-    })
+    const travel = d.returnTravel ?? (back ? { km: back.km, minutes: back.minutes } : undefined)
+    out.push({ toIndex: 0, title: `${d.stops[d.stops.length - 1]!.hotelName} → ${d.stops[0]!.hotelName}`, meta: travel ? `${kindLabel} · ${tripDistanceLabelFn(travel, t, isBike.value)}` : kindLabel, image: d.stops[0]!.image })
   }
   return out
 })
 
-/* ── Routes rondom elk hotel: de tips van dat hotel uit de reisinhoud (geen restauranttips),
-   anders de activiteiten van de dagen bij dat hotel. Type, afstand en duur zijn in het
-   prototype afgeleid (vast per titel); het rondje is schematisch. ── */
+/* ── Routes rondom elk hotel: de tips van dat hotel (geen restauranttips) met hun foto; zonder
+   foto een willekeurige uit de foto's van dat hotel of de omgeving. Type, afstand en duur zijn
+   in het prototype afgeleid (vast per titel). ── */
 type RouteKind = 'auto' | 'fiets' | 'wandelen'
 const KIND_LABEL: Record<RouteKind, string> = { auto: 'Met de auto', fiets: 'Fietsroute', wandelen: 'Wandelroute' }
 const hash = (s: string) => { let h = 7; for (const ch of s) h = (h * 31 + ch.charCodeAt(0)) >>> 0; return h }
-function localMeta(title: string, i: number): { kind: RouteKind; km: number; minutes: number; label: string } {
+function localMeta(title: string, i: number): string {
   const kinds: RouteKind[] = isBike.value ? ['fiets', 'fiets', 'wandelen'] : ['auto', 'fiets', 'wandelen']
   const h = hash(title)
   const kind = kinds[(h + i) % kinds.length]!
   const km = kind === 'auto' ? 30 + (h % 36) : kind === 'fiets' ? 22 + (h % 24) : 5 + (h % 8)
   const minutes = kind === 'auto' ? Math.round(km * 1.25) : kind === 'fiets' ? km * 4 : km * 15
-  return { kind, km, minutes, label: `${KIND_LABEL[kind]} · ${km} km · ${durationShort(minutes)}` }
-}
-/** Schematisch rondje (gesloten, vloeiende lus) rond het hotel, vast per titel. */
-function loopPath(title: string): { d: string; start: { x: number; y: number } } {
-  const h = hash(title)
-  const n = 8
-  const pts = Array.from({ length: n }, (_, k) => {
-    const a = (k / n) * Math.PI * 2 - Math.PI / 2
-    const r = 20 + (((h >> (k * 3)) & 7) - 3) * 1.6
-    return { x: 36 + Math.cos(a) * r * 1.15, y: 36 + Math.sin(a) * r }
-  })
-  // Catmull-Rom → cubic Bézier, gesloten.
-  let d = `M${pts[0]!.x.toFixed(1)} ${pts[0]!.y.toFixed(1)}`
-  for (let k = 0; k < n; k++) {
-    const p0 = pts[(k - 1 + n) % n]!, p1 = pts[k]!, p2 = pts[(k + 1) % n]!, p3 = pts[(k + 2) % n]!
-    const c1 = { x: p1.x + (p2.x - p0.x) / 6, y: p1.y + (p2.y - p0.y) / 6 }
-    const c2 = { x: p2.x - (p3.x - p1.x) / 6, y: p2.y - (p3.y - p1.y) / 6 }
-    d += ` C${c1.x.toFixed(1)} ${c1.y.toFixed(1)} ${c2.x.toFixed(1)} ${c2.y.toFixed(1)} ${p2.x.toFixed(1)} ${p2.y.toFixed(1)}`
-  }
-  return { d: d + ' Z', start: pts[0]! }
+  return `${KIND_LABEL[kind]} · ${km} km · ${durationShort(minutes)}`
 }
 const localRoutes = computed(() => (trip.value?.stops ?? []).map((s, i) => {
   const tips = tripPdp.value?.content?.hotels[s.hotelName]?.tips ?? []
-  let titles = tips.map(x => localized(x.title)).filter(x => !/restauranttip/i.test(x))
-  if (!titles.length) {
-    titles = (tripPdp.value?.days ?? [])
+  const pool = [...(s.extraImages ?? []), ...(trip.value?.nearbyImages ?? []), s.image].filter((x): x is string => !!x)
+  let items = tips.filter(x => !/restauranttip/i.test(localized(x.title))).map(x => ({ title: localized(x.title), image: x.image }))
+  if (!items.length) {
+    items = (tripPdp.value?.days ?? [])
       .filter(d => d.stopIndex === i)
-      .flatMap(d => d.blocks.filter(b => b.kind === 'activity' && b.title).map(b => localized(b.title!)))
+      .flatMap(d => d.blocks.filter(b => b.kind === 'activity' && b.title).map(b => ({ title: localized(b.title!), image: b.image })))
   }
   return {
     stopIndex: i,
     hotelName: s.hotelName,
     city: s.city,
     image: s.image,
-    routes: titles.slice(0, 5).map((title, k) => ({ title, ...localMeta(title, k), loop: loopPath(title) })),
+    // Tips met alleen een grijze placeholder-afbeelding krijgen ook een willekeurige echte foto.
+    routes: items.slice(0, 5).map((r, k) => ({ title: r.title, meta: localMeta(r.title, k), image: r.image && !/placeholder/i.test(r.image) ? r.image : pool[(hash(r.title) + k) % Math.max(pool.length, 1)] })),
   }
 }))
 
-/* ── Voorbeeld reisschema (sidepanel) en kaart ── */
+/* ── Voorbeeld reisschema (dagsamenvatting + sidepanel) en kaart ── */
 const daysView = computed(() => buildTripDaysView(tripPdp.value, trip.value, checkInIso.value, t, localized))
+const hotelLinks = computed(() => (trip.value?.stops ?? []).map((s, i) => ({ name: s.hotelName, stopIndex: i })))
 const itinOpen = ref(false)
 const itinFocus = ref<number | null>(null)
 function openItin(day: number | null = null) { itinFocus.value = day; itinOpen.value = true }
@@ -157,44 +172,26 @@ const today = computed(() => {
 const todayView = computed(() => daysView.value.find(d => d.day === today.value.day))
 const todayWeather = computed(() => weatherDays.value[today.value.day - 1])
 const todayStop = computed(() => (todayView.value?.stopIndex != null ? trip.value?.stops[todayView.value.stopIndex] : null) ?? null)
-/** De etappe van vandaag: aankomstdag = thuis → hotel 1, wisseldag = vorig → volgend hotel, terugreis = laatste etappe. */
+/** De etappe van vandaag (alleen op een wisseldag: van het vorige naar het volgende hotel). */
 const todayLeg = computed<LegItem | null>(() => {
   const v = todayView.value
-  if (!v) return null
-  if (v.type === 'arrival') return legs.value[0] ?? null
-  if (v.type === 'transfer' && v.stopIndex != null) return legs.value[v.stopIndex] ?? null
-  if (v.type === 'home') return legs.value[legs.value.length - 1] ?? null
-  return null
+  if (!v || v.type !== 'transfer' || v.stopIndex == null) return null
+  return legs.value.find(l => l.toIndex === v.stopIndex) ?? null
 })
-const todayTitle = computed(() => {
-  const v = todayView.value
-  if (!v) return ''
-  return v.heading ?? v.subtitle ?? v.label
-})
+const todayTitle = computed(() => todayView.value?.heading ?? todayView.value?.subtitle ?? todayView.value?.label ?? '')
 const todaySummary = computed(() => {
   const v = todayView.value
   if (!v) return ''
   return v.summary ?? v.blocks.map(b => b.title).filter(Boolean).slice(0, 3).join(' · ')
 })
 
-/* ── Je hotels + Handig onderweg (telefoonnummers en laadpunten zijn prototype-placeholders) ── */
-const stays = computed(() => {
-  let offset = 0
-  return (trip.value?.stops ?? []).map((s, i) => {
-    const from = dateAt(offset)
-    const to = dateAt(offset + s.nights)
-    offset += s.nights
-    const parking = s.includes.map(x => localized(x)).find(x => /parkeren/i.test(x)) ?? 'Parkeren bij het hotel'
-    return {
-      ...s,
-      from: fmt(from),
-      to: fmt(to),
-      phone: `+33 3 21 12 34 5${i + 1}`,
-      parking,
-      charging: i === 0 ? 'Laadpunt bij het hotel' : `Laadpunt op ${i + 1} km`,
-    }
-  })
-})
+/* ── Handig onderweg (telefoonnummers en laadpunten zijn prototype-placeholders) ── */
+const stays = computed(() => (trip.value?.stops ?? []).map((s, i) => ({
+  ...s,
+  phone: `+33 3 21 12 34 5${i + 1}`,
+  parking: s.includes.map(x => localized(x)).find(x => /parkeren/i.test(x)) ?? 'Parkeren bij het hotel',
+  charging: i === 0 ? 'Laadpunt bij het hotel' : `Laadpunt op ${i + 1} km`,
+})))
 
 useHead({ title: `Tips & routes speciaal voor ${firstName.value} — ViaLuxury` })
 </script>
@@ -214,7 +211,7 @@ useHead({ title: `Tips & routes speciaal voor ${firstName.value} — ViaLuxury` 
         <aside class="rp__weather" aria-label="Weersverwachting">
           <p class="rp__weather-head">Weersverwachting <span class="rp__weather-region">{{ weatherRegion }}</span></p>
           <ul class="rp__weather-days">
-            <li v-for="w in weatherDays" :key="w.key" class="rp__weather-day" :class="{ 'rp__weather-day--today': w.key === today.day - 1 }">
+            <li v-for="w in weatherDays" :key="w.key" class="rp__weather-day" :class="{ 'rp__weather-day--today': showToday && w.key === today.day - 1 }">
               <span class="rp__weather-dow">{{ w.day }} {{ w.date }}</span>
               <svg v-if="w.icon === 'sun'" class="rp__weather-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="4.5" fill="#f5b400" /><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1" stroke="#f5b400" stroke-width="2" stroke-linecap="round" /></svg>
               <svg v-else class="rp__weather-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="4" fill="#f5b400" /><path d="M9 2v2M2 9h2M4 4l1.4 1.4M14 4l-1.4 1.4" stroke="#f5b400" stroke-width="1.8" stroke-linecap="round" /><path d="M8 20h9.5a3.5 3.5 0 0 0 .4-7 5 5 0 0 0-9.6-1.4A4.2 4.2 0 0 0 8 20z" fill="#fff" stroke="#9aa3a3" stroke-width="1.6" stroke-linejoin="round" /></svg>
@@ -227,8 +224,17 @@ useHead({ title: `Tips & routes speciaal voor ${firstName.value} — ViaLuxury` 
     </section>
 
     <main class="container rp__main">
+      <!-- ── Prototype-schakelaar (linksboven): Vandaag-blok aan/uit ── -->
+      <div class="rp__proto">
+        <label class="rp__switch">
+          <input v-model="showToday" type="checkbox" class="rp__switch-input" />
+          <span class="rp__switch-track" aria-hidden="true"><span class="rp__switch-knob" /></span>
+          <span class="rp__switch-label">Vandaag-blok {{ showToday ? 'aan' : 'uit' }}</span>
+        </label>
+      </div>
+
       <!-- ── Vandaag: dagprogramma + weer van vandaag ── -->
-      <section v-if="todayView" class="rp__today">
+      <section v-if="showToday && todayView" class="rp__today">
         <div class="rp__today-main">
           <p class="rp__eyebrow rp__eyebrow--dark">
             Vandaag · {{ todayView.date ?? '' }} · {{ todayView.label }}
@@ -237,11 +243,10 @@ useHead({ title: `Tips & routes speciaal voor ${firstName.value} — ViaLuxury` 
           <h2 class="rp__h2 rp__h2--today">{{ todayTitle }}</h2>
           <p class="rp__text">{{ todaySummary }}</p>
           <div v-if="todayLeg" class="rp__today-leg">
-            <svg v-if="todayLeg.kind === 'fiets'" class="rp__kind-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="5.5" cy="17.5" r="3.5" stroke="currentColor" stroke-width="2" /><circle cx="18.5" cy="17.5" r="3.5" stroke="currentColor" stroke-width="2" /><path d="M5.5 17.5l3-8h5l5 8M8.5 9.5h4M12 5h3l1 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
-            <svg v-else class="rp__kind-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 17h2M19 17h2M5 17l1.5-5h11L19 17M4 17v3M20 17v3M3 17h18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /><path d="M8 12V8h8v4" stroke="currentColor" stroke-width="2" stroke-linejoin="round" /></svg>
+            <img v-if="todayLeg.image" class="rp__photo rp__photo--sm" :src="todayLeg.image" alt="" />
             <div>
               <p class="rp__route-title">Route van vandaag: {{ todayLeg.title }}</p>
-              <p v-if="todayLeg.meta" class="rp__route-meta">{{ todayLeg.meta }}</p>
+              <p class="rp__route-meta">{{ todayLeg.meta }}</p>
             </div>
           </div>
           <p class="rp__route-links rp__route-links--lg">
@@ -258,19 +263,16 @@ useHead({ title: `Tips & routes speciaal voor ${firstName.value} — ViaLuxury` 
         </div>
       </section>
 
-      <!-- ── De route tussen de hotels: lijst (met mini-kaartje) + witte routeschets ── -->
+      <!-- ── De route tussen de hotels: etappes met hotelfoto + de minimap van de dealpagina ── -->
       <section class="rp__section">
         <h2 class="rp__h2">De route tussen de hotels</h2>
         <div class="rp__between">
           <ul class="rp__routes">
             <li v-for="(leg, i) in legs" :key="leg.title" class="rp__route">
-              <span class="rp__mini" aria-hidden="true">
-                <MultiHotelTripCheckoutRouteSketch v-if="leg.mini" tone="dark" :labels="false" :radius="6" :stroke-width="3" :width="72" :height="72" :stops="leg.mini.stops" :legs="leg.mini.legs" />
-                <svg v-else class="rp__mini-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 17h2M19 17h2M5 17l1.5-5h11L19 17M4 17v3M20 17v3M3 17h18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /><path d="M8 12V8h8v4" stroke="currentColor" stroke-width="2" stroke-linejoin="round" /></svg>
-              </span>
+              <img v-if="leg.image" class="rp__photo" :src="leg.image" alt="" />
               <div class="rp__route-text">
                 <p class="rp__route-title"><span class="rp__route-num">{{ i + 1 }}</span>{{ leg.title }}</p>
-                <p class="rp__route-meta">{{ leg.kind === 'fiets' ? 'Fietsroute' : 'Met de auto' }}<template v-if="leg.meta"> · {{ leg.meta }}</template></p>
+                <p class="rp__route-meta">{{ leg.meta }}</p>
               </div>
               <p class="rp__route-links">
                 <a href="#" @click.prevent="mapOpen = true">Bekijk</a>
@@ -279,14 +281,15 @@ useHead({ title: `Tips & routes speciaal voor ${firstName.value} — ViaLuxury` 
               </p>
             </li>
           </ul>
-          <button type="button" class="rp__sketch" aria-label="Bekijk de route op de kaart" @click="mapOpen = true">
-            <MultiHotelTripCheckoutRouteSketch v-if="routeStops.length" class="rp__sketch-svg" :stops="routeStops" :legs="routeLegs" :width="340" :height="260" />
-            <span class="rp__sketch-caption">Bekijk op de kaart</span>
-          </button>
+          <MultiHotelTripRouteMapCard
+            class="rp__minimap"
+            :stops="mapStops" :legs="routeLegs" :return-label="mapReturnLabel" :summary="mapSummary"
+            @open="mapOpen = true"
+          />
         </div>
       </section>
 
-      <!-- ── Routes rondom elk hotel: twee blokken naast elkaar, met ingang naar alle tips ── -->
+      <!-- ── Routes rondom elk hotel: twee blokken naast elkaar, met foto-thumbs en ingang naar alle tips ── -->
       <section class="rp__section">
         <h2 class="rp__h2">Routes rondom je hotels</h2>
         <div class="rp__grid">
@@ -297,17 +300,10 @@ useHead({ title: `Tips & routes speciaal voor ${firstName.value} — ViaLuxury` 
               <p class="rp__card-sub">{{ h.city }}</p>
               <ul class="rp__routes rp__routes--compact">
                 <li v-for="r in h.routes" :key="r.title" class="rp__route">
-                  <span class="rp__mini rp__mini--loop" aria-hidden="true">
-                    <svg viewBox="0 0 72 72" class="rp__loop"><path :d="r.loop.d" /><circle :cx="r.loop.start.x" :cy="r.loop.start.y" r="4.5" /></svg>
-                  </span>
+                  <img v-if="r.image" class="rp__photo rp__photo--sm" :src="r.image" alt="" />
                   <div class="rp__route-text">
                     <p class="rp__route-title">{{ r.title }}</p>
-                    <p class="rp__route-meta rp__route-meta--kind">
-                      <svg v-if="r.kind === 'auto'" class="rp__kind-icon rp__kind-icon--sm" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 17h2M19 17h2M5 17l1.5-5h11L19 17M4 17v3M20 17v3M3 17h18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /><path d="M8 12V8h8v4" stroke="currentColor" stroke-width="2" stroke-linejoin="round" /></svg>
-                      <svg v-else-if="r.kind === 'fiets'" class="rp__kind-icon rp__kind-icon--sm" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="5.5" cy="17.5" r="3.5" stroke="currentColor" stroke-width="2" /><circle cx="18.5" cy="17.5" r="3.5" stroke="currentColor" stroke-width="2" /><path d="M5.5 17.5l3-8h5l5 8M8.5 9.5h4M12 5h3l1 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
-                      <svg v-else class="rp__kind-icon rp__kind-icon--sm" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="13" cy="4" r="2" stroke="currentColor" stroke-width="2" /><path d="M10 9l3-1 3 3 2 1M10 9l-2 5 3 2-1 6M11 16l3 2 1 4M10 9l-3 1-1 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
-                      {{ r.label }}
-                    </p>
+                    <p class="rp__route-meta">{{ r.meta }}</p>
                   </div>
                   <p class="rp__route-links">
                     <a href="#" @click.prevent>Bekijk</a>
@@ -324,30 +320,25 @@ useHead({ title: `Tips & routes speciaal voor ${firstName.value} — ViaLuxury` 
         </div>
       </section>
 
-      <!-- ── Voorbeeld reisschema + je hotels ── -->
-      <section class="rp__section rp__grid">
-        <article class="rp__card rp__card--tint">
+      <!-- ── Voorbeeld reisschema (zoals op de dealpagina) + Boeking terugvinden ── -->
+      <section class="rp__section rp__grid rp__grid--wide">
+        <article class="rp__card">
           <div class="rp__card-body">
-            <h2 class="rp__h2 rp__h2--card">Voorbeeld reisschema</h2>
-            <p class="rp__text">Dag voor dag een voorstel voor je {{ checkout.typeWord }}: de route, de hotels en de mooiste uitjes onderweg. Jij bepaalt het tempo.</p>
-            <p class="rp__route-links rp__route-links--lg">
-              <a href="#" @click.prevent="openItin(null)">Bekijk</a>
+            <h2 class="rp__h2 rp__h2--card rp__h2--icon">
+              <svg class="rp__h2-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-miterlimit="10" stroke-linecap="square" aria-hidden="true"><path d="M15 5h7M15 15h7M15 9h2M15 19h2" /><circle cx="6.5" cy="17.5" r="3.5" /><circle cx="6.5" cy="6.5" r="3.5" /></svg>
+              Voorbeeld reisschema
+            </h2>
+            <TripItinerarySummary :days="daysView" :hotels="hotelLinks" :show-stats="false" lines @select="openItin($event)" />
+            <p class="rp__route-links rp__route-links--lg rp__card-more">
+              <a href="#" @click.prevent="openItin(null)">Bekijken</a>
               <a href="#" @click.prevent>Download pdf</a>
             </p>
           </div>
         </article>
-        <article class="rp__card">
+        <article class="rp__card rp__card--tint rp__card--self">
           <div class="rp__card-body">
-            <h2 class="rp__h2 rp__h2--card">Je hotels</h2>
-            <ol class="rp__stays">
-              <li v-for="(s, i) in stays" :key="s.hotelName" class="rp__stay">
-                <span class="rp__route-num">{{ i + 1 }}</span>
-                <div>
-                  <p class="rp__route-title">{{ s.hotelName }}</p>
-                  <p class="rp__route-meta">{{ s.city }} · {{ s.from }} – {{ s.to }} · inchecken vanaf {{ s.checkIn }} uur</p>
-                </div>
-              </li>
-            </ol>
+            <h2 class="rp__h2 rp__h2--card">Boeking terugvinden</h2>
+            <p class="rp__text">Je boeking staat in je ViaLuxury-account op <b>{{ email }}</b>. Inloggen doe je zonder wachtwoord: je krijgt een inloglink per mail.</p>
             <p class="rp__route-links rp__route-links--lg">
               <NuxtLink to="/multi-hotel-trip/checkout/bevestiging">Bekijk je boeking</NuxtLink>
             </p>
@@ -394,13 +385,25 @@ useHead({ title: `Tips & routes speciaal voor ${firstName.value} — ViaLuxury` 
 
 <style scoped>
 .rp { min-height: 100vh; display: flex; flex-direction: column; background: var(--color-bg, #fff); color: var(--color-text-primary); }
-.rp__main { flex: 1; padding-top: 32px; padding-bottom: 64px; display: flex; flex-direction: column; gap: 40px; }
+.rp__main { flex: 1; padding-top: 24px; padding-bottom: 64px; display: flex; flex-direction: column; gap: 40px; }
 .rp__h2 { margin: 0 0 16px; font-family: var(--font-heading); font-size: 26px; font-weight: 700; line-height: 1.25; }
 .rp__h2--card { font-size: 22px; margin-bottom: 8px; }
+.rp__h2--icon { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+.rp__h2-icon { flex-shrink: 0; width: 24px; height: 24px; }
 .rp__h2--today { font-size: 24px; margin: 6px 0 8px; }
 .rp__h3 { margin: 0; font-family: var(--font-heading); font-size: 20px; font-weight: 700; line-height: 1.25; }
 .rp__text { margin: 0 0 12px; font-size: 15px; line-height: 1.5; color: var(--color-text-secondary); }
 .rp__anchor { scroll-margin-top: 90px; }
+
+/* Prototype-schakelaar linksboven */
+.rp__proto { display: flex; margin-bottom: -16px; }
+.rp__switch { display: inline-flex; align-items: center; gap: 10px; cursor: pointer; user-select: none; font-size: 13px; color: var(--color-text-secondary); }
+.rp__switch-input { position: absolute; opacity: 0; width: 0; height: 0; }
+.rp__switch-track { position: relative; width: 38px; height: 22px; border-radius: 11px; background: #cfcfcf; transition: background var(--transition-fast); }
+.rp__switch-knob { position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; border-radius: 50%; background: #fff; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3); transition: transform var(--transition-fast); }
+.rp__switch-input:checked + .rp__switch-track { background: var(--color-primary); }
+.rp__switch-input:checked + .rp__switch-track .rp__switch-knob { transform: translateX(16px); }
+.rp__switch-input:focus-visible + .rp__switch-track { outline: 2px solid var(--color-primary); outline-offset: 2px; }
 
 /* Hero */
 .rp__hero { position: relative; min-height: 420px; display: flex; align-items: stretch; background-size: cover; background-position: center; color: #fff; }
@@ -425,17 +428,15 @@ useHead({ title: `Tips & routes speciaal voor ${firstName.value} — ViaLuxury` 
 
 /* Vandaag */
 .rp__today { display: grid; grid-template-columns: minmax(0, 1fr) 200px; gap: 24px; align-items: center; padding: 24px 28px; border-radius: var(--radius-md); background: #f4f1ec; }
-.rp__today-leg { display: flex; align-items: center; gap: 12px; margin: 4px 0 12px; padding: 12px 14px; border-radius: 8px; background: #fff; }
+.rp__today-leg { display: flex; align-items: center; gap: 12px; margin: 4px 0 12px; padding: 10px 12px; border-radius: 8px; background: #fff; }
 .rp__today-leg p { margin: 0; }
-.rp__kind-icon { flex-shrink: 0; width: 26px; height: 26px; color: var(--color-text-primary); }
-.rp__kind-icon--sm { width: 16px; height: 16px; vertical-align: -3px; margin-right: 4px; }
 .rp__today-weather { text-align: center; padding: 12px; border-radius: 12px; background: #fff; }
 .rp__today-icon { width: 56px; height: 56px; }
 .rp__today-temp { margin: 0; font-family: var(--font-heading); font-size: 34px; font-weight: 700; line-height: 1.1; }
 .rp__today-weathertext { margin: 4px 0 0; font-size: 13px; color: var(--color-text-secondary); line-height: 1.4; }
 .rp__today-place { color: var(--color-text-primary); font-weight: 600; }
 
-/* Routelijsten: mini-kaartje | titel + meta | linkjes */
+/* Routelijsten: foto | titel + meta | linkjes */
 .rp__routes { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
 .rp__route { display: flex; align-items: center; gap: 14px; padding: 12px 0; border-top: 1px solid var(--color-border); }
 .rp__route:first-child { border-top: 0; }
@@ -443,30 +444,22 @@ useHead({ title: `Tips & routes speciaal voor ${firstName.value} — ViaLuxury` 
 .rp__route-text { flex: 1; min-width: 0; }
 .rp__route-title { margin: 0; display: flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 600; line-height: 1.35; }
 .rp__route-meta { margin: 2px 0 0; font-size: 13px; color: var(--color-text-secondary); }
-.rp__route-meta--kind { display: flex; align-items: center; }
 .rp__route-num { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 50%; background: var(--color-text-primary); color: #fff; font-size: 12px; font-weight: 700; }
 .rp__route-links { margin: 0; flex-shrink: 0; display: flex; gap: 14px; font-size: 13px; white-space: nowrap; }
 .rp__route-links a { color: var(--color-primary); font-weight: 600; text-decoration: underline; text-underline-offset: 2px; }
 .rp__route-links a:hover { color: var(--color-primary-hover); }
 .rp__route-links--lg { font-size: 15px; flex-wrap: wrap; white-space: normal; }
 .rp__card-more { margin-top: 12px; }
-/* Mini-kaartjes: etappe (echte route, donker op licht) of schematisch rondje */
-.rp__mini { flex-shrink: 0; display: flex; align-items: center; justify-content: center; width: 56px; height: 56px; border-radius: 8px; background: #f4f1ec; overflow: hidden; }
-.rp__mini :deep(svg.crs) { width: 48px; height: 48px; }
-.rp__mini-icon { width: 26px; height: 26px; color: var(--color-text-primary); }
-.rp__routes--compact .rp__mini { width: 48px; height: 48px; }
-.rp__loop { width: 42px; height: 42px; }
-.rp__loop path { fill: none; stroke: var(--color-text-primary); stroke-width: 3; stroke-linejoin: round; }
-.rp__loop circle { fill: var(--color-text-primary); }
+.rp__photo { flex-shrink: 0; width: 72px; height: 54px; object-fit: cover; border-radius: 6px; }
+.rp__photo--sm { width: 60px; height: 44px; }
 
-/* Route tussen de hotels: lijst + schets op een donker vlak */
-.rp__between { display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 32px; align-items: start; }
-.rp__sketch { position: relative; display: block; width: 100%; padding: 28px 24px 20px; border: 0; border-radius: var(--radius-md); background: var(--color-text-primary); cursor: pointer; text-align: center; }
-.rp__sketch-svg { width: 100%; height: auto; }
-.rp__sketch-caption { display: inline-block; margin-top: 14px; font-family: var(--font-body); font-size: 13px; font-weight: 600; color: #fff; text-decoration: underline; text-underline-offset: 2px; }
+/* Route tussen de hotels: lijst + minimap (zoals op de dealpagina) */
+.rp__between { display: grid; grid-template-columns: minmax(0, 1fr) 400px; gap: 32px; align-items: start; }
+.rp__minimap { width: 100%; }
 
 /* Kaarten in een raster van twee */
 .rp__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; align-items: start; }
+.rp__grid--wide { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); }
 .rp__card { overflow: hidden; border: 1px solid var(--color-border); border-radius: var(--radius-md); background: #fff; }
 .rp__card--tint { background: #f4f1ec; border-color: #f4f1ec; }
 .rp__card--dark { background: var(--color-text-primary); border-color: var(--color-text-primary); color: #fff; }
@@ -476,10 +469,6 @@ useHead({ title: `Tips & routes speciaal voor ${firstName.value} — ViaLuxury` 
 .rp__card-body { padding: 20px 22px 18px; }
 .rp__card-body--handy { padding: 18px 20px; }
 .rp__card-sub { margin: 2px 0 10px; font-size: 13px; color: var(--color-text-secondary); }
-.rp__stays { list-style: none; margin: 0 0 12px; padding: 0; display: flex; flex-direction: column; gap: 12px; }
-.rp__stay { display: flex; gap: 10px; align-items: flex-start; }
-.rp__stay .rp__route-num { margin-top: 1px; }
-.rp__stay p { margin: 0; }
 
 /* Handig onderweg: hotels + ViaLuxury naast elkaar */
 .rp__handy { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
@@ -497,16 +486,15 @@ useHead({ title: `Tips & routes speciaal voor ${firstName.value} — ViaLuxury` 
   .rp__weather { min-width: 0; width: 100%; padding: 14px; }
   .rp__weather-days { overflow-x: auto; }
   .rp__weather-day { min-width: 44px; }
-  .rp__main { padding-top: 24px; gap: 32px; }
+  .rp__main { padding-top: 20px; gap: 32px; }
   .rp__today { grid-template-columns: 1fr; padding: 18px 16px; }
   .rp__today-weather { display: flex; align-items: center; justify-content: center; gap: 12px; text-align: left; }
   .rp__today-icon { width: 40px; height: 40px; }
   .rp__today-temp { font-size: 28px; }
-  .rp__between, .rp__grid { grid-template-columns: 1fr; gap: 16px; }
+  .rp__between, .rp__grid, .rp__grid--wide { grid-template-columns: 1fr; gap: 16px; }
   .rp__handy { grid-template-columns: 1fr; }
-  .rp__sketch { padding: 20px 16px 16px; }
   .rp__route { flex-wrap: wrap; }
-  .rp__route-links { width: 100%; padding-left: 70px; white-space: normal; }
-  .rp__routes--compact .rp__route-links { padding-left: 60px; }
+  .rp__route-links { width: 100%; padding-left: 86px; white-space: normal; }
+  .rp__routes--compact .rp__route-links { padding-left: 72px; }
 }
 </style>

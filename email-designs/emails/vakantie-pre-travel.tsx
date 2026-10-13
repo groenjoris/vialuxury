@@ -40,6 +40,10 @@ type Props = {
     checkInTime: string;
     parking: string;
     mapsUrl: string;
+    /** Telefoonnummer van het hotel (prototype: placeholder). */
+    phone: string;
+    /** Opladen van de elektrische auto (prototype: placeholder). */
+    charging: string;
   };
   tollEstimate: string;
   /** Hoofdfoto van de reis bovenin. */
@@ -193,6 +197,10 @@ export default function VakantiePreTravel({
                   <Text style={{ margin: "6px 0 0" }}>
                     <Link href={firstHotel.mapsUrl} style={ctaLink}>Route in Google Maps &gt;</Link>
                   </Text>
+                  <Text style={{ ...small, margin: "6px 0 0" }}>
+                    <strong style={{ color: c.text }}>Telefoon</strong>{" "}
+                    <Link href={`tel:${firstHotel.phone.replace(/\s/g, "")}`} style={{ color: c.text, textDecoration: "underline" }}>{firstHotel.phone}</Link>
+                  </Text>
                   <Text style={{ ...small, margin: "10px 0 0" }}>
                     <strong style={{ color: c.text }}>Inchecken</strong> {arrivalDate} vanaf {firstHotel.checkInTime} uur. Neem je identiteitsbewijs mee.
                   </Text>
@@ -200,6 +208,8 @@ export default function VakantiePreTravel({
               </Row>
               <Text style={subkop}>Parkeren bij het hotel</Text>
               <Text style={{ ...body14, margin: "4px 0 0" }}>{firstHotel.parking}</Text>
+              <Text style={subkop}>Opladen van de elektrische auto</Text>
+              <Text style={{ ...body14, margin: "4px 0 0" }}>{firstHotel.charging}</Text>
               <Text style={subkop}>Wat moet ik nog betalen?</Text>
               <Text style={{ ...body14, margin: "4px 0 0" }}>
                 Niets voor de reis zelf: die is volledig betaald. Ter plekke betaal je alleen nog de lokale toeristenbelasting,
@@ -283,6 +293,8 @@ VakantiePreTravel.PreviewProps = {
     image: `${baseUrl}/images/mail/vakantie/tilques-t2.jpg`,
     checkInTime: "15:00",
     parking: "Je kunt gratis parkeren op het terrein van het kasteel, direct bij de ingang.",
+    phone: "+33 3 21 12 34 51",
+    charging: "Er is een laadpunt bij het hotel (type 2, 11 kW); meld bij het inchecken dat je wilt laden. Snelladers vind je langs de A26 bij Saint-Omer.",
     mapsUrl: "https://www.google.com/maps/dir/?api=1&destination=Ch%C3%A2teau+Tilques%2C+Rue+du+Ch%C3%A2teau%2C+62500+Tilques",
   },
   tollEstimate: "€24",
