@@ -258,7 +258,7 @@ const TRIPS: TripSpec[] = [
     gallery: [
       'https://asset.vialuxury.com/assets/9cc6726a-2225-4d8a-b450-6aa407bc0d17', // 2 de ober schenkt wijn in - beleving onderweg
       'https://asset.vialuxury.com/assets/4057689f-b08a-406e-a5f5-219efc9b81b0', // 3 gerecht onder de stolp - het 3-gangendiner
-      '/images/vakanties/002/route.jpg',             // 4 kaart van de route
+      '/images/vakanties/002/routekaart-hanzesteden.png', // 4 kaart van de route
       { stop: 0, images: [                            // 5 Hotel Mooirivier
         '/images/vakanties/002/hotel-1.jpg',           //   het hotel aan de Vecht
       ] },
@@ -278,7 +278,7 @@ const TRIPS: TripSpec[] = [
       'hanzesteden.jpg':                         'Deventer|De Waag op de Brink',
       '9cc6726a-2225-4d8a-b450-6aa407bc0d17':    'Hotel de Zwaan|De ober schenkt de wijn in',
       '4057689f-b08a-406e-a5f5-219efc9b81b0':    'Hotel de Zwaan|Een gerecht gaat onder de stolp vandaan',
-      'route.jpg':                               'Routekaart|Van Dalfsen via Raalte naar Zutphen',
+      'routekaart-hanzesteden.png':              'Routekaart|Van Dalfsen via Raalte naar Zutphen',
       'hotel-1.jpg':                             'het hotel aan de Vecht',
       'zwolle.jpg':                              'Zwolle|De Sassenpoort',
       '13379ada-10fc-4712-8961-e54ee96424d5':    'de lobby',
@@ -331,7 +331,7 @@ const TRIPS: TripSpec[] = [
     gallery: [
       '/images/vakanties/003/singraven.jpg',         // 2 zomerse drukte voor Huis Singraven - beleving onderweg
       // 3 belangrijkste include - deze reis heeft geen enkele eetfoto
-      '/images/vakanties/003/route.jpg',             // 4 kaart van de route
+      '/images/vakanties/003/routekaart-kastelen-landgoederen.png', // 4 kaart van de route
       { stop: 1, images: [                            // 5 Kasteel Engelenburg - het mooiste hotelbeeld
         '/images/vakanties/003/hotel-2.jpg',           //   het landhuis met de rozentuin
       ] },
@@ -348,7 +348,7 @@ const TRIPS: TripSpec[] = [
     photoCaptions: {
       'ruurlo.jpg':                              'Achterhoek|Kasteel Ruurlo met zijn slotgracht',
       'singraven.jpg':                           'Onderweg|Zomerse drukte voor Huis Singraven',
-      'route.jpg':                               'Routekaart|Van Arnhem via Brummen naar De Lutte',
+      'routekaart-kastelen-landgoederen.png':    'Routekaart|Van Arnhem via Brummen naar De Lutte',
       'hotel-2.jpg':                             'het landhuis met de rozentuin',
       'hotel-1.jpg':                             'het landhuis in het bos',
       'middachten.jpg':                          'Onderweg|De lanen van Kasteel Middachten',
@@ -400,7 +400,7 @@ const TRIPS: TripSpec[] = [
     gallery: [
       'https://asset.vialuxury.com/assets/466d681d-82d3-4f6d-857b-1e82c79cdb1c', // 2 de barman schenkt een aperitief in - beleving onderweg
       'https://asset.vialuxury.com/assets/cf21b84a-363c-4c95-9e27-fd49d5a7e564', // 3 twee gerechten met wijn - het culinaire diner
-      '/images/vakanties/004/route.jpg',             // 4 kaart van de route
+      '/images/vakanties/004/routekaart-zuid-limburg-luxe.png', // 4 kaart van de route
       { stop: 0, images: [                            // 5-7 Hotel Merici
         'https://asset.vialuxury.com/assets/3b6c8760-29ca-4701-85f3-32ae3ba23c24', //   het voormalige klooster vanuit het park
         'https://asset.vialuxury.com/assets/b7205338-4948-4009-b3f7-b8d6af503aeb', //   kamer met zithoek
@@ -424,7 +424,7 @@ const TRIPS: TripSpec[] = [
       'heuvelland.jpg':                          'Zuid-Limburg|Het glooiende Heuvelland',
       '466d681d-82d3-4f6d-857b-1e82c79cdb1c':    'Hotel Winselerhof|de barman schenkt een aperitief in',
       'cf21b84a-363c-4c95-9e27-fd49d5a7e564':    'Hotel Winselerhof|culinair diner in Restaurant Pirandello',
-      'route.jpg':                               'Routekaart|Van Sittard via Landgraaf naar Eijsden',
+      'routekaart-zuid-limburg-luxe.png':        'Routekaart|Van Sittard via Landgraaf naar Eijsden',
       '3b6c8760-29ca-4701-85f3-32ae3ba23c24':    'het voormalige Ursulinenklooster vanuit het park',
       'b7205338-4948-4009-b3f7-b8d6af503aeb':    'kamer met zithoek',
       '825e6754-76a0-491c-8267-f134a03603e1':    'gerecht uit de keuken van George’s',
@@ -478,7 +478,7 @@ const TRIPS: TripSpec[] = [
     gallery: [
       'https://asset.vialuxury.com/assets/466d681d-82d3-4f6d-857b-1e82c79cdb1c', // 2 de barman schenkt een aperitief in - beleving onderweg
       'https://asset.vialuxury.com/assets/cf21b84a-363c-4c95-9e27-fd49d5a7e564', // 3 twee gerechten met wijn - het culinaire diner
-      '/images/vakanties/005/route.jpg',             // 4 kaart van de route
+      '/images/vakanties/005/routekaart-zuid-limburg.png', // 4 kaart van de route
       { stop: 0, images: [                            // 5-7 Hotel Merici
         'https://asset.vialuxury.com/assets/3b6c8760-29ca-4701-85f3-32ae3ba23c24', //   het voormalige klooster vanuit het park
         'https://asset.vialuxury.com/assets/b7205338-4948-4009-b3f7-b8d6af503aeb', //   kamer met zithoek
@@ -500,7 +500,7 @@ const TRIPS: TripSpec[] = [
       'zuid-limburg.jpg':                        'Zuid-Limburg|Een Limburgs marktplein met terrassen',
       '466d681d-82d3-4f6d-857b-1e82c79cdb1c':    'Hotel Winselerhof|de barman schenkt een aperitief in',
       'cf21b84a-363c-4c95-9e27-fd49d5a7e564':    'Hotel Winselerhof|culinair diner in Restaurant Pirandello',
-      'route.jpg':                               'Routekaart|Van Sittard via Landgraaf naar Maastricht',
+      'routekaart-zuid-limburg.png':             'Routekaart|Van Sittard via Landgraaf naar Maastricht',
       '3b6c8760-29ca-4701-85f3-32ae3ba23c24':    'het voormalige Ursulinenklooster vanuit het park',
       'b7205338-4948-4009-b3f7-b8d6af503aeb':    'kamer met zithoek',
       '825e6754-76a0-491c-8267-f134a03603e1':    'gerecht uit de keuken van George’s',
@@ -579,7 +579,7 @@ const TRIPS: TripSpec[] = [
     gallery: [
       'https://asset.vialuxury.com/assets/48452b0f-f268-439c-a1b4-19c27d7e3e50', // 2 duinpad boven het strand - beleving onderweg
       'https://asset.vialuxury.com/assets/345f4ba3-8589-4b2d-aad2-b3cd196046a1', // 3 gerecht van de chef - het 3-gangendiner
-      // 4 kaart van de route - deze reis heeft geen routekaart
+      '/images/vakanties/006/routekaart-kustroute.png',    // 4 kaart van de route
       { stop: 1, images: [                            // 5 het mooiste beeld van de route; geen van de drie hotels heeft een gebouwfoto, dus een kamerbeeld
         'https://asset.vialuxury.com/assets/13edb591-9d4d-4d36-8251-33efecbf90cb', //   kamer met bubbelbad en zeezicht
       ] },
@@ -604,6 +604,7 @@ const TRIPS: TripSpec[] = [
     ],
     photoCaptions: {
       'kustroute.jpg':                           'Zeeland|De vuurtoren in de duinen',
+      'routekaart-kustroute.png':                'Routekaart|Van Zeeland via Scheveningen naar Haarlem',
       '48452b0f-f268-439c-a1b4-19c27d7e3e50':    'Onderweg|Het duinpad boven het strand',
       '345f4ba3-8589-4b2d-aad2-b3cd196046a1':    'Hotel Ter Zand|Een gerecht van de chef',
       '13edb591-9d4d-4d36-8251-33efecbf90cb':    'kamer met bubbelbad en zeezicht',
@@ -678,7 +679,7 @@ const TRIPS: TripSpec[] = [
     gallery: [
       '/images/vakanties/007/nearby-deventer-brug.jpg', // 2 fietsers op de brug bij Deventer - beleving onderweg
       'https://asset.vialuxury.com/assets/4057689f-b08a-406e-a5f5-219efc9b81b0', // 3 gerecht onder de stolp - het dagelijkse 3-gangendiner
-      // 4 kaart van de route - deze reis heeft geen routekaart
+      '/images/vakanties/007/routekaart-twente-salland.png', // 4 kaart van de route
       { stop: 2, images: [                            // 5 Landhuishotel Herikerberg - het mooiste hotelbeeld
         '/images/vakanties/007/hotel-herikerberg.jpg', //   het landhuis onder het rieten dak
       ] },
@@ -699,6 +700,7 @@ const TRIPS: TripSpec[] = [
     ],
     photoCaptions: {
       'fietsvakantie-twente-salland-bos.jpg':    'Twente|Fietsen door de bossenlaan',
+      'routekaart-twente-salland.png':           'Routekaart|Van Delden via Raalte naar Markelo',
       'nearby-deventer-brug.jpg':                'Onderweg|Fietsers op de brug bij Deventer',
       '4057689f-b08a-406e-a5f5-219efc9b81b0':    'Hotel de Zwaan|Een gerecht gaat onder de stolp vandaan',
       'hotel-herikerberg.jpg':                   'het landhuis onder het rieten dak',
