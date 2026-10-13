@@ -102,6 +102,8 @@ function bookNow() {
     const email = (document.getElementById('gf-email') as HTMLInputElement | null)?.value.trim() ?? ''
     checkoutGuest.value = { firstName, email }
   }
+  // Preloader op de bevestigingspagina alleen na "Boek nu" (niet bij een refresh).
+  useState<boolean>('mht-checkout-confirm-load', () => false).value = true
   navigateTo('/multi-hotel-trip/checkout/bevestiging')
 }
 

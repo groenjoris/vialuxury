@@ -371,6 +371,8 @@ function startMultiHotelTripConfirmation() {
   useState<{ baseId: string; rateKey: 'nonrefundable' | 'flexible'; price: number; priceWas: number; quantity: number }[]>('mht-checkout-selection', () => []).value =
     [{ baseId: 'trip', rateKey: 'flexible', price: 964, priceWas: 1535, quantity: 1 }]
   useState<{ firstName: string; email: string } | null>('mht-checkout-guest', () => null).value = { firstName: 'Rijo', email: 'rijo.verburg@gmail.com' }
+  // Preloader alleen bij deze ingang (en bij "Boek nu"), niet bij een refresh van de pagina.
+  useState<boolean>('mht-checkout-confirm-load', () => false).value = true
   navigateTo('/multi-hotel-trip/checkout/bevestiging')
 }
 

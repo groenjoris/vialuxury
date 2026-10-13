@@ -129,18 +129,21 @@ function money(v: number) {
   return `€${v.toLocaleString('nl-NL', { minimumFractionDigits: v % 1 ? 2 : 0, maximumFractionDigits: 2 })}`
 }
 
-/* Preloader (ontwerpdocument, principe 5): de betaling/boeking wordt "bevestigd" — hier een
-   gesimuleerde 6 seconden met een rustige animatie en wisselende teksten (betaling + per hotel
-   de kamer), zodat niemand naar een leeg scherm kijkt. Server én eerste client-render tonen de
-   loader (geen flits), daarna de pagina. */
+/* Preloader (ontwerpdocument, principe 5): de betaling/boeking wordt "bevestigd" — een
+   gesimuleerde 6 seconden met een rustige animatie en de stappen (betaling + per hotel de
+   kamer). Alleen bij binnenkomst via "Boek nu" of de knop op het startscherm (die zetten de
+   vlag `mht-checkout-confirm-load`); bij een refresh verschijnt de pagina direct. */
 const LOAD_MS = 6000
-const loading = ref(true)
+const loadFlag = useState<boolean>('mht-checkout-confirm-load', () => false)
+const loading = ref(loadFlag.value)
 const loadStep = ref(0)
 const loadSteps = computed(() => [
   'Betaling ontvangen',
-  ...trip.value.hotels.map((h) => `Kamer bevestigen bij ${h.name}…`),
+  ...trip.value.hotels.map((h) => `Kamer bevestigen bij ${h.name}`),
 ])
 onMounted(() => {
+  if (!loading.value) return
+  loadFlag.value = false
   const per = LOAD_MS / loadSteps.value.length
   const tick = setInterval(() => { loadStep.value = Math.min(loadStep.value + 1, loadSteps.value.length - 1) }, per)
   setTimeout(() => { clearInterval(tick); loading.value = false; window.scrollTo(0, 0) }, LOAD_MS)
@@ -160,11 +163,8 @@ useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
         <div class="cf__loader-inner">
           <span class="cf__spinner" aria-hidden="true" />
           <p class="cf__loader-title">Je boeking wordt bevestigd</p>
-          <Transition name="cf-step" mode="out-in">
-            <p :key="loadStep" class="cf__loader-step">{{ loadSteps[loadStep] }}</p>
-          </Transition>
-          <ol class="cf__loader-list" aria-hidden="true">
-            <li v-for="(st, i) in loadSteps" :key="st" :class="{ 'cf__loader-item--done': i < loadStep, 'cf__loader-item--on': i === loadStep }">{{ st.replace('…', '') }}</li>
+          <ol class="cf__loader-list">
+            <li v-for="(st, i) in loadSteps" :key="st" :class="{ 'cf__loader-item--done': i < loadStep, 'cf__loader-item--on': i === loadStep }">{{ st }}</li>
           </ol>
           <p class="cf__loader-note">Dit duurt een paar seconden. Sluit de pagina niet.</p>
         </div>
@@ -362,8 +362,7 @@ useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
 }
 @keyframes cf-spin { to { transform: rotate(360deg); } }
 .cf__loader-title { margin: 0 0 6px; font-size: var(--t-h1); font-weight: var(--w-black); line-height: 1.2; }
-.cf__loader-step { margin: 0 0 20px; min-height: 24px; font-size: var(--t-body-lg); color: var(--c-dark-grey); }
-.cf__loader-list { list-style: none; margin: 0 auto 20px; padding: 0; display: inline-flex; flex-direction: column; align-items: flex-start; gap: 6px; text-align: left; }
+.cf__loader-list { list-style: none; margin: 16px auto 20px; padding: 0; display: inline-flex; flex-direction: column; align-items: flex-start; gap: 6px; text-align: left; }
 .cf__loader-list li { position: relative; padding-left: 24px; font-size: var(--t-body); color: var(--c-medium-grey); }
 .cf__loader-list li::before {
   content: ''; position: absolute; left: 0; top: 4px; width: 14px; height: 14px; border-radius: 50%;
@@ -376,9 +375,6 @@ useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
 .cf__loader-note { margin: 0; font-size: var(--t-caption); color: var(--c-medium-grey); }
 .cf-load-leave-active { transition: opacity 350ms ease; }
 .cf-load-leave-to { opacity: 0; }
-.cf-step-enter-active, .cf-step-leave-active { transition: opacity 200ms ease, transform 200ms ease; }
-.cf-step-enter-from { opacity: 0; transform: translateY(6px); }
-.cf-step-leave-to { opacity: 0; transform: translateY(-6px); }
 
 /* 1. Hoofdfoto: kop links onder, route rechts (in beeld) */
 .cf__hero {
