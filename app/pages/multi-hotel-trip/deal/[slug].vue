@@ -1196,6 +1196,7 @@
       :index="galleryIndex"
       :came-direct="galleryCameDirect"
       :stickers="tripGalleryStickers"
+      :captions="tripGalleryCaptions"
       @update:view="galleryView = $event"
       @update:index="galleryIndex = $event"
       @close="galleryOpen = false"
@@ -1665,6 +1666,8 @@ const tripIncluded = computed(() =>
 const tripCitiesLabel = computed(() => trip ? trip.stops.map(s => s.city).join(' · ') : '')
 /** Hotelnaam-sticker per gallery-foto. */
 const tripGalleryStickers = tripPdp?.stickers
+/** Bijschrift per gallery-foto: wat er te zien is. */
+const tripGalleryCaptions = tripPdp?.captions
 /** Stops met ligging voor de kaarten (minimap + fullscreen). */
 const tripMapStops = computed(() =>
   (trip?.stops ?? [])

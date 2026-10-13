@@ -149,10 +149,16 @@ const props = defineProps<{
   /** Multi Hotel Trip: foto-id → hotelnaam; toont een sticker op de foto in
    *  de pop-up (op de pagina zelf staan geen stickers). */
   stickers?: Record<string, string>
+  /** Multi Hotel Trip: foto-id → bijschrift ("wat is dit?"), achter de
+   *  hotelnaam in dezelfde sticker. */
+  captions?: Record<string, string>
 }>()
 
+/** "Hotelnaam - wat het is", of alleen de hotelnaam als er geen bijschrift is. */
 function stickerFor(img: HotelImage): string | undefined {
-  return props.stickers?.[img.id]
+  const waar = props.stickers?.[img.id]
+  const wat = props.captions?.[img.id]
+  return waar && wat ? `${waar} - ${wat}` : waar
 }
 
 const emit = defineEmits<{
@@ -682,9 +688,8 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   padding: 4px 8px;
   border-radius: 6px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 .pg-sticker--stage {
   top: 16px;

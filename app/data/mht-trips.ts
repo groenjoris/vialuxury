@@ -93,6 +93,10 @@ interface TripSpec {
    *  stop, of precies de foto's uit `images` wanneer de volgorde binnen het blok ertoe
    *  doet (hotel, kamer, eten, USP). Zonder plan: omgevingsfoto's + hotels. */
   gallery?: (string | { stop: number; count?: number; images?: string[] })[]
+  /** Bijschrift per foto in de gallery, op bestandsnaam: wat je ziet. Bij een
+   *  hotelfoto komt de hotelnaam er vanzelf voor ("Naam - bijschrift"); een
+   *  sfeerbeeld kan met "Label|tekst" ook zijn eigen label zetten. */
+  photoCaptions?: Record<string, string>
   /** Rondje: de laatste dag gaat het terug naar het eerste hotel (auto blijft
    *  daar). De terugetappe wordt gestippeld op de kaarten getekend. */
   loop?: boolean
@@ -131,34 +135,59 @@ const TRIPS: TripSpec[] = [
       '/images/vakanties/001/nearby-marais.jpg',
     ],
     // Beeldplan volgens de checklist. Verplicht op 1 t/m 5: droombeeld van de
-    // route, een belevingsmoment onderweg, de belangrijkste include, een
-    // hoogtepunt onderweg en pas dan het mooiste hotelbeeld. Daarna verblijf en
-    // beleving om en om, de op een na belangrijkste include (het ontbijt) een
-    // keer, en als slot een omgevingsbeeld van de laatste stop. Veertien foto's,
-    // het maximum. De routekaart hoort volgens de checklist niet in de reeks.
+    // route, een belevingsmoment onderweg, de belangrijkste include, de kaart
+    // van de route en pas dan het mooiste hotelbeeld. Daarna per hotel in
+    // reisvolgorde: gebouw, kamer, de belangrijkste include van dat hotel en
+    // een omgevingsbeeld. Tilques staat met zijn gebouwfoto al op plek 5, dus
+    // dat blok begint bij de kamer.
+    //
+    // Het diner komt bij alle drie de hotels terug; dat mag maar een keer
+    // worden herhaald. Het staat op plek 3 en nog eens bij Beaulaincourt. De
+    // andere twee hotels laten hun eigen voorziening zien: het zwembad bij
+    // Tilques en de sauna bij Clery.
     gallery: [
       '/images/vakanties/001/nearby-marais.jpg',           //  2 platbodem in het Marais audomarois
       '/images/vakanties/001/clery-c4.jpg',                //  3 dessert - de drie 3-gangendiners
-      '/images/vakanties/001/nearby-boulogne.jpg',         //  4 hoogtepunt onderweg: Boulogne-sur-Mer
+      '/images/vakanties/001/route.jpg',                   //  4 kaart van de route
       { stop: 0, images: [                                 //  5-7 Chateau Tilques
-        '/images/vakanties/001/tilques-t1.jpg',            //    het kasteel vanuit de lucht
+        '/images/vakanties/001/tilques-t1.jpg',            //    gebouw: het kasteel vanuit de lucht
         '/images/vakanties/001/tilques-t2.jpg',            //    kamer
-        '/images/vakanties/001/extra-tilques-ontbijt.jpg', //    ontbijt in de tuin - include nr. 2
+        '/images/vakanties/001/tilques-t5.jpg',            //    include: het binnenzwembad
       ] },
-      '/images/vakanties/001/opaalkust-2.jpg',             //  8 onderweg: strandhuisjes aan de Opaalkust
-      { stop: 1, images: [                                 //  9-10 Chateau Clery
-        '/images/vakanties/001/clery-c1.jpg',              //    het kasteel met het gazon
+      '/images/vakanties/001/opaalkust-2.jpg',             //  8 omgeving: strandhuisjes aan de Opaalkust
+      { stop: 1, images: [                                 //  9-11 Chateau Clery
+        '/images/vakanties/001/clery-c1.jpg',              //    gebouw: het kasteel met het gazon
         '/images/vakanties/001/clery-c2.jpg',              //    kamer
+        '/images/vakanties/001/clery-c5.jpg',              //    include: de sauna
       ] },
-      '/images/vakanties/001/opaalkust-3.jpg',             // 11 onderweg: oude straat aan de kust
-      { stop: 2, images: [                                 // 12-13 Hotel Royal Beaulaincourt
-        '/images/vakanties/001/beaulaincourt-b1.jpg',      //    het stadspaleis met binnenplaats
+      '/images/vakanties/001/nearby-boulogne.jpg',         // 12 omgeving: Boulogne-sur-Mer
+      { stop: 2, images: [                                 // 13-15 Hotel Royal Beaulaincourt
+        '/images/vakanties/001/beaulaincourt-b1.jpg',      //    gebouw: het stadspaleis
         '/images/vakanties/001/beaulaincourt-b2.jpg',      //    kamer
+        '/images/vakanties/001/beaulaincourt-b4.jpg',      //    include: aan tafel, het 3-gangendiner
       ] },
-      '/images/vakanties/001/bethune.jpg',                 // 14 slot: de gevels van Bethune
-      // nearby-bethune.jpg toont hetzelfde plein maar is 1024 px breed; de
-      // checklist vraagt minimaal 1600 px, dus dit is de bruikbare versie.
+      '/images/vakanties/001/bethune.jpg',                 // 16 omgeving: de gevels van Bethune
     ],
+    photoCaptions: {
+      'opaalkust-1.jpg':            'Opaalkust|Cap Blanc-Nez, de krijtrotsen boven het strand',
+      'nearby-marais.jpg':          'Onderweg|Per platbodem door het Marais audomarois',
+      // Staat op plek 3 als sfeerbeeld, dus hier ook het hotel erbij; anders
+      // zou er "Omgeving" boven staan.
+      'clery-c4.jpg':               'Ch\u00e2teau Cl\u00e9ry|Dessert uit de keuken van Le Berthier',
+      'route.jpg':                  'Routekaart|De hele route langs de drie kastelen',
+      'tilques-t1.jpg':             'het kasteel in zijn park',
+      'tilques-t2.jpg':             'kamer in het kasteel',
+      'tilques-t5.jpg':             'het binnenzwembad',
+      'opaalkust-2.jpg':            'Onderweg|Strandhuisjes aan de Opaalkust',
+      'clery-c1.jpg':               'het kasteel met het gazon',
+      'clery-c2.jpg':               'kamer in het kasteel',
+      'clery-c5.jpg':               'de sauna',
+      'nearby-boulogne.jpg':        'Onderweg|De vestingmuren en de basiliek van Boulogne-sur-Mer',
+      'beaulaincourt-b1.jpg':       'het stadspaleis met zijn binnenplaats',
+      'beaulaincourt-b2.jpg':       'kamer',
+      'beaulaincourt-b4.jpg':       'aan tafel voor het 3-gangendiner',
+      'bethune.jpg':                'B\u00e9thune|De gevels aan de Grand Place',
+    },
     type: 'auto',
     stops: [
       { name: 'Château Tilques', city: 'Tilques', region: 'Noord-Frankrijk', nights: 2, stars: 3, lat: 50.7797, lng: 2.2010, image: '/images/vakanties/001/tilques-t1.jpg', extraImages: ['/images/vakanties/001/tilques-t2.jpg', '/images/vakanties/001/tilques-t3.jpg', '/images/vakanties/001/tilques-t4.jpg', '/images/vakanties/001/tilques-t5.jpg'], dinnerImage: '/images/vakanties/001/extra-tilques-restaurant.jpg', breakfastImage: '/images/vakanties/001/extra-tilques-ontbijt.jpg', includes: [l('2 x overnachting', '2 nights'), l('Dagelijks uitgebreid ontbijtbuffet', 'Daily extensive breakfast buffet'), l('3-gangendiner bij Le Vert Mesnil (dag van aankomst)', '3-course dinner at Le Vert Mesnil (day of arrival)'), l('Gebruik van het binnenzwembad', 'Use of the indoor pool'), l('Tennis & jeu de boules', 'Tennis & pétanque'), l('Late check-out tot 14:00 uur', 'Late check-out until 14:00'), l('Gratis parkeren', 'Free parking')] },
@@ -530,6 +559,7 @@ export interface MultiHotelTripDetail {
   fromHome?: { city: string; minutes: number }
   fromHomeByLocale?: TripSpec['fromHomeByLocale']
   gallery?: TripSpec['gallery']
+  photoCaptions?: TripSpec['photoCaptions']
   reviewScore: number
   reviewCount: number
 }
@@ -655,6 +685,7 @@ function buildTrip(spec: TripSpec): { hotel: SearchHotel; detail: MultiHotelTrip
     fromHome: spec.fromHome,
     fromHomeByLocale: spec.fromHomeByLocale,
     gallery: spec.gallery,
+    photoCaptions: spec.photoCaptions,
     loop: spec.loop,
     returnTravel: spec.returnTravel,
     station: spec.station,

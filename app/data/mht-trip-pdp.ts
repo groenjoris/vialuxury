@@ -32,6 +32,8 @@ export interface MultiHotelTripPdp {
   hotel: Hotel
   /** Foto-id → hotelnaam (sticker op de foto in de gallery-pop-up). */
   stickers: Record<string, string>
+  /** Foto-id → bijschrift: wat er op de foto te zien is. */
+  captions: Record<string, string>
   /** Redactionele inhoud (beschrijving, highlights, hotelinfo, dagprogramma). */
   content: TripItinerarySpec | null
   /** Dagprogramma, nog niet vertaald: de pagina zet dit om in tekst. */
@@ -228,9 +230,35 @@ const MAX_GALLERY = 32
 /** Sticker op de omgevingsfoto in de foto-pop-up. */
 const COVER_STICKER = 'Omgeving'
 
-function buildImages(trip: MultiHotelTripDetail): { images: HotelImage[]; stickers: Record<string, string> } {
+/** Zet per foto het bijschrift uit `photoCaptions` (op bestandsnaam). Staat er
+ *  "Label|tekst", dan vervangt het label ook de sticker — handig voor foto's die
+ *  bij geen hotel horen, zoals de routekaart of een omgevingsbeeld. */
+function vulBijschriften(
+  trip: MultiHotelTripDetail,
+  images: HotelImage[],
+  stickers: Record<string, string>,
+  captions: Record<string, string>,
+): void {
+  const spec = trip.photoCaptions
+  if (!spec) return
+  for (const img of images) {
+    const key = img.url.split('?')[0].split('/').pop()
+    const waarde = key ? spec[key] : undefined
+    if (!waarde) continue
+    const [eerste, ...rest] = waarde.split('|')
+    if (rest.length) {
+      stickers[img.id] = eerste!
+      captions[img.id] = rest.join('|')
+    } else {
+      captions[img.id] = eerste!
+    }
+  }
+}
+
+function buildImages(trip: MultiHotelTripDetail): { images: HotelImage[]; stickers: Record<string, string>; captions: Record<string, string> } {
   const images: HotelImage[] = []
   const stickers: Record<string, string> = {}
+  const captions: Record<string, string> = {}
   // Beeldplan (TripSpec.gallery): het hoofdbeeld en daarna precies de opgegeven volgorde van
   // sfeerbeelden en hotelblokken ({ stop, count }: de eerste `count` hotelfoto's van die stop,
   // of { stop, images }: precies deze foto's van die stop, in deze volgorde).
@@ -263,7 +291,8 @@ function buildImages(trip: MultiHotelTripDetail): { images: HotelImage[]; sticke
         stickers[id] = stop.hotelName
       })
     })
-    return { images, stickers }
+    vulBijschriften(trip, images, stickers, captions)
+    return { images, stickers, captions }
   }
   // 0. Omgevingsfoto als eerste (hero) — dezelfde foto als op de dealcard,
   //    met sticker "Omgeving" (niet aan een hotel gekoppeld).
@@ -311,7 +340,8 @@ function buildImages(trip: MultiHotelTripDetail): { images: HotelImage[]; sticke
     }
     round++
   }
-  return { images, stickers }
+  vulBijschriften(trip, images, stickers, captions)
+  return { images, stickers, captions }
 }
 
 const F = (nl: string, en: string): LocalizedString => ({ nl, en })
@@ -466,6 +496,6 @@ export function tripPdpBySlug(slug: string): MultiHotelTripPdp | null {
   const trip = tripDetailBySlug[slug]
   if (!trip) return null
   const content = TRIP_ITINERARIES[trip.id] ?? null
-  const { images, stickers } = buildImages(trip)
-  return { trip, deal: buildDeal(trip), hotel: buildHotel(trip, images, content), stickers, content, days: buildTripDays(trip, content) }
+  const { images, stickers, captions } = buildImages(trip)
+  return { trip, deal: buildDeal(trip), hotel: buildHotel(trip, images, content), stickers, captions, content, days: buildTripDays(trip, content) }
 }
