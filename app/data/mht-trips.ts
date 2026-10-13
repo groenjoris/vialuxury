@@ -330,7 +330,10 @@ const TRIPS: TripSpec[] = [
     coverImage: '/images/vakanties/003/ruurlo.jpg',
     gallery: [
       '/images/vakanties/003/singraven.jpg',         // 2 zomerse drukte voor Huis Singraven - beleving onderweg
-      // 3 belangrijkste include - deze reis heeft geen enkele eetfoto
+      // Plek 3 hoort de belangrijkste include te zijn, maar deze reis heeft
+      // geen enkele eetfoto. Daar staat nu een hoogtepunt onderweg, zodat de
+      // routekaart wel op plek 4 uitkomt.
+      '/images/vakanties/003/rosendael.jpg',         // 3 Kasteel Rosendael - hoogtepunt onderweg
       '/images/vakanties/003/routekaart-kastelen-landgoederen.png', // 4 kaart van de route
       { stop: 1, images: [                            // 5 Kasteel Engelenburg - het mooiste hotelbeeld
         '/images/vakanties/003/hotel-2.jpg',           //   het landhuis met de rozentuin
@@ -339,7 +342,7 @@ const TRIPS: TripSpec[] = [
         '/images/vakanties/003/hotel-1.jpg',           //   het landhuis in het bos
       ] },
       '/images/vakanties/003/middachten.jpg',        // 7 omgeving: de lanen van Kasteel Middachten
-      '/images/vakanties/003/rosendael.jpg',         // 8 omgeving: Kasteel Rosendael in de vijver
+      '/images/vakanties/002/zutphen.jpg',           // 8 omgeving: Zutphen, onderweg naar De Lutte
       { stop: 2, images: [                            // 9 Landhuishotel De Bloemenbeek
         '/images/vakanties/003/hotel-3.jpg',           //   het hotel met zijn tuin
       ] },
@@ -353,6 +356,7 @@ const TRIPS: TripSpec[] = [
       'hotel-1.jpg':                             'het landhuis in het bos',
       'middachten.jpg':                          'Onderweg|De lanen van Kasteel Middachten',
       'rosendael.jpg':                           'Onderweg|Kasteel Rosendael weerspiegeld in de vijver',
+      'zutphen.jpg':                             'Onderweg|De torens van Zutphen',
       'hotel-3.jpg':                             'het hotel met zijn tuin',
       'ootmarsum.jpg':                           'Ootmarsum|Het kerkplein',
     },
@@ -577,7 +581,7 @@ const TRIPS: TripSpec[] = [
     ],
     tags: ['auto', 'nederland', 'nieuw', 'aan-zee', 'wellness', 'steden', 'ontspanning', 'laadpaal', 'fiets-huren'],
     gallery: [
-      'https://asset.vialuxury.com/assets/48452b0f-f268-439c-a1b4-19c27d7e3e50', // 2 duinpad boven het strand - beleving onderweg
+      'https://asset.vialuxury.com/assets/8f2b7b4f-9b2e-4588-a1f3-e33d2c91ef4d', // 2 de wijn wordt ingeschonken - beleving onderweg
       'https://asset.vialuxury.com/assets/345f4ba3-8589-4b2d-aad2-b3cd196046a1', // 3 gerecht van de chef - het 3-gangendiner
       '/images/vakanties/006/routekaart-kustroute.png',    // 4 kaart van de route
       { stop: 1, images: [                            // 5 het mooiste beeld van de route; geen van de drie hotels heeft een gebouwfoto, dus een kamerbeeld
@@ -605,7 +609,7 @@ const TRIPS: TripSpec[] = [
     photoCaptions: {
       'kustroute.jpg':                           'Zeeland|De vuurtoren in de duinen',
       'routekaart-kustroute.png':                'Routekaart|Van Zeeland via Scheveningen naar Haarlem',
-      '48452b0f-f268-439c-a1b4-19c27d7e3e50':    'Onderweg|Het duinpad boven het strand',
+      '8f2b7b4f-9b2e-4588-a1f3-e33d2c91ef4d':    'Onderweg|De wijn wordt ingeschonken',
       '345f4ba3-8589-4b2d-aad2-b3cd196046a1':    'Hotel Ter Zand|Een gerecht van de chef',
       '13edb591-9d4d-4d36-8251-33efecbf90cb':    'kamer met bubbelbad en zeezicht',
       '09b83ed2-0c2d-4521-9c2a-2b30395fe6ca':    'het restaurant',
