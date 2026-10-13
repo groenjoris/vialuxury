@@ -60,6 +60,18 @@ automatisch:
 - R2 wordt niet automatisch gesynchroniseerd; "R1&R2"-wijzigingen worden
   handmatig in beide doorgevoerd.
 
+## E-mailontwerpen (`email-designs/`)
+
+De react-email-ontwerpen (voorheen het losse project `vialuxury-emails` op een eigen Vercel-URL)
+staan in `email-designs/` en worden als statische HTML gehost onder de prototype-URL:
+`npm run export` in `email-designs/` rendert elke e-mail (licht + donker) naar
+`public/emails/<slug>[.dark].html` en de lijst naar `app/data/mht-emails.json`; de gallery
+is `app/pages/multi-hotel-trip/emails/{index,[slug]}.vue` (licht/donker, desktop/mobiel,
+Kopieer/Download HTML met absolute afbeeldings-URL's). Afbeeldingen voor de mails staan in
+`public/images/mail/`. Na elke wijziging aan een e-mail: exporteren én het resultaat committen.
+Startscherm: box "E-mails" met linkjes per e-mail. Links in e-mails naar het prototype
+gebruiken `https://vialuxury.vercel.app/...`.
+
 ## Kaarten (Leaflet)
 
 De kaartweergave van de zoekresultaten (`*/map/HotelBrowseMap.vue`) haalt

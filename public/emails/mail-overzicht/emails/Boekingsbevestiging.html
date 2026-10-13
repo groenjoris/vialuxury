@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+@font-face { font-family: 'Recoleta'; src: url('./assets/Recoleta-SemiBold.ttf') format('truetype'); font-weight: 600; font-display: swap; }
+@font-face { font-family: 'Basis Grotesque Pro'; src: url('./assets/basisgrotesque-regular.ttf') format('truetype'); font-weight: 400; font-display: swap; }
+@font-face { font-family: 'Basis Grotesque Pro'; src: url('./assets/basisgrotesque-bold.ttf') format('truetype'); font-weight: 700; font-display: swap; }
+</style>
+</helmet>
+<div style="width:100%;padding:24px 0;font-family:'Basis Grotesque Pro',Helvetica,Arial,sans-serif;background:{{ pageBg }}">
+  <div style="width:100%;max-width:600px;margin:0 auto">
+
+    <div style="background:#206861;border-radius:12px 12px 0 0;padding:24px 32px">
+      <img src="./assets/logo-vialuxury-horizontal.png" alt="ViaLuxury" style="width:168px;height:auto;display:block" />
+    </div>
+
+    <div style="padding:32px;background:{{ cardBg }}">
+      <h1 style="font-family:'Recoleta',Georgia,serif;font-weight:600;font-size:26px;line-height:34px;margin:0 0 12px;color:{{ headingColor }}">Je boeking is bevestigd, {{ firstName }}</h1>
+      <p style="font-size:15px;line-height:24px;margin:0 0 24px;color:{{ inkText }}">Pak je koffers maar vast — je verblijf is geregeld. Hieronder vind je alle details van je boeking. Boekingsnummer: <strong>{{ bookingNumber }}</strong>.</p>
+
+      <img src="./assets/mail/hotel.jpg" alt="Amara Luxury Resort &amp; Villas" style="width:100%;height:260px;object-fit:cover;border-radius:8px;display:block;border:1px solid #D6D6D6;box-sizing:border-box" />
+
+      <h2 style="font-family:'Recoleta',Georgia,serif;font-weight:600;font-size:20px;line-height:28px;margin:20px 0 2px;color:{{ inkText }}">Amara Luxury Resort &amp; Villas</h2>
+      <p style="font-size:14px;margin:0 0 20px;color:{{ mutedText }}">Bodrum, Turkije</p>
+
+      <div style="border-radius:8px;padding:20px;background:{{ boxBg }}">
+        <div style="display:flex;gap:24px;flex-wrap:wrap">
+          <div style="flex:1 1 160px">
+            <div style="font-size:12px;line-height:16px;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:2px;color:{{ mutedText }}">Check-in</div>
+            <div style="font-size:15px;line-height:22px;font-weight:700;color:{{ inkText }}">za 12 sep 2026</div>
+          </div>
+          <div style="flex:1 1 160px">
+            <div style="font-size:12px;line-height:16px;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:2px;color:{{ mutedText }}">Check-out</div>
+            <div style="font-size:15px;line-height:22px;font-weight:700;color:{{ inkText }}">za 19 sep 2026</div>
+          </div>
+        </div>
+        <div style="height:1px;margin:16px 0;background:{{ dividerColor }}"></div>
+        <div style="display:flex;gap:24px;flex-wrap:wrap">
+          <div style="flex:1 1 160px">
+            <div style="font-size:12px;line-height:16px;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:2px;color:{{ mutedText }}">Reisgezelschap</div>
+            <div style="font-size:15px;line-height:22px;font-weight:700;color:{{ inkText }}">2 volwassenen</div>
+          </div>
+          <div style="flex:1 1 160px">
+            <div style="font-size:12px;line-height:16px;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:2px;color:{{ mutedText }}">Kamertype</div>
+            <div style="font-size:15px;line-height:22px;font-weight:700;color:{{ inkText }}">Deluxe kamer met zeezicht</div>
+          </div>
+        </div>
+        <div style="height:1px;margin:16px 0;background:{{ dividerColor }}"></div>
+        <div>
+          <div style="font-size:12px;line-height:16px;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:2px;color:{{ mutedText }}">Totaalprijs</div>
+          <div style="font-size:20px;line-height:26px;font-weight:700;color:{{ headingColor }}">€ 1.498</div>
+        </div>
+      </div>
+
+      <a href="https://vialuxury.nl" style="display:block;text-align:center;background:#FB862C;border-radius:8px;color:#FFFFFF;font-size:16px;font-weight:700;padding:14px 28px;text-decoration:none;margin-top:24px">Bekijk mijn boeking</a>
+
+      <p style="font-size:13px;line-height:20px;margin:20px 0 0;color:{{ mutedText }}">Vragen over je boeking? Ons team staat 7 dagen per week voor je klaar via reizen@vialuxury.nl.</p>
+    </div>
+
+    <div style="border-radius:0 0 12px 12px;padding:24px 32px;background:{{ footerBg }}">
+      <p style="color:#FFFFFF;font-size:13px;line-height:20px;margin:0">ViaLuxury — luxe reizen voor de beste prijs</p>
+      <p style="color:#9B9B9B;font-size:12px;line-height:18px;margin:8px 0 0">Je ontvangt deze e-mail omdat je een account of boeking hebt bij ViaLuxury. <a href="https://vialuxury.nl" style="font-size:14px;font-weight:700;line-height:1.3;color:#FB862C;text-decoration:underline">Voorkeuren aanpassen</a> · <a href="https://vialuxury.nl" style="font-size:14px;font-weight:700;line-height:1.3;color:#FB862C;text-decoration:underline">Uitschrijven</a></p>
+    </div>
+
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:600,&quot;height&quot;:1100},&quot;mode&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;light&quot;,&quot;dark&quot;],&quot;default&quot;:&quot;light&quot;,&quot;tsType&quot;:&quot;\&quot;light\&quot; | \&quot;dark\&quot;&quot;},&quot;firstName&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Sanne&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;bookingNumber&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;VL-2026-48213&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+class Component extends DCLogic {
+  renderVals() {
+    const dark = this.props.mode === "dark";
+    return {
+      pageBg: dark ? "#1E1E1E" : "#F5F5F5",
+      cardBg: dark ? "#2D2D2D" : "#FFFFFF",
+      boxBg: dark ? "#3A3A3A" : "#F5F5F5",
+      inkText: dark ? "#E0E0E0" : "#1A1A1A",
+      headingColor: dark ? "#80C5B7" : "#206861",
+      mutedText: dark ? "#A8A8A8" : "#6B6B6B",
+      dividerColor: dark ? "#4A4A4A" : "#E3E3E3",
+      footerBg: dark ? "#111111" : "#1A1A1A",
+      firstName: this.props.firstName ?? "Sanne",
+      bookingNumber: this.props.bookingNumber ?? "VL-2026-48213",
+    };
+  }
+}
+</script>
+</body>
+</html>

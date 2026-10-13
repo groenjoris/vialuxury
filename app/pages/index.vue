@@ -64,21 +64,17 @@
         </div>
       </section>
 
-      <!-- E-mails — ontwerpen in het losse e-mailproject (vialuxury-emails, react-email
-           gallery op Vercel). Linkjes, geen knoppen; de lijst groeit per e-mail. -->
+      <!-- E-mails — ontwerpen uit email-designs/ (react-email), als statische HTML gehost
+           onder /multi-hotel-trip/emails. Linkjes, geen knoppen; de lijst groeit per e-mail. -->
       <section class="start-section">
         <h2 class="start-section__title">E-mails</h2>
         <p class="start-section__lead">
-          E-mailontwerpen voor de multi-hotel vakanties, in de e-mailgallery op Vercel
+          E-mailontwerpen voor de multi-hotel vakanties
+          (<NuxtLink class="start-section__link" to="/multi-hotel-trip/emails">alle e-mails</NuxtLink>)
         </p>
         <ul class="start-section__links">
           <li>
-            <a
-              class="start-section__link"
-              href="https://vialuxury-emails.vercel.app/emails/vakantie-bevestiging"
-              target="_blank"
-              rel="noopener"
-            >Boekingsbevestiging vakantie</a>
+            <NuxtLink class="start-section__link" to="/multi-hotel-trip/emails/vakantie-bevestiging">Boekingsbevestiging vakantie</NuxtLink>
           </li>
         </ul>
       </section>

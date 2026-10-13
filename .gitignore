@@ -25,10 +25,14 @@ HFVR project
 /advertisement
 /backlog
 
-# Nested standalone project with its own git repo
-/vialuxury-emails
+# E-mailontwerpen (email-designs/): alleen tooling-output negeren
+/email-designs/.react-email
+*.tsbuildinfo
 
 # Local env files
 .env
 .env.*
 !.env.example
+
+# Bronmateriaal van de mailtemplates (29 MB), niet nodig voor hosting
+/email-designs/dc-templates/Folder uitwerken en formulier

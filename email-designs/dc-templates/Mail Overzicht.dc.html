@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+@font-face { font-family: 'Recoleta'; src: url('./assets/Recoleta-SemiBold.ttf') format('truetype'); font-weight: 600; font-display: swap; }
+@font-face { font-family: 'Basis Grotesque Pro'; src: url('./assets/basisgrotesque-regular.ttf') format('truetype'); font-weight: 400; font-display: swap; }
+@font-face { font-family: 'Basis Grotesque Pro'; src: url('./assets/basisgrotesque-bold.ttf') format('truetype'); font-weight: 700; font-display: swap; }
+html, body { margin: 0; padding: 0; background: #F5F5F5; }
+a { color: #206861; }
+a:hover { color: #206861; }
+</style>
+</helmet>
+<div style="min-height:100vh;background:#F5F5F5;color:#1A1A1A;font-family:'Basis Grotesque Pro',Helvetica,Arial,sans-serif;font-size:15px;line-height:1.5">
+
+  <div style="background:#206861;padding:20px 32px;display:flex;align-items:center;gap:16px">
+    <img src="./assets/logo-vialuxury-horizontal.svg" alt="ViaLuxury" style="height:18px;width:auto;display:block" />
+    <span style="color:rgba(255,255,255,0.75);font-size:14px;border-left:1px solid rgba(255,255,255,0.3);padding-left:16px">E-maildesigns</span>
+  </div>
+
+  <div style="max-width:1120px;margin:0 auto;padding:40px 32px 64px">
+
+    <sc-if value="{{ showIndex }}" hint-placeholder-val="{{ true }}">
+      <div>
+        <h1 style="font-family:'Recoleta',Georgia,serif;font-weight:600;margin:0;font-size:32px;color:#206861">E-maildesigns</h1>
+        <p style="color:#6b6b6b;margin:8px 0 0">Alle e-mailontwerpen van ViaLuxury op één plek. Klik op een ontwerp voor een grote preview, licht/donker- en mobiel/desktop-weergave en de productie-HTML.</p>
+
+        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:24px">
+          <div onClick="{{ filterWelkom }}" style="font-size:12px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;border-radius:999px;padding:9px 16px;cursor:pointer;border:1px solid {{ chipWelkomBorder }};background:{{ chipWelkomBg }};color:{{ chipWelkomFg }}">Welkom inschrijving</div>
+          <div onClick="{{ filterReminder }}" style="font-size:12px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;border-radius:999px;padding:9px 16px;cursor:pointer;border:1px solid {{ chipReminderBorder }};background:{{ chipReminderBg }};color:{{ chipReminderFg }}">Reminder welkom code</div>
+          <div onClick="{{ filterKlant }}" style="font-size:12px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;border-radius:999px;padding:9px 16px;cursor:pointer;border:1px solid {{ chipKlantBorder }};background:{{ chipKlantBg }};color:{{ chipKlantFg }}">Reminder bestaande klant</div>
+          <div onClick="{{ filterReset }}" style="font-size:12px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;border-radius:999px;padding:9px 16px;cursor:pointer;border:1px solid transparent;background:transparent;color:#6b6b6b;display:{{ resetDisplay }}">Wis filter</div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:24px;margin-top:24px">
+          <div onClick="{{ openWelkom }}" style="background:#fff;border-radius:12px;overflow:hidden;display:{{ dispWelkom }};flex-direction:column;border:1px solid #e6e6e6;cursor:pointer" style-hover="box-shadow:0 8px 24px rgba(26,26,26,0.12);transform:translateY(-2px)">
+            <div style="height:300px;overflow:hidden;position:relative;background:#F5F5F5;pointer-events:none">
+              <div style="position:absolute;top:0;left:50%;margin-left:-166px;width:664px;transform:scale(0.5);transform-origin:top left">
+                <dc-import name="Mail1A" hint-size="664px,1240px"></dc-import>
+              </div>
+            </div>
+            <div style="padding:18px 20px 20px;border-top:1px solid #eee">
+              <h2 style="font-family:'Recoleta',Georgia,serif;font-weight:600;margin:0 0 6px;font-size:19px;color:#206861">Welkom (Mail 1A)</h2>
+              <p style="margin:0;color:#6b6b6b;font-size:14px">Welkomstmail na eerste boeking: account, FAQ, deal-opt-in en thema-inspiratie. Naar Figma-ontwerp 'Nieuwsbrief'.</p>
+            </div>
+          </div>
+          <div onClick="{{ openWelkom1b }}" style="background:#fff;border-radius:12px;overflow:hidden;display:{{ dispWelkom }};flex-direction:column;border:1px solid #e6e6e6;cursor:pointer" style-hover="box-shadow:0 8px 24px rgba(26,26,26,0.12);transform:translateY(-2px)">
+            <div style="height:300px;overflow:hidden;position:relative;background:#F5F5F5;pointer-events:none">
+              <div style="position:absolute;top:0;left:50%;margin-left:-166px;width:664px;transform:scale(0.5);transform-origin:top left">
+                <dc-import name="Mail1B" hint-size="664px,1240px"></dc-import>
+              </div>
+            </div>
+            <div style="padding:18px 20px 20px;border-top:1px solid #eee">
+              <h2 style="font-family:'Recoleta',Georgia,serif;font-weight:600;margin:0 0 6px;font-size:19px;color:#206861">Welkom (Mail 1B)</h2>
+              <p style="margin:0;color:#6b6b6b;font-size:14px">Welkomstmail voor klanten die al deals ontvangen: opt-in voor niet-hotel deals bovenaan, daarna account, FAQ en thema-inspiratie. Naar Figma-frame 'mail 1B customer mobile'.</p>
+            </div>
+          </div>
+
+          <div onClick="{{ openFan }}" style="background:#fff;border-radius:12px;overflow:hidden;display:{{ dispWelkom }};flex-direction:column;border:1px solid #e6e6e6;cursor:pointer" style-hover="box-shadow:0 8px 24px rgba(26,26,26,0.12);transform:translateY(-2px)">
+            <div style="height:300px;overflow:hidden;position:relative;background:#F5F5F5;pointer-events:none">
+              <div style="position:absolute;top:0;left:50%;margin-left:-166px;width:664px;transform:scale(0.5);transform-origin:top left">
+                <dc-import name="Mail1AFan" hint-size="664px,1800px"></dc-import>
+              </div>
+            </div>
+            <div style="padding:18px 20px 20px;border-top:1px solid #eee">
+              <h2 style="font-family:'Recoleta',Georgia,serif;font-weight:600;margin:0 0 6px;font-size:19px;color:#206861">Welkom (Mail 1A FAN)</h2>
+              <p style="margin:0;color:#6b6b6b;font-size:14px">Welkomstmail na inschrijving op de nieuwsbrief: €10 welkomstkorting met code, drie populaire arrangementen en deal-opt-in. Naar Figma-frame 'mail-1A-fan-mobile'.</p>
+            </div>
+          </div>
+
+          <div onClick="{{ openMail2 }}" style="background:#fff;border-radius:12px;overflow:hidden;display:{{ dispReminder }};flex-direction:column;border:1px solid #e6e6e6;cursor:pointer" style-hover="box-shadow:0 8px 24px rgba(26,26,26,0.12);transform:translateY(-2px)">
+            <div style="height:300px;overflow:hidden;position:relative;background:#F5F5F5;pointer-events:none">
+              <div style="position:absolute;top:0;left:50%;margin-left:-166px;width:664px;transform:scale(0.5);transform-origin:top left">
+                <dc-import name="Mail2Reminder" hint-size="664px,1544px"></dc-import>
+              </div>
+            </div>
+            <div style="padding:18px 20px 20px;border-top:1px solid #eee">
+              <h2 style="font-family:'Recoleta',Georgia,serif;font-weight:600;margin:0 0 6px;font-size:19px;color:#206861">Reminder welkom code (Mail 2)</h2>
+              <p style="margin:0;color:#6b6b6b;font-size:14px">Herinnering aan de ongebruikte €10 welkomstkorting, met kortingscode en thema-inspiratie. Naar Figma-frame 'Mail 2 Fan Mobiel'.</p>
+            </div>
+          </div>
+
+          <div onClick="{{ openMail3 }}" style="background:#fff;border-radius:12px;overflow:hidden;display:{{ dispReminder }};flex-direction:column;border:1px solid #e6e6e6;cursor:pointer" style-hover="box-shadow:0 8px 24px rgba(26,26,26,0.12);transform:translateY(-2px)">
+            <div style="height:300px;overflow:hidden;position:relative;background:#F5F5F5;pointer-events:none">
+              <div style="position:absolute;top:0;left:50%;margin-left:-166px;width:664px;transform:scale(0.5);transform-origin:top left">
+                <dc-import name="Mail3Reminder" hint-size="664px,2126px"></dc-import>
+              </div>
+            </div>
+            <div style="padding:18px 20px 20px;border-top:1px solid #eee">
+              <h2 style="font-family:'Recoleta',Georgia,serif;font-weight:600;margin:0 0 6px;font-size:19px;color:#206861">Reminder welkom code (Mail 3)</h2>
+              <p style="margin:0;color:#6b6b6b;font-size:14px">Laatste herinnering aan de €10 korting, met drie arrangementen om direct te besteden. Naar Figma-frame 'Mail 3 Fan Mobile'.</p>
+            </div>
+          </div>
+
+          <div onClick="{{ openMail4 }}" style="background:#fff;border-radius:12px;overflow:hidden;display:{{ dispReminder }};flex-direction:column;border:1px solid #e6e6e6;cursor:pointer" style-hover="box-shadow:0 8px 24px rgba(26,26,26,0.12);transform:translateY(-2px)">
+            <div style="height:300px;overflow:hidden;position:relative;background:#F5F5F5;pointer-events:none">
+              <div style="position:absolute;top:0;left:50%;margin-left:-166px;width:664px;transform:scale(0.5);transform-origin:top left">
+                <dc-import name="Mail4Reminder" hint-size="664px,1400px"></dc-import>
+              </div>
+            </div>
+            <div style="padding:18px 20px 20px;border-top:1px solid #eee">
+              <h2 style="font-family:'Recoleta',Georgia,serif;font-weight:600;margin:0 0 6px;font-size:19px;color:#206861">Reminder welkom code (Mail 4)</h2>
+              <p style="margin:0;color:#6b6b6b;font-size:14px">Urgentie-mail: nog 3 dagen geldig, met drie inspiratiethema's en de kortingscode onderaan. Naar Figma-frame 'Mail 4 Fan Mobiel'.</p>
+            </div>
+          </div>
+
+          <div onClick="{{ openMail5 }}" style="background:#fff;border-radius:12px;overflow:hidden;display:{{ dispReminder }};flex-direction:column;border:1px solid #e6e6e6;cursor:pointer" style-hover="box-shadow:0 8px 24px rgba(26,26,26,0.12);transform:translateY(-2px)">
+            <div style="height:300px;overflow:hidden;position:relative;background:#F5F5F5;pointer-events:none">
+              <div style="position:absolute;top:0;left:50%;margin-left:-166px;width:664px;transform:scale(0.5);transform-origin:top left">
+                <dc-import name="Mail5Reminder" hint-size="664px,1800px"></dc-import>
+              </div>
+            </div>
+            <div style="padding:18px 20px 20px;border-top:1px solid #eee">
+              <h2 style="font-family:'Recoleta',Georgia,serif;font-weight:600;margin:0 0 6px;font-size:19px;color:#206861">Reminder welkom code (Mail 5)</h2>
+              <p style="margin:0;color:#6b6b6b;font-size:14px">Laatste kans: binnen 24 uur verloopt de €10 korting, met best geboekte arrangementen en een blijf-op-de-hoogte blok. Naar Figma-frame 'Mail 5 Fan Mobiel'.</p>
+            </div>
+          </div>
+
+          <div onClick="{{ openGeboekt }}" style="background:#fff;border-radius:12px;overflow:hidden;display:{{ dispKlant }};flex-direction:column;border:1px solid #e6e6e6;cursor:pointer" style-hover="box-shadow:0 8px 24px rgba(26,26,26,0.12);transform:translateY(-2px)">
+            <div style="height:300px;overflow:hidden;position:relative;background:#F5F5F5;pointer-events:none">
+              <div style="position:absolute;top:0;left:50%;margin-left:-166px;width:664px;transform:scale(0.5);transform-origin:top left">
+                <dc-import name="KlantGeboektUitgeschreven" hint-size="664px,1200px"></dc-import>
+              </div>
+            </div>
+            <div style="padding:18px 20px 20px;border-top:1px solid #eee">
+              <h2 style="font-family:'Recoleta',Georgia,serif;font-weight:600;margin:0 0 6px;font-size:19px;color:#206861">Klant geboekt &amp; uitgeschreven (transactioneel)</h2>
+              <p style="margin:0;color:#6b6b6b;font-size:14px">Voor klanten die wel boekten maar zijn uitgeschreven: opt-in terugwinnen, boekingsgegevens in het account en FAQ. Naar Figma-frame 'Klant geboekt &amp; uitgeschreven (transactioneel) - mobile'.</p>
+            </div>
+          </div>
+
+          <div onClick="{{ openInactief }}" style="background:#fff;border-radius:12px;overflow:hidden;display:{{ dispKlant }};flex-direction:column;border:1px solid #e6e6e6;cursor:pointer" style-hover="box-shadow:0 8px 24px rgba(26,26,26,0.12);transform:translateY(-2px)">
+            <div style="height:300px;overflow:hidden;position:relative;background:#F5F5F5;pointer-events:none">
+              <div style="position:absolute;top:0;left:50%;margin-left:-166px;width:664px;transform:scale(0.5);transform-origin:top left">
+                <dc-import name="KlantGeboektInactief" hint-size="664px,1200px"></dc-import>
+              </div>
+            </div>
+            <div style="padding:18px 20px 20px;border-top:1px solid #eee">
+              <h2 style="font-family:'Recoleta',Georgia,serif;font-weight:600;margin:0 0 6px;font-size:19px;color:#206861">Klant geboekt &amp; inactief (transactioneel)</h2>
+              <p style="margin:0;color:#6b6b6b;font-size:14px">Reactivatie voor klanten die boekten maar inactief werden: welkom terug, boekingsgegevens en FAQ met CTA naar de site. Naar Figma-frame 'Klant geboekt &amp; inactief (transactioneel) - mobile'.</p>
+            </div>
+          </div>
+        </div>
+
+        <hr style="border:0;border-top:1px solid #dcdcdc;margin:48px 0 32px" />
+        <h2 style="font-family:'Recoleta',Georgia,serif;font-weight:600;margin:0;font-size:24px;color:#206861">Inspiration examples</h2>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:24px;margin-top:24px">
+          <div onClick="{{ openBooking }}" style="background:#fff;border-radius:12px;overflow:hidden;display:flex;flex-direction:column;border:1px solid #e6e6e6;cursor:pointer" style-hover="box-shadow:0 8px 24px rgba(26,26,26,0.12);transform:translateY(-2px)">
+            <div style="height:300px;overflow:hidden;position:relative;background:#F5F5F5;pointer-events:none">
+              <div style="position:absolute;top:0;left:50%;margin-left:-166px;width:664px;transform:scale(0.5);transform-origin:top left">
+                <dc-import name="Boekingsbevestiging" hint-size="664px,1240px"></dc-import>
+              </div>
+            </div>
+            <div style="padding:18px 20px 20px;border-top:1px solid #eee">
+              <h2 style="font-family:'Recoleta',Georgia,serif;font-weight:600;margin:0 0 6px;font-size:19px;color:#206861">Boekingsbevestiging</h2>
+              <p style="margin:0;color:#6b6b6b;font-size:14px">Transactionele bevestiging na een geslaagde boeking, met reisdetails en totaalprijs.</p>
+            </div>
+          </div>
+
+          <div onClick="{{ openDeal }}" style="background:#fff;border-radius:12px;overflow:hidden;display:flex;flex-direction:column;border:1px solid #e6e6e6;cursor:pointer" style-hover="box-shadow:0 8px 24px rgba(26,26,26,0.12);transform:translateY(-2px)">
+            <div style="height:300px;overflow:hidden;position:relative;background:#F5F5F5;pointer-events:none">
+              <div style="position:absolute;top:0;left:50%;margin-left:-166px;width:664px;transform:scale(0.5);transform-origin:top left">
+                <dc-import name="DealVanDeWeek" hint-size="664px,1240px"></dc-import>
+              </div>
+            </div>
+            <div style="padding:18px 20px 20px;border-top:1px solid #eee">
+              <h2 style="font-family:'Recoleta',Georgia,serif;font-weight:600;margin:0 0 6px;font-size:19px;color:#206861">Deal van de week</h2>
+              <p style="margin:0;color:#6b6b6b;font-size:14px">Commerciële nieuwsbrief rond één deal: hero-foto, USP's, oude vs. nieuwe prijs en CTA.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ showDetail }}" hint-placeholder-val="{{ false }}">
+      <div>
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:24px">
+          <div onClick="{{ back }}" style="font-size:14px;font-weight:700;border:1px solid #d9d9d9;background:#fff;color:#1A1A1A;border-radius:8px;padding:9px 16px;cursor:pointer;display:inline-flex;align-items:center;gap:8px" style-hover="border-color:#206861">← Alle designs</div>
+          <h1 style="font-family:'Recoleta',Georgia,serif;font-weight:600;font-size:22px;margin:0 8px;color:#206861">{{ detailTitle }}</h1>
+          <div style="flex:1"></div>
+          <div style="display:inline-flex;gap:4px;background:#ececec;border-radius:10px;padding:4px">
+            <div onClick="{{ setLight }}" style="font-size:14px;font-weight:700;border-radius:8px;padding:9px 16px;cursor:pointer;background:{{ lightBg }};color:{{ lightFg }}">Licht</div>
+            <div onClick="{{ setDark }}" style="font-size:14px;font-weight:700;border-radius:8px;padding:9px 16px;cursor:pointer;background:{{ darkBg }};color:{{ darkFg }}">Donker</div>
+          </div>
+          <div style="display:inline-flex;gap:4px;background:#ececec;border-radius:10px;padding:4px">
+            <div onClick="{{ setDesktop }}" style="font-size:14px;font-weight:700;border-radius:8px;padding:9px 16px;cursor:pointer;background:{{ deskBg }};color:{{ deskFg }}">Desktop</div>
+            <div onClick="{{ setMobile }}" style="font-size:14px;font-weight:700;border-radius:8px;padding:9px 16px;cursor:pointer;background:{{ mobBg }};color:{{ mobFg }}">Mobiel</div>
+          </div>
+          <div onClick="{{ copyHtml }}" style="font-size:14px;font-weight:700;border:1px solid #FB862C;background:#FB862C;color:#fff;border-radius:8px;padding:9px 16px;cursor:pointer">{{ copyLabel }}</div>
+          <div onClick="{{ downloadHtml }}" style="font-size:14px;font-weight:700;border:1px solid #d9d9d9;background:#fff;color:#1A1A1A;border-radius:8px;padding:9px 16px;cursor:pointer" style-hover="border-color:#206861">Download .html</div>
+        </div>
+
+        <div style="display:flex;justify-content:center">
+          <div ref="{{ stageRef }}" style="border:1px solid #e0e0e0;border-radius:12px;background:#F5F5F5;min-height:600px;overflow:hidden;width:{{ stageWidth }}">
+            <sc-if value="{{ isWelkom }}" hint-placeholder-val="{{ false }}"><dc-import name="Mail1A" mode="{{ mode }}" hint-size="100%,1240px"></dc-import></sc-if>
+            <sc-if value="{{ isWelkom1b }}" hint-placeholder-val="{{ false }}"><dc-import name="Mail1B" mode="{{ mode }}" layout="{{ layout }}" hint-size="100%,1613px"></dc-import></sc-if>
+            <sc-if value="{{ isFan }}" hint-placeholder-val="{{ false }}"><dc-import name="Mail1AFan" mode="{{ mode }}" layout="{{ layout }}" hint-size="100%,1800px"></dc-import></sc-if>
+            <sc-if value="{{ isMail2 }}" hint-placeholder-val="{{ false }}"><dc-import name="Mail2Reminder" mode="{{ mode }}" layout="{{ layout }}" hint-size="100%,1544px"></dc-import></sc-if>
+            <sc-if value="{{ isMail3 }}" hint-placeholder-val="{{ false }}"><dc-import name="Mail3Reminder" mode="{{ mode }}" layout="{{ layout }}" hint-size="100%,2126px"></dc-import></sc-if>
+            <sc-if value="{{ isMail4 }}" hint-placeholder-val="{{ false }}"><dc-import name="Mail4Reminder" mode="{{ mode }}" layout="{{ layout }}" hint-size="100%,1400px"></dc-import></sc-if>
+            <sc-if value="{{ isMail5 }}" hint-placeholder-val="{{ false }}"><dc-import name="Mail5Reminder" mode="{{ mode }}" layout="{{ layout }}" hint-size="100%,1800px"></dc-import></sc-if>
+            <sc-if value="{{ isGeboekt }}" hint-placeholder-val="{{ false }}"><dc-import name="KlantGeboektUitgeschreven" mode="{{ mode }}" layout="{{ layout }}" hint-size="100%,1200px"></dc-import></sc-if>
+            <sc-if value="{{ isInactief }}" hint-placeholder-val="{{ false }}"><dc-import name="KlantGeboektInactief" mode="{{ mode }}" layout="{{ layout }}" hint-size="100%,1200px"></dc-import></sc-if>
+            <sc-if value="{{ isBooking }}" hint-placeholder-val="{{ false }}"><dc-import name="Boekingsbevestiging" mode="{{ mode }}" hint-size="100%,1100px"></dc-import></sc-if>
+            <sc-if value="{{ isDeal }}" hint-placeholder-val="{{ false }}"><dc-import name="DealVanDeWeek" mode="{{ mode }}" hint-size="100%,1100px"></dc-import></sc-if>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{}">
+const TITLES = {
+  "welkom-mail-1a": "Welkom (Mail 1A)",
+  "welkom-mail-1b": "Welkom (Mail 1B)",
+  "mail-1a-fan": "Welkom (Mail 1A FAN)",
+  "mail-2-reminder": "Reminder welkom code (Mail 2)",
+  "mail-3-reminder": "Reminder welkom code (Mail 3)",
+  "mail-4-reminder": "Reminder welkom code (Mail 4)",
+  "mail-5-reminder": "Reminder welkom code (Mail 5)",
+  "klant-geboekt-uitgeschreven": "Klant geboekt & uitgeschreven (transactioneel)",
+  "klant-geboekt-inactief": "Klant geboekt & inactief (transactioneel)",
+  "booking-confirmation": "Boekingsbevestiging",
+  "deal-alert": "Deal van de week",
+};
+
+class Component extends DCLogic {
+  state = { slug: null, mode: "light", width: "desktop", copied: false, filters: [] };
+
+  toggleFilter(key) {
+    this.setState((s) => ({
+      filters: s.filters.includes(key) ? s.filters.filter((f) => f !== key) : [...s.filters, key],
+    }));
+  }
+  stage = React.createRef();
+
+  htmlDoc() {
+    const inner = this.stage.current ? this.stage.current.innerHTML : "";
+    return `<!DOCTYPE html>\n<html lang="nl">\n<head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><title>${TITLES[this.state.slug] || ""}</title></head>\n<body style="margin:0">\n${inner}\n</body>\n</html>`;
+  }
+
+  renderVals() {
+    const { slug, mode, width, copied, filters } = this.state;
+    const active = (k) => filters.length === 0 || filters.includes(k);
+    const chip = (k) => filters.includes(k)
+      ? { bg: "#206861", fg: "#fff", border: "#206861" }
+      : { bg: "#fff", fg: "#1A1A1A", border: "#d9d9d9" };
+    const cw = chip("welkom"), cr = chip("reminder"), ck = chip("klant");
+    const on = { bg: "#206861", fg: "#fff" };
+    const off = { bg: "transparent", fg: "#1A1A1A" };
+    const l = mode === "light" ? on : off;
+    const d = mode === "dark" ? on : off;
+    const dk = width === "desktop" ? on : off;
+    const mb = width === "mobile" ? on : off;
+    return {
+      showIndex: !slug,
+      showDetail: !!slug,
+      detailTitle: TITLES[slug] || "",
+      isWelkom: slug === "welkom-mail-1a",
+      isWelkom1b: slug === "welkom-mail-1b",
+      isFan: slug === "mail-1a-fan",
+      isMail2: slug === "mail-2-reminder",
+      isMail3: slug === "mail-3-reminder",
+      isMail4: slug === "mail-4-reminder",
+      isMail5: slug === "mail-5-reminder",
+      isGeboekt: slug === "klant-geboekt-uitgeschreven",
+      isInactief: slug === "klant-geboekt-inactief",
+      isBooking: slug === "booking-confirmation",
+      isDeal: slug === "deal-alert",
+      mode,
+      layout: width === "mobile" ? "mobile" : "desktop",
+      stageRef: this.stage,
+      stageWidth: width === "mobile" ? "375px" : "700px",
+      copyLabel: copied ? "Gekopieerd ✓" : "Kopieer HTML",
+      dispWelkom: active("welkom") ? "flex" : "none",
+      dispReminder: active("reminder") ? "flex" : "none",
+      dispKlant: active("klant") ? "flex" : "none",
+      chipWelkomBg: cw.bg, chipWelkomFg: cw.fg, chipWelkomBorder: cw.border,
+      chipReminderBg: cr.bg, chipReminderFg: cr.fg, chipReminderBorder: cr.border,
+      chipKlantBg: ck.bg, chipKlantFg: ck.fg, chipKlantBorder: ck.border,
+      resetDisplay: filters.length ? "block" : "none",
+      filterWelkom: () => this.toggleFilter("welkom"),
+      filterReminder: () => this.toggleFilter("reminder"),
+      filterKlant: () => this.toggleFilter("klant"),
+      filterReset: () => this.setState({ filters: [] }),
+      openWelkom: () => this.setState({ slug: "welkom-mail-1a" }),
+      openWelkom1b: () => this.setState({ slug: "welkom-mail-1b" }),
+      openFan: () => this.setState({ slug: "mail-1a-fan" }),
+      openMail2: () => this.setState({ slug: "mail-2-reminder" }),
+      openMail3: () => this.setState({ slug: "mail-3-reminder" }),
+      openMail4: () => this.setState({ slug: "mail-4-reminder" }),
+      openMail5: () => this.setState({ slug: "mail-5-reminder" }),
+      openGeboekt: () => this.setState({ slug: "klant-geboekt-uitgeschreven" }),
+      openInactief: () => this.setState({ slug: "klant-geboekt-inactief" }),
+      openBooking: () => this.setState({ slug: "booking-confirmation" }),
+      openDeal: () => this.setState({ slug: "deal-alert" }),
+      back: () => this.setState({ slug: null }),
+      setLight: () => this.setState({ mode: "light" }),
+      setDark: () => this.setState({ mode: "dark" }),
+      setDesktop: () => this.setState({ width: "desktop" }),
+      setMobile: () => this.setState({ width: "mobile" }),
+      copyHtml: async () => {
+        try {
+          await navigator.clipboard.writeText(this.htmlDoc());
+          this.setState({ copied: true });
+          setTimeout(() => this.setState({ copied: false }), 2000);
+        } catch (e) {}
+      },
+      downloadHtml: () => {
+        const blob = new Blob([this.htmlDoc()], { type: "text/html" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = `${this.state.slug}-${this.state.mode}.html`;
+        a.click();
+        URL.revokeObjectURL(a.href);
+      },
+      lightBg: l.bg, lightFg: l.fg,
+      darkBg: d.bg, darkFg: d.fg,
+      deskBg: dk.bg, deskFg: dk.fg,
+      mobBg: mb.bg, mobFg: mb.fg,
+    };
+  }
+}
+</script>
+</body>
+</html>
