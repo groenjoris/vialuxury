@@ -425,7 +425,7 @@ const TRIPS: TripSpec[] = [
       'https://asset.vialuxury.com/assets/3b6c8760-29ca-4701-85f3-32ae3ba23c24', // Hotel Merici, het voormalige klooster
     ],
     gallery: [
-      'https://asset.vialuxury.com/assets/466d681d-82d3-4f6d-857b-1e82c79cdb1c', // 2 de barman schenkt een aperitief in - beleving onderweg
+      '/images/vakanties/004/maastricht.jpg',        // 2 terras op het Vrijthof - beleving onderweg
       'https://asset.vialuxury.com/assets/cf21b84a-363c-4c95-9e27-fd49d5a7e564', // 3 twee gerechten met wijn - het culinaire diner
       '/images/vakanties/004/routekaart-zuid-limburg-luxe.png', // 4 kaart van de route
       { stop: 0, images: [                            // 5-7 Hotel Merici
@@ -445,7 +445,7 @@ const TRIPS: TripSpec[] = [
         'https://asset.vialuxury.com/assets/0de487d1-7ef2-4bbc-b18b-f09be161e6fa', //   gerecht uit restaurant Maes
         'https://asset.vialuxury.com/assets/22de12cd-7559-42b1-acfc-e057dda16137', //   de Oysana spa
       ] },
-      '/images/vakanties/004/maastricht.jpg',        // 16 omgeving: de binnenstad van Maastricht
+      '/images/vakanties/004/servaasbrug.jpg',       // 16 omgeving: de Sint-Servaasbrug in Maastricht
     ],
     photoCaptions: {
       'heuvelland.jpg':                          'Zuid-Limburg|Het glooiende Heuvelland',
@@ -463,7 +463,8 @@ const TRIPS: TripSpec[] = [
       '263903f7-e678-45b8-82e3-e58957ae6360':    'het boutiquehotel bij avondlicht',
       '0de487d1-7ef2-4bbc-b18b-f09be161e6fa':    'gerecht uit restaurant Maes',
       '22de12cd-7559-42b1-acfc-e057dda16137':    'de Oysana spa',
-      'maastricht.jpg':                          'Maastricht|Terrassen in de binnenstad',
+      'maastricht.jpg':                          'Onderweg|Terrassen op het Vrijthof in Maastricht',
+      'servaasbrug.jpg':                         'Maastricht|De Sint-Servaasbrug over de Maas',
     },
   },
   // ── Original No. 005 ──────────────────────────────────────────────────
