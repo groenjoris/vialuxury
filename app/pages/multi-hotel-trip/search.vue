@@ -3,14 +3,15 @@
     <!-- Multi Hotel Trip: de Vakanties-landing krijgt de homepage-achtige hero
          (foto + zoekbalk eronder, zoals de themapagina's in R2). -->
     <div v-if="isTripLanding" class="search-page__trip-hero">
-      <!-- Titel "Adventure more" ("more" vet) in de kleinere maat van de oorspronkelijke titel. -->
+      <!-- Slogan (schakelaarpaneel linksboven; standaard "Adventure more", slotdeel vet) in de
+           kleinere maat van de oorspronkelijke titel. -->
       <MultiHotelTripLandingHero
         search-below
         compact-title
         :bg-url="tripHeroBg"
         :eyebrow="tripHeroCaption"
-        title="Adventure"
-        title-em="more"
+        :title="tripSlogan.title"
+        :title-em="tripSlogan.em"
         :pitch="tripHeroPitch"
       />
       <!-- Variantenschakelaar voor de vakantie-dealcards (onder het logo, voor de
@@ -438,6 +439,7 @@
 </template>
 
 <script setup lang="ts">
+import { useMultiHotelTripTripSlogan } from '~/composables-multi-hotel-trip/useMultiHotelTripTripSlogan'
 // Multi Hotel Trip: de Vakanties-zoekpagina is dezelfde pagina onder een
 // eigen URL (hero + quick filters i.p.v. filterpaneel; toont vakanties).
 // /multi-hotel-trip/vakanties is een eigen pagina (vakanties.vue) die deze
@@ -509,6 +511,7 @@ const tripHeroPitch = computed(() => t('search.holidaysPitch'))
 const sidebarVisible = computed(() => showFilters.value && !isTripMode.value)
 // Variant van de Vakanties-pagina (schakelaarpaneel linksboven): "Map" = kaartje in de toolbar.
 const { showMap: vakantiesMap } = useMultiHotelTripVakantiesVariant()
+const { slogan: tripSlogan } = useMultiHotelTripTripSlogan()
 // NB: de watch die het paneel sluit zodra de vakantiestand aangaat staat
 // verderop, ná `const route = useRoute()` (de watch leest isTripMode direct uit).
 const {
