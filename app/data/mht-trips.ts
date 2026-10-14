@@ -471,9 +471,9 @@ const TRIPS: TripSpec[] = [
   {
     id: 'trip-zuid-limburg',
     slug: 'bourgondisch-zuid-limburg-7-daagse-culinaire-autoroute',
-    // Het hoofdbeeld is het Heuvelland-panorama; het oude hoofdbeeld (het
-    // marktplein met terrassen) is doorgeschoven naar plek 2.
-    coverImage: '/images/vakanties/004/heuvelland.jpg',
+    // Het hoofdbeeld is het Heuvelland in het late zomerlicht; het oude
+    // hoofdbeeld (het marktplein met terrassen) staat op plek 2.
+    coverImage: '/images/vakanties/005/zuid-limburgs-heuvelland.jpg',
     // De twee tegels rechts op de dealcard, onder het routekaartje.
     cardPhotos: [
       'https://asset.vialuxury.com/assets/cf21b84a-363c-4c95-9e27-fd49d5a7e564', // het culinaire diner
@@ -533,7 +533,7 @@ const TRIPS: TripSpec[] = [
       '/images/vakanties/004/servaasbrug.jpg',       // 14 omgeving: de Sint-Servaasbrug in Maastricht
     ],
     photoCaptions: {
-      'heuvelland.jpg':                          'Zuid-Limburg|Het glooiende Heuvelland',
+      'zuid-limburgs-heuvelland.jpg':            'Zuid-Limburg|Het glooiende Heuvelland',
       'zuid-limburg.jpg':                        'Onderweg|Een Limburgs marktplein met terrassen',
       '466d681d-82d3-4f6d-857b-1e82c79cdb1c':    'het welkomstdrankje aan de bar',
       'cf21b84a-363c-4c95-9e27-fd49d5a7e564':    'Hotel Winselerhof|culinair diner in Restaurant Pirandello',
