@@ -471,7 +471,9 @@ const TRIPS: TripSpec[] = [
   {
     id: 'trip-zuid-limburg',
     slug: 'bourgondisch-zuid-limburg-7-daagse-culinaire-autoroute',
-    coverImage: '/images/vakanties/cover/zuid-limburg.jpg',
+    // Het hoofdbeeld is het Heuvelland-panorama; het oude hoofdbeeld (het
+    // marktplein met terrassen) is doorgeschoven naar plek 2.
+    coverImage: '/images/vakanties/004/heuvelland.jpg',
     // De twee tegels rechts op de dealcard, onder het routekaartje.
     cardPhotos: [
       'https://asset.vialuxury.com/assets/cf21b84a-363c-4c95-9e27-fd49d5a7e564', // het culinaire diner
@@ -509,7 +511,7 @@ const TRIPS: TripSpec[] = [
     tags: ['auto', 'nederland', 'culinair', 'steden', 'budget', 'cultuur', 'gratis-parkeren', 'fiets-huren'],
     routeImage: '/images/vakanties/005/route.jpg',
     gallery: [
-      'https://asset.vialuxury.com/assets/466d681d-82d3-4f6d-857b-1e82c79cdb1c', // 2 de barman schenkt een aperitief in - beleving onderweg
+      '/images/vakanties/cover/zuid-limburg.jpg',    // 2 marktplein met terrassen - beleving onderweg
       'https://asset.vialuxury.com/assets/cf21b84a-363c-4c95-9e27-fd49d5a7e564', // 3 twee gerechten met wijn - het culinaire diner
       '/images/vakanties/005/routekaart-zuid-limburg.png', // 4 kaart van de route
       { stop: 0, images: [                            // 5-7 Hotel Merici
@@ -517,11 +519,12 @@ const TRIPS: TripSpec[] = [
         'https://asset.vialuxury.com/assets/b7205338-4948-4009-b3f7-b8d6af503aeb', //   kamer met zithoek
         'https://asset.vialuxury.com/assets/825e6754-76a0-491c-8267-f134a03603e1', //   gerecht uit de keuken van George's
       ] },
-      '/images/vakanties/004/heuvelland.jpg',        // 8 omgeving: het glooiende Heuvelland
-      { stop: 1, images: [                            // 9-11 Hotel Winselerhof
+      '/images/vakanties/004/hoensbroek.jpg',        // 8 omgeving: Kasteel Hoensbroek, op de etappe naar Landgraaf
+      { stop: 1, images: [                            // 9-12 Hotel Winselerhof
         'https://asset.vialuxury.com/assets/e92ed8f1-f54c-4b84-86e7-ff8d8f31852e', //   de binnenplaats van de herenboerderij
         'https://asset.vialuxury.com/assets/c8207dab-17ba-41b1-818a-ac79f5633e2b', //   kamer onder de eiken balken
         'https://asset.vialuxury.com/assets/70abb3e3-3d4d-4fef-8ef1-e032577105f9', //   het ontbijtbuffet
+        'https://asset.vialuxury.com/assets/466d681d-82d3-4f6d-857b-1e82c79cdb1c', //   het welkomstdrankje aan de bar
       ] },
       '/images/vakanties/004/valkenburg.jpg',        // 12 omgeving: Valkenburg
       { stop: 2, images: [                            // 13 Hotel Monastere
@@ -530,14 +533,15 @@ const TRIPS: TripSpec[] = [
       '/images/vakanties/004/servaasbrug.jpg',       // 14 omgeving: de Sint-Servaasbrug in Maastricht
     ],
     photoCaptions: {
-      'zuid-limburg.jpg':                        'Zuid-Limburg|Een Limburgs marktplein met terrassen',
-      '466d681d-82d3-4f6d-857b-1e82c79cdb1c':    'Hotel Winselerhof|de barman schenkt een aperitief in',
+      'heuvelland.jpg':                          'Zuid-Limburg|Het glooiende Heuvelland',
+      'zuid-limburg.jpg':                        'Onderweg|Een Limburgs marktplein met terrassen',
+      '466d681d-82d3-4f6d-857b-1e82c79cdb1c':    'het welkomstdrankje aan de bar',
       'cf21b84a-363c-4c95-9e27-fd49d5a7e564':    'Hotel Winselerhof|culinair diner in Restaurant Pirandello',
       'routekaart-zuid-limburg.png':             'Routekaart|Van Sittard via Landgraaf naar Maastricht',
       '3b6c8760-29ca-4701-85f3-32ae3ba23c24':    'het voormalige Ursulinenklooster vanuit het park',
       'b7205338-4948-4009-b3f7-b8d6af503aeb':    'kamer met zithoek',
       '825e6754-76a0-491c-8267-f134a03603e1':    'gerecht uit de keuken van George’s',
-      'heuvelland.jpg':                          'Onderweg|Het glooiende Heuvelland',
+      'hoensbroek.jpg':                          'Onderweg|Kasteel Hoensbroek',
       'e92ed8f1-f54c-4b84-86e7-ff8d8f31852e':    'de binnenplaats van de 16e-eeuwse herenboerderij',
       'c8207dab-17ba-41b1-818a-ac79f5633e2b':    'kamer onder de originele eiken balken',
       '70abb3e3-3d4d-4fef-8ef1-e032577105f9':    'het ontbijtbuffet',
