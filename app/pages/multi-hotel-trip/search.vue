@@ -3,12 +3,13 @@
     <!-- Multi Hotel Trip: de Vakanties-landing krijgt de homepage-achtige hero
          (foto + zoekbalk eronder, zoals de themapagina's in R2). -->
     <div v-if="isTripLanding" class="search-page__trip-hero">
+      <!-- Titel als op de homepage ("Experience more"): "Adventure" met "more" vet, in alle talen. -->
       <MultiHotelTripLandingHero
         search-below
-        compact-title
         :bg-url="tripHeroBg"
         :eyebrow="tripHeroCaption"
-        :title="t('search.holidaysHeroTitle')"
+        title="Adventure"
+        title-em="more"
         :pitch="tripHeroPitch"
       />
       <!-- Variantenschakelaar voor de vakantie-dealcards (onder het logo, voor de
