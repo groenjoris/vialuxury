@@ -14,6 +14,7 @@ import {
   Text,
 } from "@react-email/components";
 import * as React from "react";
+import HelpBanner from "../components/HelpBanner";
 import NewsletterFooter from "../components/NewsletterFooter";
 import NewsletterHeader from "../components/NewsletterHeader";
 import { baseUrl, font, newsletter, type EmailMode } from "../components/theme";
@@ -21,7 +22,7 @@ import { baseUrl, font, newsletter, type EmailMode } from "../components/theme";
 // Pre-travel: veertien dagen voor vertrek van een multi-hotel vakantie. Checklist
 // ("Niet vergeten"), inchecken bij het eerste hotel (adres, route, parkeren), wat je
 // nog betaalt, de persoonlijke pagina met praktische informatie en tips, inloggen op je
-// account (boeking beheren), en veelgestelde vragen.
+// account (boeking beheren), "Hulp nodig?" en veelgestelde vragen.
 // Header, logo, Trustpilot en footer uit het nieuwsbrief-template.
 
 type Props = {
@@ -288,6 +289,8 @@ export default function VakantiePreTravel({
               </Button>
             </Section>
           </Section>
+
+          <HelpBanner mode={mode} />
 
           {/* Veelgestelde vragen */}
           <Section className="m-pad" style={{ padding: "32px 32px 32px" }}>

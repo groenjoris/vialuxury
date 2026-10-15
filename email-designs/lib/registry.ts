@@ -1,7 +1,8 @@
 import type * as React from "react";
 import VakantieBevestiging from "../emails/vakantie-bevestiging";
 import VakantiePreTravel from "../emails/vakantie-pre-travel";
-import VakantieIncheckHotel1 from "../emails/vakantie-incheck-hotel-1";
+import VakantieIncheckHotel from "../emails/vakantie-incheck-hotel";
+import { incheckMails } from "./incheckMails";
 
 export type EmailSection = "designs" | "inspiration";
 
@@ -13,6 +14,8 @@ export type EmailEntry = {
   // Elke e-mail exporteert PreviewProps met representatieve voorbeelddata
   // en accepteert een optionele `mode`-prop ("light" | "dark").
   Component: React.ComponentType<any> & { PreviewProps?: Record<string, unknown> };
+  /** Props voor deze variant (anders de PreviewProps van het component). */
+  props?: Record<string, unknown>;
 };
 
 // Alleen de e-mails van de multi-hotel vakanties; de overige ViaLuxury-mails
@@ -21,7 +24,7 @@ export const emails: EmailEntry[] = [
   {
     slug: "vakantie-bevestiging",
     title: "Boekingsbevestiging vakantie",
-    description: "Bevestiging na het boeken van een auto- of fietsvakantie met meerdere hotels: kassabon per hotel (adres, nachten, inclusies, check-in/out), flexibel annuleren, prijs, routes, boeking terugvinden, cadeaukaart en FAQ.",
+    description: "Bevestiging na het boeken van een auto- of fietsvakantie met meerdere hotels: kassabon per hotel (adres, nachten, inclusies, check-in/out), flexibel annuleren, prijs, tips voor je reis, boeking terugvinden, cadeaukaart en FAQ.",
     section: "designs",
     Component: VakantieBevestiging,
   },
@@ -32,13 +35,8 @@ export const emails: EmailEntry[] = [
     section: "designs",
     Component: VakantiePreTravel,
   },
-  {
-    slug: "vakantie-incheck-hotel-1",
-    title: "Incheck hotel 1 (dag voor aankomst)",
-    description: "De dag vóór aankomst: morgen is het zover. Zonder hoofdfoto; de gegevens van je eerste hotel (adres, route, telefoon, inchecken, parkeren, opladen, wat je nog betaalt), de persoonlijke pagina met praktische informatie en tips, en veelgestelde vragen.",
-    section: "designs",
-    Component: VakantieIncheckHotel1,
-  },
+  // Incheckmails: dag vóór hotel 1, 2 en 3, voor de auto- en de fietsvakantie.
+  ...incheckMails.map((m) => ({ slug: m.slug, title: m.title, description: m.description, section: "designs" as const, Component: VakantieIncheckHotel, props: m.props })),
 ];
 
 export function getEmail(slug: string): EmailEntry | undefined {

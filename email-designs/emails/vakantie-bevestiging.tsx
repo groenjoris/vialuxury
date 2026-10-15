@@ -22,7 +22,7 @@ import { baseUrl, font, newsletter, type EmailMode } from "../components/theme";
 // Trustpilot en footer uit het nieuwsbrief-template; daartussen dezelfde opbouw als
 // de linkerkolom van de bevestigingspagina in het prototype: kop, aanhef, boekings-
 // nummer, de kassabon (reis, per hotel foto/naam/sterren/adres, lijst met nachten en
-// inclusies, check-in/check-out, flexibel annuleren, prijs), dan Download routes,
+// inclusies, check-in/check-out, flexibel annuleren, prijs), dan Tips voor je reis,
 // Boeking terugvinden, de cadeaukaart en de veelgestelde vragen (uitgeklapt).
 
 type Hotel = {
@@ -334,16 +334,16 @@ export default function VakantieBevestiging({
             </Section>
           </Section>
 
-          {/* Download routes */}
+          {/* Tips voor je reis: de persoonlijke reispagina (zelfde tekst als op de bevestigingspagina) */}
           <Section className="m-pad" style={{ padding: "32px 32px 0" }}>
-            <Text className="m-kop" style={kop}>Download routes</Text>
+            <Text className="m-kop" style={kop}>Tips voor je reis</Text>
             <Text style={body14}>
-              ViaLuxury heeft de mooiste routes samengesteld. Je kunt ze nu alvast downloaden als GPX of PDF, of openen in
-              Google Maps.
+              We hebben de tips en routes voor je vakantie op een speciale pagina voor je klaargezet: per hotel de praktische
+              informatie, het reisschema met de kaart en onze tips voor in de buurt. De link sturen we je ook nog per mail.
             </Text>
             <Text style={{ margin: "8px 0 0" }}>
               <Link href={routesUrl} style={ctaLink}>
-                Bekijk de routes &gt;
+                Bekijk de tips &gt;
               </Link>
             </Text>
           </Section>

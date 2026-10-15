@@ -5,7 +5,7 @@ import type { EmailEntry } from "./registry";
 
 export async function renderEmail(entry: EmailEntry, mode: EmailMode = "light"): Promise<string> {
   return render(
-    createElement(entry.Component, { ...(entry.Component.PreviewProps ?? {}), mode }),
+    createElement(entry.Component, { ...(entry.props ?? entry.Component.PreviewProps ?? {}), mode }),
     { pretty: true },
   );
 }

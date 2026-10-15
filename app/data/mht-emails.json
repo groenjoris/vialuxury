@@ -2,7 +2,7 @@
   {
     "slug": "vakantie-bevestiging",
     "title": "Boekingsbevestiging vakantie",
-    "description": "Bevestiging na het boeken van een auto- of fietsvakantie met meerdere hotels: kassabon per hotel (adres, nachten, inclusies, check-in/out), flexibel annuleren, prijs, routes, boeking terugvinden, cadeaukaart en FAQ.",
+    "description": "Bevestiging na het boeken van een auto- of fietsvakantie met meerdere hotels: kassabon per hotel (adres, nachten, inclusies, check-in/out), flexibel annuleren, prijs, tips voor je reis, boeking terugvinden, cadeaukaart en FAQ.",
     "section": "designs"
   },
   {
@@ -14,7 +14,37 @@
   {
     "slug": "vakantie-incheck-hotel-1",
     "title": "Incheck hotel 1 (dag voor aankomst)",
-    "description": "De dag vóór aankomst: morgen is het zover. Zonder hoofdfoto; de gegevens van je eerste hotel (adres, route, telefoon, inchecken, parkeren, opladen, wat je nog betaalt), de persoonlijke pagina met praktische informatie en tips, en veelgestelde vragen.",
+    "description": "De dag vóór hotel 1 van de autovakantie: morgen begint je vakantie: de gegevens van je eerste hotel. Kort: \"Morgen in het kort\", het hotelblok (adres, route, telefoon, inchecken, parkeren, opladen), praktische informatie en tips, Hulp nodig? en veelgestelde vragen.",
+    "section": "designs"
+  },
+  {
+    "slug": "vakantie-incheck-hotel-2",
+    "title": "Incheck hotel 2 (dag voor aankomst)",
+    "description": "De dag vóór hotel 2 van de autovakantie: terugblik op Château Tilques, morgen door naar Château Cléry. Kort: \"Morgen in het kort\", het hotelblok (adres, route, telefoon, inchecken, parkeren, opladen), praktische informatie en tips, Hulp nodig? en veelgestelde vragen.",
+    "section": "designs"
+  },
+  {
+    "slug": "vakantie-incheck-hotel-3",
+    "title": "Incheck hotel 3 (dag voor aankomst)",
+    "description": "De dag vóór hotel 3 van de autovakantie: terugblik op Château Cléry, morgen door naar Hotel Royal Beaulaincourt. Kort: \"Morgen in het kort\", het hotelblok (adres, route, telefoon, inchecken, parkeren, opladen), praktische informatie en tips, Hulp nodig? en veelgestelde vragen.",
+    "section": "designs"
+  },
+  {
+    "slug": "vakantie-incheck-hotel-1-fiets",
+    "title": "Incheck hotel 1 (dag voor aankomst) — fietsvakantie",
+    "description": "De dag vóór hotel 1 van de fietsvakantie: morgen begint je vakantie: de gegevens van je eerste hotel. Kort: \"Morgen in het kort\", het hotelblok (adres, route, telefoon, inchecken, stalling, bagagetransfer), praktische informatie en tips, Hulp nodig? en veelgestelde vragen.",
+    "section": "designs"
+  },
+  {
+    "slug": "vakantie-incheck-hotel-2-fiets",
+    "title": "Incheck hotel 2 (dag voor aankomst) — fietsvakantie",
+    "description": "De dag vóór hotel 2 van de fietsvakantie: terugblik op Hotel Wapen van Delden, morgen door naar Hotel de Zwaan (bagage vóór 9:00 uur bij de receptie). Kort: \"Morgen in het kort\", het hotelblok (adres, route, telefoon, inchecken, stalling, bagagetransfer), praktische informatie en tips, Hulp nodig? en veelgestelde vragen.",
+    "section": "designs"
+  },
+  {
+    "slug": "vakantie-incheck-hotel-3-fiets",
+    "title": "Incheck hotel 3 (dag voor aankomst) — fietsvakantie",
+    "description": "De dag vóór hotel 3 van de fietsvakantie: terugblik op Hotel de Zwaan, morgen door naar Landhuishotel Herikerberg (bagage vóór 9:00 uur bij de receptie). Kort: \"Morgen in het kort\", het hotelblok (adres, route, telefoon, inchecken, stalling, bagagetransfer), praktische informatie en tips, Hulp nodig? en veelgestelde vragen.",
     "section": "designs"
   }
 ]

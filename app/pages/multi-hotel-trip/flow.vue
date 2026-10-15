@@ -6,7 +6,7 @@
 // oranje bolletje vlak voor elk hotelbolletje. Kaartjes zijn wit met icoon en titel; de
 // reispagina heeft de varianten Auto en Fiets (chips). Nog te maken onderdelen staan gestippeld.
 // Klikken opent de pagina of mail; de pagina's krijgen daarbij een demo-boeking (Opaalkust of
-// de fietsvakantie). Desktop-first (vaste tekenruimte van 1120px), schaalt mee tot een minimum
+// de fietsvakantie); de incheckmails hebben per variant een eigen mail. Desktop-first (vaste tekenruimte van 1120px), schaalt mee tot een minimum
 // en scrolt daarna horizontaal.
 import { tripCheckoutBySlug } from '~/data/mht-checkout/trip'
 import { pricing } from '~/data/mht-checkout/deal'
@@ -52,9 +52,9 @@ const MAILS_Y = 292
 const CARD_W = 232
 const CARD_W_SM = 158
 const PAGE_H = 116
-const MAIL_H = 76
+const MAIL_H = 100
 
-interface Variant { id: VariantId; label: string; icon: 'car' | 'bike' }
+interface Variant { id: VariantId; label: string; icon: 'car' | 'bike'; /** Eigen link per variant (mails). */ to?: string }
 interface Card {
   id: string
   kind: 'pagina' | 'email'
@@ -81,9 +81,7 @@ const pages: Card[] = [
 const mails: Card[] = [
   { id: 'mail-bevestiging', kind: 'email', title: 'Boekingsbevestiging', x: COL.booking - CARD_W / 2, y: MAILS_Y, w: CARD_W, h: MAIL_H, to: '/multi-hotel-trip/emails/vakantie-bevestiging' },
   { id: 'mail-pretravel', kind: 'email', title: 'Pre-travel', x: COL.prep - CARD_W / 2, y: MAILS_Y, w: CARD_W, h: MAIL_H, to: '/multi-hotel-trip/emails/vakantie-pre-travel' },
-  { id: 'mail-h1', kind: 'email', title: 'Incheck hotel 1', x: COL.h1 - MAIL_BEFORE - CARD_W_SM / 2, y: MAILS_Y, w: CARD_W_SM, h: MAIL_H, to: '/multi-hotel-trip/emails/vakantie-incheck-hotel-1' },
-  { id: 'mail-h2', kind: 'email', title: 'Incheck hotel 2', volgt: true, x: COL.h2 - MAIL_BEFORE - CARD_W_SM / 2, y: MAILS_Y, w: CARD_W_SM, h: MAIL_H },
-  { id: 'mail-h3', kind: 'email', title: 'Incheck hotel 3', volgt: true, x: COL.h3 - MAIL_BEFORE - CARD_W_SM / 2, y: MAILS_Y, w: CARD_W_SM, h: MAIL_H },
+  ...[COL.h1, COL.h2, COL.h3].map((x, i): Card => ({ id: `mail-h${i + 1}`, kind: 'email', title: `Incheck hotel ${i + 1}`, x: x - MAIL_BEFORE - CARD_W_SM / 2, y: MAILS_Y, w: CARD_W_SM, h: MAIL_H, to: `/multi-hotel-trip/emails/vakantie-incheck-hotel-${i + 1}`, variants: [{ id: 'auto', label: 'Auto', icon: 'car', to: `/multi-hotel-trip/emails/vakantie-incheck-hotel-${i + 1}` }, { id: 'fiets', label: 'Fiets', icon: 'bike', to: `/multi-hotel-trip/emails/vakantie-incheck-hotel-${i + 1}-fiets` }] })),
 ]
 const cards = [...pages, ...mails]
 /** Mijlpalen: oranje = moment van een pagina/mail, zwart met hotelicoon = inchecken. */
@@ -134,9 +132,10 @@ onMounted(() => {
 onBeforeUnmount(() => ro?.disconnect())
 
 function onCard(c: Card, variant: VariantId = 'auto') {
-  if (!c.to) return
-  if (c.seeded) openWithBooking(c.to, variant, !!c.preload)
-  else go(c.to)
+  const to = c.variants?.find(v => v.id === variant)?.to ?? c.to
+  if (!to) return
+  if (c.seeded) openWithBooking(to, variant, !!c.preload)
+  else go(to)
 }
 </script>
 
