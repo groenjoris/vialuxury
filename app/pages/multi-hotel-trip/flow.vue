@@ -2,7 +2,7 @@
 // Multi Hotel Trip — Post-bookingflow: de klantreis na het boeken als strak schema in de
 // huisstijl. Drie fases op een horizontale tijdlijn (Boeken, Voorbereiden, Onderweg — Onderweg
 // begint bij Incheck hotel 1) met mijlpalen; erboven de pagina's (alle even groot, ook de
-// accountomgeving), eronder de e-mails. De incheckmails gaan de dag vóór het inchecken: een
+// accountomgeving: Mijn ViaLuxury › Boekingen), eronder de e-mails. De incheckmails gaan de dag vóór het inchecken: een
 // oranje bolletje vlak voor elk hotelbolletje. Kaartjes zijn wit met icoon en titel; de
 // reispagina heeft de varianten Auto en Fiets (chips). Nog te maken onderdelen staan gestippeld.
 // Klikken opent de pagina of mail; de pagina's krijgen daarbij een demo-boeking (Opaalkust of
@@ -76,7 +76,7 @@ interface Card {
 const pages: Card[] = [
   { id: 'bevestiging', kind: 'pagina', title: 'Bevestigingspagina', x: COL.booking - CARD_W / 2, y: PAGES_BOTTOM - PAGE_H, w: CARD_W, h: PAGE_H, to: '/multi-hotel-trip/checkout/bevestiging', seeded: true, preload: true },
   { id: 'routes', kind: 'pagina', title: 'Tips & routes', x: COL.prep - CARD_W / 2, y: PAGES_BOTTOM - PAGE_H, w: CARD_W, h: PAGE_H, to: '/multi-hotel-trip/checkout/routes', seeded: true, variants: [{ id: 'auto', label: 'Auto', icon: 'car' }, { id: 'fiets', label: 'Fiets', icon: 'bike' }] },
-  { id: 'account', kind: 'pagina', title: 'Accountomgeving', sub: 'De hele reis beschikbaar', volgt: true, x: W - 20 - CARD_W, y: PAGES_BOTTOM - PAGE_H, w: CARD_W, h: PAGE_H },
+  { id: 'account', kind: 'pagina', title: 'Accountomgeving', sub: 'De hele reis beschikbaar', x: W - 20 - CARD_W, y: PAGES_BOTTOM - PAGE_H, w: CARD_W, h: PAGE_H, to: '/multi-hotel-trip/account/boekingen', seeded: true, variants: [{ id: 'auto', label: 'Auto', icon: 'car' }, { id: 'fiets', label: 'Fiets', icon: 'bike' }] },
 ]
 const mails: Card[] = [
   { id: 'mail-bevestiging', kind: 'email', title: 'Boekingsbevestiging', x: COL.booking - CARD_W / 2, y: MAILS_Y, w: CARD_W, h: MAIL_H, to: '/multi-hotel-trip/emails/vakantie-bevestiging' },

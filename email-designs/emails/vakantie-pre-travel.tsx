@@ -338,7 +338,6 @@ VakantiePreTravel.PreviewProps = {
     { image: `${baseUrl}/images/mail/vakantie/routekaart.jpg`, alt: "Routekaart van de vakantie" },
   ],
   routesUrl: "https://vialuxury.vercel.app/multi-hotel-trip/checkout/routes",
-  // Accountomgeving volgt nog in het prototype; tot die tijd naar de bevestigingspagina.
-  accountUrl: "https://vialuxury.vercel.app/multi-hotel-trip/checkout/bevestiging",
-  bookingUrl: "https://vialuxury.vercel.app/multi-hotel-trip/checkout/bevestiging",
+  accountUrl: "https://vialuxury.vercel.app/multi-hotel-trip/account/boekingen",
+  bookingUrl: "https://vialuxury.vercel.app/multi-hotel-trip/account/boekingen/ontdek-noord-frankrijk-en-de-opaalkust-in-7-dagen",
 } satisfies Props;

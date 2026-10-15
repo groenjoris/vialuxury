@@ -281,7 +281,7 @@ useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
             <section class="card">
               <h2 class="cf__h2">Boeking terugvinden</h2>
               <p class="t-body c-grey">Je boeking staat in je ViaLuxury-account op <b>{{ email }}</b>. Inloggen doe je zonder wachtwoord: je krijgt een inloglink per mail.</p>
-              <a class="cf__link cf__cta-link" href="#" @click.prevent>Bekijk je boeking</a>
+              <NuxtLink class="cf__link cf__cta-link" :to="`/multi-hotel-trip/account/boekingen/${trip.slug}`">Bekijk je boeking</NuxtLink>
             </section>
 
             <section class="card">
