@@ -4,13 +4,13 @@
 // hotel 1, 2 en 3; eronder de mails (boekingsbevestiging, pre-travel, incheckmails per hotel),
 // erboven de pagina's (bevestigingspagina, Tips en Routes bij deze vakantie, accountomgeving).
 // Vakjes met een pagina of mail in het prototype zijn klikbaar; de rest staat er grijs bij.
-useHead({ title: 'Flow multi-hotel vakantie — ViaLuxury' })
+useHead({ title: 'Post-bookingflow — ViaLuxury' })
 
 const go = (to: string) => navigateTo(to)
 
 /* Tijdlijn: mijlpalen (x in de viewBox van 1000 breed). */
 const milestones = [
-  { x: 95, label: ['Online', 'booking'], star: false },
+  { x: 95, label: ['Online', 'booking'], star: false, to: '/multi-hotel-trip/home' },
   { x: 435, label: ['14 dagen', 'voor vertrek'], star: false },
   { x: 568, label: ['Incheck', 'hotel 1'], star: true },
   { x: 730, label: ['Incheck', 'hotel 2'], star: true },
@@ -38,8 +38,8 @@ function star(cx: number, cy: number, r = 26): string {
   <div class="fl">
     <div class="fl__wrap">
       <NuxtLink class="fl__back" to="/">‹ Startscherm</NuxtLink>
-      <h1 class="fl__title">Flow multi-hotel vakantie</h1>
-      <p class="fl__lead">Van online boeking tot het laatste hotel: welke pagina's en mails de gast wanneer ziet. Klik op een vakje om die pagina of mail te openen; grijze vakjes volgen nog.</p>
+      <h1 class="fl__title">Post-bookingflow</h1>
+      <p class="fl__lead">Van online boeking tot het laatste hotel: welke pagina's en mails de gast wanneer ziet. Klik op "Online booking" voor de homepage en het boeken zelf, en op een vakje voor die pagina of mail; grijze vakjes volgen nog.</p>
 
       <svg class="fl__svg" viewBox="0 0 1000 860" role="img" aria-label="Flow van de klantreis: pagina's, mails en tijdlijn">
         <defs>
@@ -69,7 +69,15 @@ function star(cx: number, cy: number, r = 26): string {
 
         <!-- Tijdlijn -->
         <line class="fl__timeline" x1="70" y1="560" x2="985" y2="560" />
-        <g v-for="m in milestones" :key="m.x">
+        <g
+          v-for="m in milestones"
+          :key="m.x"
+          :class="{ 'fl__box--link fl__milestone--link': m.to }"
+          :role="m.to ? 'link' : undefined"
+          :tabindex="m.to ? 0 : undefined"
+          @click="m.to && go(m.to)"
+          @keydown.enter="m.to && go(m.to)"
+        >
           <line class="fl__tick" :x1="m.x" y1="505" :x2="m.x" y2="540" />
           <text class="fl__label" :x="m.star ? m.x + 52 : m.x" y="462" text-anchor="middle">{{ m.label[0] }}</text>
           <text class="fl__label" :x="m.star ? m.x + 52 : m.x" y="488" text-anchor="middle">{{ m.label[1] }}</text>
@@ -139,6 +147,9 @@ function star(cx: number, cy: number, r = 26): string {
 .fl__dot { fill: var(--color-primary, #ff7e00); stroke: #1a1e1e; stroke-width: 1.5; }
 .fl__star { fill: #1a1e1e; }
 .fl__label { font-size: 18px; fill: #1a1e1e; }
+.fl__milestone--link .fl__label { text-decoration: underline; text-underline-offset: 3px; }
+.fl__milestone--link:hover .fl__label, .fl__milestone--link:focus-visible .fl__label { fill: var(--color-primary); }
+.fl__milestone--link:hover .fl__dot { stroke: var(--color-primary); stroke-width: 2.5; }
 @media (max-width: 800px) {
   .fl { padding: 20px 12px 40px; }
   .fl__title { font-size: 24px; }

@@ -5,6 +5,14 @@
 
       <h1 class="start-screen__title">ViaLuxury Prototype</h1>
 
+      <!-- Eén ingang: de post-bookingflow (schema van de klantreis na het boeken), van
+           daaruit zijn alle pagina's en mails van de multi-hotel vakantie te bedienen. -->
+      <NuxtLink class="start-btn start-btn--primary start-screen__main-btn" to="/multi-hotel-trip/flow">Post-bookingflow</NuxtLink>
+
+      <!-- Oudere ingangen (prototypes per release), ingeklapt. -->
+      <details class="start-more">
+        <summary class="start-more__summary">Alle prototypes</summary>
+
       <!-- First release — the production-bound "Hotel First" build the
            client has picked to pursue. No homepage-variant switcher. -->
       <section class="start-section">
@@ -66,7 +74,6 @@
             class="start-btn"
             @click="startMvpTrip"
           >MVP 12-11-2026</button>
-          <NuxtLink class="start-btn" to="/multi-hotel-trip/flow">Flow</NuxtLink>
         </div>
         <!-- E-mails van de vakantie (bron: email-designs/, react-email; gehost als statische
              HTML onder /multi-hotel-trip/emails). Linkjes, geen knoppen; de mails die nog
@@ -181,6 +188,7 @@
           >Start met advertentie</button>
         </div>
       </section>
+      </details>
     </div>
   </div>
 </template>
@@ -497,6 +505,22 @@ definePageMeta({ layout: false })
   color: var(--color-text-primary);
   font-weight: 600;
 }
+
+/* Hoofdknop naar de post-bookingflow; de oude blokken staan ingeklapt eronder. */
+.start-screen__main-btn {
+  width: 100%;
+  height: 56px;
+  margin-bottom: var(--space-lg);
+  font-size: 17px;
+}
+.start-more { margin-bottom: var(--space-xl); }
+.start-more__summary {
+  cursor: pointer;
+  margin-bottom: var(--space-md);
+  font-size: 14px;
+  color: var(--color-text-secondary);
+}
+.start-more__summary:hover { color: var(--color-primary); }
 
 .start-section {
   margin-bottom: var(--space-xl);
