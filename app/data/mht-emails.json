@@ -10,5 +10,11 @@
     "title": "Pre-travel (14 dagen voor vertrek)",
     "description": "Checklist voor je reis: identiteitsbewijs en boekingsnummer, inchecken bij het eerste hotel (adres, route, parkeren), wat je nog betaalt, de persoonlijke pagina met praktische informatie en tips, inloggen op je account om je boeking te beheren, en veelgestelde vragen.",
     "section": "designs"
+  },
+  {
+    "slug": "vakantie-incheck-hotel-1",
+    "title": "Incheck hotel 1 (dag voor aankomst)",
+    "description": "De dag vóór aankomst: morgen is het zover. Zonder hoofdfoto; de gegevens van je eerste hotel (adres, route, telefoon, inchecken, parkeren, opladen, wat je nog betaalt), de persoonlijke pagina met praktische informatie en tips, en veelgestelde vragen.",
+    "section": "designs"
   }
 ]
