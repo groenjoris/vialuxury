@@ -33,20 +33,12 @@
         >{{ v.label }}</button>
       </div>
     </div>
-    <!-- Slogan (herotitel) van de Vakanties-zoekpagina; het laatste deel staat vet. -->
+    <!-- Slogan (herotitel) van de Vakanties-zoekpagina: dropdown met de kern van elke slogan. -->
     <div class="psw__section">
-      <span class="psw__label">Slogan vakanties</span>
-      <div class="psw__group psw__group--wrap" role="group" aria-label="Slogan Vakanties-zoekpagina">
-        <button
-          v-for="sl in TRIP_SLOGANS"
-          :key="sl.id"
-          type="button"
-          class="psw__btn"
-          :class="{ 'psw__btn--on': sloganId === sl.id }"
-          :aria-pressed="sloganId === sl.id"
-          @click="setSlogan(sl.id)"
-        >{{ sl.title }} <b>{{ sl.em }}</b></button>
-      </div>
+      <label class="psw__label" for="psw-slogan">Slogan vakanties</label>
+      <select id="psw-slogan" class="psw__select" :value="sloganId" @change="setSlogan(($event.target as HTMLSelectElement).value as TripSloganId)">
+        <option v-for="sl in TRIP_SLOGANS" :key="sl.id" :value="sl.id">{{ sl.short }}</option>
+      </select>
     </div>
     <div class="psw__section">
       <span class="psw__label">Hero-foto</span>
@@ -68,7 +60,7 @@ import PrototypeSwitchPanel from './PrototypeSwitchPanel.vue'
 import { PRICE_VARIANTS, useMultiHotelTripPriceVariant } from '~/composables-multi-hotel-trip/useMultiHotelTripPriceVariant'
 import { useMultiHotelTripHomeVariant } from '~/composables-multi-hotel-trip/useMultiHotelTripHomeVariant'
 import { VAKANTIES_VARIANTS, useMultiHotelTripVakantiesVariant } from '~/composables-multi-hotel-trip/useMultiHotelTripVakantiesVariant'
-import { TRIP_SLOGANS, useMultiHotelTripTripSlogan } from '~/composables-multi-hotel-trip/useMultiHotelTripTripSlogan'
+import { TRIP_SLOGANS, useMultiHotelTripTripSlogan, type TripSloganId } from '~/composables-multi-hotel-trip/useMultiHotelTripTripSlogan'
 
 const { variant: priceVariant, setVariant: setPriceVariant } = useMultiHotelTripPriceVariant()
 // Vakanties-zoekpagina: Standaard of Map (kaartje linksboven in de toolbar, desktop).
