@@ -7,7 +7,8 @@
 // dagen voor vertrek (of met het Vandaag-blok aan) per dag. Daaronder "Praktische informatie":
 // de drie hotels naast elkaar met foto, datums, check-in (datum + tijd) en check-out, adres +
 // routebeschrijving, telefoon, parkeren en opladen (fiets: stalling); bij een fietsvakantie
-// daaronder "Bagagetransfer" (⅔) en "Routes" (⅓); een contactregel; dan het voorbeeld
+// daaronder "Bagagetransfer" en "Routes" (50/50, met foto); een contactbanner over de hele
+// breedte (zelfde warme tint als de temperatuurtegel); dan het voorbeeld
 // reisschema (dagen klikbaar → sidepanel, Bekijken / Download pdf) naast de minimap; en
 // onderaan de tips per hotel zoals op de dealpagina ("Wat te doen tijdens je vakantie"). Het
 // Vandaag-blok staat standaard uit; de prototype-schakelaar zit linksboven in de navigatiebalk.
@@ -396,9 +397,10 @@ useHead({ title: `${checkout.value.name} — Tips & routes — ViaLuxury` })
             </div>
           </article>
         </div>
-        <!-- Fietsvakantie: bagagetransfer (⅔) en routes (⅓) onder de hotels -->
+        <!-- Fietsvakantie: bagagetransfer en routes (50/50, met foto) onder de hotels -->
         <div v-if="isBike" class="rp__bike">
           <article class="rp__card">
+            <img class="rp__bike-img" src="/images/vakanties/fiets/bagagetransfer.jpg" alt="Koffers klaar voor de bagagetransfer" />
             <div class="rp__card-body">
               <h3 class="rp__h3 rp__h3--icon">
                 <svg class="rp__h3-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="18" height="13" rx="2" /><path d="M9 7V4h6v3M8 11v5M16 11v5" /></svg>
@@ -408,6 +410,7 @@ useHead({ title: `${checkout.value.name} — Tips & routes — ViaLuxury` })
             </div>
           </article>
           <article class="rp__card">
+            <img class="rp__bike-img" src="/images/vakanties/fiets/fietsroute.jpg" alt="Fietsroute met knooppunten" />
             <div class="rp__card-body">
               <h3 class="rp__h3 rp__h3--icon">
                 <svg class="rp__h3-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="18" r="2.5" /><circle cx="18" cy="6" r="2.5" /><path d="M8.5 18H14a3 3 0 0 0 0-6h-4a3 3 0 0 1 0-6h5.5" /></svg>
@@ -418,9 +421,16 @@ useHead({ title: `${checkout.value.name} — Tips & routes — ViaLuxury` })
           </article>
         </div>
 
-        <p class="rp__contact">
-          Hulp nodig onderweg? Bel <a class="rp__info-link" href="tel:+31207052222">+31 20 705 2222</a> of WhatsApp <a class="rp__info-link" href="https://wa.me/31208088809">+31 20 808 8809</a> · ma t/m vr 8:00 – 18:00
-        </p>
+        <!-- Contactbanner over de hele breedte (auto én fiets), in de warme tint van de temperatuurtegel -->
+        <aside class="rp__contact" aria-label="Hulp nodig onderweg">
+          <span class="rp__contact-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 0 1 16 0" /><path d="M3 13a2 2 0 0 1 2-2h1a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H5a2 2 0 0 1-2-2v-3zM17 13a1 1 0 0 1 1-1h1a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2h-1a1 1 0 0 1-1-1v-5z" /><path d="M19 18v1a2 2 0 0 1-2 2h-3" /></svg>
+          </span>
+          <div class="rp__contact-text">
+            <p class="rp__contact-title">Hulp nodig onderweg?</p>
+            <p class="rp__contact-line">Bel <a class="rp__info-link" href="tel:+31207052222">+31 20 705 2222</a> of WhatsApp <a class="rp__info-link" href="https://wa.me/31208088809">+31 20 808 8809</a> · ma t/m vr 8:00 – 18:00</p>
+          </div>
+        </aside>
       </section>
 
       <!-- ── Voorbeeld reisschema (dagen klikbaar → sidepanel) naast de minimap ── -->
@@ -567,9 +577,16 @@ useHead({ title: `${checkout.value.name} — Tips & routes — ViaLuxury` })
 /* Links in de praktische informatie (routebeschrijving, telefoon): in de tekstkleur, niet oranje. */
 .rp__info-link { color: var(--color-text-primary); font-weight: 600; text-decoration: underline; text-underline-offset: 2px; }
 .rp__info-link:hover { color: var(--color-text-secondary); }
-.rp__contact { margin: 16px 0 0; font-size: 14px; color: var(--color-text-secondary); }
-/* Fietsvakantie: bagagetransfer (⅔) naast routes (⅓) */
-.rp__bike { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: 24px; margin-top: 24px; }
+/* Contactbanner: hele breedte, warme tint (als de temperatuurtegel), icoon links */
+.rp__contact { display: flex; align-items: center; gap: 18px; margin-top: 24px; padding: 18px 24px; border-radius: var(--radius-md); background: #fff0e4; }
+.rp__contact-icon { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; width: 48px; height: 48px; border-radius: 50%; background: #fff; color: #e8632b; }
+.rp__contact-icon svg { width: 26px; height: 26px; }
+.rp__contact-text p { margin: 0; }
+.rp__contact-title { font-family: var(--font-heading); font-size: 20px; font-weight: 700; line-height: 1.25; }
+.rp__contact-line { margin-top: 2px !important; font-size: 15px; color: var(--color-text-secondary); }
+/* Fietsvakantie: bagagetransfer en routes 50/50, met foto bovenin */
+.rp__bike { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; margin-top: 24px; }
+.rp__bike-img { display: block; width: 100%; height: 200px; object-fit: cover; }
 
 /* Reisschema naast de minimap */
 .rp__plan { display: grid; grid-template-columns: minmax(0, 1fr) 400px; gap: 32px; align-items: start; }
@@ -596,6 +613,7 @@ useHead({ title: `${checkout.value.name} — Tips & routes — ViaLuxury` })
   .rp__today-icon { width: 40px; height: 40px; }
   .rp__today-temp { font-size: 28px; }
   .rp__hotels, .rp__plan, .rp__bike { grid-template-columns: 1fr; gap: 16px; }
-  .rp__hotel-img { height: 160px; }
+  .rp__hotel-img, .rp__bike-img { height: 160px; }
+  .rp__contact { align-items: flex-start; padding: 16px; }
 }
 </style>
