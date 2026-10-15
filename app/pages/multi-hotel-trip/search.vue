@@ -166,7 +166,7 @@
             <!-- Vakanties-variant "Map": linksboven hetzelfde kaartje als in de zijbalk van de
                  gewone zoekpagina (knop "Tonen op kaart"), 75% zo hoog; de pillen staan ernaast. -->
             <MultiHotelTripMapPreviewCard v-if="isTripMode && vakantiesMap" class="search-toolbar__trip-map" @click="handleMapClick" />
-            <div class="search-toolbar__left">
+            <div v-if="!isTripMode" class="search-toolbar__left">
               <!-- Map button: only when filter hidden on desktop (sidebar map is otherwise visible) -->
               <button
                 v-if="!showFilters && !isMobile && !isTripMode"
@@ -202,17 +202,16 @@
                  wrapper to zero so the toolbar stays its natural
                  small height. -->
             <MultiHotelTripFilterPills v-if="!isTripMode" class="search-toolbar__pills" />
-            <!-- Vakantiestand: de quick filters staan als losse flex-items in
-                 deze rij; Sorteren/weergave sluiten er rechts op aan en
-                 verhuizen mee naar de tweede rij als de pillen omlopen.
-                 De wrapper is display:contents (standaard) of, in de variant
-                 "Map", het omlopende vak rechts naast het kaartje. -->
+            <!-- Vakantiestand: de quick filters staan in een eigen omlopend vak (maximaal drie
+                 regels) tussen het kaartje en de weergaveschakelaar, die in een eigen kolom rechts
+                 staat. In de hotelstand is de wrapper display:contents. -->
             <div class="search-toolbar__trip-pills">
-            <MultiHotelTripQuickFilters v-if="isTripMode" inline :counts="tripQuickFilterCounts" />
+              <MultiHotelTripQuickFilters v-if="isTripMode" inline :counts="tripQuickFilterCounts" />
+            </div>
 
             <div class="search-toolbar__right">
-              <!-- Sort dropdown -->
-              <div class="search-toolbar__sort" ref="sortRef">
+              <!-- Sort dropdown (niet in de vakantiestand) -->
+              <div v-if="!isTripMode" class="search-toolbar__sort" ref="sortRef">
                 <button class="search-toolbar__sort-btn" @click="sortOpen = !sortOpen">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M11 5h10M11 9h7M11 13h4M3 17l4 4 4-4M7 3v18" />
@@ -268,7 +267,6 @@
                   </svg>
                 </button>
               </div>
-            </div>
             </div>
           </div>
 
@@ -2434,15 +2432,19 @@ onMounted(() => {
    links en Sorteren/weergave rechts (margin-left:auto). De knoppen rechts
    krijgen de pilhoogte en -stijl. Geen space-between: de pillen staan
    met vaste gap links naast elkaar. */
+/* Vakantiestand: drie kolommen naast elkaar — (kaartje) | pillen (omlopend, max. drie regels)
+   | weergaveschakelaar in een eigen kolom. Geen sorteerknop. */
 .search-toolbar--trips {
-  flex-wrap: wrap;
-  align-items: center;
+  flex-wrap: nowrap;
+  align-items: flex-start;
   justify-content: flex-start;
-  gap: 8px;
+  gap: var(--space-md);
   padding: var(--space-md) 0 var(--space-sm);
 }
 .search-toolbar--trips .search-toolbar__right {
-  margin-left: auto;
+  flex: 0 0 auto;
+  margin-left: 0;
+  align-self: flex-start;
   gap: 8px;
 }
 .search-toolbar--trips .search-toolbar__sort-btn {
@@ -2469,31 +2471,28 @@ onMounted(() => {
   height: 42px;
 }
 
-/* De wrapper om pillen + Sorteren/weergave: standaard onzichtbaar (display:contents), zodat de
-   toolbar zich gedraagt als voorheen. */
+/* De wrapper om de pillen: in de hotelstand onzichtbaar (display:contents); in de vakantiestand het
+   omlopende vak tussen (kaartje en) weergaveschakelaar. Pillen zijn 44 px hoog met 8 px ertussen,
+   dus drie regels = 148 px. */
 .search-toolbar__trip-pills { display: contents; }
-
-/* Vakanties-variant "Map": het kaartje van de gewone zoekpagina (280 px breed, zijbalkbreedte)
-   linksboven, 75% van de normale hoogte (9:5 → 156 px, hier 117 px). De pillen staan ernaast in
-   een omlopend vak en gebruiken twee regels; de geforceerde regelovergang vervalt daar — de
-   auto-/fietsopties lopen gewoon door en Sorteren/weergave sluiten rechts op de laatste regel aan. */
-.search-toolbar--trips-map {
-  align-items: flex-start;
-  gap: var(--space-md);
-}
-.search-toolbar--trips-map .search-toolbar__trip-map {
-  flex: 0 0 280px;
-  width: 280px;
-  height: 117px;
-  aspect-ratio: auto;
-}
-.search-toolbar--trips-map .search-toolbar__trip-pills {
+.search-toolbar--trips .search-toolbar__trip-pills {
   display: flex;
   flex: 1 1 0;
   min-width: 0;
   flex-wrap: wrap;
-  align-items: center;
+  align-items: flex-start;
+  align-content: flex-start;
   gap: 8px;
+}
+
+/* Vakanties-variant "Map": het kaartje van de gewone zoekpagina (280 px breed) linksboven, precies
+   zo hoog als drie regels pillen (148 px), zodat het daarmee uitlijnt. De geforceerde regelovergang
+   in de pillen vervalt hier: ze lopen gewoon door naast het kaartje. */
+.search-toolbar--trips-map .search-toolbar__trip-map {
+  flex: 0 0 280px;
+  width: 280px;
+  height: 148px;
+  aspect-ratio: auto;
 }
 .search-toolbar--trips-map .search-toolbar__trip-pills :deep(.tqf__break) { display: none; }
 
