@@ -333,9 +333,9 @@ VakantiePreTravel.PreviewProps = {
   tollEstimate: "€24",
   heroImage: `${baseUrl}/images/mail/vakantie/opaalkust-hero.jpg`,
   thumbs: [
-    { image: `${baseUrl}/images/mail/vakantie/uitje-blancnez.jpg`, alt: "Cap Blanc-Nez" },
-    { image: `${baseUrl}/images/mail/vakantie/uitje-boulogne.jpg`, alt: "Boulogne-sur-Mer" },
-    { image: `${baseUrl}/images/mail/vakantie/routekaart.jpg`, alt: "Routekaart van de vakantie" },
+    { image: `${baseUrl}/images/mail/vakantie/uitje-blancnez-3x2.jpg`, alt: "Cap Blanc-Nez" },
+    { image: `${baseUrl}/images/mail/vakantie/uitje-boulogne-3x2.jpg`, alt: "Boulogne-sur-Mer" },
+    { image: `${baseUrl}/images/mail/vakantie/routekaart-3x2.jpg`, alt: "Routekaart van de vakantie" },
   ],
   routesUrl: "https://vialuxury.vercel.app/multi-hotel-trip/checkout/routes",
   accountUrl: "https://vialuxury.vercel.app/multi-hotel-trip/account/boekingen",
