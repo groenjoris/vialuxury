@@ -9,6 +9,8 @@ import { pricing } from '~/data/mht-checkout/deal'
 import { CHECKOUT_BOOKING_FEE } from '~/data/mht-checkout/pricing'
 import { useMultiHotelTripCheckoutTrip } from '~/composables-multi-hotel-trip/useMultiHotelTripCheckoutTrip'
 import { hotelAddress, hotelPhone, hotelMapsHref } from '~/utils-multi-hotel-trip/hotelContact'
+import { bookingRefFor } from '~/utils-multi-hotel-trip/bookingRef'
+export { bookingRefFor }
 
 export const ACCOUNT_DEMO_SLUG = 'ontdek-noord-frankrijk-en-de-opaalkust-in-7-dagen'
 /** Demo-aankomstdatum per reis (maand 0-based). */
@@ -23,13 +25,6 @@ const MONTHS_LONG = ['januari', 'februari', 'maart', 'april', 'mei', 'juni', 'ju
 export const fmtShort = (d: Date) => `${WEEKDAYS[d.getDay()]} ${d.getDate()} ${MONTHS[d.getMonth()]}`
 export const fmtLong = (d: Date) => `${WEEKDAYS_LONG[d.getDay()]} ${d.getDate()} ${MONTHS_LONG[d.getMonth()]} ${d.getFullYear()}`
 export const fmtLongNoYear = (d: Date) => `${WEEKDAYS_LONG[d.getDay()]} ${d.getDate()} ${MONTHS_LONG[d.getMonth()]}`
-
-/** Boekingsnummer: vast per reis (demo; zelfde formule als op de bevestigingspagina). */
-export function bookingRefFor(slug: string) {
-  let h = 0
-  for (const ch of slug) h = (h * 31 + ch.charCodeAt(0)) % 100000
-  return `VL-${String(27000 + h).slice(0, 2)} ${String(h).padStart(5, '0').slice(0, 3)} ${String(h * 7 % 1000).padStart(3, '0')}`
-}
 
 export function money(v: number) {
   return `€${v.toLocaleString('nl-NL', { minimumFractionDigits: v % 1 ? 2 : 0, maximumFractionDigits: 2 })}`

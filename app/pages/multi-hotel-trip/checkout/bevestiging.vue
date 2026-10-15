@@ -19,6 +19,7 @@ import { pricing } from '~/data/mht-checkout/deal'
 import { CHECKOUT_BOOKING_FEE } from '~/data/mht-checkout/pricing'
 import { useMultiHotelTripCheckoutTrip } from '~/composables-multi-hotel-trip/useMultiHotelTripCheckoutTrip'
 import { useMultiHotelTripMobileUa } from '~/composables-multi-hotel-trip/useMultiHotelTripMobileUa'
+import { bookingRefFor } from '~/utils-multi-hotel-trip/bookingRef'
 
 const isMobileUa = useMultiHotelTripMobileUa()
 
@@ -97,12 +98,8 @@ const guest = useState<{ firstName: string; email: string } | null>('mht-checkou
 const firstName = computed(() => guest.value?.firstName || 'Rijo')
 const email = computed(() => guest.value?.email || 'rijo.verburg@gmail.com')
 
-/** Boekingsnummer: vast per reis (demo; TODO echt nummer uit het boekingssysteem). */
-const bookingRef = computed(() => {
-  let h = 0
-  for (const ch of trip.value.slug) h = (h * 31 + ch.charCodeAt(0)) % 100000
-  return `VL-${String(27000 + h).slice(0, 2)} ${String(h).padStart(5, '0').slice(0, 3)} ${String(h * 7 % 1000).padStart(3, '0')}`
-})
+/** Boekingsnummer: vast per reis (demo), overal in dezelfde vorm (MultiHotelTripBookingRef). */
+const bookingRef = computed(() => bookingRefFor(trip.value.slug))
 
 /* Wat er nu gebeurt — chronologisch (verticale tijdlijn). */
 const nextSteps = computed(() => [
@@ -220,12 +217,12 @@ useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
 
           <!-- ── 3. Kassabon (⅔): grijs kader, wit vlak; boekingsnummer rechtsboven ── -->
           <section class="cf__receipt-wrap" aria-label="Jouw boeking">
-            <h2 class="cf__h2 cf__h2--lg cf__receipt-title">Jouw boeking</h2>
+            <div class="cf__receipt-titlerow">
+              <h2 class="cf__h2 cf__h2--lg cf__receipt-title">Jouw boeking</h2>
+              <MultiHotelTripBookingRef :value="bookingRef" />
+            </div>
             <div class="cf__receipt">
-              <div class="cf__receipt-head">
-                <p class="cf__eyebrow">{{ trip.typeLabel }} met {{ trip.hotels.length }} hotels</p>
-                <p class="cf__ref"><span class="cf__ref-label">Boekingsnummer</span><span class="cf__ref-number">{{ bookingRef }}</span></p>
-              </div>
+              <p class="cf__eyebrow">{{ trip.typeLabel }} met {{ trip.hotels.length }} hotels</p>
               <h2 class="cf__trip-title">{{ trip.name }}</h2>
               <p class="cf__trip-meta t-body">{{ checkInLong }} t/m {{ checkOutLong }} · {{ trip.nights }} nachten · {{ persons }} personen · {{ roomsPerHotel }} {{ roomsPerHotel === 1 ? 'kamer' : 'kamers' }} per hotel</p>
 
@@ -419,15 +416,10 @@ useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
 
 /* Kassabon: grijs kader met wit vlak erin */
 .cf__receipt-wrap { padding: 16px; border-radius: var(--radius); background: var(--c-surface); }
-/* Titel boven de kassabon, in het grijze kader. */
-.cf__receipt-title { margin: 8px 12px 16px; }
+/* Titel boven de kassabon, in het grijze kader; het boekingsnummer rechts op dezelfde hoogte. */
+.cf__receipt-titlerow { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin: 4px 12px 16px; }
+.cf__receipt-title { margin: 0; }
 .cf__receipt { padding: 28px 28px 24px; border-radius: var(--radius-sm); background: var(--c-white); box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06); }
-/* Eyebrow links, boekingsnummer rechts op dezelfde regel. */
-.cf__receipt-head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; margin-bottom: 4px; }
-.cf__receipt-head .cf__eyebrow { margin: 0; }
-.cf__ref { margin: 0; white-space: nowrap; }
-.cf__ref-label { margin-right: 8px; font-size: var(--t-caption); color: var(--c-medium-grey); }
-.cf__ref-number { font-size: var(--t-body); font-weight: var(--w-black); letter-spacing: 0.04em; }
 .cf__trip-title { margin: 0 0 6px; font-size: var(--t-h1); line-height: 1.2; }
 .cf__trip-meta { margin: 0 0 20px; color: var(--c-dark-grey); }
 
@@ -499,9 +491,8 @@ useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
   .cf__cols { grid-template-columns: 1fr; gap: 20px; }
   .cf__now, .cf__receipt-wrap, .cf__side { grid-column: auto; grid-row: auto; }
   .cf__now { padding: 20px 16px; }
-  .cf__receipt-head { flex-wrap: wrap; gap: 4px 16px; }
   .cf__receipt-wrap { padding: 10px; }
-  .cf__receipt-title { margin: 6px 6px 12px; }
+  .cf__receipt-titlerow { flex-wrap: wrap; gap: 8px 16px; margin: 4px 6px 12px; }
   .cf__receipt { padding: 20px 16px; }
   .cf__trip-title { font-size: var(--t-h2); }
   .cf__stay { grid-template-columns: 28px 96px minmax(0, 1fr); column-gap: 12px; }

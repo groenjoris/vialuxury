@@ -22,6 +22,7 @@ import { isTripSight } from '~/utils-multi-hotel-trip/tripSights'
 import { nightsLabel } from '~/utils-multi-hotel-trip/plural'
 import { formatDateWeekdayShort } from '~/utils-multi-hotel-trip/formatDate'
 import { hotelAddress, hotelPhone, hotelMapsHref } from '~/utils-multi-hotel-trip/hotelContact'
+import { bookingRefFor } from '~/utils-multi-hotel-trip/bookingRef'
 import { useMultiHotelTripCheckoutTrip } from '~/composables-multi-hotel-trip/useMultiHotelTripCheckoutTrip'
 import { useMultiHotelTripI18n } from '~/composables-multi-hotel-trip/useMultiHotelTripI18n'
 import { buildTripDaysView, tripDistanceLabelFn, tripDurationLabel } from '~/composables-multi-hotel-trip/useMultiHotelTripDaysView'
@@ -42,6 +43,7 @@ const checkout = computed(() => checkoutTrip.value ?? tripCheckoutBySlug(DEMO_SL
 const tripPdp = computed(() => tripPdpBySlug(checkout.value.slug))
 const trip = computed(() => tripPdp.value?.trip ?? null)
 const isBike = computed(() => trip.value?.type === 'fiets')
+const bookingRef = computed(() => bookingRefFor(checkout.value.slug))
 
 /* ── Prototype-schakelaar (linksboven in de navigatiebalk): het Vandaag-blok aan of uit; standaard uit ── */
 const showToday = useState<boolean>('mht-trip-page-today', () => false)
@@ -362,7 +364,10 @@ useHead({ title: `${checkout.value.name} — Tips & routes — ViaLuxury` })
 
       <!-- ── Praktische informatie: de drie hotels naast elkaar ── -->
       <section class="rp__section">
-        <h2 class="rp__h2">Praktische informatie</h2>
+        <div class="rp__section-head">
+          <h2 class="rp__h2">Praktische informatie</h2>
+          <MultiHotelTripBookingRef :value="bookingRef" />
+        </div>
         <div class="rp__hotels">
           <article v-for="(s, i) in stays" :id="`hotel-${i}`" :key="s.hotelName" class="rp__hotel rp__anchor">
             <img v-if="s.image" class="rp__hotel-img" :src="s.image" :alt="s.hotelName" />
@@ -486,6 +491,9 @@ useHead({ title: `${checkout.value.name} — Tips & routes — ViaLuxury` })
 .rp__main { flex: 1; width: 100%; padding-top: 40px; padding-bottom: 64px; display: flex; flex-direction: column; gap: 48px; }
 .rp__h2 { margin: 0 0 16px; font-family: var(--font-heading); font-size: 26px; font-weight: 700; line-height: 1.25; }
 .rp__h2--card { font-size: 22px; margin-bottom: 8px; }
+/* Sectiekop met het boekingsnummer rechts op dezelfde hoogte */
+.rp__section-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 16px; }
+.rp__section-head .rp__h2 { margin-bottom: 0; }
 .rp__h2--icon { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
 .rp__h2-icon { flex-shrink: 0; width: 24px; height: 24px; }
 .rp__h2--today { font-size: 24px; margin: 6px 0 8px; }

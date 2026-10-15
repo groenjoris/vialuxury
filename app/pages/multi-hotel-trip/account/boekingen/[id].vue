@@ -19,9 +19,10 @@ useHead({ title: () => `${checkout.value.name} — Mijn ViaLuxury` })
 
     <header class="ad__head">
       <div>
-        <p class="ad__eyebrow">{{ checkout.typeLabel }} met {{ checkout.hotels.length }} hotels · Boekingsnummer <b>{{ bookingRef }}</b></p>
+        <p class="ad__eyebrow">{{ checkout.typeLabel }} met {{ checkout.hotels.length }} hotels</p>
         <h1 class="ad__title">{{ checkout.name }}</h1>
         <p class="ad__meta">{{ dateRangeLong }} · {{ nights }} nachten · {{ persons }} personen · {{ roomsPerHotel }} {{ roomsPerHotel === 1 ? 'kamer' : 'kamers' }} per hotel</p>
+        <p class="ad__ref"><MultiHotelTripBookingRef :value="bookingRef" /></p>
       </div>
       <span class="ad__status">Actief</span>
     </header>
@@ -108,9 +109,9 @@ useHead({ title: () => `${checkout.value.name} — Mijn ViaLuxury` })
 .ad__back:hover { color: var(--color-primary); }
 .ad__head { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; margin-bottom: 24px; }
 .ad__eyebrow { margin: 0 0 6px; font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-text-secondary); }
-.ad__eyebrow b { color: var(--color-text-primary); letter-spacing: 0.04em; }
 .ad__title { margin: 0 0 8px; font-family: var(--font-heading); font-size: 32px; font-weight: 700; line-height: 1.15; }
 .ad__meta { margin: 0; font-size: 15px; color: var(--color-text-secondary); }
+.ad__ref { margin: 12px 0 0; }
 .ad__status { flex-shrink: 0; padding: 6px 12px; border-radius: 999px; background: #e4f5ec; color: #1f7a4d; font-size: 14px; font-weight: 600; }
 .ad__label { display: block; margin: 0 0 8px; font-size: 11px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: var(--color-text-secondary); }
 
