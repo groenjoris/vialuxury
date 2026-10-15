@@ -370,33 +370,45 @@ useHead({ title: `${checkout.value.name} — Tips & routes — ViaLuxury` })
         <div class="rp__hotels">
           <article v-for="(s, i) in stays" :id="`hotel-${i}`" :key="s.hotelName" class="rp__hotel rp__anchor">
             <img v-if="s.image" class="rp__hotel-img" :src="s.image" :alt="s.hotelName" />
-            <div class="rp__hotel-body">
-              <p class="rp__hotel-name">
-                <span class="rp__route-num">{{ i + 1 }}</span>
-                <span>{{ s.hotelName }} <span v-if="s.starRating" class="rp__stars" aria-hidden="true"><svg v-for="n in s.starRating" :key="n" class="icon-star" viewBox="0 0 18 18" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M16.963,6.786c-.088-.271-.323-.469-.605-.51l-4.62-.671L9.672,1.418c-.252-.512-1.093-.512-1.345,0l-2.066,4.186-4.62,.671c-.282,.041-.517,.239-.605,.51-.088,.271-.015,.57,.19,.769l3.343,3.258-.79,4.601c-.048,.282,.067,.566,.298,.734,.231,.167,.538,.189,.79,.057l4.132-2.173,4.132,2.173c.11,.058,.229,.086,.349,.086,.155,0,.31-.048,.441-.143,.231-.168,.347-.452,.298-.734l-.79-4.601,3.343-3.258c.205-.199,.278-.498,.19-.769Z"/></svg></span></span>
-              </p>
+            <span v-else class="rp__hotel-img" aria-hidden="true" />
+            <div class="rp__hotel-head">
+              <p class="rp__hotel-name"><span class="rp__route-num">{{ i + 1 }}</span><span>{{ s.hotelName }}</span></p>
               <p class="rp__hotel-sub">{{ s.city }} · {{ s.nightsLabel }} · {{ s.from }} t/m {{ s.to }}</p>
-              <div class="rp__checks">
-                <div class="rp__check">
-                  <span class="rp__label">Check-in</span>
-                  <span class="rp__check-date">{{ s.from }}</span>
-                  <span class="rp__check-time">vanaf {{ s.checkInTime }} uur</span>
-                </div>
-                <div class="rp__check">
-                  <span class="rp__label">Check-out</span>
-                  <span class="rp__check-date">{{ s.to }}</span>
-                  <span class="rp__check-time">tot {{ s.checkOutTime }} uur</span>
-                </div>
-              </div>
-              <ul class="rp__info">
-                <li><span class="rp__label">Adres</span>{{ s.address }} · <a class="rp__info-link" :href="s.mapsHref" target="_blank" rel="noopener">Routebeschrijving</a></li>
-                <li><span class="rp__label">Telefoon</span><a class="rp__info-link" :href="`tel:${s.phone.replace(/\s/g, '')}`">{{ s.phone }}</a></li>
-                <li><span class="rp__label">Parkeren</span>{{ s.parking }}</li>
-                <li><span class="rp__label">{{ isBike ? 'Fietsenstalling' : 'Opladen elektrische auto' }}</span>{{ isBike ? 'Afgesloten stalling bij het hotel' : s.charging }}</li>
-              </ul>
             </div>
+            <div class="rp__checks">
+              <div class="rp__check">
+                <span class="rp__label">Check-in</span>
+                <span class="rp__check-date">{{ s.from }}</span>
+                <span class="rp__check-time">vanaf {{ s.checkInTime }} uur</span>
+              </div>
+              <div class="rp__check">
+                <span class="rp__label">Check-out</span>
+                <span class="rp__check-date">{{ s.to }}</span>
+                <span class="rp__check-time">tot {{ s.checkOutTime }} uur</span>
+              </div>
+            </div>
+            <ul class="rp__info">
+              <li>
+                <svg class="rp__info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12z" /><circle cx="12" cy="10" r="2.5" /></svg>
+                <div><span class="rp__label">Adres</span>{{ s.address }} · <a class="rp__info-link" :href="s.mapsHref" target="_blank" rel="noopener">Routebeschrijving</a></div>
+              </li>
+              <li>
+                <svg class="rp__info-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24 11.36 11.36 0 003.58.57 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1 11.36 11.36 0 00.57 3.58 1 1 0 01-.24 1.01l-2.21 2.21z" /></svg>
+                <div><span class="rp__label">Telefoon</span><a class="rp__info-link" :href="`tel:${s.phone.replace(/\s/g, '')}`">{{ s.phone }}</a></div>
+              </li>
+              <li>
+                <svg class="rp__info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3" /><path d="M9 17V7h4a3 3 0 0 1 0 6H9" /></svg>
+                <div><span class="rp__label">Parkeren</span>{{ s.parking }}</div>
+              </li>
+              <li>
+                <svg v-if="isBike" class="rp__info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="5.5" cy="17" r="3.5" /><circle cx="18.5" cy="17" r="3.5" /><path d="M5.5 17l3.5-8h5l4.5 8M9 9H6.5M13.5 9l-3 8M14 6h2.5l2 11" /></svg>
+                <svg v-else class="rp__info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z" /></svg>
+                <div><span class="rp__label">{{ isBike ? 'Fietsenstalling' : 'Opladen elektrische auto' }}</span>{{ isBike ? 'Afgesloten stalling bij het hotel' : s.charging }}</div>
+              </li>
+            </ul>
           </article>
         </div>
+
         <!-- Fietsvakantie: bagagetransfer en routes (50/50, met foto) onder de hotels -->
         <div v-if="isBike" class="rp__bike">
           <article class="rp__card">
@@ -422,14 +434,11 @@ useHead({ title: `${checkout.value.name} — Tips & routes — ViaLuxury` })
         </div>
 
         <!-- Contactbanner over de hele breedte (auto én fiets), in de warme tint van de temperatuurtegel -->
-        <aside class="rp__contact" aria-label="Hulp nodig onderweg">
+        <aside class="rp__contact" aria-label="Hulp nodig">
           <span class="rp__contact-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 0 1 16 0" /><path d="M3 13a2 2 0 0 1 2-2h1a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H5a2 2 0 0 1-2-2v-3zM17 13a1 1 0 0 1 1-1h1a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2h-1a1 1 0 0 1-1-1v-5z" /><path d="M19 18v1a2 2 0 0 1-2 2h-3" /></svg>
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24 11.36 11.36 0 003.58.57 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1 11.36 11.36 0 00.57 3.58 1 1 0 01-.24 1.01l-2.21 2.21z" /></svg>
           </span>
-          <div class="rp__contact-text">
-            <p class="rp__contact-title">Hulp nodig onderweg?</p>
-            <p class="rp__contact-line">Bel <a class="rp__info-link" href="tel:+31207052222">+31 20 705 2222</a> of WhatsApp <a class="rp__info-link" href="https://wa.me/31208088809">+31 20 808 8809</a> · ma t/m vr 8:00 – 18:00</p>
-          </div>
+          <p class="rp__contact-line"><b>Hulp nodig?</b> Bel <a class="rp__info-link" href="tel:+31207052222">+31 20 705 2222</a> of WhatsApp <a class="rp__info-link" href="https://wa.me/31208088809">+31 20 808 8809</a> <span class="rp__contact-hours">· ma t/m vr 8:00 – 18:00</span></p>
         </aside>
       </section>
 
@@ -558,39 +567,46 @@ useHead({ title: `${checkout.value.name} — Tips & routes — ViaLuxury` })
 .rp__photo { flex-shrink: 0; width: 72px; height: 54px; object-fit: cover; border-radius: 6px; }
 .rp__photo--sm { width: 60px; height: 44px; }
 
-/* Praktische informatie: drie hotelblokken naast elkaar */
+/* Praktische informatie: drie hotelblokken naast elkaar. Elk blok is een subgrid van vier rijen
+   (foto, naam + plaats, check-in/check-out, info), zodat de check-in-rij in alle drie even hoog staat. */
 .rp__hotels { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
-.rp__hotel { overflow: hidden; border: 1px solid var(--color-border); border-radius: var(--radius-md); background: #fff; }
-.rp__hotel-img { display: block; width: 100%; height: 180px; object-fit: cover; }
-.rp__hotel-body { padding: 18px 20px 20px; }
+.rp__hotel { display: grid; grid-template-rows: subgrid; grid-row: span 4; row-gap: 0; overflow: hidden; border: 1px solid var(--color-border); border-radius: var(--radius-md); background: #fff; }
+.rp__hotel-img { display: block; width: 100%; height: 180px; object-fit: cover; background: #f0f0f0; }
+.rp__hotel-head { padding: 18px 20px 14px; }
 .rp__hotel-name { margin: 0; display: flex; align-items: flex-start; gap: 10px; font-family: var(--font-heading); font-size: 20px; font-weight: 700; line-height: 1.25; }
 .rp__hotel-name .rp__route-num { margin-top: 1px; }
-.rp__stars { color: #141414; font-size: 13px; letter-spacing: 1px; margin-left: 2px; white-space: nowrap; }
-.rp__stars svg { display: inline-block; vertical-align: -0.1em; }
-.rp__hotel-sub { margin: 4px 0 14px 34px; font-size: 13px; color: var(--color-text-secondary); }
-/* Check-in (nadruk) en check-out naast elkaar */
-.rp__checks { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-bottom: 14px; }
+.rp__hotel-sub { margin: 4px 0 0 34px; font-size: 13px; color: var(--color-text-secondary); }
+/* Check-in en check-out naast elkaar, in alle drie de blokken op dezelfde hoogte */
+.rp__checks { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin: 0 20px 18px; align-self: start; }
 .rp__check { display: flex; flex-direction: column; gap: 2px; padding: 10px 12px; border-radius: 8px; background: #f7f7f7; }
 .rp__check-date { font-size: 16px; font-weight: 700; line-height: 1.25; }
 .rp__check-time { font-size: 13px; color: var(--color-text-secondary); }
-.rp__info { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; font-size: 14px; line-height: 1.4; }
+/* Infolijst: icoon links, kopje + waarde rechts, ruim uit elkaar */
+.rp__info { list-style: none; margin: 0; padding: 0 20px 22px; display: flex; flex-direction: column; gap: 16px; font-size: 14px; line-height: 1.4; }
+.rp__info li { display: flex; align-items: flex-start; gap: 10px; }
+.rp__info li > div { min-width: 0; }
+.rp__info .rp__label { margin-bottom: 3px; }
+.rp__info-icon { flex-shrink: 0; width: 18px; height: 18px; margin-top: 1px; color: var(--color-text-primary); }
 /* Links in de praktische informatie (routebeschrijving, telefoon): in de tekstkleur, niet oranje. */
 .rp__info-link { color: var(--color-text-primary); font-weight: 600; text-decoration: underline; text-underline-offset: 2px; }
 .rp__info-link:hover { color: var(--color-text-secondary); }
-/* Contactbanner: hele breedte, warme tint (als de temperatuurtegel), icoon links */
-.rp__contact { display: flex; align-items: center; gap: 18px; margin-top: 24px; padding: 18px 24px; border-radius: var(--radius-md); background: #fff0e4; }
-.rp__contact-icon { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; width: 48px; height: 48px; border-radius: 50%; background: #fff; color: #e8632b; }
-.rp__contact-icon svg { width: 26px; height: 26px; }
-.rp__contact-text p { margin: 0; }
-.rp__contact-title { font-family: var(--font-heading); font-size: 20px; font-weight: 700; line-height: 1.25; }
-.rp__contact-line { margin-top: 2px !important; font-size: 15px; color: var(--color-text-secondary); }
+/* Contactbanner: hele breedte, warme tint (als de temperatuurtegel), alles op één regel, telefoonicoon als in de navigatie */
+.rp__contact { display: flex; align-items: center; gap: 16px; margin-top: 24px; padding: 16px 24px; border-radius: var(--radius-md); background: #fff0e4; }
+.rp__contact-icon { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 50%; background: #fff; color: #e8632b; }
+.rp__contact-icon svg { width: 22px; height: 22px; }
+.rp__contact-line { margin: 0; font-size: 18px; line-height: 1.4; color: var(--color-text-primary); }
+.rp__contact-line b { font-weight: 700; margin-right: 4px; }
+.rp__contact-line .rp__info-link { font-weight: 600; }
+.rp__contact-hours { color: var(--color-text-secondary); }
 /* Fietsvakantie: bagagetransfer en routes 50/50, met foto bovenin */
 .rp__bike { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; margin-top: 24px; }
 .rp__bike-img { display: block; width: 100%; height: 200px; object-fit: cover; }
 
-/* Reisschema naast de minimap */
-.rp__plan { display: grid; grid-template-columns: minmax(0, 1fr) 400px; gap: 32px; align-items: start; }
-.rp__minimap { width: 100%; }
+/* Reisschema naast de minimap: even hoog; de kaart vult de ruimte boven de regels, zodat
+   "Bekijk kaart" precies op de onderrand van het reisschema uitkomt. */
+.rp__plan { display: grid; grid-template-columns: minmax(0, 1fr) 400px; gap: 32px; align-items: stretch; }
+.rp__minimap { width: 100%; height: 100%; --vl-minimap-aspect: auto; }
+.rp__minimap :deep(.route-map__box) { flex: 1 1 0; min-height: 220px; }
 .rp__card { overflow: hidden; border: 1px solid var(--color-border); border-radius: var(--radius-md); background: #fff; }
 .rp__card-body { padding: 20px 22px 18px; }
 
@@ -613,7 +629,11 @@ useHead({ title: `${checkout.value.name} — Tips & routes — ViaLuxury` })
   .rp__today-icon { width: 40px; height: 40px; }
   .rp__today-temp { font-size: 28px; }
   .rp__hotels, .rp__plan, .rp__bike { grid-template-columns: 1fr; gap: 16px; }
+  .rp__hotel { display: block; }
   .rp__hotel-img, .rp__bike-img { height: 160px; }
+  .rp__plan { align-items: start; }
+  .rp__minimap { height: auto; --vl-minimap-aspect: 4 / 3; }
   .rp__contact { align-items: flex-start; padding: 16px; }
+  .rp__contact-line { font-size: 16px; }
 }
 </style>
