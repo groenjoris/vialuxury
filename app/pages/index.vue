@@ -54,21 +54,12 @@
           <!-- Post-bookingflow: schema van de klantreis na het boeken; van daaruit zijn de
                bevestigingspagina, de reispagina en de mails te openen. -->
           <NuxtLink class="start-btn" to="/multi-hotel-trip/flow">Post-bookingflow</NuxtLink>
-        </div>
-      </section>
-
-      <!-- MVP 12-11-2026 — losstaande kopie van Multi Hotel Trip, teruggeschaald naar de MVP-definitie. -->
-      <section class="start-section">
-        <h2 class="start-section__title">MVP 12-11-2026</h2>
-        <p class="start-section__lead">
-          Multi Hotel Trip teruggebracht tot de MVP-scope
-        </p>
-        <div class="start-section__buttons">
+          <!-- MVP (12-11-2026): losstaande kopie van Multi Hotel Trip, teruggeschaald naar de MVP-definitie. -->
           <button
             type="button"
-            class="start-btn start-btn--primary"
+            class="start-btn"
             @click="startMvpTrip"
-          >Homepage</button>
+          >MVP</button>
         </div>
       </section>
 
