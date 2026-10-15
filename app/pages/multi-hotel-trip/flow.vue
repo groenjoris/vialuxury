@@ -1,12 +1,13 @@
 <script setup lang="ts">
 // Multi Hotel Trip — Post-bookingflow: de klantreis na het boeken als strak schema in de
-// huisstijl. Drie fases op een horizontale tijdlijn (Boeken, Voorbereiden, Onderweg) met
-// mijlpalen; erboven de pagina's, eronder de e-mails, bovenin de accountomgeving als laag die
-// de hele reis beschikbaar is. Kaartjes hebben een icoon, type, titel en status (Klaar / Volgt)
-// en kunnen varianten dragen (chips) — de reispagina heeft Auto en Fiets. Klikken opent de
-// pagina of mail; de pagina's krijgen daarbij een demo-boeking (Opaalkust of de fietsvakantie).
-// Het schema is desktop-first (vaste tekenruimte van 1120px) en schaalt op smallere schermen
-// mee tot een minimum, daarna scrolt het horizontaal.
+// huisstijl. Drie fases op een horizontale tijdlijn (Boeken, Voorbereiden, Onderweg — Onderweg
+// begint bij Incheck hotel 1) met mijlpalen; erboven de pagina's (alle even groot, ook de
+// accountomgeving), eronder de e-mails. De incheckmails gaan de dag vóór het inchecken: een
+// oranje bolletje vlak voor elk hotelbolletje. Kaartjes zijn wit met icoon en titel; de
+// reispagina heeft de varianten Auto en Fiets (chips). Nog te maken onderdelen staan gestippeld.
+// Klikken opent de pagina of mail; de pagina's krijgen daarbij een demo-boeking (Opaalkust of
+// de fietsvakantie). Desktop-first (vaste tekenruimte van 1120px), schaalt mee tot een minimum
+// en scrolt daarna horizontaal.
 import { tripCheckoutBySlug } from '~/data/mht-checkout/trip'
 import { pricing } from '~/data/mht-checkout/deal'
 import { useMultiHotelTripCheckoutTrip } from '~/composables-multi-hotel-trip/useMultiHotelTripCheckoutTrip'
@@ -39,27 +40,29 @@ const go = (to: string) => navigateTo(to)
 
 /* ── Tekenruimte ── */
 const W = 1120
-const H = 548
+const H = 392
 const MIN_SCALE = 0.55
 /** Kolommen (x-midden) van de mijlpalen op de tijdlijn. */
 const COL = { booking: 150, prep: 440, h1: 700, h2: 870, h3: 1040 }
-const ACCOUNT_Y = 16
-const ACCOUNT_H = 44
-const PAGES_BOTTOM = 268
-const TIMELINE_Y = 336
-const MAILS_Y = 410
+/** De incheckmail gaat de dag vóór het inchecken: oranje bolletje vlak voor het hotelbolletje. */
+const MAIL_BEFORE = 36
+const PAGES_BOTTOM = 150
+const TIMELINE_Y = 218
+const MAILS_Y = 292
 const CARD_W = 232
 const CARD_W_SM = 158
-const CARD_H = 116
-const CARD_H_VARIANTS = 164
+const PAGE_H = 116
+const MAIL_H = 76
 
 interface Variant { id: VariantId; label: string; icon: 'car' | 'bike' }
 interface Card {
   id: string
   kind: 'pagina' | 'email'
   title: string
+  /** Kleine toelichting (alleen de accountomgeving: altijd beschikbaar). */
   sub?: string
-  status: 'klaar' | 'volgt'
+  /** Nog te maken: gestippeld en gedempt. */
+  volgt?: boolean
   x: number
   y: number
   w: number
@@ -71,47 +74,50 @@ interface Card {
   variants?: Variant[]
 }
 const pages: Card[] = [
-  { id: 'bevestiging', kind: 'pagina', title: 'Bevestigingspagina', sub: 'Direct na het boeken', status: 'klaar', x: COL.booking - CARD_W / 2, y: PAGES_BOTTOM - CARD_H, w: CARD_W, h: CARD_H, to: '/multi-hotel-trip/checkout/bevestiging', seeded: true, preload: true },
-  { id: 'routes', kind: 'pagina', title: 'Tips & routes', sub: 'Persoonlijke reispagina', status: 'klaar', x: COL.prep - CARD_W / 2, y: PAGES_BOTTOM - CARD_H_VARIANTS, w: CARD_W, h: CARD_H_VARIANTS, to: '/multi-hotel-trip/checkout/routes', seeded: true, variants: [{ id: 'auto', label: 'Auto', icon: 'car' }, { id: 'fiets', label: 'Fiets', icon: 'bike' }] },
+  { id: 'bevestiging', kind: 'pagina', title: 'Bevestigingspagina', x: COL.booking - CARD_W / 2, y: PAGES_BOTTOM - PAGE_H, w: CARD_W, h: PAGE_H, to: '/multi-hotel-trip/checkout/bevestiging', seeded: true, preload: true },
+  { id: 'routes', kind: 'pagina', title: 'Tips & routes', x: COL.prep - CARD_W / 2, y: PAGES_BOTTOM - PAGE_H, w: CARD_W, h: PAGE_H, to: '/multi-hotel-trip/checkout/routes', seeded: true, variants: [{ id: 'auto', label: 'Auto', icon: 'car' }, { id: 'fiets', label: 'Fiets', icon: 'bike' }] },
+  { id: 'account', kind: 'pagina', title: 'Accountomgeving', sub: 'De hele reis beschikbaar', volgt: true, x: W - 20 - CARD_W, y: PAGES_BOTTOM - PAGE_H, w: CARD_W, h: PAGE_H },
 ]
 const mails: Card[] = [
-  { id: 'mail-bevestiging', kind: 'email', title: 'Boekingsbevestiging', sub: 'Direct na het boeken', status: 'klaar', x: COL.booking - CARD_W / 2, y: MAILS_Y, w: CARD_W, h: CARD_H, to: '/multi-hotel-trip/emails/vakantie-bevestiging' },
-  { id: 'mail-pretravel', kind: 'email', title: 'Pre-travel', sub: '14 dagen voor vertrek', status: 'klaar', x: COL.prep - CARD_W / 2, y: MAILS_Y, w: CARD_W, h: CARD_H, to: '/multi-hotel-trip/emails/vakantie-pre-travel' },
-  { id: 'mail-h1', kind: 'email', title: 'Incheck hotel 1', sub: 'Op de aankomstdag', status: 'volgt', x: COL.h1 - CARD_W_SM / 2, y: MAILS_Y, w: CARD_W_SM, h: CARD_H },
-  { id: 'mail-h2', kind: 'email', title: 'Incheck hotel 2', sub: 'Op de wisseldag', status: 'volgt', x: COL.h2 - CARD_W_SM / 2, y: MAILS_Y, w: CARD_W_SM, h: CARD_H },
-  { id: 'mail-h3', kind: 'email', title: 'Incheck hotel 3', sub: 'Op de wisseldag', status: 'volgt', x: COL.h3 - CARD_W_SM / 2, y: MAILS_Y, w: CARD_W_SM, h: CARD_H },
+  { id: 'mail-bevestiging', kind: 'email', title: 'Boekingsbevestiging', x: COL.booking - CARD_W / 2, y: MAILS_Y, w: CARD_W, h: MAIL_H, to: '/multi-hotel-trip/emails/vakantie-bevestiging' },
+  { id: 'mail-pretravel', kind: 'email', title: 'Pre-travel', x: COL.prep - CARD_W / 2, y: MAILS_Y, w: CARD_W, h: MAIL_H, to: '/multi-hotel-trip/emails/vakantie-pre-travel' },
+  { id: 'mail-h1', kind: 'email', title: 'Incheck hotel 1', volgt: true, x: COL.h1 - MAIL_BEFORE - CARD_W_SM / 2, y: MAILS_Y, w: CARD_W_SM, h: MAIL_H },
+  { id: 'mail-h2', kind: 'email', title: 'Incheck hotel 2', volgt: true, x: COL.h2 - MAIL_BEFORE - CARD_W_SM / 2, y: MAILS_Y, w: CARD_W_SM, h: MAIL_H },
+  { id: 'mail-h3', kind: 'email', title: 'Incheck hotel 3', volgt: true, x: COL.h3 - MAIL_BEFORE - CARD_W_SM / 2, y: MAILS_Y, w: CARD_W_SM, h: MAIL_H },
 ]
 const cards = [...pages, ...mails]
+/** Mijlpalen: oranje = moment van een pagina/mail, zwart met hotelicoon = inchecken. */
 const milestones = [
   { x: COL.booking, label: 'Online booking', hotel: false },
   { x: COL.prep, label: '14 dagen voor vertrek', hotel: false },
+  { x: COL.h1 - MAIL_BEFORE, hotel: false },
   { x: COL.h1, label: 'Incheck hotel 1', hotel: true },
+  { x: COL.h2 - MAIL_BEFORE, hotel: false },
   { x: COL.h2, label: 'Incheck hotel 2', hotel: true },
+  { x: COL.h3 - MAIL_BEFORE, hotel: false },
   { x: COL.h3, label: 'Incheck hotel 3', hotel: true },
 ]
-/** Fases boven de tijdlijn: van/tot in x. */
+/** Fases boven de tijdlijn (label links, lijn tot de volgende fase): Onderweg begint bij Incheck hotel 1. */
 const phases = [
-  { label: 'Boeken', from: 40, to: 290 },
-  { label: 'Voorbereiden', from: 290, to: 590 },
-  { label: 'Onderweg', from: 590, to: 1100 },
+  { label: 'Boeken', from: 20, to: 290 },
+  { label: 'Voorbereiden', from: 290, to: COL.h1 },
+  { label: 'Onderweg', from: COL.h1, to: W - 20 },
 ]
 const bevestiging = pages[0]!
 const routes = pages[1]!
-const arrowY = bevestiging.y + CARD_H / 2
-/** Verbindingen (gestippeld, SVG-laag achter de kaartjes): alles leidt naar Tips & routes. */
+const arrowY = bevestiging.y + PAGE_H / 2
+/** Verbindingen (gestippeld, SVG-laag achter de kaartjes): bevestiging en mails leiden naar Tips & routes. */
 const connectors = [
   // Bevestigingspagina → Tips & routes
   { d: `M${bevestiging.x + CARD_W} ${arrowY} H${routes.x - 2}`, arrow: true },
   // Boekingsbevestiging (mail) → sluit aan op de pijl hierboven
-  { d: `M${bevestiging.x + CARD_W} ${MAILS_Y + 26} H${COL.booking + CARD_W / 2 + 34} V${arrowY + 2}`, arrow: false },
+  { d: `M${bevestiging.x + CARD_W} ${MAILS_Y + 30} H${bevestiging.x + CARD_W + 19} V${arrowY + 2}`, arrow: false },
   // Pre-travel (mail) → Tips & routes
   { d: `M${COL.prep + 80} ${MAILS_Y - 2} V${PAGES_BOTTOM + 2}`, arrow: true },
-  // Accountomgeving → Tips & routes
-  { d: `M${COL.prep + 80} ${ACCOUNT_Y + ACCOUNT_H} V${routes.y - 2}`, arrow: true },
 ]
 /** Mijlpaal → mail (en voor Online booking ook → bevestigingspagina): dunne doorgetrokken lijn. */
 const ticks = [
-  ...milestones.map(m => ({ x: m.x, y1: TIMELINE_Y + 16, y2: MAILS_Y - 2 })),
+  ...milestones.filter(m => !m.hotel).map(m => ({ x: m.x, y1: TIMELINE_Y + 16, y2: MAILS_Y - 2 })),
   { x: COL.booking, y1: PAGES_BOTTOM + 2, y2: TIMELINE_Y - 16 },
 ]
 
@@ -138,18 +144,10 @@ function onCard(c: Card, variant: VariantId = 'auto') {
   <div class="fl">
     <div class="fl__wrap">
       <header class="fl__head">
-        <div>
-          <NuxtLink class="fl__back" to="/">‹ Startscherm</NuxtLink>
-          <p class="fl__eyebrow">Multi Hotel Trip</p>
-          <h1 class="fl__title">Post-bookingflow</h1>
-          <p class="fl__lead">De klantreis na het boeken: welke pagina's en mails de gast wanneer ziet. Klik op een kaartje om die pagina of mail te openen.</p>
-        </div>
-        <ul class="fl__legend" aria-label="Legenda">
-          <li><span class="fl__legend-swatch fl__legend-swatch--page" /> Pagina</li>
-          <li><span class="fl__legend-swatch fl__legend-swatch--mail" /> E-mail</li>
-          <li><span class="fl__legend-swatch fl__legend-swatch--dot" /> Mijlpaal</li>
-          <li><span class="fl__chip fl__chip--volgt">Volgt</span> nog te maken</li>
-        </ul>
+        <NuxtLink class="fl__back" to="/">‹ Startscherm</NuxtLink>
+        <p class="fl__eyebrow">Multi Hotel Trip</p>
+        <h1 class="fl__title">Post-bookingflow</h1>
+        <p class="fl__lead">De klantreis na het boeken: welke pagina's en mails de gast wanneer ziet. Klik op een kaartje om die pagina of mail te openen.</p>
       </header>
 
       <div ref="wrapRef" class="fl__canvas-wrap">
@@ -166,25 +164,16 @@ function onCard(c: Card, variant: VariantId = 'auto') {
               <path v-for="(c, i) in connectors" :key="`conn-${i}`" class="fl__line" :d="c.d" :marker-end="c.arrow ? 'url(#fl-arrow)' : undefined" />
             </svg>
 
-            <!-- Accountomgeving: laag die de hele reis beschikbaar is -->
-            <div class="fl__account" :style="{ left: '40px', width: `${W - 80}px`, top: `${ACCOUNT_Y}px`, height: `${ACCOUNT_H}px` }">
-              <span class="fl__icon fl__icon--account" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4" /><path d="M4 21a8 8 0 0 1 16 0" /></svg>
-              </span>
-              <span class="fl__account-text"><b>Accountomgeving</b> · de hele reis beschikbaar: boeking, reispagina en mails terugvinden</span>
-              <span class="fl__chip fl__chip--volgt">Volgt</span>
-            </div>
-
             <!-- Fases + tijdlijn + mijlpalen -->
             <div v-for="p in phases" :key="p.label" class="fl__phase" :style="{ left: `${p.from}px`, width: `${p.to - p.from}px`, top: `${TIMELINE_Y - 44}px` }">
               <span class="fl__phase-label">{{ p.label }}</span>
             </div>
             <div class="fl__timeline" :style="{ top: `${TIMELINE_Y - 3}px` }" />
-            <div v-for="m in milestones" :key="m.label" class="fl__milestone" :class="{ 'fl__milestone--hotel': m.hotel }" :style="{ left: `${m.x}px`, top: `${TIMELINE_Y}px` }">
+            <div v-for="m in milestones" :key="m.x" class="fl__milestone" :class="{ 'fl__milestone--hotel': m.hotel }" :style="{ left: `${m.x}px`, top: `${TIMELINE_Y}px` }">
               <span class="fl__dot" aria-hidden="true">
                 <svg v-if="m.hotel" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16" /><path d="M9 7h2M13 7h2M9 11h2M13 11h2M9 15h2M13 15h2M10 21v-3h4v3" /></svg>
               </span>
-              <span class="fl__milestone-label">{{ m.label }}</span>
+              <span v-if="m.label" class="fl__milestone-label">{{ m.label }}</span>
             </div>
 
             <!-- Kaartjes: pagina's boven, mails onder -->
@@ -192,7 +181,7 @@ function onCard(c: Card, variant: VariantId = 'auto') {
               v-for="c in cards"
               :key="c.id"
               class="fl__card"
-              :class="[`fl__card--${c.kind}`, { 'fl__card--volgt': c.status === 'volgt', 'fl__card--link': !!c.to, 'fl__card--sm': c.w < 200 }]"
+              :class="[`fl__card--${c.kind}`, { 'fl__card--volgt': c.volgt, 'fl__card--link': !!c.to, 'fl__card--sm': c.w < 200 }]"
               :style="{ left: `${c.x}px`, top: `${c.y}px`, width: `${c.w}px`, height: `${c.h}px` }"
               :role="c.to ? 'link' : undefined"
               :tabindex="c.to ? 0 : undefined"
@@ -202,15 +191,15 @@ function onCard(c: Card, variant: VariantId = 'auto') {
               <div class="fl__card-head">
                 <span class="fl__icon" :class="c.kind === 'email' ? 'fl__icon--mail' : 'fl__icon--page'" aria-hidden="true">
                   <svg v-if="c.kind === 'email'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2" /><path d="M3 7l9 6 9-6" /></svg>
+                  <svg v-else-if="c.id === 'account'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4" /><path d="M4 21a8 8 0 0 1 16 0" /></svg>
                   <svg v-else viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2" /><path d="M3 9h18M7 6.5h.01M10 6.5h.01" /></svg>
                 </span>
-                <span class="fl__type">{{ c.kind === 'email' ? 'E-mail' : 'Pagina' }}</span>
-                <span class="fl__chip" :class="c.status === 'klaar' ? 'fl__chip--klaar' : 'fl__chip--volgt'">{{ c.status === 'klaar' ? 'Klaar' : 'Volgt' }}</span>
+                <div class="fl__card-text">
+                  <h2 class="fl__card-title">{{ c.title }}</h2>
+                  <p v-if="c.sub" class="fl__card-sub">{{ c.sub }}</p>
+                </div>
               </div>
-              <h2 class="fl__card-title">{{ c.title }}</h2>
-              <p v-if="c.sub" class="fl__card-sub">{{ c.sub }}</p>
               <div v-if="c.variants" class="fl__variants" role="group" aria-label="Varianten">
-                <span class="fl__variants-label">Variant</span>
                 <button
                   v-for="v in c.variants"
                   :key="v.id"
@@ -234,18 +223,12 @@ function onCard(c: Card, variant: VariantId = 'auto') {
 <style scoped>
 .fl { min-height: 100vh; background: #f5f5f5; padding: 32px 24px 64px; font-family: var(--font-body); color: var(--color-text-primary); }
 .fl__wrap { max-width: 1120px; margin: 0 auto; }
-.fl__head { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; margin-bottom: 24px; }
+.fl__head { margin-bottom: 20px; }
 .fl__back { display: inline-block; margin-bottom: 14px; color: var(--color-text-secondary); text-decoration: none; font-size: 14px; }
 .fl__back:hover { color: var(--color-primary); }
 .fl__eyebrow { margin: 0 0 4px; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-text-secondary); }
 .fl__title { margin: 0 0 8px; font-family: var(--font-heading); font-size: 34px; font-weight: 700; line-height: 1.1; }
 .fl__lead { margin: 0; max-width: 640px; font-size: 15px; color: var(--color-text-secondary); }
-.fl__legend { list-style: none; margin: 0; padding: 0 0 4px; display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: 13px; color: var(--color-text-secondary); white-space: nowrap; }
-.fl__legend li { display: inline-flex; align-items: center; gap: 8px; }
-.fl__legend-swatch { width: 14px; height: 14px; border-radius: 4px; }
-.fl__legend-swatch--page { background: #141414; }
-.fl__legend-swatch--mail { background: #faf8f4; border: 1px solid #d9d2c6; }
-.fl__legend-swatch--dot { border-radius: 50%; background: var(--color-primary); }
 
 /* Tekenruimte: schaalt mee, scrolt horizontaal onder de minimumschaal */
 .fl__canvas-wrap { position: relative; width: 100%; overflow-x: auto; overflow-y: hidden; }
@@ -255,16 +238,11 @@ function onCard(c: Card, variant: VariantId = 'auto') {
 .fl__line { fill: none; stroke: #8a8a8a; stroke-width: 1.5; stroke-dasharray: 4 4; }
 .fl__tick { stroke: #c4c4c4; stroke-width: 1.5; }
 
-/* Accountomgeving-laag */
-.fl__account { position: absolute; display: flex; align-items: center; gap: 12px; padding: 0 14px; border-radius: 10px; background: #fff; border: 1px dashed #c4c4c4; color: var(--color-text-secondary); font-size: 13px; }
-.fl__account-text b { color: var(--color-text-primary); font-weight: 700; }
-.fl__account .fl__chip { margin-left: auto; }
-
-/* Fases + tijdlijn + mijlpalen */
-.fl__timeline { position: absolute; left: 40px; right: 40px; height: 6px; border-radius: 3px; background: #141414; }
-.fl__phase { position: absolute; height: 28px; display: flex; align-items: center; gap: 10px; padding: 0 8px; }
-.fl__phase::before, .fl__phase::after { content: ''; flex: 1; height: 1px; background: #d4d4d4; }
-.fl__phase-label { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-text-secondary); }
+/* Fases (label links, hairline tot de volgende fase) + tijdlijn + mijlpalen */
+.fl__timeline { position: absolute; left: 20px; right: 20px; height: 6px; border-radius: 3px; background: #141414; }
+.fl__phase { position: absolute; height: 28px; display: flex; align-items: center; gap: 10px; padding: 0 10px 0 2px; }
+.fl__phase::after { content: ''; flex: 1; height: 1px; background: #d4d4d4; }
+.fl__phase-label { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-text-secondary); white-space: nowrap; }
 .fl__milestone { position: absolute; display: flex; flex-direction: column; align-items: center; transform: translate(-50%, -50%); }
 .fl__dot { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; background: var(--color-primary); box-shadow: 0 0 0 4px #f5f5f5, 0 0 0 5px #141414; }
 .fl__milestone--hotel .fl__dot { width: 30px; height: 30px; background: #141414; }
@@ -272,40 +250,33 @@ function onCard(c: Card, variant: VariantId = 'auto') {
 .fl__milestone-label { position: absolute; top: 22px; padding: 0 6px; background: #f5f5f5; white-space: nowrap; font-size: 12px; font-weight: 600; color: var(--color-text-primary); }
 .fl__milestone--hotel .fl__milestone-label { top: 26px; }
 
-/* Kaartjes */
-.fl__card { position: absolute; box-sizing: border-box; display: flex; flex-direction: column; gap: 6px; padding: 14px 16px; border-radius: 12px; background: #fff; border: 1px solid #e3e3e3; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04); transition: transform var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast); }
-.fl__card--email { background: #faf8f4; border-color: #e7e1d7; }
+/* Kaartjes: wit, icoon + titel; even groot per rij */
+.fl__card { position: absolute; box-sizing: border-box; display: flex; flex-direction: column; justify-content: center; gap: 10px; padding: 14px 16px; border-radius: 12px; background: #fff; border: 1px solid #e3e3e3; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04); transition: transform var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast); }
 .fl__card--link { cursor: pointer; }
 .fl__card--link:hover, .fl__card--link:focus-visible { transform: translateY(-2px); border-color: var(--color-primary); box-shadow: 0 10px 24px rgba(0, 0, 0, 0.1); outline: none; }
-.fl__card--volgt { border-style: dashed; background: #fff; color: var(--color-text-secondary); }
+.fl__card--volgt { border-style: dashed; border-color: #c9c9c9; color: var(--color-text-secondary); }
 .fl__card--volgt .fl__card-title { color: var(--color-text-secondary); }
 .fl__card--sm { padding: 12px; }
-.fl__card-head { display: flex; align-items: center; gap: 8px; }
-.fl__card--sm .fl__card-head { gap: 6px; }
-.fl__icon { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 8px; flex-shrink: 0; }
-.fl__icon svg { width: 16px; height: 16px; }
-.fl__card--sm .fl__icon { width: 24px; height: 24px; border-radius: 7px; }
+.fl__card-head { display: flex; align-items: center; gap: 10px; }
+.fl__card--sm .fl__card-head { gap: 8px; }
+.fl__card-text { min-width: 0; }
+.fl__icon { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 9px; flex-shrink: 0; }
+.fl__icon svg { width: 17px; height: 17px; }
+.fl__card--sm .fl__icon { width: 26px; height: 26px; border-radius: 7px; }
 .fl__card--sm .fl__icon svg { width: 14px; height: 14px; }
 .fl__icon--page { background: #141414; color: #fff; }
-.fl__icon--mail { background: #ede7dc; color: #141414; }
-.fl__icon--account { background: #f4f1ec; color: #141414; }
+.fl__icon--mail { background: #f4f1ec; color: #141414; }
 .fl__card--volgt .fl__icon { background: #ececec; color: #8a8a8a; }
-.fl__type { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-text-secondary); white-space: nowrap; }
-.fl__chip { margin-left: auto; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 700; white-space: nowrap; }
-.fl__chip--klaar { background: #e4f5ec; color: #1f7a4d; }
-.fl__chip--volgt { background: #ececec; color: #6b6b6b; }
-.fl__card-title { margin: 2px 0 0; font-family: var(--font-heading); font-size: 17px; font-weight: 700; line-height: 1.25; white-space: nowrap; }
-.fl__card--sm .fl__card-title { font-size: 15px; }
-.fl__card-sub { margin: 0; font-size: 12px; color: var(--color-text-secondary); white-space: nowrap; }
-.fl__variants { display: flex; align-items: center; gap: 6px; margin-top: 6px; padding-top: 10px; border-top: 1px solid #ececec; }
-.fl__variants-label { font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-text-secondary); margin-right: 2px; }
+.fl__card-title { margin: 0; font-family: var(--font-heading); font-size: 17px; font-weight: 700; line-height: 1.25; white-space: nowrap; }
+.fl__card--sm .fl__card-title { font-size: 14px; }
+.fl__card-sub { margin: 2px 0 0; font-size: 12px; color: var(--color-text-secondary); white-space: nowrap; }
+.fl__variants { display: flex; align-items: center; gap: 6px; }
 .fl__variant { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px 4px 8px; border-radius: 999px; border: 1.5px solid #141414; background: #fff; font-family: var(--font-body); font-size: 12px; font-weight: 700; color: #141414; cursor: pointer; transition: background var(--transition-fast), color var(--transition-fast); }
 .fl__variant svg { width: 14px; height: 14px; }
 .fl__variant:hover { background: #141414; color: #fff; }
 
 @media (max-width: 800px) {
   .fl { padding: 20px 12px 40px; }
-  .fl__head { flex-direction: column; align-items: flex-start; }
   .fl__title { font-size: 26px; }
 }
 </style>
