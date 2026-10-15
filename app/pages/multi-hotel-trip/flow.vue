@@ -4,9 +4,25 @@
 // hotel 1, 2 en 3; eronder de mails (boekingsbevestiging, pre-travel, incheckmails per hotel),
 // erboven de pagina's (bevestigingspagina, Tips en Routes bij deze vakantie, accountomgeving).
 // Vakjes met een pagina of mail in het prototype zijn klikbaar; de rest staat er grijs bij.
-useHead({ title: 'Flow multi-hotel vakantie — ViaLuxury' })
+useHead({ title: 'Post-bookingflow — ViaLuxury' })
+
+import { useMultiHotelTripCheckoutTrip } from '~/composables-multi-hotel-trip/useMultiHotelTripCheckoutTrip'
 
 const go = (to: string) => navigateTo(to)
+
+/** Demo-boeking (Opaalkust, Rijo) klaarzetten zodat de bevestigingspagina en de reispagina
+ *  zonder checkout werken; de bevestigingspagina krijgt daarbij de preloader. */
+function openWithBooking(to: string, preload = false) {
+  const { isTrip, slug, day } = useMultiHotelTripCheckoutTrip()
+  isTrip.value = true
+  slug.value = 'ontdek-noord-frankrijk-en-de-opaalkust-in-7-dagen'
+  day.value = { price: 919, checkIn: 'di 18 mei', checkOut: 'ma 24 mei', checkInYmd: { year: 2027, month: 4, day: 18 } }
+  useState<{ baseId: string; rateKey: 'nonrefundable' | 'flexible'; price: number; priceWas: number; quantity: number }[]>('mht-checkout-selection', () => []).value =
+    [{ baseId: 'trip', rateKey: 'flexible', price: 964, priceWas: 1535, quantity: 1 }]
+  useState<{ firstName: string; email: string } | null>('mht-checkout-guest', () => null).value = { firstName: 'Rijo', email: 'rijo.verburg@gmail.com' }
+  if (preload) useState<boolean>('mht-checkout-confirm-load', () => false).value = true
+  navigateTo(to)
+}
 
 /* Tijdlijn: mijlpalen (x in de viewBox van 1000 breed). */
 const milestones = [
@@ -38,7 +54,7 @@ function star(cx: number, cy: number, r = 26): string {
   <div class="fl">
     <div class="fl__wrap">
       <NuxtLink class="fl__back" to="/">‹ Startscherm</NuxtLink>
-      <h1 class="fl__title">Flow multi-hotel vakantie</h1>
+      <h1 class="fl__title">Post-bookingflow</h1>
       <p class="fl__lead">Van online boeking tot het laatste hotel: welke pagina's en mails de gast wanneer ziet. Klik op een vakje om die pagina of mail te openen; grijze vakjes volgen nog.</p>
 
       <svg class="fl__svg" viewBox="0 0 1000 860" role="img" aria-label="Flow van de klantreis: pagina's, mails en tijdlijn">
@@ -53,11 +69,11 @@ function star(cx: number, cy: number, r = 26): string {
           <rect x="20" y="12" width="160" height="190" />
           <text x="100" y="112" text-anchor="middle">Account omgeving</text>
         </g>
-        <g class="fl__box fl__box--link" role="link" tabindex="0" @click="go('/multi-hotel-trip/checkout/bevestiging')" @keydown.enter="go('/multi-hotel-trip/checkout/bevestiging')">
+        <g class="fl__box fl__box--link" role="link" tabindex="0" @click="openWithBooking('/multi-hotel-trip/checkout/bevestiging', true)" @keydown.enter="openWithBooking('/multi-hotel-trip/checkout/bevestiging', true)">
           <rect x="20" y="258" width="160" height="190" />
           <text x="100" y="358" text-anchor="middle">Bevestigingspagina</text>
         </g>
-        <g class="fl__box fl__box--link" role="link" tabindex="0" @click="go('/multi-hotel-trip/checkout/routes')" @keydown.enter="go('/multi-hotel-trip/checkout/routes')">
+        <g class="fl__box fl__box--link" role="link" tabindex="0" @click="openWithBooking('/multi-hotel-trip/checkout/routes')" @keydown.enter="openWithBooking('/multi-hotel-trip/checkout/routes')">
           <rect x="222" y="258" width="160" height="190" />
           <text x="302" y="346" text-anchor="middle">Tips en Routes bij</text>
           <text x="302" y="370" text-anchor="middle">deze vakantie</text>

@@ -51,38 +51,25 @@
             class="start-btn start-btn--primary"
             @click="startMultiHotelTripFromHome"
           >Homepage</button>
-          <button
-            type="button"
-            class="start-btn"
-            @click="startMultiHotelTripConfirmation"
-          >Bevestigingspagina</button>
-          <button
-            type="button"
-            class="start-btn"
-            @click="startMultiHotelTripRoutes"
-          >Reispagina (tips &amp; routes)</button>
-          <button
-            type="button"
-            class="start-btn"
-            @click="startMvpTrip"
-          >MVP 12-11-2026</button>
-          <NuxtLink class="start-btn" to="/multi-hotel-trip/flow">Flow</NuxtLink>
+          <!-- Post-bookingflow: schema van de klantreis na het boeken; van daaruit zijn de
+               bevestigingspagina, de reispagina en de mails te openen. -->
+          <NuxtLink class="start-btn" to="/multi-hotel-trip/flow">Post-bookingflow</NuxtLink>
         </div>
-        <!-- E-mails van de vakantie (bron: email-designs/, react-email; gehost als statische
-             HTML onder /multi-hotel-trip/emails). Linkjes, geen knoppen; de mails die nog
-             volgen staan er grijs bij, in de volgorde van de flow (/multi-hotel-trip/flow). -->
-        <p class="start-section__sublead">E-mails</p>
-        <ul class="start-section__links">
-          <li>
-            <NuxtLink class="start-section__link" to="/multi-hotel-trip/emails/vakantie-bevestiging">Boekingsbevestiging</NuxtLink>
-          </li>
-          <li>
-            <NuxtLink class="start-section__link" to="/multi-hotel-trip/emails/vakantie-pre-travel">Pre-travel (14 dagen voor vertrek)</NuxtLink>
-          </li>
-          <li class="start-section__link--todo">Incheck hotel 1 · volgt</li>
-          <li class="start-section__link--todo">Incheck hotel 2 · volgt</li>
-          <li class="start-section__link--todo">Incheck hotel 3 · volgt</li>
-        </ul>
+      </section>
+
+      <!-- MVP 12-11-2026 — losstaande kopie van Multi Hotel Trip, teruggeschaald naar de MVP-definitie. -->
+      <section class="start-section">
+        <h2 class="start-section__title">MVP 12-11-2026</h2>
+        <p class="start-section__lead">
+          Multi Hotel Trip teruggebracht tot de MVP-scope
+        </p>
+        <div class="start-section__buttons">
+          <button
+            type="button"
+            class="start-btn start-btn--primary"
+            @click="startMvpTrip"
+          >Homepage</button>
+        </div>
       </section>
 
 
@@ -186,7 +173,6 @@
 </template>
 
 <script setup lang="ts">
-import { useMultiHotelTripCheckoutTrip } from '~/composables-multi-hotel-trip/useMultiHotelTripCheckoutTrip'
 import { useHomeVariant } from '~/composables/useHomeVariant'
 const { clear } = usePartner()
 const { setHomeVariant } = useHomeVariant()
@@ -385,33 +371,6 @@ function startMvpTrip() {
 
 /** Multi Hotel Trip — direct naar de bevestigingspagina na het boeken van een vakantie
  *  (Opaalkust, 2 personen, flexibel annuleren, demo-datum), zonder de checkout te doorlopen. */
-/** Multi Hotel Trip — direct naar de persoonlijke reispagina (tips & routes) na het boeken,
- *  met dezelfde demo-boeking als de bevestigingspagina. */
-function startMultiHotelTripRoutes() {
-  seedMultiHotelTripDemoBooking()
-  navigateTo('/multi-hotel-trip/checkout/routes')
-}
-function seedMultiHotelTripDemoBooking() {
-  const { isTrip, slug, day } = useMultiHotelTripCheckoutTrip()
-  isTrip.value = true
-  slug.value = 'ontdek-noord-frankrijk-en-de-opaalkust-in-7-dagen'
-  day.value = { price: 919, checkIn: 'di 18 mei', checkOut: 'ma 24 mei', checkInYmd: { year: 2027, month: 4, day: 18 } }
-  useState<{ baseId: string; rateKey: 'nonrefundable' | 'flexible'; price: number; priceWas: number; quantity: number }[]>('mht-checkout-selection', () => []).value =
-    [{ baseId: 'trip', rateKey: 'flexible', price: 964, priceWas: 1535, quantity: 1 }]
-  useState<{ firstName: string; email: string } | null>('mht-checkout-guest', () => null).value = { firstName: 'Rijo', email: 'rijo.verburg@gmail.com' }
-}
-function startMultiHotelTripConfirmation() {
-  const { isTrip, slug, day } = useMultiHotelTripCheckoutTrip()
-  isTrip.value = true
-  slug.value = 'ontdek-noord-frankrijk-en-de-opaalkust-in-7-dagen'
-  day.value = { price: 919, checkIn: 'di 18 mei', checkOut: 'ma 24 mei', checkInYmd: { year: 2027, month: 4, day: 18 } }
-  useState<{ baseId: string; rateKey: 'nonrefundable' | 'flexible'; price: number; priceWas: number; quantity: number }[]>('mht-checkout-selection', () => []).value =
-    [{ baseId: 'trip', rateKey: 'flexible', price: 964, priceWas: 1535, quantity: 1 }]
-  useState<{ firstName: string; email: string } | null>('mht-checkout-guest', () => null).value = { firstName: 'Rijo', email: 'rijo.verburg@gmail.com' }
-  // Preloader alleen bij deze ingang (en bij "Boek nu"), niet bij een refresh van de pagina.
-  useState<boolean>('mht-checkout-confirm-load', () => false).value = true
-  navigateTo('/multi-hotel-trip/checkout/bevestiging')
-}
 
 /** "Start with ad" for the experimental homepage variants. Same static
  *  HTML page, but doesn't touch homeVariant so subsequent "home" links
@@ -540,26 +499,6 @@ definePageMeta({ layout: false })
   gap: var(--space-sm);
 }
 
-/* Lijst met linkjes (e-mails in de Multi Hotel Trip-box): geen knoppen, één link per regel;
-   mails die nog volgen staan grijs zonder link. */
-.start-section__sublead {
-  margin: var(--space-md) 0 var(--space-xs);
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--color-text-secondary);
-}
-.start-section__links {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  font-size: 15px;
-}
-.start-section__link--todo { color: var(--color-text-muted, #9a9a9a); }
 
 .start-btn {
   display: flex;
