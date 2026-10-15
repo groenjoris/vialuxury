@@ -218,7 +218,8 @@ useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
           </section>
 
           <!-- ── 3. Kassabon (⅔): grijs kader, wit vlak; boekingsnummer rechtsboven ── -->
-          <section class="cf__receipt-wrap" aria-label="Je boeking">
+          <section class="cf__receipt-wrap" aria-label="Jouw boeking">
+            <h2 class="cf__h2 cf__h2--lg cf__receipt-title">Jouw boeking</h2>
             <div class="cf__receipt">
               <div class="cf__receipt-head">
                 <p class="cf__eyebrow">{{ trip.typeLabel }} met {{ trip.hotels.length }} hotels</p>
@@ -414,6 +415,8 @@ useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
 
 /* Kassabon: grijs kader met wit vlak erin */
 .cf__receipt-wrap { padding: 16px; border-radius: var(--radius); background: var(--c-surface); }
+/* Titel boven de kassabon, in het grijze kader. */
+.cf__receipt-title { margin: 8px 12px 16px; }
 .cf__receipt { padding: 28px 28px 24px; border-radius: var(--radius-sm); background: var(--c-white); box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06); }
 /* Eyebrow links, boekingsnummer rechts op dezelfde regel. */
 .cf__receipt-head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; margin-bottom: 4px; }
@@ -494,6 +497,7 @@ useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
   .cf__now { padding: 20px 16px; }
   .cf__receipt-head { flex-wrap: wrap; gap: 4px 16px; }
   .cf__receipt-wrap { padding: 10px; }
+  .cf__receipt-title { margin: 6px 6px 12px; }
   .cf__receipt { padding: 20px 16px; }
   .cf__trip-title { font-size: var(--t-h2); }
   .cf__stay { grid-template-columns: 28px 96px minmax(0, 1fr); column-gap: 12px; }
