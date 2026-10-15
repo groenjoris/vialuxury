@@ -157,24 +157,27 @@ const TRIPS: TripSpec[] = [
       '/images/vakanties/001/nearby-marais.jpg',           //  2 platbodem in het Marais audomarois
       '/images/vakanties/001/routekaart-opaalkust.png',    //  3 kaart van de route
       '/images/vakanties/001/clery-c4.jpg',                //  4 dessert - de drie 3-gangendiners
-      { stop: 0, images: [                                 //  5-7 Chateau Tilques
+      { stop: 0, images: [                                 //  5-8 Chateau Tilques
         '/images/vakanties/001/tilques-t1.jpg',            //    gebouw: het kasteel vanuit de lucht
         '/images/vakanties/001/tilques-t2.jpg',            //    kamer
         '/images/vakanties/001/tilques-t5.jpg',            //    include: het binnenzwembad
+        '/images/vakanties/001/tilques-t3.jpg',            //    include: diner in Le Vert Mesnil
       ] },
-      '/images/vakanties/001/opaalkust-2.jpg',             //  8 omgeving: strandhuisjes aan de Opaalkust
-      { stop: 1, images: [                                 //  9-11 Chateau Clery
+      '/images/vakanties/001/opaalkust-2.jpg',             //  9 omgeving: strandhuisjes aan de Opaalkust
+      { stop: 1, images: [                                 // 10-13 Chateau Clery
         '/images/vakanties/001/clery-c1.jpg',              //    gebouw: het kasteel met het gazon
         '/images/vakanties/001/clery-c2.jpg',              //    kamer
         '/images/vakanties/001/clery-c5.jpg',              //    include: de sauna
+        '/images/vakanties/001/clery-c3.jpg',              //    include: de eetzaal van Le Berthier
       ] },
-      '/images/vakanties/001/nearby-boulogne.jpg',         // 12 omgeving: Boulogne-sur-Mer
-      { stop: 2, images: [                                 // 13-15 Hotel Royal Beaulaincourt
+      '/images/vakanties/001/nearby-boulogne.jpg',         // 14 omgeving: Boulogne-sur-Mer
+      { stop: 2, images: [                                 // 15-18 Hotel Royal Beaulaincourt
         '/images/vakanties/001/beaulaincourt-b1.jpg',      //    gebouw: het stadspaleis
         '/images/vakanties/001/beaulaincourt-b2.jpg',      //    kamer
         '/images/vakanties/001/beaulaincourt-b4.jpg',      //    include: aan tafel, het 3-gangendiner
+        '/images/vakanties/001/extra-beaulaincourt-bubbels.jpg', // include: de welkomstbubbels
       ] },
-      '/images/vakanties/001/bethune.jpg',                 // 16 omgeving: de gevels van Bethune
+      '/images/vakanties/001/bethune.jpg',                 // 19 omgeving: de gevels van Bethune
     ],
     photoCaptions: {
       'opaalkust-1.jpg':            'Opaalkust|Cap Blanc-Nez, de krijtrotsen boven het strand',
@@ -194,6 +197,9 @@ const TRIPS: TripSpec[] = [
       'beaulaincourt-b1.jpg':       'het stadspaleis met zijn binnenplaats',
       'beaulaincourt-b2.jpg':       'kamer',
       'beaulaincourt-b4.jpg':       'aan tafel voor het 3-gangendiner',
+      'tilques-t3.jpg':             'restaurant Le Vert Mesnil, met uitzicht op het park',
+      'clery-c3.jpg':               'de eetzaal van Le Berthier',
+      'extra-beaulaincourt-bubbels.jpg': 'de welkomstbubbels',
       'bethune.jpg':                'B\u00e9thune|De gevels aan de Grand Place',
     },
     type: 'auto',
@@ -276,16 +282,17 @@ const TRIPS: TripSpec[] = [
         '/images/vakanties/002/hotel-1.jpg',           //   het hotel aan de Vecht
       ] },
       '/images/vakanties/002/zwolle.jpg',            // 6 omgeving: de Sassenpoort in Zwolle
-      { stop: 1, images: [                            // 7-9 Hotel de Zwaan
+      { stop: 1, images: [                            // 7-10 Hotel de Zwaan
         'https://asset.vialuxury.com/assets/13379ada-10fc-4712-8961-e54ee96424d5', //   de lobby
         'https://asset.vialuxury.com/assets/bc8e9102-8e55-45e4-9b6b-e03b2c5c0f7c', //   kamer
-        'https://asset.vialuxury.com/assets/6961669b-2ff9-4e79-b2d4-aadbc828b490', //   een gerecht van de chef
+        'https://asset.vialuxury.com/assets/6961669b-2ff9-4e79-b2d4-aadbc828b490', //   include: een gerecht van de chef
+        'https://asset.vialuxury.com/assets/652f0a15-14d2-42ea-83af-83bb8e54be83', //   include: de amuses bij het wijnarrangement
       ] },
-      '/images/vakanties/002/bronkhorst.jpg',        // 10 omgeving: het stadje Bronkhorst
-      { stop: 2, images: [                            // 11 Hotel 's Gravenhof
+      '/images/vakanties/002/bronkhorst.jpg',        // 11 omgeving: het stadje Bronkhorst
+      { stop: 2, images: [                            // 12 Hotel 's Gravenhof
         '/images/vakanties/002/hotel-3.jpg',           //   het terras voor het hotel
       ] },
-      '/images/vakanties/002/zutphen.jpg',           // 12 omgeving: de torens van Zutphen
+      '/images/vakanties/002/zutphen.jpg',           // 13 omgeving: de torens van Zutphen
     ],
     photoCaptions: {
       'hanzesteden.jpg':                         'Deventer|De Waag op de Brink',
@@ -297,6 +304,7 @@ const TRIPS: TripSpec[] = [
       '13379ada-10fc-4712-8961-e54ee96424d5':    'de lobby',
       'bc8e9102-8e55-45e4-9b6b-e03b2c5c0f7c':    'kamer met inloopbadkamer',
       '6961669b-2ff9-4e79-b2d4-aadbc828b490':    'een gerecht van de chef',
+      '652f0a15-14d2-42ea-83af-83bb8e54be83':    'de amuses bij het wijnarrangement',
       'bronkhorst.jpg':                          'Onderweg|Het stadje Bronkhorst',
       'hotel-3.jpg':                             'het terras voor het hotel',
       'zutphen.jpg':                             'Zutphen|De torens boven de uiterwaarden',
@@ -427,28 +435,31 @@ const TRIPS: TripSpec[] = [
       '/images/vakanties/004/maastricht.jpg',        // 2 terras op het Vrijthof - beleving onderweg
       '/images/vakanties/004/routekaart-zuid-limburg-luxe.png', // 3 kaart van de route
       'https://asset.vialuxury.com/assets/cf21b84a-363c-4c95-9e27-fd49d5a7e564', // 4 twee gerechten met wijn - het culinaire diner
-      { stop: 0, images: [                            // 5-7 Hotel Merici
+      { stop: 0, images: [                            // 5-8 Hotel Merici
         'https://asset.vialuxury.com/assets/3b6c8760-29ca-4701-85f3-32ae3ba23c24', //   het voormalige klooster vanuit het park
         'https://asset.vialuxury.com/assets/b7205338-4948-4009-b3f7-b8d6af503aeb', //   kamer met zithoek
-        'https://asset.vialuxury.com/assets/825e6754-76a0-491c-8267-f134a03603e1', //   gerecht uit de keuken van George's
+        'https://asset.vialuxury.com/assets/825e6754-76a0-491c-8267-f134a03603e1', //   include: gerecht uit de keuken van George's
+        'https://asset.vialuxury.com/assets/7b5d2908-8b34-443e-a238-081cccb364fb', //   include: de gewelvenzaal van het restaurant
       ] },
-      '/images/vakanties/004/sittard.jpg',           // 8 omgeving: historisch Sittard
-      { stop: 1, images: [                            // 9-11 Hotel Winselerhof
+      '/images/vakanties/004/sittard.jpg',           // 9 omgeving: historisch Sittard
+      { stop: 1, images: [                            // 10-13 Hotel Winselerhof
         'https://asset.vialuxury.com/assets/e92ed8f1-f54c-4b84-86e7-ff8d8f31852e', //   de binnenplaats van de herenboerderij
         'https://asset.vialuxury.com/assets/c8207dab-17ba-41b1-818a-ac79f5633e2b', //   kamer onder de eiken balken
-        'https://asset.vialuxury.com/assets/70abb3e3-3d4d-4fef-8ef1-e032577105f9', //   het ontbijtbuffet
+        'https://asset.vialuxury.com/assets/70abb3e3-3d4d-4fef-8ef1-e032577105f9', //   include: het ontbijtbuffet
+        'https://asset.vialuxury.com/assets/466d681d-82d3-4f6d-857b-1e82c79cdb1c', //   include: het welkomstdrankje aan de bar
       ] },
-      '/images/vakanties/004/valkenburg.jpg',        // 12 omgeving: Valkenburg
-      { stop: 2, images: [                            // 13-15 Van Oys Maastricht Retreat (geen kamerfoto)
+      '/images/vakanties/004/valkenburg.jpg',        // 14 omgeving: Valkenburg
+      { stop: 2, images: [                            // 15-18 Van Oys Maastricht Retreat
         'https://asset.vialuxury.com/assets/263903f7-e678-45b8-82e3-e58957ae6360', //   het boutiquehotel bij avondlicht
-        'https://asset.vialuxury.com/assets/0de487d1-7ef2-4bbc-b18b-f09be161e6fa', //   gerecht uit restaurant Maes
-        'https://asset.vialuxury.com/assets/22de12cd-7559-42b1-acfc-e057dda16137', //   de Oysana spa
+        'https://asset.vialuxury.com/assets/6439f758-b68f-4756-aa95-77bfa1ca0d4b', //   Deluxe kamer met vrijstaand bad
+        'https://asset.vialuxury.com/assets/0de487d1-7ef2-4bbc-b18b-f09be161e6fa', //   include: gerecht uit restaurant Maes
+        'https://asset.vialuxury.com/assets/22de12cd-7559-42b1-acfc-e057dda16137', //   include: de Oysana spa
       ] },
-      '/images/vakanties/004/servaasbrug.jpg',       // 16 omgeving: de Sint-Servaasbrug in Maastricht
+      '/images/vakanties/004/servaasbrug.jpg',       // 19 omgeving: de Sint-Servaasbrug in Maastricht
     ],
     photoCaptions: {
       'heuvelland.jpg':                          'Zuid-Limburg|Het glooiende Heuvelland',
-      '466d681d-82d3-4f6d-857b-1e82c79cdb1c':    'Hotel Winselerhof|de barman schenkt een aperitief in',
+      '466d681d-82d3-4f6d-857b-1e82c79cdb1c':    'het welkomstdrankje aan de bar',
       'cf21b84a-363c-4c95-9e27-fd49d5a7e564':    'Hotel Winselerhof|culinair diner in Restaurant Pirandello',
       'routekaart-zuid-limburg-luxe.png':        'Routekaart|Van Sittard via Landgraaf naar Eijsden',
       '3b6c8760-29ca-4701-85f3-32ae3ba23c24':    'het voormalige Ursulinenklooster vanuit het park',
@@ -460,8 +471,10 @@ const TRIPS: TripSpec[] = [
       '70abb3e3-3d4d-4fef-8ef1-e032577105f9':    'het ontbijtbuffet',
       'valkenburg.jpg':                          'Onderweg|Valkenburg aan de Geul',
       '263903f7-e678-45b8-82e3-e58957ae6360':    'het boutiquehotel bij avondlicht',
+      '6439f758-b68f-4756-aa95-77bfa1ca0d4b':    'Deluxe kamer met vrijstaand bad',
       '0de487d1-7ef2-4bbc-b18b-f09be161e6fa':    'gerecht uit restaurant Maes',
       '22de12cd-7559-42b1-acfc-e057dda16137':    'de Oysana spa',
+      '7b5d2908-8b34-443e-a238-081cccb364fb':    'de gewelvenzaal van het restaurant',
       'maastricht.jpg':                          'Onderweg|Terrassen op het Vrijthof in Maastricht',
       'servaasbrug.jpg':                         'Maastricht|De Sint-Servaasbrug over de Maas',
     },
@@ -513,23 +526,24 @@ const TRIPS: TripSpec[] = [
       '/images/vakanties/cover/zuid-limburg.jpg',    // 2 marktplein met terrassen - beleving onderweg
       '/images/vakanties/005/routekaart-zuid-limburg.png', // 3 kaart van de route
       'https://asset.vialuxury.com/assets/cf21b84a-363c-4c95-9e27-fd49d5a7e564', // 4 twee gerechten met wijn - het culinaire diner
-      { stop: 0, images: [                            // 5-7 Hotel Merici
+      { stop: 0, images: [                            // 5-8 Hotel Merici
         'https://asset.vialuxury.com/assets/3b6c8760-29ca-4701-85f3-32ae3ba23c24', //   het voormalige klooster vanuit het park
         'https://asset.vialuxury.com/assets/b7205338-4948-4009-b3f7-b8d6af503aeb', //   kamer met zithoek
-        'https://asset.vialuxury.com/assets/825e6754-76a0-491c-8267-f134a03603e1', //   gerecht uit de keuken van George's
+        'https://asset.vialuxury.com/assets/825e6754-76a0-491c-8267-f134a03603e1', //   include: gerecht uit de keuken van George's
+        'https://asset.vialuxury.com/assets/7b5d2908-8b34-443e-a238-081cccb364fb', //   include: de gewelvenzaal van het restaurant
       ] },
-      '/images/vakanties/004/hoensbroek.jpg',        // 8 omgeving: Kasteel Hoensbroek, op de etappe naar Landgraaf
-      { stop: 1, images: [                            // 9-12 Hotel Winselerhof
+      '/images/vakanties/004/hoensbroek.jpg',        // 9 omgeving: Kasteel Hoensbroek, op de etappe naar Landgraaf
+      { stop: 1, images: [                            // 10-13 Hotel Winselerhof
         'https://asset.vialuxury.com/assets/e92ed8f1-f54c-4b84-86e7-ff8d8f31852e', //   de binnenplaats van de herenboerderij
         'https://asset.vialuxury.com/assets/c8207dab-17ba-41b1-818a-ac79f5633e2b', //   kamer onder de eiken balken
         'https://asset.vialuxury.com/assets/70abb3e3-3d4d-4fef-8ef1-e032577105f9', //   het ontbijtbuffet
-        'https://asset.vialuxury.com/assets/466d681d-82d3-4f6d-857b-1e82c79cdb1c', //   het welkomstdrankje aan de bar
+        'https://asset.vialuxury.com/assets/466d681d-82d3-4f6d-857b-1e82c79cdb1c', //   include: het welkomstdrankje aan de bar
       ] },
-      '/images/vakanties/004/valkenburg.jpg',        // 12 omgeving: Valkenburg
-      { stop: 2, images: [                            // 13 Hotel Monastere
+      '/images/vakanties/004/valkenburg.jpg',        // 14 omgeving: Valkenburg
+      { stop: 2, images: [                            // 15 Hotel Monastere (geen kamer- of includefoto beschikbaar)
         '/images/vakanties/005/hotel-3.jpg',           //   het hotel aan de straat
       ] },
-      '/images/vakanties/004/servaasbrug.jpg',       // 14 omgeving: de Sint-Servaasbrug in Maastricht
+      '/images/vakanties/004/servaasbrug.jpg',       // 16 omgeving: de Sint-Servaasbrug in Maastricht
     ],
     photoCaptions: {
       'zuid-limburgs-heuvelland.jpg':            'Zuid-Limburg|Het glooiende Heuvelland',
@@ -540,6 +554,7 @@ const TRIPS: TripSpec[] = [
       '3b6c8760-29ca-4701-85f3-32ae3ba23c24':    'het voormalige Ursulinenklooster vanuit het park',
       'b7205338-4948-4009-b3f7-b8d6af503aeb':    'kamer met zithoek',
       '825e6754-76a0-491c-8267-f134a03603e1':    'gerecht uit de keuken van George’s',
+      '7b5d2908-8b34-443e-a238-081cccb364fb':    'de gewelvenzaal van het restaurant',
       'hoensbroek.jpg':                          'Onderweg|Kasteel Hoensbroek',
       'e92ed8f1-f54c-4b84-86e7-ff8d8f31852e':    'de binnenplaats van de 16e-eeuwse herenboerderij',
       'c8207dab-17ba-41b1-818a-ac79f5633e2b':    'kamer onder de originele eiken balken',
@@ -624,24 +639,27 @@ const TRIPS: TripSpec[] = [
       { stop: 1, images: [                            // 5 het mooiste beeld van de route; geen van de drie hotels heeft een gebouwfoto, dus een kamerbeeld
         'https://asset.vialuxury.com/assets/13edb591-9d4d-4d36-8251-33efecbf90cb', //   kamer met bubbelbad en zeezicht
       ] },
-      { stop: 0, images: [                            // 6-8 Hotel Ter Zand
+      { stop: 0, images: [                            // 6-9 Hotel Ter Zand
         'https://asset.vialuxury.com/assets/09b83ed2-0c2d-4521-9c2a-2b30395fe6ca', //   het restaurant
         'https://asset.vialuxury.com/assets/f021edcd-4e63-4d41-8cb2-a7bf42a74bd5', //   kamer
-        'https://asset.vialuxury.com/assets/24a658bb-3bf3-48fa-a9b6-73fc6661c637', //   het binnenzwembad
+        'https://asset.vialuxury.com/assets/24a658bb-3bf3-48fa-a9b6-73fc6661c637', //   include: het binnenzwembad
+        'https://asset.vialuxury.com/assets/7784c9d3-cacd-4e45-8a40-bc6fb26b1aaf', //   include: het ontbijtbuffet
       ] },
-      'https://asset.vialuxury.com/assets/31e45de3-6e12-42f9-97b6-528b7b123db9', // 9 omgeving: de haven van Zierikzee
-      { stop: 1, images: [                            // 10-12 Inntel Hotels Den Haag Marina Beach
+      'https://asset.vialuxury.com/assets/31e45de3-6e12-42f9-97b6-528b7b123db9', // 10 omgeving: de haven van Zierikzee
+      { stop: 1, images: [                            // 11-14 Inntel Hotels Den Haag Marina Beach
         'https://asset.vialuxury.com/assets/bdd222fd-818b-489c-abd5-f20a6d5ce30c', //   het dakterras
         'https://asset.vialuxury.com/assets/75c82728-aac9-4fb7-ae69-ca7ca6dbf503', //   kamer
-        'https://asset.vialuxury.com/assets/631d38dd-198f-4d0d-9c1b-665ff0a101ba', //   het buitenzwembad op het dak
+        'https://asset.vialuxury.com/assets/631d38dd-198f-4d0d-9c1b-665ff0a101ba', //   include: het buitenzwembad op het dak
+        'https://asset.vialuxury.com/assets/96d891bd-537f-43ec-9efd-4dda86ad9ac3', //   include: de sauna in de spa
       ] },
-      'https://asset.vialuxury.com/assets/f6d194e2-9c00-4977-9a69-8f32abee465c', // 13 omgeving: de pier van Scheveningen
-      { stop: 2, images: [                            // 14-16 Courtyard by Marriott
+      'https://asset.vialuxury.com/assets/f6d194e2-9c00-4977-9a69-8f32abee465c', // 15 omgeving: de pier van Scheveningen
+      { stop: 2, images: [                            // 16-19 Courtyard by Marriott
         'https://asset.vialuxury.com/assets/42d24dc5-9aae-4714-8476-e072499d366a', //   de lobby
         'https://asset.vialuxury.com/assets/46b7b6fd-b154-44b3-854d-37b0c8690a2c', //   kamer
-        'https://asset.vialuxury.com/assets/9ccd751f-f557-42f7-b408-71c1a18536f6', //   het restaurant
+        'https://asset.vialuxury.com/assets/9ccd751f-f557-42f7-b408-71c1a18536f6', //   include: de Courtyard Brasserie
+        'https://asset.vialuxury.com/assets/9e71bbcb-d471-4fe3-a430-fd8f91784810', //   include: de bar voor het welkomstdrankje
       ] },
-      '/images/vakanties/006/zandvoort.jpg',         // 17 omgeving: de strandhuisjes van Zandvoort
+      '/images/vakanties/006/zandvoort.jpg',         // 20 omgeving: de strandhuisjes van Zandvoort
     ],
     photoCaptions: {
       'kustroute.jpg':                           'Zeeland|De vuurtoren in de duinen',
@@ -659,7 +677,10 @@ const TRIPS: TripSpec[] = [
       'f6d194e2-9c00-4977-9a69-8f32abee465c':    'Onderweg|De pier van Scheveningen',
       '42d24dc5-9aae-4714-8476-e072499d366a':    'de lobby',
       '46b7b6fd-b154-44b3-854d-37b0c8690a2c':    'kamer',
-      '9ccd751f-f557-42f7-b408-71c1a18536f6':    'het restaurant',
+      '7784c9d3-cacd-4e45-8a40-bc6fb26b1aaf':    'het ontbijtbuffet',
+      '96d891bd-537f-43ec-9efd-4dda86ad9ac3':    'de sauna in de spa',
+      '9ccd751f-f557-42f7-b408-71c1a18536f6':    'de Courtyard Brasserie',
+      '9e71bbcb-d471-4fe3-a430-fd8f91784810':    'de bar voor het welkomstdrankje',
       'zandvoort.jpg':                           'Zandvoort|De strandhuisjes aan de boulevard',
     },
   },
@@ -729,20 +750,24 @@ const TRIPS: TripSpec[] = [
       { stop: 2, images: [                            // 5 Landhuishotel Herikerberg - het mooiste hotelbeeld
         '/images/vakanties/007/hotel-herikerberg.jpg', //   het landhuis onder het rieten dak
       ] },
-      { stop: 0, images: [                            // 6 Hotel Wapen van Delden (geen kamer- of eetfoto)
+      { stop: 0, images: [                            // 6-8 Hotel Wapen van Delden (geen kamerfoto)
         '/images/vakanties/007/hotel-wapen-van-delden.jpg', //   het hotel in het dorp
+        '/images/vakanties/007/wapen-van-delden-culinair.jpg', //   include: aan tafel voor het 3-gangendiner
+        '/images/vakanties/007/ontbijt.jpg',           //   include: het uitgebreide ontbijtbuffet
       ] },
-      '/images/vakanties/007/nearby-twickel.jpg',    // 7 omgeving: Kasteel Twickel bij Delden
-      { stop: 1, images: [                            // 8-10 Hotel de Zwaan
+      '/images/vakanties/007/nearby-twickel.jpg',    // 9 omgeving: Kasteel Twickel bij Delden
+      { stop: 1, images: [                            // 10-13 Hotel de Zwaan
         '/images/vakanties/007/hotel-de-zwaan-gebouw.jpg', //   het hotel
         'https://asset.vialuxury.com/assets/bc8e9102-8e55-45e4-9b6b-e03b2c5c0f7c', //   kamer
-        'https://asset.vialuxury.com/assets/6961669b-2ff9-4e79-b2d4-aadbc828b490', //   een gerecht van de chef
+        'https://asset.vialuxury.com/assets/6961669b-2ff9-4e79-b2d4-aadbc828b490', //   include: een gerecht van de chef
+        'https://asset.vialuxury.com/assets/652f0a15-14d2-42ea-83af-83bb8e54be83', //   include: de amuses uit de keuken
       ] },
-      '/images/vakanties/007/deventer-ijssel.jpg',   // 11 omgeving: Deventer aan de IJssel
-      { stop: 2, images: [                            // 12 Landhuishotel Herikerberg
+      '/images/vakanties/007/deventer-ijssel.jpg',   // 14 omgeving: Deventer aan de IJssel
+      { stop: 2, images: [                            // 15-16 Landhuishotel Herikerberg
         'https://asset.vialuxury.com/assets/d79b8fd5-75cf-49a6-b558-5f28a85d9f1c', //   onderweg met de fiets in Markelo
+        '/images/vakanties/007/diner.jpg',             //   include: het restaurant, waar het 3-gangendiner staat
       ] },
-      '/images/vakanties/007/nearby-heuvelrug.jpg',  // 13 omgeving: de heide van de Sallandse Heuvelrug
+      '/images/vakanties/007/nearby-heuvelrug.jpg',  // 17 omgeving: de heide van de Sallandse Heuvelrug
     ],
     photoCaptions: {
       'fietsvakantie-twente-salland-bos.jpg':    'Twente|Fietsen door de bossenlaan',
@@ -755,6 +780,10 @@ const TRIPS: TripSpec[] = [
       'hotel-de-zwaan-gebouw.jpg':               'het hotel',
       'bc8e9102-8e55-45e4-9b6b-e03b2c5c0f7c':    'kamer met inloopbadkamer',
       '6961669b-2ff9-4e79-b2d4-aadbc828b490':    'een gerecht van de chef',
+      '652f0a15-14d2-42ea-83af-83bb8e54be83':    'de amuses uit de keuken',
+      'wapen-van-delden-culinair.jpg':           'aan tafel voor het 3-gangendiner',
+      'ontbijt.jpg':                             'het uitgebreide ontbijtbuffet',
+      'diner.jpg':                               'het restaurant, waar het 3-gangendiner wordt geserveerd',
       'deventer-ijssel.jpg':                     'Onderweg|Deventer aan de IJssel',
       'd79b8fd5-75cf-49a6-b558-5f28a85d9f1c':    'onderweg met de fiets in Markelo',
       'nearby-heuvelrug.jpg':                    'Salland|De heide van de Sallandse Heuvelrug',
