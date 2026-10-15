@@ -150,13 +150,13 @@ const TRIPS: TripSpec[] = [
     // dat blok begint bij de kamer.
     //
     // Het diner komt bij alle drie de hotels terug; dat mag maar een keer
-    // worden herhaald. Het staat op plek 3 en nog eens bij Beaulaincourt. De
+    // worden herhaald. Het staat op plek 4 en nog eens bij Beaulaincourt. De
     // andere twee hotels laten hun eigen voorziening zien: het zwembad bij
     // Tilques en de sauna bij Clery.
     gallery: [
       '/images/vakanties/001/nearby-marais.jpg',           //  2 platbodem in het Marais audomarois
-      '/images/vakanties/001/clery-c4.jpg',                //  3 dessert - de drie 3-gangendiners
-      '/images/vakanties/001/routekaart-opaalkust.png',    //  4 kaart van de route
+      '/images/vakanties/001/routekaart-opaalkust.png',    //  3 kaart van de route
+      '/images/vakanties/001/clery-c4.jpg',                //  4 dessert - de drie 3-gangendiners
       { stop: 0, images: [                                 //  5-7 Chateau Tilques
         '/images/vakanties/001/tilques-t1.jpg',            //    gebouw: het kasteel vanuit de lucht
         '/images/vakanties/001/tilques-t2.jpg',            //    kamer
@@ -179,7 +179,7 @@ const TRIPS: TripSpec[] = [
     photoCaptions: {
       'opaalkust-1.jpg':            'Opaalkust|Cap Blanc-Nez, de krijtrotsen boven het strand',
       'nearby-marais.jpg':          'Onderweg|Per platbodem door het Marais audomarois',
-      // Staat op plek 3 als sfeerbeeld, dus hier ook het hotel erbij; anders
+      // Staat op plek 4 als sfeerbeeld, dus hier ook het hotel erbij; anders
       // zou er "Omgeving" boven staan.
       'clery-c4.jpg':               'Ch\u00e2teau Cl\u00e9ry|Dessert uit de keuken van Le Berthier',
       'routekaart-opaalkust.png':   'Routekaart|De hele route langs de drie kastelen',
@@ -270,8 +270,8 @@ const TRIPS: TripSpec[] = [
     routeImage: '/images/vakanties/002/route.jpg',
     gallery: [
       'https://asset.vialuxury.com/assets/9cc6726a-2225-4d8a-b450-6aa407bc0d17', // 2 de ober schenkt wijn in - beleving onderweg
-      'https://asset.vialuxury.com/assets/4057689f-b08a-406e-a5f5-219efc9b81b0', // 3 gerecht onder de stolp - het 3-gangendiner
-      '/images/vakanties/002/routekaart-hanzesteden.png', // 4 kaart van de route
+      '/images/vakanties/002/routekaart-hanzesteden.png', // 3 kaart van de route
+      'https://asset.vialuxury.com/assets/4057689f-b08a-406e-a5f5-219efc9b81b0', // 4 gerecht onder de stolp - het 3-gangendiner
       { stop: 0, images: [                            // 5 Hotel Mooirivier
         '/images/vakanties/002/hotel-1.jpg',           //   het hotel aan de Vecht
       ] },
@@ -348,11 +348,10 @@ const TRIPS: TripSpec[] = [
     ],
     gallery: [
       '/images/vakanties/003/singraven.jpg',         // 2 zomerse drukte voor Huis Singraven - beleving onderweg
-      // Plek 3 hoort de belangrijkste include te zijn, maar deze reis heeft
-      // geen enkele eetfoto. Daar staat nu een hoogtepunt onderweg, zodat de
-      // routekaart wel op plek 4 uitkomt.
-      '/images/vakanties/003/rosendael.jpg',         // 3 Kasteel Rosendael - hoogtepunt onderweg
-      '/images/vakanties/003/routekaart-kastelen-landgoederen.png', // 4 kaart van de route
+      '/images/vakanties/003/routekaart-kastelen-landgoederen.png', // 3 kaart van de route
+      // Plek 4 hoort de belangrijkste include te zijn, maar deze reis heeft
+      // geen enkele eetfoto. Daar staat nu een hoogtepunt onderweg.
+      '/images/vakanties/003/rosendael.jpg',         // 4 Kasteel Rosendael - hoogtepunt onderweg
       { stop: 1, images: [                            // 5 Kasteel Engelenburg - het mooiste hotelbeeld
         '/images/vakanties/003/hotel-2.jpg',           //   het landhuis met de rozentuin
       ] },
@@ -426,8 +425,8 @@ const TRIPS: TripSpec[] = [
     ],
     gallery: [
       '/images/vakanties/004/maastricht.jpg',        // 2 terras op het Vrijthof - beleving onderweg
-      'https://asset.vialuxury.com/assets/cf21b84a-363c-4c95-9e27-fd49d5a7e564', // 3 twee gerechten met wijn - het culinaire diner
-      '/images/vakanties/004/routekaart-zuid-limburg-luxe.png', // 4 kaart van de route
+      '/images/vakanties/004/routekaart-zuid-limburg-luxe.png', // 3 kaart van de route
+      'https://asset.vialuxury.com/assets/cf21b84a-363c-4c95-9e27-fd49d5a7e564', // 4 twee gerechten met wijn - het culinaire diner
       { stop: 0, images: [                            // 5-7 Hotel Merici
         'https://asset.vialuxury.com/assets/3b6c8760-29ca-4701-85f3-32ae3ba23c24', //   het voormalige klooster vanuit het park
         'https://asset.vialuxury.com/assets/b7205338-4948-4009-b3f7-b8d6af503aeb', //   kamer met zithoek
@@ -512,8 +511,8 @@ const TRIPS: TripSpec[] = [
     routeImage: '/images/vakanties/005/route.jpg',
     gallery: [
       '/images/vakanties/cover/zuid-limburg.jpg',    // 2 marktplein met terrassen - beleving onderweg
-      'https://asset.vialuxury.com/assets/cf21b84a-363c-4c95-9e27-fd49d5a7e564', // 3 twee gerechten met wijn - het culinaire diner
-      '/images/vakanties/005/routekaart-zuid-limburg.png', // 4 kaart van de route
+      '/images/vakanties/005/routekaart-zuid-limburg.png', // 3 kaart van de route
+      'https://asset.vialuxury.com/assets/cf21b84a-363c-4c95-9e27-fd49d5a7e564', // 4 twee gerechten met wijn - het culinaire diner
       { stop: 0, images: [                            // 5-7 Hotel Merici
         'https://asset.vialuxury.com/assets/3b6c8760-29ca-4701-85f3-32ae3ba23c24', //   het voormalige klooster vanuit het park
         'https://asset.vialuxury.com/assets/b7205338-4948-4009-b3f7-b8d6af503aeb', //   kamer met zithoek
@@ -620,8 +619,8 @@ const TRIPS: TripSpec[] = [
     tags: ['auto', 'nederland', 'nieuw', 'aan-zee', 'wellness', 'steden', 'ontspanning', 'laadpaal', 'fiets-huren'],
     gallery: [
       'https://asset.vialuxury.com/assets/8f2b7b4f-9b2e-4588-a1f3-e33d2c91ef4d', // 2 de wijn wordt ingeschonken - beleving onderweg
-      'https://asset.vialuxury.com/assets/345f4ba3-8589-4b2d-aad2-b3cd196046a1', // 3 gerecht van de chef - het 3-gangendiner
-      '/images/vakanties/006/routekaart-kustroute.png',    // 4 kaart van de route
+      '/images/vakanties/006/routekaart-kustroute.png',    // 3 kaart van de route
+      'https://asset.vialuxury.com/assets/345f4ba3-8589-4b2d-aad2-b3cd196046a1', // 4 gerecht van de chef - het 3-gangendiner
       { stop: 1, images: [                            // 5 het mooiste beeld van de route; geen van de drie hotels heeft een gebouwfoto, dus een kamerbeeld
         'https://asset.vialuxury.com/assets/13edb591-9d4d-4d36-8251-33efecbf90cb', //   kamer met bubbelbad en zeezicht
       ] },
@@ -725,8 +724,8 @@ const TRIPS: TripSpec[] = [
     tags: ['fiets', 'nederland', 'nieuw', 'natuur', 'culinair', 'ontspanning', 'bagagetransfer', 'hotel-naar-hotel', 'fiets-huren', 'fietsroutes', 'gratis-parkeren'],
     gallery: [
       '/images/vakanties/007/nearby-deventer-brug.jpg', // 2 fietsers op de brug bij Deventer - beleving onderweg
-      'https://asset.vialuxury.com/assets/4057689f-b08a-406e-a5f5-219efc9b81b0', // 3 gerecht onder de stolp - het dagelijkse 3-gangendiner
-      '/images/vakanties/007/routekaart-twente-salland.png', // 4 kaart van de route
+      '/images/vakanties/007/routekaart-twente-salland.png', // 3 kaart van de route
+      'https://asset.vialuxury.com/assets/4057689f-b08a-406e-a5f5-219efc9b81b0', // 4 gerecht onder de stolp - het dagelijkse 3-gangendiner
       { stop: 2, images: [                            // 5 Landhuishotel Herikerberg - het mooiste hotelbeeld
         '/images/vakanties/007/hotel-herikerberg.jpg', //   het landhuis onder het rieten dak
       ] },
