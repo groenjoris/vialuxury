@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // Multi Hotel Trip — Mijn ViaLuxury › Boekingen › detail. Bovenaan twee blokken naast elkaar:
-// "Praktische informatie" (de speciale reispagina, link rechts) en "Boeking beheren" (wijzigen /
-// annuleren, links rechts). Daaronder de boeking over de hele breedte: per hotel foto, naam,
+// "Praktische informatie" (de speciale reispagina) en "Boeking beheren" (wijzigen / annuleren),
+// telkens de tekst over de hele breedte met de link(s) eronder. Daaronder de boeking over de hele breedte: per hotel foto, naam,
 // plaats, datums · nachten, "Inbegrepen" (kamer + alle inclusies met groene vinkjes), check-in en
 // check-out met tijd, en adres + telefoon; onderaan de prijs.
 import { useMultiHotelTripAccountBooking, money } from '~/composables-multi-hotel-trip/useMultiHotelTripAccountBooking'
@@ -26,24 +26,20 @@ useHead({ title: () => `${checkout.value.name} — Mijn ViaLuxury` })
       <span class="ad__status">Actief</span>
     </header>
 
-    <!-- Twee blokken boven de boeking: tekst links, link(s) rechts -->
+    <!-- Twee blokken boven de boeking: tekst over de hele breedte, link(s) eronder -->
     <div class="ad__top">
-      <section class="ad__card ad__card--row">
-        <div>
-          <h2 class="ad__h2">Praktische informatie</h2>
-          <p class="ad__text">Alles over je hotels, de omgeving en wat je onderweg nodig hebt staat op één handige pagina: inchecken, adres en parkeren per hotel, het reisschema met de kaart, het weer en onze tips voor in de buurt.</p>
-        </div>
-        <NuxtLink class="ad__link ad__link--side" to="/multi-hotel-trip/checkout/routes">Bekijk hier</NuxtLink>
+      <section class="ad__card">
+        <h2 class="ad__h2">Praktische informatie</h2>
+        <p class="ad__text">Alles over je hotels, de omgeving en wat je onderweg nodig hebt staat op één handige pagina: inchecken, adres en parkeren per hotel, het reisschema met de kaart, het weer en onze tips voor in de buurt.</p>
+        <p class="ad__actions"><NuxtLink class="ad__link" to="/multi-hotel-trip/checkout/routes">Bekijk hier</NuxtLink></p>
       </section>
-      <section class="ad__card ad__card--row">
-        <div>
-          <h2 class="ad__h2">Boeking beheren</h2>
-          <p class="ad__text">Tot {{ cancelDate }} (30 dagen voor aankomst) kun je de hele vakantie kosteloos annuleren.</p>
-        </div>
-        <ul class="ad__actions">
-          <li><a class="ad__link" href="#" @click.prevent>Deze boeking wijzigen</a></li>
-          <li><a class="ad__link" href="#" @click.prevent>Deze boeking annuleren</a></li>
-        </ul>
+      <section class="ad__card">
+        <h2 class="ad__h2">Boeking beheren</h2>
+        <p class="ad__text">Tot {{ cancelDate }} (30 dagen voor aankomst) kun je de hele vakantie kosteloos annuleren.</p>
+        <p class="ad__actions">
+          <a class="ad__link" href="#" @click.prevent>Deze boeking wijzigen</a>
+          <a class="ad__link" href="#" @click.prevent>Deze boeking annuleren</a>
+        </p>
       </section>
     </div>
 
@@ -121,15 +117,14 @@ useHead({ title: () => `${checkout.value.name} — Mijn ViaLuxury` })
 /* Twee blokken bovenaan: tekst links, links rechts */
 .ad__top { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; margin-bottom: 24px; }
 .ad__card { padding: 18px 20px 20px; border: 1px solid var(--color-border); border-radius: var(--radius-md); background: #fff; }
-.ad__card--row { display: flex; align-items: center; justify-content: space-between; gap: 24px; }
 .ad__h2 { margin: 0 0 6px; font-family: var(--font-heading); font-size: 21px; font-weight: 700; line-height: 1.25; }
 .ad__text { margin: 0; font-size: 15px; line-height: 1.5; color: var(--color-text-secondary); }
 .ad__link { color: var(--color-primary); font-weight: 600; text-decoration: underline; text-underline-offset: 2px; white-space: nowrap; }
 .ad__link:hover { color: var(--color-primary-hover); }
-.ad__link--side { flex-shrink: 0; font-size: 16px; }
 .ad__link--plain { color: var(--color-text-primary); white-space: normal; }
 .ad__link--plain:hover { color: var(--color-text-secondary); }
-.ad__actions { flex-shrink: 0; list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; font-size: 16px; }
+/* Link(s) onder de tekst, naast elkaar */
+.ad__actions { margin: 12px 0 0; display: flex; flex-wrap: wrap; gap: 8px 20px; font-size: 15px; }
 
 /* Hotelblok: foto links, informatie rechts, over de hele breedte */
 .ad__main { display: flex; flex-direction: column; gap: 20px; }
@@ -164,7 +159,6 @@ useHead({ title: () => `${checkout.value.name} — Mijn ViaLuxury` })
   .ad__head { flex-direction: column; gap: 12px; }
   .ad__title { font-size: 26px; }
   .ad__top { grid-template-columns: 1fr; }
-  .ad__card--row { flex-direction: column; align-items: flex-start; gap: 12px; }
   .ad__hotel { grid-template-columns: 1fr; gap: 14px; padding: 16px; }
   .ad__hotel-img { height: 180px; }
   .ad__includes, .ad__contact { grid-template-columns: 1fr; }
