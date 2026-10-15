@@ -409,9 +409,9 @@ useHead({ title: `${checkout.value.name} — Tips & routes — ViaLuxury` })
           </article>
         </div>
 
-        <!-- Fietsvakantie: bagagetransfer en routes (50/50, met foto) onder de hotels -->
+        <!-- Fietsvakantie: bagagetransfer en routes (50/50; foto links, tekst rechts) onder de hotels -->
         <div v-if="isBike" class="rp__bike">
-          <article class="rp__card">
+          <article class="rp__card rp__bike-card">
             <img class="rp__bike-img" src="/images/vakanties/fiets/bagagetransfer.jpg" alt="Koffers klaar voor de bagagetransfer" />
             <div class="rp__card-body">
               <h3 class="rp__h3 rp__h3--icon">
@@ -421,7 +421,7 @@ useHead({ title: `${checkout.value.name} — Tips & routes — ViaLuxury` })
               <p class="rp__text rp__text--last">Je bagage reist elke etappe vooruit naar het volgende hotel. Neem per persoon één koffer of tas mee en zet die op de dag van vertrek vóór 9:00 uur 's ochtends bij de receptie; aan het eind van de dag staat hij klaar in je volgende hotel. Jij fietst met alleen een dagtas. Bij het hotel krijg je meer gedetailleerde informatie over de transfer.</p>
             </div>
           </article>
-          <article class="rp__card">
+          <article class="rp__card rp__bike-card">
             <img class="rp__bike-img" src="/images/vakanties/fiets/fietsroute.jpg" alt="Fietsroute met knooppunten" />
             <div class="rp__card-body">
               <h3 class="rp__h3 rp__h3--icon">
@@ -598,9 +598,10 @@ useHead({ title: `${checkout.value.name} — Tips & routes — ViaLuxury` })
 .rp__contact-line b { font-weight: 700; margin-right: 4px; }
 .rp__contact-line .rp__info-link { font-weight: 600; }
 .rp__contact-hours { color: var(--color-text-secondary); }
-/* Fietsvakantie: bagagetransfer en routes 50/50, met foto bovenin */
+/* Fietsvakantie: bagagetransfer en routes 50/50; in elk blok de foto links en de tekst rechts */
 .rp__bike { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; margin-top: 24px; }
-.rp__bike-img { display: block; width: 100%; height: 200px; object-fit: cover; }
+.rp__bike-card { display: grid; grid-template-columns: 200px minmax(0, 1fr); align-items: stretch; }
+.rp__bike-img { display: block; width: 100%; height: 100%; min-height: 200px; object-fit: cover; }
 
 /* Reisschema naast de minimap: even hoog; de kaart vult de ruimte boven de regels, zodat
    "Bekijk kaart" precies op de onderrand van het reisschema uitkomt. */
@@ -630,7 +631,9 @@ useHead({ title: `${checkout.value.name} — Tips & routes — ViaLuxury` })
   .rp__today-temp { font-size: 28px; }
   .rp__hotels, .rp__plan, .rp__bike { grid-template-columns: 1fr; gap: 16px; }
   .rp__hotel { display: block; }
-  .rp__hotel-img, .rp__bike-img { height: 160px; }
+  .rp__hotel-img { height: 160px; }
+  .rp__bike-card { grid-template-columns: 1fr; }
+  .rp__bike-img { height: 160px; min-height: 0; }
   .rp__plan { align-items: start; }
   .rp__minimap { height: auto; --vl-minimap-aspect: 4 / 3; }
   .rp__contact { align-items: flex-start; padding: 16px; }
