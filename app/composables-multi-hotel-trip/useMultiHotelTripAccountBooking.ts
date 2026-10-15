@@ -8,6 +8,7 @@ import { tripPdpBySlug } from '~/data/mht-trip-pdp'
 import { pricing } from '~/data/mht-checkout/deal'
 import { CHECKOUT_BOOKING_FEE } from '~/data/mht-checkout/pricing'
 import { useMultiHotelTripCheckoutTrip } from '~/composables-multi-hotel-trip/useMultiHotelTripCheckoutTrip'
+import { hotelAddress, hotelPhone, hotelMapsHref } from '~/utils-multi-hotel-trip/hotelContact'
 
 export const ACCOUNT_DEMO_SLUG = 'ontdek-noord-frankrijk-en-de-opaalkust-in-7-dagen'
 /** Demo-aankomstdatum per reis (maand 0-based). */
@@ -21,6 +22,7 @@ const MONTHS = ['jan', 'feb', 'mrt', 'apr', 'mei', 'jun', 'jul', 'aug', 'sep', '
 const MONTHS_LONG = ['januari', 'februari', 'maart', 'april', 'mei', 'juni', 'juli', 'augustus', 'september', 'oktober', 'november', 'december']
 export const fmtShort = (d: Date) => `${WEEKDAYS[d.getDay()]} ${d.getDate()} ${MONTHS[d.getMonth()]}`
 export const fmtLong = (d: Date) => `${WEEKDAYS_LONG[d.getDay()]} ${d.getDate()} ${MONTHS_LONG[d.getMonth()]} ${d.getFullYear()}`
+export const fmtLongNoYear = (d: Date) => `${WEEKDAYS_LONG[d.getDay()]} ${d.getDate()} ${MONTHS_LONG[d.getMonth()]}`
 
 /** Boekingsnummer: vast per reis (demo; zelfde formule als op de bevestigingspagina). */
 export function bookingRefFor(slug: string) {
@@ -70,7 +72,7 @@ export function useMultiHotelTripAccountBooking(slugOverride?: string) {
   const firstName = computed(() => guest.value?.firstName || 'Rijo')
   const email = computed(() => guest.value?.email || 'rijo.verburg@gmail.com')
 
-  /** Per hotel: datums, in-/uitchecktijd en alle inclusies (voor de detailpagina). */
+  /** Per hotel: datums, in-/uitchecktijd, alle inclusies en adres/telefoon (voor de detailpagina). */
   const stays = computed(() => {
     let offset = 0
     return checkout.value.hotels.map((h, i) => {
@@ -84,9 +86,15 @@ export function useMultiHotelTripAccountBooking(slugOverride?: string) {
         ...h,
         from: fmtShort(from),
         to: fmtShort(to),
+        /** "dinsdag 18 mei t/m donderdag 20 mei" */
+        dateLine: `${fmtLongNoYear(from)} t/m ${fmtLongNoYear(to)}`,
+        region: stop?.region ?? '',
         checkInTime: stop?.checkIn ?? '15:00',
         checkOutTime: lateOut ? `${lateOut[1]}:${lateOut[2]}` : '11:00',
         includes,
+        address: hotelAddress(h.name, h.city, stop?.region),
+        phone: hotelPhone(i),
+        mapsHref: hotelMapsHref(h.name, h.city),
       }
     })
   })

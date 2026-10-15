@@ -21,6 +21,7 @@ import type { TripRouteLeg, TripMapStop } from '~/utils-multi-hotel-trip/tripMap
 import { isTripSight } from '~/utils-multi-hotel-trip/tripSights'
 import { nightsLabel } from '~/utils-multi-hotel-trip/plural'
 import { formatDateWeekdayShort } from '~/utils-multi-hotel-trip/formatDate'
+import { hotelAddress, hotelPhone, hotelMapsHref } from '~/utils-multi-hotel-trip/hotelContact'
 import { useMultiHotelTripCheckoutTrip } from '~/composables-multi-hotel-trip/useMultiHotelTripCheckoutTrip'
 import { useMultiHotelTripI18n } from '~/composables-multi-hotel-trip/useMultiHotelTripI18n'
 import { buildTripDaysView, tripDistanceLabelFn, tripDurationLabel } from '~/composables-multi-hotel-trip/useMultiHotelTripDaysView'
@@ -153,11 +154,6 @@ const legs = computed<LegItem[]>(() => {
 
 /* ── Praktische informatie per hotel: datums, check-in (datum + tijd), check-out, adres,
    telefoon, parkeren, opladen. Adressen, telefoonnummers en laadpunten zijn placeholders. ── */
-const ADDRESSES: Record<string, string> = {
-  'Château Tilques': 'Rue du Château, 62500 Tilques',
-  'Château Cléry': 'Rue du Château, 62360 Hesdin-l\'Abbé',
-  'Hotel Royal Beaulaincourt': 'Rue de Beaulaincourt, 62400 Béthune',
-}
 const stays = computed(() => {
   let offset = 0
   return (trip.value?.stops ?? []).map((s, i) => {
@@ -173,9 +169,9 @@ const stays = computed(() => {
       nightsLabel: nightsLabel(s.nights, lang.value),
       checkInTime: s.checkIn,
       checkOutTime: lateOut ? `${lateOut[1]}:${lateOut[2]}` : '11:00',
-      address: ADDRESSES[s.hotelName] ?? `${s.city}, ${s.region}`,
-      mapsHref: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${s.hotelName} ${s.city}`)}`,
-      phone: `+33 3 21 12 34 5${i + 1}`,
+      address: hotelAddress(s.hotelName, s.city, s.region),
+      mapsHref: hotelMapsHref(s.hotelName, s.city),
+      phone: hotelPhone(i),
       parking: incl.find(x => /parkeren/i.test(x)) ?? 'Gratis parkeren bij het hotel',
       charging: i === 0 ? 'Laadpunt bij het hotel' : `Laadpunt op ${i + 1} km`,
     }
