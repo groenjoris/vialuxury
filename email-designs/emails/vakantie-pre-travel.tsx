@@ -20,7 +20,8 @@ import { baseUrl, font, newsletter, type EmailMode } from "../components/theme";
 
 // Pre-travel: veertien dagen voor vertrek van een multi-hotel vakantie. Checklist
 // ("Niet vergeten"), inchecken bij het eerste hotel (adres, route, parkeren), wat je
-// nog betaalt, de persoonlijke pagina met routes en tips, en veelgestelde vragen.
+// nog betaalt, de persoonlijke pagina met praktische informatie en tips, inloggen op je
+// account (boeking beheren), en veelgestelde vragen.
 // Header, logo, Trustpilot en footer uit het nieuwsbrief-template.
 
 type Props = {
@@ -48,9 +49,11 @@ type Props = {
   tollEstimate: string;
   /** Hoofdfoto van de reis bovenin. */
   heroImage: string;
-  /** Drie thumbs boven "De mooiste uitjes en routes": twee uitjes en de routekaart. */
+  /** Drie thumbs boven "Praktische informatie en tips": twee uitjes en de routekaart (alle 3:2, even hoog). */
   thumbs: { image: string; alt: string }[];
   routesUrl: string;
+  /** Accountomgeving (inloggen met je e-mail, eenmalige code). */
+  accountUrl: string;
   bookingUrl: string;
   mode?: EmailMode;
 };
@@ -89,6 +92,7 @@ export default function VakantiePreTravel({
   heroImage,
   thumbs,
   routesUrl,
+  accountUrl,
   bookingUrl,
   mode = "light",
 }: Props) {
@@ -120,7 +124,7 @@ export default function VakantiePreTravel({
     },
     {
       q: "Kan ik nog wijzigen of annuleren?",
-      a: `Kosteloos annuleren kon tot 30 dagen voor aankomst. Wijzigen van een datum of het aantal personen is vaak nog mogelijk; mail ons op service@vialuxury.com met boekingsnummer ${bookingNumber}.`,
+      a: `Kosteloos annuleren kon tot 30 dagen voor aankomst. Wijzigen van een datum of het aantal personen is vaak nog mogelijk: regel het in je account (log in met je e-mail) of mail ons op service@vialuxury.com met boekingsnummer ${bookingNumber}.`,
     },
     {
       q: "Hoe werkt het doorreizen naar het volgende hotel?",
@@ -221,20 +225,20 @@ export default function VakantiePreTravel({
             </Section>
           </Section>
 
-          {/* De mooiste routes en leukste uitjes */}
+          {/* Praktische informatie en tips: de persoonlijke reispagina */}
           <Section className="m-pad" style={{ padding: "32px 32px 0" }}>
             <Section style={{ backgroundColor: beige, borderRadius: "8px", padding: "20px" }}>
               <Row>
                 {thumbs.map((th, i) => (
-                  <Column key={th.alt} className="stack m-nopad" style={{ width: "33.33%", paddingLeft: i === 0 ? 0 : "6px", paddingRight: i === thumbs.length - 1 ? 0 : "6px", verticalAlign: "top" }}>
-                    <Img src={th.image} alt={th.alt} width="178" height="120" className="m-thumb" style={{ display: "block", width: "100%", height: "auto", borderRadius: "6px", objectFit: "cover", marginBottom: "8px" }} />
+                  <Column key={th.alt} className="stack m-nopad" style={{ width: "33.33%", paddingLeft: i === 0 ? 0 : i === thumbs.length - 1 ? "8px" : "4px", paddingRight: i === thumbs.length - 1 ? 0 : i === 0 ? "8px" : "4px", verticalAlign: "top" }}>
+                    <Img src={th.image} alt={th.alt} width="178" height="119" className="m-thumb" style={{ display: "block", width: "100%", height: "auto", borderRadius: "6px", objectFit: "cover", marginBottom: "8px" }} />
                   </Column>
                 ))}
               </Row>
-              <Text className="m-kop" style={{ ...kop, marginTop: "8px" }}>De mooiste uitjes en routes</Text>
+              <Text className="m-kop" style={{ ...kop, marginTop: "8px" }}>Praktische informatie en tips</Text>
               <Text style={body14}>
-                We hebben een pagina speciaal voor jouw reis gemaakt: de route tussen de hotels, routes rondom elk hotel en de
-                leukste uitjes, met pdf's en gpx-bestanden voor je navigatie, het voorbeeld reisschema en de weersverwachting.
+                We hebben een pagina speciaal voor jouw reis gemaakt: per hotel de praktische informatie (inchecken, adres,
+                parkeren en telefoon), het voorbeeld reisschema met de kaart, de weersverwachting en onze tips voor in de buurt.
               </Text>
               <Button
                 href={routesUrl}
@@ -251,7 +255,36 @@ export default function VakantiePreTravel({
                   marginTop: "12px",
                 }}
               >
-                Bekijk ze op jouw speciale pagina &gt;
+                Bekijk jouw speciale pagina &gt;
+              </Button>
+            </Section>
+          </Section>
+
+          {/* Boeking beheren: inloggen op je account met een eenmalige code */}
+          <Section className="m-pad" style={{ padding: "32px 32px 0" }}>
+            <Section style={{ border: `1px solid ${line}`, borderRadius: "8px", padding: "20px" }}>
+              <Text className="m-kop" style={kop}>Boeking wijzigen of jouw boeking beheren</Text>
+              <Text style={body14}>
+                In je ViaLuxury-account vind je je boeking terug en regel je alles zelf: gegevens wijzigen of je boeking annuleren.
+                Een wachtwoord heb je niet nodig: log in met je e-mailadres en je ontvangt een eenmalige code waarmee je direct
+                in je accountomgeving bent.
+              </Text>
+              <Button
+                href={accountUrl}
+                className="m-btn"
+                style={{
+                  backgroundColor: c.cta,
+                  borderRadius: "6px",
+                  color: "#FFFFFF",
+                  fontFamily: font.body,
+                  fontSize: "14px",
+                  fontWeight: 700,
+                  padding: "10px 16px",
+                  textDecoration: "none",
+                  marginTop: "12px",
+                }}
+              >
+                Log in met je e-mail &gt;
               </Button>
             </Section>
           </Section>
@@ -305,5 +338,7 @@ VakantiePreTravel.PreviewProps = {
     { image: `${baseUrl}/images/mail/vakantie/routekaart.jpg`, alt: "Routekaart van de vakantie" },
   ],
   routesUrl: "https://vialuxury.vercel.app/multi-hotel-trip/checkout/routes",
+  // Accountomgeving volgt nog in het prototype; tot die tijd naar de bevestigingspagina.
+  accountUrl: "https://vialuxury.vercel.app/multi-hotel-trip/checkout/bevestiging",
   bookingUrl: "https://vialuxury.vercel.app/multi-hotel-trip/checkout/bevestiging",
 } satisfies Props;
