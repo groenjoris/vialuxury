@@ -4,18 +4,18 @@
  * vetgedrukt slotdeel, zoals "Experience more" op de homepage. Keuze wordt in localStorage
  * bewaard zodat hij tussen pagina's blijft staan.
  */
-export type TripSloganId = 'adventure' | 'moois' | 'hoek' | 'experience' | 'auto'
+export type TripSloganId = 'adventure' | 'moois' | 'hoek' | 'experience' | 'vliegtuig'
 
 /** `short`: de kern van de slogan (max. drie woorden) voor de dropdown in het schakelaarpaneel. */
 export const TRIP_SLOGANS: { id: TripSloganId; title: string; em: string; short: string }[] = [
-  { id: 'moois', title: 'Er is nog zoveel moois te', em: 'ontdekken', short: 'Zoveel moois' },
+  { id: 'moois', title: 'Nog zoveel moois te', em: 'ontdekken', short: 'Zoveel moois' },
   { id: 'adventure', title: 'Adventure', em: 'more', short: 'Adventure more' },
   { id: 'hoek', title: 'Het avontuur is om de', em: 'hoek', short: 'Om de hoek' },
   { id: 'experience', title: 'Experience', em: 'more adventures', short: 'More adventures' },
-  { id: 'auto', title: 'Haal meer uit je', em: 'auto', short: 'Meer uit auto' },
+  { id: 'vliegtuig', title: 'Laat het vliegtuig', em: 'staan', short: 'Laat het vliegtuig' },
 ]
 
-// v2: sinds "Er is nog zoveel moois te ontdekken" de standaard is (oude keuzes vervallen).
+// v2: sinds "Nog zoveel moois te ontdekken" de standaard is (oude keuzes vervallen).
 const STORAGE_KEY = 'vl_mht_trip_slogan_v2'
 const isId = (v: unknown): v is TripSloganId => TRIP_SLOGANS.some(s => s.id === v)
 
