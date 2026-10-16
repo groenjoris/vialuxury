@@ -4,7 +4,7 @@
  * vetgedrukt slotdeel, zoals "Experience more" op de homepage. Keuze wordt in localStorage
  * bewaard zodat hij tussen pagina's blijft staan.
  */
-export type TripSloganId = 'adventure' | 'moois' | 'hoek' | 'experience' | 'vliegtuig'
+export type TripSloganId = 'adventure' | 'moois' | 'hoek' | 'experience' | 'vliegtuig' | 'geluk' | 'eigenland' | 'nederland' | 'wow' | 'streken' | 'provincie'
 
 /** `short`: de kern van de slogan (max. drie woorden) voor de dropdown in het schakelaarpaneel. */
 export const TRIP_SLOGANS: { id: TripSloganId; title: string; em: string; short: string }[] = [
@@ -13,6 +13,12 @@ export const TRIP_SLOGANS: { id: TripSloganId; title: string; em: string; short:
   { id: 'hoek', title: 'Het avontuur is om de', em: 'hoek', short: 'Om de hoek' },
   { id: 'experience', title: 'Experience', em: 'more adventures', short: 'More adventures' },
   { id: 'vliegtuig', title: 'Laat het vliegtuig', em: 'staan', short: 'Laat het vliegtuig' },
+  { id: 'geluk', title: 'Het geluk is om de', em: 'hoek', short: 'Het geluk' },
+  { id: 'eigenland', title: 'Op avontuur in', em: 'eigen land', short: 'Eigen land' },
+  { id: 'nederland', title: 'Nederland oh', em: 'Nederland', short: 'Nederland oh' },
+  { id: 'wow', title: 'Van wow naar', em: 'wow', short: 'Wow naar wow' },
+  { id: 'streken', title: 'De mooiste streken, de', em: 'mooiste hotels', short: 'Mooiste streken' },
+  { id: 'provincie', title: 'De provincie die je nog moet', em: 'ontdekken', short: 'De provincie' },
 ]
 
 // v2: sinds "Nog zoveel moois te ontdekken" de standaard is (oude keuzes vervallen).
