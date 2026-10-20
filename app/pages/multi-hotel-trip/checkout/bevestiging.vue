@@ -20,8 +20,11 @@ import { CHECKOUT_BOOKING_FEE } from '~/data/mht-checkout/pricing'
 import { useMultiHotelTripCheckoutTrip } from '~/composables-multi-hotel-trip/useMultiHotelTripCheckoutTrip'
 import { useMultiHotelTripMobileUa } from '~/composables-multi-hotel-trip/useMultiHotelTripMobileUa'
 import { bookingRefFor } from '~/utils-multi-hotel-trip/bookingRef'
+import { useDemoBookingFromQuery } from '~/composables-multi-hotel-trip/useMultiHotelTripDemoBooking'
 
 const isMobileUa = useMultiHotelTripMobileUa()
+// Vanuit de flow: `?demo=auto|fiets&load=1` zet de demo-boeking (en de preloader) klaar bij het laden.
+useDemoBookingFromQuery()
 
 /* ── Boekingsgegevens (gedeelde checkout-state; zonder checkout de Opaalkust-demo) ── */
 const DEMO_SLUG = 'ontdek-noord-frankrijk-en-de-opaalkust-in-7-dagen'
@@ -143,6 +146,9 @@ const loadSteps = computed(() => [
 onMounted(() => {
   if (!loading.value) return
   loadFlag.value = false
+  // `load=1` uit de URL halen: de preloader hoort bij de binnenkomst, niet bij een refresh.
+  const route = useRoute()
+  if (route.query.load) useRouter().replace({ query: { ...route.query, load: undefined } })
   const per = LOAD_MS / loadSteps.value.length
   const tick = setInterval(() => { loadStep.value = Math.min(loadStep.value + 1, loadSteps.value.length - 1) }, per)
   setTimeout(() => { clearInterval(tick); loading.value = false; window.scrollTo(0, 0) }, LOAD_MS)

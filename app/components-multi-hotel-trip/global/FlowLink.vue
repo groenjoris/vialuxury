@@ -1,7 +1,12 @@
 <template>
   <!-- Prototype-navigatie: klein linkje linksboven op elk scherm en elke mail van de
-       post-bookingflow, terug naar het flowschema (niet naar het startscherm). -->
-  <NuxtLink class="flow-link" to="/multi-hotel-trip/flow" title="Terug naar de post-bookingflow">‹ flow</NuxtLink>
+       post-bookingflow, terug naar het flowschema (niet naar het startscherm).
+       Bewust een gewone <a> (volledige paginalading) en geen NuxtLink: bij een client-side
+       navigatie wordt de zware pagina (kaarten, reisschema, header) in de klik-handler
+       afgebroken en de flow opgebouwd vóór de volgende paint — dat gaf een INP van 600 ms+
+       op de live site. Een echte navigatie houdt de klik licht en reset meteen de demo-state,
+       zoals een terugkeer naar het startscherm ook doet. -->
+  <a class="flow-link" href="/multi-hotel-trip/flow" title="Terug naar de post-bookingflow">‹ flow</a>
 </template>
 
 <style scoped>

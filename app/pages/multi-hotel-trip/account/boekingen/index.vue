@@ -2,7 +2,10 @@
 // Multi Hotel Trip — Mijn ViaLuxury › Boekingen: overzicht van je boekingen (prototype: één
 // actieve vakantieboeking) met statusfilters; de kaart linkt naar de detailpagina van de boeking.
 import { useMultiHotelTripAccountBooking } from '~/composables-multi-hotel-trip/useMultiHotelTripAccountBooking'
+import { useDemoBookingFromQuery } from '~/composables-multi-hotel-trip/useMultiHotelTripDemoBooking'
 
+// Vanuit de flow: `?demo=auto|fiets` zet de demo-boeking klaar bij het laden.
+useDemoBookingFromQuery()
 const { checkout, dateRange, nights, persons, roomsPerHotel } = useMultiHotelTripAccountBooking()
 
 type Filter = 'actief' | 'aankomend' | 'afgerond' | 'geannuleerd' | 'alle'

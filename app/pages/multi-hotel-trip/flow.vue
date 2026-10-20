@@ -5,38 +5,20 @@
 // accountomgeving: Mijn ViaLuxury › Boekingen), eronder de e-mails. De incheckmails gaan de dag vóór het inchecken: een
 // oranje bolletje vlak voor elk hotelbolletje. Kaartjes zijn wit met icoon en titel; de
 // reispagina heeft de varianten Auto en Fiets (chips). Nog te maken onderdelen staan gestippeld.
-// Klikken opent de pagina of mail; de pagina's krijgen daarbij een demo-boeking (Opaalkust of
-// de fietsvakantie); de incheckmails hebben per variant een eigen mail. Desktop-first (vaste tekenruimte van 1120px), schaalt mee tot een minimum
+// Klikken opent de pagina of mail als gewone link; de pagina's lezen de demo-boeking (Opaalkust
+// of de fietsvakantie) uit `?demo=`; de incheckmails hebben per variant een eigen mail. Desktop-first (vaste tekenruimte van 1120px), schaalt mee tot een minimum
 // en scrolt daarna horizontaal.
-import { tripCheckoutBySlug } from '~/data/mht-checkout/trip'
-import { pricing } from '~/data/mht-checkout/deal'
-import { useMultiHotelTripCheckoutTrip } from '~/composables-multi-hotel-trip/useMultiHotelTripCheckoutTrip'
+import { demoHref, type DemoVariant } from '~/composables-multi-hotel-trip/useMultiHotelTripDemoBooking'
 
 useHead({ title: 'Post-bookingflow — ViaLuxury' })
 
-/* ── Demo-boekingen per variant ── */
-type VariantId = 'auto' | 'fiets'
-const DEMOS: Record<VariantId, { slug: string; checkIn: string; checkOut: string; checkInYmd: { year: number; month: number; day: number } }> = {
-  auto: { slug: 'ontdek-noord-frankrijk-en-de-opaalkust-in-7-dagen', checkIn: 'di 18 mei', checkOut: 'ma 24 mei', checkInYmd: { year: 2027, month: 4, day: 18 } },
-  fiets: { slug: 'fietsvakantie-twente-en-salland-delden-raalte-markelo', checkIn: 'ma 7 jun', checkOut: 'zo 13 jun', checkInYmd: { year: 2027, month: 5, day: 7 } },
-}
-/** Boeking klaarzetten (reis, datums, kamerkeuze met flexibel annuleren, gast) en navigeren;
- *  de bevestigingspagina krijgt optioneel de preloader. */
-function openWithBooking(to: string, variant: VariantId = 'auto', preload = false) {
-  const demo = DEMOS[variant]
-  const checkout = tripCheckoutBySlug(demo.slug)
-  const { isTrip, slug, day } = useMultiHotelTripCheckoutTrip()
-  isTrip.value = true
-  slug.value = demo.slug
-  day.value = { price: checkout?.price ?? 0, checkIn: demo.checkIn, checkOut: demo.checkOut, checkInYmd: demo.checkInYmd }
-  const flex = pricing.flexibilityPerRoom * (checkout?.hotels.length ?? 3)
-  useState<{ baseId: string; rateKey: 'nonrefundable' | 'flexible'; price: number; priceWas: number; quantity: number }[]>('mht-checkout-selection', () => []).value =
-    [{ baseId: 'trip', rateKey: 'flexible', price: (checkout?.price ?? 0) + flex, priceWas: (checkout?.priceWas ?? 0) + flex, quantity: 1 }]
-  useState<{ firstName: string; email: string } | null>('mht-checkout-guest', () => null).value = { firstName: 'Rijo', email: 'rijo.verburg@gmail.com' }
-  if (preload) useState<boolean>('mht-checkout-confirm-load', () => false).value = true
-  navigateTo(to)
-}
-const go = (to: string) => navigateTo(to)
+/* Alle kaartjes zijn gewone links (volledige paginalading). De pagina's lezen de demo-variant uit
+   de URL (`?demo=auto|fiets`, zie useMultiHotelTripDemoBooking). Een client-side routewissel
+   vanuit de klik-handler blokkeerde de UI ruim een seconde (INP); een echte navigatie is licht. */
+const BEVESTIGING = '/multi-hotel-trip/checkout/bevestiging'
+const ROUTES = '/multi-hotel-trip/checkout/routes'
+const ACCOUNT = '/multi-hotel-trip/account/boekingen'
+const open = (href: string) => { if (import.meta.client) window.location.assign(href) }
 
 /* ── Tekenruimte ── */
 const W = 1120
@@ -54,7 +36,7 @@ const CARD_W_SM = 158
 const PAGE_H = 116
 const MAIL_H = 100
 
-interface Variant { id: VariantId; label: string; icon: 'car' | 'bike'; /** Eigen link per variant (mails). */ to?: string }
+interface Variant { id: DemoVariant; label: string; icon: 'car' | 'bike'; href: string }
 interface Card {
   id: string
   kind: 'pagina' | 'email'
@@ -67,21 +49,23 @@ interface Card {
   y: number
   w: number
   h: number
-  /** Klik: pagina (met demo-boeking) of mailpreview. */
-  to?: string
-  seeded?: boolean
-  preload?: boolean
+  /** Klik: de pagina (met demo-variant in de URL) of de mailpreview. */
+  href?: string
   variants?: Variant[]
 }
+const autoFiets = (path: string, preload = false): Variant[] => [
+  { id: 'auto', label: 'Auto', icon: 'car', href: demoHref(path, 'auto', preload) },
+  { id: 'fiets', label: 'Fiets', icon: 'bike', href: demoHref(path, 'fiets', preload) },
+]
 const pages: Card[] = [
-  { id: 'bevestiging', kind: 'pagina', title: 'Bevestigingspagina', x: COL.booking - CARD_W / 2, y: PAGES_BOTTOM - PAGE_H, w: CARD_W, h: PAGE_H, to: '/multi-hotel-trip/checkout/bevestiging', seeded: true, preload: true },
-  { id: 'routes', kind: 'pagina', title: 'Tips & routes', x: COL.prep - CARD_W / 2, y: PAGES_BOTTOM - PAGE_H, w: CARD_W, h: PAGE_H, to: '/multi-hotel-trip/checkout/routes', seeded: true, variants: [{ id: 'auto', label: 'Auto', icon: 'car' }, { id: 'fiets', label: 'Fiets', icon: 'bike' }] },
-  { id: 'account', kind: 'pagina', title: 'Accountomgeving', sub: 'De hele reis beschikbaar', x: W - 20 - CARD_W, y: PAGES_BOTTOM - PAGE_H, w: CARD_W, h: PAGE_H, to: '/multi-hotel-trip/account/boekingen', seeded: true, variants: [{ id: 'auto', label: 'Auto', icon: 'car' }, { id: 'fiets', label: 'Fiets', icon: 'bike' }] },
+  { id: 'bevestiging', kind: 'pagina', title: 'Bevestigingspagina', x: COL.booking - CARD_W / 2, y: PAGES_BOTTOM - PAGE_H, w: CARD_W, h: PAGE_H, href: demoHref(BEVESTIGING, 'auto', true), variants: autoFiets(BEVESTIGING, true) },
+  { id: 'routes', kind: 'pagina', title: 'Tips & routes', x: COL.prep - CARD_W / 2, y: PAGES_BOTTOM - PAGE_H, w: CARD_W, h: PAGE_H, href: demoHref(ROUTES, 'auto'), variants: autoFiets(ROUTES) },
+  { id: 'account', kind: 'pagina', title: 'Accountomgeving', sub: 'De hele reis beschikbaar', x: W - 20 - CARD_W, y: PAGES_BOTTOM - PAGE_H, w: CARD_W, h: PAGE_H, href: demoHref(ACCOUNT, 'auto'), variants: autoFiets(ACCOUNT) },
 ]
 const mails: Card[] = [
-  { id: 'mail-bevestiging', kind: 'email', title: 'Boekingsbevestiging', x: COL.booking - CARD_W / 2, y: MAILS_Y, w: CARD_W, h: MAIL_H, to: '/multi-hotel-trip/emails/vakantie-bevestiging' },
-  { id: 'mail-pretravel', kind: 'email', title: 'Pre-travel', x: COL.prep - CARD_W / 2, y: MAILS_Y, w: CARD_W, h: MAIL_H, to: '/multi-hotel-trip/emails/vakantie-pre-travel' },
-  ...[COL.h1, COL.h2, COL.h3].map((x, i): Card => ({ id: `mail-h${i + 1}`, kind: 'email', title: `Incheck hotel ${i + 1}`, x: x - MAIL_BEFORE - CARD_W_SM / 2, y: MAILS_Y, w: CARD_W_SM, h: MAIL_H, to: `/multi-hotel-trip/emails/vakantie-incheck-hotel-${i + 1}`, variants: [{ id: 'auto', label: 'Auto', icon: 'car', to: `/multi-hotel-trip/emails/vakantie-incheck-hotel-${i + 1}` }, { id: 'fiets', label: 'Fiets', icon: 'bike', to: `/multi-hotel-trip/emails/vakantie-incheck-hotel-${i + 1}-fiets` }] })),
+  { id: 'mail-bevestiging', kind: 'email', title: 'Boekingsbevestiging', x: COL.booking - CARD_W / 2, y: MAILS_Y, w: CARD_W, h: MAIL_H, href: '/multi-hotel-trip/emails/vakantie-bevestiging' },
+  { id: 'mail-pretravel', kind: 'email', title: 'Pre-travel', x: COL.prep - CARD_W / 2, y: MAILS_Y, w: CARD_W, h: MAIL_H, href: '/multi-hotel-trip/emails/vakantie-pre-travel' },
+  ...[COL.h1, COL.h2, COL.h3].map((x, i): Card => ({ id: `mail-h${i + 1}`, kind: 'email', title: `Incheck hotel ${i + 1}`, x: x - MAIL_BEFORE - CARD_W_SM / 2, y: MAILS_Y, w: CARD_W_SM, h: MAIL_H, href: `/multi-hotel-trip/emails/vakantie-incheck-hotel-${i + 1}`, variants: [{ id: 'auto', label: 'Auto', icon: 'car', href: `/multi-hotel-trip/emails/vakantie-incheck-hotel-${i + 1}` }, { id: 'fiets', label: 'Fiets', icon: 'bike', href: `/multi-hotel-trip/emails/vakantie-incheck-hotel-${i + 1}-fiets` }] })),
 ]
 const cards = [...pages, ...mails]
 /** Mijlpalen: oranje = moment van een pagina/mail, zwart met hotelicoon = inchecken. */
@@ -131,11 +115,9 @@ onMounted(() => {
 })
 onBeforeUnmount(() => ro?.disconnect())
 
-function onCard(c: Card, variant: VariantId = 'auto') {
-  const to = c.variants?.find(v => v.id === variant)?.to ?? c.to
-  if (!to) return
-  if (c.seeded) openWithBooking(to, variant, !!c.preload)
-  else go(to)
+function onCard(c: Card, variant?: DemoVariant) {
+  const href = (variant && c.variants?.find(v => v.id === variant)?.href) ?? c.href
+  if (href) open(href)
 }
 </script>
 
@@ -180,10 +162,10 @@ function onCard(c: Card, variant: VariantId = 'auto') {
               v-for="c in cards"
               :key="c.id"
               class="fl__card"
-              :class="[`fl__card--${c.kind}`, { 'fl__card--volgt': c.volgt, 'fl__card--link': !!c.to, 'fl__card--sm': c.w < 200 }]"
+              :class="[`fl__card--${c.kind}`, { 'fl__card--volgt': c.volgt, 'fl__card--link': !!c.href, 'fl__card--sm': c.w < 200 }]"
               :style="{ left: `${c.x}px`, top: `${c.y}px`, width: `${c.w}px`, height: `${c.h}px` }"
-              :role="c.to ? 'link' : undefined"
-              :tabindex="c.to ? 0 : undefined"
+              :role="c.href ? 'link' : undefined"
+              :tabindex="c.href ? 0 : undefined"
               @click="onCard(c)"
               @keydown.enter="onCard(c)"
             >

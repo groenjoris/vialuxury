@@ -5,7 +5,9 @@
 // plaats, datums · nachten, "Inbegrepen" (kamer + alle inclusies met groene vinkjes), check-in en
 // check-out met tijd, en adres + telefoon; onderaan de prijs.
 import { useMultiHotelTripAccountBooking, money } from '~/composables-multi-hotel-trip/useMultiHotelTripAccountBooking'
+import { useDemoBookingFromQuery } from '~/composables-multi-hotel-trip/useMultiHotelTripDemoBooking'
 
+useDemoBookingFromQuery()
 const route = useRoute()
 const id = computed(() => String(route.params.id ?? ''))
 const { checkout, stays, dateRangeLong, nights, persons, roomsPerHotel, bookingRef, tripTotal, total, bookingFee, cancelDate } = useMultiHotelTripAccountBooking(id.value)

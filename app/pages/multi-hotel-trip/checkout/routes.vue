@@ -23,6 +23,7 @@ import { nightsLabel } from '~/utils-multi-hotel-trip/plural'
 import { formatDateWeekdayShort } from '~/utils-multi-hotel-trip/formatDate'
 import { hotelAddress, hotelPhone, hotelMapsHref } from '~/utils-multi-hotel-trip/hotelContact'
 import { bookingRefFor } from '~/utils-multi-hotel-trip/bookingRef'
+import { useDemoBookingFromQuery } from '~/composables-multi-hotel-trip/useMultiHotelTripDemoBooking'
 import { useMultiHotelTripCheckoutTrip } from '~/composables-multi-hotel-trip/useMultiHotelTripCheckoutTrip'
 import { useMultiHotelTripI18n } from '~/composables-multi-hotel-trip/useMultiHotelTripI18n'
 import { buildTripDaysView, tripDistanceLabelFn, tripDurationLabel } from '~/composables-multi-hotel-trip/useMultiHotelTripDaysView'
@@ -33,6 +34,8 @@ import type { TripCityChapter, TripCityAttraction } from '~/components-multi-hot
 import type { TripHotelModalData } from '~/components-multi-hotel-trip/deal/TripHotelDetails.vue'
 
 const { t, localized } = useMultiHotelTripI18n()
+// Vanuit de flow: `?demo=auto|fiets` zet de demo-boeking klaar bij het laden.
+useDemoBookingFromQuery()
 // Dag- en nachtlabels in het Nederlands (de reispagina is alleen Nederlandstalig).
 const lang = computed<'nl'>(() => 'nl')
 
