@@ -464,5 +464,6 @@ VakantieBevestiging.PreviewProps = {
   tripPrice: "€964",
   bookingFee: "€27,50",
   total: "€991,50",
-  bookingUrl: "https://vialuxury.vercel.app/mvp-trip/account/boekingen/ontdek-noord-frankrijk-en-de-opaalkust-in-7-dagen",
+  // MVP: geen detailpagina per boeking, de link gaat naar het boekingenoverzicht.
+  bookingUrl: "https://vialuxury.vercel.app/mvp-trip/account/boekingen",
 } satisfies Props;

@@ -264,7 +264,8 @@ useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
             <section class="card">
               <h2 class="cf__h2">Boeking terugvinden</h2>
               <p class="t-body c-grey">Je boeking staat in je ViaLuxury-account op <b>{{ email }}</b>. Inloggen doe je zonder wachtwoord: je krijgt een inloglink per mail.</p>
-              <NuxtLink class="cf__link cf__cta-link" :to="`/mvp-trip/account/boekingen/${trip.slug}`">Bekijk je boeking</NuxtLink>
+              <!-- MVP: geen detailpagina per boeking, de link gaat naar het boekingenoverzicht. -->
+              <NuxtLink class="cf__link cf__cta-link" to="/mvp-trip/account/boekingen">Bekijk je boeking</NuxtLink>
             </section>
 
             <section class="cf__gift" aria-label="Cadeautip">
