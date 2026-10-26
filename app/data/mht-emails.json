@@ -50,7 +50,7 @@
   {
     "slug": "mvp-vakantie-bevestiging",
     "title": "MVP — Boekingsbevestiging vakantie",
-    "description": "MVP-versie van de boekingsbevestiging (kopie van de volledige versie, nog uit te kleden): kassabon per hotel, flexibel annuleren, prijs, tips voor je reis, boeking terugvinden, cadeaukaart en FAQ.",
+    "description": "MVP-versie van de boekingsbevestiging: kassabon per hotel (met alle inclusies), flexibel annuleren, prijs, boeking terugvinden, cadeaukaart en FAQ — zonder het blok Tips voor je reis.",
     "section": "designs"
   }
 ]

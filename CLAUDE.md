@@ -38,10 +38,12 @@ Post-bookingflow van de MVP (sinds 2026-10-26): alleen de bevestigingspagina
 (`app/pages/mvp-trip/checkout/bevestiging.vue`), de boekingsbevestigingsmail
 (`email-designs/emails/mvp-vakantie-bevestiging.tsx`, slug `mvp-vakantie-bevestiging`, preview
 `/mvp-trip/emails/<slug>`) en de accountomgeving (`app/pages/mvp-trip/account/*`) — eenmalige
-kopieën van de MHT-versies die los van MHT worden uitgekleed. Het MVP-schema staat op dezelfde
-flowpagina als de volledige versie (`/multi-hotel-trip/flow`, boven de lijn); de flow-pil op de
-MVP-pagina's verwijst daar ook naartoe. Er is geen MVP-tipspagina: links daarnaartoe verwijzen
-voorlopig naar de MHT-pagina.
+kopieën van de MHT-versies die los van MHT worden uitgekleed (MVP-bevestigingspagina: alleen
+het cirkeltje als preloader, geen route op de foto, geen tipsblok; MVP-mail: geen tipsblok). De
+MVP-pagina's en -mail dragen linksboven een oranje stikkertje "MVP" (`MvpTripFlowLink`). Het
+MVP-schema staat op dezelfde flowpagina als de volledige versie (`/multi-hotel-trip/flow`, boven
+de lijn); de flow-pil op de MVP-pagina's verwijst daar ook naartoe. Er is geen MVP-tipspagina;
+alleen de MVP-accountdetailpagina linkt er nog naar (naar de MHT-pagina).
 
 ## Multi Hotel Trip (MHT) = kopie van R1 — houd ze in sync
 

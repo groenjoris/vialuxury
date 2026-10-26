@@ -1,6 +1,10 @@
 <script setup lang="ts">
-// MVP 12-11-2026 — kopie van de bevestigingspagina van Multi Hotel Trip (nog uit te kleden
-// naar de MVP-definitie; wijzigingen alleen hier, de volledige versie blijft ongewijzigd).
+// MVP 12-11-2026 — kopie van de bevestigingspagina van Multi Hotel Trip, uitgekleed naar de
+// MVP-definitie (wijzigingen alleen hier, de volledige versie blijft ongewijzigd):
+// - simpele preloader: alleen het cirkeltje, zonder de checklist (en korter);
+// - geen route op de hoofdfoto;
+// - geen blok "Tips voor je reis" (de MVP heeft geen tipspagina).
+// Stikkertje "MVP" linksboven (MvpTripFlowLink).
 //
 // Multi Hotel Trip checkout — bevestigingspagina na het boeken van een vakantie
 // (prototype: "Boek nu" op de gegevenspagina = betaald, geen validatie).
@@ -16,8 +20,6 @@
 // preloader van 6 seconden (alleen via "Boek nu" / de flow).
 import { tripCheckoutBySlug } from '~/data/mvp-checkout/trip'
 import { tripPdpBySlug } from '~/data/mvp-trip-pdp'
-import tripRoutesJson from '~/data/mvp-trip-routes.json'
-import type { TripRouteLeg } from '~/utils-mvp-trip/tripMapLayers'
 import { pricing } from '~/data/mvp-checkout/deal'
 import { CHECKOUT_BOOKING_FEE } from '~/data/mvp-checkout/pricing'
 import { useMvpTripCheckoutTrip } from '~/composables-mvp-trip/useMvpTripCheckoutTrip'
@@ -33,10 +35,8 @@ useDemoBookingFromQuery()
 const DEMO_SLUG = 'ontdek-noord-frankrijk-en-de-opaalkust-in-7-dagen'
 const { trip: checkoutTrip, day: checkoutDay } = useMvpTripCheckoutTrip()
 const trip = computed(() => checkoutTrip.value ?? tripCheckoutBySlug(DEMO_SLUG)!)
-/** De reisdata (stops met coördinaten, inclusies per hotel, inchecktijd) voor de route en de tijdlijn. */
+/** De reisdata (inclusies per hotel, inchecktijd) voor de tijdlijn. */
 const detail = computed(() => tripPdpBySlug(trip.value.slug)?.trip ?? null)
-const routeStops = computed(() => (detail.value?.stops ?? []).map(s => ({ lat: s.lat, lng: s.lng, label: s.city })))
-const routeLegs = computed<TripRouteLeg[]>(() => (tripRoutesJson as Record<string, { legs: TripRouteLeg[] }>)[detail.value?.id ?? '']?.legs ?? [])
 
 interface SelRow { baseId: string; rateKey: 'nonrefundable' | 'flexible'; price: number; priceWas: number; quantity: number }
 const selection = useState<SelRow[]>('mvp-checkout-selection', () => [])
@@ -75,8 +75,8 @@ const docsDate = computed(() => fmt(dateAt(-14)))
 const cancelDate = computed(() => fmt(dateAt(-30)))
 
 /** Per hotel: datums, inchecktijd (reisdata, anders 15:00), uitchecktijd (late check-out uit de
- *  inclusies, anders 11:00) en de lijst "wat je krijgt": kamer + inclusies van dat hotel
- *  (zonder de overnachtingen en de in-/uitchecktijden, die staan er apart). */
+ *  inclusies, anders 11:00) en de lijst "wat je krijgt": de kamer + "Inclusief arrangement"
+ *  (de inclusies zelf staan niet op de kassabon; die staan in de mail en op de dealpagina). */
 const stays = computed(() => {
   let offset = 0
   return trip.value.hotels.map((h, i) => {
@@ -85,8 +85,6 @@ const stays = computed(() => {
     const to = dateAt(offset + h.nights)
     offset += h.nights
     const incl = (stop?.includes ?? []).map(x => x.nl)
-    // Alleen ontbijt en diner (de rest van de inclusies staat in de mail en op de dealpagina).
-    const meals = incl.filter(t => /ontbijt|diner|dinner|breakfast/i.test(t))
     const lateOut = incl.map(t => t.match(/check-?out[^0-9]*(\d{1,2})[:.](\d{2})/i)).find(Boolean)
     return {
       ...h,
@@ -94,7 +92,7 @@ const stays = computed(() => {
       to: fmt(to),
       checkInTime: stop?.checkIn ?? '15:00',
       checkOutTime: lateOut ? `${lateOut[1]}:${lateOut[2]}` : '11:00',
-      items: [`${roomsPerHotel.value}× ${h.roomName}`, ...meals],
+      items: [`${roomsPerHotel.value}× ${h.roomName}`, 'Inclusief arrangement'],
     }
   })
 })
@@ -115,11 +113,6 @@ const nextSteps = computed(() => [
   { when: checkOut.value, title: 'Weer thuis', text: 'Na je vakantie ontvang je een mail met de vraag hoe het was. Daar helpen we andere reizigers mee.' },
 ])
 
-
-/** Routepagina (aparte pagina ná het boeken, knop "Bekijk de routes").
-    MVP heeft (nog) geen tipspagina: tot het uitkleden verwijst de link naar de volledige versie. */
-const routesHref = '/multi-hotel-trip/checkout/routes'
-
 /* Veelgestelde vragen (accordeon). */
 const faq = computed(() => [
   { q: 'Hoe kan ik annuleren of wijzigen?', a: `Via je account. Log in met ${email.value}, open deze boeking en kies "Annuleren" of "Datum wijzigen". Tot ${cancelDate.value} (30 dagen voor aankomst) is dat gratis; je krijgt het volledige bedrag terug.` },
@@ -135,27 +128,19 @@ function money(v: number) {
   return `€${v.toLocaleString('nl-NL', { minimumFractionDigits: v % 1 ? 2 : 0, maximumFractionDigits: 2 })}`
 }
 
-/* Preloader (ontwerpdocument, principe 5): de betaling/boeking wordt "bevestigd" — een
-   gesimuleerde 6 seconden met een rustige animatie en de stappen (betaling + per hotel de
-   kamer). Alleen bij binnenkomst via "Boek nu" of de knop op het startscherm (die zetten de
-   vlag `mvp-checkout-confirm-load`); bij een refresh verschijnt de pagina direct. */
-const LOAD_MS = 6000
+/* Preloader (MVP: simpel — alleen het cirkeltje, geen checklist): de betaling/boeking wordt
+   "bevestigd", gesimuleerd 3 seconden. Alleen bij binnenkomst via "Boek nu" of de flow (die
+   zetten de vlag `mvp-checkout-confirm-load`); bij een refresh verschijnt de pagina direct. */
+const LOAD_MS = 3000
 const loadFlag = useState<boolean>('mvp-checkout-confirm-load', () => false)
 const loading = ref(loadFlag.value)
-const loadStep = ref(0)
-const loadSteps = computed(() => [
-  'Betaling ontvangen',
-  ...trip.value.hotels.map((h) => `Kamer bevestigen bij ${h.name}`),
-])
 onMounted(() => {
   if (!loading.value) return
   loadFlag.value = false
   // `load=1` uit de URL halen: de preloader hoort bij de binnenkomst, niet bij een refresh.
   const route = useRoute()
   if (route.query.load) useRouter().replace({ query: { ...route.query, load: undefined } })
-  const per = LOAD_MS / loadSteps.value.length
-  const tick = setInterval(() => { loadStep.value = Math.min(loadStep.value + 1, loadSteps.value.length - 1) }, per)
-  setTimeout(() => { clearInterval(tick); loading.value = false; window.scrollTo(0, 0) }, LOAD_MS)
+  setTimeout(() => { loading.value = false; window.scrollTo(0, 0) }, LOAD_MS)
 })
 
 useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
@@ -167,22 +152,15 @@ useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
     <MvpTripCheckoutTopNav v-else />
     <MvpTripFlowLink />
 
-    <!-- Preloader: 3 seconden "boeking bevestigen" voordat de bevestiging verschijnt. -->
+    <!-- Preloader (MVP): alleen het cirkeltje, 3 seconden, dan de bevestiging. -->
     <Transition name="cf-load">
-      <div v-if="loading" class="cf__loader" role="status" aria-live="polite">
-        <div class="cf__loader-inner">
-          <span class="cf__spinner" aria-hidden="true" />
-          <p class="cf__loader-title">Je boeking wordt bevestigd</p>
-          <ol class="cf__loader-list">
-            <li v-for="(st, i) in loadSteps" :key="st" :class="{ 'cf__loader-item--done': i < loadStep, 'cf__loader-item--on': i === loadStep }">{{ st }}</li>
-          </ol>
-          <p class="cf__loader-note">Dit duurt een paar seconden. Sluit de pagina niet.</p>
-        </div>
+      <div v-if="loading" class="cf__loader" role="status" aria-live="polite" aria-label="Je boeking wordt bevestigd">
+        <span class="cf__spinner" aria-hidden="true" />
       </div>
     </Transition>
 
     <main v-show="!loading" class="cf__main">
-      <!-- ── 1. Hoofdfoto: vinkje + kop links, de route "op de foto" rechts ──────── -->
+      <!-- ── 1. Hoofdfoto: vinkje + kop (MVP: zonder route op de foto) ──────── -->
       <section class="cf__hero" :style="{ backgroundImage: `url(${trip.thumb})` }">
         <div class="cf__hero-inner container">
           <div class="cf__hero-text">
@@ -191,7 +169,6 @@ useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
             </span>
             <h1 class="cf__title">Je {{ trip.typeWord }} is geboekt, {{ firstName }}!</h1>
           </div>
-          <MvpTripCheckoutRouteSketch v-if="routeStops.length" class="cf__hero-route" :stops="routeStops" :legs="routeLegs" />
         </div>
         <span v-for="n in 14" :key="n" class="cf__confetti" :style="{ left: `${(n * 7.1) % 100}%`, animationDelay: `${(n % 5) * 0.18}s`, background: n % 3 === 0 ? 'var(--c-via-green)' : n % 3 === 1 ? 'var(--c-via-orange)' : '#fff' }" aria-hidden="true" />
       </section>
@@ -283,18 +260,12 @@ useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
             </div>
           </section>
 
-          <!-- ── 4. Rechterkolom (⅓): boeking terugvinden, tips voor je reis, cadeaukaart als banner ── -->
+          <!-- ── 4. Rechterkolom (⅓): boeking terugvinden en de cadeaukaart als banner (MVP: geen tipsblok) ── -->
           <aside class="cf__side">
             <section class="card">
               <h2 class="cf__h2">Boeking terugvinden</h2>
               <p class="t-body c-grey">Je boeking staat in je ViaLuxury-account op <b>{{ email }}</b>. Inloggen doe je zonder wachtwoord: je krijgt een inloglink per mail.</p>
               <NuxtLink class="cf__link cf__cta-link" :to="`/mvp-trip/account/boekingen/${trip.slug}`">Bekijk je boeking</NuxtLink>
-            </section>
-
-            <section class="card">
-              <h2 class="cf__h2">Tips voor je reis</h2>
-              <p class="t-body c-grey">We hebben de tips en routes voor je vakantie op een speciale pagina voor je klaargezet. De link sturen we je ook nog per mail.</p>
-              <NuxtLink class="cf__link cf__cta-link" :to="routesHref">Bekijk de tips</NuxtLink>
             </section>
 
             <section class="cf__gift" aria-label="Cadeautip">
@@ -331,13 +302,14 @@ useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
 <style scoped>
 .page { position: relative; min-height: 100vh; display: flex; flex-direction: column; }
 /* Ruimte linksboven voor het flow-linkje (prototype-navigatie), zodat het niet over het logo valt. */
-.cf :deep(.nav__inner) { padding-left: 84px; }
-.cf :deep(.mnav) { padding-left: 80px; }
+/* Ruimte linksboven voor de flow-pil + het MVP-stikkertje. */
+.cf :deep(.nav__inner) { padding-left: 128px; }
+.cf :deep(.mnav) { padding-left: 124px; }
 .page--white { background: var(--c-white); }
 .cf__main { flex: 1; padding-bottom: 56px; }
 .cf__body { padding-top: 32px; display: flex; flex-direction: column; gap: 32px; }
 /* Koppen in Recoleta zoals op de site (de checkout-scope zet h1–h6 standaard op de bodyfont). */
-.cf__title, .cf__trip-title, .cf__h2, .cf__gift-title, .cf__loader-title { font-family: var(--font-heading); font-weight: 700; }
+.cf__title, .cf__trip-title, .cf__h2, .cf__gift-title { font-family: var(--font-heading); font-weight: 700; }
 .cf__h2 { margin: 0 0 12px; font-size: var(--t-h2); line-height: 1.25; }
 .cf__h2--lg { margin-bottom: 18px; font-size: var(--t-h1); }
 .cf__h2--todo { margin: 26px 0 12px; padding-top: 22px; border-top: 1px solid var(--c-light-grey); }
@@ -354,41 +326,26 @@ useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
   position: fixed; inset: 0; z-index: 1000; display: flex; align-items: center; justify-content: center;
   background: var(--c-white); padding: 24px; text-align: center;
 }
-.cf__loader-inner { max-width: 420px; }
 .cf__spinner {
-  display: inline-block; width: 56px; height: 56px; margin-bottom: 20px; border-radius: 50%;
+  display: inline-block; width: 56px; height: 56px; border-radius: 50%;
   border: 4px solid var(--c-light-grey); border-top-color: var(--c-via-orange);
   animation: cf-spin 900ms linear infinite;
 }
 @keyframes cf-spin { to { transform: rotate(360deg); } }
-.cf__loader-title { margin: 0 0 6px; font-size: var(--t-h1); line-height: 1.2; }
-.cf__loader-list { list-style: none; margin: 16px auto 20px; padding: 0; display: inline-flex; flex-direction: column; align-items: flex-start; gap: 6px; text-align: left; }
-.cf__loader-list li { position: relative; padding-left: 24px; font-size: var(--t-body); color: var(--c-medium-grey); }
-.cf__loader-list li::before {
-  content: ''; position: absolute; left: 0; top: 4px; width: 14px; height: 14px; border-radius: 50%;
-  border: 2px solid var(--c-light-grey); box-sizing: border-box;
-}
-.cf__loader-item--on { color: var(--c-via-black); }
-.cf__loader-item--on::before { border-color: var(--c-via-orange); }
-.cf__loader-item--done { color: var(--c-via-black); }
-.cf__loader-item--done::before { border-color: var(--c-via-green); background: var(--c-via-green); }
-.cf__loader-note { margin: 0; font-size: var(--t-caption); color: var(--c-medium-grey); }
 .cf-load-leave-active { transition: opacity 350ms ease; }
 .cf-load-leave-to { opacity: 0; }
 
-/* 1. Hoofdfoto: kop links onder, route rechts (in beeld) */
+/* 1. Hoofdfoto: kop links onder (MVP: geen route) */
 .cf__hero {
   position: relative; overflow: hidden; min-height: 480px; display: flex; align-items: stretch;
   background-size: cover; background-position: center; color: #fff;
 }
 .cf__hero::before { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0, 0, 0, 0.12) 0%, rgba(0, 0, 0, 0.62) 100%); }
 .cf__hero-inner {
-  position: relative; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 40px; align-items: end;
+  position: relative; display: grid; grid-template-columns: minmax(0, 1fr); align-items: end;
   padding-top: 48px; padding-bottom: 40px; width: 100%;
 }
 .cf__hero-text { max-width: 640px; }
-/* De route schaalt op hoogte; de viewBox omvat ook de plaatsnamen, dus alles blijft binnen de contentbreedte. */
-.cf__hero-route { align-self: center; justify-self: end; height: 320px; width: auto; max-width: 100%; margin-top: 16px; }
 .cf__check {
   display: inline-flex; align-items: center; justify-content: center;
   width: 64px; height: 64px; margin-bottom: 16px; border-radius: 50%;
@@ -495,8 +452,7 @@ useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
   .cf__body { padding-top: 20px; gap: 24px; }
   .card { padding: 16px; }
   .cf__hero { min-height: 440px; }
-  .cf__hero-inner { grid-template-columns: 1fr; gap: 20px; padding-top: 28px; padding-bottom: 24px; }
-  .cf__hero-route { order: -1; height: 190px; width: auto; max-width: 100%; margin: 0 0 0 auto; }
+  .cf__hero-inner { padding-top: 28px; padding-bottom: 24px; }
   .cf__title { font-size: var(--t-h1); }
   .cf__cols { grid-template-columns: 1fr; gap: 20px; }
   .cf__now, .cf__receipt-wrap, .cf__side { grid-column: auto; grid-row: auto; }

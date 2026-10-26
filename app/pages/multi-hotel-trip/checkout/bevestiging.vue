@@ -72,8 +72,8 @@ const docsDate = computed(() => fmt(dateAt(-14)))
 const cancelDate = computed(() => fmt(dateAt(-30)))
 
 /** Per hotel: datums, inchecktijd (reisdata, anders 15:00), uitchecktijd (late check-out uit de
- *  inclusies, anders 11:00) en de lijst "wat je krijgt": kamer + inclusies van dat hotel
- *  (zonder de overnachtingen en de in-/uitchecktijden, die staan er apart). */
+ *  inclusies, anders 11:00) en de lijst "wat je krijgt": de kamer + "Inclusief arrangement"
+ *  (de inclusies zelf staan niet op de kassabon; die staan in de mail en op de dealpagina). */
 const stays = computed(() => {
   let offset = 0
   return trip.value.hotels.map((h, i) => {
@@ -82,8 +82,6 @@ const stays = computed(() => {
     const to = dateAt(offset + h.nights)
     offset += h.nights
     const incl = (stop?.includes ?? []).map(x => x.nl)
-    // Alleen ontbijt en diner (de rest van de inclusies staat in de mail en op de dealpagina).
-    const meals = incl.filter(t => /ontbijt|diner|dinner|breakfast/i.test(t))
     const lateOut = incl.map(t => t.match(/check-?out[^0-9]*(\d{1,2})[:.](\d{2})/i)).find(Boolean)
     return {
       ...h,
@@ -91,7 +89,7 @@ const stays = computed(() => {
       to: fmt(to),
       checkInTime: stop?.checkIn ?? '15:00',
       checkOutTime: lateOut ? `${lateOut[1]}:${lateOut[2]}` : '11:00',
-      items: [`${roomsPerHotel.value}× ${h.roomName}`, ...meals],
+      items: [`${roomsPerHotel.value}× ${h.roomName}`, 'Inclusief arrangement'],
     }
   })
 })

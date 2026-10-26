@@ -18,8 +18,9 @@ import NewsletterFooter from "../components/NewsletterFooter";
 import NewsletterHeader from "../components/NewsletterHeader";
 import { baseUrl, font, newsletter, type EmailMode } from "../components/theme";
 
-// MVP 12-11-2026 — kopie van de boekingsbevestiging van Multi Hotel Trip (nog uit te
-// kleden naar de MVP-definitie; wijzigingen alleen hier, de volledige versie blijft staan).
+// MVP 12-11-2026 — kopie van de boekingsbevestiging van Multi Hotel Trip, uitgekleed naar de
+// MVP-definitie (wijzigingen alleen hier, de volledige versie blijft staan): geen blok "Tips
+// voor je reis" (de MVP heeft geen tipspagina). Stikkertje "MVP" bovenin voor de developers.
 //
 // Boekingsbevestiging van een multi-hotel vakantie (Multi Hotel Trip). Header, logo,
 // Trustpilot en footer uit het nieuwsbrief-template; daartussen dezelfde opbouw als
@@ -33,7 +34,7 @@ type Hotel = {
   stars: number;
   address: string;
   image: string;
-  /** Lijst onder het adres: overnachtingen, kamer, ontbijt, diner. */
+  /** Lijst onder het adres: overnachtingen, kamer en álle inclusies van dat hotel (zoals op de dealpagina). */
   items: string[];
   checkIn: string;
   checkOut: string;
@@ -56,7 +57,6 @@ type Props = {
   tripPrice: string;
   bookingFee: string;
   total: string;
-  routesUrl: string;
   bookingUrl: string;
   mode?: EmailMode;
 };
@@ -101,7 +101,6 @@ export default function VakantieBevestiging({
   tripPrice,
   bookingFee,
   total,
-  routesUrl,
   bookingUrl,
   mode = "light",
 }: Props) {
@@ -213,6 +212,12 @@ export default function VakantieBevestiging({
       <Preview>Je boeking is bevestigd — {tripName}</Preview>
       <Body style={{ backgroundColor: c.bg, margin: 0, padding: 0, fontFamily: font.body }}>
         <Container style={{ width: "100%", maxWidth: "626px" }}>
+          {/* Ontwikkelmarkering: dit is de MVP-variant van de mail (niet voor de gast bedoeld). */}
+          <Section style={{ padding: "8px 12px 0" }}>
+            <span style={{ display: "inline-block", padding: "2px 8px", borderRadius: "999px", backgroundColor: "#e97132", color: "#ffffff", fontFamily: font.body, fontSize: "10px", lineHeight: "16px", fontWeight: 700, letterSpacing: "1px", textTransform: "uppercase" }}>
+              MVP
+            </span>
+          </Section>
           <NewsletterHeader mode={mode} />
 
           {/* Kop + aanhef + boekingsnummer */}
@@ -337,20 +342,6 @@ export default function VakantieBevestiging({
             </Section>
           </Section>
 
-          {/* Tips voor je reis: de persoonlijke reispagina (zelfde tekst als op de bevestigingspagina) */}
-          <Section className="m-pad" style={{ padding: "32px 32px 0" }}>
-            <Text className="m-kop" style={kop}>Tips voor je reis</Text>
-            <Text style={body14}>
-              We hebben de tips en routes voor je vakantie op een speciale pagina voor je klaargezet: per hotel de praktische
-              informatie, het reisschema met de kaart en onze tips voor in de buurt. De link sturen we je ook nog per mail.
-            </Text>
-            <Text style={{ margin: "8px 0 0" }}>
-              <Link href={routesUrl} style={ctaLink}>
-                Bekijk de tips &gt;
-              </Link>
-            </Text>
-          </Section>
-
           {/* Boeking terugvinden */}
           <Section className="m-pad" style={{ padding: "32px 32px 0" }}>
             <Text className="m-kop" style={kop}>Boeking terugvinden</Text>
@@ -445,7 +436,7 @@ VakantieBevestiging.PreviewProps = {
       stars: 3,
       address: "Rue du Château, 62500 Tilques, Frankrijk",
       image: `${baseUrl}/images/mail/vakantie/tilques-t2.jpg`,
-      items: ["2 overnachtingen", "1× Chambre Charme", "Dagelijks uitgebreid ontbijtbuffet", "3-gangendiner bij Le Vert Mesnil (dag van aankomst)"],
+      items: ["2 overnachtingen", "1× Chambre Charme", "Dagelijks uitgebreid ontbijtbuffet", "3-gangendiner bij Le Vert Mesnil (dag van aankomst)", "Gebruik van het binnenzwembad", "Tennis & jeu de boules", "Late check-out tot 14:00 uur", "Gratis parkeren"],
       checkIn: "di 18 mei · vanaf 15:00 uur",
       checkOut: "do 20 mei · tot 14:00 uur",
     },
@@ -454,7 +445,7 @@ VakantieBevestiging.PreviewProps = {
       stars: 3,
       address: "Rue du Château, 62360 Hesdin-l'Abbé, Frankrijk",
       image: `${baseUrl}/images/mail/vakantie/clery-c2.jpg`,
-      items: ["2 overnachtingen", "1× Chambre Charme", "Dagelijks uitgebreid ontbijtbuffet", "3-gangendiner bij Le Berthier (dag van aankomst)"],
+      items: ["2 overnachtingen", "1× Chambre Charme", "Dagelijks uitgebreid ontbijtbuffet", "3-gangendiner bij Le Berthier (dag van aankomst)", "Gebruik van de sauna", "Late check-out tot 14:00 uur", "Gratis parkeren"],
       checkIn: "do 20 mei · vanaf 15:00 uur",
       checkOut: "za 22 mei · tot 14:00 uur",
     },
@@ -463,7 +454,7 @@ VakantieBevestiging.PreviewProps = {
       stars: 4,
       address: "Rue de Beaulaincourt, 62400 Béthune, Frankrijk",
       image: `${baseUrl}/images/mail/vakantie/beaulaincourt-b2.jpg`,
-      items: ["2 overnachtingen", "1× Privilege Room", "Dagelijks ontbijt", "3-gangendiner in het restaurant van het hotel (dag van aankomst)"],
+      items: ["2 overnachtingen", "1× Privilege Room", "Dagelijks ontbijt", "3-gangendiner in het restaurant van het hotel (dag van aankomst)", "Welkomstbubbels", "Late check-out tot 15:00 uur"],
       checkIn: "za 22 mei · vanaf 14:00 uur",
       checkOut: "ma 24 mei · tot 15:00 uur",
     },
@@ -473,7 +464,5 @@ VakantieBevestiging.PreviewProps = {
   tripPrice: "€964",
   bookingFee: "€27,50",
   total: "€991,50",
-  // MVP heeft (nog) geen tipspagina: tot het uitkleden verwijst de knop naar de volledige versie.
-  routesUrl: "https://vialuxury.vercel.app/multi-hotel-trip/checkout/routes",
   bookingUrl: "https://vialuxury.vercel.app/mvp-trip/account/boekingen/ontdek-noord-frankrijk-en-de-opaalkust-in-7-dagen",
 } satisfies Props;

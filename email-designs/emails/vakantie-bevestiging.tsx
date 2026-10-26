@@ -30,7 +30,7 @@ type Hotel = {
   stars: number;
   address: string;
   image: string;
-  /** Lijst onder het adres: overnachtingen, kamer, ontbijt, diner. */
+  /** Lijst onder het adres: overnachtingen, kamer en álle inclusies van dat hotel (zoals op de dealpagina). */
   items: string[];
   checkIn: string;
   checkOut: string;
@@ -442,7 +442,7 @@ VakantieBevestiging.PreviewProps = {
       stars: 3,
       address: "Rue du Château, 62500 Tilques, Frankrijk",
       image: `${baseUrl}/images/mail/vakantie/tilques-t2.jpg`,
-      items: ["2 overnachtingen", "1× Chambre Charme", "Dagelijks uitgebreid ontbijtbuffet", "3-gangendiner bij Le Vert Mesnil (dag van aankomst)"],
+      items: ["2 overnachtingen", "1× Chambre Charme", "Dagelijks uitgebreid ontbijtbuffet", "3-gangendiner bij Le Vert Mesnil (dag van aankomst)", "Gebruik van het binnenzwembad", "Tennis & jeu de boules", "Late check-out tot 14:00 uur", "Gratis parkeren"],
       checkIn: "di 18 mei · vanaf 15:00 uur",
       checkOut: "do 20 mei · tot 14:00 uur",
     },
@@ -451,7 +451,7 @@ VakantieBevestiging.PreviewProps = {
       stars: 3,
       address: "Rue du Château, 62360 Hesdin-l'Abbé, Frankrijk",
       image: `${baseUrl}/images/mail/vakantie/clery-c2.jpg`,
-      items: ["2 overnachtingen", "1× Chambre Charme", "Dagelijks uitgebreid ontbijtbuffet", "3-gangendiner bij Le Berthier (dag van aankomst)"],
+      items: ["2 overnachtingen", "1× Chambre Charme", "Dagelijks uitgebreid ontbijtbuffet", "3-gangendiner bij Le Berthier (dag van aankomst)", "Gebruik van de sauna", "Late check-out tot 14:00 uur", "Gratis parkeren"],
       checkIn: "do 20 mei · vanaf 15:00 uur",
       checkOut: "za 22 mei · tot 14:00 uur",
     },
@@ -460,7 +460,7 @@ VakantieBevestiging.PreviewProps = {
       stars: 4,
       address: "Rue de Beaulaincourt, 62400 Béthune, Frankrijk",
       image: `${baseUrl}/images/mail/vakantie/beaulaincourt-b2.jpg`,
-      items: ["2 overnachtingen", "1× Privilege Room", "Dagelijks ontbijt", "3-gangendiner in het restaurant van het hotel (dag van aankomst)"],
+      items: ["2 overnachtingen", "1× Privilege Room", "Dagelijks ontbijt", "3-gangendiner in het restaurant van het hotel (dag van aankomst)", "Welkomstbubbels", "Late check-out tot 15:00 uur"],
       checkIn: "za 22 mei · vanaf 14:00 uur",
       checkOut: "ma 24 mei · tot 15:00 uur",
     },
