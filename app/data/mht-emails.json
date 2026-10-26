@@ -46,5 +46,11 @@
     "title": "Incheck hotel 3 (dag voor aankomst) — fietsvakantie",
     "description": "De dag vóór hotel 3 van de fietsvakantie: terugblik op Hotel de Zwaan, morgen door naar Landhuishotel Herikerberg (bagage vóór 9:00 uur bij de receptie). Kort: \"Morgen in het kort\", het hotelblok (adres, route, telefoon, inchecken, stalling, bagagetransfer), praktische informatie en tips, Hulp nodig? en veelgestelde vragen.",
     "section": "designs"
+  },
+  {
+    "slug": "mvp-vakantie-bevestiging",
+    "title": "MVP — Boekingsbevestiging vakantie",
+    "description": "MVP-versie van de boekingsbevestiging (kopie van de volledige versie, nog uit te kleden): kassabon per hotel, flexibel annuleren, prijs, tips voor je reis, boeking terugvinden, cadeaukaart en FAQ.",
+    "section": "designs"
   }
 ]

@@ -96,7 +96,15 @@ const sideTop = useStickyFit(sideEl, 16)
 // formulier meenemen naar de bevestigingspagina; alleen bij een vakantie.
 const checkoutGuest = useState<{ firstName: string; email: string } | null>('mvp-checkout-guest', () => null)
 function bookNow() {
-  // MVP: geen bevestigingspagina — "Boek nu" doet hier (nog) niets.
+  if (!checkoutTrip.value) return
+  if (import.meta.client) {
+    const firstName = (document.getElementById('gf-first') as HTMLInputElement | null)?.value.trim() ?? ''
+    const email = (document.getElementById('gf-email') as HTMLInputElement | null)?.value.trim() ?? ''
+    checkoutGuest.value = { firstName, email }
+  }
+  // Preloader op de bevestigingspagina alleen na "Boek nu" (niet bij een refresh).
+  useState<boolean>('mvp-checkout-confirm-load', () => false).value = true
+  navigateTo('/mvp-trip/checkout/bevestiging')
 }
 
 useHead({ title: 'Gegevens en betaalwijze — ViaLuxury' })

@@ -30,9 +30,18 @@ hoofdlink/speciale Vakanties-pagina (thema "Auto- en fietsvakanties" op de gewon
 zoekpagina), nachten 1–4, geen reviewscores/gastbeoordelingen, routekaartjes als PNG
 (`public/images/vakanties/maps/<tripId>-card.png` en `-pdp.png`), samengevat reisschema
 als vrije tekst (`summaryText`) + sidepanel als één tekstblok, includes classic, geen
-POI's op de grote kaart, room table met één standaardkamer, geen bevestigingspagina,
-geen prototype-schakelaars. Data in `app/data/mvp-*`. MVP-wijzigingen alleen in de
+POI's op de grote kaart, room table met één standaardkamer, geen
+prototype-schakelaars. Data in `app/data/mvp-*`. MVP-wijzigingen alleen in de
 `*-mvp-trip`-bestanden; MHT blijft ongewijzigd.
+
+Post-bookingflow van de MVP (sinds 2026-10-26): alleen de bevestigingspagina
+(`app/pages/mvp-trip/checkout/bevestiging.vue`), de boekingsbevestigingsmail
+(`email-designs/emails/mvp-vakantie-bevestiging.tsx`, slug `mvp-vakantie-bevestiging`, preview
+`/mvp-trip/emails/<slug>`) en de accountomgeving (`app/pages/mvp-trip/account/*`) — eenmalige
+kopieën van de MHT-versies die los van MHT worden uitgekleed. Het MVP-schema staat op dezelfde
+flowpagina als de volledige versie (`/multi-hotel-trip/flow`, boven de lijn); de flow-pil op de
+MVP-pagina's verwijst daar ook naartoe. Er is geen MVP-tipspagina: links daarnaartoe verwijzen
+voorlopig naar de MHT-pagina.
 
 ## Multi Hotel Trip (MHT) = kopie van R1 — houd ze in sync
 
