@@ -21,7 +21,7 @@ export const isFakeDoorBlockedGroup = (adults: number, children: number) => adul
 
 export function useFirstReleaseFakeDoor() {
   const cookie = useCookie<FakeDoorState | null>(COOKIE, { default: () => null, sameSite: 'lax' })
-  const state = useState<FakeDoorState | null>('fr-fakedoor', () => cookie.value ?? null)
+  const state = useState<FakeDoorState | null>('vl_fr_fakedoor', () => cookie.value ?? null)
   const save = (s: FakeDoorState | null) => { state.value = s; cookie.value = s }
 
   const enabled = computed(() => state.value?.on === true)
