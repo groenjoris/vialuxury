@@ -46,20 +46,21 @@
           Design voor auto- en fietsvakanties met meerdere hotels
         </p>
         <div class="start-section__buttons">
-          <button
-            type="button"
-            class="start-btn start-btn--primary"
-            @click="startMultiHotelTripFromHome"
-          >Homepage</button>
-          <!-- Post-bookingflow: schema van de klantreis na het boeken; van daaruit zijn de
-               bevestigingspagina, de reispagina en de mails te openen. -->
-          <NuxtLink class="start-btn" to="/multi-hotel-trip/flow">Post-bookingflow</NuxtLink>
           <!-- MVP (12-11-2026): losstaande kopie van Multi Hotel Trip, teruggeschaald naar de MVP-definitie. -->
           <button
             type="button"
-            class="start-btn"
+            class="start-btn start-btn--primary"
             @click="startMvpTrip"
           >MVP</button>
+          <!-- Post-bookingflow: schema van de klantreis na het boeken; van daaruit zijn de
+               bevestigingspagina, de reispagina en de mails te openen. -->
+          <NuxtLink class="start-btn" to="/multi-hotel-trip/flow">Post-bookingflow</NuxtLink>
+          <!-- De volledige (niet-teruggeschaalde) versie van Multi Hotel Trip. -->
+          <button
+            type="button"
+            class="start-btn"
+            @click="startMultiHotelTripFromHome"
+          >Volledige versie</button>
         </div>
       </section>
 
