@@ -32,7 +32,10 @@
       </section>
 
       <!-- Grid: Filter Sidebar + Results -->
-      <div class="search-page__grid container" :class="{ 'search-page__grid--no-sidebar': !sidebarVisible }">
+      <!-- Fake door "variabel reisgezelschap": oneven aantal volwassenen of kinderen → alleen de
+           melding met e-mailveld, geen filters en geen resultaten. -->
+      <MultiHotelTripFakeDoorNotice v-if="fakeDoorBlocked" class="container" />
+      <div v-else class="search-page__grid container" :class="{ 'search-page__grid--no-sidebar': !sidebarVisible }">
         <Transition name="sidebar-slide">
           <div v-if="sidebarVisible" class="search-page__sidebar" ref="sidebarRef">
             <!-- Map preview (fake door) at the top of sidebar -->
@@ -461,8 +464,11 @@ import { tripMatchesQuickFilters, TRIP_QUICK_FILTERS } from '~/utils-multi-hotel
 import { nightKeyFor, TRIP_NIGHT_KEYS } from '~/utils-multi-hotel-trip/nights'
 import { TRIPS_THEME_ID } from '~/utils-multi-hotel-trip/destinationMatch'
 import { useMobileSearchModalControl } from '~/composables-multi-hotel-trip/useMobileSearchModalControl'
+import { useMultiHotelTripFakeDoor } from '~/composables-multi-hotel-trip/useMultiHotelTripFakeDoor'
 
 const { t } = useMultiHotelTripI18n()
+/* Fake door "variabel reisgezelschap": oneven volwassenen of kinderen → geen resultaten, alleen de melding. */
+const { blocked: fakeDoorBlocked } = useMultiHotelTripFakeDoor()
 const {
   loading, setLoading, persons, rooms, selectedNights,
   selectedFilterTags,

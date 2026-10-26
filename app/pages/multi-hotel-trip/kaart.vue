@@ -21,9 +21,13 @@ import SearchFilterPanel from '~/components-multi-hotel-trip/search/SearchFilter
 import HotelMapMobileCard from '~/components-multi-hotel-trip/map/HotelMapMobileCard.vue'
 import FilterSubpage from '~/components-multi-hotel-trip/search/FilterSubpage.vue'
 import { useMultiHotelTripIsMobile } from '~/composables-multi-hotel-trip/useMultiHotelTripIsMobile'
+import { useMultiHotelTripFakeDoor } from '~/composables-multi-hotel-trip/useMultiHotelTripFakeDoor'
 
 const { t } = useMultiHotelTripI18n()
 const isMobile = useMultiHotelTripIsMobile()
+/* Fake door "variabel reisgezelschap": zonder aanbod geen kaart; /search toont de melding. */
+const { blocked: fakeDoorBlocked } = useMultiHotelTripFakeDoor()
+if (fakeDoorBlocked.value) navigateTo('/multi-hotel-trip/search', { replace: true })
 
 useHead({ title: 'Kaart — Via Luxury' })
 

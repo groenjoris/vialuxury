@@ -34,6 +34,7 @@
 
 <script setup lang="ts">
 import { summarizeNightKeys } from '~/utils-multi-hotel-trip/nights'
+import { useMultiHotelTripFakeDoor } from '~/composables-multi-hotel-trip/useMultiHotelTripFakeDoor'
 
 const { t } = useMultiHotelTripI18n()
 defineEmits<{ open: [] }>()
@@ -85,7 +86,14 @@ const whenCombinedLabel = computed<string>(() => {
   return `${datePart} · ${durPart}`
 })
 
+const { enabled: fakeDoorOn, adults: fakeDoorAdults, children: fakeDoorChildren } = useMultiHotelTripFakeDoor()
 const whoLabel = computed<string>(() => {
+  // Fake door "variabel reisgezelschap": "3 volw., 1 kind" (geen kamers).
+  if (fakeDoorOn.value) {
+    const a = fakeDoorAdults.value
+    const kids = fakeDoorChildren.value.length
+    return kids > 0 ? `${a} volw., ${kids} ${kids === 1 ? 'kind' : 'kind.'}` : `${a} volw.`
+  }
   // Abbreviated form ("12 pers. / 6 kamers") so the row stays on
   // one line even at large group sizes on a narrow mobile viewport.
   const persons = search.persons.value
