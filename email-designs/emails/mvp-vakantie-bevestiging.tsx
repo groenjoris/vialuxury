@@ -297,11 +297,11 @@ export default function VakantieBevestiging({
                   </Section>
                 ))}
 
-                {/* Flexibel annuleren (en bagagetransfer) */}
+                {/* Flexibel annuleren (en bagagetransfer): dezelfde groene iconen als op de bevestigingspagina */}
                 <Section style={{ borderTop: `1px solid ${line}`, marginTop: "20px", paddingTop: "16px" }}>
                   <Row>
                     <Column style={{ width: "36px", verticalAlign: "top" }}>
-                      <Img src={img(dark ? "check-dark.png" : "check.png")} alt="" width="22" height="22" />
+                      <Img src={img("icon-shield-green.png")} alt="" width="26" height="26" />
                     </Column>
                     <Column style={{ verticalAlign: "top" }}>
                       <Text style={{ ...body14, margin: 0, fontSize: "16px", fontWeight: 700 }}>Flexibel annuleren</Text>
@@ -313,7 +313,7 @@ export default function VakantieBevestiging({
                   {hasBaggage && (
                     <Row style={{ marginTop: "12px" }}>
                       <Column style={{ width: "36px", verticalAlign: "top" }}>
-                        <Img src={img(dark ? "check-dark.png" : "check.png")} alt="" width="22" height="22" />
+                        <Img src={img("icon-suitcase-green.png")} alt="" width="26" height="26" />
                       </Column>
                       <Column style={{ verticalAlign: "top" }}>
                         <Text style={{ ...body14, margin: 0, fontSize: "16px", fontWeight: 700 }}>Bagagetransfer</Text>

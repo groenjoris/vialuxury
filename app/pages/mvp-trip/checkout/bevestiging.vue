@@ -2,7 +2,7 @@
 // MVP 12-11-2026 — kopie van de bevestigingspagina van Multi Hotel Trip, uitgekleed naar de
 // MVP-definitie (wijzigingen alleen hier, de volledige versie blijft ongewijzigd):
 // - simpele preloader: alleen het cirkeltje, zonder de checklist (en korter);
-// - geen route op de hoofdfoto;
+// - geen route en geen confetti op de hoofdfoto;
 // - geen blok "Tips voor je reis" (de MVP heeft geen tipspagina).
 // Stikkertje "MVP" linksboven (MvpTripFlowLink).
 //
@@ -75,8 +75,8 @@ const docsDate = computed(() => fmt(dateAt(-14)))
 const cancelDate = computed(() => fmt(dateAt(-30)))
 
 /** Per hotel: datums, inchecktijd (reisdata, anders 15:00), uitchecktijd (late check-out uit de
- *  inclusies, anders 11:00) en de lijst "wat je krijgt": de kamer + "Inclusief arrangement"
- *  (de inclusies zelf staan niet op de kassabon; die staan in de mail en op de dealpagina). */
+ *  inclusies, anders 11:00) en als "wat je krijgt" alleen "Inclusief arrangement" (kamernaam en
+ *  inclusies staan niet op de kassabon; die staan in de mail en op de dealpagina). */
 const stays = computed(() => {
   let offset = 0
   return trip.value.hotels.map((h, i) => {
@@ -92,7 +92,7 @@ const stays = computed(() => {
       to: fmt(to),
       checkInTime: stop?.checkIn ?? '15:00',
       checkOutTime: lateOut ? `${lateOut[1]}:${lateOut[2]}` : '11:00',
-      items: [`${roomsPerHotel.value}× ${h.roomName}`, 'Inclusief arrangement'],
+      items: ['Inclusief arrangement'],
     }
   })
 })
@@ -170,7 +170,6 @@ useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
             <h1 class="cf__title">Je {{ trip.typeWord }} is geboekt, {{ firstName }}!</h1>
           </div>
         </div>
-        <span v-for="n in 14" :key="n" class="cf__confetti" :style="{ left: `${(n * 7.1) % 100}%`, animationDelay: `${(n % 5) * 0.18}s`, background: n % 3 === 0 ? 'var(--c-via-green)' : n % 3 === 1 ? 'var(--c-via-orange)' : '#fff' }" aria-hidden="true" />
       </section>
 
       <div class="container cf__body">
@@ -357,8 +356,6 @@ useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
 .cf__title { margin: 0; font-size: var(--t-display); line-height: 1.15; color: #fff; }
 @keyframes cf-pop { from { transform: scale(0.6); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 @keyframes cf-draw { to { stroke-dashoffset: 0; } }
-.cf__confetti { position: absolute; top: -12px; width: 8px; height: 12px; border-radius: 2px; opacity: 0; animation: cf-fall 2.4s ease-in forwards; }
-@keyframes cf-fall { 0% { transform: translateY(0) rotate(0); opacity: 0.95; } 100% { transform: translateY(420px) rotate(260deg); opacity: 0; } }
 
 /* 2 + 3. Kolommen ⅔ / ⅓ */
 .cf__cols { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: 24px; align-items: start; }
