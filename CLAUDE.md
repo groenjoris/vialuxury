@@ -29,8 +29,9 @@ Redesign (R1) met de vlag aan (cookie `vl_fr_fakedoor`, `useFirstReleaseFakeDoor
 aan telt de personenselector in de zoekbalk (desktop-popup in `SiteHeader.vue`, mobiel in
 `MobileSearchModal.vue`) volwassenen en kinderen (met leeftijd) in plaats van personen/kamers;
 bij een oneven aantal volwassenen of bij kinderen toont `/first-release/search` alleen
-`FirstReleaseFakeDoorNotice` (melding + e-mailveld, geen resultaten) en stuurt `/kaart` terug
-naar `/search`. Een even aantal zoekt gewoon (volwassenen / 2 kamers). Teksten onder `fakeDoor.*`
+`FirstReleaseFakeDoorNotice` (kop echoot de keuze, één zin reden, bij oneven zonder kinderen de
+link "Zoek dan voor 4 volwassenen" die de groep even maakt, e-mailveld; geen resultaten) en stuurt
+`/kaart` terug naar `/search`. Een even aantal zoekt gewoon (volwassenen / 2 kamers). Teksten onder `fakeDoor.*`
 in `app/i18n`. Elke andere startknop zet de vlag weer uit. De code synct mee naar MHT, maar
 staat daar nooit aan.
 
