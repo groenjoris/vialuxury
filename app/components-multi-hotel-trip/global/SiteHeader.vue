@@ -2201,7 +2201,16 @@ function removeSearchChild() {
 const whoExplicit = ref(false)
 
 /* ── Fake door "variabel reisgezelschap" (variant binnen R1, zie useMultiHotelTripFakeDoor) ── */
-const { enabled: fakeDoorOn, setGroup: setFakeDoorGroup } = useMultiHotelTripFakeDoor()
+const { enabled: fakeDoorOn, adults: fakeDoorAdults, children: fakeDoorChildren, setGroup: setFakeDoorGroup } = useMultiHotelTripFakeDoor()
+// De melding op de zoekpagina kan de groep zelf aanpassen ("Zoek dan voor 4 volwassenen"):
+// spiegel dat in de balk, zodat het veld en de snapshot niet achterlopen.
+watch(() => [fakeDoorOn.value, fakeDoorAdults.value, fakeDoorChildren.value.length] as const, ([on, a, k]) => {
+  if (!on) return
+  if (searchGroup.value.adults === a && searchGroup.value.children.length === k) return
+  whoExplicit.value = true
+  searchGroup.value = { adults: a, children: fakeDoorChildren.value.map(c => ({ age: c.age })), rooms: Math.max(1, Math.ceil(a / 2)), dog: false }
+  saveBarSnapshot()
+})
 function fakeDoorStepAdults(delta: number) {
   whoExplicit.value = true
   searchGroup.value.adults = Math.min(FAKE_DOOR_MAX_ADULTS, Math.max(1, searchGroup.value.adults + delta))
