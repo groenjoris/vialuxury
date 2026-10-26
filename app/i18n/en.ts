@@ -672,6 +672,23 @@ const en: Record<string, string> = {
   'review.sufficient': 'Sufficient',
   'review.fair': 'Fair',
   'review.poor': 'Poor',
+  // Fake door-test "variabel reisgezelschap" (R1-variant, zie useFirstReleaseFakeDoor).
+  'fakeDoor.adultSingular': 'adult',
+  'fakeDoor.adultPlural': 'adults',
+  'fakeDoor.adultsSub': '18 years and older',
+  'fakeDoor.childShort': 'child',
+  'fakeDoor.childrenShort': 'child.',
+  'fakeDoor.titleOdd': 'No packages for {n} {persons} yet',
+  'fakeDoor.titleChildren': 'No packages for children yet',
+  'fakeDoor.titleBoth': 'No packages for {n} people and children yet',
+  'fakeDoor.textOdd': 'Unfortunately we currently have no packages for {n} {persons}. A package is always for 2 people. If you book for {m} people, you pay for an extra person and miss out on the best price.',
+  'fakeDoor.textChildren': 'Unfortunately we do not have any packages for children yet.',
+  'fakeDoor.textChildrenAlso': 'We also do not have any packages for children yet.',
+  'fakeDoor.signupTitle': 'Leave your email address',
+  'fakeDoor.signupText': 'As soon as we have a suitable offer, we will send it to you.',
+  'fakeDoor.emailPlaceholder': 'name@example.com',
+  'fakeDoor.submit': 'Keep me posted',
+  'fakeDoor.thanks': 'Thank you! We will email you at {email} as soon as we have a suitable offer.',
 }
 
 export default en

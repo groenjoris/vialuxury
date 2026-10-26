@@ -677,6 +677,23 @@ const de: Record<string, string> = {
   'review.sufficient': 'Befriedigend',
   'review.fair': 'Akzeptabel',
   'review.poor': 'Mäßig',
+  // Fake door-test "variabel reisgezelschap" (R1-variant, zie useFirstReleaseFakeDoor).
+  'fakeDoor.adultSingular': 'Erwachsener',
+  'fakeDoor.adultPlural': 'Erwachsene',
+  'fakeDoor.adultsSub': 'ab 18 Jahren',
+  'fakeDoor.childShort': 'Kind',
+  'fakeDoor.childrenShort': 'Kind.',
+  'fakeDoor.titleOdd': 'Noch keine Arrangements für {n} {persons}',
+  'fakeDoor.titleChildren': 'Noch keine Arrangements für Kinder',
+  'fakeDoor.titleBoth': 'Noch keine Arrangements für {n} Personen und Kinder',
+  'fakeDoor.textOdd': 'Leider haben wir derzeit keine Arrangements für {n} {persons}. Ein Arrangement gilt immer für 2 Personen. Wenn Sie für {m} Personen buchen, zahlen Sie für eine zusätzliche Person und verpassen den besten Preis.',
+  'fakeDoor.textChildren': 'Leider haben wir noch keine Arrangements für Kinder.',
+  'fakeDoor.textChildrenAlso': 'Außerdem haben wir noch keine Arrangements für Kinder.',
+  'fakeDoor.signupTitle': 'Hinterlassen Sie Ihre E-Mail-Adresse',
+  'fakeDoor.signupText': 'Sobald wir ein passendes Angebot haben, schicken wir es Ihnen zu.',
+  'fakeDoor.emailPlaceholder': 'name@beispiel.de',
+  'fakeDoor.submit': 'Halten Sie mich auf dem Laufenden',
+  'fakeDoor.thanks': 'Vielen Dank! Wir schreiben Ihnen an {email}, sobald wir ein passendes Angebot haben.',
 }
 
 export default de

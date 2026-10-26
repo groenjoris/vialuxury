@@ -681,6 +681,23 @@ const nl: Record<string, string> = {
   'review.sufficient': 'Voldoende',
   'review.fair': 'Redelijk',
   'review.poor': 'Matig',
+  // Fake door-test "variabel reisgezelschap" (R1-variant, zie useFirstReleaseFakeDoor).
+  'fakeDoor.adultSingular': 'volwassene',
+  'fakeDoor.adultPlural': 'volwassenen',
+  'fakeDoor.adultsSub': 'vanaf 18 jaar',
+  'fakeDoor.childShort': 'kind',
+  'fakeDoor.childrenShort': 'kind.',
+  'fakeDoor.titleOdd': 'Nog geen arrangementen voor {n} {persons}',
+  'fakeDoor.titleChildren': 'Nog geen arrangementen voor kinderen',
+  'fakeDoor.titleBoth': 'Nog geen arrangementen voor {n} personen en kinderen',
+  'fakeDoor.textOdd': 'Op dit moment hebben we helaas geen arrangementen voor {n} {persons}. Een arrangement is altijd voor 2 personen. Boek je voor {m} personen, dan betaal je voor een extra persoon en heb je niet de beste prijs.',
+  'fakeDoor.textChildren': 'Op dit moment hebben we helaas nog geen arrangementen voor kinderen.',
+  'fakeDoor.textChildrenAlso': 'Ook hebben we nog geen arrangementen voor kinderen.',
+  'fakeDoor.signupTitle': 'Laat je e-mailadres achter',
+  'fakeDoor.signupText': 'Zodra we een passend aanbod hebben, sturen we het je toe.',
+  'fakeDoor.emailPlaceholder': 'naam@voorbeeld.nl',
+  'fakeDoor.submit': 'Houd me op de hoogte',
+  'fakeDoor.thanks': 'Bedankt! We mailen je op {email} zodra we een passend aanbod hebben.',
 }
 
 export default nl

@@ -9,7 +9,10 @@
       </section>
 
       <!-- Grid: Filter Sidebar + Results -->
-      <div class="search-page__grid container" :class="{ 'search-page__grid--no-sidebar': !showFilters }">
+      <!-- Fake door "variabel reisgezelschap": oneven aantal volwassenen of kinderen → alleen de
+           melding met e-mailveld, geen filters en geen resultaten. -->
+      <FirstReleaseFakeDoorNotice v-if="fakeDoorBlocked" class="container" />
+      <div v-else class="search-page__grid container" :class="{ 'search-page__grid--no-sidebar': !showFilters }">
         <Transition name="sidebar-slide">
           <div v-if="showFilters" class="search-page__sidebar" ref="sidebarRef">
             <!-- Map preview (fake door) at the top of sidebar -->
@@ -416,8 +419,11 @@ import {
 } from '~/utils-first-release/destinationMatch'
 import { computeFilterCounts } from '~/utils-first-release/filterCounts'
 import { useMobileSearchModalControl } from '~/composables-first-release/useMobileSearchModalControl'
+import { useFirstReleaseFakeDoor } from '~/composables-first-release/useFirstReleaseFakeDoor'
 
 const { t } = useFirstReleaseI18n()
+/* Fake door "variabel reisgezelschap": oneven volwassenen of kinderen → geen resultaten, alleen de melding. */
+const { blocked: fakeDoorBlocked } = useFirstReleaseFakeDoor()
 const {
   loading, setLoading, persons, rooms, selectedNights,
   selectedFilterTags,

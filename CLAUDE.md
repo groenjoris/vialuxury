@@ -22,6 +22,18 @@ mobiele site `app/pages/first-release/m/checkout/*`, `components-first-release/c
 MHT-checkout wijkt daardoor sterk af, dus R1-checkoutwijzigingen leveren bij de automatische
 sync (zie hieronder) vaak conflicten op — die in de MHT-bestanden oplossen.
 
+## Fake door-test "variabel reisgezelschap" (variant bínnen R1, sinds 2026-10-26)
+
+Startknop "Fake door-test" in het vak Variable Travel Group op het startscherm; opent het
+Redesign (R1) met de vlag aan (cookie `vl_fr_fakedoor`, `useFirstReleaseFakeDoor`). Met de vlag
+aan telt de personenselector in de zoekbalk (desktop-popup in `SiteHeader.vue`, mobiel in
+`MobileSearchModal.vue`) volwassenen en kinderen (met leeftijd) in plaats van personen/kamers;
+bij een oneven aantal volwassenen of bij kinderen toont `/first-release/search` alleen
+`FirstReleaseFakeDoorNotice` (melding + e-mailveld, geen resultaten) en stuurt `/kaart` terug
+naar `/search`. Een even aantal zoekt gewoon (volwassenen / 2 kamers). Teksten onder `fakeDoor.*`
+in `app/i18n`. Elke andere startknop zet de vlag weer uit. De code synct mee naar MHT, maar
+staat daar nooit aan.
+
 ## MVP 12-11-2026 = losstaande kopie van MHT (niet gesynchroniseerd)
 
 Gemaakt met `scripts/copy-mht-to-mvp.sh` (eenmalig) en daarna teruggeschaald naar de

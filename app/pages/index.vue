@@ -70,9 +70,16 @@
       <section class="start-section">
         <h2 class="start-section__title">Variable Travel Group (second release)</h2>
         <div class="start-section__buttons">
+          <!-- Fake door-test: het Redesign (R1) met een personenselector voor volwassenen en
+               kinderen; oneven aantal of kinderen → melding + e-mailveld op de zoekpagina. -->
           <button
             type="button"
             class="start-btn start-btn--primary"
+            @click="startFakeDoorTest"
+          >Fake door-test</button>
+          <button
+            type="button"
+            class="start-btn"
             @click="startSecondReleaseFromHome"
           >Homepage</button>
           <button
@@ -165,6 +172,7 @@
 </template>
 
 <script setup lang="ts">
+import { useFirstReleaseFakeDoor } from '~/composables-first-release/useFirstReleaseFakeDoor'
 import { useHomeVariant } from '~/composables/useHomeVariant'
 const { clear } = usePartner()
 const { setHomeVariant } = useHomeVariant()
@@ -228,7 +236,10 @@ onMounted(() => {
   clearMht()
 })
 
+const fakeDoor = useFirstReleaseFakeDoor()
+
 function resetAll() {
+  fakeDoor.disable()
   clear()
   clearArrivalDate()
   setSearchGroup(2, 1)
@@ -269,6 +280,17 @@ function startHotelFirstFromHome() {
   resetAll()
   setHomeVariant('hf')
   setHeroPhotoIndex(0)   // always open on picture 1 (the default hero)
+  navigateTo('/first-release/home')
+}
+
+/** Fake door-test "variabel reisgezelschap" (vak Variable Travel Group): het Redesign (R1)
+ *  met de vlag aan — personenselector telt volwassenen en kinderen; bij een oneven aantal of
+ *  kinderen toont de zoekpagina alleen de melding met e-mailveld. Zie useFirstReleaseFakeDoor. */
+function startFakeDoorTest() {
+  resetAll()
+  setHomeVariant('hf')
+  setHeroPhotoIndex(0)
+  fakeDoor.enable()
   navigateTo('/first-release/home')
 }
 

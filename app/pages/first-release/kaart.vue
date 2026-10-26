@@ -19,9 +19,13 @@ import SearchFilterPanel from '~/components-first-release/search/SearchFilterPan
 import HotelMapMobileCard from '~/components-first-release/map/HotelMapMobileCard.vue'
 import FilterSubpage from '~/components-first-release/search/FilterSubpage.vue'
 import { useFirstReleaseIsMobile } from '~/composables-first-release/useFirstReleaseIsMobile'
+import { useFirstReleaseFakeDoor } from '~/composables-first-release/useFirstReleaseFakeDoor'
 
 const { t } = useFirstReleaseI18n()
 const isMobile = useFirstReleaseIsMobile()
+/* Fake door "variabel reisgezelschap": zonder aanbod geen kaart; /search toont de melding. */
+const { blocked: fakeDoorBlocked } = useFirstReleaseFakeDoor()
+if (fakeDoorBlocked.value) navigateTo('/first-release/search', { replace: true })
 
 useHead({ title: 'Kaart — Via Luxury' })
 
