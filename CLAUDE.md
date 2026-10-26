@@ -32,7 +32,9 @@ bij een oneven aantal volwassenen of bij kinderen toont `/first-release/search` 
 `FirstReleaseFakeDoorNotice` (kop echoot de keuze, één zin reden, bij oneven zonder kinderen de
 link "Zoek dan voor 4 volwassenen" die de groep even maakt, e-mailveld; geen resultaten) en stuurt
 `/kaart` terug naar `/search`. Een even aantal zoekt gewoon (volwassenen / 2 kamers). Teksten onder `fakeDoor.*`
-in `app/i18n`. Elke andere startknop zet de vlag weer uit. De code synct mee naar MHT, maar
+in `app/i18n`. Zolang de vlag aanstaat draagt elke R1-pagina linksboven het oranje stikkertje
+"Fake door flex reisgezelschap" (`FirstReleaseFakeDoorSticker`, in `SiteHeader`, `CheckoutTopNav`
+en `CheckoutMobileHeader`). Elke andere startknop zet de vlag weer uit. De code synct mee naar MHT, maar
 staat daar nooit aan.
 
 ## MVP 12-11-2026 = losstaande kopie van MHT (niet gesynchroniseerd)

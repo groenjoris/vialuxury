@@ -13,6 +13,8 @@
       ['3', '4', '5'].includes(effectiveNavVariant) ? 'site-header--nav-v2' : null,
     ]"
   >
+    <!-- Stikkertje linksboven zolang de fake door-vlag aanstaat. -->
+    <FirstReleaseFakeDoorSticker />
     <!-- Main nav bar — laid out across TWO rows via CSS grid:
            row 1: logo (left)              | _                | actions (right)
            row 2: pay-off (under logo)     | verticals (mid)  | phone (right)
