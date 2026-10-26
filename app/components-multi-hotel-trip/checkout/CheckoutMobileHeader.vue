@@ -1,7 +1,11 @@
 <script setup lang="ts">
 // Multi Hotel Trip checkout — mobiele site: donkere balk (horizontaal logo, "Veilig uitchecken"; geen hamburger)
 // met daaronder de voortgangsbalkjes (terug-pijl, 3 segmenten, koffertje).
+import { useMultiHotelTripFakeDoor } from '~/composables-multi-hotel-trip/useMultiHotelTripFakeDoor'
+
 withDefaults(defineProps<{ step?: number }>(), { step: 1 })
+// Fake door-stikkertje linksboven: de balk krijgt dan wat extra bovenmarge zodat het logo vrij blijft.
+const { enabled: fakeDoorOn } = useMultiHotelTripFakeDoor()
 
 function goBack() {
   if (import.meta.client) window.history.back()
@@ -10,7 +14,8 @@ function goBack() {
 
 <template>
   <div>
-    <header class="mnav">
+    <header class="mnav" :class="{ 'mnav--fakedoor': fakeDoorOn }">
+      <MultiHotelTripFakeDoorSticker />
       <NuxtLink to="/multi-hotel-trip/home" aria-label="Naar de homepage">
         <img class="mnav__logo" src="/images/logo-vialuxury-horizontal.svg" alt="ViaLuxury" />
         <span class="mnav__proto" aria-hidden="true">MHR</span>
@@ -47,6 +52,7 @@ function goBack() {
 
 <style scoped>
 .mnav {
+  position: relative; /* positioneringscontext voor het fake door-stikkertje */
   background: var(--c-via-black);
   color: var(--c-white);
   padding: 14px 20px;
@@ -54,6 +60,7 @@ function goBack() {
   align-items: center;
   justify-content: space-between;
 }
+.mnav--fakedoor { padding-top: 26px; }
 .mnav__logo {
   height: 18px;
   width: auto;

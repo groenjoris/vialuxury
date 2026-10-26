@@ -2,6 +2,7 @@
      flexibel-annuleren prototype: TopNav). -->
 <template>
   <header class="nav">
+    <MultiHotelTripFakeDoorSticker />
     <div class="nav__inner">
       <div class="nav__brand">
         <NuxtLink to="/multi-hotel-trip/home" aria-label="Naar de homepage">
@@ -34,6 +35,7 @@
 
 <style scoped>
 .nav {
+  position: relative; /* positioneringscontext voor het fake door-stikkertje */
   background: var(--c-via-black);
   color: var(--c-white);
   height: 72px;
