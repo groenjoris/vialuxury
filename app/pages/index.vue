@@ -9,14 +9,6 @@
            client has picked to pursue. No homepage-variant switcher. -->
       <section class="start-section">
         <h2 class="start-section__title">Redesign (first release)</h2>
-        <p class="start-section__lead">
-          <a
-            href="https://docs.google.com/spreadsheets/d/1II0u8mkbtFpg16CWzlYGMD2yO4QR9dtOI6bDxPRREqo/edit?gid=379133869#gid=379133869"
-            target="_blank"
-            rel="noopener"
-            class="start-section__link"
-          >Scope sheet (Google Spreadsheets) ↗</a>
-        </p>
         <div class="start-section__buttons">
           <button
             type="button"
@@ -487,24 +479,12 @@ definePageMeta({ layout: false })
   color: var(--color-text-primary);
 }
 
-/* Lead line under the section title — used by the "First release"
-   block to surface the Google Sheets scope link. */
+/* Lead line under the section title. */
 .start-section__lead {
   margin: 0 0 var(--space-md);
   font-size: 14px;
   color: var(--color-text-secondary);
   text-align: left;
-}
-
-.start-section__link {
-  color: var(--color-primary);
-  text-decoration: none;
-  font-weight: 600;
-}
-
-.start-section__link:hover,
-.start-section__link:focus-visible {
-  text-decoration: underline;
 }
 
 .start-section__buttons {
