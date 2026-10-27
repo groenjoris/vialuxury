@@ -22,6 +22,18 @@ mobiele site `app/pages/first-release/m/checkout/*`, `components-first-release/c
 MHT-checkout wijkt daardoor sterk af, dus R1-checkoutwijzigingen leveren bij de automatische
 sync (zie hieronder) vaak conflicten op — die in de MHT-bestanden oplossen.
 
+## Variant-label en prototype-navigatie (sinds 2026-10-27)
+
+Elk prototype draagt onder het logo een subtiel variant-label (`.site-header__proto`, in de checkout
+`.nav__proto` / `.mnav__proto`: 9px, uppercase, wit 50 %, dun randje — nooit oranje): `R1`,
+`R1 + fake door` (fake door-vlag aan), `R2 VR` (variabel reisgezelschap; onder de pay-off, want die
+staat in R2 direct onder het logo), `MHR` en `MHR MVP` (ook bovenin de MVP-mail). Prototype-navigatie
+(`<Prefix>ProtoNav`, in de sitekop en de desktop-checkoutbalk): helemaal linksboven "‹ startscherm",
+op de post-bookingschermen van MHT/MVP (bevestiging, tips & routes, account, mailpreview) met
+"‹ flow" erboven; op mobiel verborgen — daar staat de startscherm-link alleen in de footer
+(`SiteFooter` en `CheckoutFooter`). In de desktop-sitefooter staat de startschermknop 284px naar
+links zodat de helpwidget ("Hoe kan ik je helpen?") hem niet overlapt.
+
 ## Fake door-test "variabel reisgezelschap" (variant bínnen R1, sinds 2026-10-26)
 
 Startknop "Fake door-test" in het vak Variable Travel Group op het startscherm; opent het
@@ -32,9 +44,9 @@ bij een oneven aantal volwassenen of bij kinderen toont `/first-release/search` 
 `FirstReleaseFakeDoorNotice` (kop echoot de keuze, één zin reden, bij oneven zonder kinderen de
 link "Zoek dan voor 4 volwassenen" die de groep even maakt, e-mailveld; geen resultaten) en stuurt
 `/kaart` terug naar `/search`. Een even aantal zoekt gewoon (volwassenen / 2 kamers). Teksten onder `fakeDoor.*`
-in `app/i18n`. Zolang de vlag aanstaat draagt elke R1-pagina linksboven het oranje stikkertje
-"Fake door flex reisgezelschap" (`FirstReleaseFakeDoorSticker`, in `SiteHeader`, `CheckoutTopNav`
-en `CheckoutMobileHeader`). Elke andere startknop zet de vlag weer uit. De code synct mee naar MHT, maar
+in `app/i18n`. Zolang de vlag aanstaat luidt het variant-label onder het logo op elke R1-pagina
+"R1 + fake door" (in `SiteHeader`, `CheckoutTopNav` en `CheckoutMobileHeader`, zie "Variant-label en
+prototype-navigatie"). Elke andere startknop zet de vlag weer uit. De code synct mee naar MHT, maar
 staat daar nooit aan.
 
 ## MVP 12-11-2026 = losstaande kopie van MHT (niet gesynchroniseerd)
@@ -57,9 +69,10 @@ kopieën van de MHT-versies die los van MHT worden uitgekleed (MVP-bevestigingsp
 het cirkeltje als preloader, geen route/confetti op de foto, geen tipsblok; MVP-mail: geen
 tipsblok; MVP-account: alleen het boekingenoverzicht, kaart niet klikbaar, geen detailpagina —
 annuleren/wijzigen volgt nog). De
-MVP-pagina's en -mail dragen linksboven een oranje stikkertje "MVP" (`MvpTripFlowLink`). Het
-MVP-schema staat op dezelfde flowpagina als de volledige versie (`/multi-hotel-trip/flow`, boven
-de lijn); de flow-pil op de MVP-pagina's verwijst daar ook naartoe. Er is geen MVP-tipspagina.
+MVP-pagina's dragen onder het logo het variant-label "MHR MVP" en de MVP-mail bovenin hetzelfde
+label. Het MVP-schema staat op dezelfde flowpagina als de volledige versie (`/multi-hotel-trip/flow`,
+boven de lijn); de flow-link linksboven op de MVP-post-bookingschermen (`MvpTripProtoNav`) verwijst
+daar ook naartoe. Er is geen MVP-tipspagina.
 
 ## Multi Hotel Trip (MHT) = kopie van R1 — houd ze in sync
 

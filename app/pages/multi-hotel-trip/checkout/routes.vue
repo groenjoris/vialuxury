@@ -283,9 +283,8 @@ useHead({ title: `${checkout.value.name} — Tips & routes — ViaLuxury` })
 <template>
   <div class="rp">
     <MultiHotelTripSiteHeader />
-    <MultiHotelTripFlowLink />
 
-    <!-- Prototype-schakelaar linksboven in de navigatiebalk, onder het flow-linkje (niet voor de gast): Vandaag-blok aan/uit -->
+    <!-- Prototype-schakelaar linksboven in de navigatiebalk, onder de prototype-navigatie (niet voor de gast): Vandaag-blok aan/uit -->
     <label class="rp__proto" title="Prototype: Vandaag-blok aan/uit">
       <input v-model="showToday" type="checkbox" class="rp__switch-input" />
       <span class="rp__switch-track" aria-hidden="true"><span class="rp__switch-knob" /></span>
@@ -508,8 +507,8 @@ useHead({ title: `${checkout.value.name} — Tips & routes — ViaLuxury` })
 .rp__anchor { scroll-margin-top: 90px; }
 .rp__label { display: block; font-size: 11px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: var(--color-text-secondary); }
 
-/* Prototype-schakelaar: linksboven in de zwarte navigatiebalk, boven de header (z 500) */
-.rp__proto { position: absolute; top: 34px; left: 8px; z-index: 600; display: flex; flex-direction: column; align-items: center; gap: 2px; cursor: pointer; user-select: none; }
+/* Prototype-schakelaar: linksboven in de zwarte navigatiebalk, onder de prototype-navigatie en het variant-label (z 500) */
+.rp__proto { position: absolute; top: 70px; left: 8px; z-index: 600; display: flex; flex-direction: column; align-items: center; gap: 2px; cursor: pointer; user-select: none; }
 .rp__switch-input { position: absolute; opacity: 0; width: 0; height: 0; }
 .rp__switch-track { position: relative; width: 30px; height: 18px; border-radius: 9px; background: rgba(255, 255, 255, 0.28); transition: background var(--transition-fast); }
 .rp__switch-knob { position: absolute; top: 3px; left: 3px; width: 12px; height: 12px; border-radius: 50%; background: #fff; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3); transition: transform var(--transition-fast); }

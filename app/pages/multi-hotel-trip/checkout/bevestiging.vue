@@ -159,7 +159,6 @@ useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
   <div class="mht-checkout page page--white cf" :class="{ 'page--m': isMobileUa }">
     <MultiHotelTripCheckoutMobileHeader v-if="isMobileUa" :step="3" />
     <MultiHotelTripCheckoutTopNav v-else />
-    <MultiHotelTripFlowLink />
 
     <!-- Preloader: 3 seconden "boeking bevestigen" voordat de bevestiging verschijnt. -->
     <Transition name="cf-load">
@@ -324,9 +323,6 @@ useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
 
 <style scoped>
 .page { position: relative; min-height: 100vh; display: flex; flex-direction: column; }
-/* Ruimte linksboven voor het flow-linkje (prototype-navigatie), zodat het niet over het logo valt. */
-.cf :deep(.nav__inner) { padding-left: 84px; }
-.cf :deep(.mnav) { padding-left: 80px; }
 .page--white { background: var(--c-white); }
 .cf__main { flex: 1; padding-bottom: 56px; }
 .cf__body { padding-top: 32px; display: flex; flex-direction: column; gap: 32px; }

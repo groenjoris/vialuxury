@@ -2,7 +2,8 @@
      flexibel-annuleren prototype: TopNav). -->
 <template>
   <header class="nav">
-    <MultiHotelTripFakeDoorSticker />
+    <!-- Prototype-navigatie: "‹ startscherm" helemaal linksboven. -->
+    <MultiHotelTripProtoNav />
     <div class="nav__inner">
       <div class="nav__brand">
         <NuxtLink to="/multi-hotel-trip/home" aria-label="Naar de homepage">
@@ -35,7 +36,7 @@
 
 <style scoped>
 .nav {
-  position: relative; /* positioneringscontext voor het fake door-stikkertje */
+  position: relative; /* positioneringscontext voor de prototype-navigatie linksboven */
   background: var(--c-via-black);
   color: var(--c-white);
   height: 72px;
@@ -64,7 +65,7 @@
   /* Black wordmark -> white for the dark bar */
   filter: brightness(0) invert(1);
 }
-/* Subtiele prototype-sticker onder het logo. */
+/* Subtiel variant-label onder het logo. */
 .nav__brand a { position: relative; display: block; }
 .nav__proto {
   position: absolute; left: 0; top: 100%; margin-top: 4px; pointer-events: none;

@@ -20,7 +20,7 @@ import { baseUrl, font, newsletter, type EmailMode } from "../components/theme";
 
 // MVP 12-11-2026 — kopie van de boekingsbevestiging van Multi Hotel Trip, uitgekleed naar de
 // MVP-definitie (wijzigingen alleen hier, de volledige versie blijft staan): geen blok "Tips
-// voor je reis" (de MVP heeft geen tipspagina). Stikkertje "MVP" bovenin voor de developers.
+// voor je reis" (de MVP heeft geen tipspagina). Subtiel variant-label "MHR MVP" bovenin voor de developers.
 //
 // Boekingsbevestiging van een multi-hotel vakantie (Multi Hotel Trip). Header, logo,
 // Trustpilot en footer uit het nieuwsbrief-template; daartussen dezelfde opbouw als
@@ -212,10 +212,11 @@ export default function VakantieBevestiging({
       <Preview>Je boeking is bevestigd — {tripName}</Preview>
       <Body style={{ backgroundColor: c.bg, margin: 0, padding: 0, fontFamily: font.body }}>
         <Container style={{ width: "100%", maxWidth: "626px" }}>
-          {/* Ontwikkelmarkering: dit is de MVP-variant van de mail (niet voor de gast bedoeld). */}
+          {/* Variant-label (niet voor de gast): dezelfde subtiele stijl als het label onder het logo op de
+              MVP-pagina's ("MHR MVP"), zodat developers altijd zien dat dit de MVP-variant van de mail is. */}
           <Section style={{ padding: "8px 12px 0" }}>
-            <span style={{ display: "inline-block", padding: "2px 8px", borderRadius: "999px", backgroundColor: "#e97132", color: "#ffffff", fontFamily: font.body, fontSize: "10px", lineHeight: "16px", fontWeight: 700, letterSpacing: "1px", textTransform: "uppercase" }}>
-              MVP
+            <span style={{ display: "inline-block", padding: "2px 5px", border: `1px solid ${c.border}`, borderRadius: "3px", color: c.muted, fontFamily: font.body, fontSize: "9px", lineHeight: "11px", fontWeight: 600, letterSpacing: "1.3px", textTransform: "uppercase" }}>
+              MHR MVP
             </span>
           </Section>
           <NewsletterHeader mode={mode} />

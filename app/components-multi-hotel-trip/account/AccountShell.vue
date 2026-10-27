@@ -17,7 +17,6 @@ const items = [
 <template>
   <div class="acc">
     <MultiHotelTripSiteHeader hide-search-dock />
-    <MultiHotelTripFlowLink />
 
     <div class="container acc__main">
       <nav class="acc__nav" aria-label="Mijn ViaLuxury">

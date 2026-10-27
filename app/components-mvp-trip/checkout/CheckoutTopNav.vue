@@ -2,6 +2,8 @@
      flexibel-annuleren prototype: TopNav). -->
 <template>
   <header class="nav">
+    <!-- Prototype-navigatie: "‹ startscherm" helemaal linksboven, op de bevestigingspagina met "‹ flow" erboven. -->
+    <MvpTripProtoNav />
     <div class="nav__inner">
       <div class="nav__brand">
         <NuxtLink to="/mvp-trip/home" aria-label="Naar de homepage">
@@ -34,6 +36,7 @@
 
 <style scoped>
 .nav {
+  position: relative; /* positioneringscontext voor de prototype-navigatie linksboven */
   background: var(--c-via-black);
   color: var(--c-white);
   height: 72px;
@@ -62,7 +65,7 @@
   /* Black wordmark -> white for the dark bar */
   filter: brightness(0) invert(1);
 }
-/* Subtiele prototype-sticker onder het logo. */
+/* Subtiel variant-label onder het logo. */
 .nav__brand a { position: relative; display: block; }
 .nav__proto {
   position: absolute; left: 0; top: 100%; margin-top: 4px; pointer-events: none;

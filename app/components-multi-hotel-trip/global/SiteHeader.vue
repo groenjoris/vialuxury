@@ -13,8 +13,8 @@
       ['3', '4', '5'].includes(effectiveNavVariant) ? 'site-header--nav-v2' : null,
     ]"
   >
-    <!-- Stikkertje linksboven zolang de fake door-vlag aanstaat. -->
-    <MultiHotelTripFakeDoorSticker />
+    <!-- Prototype-navigatie: "‹ startscherm" helemaal linksboven (alleen desktop). -->
+    <MultiHotelTripProtoNav />
     <!-- Main nav bar — laid out across TWO rows via CSS grid:
            row 1: logo (left)              | _                | actions (right)
            row 2: pay-off (under logo)     | verticals (mid)  | phone (right)
@@ -39,7 +39,7 @@
             alt="ViaLuxury"
             class="site-header__logo-img site-header__logo-img--horizontal"
           />
-          <!-- Prototype-sticker (subtiel) onder het logo. -->
+          <!-- Variant-label (subtiel) onder het logo. -->
           <span class="site-header__proto" aria-hidden="true">MHR</span>
         </NuxtLink>
 

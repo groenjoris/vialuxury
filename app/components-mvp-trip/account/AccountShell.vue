@@ -17,7 +17,6 @@ const items = [
 <template>
   <div class="acc">
     <MvpTripSiteHeader hide-search-dock />
-    <MvpTripFlowLink />
 
     <div class="container acc__main">
       <nav class="acc__nav" aria-label="Mijn ViaLuxury">

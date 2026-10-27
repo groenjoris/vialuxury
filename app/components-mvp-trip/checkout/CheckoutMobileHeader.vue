@@ -61,7 +61,7 @@ function goBack() {
   /* Zwart woordmerk -> wit op de donkere balk */
   filter: brightness(0) invert(1);
 }
-/* Subtiele prototype-sticker onder het logo; de balk krijgt 2px extra onderrand zodat hij erbinnen past. */
+/* Subtiel variant-label onder het logo; de balk krijgt 2px extra onderrand zodat hij erbinnen past. */
 .mnav { padding-bottom: 16px; }
 .mnav > a { position: relative; display: block; }
 .mnav__proto {

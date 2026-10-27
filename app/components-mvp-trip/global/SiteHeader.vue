@@ -13,6 +13,8 @@
       ['3', '4', '5'].includes(effectiveNavVariant) ? 'site-header--nav-v2' : null,
     ]"
   >
+    <!-- Prototype-navigatie: "‹ startscherm" helemaal linksboven, op de post-bookingschermen met "‹ flow" erboven (alleen desktop). -->
+    <MvpTripProtoNav />
     <!-- Main nav bar — laid out across TWO rows via CSS grid:
            row 1: logo (left)              | _                | actions (right)
            row 2: pay-off (under logo)     | verticals (mid)  | phone (right)
@@ -37,7 +39,7 @@
             alt="ViaLuxury"
             class="site-header__logo-img site-header__logo-img--horizontal"
           />
-          <!-- Prototype-sticker (subtiel) onder het logo. -->
+          <!-- Variant-label (subtiel) onder het logo. -->
           <span class="site-header__proto" aria-hidden="true">MHR MVP</span>
         </NuxtLink>
 

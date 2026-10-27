@@ -4,7 +4,6 @@
 // - simpele preloader: alleen het cirkeltje, zonder de checklist (en korter);
 // - geen route en geen confetti op de hoofdfoto;
 // - geen blok "Tips voor je reis" (de MVP heeft geen tipspagina).
-// Stikkertje "MVP" linksboven (MvpTripFlowLink).
 //
 // Multi Hotel Trip checkout — bevestigingspagina na het boeken van een vakantie
 // (prototype: "Boek nu" op de gegevenspagina = betaald, geen validatie).
@@ -150,7 +149,6 @@ useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
   <div class="mvp-checkout page page--white cf" :class="{ 'page--m': isMobileUa }">
     <MvpTripCheckoutMobileHeader v-if="isMobileUa" :step="3" />
     <MvpTripCheckoutTopNav v-else />
-    <MvpTripFlowLink />
 
     <!-- Preloader (MVP): alleen het cirkeltje, 3 seconden, dan de bevestiging. -->
     <Transition name="cf-load">
@@ -301,10 +299,6 @@ useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
 
 <style scoped>
 .page { position: relative; min-height: 100vh; display: flex; flex-direction: column; }
-/* Ruimte linksboven voor het flow-linkje (prototype-navigatie), zodat het niet over het logo valt. */
-/* Ruimte linksboven voor de flow-pil + het MVP-stikkertje. */
-.cf :deep(.nav__inner) { padding-left: 128px; }
-.cf :deep(.mnav) { padding-left: 124px; }
 .page--white { background: var(--c-white); }
 .cf__main { flex: 1; padding-bottom: 56px; }
 .cf__body { padding-top: 32px; display: flex; flex-direction: column; gap: 32px; }
