@@ -12,6 +12,8 @@
       ['3', '4', '5'].includes(effectiveNavVariant) ? 'site-header--nav-v2' : null,
     ]"
   >
+    <!-- Prototype-navigatie: "‹ startscherm" helemaal linksboven (alleen desktop). -->
+    <SecondReleaseProtoNav />
     <!-- Main nav bar — laid out across TWO rows via CSS grid:
            row 1: logo (left)              | _                | actions (right)
            row 2: pay-off (under logo)     | verticals (mid)  | phone (right)
@@ -36,8 +38,6 @@
             alt="ViaLuxury"
             class="site-header__logo-img site-header__logo-img--horizontal"
           />
-          <!-- TEMP: version badge so it's obvious this is Release 2. Remove later. -->
-          <span class="site-header__version-badge">R2</span>
         </NuxtLink>
 
         <!-- Pay-off block (grid row 2, col 1 on desktop; flows under the
@@ -64,6 +64,8 @@
               stroke-linecap="round"
             />
           </svg>
+          <!-- Variant-label (subtiel) onder logo + pay-off: R2 = variabel reisgezelschap (VR). -->
+          <span class="site-header__proto" aria-hidden="true">R2 VR</span>
         </NuxtLink>
 
         <!-- Verticals switcher (grid row 2, col 2 — desktop only) -->
@@ -2738,20 +2740,13 @@ function handleSelectHotelInPopup(slug: string) {
   align-items: center;
 }
 
-/* TEMP: Release-2 version badge. Remove when no longer needed. */
-.site-header__version-badge {
-  flex-shrink: 0;
-  margin-left: 8px;
-  padding: 2px 8px;
-  border-radius: 999px;
-  background: var(--color-primary);
-  color: #fff;
-  font-family: var(--font-body);
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  line-height: 1.4;
-  pointer-events: none;
+/* Subtiel variant-label onder logo + pay-off (zelfde stijl als in de andere prototypes; in R2 staat de
+   handgeschreven pay-off direct onder het logo, dus het label hangt onder de pay-off). */
+.site-header__proto {
+  align-self: flex-start; margin-top: 5px; pointer-events: none;
+  font-family: var(--font-body, inherit); font-size: 9px; line-height: 1; font-weight: 600;
+  letter-spacing: 0.14em; text-transform: uppercase; white-space: nowrap;
+  color: rgba(255, 255, 255, 0.5); border: 1px solid rgba(255, 255, 255, 0.22); border-radius: 3px; padding: 2px 5px;
 }
 
 .site-header__logo-img {

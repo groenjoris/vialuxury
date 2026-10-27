@@ -4,7 +4,7 @@
 import { useFirstReleaseFakeDoor } from '~/composables-first-release/useFirstReleaseFakeDoor'
 
 withDefaults(defineProps<{ step?: number }>(), { step: 1 })
-// Fake door-stikkertje linksboven: de balk krijgt dan wat extra bovenmarge zodat het logo vrij blijft.
+// Variant-label onder het logo: met de fake door-vlag aan "R1 + fake door".
 const { enabled: fakeDoorOn } = useFirstReleaseFakeDoor()
 
 function goBack() {
@@ -14,11 +14,10 @@ function goBack() {
 
 <template>
   <div>
-    <header class="mnav" :class="{ 'mnav--fakedoor': fakeDoorOn }">
-      <FirstReleaseFakeDoorSticker />
+    <header class="mnav">
       <NuxtLink to="/first-release/home" aria-label="Naar de homepage">
         <img class="mnav__logo" src="/images/logo-vialuxury-horizontal.svg" alt="ViaLuxury" />
-        <span class="mnav__proto" aria-hidden="true">R1</span>
+        <span class="mnav__proto" aria-hidden="true">{{ fakeDoorOn ? 'R1 + fake door' : 'R1' }}</span>
       </NuxtLink>
       <div class="mnav__right">
         <span class="mnav__safe">
@@ -52,7 +51,6 @@ function goBack() {
 
 <style scoped>
 .mnav {
-  position: relative; /* positioneringscontext voor het fake door-stikkertje */
   background: var(--c-via-black);
   color: var(--c-white);
   padding: 14px 20px;
@@ -60,7 +58,6 @@ function goBack() {
   align-items: center;
   justify-content: space-between;
 }
-.mnav--fakedoor { padding-top: 26px; }
 .mnav__logo {
   height: 18px;
   width: auto;
@@ -68,7 +65,7 @@ function goBack() {
   /* Zwart woordmerk -> wit op de donkere balk */
   filter: brightness(0) invert(1);
 }
-/* Subtiele prototype-sticker onder het logo; de balk krijgt 2px extra onderrand zodat hij erbinnen past. */
+/* Subtiel variant-label onder het logo; de balk krijgt 2px extra onderrand zodat hij erbinnen past. */
 .mnav { padding-bottom: 16px; }
 .mnav > a { position: relative; display: block; }
 .mnav__proto {

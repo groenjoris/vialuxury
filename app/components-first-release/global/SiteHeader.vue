@@ -13,8 +13,8 @@
       ['3', '4', '5'].includes(effectiveNavVariant) ? 'site-header--nav-v2' : null,
     ]"
   >
-    <!-- Stikkertje linksboven zolang de fake door-vlag aanstaat. -->
-    <FirstReleaseFakeDoorSticker />
+    <!-- Prototype-navigatie: "‹ startscherm" helemaal linksboven (alleen desktop). -->
+    <FirstReleaseProtoNav />
     <!-- Main nav bar — laid out across TWO rows via CSS grid:
            row 1: logo (left)              | _                | actions (right)
            row 2: pay-off (under logo)     | verticals (mid)  | phone (right)
@@ -39,8 +39,8 @@
             alt="ViaLuxury"
             class="site-header__logo-img site-header__logo-img--horizontal"
           />
-          <!-- Prototype-sticker (subtiel) onder het logo. -->
-          <span class="site-header__proto" aria-hidden="true">R1</span>
+          <!-- Variant-label (subtiel) onder het logo; met de fake door-vlag aan "R1 + fake door". -->
+          <span class="site-header__proto" aria-hidden="true">{{ fakeDoorOn ? 'R1 + fake door' : 'R1' }}</span>
         </NuxtLink>
 
         <!-- Opt-in pay-off under the logo (grid row 2, col 1 on desktop;
