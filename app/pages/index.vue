@@ -277,13 +277,13 @@ function startHotelFirstFromHome() {
 
 /** Fake door-test "variabel reisgezelschap" (vak Variable Travel Group): het Redesign (R1)
  *  met de vlag aan — personenselector telt volwassenen en kinderen; bij een oneven aantal of
- *  kinderen toont de zoekpagina alleen de melding met e-mailveld. Zie useFirstReleaseFakeDoor. */
+ *  kinderen toont de zoekpagina alleen de melding met e-mailveld. Zie useFirstReleaseFakeDoor.
+ *  Eigen, deelbare URL: /first-release/fake-door (de middleware fr-fakedoor zet daar de vlag aan). */
 function startFakeDoorTest() {
   resetAll()
   setHomeVariant('hf')
   setHeroPhotoIndex(0)
-  fakeDoor.enable()
-  navigateTo('/first-release/home')
+  navigateTo('/first-release/fake-door')
 }
 
 /** First-release "Hotel First" — start on the partner advertisement

@@ -36,8 +36,13 @@ links zodat de helpwidget ("Hoe kan ik je helpen?") hem niet overlapt.
 
 ## Fake door-test "variabel reisgezelschap" (variant bínnen R1, sinds 2026-10-26)
 
-Startknop "Fake door-test" in het vak Variable Travel Group op het startscherm; opent het
-Redesign (R1) met de vlag aan (cookie `vl_fr_fakedoor`, `useFirstReleaseFakeDoor`). Met de vlag
+Eigen, deelbare URL: `/first-release/fake-door` — de R1-homepage (alias van `/first-release/home`,
+hook `pages:extend` in `nuxt.config.ts`) met de vlag aan (cookie `vl_fr_fakedoor`,
+`useFirstReleaseFakeDoor`). De middleware `app/middleware/fr-fakedoor.global.ts` zet de vlag aan
+wie die URL opent en stuurt, zolang de vlag aanstaat, `/first-release/home` terug naar die URL, zodat
+de adresbalk op de homepage altijd de deelbare link toont; diepere pagina's werken op de cookie. De
+startknop "Fake door-test" in het vak Variable Travel Group op het startscherm opent die URL. Alias en
+middleware syncen niet mee naar MHT. Met de vlag
 aan telt de personenselector in de zoekbalk (desktop-popup in `SiteHeader.vue`, mobiel in
 `MobileSearchModal.vue`) volwassenen en kinderen (met leeftijd) in plaats van personen/kamers;
 bij een oneven aantal volwassenen of bij kinderen toont `/first-release/search` alleen

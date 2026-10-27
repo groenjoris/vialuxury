@@ -92,6 +92,17 @@ export default defineNuxtConfig({
     '@vueuse/nuxt',
   ],
 
+  hooks: {
+    // Fake door-test "variabel reisgezelschap" (R1) heeft een eigen, deelbare URL:
+    // /first-release/fake-door toont dezelfde homepage als /first-release/home, maar met de vlag
+    // aan (zet app/middleware/fr-fakedoor.global.ts). Als alias hier en niet via definePageMeta in
+    // home.vue, zodat de URL niet meesynct naar MHT.
+    'pages:extend'(pages) {
+      const home = pages.find(p => p.path === '/first-release/home')
+      if (home) home.alias = ['/first-release/fake-door']
+    },
+  },
+
   css: [
     '~/assets/css/fonts.css',
     '~/assets/css/variables.css',
