@@ -4,9 +4,11 @@ import { baseUrl, newsletter, type EmailMode } from "./theme";
 
 type Props = {
   mode?: EmailMode;
+  /** false = alleen het logo (CRM-mails). */
+  trustpilot?: boolean;
 };
 
-export default function NewsletterHeader({ mode = "light" }: Props) {
+export default function NewsletterHeader({ mode = "light", trustpilot = true }: Props) {
   const c = newsletter[mode];
   return (
     <Section style={{ backgroundColor: c.frame, padding: "16px 20px" }}>
@@ -20,7 +22,7 @@ export default function NewsletterHeader({ mode = "light" }: Props) {
             style={{ height: "auto" }}
           />
         </Column>
-        <Column align="right">
+        {trustpilot && <Column align="right">
           <Img
             src={`${baseUrl}/images/mail/trustpilot.png`}
             alt="Trustpilot 4.5/5 — 15.500+ reviews"
@@ -28,7 +30,7 @@ export default function NewsletterHeader({ mode = "light" }: Props) {
             height="50"
             className="m-trustpilot"
           />
-        </Column>
+        </Column>}
       </Row>
     </Section>
   );

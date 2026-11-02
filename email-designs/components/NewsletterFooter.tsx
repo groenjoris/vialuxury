@@ -4,10 +4,12 @@ import { baseUrl, font, newsletter, type EmailMode } from "./theme";
 
 type Props = {
   recipientEmail: string;
+  /** Afzenderreden die bij de trigger past, bijv. "omdat je bij ons boekte". */
+  reason?: string;
   mode?: EmailMode;
 };
 
-export default function NewsletterFooter({ recipientEmail, mode = "light" }: Props) {
+export default function NewsletterFooter({ recipientEmail, reason, mode = "light" }: Props) {
   const c = newsletter[mode];
   const small = {
     color: "#FFFFFF",
@@ -110,7 +112,7 @@ export default function NewsletterFooter({ recipientEmail, mode = "light" }: Pro
       <Row>
         <Column className="m-center">
           <Text className="m-center m-small" style={{ ...small, margin: "24px 0 0" }}>
-            Je ontvangt deze e-mail op <strong>{recipientEmail}</strong>.
+            Je ontvangt deze e-mail op <strong>{recipientEmail}</strong>{reason ? ` ${reason}` : ""}.
           </Text>
         </Column>
       </Row>

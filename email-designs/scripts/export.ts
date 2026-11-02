@@ -13,15 +13,25 @@ async function main() {
   const here = dirname(fileURLToPath(import.meta.url));
   const outDir = resolve(here, "../../public/emails");
   const dataFile = resolve(here, "../../app/data/mht-emails.json");
+  // CRM-concepten: alleen light, eigen lijst voor /crm/<slug>.
+  const crmFile = resolve(here, "../../app/data/crm-emails.json");
   mkdirSync(outDir, { recursive: true });
   const index: { slug: string; title: string; description: string; section: string }[] = [];
+  const crm: { slug: string; title: string; description: string; subject?: string; preheader?: string }[] = [];
   for (const e of emails) {
+    if (e.section === "crm") {
+      writeFileSync(resolve(outDir, `${e.slug}.html`), await renderEmail(e, "light"));
+      crm.push({ slug: e.slug, title: e.title, description: e.description, subject: e.subject, preheader: e.preheader });
+      console.log("✓", e.slug);
+      continue;
+    }
     writeFileSync(resolve(outDir, `${e.slug}.html`), await renderEmail(e, "light"));
     writeFileSync(resolve(outDir, `${e.slug}.dark.html`), await renderEmail(e, "dark"));
     index.push({ slug: e.slug, title: e.title, description: e.description, section: e.section });
     console.log("✓", e.slug);
   }
   writeFileSync(dataFile, JSON.stringify(index, null, 2) + "\n");
+  writeFileSync(crmFile, JSON.stringify(crm, null, 2) + "\n");
   console.log(`${index.length} e-mails → ${outDir}`);
 }
 main().catch((err) => { console.error(err); process.exit(1); });

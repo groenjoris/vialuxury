@@ -117,6 +117,16 @@ Links naar de mails staan in het vakje "Multi Hotel Trip" op het startscherm (ma
 volgen staan er grijs bij). Links in e-mails naar het prototype gebruiken
 `https://vialuxury.vercel.app/...`.
 
+## CRM (concept, sinds 2026-11-02)
+
+Artist impression van geautomatiseerde e-mails, alleen desktop + light mode: nagenietmail
+(`crm-nagenieten`), precies een jaar geleden (`crm-jaar-geleden`) en winkelmandje
+(`crm-winkelmandje`, variant `-beschikbaar`). Bronnen in `email-designs/emails/crm-*.tsx`
+(gedeelde bouwstenen `email-designs/components/crm.tsx`), registry-sectie `"crm"`; de export
+schrijft alleen light HTML en de lijst `app/data/crm-emails.json`. Preview `/crm/<slug>` (met
+onderwerp en preheader), bevestigingspagina van de nagenietknoppen `/crm/volgende-vakantie?keuze=…`.
+Knoppen linken naar de R1-dealpagina (zachte landing). Startscherm: vak "CRM".
+
 ## Kaarten (Leaflet)
 
 De kaartweergave van de zoekresultaten (`*/map/HotelBrowseMap.vue`) haalt
