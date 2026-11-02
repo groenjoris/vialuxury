@@ -124,7 +124,7 @@ CrmWinkelmandje.PreviewProps = {
   departureDate: "22 november 2026",
   nights: 2,
   persons: 2,
-  price: "€558",
+  price: "€358",
   availability: "almost-full",
   roomsLeft: 3,
   review: { score: "9,1", text: "Prachtige kamer, het diner was een feestje en het personeel is ontzettend gastvrij.", author: "Marieke, oktober 2026" },
