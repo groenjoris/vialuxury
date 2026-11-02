@@ -65,9 +65,9 @@
           Concept voor geautomatiseerde e-mails (desktop, light mode)
         </p>
         <div class="start-section__buttons">
-          <NuxtLink class="start-btn" to="/crm/crm-nagenieten">Nagenietmail (3 dagen na vertrek)</NuxtLink>
           <NuxtLink class="start-btn" to="/crm/crm-jaar-geleden">Precies een jaar geleden</NuxtLink>
           <NuxtLink class="start-btn" to="/crm/crm-winkelmandje">Winkelmandje (2 dagen na verlaten)</NuxtLink>
+          <NuxtLink class="start-btn" to="/crm/crm-nagenieten">Nagenietmail (3 dagen na vertrek)</NuxtLink>
         </div>
       </section>
 
