@@ -78,23 +78,24 @@ export default function CrmWinkelmandje({ recipientEmail, hotelName, packageTitl
             </Section>
           </Section>
 
-          {/* Gastenoordeel, kaal: één keer sterren met het gemiddelde, daaronder drie korte reviews van één regel */}
+          {/* Gastenoordeel: lichtgrijs vlak, één keer sterren met het gemiddelde, drie reviews in 20 px */}
           {reviews && reviews.length > 0 && (
             <Section className="m-pad" style={{ padding: "36px 32px 0" }}>
               <Text style={s.kop}>Dit vinden gasten van {hotelName}</Text>
-              {reviewSummary && (
-                <>
-                  <Section style={{ marginTop: "12px" }}>
+              <Section style={{ marginTop: "16px", backgroundColor: "#F5F5F5", borderRadius: "8px", padding: "24px 24px 28px" }}>
+                {reviewSummary && (
+                  <>
                     <TrustpilotStars rating={reviewSummary.average} />
+                    <Text style={{ ...s.body, margin: "6px 0 0" }}>{reviewSummary.label}</Text>
+                  </>
+                )}
+                {reviews.slice(0, 3).map((r, i) => (
+                  <Section key={r.author} style={{ marginTop: i || reviewSummary ? "22px" : 0 }}>
+                    <Text style={{ fontFamily: font.heading, fontSize: "20px", lineHeight: "1.35", color: c.text, margin: 0 }}>&ldquo;{r.text}&rdquo;</Text>
+                    <Text style={{ ...s.muted, margin: "4px 0 0" }}>{r.author}</Text>
                   </Section>
-                  <Text style={{ ...s.body, margin: "6px 0 0" }}>{reviewSummary.label}</Text>
-                </>
-              )}
-              {reviews.slice(0, 3).map((r, i) => (
-                <Text key={r.author} style={{ fontFamily: font.heading, fontSize: "16px", lineHeight: "1.5", color: c.text, margin: i ? "10px 0 0" : "16px 0 0" }}>
-                  &ldquo;{r.text}&rdquo; &mdash; {r.author}
-                </Text>
-              ))}
+                ))}
+              </Section>
             </Section>
           )}
 
