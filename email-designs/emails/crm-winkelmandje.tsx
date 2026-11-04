@@ -27,7 +27,7 @@ type Props = {
   /** Drie gastenoordelen; leeg → geen gastenoordeel. */
   /** Gemiddelde en aantal reviews van het hotel (schaal tot 5), boven de losse reviews. */
   reviewSummary?: { average: 3 | 3.5 | 4 | 4.5 | 5; label: string };
-  reviews?: { stars: 3 | 3.5 | 4 | 4.5 | 5; text: string; author: string }[];
+  reviews?: { text: string; author: string }[];
   image: string;
   checkoutUrl: string;
 };
@@ -78,7 +78,7 @@ export default function CrmWinkelmandje({ recipientEmail, hotelName, packageTitl
             </Section>
           </Section>
 
-          {/* Gastenoordeel: drie reviews onder elkaar, alleen als er scores zijn */}
+          {/* Gastenoordeel, kaal: één keer sterren met het gemiddelde, daaronder drie korte reviews van één regel */}
           {reviews && reviews.length > 0 && (
             <Section className="m-pad" style={{ padding: "36px 32px 0" }}>
               <Text style={s.kop}>Dit vinden gasten van {hotelName}</Text>
@@ -91,11 +91,9 @@ export default function CrmWinkelmandje({ recipientEmail, hotelName, packageTitl
                 </>
               )}
               {reviews.slice(0, 3).map((r, i) => (
-                <Section key={r.author} style={{ marginTop: "20px", paddingTop: i ? "20px" : 0, borderTop: i ? `1px solid ${c.border}` : "none" }}>
-                  <TrustpilotStars rating={r.stars} />
-                  <Text style={{ fontFamily: font.heading, fontSize: "16px", lineHeight: "1.5", color: c.text, margin: "6px 0 0" }}>&ldquo;{r.text}&rdquo;</Text>
-                  <Text style={{ ...s.muted, margin: "6px 0 0" }}>{r.author}</Text>
-                </Section>
+                <Text key={r.author} style={{ fontFamily: font.heading, fontSize: "16px", lineHeight: "1.5", color: c.text, margin: i ? "10px 0 0" : "16px 0 0" }}>
+                  &ldquo;{r.text}&rdquo; &mdash; {r.author}
+                </Text>
               ))}
             </Section>
           )}
@@ -128,11 +126,11 @@ CrmWinkelmandje.PreviewProps = {
   price: "€998",
   availability: "almost-full",
   roomsLeft: 3,
-  reviewSummary: { average: 4.5, label: "4,5 uit 312 reviews op Trustpilot" },
+  reviewSummary: { average: 4.5, label: "4,5 uit 312 reviews" },
   reviews: [
-    { stars: 5, text: "Prachtige kamer, het diner was een feestje en het personeel is ontzettend gastvrij.", author: "Marieke, oktober 2026" },
-    { stars: 5, text: "Een stijlvol hotel midden in Den Haag. Het ontbijt was uitgebreid en de kamer heerlijk rustig.", author: "Jeroen, september 2026" },
-    { stars: 4, text: "Fijne locatie, alles op loopafstand. De lobby en de bar zijn echt bijzonder.", author: "Annelies, augustus 2026" },
+    { text: "Prachtige kamer en een feestelijk diner.", author: "Marieke" },
+    { text: "Stijlvol hotel en een heerlijk rustige kamer.", author: "Jeroen" },
+    { text: "Fijne locatie, alles op loopafstand.", author: "Annelies" },
   ],
   image: "https://asset.vialuxury.com/assets/ec2bfd91-fc7d-4fa4-91b9-9fc61298b804?key=card",
   checkoutUrl: `${site}/first-release/deal/hotel-des-indes-verken-en-beleef-den-haag-vanuit-luxe-5-hotel-incl-3-gangendiner?checkin=2026-11-20&adults=2`,
