@@ -15,6 +15,22 @@ const cartVariants = [
 ]
 const isCart = computed(() => slug.value.startsWith('crm-winkelmandje'))
 
+// Snel door de mails bladeren: dropdown, vorige/volgende en de pijltjestoetsen.
+// De beschikbaar-variant van het winkelmandje hoort bij dezelfde mail in het menu.
+const menu = emails.filter(e => e.slug !== 'crm-winkelmandje-beschikbaar')
+const current = computed(() => (slug.value === 'crm-winkelmandje-beschikbaar' ? 'crm-winkelmandje' : slug.value))
+const index = computed(() => menu.findIndex(e => e.slug === current.value))
+const go = (slug: string) => navigateTo(`/crm/${slug}`)
+const step = (d: number) => go(menu[(index.value + d + menu.length) % menu.length]!.slug)
+function onKey(e: KeyboardEvent) {
+  const tag = (e.target as HTMLElement | null)?.tagName
+  if (tag === 'SELECT' || tag === 'INPUT' || e.metaKey || e.ctrlKey || e.altKey) return
+  if (e.key === 'ArrowRight') step(1)
+  else if (e.key === 'ArrowLeft') step(-1)
+}
+onMounted(() => window.addEventListener('keydown', onKey))
+onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
+
 useHead({ title: `${entry.value?.title ?? 'E-mail'} — ViaLuxury CRM` })
 </script>
 
@@ -25,6 +41,13 @@ useHead({ title: `${entry.value?.title ?? 'E-mail'} — ViaLuxury CRM` })
         <a class="crm__back" href="/">‹ Startscherm</a>
         <h1 class="crm__title">{{ entry?.title }}</h1>
       </div>
+      <nav class="crm__nav" aria-label="Ga naar een andere mail">
+        <button type="button" class="crm__step" aria-label="Vorige mail" @click="step(-1)">‹</button>
+        <select class="crm__select" :value="current" aria-label="Kies een mail" @change="go(($event.target as HTMLSelectElement).value)">
+          <option v-for="(m, i) in menu" :key="m.slug" :value="m.slug">{{ i + 1 }}. {{ m.title }}</option>
+        </select>
+        <button type="button" class="crm__step" aria-label="Volgende mail" @click="step(1)">›</button>
+      </nav>
       <div v-if="isCart" class="crm__group" role="group" aria-label="Beschikbaarheid">
         <NuxtLink
           v-for="v in cartVariants"
@@ -53,6 +76,10 @@ useHead({ title: `${entry.value?.title ?? 'E-mail'} — ViaLuxury CRM` })
 .crm__back { color: var(--color-text-secondary); text-decoration: none; font-size: 13px; }
 .crm__back:hover { color: var(--color-primary); }
 .crm__title { margin: 0; font-family: var(--font-heading); font-size: 20px; font-weight: 700; }
+.crm__nav { display: inline-flex; align-items: center; gap: 6px; }
+.crm__step { width: 36px; height: 36px; border: 1.5px solid var(--color-border); border-radius: var(--radius-md); background: #fff; color: var(--color-text-primary); font-size: 20px; line-height: 1; cursor: pointer; }
+.crm__step:hover { background: var(--color-text-primary); color: #fff; }
+.crm__select { height: 36px; max-width: 320px; padding: 0 12px; border: 1.5px solid var(--color-border); border-radius: var(--radius-md); background: #fff; color: var(--color-text-primary); font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; }
 .crm__group { display: inline-flex; border: 1.5px solid var(--color-border); border-radius: var(--radius-md); overflow: hidden; }
 .crm__btn { display: inline-flex; align-items: center; height: 36px; padding: 0 14px; background: #fff; color: var(--color-text-primary); font-size: 14px; font-weight: 600; text-decoration: none; }
 .crm__btn + .crm__btn { border-left: 1.5px solid var(--color-border); }
