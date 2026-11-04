@@ -334,3 +334,20 @@ export function CrmHeader() {
     </Section>
   );
 }
+
+/**
+ * Trustpilot-sterren (groen, schaal van 1 tot en met 5) als afbeelding van 152 × 28 px (@2x bron).
+ * Beschikbaar voor 3, 3.5, 4, 4.5 en 5 sterren. Het aantal staat ook in de alt-tekst.
+ */
+export function TrustpilotStars({ rating }: { rating: 3 | 3.5 | 4 | 4.5 | 5 }) {
+  const file = String(rating).replace(".", "-");
+  return (
+    <Img
+      src={`${baseUrl}/images/mail/crm/trustpilot-sterren-${file}.png`}
+      alt={`${String(rating).replace(".", ",")} van 5 sterren op Trustpilot`}
+      width="152"
+      height="28"
+      style={{ display: "block", width: "152px", height: "28px" }}
+    />
+  );
+}

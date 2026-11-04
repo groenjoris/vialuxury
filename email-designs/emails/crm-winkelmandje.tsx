@@ -1,12 +1,12 @@
 import { Body, Column, Container, Head, Heading, Html, Img, Link, Preview, Row, Section, Text } from "@react-email/components";
 import * as React from "react";
-import { crmCss, PrimaryButton, s, site, CrmHeader } from "../components/crm";
+import { crmCss, PrimaryButton, s, site, CrmHeader, TrustpilotStars } from "../components/crm";
 import NewsletterFooter from "../components/NewsletterFooter";
 import { font, newsletter } from "../components/theme";
 
 // CRM mail 3: winkelmandje, 2 dagen na verlaten (vervangt A4 cart 2 dagen).
 // Eén doel: de boeking afronden. Concrete datums en beschikbaarheid, één knop naar de
-// checkout met alles vooringevuld. Gastenoordeel: altijd drie reviews, alleen als er scores zijn.
+// checkout met alles vooringevuld. Gastenoordeel: altijd drie Trustpilot-reviews (1 tot en met 5 sterren), alleen als die er zijn.
 // Geen alternatieve deals.
 // Onderwerp: "[hotelnaam] op [aankomstdatum kort]: nog beschikbaar"
 
@@ -25,7 +25,7 @@ type Props = {
   availability: "available" | "almost-full";
   roomsLeft?: number;
   /** Drie gastenoordelen; leeg → geen gastenoordeel. */
-  reviews?: { score: string; text: string; author: string }[];
+  reviews?: { stars: 3 | 3.5 | 4 | 4.5 | 5; text: string; author: string }[];
   image: string;
   checkoutUrl: string;
 };
@@ -82,7 +82,7 @@ export default function CrmWinkelmandje({ recipientEmail, hotelName, packageTitl
               <Text style={s.kop}>Dit vinden gasten van {hotelName}</Text>
               {reviews.slice(0, 3).map((r, i) => (
                 <Section key={r.author} style={{ marginTop: "20px", paddingTop: i ? "20px" : 0, borderTop: i ? `1px solid ${c.border}` : "none" }}>
-                  <Text style={{ ...s.name, margin: 0 }}>{r.score}</Text>
+                  <TrustpilotStars rating={r.stars} />
                   <Text style={{ fontFamily: font.heading, fontSize: "18px", lineHeight: "1.4", color: c.text, margin: "6px 0 0" }}>&ldquo;{r.text}&rdquo;</Text>
                   <Text style={{ ...s.muted, margin: "6px 0 0" }}>{r.author}</Text>
                 </Section>
@@ -119,9 +119,9 @@ CrmWinkelmandje.PreviewProps = {
   availability: "almost-full",
   roomsLeft: 3,
   reviews: [
-    { score: "9,1", text: "Prachtige kamer, het diner was een feestje en het personeel is ontzettend gastvrij.", author: "Marieke, oktober 2026" },
-    { score: "9,4", text: "Een stijlvol hotel midden in Den Haag. Het ontbijt was uitgebreid en de kamer heerlijk rustig.", author: "Jeroen, september 2026" },
-    { score: "8,8", text: "Fijne locatie, alles op loopafstand. De lobby en de bar zijn echt bijzonder.", author: "Annelies, augustus 2026" },
+    { stars: 5, text: "Prachtige kamer, het diner was een feestje en het personeel is ontzettend gastvrij.", author: "Marieke, oktober 2026" },
+    { stars: 5, text: "Een stijlvol hotel midden in Den Haag. Het ontbijt was uitgebreid en de kamer heerlijk rustig.", author: "Jeroen, september 2026" },
+    { stars: 4, text: "Fijne locatie, alles op loopafstand. De lobby en de bar zijn echt bijzonder.", author: "Annelies, augustus 2026" },
   ],
   image: "https://asset.vialuxury.com/assets/ec2bfd91-fc7d-4fa4-91b9-9fc61298b804?key=card",
   checkoutUrl: `${site}/first-release/deal/hotel-des-indes-verken-en-beleef-den-haag-vanuit-luxe-5-hotel-incl-3-gangendiner?checkin=2026-11-20&adults=2`,
