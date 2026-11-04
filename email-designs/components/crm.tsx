@@ -235,10 +235,10 @@ export function StarRating({ baseHref }: { baseHref: string }) {
  * Codeblok (S10): de code staat als tekst (selecteerbaar, geen afbeelding), met grote waarde en
  * de deadline direct eronder. Zonder `advice` valt die regel weg.
  */
-export function CodeBlock({ code, value, deadline, line, advice }: { code: string; value: string; deadline: string; line: string; advice?: string }) {
+export function CodeBlock({ title, code, deadline }: { title: string; code: string; deadline: string }) {
   return (
     <Section>
-      {/* Icoon links naast de waarde, samen gecentreerd */}
+      {/* Icoon links naast de titel, samen gecentreerd. De titel noemt het bedrag niet: dat staat al in de intro. */}
       <table role="presentation" align="center" cellPadding={0} cellSpacing={0} style={{ margin: "0 auto" }}>
         <tbody>
           <tr>
@@ -246,7 +246,7 @@ export function CodeBlock({ code, value, deadline, line, advice }: { code: strin
               <Img src={crmIcon("tag-plus-oranje")} alt="" width="36" height="36" style={{ display: "block" }} />
             </td>
             <td style={{ verticalAlign: "middle", fontFamily: font.heading, fontWeight: 600, fontSize: "32px", lineHeight: "1.15", color: c.heading, textAlign: "left" }}>
-              {value} cadeau
+              {title}
             </td>
           </tr>
         </tbody>
@@ -262,8 +262,6 @@ export function CodeBlock({ code, value, deadline, line, advice }: { code: strin
       <Text style={{ fontFamily: font.body, fontSize: "16px", fontWeight: 700, color: c.text, margin: "16px 0 0" }}>
         <Icon name="clock-donker" size={18} /> Geldig tot en met {deadline}
       </Text>
-      <Text style={{ ...s.title, margin: "4px 0 0" }}>{line}</Text>
-      {advice && <Text style={{ ...s.muted, margin: "4px 0 0" }}>{advice}</Text>}
     </Section>
   );
 }

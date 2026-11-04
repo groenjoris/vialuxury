@@ -100,13 +100,7 @@ export default function CrmVerlanglijst({ recipientEmail, favorites, code, wishl
 
           {/* S10: de code, gekoppeld aan het eerste favoriet */}
           <Section className="m-pad" style={{ padding: "40px 32px 0", textAlign: "center" }}>
-            <CodeBlock
-              code={code.code}
-              value={code.value}
-              deadline={code.deadline}
-              line="Vul hem in bij het boeken."
-              advice={first ? `Je code staat klaar voor ${name}.` : "Je code staat klaar voor je favoriet."}
-            />
+            <CodeBlock title="Gebruik je code bij het boeken" code={code.code} deadline={code.deadline} />
             <Section style={{ marginTop: "24px" }}>
               <PrimaryButton href={first?.url ?? wishlistUrl}>{first ? `Boek ${name}` : "Bekijk je verlanglijst"}</PrimaryButton>
             </Section>

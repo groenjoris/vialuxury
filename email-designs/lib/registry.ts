@@ -89,7 +89,7 @@ export const emails: EmailEntry[] = [
   {
     slug: "crm-terugkomactie",
     title: "Terugkomactie €20 (14 dagen na vertrek)",
-    description: "De code is de held: €20 groot, de code als selecteerbare tekst en de deadline direct eronder, met het vorige verblijf als korte herinnering. Daarna drie deals in de sfeer van dat verblijf (1 uitgelicht, 2 compact) en onderaan zes themaknoppen.",
+    description: "De code is de held: een eigen blok met de code als selecteerbare tekst en de deadline direct eronder, met het vorige verblijf als korte herinnering. Daarna drie deals in de sfeer van dat verblijf (1 uitgelicht, 2 compact) en onderaan zes themaknoppen.",
     section: "crm",
     subject: "Sanne, €20 cadeau voor je volgende verblijf",
     preheader: "Omdat je met ons op pad ging. Geldig tot en met 16 december 2026.",

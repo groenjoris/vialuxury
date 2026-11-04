@@ -6,8 +6,8 @@ import { font, newsletter } from "../components/theme";
 import { lauswolt, steenenburg, vanOys, villaRuimzicht, type CrmDeal } from "../lib/crmDeals";
 
 // CRM A3 Terugkomactie (repeatbooking_1booking_14days_20euro). Trigger: 14 dagen na vertrek.
-// De code (S10) is de held: een eigen blok met de waarde groot, de code als selecteerbare tekst
-// en de deadline direct eronder. Het vorige verblijf (S14) staat als korte herinnering direct
+// De code (S10) is de held: een eigen blok met een korte actietitel, de code als selecteerbare tekst
+// en de deadline direct eronder. Het bedrag staat alleen in de intro, niet nog eens in de titel. Het vorige verblijf (S14) staat als korte herinnering direct
 // onder het codeblok, zodat de code een reden heeft ("omdat je met ons op pad ging").
 // Daaronder drie deals in de sfeer van het vorige verblijf (1 uitgelicht, 2 compact) onder
 // een frame-titel, en onderaan de themasectie (S7) met zes vierkante knoppen.
@@ -62,13 +62,7 @@ export default function CrmTerugkomactie({ recipientEmail, hotelName, place, pac
 
           {/* De held: het codeblok */}
           <Section className="m-pad" style={{ padding: "28px 32px 0", textAlign: "center" }}>
-            <CodeBlock
-              code={code.code}
-              value={code.value}
-              deadline={code.deadline}
-              line="Vul hem in bij het boeken."
-              advice="Je code staat klaar voor je volgende verblijf."
-            />
+            <CodeBlock title="Gebruik je code bij het boeken" code={code.code} deadline={code.deadline} />
             <Section style={{ marginTop: "24px" }}>
               <PrimaryButton href={ctaUrl}>Kies je volgende verblijf</PrimaryButton>
             </Section>
