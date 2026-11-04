@@ -18,6 +18,12 @@ export const crmCss = `
   .stack { display: block !important; width: 100% !important; padding: 0 0 12px !important; }
   .m-pad { padding-left: 16px !important; padding-right: 16px !important; }
   .m-h1 { font-size: 28px !important; }
+  .m-center { text-align: center !important; }
+  .m-small { font-size: 10px !important; }
+  .m-mt { margin-top: 16px !important; }
+  .m-mx-auto { margin-left: auto !important; margin-right: auto !important; }
+  .m-only { display: block !important; }
+  .m-flogo { width: 178px !important; }
 }
 `;
 

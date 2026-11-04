@@ -44,6 +44,12 @@
         .stack { display: block !important; width: 100% !important; padding: 0 0 12px !important; }
         .m-pad { padding-left: 16px !important; padding-right: 16px !important; }
         .m-h1 { font-size: 28px !important; }
+        .m-center { text-align: center !important; }
+        .m-small { font-size: 10px !important; }
+        .m-mt { margin-top: 16px !important; }
+        .m-mx-auto { margin-left: auto !important; margin-right: auto !important; }
+        .m-only { display: block !important; }
+        .m-flogo { width: 178px !important; }
       }
     </style>
   </head>
@@ -600,7 +606,7 @@
                                     data-id="__react-email-column"
                                     style="width:50%;vertical-align:top">
                                     <img
-                                      class="m-mx-auto"
+                                      class="m-mx-auto m-flogo"
                                       alt="ViaLuxury"
                                       src="/images/logo-vialuxury-horizontal.png"
                                       style="display:block;outline:none;border:none;text-decoration:none;height:auto"
@@ -610,48 +616,33 @@
                                       style="font-size:12px;line-height:16px;color:#FFFFFF;margin:20px 0 8px;font-weight:700;margin-top:20px;margin-right:0;margin-bottom:8px;margin-left:0">
                                       Volg ons op
                                     </p>
-                                    <table
-                                      align="center"
-                                      width="100%"
-                                      border="0"
-                                      cellpadding="0"
-                                      cellspacing="0"
-                                      role="presentation"
-                                      class="m-mx-auto"
-                                      style="width:54px">
-                                      <tbody style="width:100%">
-                                        <tr style="width:100%">
-                                          <td data-id="__react-email-column">
-                                            <a
-                                              href="https://www.instagram.com/vialuxury"
-                                              style="color:#067df7;text-decoration-line:none"
-                                              target="_blank"
-                                              ><img
-                                                alt="Instagram"
-                                                height="19"
-                                                src="/images/mail/icon-instagram.png"
-                                                style="display:block;outline:none;border:none;text-decoration:none"
-                                                width="19"
-                                            /></a>
-                                          </td>
-                                          <td
-                                            data-id="__react-email-column"
-                                            style="padding-left:8px">
-                                            <a
-                                              href="https://www.facebook.com/vialuxury"
-                                              style="color:#067df7;text-decoration-line:none"
-                                              target="_blank"
-                                              ><img
-                                                alt="Facebook"
-                                                height="19"
-                                                src="/images/mail/icon-facebook.png"
-                                                style="display:block;outline:none;border:none;text-decoration:none"
-                                                width="19"
-                                            /></a>
-                                          </td>
-                                        </tr>
-                                      </tbody>
-                                    </table>
+                                    <p
+                                      class="m-center"
+                                      style="font-size:12px;line-height:16px;color:#FFFFFF;margin:0;margin-top:0;margin-bottom:0;margin-left:0;margin-right:0">
+                                      <a
+                                        href="https://www.instagram.com/vialuxury"
+                                        style="color:#067df7;text-decoration-line:none"
+                                        target="_blank"
+                                        ><img
+                                          alt="Instagram"
+                                          height="19"
+                                          src="/images/mail/icon-instagram.png"
+                                          style="display:inline;outline:none;border:none;text-decoration:none;vertical-align:middle"
+                                          width="19" /></a
+                                      ><span
+                                        style="display:inline-block;width:8px"></span
+                                      ><a
+                                        href="https://www.facebook.com/vialuxury"
+                                        style="color:#067df7;text-decoration-line:none"
+                                        target="_blank"
+                                        ><img
+                                          alt="Facebook"
+                                          height="19"
+                                          src="/images/mail/icon-facebook.png"
+                                          style="display:inline;outline:none;border:none;text-decoration:none;vertical-align:middle"
+                                          width="19"
+                                      /></a>
+                                    </p>
                                   </td>
                                   <td
                                     class="stack m-center m-mt"
@@ -684,12 +675,41 @@
                                     </p>
                                     <p
                                       class="m-center m-small"
-                                      style="font-size:12px;line-height:16px;color:#FFFFFF;margin:0 0 16px;margin-top:0;margin-right:0;margin-bottom:16px;margin-left:0">
+                                      style="font-size:12px;line-height:16px;color:#FFFFFF;margin:0;margin-top:0;margin-bottom:0;margin-left:0;margin-right:0">
                                       Ma t/m Vr: 8:00 — 18:00
                                     </p>
-                                    <div
-                                      class="m-only"
-                                      style="display:none;border-top:1px solid rgba(255,255,255,0.25);margin:0 0 16px"></div>
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
+                            <div
+                              class="m-only"
+                              style="display:none;border-top:1px solid rgba(255,255,255,0.25);margin:24px 0 0"></div>
+                            <table
+                              align="center"
+                              width="100%"
+                              border="0"
+                              cellpadding="0"
+                              cellspacing="0"
+                              role="presentation">
+                              <tbody style="width:100%">
+                                <tr style="width:100%">
+                                  <td
+                                    class="stack m-center m-mt"
+                                    data-id="__react-email-column"
+                                    style="width:50%;vertical-align:bottom;padding-top:28px;padding-right:16px">
+                                    <p
+                                      class="m-center m-small"
+                                      style="font-size:12px;line-height:16px;color:#FFFFFF;margin:0;margin-top:0;margin-bottom:0;margin-left:0;margin-right:0">
+                                      Je ontvangt deze e-mail op
+                                      <strong>sanne.devries@example.com</strong>
+                                      omdat je een account hebt bij ViaLuxury<!-- -->.
+                                    </p>
+                                  </td>
+                                  <td
+                                    class="stack m-center"
+                                    data-id="__react-email-column"
+                                    style="width:50%;vertical-align:bottom;padding-top:28px">
                                     <p
                                       class="m-center m-small"
                                       style="font-size:12px;line-height:16px;color:#FFFFFF;margin:0 0 8px;margin-top:0;margin-right:0;margin-bottom:8px;margin-left:0">
@@ -730,29 +750,6 @@
                                         target="_blank"
                                         >Webversie</a
                                       >
-                                    </p>
-                                  </td>
-                                </tr>
-                              </tbody>
-                            </table>
-                            <table
-                              align="center"
-                              width="100%"
-                              border="0"
-                              cellpadding="0"
-                              cellspacing="0"
-                              role="presentation">
-                              <tbody style="width:100%">
-                                <tr style="width:100%">
-                                  <td
-                                    class="m-center"
-                                    data-id="__react-email-column">
-                                    <p
-                                      class="m-center m-small"
-                                      style="font-size:12px;line-height:16px;color:#FFFFFF;margin:24px 0 0;margin-top:24px;margin-right:0;margin-bottom:0;margin-left:0">
-                                      Je ontvangt deze e-mail op
-                                      <strong>sanne.devries@example.com</strong>
-                                      omdat je een account hebt bij ViaLuxury<!-- -->.
                                     </p>
                                   </td>
                                 </tr>

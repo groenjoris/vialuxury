@@ -27,7 +27,7 @@ export default function NewsletterHeader({ mode = "light", trustpilot = true }: 
             src={`${baseUrl}/images/mail/trustpilot.png`}
             alt="Trustpilot 4.5/5 — 15.500+ reviews"
             width="106"
-            height="50"
+            height="53"
             className="m-trustpilot"
           />
         </Column>}

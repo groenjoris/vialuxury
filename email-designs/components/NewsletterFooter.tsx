@@ -29,30 +29,28 @@ export default function NewsletterFooter({ recipientEmail, reason, mode = "light
       className="m-pad"
       style={{ backgroundColor: c.frame, padding: "32px", fontFamily: font.body }}
     >
+      {/* Rij 1: logo en social (links), hulp nodig (rechts) */}
       <Row>
         <Column className="stack m-center" style={{ width: "50%", verticalAlign: "top" }}>
           <Img
             src={`${baseUrl}/images/logo-vialuxury-horizontal.png`}
             alt="ViaLuxury"
             width="201"
-            className="m-mx-auto"
+            className="m-mx-auto m-flogo"
             style={{ height: "auto" }}
           />
           <Text className="m-center m-small" style={{ ...small, fontWeight: 700, margin: "20px 0 8px" }}>
             Volg ons op
           </Text>
-          <Row className="m-mx-auto" style={{ width: "54px" }}>
-            <Column>
-              <Link href="https://www.instagram.com/vialuxury">
-                <Img src={`${baseUrl}/images/mail/icon-instagram.png`} alt="Instagram" width="19" height="19" />
-              </Link>
-            </Column>
-            <Column style={{ paddingLeft: "8px" }}>
-              <Link href="https://www.facebook.com/vialuxury">
-                <Img src={`${baseUrl}/images/mail/icon-facebook.png`} alt="Facebook" width="19" height="19" />
-              </Link>
-            </Column>
-          </Row>
+          <Text className="m-center" style={{ ...small, margin: 0 }}>
+            <Link href="https://www.instagram.com/vialuxury">
+              <Img src={`${baseUrl}/images/mail/icon-instagram.png`} alt="Instagram" width="19" height="19" style={{ display: "inline", verticalAlign: "middle" }} />
+            </Link>
+            <span style={{ display: "inline-block", width: "8px" }} />
+            <Link href="https://www.facebook.com/vialuxury">
+              <Img src={`${baseUrl}/images/mail/icon-facebook.png`} alt="Facebook" width="19" height="19" style={{ display: "inline", verticalAlign: "middle" }} />
+            </Link>
+          </Text>
         </Column>
         <Column className="stack m-center m-mt" style={{ width: "50%", verticalAlign: "top" }}>
           <Text className="m-center" style={{ ...small, fontWeight: 700, margin: "0 0 8px" }}>
@@ -78,13 +76,26 @@ export default function NewsletterFooter({ recipientEmail, reason, mode = "light
             />
             +31 20 808 8809
           </Text>
-          <Text className="m-center m-small" style={{ ...small, margin: "0 0 16px" }}>
+          <Text className="m-center m-small" style={{ ...small, margin: 0 }}>
             Ma t/m Vr: 8:00 — 18:00
           </Text>
-          <div
-            className="m-only"
-            style={{ display: "none", borderTop: "1px solid rgba(255,255,255,0.25)", margin: "0 0 16px" }}
-          />
+        </Column>
+      </Row>
+
+      {/* Scheidingslijn: alleen op mobiel */}
+      <div
+        className="m-only"
+        style={{ display: "none", borderTop: "1px solid rgba(255,255,255,0.25)", margin: "24px 0 0" }}
+      />
+
+      {/* Rij 2: afzenderregel (links, onderaan uitgelijnd) en kleine lettertjes + links (rechts) */}
+      <Row>
+        <Column className="stack m-center m-mt" style={{ width: "50%", verticalAlign: "bottom", paddingTop: "28px", paddingRight: "16px" }}>
+          <Text className="m-center m-small" style={small}>
+            Je ontvangt deze e-mail op <strong>{recipientEmail}</strong>{reason ? ` ${reason}` : ""}.
+          </Text>
+        </Column>
+        <Column className="stack m-center" style={{ width: "50%", verticalAlign: "bottom", paddingTop: "28px" }}>
           <Text className="m-center m-small" style={{ ...small, margin: "0 0 8px" }}>
             Prijswijzigingen en/of zetfouten voorbehouden.
           </Text>
@@ -106,13 +117,6 @@ export default function NewsletterFooter({ recipientEmail, reason, mode = "light
             <Link href="https://vialuxury.nl" style={footerLink}>
               Webversie
             </Link>
-          </Text>
-        </Column>
-      </Row>
-      <Row>
-        <Column className="m-center">
-          <Text className="m-center m-small" style={{ ...small, margin: "24px 0 0" }}>
-            Je ontvangt deze e-mail op <strong>{recipientEmail}</strong>{reason ? ` ${reason}` : ""}.
           </Text>
         </Column>
       </Row>
