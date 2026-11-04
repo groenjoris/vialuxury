@@ -52,7 +52,7 @@ export default function CrmTerugkomactie({ recipientEmail, hotelName, place, pac
         <Container style={{ width: "100%", maxWidth: "626px" }}>
           <CrmHeader />
 
-          <Section className="m-pad" style={{ padding: "36px 32px 0" }}>
+          <Section className="m-pad" style={{ padding: "36px 32px 0", textAlign: "center" }}>
             <Heading as="h1" className="m-h1" style={s.h1}>Op naar de volgende keer</Heading>
             <Text style={s.body}>
               {hotelName ? `We vonden het fijn dat je met ons naar ${hotelName} ging.` : "We vonden het fijn dat je met ons op pad ging."}{" "}
@@ -61,7 +61,7 @@ export default function CrmTerugkomactie({ recipientEmail, hotelName, place, pac
           </Section>
 
           {/* De held: het codeblok */}
-          <Section className="m-pad" style={{ padding: "28px 32px 0" }}>
+          <Section className="m-pad" style={{ padding: "28px 32px 0", textAlign: "center" }}>
             <CodeBlock
               code={code.code}
               value={code.value}
@@ -76,12 +76,12 @@ export default function CrmTerugkomactie({ recipientEmail, hotelName, place, pac
 
           {/* Herinnering aan het vorige verblijf, compact en zonder knop */}
           {hotelName && previousImage && (
-            <Section className="m-pad" style={{ padding: "36px 32px 0" }}>
-              <Row>
-                <Column className="stack" style={{ width: "120px", verticalAlign: "middle" }}>
-                  <Img src={previousImage} alt={hotelName} width="120" height="75" style={{ display: "block", width: "100%", height: "75px", objectFit: "cover", borderRadius: "6px" }} />
+            <Section className="m-pad" style={{ padding: "36px 32px 0", textAlign: "center" }}>
+              <Row style={{ width: "auto" }}>
+                <Column style={{ width: "120px", verticalAlign: "middle" }}>
+                  <Img src={previousImage} alt={hotelName} width="120" height="75" style={{ display: "block", width: "120px", height: "75px", objectFit: "cover", borderRadius: "6px" }} />
                 </Column>
-                <Column className="stack" style={{ verticalAlign: "middle", paddingLeft: "16px" }}>
+                <Column style={{ verticalAlign: "middle", paddingLeft: "16px", textAlign: "left" }}>
                   <Text style={{ ...s.muted, margin: 0, textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 700 }}>Jouw vorige verblijf</Text>
                   <Text style={{ ...s.name, margin: "4px 0 0" }}>{hotelName}</Text>
                   {meta && <Text style={{ ...s.title, color: c.muted, margin: "2px 0 0" }}>{meta}</Text>}
@@ -91,7 +91,7 @@ export default function CrmTerugkomactie({ recipientEmail, hotelName, place, pac
           )}
 
           {/* Drie deals in de sfeer van het vorige verblijf: 1 uitgelicht, 2 compact */}
-          <Section className="m-pad" style={{ padding: "48px 32px 0" }}>
+          <Section className="m-pad" style={{ padding: "48px 32px 0", textAlign: "center" }}>
             <Text style={s.kop}>Ook in de sfeer van je vorige verblijf</Text>
             {featured && (
               <Section style={{ marginTop: "16px" }}>
@@ -106,7 +106,7 @@ export default function CrmTerugkomactie({ recipientEmail, hotelName, place, pac
           </Section>
 
           {/* Themasectie: onderaan, zes vierkante knoppen */}
-          <Section className="m-pad" style={{ padding: "48px 32px 44px" }}>
+          <Section className="m-pad" style={{ padding: "48px 32px 44px", textAlign: "center" }}>
             <ThemeTiles title="Niet jouw ding? Kies je thema." note="Eén klik is genoeg, dan sturen we je voortaan wat je zoekt." />
           </Section>
 

@@ -50,12 +50,12 @@ export default function CrmZoekopdracht({ recipientEmail, searchTerm, arrivalDat
         <Container style={{ width: "100%", maxWidth: "626px" }}>
           <CrmHeader />
 
-          <Section className="m-pad" style={{ padding: "36px 32px 0" }}>
+          <Section className="m-pad" style={{ padding: "36px 32px 0", textAlign: "center" }}>
             <Heading as="h1" className="m-h1" style={s.h1}>Dit vonden we voor je</Heading>
           </Section>
 
           {/* S18: zoekopdracht als samenvatting */}
-          <Section className="m-pad" style={{ padding: "20px 32px 0" }}>
+          <Section className="m-pad" style={{ padding: "20px 32px 0", textAlign: "center" }}>
             <Section style={{ backgroundColor: "#F5F5F5", borderRadius: "8px", padding: "20px 20px 22px" }}>
               <Text style={{ ...s.muted, margin: 0, textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 700 }}>Jouw zoekopdracht</Text>
               {rows.map((r) => (
@@ -70,7 +70,7 @@ export default function CrmZoekopdracht({ recipientEmail, searchTerm, arrivalDat
           </Section>
 
           {/* Drie resultaten als rij-kaarten, populairste eerst */}
-          <Section className="m-pad" style={{ padding: "36px 32px 44px" }}>
+          <Section className="m-pad" style={{ padding: "36px 32px 44px", textAlign: "center" }}>
             <Text style={{ ...s.title, margin: "0 0 4px", color: c.muted }}>De arrangementen die het best passen bij wat je zoekt</Text>
             {results.map((d, i) => (
               <Section key={d.url} style={{ marginTop: "20px", borderTop: i ? `1px solid ${c.border}` : "none", paddingTop: i ? "20px" : 0 }}>
@@ -80,7 +80,7 @@ export default function CrmZoekopdracht({ recipientEmail, searchTerm, arrivalDat
                       <Img src={d.image} alt={d.packageTitle} width="200" height="130" style={{ display: "block", width: "100%", height: "130px", objectFit: "cover", borderRadius: "6px" }} />
                     </Link>
                   </Column>
-                  <Column className="stack" style={{ verticalAlign: "top", paddingLeft: "18px" }}>
+                  <Column className="stack" style={{ verticalAlign: "top", paddingLeft: "18px", textAlign: "left" }}>
                     {d.label && <DealLabel>{d.label}</DealLabel>}
                     <Text style={{ ...s.name, fontFamily: font.heading, fontWeight: 600, fontSize: "18px", margin: d.label ? "8px 0 0" : 0 }}>{d.hotelName}</Text>
                     {d.place && (

@@ -46,7 +46,7 @@ export default function CrmVerlanglijst({ recipientEmail, favorites, code, wishl
         <Container style={{ width: "100%", maxWidth: "626px" }}>
           <CrmHeader />
 
-          <Section className="m-pad" style={{ padding: "36px 32px 0" }}>
+          <Section className="m-pad" style={{ padding: "36px 32px 0", textAlign: "center" }}>
             <Heading as="h1" className="m-h1" style={s.h1}>Van verlanglijst naar verblijf</Heading>
             <Text style={s.body}>
               {first ? `Voor ${name} krijg je ${code.value} cadeau, met jouw unieke code.` : `Voor je favoriet krijg je ${code.value} cadeau, met jouw unieke code.`}
@@ -55,8 +55,8 @@ export default function CrmVerlanglijst({ recipientEmail, favorites, code, wishl
 
           {/* S19: eerste favoriet, gemarkeerd als het item waar de code bij hoort */}
           {first && (
-            <Section className="m-pad" style={{ padding: "24px 32px 0" }}>
-              <Section style={{ border: `1px solid ${c.text}`, borderRadius: "8px", overflow: "hidden" }}>
+            <Section className="m-pad" style={{ padding: "24px 32px 0", textAlign: "center" }}>
+              <Section style={{ border: `1px solid ${c.text}`, borderRadius: "8px", overflow: "hidden", textAlign: "left" }}>
                 <Link href={first.url}>
                   <Img src={first.image} alt={first.packageTitle} width="558" height="260" style={{ display: "block", width: "100%", height: "260px", objectFit: "cover" }} />
                 </Link>
@@ -77,17 +77,17 @@ export default function CrmVerlanglijst({ recipientEmail, favorites, code, wishl
 
           {/* Overige favorieten (0, 1 of 2) */}
           {others.length > 0 && (
-            <Section className="m-pad" style={{ padding: "28px 32px 0" }}>
+            <Section className="m-pad" style={{ padding: "28px 32px 0", textAlign: "center" }}>
               <Text style={{ ...s.kop, fontSize: "18px" }}>Ook op je lijst</Text>
               {others.map((d) => (
                 <Section key={d.url} style={{ marginTop: "16px" }}>
                   <Row>
                     <Column style={{ width: "110px", verticalAlign: "middle" }}>
                       <Link href={d.url}>
-                        <Img src={d.image} alt={d.packageTitle} width="110" height="72" style={{ display: "block", width: "100%", height: "72px", objectFit: "cover", borderRadius: "6px" }} />
+                        <Img src={d.image} alt={d.packageTitle} width="110" height="72" style={{ display: "block", width: "110px", height: "72px", objectFit: "cover", borderRadius: "6px" }} />
                       </Link>
                     </Column>
-                    <Column style={{ verticalAlign: "middle", paddingLeft: "14px" }}>
+                    <Column style={{ verticalAlign: "middle", paddingLeft: "14px", textAlign: "left" }}>
                       <Text style={{ ...s.name, margin: 0 }}>{d.hotelName}</Text>
                       <Text style={{ ...s.title, margin: "2px 0 0" }}>
                         <span style={{ color: c.muted }}>vanaf </span><strong>{d.fromPrice}</strong><span style={{ color: c.muted }}> p.p.</span>
@@ -103,7 +103,7 @@ export default function CrmVerlanglijst({ recipientEmail, favorites, code, wishl
           )}
 
           {/* S10: de code, gekoppeld aan het eerste favoriet */}
-          <Section className="m-pad" style={{ padding: "40px 32px 0" }}>
+          <Section className="m-pad" style={{ padding: "40px 32px 0", textAlign: "center" }}>
             <CodeBlock
               code={code.code}
               value={code.value}
@@ -117,7 +117,7 @@ export default function CrmVerlanglijst({ recipientEmail, favorites, code, wishl
           </Section>
 
           {/* Twee alternatieven */}
-          <Section className="m-pad" style={{ padding: "48px 32px 44px" }}>
+          <Section className="m-pad" style={{ padding: "48px 32px 44px", textAlign: "center" }}>
             <Text style={s.kop}>Vergelijkbaar met {first ? name : "je favoriet"}</Text>
             {alternatives.map((d) => (
               <Section key={d.url} style={{ marginTop: "20px" }}>

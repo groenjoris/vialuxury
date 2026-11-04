@@ -45,7 +45,7 @@ export default function CrmReview({ recipientEmail, firstName, hotelName, place,
           <CrmHeader />
 
           {/* Boven de vouw: kop, één zin, vijf sterren, knop */}
-          <Section className="m-pad" style={{ padding: "36px 32px 0" }}>
+          <Section className="m-pad" style={{ padding: "36px 32px 0", textAlign: "center" }}>
             <Heading as="h1" className="m-h1" style={s.h1}>
               {firstName ? `Welkom thuis, ${firstName}` : "Welkom thuis"}
             </Heading>
@@ -54,7 +54,7 @@ export default function CrmReview({ recipientEmail, firstName, hotelName, place,
             </Text>
           </Section>
 
-          <Section className="m-pad" style={{ padding: "28px 32px 0" }}>
+          <Section className="m-pad" style={{ padding: "28px 32px 0", textAlign: "center" }}>
             <Text style={{ fontFamily: font.heading, fontWeight: 600, fontSize: "20px", color: c.heading, margin: "0 0 10px" }}>
               Hoe beoordeel je {where}?
             </Text>
@@ -65,13 +65,13 @@ export default function CrmReview({ recipientEmail, firstName, hotelName, place,
           </Section>
 
           {/* Vorig verblijf, compact en zonder knop */}
-          <Section className="m-pad" style={{ padding: "44px 32px 0" }}>
+          <Section className="m-pad" style={{ padding: "44px 32px 0", textAlign: "center" }}>
             <Section style={{ borderTop: `1px solid ${c.border}`, paddingTop: "24px" }}>
-              <Row>
-                <Column className="stack" style={{ width: "150px", verticalAlign: "middle" }}>
-                  <Img src={image} alt={hotelName ?? "Jouw verblijf"} width="150" height="94" style={{ display: "block", width: "100%", height: "94px", objectFit: "cover", borderRadius: "6px" }} />
+              <Row style={{ width: "auto" }}>
+                <Column style={{ width: "150px", verticalAlign: "middle" }}>
+                  <Img src={image} alt={hotelName ?? "Jouw verblijf"} width="150" height="94" style={{ display: "block", width: "150px", height: "94px", objectFit: "cover", borderRadius: "6px" }} />
                 </Column>
-                <Column className="stack" style={{ verticalAlign: "middle", paddingLeft: "16px" }}>
+                <Column style={{ verticalAlign: "middle", paddingLeft: "16px", textAlign: "left" }}>
                   <Text style={{ ...s.muted, margin: 0, textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 700 }}>Jouw verblijf</Text>
                   {hotelName && <Text style={{ ...s.name, margin: "4px 0 0" }}>{hotelName}</Text>}
                   {meta && <Text style={{ ...s.title, color: c.muted, margin: "2px 0 0" }}>{meta}</Text>}
@@ -81,7 +81,7 @@ export default function CrmReview({ recipientEmail, firstName, hotelName, place,
           </Section>
 
           {/* Service als vangnet */}
-          <Section className="m-pad" style={{ padding: "28px 32px 40px" }}>
+          <Section className="m-pad" style={{ padding: "28px 32px 40px", textAlign: "center" }}>
             <ServiceLine>
               Heb je nog vragen, of ging er iets niet zoals je had gehoopt? Laat het ons weten, we helpen je graag.{" "}
               <Link href={faqUrl} style={{ color: c.text, textDecoration: "underline" }}>Veelgestelde vragen</Link>

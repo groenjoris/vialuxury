@@ -140,7 +140,7 @@ function PriceLine({ d }: { d: DealLike }) {
 /** Uitgelichte deal: grote foto, label, naam, plaats, prijs, één knop. */
 export function FeaturedDeal({ d, cta = "Bekijk arrangement", primary = false }: { d: DealLike; cta?: string; primary?: boolean }) {
   return (
-    <Section style={{ border: `1px solid ${c.border}`, borderRadius: "8px", overflow: "hidden" }}>
+    <Section style={{ border: `1px solid ${c.border}`, borderRadius: "8px", overflow: "hidden", textAlign: "left" }}>
       <Link href={d.url}>
         <Img src={d.image} alt={d.packageTitle} width="558" height="300" style={{ display: "block", width: "100%", height: "300px", objectFit: "cover" }} />
       </Link>
@@ -172,7 +172,7 @@ export function CompactDeal({ d, cta = "Bekijk arrangement" }: { d: DealLike; ct
           <Img src={d.image} alt={d.packageTitle} width="168" height="126" style={{ display: "block", width: "100%", height: "126px", objectFit: "cover", borderRadius: "6px" }} />
         </Link>
       </Column>
-      <Column className="stack" style={{ verticalAlign: "top", paddingLeft: "20px" }}>
+      <Column className="stack" style={{ verticalAlign: "top", paddingLeft: "20px", textAlign: "left" }}>
         <Text style={{ ...s.name, fontFamily: font.heading, fontWeight: 600, fontSize: "18px", lineHeight: "1.25", margin: 0 }}>{d.hotelName}</Text>
         {d.place && <Text style={{ ...s.muted, margin: "2px 0 0" }}>{d.place}</Text>}
         <Text style={{ ...s.title, margin: "8px 0 0" }}>{d.packageTitle}</Text>
@@ -191,7 +191,7 @@ export function CompactDeal({ d, cta = "Bekijk arrangement" }: { d: DealLike; ct
 export function StarRating({ baseHref }: { baseHref: string }) {
   const sep = baseHref.includes("?") ? "&" : "?";
   return (
-    <Row style={{ width: "auto", marginLeft: "-6px" }} align="left">
+    <Row style={{ width: "auto" }} align="center">
       {[1, 2, 3, 4, 5].map((n) => (
         <Column key={n} style={{ padding: "0 2px" }}>
           <Link href={`${baseHref}${sep}rating=${n}`} style={{ display: "block", width: "48px", height: "48px", textAlign: "center" }}>

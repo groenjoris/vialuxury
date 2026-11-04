@@ -42,13 +42,13 @@ export default function CrmThemamail({ recipientEmail, preheader, heading, intro
         <Container style={{ width: "100%", maxWidth: "626px" }}>
           <CrmHeader />
 
-          <Section className="m-pad" style={{ padding: "36px 32px 0" }}>
+          <Section className="m-pad" style={{ padding: "36px 32px 0", textAlign: "center" }}>
             <Heading as="h1" className="m-h1" style={s.h1}>{heading}</Heading>
             <Text style={s.body}>{intro}</Text>
           </Section>
 
           {/* 1 uitgelicht + 2 compact */}
-          <Section className="m-pad" style={{ padding: "24px 32px 0" }}>
+          <Section className="m-pad" style={{ padding: "24px 32px 0", textAlign: "center" }}>
             {featured && <FeaturedDeal d={featured} primary />}
             {rest.map((d) => (
               <Section key={d.url} style={{ marginTop: "20px" }}>
@@ -57,7 +57,7 @@ export default function CrmThemamail({ recipientEmail, preheader, heading, intro
             ))}
           </Section>
 
-          <Section className="m-pad" style={{ padding: "48px 32px 44px" }}>
+          <Section className="m-pad" style={{ padding: "48px 32px 44px", textAlign: "center" }}>
             <ThemeTiles title={themesTitle} note="Eén klik is genoeg, dan sturen we je voortaan wat je zoekt." />
           </Section>
 
