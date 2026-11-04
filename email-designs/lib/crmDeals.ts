@@ -66,14 +66,37 @@ export const steenenburg: CrmDeal = {
   url: dealUrl("kasteel-steenenburg-culinair-verblijf-in-middeleeuws-4-kasteelhotel-op-prachtig-landgoed"),
 };
 
-export const winselerhof: CrmDeal = {
-  hotelName: "Hotel Winselerhof",
-  packageTitle: "Ervaar luxe en rust in een 16e-eeuwse herenboerderij in Zuid-Limburg, incl. 4-gangendiner",
-  place: "Landgraaf",
+export const desIndes: CrmDeal = {
+  hotelName: "Hotel Des Indes",
+  packageTitle: "Verken en beleef Den Haag vanuit een luxe 5*-hotel, incl. 3-gangendiner",
+  place: "Den Haag",
   nights: 2,
-  fromPrice: "€279",
-  discount: "-48%",
+  fromPrice: "€499",
+  discount: "-47%",
   label: "Populair",
-  image: "https://asset.vialuxury.com/assets/91f33df7-dfbc-454d-9ebc-8b6e8708a18c?key=card",
-  url: dealUrl("winselerhof-een-oase-van-luxe-en-rust-in-het-hart-van-limburg-incl-culinair-4-gangendiner"),
+  image: "https://asset.vialuxury.com/assets/ec2bfd91-fc7d-4fa4-91b9-9fc61298b804?key=card",
+  url: dealUrl("hotel-des-indes-verken-en-beleef-den-haag-vanuit-luxe-5-hotel-incl-3-gangendiner"),
+};
+
+export const voco: CrmDeal = {
+  hotelName: "voco® The Hague",
+  packageTitle: "Verblijf in het mooiste hotel van Nederland",
+  place: "Den Haag",
+  nights: 2,
+  fromPrice: "€319",
+  discount: "-47%",
+  image: "https://asset.vialuxury.com/assets/37e3155c-a965-4518-b38e-b9e93483766f?key=card",
+  url: dealUrl("voco-the-hague-1-1-gratis-verblijf-in-het-mooiste-hotel-van-nederland"),
+};
+
+export const dePlesman: CrmDeal = {
+  hotelName: "Hotel De Plesman",
+  packageTitle: "Gloednieuw hotel in het voormalige KLM-hoofdkantoor, incl. 3-gangendiner",
+  place: "Den Haag",
+  nights: 2,
+  fromPrice: "€309",
+  discount: "-41%",
+  label: "Nieuw",
+  image: "https://asset.vialuxury.com/assets/e14b892d-4bfd-423d-9789-4e36ca5599af?key=card",
+  url: dealUrl("de-plesman-openingsactie-beleef-den-haag-in-stijl-vanuit-een-nieuw-5-hotel-incl-3-gangendiner"),
 };

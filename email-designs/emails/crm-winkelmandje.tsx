@@ -116,17 +116,17 @@ export default function CrmWinkelmandje({ recipientEmail, hotelName, packageTitl
 
 CrmWinkelmandje.PreviewProps = {
   recipientEmail: "sanne.devries@example.com",
-  hotelName: "Hotel Winselerhof",
-  packageTitle: "Ervaar luxe en rust in een 16e-eeuwse herenboerderij in Zuid-Limburg, incl. culinair 3-gangendiner",
-  place: "Landgraaf",
+  hotelName: "Hotel Des Indes",
+  packageTitle: "Verken en beleef Den Haag vanuit een luxe 5*-hotel, incl. 3-gangendiner",
+  place: "Den Haag",
   arrivalDate: "20 november",
   departureDate: "22 november 2026",
   nights: 2,
   persons: 2,
-  price: "€358",
+  price: "€998",
   availability: "almost-full",
   roomsLeft: 3,
   review: { score: "9,1", text: "Prachtige kamer, het diner was een feestje en het personeel is ontzettend gastvrij.", author: "Marieke, oktober 2026" },
-  image: "https://asset.vialuxury.com/assets/91f33df7-dfbc-454d-9ebc-8b6e8708a18c?key=card",
-  checkoutUrl: `${site}/first-release/deal/winselerhof-een-oase-van-luxe-en-rust-in-het-hart-van-limburg-incl-culinair-4-gangendiner?checkin=2026-11-20&adults=2`,
+  image: "https://asset.vialuxury.com/assets/ec2bfd91-fc7d-4fa4-91b9-9fc61298b804?key=card",
+  checkoutUrl: `${site}/first-release/deal/hotel-des-indes-verken-en-beleef-den-haag-vanuit-luxe-5-hotel-incl-3-gangendiner?checkin=2026-11-20&adults=2`,
 } satisfies Props;

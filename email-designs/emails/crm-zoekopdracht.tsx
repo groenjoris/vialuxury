@@ -3,7 +3,7 @@ import * as React from "react";
 import { crmCss, DealLabel, Icon, PrimaryButton, s, SecondaryButton, site, CrmHeader } from "../components/crm";
 import NewsletterFooter from "../components/NewsletterFooter";
 import { font, newsletter } from "../components/theme";
-import { steenenburg, vanOys, winselerhof, type CrmDeal } from "../lib/crmDeals";
+import { dePlesman, desIndes, voco, type CrmDeal } from "../lib/crmDeals";
 
 // CRM A5 Zoekopdracht (retargeting_abandonedsearch_1). Trigger: 1 minuut na het verlaten van de
 // site (de sheet zegt "na het zoeken"; hier bewust na het verlaten, zodat de mail de bezoeker
@@ -106,9 +106,9 @@ export default function CrmZoekopdracht({ recipientEmail, searchTerm, arrivalDat
 
 CrmZoekopdracht.PreviewProps = {
   recipientEmail: "sanne.devries@example.com",
-  searchTerm: "Zuid-Limburg",
+  searchTerm: "Den Haag",
   arrivalDate: "20 november",
   persons: 2,
   resultsUrl: `${site}/first-release/search?utm_source=email&utm_medium=crm&utm_campaign=retargeting_abandonedsearch_1`,
-  results: [{ ...winselerhof, label: "Populair" }, vanOys, { ...steenenburg, label: undefined }],
+  results: [desIndes, { ...dePlesman, label: undefined }, voco],
 } satisfies Props;

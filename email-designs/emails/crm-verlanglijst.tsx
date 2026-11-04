@@ -3,7 +3,7 @@ import * as React from "react";
 import { CodeBlock, CompactDeal, crmCss, Icon, PrimaryButton, s, SecondaryButton, CrmHeader } from "../components/crm";
 import NewsletterFooter from "../components/NewsletterFooter";
 import { font, newsletter } from "../components/theme";
-import { lauswolt, steenenburg, vanOys, villaRuimzicht, winselerhof, type CrmDeal } from "../lib/crmDeals";
+import { lauswolt, steenenburg, vanOys, villaRuimzicht, desIndes, type CrmDeal } from "../lib/crmDeals";
 
 // CRM A7 Verlanglijst (retargeting_addedtowishlist_2). Trigger: 3 dagen na de eerste
 // verlanglijstmail. De code (€10) is gekoppeld aan één specifiek item: het eerste favoriet. Dat
@@ -135,7 +135,7 @@ export default function CrmVerlanglijst({ recipientEmail, favorites, code, wishl
 
 CrmVerlanglijst.PreviewProps = {
   recipientEmail: "sanne.devries@example.com",
-  favorites: [steenenburg, villaRuimzicht, winselerhof],
+  favorites: [steenenburg, villaRuimzicht, desIndes],
   code: { code: "LIJST10-5TQ9", value: "€10", deadline: "11 november 2026" },
   wishlistUrl: "https://vialuxury.vercel.app/first-release/leden?utm_source=email&utm_medium=crm&utm_campaign=retargeting_addedtowishlist_2",
   alternatives: [vanOys, lauswolt],

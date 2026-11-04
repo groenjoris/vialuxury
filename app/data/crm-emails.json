@@ -17,14 +17,14 @@
     "slug": "crm-winkelmandje",
     "title": "Winkelmandje (2 dagen na verlaten)",
     "description": "Eén doel: de boeking afronden. Winkelmandkaart met concrete datums, nachten, personen en prijs, een beschikbaarheidsregel en één knop terug naar de boeking. Gastenoordeel als er een score is. Geen alternatieve deals.",
-    "subject": "Hotel Winselerhof op 20 nov: nog beschikbaar",
+    "subject": "Hotel Des Indes op 20 nov: nog beschikbaar",
     "preheader": "Je boeking staat klaar. Rond af wanneer het jou uitkomt."
   },
   {
     "slug": "crm-winkelmandje-beschikbaar",
     "title": "Winkelmandje (2 dagen na verlaten)",
     "description": "Variant \"Beschikbaar\": nog geen schaarste, wel populair op de aankomstdatum.",
-    "subject": "Hotel Winselerhof op 20 nov: nog beschikbaar",
+    "subject": "Hotel Des Indes op 20 nov: nog beschikbaar",
     "preheader": "Je boeking staat klaar. Rond af wanneer het jou uitkomt."
   },
   {
@@ -45,7 +45,7 @@
     "slug": "crm-zoekopdracht",
     "title": "Zoekopdracht (1 minuut na verlaten)",
     "description": "De zoekopdracht staat bovenaan als herkenbare samenvatting (zoekterm, datum, personen) met \"Bekijk alle resultaten\" als primaire knop. Daaronder drie resultaten als rij-kaarten, populairste eerst. Themasectie staat uit.",
-    "subject": "Jouw zoekopdracht: Zuid-Limburg",
+    "subject": "Jouw zoekopdracht: Den Haag",
     "preheader": "De beste arrangementen voor 20 november."
   },
   {
