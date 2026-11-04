@@ -153,16 +153,12 @@ export function FeaturedDeal({ d, cta = "Bekijk arrangement", primary = false }:
         <DealEyebrow label={d.label} place={d.place} />
         <Text style={{ fontFamily: font.heading, fontWeight: 600, fontSize: "22px", lineHeight: "1.2", color: c.heading, margin: d.label || d.place ? "6px 0 0" : 0 }}>{d.hotelName}</Text>
         <Text style={{ fontFamily: font.body, fontSize: "14px", lineHeight: "1.45", color: "#555555", margin: "6px 0 0" }}>{d.packageTitle}</Text>
-        <Row style={{ marginTop: "16px" }}>
-          <Column style={{ verticalAlign: "middle" }}>
-            <Text style={{ fontFamily: font.body, fontSize: "13px", color: c.muted, margin: 0 }}>
-              {d.nights} {d.nights === 1 ? "nacht" : "nachten"} · vanaf <strong style={{ fontFamily: font.heading, fontSize: "22px", fontWeight: 600, color: c.heading }}>{d.fromPrice}</strong> p.p.
-            </Text>
-          </Column>
-          <Column align="right" style={{ verticalAlign: "middle" }}>
-            {primary ? <PrimaryButton href={d.url}>{cta}</PrimaryButton> : <DarkButton href={d.url}>{cta}</DarkButton>}
-          </Column>
-        </Row>
+        <Text style={{ fontFamily: font.body, fontSize: "13px", color: c.muted, margin: "16px 0 0" }}>
+          {d.nights} {d.nights === 1 ? "nacht" : "nachten"} · vanaf <strong style={{ fontFamily: font.heading, fontSize: "22px", fontWeight: 600, color: c.heading }}>{d.fromPrice}</strong> p.p.
+        </Text>
+        <Section style={{ marginTop: "14px" }}>
+          {primary ? <PrimaryButton href={d.url}>{cta}</PrimaryButton> : <DarkButton href={d.url}>{cta}</DarkButton>}
+        </Section>
       </Section>
     </Section>
   );
@@ -216,16 +212,12 @@ export function CompactDeal({ d, cta = "Bekijk" }: { d: DealLike; cta?: string }
             <DealEyebrow label={d.label} place={d.place} />
             <Text style={{ fontFamily: font.heading, fontWeight: 600, fontSize: "20px", lineHeight: "1.2", color: c.heading, margin: d.label || d.place ? "6px 0 0" : 0 }}>{d.hotelName}</Text>
             <Text style={{ fontFamily: font.body, fontSize: "14px", lineHeight: "1.45", color: "#555555", margin: "6px 0 0" }}>{d.packageTitle}</Text>
-            <Row style={{ marginTop: "14px" }}>
-              <Column style={{ verticalAlign: "middle" }}>
-                <Text style={{ fontFamily: font.body, fontSize: "13px", color: c.muted, margin: 0 }}>
-                  vanaf <strong style={{ fontFamily: font.heading, fontSize: "22px", fontWeight: 600, color: c.heading }}>{d.fromPrice}</strong> p.p.
-                </Text>
-              </Column>
-              <Column align="right" style={{ verticalAlign: "middle" }}>
-                <DarkButton href={d.url}>{cta}</DarkButton>
-              </Column>
-            </Row>
+            <Text style={{ fontFamily: font.body, fontSize: "13px", color: c.muted, margin: "12px 0 0" }}>
+              vanaf <strong style={{ fontFamily: font.heading, fontSize: "22px", fontWeight: 600, color: c.heading }}>{d.fromPrice}</strong> p.p.
+            </Text>
+            <Section style={{ marginTop: "10px" }}>
+              <DarkButton href={d.url}>{cta}</DarkButton>
+            </Section>
           </Section>
         </Column>
       </Row>
