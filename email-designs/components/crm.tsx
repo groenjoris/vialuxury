@@ -256,8 +256,19 @@ export function StarRating({ baseHref }: { baseHref: string }) {
 export function CodeBlock({ code, value, deadline, line, advice }: { code: string; value: string; deadline: string; line: string; advice?: string }) {
   return (
     <Section>
-      <Text style={{ margin: 0 }}><Icon name="tag-plus-oranje" size={32} /></Text>
-      <Text style={{ fontFamily: font.heading, fontWeight: 600, fontSize: "32px", lineHeight: "1.15", color: c.heading, margin: "8px 0 0" }}>{value} cadeau</Text>
+      {/* Icoon links naast de waarde, samen gecentreerd */}
+      <table role="presentation" align="center" cellPadding={0} cellSpacing={0} style={{ margin: "0 auto" }}>
+        <tbody>
+          <tr>
+            <td style={{ verticalAlign: "middle", paddingRight: "12px" }}>
+              <Img src={crmIcon("tag-plus-oranje")} alt="" width="36" height="36" style={{ display: "block" }} />
+            </td>
+            <td style={{ verticalAlign: "middle", fontFamily: font.heading, fontWeight: 600, fontSize: "32px", lineHeight: "1.15", color: c.heading, textAlign: "left" }}>
+              {value} cadeau
+            </td>
+          </tr>
+        </tbody>
+      </table>
 
       {/* Het codevak: oranje gestippelde rand over de volle breedte; "Kortingscode" en de code staan
           erin gecentreerd, als één coupon. De code is tekst (selecteerbaar), geen afbeelding. */}
