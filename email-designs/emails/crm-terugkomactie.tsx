@@ -1,8 +1,7 @@
 import { Body, Column, Container, Head, Heading, Html, Img, Preview, Row, Section, Text } from "@react-email/components";
 import * as React from "react";
-import { CodeBlock, CompactDeal, crmCss, FeaturedDeal, PrimaryButton, s, site, ThemeTiles } from "../components/crm";
+import { CodeBlock, CompactDeal, crmCss, FeaturedDeal, PrimaryButton, s, site, ThemeTiles, CrmHeader } from "../components/crm";
 import NewsletterFooter from "../components/NewsletterFooter";
-import NewsletterHeader from "../components/NewsletterHeader";
 import { font, newsletter } from "../components/theme";
 import { lauswolt, steenenburg, vanOys, villaRuimzicht, type CrmDeal } from "../lib/crmDeals";
 
@@ -51,7 +50,7 @@ export default function CrmTerugkomactie({ recipientEmail, hotelName, place, pac
       <Preview>Omdat je met ons op pad ging. Geldig tot en met {code.deadline}.</Preview>
       <Body style={{ backgroundColor: c.bg, margin: 0, padding: 0, fontFamily: font.body }}>
         <Container style={{ width: "100%", maxWidth: "626px" }}>
-          <NewsletterHeader trustpilot={false} />
+          <CrmHeader />
 
           <Section className="m-pad" style={{ padding: "36px 32px 0", textAlign: "center" }}>
             <Heading as="h1" className="m-h1" style={{ ...s.h1, textAlign: "center" }}>Op naar de volgende keer</Heading>

@@ -1,8 +1,7 @@
 import { Body, Column, Container, Head, Heading, Html, Img, Link, Preview, Row, Section, Text } from "@react-email/components";
 import * as React from "react";
-import { crmCss, faqUrl, PrimaryButton, s, ServiceLine, serviceUrl, StarRating } from "../components/crm";
+import { crmCss, faqUrl, PrimaryButton, s, ServiceLine, serviceUrl, StarRating, CrmHeader } from "../components/crm";
 import NewsletterFooter from "../components/NewsletterFooter";
-import NewsletterHeader from "../components/NewsletterHeader";
 import { font, newsletter } from "../components/theme";
 
 // CRM A1 Reviewmail (post_booking_review). Trigger: 1 dag na vertrek.
@@ -43,7 +42,7 @@ export default function CrmReview({ recipientEmail, firstName, hotelName, place,
       <Preview>We horen graag hoe je het vond. Het kost je een minuut.</Preview>
       <Body style={{ backgroundColor: c.bg, margin: 0, padding: 0, fontFamily: font.body }}>
         <Container style={{ width: "100%", maxWidth: "626px" }}>
-          <NewsletterHeader trustpilot={false} />
+          <CrmHeader />
 
           {/* Boven de vouw: kop, één zin, vijf sterren, knop */}
           <Section className="m-pad" style={{ padding: "40px 32px 0", textAlign: "center" }}>

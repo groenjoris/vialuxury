@@ -1,8 +1,7 @@
 import { Body, Container, Head, Heading, Html, Preview, Section, Text } from "@react-email/components";
 import * as React from "react";
-import { CompactDeal, crmCss, FeaturedDeal, s, ThemeTiles } from "../components/crm";
+import { CompactDeal, crmCss, FeaturedDeal, s, ThemeTiles, CrmHeader } from "../components/crm";
 import NewsletterFooter from "../components/NewsletterFooter";
-import NewsletterHeader from "../components/NewsletterHeader";
 import { font, newsletter } from "../components/theme";
 import { lauswolt, vanOys, villaRuimzicht, type CrmDeal } from "../lib/crmDeals";
 
@@ -41,7 +40,7 @@ export default function CrmThemamail({ recipientEmail, preheader, heading, intro
       <Preview>{preheader}</Preview>
       <Body style={{ backgroundColor: c.bg, margin: 0, padding: 0, fontFamily: font.body }}>
         <Container style={{ width: "100%", maxWidth: "626px" }}>
-          <NewsletterHeader trustpilot={false} />
+          <CrmHeader />
 
           <Section className="m-pad" style={{ padding: "36px 32px 0" }}>
             <Heading as="h1" className="m-h1" style={s.h1}>{heading}</Heading>

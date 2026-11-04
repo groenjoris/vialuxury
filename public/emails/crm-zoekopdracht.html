@@ -2,10 +2,8 @@
 <html dir="ltr" lang="nl">
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link
-      rel="preload"
-      as="image"
-      href="/images/logo-vialuxury-horizontal.png" />
+    <link rel="preload" as="image" href="/images/mail/crm-header-desktop.png" />
+    <link rel="preload" as="image" href="/images/mail/crm-header-mobile.png" />
     <link
       rel="preload"
       as="image"
@@ -28,6 +26,10 @@
       rel="preload"
       as="image"
       href="https://asset.vialuxury.com/assets/c090e6d0-3705-42e1-bf8a-b1e8a3f90db8?key=card" />
+    <link
+      rel="preload"
+      as="image"
+      href="/images/logo-vialuxury-horizontal.png" />
     <link rel="preload" as="image" href="/images/mail/icon-instagram.png" />
     <link rel="preload" as="image" href="/images/mail/icon-facebook.png" />
     <link rel="preload" as="image" href="/images/mail/icon-phone.png" />
@@ -35,7 +37,10 @@
     <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
     <meta name="x-apple-disable-message-reformatting" />
     <style>
+      .hdr-mob { display: none; max-height: 0; overflow: hidden; mso-hide: all; }
       @media only screen and (max-width: 480px) {
+        .hdr-desk { display: none !important; }
+        .hdr-mob { display: block !important; max-height: none !important; overflow: visible !important; }
         .stack { display: block !important; width: 100% !important; padding: 0 0 12px !important; }
         .m-pad { padding-left: 16px !important; padding-right: 16px !important; }
         .m-h1 { font-size: 28px !important; }
@@ -82,30 +87,23 @@
                       cellpadding="0"
                       cellspacing="0"
                       role="presentation"
-                      style="background-color:#141414;padding:16px 20px">
+                      style="background-color:#141414">
                       <tbody>
                         <tr>
                           <td>
-                            <table
-                              align="center"
-                              width="100%"
-                              border="0"
-                              cellpadding="0"
-                              cellspacing="0"
-                              role="presentation">
-                              <tbody style="width:100%">
-                                <tr style="width:100%">
-                                  <td data-id="__react-email-column">
-                                    <img
-                                      class="m-logo"
-                                      alt="ViaLuxury"
-                                      src="/images/logo-vialuxury-horizontal.png"
-                                      style="display:block;outline:none;border:none;text-decoration:none;height:auto"
-                                      width="201" />
-                                  </td>
-                                </tr>
-                              </tbody>
-                            </table>
+                            <img
+                              class="hdr-desk"
+                              alt="ViaLuxury. Trustpilot 4,5/5, 16.000+ reviews"
+                              height="83"
+                              src="/images/mail/crm-header-desktop.png"
+                              style="display:block;outline:none;border:none;text-decoration:none;width:100%;height:auto"
+                              width="626" /><img
+                              class="hdr-mob"
+                              alt="ViaLuxury. Trustpilot 4,5/5, 16.000+ reviews"
+                              height="72"
+                              src="/images/mail/crm-header-mobile.png"
+                              style="display:none;outline:none;border:none;text-decoration:none;width:100%;height:auto;max-height:0;overflow:hidden"
+                              width="320" />
                           </td>
                         </tr>
                       </tbody>

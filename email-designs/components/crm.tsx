@@ -11,7 +11,10 @@ const c = newsletter.light;
 export const site = "https://vialuxury.vercel.app";
 
 export const crmCss = `
+.hdr-mob { display: none; max-height: 0; overflow: hidden; mso-hide: all; }
 @media only screen and (max-width: 480px) {
+  .hdr-desk { display: none !important; }
+  .hdr-mob { display: block !important; max-height: none !important; overflow: visible !important; }
   .stack { display: block !important; width: 100% !important; padding: 0 0 12px !important; }
   .m-pad { padding-left: 16px !important; padding-right: 16px !important; }
   .m-h1 { font-size: 28px !important; }
@@ -255,3 +258,18 @@ export function ServiceLine({ children }: { children: React.ReactNode }) {
 }
 export const faqUrl = `${site}/veelgestelde-vragen`;
 export const serviceUrl = `${site}/klantenservice`;
+
+/**
+ * Header van alle CRM-mails: logo links, Trustpilot rechts, in één afbeelding (PNG @2x).
+ * Desktop 626 × 83, mobiel 320 × 72; de mobiele variant wordt met een media query getoond.
+ * Het Trustpilot-cijfer ("16.000+ reviews") zit in de afbeelding: bij een update beide PNG's vervangen.
+ */
+export function CrmHeader() {
+  const alt = "ViaLuxury. Trustpilot 4,5/5, 16.000+ reviews";
+  return (
+    <Section style={{ backgroundColor: c.frame }}>
+      <Img className="hdr-desk" src={`${baseUrl}/images/mail/crm-header-desktop.png`} alt={alt} width="626" height="83" style={{ display: "block", width: "100%", height: "auto" }} />
+      <Img className="hdr-mob" src={`${baseUrl}/images/mail/crm-header-mobile.png`} alt={alt} width="320" height="72" style={{ display: "none", width: "100%", height: "auto", maxHeight: 0, overflow: "hidden" }} />
+    </Section>
+  );
+}

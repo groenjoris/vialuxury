@@ -1,8 +1,7 @@
 import { Body, Column, Container, Head, Heading, Html, Img, Link, Preview, Row, Section, Text } from "@react-email/components";
 import * as React from "react";
-import { crmCss, DealLabel, PrimaryButton, s, SecondaryButton, site } from "../components/crm";
+import { crmCss, DealLabel, PrimaryButton, s, SecondaryButton, site, CrmHeader } from "../components/crm";
 import NewsletterFooter from "../components/NewsletterFooter";
-import NewsletterHeader from "../components/NewsletterHeader";
 import { font, newsletter } from "../components/theme";
 
 // CRM mail 2: precies een jaar geleden (vervangt A2 1 jaar). Trigger: 1 jaar na
@@ -48,7 +47,7 @@ export default function CrmJaarGeleden({ recipientEmail, hotelName, packageTitle
       <Preview>{hotelName}, {place}. Nog een keer?</Preview>
       <Body style={{ backgroundColor: c.bg, margin: 0, padding: 0, fontFamily: font.body }}>
         <Container style={{ width: "100%", maxWidth: "626px" }}>
-          <NewsletterHeader trustpilot={false} />
+          <CrmHeader />
 
           {/* Grote arrangementfoto, datum en hotel direct eronder; geen intro */}
           <Img src={image} alt={packageTitle} width="626" height="380" style={{ display: "block", width: "100%", height: "380px", objectFit: "cover" }} />
