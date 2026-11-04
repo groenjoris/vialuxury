@@ -15,6 +15,8 @@ export const crmCss = `
 @media only screen and (max-width: 480px) {
   .hdr-desk { display: none !important; }
   .hdr-mob { display: block !important; max-height: none !important; overflow: visible !important; }
+  .stack.deal-col { padding: 0 !important; }
+  .deal-img { width: 100% !important; height: 200px !important; }
   .stack { display: block !important; width: 100% !important; padding: 0 0 12px !important; }
   .m-pad { padding-left: 16px !important; padding-right: 16px !important; }
   .m-h1 { font-size: 28px !important; }
@@ -140,53 +142,94 @@ function PriceLine({ d }: { d: DealLike }) {
   );
 }
 
-/** Uitgelichte deal: grote foto, label, naam, plaats, prijs, één knop. */
+/** Uitgelichte deal: grote foto, eyebrow (label · plaats), naam, pitch, prijs links en knop rechts. */
 export function FeaturedDeal({ d, cta = "Bekijk arrangement", primary = false }: { d: DealLike; cta?: string; primary?: boolean }) {
   return (
-    <Section style={{ border: `1px solid ${c.border}`, borderRadius: "8px", overflow: "hidden", textAlign: "left" }}>
+    <Section style={{ border: `1px solid ${c.border}`, borderRadius: "8px", overflow: "hidden", textAlign: "left", backgroundColor: "#FFFFFF" }}>
       <Link href={d.url}>
         <Img src={d.image} alt={d.packageTitle} width="558" height="300" style={{ display: "block", width: "100%", height: "300px", objectFit: "cover" }} />
       </Link>
-      <Section style={{ padding: "18px 20px 22px" }}>
-        {d.label && <DealLabel>{d.label}</DealLabel>}
-        <Text style={{ ...s.name, fontFamily: font.heading, fontWeight: 600, fontSize: "20px", margin: d.label ? "10px 0 0" : 0 }}>{d.hotelName}</Text>
-        <Text style={{ ...s.muted, margin: "4px 0 0" }}>
-          <Icon name="map-pin-donker" size={14} /> {d.place}
-        </Text>
-        <Text style={{ ...s.title, margin: "10px 0 0" }}>{d.packageTitle}</Text>
-        <PriceLine d={d} />
-        <Section style={{ marginTop: "16px" }}>
-          {primary ? <PrimaryButton href={d.url}>{cta}</PrimaryButton> : <SecondaryButton href={d.url}>{cta}</SecondaryButton>}
-        </Section>
+      <Section style={{ padding: "20px 20px 22px" }}>
+        <DealEyebrow label={d.label} place={d.place} />
+        <Text style={{ fontFamily: font.heading, fontWeight: 600, fontSize: "22px", lineHeight: "1.2", color: c.heading, margin: d.label || d.place ? "6px 0 0" : 0 }}>{d.hotelName}</Text>
+        <Text style={{ fontFamily: font.body, fontSize: "14px", lineHeight: "1.45", color: "#555555", margin: "6px 0 0" }}>{d.packageTitle}</Text>
+        <Row style={{ marginTop: "16px" }}>
+          <Column style={{ verticalAlign: "middle" }}>
+            <Text style={{ fontFamily: font.body, fontSize: "13px", color: c.muted, margin: 0 }}>
+              {d.nights} {d.nights === 1 ? "nacht" : "nachten"} · vanaf <strong style={{ fontFamily: font.heading, fontSize: "22px", fontWeight: 600, color: c.heading }}>{d.fromPrice}</strong> p.p.
+            </Text>
+          </Column>
+          <Column align="right" style={{ verticalAlign: "middle" }}>
+            {primary ? <PrimaryButton href={d.url}>{cta}</PrimaryButton> : <DarkButton href={d.url}>{cta}</DarkButton>}
+          </Column>
+        </Row>
       </Section>
     </Section>
   );
 }
 
-/**
- * Compacte deal: foto links (4:3), tekst rechts in vaste volgorde: hotelnaam, plaats, pitch, prijs, link.
- * Zonder plaats valt die regel weg. Op mobiel stapelt de foto boven de tekst.
- */
-export function CompactDeal({ d, cta = "Bekijk arrangement" }: { d: DealLike; cta?: string }) {
+/** Kleine donkere knop (secundaire actie in een kaart; oranje blijft voor de ene primaire knop per mail). */
+export function DarkButton({ href, children }: { href: string; children: React.ReactNode }) {
   return (
-    <Row>
-      <Column className="stack" style={{ width: "168px", verticalAlign: "top" }}>
-        <Link href={d.url}>
-          <Img src={d.image} alt={d.packageTitle} width="168" height="126" style={{ display: "block", width: "100%", height: "126px", objectFit: "cover", borderRadius: "6px" }} />
-        </Link>
-      </Column>
-      <Column className="stack" style={{ verticalAlign: "top", paddingLeft: "20px", textAlign: "left" }}>
-        <Text style={{ ...s.name, fontFamily: font.heading, fontWeight: 600, fontSize: "18px", lineHeight: "1.25", margin: 0 }}>{d.hotelName}</Text>
-        {d.place && <Text style={{ ...s.muted, margin: "2px 0 0" }}>{d.place}</Text>}
-        <Text style={{ ...s.title, margin: "8px 0 0" }}>{d.packageTitle}</Text>
-        <Text style={{ ...s.title, margin: "8px 0 0" }}>
-          <span style={{ color: c.muted }}>vanaf </span><strong style={{ fontSize: "16px" }}>{d.fromPrice}</strong><span style={{ color: c.muted }}> p.p.</span>
-        </Text>
-        <Text style={{ ...s.title, margin: "8px 0 0" }}>
-          <Link href={d.url} style={{ color: c.text, fontWeight: 700, textDecoration: "underline" }}>{cta} →</Link>
-        </Text>
-      </Column>
-    </Row>
+    <Button
+      href={href}
+      style={{ backgroundColor: c.text, color: "#FFFFFF", fontFamily: font.body, fontSize: "14px", fontWeight: 700, borderRadius: "6px", padding: "11px 20px", textDecoration: "none" }}
+    >
+      {children}
+    </Button>
+  );
+}
+
+/** Eyebrow boven de hotelnaam: oranje stip + label (als dat er is), dan de plaats; 12 px, hoofdletters. */
+function DealEyebrow({ label, place }: { label?: string; place?: string }) {
+  if (!label && !place) return null;
+  return (
+    <Text style={{ fontFamily: font.body, fontSize: "12px", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", lineHeight: "16px", color: c.muted, margin: 0 }}>
+      {label && (
+        <>
+          <span style={{ color: c.cta }}>●</span> <span style={{ color: c.text }}>{label}</span>
+        </>
+      )}
+      {label && place ? " · " : ""}
+      {place}
+    </Text>
+  );
+}
+
+/**
+ * Dealkaart (lijstweergave): foto links over de volle hoogte, rechts in vaste volgorde
+ * eyebrow (label · plaats), hotelnaam, pitch, en onderaan de prijs links met een kleine donkere
+ * knop rechts. Eén omlijnde kaart (1 px, 8 px hoeken). Op mobiel staat de foto boven de tekst.
+ * Zonder label of plaats valt de eyebrow weg.
+ */
+export function CompactDeal({ d, cta = "Bekijk" }: { d: DealLike; cta?: string }) {
+  return (
+    <Section style={{ border: `1px solid ${c.border}`, borderRadius: "8px", overflow: "hidden", textAlign: "left", backgroundColor: "#FFFFFF" }}>
+      <Row>
+        <Column className="stack deal-col" style={{ width: "190px", verticalAlign: "top" }}>
+          <Link href={d.url}>
+            <Img src={d.image} alt={d.packageTitle} width="190" height="190" className="deal-img" style={{ display: "block", width: "190px", height: "190px", objectFit: "cover" }} />
+          </Link>
+        </Column>
+        <Column className="stack deal-col" style={{ verticalAlign: "top" }}>
+          <Section className="deal-body" style={{ padding: "18px 20px 18px" }}>
+            <DealEyebrow label={d.label} place={d.place} />
+            <Text style={{ fontFamily: font.heading, fontWeight: 600, fontSize: "20px", lineHeight: "1.2", color: c.heading, margin: d.label || d.place ? "6px 0 0" : 0 }}>{d.hotelName}</Text>
+            <Text style={{ fontFamily: font.body, fontSize: "14px", lineHeight: "1.45", color: "#555555", margin: "6px 0 0" }}>{d.packageTitle}</Text>
+            <Row style={{ marginTop: "14px" }}>
+              <Column style={{ verticalAlign: "middle" }}>
+                <Text style={{ fontFamily: font.body, fontSize: "13px", color: c.muted, margin: 0 }}>
+                  vanaf <strong style={{ fontFamily: font.heading, fontSize: "22px", fontWeight: 600, color: c.heading }}>{d.fromPrice}</strong> p.p.
+                </Text>
+              </Column>
+              <Column align="right" style={{ verticalAlign: "middle" }}>
+                <DarkButton href={d.url}>{cta}</DarkButton>
+              </Column>
+            </Row>
+          </Section>
+        </Column>
+      </Row>
+    </Section>
   );
 }
 

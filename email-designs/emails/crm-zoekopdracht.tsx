@@ -1,6 +1,6 @@
-import { Body, Column, Container, Head, Heading, Html, Img, Link, Preview, Row, Section, Text } from "@react-email/components";
+import { Body, Container, Head, Heading, Html, Preview, Section, Text } from "@react-email/components";
 import * as React from "react";
-import { crmCss, DealLabel, Icon, PrimaryButton, s, SecondaryButton, site, CrmHeader } from "../components/crm";
+import { CompactDeal, crmCss, Icon, PrimaryButton, s, site, CrmHeader } from "../components/crm";
 import NewsletterFooter from "../components/NewsletterFooter";
 import { font, newsletter } from "../components/theme";
 import { dePlesman, desIndes, voco, type CrmDeal } from "../lib/crmDeals";
@@ -71,28 +71,10 @@ export default function CrmZoekopdracht({ recipientEmail, searchTerm, arrivalDat
 
           {/* Drie resultaten als rij-kaarten, populairste eerst */}
           <Section className="m-pad" style={{ padding: "36px 32px 44px", textAlign: "center" }}>
-            <Text style={{ ...s.title, margin: "0 0 4px", color: c.muted }}>De arrangementen die het best passen bij wat je zoekt</Text>
+            <Text style={{ ...s.title, margin: "0 0 16px", color: c.muted }}>De arrangementen die het best passen bij wat je zoekt</Text>
             {results.map((d, i) => (
-              <Section key={d.url} style={{ marginTop: "20px", borderTop: i ? `1px solid ${c.border}` : "none", paddingTop: i ? "20px" : 0 }}>
-                <Row>
-                  <Column className="stack" style={{ width: "200px", verticalAlign: "top" }}>
-                    <Link href={d.url}>
-                      <Img src={d.image} alt={d.packageTitle} width="200" height="130" style={{ display: "block", width: "100%", height: "130px", objectFit: "cover", borderRadius: "6px" }} />
-                    </Link>
-                  </Column>
-                  <Column className="stack" style={{ verticalAlign: "top", paddingLeft: "18px", textAlign: "left" }}>
-                    {d.label && <DealLabel>{d.label}</DealLabel>}
-                    <Text style={{ ...s.name, fontFamily: font.heading, fontWeight: 600, fontSize: "18px", margin: d.label ? "8px 0 0" : 0 }}>{d.hotelName}</Text>
-                    {d.place && (
-                      <Text style={{ ...s.muted, margin: "2px 0 0" }}><Icon name="map-pin-donker" size={14} /> {d.place}</Text>
-                    )}
-                    <Text style={{ ...s.title, fontSize: "13px", margin: "6px 0 0" }}>{d.packageTitle}</Text>
-                    <Text style={{ ...s.title, margin: "8px 0 10px" }}>
-                      <span style={{ color: c.muted }}>vanaf </span><strong>{d.fromPrice}</strong><span style={{ color: c.muted }}> p.p.</span>
-                    </Text>
-                    <SecondaryButton href={d.url}>Bekijk arrangement</SecondaryButton>
-                  </Column>
-                </Row>
+              <Section key={d.url} style={{ marginTop: i ? "16px" : 0 }}>
+                <CompactDeal d={d} />
               </Section>
             ))}
           </Section>
