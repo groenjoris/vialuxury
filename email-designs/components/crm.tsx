@@ -17,6 +17,7 @@ export const crmCss = `
   .hdr-mob { display: block !important; max-height: none !important; overflow: visible !important; }
   .stack.deal-col { padding: 0 !important; }
   .deal-img { width: 100% !important; height: 200px !important; }
+  .deal-body { height: auto !important; margin-top: 14px !important; }
   .stack { display: block !important; width: 100% !important; padding: 0 0 12px !important; }
   .m-pad { padding-left: 16px !important; padding-right: 16px !important; }
   .m-h1 { font-size: 28px !important; }
@@ -193,35 +194,43 @@ export function DealEyebrow({ label, place }: { label?: string; place?: string }
 }
 
 /**
- * Dealkaart (lijstweergave): foto links over de volle hoogte, rechts in vaste volgorde
- * eyebrow (label · plaats), hotelnaam, pitch, en onderaan de prijs links met een kleine donkere
- * knop rechts. Eén omlijnde kaart (1 px, 8 px hoeken). Op mobiel staat de foto boven de tekst.
+ * Dealrij (lijstweergave): foto links met ronde hoeken rondom (8 px) en zonder kader, rechts de
+ * tekst die op dezelfde hoogte als de bovenkant van de foto begint: eyebrow (label · plaats),
+ * hotelnaam, pitch, prijs en daaronder een kleine donkere knop. De foto is 200 px hoog en
+ * daarmee ongeveer even hoog als het tekstblok. Op mobiel staat de foto boven de tekst.
  * Zonder label of plaats valt de eyebrow weg.
  */
 export function CompactDeal({ d, cta = "Bekijk" }: { d: DealLike; cta?: string }) {
   return (
-    <Section style={{ border: `1px solid ${c.border}`, borderRadius: "8px", overflow: "hidden", textAlign: "left", backgroundColor: "#FFFFFF" }}>
-      <Row>
-        <Column className="stack deal-col" style={{ width: "190px", verticalAlign: "top" }}>
-          <Link href={d.url}>
-            <Img src={d.image} alt={d.packageTitle} width="190" height="190" className="deal-img" style={{ display: "block", width: "190px", height: "190px", objectFit: "cover" }} />
-          </Link>
-        </Column>
-        <Column className="stack deal-col" style={{ verticalAlign: "top" }}>
-          <Section className="deal-body" style={{ padding: "18px 20px 18px" }}>
-            <DealEyebrow label={d.label} place={d.place} />
-            <Text style={{ fontFamily: font.heading, fontWeight: 600, fontSize: "20px", lineHeight: "1.2", color: c.heading, margin: d.label || d.place ? "6px 0 0" : 0 }}>{d.hotelName}</Text>
-            <Text style={{ fontFamily: font.body, fontSize: "14px", lineHeight: "1.45", color: "#555555", margin: "6px 0 0" }}>{d.packageTitle}</Text>
-            <Text style={{ fontFamily: font.body, fontSize: "13px", color: c.muted, margin: "12px 0 0" }}>
-              vanaf <strong style={{ fontFamily: font.heading, fontSize: "22px", fontWeight: 600, color: c.heading }}>{d.fromPrice}</strong> p.p.
-            </Text>
-            <Section style={{ marginTop: "10px" }}>
-              <DarkButton href={d.url}>{cta}</DarkButton>
-            </Section>
-          </Section>
-        </Column>
-      </Row>
-    </Section>
+    <Row style={{ textAlign: "left" }}>
+      <Column className="stack deal-col" style={{ width: "210px", verticalAlign: "top" }}>
+        <Link href={d.url}>
+          <Img src={d.image} alt={d.packageTitle} width="190" height="188" className="deal-img" style={{ display: "block", width: "190px", height: "188px", objectFit: "cover", borderRadius: "8px" }} />
+        </Link>
+      </Column>
+      <Column className="stack deal-col" style={{ verticalAlign: "top" }}>
+        {/* Tekstblok even hoog als de foto: inhoud bovenaan, knop onderaan */}
+        <table role="presentation" className="deal-body" width="100%" cellPadding={0} cellSpacing={0} style={{ width: "100%", height: "188px" }}>
+          <tbody>
+            <tr>
+              <td style={{ verticalAlign: "top" }}>
+                <DealEyebrow label={d.label} place={d.place} />
+                <Text style={{ fontFamily: font.heading, fontWeight: 600, fontSize: "20px", lineHeight: "1.2", color: c.heading, margin: d.label || d.place ? "6px 0 0" : 0 }}>{d.hotelName}</Text>
+                <Text style={{ fontFamily: font.body, fontSize: "14px", lineHeight: "1.45", color: "#555555", margin: "6px 0 0" }}>{d.packageTitle}</Text>
+                <Text style={{ fontFamily: font.body, fontSize: "13px", color: c.muted, margin: "10px 0 0" }}>
+                  vanaf <strong style={{ fontFamily: font.heading, fontSize: "22px", fontWeight: 600, color: c.heading }}>{d.fromPrice}</strong> p.p.
+                </Text>
+              </td>
+            </tr>
+            <tr>
+              <td style={{ verticalAlign: "bottom", paddingTop: "10px" }}>
+                <DarkButton href={d.url}>{cta}</DarkButton>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </Column>
+    </Row>
   );
 }
 

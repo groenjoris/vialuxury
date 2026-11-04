@@ -73,7 +73,7 @@ export default function CrmZoekopdracht({ recipientEmail, searchTerm, arrivalDat
           <Section className="m-pad" style={{ padding: "36px 32px 44px", textAlign: "center" }}>
             <Text style={{ ...s.title, margin: "0 0 16px", color: c.muted }}>De arrangementen die het best passen bij wat je zoekt</Text>
             {results.map((d, i) => (
-              <Section key={d.url} style={{ marginTop: i ? "16px" : 0 }}>
+              <Section key={d.url} style={{ marginTop: i ? "24px" : 0 }}>
                 <CompactDeal d={d} />
               </Section>
             ))}
