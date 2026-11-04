@@ -1,5 +1,12 @@
 [
   {
+    "slug": "crm-review",
+    "title": "Reviewmail (1 dag na vertrek)",
+    "description": "Eén doel: de review. Vijf klikbare sterren boven de vouw (elke ster een eigen link, de score staat op de landingspagina al ingevuld), daaronder het vorige verblijf compact en zonder knop. Geen deals of thema's; alleen een servicelink als vangnet voor klachten.",
+    "subject": "Hoe was je verblijf in Landgoed Lauswolt?",
+    "preheader": "We horen graag hoe je het vond. Het kost je een minuut."
+  },
+  {
     "slug": "crm-nagenieten",
     "title": "Nagenietmail (3 dagen na vertrek)",
     "description": "Haalt één gegeven op: wanneer de volgende vakantie is, om latere mails te timen. Grote foto van het hotel met \"We hopen dat je genoten hebt van …\", daarna één vraag met vier gelijkwaardige knoppen. Geen deals, geen code.",
@@ -14,6 +21,13 @@
     "preheader": "Landgoed Lauswolt, Beetsterzwaag. Nog een keer?"
   },
   {
+    "slug": "crm-terugkomactie",
+    "title": "Terugkomactie €20 (14 dagen na vertrek)",
+    "description": "De code is de held: €20 groot, de code als selecteerbare tekst en de deadline direct eronder, met het vorige verblijf als korte herinnering. Daarna drie deals in de sfeer van dat verblijf (1 uitgelicht, 2 compact) en onderaan zes themaknoppen.",
+    "subject": "Sanne, €20 cadeau voor je volgende verblijf",
+    "preheader": "Omdat je met ons op pad ging. Geldig tot en met 16 december 2026."
+  },
+  {
     "slug": "crm-winkelmandje",
     "title": "Winkelmandje (2 dagen na verlaten)",
     "description": "Eén doel: de boeking afronden. Winkelmandkaart met concrete datums, nachten, personen en prijs, een beschikbaarheidsregel en één knop terug naar de boeking. Gastenoordeel als er een score is. Geen alternatieve deals.",
@@ -26,20 +40,6 @@
     "description": "Variant \"Beschikbaar\": nog geen schaarste, wel populair op de aankomstdatum.",
     "subject": "Hotel Des Indes op 20 nov: nog beschikbaar",
     "preheader": "Je boeking staat klaar. Rond af wanneer het jou uitkomt."
-  },
-  {
-    "slug": "crm-review",
-    "title": "Reviewmail (1 dag na vertrek)",
-    "description": "Eén doel: de review. Vijf klikbare sterren boven de vouw (elke ster een eigen link, de score staat op de landingspagina al ingevuld), daaronder het vorige verblijf compact en zonder knop. Geen deals of thema's; alleen een servicelink als vangnet voor klachten.",
-    "subject": "Hoe was je verblijf in Landgoed Lauswolt?",
-    "preheader": "We horen graag hoe je het vond. Het kost je een minuut."
-  },
-  {
-    "slug": "crm-terugkomactie",
-    "title": "Terugkomactie €20 (14 dagen na vertrek)",
-    "description": "De code is de held: €20 groot, de code als selecteerbare tekst en de deadline direct eronder, met het vorige verblijf als korte herinnering. Daarna drie deals in de sfeer van dat verblijf (1 uitgelicht, 2 compact) en onderaan zes themaknoppen.",
-    "subject": "Sanne, €20 cadeau voor je volgende verblijf",
-    "preheader": "Omdat je met ons op pad ging. Geldig tot en met 16 december 2026."
   },
   {
     "slug": "crm-zoekopdracht",

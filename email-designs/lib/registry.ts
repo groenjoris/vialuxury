@@ -58,7 +58,16 @@ export const emails: EmailEntry[] = [
     section: "designs",
     Component: MvpVakantieBevestiging,
   },
-  // CRM (concept, desktop + light mode): drie geautomatiseerde mails.
+  // CRM-concepten (desktop + light mode), in de volgorde van de sheet "Automations in kaart": A1 t/m A7.
+  {
+    slug: "crm-review",
+    title: "Reviewmail (1 dag na vertrek)",
+    description: "Eén doel: de review. Vijf klikbare sterren boven de vouw (elke ster een eigen link, de score staat op de landingspagina al ingevuld), daaronder het vorige verblijf compact en zonder knop. Geen deals of thema's; alleen een servicelink als vangnet voor klachten.",
+    section: "crm",
+    subject: "Hoe was je verblijf in Landgoed Lauswolt?",
+    preheader: "We horen graag hoe je het vond. Het kost je een minuut.",
+    Component: CrmReview,
+  },
   {
     slug: "crm-nagenieten",
     title: "Nagenietmail (3 dagen na vertrek)",
@@ -78,6 +87,15 @@ export const emails: EmailEntry[] = [
     Component: CrmJaarGeleden,
   },
   {
+    slug: "crm-terugkomactie",
+    title: "Terugkomactie €20 (14 dagen na vertrek)",
+    description: "De code is de held: €20 groot, de code als selecteerbare tekst en de deadline direct eronder, met het vorige verblijf als korte herinnering. Daarna drie deals in de sfeer van dat verblijf (1 uitgelicht, 2 compact) en onderaan zes themaknoppen.",
+    section: "crm",
+    subject: "Sanne, €20 cadeau voor je volgende verblijf",
+    preheader: "Omdat je met ons op pad ging. Geldig tot en met 16 december 2026.",
+    Component: CrmTerugkomactie,
+  },
+  {
     slug: "crm-winkelmandje",
     title: "Winkelmandje (2 dagen na verlaten)",
     description: "Eén doel: de boeking afronden. Winkelmandkaart met concrete datums, nachten, personen en prijs, een beschikbaarheidsregel en één knop terug naar de boeking. Gastenoordeel als er een score is. Geen alternatieve deals.",
@@ -95,25 +113,6 @@ export const emails: EmailEntry[] = [
     preheader: "Je boeking staat klaar. Rond af wanneer het jou uitkomt.",
     Component: CrmWinkelmandje,
     props: { ...CrmWinkelmandje.PreviewProps, availability: "available" },
-  },
-  // CRM automations (concept): A1, A3, A5, A6, A7 uit "Automations in kaart".
-  {
-    slug: "crm-review",
-    title: "Reviewmail (1 dag na vertrek)",
-    description: "Eén doel: de review. Vijf klikbare sterren boven de vouw (elke ster een eigen link, de score staat op de landingspagina al ingevuld), daaronder het vorige verblijf compact en zonder knop. Geen deals of thema's; alleen een servicelink als vangnet voor klachten.",
-    section: "crm",
-    subject: "Hoe was je verblijf in Landgoed Lauswolt?",
-    preheader: "We horen graag hoe je het vond. Het kost je een minuut.",
-    Component: CrmReview,
-  },
-  {
-    slug: "crm-terugkomactie",
-    title: "Terugkomactie €20 (14 dagen na vertrek)",
-    description: "De code is de held: €20 groot, de code als selecteerbare tekst en de deadline direct eronder, met het vorige verblijf als korte herinnering. Daarna drie deals in de sfeer van dat verblijf (1 uitgelicht, 2 compact) en onderaan zes themaknoppen.",
-    section: "crm",
-    subject: "Sanne, €20 cadeau voor je volgende verblijf",
-    preheader: "Omdat je met ons op pad ging. Geldig tot en met 16 december 2026.",
-    Component: CrmTerugkomactie,
   },
   {
     slug: "crm-zoekopdracht",
