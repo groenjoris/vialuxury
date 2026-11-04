@@ -59,7 +59,7 @@ export default function CrmZoekopdracht({ recipientEmail, searchTerm, arrivalDat
             <Section style={{ backgroundColor: "#F5F5F5", borderRadius: "8px", padding: "20px 20px 22px" }}>
               <Text style={{ ...s.muted, margin: 0, textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 700 }}>Jouw zoekopdracht</Text>
               {rows.map((r) => (
-                <Text key={r.text} style={{ fontFamily: r.strong ? font.heading : font.body, fontWeight: r.strong ? 600 : 400, fontSize: r.strong ? "22px" : "16px", color: c.text, margin: r.strong ? "8px 0 0" : "6px 0 0" }}>
+                <Text key={r.text} style={{ fontFamily: r.strong ? font.heading : font.body, fontWeight: r.strong ? 600 : 400, fontSize: r.strong ? "20px" : "16px", color: c.text, margin: r.strong ? "8px 0 0" : "6px 0 0" }}>
                   <Icon name={r.icon} size={r.strong ? 22 : 18} /> <span style={{ marginLeft: "6px" }}>{r.text}</span>
                 </Text>
               ))}

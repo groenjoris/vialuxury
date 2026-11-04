@@ -59,10 +59,10 @@ export default function CrmNagenieten({ firstName, recipientEmail, hotelName, sa
           {/* De vraag, in een eigen vlak */}
           <Section className="m-pad" style={{ padding: "32px 32px 0" }}>
             <Section style={{ backgroundColor: "#F4F1EC", borderRadius: "8px", padding: "24px 24px 4px" }}>
-              <Text style={{ fontFamily: font.body, fontSize: "13px", fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: c.muted, margin: 0 }}>
+              <Text style={{ fontFamily: font.body, fontSize: "16px", fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: c.muted, margin: 0 }}>
                 Om je nog beter te kunnen helpen, één vraag
               </Text>
-              <Text style={{ ...s.kop, fontSize: "26px", margin: "8px 0 0" }}>Wanneer is je volgende vakantie?</Text>
+              <Text style={{ ...s.kop, fontSize: "20px", margin: "8px 0 0" }}>Wanneer is je volgende vakantie?</Text>
               {/* Vier gelijkwaardige knoppen: 2×2 op desktop, onder elkaar op mobiel */}
               <Section style={{ padding: "20px 0" }}>
                 {[0, 2].map((i) => (

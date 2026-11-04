@@ -52,7 +52,7 @@ export default function CrmJaarGeleden({ recipientEmail, hotelName, packageTitle
           {/* Grote arrangementfoto, datum en hotel direct eronder; geen intro */}
           <Img src={image} alt={packageTitle} width="626" height="380" style={{ display: "block", width: "100%", height: "380px", objectFit: "cover" }} />
           <Section className="m-pad" style={{ padding: "20px 32px 0" }}>
-            <Text style={{ fontFamily: font.body, fontSize: "13px", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: c.muted, margin: 0 }}>
+            <Text style={{ fontFamily: font.body, fontSize: "16px", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: c.muted, margin: 0 }}>
               {arrivalDateLastYear}
             </Text>
             <Text style={{ ...s.name, margin: "4px 0 0" }}>{hotelName}, {place}</Text>
@@ -82,8 +82,8 @@ export default function CrmJaarGeleden({ recipientEmail, hotelName, packageTitle
                     <Img src={d.image} alt={d.packageTitle} width="178" height="120" style={{ display: "block", width: "100%", height: "120px", objectFit: "cover", borderRadius: "6px" }} />
                   </Link>
                   <DealLabel>{d.label}</DealLabel>
-                  <Text style={{ ...s.name, fontSize: "15px", margin: "8px 0 0" }}>{d.hotelName}</Text>
-                  <Text style={{ ...s.title, fontSize: "13px", minHeight: "54px" }}>{d.packageTitle}</Text>
+                  <Text style={{ ...s.name, fontSize: "16px", margin: "8px 0 0" }}>{d.hotelName}</Text>
+                  <Text style={{ ...s.title, fontSize: "16px", minHeight: "54px" }}>{d.packageTitle}</Text>
                   <Text style={{ ...s.title, margin: "8px 0 12px" }}>
                     <span style={{ color: c.muted }}>vanaf </span><strong>{d.fromPrice}</strong><span style={{ color: c.muted }}> p.p.</span>
                   </Text>

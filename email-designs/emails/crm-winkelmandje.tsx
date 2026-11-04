@@ -58,7 +58,7 @@ export default function CrmWinkelmandje({ recipientEmail, hotelName, packageTitl
             <Section style={{ border: `1px solid ${c.border}`, borderRadius: "8px", overflow: "hidden" }}>
               <Img src={image} alt={packageTitle} width="560" height="240" style={{ display: "block", width: "100%", height: "240px", objectFit: "cover" }} />
               <Section style={{ padding: "20px 20px 24px" }}>
-                <Text style={{ ...s.name, fontSize: "18px" }}>{hotelName}</Text>
+                <Text style={{ ...s.name, fontSize: "20px" }}>{hotelName}</Text>
                 <Text style={s.title}>{packageTitle}</Text>
                 <Text style={{ ...s.muted, margin: "4px 0 0" }}>{place}</Text>
 
@@ -83,7 +83,7 @@ export default function CrmWinkelmandje({ recipientEmail, hotelName, packageTitl
               {reviews.slice(0, 3).map((r, i) => (
                 <Section key={r.author} style={{ marginTop: "20px", paddingTop: i ? "20px" : 0, borderTop: i ? `1px solid ${c.border}` : "none" }}>
                   <TrustpilotStars rating={r.stars} />
-                  <Text style={{ fontFamily: font.heading, fontSize: "18px", lineHeight: "1.4", color: c.text, margin: "6px 0 0" }}>&ldquo;{r.text}&rdquo;</Text>
+                  <Text style={{ fontFamily: font.heading, fontSize: "16px", lineHeight: "1.5", color: c.text, margin: "6px 0 0" }}>&ldquo;{r.text}&rdquo;</Text>
                   <Text style={{ ...s.muted, margin: "6px 0 0" }}>{r.author}</Text>
                 </Section>
               ))}

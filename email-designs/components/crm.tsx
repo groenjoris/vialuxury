@@ -34,12 +34,12 @@ export const crmCss = `
 `;
 
 export const s = {
-  h1: { fontFamily: font.heading, fontWeight: 600, fontSize: "34px", lineHeight: "1.2", color: c.heading, margin: 0 },
-  kop: { fontFamily: font.heading, fontWeight: 600, fontSize: "22px", lineHeight: "1.3", color: c.heading, margin: 0 },
+  h1: { fontFamily: font.heading, fontWeight: 600, fontSize: "32px", lineHeight: "1.2", color: c.heading, margin: 0 },
+  kop: { fontFamily: font.heading, fontWeight: 600, fontSize: "20px", lineHeight: "1.3", color: c.heading, margin: 0 },
   body: { fontFamily: font.body, fontSize: "16px", lineHeight: "1.5", color: c.text, margin: "10px 0 0" },
   name: { fontFamily: font.body, fontSize: "16px", fontWeight: 700, lineHeight: "1.3", color: c.text, margin: 0 },
-  title: { fontFamily: font.body, fontSize: "14px", lineHeight: "1.4", color: c.text, margin: "2px 0 0" },
-  muted: { fontFamily: font.body, fontSize: "13px", lineHeight: "1.4", color: c.muted, margin: "6px 0 0" },
+  title: { fontFamily: font.body, fontSize: "16px", lineHeight: "1.4", color: c.text, margin: "2px 0 0" },
+  muted: { fontFamily: font.body, fontSize: "16px", lineHeight: "1.4", color: c.muted, margin: "6px 0 0" },
 };
 
 /** Eén primaire, oranje knop per mail. */
@@ -74,7 +74,7 @@ export function SecondaryButton({ href, children, block }: { href: string; child
         border: `1px solid ${c.text}`,
         color: c.text,
         fontFamily: font.body,
-        fontSize: "14px",
+        fontSize: "16px",
         fontWeight: 700,
         borderRadius: "6px",
         padding: "10px 16px",
@@ -95,7 +95,7 @@ export function DealLabel({ children }: { children: React.ReactNode }) {
         backgroundColor: c.badgeBg,
         color: "#FFFFFF",
         fontFamily: font.body,
-        fontSize: "11px",
+        fontSize: "16px",
         fontWeight: 700,
         letterSpacing: "0.04em",
         textTransform: "uppercase",
@@ -142,7 +142,7 @@ export function FeaturedDeal({ d, cta = "Bekijk arrangement", primary = false }:
       </Link>
       <Section style={{ padding: "20px 20px 22px" }}>
         {d.label && <Text style={dealMeta}>{d.label}</Text>}
-        <Text style={{ ...dealName, fontSize: "22px", margin: d.label ? "2px 0 0" : 0 }}>{d.hotelName}</Text>
+        <Text style={{ ...dealName, fontSize: "20px", margin: d.label ? "2px 0 0" : 0 }}>{d.hotelName}</Text>
         {d.place && <Text style={{ ...dealMeta, margin: "2px 0 0" }}>{d.place}</Text>}
         <Text style={{ ...dealPitch, margin: "8px 0 0" }}>{d.packageTitle}</Text>
         <Text style={dealPrice}>vanaf {d.fromPrice} p.p.</Text>
@@ -159,7 +159,7 @@ export function DarkButton({ href, children }: { href: string; children: React.R
   return (
     <Button
       href={href}
-      style={{ backgroundColor: c.text, color: "#FFFFFF", fontFamily: font.body, fontSize: "14px", fontWeight: 700, borderRadius: "6px", padding: "11px 20px", textDecoration: "none" }}
+      style={{ backgroundColor: c.text, color: "#FFFFFF", fontFamily: font.body, fontSize: "16px", fontWeight: 700, borderRadius: "6px", padding: "11px 20px", textDecoration: "none" }}
     >
       {children}
     </Button>
@@ -167,11 +167,11 @@ export function DarkButton({ href, children }: { href: string; children: React.R
 }
 
 /** Eén stijl voor alle bijregels in een dealkaart (label, plaats): 13 px, gewoon, grijs. Elke regel staat op zichzelf. */
-export const dealMeta = { fontFamily: font.body, fontSize: "13px", lineHeight: "18px", fontWeight: 400, color: c.muted, margin: 0 };
+export const dealMeta = { fontFamily: font.body, fontSize: "16px", lineHeight: "18px", fontWeight: 400, color: c.muted, margin: 0 };
 /** Eén stijl voor de hotelnaam in een dealkaart. */
 export const dealName = { fontFamily: font.heading, fontWeight: 600, fontSize: "20px", lineHeight: "1.2", color: c.heading, margin: 0 };
 /** Eén stijl voor de pitch. */
-export const dealPitch = { fontFamily: font.body, fontSize: "14px", lineHeight: "1.45", fontWeight: 400, color: "#555555", margin: "6px 0 0" };
+export const dealPitch = { fontFamily: font.body, fontSize: "16px", lineHeight: "1.45", fontWeight: 400, color: "#555555", margin: "6px 0 0" };
 /** Eén stijl voor de prijsregel, in één keer geschreven: "vanaf €499 p.p." */
 export const dealPrice = { fontFamily: font.body, fontSize: "16px", lineHeight: "22px", fontWeight: 700, color: c.text, margin: "10px 0 0" };
 
@@ -241,8 +241,8 @@ export function CodeBlock({ code, deadline }: { code: string; deadline: string }
       {/* Het codevak: oranje gestippelde rand over de volle breedte; "Kortingscode" en de code staan
           erin gecentreerd, als één coupon. De code is tekst (selecteerbaar), geen afbeelding. */}
       <Section style={{ width: "100%", margin: 0, border: `2px dashed ${c.cta}`, borderRadius: "8px", padding: "22px 16px", textAlign: "center" }}>
-        <Text style={{ fontFamily: font.body, fontSize: "18px", lineHeight: "1.3", color: c.text, margin: 0, textAlign: "center" }}>Kortingscode</Text>
-        <Text style={{ fontFamily: font.heading, fontWeight: 700, fontSize: "30px", lineHeight: "1.2", letterSpacing: "0.02em", color: c.cta, margin: "6px 0 0", textAlign: "center", wordBreak: "keep-all" }}>{code}</Text>
+        <Text style={{ fontFamily: font.body, fontSize: "16px", lineHeight: "1.3", color: c.text, margin: 0, textAlign: "center" }}>Kortingscode</Text>
+        <Text style={{ fontFamily: font.heading, fontWeight: 700, fontSize: "32px", lineHeight: "1.2", letterSpacing: "0.02em", color: c.cta, margin: "6px 0 0", textAlign: "center", wordBreak: "keep-all" }}>{code}</Text>
       </Section>
 
       <Text style={{ fontFamily: font.body, fontSize: "16px", fontWeight: 700, color: c.text, margin: "16px 0 0" }}>
@@ -285,7 +285,7 @@ export function ThemeTiles({ title, note, themes = novemberThemes }: { title: st
                     <td className="qs-iconcell" style={{ verticalAlign: "middle", width: "24px", paddingLeft: "8px", paddingRight: "8px" }}>
                       <Img src={t.all ? crmIcon("arrow-right-donker") : `${baseUrl}/images/mail/crm/thema/${t.icon}.png`} alt="" width="24" height="24" style={{ display: "block" }} />
                     </td>
-                    <td className="qs-label" style={{ verticalAlign: "middle", textAlign: "center", paddingRight: "8px", fontFamily: font.body, fontSize: "15px", fontWeight: 700, lineHeight: "20px", color: c.text }}>
+                    <td className="qs-label" style={{ verticalAlign: "middle", textAlign: "center", paddingRight: "8px", fontFamily: font.body, fontSize: "16px", fontWeight: 700, lineHeight: "20px", color: c.text }}>
                       {t.label}
                     </td>
                   </tr>

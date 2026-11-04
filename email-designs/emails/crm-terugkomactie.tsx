@@ -57,7 +57,7 @@ export default function CrmTerugkomactie({ recipientEmail, firstName, hotelName,
 
           {/* 1. Waarom en wat: bedankt, dan het bedrag als kop met een zin eronder */}
           <Section className="m-pad" style={{ padding: "36px 32px 0", textAlign: "center" }}>
-            <Text style={{ ...dealMeta, fontSize: "14px", textAlign: "center" }}>{firstName ? `Bedankt voor je verblijf, ${firstName}` : "Bedankt voor je verblijf"}</Text>
+            <Text style={{ ...dealMeta, fontSize: "16px", textAlign: "center" }}>{firstName ? `Bedankt voor je verblijf, ${firstName}` : "Bedankt voor je verblijf"}</Text>
             <table role="presentation" align="center" cellPadding={0} cellSpacing={0} style={{ margin: "10px auto 0" }}>
               <tbody>
                 <tr>
@@ -65,12 +65,12 @@ export default function CrmTerugkomactie({ recipientEmail, firstName, hotelName,
                     <Img src={crmIcon("tag-plus-oranje")} alt="" width="44" height="44" style={{ display: "block" }} />
                   </td>
                   <td style={{ verticalAlign: "middle", textAlign: "left" }}>
-                    <Heading as="h1" className="m-h1" style={{ ...s.h1, fontSize: "40px" }}>{code.value} cadeau</Heading>
+                    <Heading as="h1" className="m-h1" style={{ ...s.h1, fontSize: "32px" }}>{code.value} cadeau</Heading>
                   </td>
                 </tr>
               </tbody>
             </table>
-            <Text style={{ ...s.body, fontSize: "18px", margin: "8px 0 0" }}>op je volgende verblijf bij ViaLuxury</Text>
+            <Text style={{ ...s.body, margin: "8px 0 0" }}>op je volgende verblijf bij ViaLuxury</Text>
           </Section>
 
           {/* 2 en 3. Hoe en tot wanneer (de code), en waar je heen kunt (de knop) */}

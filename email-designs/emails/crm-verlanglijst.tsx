@@ -62,7 +62,7 @@ export default function CrmVerlanglijst({ recipientEmail, favorites, code, wishl
                 </Link>
                 <Section style={{ padding: "20px 20px 22px" }}>
                   <Text style={dealMeta}>Hier geldt je code</Text>
-                  <Text style={{ ...dealName, fontSize: "22px", margin: "2px 0 0" }}>{first.hotelName}</Text>
+                  <Text style={{ ...dealName, fontSize: "20px", margin: "2px 0 0" }}>{first.hotelName}</Text>
                   {first.place && <Text style={{ ...dealMeta, margin: "2px 0 0" }}>{first.place}</Text>}
                   <Text style={{ ...dealPitch, margin: "8px 0 0" }}>{first.packageTitle}</Text>
                   <Text style={dealPrice}>vanaf {first.fromPrice} p.p.</Text>
@@ -74,7 +74,7 @@ export default function CrmVerlanglijst({ recipientEmail, favorites, code, wishl
           {/* Overige favorieten (0, 1 of 2) */}
           {others.length > 0 && (
             <Section className="m-pad" style={{ padding: "28px 32px 0", textAlign: "center" }}>
-              <Text style={{ ...s.kop, fontSize: "18px" }}>Ook op je lijst</Text>
+              <Text style={s.kop}>Ook op je lijst</Text>
               <table role="presentation" align="center" cellPadding={0} cellSpacing={0} style={{ margin: "4px auto 0" }}>
                 <tbody>
                   {others.map((d) => (
