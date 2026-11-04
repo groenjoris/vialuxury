@@ -65,9 +65,7 @@ export default function CrmWinkelmandje({ recipientEmail, hotelName, packageTitl
                 <Section style={{ marginTop: "16px", borderTop: `1px solid ${c.border}`, paddingTop: "14px" }}>
                   <Text style={{ ...s.title, margin: 0, fontWeight: 700 }}>{arrivalDate} tot {departureDate}</Text>
                   <Text style={{ ...s.muted, margin: "2px 0 0" }}>{nights} nachten · {persons} personen</Text>
-                  <Text style={{ fontFamily: font.body, fontSize: "22px", fontWeight: 700, color: c.text, margin: "10px 0 0" }}>
-                    {price} <span style={{ fontSize: "13px", fontWeight: 400, color: c.muted }}>totaal</span>
-                  </Text>
+                  <Text style={{ fontFamily: font.body, fontSize: "16px", fontWeight: 700, color: c.text, margin: "10px 0 0" }}>Totaal {price}</Text>
                 </Section>
 
                 <Text style={{ ...s.title, margin: "16px 0 0" }}>{availabilityLine}</Text>

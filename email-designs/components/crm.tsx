@@ -133,17 +133,7 @@ export type DealLike = {
   url: string;
 };
 
-function PriceLine({ d }: { d: DealLike }) {
-  return (
-    <Text style={{ ...s.title, margin: "8px 0 0" }}>
-      <span style={{ color: c.muted }}>{d.nights} {d.nights === 1 ? "nacht" : "nachten"} · vanaf </span>
-      <strong style={{ fontSize: "18px", fontFamily: font.heading, fontWeight: 600 }}>{d.fromPrice}</strong>
-      <span style={{ color: c.muted }}> p.p.</span>
-    </Text>
-  );
-}
-
-/** Uitgelichte deal: grote foto, eyebrow (label · plaats), naam, pitch, prijs links en knop rechts. */
+/** Uitgelichte deal: grote foto, daaronder alles onder elkaar: label, hotelnaam, plaats, pitch, prijs, knop. */
 export function FeaturedDeal({ d, cta = "Bekijk arrangement", primary = false }: { d: DealLike; cta?: string; primary?: boolean }) {
   return (
     <Section style={{ border: `1px solid ${c.border}`, borderRadius: "8px", overflow: "hidden", textAlign: "left", backgroundColor: "#FFFFFF" }}>
@@ -151,12 +141,11 @@ export function FeaturedDeal({ d, cta = "Bekijk arrangement", primary = false }:
         <Img src={d.image} alt={d.packageTitle} width="558" height="300" style={{ display: "block", width: "100%", height: "300px", objectFit: "cover" }} />
       </Link>
       <Section style={{ padding: "20px 20px 22px" }}>
-        <DealEyebrow label={d.label} place={d.place} />
-        <Text style={{ fontFamily: font.heading, fontWeight: 600, fontSize: "22px", lineHeight: "1.2", color: c.heading, margin: d.label || d.place ? "6px 0 0" : 0 }}>{d.hotelName}</Text>
-        <Text style={{ fontFamily: font.body, fontSize: "14px", lineHeight: "1.45", color: "#555555", margin: "6px 0 0" }}>{d.packageTitle}</Text>
-        <Text style={{ fontFamily: font.body, fontSize: "13px", color: c.muted, margin: "16px 0 0" }}>
-          {d.nights} {d.nights === 1 ? "nacht" : "nachten"} · vanaf <strong style={{ fontFamily: font.heading, fontSize: "22px", fontWeight: 600, color: c.heading }}>{d.fromPrice}</strong> p.p.
-        </Text>
+        {d.label && <Text style={dealMeta}>{d.label}</Text>}
+        <Text style={{ ...dealName, fontSize: "22px", margin: d.label ? "2px 0 0" : 0 }}>{d.hotelName}</Text>
+        {d.place && <Text style={{ ...dealMeta, margin: "2px 0 0" }}>{d.place}</Text>}
+        <Text style={{ ...dealPitch, margin: "8px 0 0" }}>{d.packageTitle}</Text>
+        <Text style={dealPrice}>vanaf {d.fromPrice} p.p.</Text>
         <Section style={{ marginTop: "14px" }}>
           {primary ? <PrimaryButton href={d.url}>{cta}</PrimaryButton> : <DarkButton href={d.url}>{cta}</DarkButton>}
         </Section>
@@ -177,21 +166,14 @@ export function DarkButton({ href, children }: { href: string; children: React.R
   );
 }
 
-/** Eyebrow boven de hotelnaam: oranje stip + label (als dat er is), dan de plaats; 12 px, hoofdletters. */
-export function DealEyebrow({ label, place }: { label?: string; place?: string }) {
-  if (!label && !place) return null;
-  return (
-    <Text style={{ fontFamily: font.body, fontSize: "12px", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", lineHeight: "16px", color: c.muted, margin: 0 }}>
-      {label && (
-        <>
-          <span style={{ color: c.cta }}>●</span> <span style={{ color: c.text }}>{label}</span>
-        </>
-      )}
-      {label && place ? " · " : ""}
-      {place}
-    </Text>
-  );
-}
+/** Eén stijl voor alle bijregels in een dealkaart (label, plaats): 13 px, gewoon, grijs. Elke regel staat op zichzelf. */
+export const dealMeta = { fontFamily: font.body, fontSize: "13px", lineHeight: "18px", fontWeight: 400, color: c.muted, margin: 0 };
+/** Eén stijl voor de hotelnaam in een dealkaart. */
+export const dealName = { fontFamily: font.heading, fontWeight: 600, fontSize: "20px", lineHeight: "1.2", color: c.heading, margin: 0 };
+/** Eén stijl voor de pitch. */
+export const dealPitch = { fontFamily: font.body, fontSize: "14px", lineHeight: "1.45", fontWeight: 400, color: "#555555", margin: "6px 0 0" };
+/** Eén stijl voor de prijsregel, in één keer geschreven: "vanaf €499 p.p." */
+export const dealPrice = { fontFamily: font.body, fontSize: "16px", lineHeight: "22px", fontWeight: 700, color: c.text, margin: "10px 0 0" };
 
 /**
  * Dealrij (lijstweergave): foto links met ronde hoeken rondom (8 px) en zonder kader, rechts de
@@ -214,12 +196,11 @@ export function CompactDeal({ d, cta = "Bekijk" }: { d: DealLike; cta?: string }
           <tbody>
             <tr>
               <td style={{ verticalAlign: "top" }}>
-                <DealEyebrow label={d.label} place={d.place} />
-                <Text style={{ fontFamily: font.heading, fontWeight: 600, fontSize: "20px", lineHeight: "1.2", color: c.heading, margin: d.label || d.place ? "6px 0 0" : 0 }}>{d.hotelName}</Text>
-                <Text style={{ fontFamily: font.body, fontSize: "14px", lineHeight: "1.45", color: "#555555", margin: "6px 0 0" }}>{d.packageTitle}</Text>
-                <Text style={{ fontFamily: font.body, fontSize: "13px", color: c.muted, margin: "10px 0 0" }}>
-                  vanaf <strong style={{ fontFamily: font.heading, fontSize: "22px", fontWeight: 600, color: c.heading }}>{d.fromPrice}</strong> p.p.
-                </Text>
+                {d.label && <Text style={dealMeta}>{d.label}</Text>}
+                <Text style={{ ...dealName, margin: d.label ? "2px 0 0" : 0 }}>{d.hotelName}</Text>
+                {d.place && <Text style={{ ...dealMeta, margin: "2px 0 0" }}>{d.place}</Text>}
+                <Text style={dealPitch}>{d.packageTitle}</Text>
+                <Text style={dealPrice}>vanaf {d.fromPrice} p.p.</Text>
               </td>
             </tr>
             <tr>
