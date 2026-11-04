@@ -1,13 +1,14 @@
 import { Body, Column, Container, Head, Heading, Html, Img, Preview, Row, Section, Text } from "@react-email/components";
 import * as React from "react";
-import { CodeBlock, CompactDeal, crmCss, FeaturedDeal, PrimaryButton, s, site, ThemeTiles, CrmHeader } from "../components/crm";
+import { CodeBlock, CompactDeal, crmCss, crmIcon, FeaturedDeal, PrimaryButton, s, site, ThemeTiles, CrmHeader } from "../components/crm";
 import NewsletterFooter from "../components/NewsletterFooter";
 import { font, newsletter } from "../components/theme";
 import { lauswolt, steenenburg, vanOys, villaRuimzicht, type CrmDeal } from "../lib/crmDeals";
 
 // CRM A3 Terugkomactie (repeatbooking_1booking_14days_20euro). Trigger: 14 dagen na vertrek.
-// De code (S10) is de held: een eigen blok met een korte actietitel, de code als selecteerbare tekst
-// en de deadline direct eronder. Het bedrag staat alleen in de intro, niet nog eens in de titel. Het vorige verblijf (S14) staat als korte herinnering direct
+// Bovenaan staat meteen wat je krijgt: het bedrag is de kop ("€20 cadeau"), met één korte
+// bedanktregel. De code (S10) is de held: de code als selecteerbare tekst en de deadline direct
+// eronder, met één knop naar de arrangementen. Het vorige verblijf (S14) staat als korte herinnering direct
 // onder het codeblok, zodat de code een reden heeft ("omdat je met ons op pad ging").
 // Daaronder drie deals in de sfeer van het vorige verblijf (1 uitgelicht, 2 compact) onder
 // een frame-titel, en onderaan de themasectie (S7) met zes vierkante knoppen.
@@ -52,19 +53,28 @@ export default function CrmTerugkomactie({ recipientEmail, hotelName, place, pac
         <Container style={{ width: "100%", maxWidth: "626px" }}>
           <CrmHeader />
 
+          {/* Meteen duidelijk wat je krijgt: het bedrag is de kop */}
           <Section className="m-pad" style={{ padding: "36px 32px 0", textAlign: "center" }}>
-            <Heading as="h1" className="m-h1" style={s.h1}>Op naar de volgende keer</Heading>
-            <Text style={s.body}>
-              {hotelName ? `We vonden het fijn dat je met ons naar ${hotelName} ging.` : "We vonden het fijn dat je met ons op pad ging."}{" "}
-              Daarom krijg je {code.value} cadeau op je volgende verblijf.
-            </Text>
+            <table role="presentation" align="center" cellPadding={0} cellSpacing={0} style={{ margin: "0 auto" }}>
+              <tbody>
+                <tr>
+                  <td style={{ verticalAlign: "middle", paddingRight: "14px" }}>
+                    <Img src={crmIcon("tag-plus-oranje")} alt="" width="44" height="44" style={{ display: "block" }} />
+                  </td>
+                  <td style={{ verticalAlign: "middle", textAlign: "left" }}>
+                    <Heading as="h1" className="m-h1" style={{ ...s.h1, fontSize: "40px" }}>{code.value} cadeau</Heading>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <Text style={s.body}>Bedankt voor je verblijf.</Text>
           </Section>
 
-          {/* De held: het codeblok */}
-          <Section className="m-pad" style={{ padding: "28px 32px 0", textAlign: "center" }}>
-            <CodeBlock title="Gebruik je code bij het boeken" code={code.code} deadline={code.deadline} />
+          {/* De held: het codeblok, daaronder waar je heen kunt */}
+          <Section className="m-pad" style={{ padding: "24px 32px 0", textAlign: "center" }}>
+            <CodeBlock code={code.code} deadline={code.deadline} />
             <Section style={{ marginTop: "24px" }}>
-              <PrimaryButton href={ctaUrl}>Kies je volgende verblijf</PrimaryButton>
+              <PrimaryButton href={ctaUrl}>Bekijk arrangementen</PrimaryButton>
             </Section>
           </Section>
 

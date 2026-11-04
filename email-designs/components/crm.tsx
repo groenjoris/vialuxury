@@ -235,26 +235,12 @@ export function StarRating({ baseHref }: { baseHref: string }) {
  * Codeblok (S10): de code staat als tekst (selecteerbaar, geen afbeelding), met grote waarde en
  * de deadline direct eronder. Zonder `advice` valt die regel weg.
  */
-export function CodeBlock({ title, code, deadline }: { title: string; code: string; deadline: string }) {
+export function CodeBlock({ code, deadline }: { code: string; deadline: string }) {
   return (
     <Section>
-      {/* Icoon links naast de titel, samen gecentreerd. De titel noemt het bedrag niet: dat staat al in de intro. */}
-      <table role="presentation" align="center" cellPadding={0} cellSpacing={0} style={{ margin: "0 auto" }}>
-        <tbody>
-          <tr>
-            <td style={{ verticalAlign: "middle", paddingRight: "12px" }}>
-              <Img src={crmIcon("tag-plus-oranje")} alt="" width="36" height="36" style={{ display: "block" }} />
-            </td>
-            <td style={{ verticalAlign: "middle", fontFamily: font.heading, fontWeight: 600, fontSize: "32px", lineHeight: "1.15", color: c.heading, textAlign: "left" }}>
-              {title}
-            </td>
-          </tr>
-        </tbody>
-      </table>
-
       {/* Het codevak: oranje gestippelde rand over de volle breedte; "Kortingscode" en de code staan
           erin gecentreerd, als één coupon. De code is tekst (selecteerbaar), geen afbeelding. */}
-      <Section style={{ width: "100%", margin: "16px 0 0", border: `2px dashed ${c.cta}`, borderRadius: "8px", padding: "22px 16px", textAlign: "center" }}>
+      <Section style={{ width: "100%", margin: 0, border: `2px dashed ${c.cta}`, borderRadius: "8px", padding: "22px 16px", textAlign: "center" }}>
         <Text style={{ fontFamily: font.body, fontSize: "18px", lineHeight: "1.3", color: c.text, margin: 0, textAlign: "center" }}>Kortingscode</Text>
         <Text style={{ fontFamily: font.heading, fontWeight: 700, fontSize: "30px", lineHeight: "1.2", letterSpacing: "0.02em", color: c.cta, margin: "6px 0 0", textAlign: "center", wordBreak: "keep-all" }}>{code}</Text>
       </Section>
@@ -262,6 +248,7 @@ export function CodeBlock({ title, code, deadline }: { title: string; code: stri
       <Text style={{ fontFamily: font.body, fontSize: "16px", fontWeight: 700, color: c.text, margin: "16px 0 0" }}>
         <Icon name="clock-donker" size={18} /> Geldig tot en met {deadline}
       </Text>
+      <Text style={{ ...s.title, margin: "4px 0 0" }}>Vul de code in bij het boeken.</Text>
     </Section>
   );
 }
