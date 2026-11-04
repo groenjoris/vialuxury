@@ -43,8 +43,8 @@ useHead({ title: `${entry.value?.title ?? 'E-mail'} — ViaLuxury CRM` })
       </div>
       <nav class="crm__nav" aria-label="Ga naar een andere mail">
         <button type="button" class="crm__step" aria-label="Vorige mail" @click="step(-1)">‹</button>
-        <select class="crm__select" :value="current" aria-label="Kies een mail" @change="go(($event.target as HTMLSelectElement).value)">
-          <option v-for="(m, i) in menu" :key="m.slug" :value="m.slug">{{ i + 1 }}. {{ m.title }}</option>
+        <select class="crm__select" aria-label="Kies een mail" @change="go(($event.target as HTMLSelectElement).value)">
+          <option v-for="(m, i) in menu" :key="m.slug" :value="m.slug" :selected="m.slug === current">{{ i + 1 }}. {{ m.title }}</option>
         </select>
         <button type="button" class="crm__step" aria-label="Volgende mail" @click="step(1)">›</button>
       </nav>
