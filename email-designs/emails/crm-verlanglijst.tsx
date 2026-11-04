@@ -1,6 +1,6 @@
 import { Body, Column, Container, Head, Heading, Html, Img, Link, Preview, Row, Section, Text } from "@react-email/components";
 import * as React from "react";
-import { CodeBlock, CompactDeal, crmCss, Icon, PrimaryButton, s, SecondaryButton, CrmHeader } from "../components/crm";
+import { CodeBlock, CompactDeal, crmCss, DarkButton, DealEyebrow, PrimaryButton, s, CrmHeader } from "../components/crm";
 import NewsletterFooter from "../components/NewsletterFooter";
 import { font, newsletter } from "../components/theme";
 import { lauswolt, steenenburg, vanOys, villaRuimzicht, desIndes, type CrmDeal } from "../lib/crmDeals";
@@ -56,19 +56,16 @@ export default function CrmVerlanglijst({ recipientEmail, favorites, code, wishl
           {/* S19: eerste favoriet, gemarkeerd als het item waar de code bij hoort */}
           {first && (
             <Section className="m-pad" style={{ padding: "24px 32px 0", textAlign: "center" }}>
-              <Section style={{ border: `1px solid ${c.text}`, borderRadius: "8px", overflow: "hidden", textAlign: "left" }}>
+              <Section style={{ border: `1px solid ${c.border}`, borderRadius: "8px", overflow: "hidden", textAlign: "left", backgroundColor: "#FFFFFF" }}>
                 <Link href={first.url}>
                   <Img src={first.image} alt={first.packageTitle} width="558" height="260" style={{ display: "block", width: "100%", height: "260px", objectFit: "cover" }} />
                 </Link>
-                <Section style={{ padding: "16px 20px 20px" }}>
-                  <Text style={{ ...s.muted, margin: 0, textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 700 }}>
-                    <Icon name="heart-oranje" size={14} /> Hier geldt je code
-                  </Text>
-                  <Text style={{ ...s.name, fontFamily: font.heading, fontWeight: 600, fontSize: "20px", margin: "8px 0 0" }}>{first.hotelName}</Text>
-                  {first.place && <Text style={{ ...s.muted, margin: "2px 0 0" }}>{first.place}</Text>}
-                  <Text style={{ ...s.title, margin: "8px 0 0" }}>{first.packageTitle}</Text>
-                  <Text style={{ ...s.title, margin: "8px 0 0" }}>
-                    <span style={{ color: c.muted }}>vanaf </span><strong style={{ fontFamily: font.heading, fontSize: "18px", fontWeight: 600 }}>{first.fromPrice}</strong><span style={{ color: c.muted }}> p.p.</span>
+                <Section style={{ padding: "20px 20px 22px" }}>
+                  <DealEyebrow label="Hier geldt je code" place={first.place} />
+                  <Text style={{ fontFamily: font.heading, fontWeight: 600, fontSize: "22px", lineHeight: "1.2", color: c.heading, margin: "6px 0 0" }}>{first.hotelName}</Text>
+                  <Text style={{ fontFamily: font.body, fontSize: "14px", lineHeight: "1.45", color: "#555555", margin: "6px 0 0" }}>{first.packageTitle}</Text>
+                  <Text style={{ fontFamily: font.body, fontSize: "13px", color: c.muted, margin: "14px 0 0" }}>
+                    vanaf <strong style={{ fontFamily: font.heading, fontSize: "22px", fontWeight: 600, color: c.heading }}>{first.fromPrice}</strong> p.p.
                   </Text>
                 </Section>
               </Section>
@@ -97,7 +94,7 @@ export default function CrmVerlanglijst({ recipientEmail, favorites, code, wishl
                 </Section>
               ))}
               <Section style={{ marginTop: "16px" }}>
-                <SecondaryButton href={wishlistUrl}>Bekijk je verlanglijst</SecondaryButton>
+                <DarkButton href={wishlistUrl}>Bekijk je verlanglijst</DarkButton>
               </Section>
             </Section>
           )}

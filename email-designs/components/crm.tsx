@@ -181,7 +181,7 @@ export function DarkButton({ href, children }: { href: string; children: React.R
 }
 
 /** Eyebrow boven de hotelnaam: oranje stip + label (als dat er is), dan de plaats; 12 px, hoofdletters. */
-function DealEyebrow({ label, place }: { label?: string; place?: string }) {
+export function DealEyebrow({ label, place }: { label?: string; place?: string }) {
   if (!label && !place) return null;
   return (
     <Text style={{ fontFamily: font.body, fontSize: "12px", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", lineHeight: "16px", color: c.muted, margin: 0 }}>
