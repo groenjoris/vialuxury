@@ -76,23 +76,25 @@ export default function CrmVerlanglijst({ recipientEmail, favorites, code, wishl
           {others.length > 0 && (
             <Section className="m-pad" style={{ padding: "28px 32px 0", textAlign: "center" }}>
               <Text style={{ ...s.kop, fontSize: "18px" }}>Ook op je lijst</Text>
-              {others.map((d) => (
-                <Section key={d.url} style={{ marginTop: "16px" }}>
-                  <Row>
-                    <Column style={{ width: "110px", verticalAlign: "middle" }}>
-                      <Link href={d.url}>
-                        <Img src={d.image} alt={d.packageTitle} width="110" height="72" style={{ display: "block", width: "110px", height: "72px", objectFit: "cover", borderRadius: "6px" }} />
-                      </Link>
-                    </Column>
-                    <Column style={{ verticalAlign: "middle", paddingLeft: "14px", textAlign: "left" }}>
-                      <Text style={{ ...s.name, margin: 0 }}>{d.hotelName}</Text>
-                      <Text style={{ ...s.title, margin: "2px 0 0" }}>
-                        <span style={{ color: c.muted }}>vanaf </span><strong>{d.fromPrice}</strong><span style={{ color: c.muted }}> p.p.</span>
-                      </Text>
-                    </Column>
-                  </Row>
-                </Section>
-              ))}
+              <table role="presentation" align="center" cellPadding={0} cellSpacing={0} style={{ margin: "4px auto 0" }}>
+                <tbody>
+                  {others.map((d) => (
+                    <tr key={d.url}>
+                      <td style={{ width: "110px", verticalAlign: "middle", paddingTop: "12px" }}>
+                        <Link href={d.url}>
+                          <Img src={d.image} alt={d.packageTitle} width="110" height="72" style={{ display: "block", width: "110px", height: "72px", objectFit: "cover", borderRadius: "6px" }} />
+                        </Link>
+                      </td>
+                      <td style={{ verticalAlign: "middle", paddingTop: "12px", paddingLeft: "14px", textAlign: "left" }}>
+                        <Text style={{ ...s.name, margin: 0 }}>{d.hotelName}</Text>
+                        <Text style={{ ...s.title, margin: "2px 0 0" }}>
+                          <span style={{ color: c.muted }}>vanaf </span><strong>{d.fromPrice}</strong><span style={{ color: c.muted }}> p.p.</span>
+                        </Text>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
               <Section style={{ marginTop: "16px" }}>
                 <DarkButton href={wishlistUrl}>Bekijk je verlanglijst</DarkButton>
               </Section>
