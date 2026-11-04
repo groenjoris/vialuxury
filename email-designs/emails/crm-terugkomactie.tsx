@@ -1,25 +1,27 @@
-import { Body, Column, Container, Head, Heading, Html, Img, Preview, Row, Section, Text } from "@react-email/components";
+import { Body, Container, Head, Heading, Html, Img, Preview, Section, Text } from "@react-email/components";
 import * as React from "react";
-import { CodeBlock, CompactDeal, crmCss, crmIcon, FeaturedDeal, PrimaryButton, s, site, ThemeTiles, CrmHeader } from "../components/crm";
+import { CodeBlock, CompactDeal, crmCss, crmIcon, dealMeta, dealName, FeaturedDeal, PrimaryButton, s, site, ThemeTiles, CrmHeader } from "../components/crm";
 import NewsletterFooter from "../components/NewsletterFooter";
 import { font, newsletter } from "../components/theme";
 import { lauswolt, steenenburg, vanOys, villaRuimzicht, type CrmDeal } from "../lib/crmDeals";
 
 // CRM A3 Terugkomactie (repeatbooking_1booking_14days_20euro). Trigger: 14 dagen na vertrek.
-// Bovenaan staat meteen wat je krijgt: het bedrag is de kop ("€20 cadeau"), met één korte
-// bedanktregel. De code (S10) is de held: de code als selecteerbare tekst en de deadline direct
-// eronder, met één knop naar de arrangementen. Het vorige verblijf (S14) staat als korte herinnering direct
-// onder het codeblok, zodat de code een reden heeft ("omdat je met ons op pad ging").
-// Daaronder drie deals in de sfeer van het vorige verblijf (1 uitgelicht, 2 compact) onder
-// een frame-titel, en onderaan de themasectie (S7) met zes vierkante knoppen.
+// Opbouw, in de volgorde waarin de lezer het wil weten:
+//   1. waarom (bedankt voor je verblijf) en wat je krijgt (€20 cadeau als kop, met zin eronder),
+//   2. hoe en tot wanneer (code als selecteerbare tekst, deadline, "vul de code in bij het boeken"),
+//   3. waar je heen kunt (één knop: Bekijk arrangementen),
+//   4. context: het vorige verblijf met foto, hotel, plaats en data (S14),
+//   5. inspiratie: drie deals in de sfeer van dat hotel (1 uitgelicht, 2 compact) en zes themaknoppen (S7).
+// Niets staat dubbel: het bedrag staat alleen in de kop, het hotel alleen in het verblijfsblok en
+// de framezin, de deadline alleen onder de code.
 // Onderwerp: "[voornaam], €20 cadeau voor je volgende verblijf"
 //
 // Geldigheid is nu 30 dagen (sheet). 60–90 dagen wordt nog getest (check bij Sven).
-// De code kan niet in de link en er is geen afgeprijsde prijs; copy blijft "Vul hem in bij het boeken".
+// De code kan niet in de link en er is geen afgeprijsde prijs; daarom "Vul de code in bij het boeken".
 //
 // Terugvallen (tab Mergevelden):
-//   [voornaam]  leeg → onderwerp "€20 cadeau voor je volgende verblijf"
-//   [hotelnaam] leeg → "Op naar de volgende keer" zonder hotelregel, frame "Ook in de sfeer van je vorige verblijf"
+//   [voornaam]  leeg → "Bedankt voor je verblijf" zonder naam; onderwerp "€20 cadeau voor je volgende verblijf"
+//   [hotelnaam] leeg → verblijfsblok valt weg, frame "Ook in de sfeer van je vorige verblijf"
 //   [plaats]    leeg → plaats valt weg
 //   [code], [waarde], [deadline] zijn verplicht
 
@@ -37,7 +39,7 @@ type Props = {
   ctaUrl: string;
 };
 
-export default function CrmTerugkomactie({ recipientEmail, hotelName, place, packageTitle, stayDates, previousImage, code, deals, ctaUrl }: Props) {
+export default function CrmTerugkomactie({ recipientEmail, firstName, hotelName, place, packageTitle, stayDates, previousImage, code, deals, ctaUrl }: Props) {
   const c = newsletter.light;
   const [featured, ...rest] = deals;
   const meta = [place, stayDates].filter(Boolean).join(" · ");
@@ -53,9 +55,10 @@ export default function CrmTerugkomactie({ recipientEmail, hotelName, place, pac
         <Container style={{ width: "100%", maxWidth: "626px" }}>
           <CrmHeader />
 
-          {/* Meteen duidelijk wat je krijgt: het bedrag is de kop */}
+          {/* 1. Waarom en wat: bedankt, dan het bedrag als kop met een zin eronder */}
           <Section className="m-pad" style={{ padding: "36px 32px 0", textAlign: "center" }}>
-            <table role="presentation" align="center" cellPadding={0} cellSpacing={0} style={{ margin: "0 auto" }}>
+            <Text style={{ ...dealMeta, fontSize: "14px", textAlign: "center" }}>{firstName ? `Bedankt voor je verblijf, ${firstName}` : "Bedankt voor je verblijf"}</Text>
+            <table role="presentation" align="center" cellPadding={0} cellSpacing={0} style={{ margin: "10px auto 0" }}>
               <tbody>
                 <tr>
                   <td style={{ verticalAlign: "middle", paddingRight: "14px" }}>
@@ -67,10 +70,10 @@ export default function CrmTerugkomactie({ recipientEmail, hotelName, place, pac
                 </tr>
               </tbody>
             </table>
-            <Text style={s.body}>Bedankt voor je verblijf.</Text>
+            <Text style={{ ...s.body, fontSize: "18px", margin: "8px 0 0" }}>op je volgende verblijf bij ViaLuxury</Text>
           </Section>
 
-          {/* De held: het codeblok, daaronder waar je heen kunt */}
+          {/* 2 en 3. Hoe en tot wanneer (de code), en waar je heen kunt (de knop) */}
           <Section className="m-pad" style={{ padding: "24px 32px 0", textAlign: "center" }}>
             <CodeBlock code={code.code} deadline={code.deadline} />
             <Section style={{ marginTop: "24px" }}>
@@ -78,25 +81,21 @@ export default function CrmTerugkomactie({ recipientEmail, hotelName, place, pac
             </Section>
           </Section>
 
-          {/* Herinnering aan het vorige verblijf, compact en zonder knop */}
+          {/* 4. Context: het vorige verblijf, foto bovenaan en de gegevens eronder */}
           {hotelName && previousImage && (
-            <Section className="m-pad" style={{ padding: "36px 32px 0", textAlign: "center" }}>
-              <Row style={{ width: "auto" }}>
-                <Column style={{ width: "120px", verticalAlign: "middle" }}>
-                  <Img src={previousImage} alt={hotelName} width="120" height="75" style={{ display: "block", width: "120px", height: "75px", objectFit: "cover", borderRadius: "6px" }} />
-                </Column>
-                <Column style={{ verticalAlign: "middle", paddingLeft: "16px", textAlign: "left" }}>
-                  <Text style={{ ...s.muted, margin: 0, textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 700 }}>Jouw vorige verblijf</Text>
-                  <Text style={{ ...s.name, margin: "4px 0 0" }}>{hotelName}</Text>
-                  {meta && <Text style={{ ...s.title, color: c.muted, margin: "2px 0 0" }}>{meta}</Text>}
-                </Column>
-              </Row>
+            <Section className="m-pad" style={{ padding: "44px 32px 0", textAlign: "center" }}>
+              <Section style={{ borderTop: `1px solid ${c.border}`, paddingTop: "32px" }}>
+                <Img src={previousImage} alt={hotelName} width="560" height="240" style={{ display: "block", width: "100%", height: "240px", objectFit: "cover", borderRadius: "8px" }} />
+                <Text style={{ ...dealMeta, margin: "16px 0 0", textAlign: "center" }}>Jouw verblijf</Text>
+                <Text style={{ ...dealName, margin: "2px 0 0", textAlign: "center" }}>{hotelName}</Text>
+                {meta && <Text style={{ ...dealMeta, margin: "2px 0 0", textAlign: "center" }}>{meta}</Text>}
+              </Section>
             </Section>
           )}
 
           {/* Drie deals in de sfeer van het vorige verblijf: 1 uitgelicht, 2 compact */}
           <Section className="m-pad" style={{ padding: "48px 32px 0", textAlign: "center" }}>
-            <Text style={s.kop}>Ook in de sfeer van je vorige verblijf</Text>
+            <Text style={s.kop}>{hotelName ? `Ook in de sfeer van ${hotelName}` : "Ook in de sfeer van je vorige verblijf"}</Text>
             {featured && (
               <Section style={{ marginTop: "16px" }}>
                 <FeaturedDeal d={featured} />
