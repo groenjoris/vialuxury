@@ -28,6 +28,13 @@
     "preheader": "Omdat je met ons op pad ging. Geldig tot en met 16 december 2026."
   },
   {
+    "slug": "crm-terugkomactie-herinnering",
+    "title": "Terugkomactie herinnering (30 dagen na vertrek)",
+    "description": "Kaal en met één doel: de code gebruiken voor de einddatum. \"Jouw €20 cadeau\", de code met het aantal dagen dat hij nog geldig is, één knop en één deal in de sfeer van het vorige verblijf. Alleen voor wie de eerste mail nog niet heeft gebruikt.",
+    "subject": "Je €20 cadeau verloopt op 16 december",
+    "preheader": "Nog 14 dagen geldig. Vul je code in bij het boeken."
+  },
+  {
     "slug": "crm-winkelmandje",
     "title": "Winkelmandje (2 dagen na verlaten)",
     "description": "Eén doel: de boeking afronden. Winkelmandkaart met concrete datums, nachten, personen en prijs, een beschikbaarheidsregel en één knop terug naar de boeking. Gastenoordeel met drie Trustpilot-reviews (sterren, schaal tot 5) als die er zijn. Geen alternatieve deals.",

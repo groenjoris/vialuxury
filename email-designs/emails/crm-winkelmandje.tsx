@@ -25,12 +25,14 @@ type Props = {
   availability: "available" | "almost-full";
   roomsLeft?: number;
   /** Drie gastenoordelen; leeg → geen gastenoordeel. */
+  /** Gemiddelde en aantal reviews van het hotel (schaal tot 5), boven de losse reviews. */
+  reviewSummary?: { average: 3 | 3.5 | 4 | 4.5 | 5; label: string };
   reviews?: { stars: 3 | 3.5 | 4 | 4.5 | 5; text: string; author: string }[];
   image: string;
   checkoutUrl: string;
 };
 
-export default function CrmWinkelmandje({ recipientEmail, hotelName, packageTitle, place, arrivalDate, departureDate, nights, persons, price, availability, roomsLeft, reviews, image, checkoutUrl }: Props) {
+export default function CrmWinkelmandje({ recipientEmail, hotelName, packageTitle, place, arrivalDate, departureDate, nights, persons, price, availability, roomsLeft, reviewSummary, reviews, image, checkoutUrl }: Props) {
   const c = newsletter.light;
   const availabilityLine =
     availability === "almost-full"
@@ -80,6 +82,14 @@ export default function CrmWinkelmandje({ recipientEmail, hotelName, packageTitl
           {reviews && reviews.length > 0 && (
             <Section className="m-pad" style={{ padding: "36px 32px 0" }}>
               <Text style={s.kop}>Dit vinden gasten van {hotelName}</Text>
+              {reviewSummary && (
+                <>
+                  <Section style={{ marginTop: "12px" }}>
+                    <TrustpilotStars rating={reviewSummary.average} />
+                  </Section>
+                  <Text style={{ ...s.body, margin: "6px 0 0" }}>{reviewSummary.label}</Text>
+                </>
+              )}
               {reviews.slice(0, 3).map((r, i) => (
                 <Section key={r.author} style={{ marginTop: "20px", paddingTop: i ? "20px" : 0, borderTop: i ? `1px solid ${c.border}` : "none" }}>
                   <TrustpilotStars rating={r.stars} />
@@ -118,6 +128,7 @@ CrmWinkelmandje.PreviewProps = {
   price: "€998",
   availability: "almost-full",
   roomsLeft: 3,
+  reviewSummary: { average: 4.5, label: "4,5 uit 312 reviews op Trustpilot" },
   reviews: [
     { stars: 5, text: "Prachtige kamer, het diner was een feestje en het personeel is ontzettend gastvrij.", author: "Marieke, oktober 2026" },
     { stars: 5, text: "Een stijlvol hotel midden in Den Haag. Het ontbijt was uitgebreid en de kamer heerlijk rustig.", author: "Jeroen, september 2026" },

@@ -94,6 +94,7 @@
           <NuxtLink class="start-btn" to="/crm/crm-nagenieten">Nagenietmail (3 dagen na vertrek)</NuxtLink>
           <NuxtLink class="start-btn" to="/crm/crm-jaar-geleden">Precies een jaar geleden</NuxtLink>
           <NuxtLink class="start-btn" to="/crm/crm-terugkomactie">Terugkomactie €20 (14 dagen na vertrek)</NuxtLink>
+          <NuxtLink class="start-btn" to="/crm/crm-terugkomactie-herinnering">Terugkomactie herinnering (30 dagen na vertrek)</NuxtLink>
           <NuxtLink class="start-btn" to="/crm/crm-winkelmandje">Winkelmandje (2 dagen na verlaten)</NuxtLink>
           <NuxtLink class="start-btn" to="/crm/crm-zoekopdracht">Zoekopdracht (1 minuut na verlaten)</NuxtLink>
           <NuxtLink class="start-btn" to="/crm/crm-themamail">Themamail best deals (2 uur na bekijken)</NuxtLink>

@@ -159,7 +159,7 @@ export function DarkButton({ href, children }: { href: string; children: React.R
   return (
     <Button
       href={href}
-      style={{ backgroundColor: c.text, color: "#FFFFFF", fontFamily: font.body, fontSize: "16px", fontWeight: 700, borderRadius: "6px", padding: "11px 20px", textDecoration: "none" }}
+      style={{ backgroundColor: c.text, color: "#FFFFFF", fontFamily: font.body, fontSize: "16px", fontWeight: 700, borderRadius: "6px", padding: "14px 24px", textDecoration: "none" }}
     >
       {children}
     </Button>
@@ -235,7 +235,7 @@ export function StarRating({ baseHref }: { baseHref: string }) {
  * Codeblok (S10): de code staat als tekst (selecteerbaar, geen afbeelding), met grote waarde en
  * de deadline direct eronder. Zonder `advice` valt die regel weg.
  */
-export function CodeBlock({ code, deadline }: { code: string; deadline: string }) {
+export function CodeBlock({ code, deadline, daysLeft }: { code: string; deadline: string; daysLeft?: number }) {
   return (
     <Section>
       {/* Het codevak: oranje gestippelde rand over de volle breedte; "Kortingscode" en de code staan
@@ -246,7 +246,7 @@ export function CodeBlock({ code, deadline }: { code: string; deadline: string }
       </Section>
 
       <Text style={{ fontFamily: font.body, fontSize: "16px", fontWeight: 700, color: c.text, margin: "16px 0 0" }}>
-        <Icon name="clock-donker" size={18} /> Geldig tot en met {deadline}
+        <Icon name="clock-donker" size={18} /> {daysLeft ? `Nog ${daysLeft} dagen geldig, tot en met ${deadline}` : `Geldig tot en met ${deadline}`}
       </Text>
       <Text style={{ ...s.title, margin: "4px 0 0" }}>Vul de code in bij het boeken.</Text>
     </Section>

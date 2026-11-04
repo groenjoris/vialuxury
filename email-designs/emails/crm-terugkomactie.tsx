@@ -65,7 +65,7 @@ export default function CrmTerugkomactie({ recipientEmail, firstName, hotelName,
                     <Img src={crmIcon("tag-plus-oranje")} alt="" width="44" height="44" style={{ display: "block" }} />
                   </td>
                   <td style={{ verticalAlign: "middle", textAlign: "left" }}>
-                    <Heading as="h1" className="m-h1" style={{ ...s.h1, fontSize: "32px" }}>{code.value} cadeau</Heading>
+                    <Heading as="h1" className="m-h1" style={{ ...s.h1, fontSize: "32px" }}>Jouw {code.value} cadeau</Heading>
                   </td>
                 </tr>
               </tbody>

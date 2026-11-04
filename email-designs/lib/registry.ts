@@ -8,6 +8,7 @@ import CrmJaarGeleden from "../emails/crm-jaar-geleden";
 import CrmWinkelmandje from "../emails/crm-winkelmandje";
 import CrmReview from "../emails/crm-review";
 import CrmTerugkomactie from "../emails/crm-terugkomactie";
+import CrmTerugkomactieHerinnering from "../emails/crm-terugkomactie-herinnering";
 import CrmZoekopdracht from "../emails/crm-zoekopdracht";
 import CrmThemamail from "../emails/crm-themamail";
 import CrmVerlanglijst from "../emails/crm-verlanglijst";
@@ -94,6 +95,15 @@ export const emails: EmailEntry[] = [
     subject: "Sanne, €20 cadeau voor je volgende verblijf",
     preheader: "Omdat je met ons op pad ging. Geldig tot en met 16 december 2026.",
     Component: CrmTerugkomactie,
+  },
+  {
+    slug: "crm-terugkomactie-herinnering",
+    title: "Terugkomactie herinnering (30 dagen na vertrek)",
+    description: "Kaal en met één doel: de code gebruiken voor de einddatum. \"Jouw €20 cadeau\", de code met het aantal dagen dat hij nog geldig is, één knop en één deal in de sfeer van het vorige verblijf. Alleen voor wie de eerste mail nog niet heeft gebruikt.",
+    section: "crm",
+    subject: "Je €20 cadeau verloopt op 16 december",
+    preheader: "Nog 14 dagen geldig. Vul je code in bij het boeken.",
+    Component: CrmTerugkomactieHerinnering,
   },
   {
     slug: "crm-winkelmandje",
