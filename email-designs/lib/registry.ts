@@ -6,6 +6,11 @@ import MvpVakantieBevestiging from "../emails/mvp-vakantie-bevestiging";
 import CrmNagenieten from "../emails/crm-nagenieten";
 import CrmJaarGeleden from "../emails/crm-jaar-geleden";
 import CrmWinkelmandje from "../emails/crm-winkelmandje";
+import CrmReview from "../emails/crm-review";
+import CrmTerugkomactie from "../emails/crm-terugkomactie";
+import CrmZoekopdracht from "../emails/crm-zoekopdracht";
+import CrmThemamail from "../emails/crm-themamail";
+import CrmVerlanglijst from "../emails/crm-verlanglijst";
 import { incheckMails } from "./incheckMails";
 
 // "crm": concept-mails voor het CRM-project (alleen light, eigen lijst app/data/crm-emails.json).
@@ -90,6 +95,52 @@ export const emails: EmailEntry[] = [
     preheader: "Je boeking staat klaar. Rond af wanneer het jou uitkomt.",
     Component: CrmWinkelmandje,
     props: { ...CrmWinkelmandje.PreviewProps, availability: "available" },
+  },
+  // CRM automations (concept): A1, A3, A5, A6, A7 uit "Automations in kaart".
+  {
+    slug: "crm-review",
+    title: "Reviewmail (1 dag na vertrek)",
+    description: "Eén doel: de review. Vijf klikbare sterren boven de vouw (elke ster een eigen link, de score staat op de landingspagina al ingevuld), daaronder het vorige verblijf compact en zonder knop. Geen deals of thema's; alleen een servicelink als vangnet voor klachten.",
+    section: "crm",
+    subject: "Hoe was je verblijf in Landgoed Lauswolt?",
+    preheader: "We horen graag hoe je het vond. Het kost je een minuut.",
+    Component: CrmReview,
+  },
+  {
+    slug: "crm-terugkomactie",
+    title: "Terugkomactie €20 (14 dagen na vertrek)",
+    description: "De code is de held: €20 groot, de code als selecteerbare tekst en de deadline direct eronder, met het vorige verblijf als korte herinnering. Daarna drie deals in de sfeer van dat verblijf (1 uitgelicht, 2 compact) en onderaan zes themaknoppen.",
+    section: "crm",
+    subject: "Sanne, €20 cadeau voor je volgende verblijf",
+    preheader: "Omdat je met ons op pad ging. Geldig tot en met 16 december 2026.",
+    Component: CrmTerugkomactie,
+  },
+  {
+    slug: "crm-zoekopdracht",
+    title: "Zoekopdracht (1 minuut na verlaten)",
+    description: "De zoekopdracht staat bovenaan als herkenbare samenvatting (zoekterm, datum, personen) met \"Bekijk alle resultaten\" als primaire knop. Daaronder drie resultaten als rij-kaarten, populairste eerst. Themasectie staat uit.",
+    section: "crm",
+    subject: "Jouw zoekopdracht: Zuid-Limburg",
+    preheader: "De beste arrangementen voor 20 november.",
+    Component: CrmZoekopdracht,
+  },
+  {
+    slug: "crm-themamail",
+    title: "Themamail best deals (2 uur na bekijken)",
+    description: "Herbruikbaar thema-template (wellness, diner, bubbelbad en citytrip wisselen later alleen copy en beeld): kop en intro, 1 uitgelichte deal en 2 compacte deals, daaronder zes themaknoppen. Alleen als er 2 dagen geen andere retargetingmail is gestuurd.",
+    section: "crm",
+    subject: "Onze beste deals van dit moment",
+    preheader: "Een selectie die bij je past.",
+    Component: CrmThemamail,
+  },
+  {
+    slug: "crm-verlanglijst",
+    title: "Verlanglijst €10 (3 dagen na eerste mail)",
+    description: "De code (€10) hoort bij één item: het eerste favoriet, bovenaan gemarkeerd. De overige favorieten (0, 1 of 2) eronder, dan het codeblok met knop naar dat item en twee vergelijkbare arrangementen. \"Nu te boeken\" is bewust niet gebouwd.",
+    section: "crm",
+    subject: "€10 cadeau op Kasteel Steenenburg van je verlanglijst",
+    preheader: "Jouw unieke code, geldig tot en met 11 november 2026.",
+    Component: CrmVerlanglijst,
   },
 ];
 
