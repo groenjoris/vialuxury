@@ -24,9 +24,8 @@ export const crmCss = `
   .m-mx-auto { margin-left: auto !important; margin-right: auto !important; }
   .m-only { display: block !important; }
   .m-flogo { width: 178px !important; }
-  .qs-cell { width: 50% !important; }
-  .qs-iconcell { padding-left: 6px !important; padding-right: 6px !important; }
-  .qs-label { font-size: 13px !important; line-height: 17px !important; padding-right: 6px !important; }
+  .qs-cell { width: 50% !important; padding: 0 6px 14px !important; }
+  .qs-label { font-size: 16px !important; }
 }
 `;
 
@@ -257,15 +256,13 @@ export function ThemeTiles({ title, note, themes = novemberThemes }: { title: st
       <div style={{ fontSize: 0, lineHeight: 0, textAlign: "center", margin: "12px -5px 0" }}>
         {tiles.map((t) => (
           <div key={t.label} className="qs-cell" style={{ display: "inline-block", width: "33.33%", verticalAlign: "top", boxSizing: "border-box", padding: "0 5px 10px" }}>
-            <Link href={t.url} style={{ display: "block", border: `1px solid ${c.text}`, borderRadius: "8px", textDecoration: "none", color: c.text, backgroundColor: "#FFFFFF" }}>
-              <table role="presentation" align="center" cellPadding={0} cellSpacing={0} style={{ height: "64px", margin: "0 auto" }}>
+            <Link href={t.url} style={{ display: "block", border: `1.5px solid ${c.text}`, borderRadius: "10px", textDecoration: "none", color: c.text, backgroundColor: "#FFFFFF" }}>
+              <table role="presentation" width="100%" cellPadding={0} cellSpacing={0} style={{ width: "100%", height: "60px" }}>
                 <tbody>
                   <tr>
-                    <td className="qs-iconcell" style={{ verticalAlign: "middle", paddingLeft: "8px", paddingRight: "8px", width: "24px" }}>
-                      <Img src={t.all ? crmIcon("arrow-right-donker") : `${baseUrl}/images/mail/crm/thema/${t.icon}.png`} alt="" width="24" height="24" style={{ display: "block" }} />
-                    </td>
-                    <td className="qs-label" style={{ verticalAlign: "middle", paddingRight: "8px", textAlign: "left", fontFamily: font.body, fontSize: "14px", fontWeight: 700, lineHeight: "19px", color: c.text }}>
-                      {t.label}
+                    <td style={{ verticalAlign: "middle", textAlign: "center", padding: "0 10px", fontFamily: font.body, fontSize: "15px", fontWeight: 700, lineHeight: "20px", color: c.text }}>
+                      <Img src={t.all ? crmIcon("arrow-right-donker") : `${baseUrl}/images/mail/crm/thema/${t.icon}.png`} alt="" width="24" height="24" style={{ display: "inline", verticalAlign: "middle", marginRight: "8px" }} />
+                      <span className="qs-label" style={{ verticalAlign: "middle" }}>{t.label}</span>
                     </td>
                   </tr>
                 </tbody>
