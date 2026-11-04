@@ -1,0 +1,23 @@
+{
+  "name": "vialuxury-email-designs",
+  "version": "0.2.0",
+  "private": true,
+  "scripts": {
+    "email": "email dev --dir emails --port 3300",
+    "export": "tsx scripts/export.ts"
+  },
+  "dependencies": {
+    "@react-email/components": "^0.5.0",
+    "@react-email/render": "^1.1.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.0",
+    "react-email": "^4.1.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.8.0"
+  }
+}

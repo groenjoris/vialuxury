@@ -82,6 +82,20 @@
         </div>
       </section>
 
+      <!-- CRM — concept voor de geautomatiseerde e-mails (artist impression, alleen
+           desktop en light mode). Preview per mail op /crm/<slug>. -->
+      <section class="start-section">
+        <h2 class="start-section__title">CRM</h2>
+        <p class="start-section__lead">
+          Concept voor geautomatiseerde e-mails (desktop, light mode)
+        </p>
+        <div class="start-section__buttons">
+          <NuxtLink class="start-btn" to="/crm/crm-jaar-geleden">Precies een jaar geleden</NuxtLink>
+          <NuxtLink class="start-btn" to="/crm/crm-winkelmandje">Winkelmandje (2 dagen na verlaten)</NuxtLink>
+          <NuxtLink class="start-btn" to="/crm/crm-nagenieten">Nagenietmail (3 dagen na vertrek)</NuxtLink>
+        </div>
+      </section>
+
       <!-- Second release — full independent copy of First Release, the
            next iteration the client will build on. -->
       <section class="start-section">
