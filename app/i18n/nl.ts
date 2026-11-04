@@ -50,7 +50,7 @@ const nl: Record<string, string> = {
   'header.restaurants': 'Restaurants',
   'header.giftCard': 'Geef cadeaubon',
   // Multi Hotel Trip — hoofdnavigatie 'Vakanties' met 'Nieuw'-badge
-  'header.holidays': 'Auto- en fietsvakanties',
+  'header.holidays': 'Auto- & fietsvakanties',
   'header.new': 'Nieuw',
   'header.whenAndHowLong': 'Wanneer en hoelang?',
   'header.pickDateAndDuration': 'Kies aankomstdatum en reisduur',
