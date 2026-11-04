@@ -6,7 +6,7 @@ import { font, newsletter } from "../components/theme";
 
 // CRM mail 3: winkelmandje, 2 dagen na verlaten (vervangt A4 cart 2 dagen).
 // Eén doel: de boeking afronden. Concrete datums en beschikbaarheid, één knop naar de
-// checkout met alles vooringevuld. Gastenoordeel alleen als er een score is.
+// checkout met alles vooringevuld. Gastenoordeel: altijd drie reviews, alleen als er scores zijn.
 // Geen alternatieve deals.
 // Onderwerp: "[hotelnaam] op [aankomstdatum kort]: nog beschikbaar"
 
@@ -24,13 +24,13 @@ type Props = {
   price: string;
   availability: "available" | "almost-full";
   roomsLeft?: number;
-  /** Leeg → geen gastenoordeel. */
-  review?: { score: string; text: string; author: string };
+  /** Drie gastenoordelen; leeg → geen gastenoordeel. */
+  reviews?: { score: string; text: string; author: string }[];
   image: string;
   checkoutUrl: string;
 };
 
-export default function CrmWinkelmandje({ recipientEmail, hotelName, packageTitle, place, arrivalDate, departureDate, nights, persons, price, availability, roomsLeft, review, image, checkoutUrl }: Props) {
+export default function CrmWinkelmandje({ recipientEmail, hotelName, packageTitle, place, arrivalDate, departureDate, nights, persons, price, availability, roomsLeft, reviews, image, checkoutUrl }: Props) {
   const c = newsletter.light;
   const availabilityLine =
     availability === "almost-full"
@@ -76,20 +76,17 @@ export default function CrmWinkelmandje({ recipientEmail, hotelName, packageTitl
             </Section>
           </Section>
 
-          {/* Gastenoordeel, alleen als er een score is */}
-          {review && (
-            <Section className="m-pad" style={{ padding: "32px 32px 0" }}>
-              <Row>
-                <Column style={{ width: "64px", verticalAlign: "top" }}>
-                  <div style={{ width: "52px", height: "52px", borderRadius: "6px", backgroundColor: c.text, color: "#FFFFFF", textAlign: "center", lineHeight: "52px", fontFamily: font.body, fontSize: "20px", fontWeight: 700 }}>
-                    {review.score}
-                  </div>
-                </Column>
-                <Column style={{ verticalAlign: "top" }}>
-                  <Text style={{ fontFamily: font.heading, fontSize: "18px", lineHeight: "1.4", color: c.text, margin: 0 }}>"{review.text}"</Text>
-                  <Text style={{ ...s.muted, margin: "6px 0 0" }}>{review.author}</Text>
-                </Column>
-              </Row>
+          {/* Gastenoordeel: drie reviews onder elkaar, alleen als er scores zijn */}
+          {reviews && reviews.length > 0 && (
+            <Section className="m-pad" style={{ padding: "36px 32px 0" }}>
+              <Text style={s.kop}>Dit vinden gasten van {hotelName}</Text>
+              {reviews.slice(0, 3).map((r, i) => (
+                <Section key={r.author} style={{ marginTop: "20px", paddingTop: i ? "20px" : 0, borderTop: i ? `1px solid ${c.border}` : "none" }}>
+                  <Text style={{ ...s.name, margin: 0 }}>{r.score}</Text>
+                  <Text style={{ fontFamily: font.heading, fontSize: "18px", lineHeight: "1.4", color: c.text, margin: "6px 0 0" }}>&ldquo;{r.text}&rdquo;</Text>
+                  <Text style={{ ...s.muted, margin: "6px 0 0" }}>{r.author}</Text>
+                </Section>
+              ))}
             </Section>
           )}
 
@@ -121,7 +118,11 @@ CrmWinkelmandje.PreviewProps = {
   price: "€998",
   availability: "almost-full",
   roomsLeft: 3,
-  review: { score: "9,1", text: "Prachtige kamer, het diner was een feestje en het personeel is ontzettend gastvrij.", author: "Marieke, oktober 2026" },
+  reviews: [
+    { score: "9,1", text: "Prachtige kamer, het diner was een feestje en het personeel is ontzettend gastvrij.", author: "Marieke, oktober 2026" },
+    { score: "9,4", text: "Een stijlvol hotel midden in Den Haag. Het ontbijt was uitgebreid en de kamer heerlijk rustig.", author: "Jeroen, september 2026" },
+    { score: "8,8", text: "Fijne locatie, alles op loopafstand. De lobby en de bar zijn echt bijzonder.", author: "Annelies, augustus 2026" },
+  ],
   image: "https://asset.vialuxury.com/assets/ec2bfd91-fc7d-4fa4-91b9-9fc61298b804?key=card",
   checkoutUrl: `${site}/first-release/deal/hotel-des-indes-verken-en-beleef-den-haag-vanuit-luxe-5-hotel-incl-3-gangendiner?checkin=2026-11-20&adults=2`,
 } satisfies Props;

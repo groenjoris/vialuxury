@@ -98,7 +98,7 @@ export const emails: EmailEntry[] = [
   {
     slug: "crm-winkelmandje",
     title: "Winkelmandje (2 dagen na verlaten)",
-    description: "Eén doel: de boeking afronden. Winkelmandkaart met concrete datums, nachten, personen en prijs, een beschikbaarheidsregel en één knop terug naar de boeking. Gastenoordeel als er een score is. Geen alternatieve deals.",
+    description: "Eén doel: de boeking afronden. Winkelmandkaart met concrete datums, nachten, personen en prijs, een beschikbaarheidsregel en één knop terug naar de boeking. Gastenoordeel met drie reviews als er scores zijn. Geen alternatieve deals.",
     section: "crm",
     subject: "Hotel Des Indes op 20 nov: nog beschikbaar",
     preheader: "Je boeking staat klaar. Rond af wanneer het jou uitkomt.",
