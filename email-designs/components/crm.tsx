@@ -204,12 +204,17 @@ export function StarRating({ baseHref }: { baseHref: string }) {
  */
 export function CodeBlock({ code, value, deadline, line, advice }: { code: string; value: string; deadline: string; line: string; advice?: string }) {
   return (
-    <Section style={{ border: `2px dashed ${c.border}`, borderRadius: "8px", padding: "28px 20px", textAlign: "center" }}>
+    <Section style={{ textAlign: "center" }}>
       <Text style={{ margin: 0, textAlign: "center" }}><Icon name="tag-plus-oranje" size={32} /></Text>
-      <Text style={{ fontFamily: font.body, fontSize: "12px", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: c.muted, margin: "8px 0 0", textAlign: "center" }}>Jouw unieke code</Text>
-      <Text style={{ fontFamily: font.heading, fontWeight: 600, fontSize: "40px", lineHeight: "1.1", color: c.heading, margin: "6px 0 0", textAlign: "center" }}>{value} cadeau</Text>
-      <Text style={{ fontFamily: "'Courier New', Courier, monospace", fontSize: "26px", fontWeight: 700, letterSpacing: "0.12em", color: c.text, backgroundColor: "#F5F5F5", borderRadius: "6px", padding: "12px 20px", margin: "16px auto 0", display: "inline-block", textAlign: "center" }}>{code}</Text>
-      <Text style={{ fontFamily: font.body, fontSize: "16px", fontWeight: 700, color: c.text, margin: "16px 0 0", textAlign: "center" }}>
+      <Text style={{ fontFamily: font.heading, fontWeight: 600, fontSize: "36px", lineHeight: "1.15", color: c.heading, margin: "8px 0 0", textAlign: "center" }}>{value} cadeau</Text>
+
+      {/* Het codevak: oranje gestippelde rand, "Kortingscode" en de code in oranje serif (tekst, geen afbeelding) */}
+      <Section style={{ width: "100%", maxWidth: "300px", margin: "20px auto 0", border: `2px dashed ${c.cta}`, borderRadius: "8px", padding: "22px 16px", textAlign: "center" }}>
+        <Text style={{ fontFamily: font.body, fontSize: "18px", lineHeight: "1.3", color: c.text, margin: 0, textAlign: "center" }}>Kortingscode</Text>
+        <Text style={{ fontFamily: font.heading, fontWeight: 700, fontSize: "30px", lineHeight: "1.2", letterSpacing: "0.02em", color: c.cta, margin: "6px 0 0", textAlign: "center", wordBreak: "keep-all" }}>{code}</Text>
+      </Section>
+
+      <Text style={{ fontFamily: font.body, fontSize: "16px", fontWeight: 700, color: c.text, margin: "18px 0 0", textAlign: "center" }}>
         <Icon name="clock-donker" size={18} /> Geldig tot en met {deadline}
       </Text>
       <Text style={{ ...s.title, margin: "6px 0 0", textAlign: "center" }}>{line}</Text>
