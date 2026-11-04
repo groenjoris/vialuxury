@@ -24,6 +24,9 @@ export const crmCss = `
   .m-mx-auto { margin-left: auto !important; margin-right: auto !important; }
   .m-only { display: block !important; }
   .m-flogo { width: 178px !important; }
+  .qs-cell { width: 50% !important; }
+  .qs-iconcell { padding-left: 6px !important; padding-right: 6px !important; }
+  .qs-label { font-size: 13px !important; line-height: 17px !important; padding-right: 6px !important; }
 }
 `;
 
@@ -229,9 +232,14 @@ export function CodeBlock({ code, value, deadline, line, advice }: { code: strin
   );
 }
 
-export type ThemeTile = { label: string; icon: string; url: string };
+export type ThemeTile = { label: string; icon: string; url: string; all?: boolean };
 
-/** Standaard zes themategels (vijf thema's + Alle thema's), vierkant, drie per rij. */
+/**
+ * Themasectie (S7, "snelle scan"): zes knoppen met het icoon links van het label, zwarte rand van
+ * 1 px en 8 px hoeken. Desktop 3 per rij, mobiel 2 per rij (tegels zijn inline-block-divs; in
+ * Outlook voor Windows stapelen ze, wat prima leesbaar blijft). De vijf thema's passen bij de
+ * seizoensthema's van de maand; de zesde tegel is altijd "Alle thema's".
+ */
 export const themeUrl = "https://vialuxury.com/nl-NL/zoeken?theme=";
 export const novemberThemes: ThemeTile[] = [
   { label: "Wellness", icon: "wellness-donker", url: `${themeUrl}arrangementen-wellness-overnachting` },
@@ -242,29 +250,31 @@ export const novemberThemes: ThemeTile[] = [
 ];
 
 export function ThemeTiles({ title, note, themes = novemberThemes }: { title: string; note: string; themes?: ThemeTile[] }) {
-  const tiles: (ThemeTile & { all?: boolean })[] = [...themes, { label: "Alle thema's", icon: "", url: "https://vialuxury.com/nl-NL/zoeken", all: true }];
-  const rows = [tiles.slice(0, 3), tiles.slice(3, 6)];
-  const cell = { border: `1px solid ${c.border}`, borderRadius: "6px", padding: "14px 6px", textAlign: "center" as const, height: "96px", verticalAlign: "middle" as const };
+  const tiles: ThemeTile[] = [...themes, { label: "Alle thema's", icon: "", url: "https://vialuxury.com/nl-NL/zoeken", all: true }];
   return (
     <Section>
       <Text style={s.kop}>{title}</Text>
-      {rows.map((row, ri) => (
-        <Row key={ri} style={{ marginTop: "10px" }}>
-          {row.map((t, i) => (
-            <Column key={t.label} style={{ width: "33.33%", paddingLeft: i ? "5px" : 0, paddingRight: i < row.length - 1 ? "5px" : 0, verticalAlign: "top" }}>
-              <Link href={t.url} style={{ display: "block", textDecoration: "none" }}>
-                <Section style={cell}>
-                  <Text style={{ margin: 0, textAlign: "center" }}>
-                    {t.all ? <Img src={crmIcon("arrow-right-donker")} alt="" width="28" height="28" style={{ display: "inline" }} /> : <Img src={`${baseUrl}/images/mail/crm/thema/${t.icon}.png`} alt="" width="28" height="28" style={{ display: "inline" }} />}
-                  </Text>
-                  <Text style={{ fontFamily: font.body, fontSize: "13px", fontWeight: 700, lineHeight: "1.25", color: c.text, margin: "8px 0 0", textAlign: "center" }}>{t.label}</Text>
-                </Section>
-              </Link>
-            </Column>
-          ))}
-        </Row>
-      ))}
-      <Text style={{ ...s.muted, margin: "12px 0 0" }}>{note}</Text>
+      <div style={{ fontSize: 0, lineHeight: 0, textAlign: "center", margin: "12px -5px 0" }}>
+        {tiles.map((t) => (
+          <div key={t.label} className="qs-cell" style={{ display: "inline-block", width: "33.33%", verticalAlign: "top", boxSizing: "border-box", padding: "0 5px 10px" }}>
+            <Link href={t.url} style={{ display: "block", border: `1px solid ${c.text}`, borderRadius: "8px", textDecoration: "none", color: c.text, backgroundColor: "#FFFFFF" }}>
+              <table role="presentation" align="center" cellPadding={0} cellSpacing={0} style={{ height: "64px", margin: "0 auto" }}>
+                <tbody>
+                  <tr>
+                    <td className="qs-iconcell" style={{ verticalAlign: "middle", paddingLeft: "8px", paddingRight: "8px", width: "24px" }}>
+                      <Img src={t.all ? crmIcon("arrow-right-donker") : `${baseUrl}/images/mail/crm/thema/${t.icon}.png`} alt="" width="24" height="24" style={{ display: "block" }} />
+                    </td>
+                    <td className="qs-label" style={{ verticalAlign: "middle", paddingRight: "8px", textAlign: "left", fontFamily: font.body, fontSize: "14px", fontWeight: 700, lineHeight: "19px", color: c.text }}>
+                      {t.label}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </Link>
+          </div>
+        ))}
+      </div>
+      <Text style={{ ...s.muted, margin: "4px 0 0" }}>{note}</Text>
     </Section>
   );
 }
