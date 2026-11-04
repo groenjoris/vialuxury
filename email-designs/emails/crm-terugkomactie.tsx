@@ -52,9 +52,9 @@ export default function CrmTerugkomactie({ recipientEmail, hotelName, place, pac
         <Container style={{ width: "100%", maxWidth: "626px" }}>
           <CrmHeader />
 
-          <Section className="m-pad" style={{ padding: "36px 32px 0", textAlign: "center" }}>
-            <Heading as="h1" className="m-h1" style={{ ...s.h1, textAlign: "center" }}>Op naar de volgende keer</Heading>
-            <Text style={{ ...s.body, textAlign: "center", margin: "12px auto 0", maxWidth: "460px" }}>
+          <Section className="m-pad" style={{ padding: "36px 32px 0" }}>
+            <Heading as="h1" className="m-h1" style={s.h1}>Op naar de volgende keer</Heading>
+            <Text style={s.body}>
               {hotelName ? `We vonden het fijn dat je met ons naar ${hotelName} ging.` : "We vonden het fijn dat je met ons op pad ging."}{" "}
               Daarom krijg je {code.value} cadeau op je volgende verblijf.
             </Text>
@@ -69,7 +69,7 @@ export default function CrmTerugkomactie({ recipientEmail, hotelName, place, pac
               line="Vul hem in bij het boeken."
               advice="Je code staat klaar voor je volgende verblijf."
             />
-            <Section style={{ marginTop: "24px", textAlign: "center" }}>
+            <Section style={{ marginTop: "24px" }}>
               <PrimaryButton href={ctaUrl}>Kies je volgende verblijf</PrimaryButton>
             </Section>
           </Section>

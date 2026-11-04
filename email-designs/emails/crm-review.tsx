@@ -45,21 +45,21 @@ export default function CrmReview({ recipientEmail, firstName, hotelName, place,
           <CrmHeader />
 
           {/* Boven de vouw: kop, één zin, vijf sterren, knop */}
-          <Section className="m-pad" style={{ padding: "40px 32px 0", textAlign: "center" }}>
-            <Heading as="h1" className="m-h1" style={{ ...s.h1, textAlign: "center" }}>
+          <Section className="m-pad" style={{ padding: "36px 32px 0" }}>
+            <Heading as="h1" className="m-h1" style={s.h1}>
               {firstName ? `Welkom thuis, ${firstName}` : "Welkom thuis"}
             </Heading>
-            <Text style={{ ...s.body, textAlign: "center", margin: "12px auto 0", maxWidth: "440px" }}>
+            <Text style={s.body}>
               Jouw review helpt andere gasten bij hun keuze, en ons om nog beter te worden.
             </Text>
           </Section>
 
-          <Section className="m-pad" style={{ padding: "28px 32px 0", textAlign: "center" }}>
-            <Text style={{ fontFamily: font.heading, fontWeight: 600, fontSize: "20px", color: c.heading, margin: "0 0 12px", textAlign: "center" }}>
+          <Section className="m-pad" style={{ padding: "28px 32px 0" }}>
+            <Text style={{ fontFamily: font.heading, fontWeight: 600, fontSize: "20px", color: c.heading, margin: "0 0 10px" }}>
               Hoe beoordeel je {where}?
             </Text>
             <StarRating baseHref={reviewUrl} />
-            <Section style={{ marginTop: "28px", textAlign: "center" }}>
+            <Section style={{ marginTop: "24px" }}>
               <PrimaryButton href={reviewUrl}>Schrijf je review</PrimaryButton>
             </Section>
           </Section>

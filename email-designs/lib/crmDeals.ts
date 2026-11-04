@@ -62,7 +62,7 @@ export const steenenburg: CrmDeal = {
   fromPrice: "€249",
   discount: "-49%",
   label: "Nieuw",
-  image: "https://asset.vialuxury.com/assets/c090e6d0-3705-42e1-bf8a-b1e8a3f90db8?key=card",
+  image: "https://asset.vialuxury.com/assets/67fadf3c-0b73-4afa-9c44-9eebbf26ad8f?key=card",
   url: dealUrl("kasteel-steenenburg-culinair-verblijf-in-middeleeuws-4-kasteelhotel-op-prachtig-landgoed"),
 };
 

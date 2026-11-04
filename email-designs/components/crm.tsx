@@ -160,23 +160,28 @@ export function FeaturedDeal({ d, cta = "Bekijk arrangement", primary = false }:
   );
 }
 
-/** Compacte deal: foto links (180 px), tekst rechts. Zonder plaats of prijs valt de regel weg. */
-export function CompactDeal({ d, cta = "Bekijk" }: { d: DealLike; cta?: string }) {
+/**
+ * Compacte deal: foto links (4:3), tekst rechts in vaste volgorde: hotelnaam, plaats, pitch, prijs, link.
+ * Zonder plaats valt die regel weg. Op mobiel stapelt de foto boven de tekst.
+ */
+export function CompactDeal({ d, cta = "Bekijk arrangement" }: { d: DealLike; cta?: string }) {
   return (
     <Row>
-      <Column className="stack" style={{ width: "180px", verticalAlign: "top" }}>
+      <Column className="stack" style={{ width: "168px", verticalAlign: "top" }}>
         <Link href={d.url}>
-          <Img src={d.image} alt={d.packageTitle} width="180" height="120" style={{ display: "block", width: "100%", height: "120px", objectFit: "cover", borderRadius: "6px" }} />
+          <Img src={d.image} alt={d.packageTitle} width="168" height="126" style={{ display: "block", width: "100%", height: "126px", objectFit: "cover", borderRadius: "6px" }} />
         </Link>
       </Column>
-      <Column className="stack" style={{ verticalAlign: "top", paddingLeft: "16px" }}>
-        <Text style={{ ...s.name, margin: 0 }}>{d.hotelName}</Text>
+      <Column className="stack" style={{ verticalAlign: "top", paddingLeft: "20px" }}>
+        <Text style={{ ...s.name, fontFamily: font.heading, fontWeight: 600, fontSize: "18px", lineHeight: "1.25", margin: 0 }}>{d.hotelName}</Text>
         {d.place && <Text style={{ ...s.muted, margin: "2px 0 0" }}>{d.place}</Text>}
-        <Text style={{ ...s.title, fontSize: "13px", margin: "6px 0 0" }}>{d.packageTitle}</Text>
-        <Text style={{ ...s.title, margin: "6px 0 10px" }}>
-          <span style={{ color: c.muted }}>vanaf </span><strong>{d.fromPrice}</strong><span style={{ color: c.muted }}> p.p.</span>
+        <Text style={{ ...s.title, margin: "8px 0 0" }}>{d.packageTitle}</Text>
+        <Text style={{ ...s.title, margin: "8px 0 0" }}>
+          <span style={{ color: c.muted }}>vanaf </span><strong style={{ fontSize: "16px" }}>{d.fromPrice}</strong><span style={{ color: c.muted }}> p.p.</span>
         </Text>
-        <SecondaryButton href={d.url}>{cta}</SecondaryButton>
+        <Text style={{ ...s.title, margin: "8px 0 0" }}>
+          <Link href={d.url} style={{ color: c.text, fontWeight: 700, textDecoration: "underline" }}>{cta} →</Link>
+        </Text>
       </Column>
     </Row>
   );
@@ -186,7 +191,7 @@ export function CompactDeal({ d, cta = "Bekijk" }: { d: DealLike; cta?: string }
 export function StarRating({ baseHref }: { baseHref: string }) {
   const sep = baseHref.includes("?") ? "&" : "?";
   return (
-    <Row style={{ width: "auto" }} align="center">
+    <Row style={{ width: "auto", marginLeft: "-6px" }} align="left">
       {[1, 2, 3, 4, 5].map((n) => (
         <Column key={n} style={{ padding: "0 2px" }}>
           <Link href={`${baseHref}${sep}rating=${n}`} style={{ display: "block", width: "48px", height: "48px", textAlign: "center" }}>
@@ -204,21 +209,22 @@ export function StarRating({ baseHref }: { baseHref: string }) {
  */
 export function CodeBlock({ code, value, deadline, line, advice }: { code: string; value: string; deadline: string; line: string; advice?: string }) {
   return (
-    <Section style={{ textAlign: "center" }}>
-      <Text style={{ margin: 0, textAlign: "center" }}><Icon name="tag-plus-oranje" size={32} /></Text>
-      <Text style={{ fontFamily: font.heading, fontWeight: 600, fontSize: "36px", lineHeight: "1.15", color: c.heading, margin: "8px 0 0", textAlign: "center" }}>{value} cadeau</Text>
+    <Section>
+      <Text style={{ margin: 0 }}><Icon name="tag-plus-oranje" size={32} /></Text>
+      <Text style={{ fontFamily: font.heading, fontWeight: 600, fontSize: "32px", lineHeight: "1.15", color: c.heading, margin: "8px 0 0" }}>{value} cadeau</Text>
 
-      {/* Het codevak: oranje gestippelde rand, "Kortingscode" en de code in oranje serif (tekst, geen afbeelding) */}
-      <Section style={{ width: "100%", maxWidth: "300px", margin: "20px auto 0", border: `2px dashed ${c.cta}`, borderRadius: "8px", padding: "22px 16px", textAlign: "center" }}>
+      {/* Het codevak: oranje gestippelde rand over de volle breedte; "Kortingscode" en de code staan
+          erin gecentreerd, als één coupon. De code is tekst (selecteerbaar), geen afbeelding. */}
+      <Section style={{ width: "100%", margin: "16px 0 0", border: `2px dashed ${c.cta}`, borderRadius: "8px", padding: "22px 16px", textAlign: "center" }}>
         <Text style={{ fontFamily: font.body, fontSize: "18px", lineHeight: "1.3", color: c.text, margin: 0, textAlign: "center" }}>Kortingscode</Text>
         <Text style={{ fontFamily: font.heading, fontWeight: 700, fontSize: "30px", lineHeight: "1.2", letterSpacing: "0.02em", color: c.cta, margin: "6px 0 0", textAlign: "center", wordBreak: "keep-all" }}>{code}</Text>
       </Section>
 
-      <Text style={{ fontFamily: font.body, fontSize: "16px", fontWeight: 700, color: c.text, margin: "18px 0 0", textAlign: "center" }}>
+      <Text style={{ fontFamily: font.body, fontSize: "16px", fontWeight: 700, color: c.text, margin: "16px 0 0" }}>
         <Icon name="clock-donker" size={18} /> Geldig tot en met {deadline}
       </Text>
-      <Text style={{ ...s.title, margin: "6px 0 0", textAlign: "center" }}>{line}</Text>
-      {advice && <Text style={{ ...s.muted, margin: "6px 0 0", textAlign: "center" }}>{advice}</Text>}
+      <Text style={{ ...s.title, margin: "4px 0 0" }}>{line}</Text>
+      {advice && <Text style={{ ...s.muted, margin: "4px 0 0" }}>{advice}</Text>}
     </Section>
   );
 }

@@ -82,12 +82,12 @@ export default function CrmVerlanglijst({ recipientEmail, favorites, code, wishl
               {others.map((d) => (
                 <Section key={d.url} style={{ marginTop: "16px" }}>
                   <Row>
-                    <Column className="stack" style={{ width: "110px", verticalAlign: "middle" }}>
+                    <Column style={{ width: "110px", verticalAlign: "middle" }}>
                       <Link href={d.url}>
                         <Img src={d.image} alt={d.packageTitle} width="110" height="72" style={{ display: "block", width: "100%", height: "72px", objectFit: "cover", borderRadius: "6px" }} />
                       </Link>
                     </Column>
-                    <Column className="stack" style={{ verticalAlign: "middle", paddingLeft: "14px" }}>
+                    <Column style={{ verticalAlign: "middle", paddingLeft: "14px" }}>
                       <Text style={{ ...s.name, margin: 0 }}>{d.hotelName}</Text>
                       <Text style={{ ...s.title, margin: "2px 0 0" }}>
                         <span style={{ color: c.muted }}>vanaf </span><strong>{d.fromPrice}</strong><span style={{ color: c.muted }}> p.p.</span>
@@ -111,7 +111,7 @@ export default function CrmVerlanglijst({ recipientEmail, favorites, code, wishl
               line="Vul hem in bij het boeken."
               advice={first ? `Je code staat klaar voor ${name}.` : "Je code staat klaar voor je favoriet."}
             />
-            <Section style={{ marginTop: "24px", textAlign: "center" }}>
+            <Section style={{ marginTop: "24px" }}>
               <PrimaryButton href={first?.url ?? wishlistUrl}>{first ? `Boek ${name}` : "Bekijk je verlanglijst"}</PrimaryButton>
             </Section>
           </Section>
