@@ -50,14 +50,14 @@ export default function CrmTerugkomactie({ recipientEmail, firstName, hotelName,
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <style>{crmCss}</style>
       </Head>
-      <Preview>Omdat je met ons op pad ging. Geldig tot en met {code.deadline}.</Preview>
+      <Preview>Een persoonlijk bedankje, alleen voor jou. Geldig tot en met {code.deadline}.</Preview>
       <Body style={{ backgroundColor: c.bg, margin: 0, padding: 0, fontFamily: font.body }}>
         <Container style={{ width: "100%", maxWidth: "626px" }}>
           <CrmHeader />
 
           {/* 1. Waarom en wat: bedankt, dan het bedrag als kop met een zin eronder */}
           <Section className="m-pad" style={{ padding: "36px 32px 0", textAlign: "center" }}>
-            <Text style={{ ...dealMeta, fontSize: "16px", textAlign: "center" }}>{firstName ? `Bedankt voor je verblijf, ${firstName}` : "Bedankt voor je verblijf"}</Text>
+            <Text style={{ ...dealMeta, fontSize: "16px", textAlign: "center" }}>{firstName ? `Speciaal voor jou, ${firstName}` : "Speciaal voor jou"}</Text>
             <table role="presentation" align="center" cellPadding={0} cellSpacing={0} style={{ margin: "10px auto 0" }}>
               <tbody>
                 <tr>
@@ -70,12 +70,12 @@ export default function CrmTerugkomactie({ recipientEmail, firstName, hotelName,
                 </tr>
               </tbody>
             </table>
-            <Text style={{ ...s.body, margin: "8px 0 0" }}>op je volgende verblijf bij ViaLuxury</Text>
+            <Text style={{ ...s.body, margin: "8px 0 0" }}>als persoonlijk bedankje, op je volgende verblijf bij ViaLuxury</Text>
           </Section>
 
           {/* 2 en 3. Hoe en tot wanneer (de code), en waar je heen kunt (de knop) */}
           <Section className="m-pad" style={{ padding: "24px 32px 0", textAlign: "center" }}>
-            <CodeBlock code={code.code} deadline={code.deadline} />
+            <CodeBlock code={code.code} deadline={code.deadline} label="Jouw persoonlijke code" />
             <Section style={{ marginTop: "24px" }}>
               <PrimaryButton href={ctaUrl}>Bekijk arrangementen</PrimaryButton>
             </Section>

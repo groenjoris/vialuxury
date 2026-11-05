@@ -223,7 +223,7 @@ export function StarRating({ baseHref }: { baseHref: string }) {
       {[1, 2, 3, 4, 5].map((n) => (
         <Column key={n} style={{ padding: "0 2px" }}>
           <Link href={`${baseHref}${sep}rating=${n}`} style={{ display: "block", width: "48px", height: "48px", textAlign: "center" }}>
-            <Img src={crmIcon("ster-oranje-gevuld")} alt={`${n} ${n === 1 ? "ster" : "sterren"}`} width="40" height="40" style={{ display: "block", margin: "4px auto 0" }} />
+            <Img src={crmIcon("trustpilot-ster-groen")} alt={`${n} ${n === 1 ? "ster" : "sterren"}`} width="40" height="40" style={{ display: "block", margin: "4px auto 0" }} />
           </Link>
         </Column>
       ))}
@@ -235,13 +235,13 @@ export function StarRating({ baseHref }: { baseHref: string }) {
  * Codeblok (S10): de code staat als tekst (selecteerbaar, geen afbeelding), met grote waarde en
  * de deadline direct eronder. Zonder `advice` valt die regel weg.
  */
-export function CodeBlock({ code, deadline, daysLeft }: { code: string; deadline: string; daysLeft?: number }) {
+export function CodeBlock({ code, deadline, daysLeft, label = "Kortingscode" }: { code: string; deadline: string; daysLeft?: number; label?: string }) {
   return (
     <Section>
       {/* Het codevak: oranje gestippelde rand over de volle breedte; "Kortingscode" en de code staan
           erin gecentreerd, als één coupon. De code is tekst (selecteerbaar), geen afbeelding. */}
       <Section style={{ width: "100%", margin: 0, border: `2px dashed ${c.cta}`, borderRadius: "8px", padding: "22px 16px", textAlign: "center" }}>
-        <Text style={{ fontFamily: font.body, fontSize: "16px", lineHeight: "1.3", color: c.text, margin: 0, textAlign: "center" }}>Kortingscode</Text>
+        <Text style={{ fontFamily: font.body, fontSize: "16px", lineHeight: "1.3", color: c.text, margin: 0, textAlign: "center" }}>{label}</Text>
         <Text style={{ fontFamily: font.heading, fontWeight: 700, fontSize: "32px", lineHeight: "1.2", letterSpacing: "0.02em", color: c.cta, margin: "6px 0 0", textAlign: "center", wordBreak: "keep-all" }}>{code}</Text>
       </Section>
 

@@ -93,7 +93,7 @@ export const emails: EmailEntry[] = [
     description: "Bovenaan staat meteen wat je krijgt (€20 cadeau als kop), daaronder de code als selecteerbare tekst en de deadline, met het vorige verblijf als korte herinnering. Daarna drie deals in de sfeer van dat verblijf (1 uitgelicht, 2 compact) en onderaan zes themaknoppen.",
     section: "crm",
     subject: "Sanne, €20 cadeau voor je volgende verblijf",
-    preheader: "Omdat je met ons op pad ging. Geldig tot en met 16 december 2026.",
+    preheader: "Een persoonlijk bedankje, alleen voor jou. Geldig tot en met 16 december 2026.",
     Component: CrmTerugkomactie,
   },
   {

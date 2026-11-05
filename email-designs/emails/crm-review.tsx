@@ -1,6 +1,6 @@
 import { Body, Column, Container, Head, Heading, Html, Img, Link, Preview, Row, Section, Text } from "@react-email/components";
 import * as React from "react";
-import { crmCss, faqUrl, PrimaryButton, s, ServiceLine, serviceUrl, StarRating, CrmHeader } from "../components/crm";
+import { crmCss, faqUrl, s, ServiceLine, serviceUrl, StarRating, CrmHeader } from "../components/crm";
 import NewsletterFooter from "../components/NewsletterFooter";
 import { font, newsletter } from "../components/theme";
 
@@ -44,7 +44,7 @@ export default function CrmReview({ recipientEmail, firstName, hotelName, place,
         <Container style={{ width: "100%", maxWidth: "626px" }}>
           <CrmHeader />
 
-          {/* Boven de vouw: kop, één zin, vijf sterren, knop */}
+          {/* Boven de vouw: kop, één zin, vijf sterren */}
           <Section className="m-pad" style={{ padding: "36px 32px 0", textAlign: "center" }}>
             <Heading as="h1" className="m-h1" style={s.h1}>
               {firstName ? `Welkom thuis, ${firstName}` : "Welkom thuis"}
@@ -55,13 +55,11 @@ export default function CrmReview({ recipientEmail, firstName, hotelName, place,
           </Section>
 
           <Section className="m-pad" style={{ padding: "28px 32px 0", textAlign: "center" }}>
-            <Text style={{ fontFamily: font.heading, fontWeight: 600, fontSize: "20px", color: c.heading, margin: "0 0 10px" }}>
+            <Text style={{ fontFamily: font.heading, fontWeight: 600, fontSize: "20px", color: c.heading, margin: 0 }}>
               Hoe beoordeel je {where}?
             </Text>
+            <Text style={{ ...s.title, color: c.muted, margin: "4px 0 10px" }}>Selecteer het gewenste aantal sterren</Text>
             <StarRating baseHref={reviewUrl} />
-            <Section style={{ marginTop: "24px" }}>
-              <PrimaryButton href={reviewUrl}>Schrijf je review</PrimaryButton>
-            </Section>
           </Section>
 
           {/* Vorig verblijf, compact en zonder knop */}
