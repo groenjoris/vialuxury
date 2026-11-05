@@ -205,7 +205,7 @@ export function CompactDeal({ d, cta = "Bekijk" }: { d: DealLike; cta?: string }
             </tr>
             <tr>
               <td style={{ verticalAlign: "bottom", paddingTop: "10px" }}>
-                <DarkButton href={d.url}>{cta}</DarkButton>
+                <Link href={d.url} style={{ display: "inline-block", padding: "14px 0", fontFamily: font.body, fontSize: "16px", lineHeight: "20px", fontWeight: 700, color: c.text, textDecoration: "underline" }}>{cta}</Link>
               </td>
             </tr>
           </tbody>

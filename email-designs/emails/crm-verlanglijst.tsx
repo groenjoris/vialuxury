@@ -68,6 +68,9 @@ export default function CrmVerlanglijst({ recipientEmail, favorites, code, daysL
                   {first.place && <Text style={{ ...dealMeta, margin: "2px 0 0" }}>{first.place}</Text>}
                   <Text style={{ ...dealPitch, margin: "8px 0 0" }}>{first.packageTitle}</Text>
                   <Text style={dealPrice}>vanaf {first.fromPrice} p.p. voor {first.nights} {first.nights === 1 ? "nacht" : "nachten"}</Text>
+                  <Section style={{ marginTop: "20px" }}>
+                    <PrimaryButton href={first.url}>Bekijk arrangement</PrimaryButton>
+                  </Section>
                 </Section>
               </Section>
             </Section>
