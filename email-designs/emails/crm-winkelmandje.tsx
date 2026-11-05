@@ -1,8 +1,8 @@
 import { Body, Column, Container, Head, Heading, Html, Img, Link, Preview, Row, Section, Text } from "@react-email/components";
 import * as React from "react";
 import { crmCss, PrimaryButton, s, site } from "../components/crm";
-import NewsletterFooter from "../components/NewsletterFooter";
-import NewsletterHeader from "../components/NewsletterHeader";
+import CrmFooter from "../components/CrmFooter";
+import CrmHeader from "../components/CrmHeader";
 import { font, newsletter } from "../components/theme";
 
 // CRM mail 3: winkelmandje, 2 dagen na verlaten (vervangt A4 cart 2 dagen).
@@ -47,7 +47,7 @@ export default function CrmWinkelmandje({ recipientEmail, hotelName, packageTitl
       <Preview>Je boeking staat klaar. Rond af wanneer het jou uitkomt.</Preview>
       <Body style={{ backgroundColor: c.bg, margin: 0, padding: 0, fontFamily: font.body }}>
         <Container style={{ width: "100%", maxWidth: "626px" }}>
-          <NewsletterHeader trustpilot={false} />
+          <CrmHeader />
 
           <Section className="m-pad" style={{ padding: "32px 32px 0" }}>
             <Heading as="h1" className="m-h1" style={s.h1}>Nog steeds interesse in {hotelName}?</Heading>
@@ -108,8 +108,8 @@ export default function CrmWinkelmandje({ recipientEmail, hotelName, packageTitl
             </Text>
           </Section>
 
-          <NewsletterFooter recipientEmail={recipientEmail} reason="omdat je een boeking bij ons startte" />
         </Container>
+        <CrmFooter recipientEmail={recipientEmail} reason="omdat je een boeking bij ons startte" />
       </Body>
     </Html>
   );

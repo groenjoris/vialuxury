@@ -1,8 +1,8 @@
 import { Body, Column, Container, Head, Heading, Html, Img, Preview, Row, Section, Text } from "@react-email/components";
 import * as React from "react";
 import { crmCss, s, SecondaryButton, site } from "../components/crm";
-import NewsletterFooter from "../components/NewsletterFooter";
-import NewsletterHeader from "../components/NewsletterHeader";
+import CrmFooter from "../components/CrmFooter";
+import CrmHeader from "../components/CrmHeader";
 import { baseUrl, font, newsletter } from "../components/theme";
 
 // CRM mail 1: nagenietmail, 3 dagen na vertrek (vervangt A2 3 dagen).
@@ -47,7 +47,7 @@ export default function CrmNagenieten({ firstName, recipientEmail, hotelName, sa
       <Preview>Eén klik, dan sturen we je op het juiste moment inspiratie.</Preview>
       <Body style={{ backgroundColor: c.bg, margin: 0, padding: 0, fontFamily: font.body }}>
         <Container style={{ width: "100%", maxWidth: "626px" }}>
-          <NewsletterHeader trustpilot={false} />
+          <CrmHeader />
 
           {/* Grote foto van het hotel met het nagenietframe; geen datums of arrangement, dat weet de gast al */}
           <Img src={image} alt={hotelName} width="626" height="380" style={{ display: "block", width: "100%", height: "380px", objectFit: "cover" }} />
@@ -77,8 +77,8 @@ export default function CrmNagenieten({ firstName, recipientEmail, hotelName, sa
           </Section>
           <Section style={{ height: "40px" }} />
 
-          <NewsletterFooter recipientEmail={recipientEmail} reason="omdat je bij ons boekte" />
         </Container>
+        <CrmFooter recipientEmail={recipientEmail} reason="omdat je bij ons boekte" />
       </Body>
     </Html>
   );
