@@ -99,10 +99,10 @@ export const emails: EmailEntry[] = [
   {
     slug: "crm-terugkomactie-herinnering",
     title: "Terugkomactie herinnering (30 dagen na vertrek)",
-    description: "Kaal en met één doel: de code gebruiken voor de einddatum. \"Jouw €20 cadeau\", de code met het aantal dagen dat hij nog geldig is, één knop en één deal in de sfeer van het vorige verblijf. Alleen voor wie de eerste mail nog niet heeft gebruikt.",
+    description: "Kaal en met één doel: de code gebruiken voor de einddatum. \"Jouw €20 cadeau\", de code met het aantal dagen dat hij nog geldig is, één knop en drie grote arrangementen onder elkaar in de sfeer van het vorige verblijf. Alleen voor wie de eerste mail nog niet heeft gebruikt.",
     section: "crm",
-    subject: "Je €20 cadeau verloopt op 16 december",
-    preheader: "Nog 14 dagen geldig. Vul je code in bij het boeken.",
+    subject: "Sanne, je persoonlijke €20 cadeau verloopt op 16 december",
+    preheader: "Je persoonlijke cadeau ligt nog klaar. Nog 14 dagen geldig.",
     Component: CrmTerugkomactieHerinnering,
   },
   {
