@@ -25,12 +25,14 @@ type Props = {
   /** 1 tot 3 favorieten; de eerste krijgt de code. */
   favorites: CrmDeal[];
   code: { code: string; value: string; deadline: string };
+  /** Aantal dagen tot de deadline op de verzenddatum (7 dagen geldig). */
+  daysLeft?: number;
   wishlistUrl: string;
   /** Twee vergelijkbare arrangementen. */
   alternatives: CrmDeal[];
 };
 
-export default function CrmVerlanglijst({ recipientEmail, favorites, code, wishlistUrl, alternatives }: Props) {
+export default function CrmVerlanglijst({ recipientEmail, favorites, code, daysLeft, wishlistUrl, alternatives }: Props) {
   const c = newsletter.light;
   const [first, ...others] = favorites;
   const name = first?.hotelName ?? "je favoriet";
@@ -65,7 +67,7 @@ export default function CrmVerlanglijst({ recipientEmail, favorites, code, wishl
                   <Text style={{ ...dealName, fontSize: "20px", margin: "2px 0 0" }}>{first.hotelName}</Text>
                   {first.place && <Text style={{ ...dealMeta, margin: "2px 0 0" }}>{first.place}</Text>}
                   <Text style={{ ...dealPitch, margin: "8px 0 0" }}>{first.packageTitle}</Text>
-                  <Text style={dealPrice}>vanaf {first.fromPrice} p.p.</Text>
+                  <Text style={dealPrice}>vanaf {first.fromPrice} p.p. voor {first.nights} {first.nights === 1 ? "nacht" : "nachten"}</Text>
                 </Section>
               </Section>
             </Section>
@@ -100,7 +102,7 @@ export default function CrmVerlanglijst({ recipientEmail, favorites, code, wishl
 
           {/* S10: de code, gekoppeld aan het eerste favoriet */}
           <Section className="m-pad" style={{ padding: "40px 32px 0", textAlign: "center" }}>
-            <CodeBlock code={code.code} deadline={code.deadline} />
+            <CodeBlock code={code.code} deadline={code.deadline} daysLeft={daysLeft} />
             <Section style={{ marginTop: "24px" }}>
               <PrimaryButton href={first?.url ?? wishlistUrl}>{first ? `Boek ${name}` : "Bekijk je verlanglijst"}</PrimaryButton>
             </Section>
@@ -126,7 +128,8 @@ export default function CrmVerlanglijst({ recipientEmail, favorites, code, wishl
 CrmVerlanglijst.PreviewProps = {
   recipientEmail: "sanne.devries@example.com",
   favorites: [steenenburg, villaRuimzicht, desIndes],
-  code: { code: "LIJST10-5TQ9", value: "€10", deadline: "11 november 2026" },
+  code: { code: "LIJST10-5TQ9", value: "€10", deadline: "12 november 2026" },
+  daysLeft: 7,
   wishlistUrl: "https://vialuxury.vercel.app/first-release/leden?utm_source=email&utm_medium=crm&utm_campaign=retargeting_addedtowishlist_2",
   alternatives: [vanOys, lauswolt],
 } satisfies Props;

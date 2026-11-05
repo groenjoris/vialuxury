@@ -31,10 +31,12 @@ type Props = {
   availabilityUrl: string;
   /** Leeg → geen kortingsregel. */
   code?: { code: string; value: string; deadline: string };
+  /** Aantal dagen tot de deadline op de verzenddatum; maakt de einddatum concreet. */
+  daysLeft?: number;
   deals: Deal[];
 };
 
-export default function CrmJaarGeleden({ recipientEmail, hotelName, packageTitle, place, arrivalDateLastYear, image, availabilityUrl, code, deals }: Props) {
+export default function CrmJaarGeleden({ recipientEmail, hotelName, packageTitle, place, arrivalDateLastYear, image, availabilityUrl, code, daysLeft, deals }: Props) {
   const c = newsletter.light;
   const cta = code ? `${availabilityUrl}&code=${code.code}` : availabilityUrl;
 
@@ -67,7 +69,7 @@ export default function CrmJaarGeleden({ recipientEmail, hotelName, packageTitle
               <Text style={{ ...s.title, margin: "14px 0 0" }}>
                 Je code{" "}
                 <Link href={cta} style={{ color: c.text, fontWeight: 700, textDecoration: "underline" }}>{code.code}</Link>{" "}
-                ({code.value} korting) is nog geldig tot {code.deadline}.
+                ({code.value} korting) is {daysLeft ? `nog ${daysLeft} dagen geldig, tot ${code.deadline}` : `nog geldig tot ${code.deadline}`}.
               </Text>
             )}
           </Section>
@@ -111,6 +113,7 @@ CrmJaarGeleden.PreviewProps = {
   image: "https://asset.vialuxury.com/assets/57455675-0f6e-4334-aaa2-bc3d1747f31f?key=card",
   availabilityUrl: `${deal("landgoed-lauswolt-geniet-van-5-sterren-luxe-in-de-bosrijke-omgeving-van-friesland-incl-culinair-diner")}?checkin=2026-11-02&adults=2`,
   code: { code: "WEERWEG25", value: "€25", deadline: "30 november" },
+  daysLeft: 25,
   deals: [
     {
       hotelName: "Van Oys Maastricht Retreat",

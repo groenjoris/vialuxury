@@ -22,6 +22,8 @@ type Props = {
   nights: number;
   persons: number;
   price: string;
+  /** Wat er in de totaalprijs zit of nog bijkomt, bijv. "Inclusief btw en servicekosten". Alleen invullen als het klopt. */
+  priceNote?: string;
   availability: "available" | "almost-full";
   roomsLeft?: number;
   /** Drie gastenoordelen; leeg → geen gastenoordeel. */
@@ -32,7 +34,7 @@ type Props = {
   checkoutUrl: string;
 };
 
-export default function CrmWinkelmandje({ recipientEmail, hotelName, packageTitle, place, arrivalDate, departureDate, nights, persons, price, availability, roomsLeft, reviewSummary, reviews, image, checkoutUrl }: Props) {
+export default function CrmWinkelmandje({ recipientEmail, hotelName, packageTitle, place, arrivalDate, departureDate, nights, persons, price, priceNote, availability, roomsLeft, reviewSummary, reviews, image, checkoutUrl }: Props) {
   const c = newsletter.light;
   const availabilityLine =
     availability === "almost-full"
@@ -67,7 +69,8 @@ export default function CrmWinkelmandje({ recipientEmail, hotelName, packageTitl
                 <Section style={{ marginTop: "16px", borderTop: `1px solid ${c.border}`, paddingTop: "14px" }}>
                   <Text style={{ ...s.title, margin: 0, fontWeight: 700 }}>{arrivalDate} tot {departureDate}</Text>
                   <Text style={{ ...s.muted, margin: "2px 0 0" }}>{nights} nachten · {persons} personen</Text>
-                  <Text style={{ fontFamily: font.body, fontSize: "16px", fontWeight: 700, color: c.text, margin: "10px 0 0" }}>Totaal {price}</Text>
+                  <Text style={{ fontFamily: font.body, fontSize: "16px", fontWeight: 700, color: c.text, margin: "10px 0 0" }}>Totaal {price} voor {persons} personen</Text>
+                  {priceNote && <Text style={{ ...s.muted, margin: "2px 0 0" }}>{priceNote}</Text>}
                 </Section>
 
                 <Text style={{ ...s.title, margin: "16px 0 0" }}>{availabilityLine}</Text>
@@ -125,6 +128,7 @@ CrmWinkelmandje.PreviewProps = {
   nights: 2,
   persons: 2,
   price: "€998",
+  priceNote: "Inclusief btw en servicekosten",
   availability: "almost-full",
   roomsLeft: 3,
   reviewSummary: { average: 4.5, label: "4,5 uit 312 reviews" },
