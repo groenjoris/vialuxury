@@ -14,7 +14,7 @@ import { font, newsletter } from "../components/theme";
 type Deal = {
   hotelName: string;
   packageTitle: string;
-  label: "Populair" | "Nieuw" | "Aanbevolen" | "Samengesteld door ViaLuxury";
+  label: "Populair" | "Nieuw" | "Aanbevolen";
   fromPrice: string;
   image: string;
   url: string;

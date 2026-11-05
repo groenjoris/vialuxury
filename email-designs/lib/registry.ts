@@ -96,10 +96,10 @@ export const emails: EmailEntry[] = [
   {
     slug: "crm-winkelmandje-2-dagen",
     title: "Winkelmandje (2 dagen na verlaten)",
-    description: "Na de mail van 2 uur nu alternatieven: klein de deal uit het winkelmandje, daaronder drie vergelijkbare deals in de list view van de zoekkaarten.",
+    description: "Na de mail van 2 uur nu alternatieven: Door jou bekeken (de deal uit het winkelmandje met prijs en knop), daaronder drie vergelijkbare deals in de list view van de zoekkaarten.",
     section: "crm",
-    subject: "Dit zijn 3 deals die lijken op Hotel Winselerhof",
-    preheader: "Ook met ontbijt en diner, vanaf €249 voor 2 personen.",
+    subject: "Dit zijn 3 deals die lijken op Hotel Des Indes",
+    preheader: "Ook in Den Haag en aan de kust, vanaf €309 voor 2 personen.",
     Component: CrmWinkelmandje2Dagen,
   },
   {

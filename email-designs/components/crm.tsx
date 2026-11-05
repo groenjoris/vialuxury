@@ -29,7 +29,7 @@ export const s = {
 };
 
 /** Eén primaire, oranje knop per mail. */
-export function PrimaryButton({ href, children }: { href: string; children: React.ReactNode }) {
+export function PrimaryButton({ href, children, small }: { href: string; children: React.ReactNode; small?: boolean }) {
   return (
     <Button
       href={href}
@@ -37,10 +37,10 @@ export function PrimaryButton({ href, children }: { href: string; children: Reac
         backgroundColor: c.cta,
         color: "#FFFFFF",
         fontFamily: font.body,
-        fontSize: "16px",
+        fontSize: small ? "14px" : "16px",
         fontWeight: 700,
         borderRadius: "6px",
-        padding: "14px 28px",
+        padding: small ? "11px 18px" : "14px 28px",
         textDecoration: "none",
       }}
     >
@@ -72,7 +72,7 @@ export function SecondaryButton({ href, children, block }: { href: string; child
   );
 }
 
-/** Persuasief label op een dealkaart (Populair, Nieuw, Aanbevolen, Samengesteld door ViaLuxury). */
+/** Persuasief label op een dealkaart (Populair, Nieuw, Aanbevolen). "Samengesteld door" is geen label maar een regel met de specialist (zie DealListCard). */
 export function DealLabel({ children }: { children: React.ReactNode }) {
   return (
     <Text
@@ -100,8 +100,10 @@ export function DealLabel({ children }: { children: React.ReactNode }) {
 export type ListDeal = {
   hotelName: string;
   packageTitle: string;
-  label?: "Populair" | "Nieuw" | "Aanbevolen" | "Samengesteld door ViaLuxury";
+  label?: "Populair" | "Nieuw" | "Aanbevolen";
   includes: string[];
+  /** "Samengesteld door": geen label, maar een korte regel met de specialist en één zin. */
+  curator?: { name: string; photo: string; role: string; story: string };
   /** "2 personen, 1 nacht" */
   priceMeta: string;
   fromPrice: string;
@@ -135,6 +137,20 @@ export function DealListCard({ deal: d }: { deal: ListDeal }) {
               </Row>
             ))}
           </Section>
+          {d.curator && (
+            <Row style={{ marginTop: "8px" }}>
+              <Column style={{ width: "40px", verticalAlign: "top" }}>
+                <Img src={d.curator.photo} alt={d.curator.name} width="32" height="32" style={{ display: "block", borderRadius: "16px", objectFit: "cover" }} />
+              </Column>
+              <Column style={{ verticalAlign: "top" }}>
+                <Text style={{ ...s.title, fontSize: "13px", margin: 0 }}>
+                  <strong>Samengesteld door {d.curator.name}</strong>
+                  <span style={{ color: c.muted }}>, {d.curator.role}</span>
+                </Text>
+                <Text style={{ ...s.muted, fontSize: "13px", fontStyle: "italic", margin: "2px 0 0" }}>"{d.curator.story}"</Text>
+              </Column>
+            </Row>
+          )}
           <Row style={{ marginTop: "10px" }}>
             <Column style={{ verticalAlign: "bottom" }}>
               <Text style={{ ...s.muted, fontSize: "12px", margin: 0 }}>{d.priceMeta}</Text>
