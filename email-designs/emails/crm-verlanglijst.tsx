@@ -77,24 +77,12 @@ export default function CrmVerlanglijst({ recipientEmail, favorites, code, daysL
           {others.length > 0 && (
             <Section className="m-pad" style={{ padding: "28px 32px 0", textAlign: "center" }}>
               <Text style={s.kop}>Ook op je lijst</Text>
-              <table role="presentation" align="center" cellPadding={0} cellSpacing={0} style={{ margin: "4px auto 0" }}>
-                <tbody>
-                  {others.map((d) => (
-                    <tr key={d.url}>
-                      <td style={{ width: "110px", verticalAlign: "middle", paddingTop: "12px" }}>
-                        <Link href={d.url}>
-                          <Img src={d.image} alt={d.packageTitle} width="110" height="72" style={{ display: "block", width: "110px", height: "72px", objectFit: "cover", borderRadius: "6px" }} />
-                        </Link>
-                      </td>
-                      <td style={{ verticalAlign: "middle", paddingTop: "12px", paddingLeft: "14px", textAlign: "left" }}>
-                        <Text style={{ ...s.name, margin: 0 }}>{d.hotelName}</Text>
-                        <Text style={{ ...s.title, margin: "2px 0 0" }}>vanaf {d.fromPrice} p.p.</Text>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-              <Section style={{ marginTop: "16px" }}>
+              {others.map((d) => (
+                <Section key={d.url} style={{ marginTop: "20px" }}>
+                  <CompactDeal d={d} />
+                </Section>
+              ))}
+              <Section style={{ marginTop: "24px" }}>
                 <DarkButton href={wishlistUrl}>Bekijk je verlanglijst</DarkButton>
               </Section>
             </Section>
