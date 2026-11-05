@@ -26,5 +26,12 @@
     "description": "Variant \"Beschikbaar\": nog geen schaarste, wel populair op de aankomstdatum.",
     "subject": "Hotel Winselerhof op 20 nov: nog beschikbaar",
     "preheader": "Je boeking staat klaar. Rond af wanneer het jou uitkomt."
+  },
+  {
+    "slug": "crm-winkelmandje-2-dagen",
+    "title": "Winkelmandje (2 dagen na verlaten)",
+    "description": "Na de mail van 2 uur nu alternatieven: klein de deal uit het winkelmandje, daaronder drie vergelijkbare deals in de list view van de zoekkaarten.",
+    "subject": "Dit zijn 3 deals die lijken op Hotel Winselerhof",
+    "preheader": "Ook met ontbijt en diner, vanaf €249 voor 2 personen."
   }
 ]

@@ -86,7 +86,7 @@ export default function CrmJaarGeleden({ recipientEmail, hotelName, packageTitle
                   <Text style={{ ...s.name, fontSize: "15px", margin: "8px 0 0" }}>{d.hotelName}</Text>
                   <Text style={{ ...s.title, fontSize: "13px", minHeight: "54px" }}>{d.packageTitle}</Text>
                   <Text style={{ ...s.title, margin: "8px 0 12px" }}>
-                    <span style={{ color: c.muted }}>vanaf </span><strong>{d.fromPrice}</strong><span style={{ color: c.muted }}> p.p.</span>
+                    <span style={{ color: c.muted }}>vanaf </span><strong>{d.fromPrice}</strong><span style={{ color: c.muted }}> voor 2 personen</span>
                   </Text>
                   <SecondaryButton href={d.url} block>Bekijk</SecondaryButton>
                 </Column>

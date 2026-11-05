@@ -6,6 +6,7 @@ import MvpVakantieBevestiging from "../emails/mvp-vakantie-bevestiging";
 import CrmNagenieten from "../emails/crm-nagenieten";
 import CrmJaarGeleden from "../emails/crm-jaar-geleden";
 import CrmWinkelmandje from "../emails/crm-winkelmandje";
+import CrmWinkelmandje2Dagen from "../emails/crm-winkelmandje-2-dagen";
 import { incheckMails } from "./incheckMails";
 
 // "crm": concept-mails voor het CRM-project (alleen light, eigen lijst app/data/crm-emails.json).
@@ -90,6 +91,15 @@ export const emails: EmailEntry[] = [
     preheader: "Je boeking staat klaar. Rond af wanneer het jou uitkomt.",
     Component: CrmWinkelmandje,
     props: { ...CrmWinkelmandje.PreviewProps, availability: "available" },
+  },
+  {
+    slug: "crm-winkelmandje-2-dagen",
+    title: "Winkelmandje (2 dagen na verlaten)",
+    description: "Na de mail van 2 uur nu alternatieven: klein de deal uit het winkelmandje, daaronder drie vergelijkbare deals in de list view van de zoekkaarten.",
+    section: "crm",
+    subject: "Dit zijn 3 deals die lijken op Hotel Winselerhof",
+    preheader: "Ook met ontbijt en diner, vanaf €249 voor 2 personen.",
+    Component: CrmWinkelmandje2Dagen,
   },
 ];
 

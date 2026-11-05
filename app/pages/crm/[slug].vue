@@ -14,7 +14,7 @@ const cartVariants = [
   { slug: 'crm-winkelmandje', label: 'Bijna vol' },
   { slug: 'crm-winkelmandje-beschikbaar', label: 'Beschikbaar' },
 ]
-const isCart = computed(() => slug.value.startsWith('crm-winkelmandje'))
+const isCart = computed(() => cartVariants.some(v => v.slug === slug.value))
 
 useHead({ title: `${entry.value?.title ?? 'E-mail'} — ViaLuxury CRM` })
 </script>

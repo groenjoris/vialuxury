@@ -67,6 +67,7 @@
         <div class="start-section__buttons">
           <NuxtLink class="start-btn" to="/crm/crm-jaar-geleden">Precies een jaar geleden</NuxtLink>
           <NuxtLink class="start-btn" to="/crm/crm-winkelmandje">Winkelmandje (2 uur na verlaten)</NuxtLink>
+          <NuxtLink class="start-btn" to="/crm/crm-winkelmandje-2-dagen">Winkelmandje (2 dagen na verlaten)</NuxtLink>
           <NuxtLink class="start-btn" to="/crm/crm-nagenieten">Nagenietmail (3 dagen na vertrek)</NuxtLink>
         </div>
       </section>
