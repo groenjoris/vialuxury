@@ -145,7 +145,7 @@ export const emails: EmailEntry[] = [
   {
     slug: "crm-verlanglijst",
     title: "Verlanglijst €10 (3 dagen na eerste mail)",
-    description: "De code (€10) hoort bij één item: het eerste favoriet, bovenaan gemarkeerd. De overige favorieten (0, 1 of 2) eronder, dan het codeblok met knop naar dat item en twee vergelijkbare arrangementen. \"Nu te boeken\" is bewust niet gebouwd.",
+    description: "De code (€10) staat boven de vouw, direct boven het eerste favoriet waar hij bij hoort (met knop naar dat arrangement). Daaronder de overige favorieten (0, 1 of 2) en twee vergelijkbare arrangementen. \"Nu te boeken\" is bewust niet gebouwd.",
     section: "crm",
     subject: "€10 cadeau op Kasteel Steenenburg van je verlanglijst",
     preheader: "Jouw unieke code, geldig tot en met 12 november 2026.",

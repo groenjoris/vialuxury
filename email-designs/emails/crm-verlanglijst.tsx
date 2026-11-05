@@ -8,8 +8,9 @@ import { lauswolt, steenenburg, vanOys, villaRuimzicht, desIndes, type CrmDeal }
 // CRM A7 Verlanglijst (retargeting_addedtowishlist_2). Trigger: 3 dagen na de eerste
 // verlanglijstmail. De code (€10) is gekoppeld aan één specifiek item: het eerste favoriet. Dat
 // item staat bovenaan en is gemarkeerd; de andere favorieten (0, 1 of 2) staan eronder, dus de
-// layout werkt met 1, 2 of 3 items. Daarna het codeblok met de primaire knop naar het eerste
-// favoriet, en twee vergelijkbare arrangementen als alternatief.
+// layout werkt met 1, 2 of 3 items. Het codeblok staat boven de vouw, direct boven het eerste
+// favoriet, zodat de koppeling code → arrangement meteen zichtbaar is; de primaire knop zit in
+// de favorietkaart. Onderaan twee vergelijkbare arrangementen als alternatief.
 // "Nu te boeken" en de coming-soon-variant zijn bewust niet gebouwd (kan nog niet).
 // Onderwerp: "€10 cadeau op [hotelnaam] van je verlanglijst"
 //
@@ -49,15 +50,25 @@ export default function CrmVerlanglijst({ recipientEmail, favorites, code, daysL
           <CrmHeader />
 
           <Section className="m-pad" style={{ padding: "36px 32px 0", textAlign: "center" }}>
-            <Heading as="h1" className="m-h1" style={s.h1}>Van verlanglijst naar verblijf</Heading>
+            <Heading as="h1" className="m-h1" style={s.h1}>Fijn dat je een verlanglijst maakte</Heading>
             <Text style={s.body}>
-              {first ? `Voor ${name} krijg je ${code.value} cadeau, met jouw unieke code.` : `Voor je favoriet krijg je ${code.value} cadeau, met jouw unieke code.`}
+              Als bedankje krijg je {code.value} cadeau op {name}, met jouw persoonlijke code.
             </Text>
+          </Section>
+
+          {/* S10: de code, boven de vouw en direct boven het arrangement waar hij bij hoort */}
+          <Section className="m-pad" style={{ padding: "24px 32px 0", textAlign: "center" }}>
+            <CodeBlock code={code.code} deadline={code.deadline} daysLeft={daysLeft} label="Jouw persoonlijke code" />
+            {!first && (
+              <Section style={{ marginTop: "24px" }}>
+                <PrimaryButton href={wishlistUrl}>Bekijk je verlanglijst</PrimaryButton>
+              </Section>
+            )}
           </Section>
 
           {/* S19: eerste favoriet, gemarkeerd als het item waar de code bij hoort */}
           {first && (
-            <Section className="m-pad" style={{ padding: "24px 32px 0", textAlign: "center" }}>
+            <Section className="m-pad" style={{ padding: "32px 32px 0", textAlign: "center" }}>
               <Section style={{ border: `1px solid ${c.border}`, borderRadius: "8px", overflow: "hidden", textAlign: "left", backgroundColor: "#FFFFFF" }}>
                 <Link href={first.url}>
                   <Img src={first.image} alt={first.packageTitle} width="558" height="260" style={{ display: "block", width: "100%", height: "260px", objectFit: "cover" }} />
@@ -90,14 +101,6 @@ export default function CrmVerlanglijst({ recipientEmail, favorites, code, daysL
               </Section>
             </Section>
           )}
-
-          {/* S10: de code, gekoppeld aan het eerste favoriet */}
-          <Section className="m-pad" style={{ padding: "40px 32px 0", textAlign: "center" }}>
-            <CodeBlock code={code.code} deadline={code.deadline} daysLeft={daysLeft} />
-            <Section style={{ marginTop: "24px" }}>
-              <PrimaryButton href={first?.url ?? wishlistUrl}>{first ? `Boek ${name}` : "Bekijk je verlanglijst"}</PrimaryButton>
-            </Section>
-          </Section>
 
           {/* Twee alternatieven */}
           <Section className="m-pad" style={{ padding: "48px 32px 44px", textAlign: "center" }}>
