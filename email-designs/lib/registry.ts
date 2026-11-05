@@ -74,7 +74,7 @@ export const emails: EmailEntry[] = [
   },
   {
     slug: "crm-winkelmandje",
-    title: "Winkelmandje (2 dagen na verlaten)",
+    title: "Winkelmandje (2 uur na verlaten)",
     description: "Eén doel: de boeking afronden. Winkelmandkaart met concrete datums, nachten, personen en prijs, een beschikbaarheidsregel en één knop terug naar de boeking. Gastenoordeel als er een score is. Geen alternatieve deals.",
     section: "crm",
     subject: "Hotel Winselerhof op 20 nov: nog beschikbaar",
@@ -83,7 +83,7 @@ export const emails: EmailEntry[] = [
   },
   {
     slug: "crm-winkelmandje-beschikbaar",
-    title: "Winkelmandje (2 dagen na verlaten)",
+    title: "Winkelmandje (2 uur na verlaten)",
     description: "Variant \"Beschikbaar\": nog geen schaarste, wel populair op de aankomstdatum.",
     section: "crm",
     subject: "Hotel Winselerhof op 20 nov: nog beschikbaar",

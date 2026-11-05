@@ -11,6 +11,7 @@ const c = newsletter.light;
 export const site = "https://vialuxury.vercel.app";
 
 export const crmCss = `
+body { margin: 0 !important; padding: 0 !important; }
 @media only screen and (max-width: 480px) {
   .stack { display: block !important; width: 100% !important; padding: 0 0 12px !important; }
   .m-pad { padding-left: 16px !important; padding-right: 16px !important; }

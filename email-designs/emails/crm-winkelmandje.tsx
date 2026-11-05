@@ -5,7 +5,7 @@ import CrmFooter from "../components/CrmFooter";
 import CrmHeader from "../components/CrmHeader";
 import { font, newsletter } from "../components/theme";
 
-// CRM mail 3: winkelmandje, 2 dagen na verlaten (vervangt A4 cart 2 dagen).
+// CRM mail 3: winkelmandje, 2 uur na het verlaten van de checkout.
 // Eén doel: de boeking afronden. Concrete datums en beschikbaarheid, één knop naar de
 // checkout met alles vooringevuld. Gastenoordeel alleen als er een score is.
 // Geen alternatieve deals.

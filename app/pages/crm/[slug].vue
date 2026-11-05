@@ -1,6 +1,7 @@
 <script setup lang="ts">
-// Preview van een CRM-conceptmail (alleen desktop + light mode): onderwerp en preheader
-// zoals in de inbox, daaronder de geëxporteerde HTML (public/emails/<slug>.html).
+// Preview van een CRM-conceptmail (alleen desktop + light mode), in één frame zoals de
+// ontvanger hem ziet: bovenaan afzender, onderwerp en preheader, daaronder de
+// geëxporteerde HTML (public/emails/<slug>.html).
 // Het winkelmandje heeft twee varianten van de beschikbaarheidsregel.
 import emails from '~/data/crm-emails.json'
 
@@ -35,13 +36,18 @@ useHead({ title: `${entry.value?.title ?? 'E-mail'} — ViaLuxury CRM` })
         >{{ v.label }}</NuxtLink>
       </div>
     </header>
-    <div class="crm__inbox">
-      <p class="crm__subject">{{ entry?.subject }}</p>
-      <p class="crm__preheader">{{ entry?.preheader }}</p>
-      <p class="crm__desc">{{ entry?.description }}</p>
-    </div>
     <div class="crm__stage">
-      <iframe :key="slug" class="crm__frame" :src="`/emails/${slug}.html`" :title="entry?.title" />
+      <div class="crm__mail">
+        <div class="crm__inbox">
+          <span class="crm__avatar" aria-hidden="true">V</span>
+          <div class="crm__meta">
+            <p class="crm__from"><strong>ViaLuxury</strong> <span>&lt;info@vialuxury.nl&gt;</span><span class="crm__time">10:24</span></p>
+            <p class="crm__subject">{{ entry?.subject }}</p>
+            <p class="crm__preheader">{{ entry?.preheader }}</p>
+          </div>
+        </div>
+        <iframe :key="slug" class="crm__frame" :src="`/emails/${slug}.html`" :title="entry?.title" />
+      </div>
     </div>
   </div>
 </template>
@@ -57,10 +63,15 @@ useHead({ title: `${entry.value?.title ?? 'E-mail'} — ViaLuxury CRM` })
 .crm__btn { display: inline-flex; align-items: center; height: 36px; padding: 0 14px; background: #fff; color: var(--color-text-primary); font-size: 14px; font-weight: 600; text-decoration: none; }
 .crm__btn + .crm__btn { border-left: 1.5px solid var(--color-border); }
 .crm__btn--on { background: var(--color-text-primary); color: #fff; }
-.crm__inbox { width: 700px; max-width: calc(100% - 48px); margin: 20px auto 0; padding: 14px 18px; background: #fff; border: 1px solid var(--color-border); border-radius: 8px; }
-.crm__subject { margin: 0; font-size: 15px; font-weight: 700; }
+.crm__stage { display: flex; justify-content: center; padding: 20px 24px 48px; }
+.crm__mail { width: 700px; max-width: 100%; background: #fff; border: 1px solid var(--color-border); border-radius: 8px; overflow: hidden; }
+.crm__inbox { display: flex; gap: 12px; padding: 16px 20px; border-bottom: 1px solid var(--color-border); }
+.crm__avatar { flex-shrink: 0; width: 40px; height: 40px; border-radius: 50%; background: #141414; color: #fff; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+.crm__meta { min-width: 0; flex: 1; }
+.crm__from { display: flex; gap: 6px; margin: 0; font-size: 14px; }
+.crm__from span { color: var(--color-text-secondary); }
+.crm__from .crm__time { margin-left: auto; font-size: 13px; }
+.crm__subject { margin: 4px 0 0; font-size: 17px; font-weight: 700; }
 .crm__preheader { margin: 2px 0 0; font-size: 14px; color: var(--color-text-secondary); }
-.crm__desc { margin: 10px 0 0; padding-top: 10px; border-top: 1px solid var(--color-border); font-size: 13px; color: var(--color-text-secondary); }
-.crm__stage { display: flex; justify-content: center; padding: 16px 24px 48px; }
-.crm__frame { width: 700px; max-width: 100%; height: calc(100vh - 220px); min-height: 640px; border: 1px solid var(--color-border); border-radius: 8px; background: #fff; }
+.crm__frame { display: block; width: 100%; height: calc(100vh - 200px); min-height: 640px; border: 0; }
 </style>

@@ -123,8 +123,8 @@ Artist impression van geautomatiseerde e-mails, alleen desktop + light mode: nag
 (`crm-nagenieten`), precies een jaar geleden (`crm-jaar-geleden`) en winkelmandje
 (`crm-winkelmandje`, variant `-beschikbaar`). Bronnen in `email-designs/emails/crm-*.tsx`
 (gedeelde bouwstenen `email-designs/components/crm.tsx`), registry-sectie `"crm"`; de export
-schrijft alleen light HTML en de lijst `app/data/crm-emails.json`. Preview `/crm/<slug>` (met
-onderwerp en preheader), bevestigingspagina van de nagenietknoppen `/crm/volgende-vakantie?keuze=…`.
+schrijft alleen light HTML en de lijst `app/data/crm-emails.json`. Preview `/crm/<slug>` (één frame zoals
+in de inbox: afzender, onderwerp en preheader boven de mail), bevestigingspagina van de nagenietknoppen `/crm/volgende-vakantie?keuze=…`.
 Knoppen linken naar de R1-dealpagina (zachte landing). Startscherm: vak "CRM".
 
 ## Kaarten (Leaflet)
