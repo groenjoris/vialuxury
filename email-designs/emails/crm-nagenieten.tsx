@@ -46,8 +46,8 @@ export default function CrmNagenieten({ firstName, recipientEmail, hotelName, sa
       </Head>
       <Preview>Eén klik, dan sturen we je op het juiste moment inspiratie.</Preview>
       <Body style={{ backgroundColor: c.bg, margin: 0, padding: 0, fontFamily: font.body }}>
+        <CrmHeader />
         <Container style={{ width: "100%", maxWidth: "626px" }}>
-          <CrmHeader />
 
           {/* Grote foto van het hotel met het nagenietframe; geen datums of arrangement, dat weet de gast al */}
           <Img src={image} alt={hotelName} width="626" height="380" style={{ display: "block", width: "100%", height: "380px", objectFit: "cover" }} />

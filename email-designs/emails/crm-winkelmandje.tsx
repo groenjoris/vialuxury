@@ -46,8 +46,8 @@ export default function CrmWinkelmandje({ recipientEmail, hotelName, packageTitl
       </Head>
       <Preview>Je boeking staat klaar. Rond af wanneer het jou uitkomt.</Preview>
       <Body style={{ backgroundColor: c.bg, margin: 0, padding: 0, fontFamily: font.body }}>
+        <CrmHeader />
         <Container style={{ width: "100%", maxWidth: "626px" }}>
-          <CrmHeader />
 
           <Section className="m-pad" style={{ padding: "32px 32px 0" }}>
             <Heading as="h1" className="m-h1" style={s.h1}>Nog steeds interesse in {hotelName}?</Heading>

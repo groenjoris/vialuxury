@@ -47,8 +47,8 @@ export default function CrmJaarGeleden({ recipientEmail, hotelName, packageTitle
       </Head>
       <Preview>{hotelName}, {place}. Nog een keer?</Preview>
       <Body style={{ backgroundColor: c.bg, margin: 0, padding: 0, fontFamily: font.body }}>
+        <CrmHeader />
         <Container style={{ width: "100%", maxWidth: "626px" }}>
-          <CrmHeader />
 
           {/* Grote arrangementfoto, datum en hotel direct eronder; geen intro */}
           <Img src={image} alt={packageTitle} width="626" height="380" style={{ display: "block", width: "100%", height: "380px", objectFit: "cover" }} />
