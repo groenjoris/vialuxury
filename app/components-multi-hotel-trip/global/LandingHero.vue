@@ -241,5 +241,24 @@ withDefaults(defineProps<{
     font-size: 16px;
     line-height: 1.45;
   }
+  /* Vakanties-landing (search-below): geen zoekbalk op de hero-foto. De foto houdt zijn
+     hoogte (456px: nav + tekst + de oude zoekbalkstrook) en de tekst zakt naar de onderkant,
+     met dezelfde 34px tot de rand als de zoekbalk daar had — zo komt de lucht boven de tekst. */
+  .home-hero--search-below {
+    min-height: 456px;
+  }
+  .home-hero--search-below :deep(.site-header) {
+    flex: 1 0 auto;
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 0;
+  }
+  .home-hero--search-below :deep(.site-header__mobile-search) {
+    display: none;
+  }
+  .home-hero--search-below .home-hero__content {
+    margin-top: auto;
+    padding-bottom: 34px;
+  }
 }
 </style>
