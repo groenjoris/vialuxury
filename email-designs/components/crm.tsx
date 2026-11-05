@@ -1,6 +1,6 @@
-import { Button, Text } from "@react-email/components";
+import { Button, Column, Img, Link, Row, Section, Text } from "@react-email/components";
 import * as React from "react";
-import { font, newsletter } from "./theme";
+import { baseUrl, font, newsletter } from "./theme";
 
 // Gedeelde bouwstenen van de CRM-mails (concept, alleen desktop + light mode).
 // Links naar het prototype gaan naar de R1-dealpagina, zodat de foto, titel en prijs
@@ -92,5 +92,64 @@ export function DealLabel({ children }: { children: React.ReactNode }) {
     >
       {children}
     </Text>
+  );
+}
+
+/** Deal in de list view van de zoekkaarten: foto links over de volle kaarthoogte; rechts
+ *  label, hotelnaam, dealtitel, 4 inclusies, vanafprijs met doorgehaalde prijs en Bekijk-knop. */
+export type ListDeal = {
+  hotelName: string;
+  packageTitle: string;
+  label?: "Populair" | "Nieuw" | "Aanbevolen" | "Samengesteld door ViaLuxury";
+  includes: string[];
+  /** "2 personen, 1 nacht" */
+  priceMeta: string;
+  fromPrice: string;
+  originalPrice?: string;
+  image: string;
+  url: string;
+};
+
+export function DealListCard({ deal: d }: { deal: ListDeal }) {
+  const check = `${baseUrl}/images/mail/check.png`;
+  return (
+    <Section style={{ border: `1px solid ${c.border}`, borderRadius: "8px", marginTop: "16px", overflow: "hidden" }}>
+      <Row>
+        {/* Foto als achtergrond, zodat hij de hele kaarthoogte vult (zoals de list view) */}
+        <Column className="stack" style={{ width: "200px", verticalAlign: "top", backgroundImage: `url(${d.image})`, backgroundSize: "cover", backgroundPosition: "center" }}>
+          <Link href={d.url} aria-label={d.packageTitle} style={{ display: "block", width: "200px", minHeight: "236px" }} />
+        </Column>
+        <Column className="stack" style={{ verticalAlign: "top", padding: "16px 18px" }}>
+          {d.label && <DealLabel>{d.label}</DealLabel>}
+          <Text style={{ ...s.name, margin: d.label ? "8px 0 0" : 0 }}>{d.hotelName}</Text>
+          <Text style={{ ...s.title, margin: "2px 0 0" }}>{d.packageTitle}</Text>
+          <Section style={{ marginTop: "10px" }}>
+            {d.includes.slice(0, 4).map((inc) => (
+              <Row key={inc}>
+                <Column style={{ width: "20px", verticalAlign: "top", paddingTop: "2px" }}>
+                  <Img src={check} alt="" width="14" height="14" />
+                </Column>
+                <Column style={{ verticalAlign: "top" }}>
+                  <Text style={{ ...s.title, fontSize: "13px", margin: "0 0 4px" }}>{inc}</Text>
+                </Column>
+              </Row>
+            ))}
+          </Section>
+          <Row style={{ marginTop: "10px" }}>
+            <Column style={{ verticalAlign: "bottom" }}>
+              <Text style={{ ...s.muted, fontSize: "12px", margin: 0 }}>{d.priceMeta}</Text>
+              <Text style={{ fontFamily: font.body, fontSize: "14px", color: c.text, margin: "2px 0 0" }}>
+                <span style={{ color: c.muted }}>Vanaf </span>
+                {d.originalPrice && <span style={{ color: c.muted, textDecoration: "line-through", marginRight: "6px" }}>{d.originalPrice}</span>}
+                <strong style={{ fontSize: "20px" }}>{d.fromPrice}</strong>
+              </Text>
+            </Column>
+            <Column align="right" style={{ verticalAlign: "bottom" }}>
+              <PrimaryButton href={d.url}>Bekijk</PrimaryButton>
+            </Column>
+          </Row>
+        </Column>
+      </Row>
+    </Section>
   );
 }

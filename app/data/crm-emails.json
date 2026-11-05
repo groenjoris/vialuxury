@@ -33,5 +33,19 @@
     "description": "Na de mail van 2 uur nu alternatieven: klein de deal uit het winkelmandje, daaronder drie vergelijkbare deals in de list view van de zoekkaarten.",
     "subject": "Dit zijn 3 deals die lijken op Hotel Winselerhof",
     "preheader": "Ook met ontbijt en diner, vanaf €249 voor 2 personen."
+  },
+  {
+    "slug": "crm-thema-stedentrips",
+    "title": "Themamail stedentrips (A6)",
+    "description": "Drie populaire stedentrips in list view, daarna een ander thema kiezen met vijf witte snelfilterknoppen.",
+    "subject": "Dit zijn de populairste stedentrips van dit moment",
+    "preheader": "Parijs, Den Haag en Amsterdam, vanaf €279 voor 2 personen."
+  },
+  {
+    "slug": "crm-thema-stedentrips-plaatjes",
+    "title": "Themamail stedentrips (A6)",
+    "description": "Variant met plaatjes: per thema een foto, de themanaam en een oranje link \"Meer van dit thema\".",
+    "subject": "Dit zijn de populairste stedentrips van dit moment",
+    "preheader": "Parijs, Den Haag en Amsterdam, vanaf €279 voor 2 personen."
   }
 ]

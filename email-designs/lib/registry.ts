@@ -7,6 +7,7 @@ import CrmNagenieten from "../emails/crm-nagenieten";
 import CrmJaarGeleden from "../emails/crm-jaar-geleden";
 import CrmWinkelmandje from "../emails/crm-winkelmandje";
 import CrmWinkelmandje2Dagen from "../emails/crm-winkelmandje-2-dagen";
+import CrmThemaStedentrips from "../emails/crm-thema-stedentrips";
 import { incheckMails } from "./incheckMails";
 
 // "crm": concept-mails voor het CRM-project (alleen light, eigen lijst app/data/crm-emails.json).
@@ -100,6 +101,25 @@ export const emails: EmailEntry[] = [
     subject: "Dit zijn 3 deals die lijken op Hotel Winselerhof",
     preheader: "Ook met ontbijt en diner, vanaf €249 voor 2 personen.",
     Component: CrmWinkelmandje2Dagen,
+  },
+  {
+    slug: "crm-thema-stedentrips",
+    title: "Themamail stedentrips (A6)",
+    description: "Drie populaire stedentrips in list view, daarna een ander thema kiezen met vijf witte snelfilterknoppen.",
+    section: "crm",
+    subject: "Dit zijn de populairste stedentrips van dit moment",
+    preheader: "Parijs, Den Haag en Amsterdam, vanaf €279 voor 2 personen.",
+    Component: CrmThemaStedentrips,
+  },
+  {
+    slug: "crm-thema-stedentrips-plaatjes",
+    title: "Themamail stedentrips (A6)",
+    description: "Variant met plaatjes: per thema een foto, de themanaam en een oranje link \"Meer van dit thema\".",
+    section: "crm",
+    subject: "Dit zijn de populairste stedentrips van dit moment",
+    preheader: "Parijs, Den Haag en Amsterdam, vanaf €279 voor 2 personen.",
+    Component: CrmThemaStedentrips,
+    props: { ...CrmThemaStedentrips.PreviewProps, variant: "plaatjes" },
   },
 ];
 

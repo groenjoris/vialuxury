@@ -2,7 +2,7 @@
 // Preview van een CRM-conceptmail (alleen desktop + light mode), in één frame zoals de
 // ontvanger hem ziet: bovenaan afzender, onderwerp en preheader, daaronder de
 // geëxporteerde HTML (public/emails/<slug>.html).
-// Het winkelmandje heeft twee varianten van de beschikbaarheidsregel.
+// Het winkelmandje (2 uur) en de themamail hebben elk twee varianten.
 import emails from '~/data/crm-emails.json'
 
 const route = useRoute()
@@ -10,11 +10,18 @@ const slug = computed(() => String(route.params.slug))
 const entry = computed(() => emails.find(e => e.slug === slug.value))
 if (!entry.value) throw createError({ statusCode: 404, statusMessage: 'E-mail niet gevonden' })
 
-const cartVariants = [
-  { slug: 'crm-winkelmandje', label: 'Bijna vol' },
-  { slug: 'crm-winkelmandje-beschikbaar', label: 'Beschikbaar' },
+// Mails met varianten: schakelaar rechtsboven.
+const variantGroups = [
+  [
+    { slug: 'crm-winkelmandje', label: 'Bijna vol' },
+    { slug: 'crm-winkelmandje-beschikbaar', label: 'Beschikbaar' },
+  ],
+  [
+    { slug: 'crm-thema-stedentrips', label: 'Knoppen' },
+    { slug: 'crm-thema-stedentrips-plaatjes', label: 'Plaatjes' },
+  ],
 ]
-const isCart = computed(() => cartVariants.some(v => v.slug === slug.value))
+const variants = computed(() => variantGroups.find(g => g.some(v => v.slug === slug.value)))
 
 useHead({ title: `${entry.value?.title ?? 'E-mail'} — ViaLuxury CRM` })
 </script>
@@ -26,9 +33,9 @@ useHead({ title: `${entry.value?.title ?? 'E-mail'} — ViaLuxury CRM` })
         <a class="crm__back" href="/">‹ Startscherm</a>
         <h1 class="crm__title">{{ entry?.title }}</h1>
       </div>
-      <div v-if="isCart" class="crm__group" role="group" aria-label="Beschikbaarheid">
+      <div v-if="variants" class="crm__group" role="group" aria-label="Variant">
         <NuxtLink
-          v-for="v in cartVariants"
+          v-for="v in variants"
           :key="v.slug"
           :to="`/crm/${v.slug}`"
           class="crm__btn"
