@@ -2,15 +2,21 @@
 // Multi Hotel Trip — Mijn ViaLuxury › Boekingen › detail. Bovenaan twee blokken naast elkaar:
 // "Praktische informatie" (de speciale reispagina) en "Boeking beheren" (wijzigen / annuleren),
 // telkens de tekst over de hele breedte met de link(s) eronder. Daaronder de boeking over de hele breedte: per hotel foto, naam,
-// plaats, datums · nachten, "Inbegrepen" (kamer + alle inclusies met groene vinkjes), check-in en
-// check-out met tijd, en adres + telefoon; onderaan de prijs.
-import { useMultiHotelTripAccountBooking, money } from '~/composables-multi-hotel-trip/useMultiHotelTripAccountBooking'
+// plaats, datums · nachten, check-in en check-out met tijd, "Inbegrepen" (kamer + alle inclusies met
+// dezelfde groene vinkjes als op de PDP), en adres + telefoon; onderaan de prijs. "Boeking beheren"
+// volgt de annuleringskeuze: flex = annuleren t/m 30 dagen voor aankomst 23:59 uur met de knop
+// "Boeking annuleren" (placeholder-link naar het annuleringsformulier), non-flex = alleen via de klantenservice.
+import { useMultiHotelTripAccountBooking, money, fmtLong } from '~/composables-multi-hotel-trip/useMultiHotelTripAccountBooking'
 import { useDemoBookingFromQuery, useDemoSwitches } from '~/composables-multi-hotel-trip/useMultiHotelTripDemoBooking'
 
 useDemoBookingFromQuery()
 const route = useRoute()
 const id = computed(() => String(route.params.id ?? ''))
-const { checkout, stays, dateRangeLong, nights, persons, roomsPerHotel, bookingRef, tripTotal, total, bookingFee, cancelDate, isBike, isFlex } = useMultiHotelTripAccountBooking(id.value)
+const { checkout, stays, dateRangeLong, nights, persons, roomsPerHotel, bookingRef, tripTotal, total, bookingFee, checkInYmd, isBike, isFlex } = useMultiHotelTripAccountBooking(id.value)
+/** Annuleren kan t/m 30 dagen voor aankomst, 23:59 uur (voluit, zoals de datums in de kop). */
+const cancelDeadline = computed(() => { const y = checkInYmd.value; return `${fmtLong(new Date(y.year, y.month, y.day - 30))}, 23:59 uur` })
+/** Placeholder voor het bestaande annuleringsformulier (zelfde link als de knop in de bevestigingsmail). */
+const CANCEL_FORM_URL = 'https://vialuxury.nl/annuleren'
 /* Prototype-schakelaars linksboven (DemoSwitches): Auto | Fiets en Flex | Non-flex uit de URL; de annuleringstekst en de prijs volgen. */
 const { variant: demoVariant, rate: demoRate } = useDemoSwitches(() => isBike.value ? 'fiets' : 'auto')
 
@@ -42,11 +48,11 @@ useHead({ title: () => `${checkout.value.name} — Mijn ViaLuxury` })
       </section>
       <section class="ad__card">
         <h2 class="ad__h2">Boeking beheren</h2>
-        <p class="ad__text">{{ isFlex ? `Tot ${cancelDate} (30 dagen voor aankomst) kun je de hele vakantie kosteloos annuleren.` : 'Deze boeking is niet terugbetaalbaar en kan niet geannuleerd worden. Wijzigen kan wel.' }}</p>
-        <p class="ad__actions">
-          <a class="ad__link" href="#" @click.prevent>Deze boeking wijzigen</a>
-          <a v-if="isFlex" class="ad__link" href="#" @click.prevent>Deze boeking annuleren</a>
-        </p>
+        <template v-if="isFlex">
+          <p class="ad__text">Omdat je flexibel annuleren hebt aangezet, kun je je boeking annuleren t/m {{ cancelDeadline }}. Het is niet mogelijk individuele onderdelen van je boeking aan te passen. Wil je de datum van vertrek aanpassen, dan dien je de gehele boeking te annuleren en opnieuw te boeken. Let op: voor de boekingskosten ontvang je een voucher die je weer kunt gebruiken bij je nieuwe boeking.</p>
+          <p class="ad__actions"><a class="ad__btn" :href="CANCEL_FORM_URL">Boeking annuleren</a></p>
+        </template>
+        <p v-else class="ad__text">Tijdens het boeken heb je ervoor gekozen om niet-terugbetaalbaar te boeken. Daardoor is het niet mogelijk om zelf je boeking te annuleren. Het kan zijn dat de klantenservice je wel bepaalde opties kan geven; neem daarom tijdens openingstijden contact met hen op via <a class="ad__link ad__link--plain" href="mailto:info@vialuxury.com">info@vialuxury.com</a>, <a class="ad__link ad__link--plain" href="tel:+31207052222">+31 20 705 2222</a> of een WhatsApp-bericht naar <a class="ad__link ad__link--plain" href="https://wa.me/31208088809" target="_blank" rel="noopener">+31 20 808 8809</a>.</p>
       </section>
     </div>
 
@@ -58,18 +64,6 @@ useHead({ title: () => `${checkout.value.name} — Mijn ViaLuxury` })
           <p class="ad__hotel-name"><span class="ad__num">{{ i + 1 }}</span><span>{{ h.name }}</span></p>
           <p class="ad__hotel-place">{{ h.city }}</p>
           <p class="ad__hotel-dates">{{ h.dateLine }} · {{ h.nights }} {{ h.nights === 1 ? 'nacht' : 'nachten' }}</p>
-
-          <p class="ad__label">Inbegrepen</p>
-          <ul class="ad__includes">
-            <li>
-              <svg class="ad__check" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#e4f5ec" /><path d="M7.5 12.5l3 3 6-6.5" stroke="#1f7a4d" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" /></svg>
-              <span>{{ roomsPerHotel }}× {{ h.roomName }}</span>
-            </li>
-            <li v-for="inc in h.includes" :key="inc">
-              <svg class="ad__check" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#e4f5ec" /><path d="M7.5 12.5l3 3 6-6.5" stroke="#1f7a4d" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" /></svg>
-              <span>{{ inc }}</span>
-            </li>
-          </ul>
 
           <div class="ad__checks">
             <div class="ad__check-tile">
@@ -83,6 +77,20 @@ useHead({ title: () => `${checkout.value.name} — Mijn ViaLuxury` })
               <span class="ad__check-time">tot {{ h.checkOutTime }} uur</span>
             </div>
           </div>
+
+          <!-- Inbegrepen: dezelfde groene vinkjes als op de PDP (TripHotelDetails) -->
+          <p class="ad__label">Inbegrepen</p>
+          <ul class="ad__includes">
+            <li>
+              <span class="ad__check" aria-hidden="true"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10"><path d="M3 13L8 19L21 5"/></svg></span>
+              <span>{{ roomsPerHotel }}× {{ h.roomName }}</span>
+            </li>
+            <li v-for="inc in h.includes" :key="inc">
+              <span class="ad__check" aria-hidden="true"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10"><path d="M3 13L8 19L21 5"/></svg></span>
+              <span>{{ inc }}</span>
+            </li>
+          </ul>
+
 
           <ul class="ad__contact">
             <li>
@@ -130,8 +138,10 @@ useHead({ title: () => `${checkout.value.name} — Mijn ViaLuxury` })
 .ad__link:hover { color: var(--color-primary-hover); }
 .ad__link--plain { color: var(--color-text-primary); white-space: normal; }
 .ad__link--plain:hover { color: var(--color-text-secondary); }
-/* Link(s) onder de tekst, naast elkaar */
+/* Link(s) of knop onder de tekst */
 .ad__actions { margin: 12px 0 0; display: flex; flex-wrap: wrap; gap: 8px 20px; font-size: 15px; }
+.ad__btn { display: inline-flex; align-items: center; height: 40px; padding: 0 18px; border-radius: var(--radius-md); background: var(--color-text-primary); color: #fff; font-size: 14px; font-weight: 700; text-decoration: none; transition: background var(--transition-fast); }
+.ad__btn:hover { background: #333; }
 
 /* Hotelblok: foto links, informatie rechts, over de hele breedte */
 .ad__main { display: flex; flex-direction: column; gap: 20px; }
@@ -143,7 +153,7 @@ useHead({ title: () => `${checkout.value.name} — Mijn ViaLuxury` })
 .ad__hotel-dates { margin: 2px 0 16px 34px; font-size: 15px; font-weight: 600; }
 .ad__includes { list-style: none; margin: 0 0 18px; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 24px; font-size: 15px; line-height: 1.4; }
 .ad__includes li { display: flex; align-items: flex-start; gap: 10px; }
-.ad__check { flex-shrink: 0; width: 20px; height: 20px; margin-top: 1px; }
+.ad__check { color: var(--color-discount, #27C88D); flex-shrink: 0; display: inline-flex; font-size: 18px; margin-top: 2px; }
 .ad__checks { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; max-width: 420px; margin-bottom: 18px; }
 .ad__check-tile { display: flex; flex-direction: column; gap: 2px; padding: 10px 12px; border-radius: 8px; background: #f7f7f7; }
 .ad__check-tile .ad__label { margin-bottom: 2px; }
