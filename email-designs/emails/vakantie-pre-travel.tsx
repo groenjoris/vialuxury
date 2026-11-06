@@ -19,10 +19,10 @@ import CrmFooter from "../components/CrmFooter";
 import CrmHeader from "../components/CrmHeader";
 import { baseUrl, font, newsletter, type EmailMode } from "../components/theme";
 
-// Pre-travel: veertien dagen voor vertrek van een multi-hotel vakantie. Checklist
-// ("Niet vergeten"), inchecken bij het eerste hotel (adres, route, parkeren), wat je
-// nog betaalt, de persoonlijke pagina met praktische informatie en tips, inloggen op je
-// account (boeking beheren), "Hulp nodig?" en veelgestelde vragen.
+// Pre-travel: veertien dagen voor vertrek van een multi-hotel vakantie (auto én fiets). Checklist
+// ("Niet vergeten": identiteitsbewijs, boekingsnummer, bij de fietsvakantie je fiets), inchecken bij
+// het eerste hotel (adres, route, parkeren, opladen of fietsenstalling, wat je nog betaalt), de
+// persoonlijke pagina met praktische informatie en tips, "Hulp nodig?" en veelgestelde vragen.
 // Header en footer zoals in de CRM-mails (zwarte balken over de hele breedte).
 
 type Props = {
@@ -35,6 +35,8 @@ type Props = {
   bookingNumber: string;
   tripType: string;
   tripName: string;
+  /** Fietsvakantie: "Je fiets" in de checklist, fietsenstalling i.p.v. opladen, fietsen i.p.v. rijden. */
+  isBike?: boolean;
   region: string;
   /** "dinsdag 18 mei" — aankomstdag. */
   arrivalDate: string;
@@ -48,17 +50,18 @@ type Props = {
     mapsUrl: string;
     /** Telefoonnummer van het hotel (prototype: placeholder). */
     phone: string;
-    /** Opladen van de elektrische auto (prototype: placeholder). */
-    charging: string;
+    /** Opladen van de elektrische auto (autovakantie; prototype: placeholder). */
+    charging?: string;
+    /** Fietsenstalling (fietsvakantie). */
+    bikeStorage?: string;
   };
-  tollEstimate: string;
+  /** Geschatte tolkosten heen en terug (autovakantie). */
+  tollEstimate?: string;
   /** Hoofdfoto van de reis bovenin. */
   heroImage: string;
   /** Drie thumbs boven "Praktische informatie en tips": twee uitjes en de routekaart (alle 3:2, even hoog). */
   thumbs: { image: string; alt: string }[];
   routesUrl: string;
-  /** Accountomgeving (inloggen met je e-mail, eenmalige code). */
-  accountUrl: string;
   bookingUrl: string;
   mode?: EmailMode;
 };
@@ -93,6 +96,7 @@ export default function VakantiePreTravel({
   bookingNumber,
   tripType,
   tripName,
+  isBike = false,
   region,
   arrivalDate,
   homeCity,
@@ -101,7 +105,6 @@ export default function VakantiePreTravel({
   heroImage,
   thumbs,
   routesUrl,
-  accountUrl,
   bookingUrl,
   mode = "light",
 }: Props) {
@@ -121,7 +124,7 @@ export default function VakantiePreTravel({
   const faq = [
     {
       q: "Hoe laat kan ik inchecken en uitchecken?",
-      a: `Bij ${firstHotel.name} kun je inchecken vanaf ${firstHotel.checkInTime} uur. Bij elk hotel staat de inchecktijd in je boeking; uitchecken kan tot 14:00 uur, zodat je rustig naar het volgende hotel rijdt.`,
+      a: `Bij ${firstHotel.name} kun je inchecken vanaf ${firstHotel.checkInTime} uur. Bij elk hotel staan de in- en uitchecktijden in je boeking, zodat je rustig naar het volgende hotel ${isBike ? "fietst" : "rijdt"}.`,
     },
     {
       q: "Wat als ik later aankom dan gepland?",
@@ -132,11 +135,8 @@ export default function VakantiePreTravel({
       a: "Het 3-gangendiner op de dag van aankomst reserveert het hotel voor je; je hoort bij het inchecken hoe laat. Wil je liever een ander tijdstip, zeg het dan bij aankomst.",
     },
     {
-      // Teksten uit "faq mhr.xlsx" (Pre-travel); het annuleerantwoord volgt het tarief.
-      q: "Wat moet ik nog betalen?",
-      a: "In principe betaal je bij de hotels niet meer voor hetgeen in het arrangement zit. Verblijf je ergens meerdere dagen, dan kan het dus zijn dat niet alle diners of de lunch in het arrangement zitten. In de meeste gevallen is het arrangement eveneens zonder drankjes en dien je bij het uitchecken deze dus te voldoen. Daarnaast zal je in de meeste gevallen de gemeentelijke toeristenbelasting moeten voldoen en in uitzonderlijke gevallen ook een lokale toeslag.",
-    },
-    {
+      // Tekst uit "faq mhr.xlsx" (Pre-travel); het annuleerantwoord volgt het tarief. "Wat moet ik nog
+      // betalen?" staat niet in de FAQ maar in het blok van het eerste hotel.
       q: "Kan ik nog wijzigen of annuleren?",
       a: `Het wijzigen van een boeking is niet mogelijk. ${rate === "nonflex"
         ? "Tijdens het boeken heb je ervoor gekozen om niet-terugbetaalbaar te boeken. Daardoor is het niet mogelijk om zelf je boeking te annuleren. Het kan zijn dat de klantenservice je wel bepaalde opties kan geven; neem daarom tijdens openingstijden contact met hen op."
@@ -144,7 +144,7 @@ export default function VakantiePreTravel({
     },
     {
       q: "Hoe werkt het doorreizen naar het volgende hotel?",
-      a: "Je checkt uit, rijdt de route van die dag (op je reispagina als GPX, PDF of in Google Maps) en meldt je bij de receptie van het volgende hotel met je naam en boekingsnummer. Onderweg kun je de tips van die dag volgen.",
+      a: `Je checkt uit, ${isBike ? "fietst de etappe van die dag (op je reispagina als GPX en PDF; je bagage reist vooruit)" : "rijdt de route van die dag (op je reispagina als GPX, PDF of in Google Maps)"} en meldt je bij de receptie van het volgende hotel met je naam en boekingsnummer. Onderweg kun je de tips van die dag volgen.`,
     },
   ];
 
@@ -154,7 +154,7 @@ export default function VakantiePreTravel({
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <style>{responsiveCss}</style>
       </Head>
-      <Preview>Je checklist: identiteitsbewijs, boekingsnummer en inchecken bij {firstHotel.name}.</Preview>
+      <Preview>Je checklist: identiteitsbewijs, boekingsnummer{isBike ? ", je fiets" : ""} en inchecken bij {firstHotel.name}.</Preview>
       <Body style={{ backgroundColor: c.bg, margin: 0, padding: 0, fontFamily: font.body }}>
         <CrmHeader mode={mode} />
         <Container style={{ width: "100%", maxWidth: "626px" }}>
@@ -198,6 +198,19 @@ export default function VakantiePreTravel({
                   </Text>
                 </Column>
               </Row>
+              {isBike && (
+                <Row style={{ marginTop: "12px" }}>
+                  <Column style={{ width: "32px", verticalAlign: "top" }}>
+                    <Img src={check} alt="" width="22" height="22" />
+                  </Column>
+                  <Column style={{ verticalAlign: "top" }}>
+                    <Text style={{ ...body14, margin: 0, fontWeight: 700 }}>Je fiets</Text>
+                    <Text style={{ ...small, margin: "2px 0 0" }}>
+                      Zorg dat je een goed onderhouden fiets bij je hebt; fietshuur is niet bij de boeking inbegrepen. Bij elk hotel is een afgesloten stalling.
+                    </Text>
+                  </Column>
+                </Row>
+              )}
             </Section>
           </Section>
 
@@ -228,16 +241,32 @@ export default function VakantiePreTravel({
               </Row>
               <Text style={subkop}>Parkeren bij het hotel</Text>
               <Text style={{ ...body14, margin: "4px 0 0" }}>{firstHotel.parking}</Text>
-              <Text style={subkop}>Opladen van de elektrische auto</Text>
-              <Text style={{ ...body14, margin: "4px 0 0" }}>{firstHotel.charging}</Text>
+              {firstHotel.charging && (
+                <>
+                  <Text style={subkop}>Opladen van de elektrische auto</Text>
+                  <Text style={{ ...body14, margin: "4px 0 0" }}>{firstHotel.charging} Oplaadkosten zijn niet inbegrepen bij deze vakantie.</Text>
+                </>
+              )}
+              {firstHotel.bikeStorage && (
+                <>
+                  <Text style={subkop}>Fietsenstalling</Text>
+                  <Text style={{ ...body14, margin: "4px 0 0" }}>{firstHotel.bikeStorage}</Text>
+                </>
+              )}
+              {/* Tekst uit "faq mhr.xlsx" (Pre-travel › Wat moet ik nog betalen?) */}
               <Text style={subkop}>Wat moet ik nog betalen?</Text>
               <Text style={{ ...body14, margin: "4px 0 0" }}>
-                Niets voor de reis zelf: die is volledig betaald. Ter plekke betaal je alleen nog de lokale toeristenbelasting,
-                die rekent elk hotel bij het uitchecken af.
+                In principe betaal je bij de hotels niet meer voor hetgeen in het arrangement zit. Verblijf je ergens meerdere
+                dagen, dan kan het dus zijn dat niet alle diners of de lunch in het arrangement zitten. In de meeste gevallen is
+                het arrangement eveneens zonder drankjes en dien je bij het uitchecken deze dus te voldoen. Daarnaast zal je in
+                de meeste gevallen de gemeentelijke toeristenbelasting moeten voldoen en in uitzonderlijke gevallen ook een
+                lokale toeslag.
               </Text>
-              <Text style={{ ...body14, margin: "6px 0 0" }}>
-                Vertrek je vanuit {homeCity}, houd dan rekening met tolwegen (ongeveer {tollEstimate} voor de heen- en terugreis).
-              </Text>
+              {tollEstimate && (
+                <Text style={{ ...body14, margin: "6px 0 0" }}>
+                  Vertrek je vanuit {homeCity}, houd dan rekening met tolwegen (ongeveer {tollEstimate} voor de heen- en terugreis).
+                </Text>
+              )}
             </Section>
           </Section>
 
@@ -272,35 +301,6 @@ export default function VakantiePreTravel({
                 }}
               >
                 Bekijk jouw speciale pagina &gt;
-              </Button>
-            </Section>
-          </Section>
-
-          {/* Boeking beheren: inloggen op je account met een eenmalige code */}
-          <Section className="m-pad" style={{ padding: "32px 32px 0" }}>
-            <Section style={{ border: `1px solid ${line}`, borderRadius: "8px", padding: "20px" }}>
-              <Text className="m-kop" style={kop}>Boeking wijzigen of jouw boeking beheren</Text>
-              {/* Tekst uit "faq mhr.xlsx" (Pre-travel › Boeking wijzigen of jouw boeking beheren). */}
-              <Text style={body14}>
-                Het wijzigen van een boeking is niet mogelijk. Ga naar vialuxury.com/nl-NL/inloggen, vul daar het e-mailadres in
-                waarmee je geboekt hebt en je ontvangt direct de inlogcode in de mail.
-              </Text>
-              <Button
-                href={accountUrl}
-                className="m-btn"
-                style={{
-                  backgroundColor: c.cta,
-                  borderRadius: "6px",
-                  color: "#FFFFFF",
-                  fontFamily: font.body,
-                  fontSize: "14px",
-                  fontWeight: 700,
-                  padding: "10px 16px",
-                  textDecoration: "none",
-                  marginTop: "12px",
-                }}
-              >
-                Log in met je e-mail &gt;
               </Button>
             </Section>
           </Section>
@@ -357,6 +357,36 @@ VakantiePreTravel.PreviewProps = {
     { image: `${baseUrl}/images/mail/vakantie/routekaart-3x2.jpg`, alt: "Routekaart van de vakantie" },
   ],
   routesUrl: "https://vialuxury.vercel.app/multi-hotel-trip/checkout/routes",
-  accountUrl: "https://vialuxury.vercel.app/multi-hotel-trip/account/boekingen",
   bookingUrl: "https://vialuxury.vercel.app/multi-hotel-trip/account/boekingen/ontdek-noord-frankrijk-en-de-opaalkust-in-7-dagen",
+} satisfies Props;
+
+/** Fietsvakantie (Twente & Salland): zelfde mail, andere boeking — je fiets in de checklist, stalling i.p.v. opladen, geen tol. */
+export const fietsPreviewProps = {
+  ...VakantiePreTravel.PreviewProps,
+  cancelUntil: "za 8 mei",
+  bookingNumber: "VL-85 584 493",
+  tripType: "Fietsvakantie",
+  tripName: "7-daagse fietsvakantie Twente & Salland: Delden – Raalte – Markelo incl. dagelijks 3-gangendiner",
+  isBike: true,
+  region: "Twente & Salland",
+  arrivalDate: "maandag 7 juni",
+  firstHotel: {
+    name: "Hotel Wapen van Delden",
+    address: "Langestraat 242, 7491 AM Delden",
+    image: `${baseUrl}/images/vakanties/007/hotel-wapen-van-delden.jpg`,
+    checkInTime: "15:00",
+    parking: "Gratis parkeren bij het hotel, de hele vakantie: je auto blijft hier staan terwijl je fietst.",
+    phone: "+31 74 376 1234",
+    bikeStorage: "Afgesloten fietsenstalling bij het hotel, met laadpunt voor e-bikes.",
+    mapsUrl: "https://www.google.com/maps/dir/?api=1&destination=Hotel+Wapen+van+Delden%2C+Delden",
+  },
+  tollEstimate: undefined,
+  heroImage: `${baseUrl}/images/vakanties/cover/fietsvakantie-twente-salland-bos.jpg`,
+  thumbs: [
+    { image: `${baseUrl}/images/mail/vakantie/fiets-twickel-3x2.jpg`, alt: "Kasteel Twickel" },
+    { image: `${baseUrl}/images/mail/vakantie/fiets-ijssel-3x2.jpg`, alt: "De IJssel bij Deventer" },
+    { image: `${baseUrl}/images/mail/vakantie/fiets-routekaart-3x2.jpg`, alt: "Routekaart van de fietsvakantie" },
+  ],
+  routesUrl: "https://vialuxury.vercel.app/multi-hotel-trip/checkout/routes?demo=fiets",
+  bookingUrl: "https://vialuxury.vercel.app/multi-hotel-trip/account/boekingen/fietsvakantie-twente-en-salland-delden-raalte-markelo?demo=fiets",
 } satisfies Props;

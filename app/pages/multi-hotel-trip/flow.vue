@@ -11,9 +11,8 @@
 // onderdelen staan gestippeld. De stand van de prototype-schakelaars (reis en annuleringskeuze)
 // staat in de URL (`?demo=fiets`, `?rate=nonflex`) en bepaalt waar alle kaartjes naartoe linken;
 // het schema zelf heeft geen schakelaars — je kiest op de schermen (DemoSwitches linksboven) en
-// komt via "‹ flow" met die stand terug. De incheckmails hebben per reis een eigen mail;
-// de boekingsbevestiging heeft ook een fietsversie; alleen de pre-travelmail bestaat nog
-// uitsluitend voor de autovakantie en opent ongewijzigd. Klikken opent de pagina of mail als gewone link. Desktop-first (vaste tekenruimte
+// komt via "‹ flow" met die stand terug. Elke mail bestaat per reis (slug met -fiets) en, waar
+// annuleren ter sprake komt, per tarief. Klikken opent de pagina of mail als gewone link. Desktop-first (vaste tekenruimte
 // van 1120px), schaalt mee tot een minimum en scrolt daarna horizontaal.
 import { demoHref, isDemoRate, isDemoVariant, navigateAfterPaint, type DemoRate, type DemoVariant } from '~/composables-multi-hotel-trip/useMultiHotelTripDemoBooking'
 
@@ -100,7 +99,7 @@ const fullPages = (v: DemoVariant, r: DemoRate): Card[] => [
 ]
 const fullMails = (v: DemoVariant, r: DemoRate): Card[] => [
   bevestigingMail(mailHref(v === 'fiets' ? 'vakantie-bevestiging-fiets' : 'vakantie-bevestiging', r)),
-  { id: 'mail-pretravel', kind: 'email', title: 'Pre-travel', x: X.prep, y: MAILS_Y, w: CARD_W, h: MAIL_H, href: mailHref('vakantie-pre-travel', r) },
+  { id: 'mail-pretravel', kind: 'email', title: 'Pre-travel', x: X.prep, y: MAILS_Y, w: CARD_W, h: MAIL_H, href: mailHref(v === 'fiets' ? 'vakantie-pre-travel-fiets' : 'vakantie-pre-travel', r) },
   ...[COL.h1, COL.h2, COL.h3].map((x, i): Card => ({ id: `mail-h${i + 1}`, kind: 'email', title: `Incheck hotel ${i + 1}`, x: x - MAIL_BEFORE - CARD_W_SM / 2, y: MAILS_Y, w: CARD_W_SM, h: MAIL_H, href: mailHref(incheckSlug(i + 1, v), r) })),
 ]
 const arrowY = PAGE_Y + PAGE_H / 2

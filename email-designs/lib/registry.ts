@@ -1,6 +1,6 @@
 import type * as React from "react";
 import VakantieBevestiging, { fietsPreviewProps as bevestigingFiets } from "../emails/vakantie-bevestiging";
-import VakantiePreTravel from "../emails/vakantie-pre-travel";
+import VakantiePreTravel, { fietsPreviewProps as preTravelFiets } from "../emails/vakantie-pre-travel";
 import VakantieIncheckHotel from "../emails/vakantie-incheck-hotel";
 import MvpVakantieBevestiging from "../emails/mvp-vakantie-bevestiging";
 import CrmNagenieten from "../emails/crm-nagenieten";
@@ -81,7 +81,7 @@ export const emails: EmailEntry[] = [
   {
     slug: "vakantie-pre-travel",
     title: "Pre-travel (14 dagen voor vertrek)",
-    description: "Checklist voor je reis: identiteitsbewijs en boekingsnummer, inchecken bij het eerste hotel (adres, route, parkeren), wat je nog betaalt, de persoonlijke pagina met praktische informatie en tips, inloggen op je account om je boeking te beheren, en veelgestelde vragen.",
+    description: "Checklist voor je reis: identiteitsbewijs en boekingsnummer, inchecken bij het eerste hotel (adres, route, parkeren, opladen, wat je nog betaalt), de persoonlijke pagina met praktische informatie en tips, en veelgestelde vragen.",
     section: "designs",
     subject: "Over 14 dagen vertrek je naar Noord-Frankrijk",
     preheader: "Je checklist: identiteitsbewijs, boekingsnummer en inchecken bij Château Tilques.",
@@ -91,12 +91,33 @@ export const emails: EmailEntry[] = [
     slug: "vakantie-pre-travel-nonflex",
     variantOf: "vakantie-pre-travel",
     title: "Pre-travel (14 dagen voor vertrek, niet terugbetaalbaar)",
-    description: "Niet-terugbetaalbare boeking: zonder 'je boeking annuleren' in het accountblok en met de FAQ 'Annuleren kan niet'.",
+    description: "Niet-terugbetaalbare boeking: FAQ 'Kan ik nog wijzigen of annuleren?' zonder gratis annuleren.",
     section: "designs",
     subject: "Over 14 dagen vertrek je naar Noord-Frankrijk",
     preheader: "Je checklist: identiteitsbewijs, boekingsnummer en inchecken bij Château Tilques.",
     Component: VakantiePreTravel,
     props: { ...VakantiePreTravel.PreviewProps, rate: "nonflex" },
+  },
+  {
+    slug: "vakantie-pre-travel-fiets",
+    title: "Pre-travel (14 dagen voor vertrek)",
+    description: "Dezelfde pre-travelmail voor de fietsvakantie Twente & Salland: 'Je fiets' in de checklist, fietsenstalling in plaats van opladen, geen tol.",
+    section: "designs",
+    subject: "Over 14 dagen vertrek je naar Twente & Salland",
+    preheader: "Je checklist: identiteitsbewijs, boekingsnummer, je fiets en inchecken bij Hotel Wapen van Delden.",
+    Component: VakantiePreTravel,
+    props: preTravelFiets,
+  },
+  {
+    slug: "vakantie-pre-travel-fiets-nonflex",
+    variantOf: "vakantie-pre-travel-fiets",
+    title: "Pre-travel (14 dagen voor vertrek, niet terugbetaalbaar)",
+    description: "Fietsvakantie, niet-terugbetaalbare boeking.",
+    section: "designs",
+    subject: "Over 14 dagen vertrek je naar Twente & Salland",
+    preheader: "Je checklist: identiteitsbewijs, boekingsnummer, je fiets en inchecken bij Hotel Wapen van Delden.",
+    Component: VakantiePreTravel,
+    props: { ...preTravelFiets, rate: "nonflex" },
   },
   // Incheckmails: dag vóór hotel 1, 2 en 3, voor de auto- en de fietsvakantie.
   ...incheckMails.map((m) => ({ slug: m.slug, title: m.title, description: m.description, section: "designs" as const, subject: m.subject, preheader: m.preheader, Component: VakantieIncheckHotel, props: m.props })),

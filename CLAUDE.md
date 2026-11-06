@@ -135,7 +135,7 @@ verschillen niet.
 Elke pagina en elke mail van de post-bookingflow bestaat in een auto- (Opaalkust) én een
 fietsvariant (Twente & Salland), plus flex/non-flex waar annuleren ter sprake komt. Nieuwe of
 gewijzigde onderdelen altijd in beide reizen maken (mails: `<slug>-fiets`, voorbeelddata zoals
-`fietsPreviewProps` in `vakantie-bevestiging.tsx`). Alleen de pre-travelmail is nog auto-only.
+`fietsPreviewProps` in `vakantie-bevestiging.tsx` en `vakantie-pre-travel.tsx`).
 
 ## E-mails van de vakanties (`email-designs/`)
 
