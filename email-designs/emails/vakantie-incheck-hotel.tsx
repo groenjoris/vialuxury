@@ -159,7 +159,7 @@ export default function VakantieIncheckHotel({
         },
         {
           q: "Wat betaal ik nog in het hotel?",
-          a: "Alleen de lokale toeristenbelasting, die rekent het hotel bij het uitchecken af. De rest van je vakantie is al betaald.",
+          a: "De lokale toeristenbelasting betaal je nog wel; die rekent het hotel bij het uitchecken af. De rest van je vakantie is al betaald.",
         },
       ]
     : [
@@ -293,7 +293,7 @@ export default function VakantieIncheckHotel({
                 <>
                   <Text style={subkop}>Wat moet ik nog betalen?</Text>
                   <Text style={{ ...body14, margin: "4px 0 0" }}>
-                    Niets voor de reis zelf: die is volledig betaald. Ter plekke betaal je alleen nog de lokale toeristenbelasting,
+                    Niets voor de reis zelf: die is volledig betaald. Ter plekke betaal je nog wel de lokale toeristenbelasting,
                     die rekent elk hotel bij het uitchecken af.
                   </Text>
                   {tollEstimate && (

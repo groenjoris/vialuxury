@@ -126,7 +126,7 @@ useHead({ title: () => `${checkout.value.name} — Mijn ViaLuxury` })
         <div class="ad__price-row ad__price-row--total"><span>Totaal</span><span>{{ money(total) }}</span></div>
         <div class="ad__price-row"><span>Betaald</span><span>{{ money(total) }}</span></div>
         <div class="ad__price-row ad__price-row--due"><span>Te betalen</span><span>{{ money(0) }}</span></div>
-        <p class="ad__price-note">In de hotels betaal je alleen de lokale toeristenbelasting.</p>
+        <p class="ad__price-note">In de hotels betaal je nog wel de lokale toeristenbelasting.</p>
       </section>
     </div>
   </MultiHotelTripAccountShell>
