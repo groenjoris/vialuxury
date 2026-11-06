@@ -8,33 +8,21 @@
 // begint bij Incheck hotel 1) met mijlpalen; erboven de pagina's (alle even groot, ook de
 // accountomgeving: Mijn ViaLuxury › Boekingen), eronder de e-mails. De incheckmails gaan de dag vóór het inchecken: een
 // oranje bolletje vlak voor elk hotelbolletje. Kaartjes zijn wit met icoon en titel. Nog te maken
-// onderdelen staan gestippeld. Linksboven twee schakelaars voor alle kaartjes, in de URL (dus
-// deelbaar): Auto | Fiets (`?demo=fiets`) en Flex | Non-flex (`?rate=nonflex`, de annuleringskeuze
-// van de demo-boeking). De pagina's lezen beide uit de URL (useDemoBookingFromQuery) en tonen
-// linksboven dezelfde schakelaars (DemoSwitches); de incheckmails hebben per reis een eigen mail;
+// onderdelen staan gestippeld. De stand van de prototype-schakelaars (reis en annuleringskeuze)
+// staat in de URL (`?demo=fiets`, `?rate=nonflex`) en bepaalt waar alle kaartjes naartoe linken;
+// het schema zelf heeft geen schakelaars — je kiest op de schermen (DemoSwitches linksboven) en
+// komt via "‹ flow" met die stand terug. De incheckmails hebben per reis een eigen mail;
 // de boekingsbevestiging heeft ook een fietsversie; alleen de pre-travelmail bestaat nog
 // uitsluitend voor de autovakantie en opent ongewijzigd. Klikken opent de pagina of mail als gewone link. Desktop-first (vaste tekenruimte
 // van 1120px), schaalt mee tot een minimum en scrolt daarna horizontaal.
-import { demoHref, demoQuery, isDemoRate, isDemoVariant, navigateAfterPaint, type DemoRate, type DemoVariant } from '~/composables-multi-hotel-trip/useMultiHotelTripDemoBooking'
+import { demoHref, isDemoRate, isDemoVariant, navigateAfterPaint, type DemoRate, type DemoVariant } from '~/composables-multi-hotel-trip/useMultiHotelTripDemoBooking'
 
 useHead({ title: 'Post-bookingflow — ViaLuxury' })
 
-/* Schakelaars linksboven; de stand staat in de URL (?demo=fiets, ?rate=nonflex; auto en flex = zonder). */
+/* Stand van de schakelaars uit de URL (?demo=fiets, ?rate=nonflex; auto en flex = zonder). */
 const route = useRoute()
 const variant = computed<DemoVariant>(() => isDemoVariant(route.query.demo) ? route.query.demo : 'auto')
 const rate = computed<DemoRate>(() => isDemoRate(route.query.rate) ? route.query.rate : 'flex')
-/** Query voor deze pagina met één van beide schakelaars omgezet (auto en flex blijven impliciet). */
-const switchQuery = (v: DemoVariant, r: DemoRate) => { const q = demoQuery(v, r); if (v === 'auto') delete q.demo; return q }
-const switches = computed(() => [
-  { id: 'variant', label: 'Reis', options: [
-    { label: 'Auto', on: variant.value === 'auto', query: switchQuery('auto', rate.value) },
-    { label: 'Fiets', on: variant.value === 'fiets', query: switchQuery('fiets', rate.value) },
-  ] },
-  { id: 'rate', label: 'Annuleren', options: [
-    { label: 'Flex', on: rate.value === 'flex', query: switchQuery(variant.value, 'flex') },
-    { label: 'Non-flex', on: rate.value === 'nonflex', query: switchQuery(variant.value, 'nonflex') },
-  ] },
-])
 /** Mailpreview: alleen de annuleringskeuze mee (de reis zit in de slug). */
 const mailHref = (slug: string, r: DemoRate) => `${FULL_MAIL_BASE}${slug}${r === 'nonflex' ? '?rate=nonflex' : ''}`
 
@@ -176,15 +164,6 @@ function onCard(c: Card) { if (c.href) open(c.href) }
         <p class="fl__eyebrow">Multi Hotel Trip</p>
         <h1 class="fl__title">Post-bookingflow</h1>
         <p class="fl__lead">De klantreis na het boeken: welke pagina's en mails de gast wanneer ziet. Klik op een kaartje om die pagina of mail te openen.</p>
-        <!-- Schakelaars voor alle kaartjes in beide schema's: Auto | Fiets en Flex | Non-flex; de actieve stand is geen link. -->
-        <div class="fl__switches">
-          <div v-for="g in switches" :key="g.id" class="fl__variant" role="group" :aria-label="g.label">
-            <template v-for="o in g.options" :key="o.label">
-              <span v-if="o.on" class="fl__variant-btn fl__variant-btn--on" aria-current="true">{{ o.label }}</span>
-              <NuxtLink v-else class="fl__variant-btn" :to="{ path: route.path, query: o.query }" replace>{{ o.label }}</NuxtLink>
-            </template>
-          </div>
-        </div>
       </header>
 
       <!-- Twee schema's onder elkaar: MVP boven de lijn, de volledige versie eronder -->
@@ -260,13 +239,6 @@ function onCard(c: Card) { if (c.href) open(c.href) }
 .fl__eyebrow { margin: 0 0 4px; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-text-secondary); }
 .fl__title { margin: 0 0 8px; font-family: var(--font-heading); font-size: 34px; font-weight: 700; line-height: 1.1; }
 .fl__lead { margin: 0; max-width: 640px; font-size: 15px; color: var(--color-text-secondary); }
-/* Schakelaars Auto | Fiets en Flex | Non-flex: knoppenparen, de actieve stand zwart (zelfde vorm als Licht/Donker op de mailpreview) */
-.fl__switches { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
-.fl__variant { display: inline-flex; border: 1.5px solid #d4d4d4; border-radius: var(--radius-md); overflow: hidden; background: #fff; }
-.fl__variant-btn { display: inline-flex; align-items: center; height: 36px; padding: 0 16px; font-size: 14px; font-weight: 600; color: var(--color-text-primary); text-decoration: none; }
-.fl__variant-btn + .fl__variant-btn { border-left: 1.5px solid #d4d4d4; }
-a.fl__variant-btn:hover { color: var(--color-primary); }
-.fl__variant-btn--on { background: #141414; color: #fff; }
 
 /* Twee schema's onder elkaar: kop (titel + toelichting) per schema, een lijn ertussen */
 .fl__flow + .fl__flow { margin-top: 40px; padding-top: 32px; border-top: 1px solid #d4d4d4; }

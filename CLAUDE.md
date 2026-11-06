@@ -107,9 +107,10 @@ automatisch:
 
 ## Post-bookingflow (`/multi-hotel-trip/flow`)
 
-Schema van de klantreis na het boeken (MVP boven de lijn, volledige versie eronder). Linksboven
-twee schakelaars, allebei in de URL (auto en flex = zonder query): Auto | Fiets (`?demo=fiets`) en
-Flex | Non-flex (`?rate=nonflex`, de annuleringskeuze van de demo-boeking). Ze bepalen waar álle
+Schema van de klantreis na het boeken (MVP boven de lijn, volledige versie eronder). De stand van
+de prototype-schakelaars staat in de URL (auto en flex = zonder query): reis (`?demo=fiets`) en
+annuleringskeuze (`?rate=nonflex`). Het schema zelf heeft geen schakelaars (bewust weggehaald);
+je kiest op de schermen en komt via "‹ flow" met die stand terug. De stand bepaalt waar álle
 kaartjes naartoe linken: pagina's met `?demo=` en `?rate=`, incheckmails met de `-fiets`-slug (en
 `?rate=`); de boekingsbevestiging en de pre-travelmail bestaan alleen voor de autovakantie en
 openen ongewijzigd. De pagina's lezen beide uit de URL (`useDemoBookingFromQuery`, `demoHref`,
