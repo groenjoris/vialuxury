@@ -125,7 +125,9 @@ Fiets gedempt als er geen fietsversie is). De "‹ flow"-link in `ProtoNav` (MHT
 mailpreview geeft beide standen mee terug. Inhoud volgt de stand: bevestigingspagina en
 accountdetail tonen bij non-flex "Niet terugbetaalbaar — De boeking kan niet geannuleerd worden",
 de prijs zonder toeslag en geen annuleerlink (zonder `?rate=` volgt de pagina de keuze uit de room
-table, via `rate`/`isFlex` in `useMultiHotelTripAccountBooking`); de mails met annuleringstekst
+table, via `rate`/`isFlex` in `useMultiHotelTripAccountBooking`); het accountdetail heeft bij flex
+bovendien de subtiele schakelaar "Op tijd | Te laat" (`?late=1`, vóór of ná de annuleringsdeadline)
+in het blok Boeking beheren, met een eigen tekst voor te laat; de mails met annuleringstekst
 (boekingsbevestiging, MVP-bevestiging, pre-travel) hebben een `rate`-prop en in de registry een
 `<slug>-nonflex`-variant (`variantOf`), die de preview bij Non-flex laadt; de incheckmails
 verschillen niet.
