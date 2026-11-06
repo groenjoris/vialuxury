@@ -12,8 +12,13 @@ const slug = computed(() => String(route.params.slug))
 const entry = computed(() => emails.find(e => e.slug === slug.value))
 if (!entry.value) throw createError({ statusCode: 404, statusMessage: 'E-mail niet gevonden' })
 
-/** Terug naar de flow met de variant van deze mail, zodat de schakelaar Auto | Fiets daar klopt. */
-const flowHref = computed(() => '/multi-hotel-trip/flow')
+/** Terug naar de flow met de reis van deze mail en de annuleringskeuze uit de URL, zodat de schakelaars daar kloppen. */
+const flowHref = computed(() => {
+  const q = new URLSearchParams()
+  if (route.query.rate === 'nonflex') q.set('rate', 'nonflex')
+  const qs = q.toString()
+  return `/multi-hotel-trip/flow${qs ? `?${qs}` : ''}`
+})
 
 const mode = ref<'light' | 'dark'>('light')
 const device = ref<'desktop' | 'mobile'>('desktop')

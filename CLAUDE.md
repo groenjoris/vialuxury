@@ -108,10 +108,17 @@ automatisch:
 ## Post-bookingflow (`/multi-hotel-trip/flow`)
 
 Schema van de klantreis na het boeken (MVP boven de lijn, volledige versie eronder). Linksboven
-één schakelaar Auto | Fiets (`?demo=fiets`; auto = zonder query) die bepaalt waar álle kaartjes
-naartoe linken: pagina's met `?demo=`, incheckmails met de `-fiets`-slug; de boekingsbevestiging
-en de pre-travelmail bestaan alleen voor de autovakantie en openen ongewijzigd. De "‹ flow"-link
-in `ProtoNav` (MHT/MVP) en op de mailpreview geeft de variant mee terug, zodat de schakelaar blijft staan.
+twee schakelaars, allebei in de URL (auto en flex = zonder query): Auto | Fiets (`?demo=fiets`) en
+Flex | Non-flex (`?rate=nonflex`, de annuleringskeuze van de demo-boeking). Ze bepalen waar álle
+kaartjes naartoe linken: pagina's met `?demo=` en `?rate=`, incheckmails met de `-fiets`-slug (en
+`?rate=`); de boekingsbevestiging en de pre-travelmail bestaan alleen voor de autovakantie en
+openen ongewijzigd. De pagina's lezen beide uit de URL (`useDemoBookingFromQuery`, `demoHref`,
+`demoQuery` in `useMultiHotelTripDemoBooking` / `useMvpTripDemoBooking`) en tonen linksboven
+onder de donkere balk dezelfde schakelaars (`<Prefix>DemoSwitches`, desktop; nu op de
+bevestigingspagina, de andere schermen en mails volgen). De "‹ flow"-link in `ProtoNav`
+(MHT/MVP) en op de mailpreview geeft beide standen mee terug. Bevestigingspagina: bij non-flex
+"Niet terugbetaalbaar — De boeking kan niet geannuleerd worden" op de kassabon en de prijs zonder
+toeslag; zonder `?rate=` volgt de pagina de keuze uit de room table.
 
 ## E-mails van de vakanties (`email-designs/`)
 

@@ -20,11 +20,12 @@ import { CHECKOUT_BOOKING_FEE } from '~/data/mht-checkout/pricing'
 import { useMultiHotelTripCheckoutTrip } from '~/composables-multi-hotel-trip/useMultiHotelTripCheckoutTrip'
 import { useMultiHotelTripMobileUa } from '~/composables-multi-hotel-trip/useMultiHotelTripMobileUa'
 import { bookingRefFor } from '~/utils-multi-hotel-trip/bookingRef'
-import { useDemoBookingFromQuery } from '~/composables-multi-hotel-trip/useMultiHotelTripDemoBooking'
+import { isDemoRate, isDemoVariant, useDemoBookingFromQuery, type DemoRate, type DemoVariant } from '~/composables-multi-hotel-trip/useMultiHotelTripDemoBooking'
 
 const isMobileUa = useMultiHotelTripMobileUa()
 // Vanuit de flow: `?demo=auto|fiets&load=1` zet de demo-boeking (en de preloader) klaar bij het laden.
 useDemoBookingFromQuery()
+const route = useRoute()
 
 /* ── Boekingsgegevens (gedeelde checkout-state; zonder checkout de Opaalkust-demo) ── */
 const DEMO_SLUG = 'ontdek-noord-frankrijk-en-de-opaalkust-in-7-dagen'
@@ -37,13 +38,23 @@ const routeLegs = computed<TripRouteLeg[]>(() => (tripRoutesJson as Record<strin
 
 interface SelRow { baseId: string; rateKey: 'nonrefundable' | 'flexible'; price: number; priceWas: number; quantity: number }
 const selection = useState<SelRow[]>('mht-checkout-selection', () => [])
-/* Flexibel annuleren is onderdeel van het pakket (uitgangspunt van de bevestiging). */
+/* Annuleringskeuze: de prototype-schakelaar (?rate=nonflex) gaat voor; anders de keuze uit de room
+   table; zonder keuze flexibel annuleren (uitgangspunt van de bevestiging). De prijs volgt mee. */
+const rate = computed<DemoRate>(() => isDemoRate(route.query.rate) ? route.query.rate : selection.value[0]?.rateKey === 'nonrefundable' ? 'nonflex' : 'flex')
+const isFlex = computed(() => rate.value === 'flex')
 const row = computed<SelRow>(() => {
-  const r = selection.value[0]
+  const r: SelRow = selection.value[0] ?? { baseId: 'trip', rateKey: 'nonrefundable', price: trip.value.price, priceWas: trip.value.priceWas, quantity: 1 }
   const flex = pricing.flexibilityPerRoom * trip.value.hotels.length
-  if (r) return r.rateKey === 'flexible' ? r : { ...r, rateKey: 'flexible', price: r.price + flex, priceWas: r.priceWas + flex }
-  return { baseId: 'trip', rateKey: 'flexible', price: trip.value.price + flex, priceWas: trip.value.priceWas + flex, quantity: 1 }
+  const basePrice = r.rateKey === 'flexible' ? r.price - flex : r.price
+  const basePriceWas = r.rateKey === 'flexible' ? r.priceWas - flex : r.priceWas
+  return isFlex.value
+    ? { ...r, rateKey: 'flexible', price: basePrice + flex, priceWas: basePriceWas + flex }
+    : { ...r, rateKey: 'nonrefundable', price: basePrice, priceWas: basePriceWas }
 })
+/** Reis van de demo-boeking voor de schakelaars linksboven: uit de URL, anders uit de reis zelf. */
+const demoVariant = computed<DemoVariant>(() => isDemoVariant(route.query.demo) ? route.query.demo : detail.value?.type === 'fiets' ? 'fiets' : 'auto')
+/** Fietsvakantie: extra punt bij "Wat je zelf doet". */
+const isBike = computed(() => detail.value?.type === 'fiets')
 const persons = computed(() => row.value.quantity * 2)
 const roomsPerHotel = computed(() => row.value.quantity)
 const BOOKING_FEE = CHECKOUT_BOOKING_FEE
@@ -102,9 +113,10 @@ const email = computed(() => guest.value?.email || 'rijo.verburg@gmail.com')
 /** Boekingsnummer: vast per reis (demo), overal in dezelfde vorm (MultiHotelTripBookingRef). */
 const bookingRef = computed(() => bookingRefFor(trip.value.slug))
 
-/* Wat er nu gebeurt — chronologisch (verticale tijdlijn). */
+/* Wat er nu gebeurt — chronologisch (verticale tijdlijn). De eerste stap draagt de datum van vandaag. */
+const today = fmt(new Date())
 const nextSteps = computed(() => [
-  { when: 'Nu', title: 'Bevestiging in je mailbox', text: `Binnen een paar minuten staat deze bevestiging op ${email.value}, met je boekingsnummer en alles wat je hier ziet.` },
+  { when: `${today}, nu`, title: 'Bevestiging in je mailbox', text: `Binnen een paar minuten staat deze bevestiging op ${email.value}, met je boekingsnummer en alles wat je hier ziet.` },
   { when: `Rond ${docsDate.value}`, title: 'Een mail vol tips', text: 'Twee weken voor vertrek mailen we je tips zodat je je perfect kan voorbereiden op je reis.' },
   { when: checkIn.value, title: `Inchecken bij ${trip.value.hotels[0]?.name}`, text: `Vanaf ${stays.value[0]?.checkInTime} uur. Je hoeft niets te printen, je naam en identiteitsbewijs zijn genoeg.` },
   { when: checkOut.value, title: 'Weer thuis', text: 'Na je vakantie ontvang je een mail met de vraag hoe het was. Daar helpen we andere reizigers mee.' },
@@ -145,7 +157,6 @@ onMounted(() => {
   if (!loading.value) return
   loadFlag.value = false
   // `load=1` uit de URL halen: de preloader hoort bij de binnenkomst, niet bij een refresh.
-  const route = useRoute()
   if (route.query.load) useRouter().replace({ query: { ...route.query, load: undefined } })
   const per = LOAD_MS / loadSteps.value.length
   const tick = setInterval(() => { loadStep.value = Math.min(loadStep.value + 1, loadSteps.value.length - 1) }, per)
@@ -159,6 +170,8 @@ useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
   <div class="mht-checkout page page--white cf" :class="{ 'page--m': isMobileUa }">
     <MultiHotelTripCheckoutMobileHeader v-if="isMobileUa" :step="3" />
     <MultiHotelTripCheckoutTopNav v-else />
+    <!-- Prototype-schakelaars linksboven (desktop): Auto | Fiets en Flex | Non-flex, zelfde stand als op de flow. -->
+    <MultiHotelTripDemoSwitches v-if="!isMobileUa" :variant="demoVariant" :rate="rate" />
 
     <!-- Preloader: 3 seconden "boeking bevestigen" voordat de bevestiging verschijnt. -->
     <Transition name="cf-load">
@@ -215,6 +228,14 @@ useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
                 <svg class="cf__todo-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2" stroke="currentColor" stroke-width="2" /><circle cx="12" cy="10" r="2.6" stroke="currentColor" stroke-width="2" /><path d="M9 16.5h6" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></svg>
                 <span class="t-body">Zorg dat je op vakantie een geldig identiteitsbewijs bij je hebt (paspoort, rijbewijs of ID-kaart); de hotels vragen daar bij het inchecken om.</span>
               </li>
+              <li class="cf__todo">
+                <svg class="cf__todo-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="6" width="18" height="12" rx="2" stroke="currentColor" stroke-width="2" /><circle cx="12" cy="12" r="2.6" stroke="currentColor" stroke-width="2" /><path d="M6.5 9.5h.01M17.5 14.5h.01" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" /></svg>
+                <span class="t-body">Hou er rekening mee dat de hotels een borgsom kunnen vragen.</span>
+              </li>
+              <li v-if="isBike" class="cf__todo">
+                <svg class="cf__todo-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="5.5" cy="17" r="3.5" stroke="currentColor" stroke-width="2" /><circle cx="18.5" cy="17" r="3.5" stroke="currentColor" stroke-width="2" /><path d="M5.5 17l3.5-8h5l4.5 8M9 9H6.5M13.5 9l-3 8M14 6h2.5l2 11" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+                <span class="t-body">Zorg dat je een goed onderhouden fiets bij je hebt. Fietshuur is niet bij de boeking inbegrepen.</span>
+              </li>
             </ul>
           </section>
 
@@ -246,13 +267,14 @@ useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
                 </li>
               </ol>
 
-              <!-- Flexibel annuleren (en bagagetransfer): uitgelijnd met de hotelnamen, icoon vooraan. -->
+              <!-- Annuleringskeuze (flexibel of niet terugbetaalbaar) en bagagetransfer: uitgelijnd met de hotelnamen, icoon vooraan. -->
               <ul class="cf__extras">
                 <li class="cf__extra">
-                  <svg class="cf__extra-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3l7 3v5c0 5-3.5 8.5-7 10-3.5-1.5-7-5-7-10V6l7-3z" stroke="currentColor" stroke-width="2" stroke-linejoin="round" /><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+                  <svg v-if="isFlex" class="cf__extra-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3l7 3v5c0 5-3.5 8.5-7 10-3.5-1.5-7-5-7-10V6l7-3z" stroke="currentColor" stroke-width="2" stroke-linejoin="round" /><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+                  <svg v-else class="cf__extra-icon cf__extra-icon--off" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3l7 3v5c0 5-3.5 8.5-7 10-3.5-1.5-7-5-7-10V6l7-3z" stroke="currentColor" stroke-width="2" stroke-linejoin="round" /><path d="M9.5 9.5l5 5M14.5 9.5l-5 5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" /></svg>
                   <div>
-                    <p class="cf__stay-name">Flexibel annuleren</p>
-                    <p class="t-caption c-grey">Tot {{ cancelDate }} (30 dagen voor aankomst) kosteloos annuleren van de gehele vakantie.</p>
+                    <p class="cf__stay-name">{{ isFlex ? 'Flexibel annuleren' : 'Niet terugbetaalbaar' }}</p>
+                    <p class="t-caption c-grey">{{ isFlex ? `Tot ${cancelDate} (30 dagen voor aankomst) kosteloos annuleren van de gehele vakantie.` : 'De boeking kan niet geannuleerd worden.' }}</p>
                   </div>
                 </li>
                 <li v-if="hasBaggage" class="cf__extra">
@@ -266,12 +288,12 @@ useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
 
               <!-- Prijs -->
               <div class="cf__price">
-                <div class="cf__price-row"><span class="t-body">{{ trip.typeLabel }}, {{ persons }} personen, incl. flexibel annuleren</span><span class="t-body">{{ money(tripTotal) }}</span></div>
+                <div class="cf__price-row"><span class="t-body">{{ trip.typeLabel }}, {{ persons }} personen{{ isFlex ? ', incl. flexibel annuleren' : '' }}</span><span class="t-body">{{ money(tripTotal) }}</span></div>
                 <div class="cf__price-row"><span class="t-body">Boekingskosten</span><span class="t-body">{{ money(BOOKING_FEE) }}</span></div>
                 <div class="cf__price-row cf__price-row--total"><span class="t-body t-bold">Totaal</span><span class="t-body t-bold">{{ money(total) }}</span></div>
                 <div class="cf__price-row"><span class="t-body">Betaald</span><span class="t-body">{{ money(total) }}</span></div>
                 <div class="cf__price-row cf__price-row--due"><span class="t-body t-bold">Te betalen</span><span class="t-body t-bold">{{ money(0) }}</span></div>
-                <p class="t-caption c-mgrey cf__price-note">In de hotels betaal je alleen<br>de lokale toeristenbelasting.</p>
+                <p class="t-caption c-mgrey cf__price-note">Bij aankomst betaal je wel nog<br>de lokale toeristenbelasting.</p>
               </div>
             </div>
           </section>
@@ -324,6 +346,7 @@ useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
 <style scoped>
 .page { position: relative; min-height: 100vh; display: flex; flex-direction: column; }
 .page--white { background: var(--c-white); }
+.cf { position: relative; } /* positioneringscontext voor de prototype-schakelaars linksboven */
 .cf__main { flex: 1; padding-bottom: 56px; }
 .cf__body { padding-top: 32px; display: flex; flex-direction: column; gap: 32px; }
 /* Koppen in Recoleta zoals op de site (de checkout-scope zet h1–h6 standaard op de bodyfont). */
@@ -451,6 +474,7 @@ useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
 .cf__extra { display: grid; grid-template-columns: 32px minmax(0, 1fr); column-gap: 16px; align-items: start; }
 .cf__extra p { margin: 0; }
 .cf__extra-icon { width: 26px; height: 26px; color: var(--c-via-green); }
+.cf__extra-icon--off { color: var(--color-text-secondary); } /* niet terugbetaalbaar: geen groen */
 
 .cf__price { margin-top: 20px; padding-top: 14px; border-top: 1px solid var(--c-light-grey); }
 .cf__price-row { display: flex; justify-content: space-between; gap: 12px; padding: 3px 0; }
