@@ -113,12 +113,19 @@ Flex | Non-flex (`?rate=nonflex`, de annuleringskeuze van de demo-boeking). Ze b
 kaartjes naartoe linken: pagina's met `?demo=` en `?rate=`, incheckmails met de `-fiets`-slug (en
 `?rate=`); de boekingsbevestiging en de pre-travelmail bestaan alleen voor de autovakantie en
 openen ongewijzigd. De pagina's lezen beide uit de URL (`useDemoBookingFromQuery`, `demoHref`,
-`demoQuery` in `useMultiHotelTripDemoBooking` / `useMvpTripDemoBooking`) en tonen linksboven
-onder de donkere balk dezelfde schakelaars (`<Prefix>DemoSwitches`, desktop; nu op de
-bevestigingspagina, de andere schermen en mails volgen). De "‹ flow"-link in `ProtoNav`
-(MHT/MVP) en op de mailpreview geeft beide standen mee terug. Bevestigingspagina: bij non-flex
-"Niet terugbetaalbaar — De boeking kan niet geannuleerd worden" op de kassabon en de prijs zonder
-toeslag; zonder `?rate=` volgt de pagina de keuze uit de room table.
+`demoQuery`, `useDemoSwitches` in `useMultiHotelTripDemoBooking` / `useMvpTripDemoBooking`) en
+tonen linksboven onder het label dezelfde schakelaars als één rij (`<Prefix>DemoSwitches`,
+desktop; `--demo-sw-top` 70px in de sitekop, 80px onder de checkoutbalk) op álle schermen en
+mailpreviews van de flow: bevestigingspagina, tips & routes (daar ook de Vandaag-schakelaar als
+extra knop), account (overzicht en detail), MVP-account en de mailpreviews (daar: reis via de slug,
+Fiets gedempt als er geen fietsversie is). De "‹ flow"-link in `ProtoNav` (MHT/MVP) en op de
+mailpreview geeft beide standen mee terug. Inhoud volgt de stand: bevestigingspagina en
+accountdetail tonen bij non-flex "Niet terugbetaalbaar — De boeking kan niet geannuleerd worden",
+de prijs zonder toeslag en geen annuleerlink (zonder `?rate=` volgt de pagina de keuze uit de room
+table, via `rate`/`isFlex` in `useMultiHotelTripAccountBooking`); de mails met annuleringstekst
+(boekingsbevestiging, MVP-bevestiging, pre-travel) hebben een `rate`-prop en in de registry een
+`<slug>-nonflex`-variant (`variantOf`), die de preview bij Non-flex laadt; de incheckmails
+verschillen niet.
 
 ## E-mails van de vakanties (`email-designs/`)
 

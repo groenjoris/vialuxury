@@ -49,6 +49,8 @@ type Props = {
   roomsPerHotel: number;
   hotels: Hotel[];
   cancelUntil: string;
+  /** Annuleringskeuze: flexibel annuleren (standaard) of niet terugbetaalbaar. */
+  rate?: "flex" | "nonflex";
   hasBaggage?: boolean;
   tripPrice: string;
   bookingFee: string;
@@ -95,6 +97,7 @@ export default function VakantieBevestiging({
   hotels,
   cancelUntil,
   hasBaggage = false,
+  rate = "flex",
   tripPrice,
   bookingFee,
   total,
@@ -181,7 +184,9 @@ export default function VakantieBevestiging({
   const faq = [
     {
       q: "Hoe kan ik annuleren of wijzigen?",
-      a: `Via je account. Log in met ${recipientEmail}, open deze boeking en kies "Annuleren" of "Datum wijzigen". Tot ${cancelUntil} (30 dagen voor aankomst) is dat kosteloos; je krijgt het volledige bedrag terug.`,
+      a: rate === "nonflex"
+        ? `Annuleren kan niet: deze boeking is niet terugbetaalbaar. Een datum wijzigen kan wel: log in met ${recipientEmail}, open deze boeking en kies "Datum wijzigen".`
+        : `Via je account. Log in met ${recipientEmail}, open deze boeking en kies "Annuleren" of "Datum wijzigen". Tot ${cancelUntil} (30 dagen voor aankomst) is dat kosteloos; je krijgt het volledige bedrag terug.`,
     },
     {
       q: "Hoe log ik in op mijn account?",
@@ -289,16 +294,16 @@ export default function VakantieBevestiging({
                   </Section>
                 ))}
 
-                {/* Flexibel annuleren (en bagagetransfer): dezelfde groene iconen als op de bevestigingspagina */}
+                {/* Annuleringskeuze (flexibel annuleren met het groene schild, of niet terugbetaalbaar) en bagagetransfer: dezelfde iconen als op de bevestigingspagina */}
                 <Section style={{ borderTop: `1px solid ${line}`, marginTop: "20px", paddingTop: "16px" }}>
                   <Row>
                     <Column style={{ width: "36px", verticalAlign: "top" }}>
-                      <Img src={img("icon-shield-green.png")} alt="" width="26" height="26" />
+                      {rate === "flex" && <Img src={img("icon-shield-green.png")} alt="" width="26" height="26" />}
                     </Column>
                     <Column style={{ verticalAlign: "top" }}>
-                      <Text style={{ ...body14, margin: 0, fontSize: "16px", fontWeight: 700 }}>Flexibel annuleren</Text>
+                      <Text style={{ ...body14, margin: 0, fontSize: "16px", fontWeight: 700 }}>{rate === "flex" ? "Flexibel annuleren" : "Niet terugbetaalbaar"}</Text>
                       <Text style={{ ...small, margin: "2px 0 0" }}>
-                        Tot {cancelUntil} (30 dagen voor aankomst) kosteloos annuleren van de gehele vakantie.
+                        {rate === "flex" ? `Tot ${cancelUntil} (30 dagen voor aankomst) kosteloos annuleren van de gehele vakantie.` : "De boeking kan niet geannuleerd worden."}
                       </Text>
                     </Column>
                   </Row>
@@ -319,7 +324,7 @@ export default function VakantieBevestiging({
 
                 {/* Prijs */}
                 <Section style={{ borderTop: `1px solid ${line}`, marginTop: "16px", paddingTop: "12px" }}>
-                  {priceRow(`${tripType}, ${persons} personen, incl. flexibel annuleren`, tripPrice)}
+                  {priceRow(`${tripType}, ${persons} personen${rate === "flex" ? ", incl. flexibel annuleren" : ""}`, tripPrice)}
                   {priceRow("Boekingskosten", bookingFee)}
                   {priceRow("Totaal", total, true, true)}
                   {priceRow("Betaald", total)}

@@ -5,17 +5,21 @@
 // plaats, datums · nachten, "Inbegrepen" (kamer + alle inclusies met groene vinkjes), check-in en
 // check-out met tijd, en adres + telefoon; onderaan de prijs.
 import { useMultiHotelTripAccountBooking, money } from '~/composables-multi-hotel-trip/useMultiHotelTripAccountBooking'
-import { useDemoBookingFromQuery } from '~/composables-multi-hotel-trip/useMultiHotelTripDemoBooking'
+import { useDemoBookingFromQuery, useDemoSwitches } from '~/composables-multi-hotel-trip/useMultiHotelTripDemoBooking'
 
 useDemoBookingFromQuery()
 const route = useRoute()
 const id = computed(() => String(route.params.id ?? ''))
-const { checkout, stays, dateRangeLong, nights, persons, roomsPerHotel, bookingRef, tripTotal, total, bookingFee, cancelDate } = useMultiHotelTripAccountBooking(id.value)
+const { checkout, stays, dateRangeLong, nights, persons, roomsPerHotel, bookingRef, tripTotal, total, bookingFee, cancelDate, isBike, isFlex } = useMultiHotelTripAccountBooking(id.value)
+/* Prototype-schakelaars linksboven (DemoSwitches): Auto | Fiets en Flex | Non-flex uit de URL; de annuleringstekst en de prijs volgen. */
+const { variant: demoVariant, rate: demoRate } = useDemoSwitches(() => isBike.value ? 'fiets' : 'auto')
 
 useHead({ title: () => `${checkout.value.name} — Mijn ViaLuxury` })
 </script>
 
 <template>
+  <!-- Prototype-schakelaars linksboven in de sitekop, onder het label (niet voor de gast). -->
+  <MultiHotelTripDemoSwitches :variant="demoVariant" :rate="demoRate" style="--demo-sw-top: 70px" />
   <MultiHotelTripAccountShell active="boekingen">
     <NuxtLink class="ad__back" to="/multi-hotel-trip/account/boekingen">‹ Alle boekingen</NuxtLink>
 
@@ -38,10 +42,10 @@ useHead({ title: () => `${checkout.value.name} — Mijn ViaLuxury` })
       </section>
       <section class="ad__card">
         <h2 class="ad__h2">Boeking beheren</h2>
-        <p class="ad__text">Tot {{ cancelDate }} (30 dagen voor aankomst) kun je de hele vakantie kosteloos annuleren.</p>
+        <p class="ad__text">{{ isFlex ? `Tot ${cancelDate} (30 dagen voor aankomst) kun je de hele vakantie kosteloos annuleren.` : 'Deze boeking is niet terugbetaalbaar en kan niet geannuleerd worden. Wijzigen kan wel.' }}</p>
         <p class="ad__actions">
           <a class="ad__link" href="#" @click.prevent>Deze boeking wijzigen</a>
-          <a class="ad__link" href="#" @click.prevent>Deze boeking annuleren</a>
+          <a v-if="isFlex" class="ad__link" href="#" @click.prevent>Deze boeking annuleren</a>
         </p>
       </section>
     </div>
@@ -95,7 +99,7 @@ useHead({ title: () => `${checkout.value.name} — Mijn ViaLuxury` })
 
       <!-- Prijs -->
       <section class="ad__price" aria-label="Prijs">
-        <div class="ad__price-row"><span>{{ checkout.typeLabel }}, {{ persons }} personen, incl. flexibel annuleren</span><span>{{ money(tripTotal) }}</span></div>
+        <div class="ad__price-row"><span>{{ checkout.typeLabel }}, {{ persons }} personen{{ isFlex ? ', incl. flexibel annuleren' : '' }}</span><span>{{ money(tripTotal) }}</span></div>
         <div class="ad__price-row"><span>Boekingskosten</span><span>{{ money(bookingFee) }}</span></div>
         <div class="ad__price-row ad__price-row--total"><span>Totaal</span><span>{{ money(total) }}</span></div>
         <div class="ad__price-row"><span>Betaald</span><span>{{ money(total) }}</span></div>

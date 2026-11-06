@@ -8,12 +8,30 @@
     "preheader": "Boekingsnummer VL-11 851 812. Hieronder alles over je 3 hotels."
   },
   {
+    "slug": "vakantie-bevestiging-nonflex",
+    "title": "Boekingsbevestiging vakantie (niet terugbetaalbaar)",
+    "description": "Niet-terugbetaalbare boeking: 'Niet terugbetaalbaar — De boeking kan niet geannuleerd worden' op de kassabon, prijs zonder toeslag, FAQ zonder gratis annuleren.",
+    "section": "designs",
+    "subject": "Je boeking is bevestigd: Ontdek Noord-Frankrijk en de Opaalkust in 7 dagen",
+    "preheader": "Boekingsnummer VL-11 851 812. Hieronder alles over je 3 hotels.",
+    "variantOf": "vakantie-bevestiging"
+  },
+  {
     "slug": "vakantie-pre-travel",
     "title": "Pre-travel (14 dagen voor vertrek)",
     "description": "Checklist voor je reis: identiteitsbewijs en boekingsnummer, inchecken bij het eerste hotel (adres, route, parkeren), wat je nog betaalt, de persoonlijke pagina met praktische informatie en tips, inloggen op je account om je boeking te beheren, en veelgestelde vragen.",
     "section": "designs",
     "subject": "Over 14 dagen vertrek je naar Noord-Frankrijk",
     "preheader": "Je checklist: identiteitsbewijs, boekingsnummer en inchecken bij Château Tilques."
+  },
+  {
+    "slug": "vakantie-pre-travel-nonflex",
+    "title": "Pre-travel (14 dagen voor vertrek, niet terugbetaalbaar)",
+    "description": "Niet-terugbetaalbare boeking: zonder 'je boeking annuleren' in het accountblok en met de FAQ 'Annuleren kan niet'.",
+    "section": "designs",
+    "subject": "Over 14 dagen vertrek je naar Noord-Frankrijk",
+    "preheader": "Je checklist: identiteitsbewijs, boekingsnummer en inchecken bij Château Tilques.",
+    "variantOf": "vakantie-pre-travel"
   },
   {
     "slug": "vakantie-incheck-hotel-1",
@@ -70,5 +88,14 @@
     "section": "designs",
     "subject": "Je boeking is bevestigd: Ontdek Noord-Frankrijk en de Opaalkust in 7 dagen",
     "preheader": "Boekingsnummer VL-11 851 812. Hieronder alles over je 3 hotels."
+  },
+  {
+    "slug": "mvp-vakantie-bevestiging-nonflex",
+    "title": "MVP — Boekingsbevestiging vakantie (niet terugbetaalbaar)",
+    "description": "MVP-versie voor een niet-terugbetaalbare boeking: 'Niet terugbetaalbaar' op de kassabon, prijs zonder toeslag, FAQ zonder gratis annuleren.",
+    "section": "designs",
+    "subject": "Je boeking is bevestigd: Ontdek Noord-Frankrijk en de Opaalkust in 7 dagen",
+    "preheader": "Boekingsnummer VL-11 851 812. Hieronder alles over je 3 hotels.",
+    "variantOf": "mvp-vakantie-bevestiging"
   }
 ]

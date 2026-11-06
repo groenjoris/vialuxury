@@ -28,6 +28,8 @@ import { baseUrl, font, newsletter, type EmailMode } from "../components/theme";
 type Props = {
   recipientName: string;
   recipientEmail: string;
+  /** Annuleringskeuze van de boeking: flexibel annuleren (standaard) of niet terugbetaalbaar. */
+  rate?: "flex" | "nonflex";
   bookingNumber: string;
   tripType: string;
   tripName: string;
@@ -84,6 +86,7 @@ const responsiveCss = `
 export default function VakantiePreTravel({
   recipientName,
   recipientEmail,
+  rate = "flex",
   bookingNumber,
   tripType,
   tripName,
@@ -127,7 +130,7 @@ export default function VakantiePreTravel({
     },
     {
       q: "Kan ik nog wijzigen of annuleren?",
-      a: `Kosteloos annuleren kon tot 30 dagen voor aankomst. Wijzigen van een datum of het aantal personen is vaak nog mogelijk: regel het in je account (log in met je e-mail) of mail ons op service@vialuxury.com met boekingsnummer ${bookingNumber}.`,
+      a: `${rate === "nonflex" ? "Annuleren kan niet: deze boeking is niet terugbetaalbaar." : "Kosteloos annuleren kon tot 30 dagen voor aankomst."} Wijzigen van een datum of het aantal personen is vaak nog mogelijk: regel het in je account (log in met je e-mail) of mail ons op service@vialuxury.com met boekingsnummer ${bookingNumber}.`,
     },
     {
       q: "Hoe werkt het doorreizen naar het volgende hotel?",
@@ -268,7 +271,7 @@ export default function VakantiePreTravel({
             <Section style={{ border: `1px solid ${line}`, borderRadius: "8px", padding: "20px" }}>
               <Text className="m-kop" style={kop}>Boeking wijzigen of jouw boeking beheren</Text>
               <Text style={body14}>
-                In je ViaLuxury-account vind je je boeking terug en regel je alles zelf: gegevens wijzigen of je boeking annuleren.
+                In je ViaLuxury-account vind je je boeking terug en regel je alles zelf: gegevens wijzigen{rate === "flex" ? " of je boeking annuleren" : ""}.
                 Een wachtwoord heb je niet nodig: log in met je e-mailadres en je ontvangt een eenmalige code waarmee je direct
                 in je accountomgeving bent.
               </Text>

@@ -23,7 +23,7 @@ import { nightsLabel } from '~/utils-multi-hotel-trip/plural'
 import { formatDateWeekdayShort } from '~/utils-multi-hotel-trip/formatDate'
 import { hotelAddress, hotelPhone, hotelMapsHref } from '~/utils-multi-hotel-trip/hotelContact'
 import { bookingRefFor } from '~/utils-multi-hotel-trip/bookingRef'
-import { useDemoBookingFromQuery } from '~/composables-multi-hotel-trip/useMultiHotelTripDemoBooking'
+import { useDemoBookingFromQuery, useDemoSwitches } from '~/composables-multi-hotel-trip/useMultiHotelTripDemoBooking'
 import { useMultiHotelTripCheckoutTrip } from '~/composables-multi-hotel-trip/useMultiHotelTripCheckoutTrip'
 import { useMultiHotelTripI18n } from '~/composables-multi-hotel-trip/useMultiHotelTripI18n'
 import { buildTripDaysView, tripDistanceLabelFn, tripDurationLabel } from '~/composables-multi-hotel-trip/useMultiHotelTripDaysView'
@@ -48,7 +48,8 @@ const trip = computed(() => tripPdp.value?.trip ?? null)
 const isBike = computed(() => trip.value?.type === 'fiets')
 const bookingRef = computed(() => bookingRefFor(checkout.value.slug))
 
-/* ── Prototype-schakelaar (linksboven in de navigatiebalk): het Vandaag-blok aan of uit; standaard uit ── */
+/* ── Prototype-schakelaars linksboven (DemoSwitches): Auto | Fiets en Flex | Non-flex uit de URL, plus het Vandaag-blok aan/uit (standaard uit) ── */
+const { variant: demoVariant, rate: demoRate } = useDemoSwitches(() => isBike.value ? 'fiets' : 'auto')
 const showToday = useState<boolean>('mht-trip-page-today', () => false)
 
 /* ── Datums ── */
@@ -284,12 +285,8 @@ useHead({ title: `${checkout.value.name} — Tips & routes — ViaLuxury` })
   <div class="rp">
     <MultiHotelTripSiteHeader />
 
-    <!-- Prototype-schakelaar linksboven in de navigatiebalk, onder de prototype-navigatie (niet voor de gast): Vandaag-blok aan/uit -->
-    <label class="rp__proto" title="Prototype: Vandaag-blok aan/uit">
-      <input v-model="showToday" type="checkbox" class="rp__switch-input" />
-      <span class="rp__switch-track" aria-hidden="true"><span class="rp__switch-knob" /></span>
-      <span class="rp__switch-label">Vandaag</span>
-    </label>
+    <!-- Prototype-schakelaars linksboven in de sitekop, onder het label (niet voor de gast): Auto | Fiets, Flex | Non-flex en het Vandaag-blok aan/uit -->
+    <MultiHotelTripDemoSwitches :variant="demoVariant" :rate="demoRate" :toggles="[{ id: 'today', label: 'Vandaag', on: showToday }]" style="--demo-sw-top: 70px" @toggle="showToday = !showToday" />
 
     <!-- ── Hero: reisfoto direct onder de navigatiebalk (de zoekbalk valt eroverheen), reistitel, datums, weer ── -->
     <section class="rp__hero" :style="{ backgroundImage: `url(${trip?.coverImage ?? checkout.thumb})` }">
@@ -508,14 +505,6 @@ useHead({ title: `${checkout.value.name} — Tips & routes — ViaLuxury` })
 .rp__label { display: block; font-size: 11px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: var(--color-text-secondary); }
 
 /* Prototype-schakelaar: linksboven in de zwarte navigatiebalk, onder de prototype-navigatie en het variant-label (z 500) */
-.rp__proto { position: absolute; top: 70px; left: 8px; z-index: 600; display: flex; flex-direction: column; align-items: center; gap: 2px; cursor: pointer; user-select: none; }
-.rp__switch-input { position: absolute; opacity: 0; width: 0; height: 0; }
-.rp__switch-track { position: relative; width: 30px; height: 18px; border-radius: 9px; background: rgba(255, 255, 255, 0.28); transition: background var(--transition-fast); }
-.rp__switch-knob { position: absolute; top: 3px; left: 3px; width: 12px; height: 12px; border-radius: 50%; background: #fff; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3); transition: transform var(--transition-fast); }
-.rp__switch-input:checked + .rp__switch-track { background: var(--color-primary); }
-.rp__switch-input:checked + .rp__switch-track .rp__switch-knob { transform: translateX(12px); }
-.rp__switch-input:focus-visible + .rp__switch-track { outline: 2px solid var(--color-primary); outline-offset: 2px; }
-.rp__switch-label { font-size: 9px; letter-spacing: 0.04em; text-transform: uppercase; color: rgba(255, 255, 255, 0.6); }
 
 /* Hero */
 .rp__hero { position: relative; min-height: 460px; display: flex; align-items: stretch; background-size: cover; background-position: center; color: #fff; }

@@ -16,7 +16,7 @@ async function main() {
   // CRM-concepten: alleen light, eigen lijst voor /crm/<slug>.
   const crmFile = resolve(here, "../../app/data/crm-emails.json");
   mkdirSync(outDir, { recursive: true });
-  const index: { slug: string; title: string; description: string; section: string; subject?: string; preheader?: string }[] = [];
+  const index: { slug: string; title: string; description: string; section: string; subject?: string; preheader?: string; variantOf?: string }[] = [];
   const crm: { slug: string; title: string; description: string; subject?: string; preheader?: string }[] = [];
   for (const e of emails) {
     if (e.section === "crm") {
@@ -27,7 +27,7 @@ async function main() {
     }
     writeFileSync(resolve(outDir, `${e.slug}.html`), await renderEmail(e, "light"));
     writeFileSync(resolve(outDir, `${e.slug}.dark.html`), await renderEmail(e, "dark"));
-    index.push({ slug: e.slug, title: e.title, description: e.description, section: e.section, subject: e.subject, preheader: e.preheader });
+    index.push({ slug: e.slug, title: e.title, description: e.description, section: e.section, subject: e.subject, preheader: e.preheader, variantOf: e.variantOf });
     console.log("✓", e.slug);
   }
   writeFileSync(dataFile, JSON.stringify(index, null, 2) + "\n");

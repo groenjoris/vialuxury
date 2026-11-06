@@ -10,6 +10,7 @@ import { CHECKOUT_BOOKING_FEE } from '~/data/mvp-checkout/pricing'
 import { useMvpTripCheckoutTrip } from '~/composables-mvp-trip/useMvpTripCheckoutTrip'
 import { hotelAddress, hotelPhone, hotelMapsHref } from '~/utils-mvp-trip/hotelContact'
 import { bookingRefFor } from '~/utils-mvp-trip/bookingRef'
+import { isDemoRate, type DemoRate } from '~/composables-mvp-trip/useMvpTripDemoBooking'
 export { bookingRefFor }
 
 export const ACCOUNT_DEMO_SLUG = 'ontdek-noord-frankrijk-en-de-opaalkust-in-7-dagen'
@@ -48,14 +49,22 @@ export function useMvpTripAccountBooking(slugOverride?: string) {
   const dateRangeLong = computed(() => `${fmtLong(dateAt(0))} t/m ${fmtLong(dateAt(nights.value))}`)
   const cancelDate = computed(() => fmtShort(dateAt(-30)))
 
-  /* Prijs als op de bevestigingspagina: flexibel annuleren zit in het pakket. */
+  /* Prijs als op de bevestigingspagina. Annuleringskeuze: de prototype-schakelaar (?rate=nonflex)
+     gaat voor, anders de keuze uit de room table, anders flexibel annuleren. */
   interface SelRow { baseId: string; rateKey: 'nonrefundable' | 'flexible'; price: number; priceWas: number; quantity: number }
+  const route = useRoute()
   const selection = useState<SelRow[]>('mvp-checkout-selection', () => [])
+  const selRow = computed(() => checkoutTrip.value?.slug === checkout.value.slug ? selection.value[0] : undefined)
+  const rate = computed<DemoRate>(() => isDemoRate(route.query.rate) ? route.query.rate : selRow.value?.rateKey === 'nonrefundable' ? 'nonflex' : 'flex')
+  const isFlex = computed(() => rate.value === 'flex')
   const row = computed<SelRow>(() => {
-    const r = checkoutTrip.value?.slug === checkout.value.slug ? selection.value[0] : undefined
+    const r: SelRow = selRow.value ?? { baseId: 'trip', rateKey: 'nonrefundable', price: checkout.value.price, priceWas: checkout.value.priceWas, quantity: 1 }
     const flex = pricing.flexibilityPerRoom * checkout.value.hotels.length
-    if (r) return r.rateKey === 'flexible' ? r : { ...r, rateKey: 'flexible', price: r.price + flex, priceWas: r.priceWas + flex }
-    return { baseId: 'trip', rateKey: 'flexible', price: checkout.value.price + flex, priceWas: checkout.value.priceWas + flex, quantity: 1 }
+    const basePrice = r.rateKey === 'flexible' ? r.price - flex : r.price
+    const basePriceWas = r.rateKey === 'flexible' ? r.priceWas - flex : r.priceWas
+    return isFlex.value
+      ? { ...r, rateKey: 'flexible', price: basePrice + flex, priceWas: basePriceWas + flex }
+      : { ...r, rateKey: 'nonrefundable', price: basePrice, priceWas: basePriceWas }
   })
   const persons = computed(() => row.value.quantity * 2)
   const roomsPerHotel = computed(() => row.value.quantity)
@@ -96,5 +105,5 @@ export function useMvpTripAccountBooking(slugOverride?: string) {
 
   const bookingRef = computed(() => bookingRefFor(checkout.value.slug))
 
-  return { slug, checkout, trip, isBike, checkInYmd, nights, checkIn, checkOut, dateRange, dateRangeLong, cancelDate, persons, roomsPerHotel, tripTotal, total, bookingFee: CHECKOUT_BOOKING_FEE, firstName, email, stays, bookingRef }
+  return { slug, checkout, trip, isBike, rate, isFlex, checkInYmd, nights, checkIn, checkOut, dateRange, dateRangeLong, cancelDate, persons, roomsPerHotel, tripTotal, total, bookingFee: CHECKOUT_BOOKING_FEE, firstName, email, stays, bookingRef }
 }

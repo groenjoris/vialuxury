@@ -2,11 +2,13 @@
 // Multi Hotel Trip — Mijn ViaLuxury › Boekingen: overzicht van je boekingen (prototype: één
 // actieve vakantieboeking) met statusfilters; de kaart linkt naar de detailpagina van de boeking.
 import { useMultiHotelTripAccountBooking } from '~/composables-multi-hotel-trip/useMultiHotelTripAccountBooking'
-import { useDemoBookingFromQuery } from '~/composables-multi-hotel-trip/useMultiHotelTripDemoBooking'
+import { useDemoBookingFromQuery, useDemoSwitches } from '~/composables-multi-hotel-trip/useMultiHotelTripDemoBooking'
 
 // Vanuit de flow: `?demo=auto|fiets` zet de demo-boeking klaar bij het laden.
 useDemoBookingFromQuery()
-const { checkout, dateRange, nights, persons, roomsPerHotel } = useMultiHotelTripAccountBooking()
+const { checkout, dateRange, nights, persons, roomsPerHotel, isBike } = useMultiHotelTripAccountBooking()
+/* Prototype-schakelaars linksboven (DemoSwitches): Auto | Fiets en Flex | Non-flex uit de URL. */
+const { variant: demoVariant, rate: demoRate } = useDemoSwitches(() => isBike.value ? 'fiets' : 'auto')
 
 type Filter = 'actief' | 'aankomend' | 'afgerond' | 'geannuleerd' | 'alle'
 const FILTERS: { id: Filter; label: string }[] = [
@@ -25,6 +27,8 @@ useHead({ title: 'Boekingen — Mijn ViaLuxury' })
 </script>
 
 <template>
+  <!-- Prototype-schakelaars linksboven in de sitekop, onder het label (niet voor de gast). -->
+  <MultiHotelTripDemoSwitches :variant="demoVariant" :rate="demoRate" style="--demo-sw-top: 70px" />
   <MultiHotelTripAccountShell active="boekingen">
     <h1 class="ab__title">Boekingen</h1>
     <p class="ab__lead">Bekijk al je boekingen overzichtelijk op één plek.</p>

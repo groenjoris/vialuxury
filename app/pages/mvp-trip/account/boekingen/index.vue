@@ -3,11 +3,13 @@
 // actieve vakantieboeking) met statusfilters. MVP: geen detailpagina, de kaart is niet klikbaar
 // (hoe annuleren/wijzigen dan werkt, volgt nog).
 import { useMvpTripAccountBooking } from '~/composables-mvp-trip/useMvpTripAccountBooking'
-import { useDemoBookingFromQuery } from '~/composables-mvp-trip/useMvpTripDemoBooking'
+import { useDemoBookingFromQuery, useDemoSwitches } from '~/composables-mvp-trip/useMvpTripDemoBooking'
 
 // Vanuit de flow: `?demo=auto|fiets` zet de demo-boeking klaar bij het laden.
 useDemoBookingFromQuery()
-const { checkout, dateRange, nights, persons, roomsPerHotel } = useMvpTripAccountBooking()
+const { checkout, dateRange, nights, persons, roomsPerHotel, isBike } = useMvpTripAccountBooking()
+/* Prototype-schakelaars linksboven (DemoSwitches): Auto | Fiets en Flex | Non-flex uit de URL. */
+const { variant: demoVariant, rate: demoRate } = useDemoSwitches(() => isBike.value ? 'fiets' : 'auto')
 
 type Filter = 'actief' | 'aankomend' | 'afgerond' | 'geannuleerd' | 'alle'
 const FILTERS: { id: Filter; label: string }[] = [
@@ -25,6 +27,8 @@ useHead({ title: 'Boekingen — Mijn ViaLuxury' })
 </script>
 
 <template>
+  <!-- Prototype-schakelaars linksboven in de sitekop, onder het label (niet voor de gast). -->
+  <MvpTripDemoSwitches :variant="demoVariant" :rate="demoRate" style="--demo-sw-top: 70px" />
   <MvpTripAccountShell active="boekingen">
     <h1 class="ab__title">Boekingen</h1>
     <p class="ab__lead">Bekijk al je boekingen overzichtelijk op één plek.</p>

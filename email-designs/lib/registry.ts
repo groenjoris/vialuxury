@@ -22,6 +22,9 @@ export type EmailEntry = {
    *  als <Preview> in de mail zelf; hier dezelfde tekst met de voorbeelddata ingevuld). */
   subject?: string;
   preheader?: string;
+  /** Variant van een andere mail (slug), bijv. de niet-terugbetaalbare versie `<slug>-nonflex`; de
+   *  preview toont die bij de schakelaar Non-flex, in lijsten blijft hij verborgen. */
+  variantOf?: string;
   // Elke e-mail exporteert PreviewProps met representatieve voorbeelddata
   // en accepteert een optionele `mode`-prop ("light" | "dark").
   Component: React.ComponentType<any> & { PreviewProps?: Record<string, unknown> };
@@ -42,6 +45,17 @@ export const emails: EmailEntry[] = [
     Component: VakantieBevestiging,
   },
   {
+    slug: "vakantie-bevestiging-nonflex",
+    variantOf: "vakantie-bevestiging",
+    title: "Boekingsbevestiging vakantie (niet terugbetaalbaar)",
+    description: "Niet-terugbetaalbare boeking: 'Niet terugbetaalbaar — De boeking kan niet geannuleerd worden' op de kassabon, prijs zonder toeslag, FAQ zonder gratis annuleren.",
+    section: "designs",
+    subject: "Je boeking is bevestigd: Ontdek Noord-Frankrijk en de Opaalkust in 7 dagen",
+    preheader: "Boekingsnummer VL-11 851 812. Hieronder alles over je 3 hotels.",
+    Component: VakantieBevestiging,
+    props: { ...VakantieBevestiging.PreviewProps, rate: "nonflex", tripPrice: "€919", total: "€946,50" },
+  },
+  {
     slug: "vakantie-pre-travel",
     title: "Pre-travel (14 dagen voor vertrek)",
     description: "Checklist voor je reis: identiteitsbewijs en boekingsnummer, inchecken bij het eerste hotel (adres, route, parkeren), wat je nog betaalt, de persoonlijke pagina met praktische informatie en tips, inloggen op je account om je boeking te beheren, en veelgestelde vragen.",
@@ -49,6 +63,17 @@ export const emails: EmailEntry[] = [
     subject: "Over 14 dagen vertrek je naar Noord-Frankrijk",
     preheader: "Je checklist: identiteitsbewijs, boekingsnummer en inchecken bij Château Tilques.",
     Component: VakantiePreTravel,
+  },
+  {
+    slug: "vakantie-pre-travel-nonflex",
+    variantOf: "vakantie-pre-travel",
+    title: "Pre-travel (14 dagen voor vertrek, niet terugbetaalbaar)",
+    description: "Niet-terugbetaalbare boeking: zonder 'je boeking annuleren' in het accountblok en met de FAQ 'Annuleren kan niet'.",
+    section: "designs",
+    subject: "Over 14 dagen vertrek je naar Noord-Frankrijk",
+    preheader: "Je checklist: identiteitsbewijs, boekingsnummer en inchecken bij Château Tilques.",
+    Component: VakantiePreTravel,
+    props: { ...VakantiePreTravel.PreviewProps, rate: "nonflex" },
   },
   // Incheckmails: dag vóór hotel 1, 2 en 3, voor de auto- en de fietsvakantie.
   ...incheckMails.map((m) => ({ slug: m.slug, title: m.title, description: m.description, section: "designs" as const, subject: m.subject, preheader: m.preheader, Component: VakantieIncheckHotel, props: m.props })),
@@ -61,6 +86,17 @@ export const emails: EmailEntry[] = [
     subject: "Je boeking is bevestigd: Ontdek Noord-Frankrijk en de Opaalkust in 7 dagen",
     preheader: "Boekingsnummer VL-11 851 812. Hieronder alles over je 3 hotels.",
     Component: MvpVakantieBevestiging,
+  },
+  {
+    slug: "mvp-vakantie-bevestiging-nonflex",
+    variantOf: "mvp-vakantie-bevestiging",
+    title: "MVP — Boekingsbevestiging vakantie (niet terugbetaalbaar)",
+    description: "MVP-versie voor een niet-terugbetaalbare boeking: 'Niet terugbetaalbaar' op de kassabon, prijs zonder toeslag, FAQ zonder gratis annuleren.",
+    section: "designs",
+    subject: "Je boeking is bevestigd: Ontdek Noord-Frankrijk en de Opaalkust in 7 dagen",
+    preheader: "Boekingsnummer VL-11 851 812. Hieronder alles over je 3 hotels.",
+    Component: MvpVakantieBevestiging,
+    props: { ...MvpVakantieBevestiging.PreviewProps, rate: "nonflex", tripPrice: "€919", total: "€946,50" },
   },
   // CRM (concept, desktop + light mode): drie geautomatiseerde mails.
   {

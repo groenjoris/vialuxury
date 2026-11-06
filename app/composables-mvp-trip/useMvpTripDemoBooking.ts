@@ -70,3 +70,12 @@ export function useDemoBookingFromQuery() {
   const v = route.query.demo
   if (isDemoVariant(v)) seedDemoBooking(v, { preload: route.query.load === '1', rate: isDemoRate(route.query.rate) ? route.query.rate : 'flex' })
 }
+
+/** Stand van de prototype-schakelaars (DemoSwitches) op een pagina: uit de URL; zonder `?demo=` de
+ *  reis van de pagina zelf, zonder `?rate=` flexibel annuleren. */
+export function useDemoSwitches(fallbackVariant: () => DemoVariant = () => 'auto') {
+  const route = useRoute()
+  const variant = computed<DemoVariant>(() => isDemoVariant(route.query.demo) ? route.query.demo : fallbackVariant())
+  const rate = computed<DemoRate>(() => isDemoRate(route.query.rate) ? route.query.rate : 'flex')
+  return { variant, rate }
+}

@@ -6,7 +6,7 @@
 // de HTML ook in een e-mailclient of ESP werkt.
 // MVP: dezelfde exportlijst als de volledige versie (één export, slugs met het voorvoegsel mvp-).
 import emails from '~/data/mht-emails.json'
-import { navigateAfterPaint } from '~/composables-mvp-trip/useMvpTripDemoBooking'
+import { isDemoRate, navigateAfterPaint, type DemoRate } from '~/composables-mvp-trip/useMvpTripDemoBooking'
 
 const route = useRoute()
 const slug = computed(() => String(route.params.slug))
@@ -21,9 +21,26 @@ const flowHref = computed(() => {
   return `/multi-hotel-trip/flow${qs ? `?${qs}` : ''}`
 })
 
+/* Prototype-schakelaars linksboven (DemoSwitches): de reis zit in de slug (incheckmails hebben een
+   -fiets-versie, de andere mails alleen auto), de annuleringskeuze in ?rate=; mails met een
+   -nonflex-export (registry: variantOf) tonen die bij Non-flex, de andere mails verschillen niet. */
+const isFiets = computed(() => slug.value.endsWith('-fiets'))
+const baseSlug = computed(() => isFiets.value ? slug.value.slice(0, -'-fiets'.length) : slug.value)
+const hasFiets = computed(() => emails.some(e => e.slug === `${baseSlug.value}-fiets`))
+const rate = computed<DemoRate>(() => isDemoRate(route.query.rate) ? route.query.rate : 'flex')
+const hasNonflex = computed(() => emails.some(e => (e as { variantOf?: string }).variantOf === slug.value))
+const fileSlug = computed(() => rate.value === 'nonflex' && hasNonflex.value ? `${slug.value}-nonflex` : slug.value)
+const withRate = (path: string) => `${path}${rate.value === 'nonflex' ? '?rate=nonflex' : ''}`
+const switchLinks = computed(() => ({
+  auto: null,
+  fiets: null,
+  flex: route.path,
+  nonflex: `${route.path}?rate=nonflex`,
+}))
+
 const mode = ref<'light' | 'dark'>('light')
 const device = ref<'desktop' | 'mobile'>('desktop')
-const src = computed(() => `/emails/${slug.value}${mode.value === 'dark' ? '.dark' : ''}.html`)
+const src = computed(() => `/emails/${fileSlug.value}${mode.value === 'dark' ? '.dark' : ''}.html`)
 const copied = ref(false)
 
 async function absoluteHtml(): Promise<string> {
@@ -40,7 +57,7 @@ async function downloadHtml() {
   const blob = new Blob([await absoluteHtml()], { type: 'text/html' })
   const a = document.createElement('a')
   a.href = URL.createObjectURL(blob)
-  a.download = `${slug.value}${mode.value === 'dark' ? '-dark' : ''}.html`
+  a.download = `${fileSlug.value}${mode.value === 'dark' ? '-dark' : ''}.html`
   a.click()
   URL.revokeObjectURL(a.href)
 }
@@ -58,6 +75,8 @@ useHead({ title: `${entry.value?.title ?? 'E-mail'} — ViaLuxury e-maildesigns`
           <a class="ev__back" href="/" @click="navigateAfterPaint('/', $event)">‹ Startscherm</a>
         </div>
         <h1 class="ev__title">{{ entry?.title }}</h1>
+        <!-- Prototype-schakelaars (niet voor de gast), in de balk naast de titel: Auto | Fiets en Flex | Non-flex. -->
+        <MvpTripDemoSwitches :variant="isFiets ? 'fiets' : 'auto'" :rate="rate" :links="switchLinks" style="position: static" />
       </div>
       <div class="ev__controls">
         <div class="ev__group" role="group" aria-label="Kleurmodus">
