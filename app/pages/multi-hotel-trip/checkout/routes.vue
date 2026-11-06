@@ -1,18 +1,17 @@
 <script setup lang="ts">
-// Multi Hotel Trip — persoonlijke reispagina na het boeken (autovariant, briefing 2026-10-15):
-// hero (foto sluit aan op de zwarte navigatiebalk, de zoekbalk valt over de foto) met de
-// reistitel, de reisdatums + "Nog x dagen te gaan" (gerekend vanaf de vaste prototype-datum
-// 1 november 2026) en rechts de weersverwachting: ver van tevoren een weekverwachting op basis
-// van historische gemiddelden (gekleurde tegels met thermometer, zon en regenwolk), vanaf 10
-// dagen voor vertrek (of met het Vandaag-blok aan) per dag. Daaronder "Praktische informatie":
-// de drie hotels naast elkaar met foto, datums, check-in (datum + tijd) en check-out, adres +
-// routebeschrijving, telefoon, parkeren en opladen (fiets: stalling); bij een fietsvakantie
-// daaronder "Bagagetransfer" en "Routes" (50/50, met foto); een contactbanner over de hele
-// breedte (zelfde warme tint als de temperatuurtegel); dan het voorbeeld
-// reisschema (dagen klikbaar → sidepanel, Bekijken / Download pdf) naast de minimap; en
-// onderaan de tips per hotel zoals op de dealpagina ("Wat te doen tijdens je vakantie"). Het
-// Vandaag-blok staat standaard uit; de prototype-schakelaar zit linksboven in de navigatiebalk.
-// Telefoonnummers, adressen en laadpunten zijn prototype-placeholders.
+// Multi Hotel Trip — persoonlijke reispagina na het boeken (briefing 2026-10-15, bijgewerkt
+// 2026-11-06): hero (foto sluit aan op de zwarte navigatiebalk, de zoekbalk valt over de foto)
+// met de reistitel, de reisdatums + "Nog x dagen te gaan" (gerekend vanaf de vaste prototype-
+// datum 1 november 2026) en rechts de weersverwachting: ver van tevoren een weekverwachting op
+// basis van historische gemiddelden (gekleurde tegels), vanaf 10 dagen voor vertrek per dag.
+// Daaronder "Praktische informatie": de drie hotels naast elkaar met foto, datums, check-in
+// (datum + tijd) en check-out, adres + routebeschrijving, telefoon, parkeren en opladen (fiets:
+// stalling); daaronder "Routes" (online als PDF en GPX; bij de fietsvakantie 50/50 naast
+// "Bagagetransfer", met foto); dan "Inbegrepen" en "Niet inbegrepen" (witte blokken met zwarte
+// rand, per reis en annuleringskeuze); een contactbanner over de hele breedte; dan het voorbeeld
+// reisschema als op de MVP-PDP (dagen niet klikbaar, alleen de link naar het sidepanel) naast de
+// minimap; en onderaan de tips per hotel zoals op de dealpagina ("Wat te doen tijdens je
+// vakantie"). Telefoonnummers, adressen en laadpunten zijn prototype-placeholders.
 import dayjs from 'dayjs'
 import { tripCheckoutBySlug } from '~/data/mht-checkout/trip'
 import { tripPdpBySlug, tripHotelDetails } from '~/data/mht-trip-pdp'
@@ -22,11 +21,10 @@ import { isTripSight } from '~/utils-multi-hotel-trip/tripSights'
 import { nightsLabel } from '~/utils-multi-hotel-trip/plural'
 import { formatDateWeekdayShort } from '~/utils-multi-hotel-trip/formatDate'
 import { hotelAddress, hotelPhone, hotelMapsHref } from '~/utils-multi-hotel-trip/hotelContact'
-import { bookingRefFor } from '~/utils-multi-hotel-trip/bookingRef'
 import { useDemoBookingFromQuery, useDemoSwitches } from '~/composables-multi-hotel-trip/useMultiHotelTripDemoBooking'
 import { useMultiHotelTripCheckoutTrip } from '~/composables-multi-hotel-trip/useMultiHotelTripCheckoutTrip'
 import { useMultiHotelTripI18n } from '~/composables-multi-hotel-trip/useMultiHotelTripI18n'
-import { buildTripDaysView, tripDistanceLabelFn, tripDurationLabel } from '~/composables-multi-hotel-trip/useMultiHotelTripDaysView'
+import { buildTripDaysView, tripDurationLabel } from '~/composables-multi-hotel-trip/useMultiHotelTripDaysView'
 import TripItineraryPanel from '~/components-multi-hotel-trip/deal/TripItineraryPanel.vue'
 import TripItinerarySummary from '~/components-multi-hotel-trip/deal/TripItinerarySummary.vue'
 import TripItineraryPerCity from '~/components-multi-hotel-trip/deal/TripItineraryPerCity.vue'
@@ -46,11 +44,10 @@ const checkout = computed(() => checkoutTrip.value ?? tripCheckoutBySlug(DEMO_SL
 const tripPdp = computed(() => tripPdpBySlug(checkout.value.slug))
 const trip = computed(() => tripPdp.value?.trip ?? null)
 const isBike = computed(() => trip.value?.type === 'fiets')
-const bookingRef = computed(() => bookingRefFor(checkout.value.slug))
 
-/* ── Prototype-schakelaars linksboven (DemoSwitches): Auto | Fiets en Flex | Non-flex uit de URL, plus het Vandaag-blok aan/uit (standaard uit) ── */
+/* ── Prototype-schakelaars linksboven (DemoSwitches): Auto | Fiets en Flex | Non-flex uit de URL ── */
 const { variant: demoVariant, rate: demoRate } = useDemoSwitches(() => isBike.value ? 'fiets' : 'auto')
-const showToday = useState<boolean>('mht-trip-page-today', () => false)
+const isFlex = computed(() => demoRate.value === 'flex')
 
 /* ── Datums ── */
 const DEMO_YMD = { year: 2027, month: 4, day: 18 }
@@ -80,7 +77,7 @@ const countdown = computed(() => {
 const durationShort = (minutes: number) => { const h = Math.floor(minutes / 60), m = Math.round(minutes % 60); return h ? `${h} u${m ? ` ${m} min` : ''}` : `${m} min` }
 
 /* ── Weersverwachting (prototype: gefaket). Ver van tevoren een weekverwachting op basis van
-   historische gemiddelden; vanaf 10 dagen voor vertrek (of met het Vandaag-blok aan) per dag. ── */
+   historische gemiddelden; vanaf 10 dagen voor vertrek per dag. ── */
 const WEATHER = [
   { icon: 'sun', hi: 22, text: 'zonnig' }, { icon: 'sun', hi: 23, text: 'zonnig' }, { icon: 'suncloud', hi: 21, text: 'zon en wolken' }, { icon: 'sun', hi: 24, text: 'zonnig' },
   { icon: 'sun', hi: 25, text: 'zonnig en warm' }, { icon: 'suncloud', hi: 23, text: 'zon en wolken' }, { icon: 'sun', hi: 22, text: 'zonnig' }, { icon: 'sun', hi: 24, text: 'zonnig' },
@@ -90,7 +87,7 @@ const weatherDays = computed(() => Array.from({ length: nights.value + 1 }, (_, 
   return { key: i, day: WEEKDAYS[d.getDay()]!, date: d.getDate(), ...WEATHER[i % WEATHER.length]! }
 }))
 const weatherRegion = computed(() => trip.value?.stops[0]?.region ?? trip.value?.stops[0]?.city ?? '')
-const detailedWeather = computed(() => showToday.value || daysToGo.value <= 10)
+const detailedWeather = computed(() => daysToGo.value <= 10)
 /** Gemiddeld weer per maand (West-Europa, indicatief): max. temperatuur, zonuren per dag, kans op regen. */
 const HIST = [
   { hi: 6, sun: 2, rain: 45 }, { hi: 7, sun: 3, rain: 40 }, { hi: 10, sun: 4, rain: 40 }, { hi: 14, sun: 6, rain: 35 }, { hi: 18, sun: 7, rain: 35 }, { hi: 21, sun: 7, rain: 30 },
@@ -143,21 +140,6 @@ const mapSummary = computed<({ icon: string; text: string } | undefined)[]>(() =
   return [fromHomeLine, km ? { icon: 'route', text: t('trip.totalRouteLine').replace('{km}', String(km)) } : undefined]
 })
 
-/* ── Etappes van hotel naar hotel (voor "Route van vandaag" in het Vandaag-blok) ── */
-interface LegItem { toIndex: number; title: string; meta: string; image?: string }
-const legs = computed<LegItem[]>(() => {
-  const d = trip.value
-  if (!d) return []
-  const kindLabel = isBike.value ? 'Fietsroute' : 'Met de auto'
-  const out: LegItem[] = []
-  for (let i = 1; i < d.stops.length; i++) {
-    const s = d.stops[i]!
-    const travel = s.travel ?? (() => { const l = routeLegs.value.find(x => x.to === i && !x.return); return l ? { km: l.km, minutes: l.minutes } : undefined })()
-    out.push({ toIndex: i, title: `${d.stops[i - 1]!.hotelName} → ${s.hotelName}`, meta: travel ? `${kindLabel} · ${tripDistanceLabelFn(travel, t, isBike.value)}` : kindLabel, image: s.image })
-  }
-  return out
-})
-
 /* ── Praktische informatie per hotel: datums, check-in (datum + tijd), check-out, adres,
    telefoon, parkeren, opladen. Adressen, telefoonnummers en laadpunten zijn placeholders. ── */
 const stays = computed(() => {
@@ -188,8 +170,8 @@ const stays = computed(() => {
 const daysView = computed(() => buildTripDaysView(tripPdp.value, trip.value, checkInIso.value, t, localized))
 const hotelLinks = computed(() => (trip.value?.stops ?? []).map((s, i) => ({ name: s.hotelName, stopIndex: i })))
 const itinOpen = ref(false)
-const itinFocus = ref<number | null>(null)
-function openItin(day: number | null = null) { itinFocus.value = day; itinOpen.value = true }
+/* Geen deeplinks per dag (als op de MVP-PDP): de link onder het schema opent het hele sidepanel. */
+function openItin() { itinOpen.value = true }
 const mapOpen = ref(false)
 
 /* ── Tips per hotel, zoals "Wat te doen tijdens je vakantie" op de dealpagina (zelfde opbouw) ── */
@@ -257,26 +239,29 @@ const panelHotel = computed<TripHotelModalData | null>(() => {
   }
 })
 
-/* ── Vandaag: tijdens de reis de echte dag; daarbuiten (prototype) dag 3 als voorbeeld ── */
-const today = computed(() => {
-  const d = 1 - daysToGo.value
-  const inTrip = d >= 1 && d <= nights.value + 1
-  return { day: inTrip ? d : Math.min(3, nights.value + 1), demo: !inTrip }
-})
-const todayView = computed(() => daysView.value.find(d => d.day === today.value.day))
-const todayWeather = computed(() => weatherDays.value[today.value.day - 1])
-const todayStop = computed(() => (todayView.value?.stopIndex != null ? trip.value?.stops[todayView.value.stopIndex] : null) ?? null)
-const todayLeg = computed<LegItem | null>(() => {
-  const v = todayView.value
-  if (!v || v.type !== 'transfer' || v.stopIndex == null) return null
-  return legs.value.find(l => l.toIndex === v.stopIndex) ?? null
-})
-const todayTitle = computed(() => todayView.value?.heading ?? todayView.value?.subtitle ?? todayView.value?.label ?? '')
-const todaySummary = computed(() => {
-  const v = todayView.value
-  if (!v) return ''
-  return v.summary ?? v.blocks.map(b => b.title).filter(Boolean).slice(0, 3).join(' · ')
-})
+/* ── Routes-blok: foto (fiets: route met knooppunten; auto: het routekaartje van de reis) ── */
+const routesImage = computed(() => isBike.value ? '/images/vakanties/fiets/fietsroute.jpg' : (`/images/vakanties/maps/${trip.value?.id}-card.png`))
+
+/* ── Inbegrepen / niet inbegrepen: wat men onterecht als inbegrepen kan zien, per reis en annuleringskeuze ── */
+const cancelDeadline = computed(() => `${fmt(dateAt(-30))}, 23:59 uur`)
+const included = computed(() => [
+  `${trip.value?.stops.length ?? 3} hotels, 1 kamer per hotel, ${nights.value} nachten`,
+  'Elke ochtend een uitgebreid ontbijt',
+  isBike.value ? 'Elke avond een 3-gangendiner' : 'Een 3-gangendiner op de dag van aankomst bij elk hotel',
+  ...(isBike.value
+    ? ['Bagagetransfer naar het volgende hotel', 'Fietsroutes per etappe, online als PDF en GPX', 'Gratis parkeren bij het eerste hotel, de hele vakantie']
+    : ['Autoroutes van hotel naar hotel, online als PDF en GPX', 'Gratis parkeren bij de hotels']),
+  ...(isFlex.value ? [`Flexibel annuleren t/m ${cancelDeadline.value}`] : []),
+])
+const notIncluded = computed(() => [
+  'Lunches',
+  'Koffie en thee buiten het ontbijt, en drankjes bij het diner',
+  isBike.value ? 'Fietshuur: je neemt zelf een fiets mee' : 'Opladen van je elektrische auto, brandstof en tol',
+  ...(isBike.value ? ['De reis van huis naar het eerste hotel en terug'] : []),
+  'Uitstapjes op de tweede dag bij elk hotel (entree betaal je ter plaatse)',
+  'Toeristenbelasting, bij aankomst te betalen in het hotel',
+  ...(isFlex.value ? [] : ['Annuleren: deze boeking is niet terugbetaalbaar']),
+])
 
 useHead({ title: `${checkout.value.name} — Tips & routes — ViaLuxury` })
 </script>
@@ -285,8 +270,8 @@ useHead({ title: `${checkout.value.name} — Tips & routes — ViaLuxury` })
   <div class="rp">
     <MultiHotelTripSiteHeader />
 
-    <!-- Prototype-schakelaars linksboven in de sitekop, onder het label (niet voor de gast): Auto | Fiets, Flex | Non-flex en het Vandaag-blok aan/uit -->
-    <MultiHotelTripDemoSwitches :variant="demoVariant" :rate="demoRate" :toggles="[{ id: 'today', label: 'Vandaag', on: showToday }]" style="--demo-sw-top: 70px" @toggle="showToday = !showToday" />
+    <!-- Prototype-schakelaars linksboven in de sitekop, onder het label (niet voor de gast): Auto | Fiets en Flex | Non-flex -->
+    <MultiHotelTripDemoSwitches :variant="demoVariant" :rate="demoRate" style="--demo-sw-top: 70px" />
 
     <!-- ── Hero: reisfoto direct onder de navigatiebalk (de zoekbalk valt eroverheen), reistitel, datums, weer ── -->
     <section class="rp__hero" :style="{ backgroundImage: `url(${trip?.coverImage ?? checkout.thumb})` }">
@@ -299,7 +284,7 @@ useHead({ title: `${checkout.value.name} — Tips & routes — ViaLuxury` })
           <template v-if="detailedWeather">
             <p class="rp__weather-head">Weersverwachting <span class="rp__weather-region">{{ weatherRegion }}</span></p>
             <ul class="rp__weather-days">
-              <li v-for="w in weatherDays" :key="w.key" class="rp__weather-day" :class="{ 'rp__weather-day--today': showToday && w.key === today.day - 1 }">
+              <li v-for="w in weatherDays" :key="w.key" class="rp__weather-day">
                 <span class="rp__weather-dow">{{ w.day }} {{ w.date }}</span>
                 <svg v-if="w.icon === 'sun'" class="rp__weather-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="4.5" fill="#f5b400" /><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1" stroke="#f5b400" stroke-width="2" stroke-linecap="round" /></svg>
                 <svg v-else class="rp__weather-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="4" fill="#f5b400" /><path d="M9 2v2M2 9h2M4 4l1.4 1.4M14 4l-1.4 1.4" stroke="#f5b400" stroke-width="1.8" stroke-linecap="round" /><path d="M8 20h9.5a3.5 3.5 0 0 0 .4-7 5 5 0 0 0-9.6-1.4A4.2 4.2 0 0 0 8 20z" fill="#fff" stroke="#9aa3a3" stroke-width="1.6" stroke-linejoin="round" /></svg>
@@ -331,42 +316,9 @@ useHead({ title: `${checkout.value.name} — Tips & routes — ViaLuxury` })
     </section>
 
     <main class="container rp__main">
-      <!-- ── Vandaag (alleen met de schakelaar aan): dagprogramma + weer van vandaag ── -->
-      <section v-if="showToday && todayView" class="rp__today">
-        <div class="rp__today-main">
-          <p class="rp__eyebrow rp__eyebrow--dark">
-            Vandaag · {{ todayView.date ?? '' }} · {{ todayView.label }}
-            <span v-if="today.demo" class="rp__demo">prototype: we doen alsof het {{ todayView.label.toLowerCase() }} is</span>
-          </p>
-          <h2 class="rp__h2 rp__h2--today">{{ todayTitle }}</h2>
-          <p class="rp__text">{{ todaySummary }}</p>
-          <div v-if="todayLeg" class="rp__today-leg">
-            <img v-if="todayLeg.image" class="rp__photo rp__photo--sm" :src="todayLeg.image" alt="" />
-            <div>
-              <p class="rp__route-title">Route van vandaag: {{ todayLeg.title }}</p>
-              <p class="rp__route-meta">{{ todayLeg.meta }}</p>
-            </div>
-          </div>
-          <p class="rp__route-links rp__route-links--lg">
-            <a href="#" @click.prevent="openItin(todayView.day)">Bekijk {{ todayView.label.toLowerCase() }} in het reisschema</a>
-            <a v-if="todayStop" :href="`#hotel-${todayView.stopIndex}`">Praktische informatie {{ todayStop.hotelName }}</a>
-            <a v-if="todayLeg" href="#" @click.prevent="mapOpen = true">Route op de kaart</a>
-          </p>
-        </div>
-        <div v-if="todayWeather" class="rp__today-weather">
-          <svg v-if="todayWeather.icon === 'sun'" class="rp__today-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="4.5" fill="#f5b400" /><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1" stroke="#f5b400" stroke-width="2" stroke-linecap="round" /></svg>
-          <svg v-else class="rp__today-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="4" fill="#f5b400" /><path d="M9 2v2M2 9h2M4 4l1.4 1.4M14 4l-1.4 1.4" stroke="#f5b400" stroke-width="1.8" stroke-linecap="round" /><path d="M8 20h9.5a3.5 3.5 0 0 0 .4-7 5 5 0 0 0-9.6-1.4A4.2 4.2 0 0 0 8 20z" fill="#fff" stroke="#9aa3a3" stroke-width="1.6" stroke-linejoin="round" /></svg>
-          <p class="rp__today-temp">{{ todayWeather.hi }}°</p>
-          <p class="rp__today-weathertext">{{ todayWeather.text }}<br><span class="rp__today-place">{{ todayStop?.city ?? weatherRegion }}</span></p>
-        </div>
-      </section>
-
       <!-- ── Praktische informatie: de drie hotels naast elkaar ── -->
       <section class="rp__section">
-        <div class="rp__section-head">
-          <h2 class="rp__h2">Praktische informatie</h2>
-          <MultiHotelTripBookingRef :value="bookingRef" />
-        </div>
+        <h2 class="rp__h2">Praktische informatie</h2>
         <div class="rp__hotels">
           <article v-for="(s, i) in stays" :id="`hotel-${i}`" :key="s.hotelName" class="rp__hotel rp__anchor">
             <img v-if="s.image" class="rp__hotel-img" :src="s.image" :alt="s.hotelName" />
@@ -409,9 +361,9 @@ useHead({ title: `${checkout.value.name} — Tips & routes — ViaLuxury` })
           </article>
         </div>
 
-        <!-- Fietsvakantie: bagagetransfer en routes (50/50; foto links, tekst rechts) onder de hotels -->
-        <div v-if="isBike" class="rp__bike">
-          <article class="rp__card rp__bike-card">
+        <!-- Routes (online als PDF en GPX) onder de hotels; bij de fietsvakantie 50/50 naast Bagagetransfer (foto links, tekst rechts) -->
+        <div class="rp__bike" :class="{ 'rp__bike--single': !isBike }">
+          <article v-if="isBike" class="rp__card rp__bike-card">
             <img class="rp__bike-img" src="/images/vakanties/fiets/bagagetransfer.jpg" alt="Koffers klaar voor de bagagetransfer" />
             <div class="rp__card-body">
               <h3 class="rp__h3 rp__h3--icon">
@@ -422,14 +374,44 @@ useHead({ title: `${checkout.value.name} — Tips & routes — ViaLuxury` })
             </div>
           </article>
           <article class="rp__card rp__bike-card">
-            <img class="rp__bike-img" src="/images/vakanties/fiets/fietsroute.jpg" alt="Fietsroute met knooppunten" />
+            <img class="rp__bike-img" :src="routesImage" :alt="isBike ? 'Fietsroute met knooppunten' : 'Routekaart van de vakantie'" />
             <div class="rp__card-body">
               <h3 class="rp__h3 rp__h3--icon">
                 <svg class="rp__h3-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="18" r="2.5" /><circle cx="18" cy="6" r="2.5" /><path d="M8.5 18H14a3 3 0 0 0 0-6h-4a3 3 0 0 1 0-6h5.5" /></svg>
                 Routes
               </h3>
-              <p class="rp__text rp__text--last">Bij aankomst in het hotel ontvang je de fietsroutes van de volgende etappe: uitgeprint én met een QR-code om ze online te bekijken.</p>
+              <p v-if="isBike" class="rp__text">Bij aankomst in het hotel ontvang je de fietsroutes van de volgende etappe: uitgeprint én met een QR-code om ze online te bekijken. Alle routes kun je ook hier online bekijken als PDF of downloaden als GPX voor je fietsnavigatie.</p>
+              <p v-else class="rp__text">De autoroutes van hotel naar hotel staan voor je klaar: bekijk ze online als PDF of download ze als GPX voor je navigatie. Onderweg volg je de tips van die dag.</p>
+              <p class="rp__route-links rp__route-links--lg">
+                <a href="#" @click.prevent>Bekijk de routes (PDF)</a>
+                <a href="#" @click.prevent>Download GPX</a>
+              </p>
             </div>
+          </article>
+        </div>
+
+        <!-- Inbegrepen / niet inbegrepen: witte blokken met zwarte rand; vinkje en kruis in de titel, groene vinkjes (als op de PDP) en bullets -->
+        <div class="rp__incl">
+          <article class="rp__incl-card">
+            <h3 class="rp__h3 rp__h3--icon">
+              <svg class="rp__h3-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10" aria-hidden="true"><path d="M3 13L8 19L21 5" /></svg>
+              Inbegrepen
+            </h3>
+            <ul class="rp__incl-list">
+              <li v-for="item in included" :key="item">
+                <span class="rp__incl-check" aria-hidden="true"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10"><path d="M3 13L8 19L21 5" /></svg></span>
+                <span>{{ item }}</span>
+              </li>
+            </ul>
+          </article>
+          <article class="rp__incl-card">
+            <h3 class="rp__h3 rp__h3--icon">
+              <svg class="rp__h3-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19" /></svg>
+              Niet inbegrepen
+            </h3>
+            <ul class="rp__excl-list">
+              <li v-for="item in notIncluded" :key="item">{{ item }}</li>
+            </ul>
           </article>
         </div>
 
@@ -442,7 +424,7 @@ useHead({ title: `${checkout.value.name} — Tips & routes — ViaLuxury` })
         </aside>
       </section>
 
-      <!-- ── Voorbeeld reisschema (dagen klikbaar → sidepanel) naast de minimap ── -->
+      <!-- ── Voorbeeld reisschema als op de MVP-PDP (dagen niet klikbaar, alleen de link naar het sidepanel) naast de minimap ── -->
       <section class="rp__section rp__plan">
         <article class="rp__card">
           <div class="rp__card-body">
@@ -451,11 +433,7 @@ useHead({ title: `${checkout.value.name} — Tips & routes — ViaLuxury` })
               Voorbeeld reisschema
             </h2>
             <p class="rp__text">{{ t('trip.itineraryIntro') }}</p>
-            <TripItinerarySummary :days="daysView" :hotels="hotelLinks" :show-stats="false" lines @select="openItin($event)" />
-            <p class="rp__route-links rp__route-links--lg rp__card-more">
-              <a href="#" @click.prevent="openItin(null)">Bekijken</a>
-              <a href="#" @click.prevent>Download pdf</a>
-            </p>
+            <TripItinerarySummary :days="daysView" :hotels="hotelLinks" :show-stats="false" lines full-link static @open-full="openItin()" />
           </div>
         </article>
         <MultiHotelTripRouteMapCard
@@ -474,7 +452,7 @@ useHead({ title: `${checkout.value.name} — Tips & routes — ViaLuxury` })
       </section>
     </main>
 
-    <TripItineraryPanel :open="itinOpen" :days="daysView" :focus-day="itinFocus" :trip-name="checkout.name" @close="itinOpen = false" />
+    <TripItineraryPanel :open="itinOpen" :days="daysView" :focus-day="null" :trip-name="checkout.name" @close="itinOpen = false" />
     <MultiHotelTripFullscreenMap :open="mapOpen" :title="checkout.name" :stops="routeStops" :legs="routeLegs" :highlights="[]" @close="mapOpen = false" />
     <MultiHotelTripHotelPanel overlay :hotel="panelHotel" @close="panelIndex = null" />
 
@@ -490,12 +468,8 @@ useHead({ title: `${checkout.value.name} — Tips & routes — ViaLuxury` })
 .rp__main { flex: 1; width: 100%; padding-top: 40px; padding-bottom: 64px; display: flex; flex-direction: column; gap: 48px; }
 .rp__h2 { margin: 0 0 16px; font-family: var(--font-heading); font-size: 26px; font-weight: 700; line-height: 1.25; }
 .rp__h2--card { font-size: 22px; margin-bottom: 8px; }
-/* Sectiekop met het boekingsnummer rechts op dezelfde hoogte */
-.rp__section-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 16px; }
-.rp__section-head .rp__h2 { margin-bottom: 0; }
 .rp__h2--icon { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
 .rp__h2-icon { flex-shrink: 0; width: 24px; height: 24px; }
-.rp__h2--today { font-size: 24px; margin: 6px 0 8px; }
 .rp__h3 { margin: 0 0 8px; font-family: var(--font-heading); font-size: 20px; font-weight: 700; line-height: 1.25; }
 .rp__h3--icon { display: flex; align-items: center; gap: 10px; }
 .rp__h3-icon { flex-shrink: 0; width: 22px; height: 22px; }
@@ -504,15 +478,12 @@ useHead({ title: `${checkout.value.name} — Tips & routes — ViaLuxury` })
 .rp__anchor { scroll-margin-top: 90px; }
 .rp__label { display: block; font-size: 11px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: var(--color-text-secondary); }
 
-/* Prototype-schakelaar: linksboven in de zwarte navigatiebalk, onder de prototype-navigatie en het variant-label (z 500) */
 
 /* Hero */
 .rp__hero { position: relative; min-height: 460px; display: flex; align-items: stretch; background-size: cover; background-position: center; color: #fff; }
 .rp__hero::before { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.1) 30%, rgba(0, 0, 0, 0.65) 100%); }
 .rp__hero-inner { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 32px; align-items: end; width: 100%; padding-top: 86px; padding-bottom: 40px; }
 .rp__eyebrow { margin: 0 0 8px; font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: rgba(255, 255, 255, 0.85); }
-.rp__eyebrow--dark { color: var(--color-text-secondary); display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
-.rp__demo { font-size: 11px; font-weight: 500; letter-spacing: 0; text-transform: none; padding: 2px 8px; border-radius: 999px; background: #fff; color: var(--color-text-secondary); border: 1px solid var(--color-border); }
 .rp__title { margin: 0; max-width: 720px; font-family: var(--font-heading); font-size: 42px; font-weight: 700; line-height: 1.1; color: #fff; }
 .rp__dates { margin: 12px 0 0; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; font-size: 17px; color: rgba(255, 255, 255, 0.92); }
 .rp__countdown { display: inline-block; padding: 4px 12px; border-radius: 999px; background: #fff; color: var(--color-text-primary); font-size: 14px; font-weight: 700; }
@@ -522,7 +493,6 @@ useHead({ title: `${checkout.value.name} — Tips & routes — ViaLuxury` })
 .rp__weather-region { font-weight: 400; color: var(--color-text-secondary); }
 .rp__weather-days { list-style: none; margin: 0; padding: 0; display: flex; gap: 4px; }
 .rp__weather-day { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 2px; border-radius: 8px; background: #f7f7f7; }
-.rp__weather-day--today { background: #f4f1ec; box-shadow: inset 0 0 0 1.5px var(--color-text-primary); }
 .rp__weather-dow { font-size: 11px; color: var(--color-text-secondary); white-space: nowrap; }
 .rp__weather-icon { width: 24px; height: 24px; }
 .rp__weather-temp { font-size: 14px; font-weight: 700; }
@@ -542,25 +512,11 @@ useHead({ title: `${checkout.value.name} — Tips & routes — ViaLuxury` })
 .rp__weather-stat { font-size: 11px; line-height: 1.3; color: var(--color-text-secondary); }
 .rp__weather-note { margin: 10px 0 0; font-size: 12px; line-height: 1.4; color: var(--color-text-secondary); }
 
-/* Vandaag */
-.rp__today { display: grid; grid-template-columns: minmax(0, 1fr) 200px; gap: 24px; align-items: center; padding: 24px 28px; border-radius: var(--radius-md); background: #f4f1ec; }
-.rp__today-leg { display: flex; align-items: center; gap: 12px; margin: 4px 0 12px; padding: 10px 12px; border-radius: 8px; background: #fff; }
-.rp__today-leg p { margin: 0; }
-.rp__today-weather { text-align: center; padding: 12px; border-radius: 12px; background: #fff; }
-.rp__today-icon { width: 56px; height: 56px; }
-.rp__today-temp { margin: 0; font-family: var(--font-heading); font-size: 34px; font-weight: 700; line-height: 1.1; }
-.rp__today-weathertext { margin: 4px 0 0; font-size: 13px; color: var(--color-text-secondary); line-height: 1.4; }
-.rp__today-place { color: var(--color-text-primary); font-weight: 600; }
-.rp__route-title { margin: 0; display: flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 600; line-height: 1.35; }
-.rp__route-meta { margin: 2px 0 0; font-size: 13px; color: var(--color-text-secondary); }
 .rp__route-num { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 50%; background: var(--color-text-primary); color: #fff; font-size: 12px; font-weight: 700; }
 .rp__route-links { margin: 0; flex-shrink: 0; display: flex; gap: 14px; font-size: 13px; white-space: nowrap; }
 .rp__route-links a { color: var(--color-primary); font-weight: 600; text-decoration: underline; text-underline-offset: 2px; }
 .rp__route-links a:hover { color: var(--color-primary-hover); }
 .rp__route-links--lg { font-size: 15px; flex-wrap: wrap; white-space: normal; }
-.rp__card-more { margin-top: 12px; }
-.rp__photo { flex-shrink: 0; width: 72px; height: 54px; object-fit: cover; border-radius: 6px; }
-.rp__photo--sm { width: 60px; height: 44px; }
 
 /* Praktische informatie: drie hotelblokken naast elkaar. Elk blok is een subgrid van vier rijen
    (foto, naam + plaats, check-in/check-out, info), zodat de check-in-rij in alle drie even hoog staat. */
@@ -593,10 +549,20 @@ useHead({ title: `${checkout.value.name} — Tips & routes — ViaLuxury` })
 .rp__contact-line b { font-weight: 700; margin-right: 4px; }
 .rp__contact-line .rp__info-link { font-weight: 600; }
 .rp__contact-hours { color: var(--color-text-secondary); }
-/* Fietsvakantie: bagagetransfer en routes 50/50; in elk blok de foto links en de tekst rechts */
+/* Routes (en bij de fietsvakantie bagagetransfer) 50/50; in elk blok de foto links en de tekst rechts. Autovakantie: één blok over de hele breedte. */
 .rp__bike { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; margin-top: 24px; }
+.rp__bike--single { grid-template-columns: 1fr; }
 .rp__bike-card { display: grid; grid-template-columns: 200px minmax(0, 1fr); align-items: stretch; }
 .rp__bike-img { display: block; width: 100%; height: 100%; min-height: 200px; object-fit: cover; }
+.rp__bike-card .rp__route-links { margin-top: 2px; }
+/* Inbegrepen / niet inbegrepen: twee witte blokken met zwarte rand; groene vinkjes als op de PDP, bullets bij niet inbegrepen */
+.rp__incl { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; margin-top: 24px; }
+.rp__incl-card { padding: 20px 22px 22px; border: 1px solid var(--color-text-primary); border-radius: var(--radius-md); background: #fff; }
+.rp__incl-card .rp__h3 { margin-bottom: 12px; }
+.rp__incl-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; font-size: 15px; line-height: 1.5; color: var(--color-text-secondary); }
+.rp__incl-list li { display: flex; align-items: flex-start; gap: 8px; }
+.rp__incl-check { color: var(--color-discount, #27C88D); flex-shrink: 0; display: inline-flex; font-size: 18px; margin-top: 2px; }
+.rp__excl-list { list-style: disc; margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 8px; font-size: 15px; line-height: 1.5; color: var(--color-text-secondary); }
 
 /* Reisschema naast de minimap: even hoog; de kaart vult de ruimte boven de regels, zodat
    "Bekijk kaart" precies op de onderrand van het reisschema uitkomt. */
@@ -620,11 +586,7 @@ useHead({ title: `${checkout.value.name} — Tips & routes — ViaLuxury` })
   .rp__weather-days { overflow-x: auto; }
   .rp__weather-day { min-width: 44px; }
   .rp__main { padding-top: 24px; gap: 36px; }
-  .rp__today { grid-template-columns: 1fr; padding: 18px 16px; }
-  .rp__today-weather { display: flex; align-items: center; justify-content: center; gap: 12px; text-align: left; }
-  .rp__today-icon { width: 40px; height: 40px; }
-  .rp__today-temp { font-size: 28px; }
-  .rp__hotels, .rp__plan, .rp__bike { grid-template-columns: 1fr; gap: 16px; }
+  .rp__hotels, .rp__plan, .rp__bike, .rp__incl { grid-template-columns: 1fr; gap: 16px; }
   .rp__hotel { display: block; }
   .rp__hotel-img { height: 160px; }
   .rp__bike-card { grid-template-columns: 1fr; }
