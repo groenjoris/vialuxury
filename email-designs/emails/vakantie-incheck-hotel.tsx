@@ -158,14 +158,6 @@ export default function VakantieIncheckHotel({
           a: `Bij ${hotel.name} kun je inchecken vanaf ${hotel.checkInTime} uur en uitchecken tot ${hotel.checkOutTime} uur. Bij elk hotel staat de tijd in je boeking.`,
         },
         {
-          q: "Wat als ik later aankom dan gepland?",
-          a: `Geen probleem. Kom je na 19:00 uur aan, bel dan even het hotel (${hotel.phone}), dan houden ze je kamer en het diner voor je vast.`,
-        },
-        {
-          q: "Zijn de diners op een vaste tijd?",
-          a: "Het diner op de dag van aankomst reserveert het hotel voor je; je hoort bij het inchecken hoe laat. Wil je liever een ander tijdstip, zeg het dan bij aankomst.",
-        },
-        {
           q: "Wat betaal ik nog in het hotel?",
           a: "Alleen de lokale toeristenbelasting, die rekent het hotel bij het uitchecken af. De rest van je vakantie is al betaald.",
         },
@@ -181,14 +173,6 @@ export default function VakantieIncheckHotel({
               a: `Zet morgen vóór 9:00 uur per persoon één koffer of tas bij de receptie van ${previousHotel?.name ?? "je hotel"}. Hij wordt opgehaald en staat 's middags klaar in ${hotel.name}. Jij fietst met alleen een dagtas.`,
             }]
           : []),
-        {
-          q: "Wat als ik later aankom dan gepland?",
-          a: `Geen probleem. Kom je na 19:00 uur aan, bel dan even ${hotel.name} (${hotel.phone}), dan houden ze je kamer en het diner voor je vast.`,
-        },
-        {
-          q: "Is het diner op een vaste tijd?",
-          a: "Het diner op de dag van aankomst reserveert het hotel voor je; je hoort bij het inchecken hoe laat.",
-        },
       ];
 
   const preview = incheckPreheader({ hotelIndex, hotel, previousHotel });

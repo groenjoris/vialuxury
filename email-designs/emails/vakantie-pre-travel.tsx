@@ -62,7 +62,8 @@ type Props = {
   /** Drie thumbs boven "Praktische informatie en tips": twee uitjes en de routekaart (alle 3:2, even hoog). */
   thumbs: { image: string; alt: string }[];
   routesUrl: string;
-  bookingUrl: string;
+  /** Boeking in het account (niet meer gelinkt in de mail; blijft voor de registry-data). */
+  bookingUrl?: string;
   mode?: EmailMode;
 };
 
@@ -127,24 +128,12 @@ export default function VakantiePreTravel({
       a: `Bij ${firstHotel.name} kun je inchecken vanaf ${firstHotel.checkInTime} uur. Bij elk hotel staan de in- en uitchecktijden in je boeking, zodat je rustig naar het volgende hotel ${isBike ? "fietst" : "rijdt"}.`,
     },
     {
-      q: "Wat als ik later aankom dan gepland?",
-      a: "Geen probleem. Kom je na 19:00 uur aan, bel dan even het hotel (het nummer staat op je persoonlijke reispagina), dan houden ze je kamer en het diner voor je vast.",
-    },
-    {
-      q: "Zijn de diners op een vaste tijd?",
-      a: "Het 3-gangendiner op de dag van aankomst reserveert het hotel voor je; je hoort bij het inchecken hoe laat. Wil je liever een ander tijdstip, zeg het dan bij aankomst.",
-    },
-    {
       // Tekst uit "faq mhr.xlsx" (Pre-travel); het annuleerantwoord volgt het tarief. "Wat moet ik nog
       // betalen?" staat niet in de FAQ maar in het blok van het eerste hotel.
       q: "Kan ik nog wijzigen of annuleren?",
       a: `Het wijzigen van een boeking is niet mogelijk. ${rate === "nonflex"
         ? "Tijdens het boeken heb je ervoor gekozen om niet-terugbetaalbaar te boeken. Daardoor is het niet mogelijk om zelf je boeking te annuleren. Het kan zijn dat de klantenservice je wel bepaalde opties kan geven; neem daarom tijdens openingstijden contact met hen op."
         : `Omdat je flexibel annuleren hebt aangezet, kun je je boeking annuleren t/m ${cancelUntil}, 23:59 uur. Het is niet mogelijk individuele onderdelen van je boeking aan te passen. Wil je de datum van vertrek aanpassen, dan dien je de gehele boeking te annuleren en opnieuw te boeken. Let op: voor de boekingskosten ontvang je een voucher die je weer kunt gebruiken bij je nieuwe boeking.`}`,
-    },
-    {
-      q: "Hoe werkt het doorreizen naar het volgende hotel?",
-      a: `Je checkt uit, ${isBike ? "fietst de etappe van die dag (op je reispagina als GPX en PDF; je bagage reist vooruit)" : "rijdt de route van die dag (op je reispagina als GPX, PDF of in Google Maps)"} en meldt je bij de receptie van het volgende hotel met je naam en boekingsnummer. Onderweg kun je de tips van die dag volgen.`,
     },
   ];
 
@@ -316,10 +305,6 @@ export default function VakantiePreTravel({
                 <Text style={{ ...body14, margin: "4px 0 0", color: c.muted }}>{f.a}</Text>
               </Section>
             ))}
-            <Text style={{ ...body14, margin: "16px 0 0" }}>
-              Je volledige boeking bekijken?{" "}
-              <Link href={bookingUrl} style={ctaLink}>Bekijk je boeking &gt;</Link>
-            </Text>
           </Section>
 
         </Container>
