@@ -24,24 +24,30 @@
       <div class="site-header__nav-inner container">
         <!-- Logo (grid row 1, col 1). Variant 4 (mobile) swaps the
              horizontal logo for the compact vertical one. -->
-        <NuxtLink ref="logoLinkRef" :to="homeHref" class="site-header__logo">
-          <!-- Both logos are always rendered; which one shows is decided by
-               CSS so the swap can be scoped per-page (V4 minimal header only
-               applies on home/search/deal/hotel — see mht-home-variants.css).
-               Default: horizontal visible, vertical hidden. -->
-          <img
-            src="/images/logo-vialuxury.svg"
-            alt="ViaLuxury"
-            class="site-header__logo-img site-header__logo-img--vertical"
-          />
-          <img
-            src="/images/logo-vialuxury-horizontal.svg"
-            alt="ViaLuxury"
-            class="site-header__logo-img site-header__logo-img--horizontal"
-          />
-          <!-- Variant-label (subtiel) onder het logo. -->
-          <span class="site-header__proto" aria-hidden="true">MHR</span>
-        </NuxtLink>
+        <!-- Logo-vak (grid rij 1, kolom 1): het logo plus, voor het prototype, de schakelaars (slot `proto`) —
+             onder het logo en het label (standaard) of rechts naast het logo (proto-placement="right", de
+             accountomgeving: het vak groeit mee en schuift de navigatie op). -->
+        <div class="site-header__logo-cell">
+          <NuxtLink ref="logoLinkRef" :to="homeHref" class="site-header__logo">
+            <!-- Both logos are always rendered; which one shows is decided by
+                 CSS so the swap can be scoped per-page (V4 minimal header only
+                 applies on home/search/deal/hotel — see mht-home-variants.css).
+                 Default: horizontal visible, vertical hidden. -->
+            <img
+              src="/images/logo-vialuxury.svg"
+              alt="ViaLuxury"
+              class="site-header__logo-img site-header__logo-img--vertical"
+            />
+            <img
+              src="/images/logo-vialuxury-horizontal.svg"
+              alt="ViaLuxury"
+              class="site-header__logo-img site-header__logo-img--horizontal"
+            />
+            <!-- Variant-label (subtiel) onder het logo. -->
+            <span class="site-header__proto" aria-hidden="true">MHR</span>
+          </NuxtLink>
+          <div v-if="$slots.proto" class="site-header__proto-slot" :class="`site-header__proto-slot--${props.protoPlacement}`"><slot name="proto" /></div>
+        </div>
 
         <!-- Opt-in pay-off under the logo (grid row 2, col 1 on desktop;
              flows under the logo on mobile). Off by default — the
@@ -1082,6 +1088,8 @@ const props = withDefaults(defineProps<{
   /** Hide the inline horizontal search bar — used by homepage variant 2
    *  which renders its own vertical search card instead. */
   hideSearchDock?: boolean
+  /** Plek van de prototype-schakelaars in de slot `proto`: onder het logo (standaard) of rechts ernaast. */
+  protoPlacement?: 'below' | 'right'
   /** Which of the three FR nav-bar layouts to render. Defaults to the
    *  variant that's currently stored in the composable so internal
    *  pages don't have to pass anything. */
@@ -1090,7 +1098,7 @@ const props = withDefaults(defineProps<{
   payoff?: string
   /** CSS font-family for the pay-off (defaults to the component's own rule). */
   payoffFont?: string
-}>(), { variant: 'solid', hideSearchDock: false })
+}>(), { variant: 'solid', hideSearchDock: false, protoPlacement: 'below' })
 
 // --- PAY-OFF: fit the line to the logo's exact width ---------------------
 const logoLinkRef = ref<{ $el?: HTMLElement } | HTMLElement | null>(null)
@@ -2949,8 +2957,8 @@ function handleSelectHotelInPopup(slug: string) {
  *  rij-1-knoppen en pillen (de grid-standaard). Alleen mét pay-off onder
  *  het logo (R2-stijl / payoff-varianten-pagina) staat het logo boven, zodat
  *  logo + pay-off samen één blok vormen. ─── */
-.site-header--nav-v1.site-header--has-payoff .site-header__logo,
-.site-header--nav-v6.site-header--has-payoff .site-header__logo {
+.site-header--nav-v1.site-header--has-payoff .site-header__logo-cell,
+.site-header--nav-v6.site-header--has-payoff .site-header__logo-cell {
   align-self: start;
 }
 
@@ -2964,11 +2972,19 @@ function handleSelectHotelInPopup(slug: string) {
   gap: 13px;
 }
 
-/* Logo (grid row 1, col 1) — width pinned to 244 px per design. */
-.site-header__logo {
+/* Logo-vak (grid row 1, col 1): logo + eventueel de prototype-schakelaars ernaast. */
+.site-header__logo-cell {
   grid-row: 1;
   grid-column: 1;
-  flex-shrink: 0;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+/* Logo — width pinned to 244 px per design; mag krimpen als de kop te smal wordt (zoals vóór het logo-vak). */
+.site-header__logo {
+  flex-shrink: 1;
+  min-width: 0;
   display: flex;
   align-items: center;
 }
@@ -2991,6 +3007,19 @@ function handleSelectHotelInPopup(slug: string) {
 
 /* Subtiele prototype-sticker onder het logo (absoluut, dus geen invloed op de layout). */
 .site-header__logo { position: relative; }
+/* Prototype-schakelaars: onder het logo en het label (absoluut, uitgelijnd met de linkerkant van het logo) of rechts
+   naast het logo (in de flow, twee rijen hoog, het vak groeit mee en de navigatie schuift op — naast het logo is
+   maar ~170px vrij, dus alleen vanaf 1248px; smaller valt `right` terug op onder het logo). */
+.site-header__proto-slot--below { position: absolute; left: 0; top: calc(100% + 26px); }
+.site-header__proto-slot--right { position: static; flex-shrink: 0; }
+.site-header__proto-slot--right :slotted(.demo-sw) { flex-direction: column; }
+@media (min-width: 1248px) {
+  .site-header__logo-cell:has(.site-header__proto-slot--right) { min-width: max-content; }
+}
+@media (max-width: 1247px) {
+  .site-header__proto-slot--right { position: absolute; left: 0; top: calc(100% + 26px); }
+  .site-header__proto-slot--right :slotted(.demo-sw) { flex-direction: row; }
+}
 .site-header__proto {
   position: absolute; left: 0; top: 100%; margin-top: 4px; pointer-events: none;
   font-family: var(--font-body, inherit); font-size: 9px; line-height: 1; font-weight: 600;

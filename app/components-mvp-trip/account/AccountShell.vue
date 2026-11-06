@@ -16,7 +16,9 @@ const items = [
 
 <template>
   <div class="acc">
-    <MvpTripSiteHeader hide-search-dock />
+    <MvpTripSiteHeader hide-search-dock proto-placement="right">
+      <template v-if="$slots.proto" #proto><slot name="proto" /></template>
+    </MvpTripSiteHeader>
 
     <div class="container acc__main">
       <nav class="acc__nav" aria-label="Mijn ViaLuxury">

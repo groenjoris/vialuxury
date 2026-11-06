@@ -55,8 +55,17 @@ const row = computed<SelRow>(() => {
 })
 /** Reis van de demo-boeking voor de schakelaars linksboven: uit de URL, anders uit de reis zelf. */
 const demoVariant = computed<DemoVariant>(() => isDemoVariant(route.query.demo) ? route.query.demo : detail.value?.type === 'fiets' ? 'fiets' : 'auto')
-/** Fietsvakantie: extra punt bij "Wat je zelf doet". */
+/** Fietsvakantie: extra punt bij "Wat je zelf doet" en eigen posten bij "Niet inbegrepen". */
 const isBike = computed(() => detail.value?.type === 'fiets')
+/* Niet inbegrepen (als in de bevestigingsmail): wat de gast nog zelf betaalt, per reis. */
+const notIncluded = computed(() => [
+  'Toeristenbelasting, bij aankomst te betalen in het hotel',
+  isBike.value ? 'Fietshuur' : 'Opladen van je elektrische auto, brandstof en tol',
+  ...(isBike.value ? ['De reis van huis naar het eerste hotel en terug'] : []),
+  'Kosten voor attracties uit het voorbeeldreisschema',
+  'Lunch, drankjes en maaltijden die niet bij je hotel vermeld staan',
+  'Reis- en annuleringsverzekering',
+])
 const persons = computed(() => row.value.quantity * 2)
 const roomsPerHotel = computed(() => row.value.quantity)
 const BOOKING_FEE = CHECKOUT_BOOKING_FEE
@@ -161,9 +170,10 @@ useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
 <template>
   <div class="mvp-checkout page page--white cf" :class="{ 'page--m': isMobileUa }">
     <MvpTripCheckoutMobileHeader v-if="isMobileUa" :step="3" />
-    <MvpTripCheckoutTopNav v-else />
-    <!-- Prototype-schakelaars linksboven (desktop): Auto | Fiets en Flex | Non-flex, zelfde stand als op de flow. -->
-    <MvpTripDemoSwitches v-if="!isMobileUa" :variant="demoVariant" :rate="rate" />
+    <!-- Desktop: checkoutbalk met de prototype-schakelaars onder het logo (Auto | Fiets en Flex | Non-flex, zelfde stand als op de flow). -->
+    <MvpTripCheckoutTopNav v-else>
+      <template #proto><MvpTripDemoSwitches :variant="demoVariant" :rate="rate" /></template>
+    </MvpTripCheckoutTopNav>
 
     <!-- Preloader (MVP): alleen het cirkeltje, 3 seconden, dan de bevestiging. -->
     <Transition name="cf-load">
@@ -276,7 +286,14 @@ useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
                 <div class="cf__price-row cf__price-row--total"><span class="t-body t-bold">Totaal</span><span class="t-body t-bold">{{ money(total) }}</span></div>
                 <div class="cf__price-row"><span class="t-body">Betaald</span><span class="t-body">{{ money(total) }}</span></div>
                 <div class="cf__price-row cf__price-row--due"><span class="t-body t-bold">Te betalen</span><span class="t-body t-bold">{{ money(0) }}</span></div>
-                <p class="t-caption c-mgrey cf__price-note">Bij aankomst betaal je wel nog<br>de lokale toeristenbelasting.</p>
+              </div>
+
+              <!-- Niet inbegrepen (als in de bevestigingsmail): wat de gast nog zelf betaalt -->
+              <div class="cf__excl">
+                <p class="cf__excl-title">Niet inbegrepen</p>
+                <ul class="cf__excl-list">
+                  <li v-for="item in notIncluded" :key="item" class="t-caption c-grey">{{ item }}</li>
+                </ul>
               </div>
             </div>
           </section>
@@ -324,7 +341,6 @@ useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
 <style scoped>
 .page { position: relative; min-height: 100vh; display: flex; flex-direction: column; }
 .page--white { background: var(--c-white); }
-.cf { position: relative; } /* positioneringscontext voor de prototype-schakelaars linksboven */
 .cf__main { flex: 1; padding-bottom: 56px; }
 .cf__body { padding-top: 32px; display: flex; flex-direction: column; gap: 32px; }
 /* Koppen in Recoleta zoals op de site (de checkout-scope zet h1–h6 standaard op de bodyfont). */
@@ -441,7 +457,10 @@ useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
 .cf__price-row { display: flex; justify-content: space-between; gap: 12px; padding: 3px 0; }
 .cf__price-row--total { margin-top: 4px; padding-top: 10px; border-top: 1px solid var(--c-light-grey); font-size: var(--t-body-lg); }
 .cf__price-row--due { padding-top: 6px; }
-.cf__price-note { margin: 2px 0 0; text-align: right; line-height: 1.4; }
+/* Niet inbegrepen: onder de prijs, zelfde lijn als de prijsregels */
+.cf__excl { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--c-light-grey); }
+.cf__excl-title { margin: 0 0 6px; font-size: 14px; font-weight: 700; }
+.cf__excl-list { list-style: disc; margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 3px; }
 
 /* Rechterkolom */
 .cf__side { display: flex; flex-direction: column; gap: 16px; }

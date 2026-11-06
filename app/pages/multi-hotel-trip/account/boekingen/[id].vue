@@ -24,9 +24,9 @@ useHead({ title: () => `${checkout.value.name} — Mijn ViaLuxury` })
 </script>
 
 <template>
-  <!-- Prototype-schakelaars linksboven in de sitekop, onder het label (niet voor de gast). -->
-  <MultiHotelTripDemoSwitches :variant="demoVariant" :rate="demoRate" style="--demo-sw-top: 70px" />
+  <!-- Prototype-schakelaars (niet voor de gast) rechts naast het logo in de zwarte balk. -->
   <MultiHotelTripAccountShell active="boekingen">
+    <template #proto><MultiHotelTripDemoSwitches :variant="demoVariant" :rate="demoRate" /></template>
     <NuxtLink class="ad__back" to="/multi-hotel-trip/account/boekingen">‹ Alle boekingen</NuxtLink>
 
     <header class="ad__head">

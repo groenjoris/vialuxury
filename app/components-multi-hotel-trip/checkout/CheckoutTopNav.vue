@@ -14,6 +14,8 @@
           />
           <span class="nav__proto" aria-hidden="true">MHR</span>
         </NuxtLink>
+        <!-- Prototype-schakelaars (DemoSwitches): onder het logo en het label, uitgelijnd met het logo. -->
+        <div v-if="$slots.proto" class="nav__proto-slot"><slot name="proto" /></div>
       </div>
 
       <button class="nav__service" type="button">
@@ -54,6 +56,7 @@
   gap: 16px;
 }
 .nav__brand {
+  position: relative; /* positioneringscontext voor de prototype-schakelaars onder het logo */
   display: flex;
   align-items: center;
   gap: 14px;
@@ -67,6 +70,7 @@
 }
 /* Subtiel variant-label onder het logo. */
 .nav__brand a { position: relative; display: block; }
+.nav__proto-slot { position: absolute; left: 0; top: calc(100% + 26px); }
 .nav__proto {
   position: absolute; left: 0; top: 100%; margin-top: 4px; pointer-events: none;
   font-family: var(--font-body, inherit); font-size: 9px; line-height: 1; font-weight: 600;

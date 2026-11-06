@@ -6,6 +6,9 @@
 // klaar (useDemoBookingFromQuery). De mailpreview geeft eigen links mee (de reis zit daar in de
 // slug) en `null` voor een stand die er niet is. Een pagina kan extra aan/uit-schakelaars meegeven
 // (Vandaag op de routespagina). Op mobiel verborgen, net als de prototype-navigatie.
+// Plaatsing: het paneel staat gewoon in de flow; de kop zet het via de slot `proto` op zijn plek
+// (SiteHeader: onder het logo en het label, of met proto-placement="right" rechts naast het logo
+// in de zwarte balk; CheckoutTopNav: onder het logo; mailpreview: in de balk naast de titel).
 import { demoQuery, navigateAfterPaint, type DemoRate, type DemoVariant } from '~/composables-mvp-trip/useMvpTripDemoBooking'
 
 type Opt = 'auto' | 'fiets' | 'flex' | 'nonflex'
@@ -52,9 +55,8 @@ const groups = computed(() => [
 </template>
 
 <style scoped>
-/* Linksboven onder de donkere balk, als één rij (past in de sitekop tussen het label en de zoekbalk);
-   de pagina zet `--demo-sw-top` als de kop hoger is, bijv. 70px in de sitekop. */
-.demo-sw { position: absolute; top: var(--demo-sw-top, 80px); left: 8px; z-index: 700; display: flex; flex-wrap: wrap; gap: 4px; padding: 4px; border-radius: 6px; background: rgba(20, 20, 20, 0.6); }
+/* Eén rij; de plek bepaalt de kop (slot `proto`). */
+.demo-sw { position: relative; z-index: 700; display: flex; flex-wrap: nowrap; width: max-content; gap: 4px; padding: 4px; border-radius: 6px; background: rgba(20, 20, 20, 0.6); }
 .demo-sw__group { display: inline-flex; border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 3px; overflow: hidden; }
 .demo-sw__opt { display: inline-block; padding: 3px 6px; font-family: var(--font-body, inherit); font-size: 9px; line-height: 1; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; white-space: nowrap; color: rgba(255, 255, 255, 0.6); text-decoration: none; }
 .demo-sw__opt + .demo-sw__opt { border-left: 1px solid rgba(255, 255, 255, 0.3); }

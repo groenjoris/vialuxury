@@ -268,10 +268,10 @@ useHead({ title: `${checkout.value.name} — Tips & routes — ViaLuxury` })
 
 <template>
   <div class="rp">
-    <MultiHotelTripSiteHeader />
-
-    <!-- Prototype-schakelaars linksboven in de sitekop, onder het label (niet voor de gast): Auto | Fiets en Flex | Non-flex -->
-    <MultiHotelTripDemoSwitches :variant="demoVariant" :rate="demoRate" style="--demo-sw-top: 70px" />
+    <!-- Prototype-schakelaars (niet voor de gast) onder het logo in de sitekop: Auto | Fiets en Flex | Non-flex -->
+    <MultiHotelTripSiteHeader>
+      <template #proto><MultiHotelTripDemoSwitches :variant="demoVariant" :rate="demoRate" /></template>
+    </MultiHotelTripSiteHeader>
 
     <!-- ── Hero: reisfoto direct onder de navigatiebalk (de zoekbalk valt eroverheen), reistitel, datums, weer ── -->
     <section class="rp__hero" :style="{ backgroundImage: `url(${trip?.coverImage ?? checkout.thumb})` }">

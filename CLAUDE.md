@@ -115,8 +115,10 @@ kaartjes naartoe linken: pagina's met `?demo=` en `?rate=`, incheckmails met de 
 `?rate=`); de boekingsbevestiging en de pre-travelmail bestaan alleen voor de autovakantie en
 openen ongewijzigd. De pagina's lezen beide uit de URL (`useDemoBookingFromQuery`, `demoHref`,
 `demoQuery`, `useDemoSwitches` in `useMultiHotelTripDemoBooking` / `useMvpTripDemoBooking`) en
-tonen linksboven onder het label dezelfde schakelaars als één rij (`<Prefix>DemoSwitches`,
-desktop; `--demo-sw-top` 70px in de sitekop, 80px onder de checkoutbalk) op álle schermen en
+tonen dezelfde schakelaars als één rij (`<Prefix>DemoSwitches`, desktop) via de slot `proto` van
+`SiteHeader`/`CheckoutTopNav` (doorgegeven door `AccountShell`): op de webpagina's onder het logo
+en het label, in de accountomgeving rechts naast het logo in de zwarte balk (`SiteHeader`-prop
+`proto-placement="right"`, het logo-vak groeit mee), op de mailpreview in de balk naast de titel — op álle schermen en
 mailpreviews van de flow: bevestigingspagina, tips & routes (daar ook de Vandaag-schakelaar als
 extra knop), account (overzicht en detail), MVP-account en de mailpreviews (daar: reis via de slug,
 Fiets gedempt als er geen fietsversie is). De "‹ flow"-link in `ProtoNav` (MHT/MVP) en op de

@@ -77,7 +77,7 @@ useHead({ title: `${entry.value?.title ?? 'E-mail'} — ViaLuxury e-maildesigns`
         </div>
         <h1 class="ev__title">{{ entry?.title }}</h1>
         <!-- Prototype-schakelaars (niet voor de gast), in de balk naast de titel: Auto | Fiets en Flex | Non-flex. -->
-        <MvpTripDemoSwitches :variant="isFiets ? 'fiets' : 'auto'" :rate="rate" :links="switchLinks" style="position: static" />
+        <MvpTripDemoSwitches :variant="isFiets ? 'fiets' : 'auto'" :rate="rate" :links="switchLinks" />
       </div>
       <div class="ev__controls">
         <div class="ev__group" role="group" aria-label="Kleurmodus">

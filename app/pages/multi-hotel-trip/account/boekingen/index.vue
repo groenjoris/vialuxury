@@ -27,9 +27,9 @@ useHead({ title: 'Boekingen — Mijn ViaLuxury' })
 </script>
 
 <template>
-  <!-- Prototype-schakelaars linksboven in de sitekop, onder het label (niet voor de gast). -->
-  <MultiHotelTripDemoSwitches :variant="demoVariant" :rate="demoRate" style="--demo-sw-top: 70px" />
+  <!-- Prototype-schakelaars (niet voor de gast) rechts naast het logo in de zwarte balk. -->
   <MultiHotelTripAccountShell active="boekingen">
+    <template #proto><MultiHotelTripDemoSwitches :variant="demoVariant" :rate="demoRate" /></template>
     <h1 class="ab__title">Boekingen</h1>
     <p class="ab__lead">Bekijk al je boekingen overzichtelijk op één plek.</p>
 
