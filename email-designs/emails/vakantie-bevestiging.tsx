@@ -188,28 +188,38 @@ export default function VakantieBevestiging({
     </Row>
   );
 
-  const faq = [
+  /* Veelgestelde vragen — teksten uit "faq mhr.xlsx" (Boekingsbevestiging en boekingspagina); het
+     annuleerantwoord volgt het tarief, met de uiterste datum en 23:59 uur. */
+  const faq: { q: string; a: React.ReactNode }[] = [
     {
       q: "Hoe kan ik annuleren of wijzigen?",
-      a: rate === "nonflex"
-        ? `Annuleren kan niet: deze boeking is niet terugbetaalbaar. Een datum wijzigen kan wel: log in met ${recipientEmail}, open deze boeking en kies "Datum wijzigen".`
-        : `Via je account. Log in met ${recipientEmail}, open deze boeking en kies "Annuleren" of "Datum wijzigen". Tot ${cancelUntil} 23:59 uur (30 dagen voor aankomst) is dat kosteloos; je krijgt het volledige bedrag terug.`,
+      a: `Het wijzigen van een boeking is niet mogelijk. ${rate === "nonflex"
+        ? "Tijdens het boeken heb je ervoor gekozen om niet-terugbetaalbaar te boeken. Daardoor is het niet mogelijk om zelf je boeking te annuleren. Het kan zijn dat de klantenservice je wel bepaalde opties kan geven; neem daarom tijdens openingstijden contact met hen op."
+        : `Omdat je flexibel annuleren hebt aangezet, kun je je boeking annuleren t/m ${cancelUntil}, 23:59 uur. Het is niet mogelijk individuele onderdelen van je boeking aan te passen. Wil je de datum van vertrek aanpassen, dan dien je de gehele boeking te annuleren en opnieuw te boeken. Let op: voor de boekingskosten ontvang je een voucher die je weer kunt gebruiken bij je nieuwe boeking.`}`,
     },
     {
       q: "Hoe log ik in op mijn account?",
-      a: "Je hebt geen wachtwoord nodig. Vul op vialuxury.com je e-mailadres in, je ontvangt direct een inloglink per mail. Eén klik en je bent binnen.",
+      a: (
+        <>
+          Ga naar <Link href="https://vialuxury.com/nl-NL/inloggen" style={textLink}>vialuxury.com/nl-NL/inloggen</Link>, vul daar het e-mailadres in waarmee je geboekt hebt en je ontvangt direct de inlogcode in de mail.
+        </>
+      ),
     },
     {
       q: `Hoe werkt het inchecken bij ${hotels.length} hotels?`,
-      a: "Elk hotel heeft je naam en boekingsnummer. Je meldt je bij de receptie met een geldig identiteitsbewijs; uitchecken en doorreizen naar het volgende hotel regel je gewoon ter plekke.",
+      a: "Je kunt je gewoon bij de receptie melden en inchecken met je naam en je boekingsnummer. De meeste hotels verplichten een identificatiedocument zoals een rijbewijs of een paspoort van de hoofdboeker. Bij sommige hotels moet iedereen zich identificeren. Let op: een kopie volstaat niet en zonder geldig document kan een hotel weigeren je toe te laten.",
     },
     {
       q: "Wat betaal ik nog in de hotels?",
-      a: "Alleen de lokale toeristenbelasting; die rekent elk hotel bij het uitchecken af. Alles wat hierboven bij je hotels staat is al betaald.",
+      a: "In principe betaal je bij de hotels niet meer voor hetgeen in het arrangement zit. Verblijf je ergens meerdere dagen, dan kan het dus zijn dat niet alle diners of de lunch in het arrangement zitten. In de meeste gevallen is het arrangement eveneens zonder drankjes en dien je bij het uitchecken deze dus te voldoen. Daarnaast zal je in de meeste gevallen de gemeentelijke toeristenbelasting moeten voldoen en in uitzonderlijke gevallen ook een lokale toeslag. Daarnaast is het mogelijk dat je gevraagd wordt een borg af te geven d.m.v. een reservering op een creditcard of een borg in cash.",
     },
     {
       q: "Zijn de attracties uit de tips inbegrepen?",
-      a: "Nee. De tips per hotel zijn inspiratie; entree betaal je ter plaatse en alleen voor wat je zelf kiest. Een Museumkaart of kortingspas loont bij vakanties in Nederland.",
+      a: "Alle onderdelen van het arrangement vind je terug in je boekingsbevestiging. De tips zijn hier niet vermeld en zijn dus niet inbegrepen of onderdeel van het arrangement. Je kunt dan ook zelf besluiten deze tips onderdeel te laten zijn van je reis.",
+    },
+    {
+      q: "Ik heb mijn e-mailadres verkeerd ingevuld",
+      a: "Geen zorgen, neem tijdens openingstijden of via de mail contact op met de klantenservice via info@vialuxury.com of +31 20 705 2222 of via een WhatsApp-bericht naar +31 20 808 8809. Op basis van bijvoorbeeld je adres kunnen zij dan een nieuwe boekingsbevestiging naar je sturen.",
     },
   ];
 

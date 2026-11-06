@@ -30,6 +30,8 @@ type Props = {
   recipientEmail: string;
   /** Annuleringskeuze van de boeking: flexibel annuleren (standaard) of niet terugbetaalbaar. */
   rate?: "flex" | "nonflex";
+  /** Uiterste annuleerdatum (30 dagen voor aankomst), bijv. "zo 18 apr". */
+  cancelUntil: string;
   bookingNumber: string;
   tripType: string;
   tripName: string;
@@ -87,6 +89,7 @@ export default function VakantiePreTravel({
   recipientName,
   recipientEmail,
   rate = "flex",
+  cancelUntil,
   bookingNumber,
   tripType,
   tripName,
@@ -129,8 +132,15 @@ export default function VakantiePreTravel({
       a: "Het 3-gangendiner op de dag van aankomst reserveert het hotel voor je; je hoort bij het inchecken hoe laat. Wil je liever een ander tijdstip, zeg het dan bij aankomst.",
     },
     {
+      // Teksten uit "faq mhr.xlsx" (Pre-travel); het annuleerantwoord volgt het tarief.
+      q: "Wat moet ik nog betalen?",
+      a: "In principe betaal je bij de hotels niet meer voor hetgeen in het arrangement zit. Verblijf je ergens meerdere dagen, dan kan het dus zijn dat niet alle diners of de lunch in het arrangement zitten. In de meeste gevallen is het arrangement eveneens zonder drankjes en dien je bij het uitchecken deze dus te voldoen. Daarnaast zal je in de meeste gevallen de gemeentelijke toeristenbelasting moeten voldoen en in uitzonderlijke gevallen ook een lokale toeslag.",
+    },
+    {
       q: "Kan ik nog wijzigen of annuleren?",
-      a: `${rate === "nonflex" ? "Annuleren kan niet: deze boeking is niet terugbetaalbaar." : "Kosteloos annuleren kon tot 30 dagen voor aankomst."} Wijzigen van een datum of het aantal personen is vaak nog mogelijk: regel het in je account (log in met je e-mail) of mail ons op service@vialuxury.com met boekingsnummer ${bookingNumber}.`,
+      a: `Het wijzigen van een boeking is niet mogelijk. ${rate === "nonflex"
+        ? "Tijdens het boeken heb je ervoor gekozen om niet-terugbetaalbaar te boeken. Daardoor is het niet mogelijk om zelf je boeking te annuleren. Het kan zijn dat de klantenservice je wel bepaalde opties kan geven; neem daarom tijdens openingstijden contact met hen op."
+        : `Omdat je flexibel annuleren hebt aangezet, kun je je boeking annuleren t/m ${cancelUntil}, 23:59 uur. Het is niet mogelijk individuele onderdelen van je boeking aan te passen. Wil je de datum van vertrek aanpassen, dan dien je de gehele boeking te annuleren en opnieuw te boeken. Let op: voor de boekingskosten ontvang je een voucher die je weer kunt gebruiken bij je nieuwe boeking.`}`,
     },
     {
       q: "Hoe werkt het doorreizen naar het volgende hotel?",
@@ -270,10 +280,10 @@ export default function VakantiePreTravel({
           <Section className="m-pad" style={{ padding: "32px 32px 0" }}>
             <Section style={{ border: `1px solid ${line}`, borderRadius: "8px", padding: "20px" }}>
               <Text className="m-kop" style={kop}>Boeking wijzigen of jouw boeking beheren</Text>
+              {/* Tekst uit "faq mhr.xlsx" (Pre-travel › Boeking wijzigen of jouw boeking beheren). */}
               <Text style={body14}>
-                In je ViaLuxury-account vind je je boeking terug en regel je alles zelf: gegevens wijzigen{rate === "flex" ? " of je boeking annuleren" : ""}.
-                Een wachtwoord heb je niet nodig: log in met je e-mailadres en je ontvangt een eenmalige code waarmee je direct
-                in je accountomgeving bent.
+                Het wijzigen van een boeking is niet mogelijk. Ga naar vialuxury.com/nl-NL/inloggen, vul daar het e-mailadres in
+                waarmee je geboekt hebt en je ontvangt direct de inlogcode in de mail.
               </Text>
               <Button
                 href={accountUrl}
@@ -322,6 +332,7 @@ export default function VakantiePreTravel({
 VakantiePreTravel.PreviewProps = {
   recipientName: "Rijo Verburg",
   recipientEmail: "rijo.verburg@gmail.com",
+  cancelUntil: "zo 18 apr",
   bookingNumber: "VL-11 851 812",
   tripType: "Autovakantie",
   tripName: "Ontdek Noord-Frankrijk en de Opaalkust in 7 dagen",
