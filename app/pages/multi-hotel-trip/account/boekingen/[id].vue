@@ -50,27 +50,24 @@ useHead({ title: () => `${checkout.value.name} — Mijn ViaLuxury` })
         <p class="ad__text">Alles over je hotels, de omgeving en wat je onderweg nodig hebt staat op één handige pagina: inchecken, adres en parkeren per hotel, het reisschema met de kaart, het weer en onze tips voor in de buurt.</p>
         <p class="ad__actions"><NuxtLink class="ad__link" to="/multi-hotel-trip/checkout/routes">Bekijk hier</NuxtLink></p>
       </section>
-      <section class="ad__card">
-        <div class="ad__h2-row">
-          <h2 class="ad__h2">Boeking beheren</h2>
-          <!-- Prototype (alleen bij flex): vóór of ná de annuleringsdeadline -->
-          <div v-if="isFlex" class="ad__late" role="group" aria-label="Prototype: vóór of na de annuleringsdeadline">
-            <span v-if="!late" class="ad__late-opt ad__late-opt--on" aria-current="true">Op tijd</span>
-            <a v-else class="ad__late-opt" :href="lateHref(false)" @click="navigateAfterPaint(lateHref(false), $event)">Op tijd</a>
-            <span v-if="late" class="ad__late-opt ad__late-opt--on" aria-current="true">Te laat</span>
-            <a v-else class="ad__late-opt" :href="lateHref(true)" @click="navigateAfterPaint(lateHref(true), $event)">Te laat</a>
-          </div>
+      <div class="ad__top-col">
+        <!-- Prototype-schakelaar (geen onderdeel van de uiteindelijke UX, daarom buiten het blok): bij flex vóór of ná de annuleringsdeadline -->
+        <div v-if="isFlex" class="ad__late" role="group" aria-label="Prototype: vóór of na de annuleringsdeadline" title="Prototype: vóór of na de annuleringsdeadline">
+          <span v-if="!late" class="ad__late-opt ad__late-opt--on" aria-current="true">Op tijd</span>
+          <a v-else class="ad__late-opt" :href="lateHref(false)" @click="navigateAfterPaint(lateHref(false), $event)">Op tijd</a>
+          <span v-if="late" class="ad__late-opt ad__late-opt--on" aria-current="true">Te laat</span>
+          <a v-else class="ad__late-opt" :href="lateHref(true)" @click="navigateAfterPaint(lateHref(true), $event)">Te laat</a>
         </div>
+      <section class="ad__card">
+        <h2 class="ad__h2">Boeking beheren</h2>
         <template v-if="isFlex && !late">
           <p class="ad__text">Omdat je flexibel annuleren hebt aangezet, kun je je boeking annuleren t/m {{ cancelDeadline }}. Het is niet mogelijk individuele onderdelen van je boeking aan te passen. Wil je de datum van vertrek aanpassen, dan dien je de gehele boeking te annuleren en opnieuw te boeken. Let op: voor de boekingskosten ontvang je een voucher die je weer kunt gebruiken bij je nieuwe boeking.</p>
           <p class="ad__actions"><a class="ad__btn" :href="CANCEL_FORM_URL">Boeking annuleren</a></p>
         </template>
-        <template v-else-if="isFlex && late">
-          <p class="ad__text">Je hebt gekozen voor flexibel annuleren, maar de deadline ({{ cancelDeadline }}) is al verstreken. Kosteloos annuleren is daardoor niet meer mogelijk; annuleer je nu, dan ontvang je geen bedrag retour.</p>
-          <p class="ad__actions"><a class="ad__btn" :href="CANCEL_FORM_URL">Boeking annuleren</a></p>
-        </template>
+        <p v-else-if="isFlex && late" class="ad__text">Je hebt gekozen voor flexibel annuleren, maar de deadline ({{ cancelDeadline }}) is al verstreken. Kosteloos annuleren is daardoor niet meer mogelijk, en wijzigen van je boeking ook niet. Het kan zijn dat de klantenservice je wel bepaalde opties kan geven; neem daarom tijdens openingstijden contact met hen op via <a class="ad__link ad__link--plain" href="mailto:info@vialuxury.com">info@vialuxury.com</a>, <a class="ad__link ad__link--plain" href="tel:+31207052222">+31 20 705 2222</a> of een WhatsApp-bericht naar <a class="ad__link ad__link--plain" href="https://wa.me/31208088809" target="_blank" rel="noopener">+31 20 808 8809</a>.</p>
         <p v-else class="ad__text">Tijdens het boeken heb je ervoor gekozen om niet-terugbetaalbaar te boeken. Daardoor is het niet mogelijk om zelf je boeking te annuleren. Het kan zijn dat de klantenservice je wel bepaalde opties kan geven; neem daarom tijdens openingstijden contact met hen op via <a class="ad__link ad__link--plain" href="mailto:info@vialuxury.com">info@vialuxury.com</a>, <a class="ad__link ad__link--plain" href="tel:+31207052222">+31 20 705 2222</a> of een WhatsApp-bericht naar <a class="ad__link ad__link--plain" href="https://wa.me/31208088809" target="_blank" rel="noopener">+31 20 808 8809</a>.</p>
       </section>
+      </div>
     </div>
 
     <!-- De boeking: per hotel, over de hele breedte -->
@@ -148,12 +145,12 @@ useHead({ title: () => `${checkout.value.name} — Mijn ViaLuxury` })
 
 /* Twee blokken bovenaan: tekst links, links rechts */
 .ad__top { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; margin-bottom: 24px; }
+.ad__top-col > .ad__card { height: 100%; }
 .ad__card { padding: 18px 20px 20px; border: 1px solid var(--color-border); border-radius: var(--radius-md); background: #fff; }
 .ad__h2 { margin: 0 0 6px; font-family: var(--font-heading); font-size: 21px; font-weight: 700; line-height: 1.25; }
-/* Titel met daaronder de subtiele prototype-schakelaar "Op tijd | Te laat" (zelfde typografie als het schakelpaneel linksboven; niet naast de titel, anders breekt die af) */
-.ad__h2-row { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; margin-bottom: 8px; }
-.ad__h2-row .ad__h2 { margin-bottom: 0; }
-.ad__late { flex-shrink: 0; display: inline-flex; border: 1px solid rgba(20, 20, 20, 0.3); border-radius: 3px; overflow: hidden; }
+/* Prototype-schakelaar "Op tijd | Te laat": buiten het blok, in de ruimte erboven, rechts uitgelijnd met de kaart (zelfde typografie als het schakelpaneel) */
+.ad__top-col { position: relative; }
+.ad__late { position: absolute; right: 0; top: -26px; display: inline-flex; border: 1px solid rgba(20, 20, 20, 0.3); border-radius: 3px; overflow: hidden; background: #fff; }
 .ad__late-opt { display: inline-block; padding: 3px 6px; font-size: 9px; line-height: 1; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; white-space: nowrap; color: var(--color-text-secondary); text-decoration: none; }
 .ad__late-opt + .ad__late-opt { border-left: 1px solid rgba(20, 20, 20, 0.3); }
 a.ad__late-opt:hover { color: var(--color-text-primary); }
