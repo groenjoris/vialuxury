@@ -23,7 +23,8 @@ import { baseUrl, font, newsletter, type EmailMode } from "../components/theme";
 // de linkerkolom van de bevestigingspagina in het prototype: kop, aanhef, boekings-
 // nummer, de kassabon (reis, per hotel foto/naam/sterren/adres, lijst met nachten en
 // inclusies, check-in/check-out, flexibel annuleren, prijs), dan Tips voor je reis,
-// Boeking terugvinden, de cadeaukaart en de veelgestelde vragen (uitgeklapt).
+// Boeking terugvinden, de veelgestelde vragen (uitgeklapt) en onderaan het blok "Annuleren of wijzigen"
+// (tekst per tarief, knop "Mijn boeking annuleren" naar het annuleringsformulier).
 
 type Hotel = {
   name: string;
@@ -79,9 +80,13 @@ const responsiveCss = `
   .m-logo { width: 143px !important; }
   .m-trustpilot { width: 80px !important; height: auto !important; }
   .m-hotelimg { width: 100% !important; height: auto !important; margin-bottom: 12px !important; }
-  .m-giftimg { width: 200px !important; height: auto !important; margin: 0 auto 16px !important; }
 }
 `;
+
+/** Placeholder voor het bestaande annuleringsformulier (knop "Mijn boeking annuleren"). */
+const CANCEL_FORM_URL = "https://vialuxury.nl/annuleren";
+/** Servicecentrum (veelgestelde vragen). */
+const SERVICE_URL = "https://vialuxury.nl/klantenservice";
 
 export default function VakantieBevestiging({
   recipientName,
@@ -157,6 +162,7 @@ export default function VakantieBevestiging({
     color: c.link,
     textDecoration: "underline",
   };
+  const textLink = { color: c.text, textDecoration: "underline", fontWeight: 700 };
   const num = {
     width: "26px",
     height: "26px",
@@ -186,7 +192,7 @@ export default function VakantieBevestiging({
       q: "Hoe kan ik annuleren of wijzigen?",
       a: rate === "nonflex"
         ? `Annuleren kan niet: deze boeking is niet terugbetaalbaar. Een datum wijzigen kan wel: log in met ${recipientEmail}, open deze boeking en kies "Datum wijzigen".`
-        : `Via je account. Log in met ${recipientEmail}, open deze boeking en kies "Annuleren" of "Datum wijzigen". Tot ${cancelUntil} (30 dagen voor aankomst) is dat kosteloos; je krijgt het volledige bedrag terug.`,
+        : `Via je account. Log in met ${recipientEmail}, open deze boeking en kies "Annuleren" of "Datum wijzigen". Tot ${cancelUntil} 23:59 uur (30 dagen voor aankomst) is dat kosteloos; je krijgt het volledige bedrag terug.`,
     },
     {
       q: "Hoe log ik in op mijn account?",
@@ -204,6 +210,20 @@ export default function VakantieBevestiging({
       q: "Zijn de attracties uit de tips inbegrepen?",
       a: "Nee. De tips per hotel zijn inspiratie; entree betaal je ter plaatse en alleen voor wat je zelf kiest. Een Museumkaart of kortingspas loont bij vakanties in Nederland.",
     },
+  ];
+
+  /* Niet inbegrepen: wat de gast nog zelf betaalt (per reis: fietshuur of opladen). */
+  const isBike = /fiets/i.test(tripType);
+  const notIncluded = [
+    "Toeristenbelasting, bij aankomst te betalen in het hotel",
+    isBike ? "Fietshuur" : "Opladen van je elektrische auto",
+    "Kosten voor attracties uit het voorbeeldreisschema",
+  ];
+  /* Annuleren bij het flexibele tarief: drie stappen. */
+  const cancelSteps = [
+    { title: "Check de annuleringstermijn", text: `Je kunt jouw reservering nog tot 30 dagen voor de dag van aankomst annuleren. In geval van jouw boeking betekent dit dat je annuleringstermijn afloopt om 23:59 uur op ${cancelUntil}. Bij annulering na deze termijn of bij no-show ontvang je geen bedrag retour.` },
+    { title: "Klik op de knop ‘Mijn boeking annuleren’", text: "Indien je zeker weet dat je wilt annuleren, kun je dit gemakkelijk doen via de onderstaande knop ‘Mijn boeking annuleren’. Houd je boekingsnummer en e-mailadres bij de hand." },
+    { title: "Ontvang het volledige arrangementsbedrag retour", text: "Indien je de reservering binnen de annuleringstermijn annuleert, krijg je het betaalde arrangementsbedrag van ons teruggestort. Voor de boekingskosten ontvang je een voucher, die je direct kunt gebruiken bij je nieuwe boeking. Je ontvangt binnen twee weken je betaalde arrangementsbedrag retour!" },
   ];
 
   return (
@@ -277,6 +297,12 @@ export default function VakantieBevestiging({
                           </span>
                         </Text>
                         <Text style={{ ...small, margin: "2px 0 0" }}>{h.address}</Text>
+                        {/* Check-in en check-out boven de inclusies */}
+                        <Text style={{ ...small, margin: "6px 0 0" }}>
+                          <strong style={{ color: c.text }}>Check-in</strong> {h.checkIn}
+                          <br />
+                          <strong style={{ color: c.text }}>Check-out</strong> {h.checkOut}
+                        </Text>
                         <ul style={{ margin: "8px 0 0", paddingLeft: "18px" }}>
                           {h.items.map((item) => (
                             <li key={item} style={{ ...body14, margin: "0 0 2px" }}>
@@ -284,11 +310,6 @@ export default function VakantieBevestiging({
                             </li>
                           ))}
                         </ul>
-                        <Text style={{ ...small, margin: "8px 0 0" }}>
-                          <strong style={{ color: c.text }}>Check-in</strong> {h.checkIn}
-                          <br />
-                          <strong style={{ color: c.text }}>Check-out</strong> {h.checkOut}
-                        </Text>
                       </Column>
                     </Row>
                   </Section>
@@ -303,7 +324,7 @@ export default function VakantieBevestiging({
                     <Column style={{ verticalAlign: "top" }}>
                       <Text style={{ ...body14, margin: 0, fontSize: "16px", fontWeight: 700 }}>{rate === "flex" ? "Flexibel annuleren" : "Niet terugbetaalbaar"}</Text>
                       <Text style={{ ...small, margin: "2px 0 0" }}>
-                        {rate === "flex" ? `Tot ${cancelUntil} (30 dagen voor aankomst) kosteloos annuleren van de gehele vakantie.` : "De boeking kan niet geannuleerd worden."}
+                        {rate === "flex" ? `Tot ${cancelUntil} 23:59 uur (30 dagen voor aankomst) kosteloos annuleren van de gehele vakantie.` : "De boeking kan niet geannuleerd worden."}
                       </Text>
                     </Column>
                   </Row>
@@ -329,11 +350,18 @@ export default function VakantieBevestiging({
                   {priceRow("Totaal", total, true, true)}
                   {priceRow("Betaald", total)}
                   {priceRow("Te betalen", "€0", true)}
-                  <Text style={{ ...small, textAlign: "right" as const, margin: "4px 0 0" }}>
-                    In de hotels betaal je alleen
-                    <br />
-                    de lokale toeristenbelasting.
-                  </Text>
+                </Section>
+
+                {/* Niet inbegrepen: wat de gast nog zelf betaalt (vervangt de noot over de toeristenbelasting) */}
+                <Section style={{ borderTop: `1px solid ${line}`, marginTop: "16px", paddingTop: "12px" }}>
+                  <Text style={{ ...body14, margin: 0, fontWeight: 700 }}>Niet inbegrepen</Text>
+                  <ul style={{ margin: "6px 0 0", paddingLeft: "18px" }}>
+                    {notIncluded.map((item) => (
+                      <li key={item} style={{ ...body14, margin: "0 0 2px" }}>
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
                 </Section>
               </Section>
             </Section>
@@ -367,51 +395,6 @@ export default function VakantieBevestiging({
             </Text>
           </Section>
 
-          {/* Cadeaukaart */}
-          <Section className="m-pad" style={{ padding: "32px 32px 0" }}>
-            <Section style={{ border: `1px solid ${line}`, borderRadius: "8px", padding: "20px" }}>
-              <Row>
-                <Column className="stack" style={{ width: "180px", verticalAlign: "middle" }}>
-                  <Img
-                    src={img("vakantie/giftcard.jpg")}
-                    alt="ViaLuxury cadeaukaart"
-                    width="180"
-                    height="180"
-                    className="m-giftimg"
-                    style={{ display: "block", borderRadius: "4px" }}
-                  />
-                </Column>
-                <Column className="stack m-nopad" style={{ paddingLeft: "20px", verticalAlign: "middle" }}>
-                  <Text style={eyebrow}>Cadeautip</Text>
-                  <Text className="m-kop" style={{ ...kop, fontSize: "20px", margin: "4px 0 0" }}>
-                    Maak iemand anders blij met een ViaLuxury-experience
-                  </Text>
-                  <Text style={body14}>
-                    Een verjaardag, een jubileum of gewoon omdat het kan: met een cadeaukaart geef je een verblijf in een van
-                    onze handgekozen hotels, met alle extra's erbij. De ontvanger kiest zelf het hotel en de datum.
-                  </Text>
-                  <Button
-                    href="https://cadeaukaart.vialuxury.com/Product/Products"
-                    className="m-btn"
-                    style={{
-                      backgroundColor: c.cta,
-                      borderRadius: "6px",
-                      color: "#FFFFFF",
-                      fontFamily: font.body,
-                      fontSize: "14px",
-                      fontWeight: 700,
-                      padding: "10px 16px",
-                      textDecoration: "none",
-                      marginTop: "12px",
-                    }}
-                  >
-                    Bekijk onze cadeaukaarten &gt;
-                  </Button>
-                </Column>
-              </Row>
-            </Section>
-          </Section>
-
           {/* Veelgestelde vragen (uitgeklapt) */}
           <Section className="m-pad" style={{ padding: "32px 32px 32px" }}>
             <Text className="m-kop" style={kop}>Veelgestelde vragen</Text>
@@ -423,6 +406,79 @@ export default function VakantieBevestiging({
             ))}
           </Section>
 
+
+          {/* Annuleren of wijzigen: helemaal onderaan, tekst per tarief en de knop "Mijn boeking annuleren"
+              (placeholder-link naar het bestaande annuleringsformulier) */}
+          <Section className="m-pad" style={{ padding: "0 32px 32px" }}>
+            <Section style={{ borderTop: `1px solid ${line}`, paddingTop: "28px" }}>
+              <Text className="m-kop" style={kop}>Annuleren of wijzigen van een boeking</Text>
+              <Text style={{ ...body14, margin: "16px 0 0", fontWeight: 700, fontSize: "15px" }}>Wijzigen van je verblijf</Text>
+              {rate === "nonflex" ? (
+                <>
+                  <Text style={body14}>
+                    Er is een niet-terugbetaalbaar tarief geboekt. Bij zowel wijzigen als annuleren ontvang je geen bedrag retour.
+                  </Text>
+                  <Text style={{ ...body14, margin: "16px 0 0", fontWeight: 700, fontSize: "15px" }}>Annuleren van je verblijf</Text>
+                  <Text style={body14}>
+                    Bij annuleren ontvang je geen bedrag retour, omdat je bij het boeken gekozen hebt voor de laagste prijs. Wil je toch
+                    annuleren, ondanks het feit dat je geen geld terugkrijgt, neem dan eerst contact op met de klantenservice via telefoon{" "}
+                    <Link href="tel:+31207052222" style={textLink}>+31 20 705 2222</Link> of WhatsApp{" "}
+                    <Link href="https://wa.me/31208088809" style={textLink}>+31 20 808 8809</Link>. Dan kijken we samen wat er wel mogelijk is.
+                  </Text>
+                  <Text style={body14}>
+                    Druk je toch op de knop “Mijn boeking annuleren”, dan is dat niet terug te draaien of achteraf aan te passen. Druk
+                    alleen op de knop “Mijn boeking annuleren” als je de annuleringsbevestiging nodig hebt voor een beroep op je
+                    reisverzekering.
+                  </Text>
+                </>
+              ) : (
+                <>
+                  <Text style={body14}>
+                    Er is een flexibel tarief geboekt. Als je deze boeking wilt wijzigen, annuleer dan de boeking en boek het gewenste
+                    arrangement opnieuw. Let op: je ontvangt het bedrag alleen terug als je annuleert voor 23:59 uur op {cancelUntil}.
+                  </Text>
+                  <Text style={{ ...body14, margin: "16px 0 0", fontWeight: 700, fontSize: "15px" }}>Annuleren van je verblijf</Text>
+                  <Text style={body14}>
+                    Ook wanneer je niets wilt wijzigen maar simpelweg je verblijf wilt annuleren, volg je de onderstaande stappen:
+                  </Text>
+                  {cancelSteps.map((step, i) => (
+                    <Section key={step.title} style={{ marginTop: "12px" }}>
+                      <Row>
+                        <Column style={{ width: "36px", verticalAlign: "top" }}>
+                          <span style={num}>{i + 1}</span>
+                        </Column>
+                        <Column style={{ verticalAlign: "top" }}>
+                          <Text style={{ ...body14, margin: "4px 0 0", fontWeight: 700 }}>{step.title}</Text>
+                          <Text style={{ ...body14, margin: "2px 0 0" }}>{step.text}</Text>
+                        </Column>
+                      </Row>
+                    </Section>
+                  ))}
+                </>
+              )}
+              <Text style={{ ...body14, margin: "16px 0 0" }}>
+                Wij vinden het fijn dat je bij ons geboekt hebt en helpen je graag als je nog informatie mist. Op onze{" "}
+                <Link href={SERVICE_URL} style={textLink}>servicecentrumpagina</Link> vind je direct antwoord op de meest gestelde vragen.
+              </Text>
+              <Button
+                href={CANCEL_FORM_URL}
+                className="m-btn"
+                style={{
+                  backgroundColor: c.badgeBg,
+                  borderRadius: "6px",
+                  color: "#FFFFFF",
+                  fontFamily: font.body,
+                  fontSize: "14px",
+                  fontWeight: 700,
+                  padding: "12px 18px",
+                  textDecoration: "none",
+                  marginTop: "16px",
+                }}
+              >
+                Mijn boeking annuleren
+              </Button>
+            </Section>
+          </Section>
         </Container>
         <CrmFooter recipientEmail={recipientEmail} reason="omdat je bij ons boekte" mode={mode} />
       </Body>

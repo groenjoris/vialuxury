@@ -2,7 +2,7 @@
   {
     "slug": "vakantie-bevestiging",
     "title": "Boekingsbevestiging vakantie",
-    "description": "Bevestiging na het boeken van een auto- of fietsvakantie met meerdere hotels: kassabon per hotel (adres, nachten, inclusies, check-in/out), flexibel annuleren, prijs, tips voor je reis, boeking terugvinden, cadeaukaart en FAQ.",
+    "description": "Bevestiging na het boeken van een auto- of fietsvakantie met meerdere hotels: kassabon per hotel (adres, nachten, inclusies, check-in/out), flexibel annuleren, prijs, tips voor je reis, boeking terugvinden, niet inbegrepen, FAQ en onderaan het blok Annuleren of wijzigen (tekst per tarief, knop Mijn boeking annuleren).",
     "section": "designs",
     "subject": "Je boeking is bevestigd: Ontdek Noord-Frankrijk en de Opaalkust in 7 dagen",
     "preheader": "Boekingsnummer VL-11 851 812. Hieronder alles over je 3 hotels."
@@ -84,7 +84,7 @@
   {
     "slug": "mvp-vakantie-bevestiging",
     "title": "MVP — Boekingsbevestiging vakantie",
-    "description": "MVP-versie van de boekingsbevestiging: kassabon per hotel (met alle inclusies), flexibel annuleren, prijs, boeking terugvinden, cadeaukaart en FAQ — zonder het blok Tips voor je reis.",
+    "description": "MVP-versie van de boekingsbevestiging: kassabon per hotel (met alle inclusies), flexibel annuleren, prijs, boeking terugvinden, niet inbegrepen, FAQ en onderaan het blok Annuleren of wijzigen — zonder het blok Tips voor je reis.",
     "section": "designs",
     "subject": "Je boeking is bevestigd: Ontdek Noord-Frankrijk en de Opaalkust in 7 dagen",
     "preheader": "Boekingsnummer VL-11 851 812. Hieronder alles over je 3 hotels."
