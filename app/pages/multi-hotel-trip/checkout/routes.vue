@@ -6,8 +6,8 @@
 // basis van historische gemiddelden (gekleurde tegels), vanaf 10 dagen voor vertrek per dag.
 // Daaronder "Praktische informatie": de drie hotels naast elkaar met foto, datums, check-in
 // (datum + tijd) en check-out, adres + routebeschrijving, telefoon, parkeren en opladen (fiets:
-// stalling); daaronder "Routes" (online als PDF en GPX; bij de fietsvakantie 50/50 naast
-// "Bagagetransfer", met foto); dan "Inbegrepen" en "Niet inbegrepen" (witte blokken met zwarte
+// stalling); bij de fietsvakantie daaronder "Bagagetransfer" en "Routes" (50/50, met foto; de
+// routes online als PDF en GPX — de autovakantie heeft geen routes); dan "Inbegrepen" en "Niet inbegrepen" (witte blokken met zwarte
 // rand, per reis en annuleringskeuze); een contactbanner over de hele breedte; dan het voorbeeld
 // reisschema als op de MVP-PDP (dagen niet klikbaar, alleen de link naar het sidepanel) naast de
 // minimap; en onderaan de tips per hotel zoals op de dealpagina ("Wat te doen tijdens je
@@ -239,8 +239,8 @@ const panelHotel = computed<TripHotelModalData | null>(() => {
   }
 })
 
-/* ── Routes-blok: foto (fiets: route met knooppunten; auto: het routekaartje van de reis) ── */
-const routesImage = computed(() => isBike.value ? '/images/vakanties/fiets/fietsroute.jpg' : (`/images/vakanties/maps/${trip.value?.id}-card.png`))
+/* ── Foto's bij Bagagetransfer en Routes (gebonden src: een statische src krijgt in dev een foute asset-URL en dus een hydration-waarschuwing) ── */
+const BIKE_IMAGES = { bagage: '/images/vakanties/fiets/bagagetransfer.jpg', route: '/images/vakanties/fiets/fietsroute.jpg' }
 
 /* ── Inbegrepen / niet inbegrepen: wat men onterecht als inbegrepen kan zien, per reis en annuleringskeuze ── */
 const cancelDeadline = computed(() => `${fmt(dateAt(-30))}, 23:59 uur`)
@@ -250,7 +250,7 @@ const included = computed(() => [
   isBike.value ? 'Elke avond een 3-gangendiner' : 'Een 3-gangendiner op de dag van aankomst bij elk hotel',
   ...(isBike.value
     ? ['Bagagetransfer naar het volgende hotel', 'Fietsroutes per etappe, online als PDF en GPX', 'Gratis parkeren bij het eerste hotel, de hele vakantie']
-    : ['Autoroutes van hotel naar hotel, online als PDF en GPX', 'Gratis parkeren bij de hotels']),
+    : ['Gratis parkeren bij de hotels']),
   ...(isFlex.value ? [`Flexibel annuleren t/m ${cancelDeadline.value}`] : []),
 ])
 const notIncluded = computed(() => [
@@ -258,7 +258,7 @@ const notIncluded = computed(() => [
   'Koffie en thee buiten het ontbijt, en drankjes bij het diner',
   isBike.value ? 'Fietshuur: je neemt zelf een fiets mee' : 'Opladen van je elektrische auto, brandstof en tol',
   ...(isBike.value ? ['De reis van huis naar het eerste hotel en terug'] : []),
-  'Uitstapjes op de tweede dag bij elk hotel (entree betaal je ter plaatse)',
+  'Entree voor attracties die niet in het arrangement zitten',
   'Toeristenbelasting, bij aankomst te betalen in het hotel',
   ...(isFlex.value ? [] : ['Annuleren: deze boeking is niet terugbetaalbaar']),
 ])
@@ -361,10 +361,10 @@ useHead({ title: `${checkout.value.name} — Tips & routes — ViaLuxury` })
           </article>
         </div>
 
-        <!-- Routes (online als PDF en GPX) onder de hotels; bij de fietsvakantie 50/50 naast Bagagetransfer (foto links, tekst rechts) -->
-        <div class="rp__bike" :class="{ 'rp__bike--single': !isBike }">
-          <article v-if="isBike" class="rp__card rp__bike-card">
-            <img class="rp__bike-img" src="/images/vakanties/fiets/bagagetransfer.jpg" alt="Koffers klaar voor de bagagetransfer" />
+        <!-- Fietsvakantie: bagagetransfer en routes (50/50; foto links, tekst rechts) onder de hotels. De autovakantie heeft geen routes. -->
+        <div v-if="isBike" class="rp__bike">
+          <article class="rp__card rp__bike-card">
+            <img class="rp__bike-img" :src="BIKE_IMAGES.bagage" alt="Koffers klaar voor de bagagetransfer" />
             <div class="rp__card-body">
               <h3 class="rp__h3 rp__h3--icon">
                 <svg class="rp__h3-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="18" height="13" rx="2" /><path d="M9 7V4h6v3M8 11v5M16 11v5" /></svg>
@@ -374,14 +374,13 @@ useHead({ title: `${checkout.value.name} — Tips & routes — ViaLuxury` })
             </div>
           </article>
           <article class="rp__card rp__bike-card">
-            <img class="rp__bike-img" :src="routesImage" :alt="isBike ? 'Fietsroute met knooppunten' : 'Routekaart van de vakantie'" />
+            <img class="rp__bike-img" :src="BIKE_IMAGES.route" alt="Fietsroute met knooppunten" />
             <div class="rp__card-body">
               <h3 class="rp__h3 rp__h3--icon">
                 <svg class="rp__h3-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="18" r="2.5" /><circle cx="18" cy="6" r="2.5" /><path d="M8.5 18H14a3 3 0 0 0 0-6h-4a3 3 0 0 1 0-6h5.5" /></svg>
                 Routes
               </h3>
-              <p v-if="isBike" class="rp__text">Bij aankomst in het hotel ontvang je de fietsroutes van de volgende etappe: uitgeprint én met een QR-code om ze online te bekijken. Alle routes kun je ook hier online bekijken als PDF of downloaden als GPX voor je fietsnavigatie.</p>
-              <p v-else class="rp__text">De autoroutes van hotel naar hotel staan voor je klaar: bekijk ze online als PDF of download ze als GPX voor je navigatie. Onderweg volg je de tips van die dag.</p>
+              <p class="rp__text">Bij aankomst in het hotel ontvang je de fietsroutes van de volgende etappe: uitgeprint én met een QR-code om ze online te bekijken. Alle routes kun je ook hier online bekijken als PDF of downloaden als GPX voor je fietsnavigatie.</p>
               <p class="rp__route-links rp__route-links--lg">
                 <a href="#" @click.prevent>Bekijk de routes (PDF)</a>
                 <a href="#" @click.prevent>Download GPX</a>
@@ -549,9 +548,8 @@ useHead({ title: `${checkout.value.name} — Tips & routes — ViaLuxury` })
 .rp__contact-line b { font-weight: 700; margin-right: 4px; }
 .rp__contact-line .rp__info-link { font-weight: 600; }
 .rp__contact-hours { color: var(--color-text-secondary); }
-/* Routes (en bij de fietsvakantie bagagetransfer) 50/50; in elk blok de foto links en de tekst rechts. Autovakantie: één blok over de hele breedte. */
-.rp__bike { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; margin-top: 24px; }
-.rp__bike--single { grid-template-columns: 1fr; }
+/* Fietsvakantie: bagagetransfer en routes 50/50; in elk blok de foto links en de tekst rechts */
+.rp__bike { grid-template-columns: repeat(2, minmax(0, 1fr)); display: grid; gap: 24px; margin-top: 24px; }
 .rp__bike-card { display: grid; grid-template-columns: 200px minmax(0, 1fr); align-items: stretch; }
 .rp__bike-img { display: block; width: 100%; height: 100%; min-height: 200px; object-fit: cover; }
 .rp__bike-card .rp__route-links { margin-top: 2px; }
