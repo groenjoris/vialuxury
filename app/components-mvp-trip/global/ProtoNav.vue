@@ -3,10 +3,12 @@
 // elke desktoppagina, in dezelfde subtiele stijl als het variant-label onder het logo. Op mobiel
 // verborgen: daar staat de link alleen in de footer. Bewust een gewone <a> (volledige
 // paginalading): dat houdt de klik licht op zware pagina's en reset meteen de demo-state, net als
-// een terugkeer naar het startscherm via de footer. De header is de positioneringscontext.
+// een terugkeer naar het startscherm via de footer; de navigatie start pas ná de eerstvolgende
+// paint (navigateAfterPaint), anders rekent Chrome de serverwachttijd aan de klik toe (INP).
+// De header is de positioneringscontext.
 // Op de post-bookingschermen (bevestiging, account, mails) staat er "‹ flow" boven: terug naar het
 // flowschema (de MVP-flow staat op dezelfde flowpagina als de volledige versie).
-import { isDemoRate, isDemoVariant } from '~/composables-mvp-trip/useMvpTripDemoBooking'
+import { isDemoRate, isDemoVariant, navigateAfterPaint } from '~/composables-mvp-trip/useMvpTripDemoBooking'
 
 const route = useRoute()
 /** Terug naar de flow mét de stand van de schakelaars (?demo= en ?rate=), zodat die daar blijven staan. */
@@ -22,8 +24,8 @@ const flow = computed(() => /^\/mvp-trip\/(checkout\/bevestiging|account|emails)
 
 <template>
   <nav class="proto-nav" aria-label="Prototype-navigatie">
-    <a v-if="flow" class="proto-nav__link" :href="flowHref" title="Terug naar de post-bookingflow">‹ flow</a>
-    <a class="proto-nav__link" href="/" title="Terug naar het startscherm">‹ startscherm</a>
+    <a v-if="flow" class="proto-nav__link" :href="flowHref" title="Terug naar de post-bookingflow" @click="navigateAfterPaint(flowHref, $event)">‹ flow</a>
+    <a class="proto-nav__link" href="/" title="Terug naar het startscherm" @click="navigateAfterPaint('/', $event)">‹ startscherm</a>
   </nav>
 </template>
 

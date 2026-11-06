@@ -1,10 +1,10 @@
 <script setup lang="ts">
 // Prototype-schakelaars (niet voor de gast) linksboven op de post-bookingschermen: Auto | Fiets en
 // Flex | Non-flex. Dezelfde stand als op de flowpagina; de keuze staat in de URL (`?demo=` en
-// `?rate=nonflex`), dus elke stand is een deelbare link. Gewone links (volledige paginalading):
-// de pagina zet de demo-boeking dan opnieuw klaar (useDemoBookingFromQuery). Op mobiel verborgen,
+// `?rate=nonflex`), dus elke stand is een deelbare link. Gewone links (volledige paginalading, ná
+// de eerstvolgende paint): de pagina zet de demo-boeking dan opnieuw klaar (useDemoBookingFromQuery). Op mobiel verborgen,
 // net als de prototype-navigatie. De pagina geeft de huidige stand mee.
-import { demoQuery, type DemoRate, type DemoVariant } from '~/composables-multi-hotel-trip/useMultiHotelTripDemoBooking'
+import { demoQuery, navigateAfterPaint, type DemoRate, type DemoVariant } from '~/composables-multi-hotel-trip/useMultiHotelTripDemoBooking'
 
 const props = defineProps<{ variant: DemoVariant; rate: DemoRate }>()
 const route = useRoute()
@@ -26,7 +26,7 @@ const groups = computed(() => [
     <div v-for="g in groups" :key="g.id" class="demo-sw__group" role="group" :aria-label="g.label">
       <template v-for="o in g.options" :key="o.label">
         <span v-if="o.on" class="demo-sw__opt demo-sw__opt--on" aria-current="true">{{ o.label }}</span>
-        <a v-else class="demo-sw__opt" :href="o.href">{{ o.label }}</a>
+        <a v-else class="demo-sw__opt" :href="o.href" @click="navigateAfterPaint(o.href, $event)">{{ o.label }}</a>
       </template>
     </div>
   </div>

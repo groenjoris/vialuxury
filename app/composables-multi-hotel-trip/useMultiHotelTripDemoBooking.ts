@@ -35,6 +35,20 @@ export function demoHref(path: string, variant: DemoVariant, opts: { preload?: b
   return `${path}?${q.toString()}`
 }
 
+/** Volledige navigatie ná de eerstvolgende paint. Een gewone link laat de oude pagina staan tot de
+ *  server de nieuwe heeft gestuurd (op Vercel ~0,5 s) en Chrome rekent die wachttijd aan de klik toe
+ *  (INP "600 ms" op de prototype-linkjes). Eerst een frame tekenen en dan pas navigeren maakt de
+ *  klik direct klaar. Alleen bij een gewone linkerklik; met ctrl/cmd/shift (nieuw tabblad) doet de
+ *  browser zijn eigen ding. */
+export function navigateAfterPaint(href: string, e?: MouseEvent) {
+  if (!import.meta.client) return
+  if (e) {
+    if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return
+    e.preventDefault()
+  }
+  requestAnimationFrame(() => requestAnimationFrame(() => window.location.assign(href)))
+}
+
 /** Boeking klaarzetten: reis, datums, kamerkeuze (flexibel annuleren of niet terugbetaalbaar), gast en (optioneel) de preloader-vlag. */
 export function seedDemoBooking(variant: DemoVariant, opts: { preload?: boolean; rate?: DemoRate } = {}) {
   const demo = DEMO_BOOKINGS[variant]

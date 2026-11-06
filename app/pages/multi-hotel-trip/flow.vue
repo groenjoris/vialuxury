@@ -15,7 +15,7 @@
 // de boekingsbevestiging en de pre-travelmail bestaan alleen voor de autovakantie en openen
 // ongewijzigd. Klikken opent de pagina of mail als gewone link. Desktop-first (vaste tekenruimte
 // van 1120px), schaalt mee tot een minimum en scrolt daarna horizontaal.
-import { demoHref, demoQuery, isDemoRate, isDemoVariant, type DemoRate, type DemoVariant } from '~/composables-multi-hotel-trip/useMultiHotelTripDemoBooking'
+import { demoHref, demoQuery, isDemoRate, isDemoVariant, navigateAfterPaint, type DemoRate, type DemoVariant } from '~/composables-multi-hotel-trip/useMultiHotelTripDemoBooking'
 
 useHead({ title: 'Post-bookingflow — ViaLuxury' })
 
@@ -38,9 +38,10 @@ const switches = computed(() => [
 /** Mailpreview: alleen de annuleringskeuze mee (de reis zit in de slug). */
 const mailHref = (slug: string, r: DemoRate) => `${FULL_MAIL_BASE}${slug}${r === 'nonflex' ? '?rate=nonflex' : ''}`
 
-/* Alle kaartjes zijn gewone links (volledige paginalading). De pagina's lezen de demo-variant uit
-   de URL (`?demo=auto|fiets`, zie useMultiHotelTripDemoBooking). Een client-side routewissel
-   vanuit de klik-handler blokkeerde de UI ruim een seconde (INP); een echte navigatie is licht. */
+/* Alle kaartjes zijn gewone links (volledige paginalading, ná de eerstvolgende paint). De pagina's
+   lezen de demo-variant uit de URL (`?demo=auto|fiets`, zie useMultiHotelTripDemoBooking). Een
+   client-side routewissel vanuit de klik-handler blokkeerde de UI ruim een seconde (INP); een echte
+   navigatie is licht, mits ze pas na de paint start (anders telt de serverwachttijd als INP). */
 const FULL_MAIL_BASE = '/multi-hotel-trip/emails/'
 const FULL = {
   bevestiging: '/multi-hotel-trip/checkout/bevestiging',
@@ -53,7 +54,7 @@ const MVP = {
   account: '/mvp-trip/account/boekingen',
   mail: (r: DemoRate) => `/mvp-trip/emails/mvp-vakantie-bevestiging${r === 'nonflex' ? '?rate=nonflex' : ''}`,
 }
-const open = (href: string) => { if (import.meta.client) window.location.assign(href) }
+const open = (href: string) => navigateAfterPaint(href)
 
 /* ── Tekenruimte ── */
 const W = 1120

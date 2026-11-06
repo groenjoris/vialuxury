@@ -6,6 +6,7 @@
 // de HTML ook in een e-mailclient of ESP werkt.
 // MVP: dezelfde exportlijst als de volledige versie (één export, slugs met het voorvoegsel mvp-).
 import emails from '~/data/mht-emails.json'
+import { navigateAfterPaint } from '~/composables-mvp-trip/useMvpTripDemoBooking'
 
 const route = useRoute()
 const slug = computed(() => String(route.params.slug))
@@ -54,7 +55,7 @@ useHead({ title: `${entry.value?.title ?? 'E-mail'} — ViaLuxury e-maildesigns`
         <!-- Prototype-navigatie: flow erboven, startscherm eronder (zoals linksboven op de andere schermen). -->
         <div class="ev__links">
           <NuxtLink class="ev__back" :to="flowHref">‹ Flow</NuxtLink>
-          <a class="ev__back" href="/">‹ Startscherm</a>
+          <a class="ev__back" href="/" @click="navigateAfterPaint('/', $event)">‹ Startscherm</a>
         </div>
         <h1 class="ev__title">{{ entry?.title }}</h1>
       </div>
