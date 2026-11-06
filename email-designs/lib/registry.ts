@@ -55,10 +55,11 @@ export const emails: EmailEntry[] = [
     Component: VakantieBevestiging,
     props: { ...VakantieBevestiging.PreviewProps, rate: "nonflex", tripPrice: "€919", total: "€946,50" },
   },
-  // Fietsvakantie (Twente & Salland): elke mail en pagina bestaat in een auto- én een fietsvariant.
+  // Fietsvakantie (Twente & Salland): elke mail en pagina bestaat in een auto- én een fietsvariant. Zelfde titel als de
+  // autoversie, zodat de schakelaar Auto | Fiets op de preview (naast de titel) niet verspringt.
   {
     slug: "vakantie-bevestiging-fiets",
-    title: "Boekingsbevestiging vakantie — fietsvakantie",
+    title: "Boekingsbevestiging vakantie",
     description: "Dezelfde boekingsbevestiging voor de fietsvakantie Twente & Salland: drie hotels met bagagetransport, fietshuur en de reis naar het eerste hotel niet inbegrepen.",
     section: "designs",
     subject: "Je boeking is bevestigd: 7-daagse fietsvakantie Twente & Salland",
@@ -69,7 +70,7 @@ export const emails: EmailEntry[] = [
   {
     slug: "vakantie-bevestiging-fiets-nonflex",
     variantOf: "vakantie-bevestiging-fiets",
-    title: "Boekingsbevestiging vakantie — fietsvakantie (niet terugbetaalbaar)",
+    title: "Boekingsbevestiging vakantie (niet terugbetaalbaar)",
     description: "Fietsvakantie, niet-terugbetaalbare boeking.",
     section: "designs",
     subject: "Je boeking is bevestigd: 7-daagse fietsvakantie Twente & Salland",
@@ -122,7 +123,7 @@ export const emails: EmailEntry[] = [
   },
   {
     slug: "mvp-vakantie-bevestiging-fiets",
-    title: "MVP — Boekingsbevestiging vakantie — fietsvakantie",
+    title: "MVP — Boekingsbevestiging vakantie",
     description: "MVP-versie van de boekingsbevestiging voor de fietsvakantie Twente & Salland.",
     section: "designs",
     subject: "Je boeking is bevestigd: 7-daagse fietsvakantie Twente & Salland",
@@ -133,7 +134,7 @@ export const emails: EmailEntry[] = [
   {
     slug: "mvp-vakantie-bevestiging-fiets-nonflex",
     variantOf: "mvp-vakantie-bevestiging-fiets",
-    title: "MVP — Boekingsbevestiging vakantie — fietsvakantie (niet terugbetaalbaar)",
+    title: "MVP — Boekingsbevestiging vakantie (niet terugbetaalbaar)",
     description: "MVP-versie, fietsvakantie, niet-terugbetaalbare boeking.",
     section: "designs",
     subject: "Je boeking is bevestigd: 7-daagse fietsvakantie Twente & Salland",

@@ -140,7 +140,8 @@ export const incheckMails: IncheckMailDef[] = TRIPS.flatMap((trip) =>
     };
     return {
       slug,
-      title: `Incheck hotel ${n} (dag voor aankomst)${trip.key === "fiets" ? " — fietsvakantie" : ""}`,
+      // Zelfde titel voor auto en fiets (de reis staat in de beschrijving), zodat de schakelaar op de preview niet verspringt.
+      title: `Incheck hotel ${n} (dag voor aankomst)`,
       description: `De dag vóór hotel ${n} van de ${trip.label}: ${what}. Kort: "Morgen in het kort", het hotelblok (adres, route, telefoon, inchecken, ${trip.isBike ? "stalling, bagagetransfer" : "parkeren, opladen"}), praktische informatie en tips, Hulp nodig? en veelgestelde vragen.`,
       subject: incheckSubject(props),
       preheader: incheckPreheader(props),

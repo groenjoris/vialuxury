@@ -77,6 +77,7 @@ const responsiveCss = `
   .m-mt { margin-top: 16px !important; }
   .m-pad { padding-left: 16px !important; padding-right: 16px !important; }
   .m-nopad { padding-left: 0 !important; padding-right: 0 !important; }
+  .m-num { margin-bottom: 10px !important; }
   .m-mx-auto { margin-left: auto !important; margin-right: auto !important; }
   .m-only { display: block !important; }
   .m-btn { display: block !important; text-align: center !important; }
@@ -289,9 +290,10 @@ export default function VakantieBevestiging({
 
                 {hotels.map((h, i) => (
                   <Section key={h.name} style={{ borderTop: `1px solid ${line}`, marginTop: "20px", paddingTop: "20px" }}>
+                    {/* Mobiel (stack): nummer boven de foto, foto en tekst eronder, alles links uitgelijnd. */}
                     <Row>
-                      <Column style={{ width: "36px", verticalAlign: "top" }}>
-                        <span style={num}>{i + 1}</span>
+                      <Column className="stack" style={{ width: "36px", verticalAlign: "top" }}>
+                        <span className="m-num" style={num}>{i + 1}</span>
                       </Column>
                       <Column className="stack" style={{ width: "120px", verticalAlign: "top" }}>
                         <Img
@@ -303,7 +305,7 @@ export default function VakantieBevestiging({
                           style={{ borderRadius: "4px", objectFit: "cover", display: "block" }}
                         />
                       </Column>
-                      <Column className="stack" style={{ paddingLeft: "16px", verticalAlign: "top" }}>
+                      <Column className="stack m-nopad" style={{ paddingLeft: "16px", verticalAlign: "top" }}>
                         <Text style={{ ...body14, margin: 0, fontSize: "16px", fontWeight: 700 }}>
                           {h.name}{" "}
                           <span style={{ fontSize: "13px", letterSpacing: "1px", color: c.heading, fontWeight: 400 }}>

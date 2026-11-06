@@ -18,7 +18,7 @@
   },
   {
     "slug": "vakantie-bevestiging-fiets",
-    "title": "Boekingsbevestiging vakantie — fietsvakantie",
+    "title": "Boekingsbevestiging vakantie",
     "description": "Dezelfde boekingsbevestiging voor de fietsvakantie Twente & Salland: drie hotels met bagagetransport, fietshuur en de reis naar het eerste hotel niet inbegrepen.",
     "section": "designs",
     "subject": "Je boeking is bevestigd: 7-daagse fietsvakantie Twente & Salland",
@@ -26,7 +26,7 @@
   },
   {
     "slug": "vakantie-bevestiging-fiets-nonflex",
-    "title": "Boekingsbevestiging vakantie — fietsvakantie (niet terugbetaalbaar)",
+    "title": "Boekingsbevestiging vakantie (niet terugbetaalbaar)",
     "description": "Fietsvakantie, niet-terugbetaalbare boeking.",
     "section": "designs",
     "subject": "Je boeking is bevestigd: 7-daagse fietsvakantie Twente & Salland",
@@ -76,7 +76,7 @@
   },
   {
     "slug": "vakantie-incheck-hotel-1-fiets",
-    "title": "Incheck hotel 1 (dag voor aankomst) — fietsvakantie",
+    "title": "Incheck hotel 1 (dag voor aankomst)",
     "description": "De dag vóór hotel 1 van de fietsvakantie: morgen begint je vakantie: de gegevens van je eerste hotel. Kort: \"Morgen in het kort\", het hotelblok (adres, route, telefoon, inchecken, stalling, bagagetransfer), praktische informatie en tips, Hulp nodig? en veelgestelde vragen.",
     "section": "designs",
     "subject": "Morgen begint je vakantie",
@@ -84,7 +84,7 @@
   },
   {
     "slug": "vakantie-incheck-hotel-2-fiets",
-    "title": "Incheck hotel 2 (dag voor aankomst) — fietsvakantie",
+    "title": "Incheck hotel 2 (dag voor aankomst)",
     "description": "De dag vóór hotel 2 van de fietsvakantie: terugblik op Hotel Wapen van Delden, morgen door naar Hotel de Zwaan (bagage vóór 9:00 uur bij de receptie). Kort: \"Morgen in het kort\", het hotelblok (adres, route, telefoon, inchecken, stalling, bagagetransfer), praktische informatie en tips, Hulp nodig? en veelgestelde vragen.",
     "section": "designs",
     "subject": "Morgen naar Raalte",
@@ -92,7 +92,7 @@
   },
   {
     "slug": "vakantie-incheck-hotel-3-fiets",
-    "title": "Incheck hotel 3 (dag voor aankomst) — fietsvakantie",
+    "title": "Incheck hotel 3 (dag voor aankomst)",
     "description": "De dag vóór hotel 3 van de fietsvakantie: terugblik op Hotel de Zwaan, morgen door naar Landhuishotel Herikerberg (bagage vóór 9:00 uur bij de receptie). Kort: \"Morgen in het kort\", het hotelblok (adres, route, telefoon, inchecken, stalling, bagagetransfer), praktische informatie en tips, Hulp nodig? en veelgestelde vragen.",
     "section": "designs",
     "subject": "Morgen naar Markelo",
@@ -117,7 +117,7 @@
   },
   {
     "slug": "mvp-vakantie-bevestiging-fiets",
-    "title": "MVP — Boekingsbevestiging vakantie — fietsvakantie",
+    "title": "MVP — Boekingsbevestiging vakantie",
     "description": "MVP-versie van de boekingsbevestiging voor de fietsvakantie Twente & Salland.",
     "section": "designs",
     "subject": "Je boeking is bevestigd: 7-daagse fietsvakantie Twente & Salland",
@@ -125,7 +125,7 @@
   },
   {
     "slug": "mvp-vakantie-bevestiging-fiets-nonflex",
-    "title": "MVP — Boekingsbevestiging vakantie — fietsvakantie (niet terugbetaalbaar)",
+    "title": "MVP — Boekingsbevestiging vakantie (niet terugbetaalbaar)",
     "description": "MVP-versie, fietsvakantie, niet-terugbetaalbare boeking.",
     "section": "designs",
     "subject": "Je boeking is bevestigd: 7-daagse fietsvakantie Twente & Salland",
