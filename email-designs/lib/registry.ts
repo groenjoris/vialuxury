@@ -1,5 +1,5 @@
 import type * as React from "react";
-import VakantieBevestiging from "../emails/vakantie-bevestiging";
+import VakantieBevestiging, { fietsPreviewProps as bevestigingFiets } from "../emails/vakantie-bevestiging";
 import VakantiePreTravel from "../emails/vakantie-pre-travel";
 import VakantieIncheckHotel from "../emails/vakantie-incheck-hotel";
 import MvpVakantieBevestiging from "../emails/mvp-vakantie-bevestiging";
@@ -55,6 +55,28 @@ export const emails: EmailEntry[] = [
     Component: VakantieBevestiging,
     props: { ...VakantieBevestiging.PreviewProps, rate: "nonflex", tripPrice: "€919", total: "€946,50" },
   },
+  // Fietsvakantie (Twente & Salland): elke mail en pagina bestaat in een auto- én een fietsvariant.
+  {
+    slug: "vakantie-bevestiging-fiets",
+    title: "Boekingsbevestiging vakantie — fietsvakantie",
+    description: "Dezelfde boekingsbevestiging voor de fietsvakantie Twente & Salland: drie hotels met bagagetransport, fietshuur en de reis naar het eerste hotel niet inbegrepen.",
+    section: "designs",
+    subject: "Je boeking is bevestigd: 7-daagse fietsvakantie Twente & Salland",
+    preheader: "Boekingsnummer VL-85 584 493. Hieronder alles over je 3 hotels.",
+    Component: VakantieBevestiging,
+    props: bevestigingFiets,
+  },
+  {
+    slug: "vakantie-bevestiging-fiets-nonflex",
+    variantOf: "vakantie-bevestiging-fiets",
+    title: "Boekingsbevestiging vakantie — fietsvakantie (niet terugbetaalbaar)",
+    description: "Fietsvakantie, niet-terugbetaalbare boeking.",
+    section: "designs",
+    subject: "Je boeking is bevestigd: 7-daagse fietsvakantie Twente & Salland",
+    preheader: "Boekingsnummer VL-85 584 493. Hieronder alles over je 3 hotels.",
+    Component: VakantieBevestiging,
+    props: { ...bevestigingFiets, rate: "nonflex", tripPrice: "€1.059", total: "€1.086,50" },
+  },
   {
     slug: "vakantie-pre-travel",
     title: "Pre-travel (14 dagen voor vertrek)",
@@ -97,6 +119,27 @@ export const emails: EmailEntry[] = [
     preheader: "Boekingsnummer VL-11 851 812. Hieronder alles over je 3 hotels.",
     Component: MvpVakantieBevestiging,
     props: { ...MvpVakantieBevestiging.PreviewProps, rate: "nonflex", tripPrice: "€919", total: "€946,50" },
+  },
+  {
+    slug: "mvp-vakantie-bevestiging-fiets",
+    title: "MVP — Boekingsbevestiging vakantie — fietsvakantie",
+    description: "MVP-versie van de boekingsbevestiging voor de fietsvakantie Twente & Salland.",
+    section: "designs",
+    subject: "Je boeking is bevestigd: 7-daagse fietsvakantie Twente & Salland",
+    preheader: "Boekingsnummer VL-85 584 493. Hieronder alles over je 3 hotels.",
+    Component: MvpVakantieBevestiging,
+    props: { ...bevestigingFiets, bookingUrl: "https://vialuxury.vercel.app/mvp-trip/account/boekingen?demo=fiets" },
+  },
+  {
+    slug: "mvp-vakantie-bevestiging-fiets-nonflex",
+    variantOf: "mvp-vakantie-bevestiging-fiets",
+    title: "MVP — Boekingsbevestiging vakantie — fietsvakantie (niet terugbetaalbaar)",
+    description: "MVP-versie, fietsvakantie, niet-terugbetaalbare boeking.",
+    section: "designs",
+    subject: "Je boeking is bevestigd: 7-daagse fietsvakantie Twente & Salland",
+    preheader: "Boekingsnummer VL-85 584 493. Hieronder alles over je 3 hotels.",
+    Component: MvpVakantieBevestiging,
+    props: { ...bevestigingFiets, bookingUrl: "https://vialuxury.vercel.app/mvp-trip/account/boekingen?demo=fiets", rate: "nonflex", tripPrice: "€1.059", total: "€1.086,50" },
   },
   // CRM (concept, desktop + light mode): drie geautomatiseerde mails.
   {

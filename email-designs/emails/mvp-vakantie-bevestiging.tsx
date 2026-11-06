@@ -218,9 +218,12 @@ export default function VakantieBevestiging({
   const isBike = /fiets/i.test(tripType);
   const notIncluded = [
     "Toeristenbelasting, bij aankomst te betalen in het hotel",
-    isBike ? "Fietshuur" : "Opladen van je elektrische auto",
+    isBike ? "Fietshuur" : "Opladen van je elektrische auto, brandstof en tol",
+    isBike ? "De reis van huis naar het eerste hotel en terug" : null,
     "Kosten voor attracties uit het voorbeeldreisschema",
-  ];
+    "Lunch, drankjes en maaltijden die niet bij je hotel vermeld staan",
+    "Reis- en annuleringsverzekering",
+  ].filter((x): x is string => !!x);
   /* Annuleren bij het flexibele tarief: drie stappen. */
   const cancelSteps = [
     { title: "Check de annuleringstermijn", text: `Je kunt jouw reservering nog tot 30 dagen voor de dag van aankomst annuleren. In geval van jouw boeking betekent dit dat je annuleringstermijn afloopt om 23:59 uur op ${cancelUntil}. Bij annulering na deze termijn of bij no-show ontvang je geen bedrag retour.` },
@@ -326,11 +329,11 @@ export default function VakantieBevestiging({
                   </Section>
                 ))}
 
-                {/* Annuleringskeuze (flexibel annuleren met het groene schild, of niet terugbetaalbaar) en bagagetransfer: dezelfde iconen als op de bevestigingspagina */}
+                {/* Annuleringskeuze (flexibel annuleren: groen schild met vinkje; niet terugbetaalbaar: grijs schild met kruis) en bagagetransfer: dezelfde iconen als op de bevestigingspagina */}
                 <Section style={{ borderTop: `1px solid ${line}`, marginTop: "20px", paddingTop: "16px" }}>
                   <Row>
                     <Column style={{ width: "36px", verticalAlign: "top" }}>
-                      {rate === "flex" && <Img src={img("icon-shield-green.png")} alt="" width="26" height="26" />}
+                      <Img src={img(rate === "flex" ? "icon-shield-green.png" : "icon-shield-grey.png")} alt="" width="26" height="26" />
                     </Column>
                     <Column style={{ verticalAlign: "top" }}>
                       <Text style={{ ...body14, margin: 0, fontSize: "16px", fontWeight: 700 }}>{rate === "flex" ? "Flexibel annuleren" : "Niet terugbetaalbaar"}</Text>

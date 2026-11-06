@@ -127,6 +127,13 @@ table, via `rate`/`isFlex` in `useMultiHotelTripAccountBooking`); de mails met a
 `<slug>-nonflex`-variant (`variantOf`), die de preview bij Non-flex laadt; de incheckmails
 verschillen niet.
 
+## Twee reizen: auto én fiets (regel sinds 2026-11-06)
+
+Elke pagina en elke mail van de post-bookingflow bestaat in een auto- (Opaalkust) én een
+fietsvariant (Twente & Salland), plus flex/non-flex waar annuleren ter sprake komt. Nieuwe of
+gewijzigde onderdelen altijd in beide reizen maken (mails: `<slug>-fiets`, voorbeelddata zoals
+`fietsPreviewProps` in `vakantie-bevestiging.tsx`). Alleen de pre-travelmail is nog auto-only.
+
 ## E-mails van de vakanties (`email-designs/`)
 
 Alleen de e-mails van de multi-hotel vakanties (react-email) staan in `email-designs/`; de

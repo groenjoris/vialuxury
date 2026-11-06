@@ -12,8 +12,8 @@
 // deelbaar): Auto | Fiets (`?demo=fiets`) en Flex | Non-flex (`?rate=nonflex`, de annuleringskeuze
 // van de demo-boeking). De pagina's lezen beide uit de URL (useDemoBookingFromQuery) en tonen
 // linksboven dezelfde schakelaars (DemoSwitches); de incheckmails hebben per reis een eigen mail;
-// de boekingsbevestiging en de pre-travelmail bestaan alleen voor de autovakantie en openen
-// ongewijzigd. Klikken opent de pagina of mail als gewone link. Desktop-first (vaste tekenruimte
+// de boekingsbevestiging heeft ook een fietsversie; alleen de pre-travelmail bestaat nog
+// uitsluitend voor de autovakantie en opent ongewijzigd. Klikken opent de pagina of mail als gewone link. Desktop-first (vaste tekenruimte
 // van 1120px), schaalt mee tot een minimum en scrolt daarna horizontaal.
 import { demoHref, demoQuery, isDemoRate, isDemoVariant, navigateAfterPaint, type DemoRate, type DemoVariant } from '~/composables-multi-hotel-trip/useMultiHotelTripDemoBooking'
 
@@ -52,7 +52,7 @@ const FULL = {
 const MVP = {
   bevestiging: '/mvp-trip/checkout/bevestiging',
   account: '/mvp-trip/account/boekingen',
-  mail: (r: DemoRate) => `/mvp-trip/emails/mvp-vakantie-bevestiging${r === 'nonflex' ? '?rate=nonflex' : ''}`,
+  mail: (v: DemoVariant, r: DemoRate) => `/mvp-trip/emails/mvp-vakantie-bevestiging${v === 'fiets' ? '-fiets' : ''}${r === 'nonflex' ? '?rate=nonflex' : ''}`,
 }
 const open = (href: string) => navigateAfterPaint(href)
 
@@ -111,7 +111,7 @@ const fullPages = (v: DemoVariant, r: DemoRate): Card[] => [
   accountCard(FULL.account, v, r),
 ]
 const fullMails = (v: DemoVariant, r: DemoRate): Card[] => [
-  bevestigingMail(mailHref('vakantie-bevestiging', r)),
+  bevestigingMail(mailHref(v === 'fiets' ? 'vakantie-bevestiging-fiets' : 'vakantie-bevestiging', r)),
   { id: 'mail-pretravel', kind: 'email', title: 'Pre-travel', x: X.prep, y: MAILS_Y, w: CARD_W, h: MAIL_H, href: mailHref('vakantie-pre-travel', r) },
   ...[COL.h1, COL.h2, COL.h3].map((x, i): Card => ({ id: `mail-h${i + 1}`, kind: 'email', title: `Incheck hotel ${i + 1}`, x: x - MAIL_BEFORE - CARD_W_SM / 2, y: MAILS_Y, w: CARD_W_SM, h: MAIL_H, href: mailHref(incheckSlug(i + 1, v), r) })),
 ]
@@ -127,7 +127,7 @@ const fullConnectors: Connector[] = [
 ]
 
 /* ── MVP: alleen bevestigingspagina, boekingsbevestiging en accountomgeving ── */
-const mvpCards = (v: DemoVariant, r: DemoRate): Card[] => [bevestigingCard(MVP.bevestiging, v, r), accountCard(MVP.account, v, r), bevestigingMail(MVP.mail(r))]
+const mvpCards = (v: DemoVariant, r: DemoRate): Card[] => [bevestigingCard(MVP.bevestiging, v, r), accountCard(MVP.account, v, r), bevestigingMail(MVP.mail(v, r))]
 
 /** Mijlpalen: oranje = moment van een pagina/mail, zwart met hotelicoon = inchecken. */
 const milestones = [

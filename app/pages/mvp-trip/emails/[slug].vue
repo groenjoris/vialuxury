@@ -16,6 +16,7 @@ if (!entry.value) throw createError({ statusCode: 404, statusMessage: 'E-mail ni
 /** Terug naar de flow met de reis van deze mail en de annuleringskeuze uit de URL, zodat de schakelaars daar kloppen. */
 const flowHref = computed(() => {
   const q = new URLSearchParams()
+  if (slug.value.endsWith('-fiets')) q.set('demo', 'fiets')
   if (route.query.rate === 'nonflex') q.set('rate', 'nonflex')
   const qs = q.toString()
   return `/multi-hotel-trip/flow${qs ? `?${qs}` : ''}`
@@ -32,8 +33,8 @@ const hasNonflex = computed(() => emails.some(e => (e as { variantOf?: string })
 const fileSlug = computed(() => rate.value === 'nonflex' && hasNonflex.value ? `${slug.value}-nonflex` : slug.value)
 const withRate = (path: string) => `${path}${rate.value === 'nonflex' ? '?rate=nonflex' : ''}`
 const switchLinks = computed(() => ({
-  auto: null,
-  fiets: null,
+  auto: isFiets.value ? withRate(`/mvp-trip/emails/${baseSlug.value}`) : null,
+  fiets: !isFiets.value && hasFiets.value ? withRate(`/mvp-trip/emails/${baseSlug.value}-fiets`) : null,
   flex: route.path,
   nonflex: `${route.path}?rate=nonflex`,
 }))

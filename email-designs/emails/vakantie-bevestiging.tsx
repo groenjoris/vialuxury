@@ -216,9 +216,12 @@ export default function VakantieBevestiging({
   const isBike = /fiets/i.test(tripType);
   const notIncluded = [
     "Toeristenbelasting, bij aankomst te betalen in het hotel",
-    isBike ? "Fietshuur" : "Opladen van je elektrische auto",
+    isBike ? "Fietshuur" : "Opladen van je elektrische auto, brandstof en tol",
+    isBike ? "De reis van huis naar het eerste hotel en terug" : null,
     "Kosten voor attracties uit het voorbeeldreisschema",
-  ];
+    "Lunch, drankjes en maaltijden die niet bij je hotel vermeld staan",
+    "Reis- en annuleringsverzekering",
+  ].filter((x): x is string => !!x);
   /* Annuleren bij het flexibele tarief: drie stappen. */
   const cancelSteps = [
     { title: "Check de annuleringstermijn", text: `Je kunt jouw reservering nog tot 30 dagen voor de dag van aankomst annuleren. In geval van jouw boeking betekent dit dat je annuleringstermijn afloopt om 23:59 uur op ${cancelUntil}. Bij annulering na deze termijn of bij no-show ontvang je geen bedrag retour.` },
@@ -315,11 +318,11 @@ export default function VakantieBevestiging({
                   </Section>
                 ))}
 
-                {/* Annuleringskeuze (flexibel annuleren met het groene schild, of niet terugbetaalbaar) en bagagetransfer: dezelfde iconen als op de bevestigingspagina */}
+                {/* Annuleringskeuze (flexibel annuleren: groen schild met vinkje; niet terugbetaalbaar: grijs schild met kruis) en bagagetransfer: dezelfde iconen als op de bevestigingspagina */}
                 <Section style={{ borderTop: `1px solid ${line}`, marginTop: "20px", paddingTop: "16px" }}>
                   <Row>
                     <Column style={{ width: "36px", verticalAlign: "top" }}>
-                      {rate === "flex" && <Img src={img("icon-shield-green.png")} alt="" width="26" height="26" />}
+                      <Img src={img(rate === "flex" ? "icon-shield-green.png" : "icon-shield-grey.png")} alt="" width="26" height="26" />
                     </Column>
                     <Column style={{ verticalAlign: "top" }}>
                       <Text style={{ ...body14, margin: 0, fontSize: "16px", fontWeight: 700 }}>{rate === "flex" ? "Flexibel annuleren" : "Niet terugbetaalbaar"}</Text>
@@ -533,4 +536,48 @@ VakantieBevestiging.PreviewProps = {
   total: "€991,50",
   routesUrl: "https://vialuxury.vercel.app/multi-hotel-trip/checkout/routes",
   bookingUrl: "https://vialuxury.vercel.app/multi-hotel-trip/account/boekingen/ontdek-noord-frankrijk-en-de-opaalkust-in-7-dagen",
+} satisfies Props;
+
+/** Fietsvakantie (Twente & Salland): zelfde mail, andere boeking — bagagetransfer, fietshuur niet inbegrepen. */
+export const fietsPreviewProps = {
+  ...VakantieBevestiging.PreviewProps,
+  bookingNumber: "VL-85 584 493",
+  tripType: "Fietsvakantie",
+  tripName: "7-daagse fietsvakantie Twente & Salland: Delden – Raalte – Markelo incl. dagelijks 3-gangendiner",
+  dateRange: "maandag 7 juni t/m zondag 13 juni 2027",
+  hotels: [
+    {
+      name: "Hotel Wapen van Delden",
+      stars: 4,
+      address: "Langestraat 242, 7491 AM Delden",
+      image: `${baseUrl}/images/vakanties/007/hotel-wapen-van-delden.jpg`,
+      items: ["2 overnachtingen", "1× Comfortkamer", "Dagelijks uitgebreid ontbijtbuffet", "2× 3-gangendiner", "Welkomstfietstasje met water, regenponcho en bandenplaksetje", "ViaLuxury welkomstcadeau", "Bagagetransport naar Raalte", "Gratis parkeren (gehele vakantie)"],
+      checkIn: "ma 7 jun · vanaf 15:00 uur",
+      checkOut: "wo 9 jun · tot 11:00 uur",
+    },
+    {
+      name: "Hotel de Zwaan",
+      stars: 3,
+      address: "Kerkstraat 2, 8102 EA Raalte",
+      image: `${baseUrl}/images/vakanties/007/hotel-de-zwaan-gebouw.jpg`,
+      items: ["2 overnachtingen", "1× Comfortkamer", "Dagelijks uitgebreid ontbijtbuffet", "2× 3-gangendiner", "Fietsroutes Salland op je telefoon", "Bagagetransport naar Markelo"],
+      checkIn: "wo 9 jun · vanaf 15:00 uur",
+      checkOut: "vr 11 jun · tot 11:00 uur",
+    },
+    {
+      name: "Landhuishotel Herikerberg",
+      stars: 4,
+      address: "Herikerbergweg 5, 7475 TB Markelo",
+      image: `${baseUrl}/images/vakanties/007/hotel-herikerberg.jpg`,
+      items: ["2 overnachtingen", "1× Landhuiskamer", "Dagelijks uitgebreid ontbijtbuffet", "2× 3-gangendiner", "Fietsroutes Twente op je telefoon", "Bagagetransport terug naar Delden"],
+      checkIn: "vr 11 jun · vanaf 15:00 uur",
+      checkOut: "zo 13 jun · tot 11:00 uur",
+    },
+  ],
+  cancelUntil: "za 8 mei",
+  hasBaggage: true,
+  tripPrice: "€1.104",
+  total: "€1.131,50",
+  routesUrl: "https://vialuxury.vercel.app/multi-hotel-trip/checkout/routes?demo=fiets",
+  bookingUrl: "https://vialuxury.vercel.app/multi-hotel-trip/account/boekingen/fietsvakantie-twente-en-salland-delden-raalte-markelo?demo=fiets",
 } satisfies Props;

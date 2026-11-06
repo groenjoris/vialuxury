@@ -17,6 +17,23 @@
     "variantOf": "vakantie-bevestiging"
   },
   {
+    "slug": "vakantie-bevestiging-fiets",
+    "title": "Boekingsbevestiging vakantie — fietsvakantie",
+    "description": "Dezelfde boekingsbevestiging voor de fietsvakantie Twente & Salland: drie hotels met bagagetransport, fietshuur en de reis naar het eerste hotel niet inbegrepen.",
+    "section": "designs",
+    "subject": "Je boeking is bevestigd: 7-daagse fietsvakantie Twente & Salland",
+    "preheader": "Boekingsnummer VL-85 584 493. Hieronder alles over je 3 hotels."
+  },
+  {
+    "slug": "vakantie-bevestiging-fiets-nonflex",
+    "title": "Boekingsbevestiging vakantie — fietsvakantie (niet terugbetaalbaar)",
+    "description": "Fietsvakantie, niet-terugbetaalbare boeking.",
+    "section": "designs",
+    "subject": "Je boeking is bevestigd: 7-daagse fietsvakantie Twente & Salland",
+    "preheader": "Boekingsnummer VL-85 584 493. Hieronder alles over je 3 hotels.",
+    "variantOf": "vakantie-bevestiging-fiets"
+  },
+  {
     "slug": "vakantie-pre-travel",
     "title": "Pre-travel (14 dagen voor vertrek)",
     "description": "Checklist voor je reis: identiteitsbewijs en boekingsnummer, inchecken bij het eerste hotel (adres, route, parkeren), wat je nog betaalt, de persoonlijke pagina met praktische informatie en tips, inloggen op je account om je boeking te beheren, en veelgestelde vragen.",
@@ -97,5 +114,22 @@
     "subject": "Je boeking is bevestigd: Ontdek Noord-Frankrijk en de Opaalkust in 7 dagen",
     "preheader": "Boekingsnummer VL-11 851 812. Hieronder alles over je 3 hotels.",
     "variantOf": "mvp-vakantie-bevestiging"
+  },
+  {
+    "slug": "mvp-vakantie-bevestiging-fiets",
+    "title": "MVP — Boekingsbevestiging vakantie — fietsvakantie",
+    "description": "MVP-versie van de boekingsbevestiging voor de fietsvakantie Twente & Salland.",
+    "section": "designs",
+    "subject": "Je boeking is bevestigd: 7-daagse fietsvakantie Twente & Salland",
+    "preheader": "Boekingsnummer VL-85 584 493. Hieronder alles over je 3 hotels."
+  },
+  {
+    "slug": "mvp-vakantie-bevestiging-fiets-nonflex",
+    "title": "MVP — Boekingsbevestiging vakantie — fietsvakantie (niet terugbetaalbaar)",
+    "description": "MVP-versie, fietsvakantie, niet-terugbetaalbare boeking.",
+    "section": "designs",
+    "subject": "Je boeking is bevestigd: 7-daagse fietsvakantie Twente & Salland",
+    "preheader": "Boekingsnummer VL-85 584 493. Hieronder alles over je 3 hotels.",
+    "variantOf": "mvp-vakantie-bevestiging-fiets"
   }
 ]
