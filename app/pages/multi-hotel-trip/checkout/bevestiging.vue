@@ -141,11 +141,13 @@ function money(v: number) {
   return `€${v.toLocaleString('nl-NL', { minimumFractionDigits: v % 1 ? 2 : 0, maximumFractionDigits: 2 })}`
 }
 
-/* Preloader (ontwerpdocument, principe 5): de betaling/boeking wordt "bevestigd" — een
-   gesimuleerde 6 seconden met een rustige animatie en de stappen (betaling + per hotel de
-   kamer). Alleen bij binnenkomst via "Boek nu" of de knop op het startscherm (die zetten de
-   vlag `mht-checkout-confirm-load`); bij een refresh verschijnt de pagina direct. */
-const LOAD_MS = 6000
+/* Preloader (ontwerpdocument, principe 5): de betaling/boeking wordt "bevestigd" — een rustige
+   animatie met de stappen (betaling + per hotel de kamer), elk 1,5 seconde. Ook de laatste stap
+   wordt groen; daarna nog 1 seconde en dan de bevestiging met de confetti. Alleen bij binnenkomst
+   via "Boek nu" of de flow (die zetten de vlag `mht-checkout-confirm-load`); bij een refresh
+   verschijnt de pagina direct. */
+const STEP_MS = 1500
+const DONE_PAUSE_MS = 1000
 const loadFlag = useState<boolean>('mht-checkout-confirm-load', () => false)
 const loading = ref(loadFlag.value)
 const loadStep = ref(0)
@@ -158,9 +160,10 @@ onMounted(() => {
   loadFlag.value = false
   // `load=1` uit de URL halen: de preloader hoort bij de binnenkomst, niet bij een refresh.
   if (route.query.load) useRouter().replace({ query: { ...route.query, load: undefined } })
-  const per = LOAD_MS / loadSteps.value.length
-  const tick = setInterval(() => { loadStep.value = Math.min(loadStep.value + 1, loadSteps.value.length - 1) }, per)
-  setTimeout(() => { clearInterval(tick); loading.value = false; window.scrollTo(0, 0) }, LOAD_MS)
+  // loadStep loopt tot vóórbij de laatste stap, zodat ook die groen wordt (i < loadStep).
+  const steps = loadSteps.value.length
+  const tick = setInterval(() => { loadStep.value = Math.min(loadStep.value + 1, steps) }, STEP_MS)
+  setTimeout(() => { clearInterval(tick); loading.value = false; window.scrollTo(0, 0) }, STEP_MS * steps + DONE_PAUSE_MS)
 })
 
 useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
