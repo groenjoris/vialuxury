@@ -18,7 +18,8 @@ export type EmailEntry = {
   title: string;
   description: string;
   section: EmailSection;
-  /** Onderwerpregel (CRM-mails; de preheader staat in de mail zelf). */
+  /** Onderwerpregel en preheader zoals de ontvanger ze in de inbox ziet (de preheader staat ook
+   *  als <Preview> in de mail zelf; hier dezelfde tekst met de voorbeelddata ingevuld). */
   subject?: string;
   preheader?: string;
   // Elke e-mail exporteert PreviewProps met representatieve voorbeelddata
@@ -36,6 +37,8 @@ export const emails: EmailEntry[] = [
     title: "Boekingsbevestiging vakantie",
     description: "Bevestiging na het boeken van een auto- of fietsvakantie met meerdere hotels: kassabon per hotel (adres, nachten, inclusies, check-in/out), flexibel annuleren, prijs, tips voor je reis, boeking terugvinden, cadeaukaart en FAQ.",
     section: "designs",
+    subject: "Je boeking is bevestigd: Ontdek Noord-Frankrijk en de Opaalkust in 7 dagen",
+    preheader: "Boekingsnummer VL-11 851 812. Hieronder alles over je 3 hotels.",
     Component: VakantieBevestiging,
   },
   {
@@ -43,16 +46,20 @@ export const emails: EmailEntry[] = [
     title: "Pre-travel (14 dagen voor vertrek)",
     description: "Checklist voor je reis: identiteitsbewijs en boekingsnummer, inchecken bij het eerste hotel (adres, route, parkeren), wat je nog betaalt, de persoonlijke pagina met praktische informatie en tips, inloggen op je account om je boeking te beheren, en veelgestelde vragen.",
     section: "designs",
+    subject: "Over 14 dagen vertrek je naar Noord-Frankrijk",
+    preheader: "Je checklist: identiteitsbewijs, boekingsnummer en inchecken bij Château Tilques.",
     Component: VakantiePreTravel,
   },
   // Incheckmails: dag vóór hotel 1, 2 en 3, voor de auto- en de fietsvakantie.
-  ...incheckMails.map((m) => ({ slug: m.slug, title: m.title, description: m.description, section: "designs" as const, Component: VakantieIncheckHotel, props: m.props })),
+  ...incheckMails.map((m) => ({ slug: m.slug, title: m.title, description: m.description, section: "designs" as const, subject: m.subject, preheader: m.preheader, Component: VakantieIncheckHotel, props: m.props })),
   // MVP 12-11-2026: eigen kopie van de boekingsbevestiging, los van de volledige versie uit te kleden.
   {
     slug: "mvp-vakantie-bevestiging",
     title: "MVP — Boekingsbevestiging vakantie",
     description: "MVP-versie van de boekingsbevestiging: kassabon per hotel (met alle inclusies), flexibel annuleren, prijs, boeking terugvinden, cadeaukaart en FAQ — zonder het blok Tips voor je reis.",
     section: "designs",
+    subject: "Je boeking is bevestigd: Ontdek Noord-Frankrijk en de Opaalkust in 7 dagen",
+    preheader: "Boekingsnummer VL-11 851 812. Hieronder alles over je 3 hotels.",
     Component: MvpVakantieBevestiging,
   },
   // CRM (concept, desktop + light mode): drie geautomatiseerde mails.

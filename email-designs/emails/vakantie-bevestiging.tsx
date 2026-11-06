@@ -14,12 +14,12 @@ import {
   Text,
 } from "@react-email/components";
 import * as React from "react";
-import NewsletterFooter from "../components/NewsletterFooter";
-import NewsletterHeader from "../components/NewsletterHeader";
+import CrmFooter from "../components/CrmFooter";
+import CrmHeader from "../components/CrmHeader";
 import { baseUrl, font, newsletter, type EmailMode } from "../components/theme";
 
 // Boekingsbevestiging van een multi-hotel vakantie (Multi Hotel Trip). Header, logo,
-// Trustpilot en footer uit het nieuwsbrief-template; daartussen dezelfde opbouw als
+// Trustpilot en footer zoals in de CRM-mails (zwarte balken over de hele breedte); daartussen dezelfde opbouw als
 // de linkerkolom van de bevestigingspagina in het prototype: kop, aanhef, boekings-
 // nummer, de kassabon (reis, per hotel foto/naam/sterren/adres, lijst met nachten en
 // inclusies, check-in/check-out, flexibel annuleren, prijs), dan Tips voor je reis,
@@ -207,10 +207,10 @@ export default function VakantieBevestiging({
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <style>{responsiveCss}</style>
       </Head>
-      <Preview>Je boeking is bevestigd — {tripName}</Preview>
+      <Preview>Boekingsnummer {bookingNumber}. Hieronder alles over je {hotels.length} hotels.</Preview>
       <Body style={{ backgroundColor: c.bg, margin: 0, padding: 0, fontFamily: font.body }}>
+        <CrmHeader mode={mode} />
         <Container style={{ width: "100%", maxWidth: "626px" }}>
-          <NewsletterHeader mode={mode} />
 
           {/* Kop + aanhef + boekingsnummer */}
           <Section className="m-pad" style={{ padding: "32px 32px 0" }}>
@@ -418,8 +418,8 @@ export default function VakantieBevestiging({
             ))}
           </Section>
 
-          <NewsletterFooter recipientEmail={recipientEmail} mode={mode} />
         </Container>
+        <CrmFooter recipientEmail={recipientEmail} reason="omdat je bij ons boekte" mode={mode} />
       </Body>
     </Html>
   );

@@ -2,7 +2,7 @@
 // Twente & Salland (fiets). Eén component (emails/vakantie-incheck-hotel.tsx) met per reis en
 // hotel andere props. Adressen, telefoonnummers, parkeren en laadpunten zijn prototype-placeholders.
 import { baseUrl } from "../components/theme";
-import type { IncheckHotel, IncheckProps } from "../emails/vakantie-incheck-hotel";
+import { incheckPreheader, incheckSubject, type IncheckHotel, type IncheckProps } from "../emails/vakantie-incheck-hotel";
 
 const PROTO = "https://vialuxury.vercel.app";
 
@@ -108,7 +108,7 @@ const TRIPS: TripData[] = [
   },
 ];
 
-export type IncheckMailDef = { slug: string; title: string; description: string; props: IncheckProps };
+export type IncheckMailDef = { slug: string; title: string; description: string; subject: string; preheader: string; props: IncheckProps };
 
 /** Zes mails: hotel 1, 2 en 3 voor de auto- en de fietsvakantie. */
 export const incheckMails: IncheckMailDef[] = TRIPS.flatMap((trip) =>
@@ -119,29 +119,32 @@ export const incheckMails: IncheckMailDef[] = TRIPS.flatMap((trip) =>
     const what = n === 1
       ? "morgen begint je vakantie: de gegevens van je eerste hotel"
       : `terugblik op ${previousHotel!.name}, morgen door naar ${hotel.name}${trip.isBike ? " (bagage vóór 9:00 uur bij de receptie)" : ""}`;
+    const props: IncheckProps = {
+      recipientName: "Rijo Verburg",
+      recipientEmail: "rijo.verburg@gmail.com",
+      bookingNumber: trip.key === "fiets" ? "VL-85 584 493" : "VL-11 851 812",
+      tripType: trip.tripType,
+      tripName: trip.tripName,
+      isBike: trip.isBike,
+      hotelIndex: n,
+      hotelCount: trip.hotels.length,
+      hotel,
+      previousHotel,
+      arrivalDate: trip.arrivalDates[i]!,
+      travel: trip.travel[i],
+      homeTravel: n === 1 ? trip.homeTravel : undefined,
+      tollEstimate: n === 1 ? trip.tollEstimate : undefined,
+      thumbs: trip.thumbs,
+      routesUrl: `${PROTO}/multi-hotel-trip/checkout/routes`,
+      bookingUrl: `${PROTO}/multi-hotel-trip/account/boekingen/${trip.slug}`,
+    };
     return {
       slug,
       title: `Incheck hotel ${n} (dag voor aankomst)${trip.key === "fiets" ? " — fietsvakantie" : ""}`,
       description: `De dag vóór hotel ${n} van de ${trip.label}: ${what}. Kort: "Morgen in het kort", het hotelblok (adres, route, telefoon, inchecken, ${trip.isBike ? "stalling, bagagetransfer" : "parkeren, opladen"}), praktische informatie en tips, Hulp nodig? en veelgestelde vragen.`,
-      props: {
-        recipientName: "Rijo Verburg",
-        recipientEmail: "rijo.verburg@gmail.com",
-        bookingNumber: trip.key === "fiets" ? "VL-85 584 493" : "VL-11 851 812",
-        tripType: trip.tripType,
-        tripName: trip.tripName,
-        isBike: trip.isBike,
-        hotelIndex: n,
-        hotelCount: trip.hotels.length,
-        hotel,
-        previousHotel,
-        arrivalDate: trip.arrivalDates[i]!,
-        travel: trip.travel[i],
-        homeTravel: n === 1 ? trip.homeTravel : undefined,
-        tollEstimate: n === 1 ? trip.tollEstimate : undefined,
-        thumbs: trip.thumbs,
-        routesUrl: `${PROTO}/multi-hotel-trip/checkout/routes`,
-        bookingUrl: `${PROTO}/multi-hotel-trip/account/boekingen/${trip.slug}`,
-      },
+      subject: incheckSubject(props),
+      preheader: incheckPreheader(props),
+      props,
     };
   }),
 );

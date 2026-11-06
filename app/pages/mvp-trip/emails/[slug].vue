@@ -1,6 +1,7 @@
 <script setup lang="ts">
 // Preview van één e-mailontwerp: de geëxporteerde HTML (public/emails/<slug>.html, of
-// .dark.html) in een iframe, met licht/donker, desktop/mobiel, Kopieer HTML en Download.
+// .dark.html) in een iframe, in één frame zoals de ontvanger hem ziet (afzender, onderwerp en
+// preheader erboven, zoals de CRM-preview), met licht/donker, desktop/mobiel, Kopieer HTML en Download.
 // Bij kopiëren/downloaden worden de relatieve afbeeldings-URL's absoluut gemaakt, zodat
 // de HTML ook in een e-mailclient of ESP werkt.
 // MVP: dezelfde exportlijst als de volledige versie (één export, slugs met het voorvoegsel mvp-).
@@ -10,6 +11,9 @@ const route = useRoute()
 const slug = computed(() => String(route.params.slug))
 const entry = computed(() => emails.find(e => e.slug === slug.value))
 if (!entry.value) throw createError({ statusCode: 404, statusMessage: 'E-mail niet gevonden' })
+
+/** Terug naar de flow met de variant van deze mail, zodat de schakelaar Auto | Fiets daar klopt. */
+const flowHref = computed(() => '/multi-hotel-trip/flow')
 
 const mode = ref<'light' | 'dark'>('light')
 const device = ref<'desktop' | 'mobile'>('desktop')
@@ -44,7 +48,7 @@ useHead({ title: `${entry.value?.title ?? 'E-mail'} — ViaLuxury e-maildesigns`
       <div class="ev__bar-left">
         <!-- Prototype-navigatie: flow erboven, startscherm eronder (zoals linksboven op de andere schermen). -->
         <div class="ev__links">
-          <NuxtLink class="ev__back" to="/multi-hotel-trip/flow">‹ Flow</NuxtLink>
+          <NuxtLink class="ev__back" :to="flowHref">‹ Flow</NuxtLink>
           <a class="ev__back" href="/">‹ Startscherm</a>
         </div>
         <h1 class="ev__title">{{ entry?.title }}</h1>
@@ -62,15 +66,19 @@ useHead({ title: `${entry.value?.title ?? 'E-mail'} — ViaLuxury e-maildesigns`
         <button type="button" class="ev__btn" @click="downloadHtml">Download HTML</button>
       </div>
     </header>
-    <p class="ev__desc">{{ entry?.description }}</p>
     <div class="ev__stage">
-      <iframe
-        :key="src"
-        class="ev__frame"
-        :class="{ 'ev__frame--mobile': device === 'mobile' }"
-        :src="src"
-        :title="entry?.title"
-      />
+      <div class="ev__mail" :class="{ 'ev__mail--mobile': device === 'mobile' }">
+        <!-- Zoals in de inbox: afzender, onderwerp en preheader boven de mail. -->
+        <div class="ev__inbox">
+          <span class="ev__avatar" aria-hidden="true">V</span>
+          <div class="ev__meta">
+            <p class="ev__from"><strong>ViaLuxury</strong> <span>&lt;info@vialuxury.nl&gt;</span><span class="ev__time">10:24</span></p>
+            <p class="ev__subject">{{ entry?.subject }}</p>
+            <p class="ev__preheader">{{ entry?.preheader }}</p>
+          </div>
+        </div>
+        <iframe :key="src" class="ev__frame" :src="src" :title="entry?.title" />
+      </div>
     </div>
   </div>
 </template>
@@ -96,8 +104,16 @@ useHead({ title: `${entry.value?.title ?? 'E-mail'} — ViaLuxury e-maildesigns`
 .ev__btn--on:hover { color: #fff; }
 .ev__btn--primary { background: var(--color-primary); border-color: var(--color-primary); color: #fff; }
 .ev__btn--primary:hover { background: var(--color-primary-hover); border-color: var(--color-primary-hover); color: #fff; }
-.ev__desc { max-width: 900px; margin: 0 auto; padding: 16px 24px 0; font-size: 14px; color: var(--color-text-secondary); }
 .ev__stage { display: flex; justify-content: center; padding: 20px 24px 48px; }
-.ev__frame { width: 700px; max-width: 100%; height: calc(100vh - 160px); min-height: 640px; border: 1px solid var(--color-border); border-radius: 8px; background: #fff; transition: width 200ms ease; }
-.ev__frame--mobile { width: 375px; }
+.ev__mail { width: 700px; max-width: 100%; background: #fff; border: 1px solid var(--color-border); border-radius: 8px; overflow: hidden; transition: width 200ms ease; }
+.ev__mail--mobile { width: 375px; }
+.ev__inbox { display: flex; gap: 12px; padding: 16px 20px; border-bottom: 1px solid var(--color-border); }
+.ev__avatar { flex-shrink: 0; width: 40px; height: 40px; border-radius: 50%; background: #141414; color: #fff; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+.ev__meta { min-width: 0; flex: 1; }
+.ev__from { display: flex; gap: 6px; margin: 0; font-size: 14px; }
+.ev__from span { color: var(--color-text-secondary); }
+.ev__from .ev__time { margin-left: auto; font-size: 13px; }
+.ev__subject { margin: 4px 0 0; font-size: 17px; font-weight: 700; }
+.ev__preheader { margin: 2px 0 0; font-size: 14px; color: var(--color-text-secondary); }
+.ev__frame { display: block; width: 100%; height: calc(100vh - 200px); min-height: 640px; border: 0; background: #fff; }
 </style>

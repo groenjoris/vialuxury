@@ -15,8 +15,8 @@ import {
 } from "@react-email/components";
 import * as React from "react";
 import HelpBanner from "../components/HelpBanner";
-import NewsletterFooter from "../components/NewsletterFooter";
-import NewsletterHeader from "../components/NewsletterHeader";
+import CrmFooter from "../components/CrmFooter";
+import CrmHeader from "../components/CrmHeader";
 import { baseUrl, font, newsletter, type EmailMode } from "../components/theme";
 
 // Incheckmail: de dag vóór het inchecken bij hotel 1, 2 of 3 van een multi-hotel vakantie
@@ -76,6 +76,8 @@ const img = (file: string) => `${baseUrl}/images/mail/${file}`;
 const responsiveCss = `
 @media only screen and (max-width: 480px) {
   .stack { display: block !important; width: 100% !important; }
+  .m-center { text-align: center !important; }
+  .m-mt { margin-top: 16px !important; }
   .m-h1 { font-size: 26px !important; }
   .m-kop { font-size: 18px !important; }
   .m-small { font-size: 10px !important; }
@@ -90,6 +92,12 @@ const responsiveCss = `
   .m-thumb { width: 100% !important; height: auto !important; }
 }
 `;
+
+/** Onderwerp en preheader — ook voor de registry (lib/incheckMails.ts), zodat de inbox-preview hetzelfde toont als de mail. */
+export const incheckSubject = (p: Pick<IncheckProps, "hotelIndex" | "hotel">) =>
+  p.hotelIndex === 1 ? "Morgen begint je vakantie" : `Morgen naar ${p.hotel.city}`;
+export const incheckPreheader = (p: Pick<IncheckProps, "hotelIndex" | "hotel" | "previousHotel">) =>
+  p.hotelIndex === 1 ? `Alles over je eerste hotel: ${p.hotel.name} in ${p.hotel.city}.` : `Terugblik op ${p.previousHotel?.name} en alles over ${p.hotel.name}.`;
 
 export default function VakantieIncheckHotel({
   recipientName,
@@ -183,7 +191,7 @@ export default function VakantieIncheckHotel({
         },
       ];
 
-  const preview = first ? "Morgen begint je vakantie: de gegevens van je eerste hotel" : `Morgen naar ${hotel.name} in ${hotel.city}`;
+  const preview = incheckPreheader({ hotelIndex, hotel, previousHotel });
 
   return (
     <Html lang="nl">
@@ -193,8 +201,8 @@ export default function VakantieIncheckHotel({
       </Head>
       <Preview>{preview}</Preview>
       <Body style={{ backgroundColor: c.bg, margin: 0, padding: 0, fontFamily: font.body }}>
+        <CrmHeader mode={mode} />
         <Container style={{ width: "100%", maxWidth: "626px" }}>
-          <NewsletterHeader mode={mode} />
 
           {/* Kop + intro */}
           <Section className="m-pad" style={{ padding: "28px 32px 0" }}>
@@ -367,8 +375,8 @@ export default function VakantieIncheckHotel({
             </Text>
           </Section>
 
-          <NewsletterFooter recipientEmail={recipientEmail} mode={mode} />
         </Container>
+        <CrmFooter recipientEmail={recipientEmail} reason="omdat je bij ons boekte" mode={mode} />
       </Body>
     </Html>
   );

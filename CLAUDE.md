@@ -105,6 +105,14 @@ automatisch:
 - R2 wordt niet automatisch gesynchroniseerd; "R1&R2"-wijzigingen worden
   handmatig in beide doorgevoerd.
 
+## Post-bookingflow (`/multi-hotel-trip/flow`)
+
+Schema van de klantreis na het boeken (MVP boven de lijn, volledige versie eronder). Linksboven
+één schakelaar Auto | Fiets (`?demo=fiets`; auto = zonder query) die bepaalt waar álle kaartjes
+naartoe linken: pagina's met `?demo=`, incheckmails met de `-fiets`-slug; de boekingsbevestiging
+en de pre-travelmail bestaan alleen voor de autovakantie en openen ongewijzigd. De "‹ flow"-link
+in `ProtoNav` (MHT/MVP) en op de mailpreview geeft de variant mee terug, zodat de schakelaar blijft staan.
+
 ## E-mails van de vakanties (`email-designs/`)
 
 Alleen de e-mails van de multi-hotel vakanties (react-email) staan in `email-designs/`; de
@@ -116,6 +124,14 @@ de preview is `app/pages/multi-hotel-trip/emails/[slug].vue`. Afbeeldingen voor 
 Links naar de mails staan in het vakje "Multi Hotel Trip" op het startscherm (mails die nog
 volgen staan er grijs bij). Links in e-mails naar het prototype gebruiken
 `https://vialuxury.vercel.app/...`.
+
+Sinds 2026-11-06 gebruiken de vakantiemails dezelfde `CrmHeader`/`CrmFooter` als de CRM-mails
+(zwarte balken over de hele breedte, Trustpilot 16.000+, afzenderreden "omdat je bij ons boekte";
+beide met `mode` en mobiele klassen `stack`/`m-center`), en heeft elke mail in de registry een
+`subject` en `preheader` (de preheader staat ook als `<Preview>` in de mail; de incheckmails
+halen beide uit `incheckSubject`/`incheckPreheader` in `vakantie-incheck-hotel.tsx`). De preview
+toont die, net als de CRM-preview, in één frame zoals in de inbox (afzender, onderwerp, preheader
+boven de mail) in plaats van de beschrijving.
 
 ## CRM (concept, sinds 2026-11-02)
 

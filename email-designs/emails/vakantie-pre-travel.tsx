@@ -15,15 +15,15 @@ import {
 } from "@react-email/components";
 import * as React from "react";
 import HelpBanner from "../components/HelpBanner";
-import NewsletterFooter from "../components/NewsletterFooter";
-import NewsletterHeader from "../components/NewsletterHeader";
+import CrmFooter from "../components/CrmFooter";
+import CrmHeader from "../components/CrmHeader";
 import { baseUrl, font, newsletter, type EmailMode } from "../components/theme";
 
 // Pre-travel: veertien dagen voor vertrek van een multi-hotel vakantie. Checklist
 // ("Niet vergeten"), inchecken bij het eerste hotel (adres, route, parkeren), wat je
 // nog betaalt, de persoonlijke pagina met praktische informatie en tips, inloggen op je
 // account (boeking beheren), "Hulp nodig?" en veelgestelde vragen.
-// Header, logo, Trustpilot en footer uit het nieuwsbrief-template.
+// Header en footer zoals in de CRM-mails (zwarte balken over de hele breedte).
 
 type Props = {
   recipientName: string;
@@ -64,6 +64,8 @@ const img = (file: string) => `${baseUrl}/images/mail/${file}`;
 const responsiveCss = `
 @media only screen and (max-width: 480px) {
   .stack { display: block !important; width: 100% !important; }
+  .m-center { text-align: center !important; }
+  .m-mt { margin-top: 16px !important; }
   .m-h1 { font-size: 26px !important; }
   .m-kop { font-size: 18px !important; }
   .m-small { font-size: 10px !important; }
@@ -139,10 +141,10 @@ export default function VakantiePreTravel({
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <style>{responsiveCss}</style>
       </Head>
-      <Preview>Checklist voor je reis naar {region}</Preview>
+      <Preview>Je checklist: identiteitsbewijs, boekingsnummer en inchecken bij {firstHotel.name}.</Preview>
       <Body style={{ backgroundColor: c.bg, margin: 0, padding: 0, fontFamily: font.body }}>
+        <CrmHeader mode={mode} />
         <Container style={{ width: "100%", maxWidth: "626px" }}>
-          <NewsletterHeader mode={mode} />
 
           {/* Hoofdfoto van de reis */}
           <Img src={heroImage} alt={tripName} width="626" height="300" style={{ display: "block", width: "100%", height: "auto", objectFit: "cover" }} />
@@ -307,8 +309,8 @@ export default function VakantiePreTravel({
             </Text>
           </Section>
 
-          <NewsletterFooter recipientEmail={recipientEmail} mode={mode} />
         </Container>
+        <CrmFooter recipientEmail={recipientEmail} reason="omdat je bij ons boekte" mode={mode} />
       </Body>
     </Html>
   );

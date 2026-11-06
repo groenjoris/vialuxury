@@ -14,8 +14,8 @@ import {
   Text,
 } from "@react-email/components";
 import * as React from "react";
-import NewsletterFooter from "../components/NewsletterFooter";
-import NewsletterHeader from "../components/NewsletterHeader";
+import CrmFooter from "../components/CrmFooter";
+import CrmHeader from "../components/CrmHeader";
 import { baseUrl, font, newsletter, type EmailMode } from "../components/theme";
 
 // MVP 12-11-2026 — kopie van de boekingsbevestiging van Multi Hotel Trip, uitgekleed naar de
@@ -23,7 +23,7 @@ import { baseUrl, font, newsletter, type EmailMode } from "../components/theme";
 // voor je reis" (de MVP heeft geen tipspagina). Subtiel variant-label "MHR MVP" bovenin voor de developers.
 //
 // Boekingsbevestiging van een multi-hotel vakantie (Multi Hotel Trip). Header, logo,
-// Trustpilot en footer uit het nieuwsbrief-template; daartussen dezelfde opbouw als
+// Trustpilot en footer zoals in de CRM-mails (zwarte balken over de hele breedte); daartussen dezelfde opbouw als
 // de linkerkolom van de bevestigingspagina in het prototype: kop, aanhef, boekings-
 // nummer, de kassabon (reis, per hotel foto/naam/sterren/adres, lijst met nachten en
 // inclusies, check-in/check-out, flexibel annuleren, prijs), dan Tips voor je reis,
@@ -209,17 +209,19 @@ export default function VakantieBevestiging({
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <style>{responsiveCss}</style>
       </Head>
-      <Preview>Je boeking is bevestigd — {tripName}</Preview>
+      <Preview>Boekingsnummer {bookingNumber}. Hieronder alles over je {hotels.length} hotels.</Preview>
       <Body style={{ backgroundColor: c.bg, margin: 0, padding: 0, fontFamily: font.body }}>
+        {/* Variant-label (niet voor de gast): dezelfde subtiele stijl als het label onder het logo op de
+            MVP-pagina's ("MHR MVP"), zodat developers altijd zien dat dit de MVP-variant van de mail is. */}
         <Container style={{ width: "100%", maxWidth: "626px" }}>
-          {/* Variant-label (niet voor de gast): dezelfde subtiele stijl als het label onder het logo op de
-              MVP-pagina's ("MHR MVP"), zodat developers altijd zien dat dit de MVP-variant van de mail is. */}
-          <Section style={{ padding: "8px 12px 0" }}>
+          <Section style={{ padding: "8px 12px 6px" }}>
             <span style={{ display: "inline-block", padding: "2px 5px", border: `1px solid ${c.border}`, borderRadius: "3px", color: c.muted, fontFamily: font.body, fontSize: "9px", lineHeight: "11px", fontWeight: 600, letterSpacing: "1.3px", textTransform: "uppercase" }}>
               MHR MVP
             </span>
           </Section>
-          <NewsletterHeader mode={mode} />
+        </Container>
+        <CrmHeader mode={mode} />
+        <Container style={{ width: "100%", maxWidth: "626px" }}>
 
           {/* Kop + aanhef + boekingsnummer */}
           <Section className="m-pad" style={{ padding: "32px 32px 0" }}>
@@ -413,8 +415,8 @@ export default function VakantieBevestiging({
             ))}
           </Section>
 
-          <NewsletterFooter recipientEmail={recipientEmail} mode={mode} />
         </Container>
+        <CrmFooter recipientEmail={recipientEmail} reason="omdat je bij ons boekte" mode={mode} />
       </Body>
     </Html>
   );

@@ -6,13 +6,17 @@
 // een terugkeer naar het startscherm via de footer. De header is de positioneringscontext.
 // Op de post-bookingschermen (bevestiging, account, mails) staat er "‹ flow" boven: terug naar het
 // flowschema (de MVP-flow staat op dezelfde flowpagina als de volledige versie).
+import { isDemoVariant } from '~/composables-mvp-trip/useMvpTripDemoBooking'
+
 const route = useRoute()
+/** Terug naar de flow mét de gekozen variant (?demo=), zodat de schakelaar Auto | Fiets daar blijft staan. */
+const flowHref = computed(() => isDemoVariant(route.query.demo) ? `/multi-hotel-trip/flow?demo=${route.query.demo}` : '/multi-hotel-trip/flow')
 const flow = computed(() => /^\/mvp-trip\/(checkout\/bevestiging|account|emails)(\/|$)/.test(route.path))
 </script>
 
 <template>
   <nav class="proto-nav" aria-label="Prototype-navigatie">
-    <a v-if="flow" class="proto-nav__link" href="/multi-hotel-trip/flow" title="Terug naar de post-bookingflow">‹ flow</a>
+    <a v-if="flow" class="proto-nav__link" :href="flowHref" title="Terug naar de post-bookingflow">‹ flow</a>
     <a class="proto-nav__link" href="/" title="Terug naar het startscherm">‹ startscherm</a>
   </nav>
 </template>

@@ -7,14 +7,21 @@
 // Per schema: drie fases op een horizontale tijdlijn (Boeken, Voorbereiden, Onderweg — Onderweg
 // begint bij Incheck hotel 1) met mijlpalen; erboven de pagina's (alle even groot, ook de
 // accountomgeving: Mijn ViaLuxury › Boekingen), eronder de e-mails. De incheckmails gaan de dag vóór het inchecken: een
-// oranje bolletje vlak voor elk hotelbolletje. Kaartjes zijn wit met icoon en titel; de
-// pagina's hebben de varianten Auto en Fiets (chips). Nog te maken onderdelen staan gestippeld.
-// Klikken opent de pagina of mail als gewone link; de pagina's lezen de demo-boeking (Opaalkust
-// of de fietsvakantie) uit `?demo=`; de incheckmails hebben per variant een eigen mail. Desktop-first (vaste tekenruimte van 1120px), schaalt mee tot een minimum
-// en scrolt daarna horizontaal.
-import { demoHref, type DemoVariant } from '~/composables-multi-hotel-trip/useMultiHotelTripDemoBooking'
+// oranje bolletje vlak voor elk hotelbolletje. Kaartjes zijn wit met icoon en titel. Nog te maken
+// onderdelen staan gestippeld. Linksboven één schakelaar Auto | Fiets voor alle kaartjes (in de
+// URL als `?demo=fiets`, dus deelbaar): de pagina's lezen de demo-boeking (Opaalkust of de
+// fietsvakantie) uit `?demo=`, de incheckmails hebben per variant een eigen mail; de
+// boekingsbevestiging en de pre-travelmail bestaan alleen voor de autovakantie en openen
+// ongewijzigd. Klikken opent de pagina of mail als gewone link. Desktop-first (vaste tekenruimte
+// van 1120px), schaalt mee tot een minimum en scrolt daarna horizontaal.
+import { demoHref, isDemoVariant, type DemoVariant } from '~/composables-multi-hotel-trip/useMultiHotelTripDemoBooking'
 
 useHead({ title: 'Post-bookingflow — ViaLuxury' })
+
+/* Variant: één schakelaar linksboven; de keuze staat in de URL (?demo=fiets; auto = zonder). */
+const route = useRoute()
+const variant = computed<DemoVariant>(() => isDemoVariant(route.query.demo) ? route.query.demo : 'auto')
+const VARIANTS: { id: DemoVariant; label: string }[] = [{ id: 'auto', label: 'Auto' }, { id: 'fiets', label: 'Fiets' }]
 
 /* Alle kaartjes zijn gewone links (volledige paginalading). De pagina's lezen de demo-variant uit
    de URL (`?demo=auto|fiets`, zie useMultiHotelTripDemoBooking). Een client-side routewissel
@@ -49,7 +56,6 @@ const CARD_W_SM = 158
 const PAGE_H = 116
 const MAIL_H = 100
 
-interface Variant { id: DemoVariant; label: string; icon: 'car' | 'bike'; href: string }
 interface Card {
   id: string
   kind: 'pagina' | 'email'
@@ -64,37 +70,34 @@ interface Card {
   h: number
   /** Klik: de pagina (met demo-variant in de URL) of de mailpreview. */
   href?: string
-  variants?: Variant[]
 }
 interface Connector { d: string; arrow: boolean }
 interface Tick { x: number; y1: number; y2: number }
 /** Eén schema: titel + toelichting boven de tekenruimte, eigen kaartjes, verbindingen en streepjes. */
 interface Flow { id: string; title: string; sub: string; cards: Card[]; connectors: Connector[]; ticks: Tick[] }
 
-const autoFiets = (path: string, preload = false): Variant[] => [
-  { id: 'auto', label: 'Auto', icon: 'car', href: demoHref(path, 'auto', preload) },
-  { id: 'fiets', label: 'Fiets', icon: 'bike', href: demoHref(path, 'fiets', preload) },
-]
 /* Kaartposities: in beide schema's gelijk, zodat ze onder elkaar uitlijnen. */
 const PAGE_Y = PAGES_BOTTOM - PAGE_H
 const X = { booking: COL.booking - CARD_W / 2, prep: COL.prep - CARD_W / 2, account: W - 20 - CARD_W }
-const bevestigingCard = (path: string): Card => ({ id: 'bevestiging', kind: 'pagina', title: 'Bevestigingspagina', x: X.booking, y: PAGE_Y, w: CARD_W, h: PAGE_H, href: demoHref(path, 'auto', true), variants: autoFiets(path, true) })
-const accountCard = (path: string): Card => ({ id: 'account', kind: 'pagina', title: 'Accountomgeving', sub: 'De hele reis beschikbaar', x: X.account, y: PAGE_Y, w: CARD_W, h: PAGE_H, href: demoHref(path, 'auto'), variants: autoFiets(path) })
+const bevestigingCard = (path: string, v: DemoVariant): Card => ({ id: 'bevestiging', kind: 'pagina', title: 'Bevestigingspagina', x: X.booking, y: PAGE_Y, w: CARD_W, h: PAGE_H, href: demoHref(path, v, true) })
+const accountCard = (path: string, v: DemoVariant): Card => ({ id: 'account', kind: 'pagina', title: 'Accountomgeving', sub: 'De hele reis beschikbaar', x: X.account, y: PAGE_Y, w: CARD_W, h: PAGE_H, href: demoHref(path, v) })
 const bevestigingMail = (href: string): Card => ({ id: 'mail-bevestiging', kind: 'email', title: 'Boekingsbevestiging', x: X.booking, y: MAILS_Y, w: CARD_W, h: MAIL_H, href })
+/** Incheckmails: per variant een eigen mail (fietsvakantie: slug met -fiets). */
+const incheckSlug = (n: number, v: DemoVariant) => `vakantie-incheck-hotel-${n}${v === 'fiets' ? '-fiets' : ''}`
 /** Mijlpaal → mail (en voor Online booking ook → bevestigingspagina): dunne doorgetrokken lijn. */
 const mailTick = (x: number): Tick => ({ x, y1: TIMELINE_Y + 16, y2: MAILS_Y - 2 })
 const bookingPageTick: Tick = { x: COL.booking, y1: PAGES_BOTTOM + 2, y2: TIMELINE_Y - 16 }
 
-/* ── Volledige versie ── */
-const fullPages: Card[] = [
-  bevestigingCard(FULL.bevestiging),
-  { id: 'routes', kind: 'pagina', title: 'Tips & routes', x: X.prep, y: PAGE_Y, w: CARD_W, h: PAGE_H, href: demoHref(FULL.routes, 'auto'), variants: autoFiets(FULL.routes) },
-  accountCard(FULL.account),
+/* ── Volledige versie (per variant opgebouwd) ── */
+const fullPages = (v: DemoVariant): Card[] => [
+  bevestigingCard(FULL.bevestiging, v),
+  { id: 'routes', kind: 'pagina', title: 'Tips & routes', x: X.prep, y: PAGE_Y, w: CARD_W, h: PAGE_H, href: demoHref(FULL.routes, v) },
+  accountCard(FULL.account, v),
 ]
-const fullMails: Card[] = [
+const fullMails = (v: DemoVariant): Card[] => [
   bevestigingMail(FULL.mail('vakantie-bevestiging')),
   { id: 'mail-pretravel', kind: 'email', title: 'Pre-travel', x: X.prep, y: MAILS_Y, w: CARD_W, h: MAIL_H, href: FULL.mail('vakantie-pre-travel') },
-  ...[COL.h1, COL.h2, COL.h3].map((x, i): Card => ({ id: `mail-h${i + 1}`, kind: 'email', title: `Incheck hotel ${i + 1}`, x: x - MAIL_BEFORE - CARD_W_SM / 2, y: MAILS_Y, w: CARD_W_SM, h: MAIL_H, href: FULL.mail(`vakantie-incheck-hotel-${i + 1}`), variants: [{ id: 'auto', label: 'Auto', icon: 'car', href: FULL.mail(`vakantie-incheck-hotel-${i + 1}`) }, { id: 'fiets', label: 'Fiets', icon: 'bike', href: FULL.mail(`vakantie-incheck-hotel-${i + 1}-fiets`) }] })),
+  ...[COL.h1, COL.h2, COL.h3].map((x, i): Card => ({ id: `mail-h${i + 1}`, kind: 'email', title: `Incheck hotel ${i + 1}`, x: x - MAIL_BEFORE - CARD_W_SM / 2, y: MAILS_Y, w: CARD_W_SM, h: MAIL_H, href: FULL.mail(incheckSlug(i + 1, v)) })),
 ]
 const arrowY = PAGE_Y + PAGE_H / 2
 /** Verbindingen (gestippeld, SVG-laag achter de kaartjes): bevestiging en mails leiden naar Tips & routes. */
@@ -108,7 +111,7 @@ const fullConnectors: Connector[] = [
 ]
 
 /* ── MVP: alleen bevestigingspagina, boekingsbevestiging en accountomgeving ── */
-const mvpCards: Card[] = [bevestigingCard(MVP.bevestiging), accountCard(MVP.account), bevestigingMail(MVP.mail('mvp-vakantie-bevestiging'))]
+const mvpCards = (v: DemoVariant): Card[] => [bevestigingCard(MVP.bevestiging, v), accountCard(MVP.account, v), bevestigingMail(MVP.mail('mvp-vakantie-bevestiging'))]
 
 /** Mijlpalen: oranje = moment van een pagina/mail, zwart met hotelicoon = inchecken. */
 const milestones = [
@@ -129,10 +132,10 @@ const phases = [
 ]
 
 /** Boven de lijn de MVP, eronder de volledige versie. Streepjes alleen bij momenten met een mail. */
-const flows: Flow[] = [
-  { id: 'mvp', title: 'MVP', sub: 'Bevestigingspagina, boekingsbevestiging en accountomgeving.', cards: mvpCards, connectors: [], ticks: [mailTick(COL.booking), bookingPageTick] },
-  { id: 'volledig', title: 'Volledige versie', sub: "Alle pagina's en mails van de klantreis.", cards: [...fullPages, ...fullMails], connectors: fullConnectors, ticks: [...milestones.filter(m => !m.hotel).map(m => mailTick(m.x)), bookingPageTick] },
-]
+const flows = computed<Flow[]>(() => [
+  { id: 'mvp', title: 'MVP', sub: 'Bevestigingspagina, boekingsbevestiging en accountomgeving.', cards: mvpCards(variant.value), connectors: [], ticks: [mailTick(COL.booking), bookingPageTick] },
+  { id: 'volledig', title: 'Volledige versie', sub: "Alle pagina's en mails van de klantreis.", cards: [...fullPages(variant.value), ...fullMails(variant.value)], connectors: fullConnectors, ticks: [...milestones.filter(m => !m.hotel).map(m => mailTick(m.x)), bookingPageTick] },
+])
 
 /* ── Schaal op smallere schermen ── */
 const wrapRef = ref<HTMLElement | null>(null)
@@ -146,10 +149,7 @@ onMounted(() => {
 })
 onBeforeUnmount(() => ro?.disconnect())
 
-function onCard(c: Card, variant?: DemoVariant) {
-  const href = (variant && c.variants?.find(v => v.id === variant)?.href) ?? c.href
-  if (href) open(href)
-}
+function onCard(c: Card) { if (c.href) open(c.href) }
 </script>
 
 <template>
@@ -160,6 +160,13 @@ function onCard(c: Card, variant?: DemoVariant) {
         <p class="fl__eyebrow">Multi Hotel Trip</p>
         <h1 class="fl__title">Post-bookingflow</h1>
         <p class="fl__lead">De klantreis na het boeken: welke pagina's en mails de gast wanneer ziet. Klik op een kaartje om die pagina of mail te openen.</p>
+        <!-- Variant: één schakelaar voor alle kaartjes in beide schema's; de actieve stand is geen link. -->
+        <div class="fl__variant" role="group" aria-label="Variant">
+          <template v-for="v in VARIANTS" :key="v.id">
+            <span v-if="v.id === variant" class="fl__variant-btn fl__variant-btn--on" aria-current="true">{{ v.label }}</span>
+            <NuxtLink v-else class="fl__variant-btn" :to="{ path: route.path, query: v.id === 'auto' ? {} : { demo: v.id } }" replace>{{ v.label }}</NuxtLink>
+          </template>
+        </div>
       </header>
 
       <!-- Twee schema's onder elkaar: MVP boven de lijn, de volledige versie eronder -->
@@ -217,19 +224,6 @@ function onCard(c: Card, variant?: DemoVariant) {
                     <p v-if="c.sub" class="fl__card-sub">{{ c.sub }}</p>
                   </div>
                 </div>
-                <div v-if="c.variants" class="fl__variants" role="group" aria-label="Varianten">
-                  <button
-                    v-for="v in c.variants"
-                    :key="v.id"
-                    type="button"
-                    class="fl__variant"
-                    @click.stop="onCard(c, v.id)"
-                  >
-                    <svg v-if="v.icon === 'car'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 13l1.6-4.3A2 2 0 0 1 7.5 7.5h9a2 2 0 0 1 1.9 1.2L20 13" /><rect x="2.5" y="13" width="19" height="5.5" rx="1.5" /><path d="M6 18.5V20M18 18.5V20M6.5 15.5h.01M17.5 15.5h.01" /></svg>
-                    <svg v-else viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="5.5" cy="17" r="3.5" /><circle cx="18.5" cy="17" r="3.5" /><path d="M5.5 17l3.5-8h5l4.5 8M9 9H6.5M13.5 9l-3 8M14 6h2.5l2 11" /></svg>
-                    {{ v.label }}
-                  </button>
-                </div>
               </article>
             </div>
           </div>
@@ -248,6 +242,12 @@ function onCard(c: Card, variant?: DemoVariant) {
 .fl__eyebrow { margin: 0 0 4px; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-text-secondary); }
 .fl__title { margin: 0 0 8px; font-family: var(--font-heading); font-size: 34px; font-weight: 700; line-height: 1.1; }
 .fl__lead { margin: 0; max-width: 640px; font-size: 15px; color: var(--color-text-secondary); }
+/* Schakelaar Auto | Fiets: knoppenpaar, de actieve stand zwart (zelfde vorm als Licht/Donker op de mailpreview) */
+.fl__variant { display: inline-flex; margin-top: 16px; border: 1.5px solid #d4d4d4; border-radius: var(--radius-md); overflow: hidden; background: #fff; }
+.fl__variant-btn { display: inline-flex; align-items: center; height: 36px; padding: 0 16px; font-size: 14px; font-weight: 600; color: var(--color-text-primary); text-decoration: none; }
+.fl__variant-btn + .fl__variant-btn { border-left: 1.5px solid #d4d4d4; }
+a.fl__variant-btn:hover { color: var(--color-primary); }
+.fl__variant-btn--on { background: #141414; color: #fff; }
 
 /* Twee schema's onder elkaar: kop (titel + toelichting) per schema, een lijn ertussen */
 .fl__flow + .fl__flow { margin-top: 40px; padding-top: 32px; border-top: 1px solid #d4d4d4; }
@@ -295,10 +295,6 @@ function onCard(c: Card, variant?: DemoVariant) {
 .fl__card-title { margin: 0; font-family: var(--font-heading); font-size: 17px; font-weight: 700; line-height: 1.25; white-space: nowrap; }
 .fl__card--sm .fl__card-title { font-size: 14px; }
 .fl__card-sub { margin: 2px 0 0; font-size: 12px; color: var(--color-text-secondary); white-space: nowrap; }
-.fl__variants { display: flex; align-items: center; gap: 6px; }
-.fl__variant { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px 4px 8px; border-radius: 999px; border: 1.5px solid #141414; background: #fff; font-family: var(--font-body); font-size: 12px; font-weight: 700; color: #141414; cursor: pointer; transition: background var(--transition-fast), color var(--transition-fast); }
-.fl__variant svg { width: 14px; height: 14px; }
-.fl__variant:hover { background: #141414; color: #fff; }
 
 @media (max-width: 800px) {
   .fl { padding: 20px 12px 40px; }
