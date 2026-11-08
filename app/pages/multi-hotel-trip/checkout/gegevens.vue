@@ -116,7 +116,10 @@ useHead({ title: 'Gegevens en betaalwijze — ViaLuxury' })
          op de mobiele site; desktop: de donkere afrekenbalk + stepper. -->
     <MultiHotelTripCheckoutMobileHeader v-if="isMobileUa" :step="3" />
     <template v-else>
-      <MultiHotelTripCheckoutTopNav />
+      <MultiHotelTripCheckoutTopNav>
+      <!-- Prototype: prijsweergave vakanties (PRIJS: TOTAAL | PP) onder het logo. -->
+      <template #proto><MultiHotelTripDemoSwitches price /></template>
+    </MultiHotelTripCheckoutTopNav>
       <div class="page__stepper">
         <MultiHotelTripCheckoutStepper :active="3" />
       </div>

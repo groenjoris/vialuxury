@@ -4,6 +4,7 @@ import type { SearchHotel } from '~/types/searchHotel'
 import { formatPrice } from '~/utils-multi-hotel-trip/formatPrice'
 import { priceForArrival, PRICED_PERSONS } from '~/utils-multi-hotel-trip/priceFormula'
 import { dealHasScarcity, roomsLeftForDeal } from '~/utils-multi-hotel-trip/scarcity'
+import { useMultiHotelTripPriceVariant } from '~/composables-multi-hotel-trip/useMultiHotelTripPriceVariant'
 
 /**
  * HotelMapHoverCard — preview card that floats above a hovered hotel pin
@@ -99,11 +100,15 @@ const cheapest = computed(() => {
 })
 
 // Prototype: always the PRICED_PERSONS / 1-room price (party size doesn't scale it).
+// Prijsweergave-variant (schakelaar onder het logo): een vakantie in de p.p.-variant toont de helft
+// (per persoon) met "p.p." achter het bedrag, zoals het mobiele kaartje en de dealcards.
+const { perPerson: pricePerPerson, displayPrice } = useMultiHotelTripPriceVariant()
+const ppTrip = computed(() => !!trip.value && pricePerPerson.value)
 const cheapestPrice = computed(() =>
-  priceForArrival(cheapest.value.basePrice, cheapest.value.id, activeArrival.value, PRICED_PERSONS),
+  displayPrice(priceForArrival(cheapest.value.basePrice, cheapest.value.id, activeArrival.value, PRICED_PERSONS), !!trip.value),
 )
 const cheapestOriginal = computed(() =>
-  priceForArrival(cheapest.value.originalPrice, cheapest.value.id, activeArrival.value, PRICED_PERSONS),
+  displayPrice(priceForArrival(cheapest.value.originalPrice, cheapest.value.id, activeArrival.value, PRICED_PERSONS), !!trip.value),
 )
 
 const nights = computed<number[]>(() => {
@@ -290,6 +295,7 @@ const cardStyle = computed(() => {
                 </svg>
                 <span class="hover-card__price-from">Vanaf</span>
                 <span class="hover-card__price-final">{{ formatPrice(cheapestPrice) }}</span>
+                <span v-if="ppTrip" class="hover-card__price-pp">p.p.</span>
                 <span v-if="cheapestOriginal > cheapestPrice" class="hover-card__price-old">
                   {{ formatPrice(cheapestOriginal) }}
                 </span>
@@ -510,6 +516,12 @@ const cardStyle = computed(() => {
   font-family: var(--font-heading);
   font-size: 20px;
   font-weight: 700;
+}
+/* Vakantie, prijs-p.p.-variant: "p.p." achter het bedrag. */
+.hover-card__price-pp {
+  font-size: 11px;
+  font-style: italic;
+  color: var(--color-text-secondary);
 }
 
 .hover-card__price-old {

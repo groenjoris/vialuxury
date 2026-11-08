@@ -516,6 +516,8 @@ const arrangementIncludes = trip.value ? trip.value.includes : [
             <MultiHotelTripCheckoutPriceTag :value="ppTrip ? displayPrice(rowPrice(row), true) : rowPrice(row)" :show-cents="false" size="md" bold color="var(--c-via-orange)" />
             <p v-if="!trip" class="rt__pricenote">inclusief arrangement</p>
             <p v-else-if="ppTrip" class="rt__pricenote">Per persoon<br>(min. 2 pers.)</p>
+            <!-- Totaalprijs-variant: zeg waar de prijs voor is, zoals op de datumstap ("voor 2 personen"). -->
+            <p v-else class="rt__pricenote">Voor 2 personen</p>
           </td>
 
           <!-- Je opties (1e: zonder de vaste vinkjes, begint met de voorwaarde) -->

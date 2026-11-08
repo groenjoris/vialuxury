@@ -351,6 +351,8 @@ onMounted(() => {
           alt="ViaLuxury"
         />
       </NuxtLink>
+      <!-- Prototype: prijsweergave vakanties (PRIJS: TOTAAL | PP) onder het logo, zoals in de sitekop. -->
+      <div class="kaart-filter__proto"><MultiHotelTripDemoSwitches price /></div>
       <MultiHotelTripSearchFilterPanel
         :budget-min="budgetMin"
         :budget-max="budgetMax"
@@ -517,6 +519,7 @@ onMounted(() => {
   height: auto;
   display: block;
 }
+.kaart-filter__proto { padding: 10px var(--space-lg) 0; }
 
 /* Drop the FilterPanel's outer card border on the kaart sidebar so the
    horizontal line that read as a stroke "under the logo" disappears.

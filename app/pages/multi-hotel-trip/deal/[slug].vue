@@ -1,6 +1,9 @@
 <template>
   <div class="deal-page">
-    <MultiHotelTripSiteHeader />
+    <MultiHotelTripSiteHeader>
+      <!-- Prototype: prijsweergave vakanties (PRIJS: TOTAAL | PP) onder het logo. -->
+      <template #proto><MultiHotelTripDemoSwitches price /></template>
+    </MultiHotelTripSiteHeader>
     <!-- Prototype: zwevende schakelaar voor de reisschema-varianten (alleen Noord-Frankrijk). -->
     <!-- Prototype-schakelaarpaneel: alleen op desktop (op mobiel viel het over de hotelnamen). -->
     <TripItineraryVariantSwitch v-if="showItinVariants && !isMobile" target="arrangement" />
@@ -1277,10 +1280,15 @@ const priceForLabel = computed(() => {
   if (!deal) return ''
   // Prototype: the price is always for PRICED_PERSONS in minRoomsFor(those)
   // rooms — the party-size picker doesn't change it (see PRICED_PERSONS).
+  // Vakantie (totaalprijs-variant): niet "1 kamer" maar het aantal hotels — "Voor 6 nachten,
+  // 2 personen, 3 hotels"; de prijs is voor 2 personen in 1 kamer per hotel.
+  const lastPart = isTrip && trip
+    ? `${trip.stops.length} ${lang.value === 'de' ? 'Hotels' : 'hotels'}`
+    : roomsLabel(minRoomsFor(PRICED_PERSONS), lang.value)
   return t('deal.priceFor')
     .replace('{nightsLabel}', nightsLabel(deal.nights, lang.value))
     .replace('{personsLabel}', personsLabel(PRICED_PERSONS, lang.value))
-    .replace('{roomsLabel}', roomsLabel(minRoomsFor(PRICED_PERSONS), lang.value))
+    .replace('{roomsLabel}', lastPart)
 })
 
 // ---------------------------------------------------------------------------

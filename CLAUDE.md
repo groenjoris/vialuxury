@@ -34,6 +34,15 @@ op de post-bookingschermen van MHT/MVP (bevestiging, tips & routes, account, mai
 (`SiteFooter` en `CheckoutFooter`). In de desktop-sitefooter staat de startschermknop 284px naar
 links zodat de helpwidget ("Hoe kan ik je helpen?") hem niet overlapt.
 
+Prijsweergave-schakelaar van MHT (sinds 2026-11-08): "PRIJS: TOTAAL | PP" (`MultiHotelTripDemoSwitches`
+met prop `price`, state `useMultiHotelTripPriceVariant`, localStorage, standaard p.p.) linksboven onder het
+logo via de slot `proto` op elke pagina met vakantieprijzen: homepage, zoekpagina en Vakanties-landing,
+kaart (in de filterkolom onder het logo), vakantie-PDP en de desktop-checkout t/m de gegevensstap (de
+zwevende room-table-schakelaar staat daar onder de prijsschakelaar). Alleen vakanties rekenen om (helft
+van de 2-persoonsprijs, "per persoon … (min. 2 pers.)"); de kassabon na de kamerkeuze, de
+post-bookingschermen en de mails tonen altijd de totaalprijs, dus daar staat de schakelaar niet. Op mobiel
+verborgen, zoals alle prototype-schakelaars. Niet in de MVP (geen prototype-schakelaars).
+
 ## Fake door-test "variabel reisgezelschap" (variant bínnen R1, sinds 2026-10-26)
 
 Eigen, deelbare URL: `/first-release/fake-door` — de R1-homepage (alias van `/first-release/home`,

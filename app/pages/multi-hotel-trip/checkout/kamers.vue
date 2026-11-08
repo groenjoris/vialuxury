@@ -77,7 +77,10 @@ useHead({ title: computed(() => (checkoutTrip.value ? 'Kies je opties — ViaLux
 
 <template>
   <div class="mht-checkout page page--white">
-    <MultiHotelTripCheckoutTopNav />
+    <MultiHotelTripCheckoutTopNav>
+      <!-- Prototype: prijsweergave vakanties (PRIJS: TOTAAL | PP) onder het logo. -->
+      <template #proto><MultiHotelTripDemoSwitches price /></template>
+    </MultiHotelTripCheckoutTopNav>
 
     <div class="page__stepper">
       <MultiHotelTripCheckoutStepper :active="2" />

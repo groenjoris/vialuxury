@@ -13,7 +13,10 @@
         :title="tripSlogan.title"
         :title-em="tripSlogan.em"
         :pitch="tripHeroPitch"
-      />
+      >
+        <!-- Prototype: prijsweergave vakanties (PRIJS: TOTAAL | PP) onder het logo. -->
+        <template #proto><MultiHotelTripDemoSwitches price /></template>
+      </MultiHotelTripLandingHero>
       <!-- Variantenschakelaar voor de vakantie-dealcards (onder het logo, voor de
            opdrachtgever). Dealcard-variant is definitief "collage" (keuze
            2026-09-24); de schakelaar + kleurentuner blijven in de code voor later
@@ -23,7 +26,9 @@
       </div>
       -->
     </div>
-    <MultiHotelTripSiteHeader v-else />
+    <MultiHotelTripSiteHeader v-else>
+      <template #proto><MultiHotelTripDemoSwitches price /></template>
+    </MultiHotelTripSiteHeader>
 
     <main class="search-page__main">
       <!-- Breadcrumbs -->

@@ -12,6 +12,8 @@
     </div>
 
     <MultiHotelTripSiteHeader variant="overlay">
+      <!-- Prototype-schakelaars onder het logo (b.v. de prijsweergave op de Vakanties-landing). -->
+      <template v-if="$slots.proto" #proto><slot name="proto" /></template>
       <template #hero>
         <div class="home-hero__content container">
           <div v-if="eyebrow" class="home-hero__eyebrow">

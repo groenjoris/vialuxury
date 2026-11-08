@@ -24,6 +24,8 @@
            inside SiteHeader's row 2. -->
 
       <MultiHotelTripSiteHeader variant="overlay">
+        <!-- Prototype: prijsweergave vakanties (PRIJS: TOTAAL | PP) onder het logo. -->
+        <template #proto><MultiHotelTripDemoSwitches price /></template>
         <template #hero>
           <div class="home-hero__content container">
             <div class="home-hero__eyebrow">

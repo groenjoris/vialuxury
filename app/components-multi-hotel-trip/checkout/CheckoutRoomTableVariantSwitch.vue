@@ -29,7 +29,7 @@ const { variant, setVariant } = useMultiHotelTripRoomTableVariant()
 /* Zelfde look als de reisschema-schakelaar op de vakantie-PDP (TripItineraryVariantSwitch). */
 .rtvs {
   position: fixed;
-  top: 88px;
+  top: 112px; /* onder de prijsweergave-schakelaar (PRIJS: TOTAAL | PP), die onder het logo in de afrekenbalk staat */
   left: 16px;
   z-index: 1100;
   display: flex;
