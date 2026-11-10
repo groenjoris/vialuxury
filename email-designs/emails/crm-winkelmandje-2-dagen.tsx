@@ -6,10 +6,10 @@ import { crmCss, DealRow, FeaturedDeal, type RowDeal, s, site } from "../compone
 import { font, newsletter } from "../components/theme";
 
 // CRM mail 4: winkelmandje, 2 dagen na het verlaten van de checkout. Na de mail van
-// 2 uur (zelfde deal, afronden) nu alternatieven. "Door jou bekeken": de deal uit het
-// winkelmandje als omlijnde dealrij (zoals "Jouw verblijf" in de reviewmail). Daaronder drie
-// vergelijkbare deals onder elkaar: de eerste groot over de hele breedte met een oranje knop
-// (naar Jesse's terugkomactie), de andere twee als dealrij (zoals "Precies een jaar geleden").
+// 2 uur (zelfde deal, afronden) nu alternatieven. Eerst drie vergelijkbare deals onder elkaar:
+// de eerste groot over de hele breedte met een oranje knop (naar Jesse's terugkomactie), de
+// andere twee als dealrij. Daaronder "Door jou bekeken": de deal uit het winkelmandje als
+// omlijnde dealrij (zoals "Jouw verblijf" in de reviewmail).
 // Geen labels. Klaviyo: nooit twee lettertypen op één regel, daarom staat alles onder elkaar.
 // Onderwerp: "Dit zijn 3 deals die lijken op [hotelnaam]"
 
@@ -34,19 +34,19 @@ export default function CrmWinkelmandje2Dagen({ recipientEmail, cart, deals }: P
       <Body style={{ backgroundColor: c.bg, margin: 0, padding: 0, fontFamily: font.body }}>
         <CrmHeader />
         <Container style={{ width: "100%", maxWidth: "626px" }}>
-          {/* Door jou bekeken: de deal uit het winkelmandje */}
+          {/* Eerst de drie vergelijkbare deals: de eerste groot, de rest als rij */}
           <Section className="m-pad" style={{ padding: "32px 32px 0" }}>
-            <Text style={s.kop}>Door jou bekeken</Text>
-            <DealRow deal={cart} cta="Ga verder met boeken" />
-          </Section>
-
-          {/* Drie vergelijkbare deals: de eerste groot, de rest als rij */}
-          <Section className="m-pad" style={{ padding: "44px 32px 40px" }}>
             <Text style={s.kop}>Geboekt door anderen die {cart.hotelName} bekeken</Text>
             {first && <FeaturedDeal deal={first} />}
             {rest.map((d) => (
               <DealRow key={d.url} deal={d} />
             ))}
+          </Section>
+
+          {/* Daaronder "Door jou bekeken": de deal uit het winkelmandje */}
+          <Section className="m-pad" style={{ padding: "44px 32px 40px" }}>
+            <Text style={s.kop}>Door jou bekeken</Text>
+            <DealRow deal={cart} cta="Ga verder met boeken" />
           </Section>
         </Container>
         <CrmFooter recipientEmail={recipientEmail} reason="omdat je een boeking bij ons startte" />
