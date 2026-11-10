@@ -45,7 +45,7 @@ export default function CrmVerlanglijst({ recipientEmail, code, daysLeft, favori
           </Section>
 
           <Section className="m-pad" style={{ padding: "24px 32px 0" }}>
-            <CodeBlock code={code.code} label="Jouw persoonlijke code" deadline={code.deadline} daysLeft={daysLeft} />
+            <CodeBlock title={`${code.value} cadeau`} code={code.code} deadline={code.deadline} daysLeft={daysLeft} />
           </Section>
 
           {/* Het favoriet waarop de code geldt, met de ene oranje knop */}
