@@ -222,3 +222,25 @@ export function CodeBlock({ code, label, deadline }: { code: string; label: stri
     </Section>
   );
 }
+
+/** Uitgelichte deal over de hele breedte (naar Jesse's FeaturedDeal): grote foto, daaronder alles
+ *  onder elkaar: hotelnaam, plaats, dealtitel, vette regel (vanafprijs) en een oranje knop.
+ *  Zelfde zwarte rand en tekststijlen als DealRow; geen labels. */
+export function FeaturedDeal({ deal: d, cta = "Bekijk arrangement" }: { deal: RowDeal; cta?: string }) {
+  return (
+    <Section style={{ border: `1px solid ${c.text}`, borderRadius: "8px", marginTop: "12px", overflow: "hidden" }}>
+      <Link href={d.url}>
+        <Img src={d.image} alt={d.packageTitle ?? d.hotelName ?? ""} width="560" height="300" style={{ display: "block", width: "100%", height: "300px", objectFit: "cover" }} />
+      </Link>
+      <Section style={{ padding: "18px 20px 22px" }}>
+        {d.hotelName && <Text style={{ fontFamily: font.heading, fontWeight: 600, fontSize: "20px", lineHeight: "1.2", color: c.heading, margin: 0 }}>{d.hotelName}</Text>}
+        {d.place && <Text style={{ ...s.muted, fontSize: "14px", margin: "2px 0 0" }}>{d.place}</Text>}
+        {d.packageTitle && <Text style={{ ...s.title, margin: "8px 0 0" }}>{d.packageTitle}</Text>}
+        {d.line && <Text style={{ ...s.title, fontWeight: 700, margin: "8px 0 0" }}>{d.line}</Text>}
+        <Section style={{ marginTop: "14px" }}>
+          <PrimaryButton href={d.url} small>{cta}</PrimaryButton>
+        </Section>
+      </Section>
+    </Section>
+  );
+}

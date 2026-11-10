@@ -184,7 +184,9 @@ light HTML en de lijst `app/data/crm-emails.json`. Preview `/crm/<slug>` (één 
 inbox: afzender, onderwerp en preheader boven de mail) met links alle mails als tekstlinkjes, bevestigingspagina van de nagenietknoppen
 `/crm/volgende-vakantie?keuze=…`. Knoppen linken naar de R1-dealpagina (zachte landing; die neemt
 `?checkin=` en `?adults=` over). Prijzen uit `deals.json` zijn het totaal voor 2 personen, niet p.p.
-Startscherm: vak "CRM".
+Klaviyo-beperking (2026-11-10): nooit twee lettertypen (serif-kop en sans-tekst) naast elkaar op
+één regel; onder elkaar mag wel. Daarom staan hotelnaam, plaats, dealtitel en prijs elk op een eigen
+regel (`DealRow`, `FeaturedDeal`). Startscherm: vak "CRM".
 
 ## Kaarten (Leaflet)
 
