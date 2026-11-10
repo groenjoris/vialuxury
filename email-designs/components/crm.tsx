@@ -8,7 +8,7 @@ import { baseUrl, font, newsletter } from "./theme";
 // - Drie lettergroottes: titel 32, subtitel/hotelnaam 20, alle overige tekst 16 px.
 // - Alles links uitgelijnd (alleen de inhoud van de coupon staat gecentreerd).
 // - Klaviyo: nooit twee lettertypen naast elkaar op één regel; onder elkaar mag wel.
-// - Geen grijze vlakken; beige alleen als highlight. Blokken zijn wit met een zwarte rand.
+// - Geen grijze vlakken; beige alleen als highlight. Blokken zijn wit met een grijze rand (#E5E5E5, zoals de website).
 // - Geen labels ("Populair" e.d.) op deals; prijzen zijn het totaal voor 2 personen.
 // - Links naar het prototype gaan naar de R1-dealpagina (zachte landing).
 
@@ -61,7 +61,7 @@ export function PrimaryButton({ href, children, small }: { href: string; childre
   );
 }
 
-/** Secundaire knop: wit met zwarte rand, nooit oranje (kleur alleen voor de kern). */
+/** Secundaire knop: wit met grijze rand (zoals de website), nooit oranje (kleur alleen voor de kern). */
 export function SecondaryButton({ href, children, block }: { href: string; children: React.ReactNode; block?: boolean }) {
   return (
     <Button
@@ -70,7 +70,7 @@ export function SecondaryButton({ href, children, block }: { href: string; child
         display: block ? "block" : "inline-block",
         textAlign: "center",
         backgroundColor: "#FFFFFF",
-        border: `1px solid ${c.text}`,
+        border: `1px solid #E5E5E5`,
         color: c.text,
         fontFamily: font.body,
         fontSize: "16px",
@@ -120,11 +120,11 @@ function DealText({ d }: { d: RowDeal }) {
   );
 }
 
-/** Dealrij met zwarte rand: foto links tot aan de rand en over de volle hoogte; rechts de
+/** Dealrij met grijze rand: foto links tot aan de rand en over de volle hoogte; rechts de
  *  tekstregels en een oranje link. */
 export function DealRow({ deal: d, cta = "Bekijk" }: { deal: RowDeal; cta?: string }) {
   return (
-    <Section style={{ border: `1px solid ${c.text}`, borderRadius: "8px", marginTop: "12px", overflow: "hidden" }}>
+    <Section style={{ border: `1px solid #E5E5E5`, borderRadius: "8px", marginTop: "12px", overflow: "hidden" }}>
       <Row>
         {/* Foto als achtergrond: sluit aan op de rand en vult de hele hoogte van het blok */}
         <Column className="stack" style={{ width: "190px", verticalAlign: "top", backgroundImage: `url(${d.image})`, backgroundSize: "cover", backgroundPosition: "center" }}>
@@ -144,7 +144,7 @@ export function DealRow({ deal: d, cta = "Bekijk" }: { deal: RowDeal; cta?: stri
  *  hoofdknop hebben. */
 export function FeaturedDeal({ deal: d, cta = "Bekijk arrangement", primary = true }: { deal: RowDeal; cta?: string; primary?: boolean }) {
   return (
-    <Section style={{ border: `1px solid ${c.text}`, borderRadius: "8px", marginTop: "12px", overflow: "hidden" }}>
+    <Section style={{ border: `1px solid #E5E5E5`, borderRadius: "8px", marginTop: "12px", overflow: "hidden" }}>
       <Link href={d.url}>
         <Img src={d.image} alt={d.packageTitle ?? d.hotelName ?? ""} width="560" height="300" style={{ display: "block", width: "100%", height: "300px", objectFit: "cover" }} />
       </Link>
@@ -233,7 +233,7 @@ export function PillGrid({ items }: { items: Pill[] }) {
                 {t && (
                   <Link
                     href={t.href}
-                    style={{ display: "block", backgroundColor: "#FFFFFF", border: "1px solid #E5E2DA", borderRadius: "4px", padding: "13px 16px", fontFamily: font.body, fontSize: "16px", lineHeight: "20px", color: c.text, textDecoration: "none" }}
+                    style={{ display: "block", backgroundColor: "#FFFFFF", border: "1px solid #E5E5E5", borderRadius: "4px", padding: "13px 16px", fontFamily: font.body, fontSize: "16px", lineHeight: "20px", color: c.text, textDecoration: "none" }}
                   >
                     {t.icon && <Img src={t.icon} alt="" width="16" height="16" style={{ display: "inline-block", verticalAlign: "-2px", marginRight: "10px" }} />}
                     {t.label}

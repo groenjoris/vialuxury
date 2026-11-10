@@ -69,7 +69,7 @@ export default function CrmReview({ recipientEmail, firstName, hotelName, stars,
             </Row>
           </Section>
 
-          {/* Jouw verblijf: dealrij met zwarte rand, hotelnaam bovenaan */}
+          {/* Jouw verblijf: dealrij met grijze rand, hotelnaam bovenaan */}
           <Section className="m-pad" style={{ padding: "44px 32px 0" }}>
             <Text style={s.kop}>Jouw verblijf</Text>
             <DealRow deal={{ hotelName, stars, place, packageTitle, line: stayDates, image, url: dealUrl }} />

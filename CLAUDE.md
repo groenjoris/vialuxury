@@ -187,7 +187,7 @@ Regels voor elke CRM-mail:
 - Alles links uitgelijnd, nooit gecentreerd (alleen de inhoud van de coupon staat gecentreerd).
 - Klaviyo: nooit twee lettertypen (serif-kop en sans-tekst) naast elkaar op één regel; onder elkaar mag
   wel. Hotelnaam, sterren, plaats, dealtitel en prijs staan daarom elk op een eigen regel.
-- Dealblokken: wit met zwarte rand, foto tot aan de rand; suggesties als één groot blok + rijen
+- Dealblokken: wit met grijze rand (#E5E5E5, de randkleur van de website), foto tot aan de rand; suggesties als één groot blok + rijen
   (`DealList`). Geen labels of stickers ("Populair"). Eén oranje knop per mail; staat die al bovenaan,
   dan krijgt het grote dealblok een omlijnde knop (`primary={false}`).
 - Geen grijze vlakken; beige (#F4F1EC) alleen als echte highlight (nu nergens in gebruik). Keuzes (thema, nagenietvraag) zijn witte snelfilterknoppen in een raster van twee (`PillGrid`).

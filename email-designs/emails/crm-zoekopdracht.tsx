@@ -45,7 +45,7 @@ export default function CrmZoekopdracht({ recipientEmail, searchTerm, arrivalDat
           {/* De zoekopdracht als samenvatting, met de ene knop */}
           <Section className="m-pad" style={{ padding: "28px 32px 0" }}>
             <Text style={s.kop}>Jouw zoekopdracht</Text>
-            <Section style={{ border: `1px solid ${c.text}`, borderRadius: "8px", padding: "14px 20px 22px", marginTop: "12px" }}>
+            <Section style={{ border: `1px solid #E5E5E5`, borderRadius: "8px", padding: "14px 20px 22px", marginTop: "12px" }}>
               <IconLine icon="magnifier-donker" bold>{searchTerm ?? "Jouw zoekopdracht"}</IconLine>
               {arrivalDate && <IconLine icon="calendar-donker">{arrivalDate}</IconLine>}
               {persons && <IconLine icon="users-donker">{persons} personen</IconLine>}
