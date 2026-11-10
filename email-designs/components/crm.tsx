@@ -191,9 +191,9 @@ export function CodeBlock({ title, code, label = "Jouw persoonlijke code", deadl
   const center = { textAlign: "center" as const };
   return (
     <Section style={{ width: "100%", border: `2px dashed ${c.cta}`, borderRadius: "8px", padding: "22px 22px 24px", textAlign: "center" }}>
-      {title && <Text style={{ ...s.kop, ...center, margin: "0 0 10px" }}>{title}</Text>}
+      {title && <Text style={{ ...s.h1, fontWeight: 700, color: c.cta, ...center, margin: "0 0 12px" }}>{title}</Text>}
       <Text style={{ ...s.title, ...center, margin: 0 }}>{label}</Text>
-      <Text style={{ fontFamily: font.heading, fontWeight: 700, fontSize: "32px", lineHeight: "1.2", letterSpacing: "0.02em", color: c.cta, margin: "4px 0 0", ...center }}>{code}</Text>
+      <Text style={{ fontFamily: font.heading, fontWeight: 700, fontSize: "20px", lineHeight: "1.3", letterSpacing: "0.02em", color: c.text, margin: "4px 0 0", ...center }}>{code}</Text>
       <Text style={{ ...s.name, ...center, margin: "14px 0 0" }}>
         <Img src={mailIcon("clock-donker")} alt="" width="18" height="18" style={{ display: "inline-block", verticalAlign: "-3px", marginRight: "8px" }} />
         {daysLeft ? `Nog ${daysLeft} dagen geldig, tot en met ${deadline}` : `Geldig tot en met ${deadline}`}
