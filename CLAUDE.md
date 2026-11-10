@@ -177,7 +177,7 @@ deals in list view), themamail stedentrips A6 (`crm-thema-stedentrips`, variant 
 themakeuze naar `/crm/thema?keuze=…`) reviewmail 1 dag na vertrek (`crm-review`) en de nagenietmail (`crm-nagenieten`, staat bewust als laatste).
 Jesse de Groot heeft eigen CRM-mails op `origin/redesign-jesse` (review, terugkomactie, zoekopdracht,
 verlanglijst, codeblok, iconen in `public/images/mail/crm/`); nieuwe mails op main worden daarop
-gebaseerd en per stuk overgenomen (niet mergen), met onze header/footer, links uitgelijnd, zonder labels. Bronnen in
+gebaseerd en per stuk overgenomen (niet mergen), met onze header/footer en zonder labels. Alles in de CRM-mails is links uitgelijnd (nooit gecentreerd). Bronnen in
 `email-designs/emails/crm-*.tsx` (gedeelde bouwstenen `email-designs/components/crm.tsx`, o.a. `DealListCard`,
 `CrmHeader`/`CrmFooter` over de hele breedte), registry-sectie `"crm"`; de export schrijft alleen
 light HTML en de lijst `app/data/crm-emails.json`. Preview `/crm/<slug>` (één frame zoals in de

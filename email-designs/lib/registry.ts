@@ -170,7 +170,7 @@ export const emails: EmailEntry[] = [
     title: "Reviewmail (1 dag na vertrek)",
     description: "Eén doel: de review. Vijf klikbare Trustpilot-sterren boven de vouw, daaronder het verblijf in een omlijnd blok. Gebaseerd op de reviewmail van Jesse.",
     section: "crm",
-    subject: "Welkom thuis, Sanne",
+    subject: "Hoe was je verblijf?",
     preheader: "We horen graag hoe je het vond. Het kost je een minuut.",
     Component: CrmReview,
   },

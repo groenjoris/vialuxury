@@ -11,7 +11,7 @@ import { baseUrl, font, newsletter } from "../components/theme";
 // zodat de score op de landingspagina al is ingevuld. Daaronder "Jouw verblijf": het
 // arrangement in een zwart omlijnd blok (foto links; hotelnaam, plaats, dealtitel,
 // datums en een oranje link). Geen deals of thema's; de serviceregel is het vangnet.
-// Onderwerp: "Welkom thuis, [voornaam]"
+// Onderwerp: "Hoe was je verblijf?" Alles links uitgelijnd.
 
 type Props = {
   recipientEmail: string;
@@ -44,24 +44,24 @@ export default function CrmReview({ recipientEmail, firstName, hotelName, place,
         <CrmHeader />
         <Container style={{ width: "100%", maxWidth: "626px" }}>
           {/* Boven de vouw: kop, één zin, vijf sterren */}
-          <Section className="m-pad" style={{ padding: "36px 32px 0", textAlign: "center" }}>
+          <Section className="m-pad" style={{ padding: "36px 32px 0" }}>
             <Heading as="h1" className="m-h1" style={s.h1}>
-              {firstName ? `Hoe was je verblijf, ${firstName}?` : "Hoe was je verblijf?"}
+              {firstName ? `Welkom thuis, ${firstName}` : "Welkom thuis"}
             </Heading>
             <Text style={s.body}>Jouw review helpt andere gasten bij hun keuze, en ons om nog beter te worden.</Text>
           </Section>
 
-          <Section className="m-pad" style={{ padding: "28px 32px 0", textAlign: "center" }}>
+          <Section className="m-pad" style={{ padding: "28px 32px 0" }}>
             <Text style={{ fontFamily: font.heading, fontWeight: 600, fontSize: "20px", color: c.heading, margin: 0 }}>
               Hoe beoordeel je {hotelName ? `je verblijf in ${hotelName}` : "je verblijf"}?
             </Text>
             <Text style={{ ...s.title, color: c.muted, margin: "4px 0 10px" }}>Selecteer het gewenste aantal sterren</Text>
             {/* Vijf losse ster-links; elk tapvlak is 48 × 48 px */}
-            <Row style={{ width: "auto" }} align="center">
+            <Row style={{ width: "auto" }} align="left">
               {[1, 2, 3, 4, 5].map((n) => (
-                <Column key={n} style={{ padding: "0 2px" }}>
-                  <Link href={`${reviewUrl}${sep}rating=${n}`} style={{ display: "block", width: "48px", height: "48px", textAlign: "center" }}>
-                    <Img src={`${baseUrl}/images/mail/crm/trustpilot-ster-groen.png`} alt={`${n} ${n === 1 ? "ster" : "sterren"}`} width="40" height="40" style={{ display: "block", margin: "4px auto 0" }} />
+                <Column key={n} style={{ padding: "0 4px 0 0" }}>
+                  <Link href={`${reviewUrl}${sep}rating=${n}`} style={{ display: "block", width: "48px", height: "48px" }}>
+                    <Img src={`${baseUrl}/images/mail/crm/trustpilot-ster-groen.png`} alt={`${n} ${n === 1 ? "ster" : "sterren"}`} width="40" height="40" style={{ display: "block", margin: "4px 0 0" }} />
                   </Link>
                 </Column>
               ))}
