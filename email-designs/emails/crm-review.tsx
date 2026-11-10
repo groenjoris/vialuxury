@@ -19,6 +19,7 @@ type Props = {
   firstName?: string;
   /** Leeg → "je verblijf" zonder hotelnaam. */
   hotelName?: string;
+  stars?: number;
   place?: string;
   packageTitle?: string;
   /** "31 oktober tot 2 november 2026" */
@@ -28,7 +29,7 @@ type Props = {
   reviewUrl: string;
 };
 
-export default function CrmReview({ recipientEmail, firstName, hotelName, place, packageTitle, stayDates, image, dealUrl, reviewUrl }: Props) {
+export default function CrmReview({ recipientEmail, firstName, hotelName, stars, place, packageTitle, stayDates, image, dealUrl, reviewUrl }: Props) {
   const c = newsletter.light;
   const sep = reviewUrl.includes("?") ? "&" : "?";
   const underline = { color: c.text, textDecoration: "underline" };
@@ -71,7 +72,7 @@ export default function CrmReview({ recipientEmail, firstName, hotelName, place,
           {/* Jouw verblijf: dealrij met zwarte rand, hotelnaam bovenaan */}
           <Section className="m-pad" style={{ padding: "44px 32px 0" }}>
             <Text style={s.kop}>Jouw verblijf</Text>
-            <DealRow deal={{ hotelName, place, packageTitle, line: stayDates, image, url: dealUrl }} />
+            <DealRow deal={{ hotelName, stars, place, packageTitle, line: stayDates, image, url: dealUrl }} />
           </Section>
 
           {/* Service als vangnet */}
@@ -94,6 +95,7 @@ CrmReview.PreviewProps = {
   recipientEmail: "sanne.devries@example.com",
   firstName: "Sanne",
   hotelName: "Landgoed Lauswolt",
+  stars: 5,
   place: "Beetsterzwaag",
   packageTitle: "Culinair verblijf in een luxe 5*-hotel in het prachtige Friesland, incl. MICHELIN-diner",
   stayDates: "31 oktober tot 2 november 2026",

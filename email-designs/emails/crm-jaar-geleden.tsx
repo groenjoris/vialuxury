@@ -85,6 +85,7 @@ CrmJaarGeleden.PreviewProps = {
   deals: [
     {
       hotelName: "voco® The Hague",
+      stars: 4,
       place: "Den Haag",
       packageTitle: "Verblijf in het mooiste hotel van Nederland",
       line: "Vanaf €319 voor 2 personen",
@@ -93,6 +94,7 @@ CrmJaarGeleden.PreviewProps = {
     },
     {
       hotelName: "Hotel De Plesman",
+      stars: 4,
       place: "Den Haag",
       packageTitle: "Gloednieuw hotel in het voormalige KLM-hoofdkantoor",
       line: "Vanaf €309 voor 2 personen",
@@ -101,6 +103,7 @@ CrmJaarGeleden.PreviewProps = {
     },
     {
       hotelName: "Grand Hotel Amrâth Kurhaus",
+      stars: 5,
       place: "Scheveningen",
       packageTitle: "Luxe overnachten aan het strand van Scheveningen",
       line: "Vanaf €399 voor 2 personen",
