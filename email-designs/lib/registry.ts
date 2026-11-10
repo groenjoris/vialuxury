@@ -195,21 +195,11 @@ export const emails: EmailEntry[] = [
   {
     slug: "crm-winkelmandje",
     title: "Winkelmandje (2 uur na verlaten)",
-    description: "Eén doel: de boeking afronden. Winkelmandkaart met concrete datums, nachten, personen en prijs, een beschikbaarheidsregel en één knop terug naar de boeking. Gastenoordeel als er een score is. Geen alternatieve deals.",
+    description: "Eén doel: de boeking afronden. Winkelmandkaart met concrete datums, nachten, personen en totaalprijs en één knop terug naar de boeking. Gastenoordeel met Trustpilot-sterren en drie reviews. Overgenomen van Jesse. Geen alternatieve deals.",
     section: "crm",
-    subject: "Hotel Winselerhof op 20 nov: nog beschikbaar",
+    subject: "Hotel Des Indes op 20 nov: nog beschikbaar",
     preheader: "Je boeking staat klaar. Rond af wanneer het jou uitkomt.",
     Component: CrmWinkelmandje,
-  },
-  {
-    slug: "crm-winkelmandje-beschikbaar",
-    title: "Winkelmandje (2 uur na verlaten)",
-    description: "Variant \"Beschikbaar\": nog geen schaarste, wel populair op de aankomstdatum.",
-    section: "crm",
-    subject: "Hotel Winselerhof op 20 nov: nog beschikbaar",
-    preheader: "Je boeking staat klaar. Rond af wanneer het jou uitkomt.",
-    Component: CrmWinkelmandje,
-    props: { ...CrmWinkelmandje.PreviewProps, availability: "available" },
   },
   {
     slug: "crm-winkelmandje-2-dagen",

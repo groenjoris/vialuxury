@@ -171,8 +171,8 @@ boven de mail) in plaats van de beschrijving.
 ## CRM (concept, sinds 2026-11-02)
 
 Artist impression van geautomatiseerde e-mails, alleen desktop + light mode: precies een jaar
-geleden (`crm-jaar-geleden`), winkelmandje 2 uur na verlaten (`crm-winkelmandje`, variant
-`-beschikbaar`), winkelmandje 2 dagen na verlaten (`crm-winkelmandje-2-dagen`, drie vergelijkbare
+geleden (`crm-jaar-geleden`), winkelmandje 2 uur na verlaten (`crm-winkelmandje`, overgenomen
+van Jesse), winkelmandje 2 dagen na verlaten (`crm-winkelmandje-2-dagen`, drie vergelijkbare
 deals in list view), themamail stedentrips A6 (`crm-thema-stedentrips`, variant `-plaatjes`;
 themakeuze naar `/crm/thema?keuze=…`) reviewmail 1 dag na vertrek (`crm-review`) en de nagenietmail (`crm-nagenieten`, staat bewust als laatste).
 Jesse de Groot heeft eigen CRM-mails op `origin/redesign-jesse` (review, terugkomactie, zoekopdracht,
@@ -181,7 +181,7 @@ gebaseerd en per stuk overgenomen (niet mergen), met onze header/footer en zonde
 `email-designs/emails/crm-*.tsx` (gedeelde bouwstenen `email-designs/components/crm.tsx`, o.a. `DealListCard`,
 `CrmHeader`/`CrmFooter` over de hele breedte), registry-sectie `"crm"`; de export schrijft alleen
 light HTML en de lijst `app/data/crm-emails.json`. Preview `/crm/<slug>` (één frame zoals in de
-inbox: afzender, onderwerp en preheader boven de mail), bevestigingspagina van de nagenietknoppen
+inbox: afzender, onderwerp en preheader boven de mail) met links alle mails als tekstlinkjes, bevestigingspagina van de nagenietknoppen
 `/crm/volgende-vakantie?keuze=…`. Knoppen linken naar de R1-dealpagina (zachte landing; die neemt
 `?checkin=` en `?adults=` over). Prijzen uit `deals.json` zijn het totaal voor 2 personen, niet p.p.
 Startscherm: vak "CRM".

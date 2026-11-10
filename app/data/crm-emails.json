@@ -23,15 +23,8 @@
   {
     "slug": "crm-winkelmandje",
     "title": "Winkelmandje (2 uur na verlaten)",
-    "description": "Eén doel: de boeking afronden. Winkelmandkaart met concrete datums, nachten, personen en prijs, een beschikbaarheidsregel en één knop terug naar de boeking. Gastenoordeel als er een score is. Geen alternatieve deals.",
-    "subject": "Hotel Winselerhof op 20 nov: nog beschikbaar",
-    "preheader": "Je boeking staat klaar. Rond af wanneer het jou uitkomt."
-  },
-  {
-    "slug": "crm-winkelmandje-beschikbaar",
-    "title": "Winkelmandje (2 uur na verlaten)",
-    "description": "Variant \"Beschikbaar\": nog geen schaarste, wel populair op de aankomstdatum.",
-    "subject": "Hotel Winselerhof op 20 nov: nog beschikbaar",
+    "description": "Eén doel: de boeking afronden. Winkelmandkaart met concrete datums, nachten, personen en totaalprijs en één knop terug naar de boeking. Gastenoordeel met Trustpilot-sterren en drie reviews. Overgenomen van Jesse. Geen alternatieve deals.",
+    "subject": "Hotel Des Indes op 20 nov: nog beschikbaar",
     "preheader": "Je boeking staat klaar. Rond af wanneer het jou uitkomt."
   },
   {

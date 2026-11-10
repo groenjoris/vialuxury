@@ -1,14 +1,16 @@
-import { Body, Column, Container, Head, Heading, Html, Img, Link, Preview, Row, Section, Text } from "@react-email/components";
+import { Body, Container, Head, Heading, Html, Img, Link, Preview, Section, Text } from "@react-email/components";
 import * as React from "react";
 import { crmCss, PrimaryButton, s, site } from "../components/crm";
 import CrmFooter from "../components/CrmFooter";
 import CrmHeader from "../components/CrmHeader";
-import { font, newsletter } from "../components/theme";
+import { baseUrl, font, newsletter } from "../components/theme";
 
-// CRM mail 3: winkelmandje, 2 uur na het verlaten van de checkout.
-// Eén doel: de boeking afronden. Concrete datums en beschikbaarheid, één knop naar de
-// checkout met alles vooringevuld. Gastenoordeel alleen als er een score is.
-// Geen alternatieve deals.
+// CRM mail 3: winkelmandje, 2 uur na het verlaten van de checkout. Overgenomen van de
+// winkelmandjemail van Jesse (origin/redesign-jesse, crm-winkelmandje.tsx), met de plaats
+// boven de dealtitel en zonder de beschikbaarheidsregel ("Nog x kamers beschikbaar").
+// Eén doel: de boeking afronden. Concrete datums en de totaalprijs, één knop naar de
+// boeking met alles vooringevuld. Gastenoordeel: gemiddelde met Trustpilot-sterren en drie
+// korte reviews, alleen als die er zijn. Geen alternatieve deals.
 // Onderwerp: "[hotelnaam] op [aankomstdatum kort]: nog beschikbaar"
 
 type Props = {
@@ -22,21 +24,23 @@ type Props = {
   departureDate: string;
   nights: number;
   persons: number;
+  /** Totaalprijs voor alle personen. */
   price: string;
-  availability: "available" | "almost-full";
-  roomsLeft?: number;
-  /** Leeg → geen gastenoordeel. */
-  review?: { score: string; text: string; author: string };
+  /** Wat er in de totaalprijs zit of nog bijkomt, bijv. "Inclusief btw en servicekosten". Alleen invullen als het klopt. */
+  priceNote?: string;
+  /** Gemiddelde en aantal reviews van het hotel (schaal tot 5), boven de losse reviews. */
+  reviewSummary?: { average: 3 | 3.5 | 4 | 4.5 | 5; label: string };
+  /** Drie gastenoordelen; leeg → geen gastenoordeel. */
+  reviews?: { text: string; author: string }[];
   image: string;
   checkoutUrl: string;
 };
 
-export default function CrmWinkelmandje({ recipientEmail, hotelName, packageTitle, place, arrivalDate, departureDate, nights, persons, price, availability, roomsLeft, review, image, checkoutUrl }: Props) {
+export default function CrmWinkelmandje({ recipientEmail, hotelName, packageTitle, place, arrivalDate, departureDate, nights, persons, price, priceNote, reviewSummary, reviews, image, checkoutUrl }: Props) {
   const c = newsletter.light;
-  const availabilityLine =
-    availability === "almost-full"
-      ? `Nog ${roomsLeft} kamers beschikbaar op ${arrivalDate}.`
-      : `${arrivalDate[0].toUpperCase()}${arrivalDate.slice(1)} is gewild bij onze bezoekers. Nog beschikbaar voor ${persons} personen.`;
+  // Lettergroottes van Jesse's versie: 16 px voor alle regels in de kaart.
+  const line = { ...s.title, fontSize: "16px" };
+  const muted = { ...s.muted, fontSize: "16px" };
 
   return (
     <Html lang="nl">
@@ -48,7 +52,6 @@ export default function CrmWinkelmandje({ recipientEmail, hotelName, packageTitl
       <Body style={{ backgroundColor: c.bg, margin: 0, padding: 0, fontFamily: font.body }}>
         <CrmHeader />
         <Container style={{ width: "100%", maxWidth: "626px" }}>
-
           <Section className="m-pad" style={{ padding: "32px 32px 0" }}>
             <Heading as="h1" className="m-h1" style={s.h1}>Nog steeds interesse in {hotelName}?</Heading>
             <Text style={s.body}>We hebben 'm voor je bewaard.</Text>
@@ -59,22 +62,17 @@ export default function CrmWinkelmandje({ recipientEmail, hotelName, packageTitl
             <Section style={{ border: `1px solid ${c.border}`, borderRadius: "8px", overflow: "hidden" }}>
               <Img src={image} alt={packageTitle} width="560" height="240" style={{ display: "block", width: "100%", height: "240px", objectFit: "cover" }} />
               <Section style={{ padding: "20px 20px 24px" }}>
-                <Text style={{ ...s.name, fontSize: "18px" }}>{hotelName}</Text>
-                <Text style={s.title}>{packageTitle}</Text>
-                <Text style={{ ...s.muted, margin: "4px 0 0" }}>{place}</Text>
+                <Text style={{ ...s.name, fontSize: "20px" }}>{hotelName}</Text>
+                <Text style={{ ...muted, margin: "2px 0 0" }}>{place}</Text>
+                <Text style={{ ...line, margin: "6px 0 0" }}>{packageTitle}</Text>
 
-                <Row style={{ marginTop: "16px", borderTop: `1px solid ${c.border}` }}>
-                  <Column style={{ paddingTop: "14px", verticalAlign: "top" }}>
-                    <Text style={{ ...s.title, margin: 0, fontWeight: 700 }}>{arrivalDate} tot {departureDate}</Text>
-                    <Text style={{ ...s.muted, margin: "2px 0 0" }}>{nights} nachten · {persons} personen</Text>
-                  </Column>
-                  <Column align="right" style={{ paddingTop: "14px", verticalAlign: "top" }}>
-                    <Text style={{ fontFamily: font.body, fontSize: "22px", fontWeight: 700, color: c.text, margin: 0, textAlign: "right" }}>{price}</Text>
-                    <Text style={{ ...s.muted, margin: "2px 0 0", textAlign: "right" }}>totaal</Text>
-                  </Column>
-                </Row>
+                <Section style={{ marginTop: "16px", borderTop: `1px solid ${c.border}`, paddingTop: "14px" }}>
+                  <Text style={{ ...line, margin: 0, fontWeight: 700 }}>{arrivalDate} tot {departureDate}</Text>
+                  <Text style={{ ...muted, margin: "2px 0 0" }}>{nights} nachten · {persons} personen</Text>
+                  <Text style={{ fontFamily: font.body, fontSize: "16px", fontWeight: 700, color: c.text, margin: "10px 0 0" }}>Totaal {price} voor {persons} personen</Text>
+                  {priceNote && <Text style={{ ...muted, margin: "2px 0 0" }}>{priceNote}</Text>}
+                </Section>
 
-                <Text style={{ ...s.title, margin: "16px 0 0" }}>{availabilityLine}</Text>
                 <Section style={{ marginTop: "20px" }}>
                   <PrimaryButton href={checkoutUrl}>Rond je boeking af</PrimaryButton>
                 </Section>
@@ -82,32 +80,41 @@ export default function CrmWinkelmandje({ recipientEmail, hotelName, packageTitl
             </Section>
           </Section>
 
-          {/* Gastenoordeel, alleen als er een score is */}
-          {review && (
-            <Section className="m-pad" style={{ padding: "32px 32px 0" }}>
-              <Row>
-                <Column style={{ width: "64px", verticalAlign: "top" }}>
-                  <div style={{ width: "52px", height: "52px", borderRadius: "6px", backgroundColor: c.text, color: "#FFFFFF", textAlign: "center", lineHeight: "52px", fontFamily: font.body, fontSize: "20px", fontWeight: 700 }}>
-                    {review.score}
-                  </div>
-                </Column>
-                <Column style={{ verticalAlign: "top" }}>
-                  <Text style={{ fontFamily: font.heading, fontSize: "18px", lineHeight: "1.4", color: c.text, margin: 0 }}>"{review.text}"</Text>
-                  <Text style={{ ...s.muted, margin: "6px 0 0" }}>{review.author}</Text>
-                </Column>
-              </Row>
+          {/* Gastenoordeel: lichtgrijs vlak, één keer sterren met het gemiddelde, drie reviews in 20 px */}
+          {reviews && reviews.length > 0 && (
+            <Section className="m-pad" style={{ padding: "36px 32px 0" }}>
+              <Text style={{ ...s.kop, fontSize: "20px" }}>Dit vinden gasten van {hotelName}</Text>
+              <Section style={{ marginTop: "16px", backgroundColor: "#F5F5F5", borderRadius: "8px", padding: "24px 24px 28px" }}>
+                {reviewSummary && (
+                  <>
+                    <Img
+                      src={`${baseUrl}/images/mail/crm/trustpilot-sterren-${String(reviewSummary.average).replace(".", "-")}.png`}
+                      alt={`${String(reviewSummary.average).replace(".", ",")} van 5 sterren op Trustpilot`}
+                      width="152"
+                      height="28"
+                      style={{ display: "block", width: "152px", height: "28px" }}
+                    />
+                    <Text style={{ ...s.body, margin: "6px 0 0" }}>{reviewSummary.label}</Text>
+                  </>
+                )}
+                {reviews.slice(0, 3).map((r, i) => (
+                  <Section key={r.author} style={{ marginTop: i || reviewSummary ? "22px" : 0 }}>
+                    <Text style={{ fontFamily: font.heading, fontSize: "20px", lineHeight: "1.35", color: c.text, margin: 0 }}>&ldquo;{r.text}&rdquo;</Text>
+                    <Text style={{ ...muted, margin: "4px 0 0" }}>{r.author}</Text>
+                  </Section>
+                ))}
+              </Section>
             </Section>
           )}
 
           {/* Service */}
           <Section className="m-pad" style={{ padding: "32px 32px 40px" }}>
-            <Text style={{ ...s.title, margin: 0, color: c.muted }}>
+            <Text style={{ ...line, margin: 0, color: c.muted }}>
               Vragen over je boeking?{" "}
               <Link href={`${site}/klantenservice`} style={{ color: c.text, textDecoration: "underline" }}>Onze klantenservice</Link>{" "}
               helpt je graag.
             </Text>
           </Section>
-
         </Container>
         <CrmFooter recipientEmail={recipientEmail} reason="omdat je een boeking bij ons startte" />
       </Body>
@@ -117,17 +124,22 @@ export default function CrmWinkelmandje({ recipientEmail, hotelName, packageTitl
 
 CrmWinkelmandje.PreviewProps = {
   recipientEmail: "sanne.devries@example.com",
-  hotelName: "Hotel Winselerhof",
-  packageTitle: "Ervaar luxe en rust in een 16e-eeuwse herenboerderij in Zuid-Limburg, incl. culinair 3-gangendiner",
-  place: "Landgraaf",
+  hotelName: "Hotel Des Indes",
+  packageTitle: "Verken en beleef Den Haag vanuit een luxe 5*-hotel, incl. 3-gangendiner",
+  place: "Den Haag",
   arrivalDate: "20 november",
   departureDate: "22 november 2026",
   nights: 2,
   persons: 2,
-  price: "€358",
-  availability: "almost-full",
-  roomsLeft: 3,
-  review: { score: "9,1", text: "Prachtige kamer, het diner was een feestje en het personeel is ontzettend gastvrij.", author: "Marieke, oktober 2026" },
-  image: "https://asset.vialuxury.com/assets/91f33df7-dfbc-454d-9ebc-8b6e8708a18c?key=card",
-  checkoutUrl: `${site}/first-release/deal/winselerhof-een-oase-van-luxe-en-rust-in-het-hart-van-limburg-incl-culinair-4-gangendiner?checkin=2026-11-20&adults=2`,
+  // deals.json: €499 is het totaal voor 2 personen en 2 nachten (Jesse had €998).
+  price: "€499",
+  priceNote: "Inclusief btw en servicekosten",
+  reviewSummary: { average: 4.5, label: "4,5 uit 312 reviews" },
+  reviews: [
+    { text: "Prachtige kamer en een feestelijk diner.", author: "Marieke" },
+    { text: "Stijlvol hotel en een heerlijk rustige kamer.", author: "Jeroen" },
+    { text: "Fijne locatie, alles op loopafstand.", author: "Annelies" },
+  ],
+  image: "https://asset.vialuxury.com/assets/ec2bfd91-fc7d-4fa4-91b9-9fc61298b804?key=card",
+  checkoutUrl: `${site}/first-release/deal/hotel-des-indes-verken-en-beleef-den-haag-vanuit-luxe-5-hotel-incl-3-gangendiner?checkin=2026-11-20&adults=2`,
 } satisfies Props;
