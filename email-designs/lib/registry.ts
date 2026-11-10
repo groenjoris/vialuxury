@@ -170,7 +170,7 @@ export const emails: EmailEntry[] = [
   // CRM (concept, desktop + light mode): drie geautomatiseerde mails.
   {
     slug: "crm-review",
-    title: "Reviewmail (1 dag na vertrek)",
+    title: "Reviewmail (1 dag na thuiskomst)",
     description: "Eén doel: de review. Vijf klikbare Trustpilot-sterren boven de vouw, daaronder het verblijf in een omlijnd blok. Gebaseerd op de reviewmail van Jesse.",
     section: "crm",
     subject: "Hoe was je verblijf?",

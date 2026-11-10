@@ -5,7 +5,7 @@ import CrmHeader from "../components/CrmHeader";
 import { crmCss, DealRow, s, site } from "../components/crm";
 import { baseUrl, font, newsletter } from "../components/theme";
 
-// CRM: reviewmail, 1 dag na vertrek. Gebaseerd op de reviewmail van Jesse
+// CRM: reviewmail, 1 dag na thuiskomst. Gebaseerd op de reviewmail van Jesse
 // (origin/redesign-jesse, crm-review.tsx). Eén doel: de review. Kop, één zin en vijf
 // klikbare Trustpilot-sterren boven de vouw; elke ster is een eigen link (?rating=1..5),
 // zodat de score op de landingspagina al is ingevuld. Daaronder "Jouw verblijf": het
