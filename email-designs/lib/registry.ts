@@ -8,6 +8,7 @@ import CrmJaarGeleden from "../emails/crm-jaar-geleden";
 import CrmWinkelmandje from "../emails/crm-winkelmandje";
 import CrmWinkelmandje2Dagen from "../emails/crm-winkelmandje-2-dagen";
 import CrmThemaStedentrips from "../emails/crm-thema-stedentrips";
+import CrmReview from "../emails/crm-review";
 import { incheckMails } from "./incheckMails";
 
 // "crm": concept-mails voor het CRM-project (alleen light, eigen lijst app/data/crm-emails.json).
@@ -164,6 +165,15 @@ export const emails: EmailEntry[] = [
     props: { ...bevestigingFiets, bookingUrl: "https://vialuxury.vercel.app/mvp-trip/account/boekingen?demo=fiets", rate: "nonflex", tripPrice: "€1.059", total: "€1.086,50" },
   },
   // CRM (concept, desktop + light mode): drie geautomatiseerde mails.
+  {
+    slug: "crm-review",
+    title: "Reviewmail (1 dag na vertrek)",
+    description: "Eén doel: de review. Vijf klikbare Trustpilot-sterren boven de vouw, daaronder het verblijf in een omlijnd blok. Gebaseerd op de reviewmail van Jesse.",
+    section: "crm",
+    subject: "Welkom thuis, Sanne",
+    preheader: "We horen graag hoe je het vond. Het kost je een minuut.",
+    Component: CrmReview,
+  },
   {
     slug: "crm-nagenieten",
     title: "Nagenietmail (3 dagen na vertrek)",

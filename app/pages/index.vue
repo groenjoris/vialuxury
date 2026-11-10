@@ -69,6 +69,7 @@
           <NuxtLink class="start-btn" to="/crm/crm-winkelmandje">Winkelmandje (2 uur na verlaten)</NuxtLink>
           <NuxtLink class="start-btn" to="/crm/crm-winkelmandje-2-dagen">Winkelmandje (2 dagen na verlaten)</NuxtLink>
           <NuxtLink class="start-btn" to="/crm/crm-thema-stedentrips">Themamail stedentrips (A6)</NuxtLink>
+          <NuxtLink class="start-btn" to="/crm/crm-review">Reviewmail (1 dag na vertrek)</NuxtLink>
           <NuxtLink class="start-btn" to="/crm/crm-nagenieten">Nagenietmail (3 dagen na vertrek)</NuxtLink>
         </div>
       </section>

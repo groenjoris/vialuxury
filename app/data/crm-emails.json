@@ -1,5 +1,12 @@
 [
   {
+    "slug": "crm-review",
+    "title": "Reviewmail (1 dag na vertrek)",
+    "description": "Eén doel: de review. Vijf klikbare Trustpilot-sterren boven de vouw, daaronder het verblijf in een omlijnd blok. Gebaseerd op de reviewmail van Jesse.",
+    "subject": "Welkom thuis, Sanne",
+    "preheader": "We horen graag hoe je het vond. Het kost je een minuut."
+  },
+  {
     "slug": "crm-nagenieten",
     "title": "Nagenietmail (3 dagen na vertrek)",
     "description": "Haalt één gegeven op: wanneer de volgende vakantie is, om latere mails te timen. Grote foto van het hotel met \"We hopen dat je genoten hebt van …\", daarna één vraag met vier gelijkwaardige knoppen. Geen deals, geen code.",
