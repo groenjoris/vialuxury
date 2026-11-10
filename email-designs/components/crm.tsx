@@ -175,6 +175,8 @@ export function DealListCard({ deal: d }: { deal: ListDeal }) {
  *  vanafprijs) en een oranje link. Geen labels. */
 export type RowDeal = {
   hotelName?: string;
+  /** Aantal sterren, op een eigen regel onder de hotelnaam (Klaviyo: niet naast de naam). */
+  stars?: number;
   place?: string;
   packageTitle?: string;
   /** Vette regel onder de dealtitel: "31 oktober tot 2 november 2026" of "Vanaf €319 voor 2 personen". */
@@ -193,6 +195,7 @@ export function DealRow({ deal: d, cta = "Bekijk" }: { deal: RowDeal; cta?: stri
         </Column>
         <Column className="stack" style={{ verticalAlign: "top", padding: "16px 18px" }}>
           {d.hotelName && <Text style={{ fontFamily: font.heading, fontWeight: 600, fontSize: "20px", lineHeight: "1.2", color: c.heading, margin: 0 }}>{d.hotelName}</Text>}
+          {d.stars && <Text style={{ fontFamily: font.body, fontSize: "13px", lineHeight: "1.2", letterSpacing: "2px", color: c.text, margin: "4px 0 0" }}>{"★".repeat(d.stars)}</Text>}
           {d.place && <Text style={{ ...s.muted, fontSize: "14px", margin: "2px 0 0" }}>{d.place}</Text>}
           {d.packageTitle && <Text style={{ ...s.title, margin: "8px 0 0" }}>{d.packageTitle}</Text>}
           {d.line && <Text style={{ ...s.title, fontWeight: 700, margin: "8px 0 0" }}>{d.line}</Text>}
@@ -234,6 +237,7 @@ export function FeaturedDeal({ deal: d, cta = "Bekijk arrangement" }: { deal: Ro
       </Link>
       <Section style={{ padding: "18px 20px 22px" }}>
         {d.hotelName && <Text style={{ fontFamily: font.heading, fontWeight: 600, fontSize: "20px", lineHeight: "1.2", color: c.heading, margin: 0 }}>{d.hotelName}</Text>}
+        {d.stars && <Text style={{ fontFamily: font.body, fontSize: "13px", lineHeight: "1.2", letterSpacing: "2px", color: c.text, margin: "4px 0 0" }}>{"★".repeat(d.stars)}</Text>}
         {d.place && <Text style={{ ...s.muted, fontSize: "14px", margin: "2px 0 0" }}>{d.place}</Text>}
         {d.packageTitle && <Text style={{ ...s.title, margin: "8px 0 0" }}>{d.packageTitle}</Text>}
         {d.line && <Text style={{ ...s.title, fontWeight: 700, margin: "8px 0 0" }}>{d.line}</Text>}

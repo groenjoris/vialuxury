@@ -61,6 +61,7 @@ CrmWinkelmandje2Dagen.PreviewProps = {
   recipientEmail: "sanne.devries@example.com",
   cart: {
     hotelName: "Hotel Des Indes",
+    stars: 5,
     place: "Den Haag",
     packageTitle: "Verblijf 3 dagen in een luxe 5*-hotel in hartje Den Haag",
     line: "Vanaf €379 voor 2 personen",
@@ -70,6 +71,7 @@ CrmWinkelmandje2Dagen.PreviewProps = {
   deals: [
     {
       hotelName: "voco® The Hague",
+      stars: 4,
       place: "Den Haag",
       packageTitle: "Verblijf in het mooiste hotel van Nederland",
       line: "Vanaf €319 voor 2 personen",
@@ -78,6 +80,7 @@ CrmWinkelmandje2Dagen.PreviewProps = {
     },
     {
       hotelName: "Hotel De Plesman",
+      stars: 4,
       place: "Den Haag",
       packageTitle: "Gloednieuw hotel in het voormalige KLM-hoofdkantoor",
       line: "Vanaf €309 voor 2 personen",
@@ -86,6 +89,7 @@ CrmWinkelmandje2Dagen.PreviewProps = {
     },
     {
       hotelName: "Grand Hotel Amrâth Kurhaus",
+      stars: 5,
       place: "Scheveningen",
       packageTitle: "Luxe overnachten aan het strand van Scheveningen",
       line: "Vanaf €399 voor 2 personen",
