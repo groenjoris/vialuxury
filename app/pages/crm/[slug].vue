@@ -2,7 +2,7 @@
 // Preview van een CRM-conceptmail (alleen desktop + light mode), in één frame zoals de
 // ontvanger hem ziet: bovenaan afzender, onderwerp en preheader, daaronder de
 // geëxporteerde HTML (public/emails/<slug>.html).
-// Links van de mail staan alle mails als tekstlinkjes; mails met varianten krijgen een schakelaar rechtsboven (nu geen).
+// Links van de mail staan alle mails als tekstlinkjes.
 import emails from '~/data/crm-emails.json'
 
 const route = useRoute()
@@ -10,15 +10,9 @@ const slug = computed(() => String(route.params.slug))
 const entry = computed(() => emails.find(e => e.slug === slug.value))
 if (!entry.value) throw createError({ statusCode: 404, statusMessage: 'E-mail niet gevonden' })
 
-// Mails met varianten: schakelaar rechtsboven.
-const variantGroups: { slug: string; label: string }[][] = []
-const variants = computed(() => variantGroups.find(g => g.some(v => v.slug === slug.value)))
-
 // Alle mails als tekstlinkjes links van de mail, in de volgorde van het startscherm
-// (varianten staan er niet los in; de actieve mail blijft ook bij een variant gemarkeerd).
 const navOrder = ['crm-jaar-geleden', 'crm-winkelmandje', 'crm-winkelmandje-2-dagen', 'crm-thema-stedentrips', 'crm-zoekopdracht', 'crm-verlanglijst', 'crm-review', 'crm-terugkomactie', 'crm-terugkomactie-herinnering', 'crm-nagenieten']
 const nav = navOrder.map(s => emails.find(e => e.slug === s)).filter((e): e is (typeof emails)[number] => !!e)
-const activeSlug = computed(() => variants.value?.[0]?.slug ?? slug.value)
 
 useHead({ title: `${entry.value?.title ?? 'E-mail'} — ViaLuxury CRM` })
 </script>
@@ -30,15 +24,6 @@ useHead({ title: `${entry.value?.title ?? 'E-mail'} — ViaLuxury CRM` })
         <a class="crm__back" href="/">‹ Startscherm</a>
         <h1 class="crm__title">{{ entry?.title }}</h1>
       </div>
-      <div v-if="variants" class="crm__group" role="group" aria-label="Variant">
-        <NuxtLink
-          v-for="v in variants"
-          :key="v.slug"
-          :to="`/crm/${v.slug}`"
-          class="crm__btn"
-          :class="{ 'crm__btn--on': v.slug === slug }"
-        >{{ v.label }}</NuxtLink>
-      </div>
     </header>
     <div class="crm__stage">
       <nav class="crm__nav" aria-label="CRM-mails">
@@ -47,7 +32,7 @@ useHead({ title: `${entry.value?.title ?? 'E-mail'} — ViaLuxury CRM` })
           :key="e.slug"
           :to="`/crm/${e.slug}`"
           class="crm__nav-link"
-          :class="{ 'crm__nav-link--on': e.slug === activeSlug }"
+          :class="{ 'crm__nav-link--on': e.slug === slug }"
         >{{ e.title }}</NuxtLink>
       </nav>
       <div class="crm__mail">
@@ -72,10 +57,6 @@ useHead({ title: `${entry.value?.title ?? 'E-mail'} — ViaLuxury CRM` })
 .crm__back { color: var(--color-text-secondary); text-decoration: none; font-size: 13px; }
 .crm__back:hover { color: var(--color-primary); }
 .crm__title { margin: 0; font-family: var(--font-heading); font-size: 20px; font-weight: 700; }
-.crm__group { display: inline-flex; border: 1.5px solid var(--color-border); border-radius: var(--radius-md); overflow: hidden; }
-.crm__btn { display: inline-flex; align-items: center; height: 36px; padding: 0 14px; background: #fff; color: var(--color-text-primary); font-size: 14px; font-weight: 600; text-decoration: none; }
-.crm__btn + .crm__btn { border-left: 1.5px solid var(--color-border); }
-.crm__btn--on { background: var(--color-text-primary); color: #fff; }
 .crm__stage { display: flex; justify-content: center; align-items: flex-start; gap: 24px; padding: 20px 24px 48px; }
 /* Even breed als de ruimte rechts van de mail, zodat de mail in het midden blijft. */
 .crm__nav { position: sticky; top: 20px; display: flex; flex-direction: column; gap: 8px; width: 200px; flex-shrink: 0; margin-right: 0; }
