@@ -188,8 +188,8 @@ Regels voor elke CRM-mail:
 - Klaviyo: nooit twee lettertypen (serif-kop en sans-tekst) naast elkaar op één regel; onder elkaar mag
   wel. Hotelnaam, sterren, plaats, dealtitel en prijs staan daarom elk op een eigen regel.
 - Dealblokken: wit met grijze rand (#E5E5E5, de randkleur van de website), foto tot aan de rand; suggesties als één groot blok + rijen
-  (`DealList`). Geen labels of stickers ("Populair"). Eén oranje knop per mail; staat die al bovenaan,
-  dan krijgt het grote dealblok een omlijnde knop (`primary={false}`).
+  (`DealList`). Geen labels of stickers ("Populair"). De knop "Bekijk arrangement" in het grote
+  dealblok is altijd oranje, ook als de mail bovenaan al een oranje knop heeft.
 - Geen grijze vlakken; beige (#F4F1EC) alleen als echte highlight: het vlak achter de blokken met keuzeknoppen (`beigeBox`). Keuzes (thema, nagenietvraag) zijn witte snelfilterknoppen in een raster van twee (`PillGrid`) op dat beige vlak.
 - Prijzen uit `deals.json` zijn het totaal voor 2 personen: "Vanaf €319 voor 2 personen", nooit p.p.
 - Knoppen linken naar de R1-dealpagina (zachte landing; die neemt `?checkin=` en `?adults=` over).

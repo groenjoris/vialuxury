@@ -73,10 +73,10 @@ export default function CrmTerugkomactie({ recipientEmail, firstName, stay, code
             </Section>
           )}
 
-          {/* Inspiratie: één groot, twee als rij; omlijnde knop, want de oranje knop staat boven */}
+          {/* Inspiratie: één groot, twee als rij */}
           <Section className="m-pad" style={{ padding: reminder ? "44px 32px 40px" : "44px 32px 0" }}>
             <Text style={s.kop}>{stay?.hotelName ? `Ook in de sfeer van ${stay.hotelName}` : "Ook in de sfeer van je vorige verblijf"}</Text>
-            <DealList deals={deals} primary={false} />
+            <DealList deals={deals} />
           </Section>
 
           {!reminder && (

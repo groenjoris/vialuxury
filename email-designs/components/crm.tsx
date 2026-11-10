@@ -140,9 +140,8 @@ export function DealRow({ deal: d, cta = "Bekijk" }: { deal: RowDeal; cta?: stri
 }
 
 /** Uitgelichte deal over de hele breedte (naar Jesse's FeaturedDeal): grote foto, daaronder de
- *  tekstregels en een knop. `primary={false}`: omlijnde knop, voor mails die al een oranje
- *  hoofdknop hebben. */
-export function FeaturedDeal({ deal: d, cta = "Bekijk arrangement", primary = true }: { deal: RowDeal; cta?: string; primary?: boolean }) {
+ *  tekstregels en een oranje knop "Bekijk arrangement" (altijd oranje). */
+export function FeaturedDeal({ deal: d, cta = "Bekijk arrangement" }: { deal: RowDeal; cta?: string }) {
   return (
     <Section style={{ border: `1px solid #E5E5E5`, borderRadius: "8px", marginTop: "12px", overflow: "hidden" }}>
       <Link href={d.url}>
@@ -151,7 +150,7 @@ export function FeaturedDeal({ deal: d, cta = "Bekijk arrangement", primary = tr
       <Section style={{ padding: "18px 20px 22px" }}>
         <DealText d={d} />
         <Section style={{ marginTop: "14px" }}>
-          {primary ? <PrimaryButton href={d.url} small>{cta}</PrimaryButton> : <SecondaryButton href={d.url}>{cta}</SecondaryButton>}
+          <PrimaryButton href={d.url} small>{cta}</PrimaryButton>
         </Section>
       </Section>
     </Section>
@@ -159,11 +158,11 @@ export function FeaturedDeal({ deal: d, cta = "Bekijk arrangement", primary = tr
 }
 
 /** Eén groot, de rest als rij: de vaste opbouw van een rij suggesties. */
-export function DealList({ deals, primary = true }: { deals: RowDeal[]; primary?: boolean }) {
+export function DealList({ deals }: { deals: RowDeal[] }) {
   const [first, ...rest] = deals;
   return (
     <>
-      {first && <FeaturedDeal deal={first} primary={primary} />}
+      {first && <FeaturedDeal deal={first} />}
       {rest.map((d) => (
         <DealRow key={d.url} deal={d} />
       ))}

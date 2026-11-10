@@ -57,7 +57,7 @@ export default function CrmZoekopdracht({ recipientEmail, searchTerm, arrivalDat
 
           <Section className="m-pad" style={{ padding: "44px 32px 40px" }}>
             <Text style={s.kop}>De arrangementen die het best passen bij wat je zoekt</Text>
-            <DealList deals={results} primary={false} />
+            <DealList deals={results} />
           </Section>
         </Container>
         <CrmFooter recipientEmail={recipientEmail} reason="omdat je een account hebt bij ViaLuxury" />
