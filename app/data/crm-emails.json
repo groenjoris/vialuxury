@@ -37,14 +37,7 @@
   {
     "slug": "crm-thema-stedentrips",
     "title": "Themamail stedentrips (A6)",
-    "description": "Drie populaire stedentrips in list view, daarna een ander thema kiezen met vijf witte snelfilterknoppen.",
-    "subject": "Dit zijn de populairste stedentrips van dit moment",
-    "preheader": "Parijs, Den Haag en Amsterdam, vanaf €279 voor 2 personen."
-  },
-  {
-    "slug": "crm-thema-stedentrips-plaatjes",
-    "title": "Themamail stedentrips (A6)",
-    "description": "Variant met plaatjes: per thema een foto, de themanaam en een oranje link \"Meer van dit thema\".",
+    "description": "Drie populaire stedentrips (één groot, twee als rij) met de reden onder de kop, daarna een ander thema kiezen met zes witte snelfilterknoppen in een raster.",
     "subject": "Dit zijn de populairste stedentrips van dit moment",
     "preheader": "Parijs, Den Haag en Amsterdam, vanaf €279 voor 2 personen."
   }

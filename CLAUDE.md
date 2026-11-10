@@ -173,7 +173,7 @@ boven de mail) in plaats van de beschrijving.
 Artist impression van geautomatiseerde e-mails, alleen desktop + light mode: precies een jaar
 geleden (`crm-jaar-geleden`), winkelmandje 2 uur na verlaten (`crm-winkelmandje`, overgenomen
 van Jesse), winkelmandje 2 dagen na verlaten (`crm-winkelmandje-2-dagen`, drie vergelijkbare
-deals in list view), themamail stedentrips A6 (`crm-thema-stedentrips`, variant `-plaatjes`;
+deals in list view), themamail stedentrips A6 (`crm-thema-stedentrips`;
 themakeuze naar `/crm/thema?keuze=…`) reviewmail 1 dag na vertrek (`crm-review`) en de nagenietmail (`crm-nagenieten`, staat bewust als laatste).
 Jesse de Groot heeft eigen CRM-mails op `origin/redesign-jesse` (review, terugkomactie, zoekopdracht,
 verlanglijst, codeblok, iconen in `public/images/mail/crm/`); nieuwe mails op main worden daarop

@@ -8,6 +8,7 @@ const themes: Record<string, string> = {
   'natuur': 'In de natuur',
   'culinair': 'Culinair genieten',
   'kasteel': 'Kasteelhotels',
+  'romantisch': 'Romantisch',
 }
 const theme = computed(() => themes[String(route.query.keuze)])
 useHead({ title: 'Bedankt — ViaLuxury' })

@@ -2,7 +2,7 @@
 // Preview van een CRM-conceptmail (alleen desktop + light mode), in één frame zoals de
 // ontvanger hem ziet: bovenaan afzender, onderwerp en preheader, daaronder de
 // geëxporteerde HTML (public/emails/<slug>.html).
-// De themamail heeft twee varianten; links van de mail staan alle mails als tekstlinkjes.
+// Links van de mail staan alle mails als tekstlinkjes; mails met varianten krijgen een schakelaar rechtsboven (nu geen).
 import emails from '~/data/crm-emails.json'
 
 const route = useRoute()
@@ -11,12 +11,7 @@ const entry = computed(() => emails.find(e => e.slug === slug.value))
 if (!entry.value) throw createError({ statusCode: 404, statusMessage: 'E-mail niet gevonden' })
 
 // Mails met varianten: schakelaar rechtsboven.
-const variantGroups = [
-  [
-    { slug: 'crm-thema-stedentrips', label: 'Knoppen' },
-    { slug: 'crm-thema-stedentrips-plaatjes', label: 'Plaatjes' },
-  ],
-]
+const variantGroups: { slug: string; label: string }[][] = []
 const variants = computed(() => variantGroups.find(g => g.some(v => v.slug === slug.value)))
 
 // Alle mails als tekstlinkjes links van de mail, in de volgorde van het startscherm

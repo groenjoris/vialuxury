@@ -213,21 +213,11 @@ export const emails: EmailEntry[] = [
   {
     slug: "crm-thema-stedentrips",
     title: "Themamail stedentrips (A6)",
-    description: "Drie populaire stedentrips in list view, daarna een ander thema kiezen met vijf witte snelfilterknoppen.",
+    description: "Drie populaire stedentrips (één groot, twee als rij) met de reden onder de kop, daarna een ander thema kiezen met zes witte snelfilterknoppen in een raster.",
     section: "crm",
     subject: "Dit zijn de populairste stedentrips van dit moment",
     preheader: "Parijs, Den Haag en Amsterdam, vanaf €279 voor 2 personen.",
     Component: CrmThemaStedentrips,
-  },
-  {
-    slug: "crm-thema-stedentrips-plaatjes",
-    title: "Themamail stedentrips (A6)",
-    description: "Variant met plaatjes: per thema een foto, de themanaam en een oranje link \"Meer van dit thema\".",
-    section: "crm",
-    subject: "Dit zijn de populairste stedentrips van dit moment",
-    preheader: "Parijs, Den Haag en Amsterdam, vanaf €279 voor 2 personen.",
-    Component: CrmThemaStedentrips,
-    props: { ...CrmThemaStedentrips.PreviewProps, variant: "plaatjes" },
   },
 ];
 
