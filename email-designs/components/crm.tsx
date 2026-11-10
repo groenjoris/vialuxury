@@ -8,7 +8,7 @@ import { baseUrl, font, newsletter } from "./theme";
 // - Drie lettergroottes: titel 32, subtitel/hotelnaam 20, alle overige tekst 16 px.
 // - Alles links uitgelijnd (alleen de inhoud van de coupon staat gecentreerd).
 // - Klaviyo: nooit twee lettertypen naast elkaar op één regel; onder elkaar mag wel.
-// - Geen grijze vlakken; beige alleen als highlight. Blokken zijn wit met een grijze rand (#E5E5E5, zoals de website).
+// - Geen grijze vlakken; beige alleen als highlight (achter de blokken met keuzeknoppen). Blokken zijn wit met een grijze rand (#E5E5E5, zoals de website).
 // - Geen labels ("Populair" e.d.) op deals; prijzen zijn het totaal voor 2 personen.
 // - Links naar het prototype gaan naar de R1-dealpagina (zachte landing).
 
@@ -215,6 +215,9 @@ export const themes: Theme[] = [
   { id: "romantisch", label: "Romantisch", icon: themeIcon("heart") },
 ];
 
+/** Beige vlak (highlight) achter een blok met keuzeknoppen: themakiezer en nagenietvraag. */
+export const beigeBox = { backgroundColor: "#F4F1EC", borderRadius: "8px", padding: "24px 24px 28px" };
+
 /** Raster van witte snelfilterknoppen (zoals "Snel zoeken" op de homepage): dun randje, optioneel
  *  een icoon, label links; twee even brede kolommen. */
 export type Pill = { label: string; href: string; icon?: string };
@@ -251,7 +254,7 @@ export function PillGrid({ items }: { items: Pill[] }) {
 /** Themakiezer: de snelfilterknoppen met icoon. Elke keuze gaat naar /crm/thema?keuze=<id>. */
 export function ThemePicker({ items = themes }: { items?: Theme[] }) {
   return (
-    <Section>
+    <Section style={beigeBox}>
       <Text style={s.kop}>Waarover wil je aanbiedingen ontvangen?</Text>
       <Text style={s.body}>Eén klik is genoeg, dan sturen we voortaan wat je zoekt.</Text>
       <PillGrid items={items.map((t) => ({ label: t.label, icon: t.icon, href: `${site}/crm/thema?keuze=${t.id}` }))} />

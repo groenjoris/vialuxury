@@ -54,6 +54,7 @@ export default function CrmJaarGeleden({ recipientEmail, hotelName, packageTitle
 
           {code && (
             <Section className="m-pad" style={{ padding: "32px 32px 0" }}>
+              <Text style={{ ...s.body, margin: "0 0 10px" }}>Je code is nog steeds geldig:</Text>
               <CodeBlock title={`${code.value} korting`} code={code.code} deadline={code.deadline} />
             </Section>
           )}
