@@ -7,9 +7,9 @@ import { baseUrl, font, newsletter } from "../components/theme";
 
 // CRM mail 1: nagenietmail, 3 dagen na vertrek (vervangt A2 3 dagen).
 // Eén doel: ophalen wanneer de volgende vakantie is, om latere mails te timen.
-// Grote hotelfoto met "We hopen dat je genoten hebt van …", daarna de vraag met vier witte
-// snelfilterknoppen (zelfde stijl als de themakiezer).
-// Geen deals, geen code. Vier gelijkwaardige knoppen; elke knop gaat naar een
+// Grote hotelfoto met "We hopen dat je genoten hebt van …", daarna de vraag met zes witte
+// snelfilterknoppen op een beige vlak (zelfde stijl als de themakiezer): vijf tijdvakken en
+// "Weet ik nog niet". Geen deals, geen code. Gelijkwaardige knoppen; elke knop gaat naar een
 // bevestigingspagina met de keuze als parameter.
 // Onderwerp: "Wanneer ga je weer?"
 
@@ -23,12 +23,16 @@ type Props = {
 
 export default function CrmNagenieten({ firstName, recipientEmail, hotelName, image }: Props) {
   const c = newsletter.light;
-  // Vier gelijkwaardige antwoorden; elk gaat naar de bevestigingspagina met de keuze als parameter.
+  // Zes tijdvakken vanaf nu, in tijdsvolgorde: ze sluiten op elkaar aan (geen overlap, geen gat)
+  // en kloppen in elk seizoen waarin de mail verstuurd wordt. "Weet ik nog niet" staat als laatste.
+  // Elk antwoord gaat naar de bevestigingspagina met de keuze als parameter.
   const choices = [
+    { key: "binnen-1-maand", label: "Binnen een maand" },
+    { key: "1-3-maanden", label: "Over 1 tot 3 maanden" },
+    { key: "3-6-maanden", label: "Over 3 tot 6 maanden" },
+    { key: "6-12-maanden", label: "Over 6 tot 12 maanden" },
+    { key: "over-een-jaar", label: "Over een jaar of later" },
     { key: "weet-ik-nog-niet", label: "Weet ik nog niet" },
-    { key: "zomer", label: "Zomer" },
-    { key: "nazomer", label: "Nazomer" },
-    { key: "zelfde-periode", label: "Zelfde periode als nu" },
   ].map((ch) => ({ label: ch.label, href: `${site}/crm/volgende-vakantie?keuze=${ch.key}` }));
 
   return (

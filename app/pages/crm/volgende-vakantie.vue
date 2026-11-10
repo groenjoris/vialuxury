@@ -1,12 +1,14 @@
 <script setup lang="ts">
-// Bevestigingspagina achter de vier knoppen van de CRM-nagenietmail
+// Bevestigingspagina achter de zes knoppen van de CRM-nagenietmail
 // (/crm/volgende-vakantie?keuze=<keuze>): echoot de keuze, verder niets te doen.
 const route = useRoute()
 const answers: Record<string, { title: string; text: string }> = {
+  'binnen-1-maand': { title: 'Genoteerd: binnen een maand', text: 'We sturen je deze week de mooiste arrangementen waar nog plek is.' },
+  '1-3-maanden': { title: 'Genoteerd: over 1 tot 3 maanden', text: 'Over een paar weken sturen we je de mooiste arrangementen voor die periode.' },
+  '3-6-maanden': { title: 'Genoteerd: over 3 tot 6 maanden', text: 'Over twee maanden sturen we je de mooiste arrangementen voor die periode.' },
+  '6-12-maanden': { title: 'Genoteerd: over 6 tot 12 maanden', text: 'Over een half jaar sturen we je de mooiste arrangementen voor die periode.' },
+  'over-een-jaar': { title: 'Genoteerd: over een jaar of later', text: 'Tot die tijd sturen we je af en toe iets moois, zonder haast.' },
   'weet-ik-nog-niet': { title: 'Helemaal goed', text: 'We sturen je af en toe iets moois, zonder haast.' },
-  'zomer': { title: 'Genoteerd: zomer', text: 'In het voorjaar sturen we je de mooiste zomerarrangementen.' },
-  'nazomer': { title: 'Genoteerd: nazomer', text: 'Begin zomer sturen we je de mooiste arrangementen voor september en oktober.' },
-  'zelfde-periode': { title: 'Genoteerd: weer eind oktober', text: 'Na de zomer sturen we je de mooiste arrangementen voor eind oktober.' },
 }
 const answer = computed(() => answers[String(route.query.keuze)] ?? answers['weet-ik-nog-niet'])
 useHead({ title: 'Bedankt — ViaLuxury' })

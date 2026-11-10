@@ -218,7 +218,7 @@ export const emails: EmailEntry[] = [
   {
     slug: "crm-nagenieten",
     title: "Nagenietmail (3 dagen na vertrek)",
-    description: "Haalt één gegeven op: wanneer de volgende vakantie is, om latere mails te timen. Grote foto van het hotel met \"We hopen dat je genoten hebt van …\", daarna één vraag met vier gelijkwaardige knoppen. Geen deals, geen code.",
+    description: "Haalt één gegeven op: wanneer de volgende vakantie is, om latere mails te timen. Grote foto van het hotel met \"We hopen dat je genoten hebt van …\", daarna één vraag met zes gelijkwaardige knoppen. Geen deals, geen code.",
     section: "crm",
     subject: "Wanneer ga je weer?",
     preheader: "Eén klik, dan sturen we je op het juiste moment inspiratie.",
