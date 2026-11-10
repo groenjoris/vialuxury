@@ -190,7 +190,7 @@ Regels voor elke CRM-mail:
 - Dealblokken: wit met zwarte rand, foto tot aan de rand; suggesties als één groot blok + rijen
   (`DealList`). Geen labels of stickers ("Populair"). Eén oranje knop per mail; staat die al bovenaan,
   dan krijgt het grote dealblok een omlijnde knop (`primary={false}`).
-- Geen grijze vlakken. Beige (#F4F1EC) alleen als highlight (het vraagblok in de nagenietmail).
+- Geen grijze vlakken; beige (#F4F1EC) alleen als echte highlight (nu nergens in gebruik). Keuzes (thema, nagenietvraag) zijn witte snelfilterknoppen in een raster van twee (`PillGrid`).
 - Prijzen uit `deals.json` zijn het totaal voor 2 personen: "Vanaf €319 voor 2 personen", nooit p.p.
 - Knoppen linken naar de R1-dealpagina (zachte landing; die neemt `?checkin=` en `?adults=` over).
 - Jesse de Groot heeft eigen CRM-mails op `origin/redesign-jesse`; mails worden daarvan per stuk

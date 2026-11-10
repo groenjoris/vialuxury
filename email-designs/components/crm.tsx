@@ -215,37 +215,46 @@ export const themes: Theme[] = [
   { id: "romantisch", label: "Romantisch", icon: themeIcon("heart") },
 ];
 
-/** Themakiezer: witte snelfilterknoppen met icoon (zoals "Snel zoeken" op de homepage) in een
- *  raster van twee even brede kolommen. Elke keuze gaat naar /crm/thema?keuze=<id>. */
-export function ThemePicker({ items = themes }: { items?: Theme[] }) {
+/** Raster van witte snelfilterknoppen (zoals "Snel zoeken" op de homepage): dun randje, optioneel
+ *  een icoon, label links; twee even brede kolommen. */
+export type Pill = { label: string; href: string; icon?: string };
+
+export function PillGrid({ items }: { items: Pill[] }) {
   const perRow = 2;
   const rows = Array.from({ length: Math.ceil(items.length / perRow) }, (_, i) => items.slice(i * perRow, (i + 1) * perRow));
+  return (
+    <Section style={{ marginTop: "8px" }}>
+      {rows.map((row, ri) => (
+        <Row key={ri} style={{ marginTop: "8px" }}>
+          {Array.from({ length: perRow }, (_, i) => {
+            const t = row[i];
+            return (
+              <Column key={i} className="stack" style={{ width: `${100 / perRow}%`, verticalAlign: "top", paddingLeft: i ? "4px" : 0, paddingRight: i < perRow - 1 ? "4px" : 0 }}>
+                {t && (
+                  <Link
+                    href={t.href}
+                    style={{ display: "block", backgroundColor: "#FFFFFF", border: "1px solid #E5E2DA", borderRadius: "4px", padding: "13px 16px", fontFamily: font.body, fontSize: "16px", lineHeight: "20px", color: c.text, textDecoration: "none" }}
+                  >
+                    {t.icon && <Img src={t.icon} alt="" width="16" height="16" style={{ display: "inline-block", verticalAlign: "-2px", marginRight: "10px" }} />}
+                    {t.label}
+                  </Link>
+                )}
+              </Column>
+            );
+          })}
+        </Row>
+      ))}
+    </Section>
+  );
+}
+
+/** Themakiezer: de snelfilterknoppen met icoon. Elke keuze gaat naar /crm/thema?keuze=<id>. */
+export function ThemePicker({ items = themes }: { items?: Theme[] }) {
   return (
     <Section>
       <Text style={s.kop}>Waarover wil je aanbiedingen ontvangen?</Text>
       <Text style={s.body}>Eén klik is genoeg, dan sturen we voortaan wat je zoekt.</Text>
-      <Section style={{ marginTop: "8px" }}>
-        {rows.map((row, ri) => (
-          <Row key={ri} style={{ marginTop: "8px" }}>
-            {Array.from({ length: perRow }, (_, i) => {
-              const t = row[i];
-              return (
-                <Column key={i} style={{ width: `${100 / perRow}%`, verticalAlign: "top", paddingLeft: i ? "4px" : 0, paddingRight: i < perRow - 1 ? "4px" : 0 }}>
-                  {t && (
-                    <Link
-                      href={`${site}/crm/thema?keuze=${t.id}`}
-                      style={{ display: "block", backgroundColor: "#FFFFFF", border: "1px solid #E5E2DA", borderRadius: "4px", padding: "13px 16px", fontFamily: font.body, fontSize: "16px", lineHeight: "20px", color: c.text, textDecoration: "none" }}
-                    >
-                      <Img src={t.icon} alt="" width="16" height="16" style={{ display: "inline-block", verticalAlign: "-2px", marginRight: "10px" }} />
-                      {t.label}
-                    </Link>
-                  )}
-                </Column>
-              );
-            })}
-          </Row>
-        ))}
-      </Section>
+      <PillGrid items={items.map((t) => ({ label: t.label, icon: t.icon, href: `${site}/crm/thema?keuze=${t.id}` }))} />
     </Section>
   );
 }
