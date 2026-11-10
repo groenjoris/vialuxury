@@ -169,3 +169,56 @@ export function DealListCard({ deal: d }: { deal: ListDeal }) {
     </Section>
   );
 }
+
+/** Dealrij met zwarte rand (zoals "Jouw verblijf" in de reviewmail): foto links tot aan de rand
+ *  en over de volle hoogte; rechts hotelnaam, plaats, dealtitel, één vette regel (datums of
+ *  vanafprijs) en een oranje link. Geen labels. */
+export type RowDeal = {
+  hotelName?: string;
+  place?: string;
+  packageTitle?: string;
+  /** Vette regel onder de dealtitel: "31 oktober tot 2 november 2026" of "Vanaf €319 voor 2 personen". */
+  line?: string;
+  image: string;
+  url: string;
+};
+
+export function DealRow({ deal: d, cta = "Bekijk" }: { deal: RowDeal; cta?: string }) {
+  return (
+    <Section style={{ border: `1px solid ${c.text}`, borderRadius: "8px", marginTop: "12px", overflow: "hidden" }}>
+      <Row>
+        {/* Foto als achtergrond: sluit aan op de rand en vult de hele hoogte van het blok */}
+        <Column className="stack" style={{ width: "190px", verticalAlign: "top", backgroundImage: `url(${d.image})`, backgroundSize: "cover", backgroundPosition: "center" }}>
+          <Link href={d.url} aria-label={d.hotelName ?? cta} style={{ display: "block", width: "190px", minHeight: "150px" }} />
+        </Column>
+        <Column className="stack" style={{ verticalAlign: "top", padding: "16px 18px" }}>
+          {d.hotelName && <Text style={{ fontFamily: font.heading, fontWeight: 600, fontSize: "20px", lineHeight: "1.2", color: c.heading, margin: 0 }}>{d.hotelName}</Text>}
+          {d.place && <Text style={{ ...s.muted, fontSize: "14px", margin: "2px 0 0" }}>{d.place}</Text>}
+          {d.packageTitle && <Text style={{ ...s.title, margin: "8px 0 0" }}>{d.packageTitle}</Text>}
+          {d.line && <Text style={{ ...s.title, fontWeight: 700, margin: "8px 0 0" }}>{d.line}</Text>}
+          <Link href={d.url} style={{ display: "inline-block", marginTop: "10px", fontFamily: font.body, fontSize: "14px", fontWeight: 700, color: c.link, textDecoration: "underline" }}>
+            {cta}
+          </Link>
+        </Column>
+      </Row>
+    </Section>
+  );
+}
+
+/** Kortingscode als coupon (naar het codeblok van Jesse's terugkomactie): oranje gestippelde rand,
+ *  de code als selecteerbare tekst in oranje serif, daaronder de geldigheid. Links uitgelijnd. */
+export function CodeBlock({ code, label, deadline }: { code: string; label: string; deadline: string }) {
+  return (
+    <Section>
+      <Section style={{ width: "100%", border: `2px dashed ${c.cta}`, borderRadius: "8px", padding: "20px 22px" }}>
+        <Text style={{ fontFamily: font.body, fontSize: "16px", lineHeight: "1.3", color: c.text, margin: 0 }}>{label}</Text>
+        <Text style={{ fontFamily: font.heading, fontWeight: 700, fontSize: "32px", lineHeight: "1.2", letterSpacing: "0.02em", color: c.cta, margin: "6px 0 0" }}>{code}</Text>
+      </Section>
+      <Text style={{ fontFamily: font.body, fontSize: "16px", fontWeight: 700, color: c.text, margin: "14px 0 0" }}>
+        <Img src={`${baseUrl}/images/mail/crm/clock-donker.png`} alt="" width="18" height="18" style={{ display: "inline-block", verticalAlign: "-3px", marginRight: "6px" }} />
+        Geldig tot en met {deadline}
+      </Text>
+      <Text style={{ ...s.title, margin: "4px 0 0" }}>Vul de code in bij het boeken.</Text>
+    </Section>
+  );
+}

@@ -189,7 +189,7 @@ export const emails: EmailEntry[] = [
     description: "On this day-herinnering op de aankomstdatum +1 jaar: grote foto, datum en hotel, één knop naar het arrangement met dezelfde periode en personen vooringevuld. Kortingsregel alleen bij een actieve code; drie deals met frame-titel.",
     section: "crm",
     subject: "Vandaag een jaar geleden",
-    preheader: "Landgoed Lauswolt, Beetsterzwaag. Nog een keer?",
+    preheader: "Je verblijf in Hotel Des Indes, en een code voor €25 korting.",
     Component: CrmJaarGeleden,
   },
   {
