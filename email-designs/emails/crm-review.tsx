@@ -71,14 +71,13 @@ export default function CrmReview({ recipientEmail, firstName, hotelName, place,
           {/* Jouw verblijf: dealrij met zwarte rand, hotelnaam bovenaan */}
           <Section className="m-pad" style={{ padding: "44px 32px 0" }}>
             <Text style={s.kop}>Jouw verblijf</Text>
-            <Section style={{ border: `1px solid ${c.text}`, borderRadius: "8px", padding: "14px", marginTop: "12px" }}>
+            <Section style={{ border: `1px solid ${c.text}`, borderRadius: "8px", marginTop: "12px", overflow: "hidden" }}>
               <Row>
-                <Column className="stack" style={{ width: "190px", verticalAlign: "top" }}>
-                  <Link href={dealUrl}>
-                    <Img src={image} alt={hotelName ?? "Jouw verblijf"} width="176" height="140" style={{ display: "block", width: "176px", height: "140px", objectFit: "cover", borderRadius: "6px" }} />
-                  </Link>
+                {/* Foto als achtergrond: sluit aan op de rand en vult de hele hoogte van het blok */}
+                <Column className="stack" style={{ width: "190px", verticalAlign: "top", backgroundImage: `url(${image})`, backgroundSize: "cover", backgroundPosition: "center" }}>
+                  <Link href={dealUrl} aria-label={hotelName ?? "Jouw verblijf"} style={{ display: "block", width: "190px", minHeight: "150px" }} />
                 </Column>
-                <Column className="stack" style={{ verticalAlign: "top" }}>
+                <Column className="stack" style={{ verticalAlign: "top", padding: "16px 18px" }}>
                   {hotelName && <Text style={{ fontFamily: font.heading, fontWeight: 600, fontSize: "20px", lineHeight: "1.2", color: c.heading, margin: 0 }}>{hotelName}</Text>}
                   {place && <Text style={{ ...s.muted, fontSize: "14px", margin: "2px 0 0" }}>{place}</Text>}
                   {packageTitle && <Text style={{ ...s.title, margin: "8px 0 0" }}>{packageTitle}</Text>}
