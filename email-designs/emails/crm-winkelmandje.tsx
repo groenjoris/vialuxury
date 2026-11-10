@@ -38,9 +38,8 @@ type Props = {
 
 export default function CrmWinkelmandje({ recipientEmail, hotelName, packageTitle, place, arrivalDate, departureDate, nights, persons, price, priceNote, reviewSummary, reviews, image, checkoutUrl }: Props) {
   const c = newsletter.light;
-  // Lettergroottes van Jesse's versie: 16 px voor alle regels in de kaart.
-  const line = { ...s.title, fontSize: "16px" };
-  const muted = { ...s.muted, fontSize: "16px" };
+  const line = s.title;
+  const muted = s.muted;
 
   return (
     <Html lang="nl">
@@ -59,17 +58,17 @@ export default function CrmWinkelmandje({ recipientEmail, hotelName, packageTitl
 
           {/* Winkelmandkaart */}
           <Section className="m-pad" style={{ padding: "24px 32px 0" }}>
-            <Section style={{ border: `1px solid ${c.border}`, borderRadius: "8px", overflow: "hidden" }}>
+            <Section style={{ border: `1px solid ${c.text}`, borderRadius: "8px", overflow: "hidden" }}>
               <Img src={image} alt={packageTitle} width="560" height="240" style={{ display: "block", width: "100%", height: "240px", objectFit: "cover" }} />
               <Section style={{ padding: "20px 20px 24px" }}>
-                <Text style={{ ...s.name, fontSize: "20px" }}>{hotelName}</Text>
+                <Text style={s.kop}>{hotelName}</Text>
                 <Text style={{ ...muted, margin: "2px 0 0" }}>{place}</Text>
                 <Text style={{ ...line, margin: "6px 0 0" }}>{packageTitle}</Text>
 
                 <Section style={{ marginTop: "16px", borderTop: `1px solid ${c.border}`, paddingTop: "14px" }}>
                   <Text style={{ ...line, margin: 0, fontWeight: 700 }}>{arrivalDate} tot {departureDate}</Text>
                   <Text style={{ ...muted, margin: "2px 0 0" }}>{nights} nachten · {persons} personen</Text>
-                  <Text style={{ fontFamily: font.body, fontSize: "16px", fontWeight: 700, color: c.text, margin: "10px 0 0" }}>Totaal {price} voor {persons} personen</Text>
+                  <Text style={{ ...s.name, margin: "10px 0 0" }}>Totaal {price} voor {persons} personen</Text>
                   {priceNote && <Text style={{ ...muted, margin: "2px 0 0" }}>{priceNote}</Text>}
                 </Section>
 
@@ -80,11 +79,11 @@ export default function CrmWinkelmandje({ recipientEmail, hotelName, packageTitl
             </Section>
           </Section>
 
-          {/* Gastenoordeel: lichtgrijs vlak, één keer sterren met het gemiddelde, drie reviews in 20 px */}
+          {/* Gastenoordeel: zonder vlak; één keer sterren met het gemiddelde, drie reviews in 20 px serif */}
           {reviews && reviews.length > 0 && (
             <Section className="m-pad" style={{ padding: "36px 32px 0" }}>
-              <Text style={{ ...s.kop, fontSize: "20px" }}>Dit vinden gasten van {hotelName}</Text>
-              <Section style={{ marginTop: "16px", backgroundColor: "#F5F5F5", borderRadius: "8px", padding: "24px 24px 28px" }}>
+              <Text style={s.kop}>Dit vinden gasten van {hotelName}</Text>
+              <Section style={{ marginTop: "14px" }}>
                 {reviewSummary && (
                   <>
                     <Img

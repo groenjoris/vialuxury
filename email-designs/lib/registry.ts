@@ -9,6 +9,9 @@ import CrmWinkelmandje from "../emails/crm-winkelmandje";
 import CrmWinkelmandje2Dagen from "../emails/crm-winkelmandje-2-dagen";
 import CrmThemaStedentrips from "../emails/crm-thema-stedentrips";
 import CrmReview from "../emails/crm-review";
+import CrmTerugkomactie, { herinneringProps } from "../emails/crm-terugkomactie";
+import CrmZoekopdracht from "../emails/crm-zoekopdracht";
+import CrmVerlanglijst from "../emails/crm-verlanglijst";
 import { incheckMails } from "./incheckMails";
 
 // "crm": concept-mails voor het CRM-project (alleen light, eigen lijst app/data/crm-emails.json).
@@ -173,6 +176,44 @@ export const emails: EmailEntry[] = [
     subject: "Hoe was je verblijf?",
     preheader: "We horen graag hoe je het vond. Het kost je een minuut.",
     Component: CrmReview,
+  },
+  // Overgenomen van Jesse (origin/redesign-jesse), omgezet naar onze bouwstenen.
+  {
+    slug: "crm-terugkomactie",
+    title: "Terugkomactie €20 (14 dagen na vertrek)",
+    description: "Kortingscode als coupon, één knop, jouw verblijf, drie deals in de sfeer van dat hotel en de themakiezer.",
+    section: "crm",
+    subject: "Sanne, €20 cadeau voor je volgende verblijf",
+    preheader: "Een persoonlijk bedankje, alleen voor jou. Geldig tot en met 16 december 2026.",
+    Component: CrmTerugkomactie,
+  },
+  {
+    slug: "crm-terugkomactie-herinnering",
+    title: "Terugkomactie herinnering (30 dagen na vertrek)",
+    description: "Voor wie de code nog niet gebruikte: dezelfde coupon met het aantal dagen dat hij nog geldig is, één knop en drie deals.",
+    section: "crm",
+    subject: "Sanne, je persoonlijke €20 cadeau verloopt op 16 december",
+    preheader: "Je persoonlijke cadeau ligt nog klaar. Nog 14 dagen geldig.",
+    Component: CrmTerugkomactie,
+    props: herinneringProps,
+  },
+  {
+    slug: "crm-zoekopdracht",
+    title: "Zoekopdracht (1 minuut na verlaten)",
+    description: "De zoekopdracht als samenvatting met één knop naar alle resultaten, daaronder de drie best passende arrangementen.",
+    section: "crm",
+    subject: "Jouw zoekopdracht: Den Haag",
+    preheader: "De beste arrangementen voor 20 november.",
+    Component: CrmZoekopdracht,
+  },
+  {
+    slug: "crm-verlanglijst",
+    title: "Verlanglijst €10 (3 dagen na eerste mail)",
+    description: "Code voor het eerste favoriet, direct boven dat arrangement; daaronder de andere favorieten en twee vergelijkbare arrangementen.",
+    section: "crm",
+    subject: "€10 cadeau op Kasteel Steenenburg van je verlanglijst",
+    preheader: "Jouw unieke code, geldig tot en met 12 november 2026.",
+    Component: CrmVerlanglijst,
   },
   {
     slug: "crm-nagenieten",

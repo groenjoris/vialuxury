@@ -7,6 +7,34 @@
     "preheader": "We horen graag hoe je het vond. Het kost je een minuut."
   },
   {
+    "slug": "crm-terugkomactie",
+    "title": "Terugkomactie €20 (14 dagen na vertrek)",
+    "description": "Kortingscode als coupon, één knop, jouw verblijf, drie deals in de sfeer van dat hotel en de themakiezer.",
+    "subject": "Sanne, €20 cadeau voor je volgende verblijf",
+    "preheader": "Een persoonlijk bedankje, alleen voor jou. Geldig tot en met 16 december 2026."
+  },
+  {
+    "slug": "crm-terugkomactie-herinnering",
+    "title": "Terugkomactie herinnering (30 dagen na vertrek)",
+    "description": "Voor wie de code nog niet gebruikte: dezelfde coupon met het aantal dagen dat hij nog geldig is, één knop en drie deals.",
+    "subject": "Sanne, je persoonlijke €20 cadeau verloopt op 16 december",
+    "preheader": "Je persoonlijke cadeau ligt nog klaar. Nog 14 dagen geldig."
+  },
+  {
+    "slug": "crm-zoekopdracht",
+    "title": "Zoekopdracht (1 minuut na verlaten)",
+    "description": "De zoekopdracht als samenvatting met één knop naar alle resultaten, daaronder de drie best passende arrangementen.",
+    "subject": "Jouw zoekopdracht: Den Haag",
+    "preheader": "De beste arrangementen voor 20 november."
+  },
+  {
+    "slug": "crm-verlanglijst",
+    "title": "Verlanglijst €10 (3 dagen na eerste mail)",
+    "description": "Code voor het eerste favoriet, direct boven dat arrangement; daaronder de andere favorieten en twee vergelijkbare arrangementen.",
+    "subject": "€10 cadeau op Kasteel Steenenburg van je verlanglijst",
+    "preheader": "Jouw unieke code, geldig tot en met 12 november 2026."
+  },
+  {
     "slug": "crm-nagenieten",
     "title": "Nagenietmail (3 dagen na vertrek)",
     "description": "Haalt één gegeven op: wanneer de volgende vakantie is, om latere mails te timen. Grote foto van het hotel met \"We hopen dat je genoten hebt van …\", daarna één vraag met vier gelijkwaardige knoppen. Geen deals, geen code.",

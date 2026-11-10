@@ -16,7 +16,7 @@ const variants = computed(() => variantGroups.find(g => g.some(v => v.slug === s
 
 // Alle mails als tekstlinkjes links van de mail, in de volgorde van het startscherm
 // (varianten staan er niet los in; de actieve mail blijft ook bij een variant gemarkeerd).
-const navOrder = ['crm-jaar-geleden', 'crm-winkelmandje', 'crm-winkelmandje-2-dagen', 'crm-thema-stedentrips', 'crm-review', 'crm-nagenieten']
+const navOrder = ['crm-jaar-geleden', 'crm-winkelmandje', 'crm-winkelmandje-2-dagen', 'crm-thema-stedentrips', 'crm-zoekopdracht', 'crm-verlanglijst', 'crm-review', 'crm-terugkomactie', 'crm-terugkomactie-herinnering', 'crm-nagenieten']
 const nav = navOrder.map(s => emails.find(e => e.slug === s)).filter((e): e is (typeof emails)[number] => !!e)
 const activeSlug = computed(() => variants.value?.[0]?.slug ?? slug.value)
 

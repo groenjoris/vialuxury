@@ -53,7 +53,7 @@ export default function CrmReview({ recipientEmail, firstName, hotelName, stars,
           </Section>
 
           <Section className="m-pad" style={{ padding: "28px 32px 0" }}>
-            <Text style={{ fontFamily: font.heading, fontWeight: 600, fontSize: "20px", color: c.heading, margin: 0 }}>
+            <Text style={s.kop}>
               Hoe beoordeel je {hotelName ? `je verblijf in ${hotelName}` : "je verblijf"}?
             </Text>
             <Text style={{ ...s.title, color: c.muted, margin: "4px 0 10px" }}>Selecteer het gewenste aantal sterren</Text>

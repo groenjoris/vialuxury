@@ -3,8 +3,14 @@ import * as React from "react";
 import { baseUrl, font, newsletter } from "./theme";
 
 // Gedeelde bouwstenen van de CRM-mails (concept, alleen desktop + light mode).
-// Links naar het prototype gaan naar de R1-dealpagina, zodat de foto, titel en prijs
-// uit de mail daar terugkomen (zachte landing).
+//
+// Spelregels (zie ook CLAUDE.md, sectie CRM):
+// - Drie lettergroottes: titel 32, subtitel/hotelnaam 20, alle overige tekst 16 px.
+// - Alles links uitgelijnd (alleen de inhoud van de coupon staat gecentreerd).
+// - Klaviyo: nooit twee lettertypen naast elkaar op één regel; onder elkaar mag wel.
+// - Geen grijze vlakken; beige alleen als highlight. Blokken zijn wit met een zwarte rand.
+// - Geen labels ("Populair" e.d.) op deals; prijzen zijn het totaal voor 2 personen.
+// - Links naar het prototype gaan naar de R1-dealpagina (zachte landing).
 
 const c = newsletter.light;
 
@@ -20,15 +26,21 @@ body { margin: 0 !important; padding: 0 !important; }
 `;
 
 export const s = {
-  h1: { fontFamily: font.heading, fontWeight: 600, fontSize: "34px", lineHeight: "1.2", color: c.heading, margin: 0 },
-  kop: { fontFamily: font.heading, fontWeight: 600, fontSize: "22px", lineHeight: "1.3", color: c.heading, margin: 0 },
-  body: { fontFamily: font.body, fontSize: "16px", lineHeight: "1.5", color: c.text, margin: "10px 0 0" },
-  name: { fontFamily: font.body, fontSize: "16px", fontWeight: 700, lineHeight: "1.3", color: c.text, margin: 0 },
-  title: { fontFamily: font.body, fontSize: "14px", lineHeight: "1.4", color: c.text, margin: "2px 0 0" },
-  muted: { fontFamily: font.body, fontSize: "13px", lineHeight: "1.4", color: c.muted, margin: "6px 0 0" },
+  /** Titel: 32 px serif. */
+  h1: { fontFamily: font.heading, fontWeight: 600, fontSize: "32px", lineHeight: "1.2", color: c.heading, margin: 0 },
+  /** Subtitel en hotelnaam: 20 px serif. */
+  kop: { fontFamily: font.heading, fontWeight: 600, fontSize: "20px", lineHeight: "1.3", color: c.heading, margin: 0 },
+  /** Lopende tekst: 16 px. */
+  body: { fontFamily: font.body, fontSize: "16px", lineHeight: "1.5", color: c.text, margin: "8px 0 0" },
+  /** Vette regel (prijs, datums): 16 px. */
+  name: { fontFamily: font.body, fontSize: "16px", fontWeight: 700, lineHeight: "1.4", color: c.text, margin: 0 },
+  /** Regel in een blok: 16 px. */
+  title: { fontFamily: font.body, fontSize: "16px", lineHeight: "1.4", color: c.text, margin: "2px 0 0" },
+  /** Bijregel (plaats, toelichting): 16 px grijs. */
+  muted: { fontFamily: font.body, fontSize: "16px", lineHeight: "1.4", color: c.muted, margin: "4px 0 0" },
 };
 
-/** Eén primaire, oranje knop per mail. */
+/** Primaire, oranje knop. `small`: compacter, voor in een dealblok. */
 export function PrimaryButton({ href, children, small }: { href: string; children: React.ReactNode; small?: boolean }) {
   return (
     <Button
@@ -37,10 +49,10 @@ export function PrimaryButton({ href, children, small }: { href: string; childre
         backgroundColor: c.cta,
         color: "#FFFFFF",
         fontFamily: font.body,
-        fontSize: small ? "14px" : "16px",
+        fontSize: "16px",
         fontWeight: 700,
         borderRadius: "6px",
-        padding: small ? "11px 18px" : "14px 28px",
+        padding: small ? "11px 20px" : "14px 28px",
         textDecoration: "none",
       }}
     >
@@ -49,7 +61,7 @@ export function PrimaryButton({ href, children, small }: { href: string; childre
   );
 }
 
-/** Secundaire knop: zwart omlijnd, nooit oranje (kleur alleen voor de kern). */
+/** Secundaire knop: wit met zwarte rand, nooit oranje (kleur alleen voor de kern). */
 export function SecondaryButton({ href, children, block }: { href: string; children: React.ReactNode; block?: boolean }) {
   return (
     <Button
@@ -57,13 +69,14 @@ export function SecondaryButton({ href, children, block }: { href: string; child
       style={{
         display: block ? "block" : "inline-block",
         textAlign: "center",
+        backgroundColor: "#FFFFFF",
         border: `1px solid ${c.text}`,
         color: c.text,
         fontFamily: font.body,
-        fontSize: "14px",
+        fontSize: "16px",
         fontWeight: 700,
         borderRadius: "6px",
-        padding: "10px 16px",
+        padding: "10px 20px",
         textDecoration: "none",
       }}
     >
@@ -72,110 +85,19 @@ export function SecondaryButton({ href, children, block }: { href: string; child
   );
 }
 
-/** Persuasief label op een dealkaart (Populair, Nieuw, Aanbevolen). "Samengesteld door" is geen label maar een regel met de specialist (zie DealListCard). */
-export function DealLabel({ children }: { children: React.ReactNode }) {
+/** Oranje, onderstreepte tekstlink (bijv. "Bekijk" in een dealrij). */
+export function TextLink({ href, children }: { href: string; children: React.ReactNode }) {
   return (
-    <Text
-      style={{
-        display: "inline-block",
-        backgroundColor: c.badgeBg,
-        color: "#FFFFFF",
-        fontFamily: font.body,
-        fontSize: "11px",
-        fontWeight: 700,
-        letterSpacing: "0.04em",
-        textTransform: "uppercase",
-        borderRadius: "3px",
-        padding: "3px 7px",
-        margin: "10px 0 0",
-      }}
-    >
+    <Link href={href} style={{ display: "inline-block", marginTop: "10px", fontFamily: font.body, fontSize: "16px", fontWeight: 700, color: c.link, textDecoration: "underline" }}>
       {children}
-    </Text>
+    </Link>
   );
 }
 
-/** Deal in de list view van de zoekkaarten: foto links over de volle kaarthoogte; rechts
- *  label, hotelnaam, dealtitel, 4 inclusies, vanafprijs met doorgehaalde prijs en Bekijk-knop. */
-export type ListDeal = {
-  hotelName: string;
-  packageTitle: string;
-  label?: "Populair" | "Nieuw" | "Aanbevolen";
-  includes: string[];
-  /** "Samengesteld door": geen label, maar een korte regel met de specialist en één zin. */
-  curator?: { name: string; photo: string; role: string; story: string };
-  /** "2 personen, 1 nacht" */
-  priceMeta: string;
-  fromPrice: string;
-  originalPrice?: string;
-  image: string;
-  url: string;
-};
-
-export function DealListCard({ deal: d }: { deal: ListDeal }) {
-  const check = `${baseUrl}/images/mail/check.png`;
-  return (
-    <Section style={{ border: `1px solid ${c.border}`, borderRadius: "8px", marginTop: "16px", overflow: "hidden" }}>
-      <Row>
-        {/* Foto als achtergrond, zodat hij de hele kaarthoogte vult (zoals de list view) */}
-        <Column className="stack" style={{ width: "200px", verticalAlign: "top", backgroundImage: `url(${d.image})`, backgroundSize: "cover", backgroundPosition: "center" }}>
-          <Link href={d.url} aria-label={d.packageTitle} style={{ display: "block", width: "200px", minHeight: "236px" }} />
-        </Column>
-        <Column className="stack" style={{ verticalAlign: "top", padding: "16px 18px" }}>
-          {d.label && <DealLabel>{d.label}</DealLabel>}
-          <Text style={{ ...s.name, margin: d.label ? "8px 0 0" : 0 }}>{d.hotelName}</Text>
-          <Text style={{ ...s.title, margin: "2px 0 0" }}>{d.packageTitle}</Text>
-          <Section style={{ marginTop: "10px" }}>
-            {d.includes.slice(0, 4).map((inc) => (
-              <Row key={inc}>
-                <Column style={{ width: "20px", verticalAlign: "top", paddingTop: "2px" }}>
-                  <Img src={check} alt="" width="14" height="14" />
-                </Column>
-                <Column style={{ verticalAlign: "top" }}>
-                  <Text style={{ ...s.title, fontSize: "13px", margin: "0 0 4px" }}>{inc}</Text>
-                </Column>
-              </Row>
-            ))}
-          </Section>
-          {d.curator && (
-            <Row style={{ marginTop: "8px" }}>
-              <Column style={{ width: "40px", verticalAlign: "top" }}>
-                <Img src={d.curator.photo} alt={d.curator.name} width="32" height="32" style={{ display: "block", borderRadius: "16px", objectFit: "cover" }} />
-              </Column>
-              <Column style={{ verticalAlign: "top" }}>
-                <Text style={{ ...s.title, fontSize: "13px", margin: 0 }}>
-                  <strong>Samengesteld door {d.curator.name}</strong>
-                  <span style={{ color: c.muted }}>, {d.curator.role}</span>
-                </Text>
-                <Text style={{ ...s.muted, fontSize: "13px", fontStyle: "italic", margin: "2px 0 0" }}>"{d.curator.story}"</Text>
-              </Column>
-            </Row>
-          )}
-          <Row style={{ marginTop: "10px" }}>
-            <Column style={{ verticalAlign: "bottom" }}>
-              <Text style={{ ...s.muted, fontSize: "12px", margin: 0 }}>{d.priceMeta}</Text>
-              <Text style={{ fontFamily: font.body, fontSize: "14px", color: c.text, margin: "2px 0 0" }}>
-                <span style={{ color: c.muted }}>Vanaf </span>
-                {d.originalPrice && <span style={{ color: c.muted, textDecoration: "line-through", marginRight: "6px" }}>{d.originalPrice}</span>}
-                <strong style={{ fontSize: "20px" }}>{d.fromPrice}</strong>
-              </Text>
-            </Column>
-            <Column align="right" style={{ verticalAlign: "bottom" }}>
-              <PrimaryButton href={d.url}>Bekijk</PrimaryButton>
-            </Column>
-          </Row>
-        </Column>
-      </Row>
-    </Section>
-  );
-}
-
-/** Dealrij met zwarte rand (zoals "Jouw verblijf" in de reviewmail): foto links tot aan de rand
- *  en over de volle hoogte; rechts hotelnaam, plaats, dealtitel, één vette regel (datums of
- *  vanafprijs) en een oranje link. Geen labels. */
+/** Deal of verblijf in een blok. Elke regel staat op zichzelf (Klaviyo). */
 export type RowDeal = {
   hotelName?: string;
-  /** Aantal sterren, op een eigen regel onder de hotelnaam (Klaviyo: niet naast de naam). */
+  /** Aantal sterren, op een eigen regel onder de hotelnaam. */
   stars?: number;
   place?: string;
   packageTitle?: string;
@@ -185,6 +107,21 @@ export type RowDeal = {
   url: string;
 };
 
+/** De tekstregels van een dealblok: hotelnaam (20 serif), sterren, plaats, dealtitel en de vette regel. */
+function DealText({ d }: { d: RowDeal }) {
+  return (
+    <>
+      {d.hotelName && <Text style={s.kop}>{d.hotelName}</Text>}
+      {d.stars && <Text style={{ ...s.title, letterSpacing: "2px", margin: "2px 0 0" }}>{"★".repeat(d.stars)}</Text>}
+      {d.place && <Text style={{ ...s.muted, margin: "2px 0 0" }}>{d.place}</Text>}
+      {d.packageTitle && <Text style={{ ...s.title, margin: "8px 0 0" }}>{d.packageTitle}</Text>}
+      {d.line && <Text style={{ ...s.name, margin: "8px 0 0" }}>{d.line}</Text>}
+    </>
+  );
+}
+
+/** Dealrij met zwarte rand: foto links tot aan de rand en over de volle hoogte; rechts de
+ *  tekstregels en een oranje link. */
 export function DealRow({ deal: d, cta = "Bekijk" }: { deal: RowDeal; cta?: string }) {
   return (
     <Section style={{ border: `1px solid ${c.text}`, borderRadius: "8px", marginTop: "12px", overflow: "hidden" }}>
@@ -194,56 +131,120 @@ export function DealRow({ deal: d, cta = "Bekijk" }: { deal: RowDeal; cta?: stri
           <Link href={d.url} aria-label={d.hotelName ?? cta} style={{ display: "block", width: "190px", minHeight: "150px" }} />
         </Column>
         <Column className="stack" style={{ verticalAlign: "top", padding: "16px 18px" }}>
-          {d.hotelName && <Text style={{ fontFamily: font.heading, fontWeight: 600, fontSize: "20px", lineHeight: "1.2", color: c.heading, margin: 0 }}>{d.hotelName}</Text>}
-          {d.stars && <Text style={{ fontFamily: font.body, fontSize: "13px", lineHeight: "1.2", letterSpacing: "2px", color: c.text, margin: "4px 0 0" }}>{"★".repeat(d.stars)}</Text>}
-          {d.place && <Text style={{ ...s.muted, fontSize: "14px", margin: "2px 0 0" }}>{d.place}</Text>}
-          {d.packageTitle && <Text style={{ ...s.title, margin: "8px 0 0" }}>{d.packageTitle}</Text>}
-          {d.line && <Text style={{ ...s.title, fontWeight: 700, margin: "8px 0 0" }}>{d.line}</Text>}
-          <Link href={d.url} style={{ display: "inline-block", marginTop: "10px", fontFamily: font.body, fontSize: "14px", fontWeight: 700, color: c.link, textDecoration: "underline" }}>
-            {cta}
-          </Link>
+          <DealText d={d} />
+          <TextLink href={d.url}>{cta}</TextLink>
         </Column>
       </Row>
     </Section>
   );
 }
 
-/** Kortingscode als coupon (naar het codeblok van Jesse's terugkomactie): oranje gestippelde rand,
- *  de code als selecteerbare tekst in oranje serif, gecentreerd in het vak; de geldigheid eronder staat links. */
-export function CodeBlock({ code, label, deadline }: { code: string; label: string; deadline: string }) {
-  return (
-    <Section>
-      <Section style={{ width: "100%", border: `2px dashed ${c.cta}`, borderRadius: "8px", padding: "20px 22px", textAlign: "center" }}>
-        <Text style={{ fontFamily: font.body, fontSize: "16px", lineHeight: "1.3", color: c.text, margin: 0, textAlign: "center" }}>{label}</Text>
-        <Text style={{ fontFamily: font.heading, fontWeight: 700, fontSize: "32px", lineHeight: "1.2", letterSpacing: "0.02em", color: c.cta, margin: "6px 0 0", textAlign: "center" }}>{code}</Text>
-      </Section>
-      <Text style={{ fontFamily: font.body, fontSize: "16px", fontWeight: 700, color: c.text, margin: "14px 0 0" }}>
-        <Img src={`${baseUrl}/images/mail/crm/clock-donker.png`} alt="" width="18" height="18" style={{ display: "inline-block", verticalAlign: "-3px", marginRight: "6px" }} />
-        Geldig tot en met {deadline}
-      </Text>
-      <Text style={{ ...s.title, margin: "4px 0 0" }}>Vul de code in bij het boeken.</Text>
-    </Section>
-  );
-}
-
-/** Uitgelichte deal over de hele breedte (naar Jesse's FeaturedDeal): grote foto, daaronder alles
- *  onder elkaar: hotelnaam, plaats, dealtitel, vette regel (vanafprijs) en een oranje knop.
- *  Zelfde zwarte rand en tekststijlen als DealRow; geen labels. */
-export function FeaturedDeal({ deal: d, cta = "Bekijk arrangement" }: { deal: RowDeal; cta?: string }) {
+/** Uitgelichte deal over de hele breedte (naar Jesse's FeaturedDeal): grote foto, daaronder de
+ *  tekstregels en een knop. `primary={false}`: omlijnde knop, voor mails die al een oranje
+ *  hoofdknop hebben. */
+export function FeaturedDeal({ deal: d, cta = "Bekijk arrangement", primary = true }: { deal: RowDeal; cta?: string; primary?: boolean }) {
   return (
     <Section style={{ border: `1px solid ${c.text}`, borderRadius: "8px", marginTop: "12px", overflow: "hidden" }}>
       <Link href={d.url}>
         <Img src={d.image} alt={d.packageTitle ?? d.hotelName ?? ""} width="560" height="300" style={{ display: "block", width: "100%", height: "300px", objectFit: "cover" }} />
       </Link>
       <Section style={{ padding: "18px 20px 22px" }}>
-        {d.hotelName && <Text style={{ fontFamily: font.heading, fontWeight: 600, fontSize: "20px", lineHeight: "1.2", color: c.heading, margin: 0 }}>{d.hotelName}</Text>}
-        {d.stars && <Text style={{ fontFamily: font.body, fontSize: "13px", lineHeight: "1.2", letterSpacing: "2px", color: c.text, margin: "4px 0 0" }}>{"★".repeat(d.stars)}</Text>}
-        {d.place && <Text style={{ ...s.muted, fontSize: "14px", margin: "2px 0 0" }}>{d.place}</Text>}
-        {d.packageTitle && <Text style={{ ...s.title, margin: "8px 0 0" }}>{d.packageTitle}</Text>}
-        {d.line && <Text style={{ ...s.title, fontWeight: 700, margin: "8px 0 0" }}>{d.line}</Text>}
+        <DealText d={d} />
         <Section style={{ marginTop: "14px" }}>
-          <PrimaryButton href={d.url} small>{cta}</PrimaryButton>
+          {primary ? <PrimaryButton href={d.url} small>{cta}</PrimaryButton> : <SecondaryButton href={d.url}>{cta}</SecondaryButton>}
         </Section>
+      </Section>
+    </Section>
+  );
+}
+
+/** Eén groot, de rest als rij: de vaste opbouw van een rij suggesties. */
+export function DealList({ deals, primary = true }: { deals: RowDeal[]; primary?: boolean }) {
+  const [first, ...rest] = deals;
+  return (
+    <>
+      {first && <FeaturedDeal deal={first} primary={primary} />}
+      {rest.map((d) => (
+        <DealRow key={d.url} deal={d} />
+      ))}
+    </>
+  );
+}
+
+const mailIcon = (name: string) => `${baseUrl}/images/mail/crm/${name}.png`;
+
+/** Regel met een icoon ervoor (klok, kalender, vergrootglas). */
+export function IconLine({ icon, children, bold }: { icon: string; children: React.ReactNode; bold?: boolean }) {
+  return (
+    <Text style={{ ...(bold ? s.name : s.title), margin: "6px 0 0" }}>
+      <Img src={mailIcon(icon)} alt="" width="18" height="18" style={{ display: "inline-block", verticalAlign: "-3px", marginRight: "8px" }} />
+      {children}
+    </Text>
+  );
+}
+
+/** Kortingscode als coupon (naar het codeblok van Jesse's terugkomactie): oranje gestippelde rand,
+ *  de code als selecteerbare tekst in oranje serif, gecentreerd in het vak; de geldigheid eronder
+ *  staat links. Met `daysLeft`: "Nog 14 dagen geldig, tot en met …". */
+export function CodeBlock({ code, label, deadline, daysLeft }: { code: string; label: string; deadline: string; daysLeft?: number }) {
+  return (
+    <Section>
+      <Section style={{ width: "100%", border: `2px dashed ${c.cta}`, borderRadius: "8px", padding: "20px 22px", textAlign: "center" }}>
+        <Text style={{ ...s.title, margin: 0, textAlign: "center" }}>{label}</Text>
+        <Text style={{ fontFamily: font.heading, fontWeight: 700, fontSize: "32px", lineHeight: "1.2", letterSpacing: "0.02em", color: c.cta, margin: "6px 0 0", textAlign: "center" }}>{code}</Text>
+      </Section>
+      <Section style={{ marginTop: "8px" }}>
+        <IconLine icon="clock-donker" bold>
+          {daysLeft ? `Nog ${daysLeft} dagen geldig, tot en met ${deadline}` : `Geldig tot en met ${deadline}`}
+        </IconLine>
+      </Section>
+      <Text style={s.muted}>Vul de code in bij het boeken.</Text>
+    </Section>
+  );
+}
+
+/** Thema uit de snelfilters van de homepage. */
+export type Theme = { id: string; label: string; icon: string };
+const themeIcon = (key: string) => `${baseUrl}/images/mail/theme-${key}.png`;
+export const themes: Theme[] = [
+  { id: "wellness", label: "Wellness", icon: themeIcon("bath") },
+  { id: "aan-zee", label: "Aan zee", icon: themeIcon("waves") },
+  { id: "natuur", label: "In de natuur", icon: themeIcon("leaf") },
+  { id: "culinair", label: "Culinair genieten", icon: themeIcon("wine") },
+  { id: "kasteel", label: "Kasteelhotels", icon: themeIcon("castle") },
+  { id: "romantisch", label: "Romantisch", icon: themeIcon("heart") },
+];
+
+/** Themakiezer: witte snelfilterknoppen met icoon (zoals "Snel zoeken" op de homepage) in een
+ *  raster van twee even brede kolommen. Elke keuze gaat naar /crm/thema?keuze=<id>. */
+export function ThemePicker({ items = themes }: { items?: Theme[] }) {
+  const perRow = 2;
+  const rows = Array.from({ length: Math.ceil(items.length / perRow) }, (_, i) => items.slice(i * perRow, (i + 1) * perRow));
+  return (
+    <Section>
+      <Text style={s.kop}>Waarover wil je aanbiedingen ontvangen?</Text>
+      <Text style={s.body}>Eén klik is genoeg, dan sturen we voortaan wat je zoekt.</Text>
+      <Section style={{ marginTop: "8px" }}>
+        {rows.map((row, ri) => (
+          <Row key={ri} style={{ marginTop: "8px" }}>
+            {Array.from({ length: perRow }, (_, i) => {
+              const t = row[i];
+              return (
+                <Column key={i} style={{ width: `${100 / perRow}%`, verticalAlign: "top", paddingLeft: i ? "4px" : 0, paddingRight: i < perRow - 1 ? "4px" : 0 }}>
+                  {t && (
+                    <Link
+                      href={`${site}/crm/thema?keuze=${t.id}`}
+                      style={{ display: "block", backgroundColor: "#FFFFFF", border: "1px solid #E5E2DA", borderRadius: "4px", padding: "13px 16px", fontFamily: font.body, fontSize: "16px", lineHeight: "20px", color: c.text, textDecoration: "none" }}
+                    >
+                      <Img src={t.icon} alt="" width="16" height="16" style={{ display: "inline-block", verticalAlign: "-2px", marginRight: "10px" }} />
+                      {t.label}
+                    </Link>
+                  )}
+                </Column>
+              );
+            })}
+          </Row>
+        ))}
       </Section>
     </Section>
   );

@@ -46,7 +46,7 @@ export default function CrmJaarGeleden({ recipientEmail, hotelName, packageTitle
           <Section className="m-pad" style={{ padding: "28px 32px 0" }}>
             <Heading as="h1" className="m-h1" style={s.h1}>Vorig jaar op {arrivalDayLastYear}</Heading>
             <Text style={{ ...s.kop, margin: "6px 0 0" }}>{hotelName}</Text>
-            <Text style={{ fontFamily: font.body, fontSize: "18px", lineHeight: "1.4", color: c.text, margin: "24px 0 0" }}>Nog een keer beleven?</Text>
+            <Text style={{ ...s.body, margin: "24px 0 0" }}>Nog een keer beleven?</Text>
             <Section style={{ marginTop: "14px" }}>
               <PrimaryButton href={availabilityUrl}>Check beschikbaarheid</PrimaryButton>
             </Section>
