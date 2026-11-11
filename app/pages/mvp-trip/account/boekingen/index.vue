@@ -1,15 +1,18 @@
 <script setup lang="ts">
 // MVP 12-11-2026 — Mijn ViaLuxury › Boekingen: overzicht van je boekingen (prototype: één
-// actieve vakantieboeking) met statusfilters. MVP: geen detailpagina, de kaart is niet klikbaar
-// (hoe annuleren/wijzigen dan werkt, volgt nog).
+// actieve vakantieboeking) met statusfilters. MVP (definitie 2026-11-11): geen detailpagina; de
+// kaart linkt naar de bevestigingspagina (zonder preloader en confetti), want daar staat de hele
+// boeking met de veelgestelde vragen.
 import { useMvpTripAccountBooking } from '~/composables-mvp-trip/useMvpTripAccountBooking'
-import { useDemoBookingFromQuery, useDemoSwitches } from '~/composables-mvp-trip/useMvpTripDemoBooking'
+import { demoHref, useDemoBookingFromQuery, useDemoSwitches } from '~/composables-mvp-trip/useMvpTripDemoBooking'
 
 // Vanuit de flow: `?demo=auto|fiets` zet de demo-boeking klaar bij het laden.
 useDemoBookingFromQuery()
 const { checkout, dateRange, nights, persons, roomsPerHotel, isBike } = useMvpTripAccountBooking()
 /* Prototype-schakelaars linksboven (DemoSwitches): Auto | Fiets en Flex | Non-flex uit de URL. */
 const { variant: demoVariant, rate: demoRate } = useDemoSwitches(() => isBike.value ? 'fiets' : 'auto')
+/** De kaart opent de MVP-bevestigingspagina met dezelfde demo-stand; zonder `load=1`, dus geen preloader. */
+const confirmHref = computed(() => demoHref('/mvp-trip/checkout/bevestiging', demoVariant.value, { rate: demoRate.value }))
 
 type Filter = 'actief' | 'aankomend' | 'afgerond' | 'geannuleerd' | 'alle'
 const FILTERS: { id: Filter; label: string }[] = [
@@ -45,7 +48,7 @@ useHead({ title: 'Boekingen — Mijn ViaLuxury' })
       >{{ f.label }}</button>
     </div>
 
-    <article v-if="visible" class="ab__card">
+    <NuxtLink v-if="visible" class="ab__card" :to="confirmHref">
       <img class="ab__img" :src="checkout.thumb" :alt="checkout.name" />
       <div class="ab__body">
         <p class="ab__eyebrow">{{ checkout.typeLabel }} met {{ checkout.hotels.length }} hotels</p>
@@ -55,7 +58,8 @@ useHead({ title: 'Boekingen — Mijn ViaLuxury' })
         <p class="ab__meta">{{ persons }} personen · {{ roomsPerHotel }} {{ roomsPerHotel === 1 ? 'kamer' : 'kamers' }} per hotel</p>
       </div>
       <span class="ab__status ab__status--actief">Actief</span>
-    </article>
+      <svg class="ab__chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6" /></svg>
+    </NuxtLink>
     <p v-else class="ab__empty">Geen boekingen in deze categorie.</p>
   </MvpTripAccountShell>
 </template>
@@ -69,7 +73,9 @@ useHead({ title: 'Boekingen — Mijn ViaLuxury' })
 .ab__chip--on, .ab__chip--on:hover { border-color: var(--color-primary); background: #fff4ec; color: var(--color-text-primary); }
 
 /* Boekingskaart (niet klikbaar): foto | tekst | status */
-.ab__card { display: grid; grid-template-columns: 232px minmax(0, 1fr) auto; gap: 20px; align-items: center; padding: 16px; border: 1px solid var(--color-border); border-radius: var(--radius-md); background: #fff; }
+.ab__card { display: grid; grid-template-columns: 232px minmax(0, 1fr) auto auto; gap: 20px; align-items: center; padding: 16px; border: 1px solid var(--color-border); border-radius: var(--radius-md); background: #fff; color: inherit; text-decoration: none; transition: box-shadow var(--transition-fast), border-color var(--transition-fast); }
+.ab__card:hover { border-color: #c4c4c4; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08); }
+.ab__chev { width: 20px; height: 20px; color: var(--color-text-secondary); }
 .ab__img { display: block; width: 232px; height: 128px; object-fit: cover; border-radius: 8px; }
 .ab__body p { margin: 0; }
 .ab__eyebrow { font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-text-secondary); margin-bottom: 4px !important; }
@@ -84,6 +90,7 @@ useHead({ title: 'Boekingen — Mijn ViaLuxury' })
   .ab__title { font-size: 28px; }
   .ab__chip { padding: 8px 14px; font-size: 14px; }
   .ab__card { grid-template-columns: 1fr; gap: 12px; }
+  .ab__chev { display: none; }
   .ab__img { width: 100%; height: 160px; }
   .ab__status { justify-self: start; }
 }

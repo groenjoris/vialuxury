@@ -27,7 +27,7 @@ sync (zie hieronder) vaak conflicten op — die in de MHT-bestanden oplossen.
 Elk prototype draagt onder het logo een subtiel variant-label (`.site-header__proto`, in de checkout
 `.nav__proto` / `.mnav__proto`: 9px, uppercase, wit 50 %, dun randje — nooit oranje): `R1`,
 `R1 + fake door` (fake door-vlag aan), `R2 VR` (variabel reisgezelschap; onder de pay-off, want die
-staat in R2 direct onder het logo), `MHR` en `MHR MVP` (ook bovenin de MVP-mail). Prototype-navigatie
+staat in R2 direct onder het logo), `MHR` en `MHR MVP` (ook bovenin de MVP-mails). Prototype-navigatie
 (`<Prefix>ProtoNav`, in de sitekop en de desktop-checkoutbalk): helemaal linksboven "‹ startscherm",
 op de post-bookingschermen van MHT/MVP (bevestiging, tips & routes, account, mailpreview) met
 "‹ flow" erboven; op mobiel verborgen — daar staat de startscherm-link alleen in de footer
@@ -75,18 +75,22 @@ POI's op de grote kaart, room table met één standaardkamer, geen
 prototype-schakelaars. Data in `app/data/mvp-*`. MVP-wijzigingen alleen in de
 `*-mvp-trip`-bestanden; MHT blijft ongewijzigd.
 
-Post-bookingflow van de MVP (sinds 2026-10-26): alleen de bevestigingspagina
-(`app/pages/mvp-trip/checkout/bevestiging.vue`), de boekingsbevestigingsmail
-(`email-designs/emails/mvp-vakantie-bevestiging.tsx`, slug `mvp-vakantie-bevestiging`, preview
-`/mvp-trip/emails/<slug>`) en de accountomgeving (`app/pages/mvp-trip/account/*`) — eenmalige
-kopieën van de MHT-versies die los van MHT worden uitgekleed (MVP-bevestigingspagina: alleen
-het cirkeltje als preloader, geen route/confetti op de foto, geen tipsblok; MVP-mail: geen
-tipsblok; MVP-account: alleen het boekingenoverzicht, kaart niet klikbaar, geen detailpagina —
-annuleren/wijzigen volgt nog). De
-MVP-pagina's dragen onder het logo het variant-label "MHR MVP" en de MVP-mail bovenin hetzelfde
-label. Het MVP-schema staat op dezelfde flowpagina als de volledige versie (`/multi-hotel-trip/flow`,
-boven de lijn); de flow-link linksboven op de MVP-post-bookingschermen (`MvpTripProtoNav`) verwijst
-daar ook naartoe. Er is geen MVP-tipspagina.
+Post-bookingflow van de MVP (definitie 2026-11-11): alles behalve de tips- en routespagina en de
+accountdetailpagina. Bevestigingspagina (`app/pages/mvp-trip/checkout/bevestiging.vue`) en
+boekingsbevestigingsmail (`email-designs/emails/mvp-vakantie-bevestiging.tsx`) zijn eenmalige kopieën
+van de MHT-versies die los van MHT worden uitgekleed (bevestigingspagina: alleen het cirkeltje als
+preloader, geen route/confetti op de foto, geen tipsblok; mail: geen tipsblok). De pre-travelmail en de
+incheckmails zijn dezelfde componenten als de volledige versie met de prop `mvp` (label "MHR MVP"
+bovenin via `MvpLabel`, zonder het blok "Praktische informatie en tips", boekingslinks naar het
+MVP-boekingenoverzicht; registry-slugs `mvp-vakantie-pre-travel(-fiets)(-nonflex)` en
+`mvp-vakantie-incheck-hotel-N(-fiets)`, preview `/mvp-trip/emails/<slug>`). De accountomgeving
+(`app/pages/mvp-trip/account/*`) heeft alleen het boekingenoverzicht; de boekingskaart linkt naar de
+MVP-bevestigingspagina (zonder `load=1`, dus zonder preloader; die heeft geen confetti), want daar staat
+de hele boeking met de veelgestelde vragen. De MVP-pagina's dragen onder het logo het variant-label
+"MHR MVP" en de MVP-mails bovenin hetzelfde label. Het MVP-schema staat op dezelfde flowpagina als de
+volledige versie (`/multi-hotel-trip/flow`, boven de lijn, met dezelfde kaartjes minus Tips & routes); de
+flow-link linksboven op de MVP-post-bookingschermen (`MvpTripProtoNav`) verwijst daar ook naartoe. Er is
+geen MVP-tipspagina.
 
 ## Multi Hotel Trip (MHT) = kopie van R1 — houd ze in sync
 
@@ -120,9 +124,8 @@ Schema van de klantreis na het boeken (MVP boven de lijn, volledige versie erond
 de prototype-schakelaars staat in de URL (auto en flex = zonder query): reis (`?demo=fiets`) en
 annuleringskeuze (`?rate=nonflex`). Het schema zelf heeft geen schakelaars (bewust weggehaald);
 je kiest op de schermen en komt via "‹ flow" met die stand terug. De stand bepaalt waar álle
-kaartjes naartoe linken: pagina's met `?demo=` en `?rate=`, incheckmails met de `-fiets`-slug (en
-`?rate=`); de boekingsbevestiging en de pre-travelmail bestaan alleen voor de autovakantie en
-openen ongewijzigd. De pagina's lezen beide uit de URL (`useDemoBookingFromQuery`, `demoHref`,
+kaartjes naartoe linken: pagina's met `?demo=` en `?rate=`, mails met de `-fiets`-slug en `?rate=nonflex` (de MVP-kaartjes naar de pagina's onder `/mvp-trip` en de
+mails met het voorvoegsel `mvp-`). De pagina's lezen beide uit de URL (`useDemoBookingFromQuery`, `demoHref`,
 `demoQuery`, `useDemoSwitches` in `useMultiHotelTripDemoBooking` / `useMvpTripDemoBooking`) en
 tonen dezelfde schakelaars als één rij (`<Prefix>DemoSwitches`, desktop) via de slot `proto` van
 `SiteHeader`/`CheckoutTopNav` (doorgegeven door `AccountShell`): op de webpagina's onder het logo
@@ -166,7 +169,9 @@ beide met `mode` en mobiele klassen `stack`/`m-center`), en heeft elke mail in d
 `subject` en `preheader` (de preheader staat ook als `<Preview>` in de mail; de incheckmails
 halen beide uit `incheckSubject`/`incheckPreheader` in `vakantie-incheck-hotel.tsx`). De preview
 toont die, net als de CRM-preview, in één frame zoals in de inbox (afzender, onderwerp, preheader
-boven de mail) in plaats van de beschrijving.
+boven de mail) in plaats van de beschrijving. De vakantiemails geven `CrmFooter` de prop
+`transactional` mee (sinds 2026-11-11): rechts geen nieuwsbrief-opt-out maar "Je ontvangt deze e-mail
+omdat je een account of boeking hebt bij ViaLuxury."; de CRM-mails houden de opt-out.
 
 ## CRM (concept, sinds 2026-11-02)
 

@@ -1,8 +1,8 @@
 <script setup lang="ts">
 // Multi Hotel Trip — Post-bookingflow: de klantreis na het boeken als strak schema in de
-// huisstijl, twee keer onder elkaar: boven de lijn de MVP (12-11-2026: alleen de
-// bevestigingspagina, de boekingsbevestiging en de accountomgeving — de kaartjes linken naar
-// de MVP-kopieën onder /mvp-trip), onder de lijn de volledige versie. Beide schema's delen
+// huisstijl, twee keer onder elkaar: boven de lijn de MVP (12-11-2026, definitie 2026-11-11:
+// alles behalve Tips & routes en de accountdetailpagina — de kaartjes linken naar de MVP-pagina's
+// onder /mvp-trip en de mvp-mails), onder de lijn de volledige versie. Beide schema's delen
 // dezelfde tijdlijn en kaartposities, zodat direct te zien is wat de MVP weglaat.
 // Per schema: drie fases op een horizontale tijdlijn (Boeken, Voorbereiden, Onderweg — Onderweg
 // begint bij Incheck hotel 1) met mijlpalen; erboven de pagina's (alle even groot, ook de
@@ -35,11 +35,11 @@ const FULL = {
   routes: '/multi-hotel-trip/checkout/routes',
   account: '/multi-hotel-trip/account/boekingen',
 }
-/* MVP: eigen kopieën in de MVP-namespace (app/pages/mvp-trip, mail mvp-vakantie-bevestiging). */
+/* MVP: eigen pagina's in de MVP-namespace (app/pages/mvp-trip) en mails met het voorvoegsel mvp-. */
 const MVP = {
   bevestiging: '/mvp-trip/checkout/bevestiging',
   account: '/mvp-trip/account/boekingen',
-  mail: (v: DemoVariant, r: DemoRate) => `/mvp-trip/emails/mvp-vakantie-bevestiging${v === 'fiets' ? '-fiets' : ''}${r === 'nonflex' ? '?rate=nonflex' : ''}`,
+  mail: (slug: string, r: DemoRate) => `/mvp-trip/emails/mvp-${slug}${r === 'nonflex' ? '?rate=nonflex' : ''}`,
 }
 const open = (href: string) => navigateAfterPaint(href)
 
@@ -85,7 +85,12 @@ const X = { booking: COL.booking - CARD_W / 2, prep: COL.prep - CARD_W / 2, acco
 const bevestigingCard = (path: string, v: DemoVariant, r: DemoRate): Card => ({ id: 'bevestiging', kind: 'pagina', title: 'Bevestigingspagina', x: X.booking, y: PAGE_Y, w: CARD_W, h: PAGE_H, href: demoHref(path, v, { preload: true, rate: r }) })
 const accountCard = (path: string, v: DemoVariant, r: DemoRate): Card => ({ id: 'account', kind: 'pagina', title: 'Accountomgeving', sub: 'De hele reis beschikbaar', x: X.account, y: PAGE_Y, w: CARD_W, h: PAGE_H, href: demoHref(path, v, { rate: r }) })
 const bevestigingMail = (href: string): Card => ({ id: 'mail-bevestiging', kind: 'email', title: 'Boekingsbevestiging', x: X.booking, y: MAILS_Y, w: CARD_W, h: MAIL_H, href })
-/** Incheckmails: per variant een eigen mail (fietsvakantie: slug met -fiets). */
+const preTravelMail = (href: string): Card => ({ id: 'mail-pretravel', kind: 'email', title: 'Pre-travel', x: X.prep, y: MAILS_Y, w: CARD_W, h: MAIL_H, href })
+/** Incheckmails: drie kleine kaartjes vlak vóór elk hotelbolletje; de link per hotelnummer. */
+const incheckMails = (hrefOf: (n: number) => string): Card[] => [COL.h1, COL.h2, COL.h3].map((x, i): Card => ({ id: `mail-h${i + 1}`, kind: 'email', title: `Incheck hotel ${i + 1}`, x: x - MAIL_BEFORE - CARD_W_SM / 2, y: MAILS_Y, w: CARD_W_SM, h: MAIL_H, href: hrefOf(i + 1) }))
+/** Mailslugs per reis (fietsvakantie: slug met -fiets); de MVP-mails krijgen het voorvoegsel mvp-. */
+const bevestigingSlug = (v: DemoVariant) => `vakantie-bevestiging${v === 'fiets' ? '-fiets' : ''}`
+const preTravelSlug = (v: DemoVariant) => `vakantie-pre-travel${v === 'fiets' ? '-fiets' : ''}`
 const incheckSlug = (n: number, v: DemoVariant) => `vakantie-incheck-hotel-${n}${v === 'fiets' ? '-fiets' : ''}`
 /** Mijlpaal → mail (en voor Online booking ook → bevestigingspagina): dunne doorgetrokken lijn. */
 const mailTick = (x: number): Tick => ({ x, y1: TIMELINE_Y + 16, y2: MAILS_Y - 2 })
@@ -98,9 +103,9 @@ const fullPages = (v: DemoVariant, r: DemoRate): Card[] => [
   accountCard(FULL.account, v, r),
 ]
 const fullMails = (v: DemoVariant, r: DemoRate): Card[] => [
-  bevestigingMail(mailHref(v === 'fiets' ? 'vakantie-bevestiging-fiets' : 'vakantie-bevestiging', r)),
-  { id: 'mail-pretravel', kind: 'email', title: 'Pre-travel', x: X.prep, y: MAILS_Y, w: CARD_W, h: MAIL_H, href: mailHref(v === 'fiets' ? 'vakantie-pre-travel-fiets' : 'vakantie-pre-travel', r) },
-  ...[COL.h1, COL.h2, COL.h3].map((x, i): Card => ({ id: `mail-h${i + 1}`, kind: 'email', title: `Incheck hotel ${i + 1}`, x: x - MAIL_BEFORE - CARD_W_SM / 2, y: MAILS_Y, w: CARD_W_SM, h: MAIL_H, href: mailHref(incheckSlug(i + 1, v), r) })),
+  bevestigingMail(mailHref(bevestigingSlug(v), r)),
+  preTravelMail(mailHref(preTravelSlug(v), r)),
+  ...incheckMails(n => mailHref(incheckSlug(n, v), r)),
 ]
 const arrowY = PAGE_Y + PAGE_H / 2
 /** Verbindingen (gestippeld, SVG-laag achter de kaartjes): bevestiging en mails leiden naar Tips & routes. */
@@ -113,8 +118,15 @@ const fullConnectors: Connector[] = [
   { d: `M${COL.prep + 80} ${MAILS_Y - 2} V${PAGES_BOTTOM + 2}`, arrow: true },
 ]
 
-/* ── MVP: alleen bevestigingspagina, boekingsbevestiging en accountomgeving ── */
-const mvpCards = (v: DemoVariant, r: DemoRate): Card[] => [bevestigingCard(MVP.bevestiging, v, r), accountCard(MVP.account, v, r), bevestigingMail(MVP.mail(v, r))]
+/* ── MVP: alles behalve Tips & routes en de accountdetailpagina (de boekingskaart in het account
+   opent de bevestigingspagina) ── */
+const mvpCards = (v: DemoVariant, r: DemoRate): Card[] => [
+  bevestigingCard(MVP.bevestiging, v, r),
+  accountCard(MVP.account, v, r),
+  bevestigingMail(MVP.mail(bevestigingSlug(v), r)),
+  preTravelMail(MVP.mail(preTravelSlug(v), r)),
+  ...incheckMails(n => MVP.mail(incheckSlug(n, v), r)),
+]
 
 /** Mijlpalen: oranje = moment van een pagina/mail, zwart met hotelicoon = inchecken. */
 const milestones = [
@@ -136,7 +148,7 @@ const phases = [
 
 /** Boven de lijn de MVP, eronder de volledige versie. Streepjes alleen bij momenten met een mail. */
 const flows = computed<Flow[]>(() => [
-  { id: 'mvp', title: 'MVP', sub: 'Bevestigingspagina, boekingsbevestiging en accountomgeving.', cards: mvpCards(variant.value, rate.value), connectors: [], ticks: [mailTick(COL.booking), bookingPageTick] },
+  { id: 'mvp', title: 'MVP', sub: 'Alles behalve Tips & routes en de accountdetailpagina.', cards: mvpCards(variant.value, rate.value), connectors: [], ticks: [...milestones.filter(m => !m.hotel).map(m => mailTick(m.x)), bookingPageTick] },
   { id: 'volledig', title: 'Volledige versie', sub: "Alle pagina's en mails van de klantreis.", cards: [...fullPages(variant.value, rate.value), ...fullMails(variant.value, rate.value)], connectors: fullConnectors, ticks: [...milestones.filter(m => !m.hotel).map(m => mailTick(m.x)), bookingPageTick] },
 ])
 

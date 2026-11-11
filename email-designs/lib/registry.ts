@@ -14,6 +14,9 @@ import CrmZoekopdracht from "../emails/crm-zoekopdracht";
 import CrmVerlanglijst from "../emails/crm-verlanglijst";
 import { incheckMails } from "./incheckMails";
 
+/** MVP: geen accountdetailpagina, boekingslinks gaan naar het boekingenoverzicht. */
+const MVP_ACCOUNT = "https://vialuxury.vercel.app/mvp-trip/account/boekingen";
+
 // "crm": concept-mails voor het CRM-project (alleen light, eigen lijst app/data/crm-emails.json).
 export type EmailSection = "designs" | "inspiration" | "crm";
 
@@ -167,6 +170,61 @@ export const emails: EmailEntry[] = [
     Component: MvpVakantieBevestiging,
     props: { ...bevestigingFiets, bookingUrl: "https://vialuxury.vercel.app/mvp-trip/account/boekingen?demo=fiets", rate: "nonflex", tripPrice: "€1.059", total: "€1.086,50" },
   },
+  // MVP 12-11-2026 (definitie 2026-11-11: alles behalve de tips- en routespagina en de accountdetailpagina):
+  // pre-travel en incheckmails zijn dezelfde componenten als de volledige versie met prop `mvp` (label "MHR MVP"
+  // bovenin, zonder het blok "Praktische informatie en tips", boekingslinks naar het MVP-boekingenoverzicht).
+  {
+    slug: "mvp-vakantie-pre-travel",
+    title: "MVP — Pre-travel (14 dagen voor vertrek)",
+    description: "MVP-versie van de pre-travelmail: zonder het blok Praktische informatie en tips; 'Bekijk je boeking online' gaat naar het boekingenoverzicht.",
+    section: "designs",
+    subject: "Over 14 dagen vertrek je naar Noord-Frankrijk",
+    preheader: "Je checklist: identiteitsbewijs, boekingsnummer en inchecken bij Château Tilques.",
+    Component: VakantiePreTravel,
+    props: { ...VakantiePreTravel.PreviewProps, mvp: true, bookingUrl: MVP_ACCOUNT },
+  },
+  {
+    slug: "mvp-vakantie-pre-travel-nonflex",
+    variantOf: "mvp-vakantie-pre-travel",
+    title: "MVP — Pre-travel (14 dagen voor vertrek, niet terugbetaalbaar)",
+    description: "MVP-versie, niet-terugbetaalbare boeking.",
+    section: "designs",
+    subject: "Over 14 dagen vertrek je naar Noord-Frankrijk",
+    preheader: "Je checklist: identiteitsbewijs, boekingsnummer en inchecken bij Château Tilques.",
+    Component: VakantiePreTravel,
+    props: { ...VakantiePreTravel.PreviewProps, mvp: true, bookingUrl: MVP_ACCOUNT, rate: "nonflex" },
+  },
+  {
+    slug: "mvp-vakantie-pre-travel-fiets",
+    title: "MVP — Pre-travel (14 dagen voor vertrek)",
+    description: "MVP-versie van de pre-travelmail voor de fietsvakantie Twente & Salland.",
+    section: "designs",
+    subject: "Over 14 dagen vertrek je naar Twente & Salland",
+    preheader: "Je checklist: identiteitsbewijs, boekingsnummer, je fiets en inchecken bij Hotel Wapen van Delden.",
+    Component: VakantiePreTravel,
+    props: { ...preTravelFiets, mvp: true, bookingUrl: `${MVP_ACCOUNT}?demo=fiets` },
+  },
+  {
+    slug: "mvp-vakantie-pre-travel-fiets-nonflex",
+    variantOf: "mvp-vakantie-pre-travel-fiets",
+    title: "MVP — Pre-travel (14 dagen voor vertrek, niet terugbetaalbaar)",
+    description: "MVP-versie, fietsvakantie, niet-terugbetaalbare boeking.",
+    section: "designs",
+    subject: "Over 14 dagen vertrek je naar Twente & Salland",
+    preheader: "Je checklist: identiteitsbewijs, boekingsnummer, je fiets en inchecken bij Hotel Wapen van Delden.",
+    Component: VakantiePreTravel,
+    props: { ...preTravelFiets, mvp: true, bookingUrl: `${MVP_ACCOUNT}?demo=fiets`, rate: "nonflex" },
+  },
+  ...incheckMails.map((m) => ({
+    slug: `mvp-${m.slug}`,
+    title: `MVP — ${m.title}`,
+    description: `MVP-versie (zonder het blok Praktische informatie en tips): ${m.description}`,
+    section: "designs" as const,
+    subject: m.subject,
+    preheader: m.preheader,
+    Component: VakantieIncheckHotel,
+    props: { ...m.props, mvp: true, bookingUrl: m.props.isBike ? `${MVP_ACCOUNT}?demo=fiets` : MVP_ACCOUNT },
+  })),
   // CRM (concept, desktop + light mode): drie geautomatiseerde mails.
   {
     slug: "crm-review",

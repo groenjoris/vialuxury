@@ -15,6 +15,7 @@ import {
 } from "@react-email/components";
 import * as React from "react";
 import HelpBanner from "../components/HelpBanner";
+import MvpLabel from "../components/MvpLabel";
 import CrmFooter from "../components/CrmFooter";
 import CrmHeader from "../components/CrmHeader";
 import { baseUrl, font, newsletter, type EmailMode } from "../components/theme";
@@ -65,8 +66,10 @@ type Props = {
   /** Drie thumbs boven "Praktische informatie en tips": twee uitjes en de routekaart (alle 3:2, even hoog). */
   thumbs: { image: string; alt: string }[];
   routesUrl: string;
-  /** Boeking in het account (blok "Bekijk je boeking online"). */
+  /** Boeking in het account (blok "Bekijk je boeking online"); in de MVP het boekingenoverzicht. */
   bookingUrl: string;
+  /** MVP 12-11-2026: label "MHR MVP" bovenin en zonder het blok "Praktische informatie en tips" (de MVP heeft geen tipspagina). */
+  mvp?: boolean;
   mode?: EmailMode;
 };
 
@@ -110,6 +113,7 @@ export default function VakantiePreTravel({
   thumbs,
   routesUrl,
   bookingUrl,
+  mvp = false,
   mode = "light",
 }: Props) {
   const c = newsletter[mode];
@@ -148,6 +152,7 @@ export default function VakantiePreTravel({
       </Head>
       <Preview>Je checklist: identiteitsbewijs, boekingsnummer{isBike ? ", je fiets" : ""} en inchecken bij {firstHotel.name}.</Preview>
       <Body style={{ backgroundColor: c.bg, margin: 0, padding: 0, fontFamily: font.body }}>
+        {mvp && <MvpLabel mode={mode} />}
         <CrmHeader mode={mode} />
         <Container style={{ width: "100%", maxWidth: "626px" }}>
 
@@ -266,7 +271,8 @@ export default function VakantiePreTravel({
             </Section>
           </Section>
 
-          {/* Praktische informatie en tips: de persoonlijke reispagina */}
+          {/* Praktische informatie en tips: de persoonlijke reispagina (niet in de MVP: geen tipspagina) */}
+          {!mvp && (
           <Section className="m-pad" style={{ padding: "32px 32px 0" }}>
             <Section style={{ backgroundColor: beige, borderRadius: "8px", padding: "20px" }}>
               <Row>
@@ -300,6 +306,7 @@ export default function VakantiePreTravel({
               </Button>
             </Section>
           </Section>
+          )}
 
           {/* Bekijk je boeking online: simpel beige blok met alleen een link naar het account (inloggen met een
               code per mail, geen wachtwoord). Belooft niets over wijzigen of beheren. */}
@@ -330,7 +337,7 @@ export default function VakantiePreTravel({
           </Section>
 
         </Container>
-        <CrmFooter recipientEmail={recipientEmail} reason="omdat je bij ons boekte" mode={mode} />
+        <CrmFooter recipientEmail={recipientEmail} reason="omdat je bij ons boekte" transactional mode={mode} />
       </Body>
     </Html>
   );

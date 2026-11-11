@@ -4,17 +4,23 @@ import { baseUrl, font, newsletter, type EmailMode } from "./theme";
 
 // Footer van de CRM- en vakantiemails. Staat buiten de 626px-container van de mail: het zwarte
 // vlak loopt over de hele breedte, de inhoud blijft 626px breed. Links logo, "Volg ons op" en
-// onderaan de afzenderreden; rechts "Hulp nodig?", de kleine lettertjes en de opt-out. Op mobiel
-// (klassen stack/m-center uit de responsiveCss van de vakantiemails) staan de kolommen onder elkaar.
+// onderaan de afzenderreden; rechts "Hulp nodig?", de kleine lettertjes en de opt-out. Bij een
+// boekingsgerelateerde mail (`transactional`, de post-bookingflow) vervalt de nieuwsbrief-opt-out
+// rechts (zin + Wijzig e-mailvoorkeuren | Uitschrijven | Webversie) en staat daar de zin "Je
+// ontvangt deze e-mail omdat je een account of boeking hebt bij ViaLuxury." (zoals in de
+// transactionele mails van het CRM-project). Op mobiel (klassen stack/m-center uit de
+// responsiveCss van de vakantiemails) staan de kolommen onder elkaar.
 
 type Props = {
   recipientEmail: string;
   /** Afzenderreden die bij de trigger past, bijv. "omdat je bij ons boekte". */
   reason: string;
+  /** Boekingsgerelateerde mail: geen nieuwsbrief-opt-out, wel de account-/boekingszin. */
+  transactional?: boolean;
   mode?: EmailMode;
 };
 
-export default function CrmFooter({ recipientEmail, reason, mode = "light" }: Props) {
+export default function CrmFooter({ recipientEmail, reason, transactional = false, mode = "light" }: Props) {
   const c = newsletter[mode];
   const text = { fontFamily: font.body, color: "#FFFFFF", fontSize: "12px", lineHeight: "16px", margin: "0 0 8px" };
   const bold = { ...text, fontWeight: 700 };
@@ -58,12 +64,18 @@ export default function CrmFooter({ recipientEmail, reason, mode = "light" }: Pr
             <Column className="stack m-center m-mt" style={{ width: "50%", verticalAlign: "bottom" }}>
               <Text className="m-center m-small" style={text}>Prijswijzigingen en/of zetfouten voorbehouden.</Text>
               <Text className="m-center m-small" style={text}>Copyright © ViaLuxury, All Rights Reserved</Text>
-              <Text className="m-center m-small" style={text}>Liever geen updates meer? Ontvang onze nieuwsbrief minder vaak, of helemaal niet meer.</Text>
-              <Text className="m-center m-small" style={{ ...text, margin: 0 }}>
-                <Link href="https://vialuxury.nl" style={link}>Wijzig e-mailvoorkeuren</Link> |{" "}
-                <Link href="https://vialuxury.nl" style={link}>Uitschrijven</Link> |{" "}
-                <Link href="https://vialuxury.nl" style={link}>Webversie</Link>
-              </Text>
+              {transactional ? (
+                <Text className="m-center m-small" style={{ ...text, margin: 0 }}>Je ontvangt deze e-mail omdat je een account of boeking hebt bij ViaLuxury.</Text>
+              ) : (
+                <>
+                  <Text className="m-center m-small" style={text}>Liever geen updates meer? Ontvang onze nieuwsbrief minder vaak, of helemaal niet meer.</Text>
+                  <Text className="m-center m-small" style={{ ...text, margin: 0 }}>
+                    <Link href="https://vialuxury.nl" style={link}>Wijzig e-mailvoorkeuren</Link> |{" "}
+                    <Link href="https://vialuxury.nl" style={link}>Uitschrijven</Link> |{" "}
+                    <Link href="https://vialuxury.nl" style={link}>Webversie</Link>
+                  </Text>
+                </>
+              )}
             </Column>
           </Row>
         </Section>

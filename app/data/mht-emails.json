@@ -148,5 +148,87 @@
     "subject": "Je boeking is bevestigd: 7-daagse fietsvakantie Twente & Salland",
     "preheader": "Boekingsnummer VL-85 584 493. Hieronder alles over je 3 hotels.",
     "variantOf": "mvp-vakantie-bevestiging-fiets"
+  },
+  {
+    "slug": "mvp-vakantie-pre-travel",
+    "title": "MVP — Pre-travel (14 dagen voor vertrek)",
+    "description": "MVP-versie van de pre-travelmail: zonder het blok Praktische informatie en tips; 'Bekijk je boeking online' gaat naar het boekingenoverzicht.",
+    "section": "designs",
+    "subject": "Over 14 dagen vertrek je naar Noord-Frankrijk",
+    "preheader": "Je checklist: identiteitsbewijs, boekingsnummer en inchecken bij Château Tilques."
+  },
+  {
+    "slug": "mvp-vakantie-pre-travel-nonflex",
+    "title": "MVP — Pre-travel (14 dagen voor vertrek, niet terugbetaalbaar)",
+    "description": "MVP-versie, niet-terugbetaalbare boeking.",
+    "section": "designs",
+    "subject": "Over 14 dagen vertrek je naar Noord-Frankrijk",
+    "preheader": "Je checklist: identiteitsbewijs, boekingsnummer en inchecken bij Château Tilques.",
+    "variantOf": "mvp-vakantie-pre-travel"
+  },
+  {
+    "slug": "mvp-vakantie-pre-travel-fiets",
+    "title": "MVP — Pre-travel (14 dagen voor vertrek)",
+    "description": "MVP-versie van de pre-travelmail voor de fietsvakantie Twente & Salland.",
+    "section": "designs",
+    "subject": "Over 14 dagen vertrek je naar Twente & Salland",
+    "preheader": "Je checklist: identiteitsbewijs, boekingsnummer, je fiets en inchecken bij Hotel Wapen van Delden."
+  },
+  {
+    "slug": "mvp-vakantie-pre-travel-fiets-nonflex",
+    "title": "MVP — Pre-travel (14 dagen voor vertrek, niet terugbetaalbaar)",
+    "description": "MVP-versie, fietsvakantie, niet-terugbetaalbare boeking.",
+    "section": "designs",
+    "subject": "Over 14 dagen vertrek je naar Twente & Salland",
+    "preheader": "Je checklist: identiteitsbewijs, boekingsnummer, je fiets en inchecken bij Hotel Wapen van Delden.",
+    "variantOf": "mvp-vakantie-pre-travel-fiets"
+  },
+  {
+    "slug": "mvp-vakantie-incheck-hotel-1",
+    "title": "MVP — Incheck hotel 1 (dag voor aankomst)",
+    "description": "MVP-versie (zonder het blok Praktische informatie en tips): De dag vóór hotel 1 van de autovakantie: morgen begint je vakantie: de gegevens van je eerste hotel. Kort: \"Morgen in het kort\", het hotelblok (adres, route, telefoon, inchecken, parkeren, opladen), praktische informatie en tips, Hulp nodig? en veelgestelde vragen.",
+    "section": "designs",
+    "subject": "Morgen begint je vakantie",
+    "preheader": "Alles over je eerste hotel: Château Tilques in Tilques."
+  },
+  {
+    "slug": "mvp-vakantie-incheck-hotel-2",
+    "title": "MVP — Incheck hotel 2 (dag voor aankomst)",
+    "description": "MVP-versie (zonder het blok Praktische informatie en tips): De dag vóór hotel 2 van de autovakantie: terugblik op Château Tilques, morgen door naar Château Cléry. Kort: \"Morgen in het kort\", het hotelblok (adres, route, telefoon, inchecken, parkeren, opladen), praktische informatie en tips, Hulp nodig? en veelgestelde vragen.",
+    "section": "designs",
+    "subject": "Morgen naar Hesdin-l'Abbé",
+    "preheader": "Terugblik op Château Tilques en alles over Château Cléry."
+  },
+  {
+    "slug": "mvp-vakantie-incheck-hotel-3",
+    "title": "MVP — Incheck hotel 3 (dag voor aankomst)",
+    "description": "MVP-versie (zonder het blok Praktische informatie en tips): De dag vóór hotel 3 van de autovakantie: terugblik op Château Cléry, morgen door naar Hotel Royal Beaulaincourt. Kort: \"Morgen in het kort\", het hotelblok (adres, route, telefoon, inchecken, parkeren, opladen), praktische informatie en tips, Hulp nodig? en veelgestelde vragen.",
+    "section": "designs",
+    "subject": "Morgen naar Béthune",
+    "preheader": "Terugblik op Château Cléry en alles over Hotel Royal Beaulaincourt."
+  },
+  {
+    "slug": "mvp-vakantie-incheck-hotel-1-fiets",
+    "title": "MVP — Incheck hotel 1 (dag voor aankomst)",
+    "description": "MVP-versie (zonder het blok Praktische informatie en tips): De dag vóór hotel 1 van de fietsvakantie: morgen begint je vakantie: de gegevens van je eerste hotel. Kort: \"Morgen in het kort\", het hotelblok (adres, route, telefoon, inchecken, stalling, bagagetransfer), praktische informatie en tips, Hulp nodig? en veelgestelde vragen.",
+    "section": "designs",
+    "subject": "Morgen begint je vakantie",
+    "preheader": "Alles over je eerste hotel: Hotel Wapen van Delden in Delden."
+  },
+  {
+    "slug": "mvp-vakantie-incheck-hotel-2-fiets",
+    "title": "MVP — Incheck hotel 2 (dag voor aankomst)",
+    "description": "MVP-versie (zonder het blok Praktische informatie en tips): De dag vóór hotel 2 van de fietsvakantie: terugblik op Hotel Wapen van Delden, morgen door naar Hotel de Zwaan (bagage vóór 9:00 uur bij de receptie). Kort: \"Morgen in het kort\", het hotelblok (adres, route, telefoon, inchecken, stalling, bagagetransfer), praktische informatie en tips, Hulp nodig? en veelgestelde vragen.",
+    "section": "designs",
+    "subject": "Morgen naar Raalte",
+    "preheader": "Terugblik op Hotel Wapen van Delden en alles over Hotel de Zwaan."
+  },
+  {
+    "slug": "mvp-vakantie-incheck-hotel-3-fiets",
+    "title": "MVP — Incheck hotel 3 (dag voor aankomst)",
+    "description": "MVP-versie (zonder het blok Praktische informatie en tips): De dag vóór hotel 3 van de fietsvakantie: terugblik op Hotel de Zwaan, morgen door naar Landhuishotel Herikerberg (bagage vóór 9:00 uur bij de receptie). Kort: \"Morgen in het kort\", het hotelblok (adres, route, telefoon, inchecken, stalling, bagagetransfer), praktische informatie en tips, Hulp nodig? en veelgestelde vragen.",
+    "section": "designs",
+    "subject": "Morgen naar Markelo",
+    "preheader": "Terugblik op Hotel de Zwaan en alles over Landhuishotel Herikerberg."
   }
 ]

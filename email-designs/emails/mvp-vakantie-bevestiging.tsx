@@ -492,7 +492,7 @@ export default function VakantieBevestiging({
             </Section>
           </Section>
         </Container>
-        <CrmFooter recipientEmail={recipientEmail} reason="omdat je bij ons boekte" mode={mode} />
+        <CrmFooter recipientEmail={recipientEmail} reason="omdat je bij ons boekte" transactional mode={mode} />
       </Body>
     </Html>
   );

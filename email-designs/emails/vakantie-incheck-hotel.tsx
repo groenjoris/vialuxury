@@ -15,6 +15,7 @@ import {
 } from "@react-email/components";
 import * as React from "react";
 import HelpBanner from "../components/HelpBanner";
+import MvpLabel from "../components/MvpLabel";
 import CrmFooter from "../components/CrmFooter";
 import CrmHeader from "../components/CrmHeader";
 import { baseUrl, font, newsletter, type EmailMode } from "../components/theme";
@@ -67,7 +68,10 @@ export type IncheckProps = {
   tollEstimate?: string;
   thumbs: { image: string; alt: string }[];
   routesUrl: string;
+  /** Boeking in het account; in de MVP het boekingenoverzicht. */
   bookingUrl: string;
+  /** MVP 12-11-2026: label "MHR MVP" bovenin en zonder het blok "Praktische informatie en tips" (de MVP heeft geen tipspagina). */
+  mvp?: boolean;
   mode?: EmailMode;
 };
 
@@ -117,6 +121,7 @@ export default function VakantieIncheckHotel({
   thumbs,
   routesUrl,
   bookingUrl,
+  mvp = false,
   mode = "light",
 }: IncheckProps) {
   const c = newsletter[mode];
@@ -185,6 +190,7 @@ export default function VakantieIncheckHotel({
       </Head>
       <Preview>{preview}</Preview>
       <Body style={{ backgroundColor: c.bg, margin: 0, padding: 0, fontFamily: font.body }}>
+        {mvp && <MvpLabel mode={mode} />}
         <CrmHeader mode={mode} />
         <Container style={{ width: "100%", maxWidth: "626px" }}>
 
@@ -306,7 +312,8 @@ export default function VakantieIncheckHotel({
             </Section>
           </Section>
 
-          {/* Praktische informatie en tips: de persoonlijke reispagina */}
+          {/* Praktische informatie en tips: de persoonlijke reispagina (niet in de MVP: geen tipspagina) */}
+          {!mvp && (
           <Section className="m-pad" style={{ padding: "32px 32px 0" }}>
             <Section style={{ backgroundColor: beige, borderRadius: "8px", padding: "20px" }}>
               <Row>
@@ -341,6 +348,7 @@ export default function VakantieIncheckHotel({
               </Button>
             </Section>
           </Section>
+          )}
 
           <HelpBanner mode={mode} />
 
@@ -360,7 +368,7 @@ export default function VakantieIncheckHotel({
           </Section>
 
         </Container>
-        <CrmFooter recipientEmail={recipientEmail} reason="omdat je bij ons boekte" mode={mode} />
+        <CrmFooter recipientEmail={recipientEmail} reason="omdat je bij ons boekte" transactional mode={mode} />
       </Body>
     </Html>
   );
