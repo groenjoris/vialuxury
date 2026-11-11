@@ -158,7 +158,7 @@ a.ad__late-opt:hover { color: var(--color-text-primary); }
 .ad__text { margin: 0; font-size: 15px; line-height: 1.5; color: var(--color-text-secondary); }
 .ad__link { color: var(--color-primary); font-weight: 600; text-decoration: underline; text-underline-offset: 2px; white-space: nowrap; }
 .ad__link:hover { color: var(--color-primary-hover); }
-.ad__link--plain { color: var(--color-text-primary); white-space: normal; }
+.ad__link--plain { white-space: normal; } /* in lopende tekst; zelfde oranje als elke tekstlink (huisstijl) */
 .ad__link--plain:hover { color: var(--color-text-secondary); }
 /* Link(s) of knop onder de tekst */
 .ad__actions { margin: 12px 0 0; display: flex; flex-wrap: wrap; gap: 8px 20px; font-size: 15px; }

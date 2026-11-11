@@ -221,7 +221,7 @@ export default function VakantiePreTravel({
                   </Text>
                   <Text style={{ ...small, margin: "6px 0 0" }}>
                     <strong style={{ color: c.text }}>Telefoon</strong>{" "}
-                    <Link href={`tel:${firstHotel.phone.replace(/\s/g, "")}`} style={{ color: c.text, textDecoration: "underline" }}>{firstHotel.phone}</Link>
+                    <Link href={`tel:${firstHotel.phone.replace(/\s/g, "")}`} style={{ color: c.link, textDecoration: "underline" }}>{firstHotel.phone}</Link>
                   </Text>
                   <Text style={{ ...small, margin: "10px 0 0" }}>
                     <strong style={{ color: c.text }}>Inchecken</strong> {arrivalDate} vanaf {firstHotel.checkInTime} uur. Neem je identiteitsbewijs mee.

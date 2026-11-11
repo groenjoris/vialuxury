@@ -163,7 +163,7 @@ export default function VakantieBevestiging({
     color: c.link,
     textDecoration: "underline",
   };
-  const textLink = { color: c.text, textDecoration: "underline", fontWeight: 700 };
+  const textLink = { color: c.link, textDecoration: "underline", fontWeight: 700 }; // tekstlinks altijd oranje (huisstijl)
   const num = {
     width: "26px",
     height: "26px",

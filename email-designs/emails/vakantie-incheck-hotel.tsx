@@ -251,7 +251,7 @@ export default function VakantieIncheckHotel({
                   </Text>
                   <Text style={{ ...small, margin: "6px 0 0" }}>
                     <strong style={{ color: c.text }}>Telefoon</strong>{" "}
-                    <Link href={`tel:${hotel.phone.replace(/\s/g, "")}`} style={{ color: c.text, textDecoration: "underline" }}>{hotel.phone}</Link>
+                    <Link href={`tel:${hotel.phone.replace(/\s/g, "")}`} style={{ color: c.link, textDecoration: "underline" }}>{hotel.phone}</Link>
                   </Text>
                   <Text style={{ ...small, margin: "10px 0 0" }}>
                     <strong style={{ color: c.text }}>Inchecken</strong> morgen, {arrivalDate}, vanaf {hotel.checkInTime} uur. Neem je identiteitsbewijs mee.

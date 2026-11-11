@@ -538,7 +538,8 @@ useHead({ title: `${checkout.value.name} — Tips & routes — ViaLuxury` })
 .rp__info .rp__label { margin-bottom: 3px; }
 .rp__info-icon { flex-shrink: 0; width: 18px; height: 18px; margin-top: 1px; color: var(--color-text-primary); }
 /* Links in de praktische informatie (routebeschrijving, telefoon): in de tekstkleur, niet oranje. */
-.rp__info-link { color: var(--color-text-primary); font-weight: 600; text-decoration: underline; text-underline-offset: 2px; }
+.rp__info-link { color: var(--color-primary); font-weight: 600; text-decoration: underline; text-underline-offset: 2px; }
+.rp__info-link:hover { color: var(--color-primary-hover); }
 .rp__info-link:hover { color: var(--color-text-secondary); }
 /* Contactbanner: hele breedte, warme tint (als de temperatuurtegel), alles op één regel, telefoonicoon als in de navigatie */
 .rp__contact { display: flex; align-items: center; gap: 16px; margin-top: 24px; padding: 16px 24px; border-radius: var(--radius-md); background: #fff0e4; }

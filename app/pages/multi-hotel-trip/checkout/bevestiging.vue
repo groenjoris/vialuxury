@@ -53,17 +53,8 @@ const row = computed<SelRow>(() => {
 })
 /** Reis van de demo-boeking voor de schakelaars linksboven: uit de URL, anders uit de reis zelf. */
 const demoVariant = computed<DemoVariant>(() => isDemoVariant(route.query.demo) ? route.query.demo : detail.value?.type === 'fiets' ? 'fiets' : 'auto')
-/** Fietsvakantie: extra punt bij "Wat je zelf doet" en eigen posten bij "Niet inbegrepen". */
+/** Fietsvakantie: extra punt bij "Wat je zelf doet". */
 const isBike = computed(() => detail.value?.type === 'fiets')
-/* Niet inbegrepen (als in de bevestigingsmail): wat de gast nog zelf betaalt, per reis. */
-const notIncluded = computed(() => [
-  'Toeristenbelasting, bij aankomst te betalen in het hotel',
-  isBike.value ? 'Fietshuur' : 'Opladen van je elektrische auto, brandstof en tol',
-  ...(isBike.value ? ['De reis van huis naar het eerste hotel en terug'] : []),
-  'Kosten voor attracties uit het voorbeeldreisschema',
-  'Lunch, drankjes en maaltijden die niet bij je hotel vermeld staan',
-  'Reis- en annuleringsverzekering',
-])
 const persons = computed(() => row.value.quantity * 2)
 const roomsPerHotel = computed(() => row.value.quantity)
 const BOOKING_FEE = CHECKOUT_BOOKING_FEE
@@ -92,8 +83,8 @@ const docsDate = computed(() => fmt(dateAt(-14)))
 const cancelDate = computed(() => fmt(dateAt(-30)))
 
 /** Per hotel: datums, inchecktijd (reisdata, anders 15:00), uitchecktijd (late check-out uit de
- *  inclusies, anders 11:00) en als "wat je krijgt" alleen "Inclusief arrangement" (kamernaam en
- *  inclusies staan niet op de kassabon; die staan in de mail en op de dealpagina). */
+ *  inclusies, anders 11:00) en "wat je krijgt": de kamer en álle inclusies van dat hotel, net als in
+ *  de bevestigingsmail en in het account (sinds 2026-11-11; eerder alleen "Inclusief arrangement"). */
 const stays = computed(() => {
   let offset = 0
   return trip.value.hotels.map((h, i) => {
@@ -109,7 +100,10 @@ const stays = computed(() => {
       to: fmt(to),
       checkInTime: stop?.checkIn ?? '15:00',
       checkOutTime: lateOut ? `${lateOut[1]}:${lateOut[2]}` : '11:00',
-      items: ['Inclusief arrangement'],
+      // Volgorde als in de mail: overnachtingen (eerste inclusie), dan de kamer, dan de rest.
+      items: /overnachting/i.test(incl[0] ?? '')
+        ? [incl[0]!, `${roomsPerHotel.value}× ${h.roomName}`, ...incl.slice(1)]
+        : [`${roomsPerHotel.value}× ${h.roomName}`, ...incl],
     }
   })
 })
@@ -136,10 +130,13 @@ const nextSteps = computed(() => [
 const routesHref = '/multi-hotel-trip/checkout/routes'
 
 /* Veelgestelde vragen (accordeon) — teksten uit "faq mhr.xlsx" (Boekingsbevestiging en boekingspagina);
-   het annuleerantwoord volgt de annuleringskeuze, met de uiterste datum en 23:59 uur. */
+   het annuleerantwoord volgt de annuleringskeuze, met de uiterste datum en 23:59 uur; bij flex staat
+   onder dat antwoord de link "Boeking annuleren". */
 const cancelDeadline = computed(() => `${fmtLong(dateAt(-30))}, 23:59 uur`)
+/** Annuleringsformulier (placeholder-link, zelfde als in het account en de mail; het formulier zelf volgt nog). */
+const CANCEL_FORM_URL = 'https://vialuxury.nl/annuleren'
 const faq = computed(() => [
-  { q: 'Hoe kan ik annuleren of wijzigen?', a: `Het wijzigen van een boeking is niet mogelijk. ${isFlex.value ? `Omdat je flexibel annuleren hebt aangezet, kun je je boeking annuleren t/m ${cancelDeadline.value}. Het is niet mogelijk individuele onderdelen van je boeking aan te passen. Wil je de datum van vertrek aanpassen, dan dien je de gehele boeking te annuleren en opnieuw te boeken. Let op: voor de boekingskosten ontvang je een voucher die je weer kunt gebruiken bij je nieuwe boeking.` : 'Tijdens het boeken heb je ervoor gekozen om niet-terugbetaalbaar te boeken. Daardoor is het niet mogelijk om zelf je boeking te annuleren. Het kan zijn dat de klantenservice je wel bepaalde opties kan geven; neem daarom tijdens openingstijden contact met hen op.'}` },
+  { q: 'Hoe kan ik annuleren of wijzigen?', link: isFlex.value ? { label: 'Boeking annuleren', href: CANCEL_FORM_URL } : undefined, a: `Het wijzigen van een boeking is niet mogelijk. ${isFlex.value ? `Omdat je flexibel annuleren hebt aangezet, kun je je boeking annuleren t/m ${cancelDeadline.value}. Het is niet mogelijk individuele onderdelen van je boeking aan te passen. Wil je de datum van vertrek aanpassen, dan dien je de gehele boeking te annuleren en opnieuw te boeken. Let op: voor de boekingskosten ontvang je een voucher die je weer kunt gebruiken bij je nieuwe boeking.` : 'Tijdens het boeken heb je ervoor gekozen om niet-terugbetaalbaar te boeken. Daardoor is het niet mogelijk om zelf je boeking te annuleren. Het kan zijn dat de klantenservice je wel bepaalde opties kan geven; neem daarom tijdens openingstijden contact met hen op.'}` },
   { q: 'Hoe log ik in op mijn account?', a: 'Ga naar vialuxury.com/nl-NL/inloggen, vul daar het e-mailadres in waarmee je geboekt hebt en je ontvangt direct de inlogcode in de mail.' },
   { q: `Hoe werkt het inchecken bij ${trip.value.hotels.length} hotels?`, a: 'Je kunt je gewoon bij de receptie melden en inchecken met je naam en je boekingsnummer. De meeste hotels verplichten een identificatiedocument zoals een rijbewijs of een paspoort van de hoofdboeker. Bij sommige hotels moet iedereen zich identificeren. Let op: een kopie volstaat niet en zonder geldig document kan een hotel weigeren je toe te laten.' },
   { q: 'Wat betaal ik nog in de hotels?', a: 'In principe betaal je bij de hotels niet meer voor hetgeen in het arrangement zit. Verblijf je ergens meerdere dagen, dan kan het dus zijn dat niet alle diners of de lunch in het arrangement zitten. In de meeste gevallen is het arrangement eveneens zonder drankjes en dien je bij het uitchecken deze dus te voldoen. Daarnaast zal je in de meeste gevallen de gemeentelijke toeristenbelasting moeten voldoen en in uitzonderlijke gevallen ook een lokale toeslag. Daarnaast is het mogelijk dat je gevraagd wordt een borg af te geven d.m.v. een reservering op een creditcard of een borg in cash.' },
@@ -308,14 +305,8 @@ useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
                 <div class="cf__price-row cf__price-row--total"><span class="t-body t-bold">Totaal</span><span class="t-body t-bold">{{ money(total) }}</span></div>
                 <div class="cf__price-row"><span class="t-body">Betaald</span><span class="t-body">{{ money(total) }}</span></div>
                 <div class="cf__price-row cf__price-row--due"><span class="t-body t-bold">Te betalen</span><span class="t-body t-bold">{{ money(0) }}</span></div>
-              </div>
-
-              <!-- Niet inbegrepen (als in de bevestigingsmail): wat de gast nog zelf betaalt -->
-              <div class="cf__excl">
-                <p class="cf__excl-title">Niet inbegrepen</p>
-                <ul class="cf__excl-list">
-                  <li v-for="item in notIncluded" :key="item" class="t-caption c-grey">{{ item }}</li>
-                </ul>
+                <!-- Wat ter plekke nog komt, direct onder het nulbedrag ("nog wel", niet "alleen"). -->
+                <p class="t-caption c-mgrey cf__price-note">Bij aankomst betaal je nog wel<br>de lokale toeristenbelasting.</p>
               </div>
             </div>
           </section>
@@ -354,7 +345,11 @@ useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
               <span>{{ f.q }}</span>
               <svg class="cf__chev" :class="{ 'cf__chev--open': openFaq === i }" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" /></svg>
             </button>
-            <p v-show="openFaq === i" class="cf__faq-a t-body c-grey">{{ f.a }}</p>
+            <div v-show="openFaq === i">
+              <p class="cf__faq-a t-body c-grey">{{ f.a }}</p>
+              <!-- Flex: de link naar het annuleringsformulier onder het antwoord (placeholder; het formulier volgt nog). -->
+              <a v-if="f.link" class="cf__link cf__faq-link" :href="f.link.href" target="_blank" rel="noopener">{{ f.link.label }}</a>
+            </div>
           </div>
         </section>
       </div>
@@ -486,9 +481,8 @@ useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
 .cf__stars svg { display: inline-block; }
 .cf__stay-meta { margin: 2px 0 6px; }
 /* Kamer · ontbijt · diner: doorlopend, met een bulletje ertussen (geen vinkjes). */
-.cf__stay-items { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 2px 0; }
-.cf__stay-items li { display: inline; }
-.cf__stay-items li + li::before { content: '·'; margin: 0 6px; color: var(--c-medium-grey); }
+/* Wat je krijgt: kamer + alle inclusies onder elkaar (zoals in de bevestigingsmail). */
+.cf__stay-items { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
 
 /* Flexibel annuleren / bagagetransfer: het icoon staat in de kolom van de nummerbolletjes (zelfde raster als de hotels). */
 .cf__extras { list-style: none; margin: 20px 0 0; padding: 18px 0 0; border-top: 1px solid var(--c-light-grey); display: flex; flex-direction: column; gap: 14px; }
@@ -501,10 +495,7 @@ useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
 .cf__price-row { display: flex; justify-content: space-between; gap: 12px; padding: 3px 0; }
 .cf__price-row--total { margin-top: 4px; padding-top: 10px; border-top: 1px solid var(--c-light-grey); font-size: var(--t-body-lg); }
 .cf__price-row--due { padding-top: 6px; }
-/* Niet inbegrepen: onder de prijs, zelfde lijn als de prijsregels */
-.cf__excl { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--c-light-grey); }
-.cf__excl-title { margin: 0 0 6px; font-size: 14px; font-weight: 700; }
-.cf__excl-list { list-style: disc; margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 3px; }
+.cf__price-note { margin: 2px 0 0; text-align: right; line-height: 1.4; }
 
 /* Rechterkolom */
 .cf__side { display: flex; flex-direction: column; gap: 16px; }
@@ -527,6 +518,7 @@ useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
   background: none; border: 0; cursor: pointer; text-align: left; font-family: inherit; font-size: var(--t-body-lg); font-weight: var(--w-medium); color: var(--c-via-black);
 }
 .cf__faq-a { margin: 0 0 16px; max-width: 680px; }
+.cf__faq-link { display: inline-block; margin: -6px 0 16px; font-size: var(--t-body); }
 
 /* Mobiel: één kolom, route boven de kop op de foto */
 @media (max-width: 800px) {
