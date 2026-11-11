@@ -223,16 +223,6 @@ export default function VakantieBevestiging({
     },
   ];
 
-  /* Niet inbegrepen: wat de gast nog zelf betaalt (per reis: fietshuur of opladen). */
-  const isBike = /fiets/i.test(tripType);
-  const notIncluded = [
-    "Toeristenbelasting, bij aankomst te betalen in het hotel",
-    isBike ? "Fietshuur" : "Opladen van je elektrische auto, brandstof en tol",
-    isBike ? "De reis van huis naar het eerste hotel en terug" : null,
-    "Kosten voor attracties uit het voorbeeldreisschema",
-    "Lunch, drankjes en maaltijden die niet bij je hotel vermeld staan",
-    "Reis- en annuleringsverzekering",
-  ].filter((x): x is string => !!x);
   /* Annuleren bij het flexibele tarief: drie stappen. */
   const cancelSteps = [
     { title: "Check de annuleringstermijn", text: `Je kunt jouw reservering nog tot 30 dagen voor de dag van aankomst annuleren. In geval van jouw boeking betekent dit dat je annuleringstermijn afloopt om 23:59 uur op ${cancelUntil}. Bij annulering na deze termijn of bij no-show ontvang je geen bedrag retour.` },
@@ -365,18 +355,12 @@ export default function VakantieBevestiging({
                   {priceRow("Totaal", total, true, true)}
                   {priceRow("Betaald", total)}
                   {priceRow("Te betalen", "€0", true)}
-                </Section>
-
-                {/* Niet inbegrepen: wat de gast nog zelf betaalt (vervangt de noot over de toeristenbelasting) */}
-                <Section style={{ borderTop: `1px solid ${line}`, marginTop: "16px", paddingTop: "12px" }}>
-                  <Text style={{ ...body14, margin: 0, fontWeight: 700 }}>Niet inbegrepen</Text>
-                  <ul style={{ margin: "6px 0 0", paddingLeft: "18px" }}>
-                    {notIncluded.map((item) => (
-                      <li key={item} style={{ ...body14, margin: "0 0 2px" }}>
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
+                  {/* Wat ter plekke nog komt, direct onder het nulbedrag (zelfde regel als op de bevestigingspagina). */}
+                  <Text style={{ ...small, textAlign: "right" as const, margin: "4px 0 0" }}>
+                    Bij aankomst betaal je nog wel
+                    <br />
+                    de lokale toeristenbelasting.
+                  </Text>
                 </Section>
               </Section>
             </Section>

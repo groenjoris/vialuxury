@@ -42,7 +42,6 @@ type Props = {
   region: string;
   /** "dinsdag 18 mei" — aankomstdag. */
   arrivalDate: string;
-  homeCity: string;
   firstHotel: {
     name: string;
     address: string;
@@ -59,8 +58,6 @@ type Props = {
     /** Wat bij het arrangement van dit hotel zit (zonder de overnachting en parkeren), om bij het inchecken na te kijken. */
     includes: string[];
   };
-  /** Geschatte tolkosten heen en terug (autovakantie). */
-  tollEstimate?: string;
   /** Hoofdfoto van de reis bovenin. */
   heroImage: string;
   /** Drie thumbs boven "Praktische informatie en tips": twee uitjes en de routekaart (alle 3:2, even hoog). */
@@ -74,6 +71,8 @@ type Props = {
 };
 
 const img = (file: string) => `${baseUrl}/images/mail/${file}`;
+/** Annuleringsformulier (placeholder-link, zelfde als in de bevestigingsmail en het account; het formulier volgt nog). */
+const CANCEL_FORM_URL = "https://vialuxury.nl/annuleren";
 
 const responsiveCss = `
 @media only screen and (max-width: 480px) {
@@ -106,9 +105,7 @@ export default function VakantiePreTravel({
   isBike = false,
   region,
   arrivalDate,
-  homeCity,
   firstHotel,
-  tollEstimate,
   heroImage,
   thumbs,
   routesUrl,
@@ -138,6 +135,8 @@ export default function VakantiePreTravel({
       // Tekst uit "faq mhr.xlsx" (Pre-travel); het annuleerantwoord volgt het tarief. "Wat moet ik nog
       // betalen?" staat niet in de FAQ maar in het blok van het eerste hotel.
       q: "Kan ik nog wijzigen of annuleren?",
+      // Flex: onder het antwoord de link naar het annuleringsformulier (zoals op de bevestigingspagina).
+      link: rate === "flex" ? { label: "Boeking annuleren", href: CANCEL_FORM_URL } : undefined,
       a: `Het wijzigen van een boeking is niet mogelijk. ${rate === "nonflex"
         ? "Tijdens het boeken heb je ervoor gekozen om niet-terugbetaalbaar te boeken. Daardoor is het niet mogelijk om zelf je boeking te annuleren. Het kan zijn dat de klantenservice je wel bepaalde opties kan geven; neem daarom tijdens openingstijden contact met hen op."
         : `Omdat je flexibel annuleren hebt aangezet, kun je je boeking annuleren t/m ${cancelUntil}, 23:59 uur. Het is niet mogelijk individuele onderdelen van je boeking aan te passen. Wil je de datum van vertrek aanpassen, dan dien je de gehele boeking te annuleren en opnieuw te boeken. Let op: voor de boekingskosten ontvang je een voucher die je weer kunt gebruiken bij je nieuwe boeking.`}`,
@@ -263,11 +262,6 @@ export default function VakantiePreTravel({
               <Text style={{ ...body14, margin: "4px 0 0" }}>
                 Je betaalt bij aankomst toeristenbelasting en eventueel een gemeentelijke of lokale toeslag.
               </Text>
-              {tollEstimate && (
-                <Text style={{ ...body14, margin: "6px 0 0" }}>
-                  Vertrek je vanuit {homeCity}, houd dan rekening met tolwegen (ongeveer {tollEstimate} voor de heen- en terugreis).
-                </Text>
-              )}
             </Section>
           </Section>
 
@@ -332,6 +326,11 @@ export default function VakantiePreTravel({
               <Section key={f.q} style={{ borderTop: `1px solid ${line}`, marginTop: "12px", paddingTop: "12px" }}>
                 <Text style={{ ...body14, margin: 0, fontWeight: 700, fontSize: "15px" }}>{f.q}</Text>
                 <Text style={{ ...body14, margin: "4px 0 0", color: c.muted }}>{f.a}</Text>
+                {f.link && (
+                  <Text style={{ margin: "8px 0 0" }}>
+                    <Link href={f.link.href} style={ctaLink}>{f.link.label} &gt;</Link>
+                  </Text>
+                )}
               </Section>
             ))}
           </Section>
@@ -352,7 +351,6 @@ VakantiePreTravel.PreviewProps = {
   tripName: "Ontdek Noord-Frankrijk en de Opaalkust in 7 dagen",
   region: "Noord-Frankrijk",
   arrivalDate: "dinsdag 18 mei",
-  homeCity: "Utrecht",
   firstHotel: {
     name: "Château Tilques",
     address: "Rue du Château, 62500 Tilques, Frankrijk",
@@ -365,7 +363,6 @@ VakantiePreTravel.PreviewProps = {
     // Zelfde inclusies als in de bevestigingsmail, zonder de overnachtingen, de kamer en het (gratis) parkeren.
     includes: ["Dagelijks uitgebreid ontbijtbuffet", "3-gangendiner bij Le Vert Mesnil (dag van aankomst)", "Gebruik van het binnenzwembad", "Tennis & jeu de boules", "Late check-out tot 14:00 uur"],
   },
-  tollEstimate: "€24",
   heroImage: `${baseUrl}/images/mail/vakantie/opaalkust-hero.jpg`,
   thumbs: [
     { image: `${baseUrl}/images/mail/vakantie/uitje-blancnez-3x2.jpg`, alt: "Cap Blanc-Nez" },
@@ -397,7 +394,6 @@ export const fietsPreviewProps = {
     mapsUrl: "https://www.google.com/maps/dir/?api=1&destination=Hotel+Wapen+van+Delden%2C+Delden",
     includes: ["Dagelijks uitgebreid ontbijtbuffet", "2× 3-gangendiner", "Welkomstfietstasje met water, regenponcho en bandenplaksetje", "ViaLuxury welkomstcadeau", "Bagagetransport naar Raalte"],
   },
-  tollEstimate: undefined,
   heroImage: `${baseUrl}/images/vakanties/cover/fietsvakantie-twente-salland-bos.jpg`,
   thumbs: [
     { image: `${baseUrl}/images/mail/vakantie/fiets-twickel-3x2.jpg`, alt: "Kasteel Twickel" },
