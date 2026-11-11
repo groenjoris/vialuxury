@@ -6,7 +6,7 @@ import { baseUrl, font, newsletter, type EmailMode } from "./theme";
 export default function HelpBanner({ mode = "light" }: { mode?: EmailMode }) {
   const c = newsletter[mode];
   const dark = mode === "dark";
-  const link = { color: c.text, textDecoration: "underline", fontWeight: 700 };
+  const link = { color: c.link, textDecoration: "underline", fontWeight: 700 }; // tekstlinks altijd oranje (huisstijl)
   return (
     <Section className="m-pad" style={{ padding: "24px 32px 0" }}>
       <Section style={{ backgroundColor: dark ? "#3A3A3A" : "#FFF0E4", borderRadius: "8px", padding: "14px 18px" }}>
