@@ -7,8 +7,9 @@
 // Daaronder "Praktische informatie": de drie hotels naast elkaar met foto, datums, check-in
 // (datum + tijd) en check-out, adres + routebeschrijving, telefoon, parkeren en opladen (fiets:
 // stalling); bij de fietsvakantie daaronder "Bagagetransfer" en "Routes" (50/50, met foto; de
-// routes online als PDF en GPX — de autovakantie heeft geen routes); dan "Inbegrepen" en "Niet inbegrepen" (witte blokken met zwarte
-// rand, per reis en annuleringskeuze); een contactbanner over de hele breedte; dan het voorbeeld
+// routes online als PDF en GPX — de autovakantie heeft geen routes); een contactbanner over de hele
+// breedte (geen blokken Inbegrepen / Niet inbegrepen meer: dat is afgedekt op de PDP, de bevestiging
+// en in de mails, en deze pagina draagt de voorpret); dan het voorbeeld
 // reisschema als op de MVP-PDP (dagen niet klikbaar, alleen de link naar het sidepanel) naast de
 // minimap; en onderaan de tips per hotel zoals op de dealpagina ("Wat te doen tijdens je
 // vakantie"). Telefoonnummers, adressen en laadpunten zijn prototype-placeholders.
@@ -47,7 +48,6 @@ const isBike = computed(() => trip.value?.type === 'fiets')
 
 /* ── Prototype-schakelaars linksboven (DemoSwitches): Auto | Fiets en Flex | Non-flex uit de URL ── */
 const { variant: demoVariant, rate: demoRate } = useDemoSwitches(() => isBike.value ? 'fiets' : 'auto')
-const isFlex = computed(() => demoRate.value === 'flex')
 
 /* ── Datums ── */
 const DEMO_YMD = { year: 2027, month: 4, day: 18 }
@@ -242,27 +242,6 @@ const panelHotel = computed<TripHotelModalData | null>(() => {
 /* ── Foto's bij Bagagetransfer en Routes (gebonden src: een statische src krijgt in dev een foute asset-URL en dus een hydration-waarschuwing) ── */
 const BIKE_IMAGES = { bagage: '/images/vakanties/fiets/bagagetransfer.jpg', route: '/images/vakanties/fiets/fietsroute.jpg' }
 
-/* ── Inbegrepen / niet inbegrepen: wat men onterecht als inbegrepen kan zien, per reis en annuleringskeuze ── */
-const cancelDeadline = computed(() => `${fmt(dateAt(-30))}, 23:59 uur`)
-const included = computed(() => [
-  `${trip.value?.stops.length ?? 3} hotels, 1 kamer per hotel, ${nights.value} nachten`,
-  'Elke ochtend een uitgebreid ontbijt',
-  isBike.value ? 'Elke avond een 3-gangendiner' : 'Een 3-gangendiner op de dag van aankomst bij elk hotel',
-  ...(isBike.value
-    ? ['Bagagetransfer naar het volgende hotel', 'Fietsroutes per etappe, online als PDF en GPX', 'Gratis parkeren bij het eerste hotel, de hele vakantie']
-    : ['Gratis parkeren bij de hotels']),
-  ...(isFlex.value ? [`Flexibel annuleren t/m ${cancelDeadline.value}`] : []),
-])
-const notIncluded = computed(() => [
-  'Lunches',
-  'Koffie en thee buiten het ontbijt, en drankjes bij het diner',
-  isBike.value ? 'Fietshuur: je neemt zelf een fiets mee' : 'Opladen van je elektrische auto, brandstof en tol',
-  ...(isBike.value ? ['De reis van huis naar het eerste hotel en terug'] : []),
-  'Entree voor attracties die niet in het arrangement zitten',
-  'Toeristenbelasting, bij aankomst te betalen in het hotel',
-  ...(isFlex.value ? [] : ['Annuleren: deze boeking is niet terugbetaalbaar']),
-])
-
 useHead({ title: `${checkout.value.name} — Tips & routes — ViaLuxury` })
 </script>
 
@@ -386,31 +365,6 @@ useHead({ title: `${checkout.value.name} — Tips & routes — ViaLuxury` })
                 <a href="#" @click.prevent>Download GPX</a>
               </p>
             </div>
-          </article>
-        </div>
-
-        <!-- Inbegrepen / niet inbegrepen: witte blokken met zwarte rand; vinkje en kruis in de titel, groene vinkjes (als op de PDP) en bullets -->
-        <div class="rp__incl">
-          <article class="rp__incl-card">
-            <h3 class="rp__h3 rp__h3--icon">
-              <svg class="rp__h3-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10" aria-hidden="true"><path d="M3 13L8 19L21 5" /></svg>
-              Inbegrepen
-            </h3>
-            <ul class="rp__incl-list">
-              <li v-for="item in included" :key="item">
-                <span class="rp__incl-check" aria-hidden="true"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10"><path d="M3 13L8 19L21 5" /></svg></span>
-                <span>{{ item }}</span>
-              </li>
-            </ul>
-          </article>
-          <article class="rp__incl-card">
-            <h3 class="rp__h3 rp__h3--icon">
-              <svg class="rp__h3-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19" /></svg>
-              Niet inbegrepen
-            </h3>
-            <ul class="rp__excl-list">
-              <li v-for="item in notIncluded" :key="item">{{ item }}</li>
-            </ul>
           </article>
         </div>
 
@@ -554,15 +508,6 @@ useHead({ title: `${checkout.value.name} — Tips & routes — ViaLuxury` })
 .rp__bike-card { display: grid; grid-template-columns: 200px minmax(0, 1fr); align-items: stretch; }
 .rp__bike-img { display: block; width: 100%; height: 100%; min-height: 200px; object-fit: cover; }
 .rp__bike-card .rp__route-links { margin-top: 2px; }
-/* Inbegrepen / niet inbegrepen: twee witte blokken met zwarte rand; groene vinkjes als op de PDP, bullets bij niet inbegrepen */
-.rp__incl { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; margin-top: 24px; }
-.rp__incl-card { padding: 20px 22px 22px; border: 1px solid var(--color-text-primary); border-radius: var(--radius-md); background: #fff; }
-.rp__incl-card .rp__h3 { margin-bottom: 12px; }
-.rp__incl-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; font-size: 15px; line-height: 1.5; color: var(--color-text-secondary); }
-.rp__incl-list li { display: flex; align-items: flex-start; gap: 8px; }
-.rp__incl-check { color: var(--color-discount, #27C88D); flex-shrink: 0; display: inline-flex; font-size: 18px; margin-top: 2px; }
-.rp__excl-list { list-style: disc; margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 8px; font-size: 15px; line-height: 1.5; color: var(--color-text-secondary); }
-
 /* Reisschema naast de minimap: even hoog; de kaart vult de ruimte boven de regels, zodat
    "Bekijk kaart" precies op de onderrand van het reisschema uitkomt. */
 .rp__plan { display: grid; grid-template-columns: minmax(0, 1fr) 400px; gap: 32px; align-items: stretch; }
@@ -585,7 +530,7 @@ useHead({ title: `${checkout.value.name} — Tips & routes — ViaLuxury` })
   .rp__weather-days { overflow-x: auto; }
   .rp__weather-day { min-width: 44px; }
   .rp__main { padding-top: 24px; gap: 36px; }
-  .rp__hotels, .rp__plan, .rp__bike, .rp__incl { grid-template-columns: 1fr; gap: 16px; }
+  .rp__hotels, .rp__plan, .rp__bike { grid-template-columns: 1fr; gap: 16px; }
   .rp__hotel { display: block; }
   .rp__hotel-img { height: 160px; }
   .rp__bike-card { grid-template-columns: 1fr; }
