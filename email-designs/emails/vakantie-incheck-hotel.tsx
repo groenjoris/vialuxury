@@ -24,7 +24,7 @@ import { baseUrl, font, newsletter, type EmailMode } from "../components/theme";
 // (auto of fiets). Kort, met de belangrijkste dingen benadrukt: korte intro (bij hotel 2 en 3
 // terugblik op het vorige hotel en bij de fietsvakantie de bagage vóór 9:00 uur bij de
 // receptie), "Morgen in het kort", het blok met het komende hotel (adres, route, telefoon,
-// inchecken, parkeren/stalling, opladen/bagagetransfer), de persoonlijke pagina met praktische
+// inchecken, parkeren/stalling, opladen/bagagetransfer, wat er inbegrepen is), de persoonlijke pagina met praktische
 // informatie en tips, "Hulp nodig?" en veelgestelde vragen. Geen hoofdfoto, geen "boeking
 // beheren"-blok. Data per reis en hotel staat in lib/incheckMails.ts.
 
@@ -37,6 +37,8 @@ export type IncheckHotel = {
   mapsUrl: string;
   checkInTime: string;
   checkOutTime: string;
+  /** Wat bij het arrangement van dit hotel zit (zonder overnachting en parkeren), om bij het inchecken na te kijken. */
+  includes: string[];
   /** Auto: parkeren en opladen. */
   parking?: string;
   charging?: string;
@@ -295,6 +297,15 @@ export default function VakantieIncheckHotel({
                   )}
                 </>
               )}
+              {/* Wat bij het arrangement van dit hotel zit (zonder overnachting en parkeren): zodat je bij het inchecken
+                  vanuit de mail nog even kunt nakijken wat je allemaal krijgt. */}
+              <Text style={subkop}>Wat is er inbegrepen?</Text>
+              <Text style={{ ...body14, margin: "4px 0 0" }}>Bij {hotel.name} zit dit bij je arrangement:</Text>
+              <ul style={{ margin: "4px 0 0", paddingLeft: "18px" }}>
+                {hotel.includes.map((item) => (
+                  <li key={item} style={{ ...body14, margin: "0 0 2px" }}>{item}</li>
+                ))}
+              </ul>
               {first && (
                 <>
                   <Text style={subkop}>Wat moet ik nog betalen?</Text>

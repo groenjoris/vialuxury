@@ -1,6 +1,7 @@
 // De incheckmails (dag vóór hotel 1, 2 en 3) voor de twee demo-reizen: de Opaalkust (auto) en
 // Twente & Salland (fiets). Eén component (emails/vakantie-incheck-hotel.tsx) met per reis en
-// hotel andere props. Adressen, telefoonnummers, parkeren en laadpunten zijn prototype-placeholders.
+// hotel andere props. Adressen, telefoonnummers, parkeren en laadpunten zijn prototype-placeholders; de
+// inclusies per hotel zijn die van de bevestigingsmail (zonder overnachting, kamer en parkeren).
 import { baseUrl } from "../components/theme";
 import { incheckPreheader, incheckSubject, type IncheckHotel, type IncheckProps } from "../emails/vakantie-incheck-hotel";
 
@@ -41,6 +42,7 @@ const TRIPS: TripData[] = [
         image: `${baseUrl}/images/mail/vakantie/tilques-t2.jpg`, phone: "+33 3 21 12 34 51",
         mapsUrl: "https://www.google.com/maps/dir/?api=1&destination=Ch%C3%A2teau+Tilques%2C+Rue+du+Ch%C3%A2teau%2C+62500+Tilques",
         checkInTime: "15:00", checkOutTime: "14:00",
+        includes: ["Dagelijks uitgebreid ontbijtbuffet", "3-gangendiner bij Le Vert Mesnil (dag van aankomst)", "Gebruik van het binnenzwembad", "Tennis & jeu de boules", "Late check-out tot 14:00 uur"],
         parking: "Je kunt gratis parkeren op het terrein van het kasteel, direct bij de ingang.",
         charging: "Er is een laadpunt bij het hotel (type 2, 11 kW); meld bij het inchecken dat je wilt laden. Snelladers vind je langs de A26 bij Saint-Omer.",
       },
@@ -49,6 +51,7 @@ const TRIPS: TripData[] = [
         image: `${baseUrl}/images/vakanties/001/clery-c1.jpg`, phone: "+33 3 21 12 34 52",
         mapsUrl: "https://www.google.com/maps/dir/?api=1&destination=Ch%C3%A2teau+Cl%C3%A9ry%2C+Hesdin-l%27Abb%C3%A9",
         checkInTime: "15:00", checkOutTime: "14:00",
+        includes: ["Dagelijks uitgebreid ontbijtbuffet", "3-gangendiner bij Le Berthier (dag van aankomst)", "Gebruik van de sauna", "Late check-out tot 14:00 uur"],
         parking: "Gratis parkeren op het landgoed, naast het hotel.",
         charging: "Laadpunt op 2 km (parkeerterrein van de supermarkt in Hesdin-l'Abbé); op aanvraag een stopcontact bij het hotel voor langzaam laden.",
       },
@@ -57,6 +60,7 @@ const TRIPS: TripData[] = [
         image: `${baseUrl}/images/vakanties/001/beaulaincourt-b1.jpg`, phone: "+33 3 21 12 34 53",
         mapsUrl: "https://www.google.com/maps/dir/?api=1&destination=Hotel+Royal+Beaulaincourt%2C+B%C3%A9thune",
         checkInTime: "14:00", checkOutTime: "15:00",
+        includes: ["Dagelijks ontbijt", "3-gangendiner in het restaurant van het hotel (dag van aankomst)", "Welkomstbubbels", "Late check-out tot 15:00 uur"],
         parking: "Gratis parkeren op het afgesloten terrein van het hotel.",
         charging: "Laadpunt op 3 km bij het winkelcentrum; snelladers langs de A26 richting huis.",
       },
@@ -83,6 +87,7 @@ const TRIPS: TripData[] = [
         image: `${baseUrl}/images/vakanties/007/hotel-wapen-van-delden.jpg`, phone: "+31 74 376 1234",
         mapsUrl: "https://www.google.com/maps/dir/?api=1&destination=Hotel+Wapen+van+Delden%2C+Delden",
         checkInTime: "15:00", checkOutTime: "11:00",
+        includes: ["Dagelijks uitgebreid ontbijtbuffet", "2× 3-gangendiner", "Welkomstfietstasje met water, regenponcho en bandenplaksetje", "ViaLuxury welkomstcadeau", "Bagagetransport naar Raalte"],
         bikeStorage: "Afgesloten fietsenstalling bij het hotel, met laadpunt voor e-bikes.",
       },
       {
@@ -90,6 +95,7 @@ const TRIPS: TripData[] = [
         image: `${baseUrl}/images/vakanties/007/hotel-de-zwaan-gebouw.jpg`, phone: "+31 572 36 1234",
         mapsUrl: "https://www.google.com/maps/dir/?api=1&destination=Hotel+de+Zwaan%2C+Raalte",
         checkInTime: "15:00", checkOutTime: "12:00",
+        includes: ["Dagelijks uitgebreid ontbijtbuffet", "2× 3-gangendiner", "Fietsroutes Salland op je telefoon", "Bagagetransport naar Markelo"],
         bikeStorage: "Overdekte, afgesloten stalling achter het hotel; e-bikes laad je in de stalling.",
       },
       {
@@ -97,6 +103,7 @@ const TRIPS: TripData[] = [
         image: `${baseUrl}/images/vakanties/007/hotel-herikerberg.jpg`, phone: "+31 547 36 1234",
         mapsUrl: "https://www.google.com/maps/dir/?api=1&destination=Landhuishotel+Herikerberg%2C+Markelo",
         checkInTime: "15:00", checkOutTime: "11:00",
+        includes: ["Dagelijks uitgebreid ontbijtbuffet", "2× 3-gangendiner", "Fietsroutes Twente op je telefoon", "Bagagetransport terug naar Delden"],
         bikeStorage: "Afgesloten fietsenstalling naast de ingang, met laadpunt voor e-bikes.",
       },
     ],
@@ -142,7 +149,7 @@ export const incheckMails: IncheckMailDef[] = TRIPS.flatMap((trip) =>
       slug,
       // Zelfde titel voor auto en fiets (de reis staat in de beschrijving), zodat de schakelaar op de preview niet verspringt.
       title: `Incheck hotel ${n} (dag voor aankomst)`,
-      description: `De dag vóór hotel ${n} van de ${trip.label}: ${what}. Kort: "Morgen in het kort", het hotelblok (adres, route, telefoon, inchecken, ${trip.isBike ? "stalling, bagagetransfer" : "parkeren, opladen"}), praktische informatie en tips, Hulp nodig? en veelgestelde vragen.`,
+      description: `De dag vóór hotel ${n} van de ${trip.label}: ${what}. Kort: "Morgen in het kort", het hotelblok (adres, route, telefoon, inchecken, ${trip.isBike ? "stalling, bagagetransfer" : "parkeren, opladen"}, wat er inbegrepen is), praktische informatie en tips, Hulp nodig? en veelgestelde vragen.`,
       subject: incheckSubject(props),
       preheader: incheckPreheader(props),
       props,

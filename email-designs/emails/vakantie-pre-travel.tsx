@@ -22,8 +22,8 @@ import { baseUrl, font, newsletter, type EmailMode } from "../components/theme";
 
 // Pre-travel: veertien dagen voor vertrek van een multi-hotel vakantie (auto én fiets). Checklist
 // ("Niet vergeten": identiteitsbewijs, boekingsnummer, bij de fietsvakantie je fiets), inchecken bij
-// het eerste hotel (adres, route, parkeren, opladen of fietsenstalling, wat er inbegrepen is, wat je
-// nog betaalt), de persoonlijke pagina met praktische informatie en tips, "Bekijk je boeking online"
+// het eerste hotel (adres, route, parkeren, opladen of fietsenstalling, wat je nog betaalt; de
+// inclusies staan in de incheckmails), de persoonlijke pagina met praktische informatie en tips, "Bekijk je boeking online"
 // (inloggen met een code per mail), "Hulp nodig?" en veelgestelde vragen.
 // Header en footer zoals in de CRM-mails (zwarte balken over de hele breedte).
 
@@ -55,8 +55,6 @@ type Props = {
     charging?: string;
     /** Fietsenstalling (fietsvakantie). */
     bikeStorage?: string;
-    /** Wat bij het arrangement van dit hotel zit (zonder de overnachting en parkeren), om bij het inchecken na te kijken. */
-    includes: string[];
   };
   /** Hoofdfoto van de reis bovenin. */
   heroImage: string;
@@ -249,15 +247,6 @@ export default function VakantiePreTravel({
                   <Text style={{ ...body14, margin: "4px 0 0" }}>{firstHotel.bikeStorage}</Text>
                 </>
               )}
-              {/* Wat bij het arrangement van dit hotel zit (zonder overnachting en parkeren): zodat je bij het inchecken
-                  vanuit de mail nog even kunt nakijken wat je allemaal krijgt. */}
-              <Text style={subkop}>Wat is er inbegrepen?</Text>
-              <Text style={{ ...body14, margin: "4px 0 0" }}>Bij {firstHotel.name} zit dit bij je arrangement:</Text>
-              <ul style={{ margin: "4px 0 0", paddingLeft: "18px" }}>
-                {firstHotel.includes.map((item) => (
-                  <li key={item} style={{ ...body14, margin: "0 0 2px" }}>{item}</li>
-                ))}
-              </ul>
               <Text style={subkop}>Wat moet ik nog betalen?</Text>
               <Text style={{ ...body14, margin: "4px 0 0" }}>
                 Je betaalt bij aankomst toeristenbelasting en eventueel een gemeentelijke of lokale toeslag.
@@ -360,8 +349,6 @@ VakantiePreTravel.PreviewProps = {
     phone: "+33 3 21 12 34 51",
     charging: "Er is een laadpunt bij het hotel (type 2, 11 kW); meld bij het inchecken dat je wilt laden. Snelladers vind je langs de A26 bij Saint-Omer.",
     mapsUrl: "https://www.google.com/maps/dir/?api=1&destination=Ch%C3%A2teau+Tilques%2C+Rue+du+Ch%C3%A2teau%2C+62500+Tilques",
-    // Zelfde inclusies als in de bevestigingsmail, zonder de overnachtingen, de kamer en het (gratis) parkeren.
-    includes: ["Dagelijks uitgebreid ontbijtbuffet", "3-gangendiner bij Le Vert Mesnil (dag van aankomst)", "Gebruik van het binnenzwembad", "Tennis & jeu de boules", "Late check-out tot 14:00 uur"],
   },
   heroImage: `${baseUrl}/images/mail/vakantie/opaalkust-hero.jpg`,
   thumbs: [
@@ -392,7 +379,6 @@ export const fietsPreviewProps = {
     phone: "+31 74 376 1234",
     bikeStorage: "Afgesloten fietsenstalling bij het hotel, met laadpunt voor e-bikes.",
     mapsUrl: "https://www.google.com/maps/dir/?api=1&destination=Hotel+Wapen+van+Delden%2C+Delden",
-    includes: ["Dagelijks uitgebreid ontbijtbuffet", "2× 3-gangendiner", "Welkomstfietstasje met water, regenponcho en bandenplaksetje", "ViaLuxury welkomstcadeau", "Bagagetransport naar Raalte"],
   },
   heroImage: `${baseUrl}/images/vakanties/cover/fietsvakantie-twente-salland-bos.jpg`,
   thumbs: [
