@@ -12,9 +12,16 @@ export default function HelpBanner({ mode = "light" }: { mode?: EmailMode }) {
       <Section style={{ backgroundColor: dark ? "#3A3A3A" : "#FFF0E4", borderRadius: "8px", padding: "14px 18px" }}>
         <Row>
           <Column style={{ width: "48px", verticalAlign: "middle" }}>
-            <div style={{ width: "36px", height: "36px", borderRadius: "18px", backgroundColor: dark ? "#2D2D2D" : "#FFFFFF", textAlign: "center", lineHeight: "36px" }}>
-              <Img src={`${baseUrl}/images/mail/icon-phone-orange.png`} alt="" width="18" height="18" style={{ display: "inline-block", verticalAlign: "middle" }} />
-            </div>
+            {/* Witte cirkel als tabelcel, zodat het icoon (20px) in elke mailclient in het midden staat. */}
+            <table role="presentation" cellPadding={0} cellSpacing={0} border={0} style={{ width: "36px", height: "36px", borderCollapse: "separate" }}>
+              <tbody>
+                <tr>
+                  <td style={{ width: "36px", height: "36px", padding: 0, borderRadius: "18px", backgroundColor: dark ? "#2D2D2D" : "#FFFFFF", textAlign: "center", verticalAlign: "middle" }}>
+                    <Img src={`${baseUrl}/images/mail/icon-phone-orange.png`} alt="" width="20" height="20" style={{ display: "block", margin: "0 auto" }} />
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </Column>
           <Column style={{ verticalAlign: "middle" }}>
             <Text style={{ fontFamily: font.body, fontSize: "15px", lineHeight: "1.45", color: c.text, margin: 0 }}>

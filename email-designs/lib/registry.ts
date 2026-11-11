@@ -85,7 +85,7 @@ export const emails: EmailEntry[] = [
   {
     slug: "vakantie-pre-travel",
     title: "Pre-travel (14 dagen voor vertrek)",
-    description: "Checklist voor je reis: identiteitsbewijs en boekingsnummer, inchecken bij het eerste hotel (adres, route, parkeren, opladen, wat je nog betaalt), de persoonlijke pagina met praktische informatie en tips, en veelgestelde vragen.",
+    description: "Checklist voor je reis: identiteitsbewijs en boekingsnummer, inchecken bij het eerste hotel (adres, route, parkeren, opladen, wat er inbegrepen is, wat je nog betaalt), de persoonlijke pagina met praktische informatie en tips, je boeking online, en veelgestelde vragen.",
     section: "designs",
     subject: "Over 14 dagen vertrek je naar Noord-Frankrijk",
     preheader: "Je checklist: identiteitsbewijs, boekingsnummer en inchecken bij Château Tilques.",

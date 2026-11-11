@@ -21,8 +21,9 @@ import { baseUrl, font, newsletter, type EmailMode } from "../components/theme";
 
 // Pre-travel: veertien dagen voor vertrek van een multi-hotel vakantie (auto én fiets). Checklist
 // ("Niet vergeten": identiteitsbewijs, boekingsnummer, bij de fietsvakantie je fiets), inchecken bij
-// het eerste hotel (adres, route, parkeren, opladen of fietsenstalling, wat je nog betaalt), de
-// persoonlijke pagina met praktische informatie en tips, "Hulp nodig?" en veelgestelde vragen.
+// het eerste hotel (adres, route, parkeren, opladen of fietsenstalling, wat er inbegrepen is, wat je
+// nog betaalt), de persoonlijke pagina met praktische informatie en tips, "Bekijk je boeking online"
+// (inloggen met een code per mail), "Hulp nodig?" en veelgestelde vragen.
 // Header en footer zoals in de CRM-mails (zwarte balken over de hele breedte).
 
 type Props = {
@@ -54,6 +55,8 @@ type Props = {
     charging?: string;
     /** Fietsenstalling (fietsvakantie). */
     bikeStorage?: string;
+    /** Wat bij het arrangement van dit hotel zit (zonder de overnachting en parkeren), om bij het inchecken na te kijken. */
+    includes: string[];
   };
   /** Geschatte tolkosten heen en terug (autovakantie). */
   tollEstimate?: string;
@@ -62,8 +65,8 @@ type Props = {
   /** Drie thumbs boven "Praktische informatie en tips": twee uitjes en de routekaart (alle 3:2, even hoog). */
   thumbs: { image: string; alt: string }[];
   routesUrl: string;
-  /** Boeking in het account (niet meer gelinkt in de mail; blijft voor de registry-data). */
-  bookingUrl?: string;
+  /** Boeking in het account (blok "Bekijk je boeking online"). */
+  bookingUrl: string;
   mode?: EmailMode;
 };
 
@@ -224,7 +227,7 @@ export default function VakantiePreTravel({
                     <Link href={`tel:${firstHotel.phone.replace(/\s/g, "")}`} style={{ color: c.link, textDecoration: "underline" }}>{firstHotel.phone}</Link>
                   </Text>
                   <Text style={{ ...small, margin: "10px 0 0" }}>
-                    <strong style={{ color: c.text }}>Inchecken</strong> {arrivalDate} vanaf {firstHotel.checkInTime} uur. Neem je identiteitsbewijs mee.
+                    <strong style={{ color: c.text }}>Inchecken</strong> {arrivalDate} vanaf {firstHotel.checkInTime} uur.
                   </Text>
                 </Column>
               </Row>
@@ -233,7 +236,7 @@ export default function VakantiePreTravel({
               {firstHotel.charging && (
                 <>
                   <Text style={subkop}>Opladen van de elektrische auto</Text>
-                  <Text style={{ ...body14, margin: "4px 0 0" }}>{firstHotel.charging} Oplaadkosten zijn niet inbegrepen bij deze vakantie.</Text>
+                  <Text style={{ ...body14, margin: "4px 0 0" }}>{firstHotel.charging}</Text>
                 </>
               )}
               {firstHotel.bikeStorage && (
@@ -242,14 +245,18 @@ export default function VakantiePreTravel({
                   <Text style={{ ...body14, margin: "4px 0 0" }}>{firstHotel.bikeStorage}</Text>
                 </>
               )}
-              {/* Tekst uit "faq mhr.xlsx" (Pre-travel › Wat moet ik nog betalen?) */}
+              {/* Wat bij het arrangement van dit hotel zit (zonder overnachting en parkeren): zodat je bij het inchecken
+                  vanuit de mail nog even kunt nakijken wat je allemaal krijgt. */}
+              <Text style={subkop}>Wat is er inbegrepen?</Text>
+              <Text style={{ ...body14, margin: "4px 0 0" }}>Bij {firstHotel.name} zit dit bij je arrangement:</Text>
+              <ul style={{ margin: "4px 0 0", paddingLeft: "18px" }}>
+                {firstHotel.includes.map((item) => (
+                  <li key={item} style={{ ...body14, margin: "0 0 2px" }}>{item}</li>
+                ))}
+              </ul>
               <Text style={subkop}>Wat moet ik nog betalen?</Text>
               <Text style={{ ...body14, margin: "4px 0 0" }}>
-                In principe betaal je bij de hotels niet meer voor hetgeen in het arrangement zit. Verblijf je ergens meerdere
-                dagen, dan kan het dus zijn dat niet alle diners of de lunch in het arrangement zitten. In de meeste gevallen is
-                het arrangement eveneens zonder drankjes en dien je bij het uitchecken deze dus te voldoen. Daarnaast zal je in
-                de meeste gevallen de gemeentelijke toeristenbelasting moeten voldoen en in uitzonderlijke gevallen ook een
-                lokale toeslag.
+                Je betaalt bij aankomst toeristenbelasting en eventueel een gemeentelijke of lokale toeslag.
               </Text>
               {tollEstimate && (
                 <Text style={{ ...body14, margin: "6px 0 0" }}>
@@ -294,6 +301,21 @@ export default function VakantiePreTravel({
             </Section>
           </Section>
 
+          {/* Bekijk je boeking online: simpel beige blok met alleen een link naar het account (inloggen met een
+              code per mail, geen wachtwoord). Belooft niets over wijzigen of beheren. */}
+          <Section className="m-pad" style={{ padding: "24px 32px 0" }}>
+            <Section style={{ backgroundColor: beige, borderRadius: "8px", padding: "20px" }}>
+              <Text className="m-kop" style={kop}>Bekijk je boeking online</Text>
+              <Text style={body14}>
+                Log in bij je account met het e-mailadres waarmee je hebt geboekt. Je ontvangt dan een inlogcode per mail; een
+                wachtwoord heb je niet nodig.
+              </Text>
+              <Text style={{ margin: "12px 0 0" }}>
+                <Link href={bookingUrl} style={ctaLink}>Bekijk je boeking online &gt;</Link>
+              </Text>
+            </Section>
+          </Section>
+
           <HelpBanner mode={mode} />
 
           {/* Veelgestelde vragen */}
@@ -333,6 +355,8 @@ VakantiePreTravel.PreviewProps = {
     phone: "+33 3 21 12 34 51",
     charging: "Er is een laadpunt bij het hotel (type 2, 11 kW); meld bij het inchecken dat je wilt laden. Snelladers vind je langs de A26 bij Saint-Omer.",
     mapsUrl: "https://www.google.com/maps/dir/?api=1&destination=Ch%C3%A2teau+Tilques%2C+Rue+du+Ch%C3%A2teau%2C+62500+Tilques",
+    // Zelfde inclusies als in de bevestigingsmail, zonder de overnachtingen, de kamer en het (gratis) parkeren.
+    includes: ["Dagelijks uitgebreid ontbijtbuffet", "3-gangendiner bij Le Vert Mesnil (dag van aankomst)", "Gebruik van het binnenzwembad", "Tennis & jeu de boules", "Late check-out tot 14:00 uur"],
   },
   tollEstimate: "€24",
   heroImage: `${baseUrl}/images/mail/vakantie/opaalkust-hero.jpg`,
@@ -364,6 +388,7 @@ export const fietsPreviewProps = {
     phone: "+31 74 376 1234",
     bikeStorage: "Afgesloten fietsenstalling bij het hotel, met laadpunt voor e-bikes.",
     mapsUrl: "https://www.google.com/maps/dir/?api=1&destination=Hotel+Wapen+van+Delden%2C+Delden",
+    includes: ["Dagelijks uitgebreid ontbijtbuffet", "2× 3-gangendiner", "Welkomstfietstasje met water, regenponcho en bandenplaksetje", "ViaLuxury welkomstcadeau", "Bagagetransport naar Raalte"],
   },
   tollEstimate: undefined,
   heroImage: `${baseUrl}/images/vakanties/cover/fietsvakantie-twente-salland-bos.jpg`,
