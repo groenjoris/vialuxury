@@ -171,7 +171,7 @@ boven de mail) in plaats van de beschrijving.
 ## CRM (concept, sinds 2026-11-02)
 
 Artist impression van geautomatiseerde e-mails, alleen desktop + light mode. Mails (in de volgorde
-van het startscherm en de linkjes links in de preview): `crm-jaar-geleden`, `crm-winkelmandje`
+van het paneel links in de preview): `crm-jaar-geleden`, `crm-winkelmandje`
 (2 uur na verlaten), `crm-winkelmandje-2-dagen`, `crm-thema-stedentrips` (A6), `crm-zoekopdracht`,
 `crm-verlanglijst`, `crm-review`, `crm-terugkomactie` (€20), `crm-terugkomactie-herinnering` (zelfde
 component met `daysLeft`) en `crm-nagenieten` (staat bewust als laatste). Bronnen in
@@ -179,8 +179,10 @@ component met `daysLeft`) en `crm-nagenieten` (staat bewust als laatste). Bronne
 `FeaturedDeal`, `DealList`, `CodeBlock`, `ThemePicker`, `IconLine`) plus `CrmHeader`/`CrmFooter`,
 voorbeelddeals in `email-designs/lib/crmDeals.ts`, registry-sectie `"crm"`; de export schrijft alleen
 light HTML en de lijst `app/data/crm-emails.json`. Preview `/crm/<slug>` (één frame zoals in de inbox:
-afzender, onderwerp en preheader boven de mail, links alle mails als tekstlinkjes); bevestigingspagina's
-`/crm/volgende-vakantie?keuze=…` (nagenieten) en `/crm/thema?keuze=…` (themakiezer). Startscherm: vak "CRM".
+afzender, onderwerp en preheader boven de mail; links tegen de rand een wit paneel met alle mails: naam,
+daaronder het verzendmoment, actieve mail op beige, pijltjes ↑ ↓ bladeren); bevestigingspagina's
+`/crm/volgende-vakantie?keuze=…` (nagenieten) en `/crm/thema?keuze=…` (themakiezer). Startscherm: vak "CRM"
+met één knop "Voorbeeldmails" (naar de eerste mail).
 
 Regels voor elke CRM-mail:
 - Drie lettergroottes: titel 32, subtitel en hotelnaam 20, alle overige tekst 16 px (footer uitgezonderd).

@@ -58,23 +58,14 @@
 
 
       <!-- CRM — concept voor de geautomatiseerde e-mails (artist impression, alleen
-           desktop en light mode). Preview per mail op /crm/<slug>. -->
+           desktop en light mode). Eén knop naar de eerste mail; de preview (/crm/<slug>) heeft links een paneel met alle mails. -->
       <section class="start-section">
         <h2 class="start-section__title">CRM</h2>
         <p class="start-section__lead">
           Concept voor geautomatiseerde e-mails (desktop, light mode)
         </p>
         <div class="start-section__buttons">
-          <NuxtLink class="start-btn" to="/crm/crm-jaar-geleden">Precies een jaar geleden</NuxtLink>
-          <NuxtLink class="start-btn" to="/crm/crm-winkelmandje">Winkelmandje (2 uur na verlaten)</NuxtLink>
-          <NuxtLink class="start-btn" to="/crm/crm-winkelmandje-2-dagen">Winkelmandje (2 dagen na verlaten)</NuxtLink>
-          <NuxtLink class="start-btn" to="/crm/crm-thema-stedentrips">Themamail stedentrips (A6)</NuxtLink>
-          <NuxtLink class="start-btn" to="/crm/crm-zoekopdracht">Zoekopdracht (1 minuut na verlaten)</NuxtLink>
-          <NuxtLink class="start-btn" to="/crm/crm-verlanglijst">Verlanglijst €10 (3 dagen na eerste mail)</NuxtLink>
-          <NuxtLink class="start-btn" to="/crm/crm-review">Reviewmail (1 dag na thuiskomst)</NuxtLink>
-          <NuxtLink class="start-btn" to="/crm/crm-terugkomactie">Terugkomactie €20 (14 dagen na vertrek)</NuxtLink>
-          <NuxtLink class="start-btn" to="/crm/crm-terugkomactie-herinnering">Terugkomactie herinnering (30 dagen na vertrek)</NuxtLink>
-          <NuxtLink class="start-btn" to="/crm/crm-nagenieten">Nagenietmail (3 dagen na vertrek)</NuxtLink>
+          <NuxtLink class="start-btn" to="/crm/crm-jaar-geleden">Voorbeeldmails</NuxtLink>
         </div>
       </section>
 
