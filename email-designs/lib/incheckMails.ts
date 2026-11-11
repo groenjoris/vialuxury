@@ -19,7 +19,6 @@ type TripData = {
   /** Etappe naar hotel 2 en 3. */
   travel: ({ km: number; duration: string } | undefined)[];
   homeTravel: string;
-  tollEstimate?: string;
   hotels: IncheckHotel[];
   thumbs: { image: string; alt: string }[];
 };
@@ -35,7 +34,6 @@ const TRIPS: TripData[] = [
     arrivalDates: ["dinsdag 18 mei", "donderdag 20 mei", "zaterdag 22 mei"],
     travel: [undefined, { km: 53, duration: "ca. 45 minuten rijden" }, { km: 90, duration: "ca. 1 uur en 5 minuten rijden" }],
     homeTravel: "ca. 3 uur 45 min vanuit Utrecht",
-    tollEstimate: "€24",
     hotels: [
       {
         name: "Château Tilques", city: "Tilques", address: "Rue du Château, 62500 Tilques, Frankrijk",
@@ -140,7 +138,6 @@ export const incheckMails: IncheckMailDef[] = TRIPS.flatMap((trip) =>
       arrivalDate: trip.arrivalDates[i]!,
       travel: trip.travel[i],
       homeTravel: n === 1 ? trip.homeTravel : undefined,
-      tollEstimate: n === 1 ? trip.tollEstimate : undefined,
       thumbs: trip.thumbs,
       routesUrl: `${PROTO}/multi-hotel-trip/checkout/routes`,
       bookingUrl: `${PROTO}/multi-hotel-trip/account/boekingen/${trip.slug}`,
@@ -149,7 +146,7 @@ export const incheckMails: IncheckMailDef[] = TRIPS.flatMap((trip) =>
       slug,
       // Zelfde titel voor auto en fiets (de reis staat in de beschrijving), zodat de schakelaar op de preview niet verspringt.
       title: `Incheck hotel ${n} (dag voor aankomst)`,
-      description: `De dag vóór hotel ${n} van de ${trip.label}: ${what}. Kort: "Morgen in het kort", het hotelblok (adres, route, telefoon, inchecken, ${trip.isBike ? "stalling, bagagetransfer" : "parkeren, opladen"}, wat er inbegrepen is), praktische informatie en tips, Hulp nodig? en veelgestelde vragen.`,
+      description: `De dag vóór hotel ${n} van de ${trip.label}: ${what}. Kort: "Morgen in het kort", het hotelblok (adres, route, telefoon, inchecken, ${trip.isBike ? "stalling, bagagetransfer" : "parkeren, opladen"}, wat er inbegrepen is), praktische informatie en tips, je boeking online, Hulp nodig? en veelgestelde vragen (met de link Boeking annuleren).`,
       subject: incheckSubject(props),
       preheader: incheckPreheader(props),
       props,

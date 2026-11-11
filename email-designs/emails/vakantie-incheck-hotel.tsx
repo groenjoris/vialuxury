@@ -25,8 +25,9 @@ import { baseUrl, font, newsletter, type EmailMode } from "../components/theme";
 // terugblik op het vorige hotel en bij de fietsvakantie de bagage vóór 9:00 uur bij de
 // receptie), "Morgen in het kort", het blok met het komende hotel (adres, route, telefoon,
 // inchecken, parkeren/stalling, opladen/bagagetransfer, wat er inbegrepen is), de persoonlijke pagina met praktische
-// informatie en tips, "Hulp nodig?" en veelgestelde vragen. Geen hoofdfoto, geen "boeking
-// beheren"-blok. Data per reis en hotel staat in lib/incheckMails.ts.
+// informatie en tips, "Bekijk je boeking online", "Hulp nodig?" en veelgestelde vragen (met bij "Kan ik nog
+// wijzigen?" de link naar het annuleringsformulier). Geen hoofdfoto. Data per reis en hotel staat in
+// lib/incheckMails.ts.
 
 export type IncheckHotel = {
   name: string;
@@ -66,8 +67,6 @@ export type IncheckProps = {
   travel?: { km: number; duration: string };
   /** Hotel 1: reistijd vanuit huis, bv. "ca. 3 uur 45 min vanuit Utrecht". */
   homeTravel?: string;
-  /** Hotel 1, auto: tolkosten heen en terug. */
-  tollEstimate?: string;
   thumbs: { image: string; alt: string }[];
   routesUrl: string;
   /** Boeking in het account; in de MVP het boekingenoverzicht. */
@@ -78,6 +77,8 @@ export type IncheckProps = {
 };
 
 const img = (file: string) => `${baseUrl}/images/mail/${file}`;
+/** Annuleringsformulier (placeholder-link, zelfde als in de bevestigings- en pre-travelmail en het account; het formulier volgt nog). */
+const CANCEL_FORM_URL = "https://vialuxury.nl/annuleren";
 
 const responsiveCss = `
 @media only screen and (max-width: 480px) {
@@ -119,7 +120,6 @@ export default function VakantieIncheckHotel({
   arrivalDate,
   travel,
   homeTravel,
-  tollEstimate,
   thumbs,
   routesUrl,
   bookingUrl,
@@ -158,16 +158,22 @@ export default function VakantieIncheckHotel({
         { title: `Inchecken bij ${hotel.name} vanaf ${hotel.checkInTime} uur`, text: "Neem je identiteitsbewijs mee." },
       ];
 
-  const faq = first
+  /* Veelgestelde vragen. "Wat moet ik nog betalen?" staat al in het hotelblok (hotel 1), dus niet nog eens
+     als vraag. "Kan ik nog wijzigen?" is de dag vóór aankomst altijd nee (annuleren kan, maar zonder
+     bedrag retour), met de link naar het annuleringsformulier. */
+  type Faq = { q: string; a: string; link?: { label: string; href: string } };
+  const wijzigen: Faq = {
+    q: "Kan ik nog wijzigen?",
+    a: "Nee, wijzigen is niet meer mogelijk. Annuleren kan nog wel, maar je ontvangt dan geen bedrag retour.",
+    link: { label: "Boeking annuleren", href: CANCEL_FORM_URL },
+  };
+  const faq: Faq[] = first
     ? [
         {
           q: "Hoe laat kan ik inchecken en uitchecken?",
           a: `Bij ${hotel.name} kun je inchecken vanaf ${hotel.checkInTime} uur en uitchecken tot ${hotel.checkOutTime} uur. Bij elk hotel staat de tijd in je boeking.`,
         },
-        {
-          q: "Wat betaal ik nog in het hotel?",
-          a: "De lokale toeristenbelasting betaal je nog wel; die rekent het hotel bij het uitchecken af. De rest van je vakantie is al betaald.",
-        },
+        wijzigen,
       ]
     : [
         {
@@ -180,6 +186,7 @@ export default function VakantieIncheckHotel({
               a: `Zet morgen vóór 9:00 uur per persoon één koffer of tas bij de receptie van ${previousHotel?.name ?? "je hotel"}. Hij wordt opgehaald en staat 's middags klaar in ${hotel.name}. Jij fietst met alleen een dagtas.`,
             }]
           : []),
+        wijzigen,
       ];
 
   const preview = incheckPreheader({ hotelIndex, hotel, previousHotel });
@@ -313,11 +320,6 @@ export default function VakantieIncheckHotel({
                     Niets voor de reis zelf: die is volledig betaald. Ter plekke betaal je nog wel de lokale toeristenbelasting,
                     die rekent elk hotel bij het uitchecken af.
                   </Text>
-                  {tollEstimate && (
-                    <Text style={{ ...body14, margin: "6px 0 0" }}>
-                      Houd onderweg rekening met tolwegen (ongeveer {tollEstimate} voor de heen- en terugreis).
-                    </Text>
-                  )}
                 </>
               )}
             </Section>
@@ -361,6 +363,21 @@ export default function VakantieIncheckHotel({
           </Section>
           )}
 
+          {/* Bekijk je boeking online: simpel beige blok met alleen een link naar het account (zelfde blok als in de
+              pre-travelmail; in de MVP het boekingenoverzicht). */}
+          <Section className="m-pad" style={{ padding: "24px 32px 0" }}>
+            <Section style={{ backgroundColor: beige, borderRadius: "8px", padding: "20px" }}>
+              <Text className="m-kop" style={kop}>Bekijk je boeking online</Text>
+              <Text style={body14}>
+                Log in bij je account met het e-mailadres waarmee je hebt geboekt. Je ontvangt dan een inlogcode per mail; een
+                wachtwoord heb je niet nodig.
+              </Text>
+              <Text style={{ margin: "12px 0 0" }}>
+                <Link href={bookingUrl} style={ctaLink}>Bekijk je boeking online &gt;</Link>
+              </Text>
+            </Section>
+          </Section>
+
           <HelpBanner mode={mode} />
 
           {/* Veelgestelde vragen */}
@@ -370,12 +387,13 @@ export default function VakantieIncheckHotel({
               <Section key={f.q} style={{ borderTop: `1px solid ${line}`, marginTop: "12px", paddingTop: "12px" }}>
                 <Text style={{ ...body14, margin: 0, fontWeight: 700, fontSize: "15px" }}>{f.q}</Text>
                 <Text style={{ ...body14, margin: "4px 0 0", color: c.muted }}>{f.a}</Text>
+                {f.link && (
+                  <Text style={{ margin: "8px 0 0" }}>
+                    <Link href={f.link.href} style={ctaLink}>{f.link.label} &gt;</Link>
+                  </Text>
+                )}
               </Section>
             ))}
-            <Text style={{ ...body14, margin: "16px 0 0" }}>
-              Je volledige boeking bekijken?{" "}
-              <Link href={bookingUrl} style={ctaLink}>Bekijk je boeking &gt;</Link>
-            </Text>
           </Section>
 
         </Container>
