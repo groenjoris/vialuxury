@@ -93,7 +93,7 @@ useHead({ title: () => `${checkout.value.name} — Mijn ViaLuxury` })
             </div>
           </div>
 
-          <!-- Inbegrepen: dezelfde groene vinkjes als op de PDP (TripHotelDetails) -->
+          <!-- Inbegrepen: zwarte vinkjes (zelfde vorm als op de PDP, niet groen: te druk) -->
           <p class="ad__label">Inbegrepen</p>
           <ul class="ad__includes">
             <li>
@@ -110,7 +110,12 @@ useHead({ title: () => `${checkout.value.name} — Mijn ViaLuxury` })
           <ul class="ad__contact">
             <li>
               <svg class="ad__contact-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12z" /><circle cx="12" cy="10" r="2.5" /></svg>
-              <div><span class="ad__label">Adres</span>{{ h.address }} · <a class="ad__link ad__link--plain" :href="h.mapsHref" target="_blank" rel="noopener">Routebeschrijving</a></div>
+              <div>
+                <span class="ad__label">Adres</span>
+                <span>{{ h.address }}</span>
+                <!-- Altijd op een eigen regel onder het adres; zelfde tekst als in de mails. -->
+                <a class="ad__link ad__link--plain ad__route" :href="h.mapsHref" target="_blank" rel="noopener">Routebeschrijving in Google Maps</a>
+              </div>
             </li>
             <li>
               <svg class="ad__contact-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24 11.36 11.36 0 003.58.57 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1 11.36 11.36 0 00.57 3.58 1 1 0 01-.24 1.01l-2.21 2.21z" /></svg>
@@ -183,7 +188,7 @@ a.ad__late-opt:hover { color: var(--color-text-primary); }
 .ad__hotel-dates { margin: 2px 0 16px 34px; font-size: 15px; font-weight: 600; }
 .ad__includes { list-style: none; margin: 0 0 18px; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 24px; font-size: 15px; line-height: 1.4; }
 .ad__includes li { display: flex; align-items: flex-start; gap: 10px; }
-.ad__check { color: var(--color-discount, #27C88D); flex-shrink: 0; display: inline-flex; font-size: 18px; margin-top: 2px; }
+.ad__check { color: var(--color-text-primary); flex-shrink: 0; display: inline-flex; font-size: 18px; margin-top: 2px; }
 .ad__checks { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; max-width: 420px; margin-bottom: 18px; }
 .ad__check-tile { display: flex; flex-direction: column; gap: 2px; padding: 10px 12px; border-radius: 8px; background: #f7f7f7; }
 .ad__check-tile .ad__label { margin-bottom: 2px; }
@@ -194,6 +199,7 @@ a.ad__late-opt:hover { color: var(--color-text-primary); }
 .ad__contact li { display: flex; align-items: flex-start; gap: 10px; }
 .ad__contact .ad__label { margin-bottom: 3px; }
 .ad__contact-icon { flex-shrink: 0; width: 18px; height: 18px; margin-top: 1px; }
+.ad__route { display: block; margin-top: 4px; }
 .ad__hotel-ref { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--color-border); }
 
 /* Prijs */

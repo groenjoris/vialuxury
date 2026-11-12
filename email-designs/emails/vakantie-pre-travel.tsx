@@ -126,8 +126,8 @@ export default function VakantiePreTravel({
   const body14 = { fontFamily: font.body, fontSize: "14px", lineHeight: "1.45", color: c.text, margin: "8px 0 0" };
   const small = { fontFamily: font.body, fontSize: "14px", lineHeight: "1.4", color: c.muted, margin: 0 };
   const ctaLink = { fontFamily: font.body, fontSize: "14px", fontWeight: 700, color: c.link, textDecoration: "underline" };
-  /** Links in het hotelblok (route, telefoon): in de tekstkleur, onderstreept — oranje wordt daar te druk. */
-  const plainLink = { color: c.text, textDecoration: "underline" };
+  /** Links in het hotelblok (route, telefoon): oranje en onderstreept, zoals alle tekstlinks (huisstijl). */
+  const plainLink = { color: c.link, textDecoration: "underline" };
   const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
   const check = img(dark ? "check-dark.png" : "check.png");
 
@@ -246,7 +246,7 @@ export default function VakantiePreTravel({
                   <Text style={{ ...small, margin: "2px 0 0" }}>{firstHotel.address}</Text>
                   {/* Route vlak onder het adres (hoort erbij); de telefoon met wat lucht erboven. */}
                   <Text style={{ ...small, margin: "2px 0 0" }}>
-                    <Link href={firstHotel.mapsUrl} style={plainLink}>Route in Google Maps</Link>
+                    <Link href={firstHotel.mapsUrl} style={plainLink}>Routebeschrijving in Google Maps</Link>
                   </Text>
                   <Text style={{ ...small, margin: "10px 0 0" }}>
                     <Link href={`tel:${firstHotel.phone.replace(/\s/g, "")}`} style={plainLink}>{firstHotel.phone}</Link>
