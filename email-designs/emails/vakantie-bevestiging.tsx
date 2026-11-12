@@ -22,7 +22,7 @@ import { baseUrl, font, newsletter, type EmailMode } from "../components/theme";
 // de linkerkolom van de bevestigingspagina in het prototype: kop, aanhef, boekings-
 // nummer, de kassabon (reis, per hotel foto/naam/sterren/adres, lijst met nachten en
 // inclusies, check-in/check-out, flexibel annuleren, prijs), dan Tips voor je reis,
-// Boeking terugvinden, de veelgestelde vragen (uitgeklapt) en onderaan het blok "Annuleren of wijzigen"
+// Bekijk je boeking online, de veelgestelde vragen (uitgeklapt) en onderaan het blok "Annuleren of wijzigen"
 // (tekst per tarief, oranje tekstlink "Mijn boeking annuleren" naar het annuleringsformulier, daaronder de afsluiting).
 
 type Hotel = {
@@ -379,18 +379,18 @@ export default function VakantieBevestiging({
             </Text>
           </Section>
 
-          {/* Boeking terugvinden */}
+          {/* Bekijk je boeking online: zelfde beige blok als in de pre-travel- en incheckmails, hier met het e-mailadres. */}
           <Section className="m-pad" style={{ padding: "32px 32px 0" }}>
-            <Text className="m-kop" style={kop}>Boeking terugvinden</Text>
-            <Text style={body14}>
-              Je boeking staat in je ViaLuxury-account op <strong>{recipientEmail}</strong>. Inloggen doe je zonder wachtwoord:
-              je krijgt een inloglink per mail.
-            </Text>
-            <Text style={{ margin: "8px 0 0" }}>
-              <Link href={bookingUrl} style={ctaLink}>
-                Bekijk je boeking &gt;
-              </Link>
-            </Text>
+            <Section style={{ backgroundColor: beige, borderRadius: "8px", padding: "20px" }}>
+              <Text className="m-kop" style={kop}>Bekijk je boeking online</Text>
+              <Text style={body14}>
+                Je boeking staat in je ViaLuxury-account op <strong>{recipientEmail}</strong>. Log in met dat e-mailadres: je
+                ontvangt dan een inlogcode per mail; een wachtwoord heb je niet nodig.
+              </Text>
+              <Text style={{ margin: "12px 0 0" }}>
+                <Link href={bookingUrl} style={ctaLink}>Bekijk je boeking online &gt;</Link>
+              </Text>
+            </Section>
           </Section>
 
           {/* Veelgestelde vragen (uitgeklapt) */}
