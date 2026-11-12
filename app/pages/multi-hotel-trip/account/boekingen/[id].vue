@@ -137,21 +137,24 @@ useHead({ title: () => `${checkout.value.name} — Mijn ViaLuxury` })
 </template>
 
 <style scoped>
-.ad__back { display: inline-block; margin-bottom: 16px; color: var(--color-text-secondary); text-decoration: none; font-size: 14px; }
+/* Typografie: vijf maten — 32 (titel), 22 (koppen en hotelnamen, Recoleta), 15 (alle lopende tekst, links, knop,
+   datums, bedragen, boekingsnummers), 13 (bijschriften: inchecktijd, noot onder de prijs, statuschip) en 12 (uppercase
+   labels, nummerbol). De prototype-schakelaar Op tijd | Te laat (9px) hoort niet bij de UX. */
+.ad__back { display: inline-block; margin-bottom: 16px; color: var(--color-text-secondary); text-decoration: none; font-size: 15px; }
 .ad__back:hover { color: var(--color-primary); }
 .ad__head { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; margin-bottom: 24px; }
 .ad__eyebrow { margin: 0 0 6px; font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-text-secondary); }
 .ad__title { margin: 0 0 8px; font-family: var(--font-heading); font-size: 32px; font-weight: 700; line-height: 1.15; }
 .ad__meta { margin: 0; font-size: 15px; color: var(--color-text-secondary); }
 .ad__ref { margin: 12px 0 0; }
-.ad__status { flex-shrink: 0; padding: 6px 12px; border-radius: 999px; background: #e4f5ec; color: #1f7a4d; font-size: 14px; font-weight: 600; }
-.ad__label { display: block; margin: 0 0 8px; font-size: 11px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: var(--color-text-secondary); }
+.ad__status { flex-shrink: 0; padding: 6px 12px; border-radius: 999px; background: #e4f5ec; color: #1f7a4d; font-size: 13px; font-weight: 600; }
+.ad__label { display: block; margin: 0 0 8px; font-size: 12px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: var(--color-text-secondary); }
 
 /* Twee blokken bovenaan: tekst links, links rechts */
 .ad__top { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; margin-bottom: 24px; }
 .ad__top-col > .ad__card { height: 100%; }
 .ad__card { padding: 18px 20px 20px; border: 1px solid var(--color-border); border-radius: var(--radius-md); background: #fff; }
-.ad__h2 { margin: 0 0 6px; font-family: var(--font-heading); font-size: 21px; font-weight: 700; line-height: 1.25; }
+.ad__h2 { margin: 0 0 6px; font-family: var(--font-heading); font-size: 22px; font-weight: 700; line-height: 1.25; }
 /* Prototype-schakelaar "Op tijd | Te laat": buiten het blok, in de ruimte erboven, rechts uitgelijnd met de kaart (zelfde typografie als het schakelpaneel) */
 .ad__top-col { position: relative; }
 .ad__late { position: absolute; right: 0; top: -26px; display: inline-flex; border: 1px solid rgba(20, 20, 20, 0.3); border-radius: 3px; overflow: hidden; background: #fff; }
@@ -166,7 +169,7 @@ a.ad__late-opt:hover { color: var(--color-text-primary); }
 .ad__link--plain:hover { color: var(--color-text-secondary); }
 /* Link(s) of knop onder de tekst */
 .ad__actions { margin: 12px 0 0; display: flex; flex-wrap: wrap; gap: 8px 20px; font-size: 15px; }
-.ad__btn { display: inline-flex; align-items: center; height: 40px; padding: 0 18px; border-radius: var(--radius-md); background: var(--color-text-primary); color: #fff; font-size: 14px; font-weight: 700; text-decoration: none; transition: background var(--transition-fast); }
+.ad__btn { display: inline-flex; align-items: center; height: 40px; padding: 0 18px; border-radius: var(--radius-md); background: var(--color-text-primary); color: #fff; font-size: 15px; font-weight: 700; text-decoration: none; transition: background var(--transition-fast); }
 .ad__btn:hover { background: #333; }
 
 /* Hotelblok: foto links, informatie rechts, over de hele breedte */
@@ -183,10 +186,10 @@ a.ad__late-opt:hover { color: var(--color-text-primary); }
 .ad__checks { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; max-width: 420px; margin-bottom: 18px; }
 .ad__check-tile { display: flex; flex-direction: column; gap: 2px; padding: 10px 12px; border-radius: 8px; background: #f7f7f7; }
 .ad__check-tile .ad__label { margin-bottom: 2px; }
-.ad__check-date { font-size: 16px; font-weight: 700; line-height: 1.25; }
+.ad__check-date { font-size: 15px; font-weight: 700; line-height: 1.25; }
 .ad__check-time { font-size: 13px; color: var(--color-text-secondary); }
 /* Adres en telefoon naast elkaar, met icoon */
-.ad__contact { list-style: none; margin: 0; padding: 16px 0 0; border-top: 1px solid var(--color-border); display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 24px; font-size: 14px; line-height: 1.4; }
+.ad__contact { list-style: none; margin: 0; padding: 16px 0 0; border-top: 1px solid var(--color-border); display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 24px; font-size: 15px; line-height: 1.4; }
 .ad__contact li { display: flex; align-items: flex-start; gap: 10px; }
 .ad__contact .ad__label { margin-bottom: 3px; }
 .ad__contact-icon { flex-shrink: 0; width: 18px; height: 18px; margin-top: 1px; }
@@ -195,7 +198,7 @@ a.ad__late-opt:hover { color: var(--color-text-primary); }
 /* Prijs */
 .ad__price { padding: 18px 20px; border: 1px solid var(--color-border); border-radius: var(--radius-md); background: #f7f7f7; font-size: 15px; }
 .ad__price-row { display: flex; justify-content: space-between; gap: 12px; padding: 3px 0; }
-.ad__price-row--total { margin-top: 6px; padding-top: 10px; border-top: 1px solid var(--color-border); font-size: 17px; font-weight: 700; }
+.ad__price-row--total { margin-top: 6px; padding-top: 10px; border-top: 1px solid var(--color-border); font-size: 15px; font-weight: 700; }
 .ad__price-row--due { padding-top: 6px; font-weight: 700; }
 .ad__price-note { margin: 6px 0 0; text-align: right; font-size: 13px; color: var(--color-text-secondary); }
 
