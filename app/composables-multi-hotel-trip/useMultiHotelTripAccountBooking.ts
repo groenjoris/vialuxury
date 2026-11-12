@@ -9,7 +9,7 @@ import { pricing } from '~/data/mht-checkout/deal'
 import { CHECKOUT_BOOKING_FEE } from '~/data/mht-checkout/pricing'
 import { useMultiHotelTripCheckoutTrip } from '~/composables-multi-hotel-trip/useMultiHotelTripCheckoutTrip'
 import { hotelAddress, hotelPhone, hotelMapsHref } from '~/utils-multi-hotel-trip/hotelContact'
-import { bookingRefFor } from '~/utils-multi-hotel-trip/bookingRef'
+import { bookingRefFor, hotelBookingRefFor } from '~/utils-multi-hotel-trip/bookingRef'
 import { isDemoRate, type DemoRate } from '~/composables-multi-hotel-trip/useMultiHotelTripDemoBooking'
 export { bookingRefFor }
 
@@ -97,6 +97,8 @@ export function useMultiHotelTripAccountBooking(slugOverride?: string) {
         checkOutTime: lateOut ? `${lateOut[1]}:${lateOut[2]}` : '11:00',
         includes,
         address: hotelAddress(h.name, h.city, stop?.region),
+        /** Eigen boekingsnummer van dit hotel (10 cijfers, demo), zelfde als op de bevestiging en in de mails. */
+        bookingRef: hotelBookingRefFor(h.name),
         phone: hotelPhone(i),
         mapsHref: hotelMapsHref(h.name, h.city),
       }
