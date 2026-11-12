@@ -253,7 +253,11 @@ useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
                     <p class="cf__stay-name">{{ h.name }} <span v-if="h.starRating" class="cf__stars" aria-hidden="true"><span v-for="n in h.starRating" :key="n"><svg class="icon-star" viewBox="0 0 18 18" width="1em" height="1em" fill="currentColor" style="vertical-align:-0.125em" aria-hidden="true"><path d="M16.963,6.786c-.088-.271-.323-.469-.605-.51l-4.62-.671L9.672,1.418c-.252-.512-1.093-.512-1.345,0l-2.066,4.186-4.62,.671c-.282,.041-.517,.239-.605,.51-.088,.271-.015,.57,.19,.769l3.343,3.258-.79,4.601c-.048,.282,.067,.566,.298,.734,.231,.167,.538,.189,.79,.057l4.132-2.173,4.132,2.173c.11,.058,.229,.086,.349,.086,.155,0,.31-.048,.441-.143,.231-.168,.347-.452,.298-.734l-.79-4.601,3.343-3.258c.205-.199,.278-.498,.19-.769Z"/></svg></span></span></p>
                     <p class="t-caption c-mgrey cf__stay-meta">{{ h.city }} · {{ h.nights }} {{ h.nights === 1 ? 'nacht' : 'nachten' }} · {{ h.from }} t/m {{ h.to }}</p>
                     <ul class="cf__stay-items">
-                      <li v-for="item in h.items" :key="item" class="t-caption c-grey">{{ item }}</li>
+                      <li v-for="item in h.items" :key="item" class="t-caption c-grey">
+                        <!-- Vinkje in de tekstkleur (niet groen: te druk), zelfde vinkje als in het account en op de PDP. -->
+                        <svg class="cf__stay-check" viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10" aria-hidden="true"><path d="M3 13L8 19L21 5" /></svg>
+                        <span>{{ item }}</span>
+                      </li>
                     </ul>
                     <!-- Hotelboekingsnummer: klein balkje zoals het ViaLuxury Ordernummer, links gelijk met de inclusies, zo breed als de inhoud. -->
                     <MvpTripBookingRef class="cf__stay-ref" small label="Hotelboekingsnummer" :value="h.bookingRef" />
@@ -447,6 +451,8 @@ useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
 /* Kamer · ontbijt · diner: doorlopend, met een bulletje ertussen (geen vinkjes). */
 /* Wat je krijgt: kamer + alle inclusies onder elkaar (zoals in de bevestigingsmail). */
 .cf__stay-items { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+.cf__stay-items li { display: flex; align-items: flex-start; gap: 6px; }
+.cf__stay-check { flex-shrink: 0; font-size: 14px; margin-top: 1px; }
 .cf__stay-ref { margin-top: 8px; }
 
 /* Flexibel annuleren / bagagetransfer: het icoon staat in de kolom van de nummerbolletjes (zelfde raster als de hotels). */

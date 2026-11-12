@@ -117,6 +117,7 @@ export default function VakantieBevestiging({
 }: Props) {
   const c = newsletter[mode];
   const dark = mode === "dark";
+  const check = img(dark ? "check-dark.png" : "check.png"); // vinkje in de tekstkleur bij de inclusies
   const frameBg = dark ? "#262626" : "#F7F7F7"; // grijs kader om de kassabon
   const beige = dark ? "#3A3A3A" : "#F4F1EC"; // ViaLuxury Ordernummer, tintvlakken
   const line = c.border;
@@ -146,7 +147,7 @@ export default function VakantieBevestiging({
   };
   const small = {
     fontFamily: font.body,
-    fontSize: "13px",
+    fontSize: "14px",
     lineHeight: "1.4",
     color: c.muted,
     margin: 0,
@@ -175,7 +176,7 @@ export default function VakantieBevestiging({
     backgroundColor: c.badgeBg,
     color: "#FFFFFF",
     fontFamily: font.body,
-    fontSize: "13px",
+    fontSize: "14px",
     fontWeight: 700,
     textAlign: "center" as const,
     lineHeight: "26px",
@@ -285,7 +286,7 @@ export default function VakantieBevestiging({
                 <Text style={eyebrow}>
                   {tripType} met {hotels.length} hotels
                 </Text>
-                <Text className="m-kop" style={{ ...kop, fontSize: "22px", margin: "4px 0 0" }}>{tripName}</Text>
+                <Text className="m-kop" style={{ ...kop, margin: "4px 0 0" }}>{tripName}</Text>
                 <Text style={{ ...small, color: c.text, margin: "6px 0 0" }}>
                   {dateRange} · {nights} nachten · {persons} personen · {roomsPerHotel} {roomsPerHotel === 1 ? "kamer" : "kamers"} per hotel
                 </Text>
@@ -310,7 +311,7 @@ export default function VakantieBevestiging({
                       <Column className="stack m-nopad" style={{ paddingLeft: "16px", verticalAlign: "top" }}>
                         <Text style={{ ...body14, margin: 0, fontSize: "16px", fontWeight: 700 }}>
                           {h.name}{" "}
-                          <span style={{ fontSize: "13px", letterSpacing: "1px", color: c.heading, fontWeight: 400 }}>
+                          <span style={{ fontSize: "12px", letterSpacing: "1px", color: c.heading, fontWeight: 400 }}>
                             {"★".repeat(h.stars)}
                           </span>
                         </Text>
@@ -321,13 +322,19 @@ export default function VakantieBevestiging({
                           <br />
                           <strong style={{ color: c.text }}>Check-out</strong> {h.checkOut}
                         </Text>
-                        <ul style={{ margin: "8px 0 0", paddingLeft: "18px" }}>
-                          {h.items.map((item) => (
-                            <li key={item} style={{ ...body14, margin: "0 0 2px" }}>
-                              {item}
-                            </li>
-                          ))}
-                        </ul>
+                        {/* Inclusies met een vinkje in de tekstkleur (niet groen: te druk), zoals op de bevestigingspagina. */}
+                        <table role="presentation" cellPadding={0} cellSpacing={0} border={0} style={{ marginTop: "8px", borderCollapse: "collapse" }}>
+                          <tbody>
+                            {h.items.map((item) => (
+                              <tr key={item}>
+                                <td style={{ width: "20px", padding: "0 0 3px", verticalAlign: "top" }}>
+                                  <Img src={check} alt="" width="14" height="14" style={{ display: "block", marginTop: "3px" }} />
+                                </td>
+                                <td style={{ ...body14, margin: 0, padding: "0 0 3px", verticalAlign: "top" }}>{item}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
                       </Column>
                     </Row>
                     {/* Hotelboekingsnummer: smal beige balkje over de hele breedte van het hotelblok (links gelijk met het nummer en
@@ -410,7 +417,7 @@ export default function VakantieBevestiging({
             <Text className="m-kop" style={kop}>Veelgestelde vragen</Text>
             {faq.map((f) => (
               <Section key={f.q} style={{ borderTop: `1px solid ${line}`, marginTop: "12px", paddingTop: "12px" }}>
-                <Text style={{ ...body14, margin: 0, fontWeight: 700, fontSize: "15px" }}>{f.q}</Text>
+                <Text style={{ ...body14, margin: 0, fontWeight: 700, fontSize: "16px" }}>{f.q}</Text>
                 <Text style={{ ...body14, margin: "4px 0 0", color: c.muted }}>{f.a}</Text>
               </Section>
             ))}
@@ -422,13 +429,13 @@ export default function VakantieBevestiging({
           <Section className="m-pad" style={{ padding: "0 32px 32px" }}>
             <Section style={{ borderTop: `1px solid ${line}`, paddingTop: "28px" }}>
               <Text className="m-kop" style={kop}>Annuleren of wijzigen van een boeking</Text>
-              <Text style={{ ...body14, margin: "16px 0 0", fontWeight: 700, fontSize: "15px" }}>Wijzigen van je verblijf</Text>
+              <Text style={{ ...body14, margin: "16px 0 0", fontWeight: 700, fontSize: "16px" }}>Wijzigen van je verblijf</Text>
               {rate === "nonflex" ? (
                 <>
                   <Text style={body14}>
                     Er is een niet-terugbetaalbaar tarief geboekt. Bij zowel wijzigen als annuleren ontvang je geen bedrag retour.
                   </Text>
-                  <Text style={{ ...body14, margin: "16px 0 0", fontWeight: 700, fontSize: "15px" }}>Annuleren van je verblijf</Text>
+                  <Text style={{ ...body14, margin: "16px 0 0", fontWeight: 700, fontSize: "16px" }}>Annuleren van je verblijf</Text>
                   <Text style={body14}>
                     Bij annuleren ontvang je geen bedrag retour, omdat je bij het boeken gekozen hebt voor de laagste prijs. Wil je toch
                     annuleren, ondanks het feit dat je geen geld terugkrijgt, neem dan eerst contact op met de klantenservice via telefoon{" "}
@@ -447,7 +454,7 @@ export default function VakantieBevestiging({
                     Er is een flexibel tarief geboekt. Als je deze boeking wilt wijzigen, annuleer dan de boeking en boek het gewenste
                     arrangement opnieuw. Let op: je ontvangt het bedrag alleen terug als je annuleert voor 23:59 uur op {cancelUntil}.
                   </Text>
-                  <Text style={{ ...body14, margin: "16px 0 0", fontWeight: 700, fontSize: "15px" }}>Annuleren van je verblijf</Text>
+                  <Text style={{ ...body14, margin: "16px 0 0", fontWeight: 700, fontSize: "16px" }}>Annuleren van je verblijf</Text>
                   <Text style={body14}>
                     Ook wanneer je niets wilt wijzigen maar simpelweg je verblijf wilt annuleren, volg je de onderstaande stappen:
                   </Text>

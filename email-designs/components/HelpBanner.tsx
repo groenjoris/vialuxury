@@ -24,7 +24,7 @@ export default function HelpBanner({ mode = "light" }: { mode?: EmailMode }) {
             </table>
           </Column>
           <Column style={{ verticalAlign: "middle" }}>
-            <Text style={{ fontFamily: font.body, fontSize: "15px", lineHeight: "1.45", color: c.text, margin: 0 }}>
+            <Text style={{ fontFamily: font.body, fontSize: "14px", lineHeight: "1.45", color: c.text, margin: 0 }}>
               <strong>Hulp nodig?</strong> Bel{" "}
               <Link href="tel:+31207052222" style={link}>+31 20 705 2222</Link> of WhatsApp{" "}
               <Link href="https://wa.me/31208088809" style={link}>+31 20 808 8809</Link>

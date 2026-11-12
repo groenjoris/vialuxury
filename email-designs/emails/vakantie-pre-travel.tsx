@@ -124,7 +124,7 @@ export default function VakantiePreTravel({
   const kop = { fontFamily: font.heading, fontWeight: 600, fontSize: "24px", lineHeight: "1.3", color: c.heading, margin: 0 };
   const subkop = { fontFamily: font.body, fontWeight: 700, fontSize: "16px", lineHeight: "1.3", color: c.heading, margin: "16px 0 0" };
   const body14 = { fontFamily: font.body, fontSize: "14px", lineHeight: "1.45", color: c.text, margin: "8px 0 0" };
-  const small = { fontFamily: font.body, fontSize: "13px", lineHeight: "1.4", color: c.muted, margin: 0 };
+  const small = { fontFamily: font.body, fontSize: "14px", lineHeight: "1.4", color: c.muted, margin: 0 };
   const ctaLink = { fontFamily: font.body, fontSize: "14px", fontWeight: 700, color: c.link, textDecoration: "underline" };
   const check = img(dark ? "check-dark.png" : "check.png");
 
@@ -334,7 +334,7 @@ export default function VakantiePreTravel({
             <Text className="m-kop" style={kop}>Veelgestelde vragen</Text>
             {faq.map((f) => (
               <Section key={f.q} style={{ borderTop: `1px solid ${line}`, marginTop: "12px", paddingTop: "12px" }}>
-                <Text style={{ ...body14, margin: 0, fontWeight: 700, fontSize: "15px" }}>{f.q}</Text>
+                <Text style={{ ...body14, margin: 0, fontWeight: 700, fontSize: "16px" }}>{f.q}</Text>
                 <Text style={{ ...body14, margin: "4px 0 0", color: c.muted }}>{f.a}</Text>
                 {f.link && (
                   <Text style={{ margin: "8px 0 0" }}>
