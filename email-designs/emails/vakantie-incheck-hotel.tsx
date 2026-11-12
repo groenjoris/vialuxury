@@ -38,6 +38,8 @@ export type IncheckHotel = {
   mapsUrl: string;
   checkInTime: string;
   checkOutTime: string;
+  /** Eigen boekingsnummer van dit hotel (10 cijfers, demo). */
+  bookingRef: string;
   /** Wat bij het arrangement van dit hotel zit (zonder overnachting en parkeren), om bij het inchecken na te kijken. */
   includes: string[];
   /** Auto: parkeren en opladen. */
@@ -147,7 +149,7 @@ export default function VakantieIncheckHotel({
     ? [
         { title: `Inchecken bij ${hotel.name} vanaf ${hotel.checkInTime} uur`, text: homeTravel ? `Reistijd ${homeTravel}.` : undefined },
         { title: "Neem je identiteitsbewijs mee", text: "Paspoort, rijbewijs of ID-kaart; het hotel vraagt ernaar bij het inchecken." },
-        { title: `Je ViaLuxury Ordernummer: ${bookingNumber}`, text: "Hetzelfde nummer voor alle hotels." },
+        { title: `Je hotelboekingsnummer: ${hotel.bookingRef}`, text: `Het eigen boekingsnummer van ${hotel.name}; noem het bij het inchecken.` },
       ]
     : [
         ...(isBike && previousHotel
@@ -156,6 +158,7 @@ export default function VakantieIncheckHotel({
         ...(previousHotel ? [{ title: `Uitchecken bij ${previousHotel.name} tot ${previousHotel.checkOutTime} uur` }] : []),
         ...(travel ? [{ title: `${travel.km} km naar ${hotel.city}`, text: `${travel.duration}. De route staat op je persoonlijke reispagina.` }] : []),
         { title: `Inchecken bij ${hotel.name} vanaf ${hotel.checkInTime} uur`, text: "Neem je identiteitsbewijs mee." },
+        { title: `Je hotelboekingsnummer: ${hotel.bookingRef}`, text: `Het eigen boekingsnummer van ${hotel.name}; noem het bij het inchecken.` },
       ];
 
   /* Veelgestelde vragen. "Wat moet ik nog betalen?" staat al in het hotelblok (hotel 1), dus niet nog eens
@@ -262,7 +265,7 @@ export default function VakantieIncheckHotel({
                     <strong style={{ color: c.text }}>Adres</strong> {hotel.address}
                   </Text>
                   <Text style={{ margin: "6px 0 0" }}>
-                    <Link href={hotel.mapsUrl} style={ctaLink}>Route in Google Maps &gt;</Link>
+                    <Link href={hotel.mapsUrl} style={ctaLink}>Route in Google Maps</Link>
                   </Text>
                   <Text style={{ ...small, margin: "6px 0 0" }}>
                     <strong style={{ color: c.text }}>Telefoon</strong>{" "}
@@ -357,7 +360,7 @@ export default function VakantieIncheckHotel({
                   marginTop: "12px",
                 }}
               >
-                Bekijk jouw speciale pagina &gt;
+                Bekijk jouw speciale pagina
               </Button>
             </Section>
           </Section>
@@ -373,7 +376,7 @@ export default function VakantieIncheckHotel({
                 wachtwoord heb je niet nodig.
               </Text>
               <Text style={{ margin: "12px 0 0" }}>
-                <Link href={bookingUrl} style={ctaLink}>Bekijk je boeking online &gt;</Link>
+                <Link href={bookingUrl} style={ctaLink}>Bekijk je boeking online</Link>
               </Text>
             </Section>
           </Section>
@@ -389,7 +392,7 @@ export default function VakantieIncheckHotel({
                 <Text style={{ ...body14, margin: "4px 0 0", color: c.muted }}>{f.a}</Text>
                 {f.link && (
                   <Text style={{ margin: "8px 0 0" }}>
-                    <Link href={f.link.href} style={ctaLink}>{f.link.label} &gt;</Link>
+                    <Link href={f.link.href} style={ctaLink}>{f.link.label}</Link>
                   </Text>
                 )}
               </Section>

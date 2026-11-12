@@ -144,6 +144,14 @@ in het blok Boeking beheren, met een eigen tekst voor te laat; de mails met annu
 `<slug>-nonflex`-variant (`variantOf`), die de preview bij Non-flex laadt; de incheckmails
 verschillen niet.
 
+Boekingsnummers (sinds 2026-11-12): het "ViaLuxury Ordernummer" (`bookingRefFor`, beige vlakje `BookingRef`) en per
+hotel een eigen "Hotelboekingsnummer" van 10 cijfers (`HOTEL_BOOKING_REFS` in `app/utils-*/bookingRef.ts` en
+`email-designs/lib/hotelBookingRefs.ts`, dezelfde nummers): op de bevestigingspagina als klein vlakje onder de
+inclusies (`BookingRef small label="Hotelboekingsnummer"`), in de bevestigingsmail als beige balkje over de
+breedte van het hotelblok, in de pre-travelmail onder "Niet vergeten" (alle drie onder elkaar) en in de
+incheckmails bij "Morgen in het kort" (het nummer van dat hotel). Tekstlinks en knoppen in de mails zonder
+chevron ("›"), dat is geen huisstijl.
+
 ## Twee reizen: auto én fiets (regel sinds 2026-11-06)
 
 Elke pagina en elke mail van de post-bookingflow bestaat in een auto- (Opaalkust) én een

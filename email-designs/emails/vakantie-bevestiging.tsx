@@ -16,6 +16,7 @@ import * as React from "react";
 import CrmFooter from "../components/CrmFooter";
 import CrmHeader from "../components/CrmHeader";
 import { baseUrl, font, newsletter, type EmailMode } from "../components/theme";
+import { hotelBookingRef } from "../lib/hotelBookingRefs";
 
 // Boekingsbevestiging van een multi-hotel vakantie (Multi Hotel Trip). Header, logo,
 // Trustpilot en footer zoals in de CRM-mails (zwarte balken over de hele breedte); daartussen dezelfde opbouw als
@@ -27,6 +28,8 @@ import { baseUrl, font, newsletter, type EmailMode } from "../components/theme";
 
 type Hotel = {
   name: string;
+  /** Eigen boekingsnummer van dit hotel (10 cijfers, demo). */
+  bookingRef: string;
   stars: number;
   address: string;
   image: string;
@@ -316,6 +319,18 @@ export default function VakantieBevestiging({
                         </ul>
                       </Column>
                     </Row>
+                    {/* Hotelboekingsnummer: smal beige balkje over de hele breedte van het hotelblok (links gelijk met het nummer en
+                        de foto), zoals het ViaLuxury Ordernummer bovenin maar kleiner. */}
+                    <Section style={{ backgroundColor: beige, borderRadius: "6px", padding: "8px 12px", marginTop: "10px" }}>
+                      <Row>
+                        <Column>
+                          <Text style={{ ...small, margin: 0, color: c.text }}>Hotelboekingsnummer</Text>
+                        </Column>
+                        <Column align="right">
+                          <Text style={{ ...small, margin: 0, fontWeight: 700, letterSpacing: "0.04em", textAlign: "right" as const, color: c.text }}>{h.bookingRef}</Text>
+                        </Column>
+                      </Row>
+                    </Section>
                   </Section>
                 ))}
 
@@ -374,7 +389,7 @@ export default function VakantieBevestiging({
             </Text>
             <Text style={{ margin: "8px 0 0" }}>
               <Link href={routesUrl} style={ctaLink}>
-                Bekijk de tips &gt;
+                Bekijk de tips
               </Link>
             </Text>
           </Section>
@@ -388,7 +403,7 @@ export default function VakantieBevestiging({
                 ontvangt dan een inlogcode per mail; een wachtwoord heb je niet nodig.
               </Text>
               <Text style={{ margin: "12px 0 0" }}>
-                <Link href={bookingUrl} style={ctaLink}>Bekijk je boeking online &gt;</Link>
+                <Link href={bookingUrl} style={ctaLink}>Bekijk je boeking online</Link>
               </Text>
             </Section>
           </Section>
@@ -456,7 +471,7 @@ export default function VakantieBevestiging({
               )}
               {/* Oranje tekstlink (geen knop) naar het annuleringsformulier; daaronder de afsluiting met de servicecentrumpagina. */}
               <Text style={{ margin: "16px 0 0" }}>
-                <Link href={CANCEL_FORM_URL} style={ctaLink}>Mijn boeking annuleren &gt;</Link>
+                <Link href={CANCEL_FORM_URL} style={ctaLink}>Mijn boeking annuleren</Link>
               </Text>
               <Text style={{ ...body14, margin: "16px 0 0" }}>
                 Wij vinden het fijn dat je bij ons geboekt hebt en helpen je graag als je nog informatie mist. Op onze{" "}
@@ -485,6 +500,7 @@ VakantieBevestiging.PreviewProps = {
   hotels: [
     {
       name: "Château Tilques",
+      bookingRef: hotelBookingRef("Château Tilques"),
       stars: 3,
       address: "Rue du Château, 62500 Tilques, Frankrijk",
       image: `${baseUrl}/images/mail/vakantie/tilques-t2.jpg`,
@@ -494,6 +510,7 @@ VakantieBevestiging.PreviewProps = {
     },
     {
       name: "Château Cléry",
+      bookingRef: hotelBookingRef("Château Cléry"),
       stars: 3,
       address: "Rue du Château, 62360 Hesdin-l'Abbé, Frankrijk",
       image: `${baseUrl}/images/mail/vakantie/clery-c2.jpg`,
@@ -503,6 +520,7 @@ VakantieBevestiging.PreviewProps = {
     },
     {
       name: "Hotel Royal Beaulaincourt",
+      bookingRef: hotelBookingRef("Hotel Royal Beaulaincourt"),
       stars: 4,
       address: "Rue de Beaulaincourt, 62400 Béthune, Frankrijk",
       image: `${baseUrl}/images/mail/vakantie/beaulaincourt-b2.jpg`,
@@ -530,6 +548,7 @@ export const fietsPreviewProps = {
   hotels: [
     {
       name: "Hotel Wapen van Delden",
+      bookingRef: hotelBookingRef("Hotel Wapen van Delden"),
       stars: 4,
       address: "Langestraat 242, 7491 AM Delden",
       image: `${baseUrl}/images/vakanties/007/hotel-wapen-van-delden.jpg`,
@@ -539,6 +558,7 @@ export const fietsPreviewProps = {
     },
     {
       name: "Hotel de Zwaan",
+      bookingRef: hotelBookingRef("Hotel de Zwaan"),
       stars: 3,
       address: "Kerkstraat 2, 8102 EA Raalte",
       image: `${baseUrl}/images/vakanties/007/hotel-de-zwaan-gebouw.jpg`,
@@ -548,6 +568,7 @@ export const fietsPreviewProps = {
     },
     {
       name: "Landhuishotel Herikerberg",
+      bookingRef: hotelBookingRef("Landhuishotel Herikerberg"),
       stars: 4,
       address: "Herikerbergweg 5, 7475 TB Markelo",
       image: `${baseUrl}/images/vakanties/007/hotel-herikerberg.jpg`,

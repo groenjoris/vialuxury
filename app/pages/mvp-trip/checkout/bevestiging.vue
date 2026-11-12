@@ -23,7 +23,7 @@ import { pricing } from '~/data/mvp-checkout/deal'
 import { CHECKOUT_BOOKING_FEE } from '~/data/mvp-checkout/pricing'
 import { useMvpTripCheckoutTrip } from '~/composables-mvp-trip/useMvpTripCheckoutTrip'
 import { useMvpTripMobileUa } from '~/composables-mvp-trip/useMvpTripMobileUa'
-import { bookingRefFor } from '~/utils-mvp-trip/bookingRef'
+import { bookingRefFor, hotelBookingRefFor } from '~/utils-mvp-trip/bookingRef'
 import { isDemoRate, isDemoVariant, useDemoBookingFromQuery, type DemoRate, type DemoVariant } from '~/composables-mvp-trip/useMvpTripDemoBooking'
 
 const isMobileUa = useMvpTripMobileUa()
@@ -102,6 +102,8 @@ const stays = computed(() => {
       to: fmt(to),
       checkInTime: stop?.checkIn ?? '15:00',
       checkOutTime: lateOut ? `${lateOut[1]}:${lateOut[2]}` : '11:00',
+      /** Eigen boekingsnummer van dit hotel (10 cijfers, demo). */
+      bookingRef: hotelBookingRefFor(h.name),
       // Volgorde als in de mail: overnachtingen (eerste inclusie), dan de kamer, dan de rest.
       items: /overnachting/i.test(incl[0] ?? '')
         ? [incl[0]!, `${roomsPerHotel.value}× ${h.roomName}`, ...incl.slice(1)]
@@ -253,6 +255,8 @@ useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
                     <ul class="cf__stay-items">
                       <li v-for="item in h.items" :key="item" class="t-caption c-grey">{{ item }}</li>
                     </ul>
+                    <!-- Hotelboekingsnummer: klein balkje zoals het ViaLuxury Ordernummer, links gelijk met de inclusies, zo breed als de inhoud. -->
+                    <MvpTripBookingRef class="cf__stay-ref" small label="Hotelboekingsnummer" :value="h.bookingRef" />
                   </div>
                 </li>
               </ol>
@@ -439,6 +443,7 @@ useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
 /* Kamer · ontbijt · diner: doorlopend, met een bulletje ertussen (geen vinkjes). */
 /* Wat je krijgt: kamer + alle inclusies onder elkaar (zoals in de bevestigingsmail). */
 .cf__stay-items { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+.cf__stay-ref { margin-top: 8px; }
 
 /* Flexibel annuleren / bagagetransfer: het icoon staat in de kolom van de nummerbolletjes (zelfde raster als de hotels). */
 .cf__extras { list-style: none; margin: 20px 0 0; padding: 18px 0 0; border-top: 1px solid var(--c-light-grey); display: flex; flex-direction: column; gap: 14px; }

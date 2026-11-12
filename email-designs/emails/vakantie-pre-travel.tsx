@@ -16,6 +16,7 @@ import {
 import * as React from "react";
 import HelpBanner from "../components/HelpBanner";
 import MvpLabel from "../components/MvpLabel";
+import { hotelBookingRef } from "../lib/hotelBookingRefs";
 import CrmFooter from "../components/CrmFooter";
 import CrmHeader from "../components/CrmHeader";
 import { baseUrl, font, newsletter, type EmailMode } from "../components/theme";
@@ -35,6 +36,8 @@ type Props = {
   /** Uiterste annuleerdatum (30 dagen voor aankomst), bijv. "zo 18 apr". */
   cancelUntil: string;
   bookingNumber: string;
+  /** Per hotel het eigen boekingsnummer (10 cijfers), in de volgorde van de reis. */
+  hotelBookingRefs: { name: string; ref: string }[];
   tripType: string;
   tripName: string;
   /** Fietsvakantie: "Je fiets" in de checklist, fietsenstalling i.p.v. opladen, fietsen i.p.v. rijden. */
@@ -98,6 +101,7 @@ export default function VakantiePreTravel({
   rate = "flex",
   cancelUntil,
   bookingNumber,
+  hotelBookingRefs,
   tripType,
   tripName,
   isBike = false,
@@ -192,6 +196,23 @@ export default function VakantiePreTravel({
                   </Text>
                 </Column>
               </Row>
+              {/* Hotelboekingsnummers: elk hotel heeft zijn eigen nummer; de drie hotels onder elkaar. */}
+              <Row style={{ marginTop: "12px" }}>
+                <Column style={{ width: "32px", verticalAlign: "top" }}>
+                  <Img src={check} alt="" width="22" height="22" />
+                </Column>
+                <Column style={{ verticalAlign: "top" }}>
+                  <Text style={{ ...body14, margin: 0, fontWeight: 700 }}>Je hotelboekingsnummers</Text>
+                  <Text style={{ ...small, margin: "2px 0 0" }}>
+                    Elk hotel heeft daarnaast zijn eigen boekingsnummer; noem dat bij het inchecken.
+                  </Text>
+                  {hotelBookingRefs.map((h) => (
+                    <Text key={h.name} style={{ ...small, margin: "4px 0 0" }}>
+                      {h.name}: <strong style={{ color: c.text, letterSpacing: "0.04em" }}>{h.ref}</strong>
+                    </Text>
+                  ))}
+                </Column>
+              </Row>
               {isBike && (
                 <Row style={{ marginTop: "12px" }}>
                   <Column style={{ width: "32px", verticalAlign: "top" }}>
@@ -222,7 +243,7 @@ export default function VakantiePreTravel({
                     <strong style={{ color: c.text }}>Adres</strong> {firstHotel.address}
                   </Text>
                   <Text style={{ margin: "6px 0 0" }}>
-                    <Link href={firstHotel.mapsUrl} style={ctaLink}>Route in Google Maps &gt;</Link>
+                    <Link href={firstHotel.mapsUrl} style={ctaLink}>Route in Google Maps</Link>
                   </Text>
                   <Text style={{ ...small, margin: "6px 0 0" }}>
                     <strong style={{ color: c.text }}>Telefoon</strong>{" "}
@@ -285,7 +306,7 @@ export default function VakantiePreTravel({
                   marginTop: "12px",
                 }}
               >
-                Bekijk jouw speciale pagina &gt;
+                Bekijk jouw speciale pagina
               </Button>
             </Section>
           </Section>
@@ -301,7 +322,7 @@ export default function VakantiePreTravel({
                 wachtwoord heb je niet nodig.
               </Text>
               <Text style={{ margin: "12px 0 0" }}>
-                <Link href={bookingUrl} style={ctaLink}>Bekijk je boeking online &gt;</Link>
+                <Link href={bookingUrl} style={ctaLink}>Bekijk je boeking online</Link>
               </Text>
             </Section>
           </Section>
@@ -317,7 +338,7 @@ export default function VakantiePreTravel({
                 <Text style={{ ...body14, margin: "4px 0 0", color: c.muted }}>{f.a}</Text>
                 {f.link && (
                   <Text style={{ margin: "8px 0 0" }}>
-                    <Link href={f.link.href} style={ctaLink}>{f.link.label} &gt;</Link>
+                    <Link href={f.link.href} style={ctaLink}>{f.link.label}</Link>
                   </Text>
                 )}
               </Section>
@@ -336,6 +357,7 @@ VakantiePreTravel.PreviewProps = {
   recipientEmail: "rijo.verburg@gmail.com",
   cancelUntil: "zo 18 apr",
   bookingNumber: "VL-11 851 812",
+  hotelBookingRefs: ["Château Tilques", "Château Cléry", "Hotel Royal Beaulaincourt"].map((name) => ({ name, ref: hotelBookingRef(name) })),
   tripType: "Autovakantie",
   tripName: "Ontdek Noord-Frankrijk en de Opaalkust in 7 dagen",
   region: "Noord-Frankrijk",
@@ -365,6 +387,7 @@ export const fietsPreviewProps = {
   ...VakantiePreTravel.PreviewProps,
   cancelUntil: "za 8 mei",
   bookingNumber: "VL-85 584 493",
+  hotelBookingRefs: ["Hotel Wapen van Delden", "Hotel de Zwaan", "Landhuishotel Herikerberg"].map((name) => ({ name, ref: hotelBookingRef(name) })),
   tripType: "Fietsvakantie",
   tripName: "7-daagse fietsvakantie Twente & Salland: Delden – Raalte – Markelo incl. dagelijks 3-gangendiner",
   isBike: true,

@@ -3,6 +3,7 @@
 // hotel andere props. Adressen, telefoonnummers, parkeren en laadpunten zijn prototype-placeholders; de
 // inclusies per hotel zijn die van de bevestigingsmail (zonder overnachting, kamer en parkeren).
 import { baseUrl } from "../components/theme";
+import { hotelBookingRef } from "./hotelBookingRefs";
 import { incheckPreheader, incheckSubject, type IncheckHotel, type IncheckProps } from "../emails/vakantie-incheck-hotel";
 
 const PROTO = "https://vialuxury.vercel.app";
@@ -36,7 +37,7 @@ const TRIPS: TripData[] = [
     homeTravel: "ca. 3 uur 45 min vanuit Utrecht",
     hotels: [
       {
-        name: "Château Tilques", city: "Tilques", address: "Rue du Château, 62500 Tilques, Frankrijk",
+        name: "Château Tilques", bookingRef: hotelBookingRef("Château Tilques"), city: "Tilques", address: "Rue du Château, 62500 Tilques, Frankrijk",
         image: `${baseUrl}/images/mail/vakantie/tilques-t2.jpg`, phone: "+33 3 21 12 34 51",
         mapsUrl: "https://www.google.com/maps/dir/?api=1&destination=Ch%C3%A2teau+Tilques%2C+Rue+du+Ch%C3%A2teau%2C+62500+Tilques",
         checkInTime: "15:00", checkOutTime: "14:00",
@@ -45,7 +46,7 @@ const TRIPS: TripData[] = [
         charging: "Er is een laadpunt bij het hotel (type 2, 11 kW); meld bij het inchecken dat je wilt laden. Snelladers vind je langs de A26 bij Saint-Omer.",
       },
       {
-        name: "Château Cléry", city: "Hesdin-l'Abbé", address: "Rue du Château, 62360 Hesdin-l'Abbé, Frankrijk",
+        name: "Château Cléry", bookingRef: hotelBookingRef("Château Cléry"), city: "Hesdin-l'Abbé", address: "Rue du Château, 62360 Hesdin-l'Abbé, Frankrijk",
         image: `${baseUrl}/images/vakanties/001/clery-c1.jpg`, phone: "+33 3 21 12 34 52",
         mapsUrl: "https://www.google.com/maps/dir/?api=1&destination=Ch%C3%A2teau+Cl%C3%A9ry%2C+Hesdin-l%27Abb%C3%A9",
         checkInTime: "15:00", checkOutTime: "14:00",
@@ -54,7 +55,7 @@ const TRIPS: TripData[] = [
         charging: "Laadpunt op 2 km (parkeerterrein van de supermarkt in Hesdin-l'Abbé); op aanvraag een stopcontact bij het hotel voor langzaam laden.",
       },
       {
-        name: "Hotel Royal Beaulaincourt", city: "Béthune", address: "Rue de Beaulaincourt, 62400 Béthune, Frankrijk",
+        name: "Hotel Royal Beaulaincourt", bookingRef: hotelBookingRef("Hotel Royal Beaulaincourt"), city: "Béthune", address: "Rue de Beaulaincourt, 62400 Béthune, Frankrijk",
         image: `${baseUrl}/images/vakanties/001/beaulaincourt-b1.jpg`, phone: "+33 3 21 12 34 53",
         mapsUrl: "https://www.google.com/maps/dir/?api=1&destination=Hotel+Royal+Beaulaincourt%2C+B%C3%A9thune",
         checkInTime: "14:00", checkOutTime: "15:00",
@@ -81,7 +82,7 @@ const TRIPS: TripData[] = [
     homeTravel: "ca. 1 uur 30 min met de auto vanuit Utrecht; gratis parkeren bij het hotel voor de hele vakantie",
     hotels: [
       {
-        name: "Hotel Wapen van Delden", city: "Delden", address: "Langestraat 242, 7491 AM Delden",
+        name: "Hotel Wapen van Delden", bookingRef: hotelBookingRef("Hotel Wapen van Delden"), city: "Delden", address: "Langestraat 242, 7491 AM Delden",
         image: `${baseUrl}/images/vakanties/007/hotel-wapen-van-delden.jpg`, phone: "+31 74 376 1234",
         mapsUrl: "https://www.google.com/maps/dir/?api=1&destination=Hotel+Wapen+van+Delden%2C+Delden",
         checkInTime: "15:00", checkOutTime: "11:00",
@@ -89,7 +90,7 @@ const TRIPS: TripData[] = [
         bikeStorage: "Afgesloten fietsenstalling bij het hotel, met laadpunt voor e-bikes.",
       },
       {
-        name: "Hotel de Zwaan", city: "Raalte", address: "Kerkstraat 2, 8102 EA Raalte",
+        name: "Hotel de Zwaan", bookingRef: hotelBookingRef("Hotel de Zwaan"), city: "Raalte", address: "Kerkstraat 2, 8102 EA Raalte",
         image: `${baseUrl}/images/vakanties/007/hotel-de-zwaan-gebouw.jpg`, phone: "+31 572 36 1234",
         mapsUrl: "https://www.google.com/maps/dir/?api=1&destination=Hotel+de+Zwaan%2C+Raalte",
         checkInTime: "15:00", checkOutTime: "12:00",
@@ -97,7 +98,7 @@ const TRIPS: TripData[] = [
         bikeStorage: "Overdekte, afgesloten stalling achter het hotel; e-bikes laad je in de stalling.",
       },
       {
-        name: "Landhuishotel Herikerberg", city: "Markelo", address: "Herikerbergweg 5, 7475 TB Markelo",
+        name: "Landhuishotel Herikerberg", bookingRef: hotelBookingRef("Landhuishotel Herikerberg"), city: "Markelo", address: "Herikerbergweg 5, 7475 TB Markelo",
         image: `${baseUrl}/images/vakanties/007/hotel-herikerberg.jpg`, phone: "+31 547 36 1234",
         mapsUrl: "https://www.google.com/maps/dir/?api=1&destination=Landhuishotel+Herikerberg%2C+Markelo",
         checkInTime: "15:00", checkOutTime: "11:00",
