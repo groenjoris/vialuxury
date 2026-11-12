@@ -133,10 +133,10 @@ const nextSteps = computed(() => [
    het annuleerantwoord volgt de annuleringskeuze, met de uiterste datum en 23:59 uur; bij flex staat
    onder dat antwoord de link "Boeking annuleren". */
 const cancelDeadline = computed(() => `${fmtLong(dateAt(-30))}, 23:59 uur`)
-/** Annuleringsformulier (placeholder-link, zelfde als in het account en de mail; het formulier zelf volgt nog). */
-const CANCEL_FORM_URL = 'https://vialuxury.nl/annuleren'
+/** Annuleringsformulier (mockup van het echte formulier), met het ViaLuxury Ordernummer in de URL. */
+const cancelHref = computed(() => `/mvp-trip/annuleren?bookingId=${encodeURIComponent(bookingRef.value)}`)
 const faq = computed(() => [
-  { q: 'Hoe kan ik annuleren of wijzigen?', link: isFlex.value ? { label: 'Boeking annuleren', href: CANCEL_FORM_URL } : undefined, a: `Het wijzigen van een boeking is niet mogelijk. ${isFlex.value ? `Omdat je flexibel annuleren hebt aangezet, kun je je boeking annuleren t/m ${cancelDeadline.value}. Het is niet mogelijk individuele onderdelen van je boeking aan te passen. Wil je de datum van vertrek aanpassen, dan dien je de gehele boeking te annuleren en opnieuw te boeken. Let op: voor de boekingskosten ontvang je een voucher die je weer kunt gebruiken bij je nieuwe boeking.` : 'Tijdens het boeken heb je ervoor gekozen om niet-terugbetaalbaar te boeken. Daardoor is het niet mogelijk om zelf je boeking te annuleren. Het kan zijn dat de klantenservice je wel bepaalde opties kan geven; neem daarom tijdens openingstijden contact met hen op.'}` },
+  { q: 'Hoe kan ik annuleren of wijzigen?', link: isFlex.value ? { label: 'Boeking annuleren', href: cancelHref.value } : undefined, a: `Het wijzigen van een boeking is niet mogelijk. ${isFlex.value ? `Omdat je flexibel annuleren hebt aangezet, kun je je boeking annuleren t/m ${cancelDeadline.value}. Het is niet mogelijk individuele onderdelen van je boeking aan te passen. Wil je de datum van vertrek aanpassen, dan dien je de gehele boeking te annuleren en opnieuw te boeken. Let op: voor de boekingskosten ontvang je een voucher die je weer kunt gebruiken bij je nieuwe boeking.` : 'Tijdens het boeken heb je ervoor gekozen om niet-terugbetaalbaar te boeken. Daardoor is het niet mogelijk om zelf je boeking te annuleren. Het kan zijn dat de klantenservice je wel bepaalde opties kan geven; neem daarom tijdens openingstijden contact met hen op.'}` },
   { q: 'Hoe log ik in op mijn account?', a: 'Ga naar vialuxury.com/nl-NL/inloggen, vul daar het e-mailadres in waarmee je geboekt hebt en je ontvangt direct de inlogcode in de mail.' },
   { q: `Hoe werkt het inchecken bij ${trip.value.hotels.length} hotels?`, a: 'Je kunt je gewoon bij de receptie melden en inchecken met je naam en je ViaLuxury Ordernummer. De meeste hotels verplichten een identificatiedocument zoals een rijbewijs of een paspoort van de hoofdboeker. Bij sommige hotels moet iedereen zich identificeren. Let op: een kopie volstaat niet en zonder geldig document kan een hotel weigeren je toe te laten.' },
   { q: 'Wat betaal ik nog in de hotels?', a: 'In principe betaal je bij de hotels niet meer voor hetgeen in het arrangement zit. Verblijf je ergens meerdere dagen, dan kan het dus zijn dat niet alle diners of de lunch in het arrangement zitten. In de meeste gevallen is het arrangement eveneens zonder drankjes en dien je bij het uitchecken deze dus te voldoen. Daarnaast zal je in de meeste gevallen de gemeentelijke toeristenbelasting moeten voldoen en in uitzonderlijke gevallen ook een lokale toeslag. Daarnaast is het mogelijk dat je gevraagd wordt een borg af te geven d.m.v. een reservering op een creditcard of een borg in cash.' },
@@ -329,7 +329,7 @@ useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
             <div v-show="openFaq === i">
               <p class="cf__faq-a t-body c-grey">{{ f.a }}</p>
               <!-- Flex: de link naar het annuleringsformulier onder het antwoord (placeholder; het formulier volgt nog). -->
-              <a v-if="f.link" class="cf__link cf__faq-link" :href="f.link.href" target="_blank" rel="noopener">{{ f.link.label }}</a>
+              <NuxtLink v-if="f.link" class="cf__link cf__faq-link" :to="f.link.href">{{ f.link.label }}</NuxtLink>
             </div>
           </div>
         </section>

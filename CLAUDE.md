@@ -152,6 +152,12 @@ breedte van het hotelblok, in de pre-travelmail onder "Niet vergeten" (alle drie
 incheckmails bij "Morgen in het kort" (het nummer van dat hotel). Tekstlinks en knoppen in de mails zonder
 chevron ("›"), dat is geen huisstijl.
 
+Annuleringsformulier (sinds 2026-11-12): `/multi-hotel-trip/annuleren?bookingId=<ordernummer>` (MVP-kopie
+`/mvp-trip/annuleren`) is een mockup van het echte formulier op vialuxury.com/nl-NL/cancel (zelfde teksten,
+Boekings-ID uit de URL, e-mailadres van de demo-gast voorgevuld, "Annuleer boeking" toont direct de bevestiging).
+Alle links "Boeking annuleren" / "Mijn boeking annuleren" (bevestigingspagina-FAQ, accountdetail, bevestigings-,
+pre-travel- en incheckmails; de MVP-mails naar de MVP-kopie) wijzen hiernaartoe.
+
 ## Twee reizen: auto én fiets (regel sinds 2026-11-06)
 
 Elke pagina en elke mail van de post-bookingflow bestaat in een auto- (Opaalkust) én een

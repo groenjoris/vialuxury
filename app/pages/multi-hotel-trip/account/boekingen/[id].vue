@@ -16,7 +16,8 @@ const { checkout, stays, dateRangeLong, nights, persons, roomsPerHotel, bookingR
 /** Annuleren kan t/m 30 dagen voor aankomst, 23:59 uur (voluit, zoals de datums in de kop). */
 const cancelDeadline = computed(() => { const y = checkInYmd.value; return `${fmtLong(new Date(y.year, y.month, y.day - 30))}, 23:59 uur` })
 /** Placeholder voor het bestaande annuleringsformulier (zelfde link als de knop in de bevestigingsmail). */
-const CANCEL_FORM_URL = 'https://vialuxury.nl/annuleren'
+/** Annuleringsformulier (mockup van het echte formulier), met het ViaLuxury Ordernummer in de URL. */
+const cancelHref = computed(() => `/multi-hotel-trip/annuleren?bookingId=${encodeURIComponent(bookingRef.value)}`)
 /* Prototype-schakelaars (DemoSwitches): Auto | Fiets en Flex | Non-flex uit de URL; de annuleringstekst en de prijs volgen. */
 const { variant: demoVariant, rate: demoRate } = useDemoSwitches(() => isBike.value ? 'fiets' : 'auto')
 /* Prototype: bij flex ook "op tijd" (vóór de annuleringsdeadline) of "te laat" (erna); subtiele schakelaar in het blok
@@ -62,7 +63,7 @@ useHead({ title: () => `${checkout.value.name} — Mijn ViaLuxury` })
         <h2 class="ad__h2">Boeking beheren</h2>
         <template v-if="isFlex && !late">
           <p class="ad__text">Omdat je flexibel annuleren hebt aangezet, kun je je boeking annuleren t/m {{ cancelDeadline }}. Het is niet mogelijk individuele onderdelen van je boeking aan te passen. Wil je de datum van vertrek aanpassen, dan dien je de gehele boeking te annuleren en opnieuw te boeken. Let op: voor de boekingskosten ontvang je een voucher die je weer kunt gebruiken bij je nieuwe boeking.</p>
-          <p class="ad__actions"><a class="ad__btn" :href="CANCEL_FORM_URL">Boeking annuleren</a></p>
+          <p class="ad__actions"><NuxtLink class="ad__btn" :to="cancelHref">Boeking annuleren</NuxtLink></p>
         </template>
         <p v-else-if="isFlex && late" class="ad__text">Je hebt gekozen voor flexibel annuleren, maar de deadline ({{ cancelDeadline }}) is al verstreken. Kosteloos annuleren is daardoor niet meer mogelijk, en wijzigen van je boeking ook niet. Het kan zijn dat de klantenservice je wel bepaalde opties kan geven; neem daarom tijdens openingstijden contact met hen op via <a class="ad__link ad__link--plain" href="mailto:info@vialuxury.com">info@vialuxury.com</a>, <a class="ad__link ad__link--plain" href="tel:+31207052222">+31 20 705 2222</a> of een WhatsApp-bericht naar <a class="ad__link ad__link--plain" href="https://wa.me/31208088809" target="_blank" rel="noopener">+31 20 808 8809</a>.</p>
         <p v-else class="ad__text">Tijdens het boeken heb je ervoor gekozen om niet-terugbetaalbaar te boeken. Daardoor is het niet mogelijk om zelf je boeking te annuleren. Het kan zijn dat de klantenservice je wel bepaalde opties kan geven; neem daarom tijdens openingstijden contact met hen op via <a class="ad__link ad__link--plain" href="mailto:info@vialuxury.com">info@vialuxury.com</a>, <a class="ad__link ad__link--plain" href="tel:+31207052222">+31 20 705 2222</a> of een WhatsApp-bericht naar <a class="ad__link ad__link--plain" href="https://wa.me/31208088809" target="_blank" rel="noopener">+31 20 808 8809</a>.</p>

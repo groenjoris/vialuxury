@@ -86,8 +86,8 @@ const responsiveCss = `
 }
 `;
 
-/** Placeholder voor het bestaande annuleringsformulier (link "Mijn boeking annuleren"). */
-const CANCEL_FORM_URL = "https://vialuxury.nl/annuleren";
+/** Annuleringsformulier in het prototype (mockup van vialuxury.com/nl-NL/cancel), met het ViaLuxury Ordernummer in de URL. */
+const cancelUrl = (bookingNumber: string) => `https://vialuxury.vercel.app/multi-hotel-trip/annuleren?bookingId=${encodeURIComponent(bookingNumber)}`;
 /** Servicecentrum (veelgestelde vragen). */
 const SERVICE_URL = "https://vialuxury.nl/klantenservice";
 
@@ -477,7 +477,7 @@ export default function VakantieBevestiging({
               )}
               {/* Oranje tekstlink (geen knop) naar het annuleringsformulier; daaronder de afsluiting met de servicecentrumpagina. */}
               <Text style={{ margin: "16px 0 0" }}>
-                <Link href={CANCEL_FORM_URL} style={ctaLink}>Mijn boeking annuleren</Link>
+                <Link href={cancelUrl(bookingNumber)} style={ctaLink}>Mijn boeking annuleren</Link>
               </Text>
               {/* Afsluiting, met een lijn tussen het annuleerverhaal en deze tekst. */}
               <Section style={{ borderTop: `1px solid ${line}`, marginTop: "18px", paddingTop: "16px" }}>

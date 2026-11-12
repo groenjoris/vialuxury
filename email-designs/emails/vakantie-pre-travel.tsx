@@ -72,8 +72,8 @@ type Props = {
 };
 
 const img = (file: string) => `${baseUrl}/images/mail/${file}`;
-/** Annuleringsformulier (placeholder-link, zelfde als in de bevestigingsmail en het account; het formulier volgt nog). */
-const CANCEL_FORM_URL = "https://vialuxury.nl/annuleren";
+/** Annuleringsformulier in het prototype (mockup van vialuxury.com/nl-NL/cancel); de MVP-mails linken naar de MVP-kopie. */
+const cancelUrl = (bookingNumber: string, mvp: boolean) => `https://vialuxury.vercel.app/${mvp ? "mvp-trip" : "multi-hotel-trip"}/annuleren?bookingId=${encodeURIComponent(bookingNumber)}`;
 
 const responsiveCss = `
 @media only screen and (max-width: 480px) {
@@ -141,7 +141,7 @@ export default function VakantiePreTravel({
       // betalen?" staat niet in de FAQ maar in het blok van het eerste hotel.
       q: "Kan ik nog wijzigen of annuleren?",
       // Flex: onder het antwoord de link naar het annuleringsformulier (zoals op de bevestigingspagina).
-      link: rate === "flex" ? { label: "Boeking annuleren", href: CANCEL_FORM_URL } : undefined,
+      link: rate === "flex" ? { label: "Boeking annuleren", href: cancelUrl(bookingNumber, mvp) } : undefined,
       a: `Het wijzigen van een boeking is niet mogelijk. ${rate === "nonflex"
         ? "Tijdens het boeken heb je ervoor gekozen om niet-terugbetaalbaar te boeken. Daardoor is het niet mogelijk om zelf je boeking te annuleren. Het kan zijn dat de klantenservice je wel bepaalde opties kan geven; neem daarom tijdens openingstijden contact met hen op."
         : `Omdat je flexibel annuleren hebt aangezet, kun je je boeking annuleren t/m ${cancelUntil}, 23:59 uur. Het is niet mogelijk individuele onderdelen van je boeking aan te passen. Wil je de datum van vertrek aanpassen, dan dien je de gehele boeking te annuleren en opnieuw te boeken. Let op: voor de boekingskosten ontvang je een voucher die je weer kunt gebruiken bij je nieuwe boeking.`}`,
@@ -244,18 +244,16 @@ export default function VakantiePreTravel({
                   {/* Naast de foto alleen naam en adres (niet hoger dan de foto); de rest als subkopjes eronder. */}
                   <Text style={{ ...body14, margin: 0, fontSize: "16px", fontWeight: 700 }}>{firstHotel.name}</Text>
                   <Text style={{ ...small, margin: "2px 0 0" }}>{firstHotel.address}</Text>
+                  <Text style={{ ...small, margin: "6px 0 0" }}>
+                    <Link href={firstHotel.mapsUrl} style={plainLink}>Route in Google Maps</Link>
+                  </Text>
+                  <Text style={{ ...small, margin: "2px 0 0" }}>
+                    <Link href={`tel:${firstHotel.phone.replace(/\s/g, "")}`} style={plainLink}>{firstHotel.phone}</Link>
+                  </Text>
                 </Column>
               </Row>
               <Text style={subkop}>Inchecken</Text>
               <Text style={{ ...body14, margin: "4px 0 0" }}>{cap(arrivalDate)} vanaf {firstHotel.checkInTime} uur.</Text>
-              <Text style={subkop}>Route</Text>
-              <Text style={{ ...body14, margin: "4px 0 0" }}>
-                <Link href={firstHotel.mapsUrl} style={plainLink}>Route in Google Maps</Link>
-              </Text>
-              <Text style={subkop}>Telefoon</Text>
-              <Text style={{ ...body14, margin: "4px 0 0" }}>
-                <Link href={`tel:${firstHotel.phone.replace(/\s/g, "")}`} style={plainLink}>{firstHotel.phone}</Link>
-              </Text>
               <Text style={subkop}>Parkeren bij het hotel</Text>
               <Text style={{ ...body14, margin: "4px 0 0" }}>{firstHotel.parking}</Text>
               {firstHotel.charging && (

@@ -79,8 +79,8 @@ export type IncheckProps = {
 };
 
 const img = (file: string) => `${baseUrl}/images/mail/${file}`;
-/** Annuleringsformulier (placeholder-link, zelfde als in de bevestigings- en pre-travelmail en het account; het formulier volgt nog). */
-const CANCEL_FORM_URL = "https://vialuxury.nl/annuleren";
+/** Annuleringsformulier in het prototype (mockup van vialuxury.com/nl-NL/cancel); de MVP-mails linken naar de MVP-kopie. */
+const cancelUrl = (bookingNumber: string, mvp: boolean) => `https://vialuxury.vercel.app/${mvp ? "mvp-trip" : "multi-hotel-trip"}/annuleren?bookingId=${encodeURIComponent(bookingNumber)}`;
 
 const responsiveCss = `
 @media only screen and (max-width: 480px) {
@@ -170,7 +170,7 @@ export default function VakantieIncheckHotel({
   const wijzigen: Faq = {
     q: "Kan ik nog wijzigen?",
     a: "Nee, wijzigen is niet meer mogelijk. Annuleren kan nog wel, maar je ontvangt dan geen bedrag retour.",
-    link: { label: "Boeking annuleren", href: CANCEL_FORM_URL },
+    link: { label: "Boeking annuleren", href: cancelUrl(bookingNumber, mvp) },
   };
   const faq: Faq[] = first
     ? [
@@ -265,18 +265,16 @@ export default function VakantieIncheckHotel({
                   {/* Naast de foto alleen naam en adres (niet hoger dan de foto); de rest als subkopjes eronder. */}
                   <Text style={{ ...body14, margin: 0, fontSize: "16px", fontWeight: 700 }}>{hotel.name}</Text>
                   <Text style={{ ...small, margin: "2px 0 0" }}>{hotel.address}</Text>
+                  <Text style={{ ...small, margin: "6px 0 0" }}>
+                    <Link href={hotel.mapsUrl} style={plainLink}>Route in Google Maps</Link>
+                  </Text>
+                  <Text style={{ ...small, margin: "2px 0 0" }}>
+                    <Link href={`tel:${hotel.phone.replace(/\s/g, "")}`} style={plainLink}>{hotel.phone}</Link>
+                  </Text>
                 </Column>
               </Row>
               <Text style={subkop}>Inchecken</Text>
               <Text style={{ ...body14, margin: "4px 0 0" }}>Morgen, {arrivalDate}, vanaf {hotel.checkInTime} uur. Neem je identiteitsbewijs mee.</Text>
-              <Text style={subkop}>Route</Text>
-              <Text style={{ ...body14, margin: "4px 0 0" }}>
-                <Link href={hotel.mapsUrl} style={plainLink}>Route in Google Maps</Link>
-              </Text>
-              <Text style={subkop}>Telefoon</Text>
-              <Text style={{ ...body14, margin: "4px 0 0" }}>
-                <Link href={`tel:${hotel.phone.replace(/\s/g, "")}`} style={plainLink}>{hotel.phone}</Link>
-              </Text>
               {isBike ? (
                 <>
                   {hotel.bikeStorage && (
@@ -312,11 +310,19 @@ export default function VakantieIncheckHotel({
                   vanuit de mail nog even kunt nakijken wat je allemaal krijgt. */}
               <Text style={subkop}>Wat is er inbegrepen?</Text>
               <Text style={{ ...body14, margin: "4px 0 0" }}>Bij {hotel.name} zit dit bij je arrangement:</Text>
-              <ul style={{ margin: "4px 0 0", paddingLeft: "18px" }}>
-                {hotel.includes.map((item) => (
-                  <li key={item} style={{ ...body14, margin: "0 0 2px" }}>{item}</li>
-                ))}
-              </ul>
+              {/* Vinkjes in de tekstkleur, zoals in de bevestigingsmail */}
+              <table role="presentation" cellPadding={0} cellSpacing={0} border={0} style={{ marginTop: "4px", borderCollapse: "collapse" }}>
+                <tbody>
+                  {hotel.includes.map((item) => (
+                    <tr key={item}>
+                      <td style={{ width: "20px", padding: "0 0 3px", verticalAlign: "top" }}>
+                        <Img src={check} alt="" width="14" height="14" style={{ display: "block", marginTop: "3px" }} />
+                      </td>
+                      <td style={{ ...body14, margin: 0, padding: "0 0 3px", verticalAlign: "top" }}>{item}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
               {first && (
                 <>
                   <Text style={subkop}>Wat moet ik nog betalen?</Text>
