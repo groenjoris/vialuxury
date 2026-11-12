@@ -109,17 +109,17 @@ useHead({ title: () => `${checkout.value.name} — Mijn ViaLuxury` })
           <ul class="ad__contact">
             <li>
               <svg class="ad__contact-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12z" /><circle cx="12" cy="10" r="2.5" /></svg>
-              <div>
-                <span class="ad__label">Adres</span>{{ h.address }} · <a class="ad__link ad__link--plain" :href="h.mapsHref" target="_blank" rel="noopener">Routebeschrijving</a>
-                <!-- Hotelboekingsnummer onder het adres: hetzelfde kleine vlakje als op de bevestigingspagina. -->
-                <div class="ad__hotel-ref"><MultiHotelTripBookingRef small label="Hotelboekingsnummer" :value="h.bookingRef" /></div>
-              </div>
+              <div><span class="ad__label">Adres</span>{{ h.address }} · <a class="ad__link ad__link--plain" :href="h.mapsHref" target="_blank" rel="noopener">Routebeschrijving</a></div>
             </li>
             <li>
               <svg class="ad__contact-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24 11.36 11.36 0 003.58.57 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1 11.36 11.36 0 00.57 3.58 1 1 0 01-.24 1.01l-2.21 2.21z" /></svg>
               <div><span class="ad__label">Telefoon</span><a class="ad__link ad__link--plain" :href="`tel:${h.phone.replace(/\s/g, '')}`">{{ h.phone }}</a></div>
             </li>
           </ul>
+
+          <!-- Hotelboekingsnummer: eigen regel onder het contactblok (hoort niet bij het adres), helemaal links, met een lijn erboven;
+               hetzelfde kleine vlakje als op de bevestigingspagina. -->
+          <div class="ad__hotel-ref"><MultiHotelTripBookingRef small label="Hotelboekingsnummer" :value="h.bookingRef" /></div>
         </div>
       </article>
 
@@ -190,7 +190,7 @@ a.ad__late-opt:hover { color: var(--color-text-primary); }
 .ad__contact li { display: flex; align-items: flex-start; gap: 10px; }
 .ad__contact .ad__label { margin-bottom: 3px; }
 .ad__contact-icon { flex-shrink: 0; width: 18px; height: 18px; margin-top: 1px; }
-.ad__hotel-ref { margin-top: 8px; }
+.ad__hotel-ref { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--color-border); }
 
 /* Prijs */
 .ad__price { padding: 18px 20px; border: 1px solid var(--color-border); border-radius: var(--radius-md); background: #f7f7f7; font-size: 15px; }
