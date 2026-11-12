@@ -142,6 +142,8 @@ export default function VakantieIncheckHotel({
   const body14 = { fontFamily: font.body, fontSize: "14px", lineHeight: "1.45", color: c.text, margin: "8px 0 0" };
   const small = { fontFamily: font.body, fontSize: "14px", lineHeight: "1.4", color: c.muted, margin: 0 };
   const ctaLink = { fontFamily: font.body, fontSize: "14px", fontWeight: 700, color: c.link, textDecoration: "underline" };
+  /** Links in het hotelblok (route, telefoon): in de tekstkleur, onderstreept — oranje wordt daar te druk. */
+  const plainLink = { color: c.text, textDecoration: "underline" };
   const check = img(dark ? "check-dark.png" : "check.png");
 
   /* Morgen in het kort: de dingen die je niet mag missen. */
@@ -260,22 +262,21 @@ export default function VakantieIncheckHotel({
                   <Img src={hotel.image} alt={hotel.name} width="140" height="100" className="m-hotelimg" style={{ borderRadius: "4px", objectFit: "cover", display: "block" }} />
                 </Column>
                 <Column className="stack m-nopad" style={{ paddingLeft: "18px", verticalAlign: "top" }}>
+                  {/* Naast de foto alleen naam en adres (niet hoger dan de foto); de rest als subkopjes eronder. */}
                   <Text style={{ ...body14, margin: 0, fontSize: "16px", fontWeight: 700 }}>{hotel.name}</Text>
-                  <Text style={{ ...small, margin: "2px 0 0" }}>
-                    <strong style={{ color: c.text }}>Adres</strong> {hotel.address}
-                  </Text>
-                  <Text style={{ margin: "6px 0 0" }}>
-                    <Link href={hotel.mapsUrl} style={ctaLink}>Route in Google Maps</Link>
-                  </Text>
-                  <Text style={{ ...small, margin: "6px 0 0" }}>
-                    <strong style={{ color: c.text }}>Telefoon</strong>{" "}
-                    <Link href={`tel:${hotel.phone.replace(/\s/g, "")}`} style={{ color: c.link, textDecoration: "underline" }}>{hotel.phone}</Link>
-                  </Text>
-                  <Text style={{ ...small, margin: "10px 0 0" }}>
-                    <strong style={{ color: c.text }}>Inchecken</strong> morgen, {arrivalDate}, vanaf {hotel.checkInTime} uur. Neem je identiteitsbewijs mee.
-                  </Text>
+                  <Text style={{ ...small, margin: "2px 0 0" }}>{hotel.address}</Text>
                 </Column>
               </Row>
+              <Text style={subkop}>Inchecken</Text>
+              <Text style={{ ...body14, margin: "4px 0 0" }}>Morgen, {arrivalDate}, vanaf {hotel.checkInTime} uur. Neem je identiteitsbewijs mee.</Text>
+              <Text style={subkop}>Route</Text>
+              <Text style={{ ...body14, margin: "4px 0 0" }}>
+                <Link href={hotel.mapsUrl} style={plainLink}>Route in Google Maps</Link>
+              </Text>
+              <Text style={subkop}>Telefoon</Text>
+              <Text style={{ ...body14, margin: "4px 0 0" }}>
+                <Link href={`tel:${hotel.phone.replace(/\s/g, "")}`} style={plainLink}>{hotel.phone}</Link>
+              </Text>
               {isBike ? (
                 <>
                   {hotel.bikeStorage && (

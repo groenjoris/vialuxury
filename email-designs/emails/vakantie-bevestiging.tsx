@@ -324,20 +324,19 @@ export default function VakantieBevestiging({
                             ))}
                           </tbody>
                         </table>
+                        {/* Hotelboekingsnummer: klein beige vlakje onder de inclusies, links gelijk met de lijst en zo breed als de
+                            inhoud (zoals op de bevestigingspagina). */}
+                        <table role="presentation" cellPadding={0} cellSpacing={0} border={0} style={{ marginTop: "8px", borderCollapse: "separate" }}>
+                          <tbody>
+                            <tr>
+                              <td style={{ ...body14, margin: 0, backgroundColor: beige, borderRadius: "6px", padding: "5px 14px 5px 10px", whiteSpace: "nowrap" as const }}>
+                                Hotelboekingsnummer&nbsp;&nbsp;<strong style={{ letterSpacing: "0.04em" }}>{h.bookingRef}</strong>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
                       </Column>
                     </Row>
-                    {/* Hotelboekingsnummer: smal beige balkje over de hele breedte van het hotelblok (links gelijk met het nummer en
-                        de foto), zoals het ViaLuxury Ordernummer bovenin maar kleiner. */}
-                    <Section style={{ backgroundColor: beige, borderRadius: "6px", padding: "8px 12px", marginTop: "10px" }}>
-                      <Row>
-                        <Column>
-                          <Text style={{ ...small, margin: 0, color: c.text }}>Hotelboekingsnummer</Text>
-                        </Column>
-                        <Column align="right">
-                          <Text style={{ ...small, margin: 0, fontWeight: 700, letterSpacing: "0.04em", textAlign: "right" as const, color: c.text }}>{h.bookingRef}</Text>
-                        </Column>
-                      </Row>
-                    </Section>
                   </Section>
                 ))}
 
@@ -480,10 +479,13 @@ export default function VakantieBevestiging({
               <Text style={{ margin: "16px 0 0" }}>
                 <Link href={CANCEL_FORM_URL} style={ctaLink}>Mijn boeking annuleren</Link>
               </Text>
-              <Text style={{ ...body14, margin: "16px 0 0" }}>
-                Wij vinden het fijn dat je bij ons geboekt hebt en helpen je graag als je nog informatie mist. Op onze{" "}
-                <Link href={SERVICE_URL} style={textLink}>servicecentrumpagina</Link> vind je direct antwoord op de meest gestelde vragen.
-              </Text>
+              {/* Afsluiting, met een lijn tussen het annuleerverhaal en deze tekst. */}
+              <Section style={{ borderTop: `1px solid ${line}`, marginTop: "18px", paddingTop: "16px" }}>
+                <Text style={{ ...body14, margin: 0 }}>
+                  Wij vinden het fijn dat je bij ons geboekt hebt en helpen je graag als je nog informatie mist. Op onze{" "}
+                  <Link href={SERVICE_URL} style={textLink}>servicecentrumpagina</Link> vind je direct antwoord op de meest gestelde vragen.
+                </Text>
+              </Section>
             </Section>
           </Section>
         </Container>
