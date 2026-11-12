@@ -365,6 +365,10 @@ useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
 </template>
 
 <style scoped>
+/* Typografie: alleen de zes maten van de checkout-tokens — 32 display (titel op de foto), 24 h1 (blokkoppen 'Wat er nu
+   gebeurt' en 'Jouw boeking'), 20 h2 (overige koppen, reisnaam), 16 body-lg (staptitels, hotelnamen, FAQ-vragen),
+   14 body (alle lopende tekst, links, prijsregels, boekingsnummervlakjes) en 12 caption (bijschriften, inclusies,
+   eyebrow, nummerbollen, sterren). Geen losse pixelmaten ertussen. */
 .page { position: relative; min-height: 100vh; display: flex; flex-direction: column; }
 .page--white { background: var(--c-white); }
 .cf__main { flex: 1; padding-bottom: 56px; }
@@ -463,7 +467,7 @@ useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
 .cf__receipt-titlerow { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin: 4px 12px 16px; }
 .cf__receipt-title { margin: 0; }
 .cf__receipt { padding: 28px 28px 24px; border-radius: var(--radius-sm); background: var(--c-white); box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06); }
-.cf__trip-title { margin: 0 0 6px; font-size: var(--t-h1); line-height: 1.2; }
+.cf__trip-title { margin: 0 0 6px; font-size: var(--t-h2); line-height: 1.2; } /* reisnaam één stap onder de blokkop 'Jouw boeking' (h1) */
 .cf__trip-meta { margin: 0 0 20px; color: var(--c-dark-grey); }
 
 /* Tijdlijn per hotel: bolletje | kamerfoto | tekst */
@@ -474,14 +478,14 @@ useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
 .cf__stay-dot { position: relative; z-index: 1; display: flex; align-items: center; height: 80px; }
 .cf__num {
   display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 50%;
-  background: var(--c-via-black); color: #fff; font-size: 13px; font-weight: 700; box-shadow: 0 0 0 4px #fff;
+  background: var(--c-via-black); color: #fff; font-size: var(--t-caption); font-weight: 700; box-shadow: 0 0 0 4px #fff;
 }
 .cf__stay-img { display: block; width: 112px; height: 80px; object-fit: cover; border-radius: var(--radius-sm); }
 .cf__stay-img--empty { background: var(--c-surface); }
 .cf__stay-body { min-width: 0; }
 .cf__stay-name { margin: 0; font-size: var(--t-body-lg); font-weight: 700; line-height: 1.3; }
 /* Sterren als op de dealcards: zwart, 13px, letterspatiëring 1px. */
-.cf__stars { color: #141414; font-size: 13px; letter-spacing: 1px; margin-left: 4px; font-weight: 400; }
+.cf__stars { color: #141414; font-size: var(--t-caption); letter-spacing: 1px; margin-left: 4px; font-weight: 400; }
 .cf__stars svg { display: inline-block; }
 .cf__stay-meta { margin: 2px 0 6px; }
 /* Kamer · ontbijt · diner: doorlopend, met een bulletje ertussen (geen vinkjes). */
@@ -539,7 +543,6 @@ useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
   .cf__receipt-wrap { padding: 10px; }
   .cf__receipt-titlerow { flex-wrap: wrap; gap: 8px 16px; margin: 4px 6px 12px; }
   .cf__receipt { padding: 20px 16px; }
-  .cf__trip-title { font-size: var(--t-h2); }
   .cf__stay { grid-template-columns: 28px 96px minmax(0, 1fr); column-gap: 12px; }
   .cf__stay:not(:last-child)::before { left: 12px; top: 35px; bottom: -53px; }
   .cf__stay-dot { height: 70px; }

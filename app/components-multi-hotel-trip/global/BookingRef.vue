@@ -10,7 +10,7 @@ withDefaults(defineProps<{ value: string; label?: string; small?: boolean }>(), 
 </template>
 
 <style scoped>
-.bref { display: inline-flex; align-items: baseline; gap: 8px; padding: 8px 12px; border-radius: 8px; background: #f4f1ec; font-family: var(--font-body); font-size: 15px; line-height: 1.3; color: var(--color-text-primary, #141414); white-space: nowrap; }
+.bref { display: inline-flex; align-items: baseline; gap: 8px; padding: 8px 12px; border-radius: 8px; background: #f4f1ec; font-family: var(--font-body); font-size: var(--t-body, 15px); line-height: 1.3; /* de bodymaat van de pagina: 14 in de checkout, 15 in het account */ color: var(--color-text-primary, #141414); white-space: nowrap; }
 .bref__label { color: var(--color-text-secondary, #555); }
 .bref__num { font-weight: 700; letter-spacing: 0.04em; }
 /* Kleine variant (hotelboekingsnummer): zelfde letter als de lopende tekst, alleen minder ruimte eromheen; past zich aan de inhoud aan. */
