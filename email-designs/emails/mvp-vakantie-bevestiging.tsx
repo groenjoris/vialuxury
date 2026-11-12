@@ -115,7 +115,7 @@ export default function VakantieBevestiging({
   const c = newsletter[mode];
   const dark = mode === "dark";
   const frameBg = dark ? "#262626" : "#F7F7F7"; // grijs kader om de kassabon
-  const beige = dark ? "#3A3A3A" : "#F4F1EC"; // boekingsnummer, tintvlakken
+  const beige = dark ? "#3A3A3A" : "#F4F1EC"; // ViaLuxury Ordernummer, tintvlakken
   const line = c.border;
 
   const h1 = {
@@ -208,7 +208,7 @@ export default function VakantieBevestiging({
     },
     {
       q: `Hoe werkt het inchecken bij ${hotels.length} hotels?`,
-      a: "Je kunt je gewoon bij de receptie melden en inchecken met je naam en je boekingsnummer. De meeste hotels verplichten een identificatiedocument zoals een rijbewijs of een paspoort van de hoofdboeker. Bij sommige hotels moet iedereen zich identificeren. Let op: een kopie volstaat niet en zonder geldig document kan een hotel weigeren je toe te laten.",
+      a: "Je kunt je gewoon bij de receptie melden en inchecken met je naam en je ViaLuxury Ordernummer. De meeste hotels verplichten een identificatiedocument zoals een rijbewijs of een paspoort van de hoofdboeker. Bij sommige hotels moet iedereen zich identificeren. Let op: een kopie volstaat niet en zonder geldig document kan een hotel weigeren je toe te laten.",
     },
     {
       q: "Wat betaal ik nog in de hotels?",
@@ -227,7 +227,7 @@ export default function VakantieBevestiging({
   /* Annuleren bij het flexibele tarief: drie stappen. */
   const cancelSteps = [
     { title: "Check de annuleringstermijn", text: `Je kunt jouw reservering nog tot 30 dagen voor de dag van aankomst annuleren. In geval van jouw boeking betekent dit dat je annuleringstermijn afloopt om 23:59 uur op ${cancelUntil}. Bij annulering na deze termijn of bij no-show ontvang je geen bedrag retour.` },
-    { title: "Klik op de link ‘Mijn boeking annuleren’", text: "Indien je zeker weet dat je wilt annuleren, kun je dit gemakkelijk doen via de onderstaande link ‘Mijn boeking annuleren’. Houd je boekingsnummer en e-mailadres bij de hand." },
+    { title: "Klik op de link ‘Mijn boeking annuleren’", text: "Indien je zeker weet dat je wilt annuleren, kun je dit gemakkelijk doen via de onderstaande link ‘Mijn boeking annuleren’. Houd je ViaLuxury Ordernummer en e-mailadres bij de hand." },
     { title: "Ontvang het volledige arrangementsbedrag retour", text: "Indien je de reservering binnen de annuleringstermijn annuleert, krijg je het betaalde arrangementsbedrag van ons teruggestort. Voor de boekingskosten ontvang je een voucher, die je direct kunt gebruiken bij je nieuwe boeking. Je ontvangt binnen twee weken je betaalde arrangementsbedrag retour!" },
   ];
 
@@ -237,7 +237,7 @@ export default function VakantieBevestiging({
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <style>{responsiveCss}</style>
       </Head>
-      <Preview>Boekingsnummer {bookingNumber}. Hieronder alles over je {hotels.length} hotels.</Preview>
+      <Preview>ViaLuxury Ordernummer {bookingNumber}. Hieronder alles over je {hotels.length} hotels.</Preview>
       <Body style={{ backgroundColor: c.bg, margin: 0, padding: 0, fontFamily: font.body }}>
         {/* Variant-label (niet voor de gast): dezelfde subtiele stijl als het label onder het logo op de
             MVP-pagina's ("MHR MVP"), zodat developers altijd zien dat dit de MVP-variant van de mail is. */}
@@ -251,7 +251,7 @@ export default function VakantieBevestiging({
         <CrmHeader mode={mode} />
         <Container style={{ width: "100%", maxWidth: "626px" }}>
 
-          {/* Kop + aanhef + boekingsnummer */}
+          {/* Kop + aanhef + ViaLuxury Ordernummer */}
           <Section className="m-pad" style={{ padding: "32px 32px 0" }}>
             <Heading as="h1" className="m-h1" style={h1}>
               Je boeking is bevestigd
@@ -264,7 +264,7 @@ export default function VakantieBevestiging({
             <Section style={{ backgroundColor: beige, borderRadius: "8px", padding: "12px 16px", marginTop: "16px" }}>
               <Row>
                 <Column>
-                  <Text style={{ ...body14, margin: 0 }}>Je boekingsnummer</Text>
+                  <Text style={{ ...body14, margin: 0 }}>ViaLuxury Ordernummer</Text>
                 </Column>
                 <Column align="right">
                   <Text style={{ ...body14, margin: 0, fontWeight: 700, fontSize: "16px", letterSpacing: "0.04em", textAlign: "right" as const }}>

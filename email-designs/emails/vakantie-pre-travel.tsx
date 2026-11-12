@@ -21,7 +21,7 @@ import CrmHeader from "../components/CrmHeader";
 import { baseUrl, font, newsletter, type EmailMode } from "../components/theme";
 
 // Pre-travel: veertien dagen voor vertrek van een multi-hotel vakantie (auto én fiets). Checklist
-// ("Niet vergeten": identiteitsbewijs, boekingsnummer, bij de fietsvakantie je fiets), inchecken bij
+// ("Niet vergeten": identiteitsbewijs, ViaLuxury Ordernummer, bij de fietsvakantie je fiets), inchecken bij
 // het eerste hotel (adres, route, parkeren, opladen of fietsenstalling, wat je nog betaalt; de
 // inclusies staan in de incheckmails), de persoonlijke pagina met praktische informatie en tips, "Bekijk je boeking online"
 // (inloggen met een code per mail), "Hulp nodig?" en veelgestelde vragen.
@@ -147,7 +147,7 @@ export default function VakantiePreTravel({
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <style>{responsiveCss}</style>
       </Head>
-      <Preview>Je checklist: identiteitsbewijs, boekingsnummer{isBike ? ", je fiets" : ""} en inchecken bij {firstHotel.name}.</Preview>
+      <Preview>Je checklist: identiteitsbewijs, ViaLuxury Ordernummer{isBike ? ", je fiets" : ""} en inchecken bij {firstHotel.name}.</Preview>
       <Body style={{ backgroundColor: c.bg, margin: 0, padding: 0, fontFamily: font.body }}>
         {mvp && <MvpLabel mode={mode} />}
         <CrmHeader mode={mode} />
@@ -186,9 +186,9 @@ export default function VakantiePreTravel({
                   <Img src={check} alt="" width="22" height="22" />
                 </Column>
                 <Column style={{ verticalAlign: "top" }}>
-                  <Text style={{ ...body14, margin: 0, fontWeight: 700 }}>Je boekingsnummer: {bookingNumber}</Text>
+                  <Text style={{ ...body14, margin: 0, fontWeight: 700 }}>Je ViaLuxury Ordernummer: {bookingNumber}</Text>
                   <Text style={{ ...small, margin: "2px 0 0" }}>
-                    Voor de zekerheid, neem het mee. Het is hetzelfde boekingsnummer voor alle hotels; het staat ook in je account.
+                    Voor de zekerheid, neem het mee. Het is hetzelfde ViaLuxury Ordernummer voor alle hotels; het staat ook in je account.
                   </Text>
                 </Column>
               </Row>

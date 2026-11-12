@@ -147,7 +147,7 @@ export default function VakantieIncheckHotel({
     ? [
         { title: `Inchecken bij ${hotel.name} vanaf ${hotel.checkInTime} uur`, text: homeTravel ? `Reistijd ${homeTravel}.` : undefined },
         { title: "Neem je identiteitsbewijs mee", text: "Paspoort, rijbewijs of ID-kaart; het hotel vraagt ernaar bij het inchecken." },
-        { title: `Je boekingsnummer: ${bookingNumber}`, text: "Hetzelfde nummer voor alle hotels." },
+        { title: `Je ViaLuxury Ordernummer: ${bookingNumber}`, text: "Hetzelfde nummer voor alle hotels." },
       ]
     : [
         ...(isBike && previousHotel

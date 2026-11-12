@@ -1,11 +1,11 @@
 <script setup lang="ts">
-// Boekingsnummer, overal in dezelfde vorm als in de pre-travelmail: op een beige vlakje,
+// ViaLuxury Ordernummer, overal in dezelfde vorm als in de pre-travelmail: op een beige vlakje,
 // label + vet nummer. Gebruikt op de bevestigingspagina, de tipspagina en in Mijn ViaLuxury.
 defineProps<{ value: string }>()
 </script>
 
 <template>
-  <span class="bref"><span class="bref__label">Boekingsnummer</span><b class="bref__num">{{ value }}</b></span>
+  <span class="bref"><span class="bref__label">ViaLuxury Ordernummer</span><b class="bref__num">{{ value }}</b></span>
 </template>
 
 <style scoped>

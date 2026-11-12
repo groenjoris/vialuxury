@@ -5,7 +5,7 @@
     "description": "Bevestiging na het boeken van een auto- of fietsvakantie met meerdere hotels: kassabon per hotel (adres, nachten, inclusies, check-in/out), flexibel annuleren, prijs, tips voor je reis, boeking terugvinden, niet inbegrepen, FAQ en onderaan het blok Annuleren of wijzigen (tekst per tarief, link Mijn boeking annuleren, daaronder de afsluiting).",
     "section": "designs",
     "subject": "Je boeking is bevestigd: Ontdek Noord-Frankrijk en de Opaalkust in 7 dagen",
-    "preheader": "Boekingsnummer VL-11 851 812. Hieronder alles over je 3 hotels."
+    "preheader": "ViaLuxury Ordernummer VL-11 851 812. Hieronder alles over je 3 hotels."
   },
   {
     "slug": "vakantie-bevestiging-nonflex",
@@ -13,7 +13,7 @@
     "description": "Niet-terugbetaalbare boeking: 'Niet terugbetaalbaar — De boeking kan niet geannuleerd worden' op de kassabon, prijs zonder toeslag, FAQ zonder gratis annuleren.",
     "section": "designs",
     "subject": "Je boeking is bevestigd: Ontdek Noord-Frankrijk en de Opaalkust in 7 dagen",
-    "preheader": "Boekingsnummer VL-11 851 812. Hieronder alles over je 3 hotels.",
+    "preheader": "ViaLuxury Ordernummer VL-11 851 812. Hieronder alles over je 3 hotels.",
     "variantOf": "vakantie-bevestiging"
   },
   {
@@ -22,7 +22,7 @@
     "description": "Dezelfde boekingsbevestiging voor de fietsvakantie Twente & Salland: drie hotels met bagagetransport, fietshuur en de reis naar het eerste hotel niet inbegrepen.",
     "section": "designs",
     "subject": "Je boeking is bevestigd: 7-daagse fietsvakantie Twente & Salland",
-    "preheader": "Boekingsnummer VL-85 584 493. Hieronder alles over je 3 hotels."
+    "preheader": "ViaLuxury Ordernummer VL-85 584 493. Hieronder alles over je 3 hotels."
   },
   {
     "slug": "vakantie-bevestiging-fiets-nonflex",
@@ -30,16 +30,16 @@
     "description": "Fietsvakantie, niet-terugbetaalbare boeking.",
     "section": "designs",
     "subject": "Je boeking is bevestigd: 7-daagse fietsvakantie Twente & Salland",
-    "preheader": "Boekingsnummer VL-85 584 493. Hieronder alles over je 3 hotels.",
+    "preheader": "ViaLuxury Ordernummer VL-85 584 493. Hieronder alles over je 3 hotels.",
     "variantOf": "vakantie-bevestiging-fiets"
   },
   {
     "slug": "vakantie-pre-travel",
     "title": "Pre-travel (14 dagen voor vertrek)",
-    "description": "Checklist voor je reis: identiteitsbewijs en boekingsnummer, inchecken bij het eerste hotel (adres, route, parkeren, opladen, wat je nog betaalt), de persoonlijke pagina met praktische informatie en tips, je boeking online, en veelgestelde vragen.",
+    "description": "Checklist voor je reis: identiteitsbewijs en ViaLuxury Ordernummer, inchecken bij het eerste hotel (adres, route, parkeren, opladen, wat je nog betaalt), de persoonlijke pagina met praktische informatie en tips, je boeking online, en veelgestelde vragen.",
     "section": "designs",
     "subject": "Over 14 dagen vertrek je naar Noord-Frankrijk",
-    "preheader": "Je checklist: identiteitsbewijs, boekingsnummer en inchecken bij Château Tilques."
+    "preheader": "Je checklist: identiteitsbewijs, ViaLuxury Ordernummer en inchecken bij Château Tilques."
   },
   {
     "slug": "vakantie-pre-travel-nonflex",
@@ -47,7 +47,7 @@
     "description": "Niet-terugbetaalbare boeking: FAQ 'Kan ik nog wijzigen of annuleren?' zonder gratis annuleren.",
     "section": "designs",
     "subject": "Over 14 dagen vertrek je naar Noord-Frankrijk",
-    "preheader": "Je checklist: identiteitsbewijs, boekingsnummer en inchecken bij Château Tilques.",
+    "preheader": "Je checklist: identiteitsbewijs, ViaLuxury Ordernummer en inchecken bij Château Tilques.",
     "variantOf": "vakantie-pre-travel"
   },
   {
@@ -56,7 +56,7 @@
     "description": "Dezelfde pre-travelmail voor de fietsvakantie Twente & Salland: 'Je fiets' in de checklist, fietsenstalling in plaats van opladen, geen tol.",
     "section": "designs",
     "subject": "Over 14 dagen vertrek je naar Twente & Salland",
-    "preheader": "Je checklist: identiteitsbewijs, boekingsnummer, je fiets en inchecken bij Hotel Wapen van Delden."
+    "preheader": "Je checklist: identiteitsbewijs, ViaLuxury Ordernummer, je fiets en inchecken bij Hotel Wapen van Delden."
   },
   {
     "slug": "vakantie-pre-travel-fiets-nonflex",
@@ -64,7 +64,7 @@
     "description": "Fietsvakantie, niet-terugbetaalbare boeking.",
     "section": "designs",
     "subject": "Over 14 dagen vertrek je naar Twente & Salland",
-    "preheader": "Je checklist: identiteitsbewijs, boekingsnummer, je fiets en inchecken bij Hotel Wapen van Delden.",
+    "preheader": "Je checklist: identiteitsbewijs, ViaLuxury Ordernummer, je fiets en inchecken bij Hotel Wapen van Delden.",
     "variantOf": "vakantie-pre-travel-fiets"
   },
   {
@@ -121,7 +121,7 @@
     "description": "MVP-versie van de boekingsbevestiging: kassabon per hotel (met alle inclusies), flexibel annuleren, prijs, boeking terugvinden, niet inbegrepen, FAQ en onderaan het blok Annuleren of wijzigen — zonder het blok Tips voor je reis.",
     "section": "designs",
     "subject": "Je boeking is bevestigd: Ontdek Noord-Frankrijk en de Opaalkust in 7 dagen",
-    "preheader": "Boekingsnummer VL-11 851 812. Hieronder alles over je 3 hotels."
+    "preheader": "ViaLuxury Ordernummer VL-11 851 812. Hieronder alles over je 3 hotels."
   },
   {
     "slug": "mvp-vakantie-bevestiging-nonflex",
@@ -129,7 +129,7 @@
     "description": "MVP-versie voor een niet-terugbetaalbare boeking: 'Niet terugbetaalbaar' op de kassabon, prijs zonder toeslag, FAQ zonder gratis annuleren.",
     "section": "designs",
     "subject": "Je boeking is bevestigd: Ontdek Noord-Frankrijk en de Opaalkust in 7 dagen",
-    "preheader": "Boekingsnummer VL-11 851 812. Hieronder alles over je 3 hotels.",
+    "preheader": "ViaLuxury Ordernummer VL-11 851 812. Hieronder alles over je 3 hotels.",
     "variantOf": "mvp-vakantie-bevestiging"
   },
   {
@@ -138,7 +138,7 @@
     "description": "MVP-versie van de boekingsbevestiging voor de fietsvakantie Twente & Salland.",
     "section": "designs",
     "subject": "Je boeking is bevestigd: 7-daagse fietsvakantie Twente & Salland",
-    "preheader": "Boekingsnummer VL-85 584 493. Hieronder alles over je 3 hotels."
+    "preheader": "ViaLuxury Ordernummer VL-85 584 493. Hieronder alles over je 3 hotels."
   },
   {
     "slug": "mvp-vakantie-bevestiging-fiets-nonflex",
@@ -146,7 +146,7 @@
     "description": "MVP-versie, fietsvakantie, niet-terugbetaalbare boeking.",
     "section": "designs",
     "subject": "Je boeking is bevestigd: 7-daagse fietsvakantie Twente & Salland",
-    "preheader": "Boekingsnummer VL-85 584 493. Hieronder alles over je 3 hotels.",
+    "preheader": "ViaLuxury Ordernummer VL-85 584 493. Hieronder alles over je 3 hotels.",
     "variantOf": "mvp-vakantie-bevestiging-fiets"
   },
   {
@@ -155,7 +155,7 @@
     "description": "MVP-versie van de pre-travelmail: zonder het blok Praktische informatie en tips; 'Bekijk je boeking online' gaat naar het boekingenoverzicht.",
     "section": "designs",
     "subject": "Over 14 dagen vertrek je naar Noord-Frankrijk",
-    "preheader": "Je checklist: identiteitsbewijs, boekingsnummer en inchecken bij Château Tilques."
+    "preheader": "Je checklist: identiteitsbewijs, ViaLuxury Ordernummer en inchecken bij Château Tilques."
   },
   {
     "slug": "mvp-vakantie-pre-travel-nonflex",
@@ -163,7 +163,7 @@
     "description": "MVP-versie, niet-terugbetaalbare boeking.",
     "section": "designs",
     "subject": "Over 14 dagen vertrek je naar Noord-Frankrijk",
-    "preheader": "Je checklist: identiteitsbewijs, boekingsnummer en inchecken bij Château Tilques.",
+    "preheader": "Je checklist: identiteitsbewijs, ViaLuxury Ordernummer en inchecken bij Château Tilques.",
     "variantOf": "mvp-vakantie-pre-travel"
   },
   {
@@ -172,7 +172,7 @@
     "description": "MVP-versie van de pre-travelmail voor de fietsvakantie Twente & Salland.",
     "section": "designs",
     "subject": "Over 14 dagen vertrek je naar Twente & Salland",
-    "preheader": "Je checklist: identiteitsbewijs, boekingsnummer, je fiets en inchecken bij Hotel Wapen van Delden."
+    "preheader": "Je checklist: identiteitsbewijs, ViaLuxury Ordernummer, je fiets en inchecken bij Hotel Wapen van Delden."
   },
   {
     "slug": "mvp-vakantie-pre-travel-fiets-nonflex",
@@ -180,7 +180,7 @@
     "description": "MVP-versie, fietsvakantie, niet-terugbetaalbare boeking.",
     "section": "designs",
     "subject": "Over 14 dagen vertrek je naar Twente & Salland",
-    "preheader": "Je checklist: identiteitsbewijs, boekingsnummer, je fiets en inchecken bij Hotel Wapen van Delden.",
+    "preheader": "Je checklist: identiteitsbewijs, ViaLuxury Ordernummer, je fiets en inchecken bij Hotel Wapen van Delden.",
     "variantOf": "mvp-vakantie-pre-travel-fiets"
   },
   {

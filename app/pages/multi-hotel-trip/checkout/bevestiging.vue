@@ -5,7 +5,7 @@
 // route "op de foto" (witte lijn, genummerde bolletjes, plaatsnamen); daaronder
 // links (⅔) eerst één wit, omlijnd blok met "Wat er nu gebeurt" (groter: de helft van
 // de boodschap) en "Wat je zelf doet", dan de kassabon — grijs kader met wit vlak:
-// eyebrow met rechts het boekingsnummer, reisnaam, datums, verticale tijdlijn met per
+// eyebrow met rechts het ViaLuxury Ordernummer, reisnaam, datums, verticale tijdlijn met per
 // hotel foto, naam, plaats · nachten · datums en wat je krijgt, dan flexibel annuleren
 // (en bagagetransfer), de prijs en "Betaald". Rechts (⅓) "Boeking terugvinden", "Tips
 // voor je reis" en de cadeaukaart als banner. Onderaan de veelgestelde vragen.
@@ -113,13 +113,13 @@ const guest = useState<{ firstName: string; email: string } | null>('mht-checkou
 const firstName = computed(() => guest.value?.firstName || 'Rijo')
 const email = computed(() => guest.value?.email || 'rijo.verburg@gmail.com')
 
-/** Boekingsnummer: vast per reis (demo), overal in dezelfde vorm (MultiHotelTripBookingRef). */
+/** ViaLuxury Ordernummer: vast per reis (demo), overal in dezelfde vorm (MultiHotelTripBookingRef). */
 const bookingRef = computed(() => bookingRefFor(trip.value.slug))
 
 /* Wat er nu gebeurt — chronologisch (verticale tijdlijn). De eerste stap draagt de datum van vandaag. */
 const today = fmt(new Date())
 const nextSteps = computed(() => [
-  { when: `${today}, nu`, title: 'Bevestiging in je mailbox', text: `Binnen een paar minuten staat deze bevestiging op ${email.value}, met je boekingsnummer en alles wat je hier ziet.` },
+  { when: `${today}, nu`, title: 'Bevestiging in je mailbox', text: `Binnen een paar minuten staat deze bevestiging op ${email.value}, met je ViaLuxury Ordernummer en alles wat je hier ziet.` },
   { when: `Rond ${docsDate.value}`, title: 'Een mail vol tips', text: 'Twee weken voor vertrek mailen we je tips zodat je je perfect kan voorbereiden op je reis.' },
   { when: checkIn.value, title: `Inchecken bij ${trip.value.hotels[0]?.name}`, text: `Vanaf ${stays.value[0]?.checkInTime} uur. Je hoeft niets te printen, je naam en identiteitsbewijs zijn genoeg.` },
   { when: checkOut.value, title: 'Weer thuis', text: 'Na je vakantie ontvang je een mail met de vraag hoe het was. Daar helpen we andere reizigers mee.' },
@@ -138,7 +138,7 @@ const CANCEL_FORM_URL = 'https://vialuxury.nl/annuleren'
 const faq = computed(() => [
   { q: 'Hoe kan ik annuleren of wijzigen?', link: isFlex.value ? { label: 'Boeking annuleren', href: CANCEL_FORM_URL } : undefined, a: `Het wijzigen van een boeking is niet mogelijk. ${isFlex.value ? `Omdat je flexibel annuleren hebt aangezet, kun je je boeking annuleren t/m ${cancelDeadline.value}. Het is niet mogelijk individuele onderdelen van je boeking aan te passen. Wil je de datum van vertrek aanpassen, dan dien je de gehele boeking te annuleren en opnieuw te boeken. Let op: voor de boekingskosten ontvang je een voucher die je weer kunt gebruiken bij je nieuwe boeking.` : 'Tijdens het boeken heb je ervoor gekozen om niet-terugbetaalbaar te boeken. Daardoor is het niet mogelijk om zelf je boeking te annuleren. Het kan zijn dat de klantenservice je wel bepaalde opties kan geven; neem daarom tijdens openingstijden contact met hen op.'}` },
   { q: 'Hoe log ik in op mijn account?', a: 'Ga naar vialuxury.com/nl-NL/inloggen, vul daar het e-mailadres in waarmee je geboekt hebt en je ontvangt direct de inlogcode in de mail.' },
-  { q: `Hoe werkt het inchecken bij ${trip.value.hotels.length} hotels?`, a: 'Je kunt je gewoon bij de receptie melden en inchecken met je naam en je boekingsnummer. De meeste hotels verplichten een identificatiedocument zoals een rijbewijs of een paspoort van de hoofdboeker. Bij sommige hotels moet iedereen zich identificeren. Let op: een kopie volstaat niet en zonder geldig document kan een hotel weigeren je toe te laten.' },
+  { q: `Hoe werkt het inchecken bij ${trip.value.hotels.length} hotels?`, a: 'Je kunt je gewoon bij de receptie melden en inchecken met je naam en je ViaLuxury Ordernummer. De meeste hotels verplichten een identificatiedocument zoals een rijbewijs of een paspoort van de hoofdboeker. Bij sommige hotels moet iedereen zich identificeren. Let op: een kopie volstaat niet en zonder geldig document kan een hotel weigeren je toe te laten.' },
   { q: 'Wat betaal ik nog in de hotels?', a: 'In principe betaal je bij de hotels niet meer voor hetgeen in het arrangement zit. Verblijf je ergens meerdere dagen, dan kan het dus zijn dat niet alle diners of de lunch in het arrangement zitten. In de meeste gevallen is het arrangement eveneens zonder drankjes en dien je bij het uitchecken deze dus te voldoen. Daarnaast zal je in de meeste gevallen de gemeentelijke toeristenbelasting moeten voldoen en in uitzonderlijke gevallen ook een lokale toeslag. Daarnaast is het mogelijk dat je gevraagd wordt een borg af te geven d.m.v. een reservering op een creditcard of een borg in cash.' },
   { q: 'Zijn de attracties uit de tips inbegrepen?', a: 'Alle onderdelen van het arrangement vind je terug in je boekingsbevestiging. De tips zijn hier niet vermeld en zijn dus niet inbegrepen of onderdeel van het arrangement. Je kunt dan ook zelf besluiten deze tips onderdeel te laten zijn van je reis.' },
   { q: 'Ik heb mijn e-mailadres verkeerd ingevuld', a: 'Geen zorgen, neem tijdens openingstijden of via de mail contact op met de klantenservice via info@vialuxury.com of +31 20 705 2222 of via een WhatsApp-bericht naar +31 20 808 8809. Op basis van bijvoorbeeld je adres kunnen zij dan een nieuwe boekingsbevestiging naar je sturen.' },
@@ -251,7 +251,7 @@ useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
             </ul>
           </section>
 
-          <!-- ── 3. Kassabon (⅔): grijs kader, wit vlak; boekingsnummer rechtsboven ── -->
+          <!-- ── 3. Kassabon (⅔): grijs kader, wit vlak; ViaLuxury Ordernummer rechtsboven ── -->
           <section class="cf__receipt-wrap" aria-label="Jouw boeking">
             <div class="cf__receipt-titlerow">
               <h2 class="cf__h2 cf__h2--lg cf__receipt-title">Jouw boeking</h2>
@@ -455,7 +455,7 @@ useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
 
 /* Kassabon: grijs kader met wit vlak erin */
 .cf__receipt-wrap { padding: 16px; border-radius: var(--radius); background: var(--c-surface); }
-/* Titel boven de kassabon, in het grijze kader; het boekingsnummer rechts op dezelfde hoogte. */
+/* Titel boven de kassabon, in het grijze kader; het ViaLuxury Ordernummer rechts op dezelfde hoogte. */
 .cf__receipt-titlerow { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin: 4px 12px 16px; }
 .cf__receipt-title { margin: 0; }
 .cf__receipt { padding: 28px 28px 24px; border-radius: var(--radius-sm); background: var(--c-white); box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06); }

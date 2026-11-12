@@ -1,4 +1,4 @@
-/** Boekingsnummer van een vakantieboeking: vast per reis (demo; TODO echt nummer uit het boekingssysteem). */
+/** ViaLuxury Ordernummer van een vakantieboeking: vast per reis (demo; TODO echt nummer uit het boekingssysteem). */
 export function bookingRefFor(slug: string): string {
   let h = 0
   for (const ch of slug) h = (h * 31 + ch.charCodeAt(0)) % 100000
