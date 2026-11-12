@@ -265,10 +265,11 @@ export default function VakantieIncheckHotel({
                   {/* Naast de foto alleen naam en adres (niet hoger dan de foto); de rest als subkopjes eronder. */}
                   <Text style={{ ...body14, margin: 0, fontSize: "16px", fontWeight: 700 }}>{hotel.name}</Text>
                   <Text style={{ ...small, margin: "2px 0 0" }}>{hotel.address}</Text>
-                  <Text style={{ ...small, margin: "6px 0 0" }}>
+                  {/* Route vlak onder het adres (hoort erbij); de telefoon met wat lucht erboven. */}
+                  <Text style={{ ...small, margin: "2px 0 0" }}>
                     <Link href={hotel.mapsUrl} style={plainLink}>Route in Google Maps</Link>
                   </Text>
-                  <Text style={{ ...small, margin: "2px 0 0" }}>
+                  <Text style={{ ...small, margin: "10px 0 0" }}>
                     <Link href={`tel:${hotel.phone.replace(/\s/g, "")}`} style={plainLink}>{hotel.phone}</Link>
                   </Text>
                 </Column>

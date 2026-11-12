@@ -244,10 +244,11 @@ export default function VakantiePreTravel({
                   {/* Naast de foto alleen naam en adres (niet hoger dan de foto); de rest als subkopjes eronder. */}
                   <Text style={{ ...body14, margin: 0, fontSize: "16px", fontWeight: 700 }}>{firstHotel.name}</Text>
                   <Text style={{ ...small, margin: "2px 0 0" }}>{firstHotel.address}</Text>
-                  <Text style={{ ...small, margin: "6px 0 0" }}>
+                  {/* Route vlak onder het adres (hoort erbij); de telefoon met wat lucht erboven. */}
+                  <Text style={{ ...small, margin: "2px 0 0" }}>
                     <Link href={firstHotel.mapsUrl} style={plainLink}>Route in Google Maps</Link>
                   </Text>
-                  <Text style={{ ...small, margin: "2px 0 0" }}>
+                  <Text style={{ ...small, margin: "10px 0 0" }}>
                     <Link href={`tel:${firstHotel.phone.replace(/\s/g, "")}`} style={plainLink}>{firstHotel.phone}</Link>
                   </Text>
                 </Column>
