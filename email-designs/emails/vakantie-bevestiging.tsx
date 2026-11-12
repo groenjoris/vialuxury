@@ -1,6 +1,5 @@
 import {
   Body,
-  Button,
   Column,
   Container,
   Head,
@@ -24,7 +23,7 @@ import { baseUrl, font, newsletter, type EmailMode } from "../components/theme";
 // nummer, de kassabon (reis, per hotel foto/naam/sterren/adres, lijst met nachten en
 // inclusies, check-in/check-out, flexibel annuleren, prijs), dan Tips voor je reis,
 // Boeking terugvinden, de veelgestelde vragen (uitgeklapt) en onderaan het blok "Annuleren of wijzigen"
-// (tekst per tarief, knop "Mijn boeking annuleren" naar het annuleringsformulier).
+// (tekst per tarief, oranje tekstlink "Mijn boeking annuleren" naar het annuleringsformulier, daaronder de afsluiting).
 
 type Hotel = {
   name: string;
@@ -84,7 +83,7 @@ const responsiveCss = `
 }
 `;
 
-/** Placeholder voor het bestaande annuleringsformulier (knop "Mijn boeking annuleren"). */
+/** Placeholder voor het bestaande annuleringsformulier (link "Mijn boeking annuleren"). */
 const CANCEL_FORM_URL = "https://vialuxury.nl/annuleren";
 /** Servicecentrum (veelgestelde vragen). */
 const SERVICE_URL = "https://vialuxury.nl/klantenservice";
@@ -226,7 +225,7 @@ export default function VakantieBevestiging({
   /* Annuleren bij het flexibele tarief: drie stappen. */
   const cancelSteps = [
     { title: "Check de annuleringstermijn", text: `Je kunt jouw reservering nog tot 30 dagen voor de dag van aankomst annuleren. In geval van jouw boeking betekent dit dat je annuleringstermijn afloopt om 23:59 uur op ${cancelUntil}. Bij annulering na deze termijn of bij no-show ontvang je geen bedrag retour.` },
-    { title: "Klik op de knop ‘Mijn boeking annuleren’", text: "Indien je zeker weet dat je wilt annuleren, kun je dit gemakkelijk doen via de onderstaande knop ‘Mijn boeking annuleren’. Houd je boekingsnummer en e-mailadres bij de hand." },
+    { title: "Klik op de link ‘Mijn boeking annuleren’", text: "Indien je zeker weet dat je wilt annuleren, kun je dit gemakkelijk doen via de onderstaande link ‘Mijn boeking annuleren’. Houd je boekingsnummer en e-mailadres bij de hand." },
     { title: "Ontvang het volledige arrangementsbedrag retour", text: "Indien je de reservering binnen de annuleringstermijn annuleert, krijg je het betaalde arrangementsbedrag van ons teruggestort. Voor de boekingskosten ontvang je een voucher, die je direct kunt gebruiken bij je nieuwe boeking. Je ontvangt binnen twee weken je betaalde arrangementsbedrag retour!" },
   ];
 
@@ -406,7 +405,7 @@ export default function VakantieBevestiging({
           </Section>
 
 
-          {/* Annuleren of wijzigen: helemaal onderaan, tekst per tarief en de knop "Mijn boeking annuleren"
+          {/* Annuleren of wijzigen: helemaal onderaan, tekst per tarief en de link "Mijn boeking annuleren"
               (placeholder-link naar het bestaande annuleringsformulier) */}
           <Section className="m-pad" style={{ padding: "0 32px 32px" }}>
             <Section style={{ borderTop: `1px solid ${line}`, paddingTop: "28px" }}>
@@ -425,8 +424,8 @@ export default function VakantieBevestiging({
                     <Link href="https://wa.me/31208088809" style={textLink}>+31 20 808 8809</Link>. Dan kijken we samen wat er wel mogelijk is.
                   </Text>
                   <Text style={body14}>
-                    Druk je toch op de knop “Mijn boeking annuleren”, dan is dat niet terug te draaien of achteraf aan te passen. Druk
-                    alleen op de knop “Mijn boeking annuleren” als je de annuleringsbevestiging nodig hebt voor een beroep op je
+                    Klik je toch op de link “Mijn boeking annuleren”, dan is dat niet terug te draaien of achteraf aan te passen. Klik
+                    alleen op de link “Mijn boeking annuleren” als je de annuleringsbevestiging nodig hebt voor een beroep op je
                     reisverzekering.
                   </Text>
                 </>
@@ -455,27 +454,14 @@ export default function VakantieBevestiging({
                   ))}
                 </>
               )}
+              {/* Oranje tekstlink (geen knop) naar het annuleringsformulier; daaronder de afsluiting met de servicecentrumpagina. */}
+              <Text style={{ margin: "16px 0 0" }}>
+                <Link href={CANCEL_FORM_URL} style={ctaLink}>Mijn boeking annuleren &gt;</Link>
+              </Text>
               <Text style={{ ...body14, margin: "16px 0 0" }}>
                 Wij vinden het fijn dat je bij ons geboekt hebt en helpen je graag als je nog informatie mist. Op onze{" "}
                 <Link href={SERVICE_URL} style={textLink}>servicecentrumpagina</Link> vind je direct antwoord op de meest gestelde vragen.
               </Text>
-              <Button
-                href={CANCEL_FORM_URL}
-                className="m-btn"
-                style={{
-                  backgroundColor: c.badgeBg,
-                  borderRadius: "6px",
-                  color: "#FFFFFF",
-                  fontFamily: font.body,
-                  fontSize: "14px",
-                  fontWeight: 700,
-                  padding: "12px 18px",
-                  textDecoration: "none",
-                  marginTop: "16px",
-                }}
-              >
-                Mijn boeking annuleren
-              </Button>
             </Section>
           </Section>
         </Container>
