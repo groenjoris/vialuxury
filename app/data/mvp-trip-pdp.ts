@@ -377,8 +377,8 @@ function tripFaq(trip: MvpTripDetail): FaqItem[] {
           `Yes. ${trip.station ?? first?.city ?? ''} station is a few minutes' ride from the first hotel. Outside rush hour your bike travels with you on the train with a bicycle ticket; if you prefer to travel without a bike, a rental bike or e-bike is waiting for you on arrival.`) },
     ] as FaqItem[] : []),
     { id: 'trip-annuleren', question: F('Kan ik annuleren of mijn datum wijzigen?', 'Can I cancel or change my date?'),
-      answer: F('Tot 30 dagen voor vertrek annuleer je kosteloos. Daarna gelden de voorwaarden van de hotels. Een andere aankomstdatum regelen we op aanvraag, afhankelijk van de beschikbaarheid bij alle hotels.',
-        'Up to 30 days before departure you can cancel free of charge. After that the hotels\' conditions apply. We arrange a different arrival date on request, subject to availability at all hotels.') },
+      answer: F('Tot 31 dagen voor vertrek annuleer je kosteloos. Daarna gelden de voorwaarden van de hotels. Een andere aankomstdatum regelen we op aanvraag, afhankelijk van de beschikbaarheid bij alle hotels.',
+        'Up to 31 days before departure you can cancel free of charge. After that the hotels\' conditions apply. We arrange a different arrival date on request, subject to availability at all hotels.') },
   ]
   return items
 }

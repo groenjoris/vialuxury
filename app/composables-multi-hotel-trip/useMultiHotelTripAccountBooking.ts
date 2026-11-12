@@ -47,7 +47,7 @@ export function useMultiHotelTripAccountBooking(slugOverride?: string) {
   const checkOut = computed(() => fmtShort(dateAt(nights.value)))
   const dateRange = computed(() => `${checkIn.value} t/m ${checkOut.value} ${checkInYmd.value.year}`)
   const dateRangeLong = computed(() => `${fmtLong(dateAt(0))} t/m ${fmtLong(dateAt(nights.value))}`)
-  const cancelDate = computed(() => fmtShort(dateAt(-30)))
+  const cancelDate = computed(() => fmtShort(dateAt(-31)))
 
   /* Prijs als op de bevestigingspagina. Annuleringskeuze: de prototype-schakelaar (?rate=nonflex)
      gaat voor, anders de keuze uit de room table, anders flexibel annuleren. */

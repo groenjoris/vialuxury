@@ -8,8 +8,10 @@ import { baseUrl, font, newsletter, type EmailMode } from "./theme";
 // boekingsgerelateerde mail (`transactional`, de post-bookingflow) vervalt de nieuwsbrief-opt-out
 // rechts (zin + Wijzig e-mailvoorkeuren | Uitschrijven | Webversie) en staat daar de zin "Je
 // ontvangt deze e-mail omdat je een account of boeking hebt bij ViaLuxury." (zoals in de
-// transactionele mails van het CRM-project). Op mobiel (klassen stack/m-center uit de
-// responsiveCss van de vakantiemails) staan de kolommen onder elkaar.
+// transactionele mails van het CRM-project); de afzenderzin linksonder ("Je ontvangt deze e-mail op
+// … omdat je bij ons boekte") vervalt dan, want die zou dubbelop zijn. De CRM-mails houden beide.
+// Op mobiel (klassen stack/m-center uit de responsiveCss van de vakantiemails) staan de kolommen
+// onder elkaar.
 
 type Props = {
   recipientEmail: string;
@@ -57,9 +59,11 @@ export default function CrmFooter({ recipientEmail, reason, transactional = fals
           </Row>
           <Row style={{ marginTop: "28px" }}>
             <Column className="stack m-center" style={{ width: "50%", verticalAlign: "bottom", paddingRight: "24px" }}>
-              <Text className="m-center m-small" style={{ ...text, margin: 0 }}>
-                Je ontvangt deze e-mail op <strong>{recipientEmail}</strong> {reason}.
-              </Text>
+              {!transactional && (
+                <Text className="m-center m-small" style={{ ...text, margin: 0 }}>
+                  Je ontvangt deze e-mail op <strong>{recipientEmail}</strong> {reason}.
+                </Text>
+              )}
             </Column>
             <Column className="stack m-center m-mt" style={{ width: "50%", verticalAlign: "bottom" }}>
               <Text className="m-center m-small" style={text}>Prijswijzigingen en/of zetfouten voorbehouden.</Text>

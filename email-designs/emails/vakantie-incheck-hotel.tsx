@@ -183,7 +183,7 @@ export default function VakantieIncheckHotel({
     : [
         {
           q: "Hoe laat moet ik uitchecken?",
-          a: `Bij ${previousHotel?.name ?? "je hotel"} kun je uitchecken tot ${previousHotel?.checkOutTime ?? "11:00"} uur. Je meldt je bij de receptie; de toeristenbelasting reken je daar af.`,
+          a: `Bij ${previousHotel?.name ?? "je hotel"} kun je uitchecken tot ${previousHotel?.checkOutTime ?? "11:00"} uur. Je meldt je bij de receptie.`,
         },
         ...(isBike
           ? [{
@@ -299,7 +299,8 @@ export default function VakantieIncheckHotel({
                       <Text style={{ ...body14, margin: "4px 0 0" }}>{hotel.parking}</Text>
                     </>
                   )}
-                  {hotel.charging && (
+                  {/* Opladen: niet in de MVP (die gegevens zitten nog niet in de data). */}
+                  {!mvp && hotel.charging && (
                     <>
                       <Text style={subkop}>Opladen van de elektrische auto</Text>
                       <Text style={{ ...body14, margin: "4px 0 0" }}>{hotel.charging}</Text>
@@ -328,8 +329,7 @@ export default function VakantieIncheckHotel({
                 <>
                   <Text style={subkop}>Wat moet ik nog betalen?</Text>
                   <Text style={{ ...body14, margin: "4px 0 0" }}>
-                    Niets voor de reis zelf: die is volledig betaald. Ter plekke betaal je nog wel de lokale toeristenbelasting,
-                    die rekent elk hotel bij het uitchecken af.
+                    Bij aankomst betaal je nog wel de lokale toeristenbelasting.
                   </Text>
                 </>
               )}

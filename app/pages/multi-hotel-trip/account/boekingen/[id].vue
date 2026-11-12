@@ -4,7 +4,7 @@
 // telkens de tekst over de hele breedte met de link(s) eronder. Daaronder de boeking over de hele breedte: per hotel foto, naam,
 // plaats, datums · nachten, check-in en check-out met tijd, "Inbegrepen" (kamer + alle inclusies met
 // dezelfde groene vinkjes als op de PDP), en adres + telefoon; onderaan de prijs. "Boeking beheren"
-// volgt de annuleringskeuze: flex = annuleren t/m 30 dagen voor aankomst 23:59 uur met de knop
+// volgt de annuleringskeuze: flex = annuleren t/m 31 dagen voor aankomst 23:59 uur met de knop
 // "Boeking annuleren" (placeholder-link naar het annuleringsformulier), non-flex = alleen via de klantenservice.
 import { useMultiHotelTripAccountBooking, money, fmtLong } from '~/composables-multi-hotel-trip/useMultiHotelTripAccountBooking'
 import { demoQuery, navigateAfterPaint, useDemoBookingFromQuery, useDemoSwitches } from '~/composables-multi-hotel-trip/useMultiHotelTripDemoBooking'
@@ -13,8 +13,8 @@ useDemoBookingFromQuery()
 const route = useRoute()
 const id = computed(() => String(route.params.id ?? ''))
 const { checkout, stays, dateRangeLong, nights, persons, roomsPerHotel, bookingRef, tripTotal, total, bookingFee, checkInYmd, isBike, isFlex } = useMultiHotelTripAccountBooking(id.value)
-/** Annuleren kan t/m 30 dagen voor aankomst, 23:59 uur (voluit, zoals de datums in de kop). */
-const cancelDeadline = computed(() => { const y = checkInYmd.value; return `${fmtLong(new Date(y.year, y.month, y.day - 30))}, 23:59 uur` })
+/** Annuleren kan t/m 31 dagen voor aankomst, 23:59 uur (voluit, zoals de datums in de kop). */
+const cancelDeadline = computed(() => { const y = checkInYmd.value; return `${fmtLong(new Date(y.year, y.month, y.day - 31))}, 23:59 uur` })
 /** Placeholder voor het bestaande annuleringsformulier (zelfde link als de knop in de bevestigingsmail). */
 /** Annuleringsformulier (mockup van het echte formulier), met het ViaLuxury Ordernummer in de URL. */
 const cancelHref = computed(() => `/multi-hotel-trip/annuleren?bookingId=${encodeURIComponent(bookingRef.value)}`)

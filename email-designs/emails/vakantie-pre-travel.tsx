@@ -33,7 +33,7 @@ type Props = {
   recipientEmail: string;
   /** Annuleringskeuze van de boeking: flexibel annuleren (standaard) of niet terugbetaalbaar. */
   rate?: "flex" | "nonflex";
-  /** Uiterste annuleerdatum (30 dagen voor aankomst), bijv. "zo 18 apr". */
+  /** Uiterste annuleerdatum, voluit (31 dagen voor aankomst), bijv. "zaterdag 17 april". */
   cancelUntil: string;
   bookingNumber: string;
   /** Per hotel het eigen boekingsnummer (10 cijfers), in de volgorde van de reis. */
@@ -195,7 +195,7 @@ export default function VakantiePreTravel({
                 <Column style={{ verticalAlign: "top" }}>
                   <Text style={{ ...body14, margin: 0, fontWeight: 700 }}>Je ViaLuxury Ordernummer: {bookingNumber}</Text>
                   <Text style={{ ...small, margin: "2px 0 0" }}>
-                    Voor de zekerheid, neem het mee. Het is hetzelfde ViaLuxury Ordernummer voor alle hotels; het staat ook in je account.
+                    Het is hetzelfde ViaLuxury Ordernummer voor alle hotels; het staat ook in je account.
                   </Text>
                 </Column>
               </Row>
@@ -257,7 +257,8 @@ export default function VakantiePreTravel({
               <Text style={{ ...body14, margin: "4px 0 0" }}>{cap(arrivalDate)} vanaf {firstHotel.checkInTime} uur.</Text>
               <Text style={subkop}>Parkeren bij het hotel</Text>
               <Text style={{ ...body14, margin: "4px 0 0" }}>{firstHotel.parking}</Text>
-              {firstHotel.charging && (
+              {/* Opladen: niet in de MVP (die gegevens zitten nog niet in de data). */}
+              {!mvp && firstHotel.charging && (
                 <>
                   <Text style={subkop}>Opladen van de elektrische auto</Text>
                   <Text style={{ ...body14, margin: "4px 0 0" }}>{firstHotel.charging}</Text>
@@ -271,7 +272,7 @@ export default function VakantiePreTravel({
               )}
               <Text style={subkop}>Wat moet ik nog betalen?</Text>
               <Text style={{ ...body14, margin: "4px 0 0" }}>
-                Je betaalt bij aankomst toeristenbelasting en eventueel een gemeentelijke of lokale toeslag.
+                Bij aankomst betaal je nog wel de lokale toeristenbelasting.
               </Text>
             </Section>
           </Section>
@@ -356,7 +357,7 @@ export default function VakantiePreTravel({
 VakantiePreTravel.PreviewProps = {
   recipientName: "Rijo Verburg",
   recipientEmail: "rijo.verburg@gmail.com",
-  cancelUntil: "zo 18 apr",
+  cancelUntil: "zaterdag 17 april",
   bookingNumber: "VL-11 851 812",
   hotelBookingRefs: ["Château Tilques", "Château Cléry", "Hotel Royal Beaulaincourt"].map((name) => ({ name, ref: hotelBookingRef(name) })),
   tripType: "Autovakantie",
@@ -386,7 +387,7 @@ VakantiePreTravel.PreviewProps = {
 /** Fietsvakantie (Twente & Salland): zelfde mail, andere boeking — je fiets in de checklist, stalling i.p.v. opladen, geen tol. */
 export const fietsPreviewProps = {
   ...VakantiePreTravel.PreviewProps,
-  cancelUntil: "za 8 mei",
+  cancelUntil: "vrijdag 7 mei",
   bookingNumber: "VL-85 584 493",
   hotelBookingRefs: ["Hotel Wapen van Delden", "Hotel de Zwaan", "Landhuishotel Herikerberg"].map((name) => ({ name, ref: hotelBookingRef(name) })),
   tripType: "Fietsvakantie",

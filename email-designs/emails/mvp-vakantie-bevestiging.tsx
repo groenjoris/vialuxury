@@ -55,6 +55,7 @@ type Props = {
   persons: number;
   roomsPerHotel: number;
   hotels: Hotel[];
+  /** Uiterste annuleerdatum, voluit zoals op de bevestigingspagina (31 dagen voor aankomst), bijv. "zaterdag 17 april". */
   cancelUntil: string;
   /** Annuleringskeuze: flexibel annuleren (standaard) of niet terugbetaalbaar. */
   rate?: "flex" | "nonflex";
@@ -193,15 +194,9 @@ export default function VakantieBevestiging({
     </Row>
   );
 
-  /* Veelgestelde vragen — teksten uit "faq mhr.xlsx" (Boekingsbevestiging en boekingspagina); het
-     annuleerantwoord volgt het tarief, met de uiterste datum en 23:59 uur. */
+  /* Veelgestelde vragen — teksten uit "faq mhr.xlsx" (Boekingsbevestiging en boekingspagina); zonder
+     "Hoe kan ik annuleren of wijzigen?": dat staat al onderaan in het blok "Annuleren of wijzigen". */
   const faq: { q: string; a: React.ReactNode }[] = [
-    {
-      q: "Hoe kan ik annuleren of wijzigen?",
-      a: `Het wijzigen van een boeking is niet mogelijk. ${rate === "nonflex"
-        ? "Tijdens het boeken heb je ervoor gekozen om niet-terugbetaalbaar te boeken. Daardoor is het niet mogelijk om zelf je boeking te annuleren. Het kan zijn dat de klantenservice je wel bepaalde opties kan geven; neem daarom tijdens openingstijden contact met hen op."
-        : `Omdat je flexibel annuleren hebt aangezet, kun je je boeking annuleren t/m ${cancelUntil}, 23:59 uur. Het is niet mogelijk individuele onderdelen van je boeking aan te passen. Wil je de datum van vertrek aanpassen, dan dien je de gehele boeking te annuleren en opnieuw te boeken. Let op: voor de boekingskosten ontvang je een voucher die je weer kunt gebruiken bij je nieuwe boeking.`}`,
-    },
     {
       q: "Hoe log ik in op mijn account?",
       a: (
@@ -230,7 +225,7 @@ export default function VakantieBevestiging({
 
   /* Annuleren bij het flexibele tarief: drie stappen. */
   const cancelSteps = [
-    { title: "Check de annuleringstermijn", text: `Je kunt jouw reservering nog tot 30 dagen voor de dag van aankomst annuleren. In geval van jouw boeking betekent dit dat je annuleringstermijn afloopt om 23:59 uur op ${cancelUntil}. Bij annulering na deze termijn of bij no-show ontvang je geen bedrag retour.` },
+    { title: "Check de annuleringstermijn", text: `Je kunt jouw reservering nog tot 31 dagen voor de dag van aankomst annuleren. In geval van jouw boeking betekent dit dat je annuleringstermijn afloopt om 23:59 uur op ${cancelUntil}. Bij annulering na deze termijn of bij no-show ontvang je geen bedrag retour.` },
     { title: "Klik op de link ‘Mijn boeking annuleren’", text: "Indien je zeker weet dat je wilt annuleren, kun je dit gemakkelijk doen via de onderstaande link ‘Mijn boeking annuleren’. Houd je ViaLuxury Ordernummer en e-mailadres bij de hand." },
     { title: "Ontvang het volledige arrangementsbedrag retour", text: "Indien je de reservering binnen de annuleringstermijn annuleert, krijg je het betaalde arrangementsbedrag van ons teruggestort. Voor de boekingskosten ontvang je een voucher, die je direct kunt gebruiken bij je nieuwe boeking. Je ontvangt binnen twee weken je betaalde arrangementsbedrag retour!" },
   ];
@@ -360,7 +355,7 @@ export default function VakantieBevestiging({
                     <Column style={{ verticalAlign: "top" }}>
                       <Text style={{ ...body14, margin: 0, fontSize: "16px", fontWeight: 700 }}>{rate === "flex" ? "Flexibel annuleren" : "Niet terugbetaalbaar"}</Text>
                       <Text style={{ ...small, margin: "2px 0 0" }}>
-                        {rate === "flex" ? `Tot ${cancelUntil} 23:59 uur (30 dagen voor aankomst) kosteloos annuleren van de gehele vakantie.` : "De boeking kan niet geannuleerd worden."}
+                        {rate === "flex" ? `Tot ${cancelUntil} 23:59 uur (31 dagen voor aankomst) kosteloos annuleren van de gehele vakantie.` : "De boeking kan niet geannuleerd worden."}
                       </Text>
                     </Column>
                   </Row>
@@ -535,7 +530,7 @@ VakantieBevestiging.PreviewProps = {
       checkOut: "ma 24 mei · tot 15:00 uur",
     },
   ],
-  cancelUntil: "zo 18 apr",
+  cancelUntil: "zaterdag 17 april",
   hasBaggage: false,
   tripPrice: "€964",
   bookingFee: "€27,50",

@@ -79,7 +79,8 @@ Post-bookingflow van de MVP (definitie 2026-11-11): alles behalve de tips- en ro
 accountdetailpagina. Bevestigingspagina (`app/pages/mvp-trip/checkout/bevestiging.vue`) en
 boekingsbevestigingsmail (`email-designs/emails/mvp-vakantie-bevestiging.tsx`) zijn eenmalige kopieën
 van de MHT-versies die los van MHT worden uitgekleed (bevestigingspagina: alleen het cirkeltje als
-preloader, geen route/confetti op de foto, geen tipsblok; mail: geen tipsblok). De pre-travelmail en de
+preloader, geen route/confetti op de foto, geen tipsblok, in de tijdlijn geen stap "Een mail vol tips"; mail: geen
+tipsblok). De pre-travelmail en de
 incheckmails zijn dezelfde componenten als de volledige versie met de prop `mvp` (label "MHR MVP"
 bovenin via `MvpLabel`, zonder het blok "Praktische informatie en tips", boekingslinks naar het
 MVP-boekingenoverzicht; registry-slugs `mvp-vakantie-pre-travel(-fiets)(-nonflex)` en
@@ -135,7 +136,9 @@ mailpreviews van de flow: bevestigingspagina, tips & routes (daar ook de Vandaag
 extra knop), account (overzicht en detail), MVP-account en de mailpreviews (daar: reis via de slug,
 Fiets gedempt als er geen fietsversie is). De "‹ flow"-link in `ProtoNav` (MHT/MVP) en op de
 mailpreview geeft beide standen mee terug. Inhoud volgt de stand: bevestigingspagina en
-accountdetail tonen bij non-flex "Niet terugbetaalbaar — De boeking kan niet geannuleerd worden",
+accountdetail tonen bij non-flex "Niet terugbetaalbaar — De boeking kan niet geannuleerd worden"
+(flex: annuleren t/m 31 dagen voor aankomst, 23:59 uur — sinds 2026-11-12 overal 31 dagen, ook in de room table en
+de PDP-FAQ, en de uiterste datum altijd voluit mét tijd, bijv. "zaterdag 17 april 23:59 uur"),
 de prijs zonder toeslag en geen annuleerlink (zonder `?rate=` volgt de pagina de keuze uit de room
 table, via `rate`/`isFlex` in `useMultiHotelTripAccountBooking`); het accountdetail heeft bij flex
 bovendien de subtiele schakelaar "Op tijd | Te laat" (`?late=1`, vóór of ná de annuleringsdeadline)
@@ -184,7 +187,8 @@ beide met `mode` en mobiele klassen `stack`/`m-center`), en heeft elke mail in d
 halen beide uit `incheckSubject`/`incheckPreheader` in `vakantie-incheck-hotel.tsx`). De preview
 toont die, net als de CRM-preview, in één frame zoals in de inbox (afzender, onderwerp, preheader
 boven de mail) in plaats van de beschrijving. De vakantiemails geven `CrmFooter` de prop
-`transactional` mee (sinds 2026-11-11): rechts geen nieuwsbrief-opt-out maar "Je ontvangt deze e-mail
+`transactional` mee (sinds 2026-11-11): linksonder geen afzenderzin "Je ontvangt deze e-mail op … omdat je bij ons
+boekte" (dubbelop) en rechts geen nieuwsbrief-opt-out maar "Je ontvangt deze e-mail
 omdat je een account of boeking hebt bij ViaLuxury."; de CRM-mails houden de opt-out.
 
 ## CRM (concept, sinds 2026-11-02)

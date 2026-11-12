@@ -255,8 +255,8 @@ const nl: Record<string, string> = {
   // Multi Hotel Trip — vakantie-PDP
   'trip.fantasticHotels': '{n} fantastische hotels',
   'trip.easyCancel': 'Gemakkelijk annuleren',
-  'trip.freeCancelLine': 'Gratis annuleren tot 30 dagen voor vertrek.',
-  'trip.freeCancelLineDate': 'Gratis annuleren tot {date} (30 dagen voor vertrek).',
+  'trip.freeCancelLine': 'Gratis annuleren tot 31 dagen voor vertrek.',
+  'trip.freeCancelLineDate': 'Gratis annuleren tot {date} (31 dagen voor vertrek).',
   'trip.hotelsIncludedHeading': 'In deze vakantie zijn deze hotels inbegrepen:',
   'trip.daySingle': 'Dag {a}',
   'trip.dayAnd': 'Dag {a} en {b}',

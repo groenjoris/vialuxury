@@ -78,9 +78,9 @@ const checkIn = computed(() => checkoutDay.value?.checkIn || fmt(dateAt(0)))
 const checkOut = computed(() => checkoutDay.value?.checkOut || fmt(dateAt(trip.value.nights)))
 const checkInLong = computed(() => fmtLong(dateAt(0)))
 const checkOutLong = computed(() => fmtLong(dateAt(trip.value.nights)))
-/** Datum 14 dagen voor vertrek (reisdocument) en 30 dagen ervoor (gratis annuleren, als in de room table). */
+/** Datum 14 dagen voor vertrek (reisdocument) en 31 dagen ervoor (uiterste annuleerdatum, voluit; als in de room table). */
 const docsDate = computed(() => fmt(dateAt(-14)))
-const cancelDate = computed(() => fmt(dateAt(-30)))
+const cancelDate = computed(() => fmtLong(dateAt(-31)))
 
 /** Per hotel: datums, inchecktijd (reisdata, anders 15:00), uitchecktijd (late check-out uit de
  *  inclusies, anders 11:00) en "wat je krijgt": de kamer en álle inclusies van dat hotel, net als in
@@ -134,7 +134,7 @@ const routesHref = '/multi-hotel-trip/checkout/routes'
 /* Veelgestelde vragen (accordeon) — teksten uit "faq mhr.xlsx" (Boekingsbevestiging en boekingspagina);
    het annuleerantwoord volgt de annuleringskeuze, met de uiterste datum en 23:59 uur; bij flex staat
    onder dat antwoord de link "Boeking annuleren". */
-const cancelDeadline = computed(() => `${fmtLong(dateAt(-30))}, 23:59 uur`)
+const cancelDeadline = computed(() => `${fmtLong(dateAt(-31))}, 23:59 uur`)
 /** Annuleringsformulier (mockup van het echte formulier), met het ViaLuxury Ordernummer in de URL. */
 const cancelHref = computed(() => `/multi-hotel-trip/annuleren?bookingId=${encodeURIComponent(bookingRef.value)}`)
 const faq = computed(() => [
@@ -294,7 +294,7 @@ useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
                   <svg v-else class="cf__extra-icon cf__extra-icon--off" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3l7 3v5c0 5-3.5 8.5-7 10-3.5-1.5-7-5-7-10V6l7-3z" stroke="currentColor" stroke-width="2" stroke-linejoin="round" /><path d="M9.5 9.5l5 5M14.5 9.5l-5 5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" /></svg>
                   <div>
                     <p class="cf__stay-name">{{ isFlex ? 'Flexibel annuleren' : 'Niet terugbetaalbaar' }}</p>
-                    <p class="t-caption c-grey">{{ isFlex ? `Tot ${cancelDate} (30 dagen voor aankomst) kosteloos annuleren van de gehele vakantie.` : 'De boeking kan niet geannuleerd worden.' }}</p>
+                    <p class="t-caption c-grey">{{ isFlex ? `Tot ${cancelDate} 23:59 uur (31 dagen voor aankomst) kosteloos annuleren van de gehele vakantie.` : 'De boeking kan niet geannuleerd worden.' }}</p>
                   </div>
                 </li>
                 <li v-if="hasBaggage" class="cf__extra">
