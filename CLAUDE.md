@@ -195,7 +195,7 @@ omdat je een account of boeking hebt bij ViaLuxury."; de CRM-mails houden de opt
 
 Artist impression van geautomatiseerde e-mails, alleen desktop + light mode. Mails (in de volgorde
 van het paneel links in de preview): `crm-jaar-geleden`, `crm-winkelmandje`
-(2 uur na verlaten), `crm-winkelmandje-2-dagen`, `crm-thema-stedentrips` (A6), `crm-zoekopdracht`,
+(2 uur na verlaten), `crm-winkelmandje-2-dagen`, `crm-thema-stedentrips` (A6), `crm-thema-stedentrips-uitgebreid`, `crm-zoekopdracht`,
 `crm-verlanglijst`, `crm-review`, `crm-terugkomactie` (€20), `crm-terugkomactie-herinnering` (zelfde
 component met `daysLeft`) en `crm-nagenieten` (staat bewust als laatste). Bronnen in
 `email-designs/emails/crm-*.tsx`, bouwstenen in `email-designs/components/crm.tsx` (`DealRow`,
@@ -216,6 +216,11 @@ Regels voor elke CRM-mail:
   (`DealList`). Geen labels of stickers ("Populair"). De knop "Bekijk arrangement" in het grote
   dealblok is altijd oranje, ook als de mail bovenaan al een oranje knop heeft.
 - Geen grijze vlakken; beige (#F4F1EC) alleen als echte highlight: het vlak achter de blokken met keuzeknoppen (`beigeBox`). Keuzes (thema, nagenietvraag) zijn witte snelfilterknoppen in een raster van twee (`PillGrid`) op dat beige vlak.
+- Variant met uitgebreide kaarten (`crm-thema-stedentrips-uitgebreid`, prop `rich`, bouwstenen `RichFeaturedDeal`/
+  `RichDealRow`/`RichDealList`): de zoekkaart van de website als e-mail. Korting als zwart vlakje op de foto, hotel met
+  sterren en plaats (sans, ondergeschikt), lijntje, dealtitel 20 serif, "Arrangement" met maximaal vier inclusies
+  (groen vinkje), "2 personen, 2 nachten", "Vanaf €409" met de doorgestreepte kamerprijs en rechts de knop "Bekijk".
+  Elke regel één lettertype: hotelnaam en de hele prijsregel staan in de sans. De standaardmails houden de kale kaart.
 - Prijzen uit `deals.json` zijn het totaal voor 2 personen: "Vanaf €319 voor 2 personen", nooit p.p.
 - Knoppen linken naar de R1-dealpagina (zachte landing; die neemt `?checkin=` en `?adults=` over).
 - Jesse de Groot heeft eigen CRM-mails op `origin/redesign-jesse`; mails worden daarvan per stuk

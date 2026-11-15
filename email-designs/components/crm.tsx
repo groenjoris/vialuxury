@@ -105,6 +105,16 @@ export type RowDeal = {
   line?: string;
   image: string;
   url: string;
+  /** Alleen voor de uitgebreide kaart (RichDealList), zoals de zoekkaart op de website: */
+  /** Inclusies met een groen vinkje, maximaal vier. */
+  includes?: string[];
+  /** Kortingspercentage op de foto, bijv. "-37%". */
+  discount?: string;
+  /** Vanafprijs en doorgestreepte kamerprijs, bijv. "€409" en "€645". */
+  price?: string;
+  original?: string;
+  /** Waar de prijs voor geldt, bijv. "2 personen, 2 nachten". */
+  priceFor?: string;
 };
 
 /** De tekstregels van een dealblok: hotelnaam (20 serif), sterren, plaats, dealtitel en de vette regel. */
@@ -154,6 +164,120 @@ export function FeaturedDeal({ deal: d, cta = "Bekijk arrangement" }: { deal: Ro
         </Section>
       </Section>
     </Section>
+  );
+}
+
+// ── Uitgebreide dealkaart: de zoekkaart van de website als e-mail ──────────────────────────
+// Zelfde volgorde als de zoekkaart: korting op de foto, hotel met sterren en plaats (ondergeschikt),
+// lijntje, de dealtitel als meest prominente regel, "Arrangement" met de inclusies, en onderaan
+// voor wie de prijs geldt, de vanafprijs met de doorgestreepte kamerprijs en de knop.
+// Klaviyo: elke regel heeft één lettertype. Hotelnaam en sterren staan daarom in de sans, en de
+// prijsregel is helemaal sans (op de website is het bedrag serif naast sans).
+
+const checkIcon = `${baseUrl}/images/mail/crm/check-groen.png`;
+
+/** Kortingspercentage linksboven op de foto (zwart vlakje, zoals de website). */
+function DiscountBadge({ children }: { children: React.ReactNode }) {
+  return (
+    <span style={{ display: "inline-block", margin: "14px 0 0 14px", backgroundColor: c.text, color: "#FFFFFF", fontFamily: font.heading, fontWeight: 700, fontSize: "16px", lineHeight: "20px", padding: "6px 10px", borderRadius: "4px" }}>
+      {children}
+    </span>
+  );
+}
+
+/** Tekstdeel van de uitgebreide kaart, t/m de inclusies. */
+function RichDealText({ d }: { d: RowDeal }) {
+  return (
+    <>
+      {d.hotelName && (
+        <Text style={{ ...s.name, margin: 0 }}>
+          {d.hotelName}
+          {d.stars ? <span style={{ letterSpacing: "1px", marginLeft: "8px" }}>{"★".repeat(d.stars)}</span> : null}
+        </Text>
+      )}
+      {d.place && <Text style={{ ...s.muted, margin: "2px 0 0" }}>{d.place}</Text>}
+      <Section style={{ borderTop: "1px solid #E5E5E5", marginTop: "12px", fontSize: "1px", lineHeight: "1px" }}>&nbsp;</Section>
+      {d.packageTitle && <Text style={{ ...s.kop, margin: "10px 0 0" }}>{d.packageTitle}</Text>}
+      {d.includes && d.includes.length > 0 && (
+        <>
+          <Text style={{ fontFamily: font.heading, fontWeight: 600, fontSize: "16px", lineHeight: "1.4", color: c.cta, margin: "12px 0 2px" }}>Arrangement</Text>
+          {d.includes.slice(0, 4).map((inc) => (
+            <Text key={inc} style={{ ...s.muted, margin: "4px 0 0" }}>
+              <Img src={checkIcon} alt="" width="14" height="14" style={{ display: "inline-block", verticalAlign: "-1px", marginRight: "8px" }} />
+              {inc}
+            </Text>
+          ))}
+        </>
+      )}
+    </>
+  );
+}
+
+/** Onderkant van de uitgebreide kaart: links voor wie de prijs geldt en de vanafprijs met de
+ *  doorgestreepte kamerprijs, rechts de oranje knop (zoals op de zoekkaart). */
+function RichDealPrice({ d, cta }: { d: RowDeal; cta: string }) {
+  return (
+    <Row style={{ marginTop: "14px" }}>
+      <Column style={{ verticalAlign: "bottom" }}>
+        {d.priceFor && <Text style={{ ...s.name, margin: 0 }}>{d.priceFor}</Text>}
+        <Text style={{ fontFamily: font.body, fontSize: "16px", lineHeight: "26px", color: c.muted, margin: "2px 0 0" }}>
+          Vanaf <span style={{ fontSize: "20px", fontWeight: 700, color: c.text }}>{d.price}</span>
+          {d.original && <span style={{ color: "#D32F2F", textDecoration: "line-through", marginLeft: "8px" }}>{d.original}</span>}
+        </Text>
+      </Column>
+      <Column style={{ verticalAlign: "bottom", textAlign: "right", width: "110px" }}>
+        <PrimaryButton href={d.url} small>{cta}</PrimaryButton>
+      </Column>
+    </Row>
+  );
+}
+
+/** Uitgebreide kaart over de hele breedte: foto bovenaan met de korting erop. */
+export function RichFeaturedDeal({ deal: d, cta = "Bekijk" }: { deal: RowDeal; cta?: string }) {
+  return (
+    <Section style={{ border: `1px solid #E5E5E5`, borderRadius: "8px", marginTop: "12px", overflow: "hidden" }}>
+      <Section style={{ backgroundImage: `url(${d.image})`, backgroundSize: "cover", backgroundPosition: "center" }}>
+        <Link href={d.url} aria-label={d.packageTitle ?? d.hotelName ?? cta} style={{ display: "block", height: "300px", textDecoration: "none" }}>
+          {d.discount && <DiscountBadge>{d.discount}</DiscountBadge>}
+        </Link>
+      </Section>
+      <Section style={{ padding: "16px 20px 20px" }}>
+        <RichDealText d={d} />
+        <RichDealPrice d={d} cta={cta} />
+      </Section>
+    </Section>
+  );
+}
+
+/** Uitgebreide kaart als rij: foto links over de volle hoogte met de korting erop. */
+export function RichDealRow({ deal: d, cta = "Bekijk" }: { deal: RowDeal; cta?: string }) {
+  return (
+    <Section style={{ border: `1px solid #E5E5E5`, borderRadius: "8px", marginTop: "12px", overflow: "hidden" }}>
+      <Row>
+        <Column className="stack" style={{ width: "190px", verticalAlign: "top", backgroundImage: `url(${d.image})`, backgroundSize: "cover", backgroundPosition: "center" }}>
+          <Link href={d.url} aria-label={d.packageTitle ?? d.hotelName ?? cta} style={{ display: "block", width: "190px", minHeight: "150px", textDecoration: "none" }}>
+            {d.discount && <DiscountBadge>{d.discount}</DiscountBadge>}
+          </Link>
+        </Column>
+        <Column className="stack" style={{ verticalAlign: "top", padding: "16px 18px 18px" }}>
+          <RichDealText d={d} />
+          <RichDealPrice d={d} cta={cta} />
+        </Column>
+      </Row>
+    </Section>
+  );
+}
+
+/** Eén groot, de rest als rij, met de uitgebreide kaarten. */
+export function RichDealList({ deals }: { deals: RowDeal[] }) {
+  const [first, ...rest] = deals;
+  return (
+    <>
+      {first && <RichFeaturedDeal deal={first} />}
+      {rest.map((d) => (
+        <RichDealRow key={d.url} deal={d} />
+      ))}
+    </>
   );
 }
 

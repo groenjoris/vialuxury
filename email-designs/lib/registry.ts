@@ -318,6 +318,16 @@ export const emails: EmailEntry[] = [
     preheader: "Parijs, Den Haag en Amsterdam, vanaf €279 voor 2 personen.",
     Component: CrmThemaStedentrips,
   },
+  {
+    slug: "crm-thema-stedentrips-uitgebreid",
+    title: "Themamail stedentrips (A6, uitgebreide kaarten)",
+    description: "Variant van de themamail met uitgebreide dealkaarten naar de zoekkaart van de website: korting op de foto, hotel met sterren, dealtitel, inclusies, doorgestreepte kamerprijs en de knop.",
+    section: "crm",
+    subject: "Dit zijn de populairste stedentrips van dit moment",
+    preheader: "Parijs, Den Haag en Amsterdam, vanaf €279 voor 2 personen.",
+    Component: CrmThemaStedentrips,
+    props: { ...CrmThemaStedentrips.PreviewProps, rich: true },
+  },
 ];
 
 export function getEmail(slug: string): EmailEntry | undefined {

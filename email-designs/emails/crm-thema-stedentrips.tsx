@@ -2,7 +2,7 @@ import { Body, Container, Head, Heading, Html, Preview, Section, Text } from "@r
 import * as React from "react";
 import CrmFooter from "../components/CrmFooter";
 import CrmHeader from "../components/CrmHeader";
-import { crmCss, DealList, type RowDeal, s, site, ThemePicker } from "../components/crm";
+import { crmCss, DealList, RichDealList, type RowDeal, s, site, ThemePicker } from "../components/crm";
 import { font, newsletter } from "../components/theme";
 
 // CRM: themamail stedentrips (A6). Kop met de reden ("Omdat je zocht op 'stedentrips'"),
@@ -10,6 +10,8 @@ import { font, newsletter } from "../components/theme";
 // twee als omlijnde dealrij) en onderaan de themakiezer: zes witte snelfilterknoppen met
 // icoon, zoals "Snel zoeken" op de homepage, in een raster van twee even brede kolommen.
 // Elke keuze gaat naar /crm/thema?keuze=<id>.
+// Variant `rich` (slug crm-thema-stedentrips-uitgebreid): dezelfde mail met uitgebreide kaarten naar
+// de zoekkaart van de website (korting op de foto, inclusies, doorgestreepte kamerprijs).
 // Onderwerp: "Dit zijn de populairste stedentrips van dit moment"
 
 type Props = {
@@ -17,9 +19,11 @@ type Props = {
   /** Zoekterm of thema waarop de ontvanger zocht; leeg → geen reden onder de kop. */
   searchedFor?: string;
   deals: RowDeal[];
+  /** Uitgebreide dealkaarten zoals de zoekkaart op de website. */
+  rich?: boolean;
 };
 
-export default function CrmThemaStedentrips({ recipientEmail, searchedFor, deals }: Props) {
+export default function CrmThemaStedentrips({ recipientEmail, searchedFor, deals, rich }: Props) {
   const c = newsletter.light;
   return (
     <Html lang="nl">
@@ -38,7 +42,7 @@ export default function CrmThemaStedentrips({ recipientEmail, searchedFor, deals
 
           {/* Drie deals: de eerste groot, de rest als rij */}
           <Section className="m-pad" style={{ padding: "12px 32px 0" }}>
-            <DealList deals={deals} />
+            {rich ? <RichDealList deals={deals} /> : <DealList deals={deals} />}
           </Section>
 
           {/* Themakiezer: raster van even brede snelfilterknoppen */}
@@ -66,6 +70,11 @@ CrmThemaStedentrips.PreviewProps = {
       line: "Vanaf €409 voor 2 personen",
       image: "https://asset.vialuxury.com/assets/8b56b66e-8948-4731-b8a5-600b37337c16?key=card",
       url: deal("hotel-mademoiselle-geniet-3-dagen-van-parijs-vol-smaak-stijl-and-beleving"),
+      includes: ["Dagelijks ontbijtbuffet", "Franse kaasplank", "Seine cruise tickets voor 2 personen", "Glas champagne p.p."],
+      discount: "-37%",
+      price: "€409",
+      original: "€645",
+      priceFor: "2 personen, 2 nachten",
     },
     {
       hotelName: "Hotel Des Indes",
@@ -75,6 +84,11 @@ CrmThemaStedentrips.PreviewProps = {
       line: "Vanaf €379 voor 2 personen",
       image: "https://asset.vialuxury.com/assets/910163b4-1308-4f1f-989c-66e6d9202593?key=card",
       url: deal("hotel-des-indes-verblijf-3-dagen-in-luxe-5-hotel-in-hartje-centrum"),
+      includes: ["Kamerupgrade", "Dagelijks luxe ontbijtbuffet", "Welkomstdrankje", "Late check-out"],
+      discount: "-54%",
+      price: "€379",
+      original: "€830",
+      priceFor: "2 personen, 2 nachten",
     },
     {
       hotelName: "WestCord Fashion Hotel Amsterdam",
@@ -84,6 +98,11 @@ CrmThemaStedentrips.PreviewProps = {
       line: "Vanaf €279 voor 2 personen",
       image: "https://asset.vialuxury.com/assets/a0943077-0b0f-4022-96ec-eda45927e263?key=card",
       url: deal("fashion-hotel-amsterdam-3-daags-verblijf-in-een-4-hotel-met-wellness-en-sky-bar-met-panoramisch-uitzicht"),
+      includes: ["Dagelijks ontbijtbuffet", "Gebruik zwembad", "Wellness & Fitness", "Late check-out"],
+      discount: "-49%",
+      price: "€279",
+      original: "€543",
+      priceFor: "2 personen, 2 nachten",
     },
   ],
 } satisfies Props;
