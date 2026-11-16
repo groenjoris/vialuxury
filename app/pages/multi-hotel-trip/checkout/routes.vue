@@ -73,8 +73,6 @@ const countdown = computed(() => {
   if (d >= -nights.value) return 'Je bent onderweg'
   return 'Welkom thuis'
 })
-/** "1 u 10 min" / "45 min". */
-const durationShort = (minutes: number) => { const h = Math.floor(minutes / 60), m = Math.round(minutes % 60); return h ? `${h} u${m ? ` ${m} min` : ''}` : `${m} min` }
 
 /* ── Weersverwachting (prototype: gefaket). Ver van tevoren een weekverwachting op basis van
    historische gemiddelden; vanaf 10 dagen voor vertrek per dag. ── */
@@ -126,17 +124,16 @@ const mapSummary = computed<({ icon: string; text: string } | undefined)[]>(() =
     if (d.returnTravel) legKm.push(d.returnTravel.km)
     const total = legKm.reduce((a, b) => a + b, 0)
     return [
-      d.fromHome && first ? { icon: 'car', text: t('trip.bike.arrivalLine').replace('{duration}', tripDurationLabel(d.fromHome.minutes, t)).replace('{city}', d.fromHome.city) } : undefined,
+      d.fromHome && first ? { icon: 'car', text: t('trip.arrivalLine').replace('{duration}', tripDurationLabel(d.fromHome.minutes, t)).replace('{city}', d.fromHome.city) } : undefined,
       total ? { icon: 'route', text: t('trip.bike.stagesLine').replace('{n}', String(legKm.length)).replace('{list}', legKm.join(' · ')).replace('{total}', String(total)) } : undefined,
     ]
   }
-  const origin = d.fromHomeByLocale?.nl
+  // Autovakantie: dezelfde heenreisregel als de fietsvakantie (sinds 2026-11-16).
+  const origin = d.fromHomeByLocale?.nl ?? d.fromHome
   const km = d.stops.reduce((sum, s, i) => sum + (s.travel?.km ?? legs.find(l => l.to === i && !l.return)?.km ?? 0), 0)
   const fromHomeLine = origin && first
-    ? { icon: 'car', text: t('trip.fromHomeShort').replace('{city}', origin.city).replace('{to}', first.city).replace('{duration}', durationShort(origin.minutes)).replace('{km}', String(origin.km)) }
-    : d.fromHome && first
-      ? { icon: 'car', text: t('trip.fromHomeShortNoKm').replace('{city}', d.fromHome.city).replace('{duration}', durationShort(d.fromHome.minutes)).replace('{to}', first.city) }
-      : undefined
+    ? { icon: 'car', text: t('trip.arrivalLine').replace('{duration}', tripDurationLabel(origin.minutes, t)).replace('{city}', origin.city) }
+    : undefined
   return [fromHomeLine, km ? { icon: 'route', text: t('trip.totalRouteLine').replace('{km}', String(km)) } : undefined]
 })
 

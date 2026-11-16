@@ -81,12 +81,12 @@ interface TripSpec {
    *  in de PDP-gallery — de eerste vier staan dus bij landing in beeld; de
    *  hotelfoto's komen daarna (alleen in de foto-pop-up). */
   nearbyImages?: string[]
-  /** Heenreis vanaf huis (prototype: Utrecht) naar het eerste hotel — onder de
-   *  minimap: "Vanaf Utrecht: 3 uur naar Béthune". Schatting. */
+  /** Heenreis vanaf huis (prototype: Utrecht) naar het eerste hotel — onder de minimap, bij auto-
+   *  én fietsvakantie dezelfde regel (sinds 2026-11-16): "Heenreis: ca. 3 uur 45 min met de auto
+   *  vanuit Utrecht". Schatting. */
   fromHome?: { city: string; minutes: number }
-  /** Reistijd naar het eerste hotel per taalinstelling (onder de minimap): nl → Utrecht,
-   *  nl-BE → Brussel, de → Düsseldorf; en valt terug op nl. Vervangt dan ook de regel
-   *  met de totale routelengte. */
+  /** Vertrekplaats en reistijd per taalinstelling (autovakantie, onder de minimap): nl → Utrecht,
+   *  nl-BE → Brussel, de → Düsseldorf; en valt terug op nl, zonder deze op `fromHome`. */
   fromHomeByLocale?: Partial<Record<'nl' | 'nl-BE' | 'de' | 'en', { city: string; km: number; minutes: number }>>
   /** Beeldplan van de PDP-gallery na het hoofdbeeld (coverImage): sfeerbeelden (url) en
    *  hotelblokken ({ stop, count }) in deze volgorde. Zonder plan: omgevingsfoto's + hotels. */

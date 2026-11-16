@@ -320,14 +320,12 @@ const nl: Record<string, string> = {
   'trip.introTitleBike': '{days}-daagse fietsreis',
   'trip.includedHeading': 'In deze {type} voor 2 personen is het volgende inbegrepen',
   // Onder de minimap
-  'trip.fromHomeShort': '{city} → {to}: {duration} ({km} km)',
-  'trip.fromHomeShortNoKm': '{city} → {to}: {duration}',
   'trip.totalRouteLine': 'Totale route tussen hotels: {km} km',
   'trip.totalDriveLine': 'Totale rijtijd: ca. {duration}',
   // Fietsvakantie — regels onder de minimap
   'trip.bike.stagesLine': '{n} fietsetappes: {list} km ({total} km totaal)',
   'trip.bike.timeLine': '{min} tot {max} uur fietsen per etappe, in rustig tempo',
-  'trip.bike.arrivalLine': 'Heenreis: ca. {duration} met de auto vanuit {city}',
+  'trip.arrivalLine': 'Heenreis: ca. {duration} met de auto vanuit {city}',
   'trip.itineraryIntro': 'Zo ziet je vakantie eruit: een voorbeeldprogramma, je bepaalt zelf het tempo.',
   'trip.itin.goodToKnow': 'Goed om te weten',
   'trip.itin.gtk1': 'Dit reisschema is een voorbeeld vol inspiratie: jij bepaalt het tempo en wat je doet, de hotels zijn je thuisbasis.',

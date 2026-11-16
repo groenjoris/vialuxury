@@ -1802,13 +1802,6 @@ function tripDurationLabel(minutes: number): string {
   const h = Math.floor(minutes / 60), m = minutes % 60
   return m === 0 ? t('trip.dur.hours').replace('{h}', String(h)) : t('trip.dur.hoursMinutes').replace('{h}', String(h)).replace('{m}', String(m))
 }
-/** Korte reistijd voor op één regel: "45 min", "3 uur", "3 u 45 min" (de: "4:30 h"). */
-function tripDurationShort(minutes: number): string {
-  if (minutes < 60) return t('trip.durShort.minutes').replace('{m}', String(minutes))
-  const h = Math.floor(minutes / 60), m = minutes % 60
-  if (m === 0) return t('trip.durShort.hours').replace('{h}', String(h))
-  return t('trip.durCompact.hoursMinutes').replace('{h}', String(h)).replace('{m}', String(m)).replace('{mm}', String(m).padStart(2, '0'))
-}
 /** MVP: de minikaart is een handmatig gemaakte PNG per route (public/images/vakanties/maps). */
 const tripMapPng = computed(() => `/images/vakanties/maps/${trip?.id ?? ''}-pdp.png`)
 /** Mobiel, titel boven de routekaart: "Autovakantie met 3 hotels" / "Fietsvakantie met bagagetransfer"
@@ -1852,21 +1845,19 @@ const tripMapSummary = computed<({ icon: string; text: string } | undefined)[]>(
     const minH = Math.max(1, Math.floor(Math.min(...mins) / 60))
     const maxH = Math.max(minH, Math.ceil(Math.max(...mins) / 60))
     return [
-      trip.fromHome && first ? { icon: 'car', text: t('trip.bike.arrivalLine').replace('{duration}', tripDurationLabel(trip.fromHome.minutes)).replace('{city}', trip.fromHome.city) } : undefined,
+      trip.fromHome && first ? { icon: 'car', text: t('trip.arrivalLine').replace('{duration}', tripDurationLabel(trip.fromHome.minutes)).replace('{city}', trip.fromHome.city) } : undefined,
       total ? { icon: 'route', text: t('trip.bike.stagesLine').replace('{n}', String(legKm.length)).replace('{list}', legKm.join(' · ')).replace('{total}', String(total)) } : undefined,
       mins.length ? { icon: 'clock', text: t('trip.bike.timeLine').replace('{min}', String(minH)).replace('{max}', String(maxH)) } : undefined,
     ]
   }
-  // Vertrekplaats per taalinstelling (nl Utrecht, nl-BE Brussel, de Düsseldorf), kort zodat het
-  // op één regel past: "Utrecht → Tilques: ca. 3 u 45 min (332 km)".
+  // Vertrekplaats per taalinstelling (nl Utrecht, nl-BE Brussel, de Düsseldorf); dezelfde regel als bij de
+  // fietsvakantie (sinds 2026-11-16): "Heenreis: ca. 3 uur 45 min met de auto vanuit Utrecht".
   const byLocale = trip.fromHomeByLocale
-  const origin = byLocale ? (byLocale[locale.value as keyof typeof byLocale] ?? byLocale.nl) : undefined
+  const origin = (byLocale ? (byLocale[locale.value as keyof typeof byLocale] ?? byLocale.nl) : undefined) ?? trip.fromHome
   const km = trip.stops.reduce((sum, s, i) => sum + (s.travel?.km ?? legs.find(l => l.to === i && !l.return)?.km ?? 0), 0)
   const fromHomeLine = origin && first
-    ? { icon: 'car', text: t('trip.fromHomeShort').replace('{city}', origin.city).replace('{to}', first.city).replace('{duration}', tripDurationShort(origin.minutes)).replace('{km}', String(origin.km)) }
-    : trip.fromHome && first
-      ? { icon: 'car', text: t('trip.fromHomeShortNoKm').replace('{city}', trip.fromHome.city).replace('{duration}', tripDurationShort(trip.fromHome.minutes)).replace('{to}', first.city) }
-      : undefined
+    ? { icon: 'car', text: t('trip.arrivalLine').replace('{duration}', tripDurationLabel(origin.minutes)).replace('{city}', origin.city) }
+    : undefined
   return [
     fromHomeLine,
     km ? { icon: 'route', text: t('trip.totalRouteLine').replace('{km}', String(km)) } : undefined,
