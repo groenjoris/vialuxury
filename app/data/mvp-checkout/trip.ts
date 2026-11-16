@@ -66,7 +66,13 @@ export interface TripCheckout {
    *  "stuks" ("Nog beschikbaar voor max 4 personen", mag over twee regels), want "Nog 2 beschikbaar"
    *  zegt bij een vakantie met drie hotels niet wat er nog is. */
   scarcity?: string
+  /** Bij schaarste: het maximum aantal personen dat nog kan; de personenselector grijst de opties
+   *  erboven uit (desktop: uitgegrijsde opties in het menu, mobiel: de plusknop stopt). */
+  maxPersons?: number
 }
+
+/** Demo-schaarste: de vakantie is nog beschikbaar voor maximaal dit aantal personen (2 kamers per hotel). */
+const TRIP_MAX_PERSONS = 4
 
 export function tripCheckoutBySlug(slug: string): TripCheckout | null {
   const pdp = tripPdpBySlug(slug)
@@ -97,6 +103,7 @@ export function tripCheckoutBySlug(slug: string): TripCheckout | null {
     thumb: trip.coverImage ?? trip.stops[0]?.image ?? '',
     includes: trip.inclusions.map(i => i.nl),
     hotels,
-    scarcity: 'Nog beschikbaar voor max 4 personen',
+    scarcity: `Nog beschikbaar voor max ${TRIP_MAX_PERSONS} personen`,
+    maxPersons: TRIP_MAX_PERSONS,
   }
 }
