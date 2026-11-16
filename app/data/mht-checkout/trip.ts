@@ -62,7 +62,9 @@ export interface TripCheckout {
   thumb: string
   includes: string[]
   hotels: TripCheckoutHotel[]
-  /** Schaarste van de vakantie (demo), bv. "Nog 2 beschikbaar" — in de kolom "Je opties". */
+  /** Schaarste van de vakantie (demo) in de kolom "Je opties": in personen, niet in kamers of
+   *  "stuks" ("Nog beschikbaar voor max 4 personen", mag over twee regels), want "Nog 2 beschikbaar"
+   *  zegt bij een vakantie met drie hotels niet wat er nog is. */
   scarcity?: string
 }
 
@@ -95,6 +97,6 @@ export function tripCheckoutBySlug(slug: string): TripCheckout | null {
     thumb: trip.coverImage ?? trip.stops[0]?.image ?? '',
     includes: trip.inclusions.map(i => i.nl),
     hotels,
-    scarcity: 'Nog 2 beschikbaar',
+    scarcity: 'Nog beschikbaar voor max 4 personen',
   }
 }
