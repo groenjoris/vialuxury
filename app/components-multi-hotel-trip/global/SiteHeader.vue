@@ -360,7 +360,7 @@
                           {{ t('header.holidays') }}
                           <span class="menu-panel__badge">{{ t('header.new') }}</span>
                         </span>
-                        <span class="menu-panel__row-sub">Meerdere hotels in één reis, met de auto of de fiets</span>
+                        <span class="menu-panel__row-sub">Meerdere hotels in één reis, met eigen auto of fiets</span>
                       </span>
                       <svg class="menu-panel__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
                     </NuxtLink>
