@@ -69,6 +69,10 @@ export function useMultiHotelTripAccountBooking(slugOverride?: string) {
   const persons = computed(() => row.value.quantity * 2)
   const roomsPerHotel = computed(() => row.value.quantity)
   const tripTotal = computed(() => row.value.price * row.value.quantity)
+  /** Korting zoals op de bevestigingspagina: doorgestreepte prijs (incl. flex-toeslag) min wat je betaalt. */
+  const listTotal = computed(() => row.value.priceWas * row.value.quantity)
+  const discount = computed(() => listTotal.value - tripTotal.value)
+  const discountPct = computed(() => Math.round((discount.value / listTotal.value) * 100))
   const total = computed(() => tripTotal.value + CHECKOUT_BOOKING_FEE)
 
   /* Gast */
@@ -107,5 +111,5 @@ export function useMultiHotelTripAccountBooking(slugOverride?: string) {
 
   const bookingRef = computed(() => bookingRefFor(checkout.value.slug))
 
-  return { slug, checkout, trip, isBike, rate, isFlex, checkInYmd, nights, checkIn, checkOut, dateRange, dateRangeLong, cancelDate, persons, roomsPerHotel, tripTotal, total, bookingFee: CHECKOUT_BOOKING_FEE, firstName, email, stays, bookingRef }
+  return { slug, checkout, trip, isBike, rate, isFlex, checkInYmd, nights, checkIn, checkOut, dateRange, dateRangeLong, cancelDate, persons, roomsPerHotel, tripTotal, listTotal, discount, discountPct, total, bookingFee: CHECKOUT_BOOKING_FEE, firstName, email, stays, bookingRef }
 }

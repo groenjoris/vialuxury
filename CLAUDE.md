@@ -136,7 +136,7 @@ mailpreviews van de flow: bevestigingspagina, tips & routes (daar ook de Vandaag
 extra knop), account (overzicht en detail), MVP-account en de mailpreviews (daar: reis via de slug,
 Fiets gedempt als er geen fietsversie is). De "‹ flow"-link in `ProtoNav` (MHT/MVP) en op de
 mailpreview geeft beide standen mee terug. Inhoud volgt de stand: bevestigingspagina en
-accountdetail tonen bij non-flex "Niet terugbetaalbaar — De boeking kan niet geannuleerd worden"
+accountdetail tonen bij non-flex "Niet terugbetaalbaar — Bij zowel wijzigen als annuleren ontvang je geen bedrag retour" (de zin uit het annuleerblok onderaan de mail)
 (flex: annuleren t/m 31 dagen voor aankomst, 23:59 uur — sinds 2026-11-12 overal 31 dagen, ook in de room table en
 de PDP-FAQ, en de uiterste datum altijd voluit mét tijd, bijv. "zaterdag 17 april 23:59 uur"),
 de prijs zonder toeslag en geen annuleerlink (zonder `?rate=` volgt de pagina de keuze uit de room

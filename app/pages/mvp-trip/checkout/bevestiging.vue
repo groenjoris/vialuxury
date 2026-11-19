@@ -61,6 +61,10 @@ const persons = computed(() => row.value.quantity * 2)
 const roomsPerHotel = computed(() => row.value.quantity)
 const BOOKING_FEE = CHECKOUT_BOOKING_FEE
 const tripTotal = computed(() => row.value.price * row.value.quantity)
+/** Korting: de doorgestreepte prijs uit de room table (incl. flex-toeslag) min wat je betaalt, als eigen regel op de kassabon. */
+const listTotal = computed(() => row.value.priceWas * row.value.quantity)
+const discount = computed(() => listTotal.value - tripTotal.value)
+const discountPct = computed(() => Math.round((discount.value / listTotal.value) * 100))
 const total = computed(() => tripTotal.value + BOOKING_FEE)
 /** Bagagetransfer hoort bij de fietsvakantie (of als een inclusie het noemt). */
 const hasBaggage = computed(() => detail.value?.type === 'fiets' || trip.value.includes.some(t => /bagage/i.test(t)))
@@ -137,7 +141,7 @@ const cancelHref = computed(() => `/mvp-trip/annuleren?bookingId=${encodeURIComp
 const faq = computed(() => [
   { q: 'Hoe kan ik annuleren of wijzigen?', link: isFlex.value ? { label: 'Boeking annuleren', href: cancelHref.value } : undefined, a: `Het wijzigen van een boeking is niet mogelijk. ${isFlex.value ? `Omdat je flexibel annuleren hebt aangezet, kun je je boeking annuleren t/m ${cancelDeadline.value}. Het is niet mogelijk individuele onderdelen van je boeking aan te passen. Wil je de datum van vertrek aanpassen, dan dien je de gehele boeking te annuleren en opnieuw te boeken. Let op: voor de boekingskosten ontvang je een voucher die je weer kunt gebruiken bij je nieuwe boeking.` : 'Tijdens het boeken heb je ervoor gekozen om niet-terugbetaalbaar te boeken. Daardoor is het niet mogelijk om zelf je boeking te annuleren. Het kan zijn dat de klantenservice je wel bepaalde opties kan geven; neem daarom tijdens openingstijden contact met hen op.'}` },
   { q: 'Hoe log ik in op mijn account?', a: 'Ga naar vialuxury.com/nl-NL/inloggen, vul daar het e-mailadres in waarmee je geboekt hebt en je ontvangt direct de inlogcode in de mail.' },
-  { q: `Hoe werkt het inchecken bij ${trip.value.hotels.length} hotels?`, a: 'Je kunt je gewoon bij de receptie melden en inchecken met je naam en je ViaLuxury Ordernummer. De meeste hotels verplichten een identificatiedocument zoals een rijbewijs of een paspoort van de hoofdboeker. Bij sommige hotels moet iedereen zich identificeren. Let op: een kopie volstaat niet en zonder geldig document kan een hotel weigeren je toe te laten.' },
+  { q: `Hoe werkt het inchecken bij ${trip.value.hotels.length} hotels?`, a: 'Je kunt je gewoon bij de receptie melden en inchecken met je naam en het hotelboekingsnummer van dat hotel. De meeste hotels verplichten een identificatiedocument zoals een rijbewijs of een paspoort van de hoofdboeker. Bij sommige hotels moet iedereen zich identificeren. Let op: een kopie volstaat niet en zonder geldig document kan een hotel weigeren je toe te laten.' },
   { q: 'Wat betaal ik nog in de hotels?', a: 'In principe betaal je bij de hotels niet meer voor hetgeen in het arrangement zit. Verblijf je ergens meerdere dagen, dan kan het dus zijn dat niet alle diners of de lunch in het arrangement zitten. In de meeste gevallen is het arrangement eveneens zonder drankjes en dien je bij het uitchecken deze dus te voldoen. Daarnaast zal je in de meeste gevallen de gemeentelijke toeristenbelasting moeten voldoen en in uitzonderlijke gevallen ook een lokale toeslag. Daarnaast is het mogelijk dat je gevraagd wordt een borg af te geven d.m.v. een reservering op een creditcard of een borg in cash.' },
   { q: 'Zijn de attracties uit de tips inbegrepen?', a: 'Alle onderdelen van het arrangement vind je terug in je boekingsbevestiging. De tips zijn hier niet vermeld en zijn dus niet inbegrepen of onderdeel van het arrangement. Je kunt dan ook zelf besluiten deze tips onderdeel te laten zijn van je reis.' },
   { q: 'Ik heb mijn e-mailadres verkeerd ingevuld', a: 'Geen zorgen, neem tijdens openingstijden of via de mail contact op met de klantenservice via info@vialuxury.com of +31 20 705 2222 of via een WhatsApp-bericht naar +31 20 808 8809. Op basis van bijvoorbeeld je adres kunnen zij dan een nieuwe boekingsbevestiging naar je sturen.' },
@@ -271,7 +275,7 @@ useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
                   <svg v-else class="cf__extra-icon cf__extra-icon--off" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3l7 3v5c0 5-3.5 8.5-7 10-3.5-1.5-7-5-7-10V6l7-3z" stroke="currentColor" stroke-width="2" stroke-linejoin="round" /><path d="M9.5 9.5l5 5M14.5 9.5l-5 5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" /></svg>
                   <div>
                     <p class="cf__stay-name">{{ isFlex ? 'Flexibel annuleren' : 'Niet terugbetaalbaar' }}</p>
-                    <p class="t-caption c-grey">{{ isFlex ? `Tot ${cancelDate} 23:59 uur (31 dagen voor aankomst) kosteloos annuleren van de gehele vakantie.` : 'De boeking kan niet geannuleerd worden.' }}</p>
+                    <p class="t-caption c-grey">{{ isFlex ? `Tot ${cancelDate} 23:59 uur (31 dagen voor aankomst) kosteloos annuleren van de gehele vakantie.` : 'Bij zowel wijzigen als annuleren ontvang je geen bedrag retour.' }}</p>
                   </div>
                 </li>
                 <li v-if="hasBaggage" class="cf__extra">
@@ -285,7 +289,8 @@ useHead({ title: 'Je vakantie is geboekt — ViaLuxury' })
 
               <!-- Prijs -->
               <div class="cf__price">
-                <div class="cf__price-row"><span class="t-body">{{ trip.typeLabel }}, {{ persons }} personen{{ isFlex ? ', incl. flexibel annuleren' : '' }}</span><span class="t-body">{{ money(tripTotal) }}</span></div>
+                <div class="cf__price-row"><span class="t-body">{{ trip.typeLabel }}, {{ persons }} personen{{ isFlex ? ', incl. flexibel annuleren' : '' }}</span><span class="t-body">{{ money(listTotal) }}</span></div>
+                <div class="cf__price-row"><span class="t-body">Korting ({{ discountPct }}%)</span><span class="t-body">−{{ money(discount) }}</span></div>
                 <div class="cf__price-row"><span class="t-body">Boekingskosten</span><span class="t-body">{{ money(BOOKING_FEE) }}</span></div>
                 <div class="cf__price-row cf__price-row--total"><span class="t-body t-bold">Totaal</span><span class="t-body t-bold">{{ money(total) }}</span></div>
                 <div class="cf__price-row"><span class="t-body">Betaald</span><span class="t-body">{{ money(total) }}</span></div>

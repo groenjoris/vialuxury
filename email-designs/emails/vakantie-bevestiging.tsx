@@ -56,7 +56,10 @@ type Props = {
   /** Annuleringskeuze: flexibel annuleren (standaard) of niet terugbetaalbaar. */
   rate?: "flex" | "nonflex";
   hasBaggage?: boolean;
-  tripPrice: string;
+  /** Doorgestreepte prijs (incl. flex-toeslag), korting als "−€571" en het percentage: eigen regel op de kassabon. */
+  listPrice: string;
+  discount: string;
+  discountPct: number;
   bookingFee: string;
   total: string;
   routesUrl: string;
@@ -107,7 +110,9 @@ export default function VakantieBevestiging({
   cancelUntil,
   hasBaggage = false,
   rate = "flex",
-  tripPrice,
+  listPrice,
+  discount,
+  discountPct,
   bookingFee,
   total,
   routesUrl,
@@ -205,7 +210,7 @@ export default function VakantieBevestiging({
     },
     {
       q: `Hoe werkt het inchecken bij ${hotels.length} hotels?`,
-      a: "Je kunt je gewoon bij de receptie melden en inchecken met je naam en je ViaLuxury Ordernummer. De meeste hotels verplichten een identificatiedocument zoals een rijbewijs of een paspoort van de hoofdboeker. Bij sommige hotels moet iedereen zich identificeren. Let op: een kopie volstaat niet en zonder geldig document kan een hotel weigeren je toe te laten.",
+      a: "Je kunt je gewoon bij de receptie melden en inchecken met je naam en het hotelboekingsnummer van dat hotel. De meeste hotels verplichten een identificatiedocument zoals een rijbewijs of een paspoort van de hoofdboeker. Bij sommige hotels moet iedereen zich identificeren. Let op: een kopie volstaat niet en zonder geldig document kan een hotel weigeren je toe te laten.",
     },
     {
       q: "Wat betaal ik nog in de hotels?",
@@ -234,7 +239,7 @@ export default function VakantieBevestiging({
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <style>{responsiveCss}</style>
       </Head>
-      <Preview>ViaLuxury Ordernummer {bookingNumber}. Hieronder alles over je {hotels.length} hotels.</Preview>
+      <Preview>Hieronder alles over je {hotels.length} hotels.</Preview>
       <Body style={{ backgroundColor: c.bg, margin: 0, padding: 0, fontFamily: font.body }}>
         <CrmHeader mode={mode} />
         <Container style={{ width: "100%", maxWidth: "626px" }}>
@@ -344,7 +349,7 @@ export default function VakantieBevestiging({
                     <Column style={{ verticalAlign: "top" }}>
                       <Text style={{ ...body14, margin: 0, fontSize: "16px", fontWeight: 700 }}>{rate === "flex" ? "Flexibel annuleren" : "Niet terugbetaalbaar"}</Text>
                       <Text style={{ ...small, margin: "2px 0 0" }}>
-                        {rate === "flex" ? `Tot ${cancelUntil} 23:59 uur (31 dagen voor aankomst) kosteloos annuleren van de gehele vakantie.` : "De boeking kan niet geannuleerd worden."}
+                        {rate === "flex" ? `Tot ${cancelUntil} 23:59 uur (31 dagen voor aankomst) kosteloos annuleren van de gehele vakantie.` : "Bij zowel wijzigen als annuleren ontvang je geen bedrag retour."}
                       </Text>
                     </Column>
                   </Row>
@@ -365,7 +370,8 @@ export default function VakantieBevestiging({
 
                 {/* Prijs */}
                 <Section style={{ borderTop: `1px solid ${line}`, marginTop: "16px", paddingTop: "12px" }}>
-                  {priceRow(`${tripType}, ${persons} personen${rate === "flex" ? ", incl. flexibel annuleren" : ""}`, tripPrice)}
+                  {priceRow(`${tripType}, ${persons} personen${rate === "flex" ? ", incl. flexibel annuleren" : ""}`, listPrice)}
+                  {priceRow(`Korting (${discountPct}%)`, discount)}
                   {priceRow("Boekingskosten", bookingFee)}
                   {priceRow("Totaal", total, true, true)}
                   {priceRow("Betaald", total)}
@@ -535,7 +541,9 @@ VakantieBevestiging.PreviewProps = {
   ],
   cancelUntil: "zaterdag 17 april",
   hasBaggage: false,
-  tripPrice: "€964",
+  listPrice: "€1.535",
+  discount: "−€571",
+  discountPct: 37,
   bookingFee: "€27,50",
   total: "€991,50",
   routesUrl: "https://vialuxury.vercel.app/multi-hotel-trip/checkout/routes",
@@ -583,7 +591,9 @@ export const fietsPreviewProps = {
   ],
   cancelUntil: "vrijdag 7 mei",
   hasBaggage: true,
-  tripPrice: "€1.104",
+  listPrice: "€1.680",
+  discount: "−€576",
+  discountPct: 34,
   total: "€1.131,50",
   routesUrl: "https://vialuxury.vercel.app/multi-hotel-trip/checkout/routes?demo=fiets",
   bookingUrl: "https://vialuxury.vercel.app/multi-hotel-trip/account/boekingen/fietsvakantie-twente-en-salland-delden-raalte-markelo?demo=fiets",

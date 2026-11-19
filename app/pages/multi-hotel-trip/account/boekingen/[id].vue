@@ -12,7 +12,7 @@ import { demoQuery, navigateAfterPaint, useDemoBookingFromQuery, useDemoSwitches
 useDemoBookingFromQuery()
 const route = useRoute()
 const id = computed(() => String(route.params.id ?? ''))
-const { checkout, stays, dateRangeLong, nights, persons, roomsPerHotel, bookingRef, tripTotal, total, bookingFee, checkInYmd, isBike, isFlex } = useMultiHotelTripAccountBooking(id.value)
+const { checkout, stays, dateRangeLong, nights, persons, roomsPerHotel, bookingRef, listTotal, discount, discountPct, total, bookingFee, checkInYmd, isBike, isFlex } = useMultiHotelTripAccountBooking(id.value)
 /** Annuleren kan t/m 31 dagen voor aankomst, 23:59 uur (voluit, zoals de datums in de kop). */
 const cancelDeadline = computed(() => { const y = checkInYmd.value; return `${fmtLong(new Date(y.year, y.month, y.day - 31))}, 23:59 uur` })
 /** Placeholder voor het bestaande annuleringsformulier (zelfde link als de knop in de bevestigingsmail). */
@@ -131,7 +131,8 @@ useHead({ title: () => `${checkout.value.name} — Mijn ViaLuxury` })
 
       <!-- Prijs -->
       <section class="ad__price" aria-label="Prijs">
-        <div class="ad__price-row"><span>{{ checkout.typeLabel }}, {{ persons }} personen{{ isFlex ? ', incl. flexibel annuleren' : '' }}</span><span>{{ money(tripTotal) }}</span></div>
+        <div class="ad__price-row"><span>{{ checkout.typeLabel }}, {{ persons }} personen{{ isFlex ? ', incl. flexibel annuleren' : '' }}</span><span>{{ money(listTotal) }}</span></div>
+        <div class="ad__price-row"><span>Korting ({{ discountPct }}%)</span><span>−{{ money(discount) }}</span></div>
         <div class="ad__price-row"><span>Boekingskosten</span><span>{{ money(bookingFee) }}</span></div>
         <div class="ad__price-row ad__price-row--total"><span>Totaal</span><span>{{ money(total) }}</span></div>
         <div class="ad__price-row"><span>Betaald</span><span>{{ money(total) }}</span></div>
