@@ -264,11 +264,12 @@ useHead({ title: 'Selecteer aankomstdatum — ViaLuxury' })
   flex-direction: column;
   gap: 20px;
 }
+/* Toelichting onder de titel in het bodyfont (14/20, medium), niet als kop. */
 .mcal__intro {
   text-align: center;
-  font-weight: var(--w-black);
-  font-size: 17px;
-  line-height: 26px;
+  font-weight: var(--w-medium);
+  font-size: var(--t-body);
+  line-height: var(--lh-body);
   color: var(--c-grey);
   padding: 0 8px;
 }
