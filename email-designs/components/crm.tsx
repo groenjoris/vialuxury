@@ -216,9 +216,13 @@ export function DealRow({ deal: d, cta }: { deal: RowDeal; cta?: string }) {
   return (
     <Section style={{ border: `1px solid #E5E5E5`, borderRadius: "8px", marginTop: "12px", overflow: "hidden" }}>
       <Row>
-        {/* Foto als achtergrond: sluit aan op de rand en vult de hele hoogte van het blok */}
-        <Column className="stack" style={{ width: "190px", verticalAlign: "top", backgroundImage: `url(${d.image})`, backgroundSize: "cover", backgroundPosition: "center" }}>
-          <Link href={d.url} aria-label={d.hotelName ?? cta ?? "Bekijk"} style={{ display: "block", width: "190px", minHeight: "150px" }} />
+        {/* Foto als gewone <img>, niet als CSS-achtergrond: die laat Outlook namelijk weg.
+            De foto staat bovenaan in de cel op zijn eigen verhouding (190x119); is de
+            tekstkolom hoger, dan vult de beige cel de rest. */}
+        <Column className="stack" style={{ width: "190px", verticalAlign: "top", backgroundColor: "#F4F1EC" }}>
+          <Link href={d.url}>
+            <Img src={d.image} alt={d.packageTitle ?? d.hotelName ?? ""} width="190" height="119" style={{ display: "block", width: "100%", height: "auto" }} />
+          </Link>
         </Column>
         <Column className="stack" style={{ verticalAlign: "top", padding: rich ? "16px 18px 18px" : "16px 18px" }}>
           {rich ? (
@@ -256,7 +260,7 @@ export function FeaturedDeal({ deal: d, cta, priceRow = true }: { deal: RowDeal;
   return (
     <Section style={{ border: `1px solid #E5E5E5`, borderRadius: "8px", marginTop: "12px", overflow: "hidden" }}>
       <Link href={d.url}>
-        <Img src={d.image} alt={d.packageTitle ?? d.hotelName ?? ""} width="560" height="300" style={{ display: "block", width: "100%", height: "300px", objectFit: "cover" }} />
+        <Img src={d.image} alt={d.packageTitle ?? d.hotelName ?? ""} width="560" height="350" style={{ display: "block", width: "100%", height: "auto" }} />
       </Link>
       {rich ? (
         <Section style={{ padding: "16px 20px 20px" }}>
