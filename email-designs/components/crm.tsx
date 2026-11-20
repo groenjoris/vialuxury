@@ -206,9 +206,10 @@ function RichDealPrice({ d, cta }: { d: RowDeal; cta: string }) {
 }
 
 /** Dealrij met grijze rand: foto links tot aan de rand en over de volle hoogte. Met een prijs de
- *  uitgebreide kaart (knop "Bekijk"), anders de tekstregels met een oranje link. */
+ *  uitgebreide kaart (knop "Bekijk"), anders de tekstregels met een oranje link. Met inclusies maar
+ *  zonder prijs (de bekeken deal): de uitgebreide kaart met onderaan de eigen regels en de link. */
 export function DealRow({ deal: d, cta }: { deal: RowDeal; cta?: string }) {
-  const rich = !!d.price;
+  const rich = !!d.price || !!d.includes;
   return (
     <Section style={{ border: `1px solid #E5E5E5`, borderRadius: "8px", marginTop: "12px", overflow: "hidden" }}>
       <Row>
@@ -220,7 +221,17 @@ export function DealRow({ deal: d, cta }: { deal: RowDeal; cta?: string }) {
           {rich ? (
             <>
               <RichDealText d={d} />
-              <RichDealPrice d={d} cta={cta ?? "Bekijk"} />
+              {d.price ? (
+                <RichDealPrice d={d} cta={cta ?? "Bekijk"} />
+              ) : (
+                <>
+                  {/* Bekeken deal: geen prijsrij maar de eigen regels en een link */}
+                  {d.lines?.map((l, i) => (
+                    <Text key={l} style={{ ...s.title, margin: i ? "2px 0 0" : "14px 0 0" }}>{l}</Text>
+                  ))}
+                  <TextLink href={d.url}>{cta ?? "Bekijk"}</TextLink>
+                </>
+              )}
             </>
           ) : (
             <>
