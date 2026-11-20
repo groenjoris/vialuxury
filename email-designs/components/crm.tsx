@@ -107,6 +107,9 @@ export type RowDeal = {
   /** Gewone bodyregels onder de dealtitel (bekeken deal: aankomst, nachten en personen, besparing). */
   lines?: string[];
   image: string;
+  /** Twee extra foto's voor de collagekaart (rechts naast de hoofdfoto). Zonder deze
+   *  valt de collage terug op alleen de hoofdfoto over de volle breedte. */
+  extraImages?: string[];
   url: string;
   /** Uitgebreide kaart (zoals de zoekkaart op de website); een deal met `price` krijgt die: */
   /** Inclusies met een groen vinkje, maximaal vier. */
@@ -268,6 +271,60 @@ export function FeaturedDeal({ deal: d, cta, priceRow = true }: { deal: RowDeal;
           </Section>
         </Section>
       )}
+    </Section>
+  );
+}
+
+/** Fotocollage bovenaan de kaart: links de hoofdfoto, rechts twee kleinere onder elkaar.
+ *  Losse `<img>`-tags in een tabel — geen CSS-achtergrond, zodat Outlook de foto's ook toont.
+ *  Op mobiel (max-width 480) vallen de kolommen onder elkaar via `.stack`. */
+function DealCollage({ d }: { d: RowDeal }) {
+  const extra = (d.extraImages ?? []).slice(0, 2);
+  const alt = d.packageTitle ?? d.hotelName ?? "";
+  if (extra.length < 2) {
+    return (
+      <Link href={d.url}>
+        <Img src={d.image} alt={alt} width="560" height="300" style={{ display: "block", width: "100%", height: "300px", objectFit: "cover" }} />
+      </Link>
+    );
+  }
+  return (
+    <Row>
+      <Column className="stack" style={{ width: "372px", verticalAlign: "top", paddingRight: "4px" }}>
+        <Link href={d.url}>
+          <Img src={d.image} alt={alt} width="372" height="248" style={{ display: "block", width: "100%", height: "248px", objectFit: "cover" }} />
+        </Link>
+      </Column>
+      <Column className="stack" style={{ width: "184px", verticalAlign: "top" }}>
+        {extra.map((src, i) => (
+          <Link key={src} href={d.url}>
+            <Img src={src} alt="" width="184" height="122" style={{ display: "block", width: "100%", height: "122px", objectFit: "cover", marginTop: i ? "4px" : 0 }} />
+          </Link>
+        ))}
+      </Column>
+    </Row>
+  );
+}
+
+/** Dealkaart met de fotocollage bovenaan en daaronder de tekst en de prijsrij. Dezelfde
+ *  inhoud als `DealRow`, alleen staat het beeld boven de tekst in plaats van ernaast. */
+export function CollageDeal({ deal: d, cta, priceRow = true }: { deal: RowDeal; cta?: string; priceRow?: boolean }) {
+  return (
+    <Section style={{ border: `1px solid #E5E5E5`, borderRadius: "8px", marginTop: "12px", overflow: "hidden" }}>
+      <DealCollage d={d} />
+      <Section style={{ padding: "16px 20px 20px" }}>
+        <RichDealText d={d} />
+        {d.price && priceRow ? (
+          <RichDealPrice d={d} cta={cta ?? "Bekijk"} />
+        ) : (
+          <>
+            {d.lines?.map((l, i) => (
+              <Text key={l} style={{ ...s.title, margin: i ? "2px 0 0" : "14px 0 0" }}>{l}</Text>
+            ))}
+            <TextLink href={d.url}>{cta ?? "Bekijk"}</TextLink>
+          </>
+        )}
+      </Section>
     </Section>
   );
 }
