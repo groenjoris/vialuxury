@@ -260,7 +260,7 @@ export function FeaturedDeal({ deal: d, cta, priceRow = true }: { deal: RowDeal;
   return (
     <Section style={{ border: `1px solid #E5E5E5`, borderRadius: "8px", marginTop: "12px", overflow: "hidden" }}>
       <Link href={d.url}>
-        <Img src={d.image} alt={d.packageTitle ?? d.hotelName ?? ""} width="560" height="350" style={{ display: "block", width: "100%", height: "auto" }} />
+        <Img src={d.image} alt={d.packageTitle ?? d.hotelName ?? ""} width="560" height="240" style={{ display: "block", width: "100%", height: "auto" }} />
       </Link>
       {rich ? (
         <Section style={{ padding: "16px 20px 20px" }}>
