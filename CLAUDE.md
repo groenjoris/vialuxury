@@ -224,8 +224,9 @@ Regels voor elke CRM-mail:
   Kortingsblokje en knop zijn even hoog (42 px) met dezelfde afronding (6 px). Klaviyo: geen tekst op een foto, en elke
   regel één lettertype (hotelnaam en de hele prijsrij in de sans). De kale kaart (zonder `price`) blijft voor een
   verblijf met datums ("Jouw verblijf", `asStay`) en "Door jou bekeken" in de winkelmandjemail van 2 dagen. De
-  winkelmandjemail van 2 uur zet datums, nachten/personen, de besparing (smiley, "Bespaar €441 (47%)", bedrag oranje en
-  vet, zoals in de checkout) en de knop bóven de kaart; de kaart zelf is de uitgebreide zonder prijsrij (`priceRow={false}`).
+  winkelmandjemail van 2 uur zet onder de titel drie regels in dezelfde bodytekst (hotelnaam vet, "20 november · 2 nachten
+  · 2 personen", "Bespaar €441 (47%)"; geen icoon, geen kleur) en de knop bóven de kaart; "Door jou bekeken" in de mail
+  van 2 dagen toont dezelfde twee regels in plaats van een prijs (`lines`), met de link "Ga verder met boeken"; de kaart zelf is de uitgebreide zonder prijsrij (`priceRow={false}`).
 - Prijzen uit `deals.json` zijn het totaal voor 2 personen: "Vanaf €319 voor 2 personen", nooit p.p.
 - Knoppen linken naar de R1-dealpagina (zachte landing; die neemt `?checkin=` en `?adults=` over).
 - Jesse de Groot heeft eigen CRM-mails op `origin/redesign-jesse`; mails worden daarvan per stuk

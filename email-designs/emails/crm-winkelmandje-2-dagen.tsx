@@ -9,7 +9,9 @@ import { font, newsletter } from "../components/theme";
 // 2 uur (zelfde deal, afronden) nu alternatieven. Eerst drie vergelijkbare deals onder elkaar:
 // de eerste groot over de hele breedte met een oranje knop (naar Jesse's terugkomactie), de
 // andere twee als dealrij. Daaronder "Door jou bekeken": de deal uit het winkelmandje als
-// omlijnde dealrij (zoals "Jouw verblijf" in de reviewmail).
+// omlijnde dealrij (zoals "Jouw verblijf" in de reviewmail), zonder prijs: onderin de aankomst met
+// nachten en personen en de besparing, dezelfde regels als in de mail van 2 uur, met de link
+// "Ga verder met boeken".
 // Geen labels. Klaviyo: nooit twee lettertypen op één regel, daarom staat alles onder elkaar.
 // Onderwerp: "Dit zijn 3 deals die lijken op [hotelnaam]"
 
@@ -64,7 +66,8 @@ CrmWinkelmandje2Dagen.PreviewProps = {
     stars: 5,
     place: "Den Haag",
     packageTitle: "Verblijf 3 dagen in een luxe 5*-hotel in hartje Den Haag",
-    line: "Vanaf €379 voor 2 personen",
+    // Geen prijs: aankomst met nachten en personen, en de besparing (deals.json: €379 in plaats van €830).
+    lines: ["20 november · 2 nachten · 2 personen", "Bespaar €451 (54%)"],
     image: "https://asset.vialuxury.com/assets/910163b4-1308-4f1f-989c-66e6d9202593?key=card",
     url: `${deal("hotel-des-indes-verblijf-3-dagen-in-luxe-5-hotel-in-hartje-centrum")}?checkin=2026-11-20&adults=2`,
   },

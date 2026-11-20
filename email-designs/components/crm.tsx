@@ -104,6 +104,8 @@ export type RowDeal = {
   packageTitle?: string;
   /** Vette regel onder de dealtitel: "31 oktober tot 2 november 2026" of "Vanaf €319 voor 2 personen". */
   line?: string;
+  /** Gewone bodyregels onder de dealtitel (bekeken deal: aankomst, nachten en personen, besparing). */
+  lines?: string[];
   image: string;
   url: string;
   /** Uitgebreide kaart (zoals de zoekkaart op de website); een deal met `price` krijgt die: */
@@ -127,6 +129,9 @@ function DealText({ d }: { d: RowDeal }) {
       {d.place && <Text style={{ ...s.muted, margin: "2px 0 0" }}>{d.place}</Text>}
       {d.packageTitle && <Text style={{ ...s.title, margin: "8px 0 0" }}>{d.packageTitle}</Text>}
       {d.line && <Text style={{ ...s.name, margin: "8px 0 0" }}>{d.line}</Text>}
+      {d.lines?.map((l, i) => (
+        <Text key={l} style={{ ...s.title, margin: i ? "2px 0 0" : "8px 0 0" }}>{l}</Text>
+      ))}
     </>
   );
 }
