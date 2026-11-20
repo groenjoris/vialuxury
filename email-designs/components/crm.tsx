@@ -230,8 +230,9 @@ export function DealRow({ deal: d, cta }: { deal: RowDeal; cta?: string }) {
 }
 
 /** Uitgelichte deal over de hele breedte: grote foto, daaronder met een prijs de uitgebreide kaart
- *  (knop "Bekijk"), anders de tekstregels en een oranje knop "Bekijk arrangement". */
-export function FeaturedDeal({ deal: d, cta }: { deal: RowDeal; cta?: string }) {
+ *  (knop "Bekijk"), anders de tekstregels en een oranje knop "Bekijk arrangement".
+ *  `priceRow={false}`: zonder de prijsrij en de knop (winkelmandje: prijs en knop staan erboven). */
+export function FeaturedDeal({ deal: d, cta, priceRow = true }: { deal: RowDeal; cta?: string; priceRow?: boolean }) {
   const rich = !!d.price;
   return (
     <Section style={{ border: `1px solid #E5E5E5`, borderRadius: "8px", marginTop: "12px", overflow: "hidden" }}>
@@ -241,7 +242,7 @@ export function FeaturedDeal({ deal: d, cta }: { deal: RowDeal; cta?: string }) 
       {rich ? (
         <Section style={{ padding: "16px 20px 20px" }}>
           <RichDealText d={d} />
-          <RichDealPrice d={d} cta={cta ?? "Bekijk"} />
+          {priceRow && <RichDealPrice d={d} cta={cta ?? "Bekijk"} />}
         </Section>
       ) : (
         <Section style={{ padding: "18px 20px 22px" }}>

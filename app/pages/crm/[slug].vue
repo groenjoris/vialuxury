@@ -22,10 +22,22 @@ const nav = navOrder
     return { slug: e.slug, label: m ? m[1] : e.title, when: m ? m[2] : '' }
   })
 
+// Varianten van één mail (registry: variantOf) staan niet in het paneel maar als schakelaar in de
+// kop, rechts van de naam van de mail. In het paneel blijft de hoofdmail actief.
+const baseSlug = computed(() => (entry.value as { variantOf?: string } | undefined)?.variantOf ?? slug.value)
+const variantLabels: Record<string, string> = {
+  'crm-winkelmandje': 'Naam bekend',
+  'crm-winkelmandje-naam-onbekend': 'Naam onbekend',
+}
+const variants = computed(() => {
+  const list = emails.filter(e => e.slug === baseSlug.value || (e as { variantOf?: string }).variantOf === baseSlug.value)
+  return list.length > 1 ? list.map(e => ({ slug: e.slug, label: variantLabels[e.slug] ?? e.slug })) : []
+})
+
 // Pijltjes omhoog/omlaag: vorige/volgende mail
 function onKey(ev: KeyboardEvent) {
   if (ev.key !== 'ArrowDown' && ev.key !== 'ArrowUp') return
-  const i = nav.findIndex(e => e.slug === slug.value)
+  const i = nav.findIndex(e => e.slug === baseSlug.value)
   const next = nav[i + (ev.key === 'ArrowDown' ? 1 : -1)]
   if (!next) return
   ev.preventDefault()
@@ -43,6 +55,16 @@ useHead({ title: `${entry.value?.title ?? 'E-mail'} — ViaLuxury CRM` })
       <div class="crm__left">
         <a class="crm__back" href="/">‹ Startscherm</a>
         <h1 class="crm__title">{{ entry?.title }}</h1>
+        <div v-if="variants.length" class="crm__variants" role="group" aria-label="Variant">
+          <NuxtLink
+            v-for="v in variants"
+            :key="v.slug"
+            :to="`/crm/${v.slug}`"
+            class="crm__variant"
+            :class="{ 'crm__variant--on': v.slug === slug }"
+            :aria-current="v.slug === slug ? 'true' : undefined"
+          >{{ v.label }}</NuxtLink>
+        </div>
       </div>
     </header>
     <div class="crm__stage">
@@ -53,8 +75,8 @@ useHead({ title: `${entry.value?.title ?? 'E-mail'} — ViaLuxury CRM` })
           :key="e.slug"
           :to="`/crm/${e.slug}`"
           class="crm__nav-link"
-          :class="{ 'crm__nav-link--on': e.slug === slug }"
-          :aria-current="e.slug === slug ? 'page' : undefined"
+          :class="{ 'crm__nav-link--on': e.slug === baseSlug }"
+          :aria-current="e.slug === baseSlug ? 'page' : undefined"
         >
           <span class="crm__nav-label">{{ e.label }}</span>
           <span v-if="e.when" class="crm__nav-when">{{ e.when }}</span>
@@ -85,6 +107,12 @@ useHead({ title: `${entry.value?.title ?? 'E-mail'} — ViaLuxury CRM` })
 .crm__back { color: var(--color-text-secondary); text-decoration: none; font-size: 13px; }
 .crm__back:hover { color: var(--color-primary); }
 .crm__title { margin: 0; font-family: var(--font-heading); font-size: 20px; font-weight: 700; }
+/* Variantschakelaar rechts van de naam: twee segmenten, het actieve zwart */
+.crm__variants { display: inline-flex; border: 1px solid var(--color-border); border-radius: 6px; overflow: hidden; background: #fff; }
+.crm__variant { padding: 6px 12px; font-size: 13px; line-height: 1.3; color: var(--color-text-secondary); text-decoration: none; }
+.crm__variant + .crm__variant { border-left: 1px solid var(--color-border); }
+.crm__variant:hover { color: var(--color-text-primary); }
+.crm__variant--on, .crm__variant--on:hover { background: #141414; color: #fff; }
 .crm__stage { display: flex; align-items: flex-start; gap: 24px; padding: 20px 24px 48px; }
 /* Paneel links tegen de rand; de mail staat gecentreerd in de ruimte ernaast. */
 .crm__nav { position: sticky; top: 20px; display: flex; flex-direction: column; gap: 2px; width: 264px; flex-shrink: 0; padding: 12px 8px; background: #fff; border: 1px solid var(--color-border); border-radius: 8px; }

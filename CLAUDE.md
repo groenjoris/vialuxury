@@ -195,7 +195,8 @@ omdat je een account of boeking hebt bij ViaLuxury."; de CRM-mails houden de opt
 
 Artist impression van geautomatiseerde e-mails, alleen desktop + light mode. Mails (in de volgorde
 van het paneel links in de preview): `crm-jaar-geleden`, `crm-winkelmandje`
-(2 uur na verlaten), `crm-winkelmandje-2-dagen`, `crm-thema-stedentrips` (A6), `crm-zoekopdracht`,
+(2 uur na verlaten; variant `crm-winkelmandje-naam-onbekend` via de schakelaar "Naam bekend | Naam onbekend" in de previewkop,
+registry `variantOf`, labels in `variantLabels` in `app/pages/crm/[slug].vue`), `crm-winkelmandje-2-dagen`, `crm-thema-stedentrips` (A6), `crm-zoekopdracht`,
 `crm-verlanglijst`, `crm-review`, `crm-terugkomactie` (€20), `crm-terugkomactie-herinnering` (zelfde
 component met `daysLeft`) en `crm-nagenieten` (staat bewust als laatste). Bronnen in
 `email-designs/emails/crm-*.tsx`, bouwstenen in `email-designs/components/crm.tsx` (`DealRow`,
@@ -222,7 +223,9 @@ Regels voor elke CRM-mail:
   zwarte kortingsblokje ("-37%"), daarnaast "Vanaf €409" met de doorgestreepte kamerprijs, rechts de knop "Bekijk".
   Kortingsblokje en knop zijn even hoog (42 px) met dezelfde afronding (6 px). Klaviyo: geen tekst op een foto, en elke
   regel één lettertype (hotelnaam en de hele prijsrij in de sans). De kale kaart (zonder `price`) blijft voor een
-  verblijf met datums ("Jouw verblijf", `asStay`) en de bekeken deal in de winkelmandjemails.
+  verblijf met datums ("Jouw verblijf", `asStay`) en "Door jou bekeken" in de winkelmandjemail van 2 dagen. De
+  winkelmandjemail van 2 uur zet datums, nachten/personen, de besparing (smiley, "Bespaar €441 (47%)", bedrag oranje en
+  vet, zoals in de checkout) en de knop bóven de kaart; de kaart zelf is de uitgebreide zonder prijsrij (`priceRow={false}`).
 - Prijzen uit `deals.json` zijn het totaal voor 2 personen: "Vanaf €319 voor 2 personen", nooit p.p.
 - Knoppen linken naar de R1-dealpagina (zachte landing; die neemt `?checkin=` en `?adults=` over).
 - Jesse de Groot heeft eigen CRM-mails op `origin/redesign-jesse`; mails worden daarvan per stuk

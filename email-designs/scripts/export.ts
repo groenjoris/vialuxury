@@ -17,11 +17,11 @@ async function main() {
   const crmFile = resolve(here, "../../app/data/crm-emails.json");
   mkdirSync(outDir, { recursive: true });
   const index: { slug: string; title: string; description: string; section: string; subject?: string; preheader?: string; variantOf?: string }[] = [];
-  const crm: { slug: string; title: string; description: string; subject?: string; preheader?: string }[] = [];
+  const crm: { slug: string; title: string; description: string; subject?: string; preheader?: string; variantOf?: string }[] = [];
   for (const e of emails) {
     if (e.section === "crm") {
       writeFileSync(resolve(outDir, `${e.slug}.html`), await renderEmail(e, "light"));
-      crm.push({ slug: e.slug, title: e.title, description: e.description, subject: e.subject, preheader: e.preheader });
+      crm.push({ slug: e.slug, title: e.title, description: e.description, subject: e.subject, preheader: e.preheader, variantOf: e.variantOf });
       console.log("✓", e.slug);
       continue;
     }

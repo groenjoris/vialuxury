@@ -1,42 +1,45 @@
 import { Body, Container, Head, Heading, Html, Img, Link, Preview, Section, Text } from "@react-email/components";
 import * as React from "react";
-import { crmCss, PrimaryButton, s, site } from "../components/crm";
+import { crmCss, FeaturedDeal, PrimaryButton, type RowDeal, s, site } from "../components/crm";
+import { desIndes } from "../lib/crmDeals";
 import CrmFooter from "../components/CrmFooter";
 import CrmHeader from "../components/CrmHeader";
 import { baseUrl, font, newsletter } from "../components/theme";
 
-// CRM mail 3: winkelmandje, 2 uur na het verlaten van de checkout. Overgenomen van de
-// winkelmandjemail van Jesse (origin/redesign-jesse, crm-winkelmandje.tsx), met de plaats
-// boven de dealtitel en zonder de beschikbaarheidsregel ("Nog x kamers beschikbaar").
-// Eén doel: de boeking afronden. Concrete datums en de totaalprijs, één knop naar de
-// boeking met alles vooringevuld. Gastenoordeel: gemiddelde met Trustpilot-sterren en drie
-// korte reviews, alleen als die er zijn. Geen alternatieve deals.
-// Onderwerp: "[hotelnaam] op [aankomstdatum kort]: nog beschikbaar"
+// CRM mail 3: winkelmandje, 2 uur na het verlaten van de checkout.
+// Eén doel: de boeking afronden. Bovenaan de titel (met voornaam als die bekend is), de vraag met
+// de hotelnaam, de gekozen datums, nachten en personen, de besparing voor die datum (opmaak zoals
+// "Je hebt al €441 (47%) bespaard" in de checkout: smiley, bedrag oranje en vet) en de ene knop
+// naar de boeking met alles vooringevuld. Daaronder de deal op de uitgebreide kaart, zonder
+// prijsrij. Gastenoordeel: gemiddelde met Trustpilot-sterren en drie korte reviews, alleen als die
+// er zijn. Geen alternatieve deals.
+// Twee varianten (schakelaar in de preview): naam bekend (crm-winkelmandje) en naam onbekend
+// (crm-winkelmandje-naam-onbekend).
+// Onderwerp: "[Voornaam], we hebben deze nog even voor je bewaard" / "We hebben deze nog even voor je bewaard"
 
 type Props = {
   recipientEmail: string;
-  hotelName: string;
-  packageTitle: string;
-  place: string;
+  /** Leeg → titel zonder naam. */
+  firstName?: string;
+  /** De deal uit het winkelmandje, op de uitgebreide kaart (zonder prijsrij). */
+  deal: RowDeal & { hotelName: string };
   /** "20 november" */
   arrivalDate: string;
   /** "22 november 2026" */
   departureDate: string;
   nights: number;
   persons: number;
-  /** Totaalprijs voor alle personen. */
-  price: string;
-  /** Wat er in de totaalprijs zit of nog bijkomt, bijv. "Inclusief btw en servicekosten". Alleen invullen als het klopt. */
-  priceNote?: string;
+  /** Besparing voor de gekozen datum t.o.v. de kamerprijs; leeg → geen besparingsregel. */
+  saving?: { amount: string; percentage?: string };
   /** Gemiddelde en aantal reviews van het hotel (schaal tot 5), boven de losse reviews. */
   reviewSummary?: { average: 3 | 3.5 | 4 | 4.5 | 5; label: string };
   /** Drie gastenoordelen; leeg → geen gastenoordeel. */
   reviews?: { text: string; author: string }[];
-  image: string;
   checkoutUrl: string;
 };
 
-export default function CrmWinkelmandje({ recipientEmail, hotelName, packageTitle, place, arrivalDate, departureDate, nights, persons, price, priceNote, reviewSummary, reviews, image, checkoutUrl }: Props) {
+export default function CrmWinkelmandje({ recipientEmail, firstName, deal, arrivalDate, departureDate, nights, persons, saving, reviewSummary, reviews, checkoutUrl }: Props) {
+  const hotelName = deal.hotelName;
   const c = newsletter.light;
   const line = s.title;
   const muted = s.muted;
@@ -52,31 +55,31 @@ export default function CrmWinkelmandje({ recipientEmail, hotelName, packageTitl
         <CrmHeader />
         <Container style={{ width: "100%", maxWidth: "626px" }}>
           <Section className="m-pad" style={{ padding: "32px 32px 0" }}>
-            <Heading as="h1" className="m-h1" style={s.h1}>Nog steeds interesse in {hotelName}?</Heading>
-            <Text style={s.body}>We hebben 'm voor je bewaard.</Text>
+            <Heading as="h1" className="m-h1" style={s.h1}>
+              {firstName ? `${firstName}, we hebben 'm nog even voor je bewaard.` : "We hebben 'm nog even voor je bewaard."}
+            </Heading>
+            <Text style={s.body}>Nog steeds interesse in {hotelName}?</Text>
+
+            {/* Wat er klaarstaat: datums, nachten en personen, en de besparing voor die datum */}
+            <Text style={{ ...line, margin: "16px 0 0", fontWeight: 700 }}>{arrivalDate} tot {departureDate}</Text>
+            <Text style={{ ...muted, margin: "2px 0 0" }}>{nights} nachten · {persons} personen</Text>
+            {saving && (
+              <Text style={{ ...line, margin: "10px 0 0" }}>
+                <Img src={`${baseUrl}/images/mail/crm/smiley-donker.png`} alt="" width="18" height="18" style={{ display: "inline-block", verticalAlign: "-3px", marginRight: "6px" }} />
+                Bespaar <span style={{ fontWeight: 700, color: c.cta }}>{saving.amount}</span>
+                {saving.percentage && <span style={{ color: c.muted }}> ({saving.percentage})</span>}
+              </Text>
+            )}
+
+            {/* De ene knop, buiten de kaart */}
+            <Section style={{ marginTop: "20px" }}>
+              <PrimaryButton href={checkoutUrl}>Rond je boeking af</PrimaryButton>
+            </Section>
           </Section>
 
-          {/* Winkelmandkaart */}
-          <Section className="m-pad" style={{ padding: "24px 32px 0" }}>
-            <Section style={{ border: `1px solid #E5E5E5`, borderRadius: "8px", overflow: "hidden" }}>
-              <Img src={image} alt={packageTitle} width="560" height="240" style={{ display: "block", width: "100%", height: "240px", objectFit: "cover" }} />
-              <Section style={{ padding: "20px 20px 24px" }}>
-                <Text style={s.kop}>{hotelName}</Text>
-                <Text style={{ ...muted, margin: "2px 0 0" }}>{place}</Text>
-                <Text style={{ ...line, margin: "6px 0 0" }}>{packageTitle}</Text>
-
-                <Section style={{ marginTop: "16px", borderTop: `1px solid ${c.border}`, paddingTop: "14px" }}>
-                  <Text style={{ ...line, margin: 0, fontWeight: 700 }}>{arrivalDate} tot {departureDate}</Text>
-                  <Text style={{ ...muted, margin: "2px 0 0" }}>{nights} nachten · {persons} personen</Text>
-                  <Text style={{ ...s.name, margin: "10px 0 0" }}>Totaal {price} voor {persons} personen</Text>
-                  {priceNote && <Text style={{ ...muted, margin: "2px 0 0" }}>{priceNote}</Text>}
-                </Section>
-
-                <Section style={{ marginTop: "20px" }}>
-                  <PrimaryButton href={checkoutUrl}>Rond je boeking af</PrimaryButton>
-                </Section>
-              </Section>
-            </Section>
+          {/* De deal op de uitgebreide kaart, zonder prijsrij; de foto linkt naar de boeking */}
+          <Section className="m-pad" style={{ padding: "12px 32px 0" }}>
+            <FeaturedDeal deal={{ ...deal, url: checkoutUrl }} priceRow={false} />
           </Section>
 
           {/* Gastenoordeel: zonder vlak; één keer sterren met het gemiddelde, drie reviews in 20 px serif */}
@@ -121,24 +124,26 @@ export default function CrmWinkelmandje({ recipientEmail, hotelName, packageTitl
   );
 }
 
+const checkoutUrl = `${desIndes.url}?checkin=2026-11-20&adults=2`;
+
 CrmWinkelmandje.PreviewProps = {
   recipientEmail: "sanne.devries@example.com",
-  hotelName: "Hotel Des Indes",
-  packageTitle: "Verken en beleef Den Haag vanuit een luxe 5*-hotel, incl. 3-gangendiner",
-  place: "Den Haag",
+  firstName: "Sanne",
+  deal: { ...desIndes, hotelName: "Hotel Des Indes" },
   arrivalDate: "20 november",
   departureDate: "22 november 2026",
   nights: 2,
   persons: 2,
-  // deals.json: €499 is het totaal voor 2 personen en 2 nachten (Jesse had €998).
-  price: "€499",
-  priceNote: "Inclusief btw en servicekosten",
+  // deals.json: €499 in plaats van €940 voor 2 personen en 2 nachten.
+  saving: { amount: "€441", percentage: "47%" },
   reviewSummary: { average: 4.5, label: "4,5 uit 312 reviews" },
   reviews: [
     { text: "Prachtige kamer en een feestelijk diner.", author: "Marieke" },
     { text: "Stijlvol hotel en een heerlijk rustige kamer.", author: "Jeroen" },
     { text: "Fijne locatie, alles op loopafstand.", author: "Annelies" },
   ],
-  image: "https://asset.vialuxury.com/assets/ec2bfd91-fc7d-4fa4-91b9-9fc61298b804?key=card",
-  checkoutUrl: `${site}/first-release/deal/hotel-des-indes-verken-en-beleef-den-haag-vanuit-luxe-5-hotel-incl-3-gangendiner?checkin=2026-11-20&adults=2`,
+  checkoutUrl,
 } satisfies Props;
+
+/** Variant zonder voornaam (naam onbekend). */
+export const naamOnbekendProps = { ...CrmWinkelmandje.PreviewProps, firstName: undefined };

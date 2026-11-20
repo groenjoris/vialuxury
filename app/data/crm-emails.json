@@ -51,9 +51,17 @@
   {
     "slug": "crm-winkelmandje",
     "title": "Winkelmandje (2 uur na verlaten)",
-    "description": "Eén doel: de boeking afronden. Winkelmandkaart met concrete datums, nachten, personen en totaalprijs en één knop terug naar de boeking. Gastenoordeel met Trustpilot-sterren en drie reviews. Overgenomen van Jesse. Geen alternatieve deals.",
-    "subject": "Hotel Des Indes op 20 nov: nog beschikbaar",
+    "description": "Eén doel: de boeking afronden. Titel met voornaam, de vraag met de hotelnaam, datums, nachten en personen, de besparing en één knop terug naar de boeking; daaronder de deal op de uitgebreide kaart zonder prijsrij. Gastenoordeel met Trustpilot-sterren en drie reviews. Geen alternatieve deals.",
+    "subject": "Sanne, we hebben deze nog even voor je bewaard",
     "preheader": "Je boeking staat klaar. Rond af wanneer het jou uitkomt."
+  },
+  {
+    "slug": "crm-winkelmandje-naam-onbekend",
+    "title": "Winkelmandje (2 uur na verlaten)",
+    "description": "Variant van de winkelmandjemail voor als de voornaam niet bekend is: titel en onderwerp zonder naam.",
+    "subject": "We hebben deze nog even voor je bewaard",
+    "preheader": "Je boeking staat klaar. Rond af wanneer het jou uitkomt.",
+    "variantOf": "crm-winkelmandje"
   },
   {
     "slug": "crm-winkelmandje-2-dagen",

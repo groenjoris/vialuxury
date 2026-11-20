@@ -5,7 +5,7 @@ import VakantieIncheckHotel from "../emails/vakantie-incheck-hotel";
 import MvpVakantieBevestiging from "../emails/mvp-vakantie-bevestiging";
 import CrmNagenieten from "../emails/crm-nagenieten";
 import CrmJaarGeleden from "../emails/crm-jaar-geleden";
-import CrmWinkelmandje from "../emails/crm-winkelmandje";
+import CrmWinkelmandje, { naamOnbekendProps } from "../emails/crm-winkelmandje";
 import CrmWinkelmandje2Dagen from "../emails/crm-winkelmandje-2-dagen";
 import CrmThemaStedentrips from "../emails/crm-thema-stedentrips";
 import CrmReview from "../emails/crm-review";
@@ -294,11 +294,22 @@ export const emails: EmailEntry[] = [
   {
     slug: "crm-winkelmandje",
     title: "Winkelmandje (2 uur na verlaten)",
-    description: "Eén doel: de boeking afronden. Winkelmandkaart met concrete datums, nachten, personen en totaalprijs en één knop terug naar de boeking. Gastenoordeel met Trustpilot-sterren en drie reviews. Overgenomen van Jesse. Geen alternatieve deals.",
+    description: "Eén doel: de boeking afronden. Titel met voornaam, de vraag met de hotelnaam, datums, nachten en personen, de besparing en één knop terug naar de boeking; daaronder de deal op de uitgebreide kaart zonder prijsrij. Gastenoordeel met Trustpilot-sterren en drie reviews. Geen alternatieve deals.",
     section: "crm",
-    subject: "Hotel Des Indes op 20 nov: nog beschikbaar",
+    subject: "Sanne, we hebben deze nog even voor je bewaard",
     preheader: "Je boeking staat klaar. Rond af wanneer het jou uitkomt.",
     Component: CrmWinkelmandje,
+  },
+  {
+    slug: "crm-winkelmandje-naam-onbekend",
+    title: "Winkelmandje (2 uur na verlaten)",
+    description: "Variant van de winkelmandjemail voor als de voornaam niet bekend is: titel en onderwerp zonder naam.",
+    section: "crm",
+    variantOf: "crm-winkelmandje",
+    subject: "We hebben deze nog even voor je bewaard",
+    preheader: "Je boeking staat klaar. Rond af wanneer het jou uitkomt.",
+    Component: CrmWinkelmandje,
+    props: naamOnbekendProps,
   },
   {
     slug: "crm-winkelmandje-2-dagen",
