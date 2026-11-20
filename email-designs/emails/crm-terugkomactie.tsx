@@ -4,7 +4,7 @@ import CrmFooter from "../components/CrmFooter";
 import CrmHeader from "../components/CrmHeader";
 import { CodeBlock, crmCss, DealList, DealRow, PrimaryButton, type RowDeal, s, site, ThemePicker } from "../components/crm";
 import { font, newsletter } from "../components/theme";
-import { lauswolt, steenenburg, vanOys, villaRuimzicht } from "../lib/crmDeals";
+import { asStay, lauswolt, steenenburg, vanOys, villaRuimzicht } from "../lib/crmDeals";
 
 // CRM A3: terugkomactie €20, 14 dagen na vertrek. Overgenomen van Jesse (origin/redesign-jesse,
 // crm-terugkomactie.tsx) en omgezet naar onze bouwstenen en regels. Met `daysLeft` is het de
@@ -94,7 +94,7 @@ export default function CrmTerugkomactie({ recipientEmail, firstName, stay, code
 const base = {
   recipientEmail: "sanne.devries@example.com",
   firstName: "Sanne",
-  stay: { ...lauswolt, line: "31 oktober tot 2 november 2026" },
+  stay: asStay(lauswolt, "31 oktober tot 2 november 2026"),
   code: { code: "TERUG20-8KQ3", value: "€20", deadline: "16 december 2026" },
   deals: [vanOys, villaRuimzicht, steenenburg],
 } satisfies Partial<Props>;

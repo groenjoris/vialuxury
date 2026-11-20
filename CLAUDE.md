@@ -195,7 +195,7 @@ omdat je een account of boeking hebt bij ViaLuxury."; de CRM-mails houden de opt
 
 Artist impression van geautomatiseerde e-mails, alleen desktop + light mode. Mails (in de volgorde
 van het paneel links in de preview): `crm-jaar-geleden`, `crm-winkelmandje`
-(2 uur na verlaten), `crm-winkelmandje-2-dagen`, `crm-thema-stedentrips` (A6), `crm-thema-stedentrips-uitgebreid`, `crm-zoekopdracht`,
+(2 uur na verlaten), `crm-winkelmandje-2-dagen`, `crm-thema-stedentrips` (A6), `crm-zoekopdracht`,
 `crm-verlanglijst`, `crm-review`, `crm-terugkomactie` (€20), `crm-terugkomactie-herinnering` (zelfde
 component met `daysLeft`) en `crm-nagenieten` (staat bewust als laatste). Bronnen in
 `email-designs/emails/crm-*.tsx`, bouwstenen in `email-designs/components/crm.tsx` (`DealRow`,
@@ -213,14 +213,16 @@ Regels voor elke CRM-mail:
 - Klaviyo: nooit twee lettertypen (serif-kop en sans-tekst) naast elkaar op één regel; onder elkaar mag
   wel. Hotelnaam, sterren, plaats, dealtitel en prijs staan daarom elk op een eigen regel.
 - Dealblokken: wit met grijze rand (#E5E5E5, de randkleur van de website), foto tot aan de rand; suggesties als één groot blok + rijen
-  (`DealList`). Geen labels of stickers ("Populair"). De knop "Bekijk arrangement" in het grote
-  dealblok is altijd oranje, ook als de mail bovenaan al een oranje knop heeft.
+  (`DealList`). Geen labels of stickers ("Populair"). De knop "Bekijk" in een dealkaart
+  is altijd oranje, ook als de mail bovenaan al een oranje knop heeft.
 - Geen grijze vlakken; beige (#F4F1EC) alleen als echte highlight: het vlak achter de blokken met keuzeknoppen (`beigeBox`). Keuzes (thema, nagenietvraag) zijn witte snelfilterknoppen in een raster van twee (`PillGrid`) op dat beige vlak.
-- Variant met uitgebreide kaarten (`crm-thema-stedentrips-uitgebreid`, prop `rich`, bouwstenen `RichFeaturedDeal`/
-  `RichDealRow`/`RichDealList`): de zoekkaart van de website als e-mail. Korting als zwart vlakje op de foto, hotel met
-  sterren en plaats (sans, ondergeschikt), lijntje, dealtitel 20 serif, "Arrangement" met maximaal vier inclusies
-  (groen vinkje), "2 personen, 2 nachten", "Vanaf €409" met de doorgestreepte kamerprijs en rechts de knop "Bekijk".
-  Elke regel één lettertype: hotelnaam en de hele prijsregel staan in de sans. De standaardmails houden de kale kaart.
+- Elke deal staat op de uitgebreide kaart, de zoekkaart van de website als e-mail (`DealRow`/`FeaturedDeal` tonen
+  die zodra de deal een `price` heeft): hotel met sterren en plaats (sans, ondergeschikt), lijntje, dealtitel 20 serif,
+  "Arrangement" met maximaal vier inclusies (groen vinkje), "2 personen, 2 nachten" en onderaan één rij: links het
+  zwarte kortingsblokje ("-37%"), daarnaast "Vanaf €409" met de doorgestreepte kamerprijs, rechts de knop "Bekijk".
+  Kortingsblokje en knop zijn even hoog (42 px) met dezelfde afronding (6 px). Klaviyo: geen tekst op een foto, en elke
+  regel één lettertype (hotelnaam en de hele prijsrij in de sans). De kale kaart (zonder `price`) blijft voor een
+  verblijf met datums ("Jouw verblijf", `asStay`) en de bekeken deal in de winkelmandjemails.
 - Prijzen uit `deals.json` zijn het totaal voor 2 personen: "Vanaf €319 voor 2 personen", nooit p.p.
 - Knoppen linken naar de R1-dealpagina (zachte landing; die neemt `?checkin=` en `?adults=` over).
 - Jesse de Groot heeft eigen CRM-mails op `origin/redesign-jesse`; mails worden daarvan per stuk

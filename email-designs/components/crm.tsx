@@ -10,6 +10,7 @@ import { baseUrl, font, newsletter } from "./theme";
 // - Klaviyo: nooit twee lettertypen naast elkaar op één regel; onder elkaar mag wel.
 // - Geen grijze vlakken; beige alleen als highlight (achter de blokken met keuzeknoppen). Blokken zijn wit met een grijze rand (#E5E5E5, zoals de website).
 // - Geen labels ("Populair" e.d.) op deals; prijzen zijn het totaal voor 2 personen.
+// - Deals staan op de uitgebreide kaart (zoals de zoekkaart op de website); geen tekst op een foto.
 // - Links naar het prototype gaan naar de R1-dealpagina (zachte landing).
 
 const c = newsletter.light;
@@ -105,10 +106,10 @@ export type RowDeal = {
   line?: string;
   image: string;
   url: string;
-  /** Alleen voor de uitgebreide kaart (RichDealList), zoals de zoekkaart op de website: */
+  /** Uitgebreide kaart (zoals de zoekkaart op de website); een deal met `price` krijgt die: */
   /** Inclusies met een groen vinkje, maximaal vier. */
   includes?: string[];
-  /** Kortingspercentage op de foto, bijv. "-37%". */
+  /** Kortingspercentage, als blokje links van de prijs, bijv. "-37%". */
   discount?: string;
   /** Vanafprijs en doorgestreepte kamerprijs, bijv. "€409" en "€645". */
   price?: string;
@@ -130,60 +131,18 @@ function DealText({ d }: { d: RowDeal }) {
   );
 }
 
-/** Dealrij met grijze rand: foto links tot aan de rand en over de volle hoogte; rechts de
- *  tekstregels en een oranje link. */
-export function DealRow({ deal: d, cta = "Bekijk" }: { deal: RowDeal; cta?: string }) {
-  return (
-    <Section style={{ border: `1px solid #E5E5E5`, borderRadius: "8px", marginTop: "12px", overflow: "hidden" }}>
-      <Row>
-        {/* Foto als achtergrond: sluit aan op de rand en vult de hele hoogte van het blok */}
-        <Column className="stack" style={{ width: "190px", verticalAlign: "top", backgroundImage: `url(${d.image})`, backgroundSize: "cover", backgroundPosition: "center" }}>
-          <Link href={d.url} aria-label={d.hotelName ?? cta} style={{ display: "block", width: "190px", minHeight: "150px" }} />
-        </Column>
-        <Column className="stack" style={{ verticalAlign: "top", padding: "16px 18px" }}>
-          <DealText d={d} />
-          <TextLink href={d.url}>{cta}</TextLink>
-        </Column>
-      </Row>
-    </Section>
-  );
-}
-
-/** Uitgelichte deal over de hele breedte (naar Jesse's FeaturedDeal): grote foto, daaronder de
- *  tekstregels en een oranje knop "Bekijk arrangement" (altijd oranje). */
-export function FeaturedDeal({ deal: d, cta = "Bekijk arrangement" }: { deal: RowDeal; cta?: string }) {
-  return (
-    <Section style={{ border: `1px solid #E5E5E5`, borderRadius: "8px", marginTop: "12px", overflow: "hidden" }}>
-      <Link href={d.url}>
-        <Img src={d.image} alt={d.packageTitle ?? d.hotelName ?? ""} width="560" height="300" style={{ display: "block", width: "100%", height: "300px", objectFit: "cover" }} />
-      </Link>
-      <Section style={{ padding: "18px 20px 22px" }}>
-        <DealText d={d} />
-        <Section style={{ marginTop: "14px" }}>
-          <PrimaryButton href={d.url} small>{cta}</PrimaryButton>
-        </Section>
-      </Section>
-    </Section>
-  );
-}
-
-// ── Uitgebreide dealkaart: de zoekkaart van de website als e-mail ──────────────────────────
-// Zelfde volgorde als de zoekkaart: korting op de foto, hotel met sterren en plaats (ondergeschikt),
-// lijntje, de dealtitel als meest prominente regel, "Arrangement" met de inclusies, en onderaan
-// voor wie de prijs geldt, de vanafprijs met de doorgestreepte kamerprijs en de knop.
-// Klaviyo: elke regel heeft één lettertype. Hotelnaam en sterren staan daarom in de sans, en de
-// prijsregel is helemaal sans (op de website is het bedrag serif naast sans).
+// ── Dealkaart: de zoekkaart van de website als e-mail ───────────────────────────────────────
+// Een deal met een prijs (`price`) krijgt de uitgebreide kaart, in dezelfde volgorde als de
+// zoekkaart: hotel met sterren en plaats (ondergeschikt), lijntje, de dealtitel als meest
+// prominente regel, "Arrangement" met de inclusies, voor wie de prijs geldt en onderaan één rij:
+// links het kortingsblokje, daarnaast de vanafprijs met de doorgestreepte kamerprijs, rechts de knop.
+// Klaviyo: geen tekst op een foto (de korting staat daarom naast de prijs) en elke regel één
+// lettertype: hotelnaam en sterren in de sans, de prijsrij helemaal sans.
+// Zonder `price` (een verblijf met datums, de deal uit het winkelmandje) blijft het de kale kaart.
 
 const checkIcon = `${baseUrl}/images/mail/crm/check-groen.png`;
-
-/** Kortingspercentage linksboven op de foto (zwart vlakje, zoals de website). */
-function DiscountBadge({ children }: { children: React.ReactNode }) {
-  return (
-    <span style={{ display: "inline-block", margin: "14px 0 0 14px", backgroundColor: c.text, color: "#FFFFFF", fontFamily: font.heading, fontWeight: 700, fontSize: "16px", lineHeight: "20px", padding: "6px 10px", borderRadius: "4px" }}>
-      {children}
-    </span>
-  );
-}
+/** Kortingsblokje en knop in de prijsrij: zelfde hoogte (42 px) en zelfde afronding. */
+const priceRowBox = { fontSize: "16px", fontWeight: 700, lineHeight: "20px", borderRadius: "6px", color: "#FFFFFF" };
 
 /** Tekstdeel van de uitgebreide kaart, t/m de inclusies. */
 function RichDealText({ d }: { d: RowDeal }) {
@@ -213,71 +172,86 @@ function RichDealText({ d }: { d: RowDeal }) {
   );
 }
 
-/** Onderkant van de uitgebreide kaart: links voor wie de prijs geldt en de vanafprijs met de
- *  doorgestreepte kamerprijs, rechts de oranje knop (zoals op de zoekkaart). */
+/** Onderkant van de uitgebreide kaart: voor wie de prijs geldt en daaronder één rij met links het
+ *  kortingsblokje, daarnaast de vanafprijs met de doorgestreepte kamerprijs en rechts de knop. */
 function RichDealPrice({ d, cta }: { d: RowDeal; cta: string }) {
   return (
-    <Row style={{ marginTop: "14px" }}>
-      <Column style={{ verticalAlign: "bottom" }}>
-        {d.priceFor && <Text style={{ ...s.name, margin: 0 }}>{d.priceFor}</Text>}
-        <Text style={{ fontFamily: font.body, fontSize: "16px", lineHeight: "26px", color: c.muted, margin: "2px 0 0" }}>
-          Vanaf <span style={{ fontSize: "20px", fontWeight: 700, color: c.text }}>{d.price}</span>
-          {d.original && <span style={{ color: "#D32F2F", textDecoration: "line-through", marginLeft: "8px" }}>{d.original}</span>}
-        </Text>
-      </Column>
-      <Column style={{ verticalAlign: "bottom", textAlign: "right", width: "110px" }}>
-        <PrimaryButton href={d.url} small>{cta}</PrimaryButton>
-      </Column>
-    </Row>
+    <>
+      {d.priceFor && <Text style={{ ...s.name, margin: "14px 0 0" }}>{d.priceFor}</Text>}
+      <Row style={{ marginTop: "8px" }}>
+        {d.discount && (
+          <Column style={{ verticalAlign: "middle", width: "1%", paddingRight: "12px" }}>
+            <span style={{ ...priceRowBox, display: "inline-block", whiteSpace: "nowrap", backgroundColor: c.text, fontFamily: font.body, padding: "11px 12px" }}>{d.discount}</span>
+          </Column>
+        )}
+        <Column style={{ verticalAlign: "middle" }}>
+          <Text style={{ fontFamily: font.body, fontSize: "16px", lineHeight: "24px", color: c.muted, margin: 0, whiteSpace: "nowrap" }}>
+            Vanaf <span style={{ fontSize: "20px", fontWeight: 700, color: c.text }}>{d.price}</span>
+            {d.original && <span style={{ color: "#D32F2F", textDecoration: "line-through", marginLeft: "8px" }}>{d.original}</span>}
+          </Text>
+        </Column>
+        <Column style={{ verticalAlign: "middle", textAlign: "right", width: "1%" }}>
+          <Button href={d.url} style={{ ...priceRowBox, backgroundColor: c.cta, fontFamily: font.body, padding: "11px 20px", textDecoration: "none", whiteSpace: "nowrap" }}>
+            {cta}
+          </Button>
+        </Column>
+      </Row>
+    </>
   );
 }
 
-/** Uitgebreide kaart over de hele breedte: foto bovenaan met de korting erop. */
-export function RichFeaturedDeal({ deal: d, cta = "Bekijk" }: { deal: RowDeal; cta?: string }) {
-  return (
-    <Section style={{ border: `1px solid #E5E5E5`, borderRadius: "8px", marginTop: "12px", overflow: "hidden" }}>
-      <Section style={{ backgroundImage: `url(${d.image})`, backgroundSize: "cover", backgroundPosition: "center" }}>
-        <Link href={d.url} aria-label={d.packageTitle ?? d.hotelName ?? cta} style={{ display: "block", height: "300px", textDecoration: "none" }}>
-          {d.discount && <DiscountBadge>{d.discount}</DiscountBadge>}
-        </Link>
-      </Section>
-      <Section style={{ padding: "16px 20px 20px" }}>
-        <RichDealText d={d} />
-        <RichDealPrice d={d} cta={cta} />
-      </Section>
-    </Section>
-  );
-}
-
-/** Uitgebreide kaart als rij: foto links over de volle hoogte met de korting erop. */
-export function RichDealRow({ deal: d, cta = "Bekijk" }: { deal: RowDeal; cta?: string }) {
+/** Dealrij met grijze rand: foto links tot aan de rand en over de volle hoogte. Met een prijs de
+ *  uitgebreide kaart (knop "Bekijk"), anders de tekstregels met een oranje link. */
+export function DealRow({ deal: d, cta }: { deal: RowDeal; cta?: string }) {
+  const rich = !!d.price;
   return (
     <Section style={{ border: `1px solid #E5E5E5`, borderRadius: "8px", marginTop: "12px", overflow: "hidden" }}>
       <Row>
+        {/* Foto als achtergrond: sluit aan op de rand en vult de hele hoogte van het blok */}
         <Column className="stack" style={{ width: "190px", verticalAlign: "top", backgroundImage: `url(${d.image})`, backgroundSize: "cover", backgroundPosition: "center" }}>
-          <Link href={d.url} aria-label={d.packageTitle ?? d.hotelName ?? cta} style={{ display: "block", width: "190px", minHeight: "150px", textDecoration: "none" }}>
-            {d.discount && <DiscountBadge>{d.discount}</DiscountBadge>}
-          </Link>
+          <Link href={d.url} aria-label={d.hotelName ?? cta ?? "Bekijk"} style={{ display: "block", width: "190px", minHeight: "150px" }} />
         </Column>
-        <Column className="stack" style={{ verticalAlign: "top", padding: "16px 18px 18px" }}>
-          <RichDealText d={d} />
-          <RichDealPrice d={d} cta={cta} />
+        <Column className="stack" style={{ verticalAlign: "top", padding: rich ? "16px 18px 18px" : "16px 18px" }}>
+          {rich ? (
+            <>
+              <RichDealText d={d} />
+              <RichDealPrice d={d} cta={cta ?? "Bekijk"} />
+            </>
+          ) : (
+            <>
+              <DealText d={d} />
+              <TextLink href={d.url}>{cta ?? "Bekijk"}</TextLink>
+            </>
+          )}
         </Column>
       </Row>
     </Section>
   );
 }
 
-/** Eén groot, de rest als rij, met de uitgebreide kaarten. */
-export function RichDealList({ deals }: { deals: RowDeal[] }) {
-  const [first, ...rest] = deals;
+/** Uitgelichte deal over de hele breedte: grote foto, daaronder met een prijs de uitgebreide kaart
+ *  (knop "Bekijk"), anders de tekstregels en een oranje knop "Bekijk arrangement". */
+export function FeaturedDeal({ deal: d, cta }: { deal: RowDeal; cta?: string }) {
+  const rich = !!d.price;
   return (
-    <>
-      {first && <RichFeaturedDeal deal={first} />}
-      {rest.map((d) => (
-        <RichDealRow key={d.url} deal={d} />
-      ))}
-    </>
+    <Section style={{ border: `1px solid #E5E5E5`, borderRadius: "8px", marginTop: "12px", overflow: "hidden" }}>
+      <Link href={d.url}>
+        <Img src={d.image} alt={d.packageTitle ?? d.hotelName ?? ""} width="560" height="300" style={{ display: "block", width: "100%", height: "300px", objectFit: "cover" }} />
+      </Link>
+      {rich ? (
+        <Section style={{ padding: "16px 20px 20px" }}>
+          <RichDealText d={d} />
+          <RichDealPrice d={d} cta={cta ?? "Bekijk"} />
+        </Section>
+      ) : (
+        <Section style={{ padding: "18px 20px 22px" }}>
+          <DealText d={d} />
+          <Section style={{ marginTop: "14px" }}>
+            <PrimaryButton href={d.url} small>{cta ?? "Bekijk arrangement"}</PrimaryButton>
+          </Section>
+        </Section>
+      )}
+    </Section>
   );
 }
 

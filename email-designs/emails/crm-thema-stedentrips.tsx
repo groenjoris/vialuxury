@@ -2,7 +2,7 @@ import { Body, Container, Head, Heading, Html, Preview, Section, Text } from "@r
 import * as React from "react";
 import CrmFooter from "../components/CrmFooter";
 import CrmHeader from "../components/CrmHeader";
-import { crmCss, DealList, RichDealList, type RowDeal, s, site, ThemePicker } from "../components/crm";
+import { crmCss, DealList, type RowDeal, s, site, ThemePicker } from "../components/crm";
 import { font, newsletter } from "../components/theme";
 
 // CRM: themamail stedentrips (A6). Kop met de reden ("Omdat je zocht op 'stedentrips'"),
@@ -10,8 +10,7 @@ import { font, newsletter } from "../components/theme";
 // twee als omlijnde dealrij) en onderaan de themakiezer: zes witte snelfilterknoppen met
 // icoon, zoals "Snel zoeken" op de homepage, in een raster van twee even brede kolommen.
 // Elke keuze gaat naar /crm/thema?keuze=<id>.
-// Variant `rich` (slug crm-thema-stedentrips-uitgebreid): dezelfde mail met uitgebreide kaarten naar
-// de zoekkaart van de website (korting op de foto, inclusies, doorgestreepte kamerprijs).
+// De deals staan op de uitgebreide kaart (zoals de zoekkaart op de website).
 // Onderwerp: "Dit zijn de populairste stedentrips van dit moment"
 
 type Props = {
@@ -19,11 +18,9 @@ type Props = {
   /** Zoekterm of thema waarop de ontvanger zocht; leeg → geen reden onder de kop. */
   searchedFor?: string;
   deals: RowDeal[];
-  /** Uitgebreide dealkaarten zoals de zoekkaart op de website. */
-  rich?: boolean;
 };
 
-export default function CrmThemaStedentrips({ recipientEmail, searchedFor, deals, rich }: Props) {
+export default function CrmThemaStedentrips({ recipientEmail, searchedFor, deals }: Props) {
   const c = newsletter.light;
   return (
     <Html lang="nl">
@@ -42,7 +39,7 @@ export default function CrmThemaStedentrips({ recipientEmail, searchedFor, deals
 
           {/* Drie deals: de eerste groot, de rest als rij */}
           <Section className="m-pad" style={{ padding: "12px 32px 0" }}>
-            {rich ? <RichDealList deals={deals} /> : <DealList deals={deals} />}
+            <DealList deals={deals} />
           </Section>
 
           {/* Themakiezer: raster van even brede snelfilterknoppen */}

@@ -13,7 +13,7 @@ if (!entry.value) throw createError({ statusCode: 404, statusMessage: 'E-mail ni
 
 // Alle mails in het paneel links, in de volgorde van het startscherm. De titel
 // "Winkelmandje (2 uur na verlaten)" wordt gesplitst in naam en moment.
-const navOrder = ['crm-jaar-geleden', 'crm-winkelmandje', 'crm-winkelmandje-2-dagen', 'crm-thema-stedentrips', 'crm-thema-stedentrips-uitgebreid', 'crm-zoekopdracht', 'crm-verlanglijst', 'crm-review', 'crm-terugkomactie', 'crm-terugkomactie-herinnering', 'crm-nagenieten']
+const navOrder = ['crm-jaar-geleden', 'crm-winkelmandje', 'crm-winkelmandje-2-dagen', 'crm-thema-stedentrips', 'crm-zoekopdracht', 'crm-verlanglijst', 'crm-review', 'crm-terugkomactie', 'crm-terugkomactie-herinnering', 'crm-nagenieten']
 const nav = navOrder
   .map(s => emails.find(e => e.slug === s))
   .filter((e): e is (typeof emails)[number] => !!e)
