@@ -8,7 +8,7 @@ import { baseUrl, font, newsletter } from "../components/theme";
 
 // CRM mail 3: winkelmandje, 2 uur na het verlaten van de checkout.
 // Eén doel: de boeking afronden. Bovenaan de titel (met voornaam als die bekend is), daaronder drie
-// regels in dezelfde bodytekst: de hotelnaam (vet), aankomst met nachten en personen, en de
+// regels in dezelfde bodytekst: de hotelnaam (vet) met de sterren, de plaats, aankomst met nachten en personen, en de
 // besparing voor die datum ("Bespaar €441 (47%)", zonder icoon of kleur). Dan de ene knop
 // naar de boeking met alles vooringevuld. Daaronder de deal op de uitgebreide kaart, zonder
 // prijsrij. Gastenoordeel: gemiddelde met Trustpilot-sterren en drie korte reviews, alleen als die
@@ -58,7 +58,11 @@ export default function CrmWinkelmandje({ recipientEmail, firstName, deal, arriv
             </Heading>
             {/* Wat er klaarstaat, drie regels in dezelfde bodytekst: hotel (vet), aankomst met nachten
                 en personen, en de besparing voor die datum */}
-            <Text style={{ ...s.name, margin: "12px 0 0" }}>{hotelName}</Text>
+            <Text style={{ ...s.name, margin: "12px 0 0" }}>
+              {hotelName}
+              {deal.stars ? <span style={{ letterSpacing: "1px", marginLeft: "8px" }}>{"★".repeat(deal.stars)}</span> : null}
+            </Text>
+            {deal.place && <Text style={{ ...muted, margin: "2px 0 0" }}>{deal.place}</Text>}
             <Text style={{ ...line, margin: "2px 0 0" }}>{arrivalDate} · {nights} {nights === 1 ? "nacht" : "nachten"} · {persons} {persons === 1 ? "persoon" : "personen"}</Text>
             {saving && <Text style={{ ...line, margin: "2px 0 0" }}>Bespaar {saving.amount}{saving.percentage ? ` (${saving.percentage})` : ""}</Text>}
 
@@ -68,9 +72,10 @@ export default function CrmWinkelmandje({ recipientEmail, firstName, deal, arriv
             </Section>
           </Section>
 
-          {/* De deal op de uitgebreide kaart, zonder prijsrij; de foto linkt naar de boeking */}
+          {/* De deal op de uitgebreide kaart, zonder hotel en plaats (die staan boven) en zonder prijsrij;
+              de foto linkt naar de boeking */}
           <Section className="m-pad" style={{ padding: "12px 32px 0" }}>
-            <FeaturedDeal deal={{ ...deal, url: checkoutUrl }} priceRow={false} />
+            <FeaturedDeal deal={{ ...deal, hotelName: undefined, stars: undefined, place: undefined, url: checkoutUrl }} priceRow={false} />
           </Section>
 
           {/* Gastenoordeel: zonder vlak; één keer sterren met het gemiddelde, drie reviews in 20 px serif */}

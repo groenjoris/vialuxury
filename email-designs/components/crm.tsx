@@ -160,8 +160,8 @@ function RichDealText({ d }: { d: RowDeal }) {
         </Text>
       )}
       {d.place && <Text style={{ ...s.muted, margin: "2px 0 0" }}>{d.place}</Text>}
-      <Section style={{ borderTop: "1px solid #E5E5E5", marginTop: "12px", fontSize: "1px", lineHeight: "1px" }}>&nbsp;</Section>
-      {d.packageTitle && <Text style={{ ...s.kop, margin: "10px 0 0" }}>{d.packageTitle}</Text>}
+      {(d.hotelName || d.place) && <Section style={{ borderTop: "1px solid #E5E5E5", marginTop: "12px", fontSize: "1px", lineHeight: "1px" }}>&nbsp;</Section>}
+      {d.packageTitle && <Text style={{ ...s.kop, margin: d.hotelName || d.place ? "10px 0 0" : 0 }}>{d.packageTitle}</Text>}
       {d.includes && d.includes.length > 0 && (
         <>
           <Text style={{ fontFamily: font.heading, fontWeight: 600, fontSize: "16px", lineHeight: "1.4", color: c.cta, margin: "12px 0 2px" }}>Arrangement</Text>
