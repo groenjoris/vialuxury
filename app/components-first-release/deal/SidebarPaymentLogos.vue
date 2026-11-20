@@ -42,16 +42,19 @@ const logos = computed(() => {
   align-items: center;
   gap: 6px;
 }
+/* Alle logo's even hoog (20 px) en op één middenlijn. De SVG's zelf zijn bijgesneden
+   tot hun tekening (geen lege marge in de viewBox), zodat gelijke hoogte ook gelijk oogt;
+   de kaartlogo's (iDEAL, Maestro, Bancontact, CB, Giro) houden hun kaartvorm. */
 .sidebar-pay__item {
   display: inline-flex;
+  align-items: center;
+  height: 20px;
   flex: 0 0 auto;
   min-width: 0;
 }
 .sidebar-pay__item img {
-  height: 22px;
+  height: 20px;
   width: auto;
-  max-width: 100%;
   display: block;
-  object-fit: contain;
 }
 </style>

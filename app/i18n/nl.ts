@@ -50,7 +50,7 @@ const nl: Record<string, string> = {
   'header.restaurants': 'Restaurants',
   'header.giftCard': 'Geef cadeaubon',
   // Multi Hotel Trip — hoofdnavigatie 'Vakanties' met 'Nieuw'-badge
-  'header.holidays': 'Auto- & Fietsvakanties',
+  'header.holidays': 'Auto- & fietsvakanties',
   'header.new': 'Nieuw',
   'header.whenAndHowLong': 'Wanneer en hoelang?',
   'header.pickDateAndDuration': 'Kies aankomstdatum en reisduur',
@@ -255,8 +255,8 @@ const nl: Record<string, string> = {
   // Multi Hotel Trip — vakantie-PDP
   'trip.fantasticHotels': '{n} fantastische hotels',
   'trip.easyCancel': 'Gemakkelijk annuleren',
-  'trip.freeCancelLine': 'Gratis annuleren tot 30 dagen voor vertrek.',
-  'trip.freeCancelLineDate': 'Gratis annuleren tot {date} (30 dagen voor vertrek).',
+  'trip.freeCancelLine': 'Gratis annuleren tot 31 dagen voor vertrek.',
+  'trip.freeCancelLineDate': 'Gratis annuleren tot {date} (31 dagen voor vertrek).',
   'trip.hotelsIncludedHeading': 'In deze vakantie zijn deze hotels inbegrepen:',
   'trip.daySingle': 'Dag {a}',
   'trip.dayAnd': 'Dag {a} en {b}',
@@ -320,14 +320,12 @@ const nl: Record<string, string> = {
   'trip.introTitleBike': '{days}-daagse fietsreis',
   'trip.includedHeading': 'In deze {type} voor 2 personen is het volgende inbegrepen',
   // Onder de minimap
-  'trip.fromHomeShort': '{city} → {to}: {duration} ({km} km)',
-  'trip.fromHomeShortNoKm': '{city} → {to}: {duration}',
   'trip.totalRouteLine': 'Totale route tussen hotels: {km} km',
   'trip.totalDriveLine': 'Totale rijtijd: ca. {duration}',
   // Fietsvakantie — regels onder de minimap
   'trip.bike.stagesLine': '{n} fietsetappes: {list} km ({total} km totaal)',
   'trip.bike.timeLine': '{min} tot {max} uur fietsen per etappe, in rustig tempo',
-  'trip.bike.arrivalLine': 'Heenreis: ca. {duration} met de auto vanuit {city}',
+  'trip.arrivalLine': 'Heenreis: ca. {duration} met de auto vanuit {city}',
   'trip.itineraryIntro': 'Zo ziet je vakantie eruit: een voorbeeldprogramma, je bepaalt zelf het tempo.',
   'trip.itin.goodToKnow': 'Goed om te weten',
   'trip.itin.gtk1': 'Dit reisschema is een voorbeeld vol inspiratie: jij bepaalt het tempo en wat je doet, de hotels zijn je thuisbasis.',
@@ -681,6 +679,27 @@ const nl: Record<string, string> = {
   'review.sufficient': 'Voldoende',
   'review.fair': 'Redelijk',
   'review.poor': 'Matig',
+  // Fake door-test "variabel reisgezelschap" (R1-variant, zie useFirstReleaseFakeDoor).
+  'fakeDoor.adultSingular': 'volwassene',
+  'fakeDoor.adultPlural': 'volwassenen',
+  'fakeDoor.adultsSub': 'vanaf 18 jaar',
+  'fakeDoor.childShort': 'kind',
+  'fakeDoor.childrenShort': 'kind.',
+  'fakeDoor.selAdultSingular': 'volwassene',
+  'fakeDoor.selAdultPlural': 'volwassenen',
+  'fakeDoor.and': 'en',
+  'fakeDoor.title': 'Voor {sel} hebben we nog geen arrangement',
+  'fakeDoor.textOdd': 'Al onze arrangementen zijn voor 2 volwassenen.',
+  'fakeDoor.altIntro': 'Wil je toch nu boeken?',
+  'fakeDoor.altLink': 'Zoek dan voor {m} volwassenen',
+  'fakeDoor.altNote': 'Je betaalt dan wel voor één persoon extra.',
+  'fakeDoor.textChildren': 'Onze arrangementen zijn nu nog alleen voor volwassenen.',
+  'fakeDoor.textBoth': 'Al onze arrangementen zijn voor 2 volwassenen, en nog niet voor kinderen.',
+  'fakeDoor.signupTitle': 'Wil je weten wanneer het wél kan?',
+  'fakeDoor.signupText': 'Laat je e-mailadres achter. Zodra we een arrangement voor {sel} hebben, mailen we je direct. Alleen dat mailtje, verder niets.',
+  'fakeDoor.emailPlaceholder': 'naam@voorbeeld.nl',
+  'fakeDoor.submit': 'Mail me zodra het kan',
+  'fakeDoor.thanks': 'Dankjewel! Zodra we een arrangement voor {sel} hebben, mailen we je op {email}.',
 }
 
 export default nl

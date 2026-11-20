@@ -1,7 +1,11 @@
 <script setup lang="ts">
 // First Release checkout — mobiele site: donkere balk (horizontaal logo, "Veilig uitchecken"; geen hamburger)
 // met daaronder de voortgangsbalkjes (terug-pijl, 3 segmenten, koffertje).
+import { useFirstReleaseFakeDoor } from '~/composables-first-release/useFirstReleaseFakeDoor'
+
 withDefaults(defineProps<{ step?: number }>(), { step: 1 })
+// Variant-label onder het logo: met de fake door-vlag aan "R1 + fake door".
+const { enabled: fakeDoorOn } = useFirstReleaseFakeDoor()
 
 function goBack() {
   if (import.meta.client) window.history.back()
@@ -13,6 +17,7 @@ function goBack() {
     <header class="mnav">
       <NuxtLink to="/first-release/home" aria-label="Naar de homepage">
         <img class="mnav__logo" src="/images/logo-vialuxury-horizontal.svg" alt="ViaLuxury" />
+        <span class="mnav__proto" aria-hidden="true">{{ fakeDoorOn ? 'R1 + fake door' : 'R1' }}</span>
       </NuxtLink>
       <div class="mnav__right">
         <span class="mnav__safe">
@@ -59,6 +64,15 @@ function goBack() {
   display: block;
   /* Zwart woordmerk -> wit op de donkere balk */
   filter: brightness(0) invert(1);
+}
+/* Subtiel variant-label onder het logo; de balk krijgt 2px extra onderrand zodat hij erbinnen past. */
+.mnav { padding-bottom: 16px; }
+.mnav > a { position: relative; display: block; }
+.mnav__proto {
+  position: absolute; left: 0; top: 100%; margin-top: 1px; pointer-events: none;
+  font-family: var(--font-body, inherit); font-size: 8px; line-height: 1; font-weight: 600;
+  letter-spacing: 0.14em; text-transform: uppercase; white-space: nowrap;
+  color: rgba(255, 255, 255, 0.5); border: 1px solid rgba(255, 255, 255, 0.22); border-radius: 3px; padding: 1px 4px;
 }
 .mnav__right {
   display: flex;

@@ -102,6 +102,8 @@ function bookNow() {
     const email = (document.getElementById('gf-email') as HTMLInputElement | null)?.value.trim() ?? ''
     checkoutGuest.value = { firstName, email }
   }
+  // Preloader op de bevestigingspagina alleen na "Boek nu" (niet bij een refresh).
+  useState<boolean>('mht-checkout-confirm-load', () => false).value = true
   navigateTo('/multi-hotel-trip/checkout/bevestiging')
 }
 
@@ -114,7 +116,10 @@ useHead({ title: 'Gegevens en betaalwijze — ViaLuxury' })
          op de mobiele site; desktop: de donkere afrekenbalk + stepper. -->
     <MultiHotelTripCheckoutMobileHeader v-if="isMobileUa" :step="3" />
     <template v-else>
-      <MultiHotelTripCheckoutTopNav />
+      <MultiHotelTripCheckoutTopNav>
+      <!-- Prototype: prijsweergave vakanties (PRIJS: TOTAAL | PP) onder het logo. -->
+      <template #proto><MultiHotelTripDemoSwitches price /></template>
+    </MultiHotelTripCheckoutTopNav>
       <div class="page__stepper">
         <MultiHotelTripCheckoutStepper :active="3" />
       </div>

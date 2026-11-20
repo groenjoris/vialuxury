@@ -1,0 +1,305 @@
+<script setup lang="ts">
+// Multi Hotel Trip — Post-bookingflow: de klantreis na het boeken als strak schema in de
+// huisstijl, twee keer onder elkaar: boven de lijn de MVP (12-11-2026, definitie 2026-11-11:
+// alles behalve Tips & routes en de accountdetailpagina — de kaartjes linken naar de MVP-pagina's
+// onder /mvp-trip en de mvp-mails), onder de lijn de volledige versie. Beide schema's delen
+// dezelfde tijdlijn en kaartposities, zodat direct te zien is wat de MVP weglaat.
+// Per schema: drie fases op een horizontale tijdlijn (Boeken, Voorbereiden, Onderweg — Onderweg
+// begint bij Incheck hotel 1) met mijlpalen; erboven de pagina's (alle even groot, ook de
+// accountomgeving: Mijn ViaLuxury › Boekingen), eronder de e-mails. De incheckmails gaan de dag vóór het inchecken: een
+// oranje bolletje vlak voor elk hotelbolletje. Kaartjes zijn wit met icoon en titel. Nog te maken
+// onderdelen staan gestippeld. De stand van de prototype-schakelaars (reis en annuleringskeuze)
+// staat in de URL (`?demo=fiets`, `?rate=nonflex`) en bepaalt waar alle kaartjes naartoe linken;
+// het schema zelf heeft geen schakelaars — je kiest op de schermen (DemoSwitches linksboven) en
+// komt via "‹ flow" met die stand terug. Elke mail bestaat per reis (slug met -fiets) en, waar
+// annuleren ter sprake komt, per tarief. Klikken opent de pagina of mail als gewone link. Desktop-first (vaste tekenruimte
+// van 1120px), schaalt mee tot een minimum en scrolt daarna horizontaal.
+import { demoHref, isDemoRate, isDemoVariant, navigateAfterPaint, type DemoRate, type DemoVariant } from '~/composables-multi-hotel-trip/useMultiHotelTripDemoBooking'
+
+useHead({ title: 'Post-bookingflow — ViaLuxury' })
+
+/* Stand van de schakelaars uit de URL (?demo=fiets, ?rate=nonflex; auto en flex = zonder). */
+const route = useRoute()
+const variant = computed<DemoVariant>(() => isDemoVariant(route.query.demo) ? route.query.demo : 'auto')
+const rate = computed<DemoRate>(() => isDemoRate(route.query.rate) ? route.query.rate : 'flex')
+/** Mailpreview: alleen de annuleringskeuze mee (de reis zit in de slug). */
+const mailHref = (slug: string, r: DemoRate) => `${FULL_MAIL_BASE}${slug}${r === 'nonflex' ? '?rate=nonflex' : ''}`
+
+/* Alle kaartjes zijn gewone links (volledige paginalading, ná de eerstvolgende paint). De pagina's
+   lezen de demo-variant uit de URL (`?demo=auto|fiets`, zie useMultiHotelTripDemoBooking). Een
+   client-side routewissel vanuit de klik-handler blokkeerde de UI ruim een seconde (INP); een echte
+   navigatie is licht, mits ze pas na de paint start (anders telt de serverwachttijd als INP). */
+const FULL_MAIL_BASE = '/multi-hotel-trip/emails/'
+const FULL = {
+  bevestiging: '/multi-hotel-trip/checkout/bevestiging',
+  routes: '/multi-hotel-trip/checkout/routes',
+  account: '/multi-hotel-trip/account/boekingen',
+}
+/* MVP: eigen pagina's in de MVP-namespace (app/pages/mvp-trip) en mails met het voorvoegsel mvp-. */
+const MVP = {
+  bevestiging: '/mvp-trip/checkout/bevestiging',
+  account: '/mvp-trip/account/boekingen',
+  mail: (slug: string, r: DemoRate) => `/mvp-trip/emails/mvp-${slug}${r === 'nonflex' ? '?rate=nonflex' : ''}`,
+}
+const open = (href: string) => navigateAfterPaint(href)
+
+/* ── Tekenruimte ── */
+const W = 1120
+const H = 392
+const MIN_SCALE = 0.55
+/** Kolommen (x-midden) van de mijlpalen op de tijdlijn. */
+const COL = { booking: 150, prep: 440, h1: 700, h2: 870, h3: 1040 }
+/** De incheckmail gaat de dag vóór het inchecken: oranje bolletje vlak voor het hotelbolletje. */
+const MAIL_BEFORE = 36
+const PAGES_BOTTOM = 150
+const TIMELINE_Y = 218
+const MAILS_Y = 292
+const CARD_W = 232
+const CARD_W_SM = 158
+const PAGE_H = 116
+const MAIL_H = 100
+
+interface Card {
+  id: string
+  kind: 'pagina' | 'email'
+  title: string
+  /** Kleine toelichting (alleen de accountomgeving: altijd beschikbaar). */
+  sub?: string
+  /** Nog te maken: gestippeld en gedempt. */
+  volgt?: boolean
+  x: number
+  y: number
+  w: number
+  h: number
+  /** Klik: de pagina (met demo-variant in de URL) of de mailpreview. */
+  href?: string
+}
+interface Connector { d: string; arrow: boolean }
+interface Tick { x: number; y1: number; y2: number }
+/** Eén schema: titel + toelichting boven de tekenruimte, eigen kaartjes, verbindingen en streepjes. */
+interface Flow { id: string; title: string; sub: string; cards: Card[]; connectors: Connector[]; ticks: Tick[] }
+
+/* Kaartposities: in beide schema's gelijk, zodat ze onder elkaar uitlijnen. */
+const PAGE_Y = PAGES_BOTTOM - PAGE_H
+const X = { booking: COL.booking - CARD_W / 2, prep: COL.prep - CARD_W / 2, account: W - 20 - CARD_W }
+const bevestigingCard = (path: string, v: DemoVariant, r: DemoRate): Card => ({ id: 'bevestiging', kind: 'pagina', title: 'Bevestigingspagina', x: X.booking, y: PAGE_Y, w: CARD_W, h: PAGE_H, href: demoHref(path, v, { preload: true, rate: r }) })
+const accountCard = (path: string, v: DemoVariant, r: DemoRate): Card => ({ id: 'account', kind: 'pagina', title: 'Accountomgeving', sub: 'De hele reis beschikbaar', x: X.account, y: PAGE_Y, w: CARD_W, h: PAGE_H, href: demoHref(path, v, { rate: r }) })
+const bevestigingMail = (href: string): Card => ({ id: 'mail-bevestiging', kind: 'email', title: 'Boekingsbevestiging', x: X.booking, y: MAILS_Y, w: CARD_W, h: MAIL_H, href })
+const preTravelMail = (href: string): Card => ({ id: 'mail-pretravel', kind: 'email', title: 'Pre-travel', x: X.prep, y: MAILS_Y, w: CARD_W, h: MAIL_H, href })
+/** Incheckmails: drie kleine kaartjes vlak vóór elk hotelbolletje; de link per hotelnummer. */
+const incheckMails = (hrefOf: (n: number) => string): Card[] => [COL.h1, COL.h2, COL.h3].map((x, i): Card => ({ id: `mail-h${i + 1}`, kind: 'email', title: `Incheck hotel ${i + 1}`, x: x - MAIL_BEFORE - CARD_W_SM / 2, y: MAILS_Y, w: CARD_W_SM, h: MAIL_H, href: hrefOf(i + 1) }))
+/** Mailslugs per reis (fietsvakantie: slug met -fiets); de MVP-mails krijgen het voorvoegsel mvp-. */
+const bevestigingSlug = (v: DemoVariant) => `vakantie-bevestiging${v === 'fiets' ? '-fiets' : ''}`
+const preTravelSlug = (v: DemoVariant) => `vakantie-pre-travel${v === 'fiets' ? '-fiets' : ''}`
+const incheckSlug = (n: number, v: DemoVariant) => `vakantie-incheck-hotel-${n}${v === 'fiets' ? '-fiets' : ''}`
+/** Mijlpaal → mail (en voor Online booking ook → bevestigingspagina): dunne doorgetrokken lijn. */
+const mailTick = (x: number): Tick => ({ x, y1: TIMELINE_Y + 16, y2: MAILS_Y - 2 })
+const bookingPageTick: Tick = { x: COL.booking, y1: PAGES_BOTTOM + 2, y2: TIMELINE_Y - 16 }
+
+/* ── Volledige versie (per variant opgebouwd) ── */
+const fullPages = (v: DemoVariant, r: DemoRate): Card[] => [
+  bevestigingCard(FULL.bevestiging, v, r),
+  { id: 'routes', kind: 'pagina', title: 'Tips & routes', x: X.prep, y: PAGE_Y, w: CARD_W, h: PAGE_H, href: demoHref(FULL.routes, v, { rate: r }) },
+  accountCard(FULL.account, v, r),
+]
+const fullMails = (v: DemoVariant, r: DemoRate): Card[] => [
+  bevestigingMail(mailHref(bevestigingSlug(v), r)),
+  preTravelMail(mailHref(preTravelSlug(v), r)),
+  ...incheckMails(n => mailHref(incheckSlug(n, v), r)),
+]
+const arrowY = PAGE_Y + PAGE_H / 2
+/** Verbindingen (gestippeld, SVG-laag achter de kaartjes): bevestiging en mails leiden naar Tips & routes. */
+const fullConnectors: Connector[] = [
+  // Bevestigingspagina → Tips & routes
+  { d: `M${X.booking + CARD_W} ${arrowY} H${X.prep - 2}`, arrow: true },
+  // Boekingsbevestiging (mail) → sluit aan op de pijl hierboven
+  { d: `M${X.booking + CARD_W} ${MAILS_Y + 30} H${X.booking + CARD_W + 19} V${arrowY + 2}`, arrow: false },
+  // Pre-travel (mail) → Tips & routes
+  { d: `M${COL.prep + 80} ${MAILS_Y - 2} V${PAGES_BOTTOM + 2}`, arrow: true },
+]
+
+/* ── MVP: alles behalve Tips & routes en de accountdetailpagina (de boekingskaart in het account
+   opent de bevestigingspagina) ── */
+const mvpCards = (v: DemoVariant, r: DemoRate): Card[] => [
+  bevestigingCard(MVP.bevestiging, v, r),
+  accountCard(MVP.account, v, r),
+  bevestigingMail(MVP.mail(bevestigingSlug(v), r)),
+  preTravelMail(MVP.mail(preTravelSlug(v), r)),
+  ...incheckMails(n => MVP.mail(incheckSlug(n, v), r)),
+]
+
+/** Mijlpalen: oranje = moment van een pagina/mail, zwart met hotelicoon = inchecken. */
+const milestones = [
+  { x: COL.booking, label: 'Online booking', hotel: false },
+  { x: COL.prep, label: '14 dagen voor vertrek', hotel: false },
+  { x: COL.h1 - MAIL_BEFORE, hotel: false },
+  { x: COL.h1, label: 'Incheck hotel 1', hotel: true },
+  { x: COL.h2 - MAIL_BEFORE, hotel: false },
+  { x: COL.h2, label: 'Incheck hotel 2', hotel: true },
+  { x: COL.h3 - MAIL_BEFORE, hotel: false },
+  { x: COL.h3, label: 'Incheck hotel 3', hotel: true },
+]
+/** Fases boven de tijdlijn (label links, lijn tot de volgende fase): Onderweg begint bij Incheck hotel 1. */
+const phases = [
+  { label: 'Boeken', from: 20, to: 290 },
+  { label: 'Voorbereiden', from: 290, to: COL.h1 },
+  { label: 'Onderweg', from: COL.h1, to: W - 20 },
+]
+
+/** Boven de lijn de MVP, eronder de volledige versie. Streepjes alleen bij momenten met een mail. */
+const flows = computed<Flow[]>(() => [
+  { id: 'mvp', title: 'MVP', sub: 'Alles behalve Tips & routes en de accountdetailpagina.', cards: mvpCards(variant.value, rate.value), connectors: [], ticks: [...milestones.filter(m => !m.hotel).map(m => mailTick(m.x)), bookingPageTick] },
+  { id: 'volledig', title: 'Volledige versie', sub: "Alle pagina's en mails van de klantreis.", cards: [...fullPages(variant.value, rate.value), ...fullMails(variant.value, rate.value)], connectors: fullConnectors, ticks: [...milestones.filter(m => !m.hotel).map(m => mailTick(m.x)), bookingPageTick] },
+])
+
+/* ── Schaal op smallere schermen ── */
+const wrapRef = ref<HTMLElement | null>(null)
+const scale = ref(1)
+let ro: ResizeObserver | null = null
+onMounted(() => {
+  const update = () => { scale.value = Math.max(MIN_SCALE, Math.min(1, (wrapRef.value?.clientWidth ?? W) / W)) }
+  update()
+  ro = new ResizeObserver(update)
+  if (wrapRef.value) ro.observe(wrapRef.value)
+})
+onBeforeUnmount(() => ro?.disconnect())
+
+function onCard(c: Card) { if (c.href) open(c.href) }
+</script>
+
+<template>
+  <div class="fl">
+    <div ref="wrapRef" class="fl__wrap">
+      <header class="fl__head">
+        <NuxtLink class="fl__back" to="/">‹ Startscherm</NuxtLink>
+        <p class="fl__eyebrow">Multi Hotel Trip</p>
+        <h1 class="fl__title">Post-bookingflow</h1>
+        <p class="fl__lead">De klantreis na het boeken: welke pagina's en mails de gast wanneer ziet. Klik op een kaartje om die pagina of mail te openen.</p>
+      </header>
+
+      <!-- Twee schema's onder elkaar: MVP boven de lijn, de volledige versie eronder -->
+      <section v-for="f in flows" :key="f.id" class="fl__flow">
+        <div class="fl__flow-head">
+          <h2 class="fl__flow-title">{{ f.title }}</h2>
+          <p class="fl__flow-sub">{{ f.sub }}</p>
+        </div>
+        <div class="fl__canvas-wrap">
+          <div class="fl__stage" :style="{ width: `${W * scale}px`, height: `${H * scale}px` }">
+            <div class="fl__canvas" :style="{ width: `${W}px`, height: `${H}px`, transform: `scale(${scale})` }">
+              <!-- Lijnen -->
+              <svg class="fl__lines" :viewBox="`0 0 ${W} ${H}`" :width="W" :height="H" aria-hidden="true">
+                <defs>
+                  <marker :id="`fl-arrow-${f.id}`" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                    <path d="M0 0L10 5L0 10z" fill="#8a8a8a" />
+                  </marker>
+                </defs>
+                <line v-for="(t, i) in f.ticks" :key="`tick-${i}`" class="fl__tick" :x1="t.x" :y1="t.y1" :x2="t.x" :y2="t.y2" />
+                <path v-for="(c, i) in f.connectors" :key="`conn-${i}`" class="fl__line" :d="c.d" :marker-end="c.arrow ? `url(#fl-arrow-${f.id})` : undefined" />
+              </svg>
+
+              <!-- Fases + tijdlijn + mijlpalen -->
+              <div v-for="p in phases" :key="p.label" class="fl__phase" :style="{ left: `${p.from}px`, width: `${p.to - p.from}px`, top: `${TIMELINE_Y - 44}px` }">
+                <span class="fl__phase-label">{{ p.label }}</span>
+              </div>
+              <div class="fl__timeline" :style="{ top: `${TIMELINE_Y - 3}px` }" />
+              <div v-for="m in milestones" :key="m.x" class="fl__milestone" :class="{ 'fl__milestone--hotel': m.hotel }" :style="{ left: `${m.x}px`, top: `${TIMELINE_Y}px` }">
+                <span class="fl__dot" aria-hidden="true">
+                  <svg v-if="m.hotel" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16" /><path d="M9 7h2M13 7h2M9 11h2M13 11h2M9 15h2M13 15h2M10 21v-3h4v3" /></svg>
+                </span>
+                <span v-if="m.label" class="fl__milestone-label">{{ m.label }}</span>
+              </div>
+
+              <!-- Kaartjes: pagina's boven, mails onder -->
+              <article
+                v-for="c in f.cards"
+                :key="c.id"
+                class="fl__card"
+                :class="[`fl__card--${c.kind}`, { 'fl__card--volgt': c.volgt, 'fl__card--link': !!c.href, 'fl__card--sm': c.w < 200 }]"
+                :style="{ left: `${c.x}px`, top: `${c.y}px`, width: `${c.w}px`, height: `${c.h}px` }"
+                :role="c.href ? 'link' : undefined"
+                :tabindex="c.href ? 0 : undefined"
+                @click="onCard(c)"
+                @keydown.enter="onCard(c)"
+              >
+                <div class="fl__card-head">
+                  <span class="fl__icon" :class="c.kind === 'email' ? 'fl__icon--mail' : 'fl__icon--page'" aria-hidden="true">
+                    <svg v-if="c.kind === 'email'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2" /><path d="M3 7l9 6 9-6" /></svg>
+                    <svg v-else-if="c.id === 'account'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4" /><path d="M4 21a8 8 0 0 1 16 0" /></svg>
+                    <svg v-else viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2" /><path d="M3 9h18M7 6.5h.01M10 6.5h.01" /></svg>
+                  </span>
+                  <div class="fl__card-text">
+                    <h2 class="fl__card-title">{{ c.title }}</h2>
+                    <p v-if="c.sub" class="fl__card-sub">{{ c.sub }}</p>
+                  </div>
+                </div>
+              </article>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+</template>
+
+<style scoped>
+.fl { min-height: 100vh; background: #f5f5f5; padding: 32px 24px 64px; font-family: var(--font-body); color: var(--color-text-primary); }
+.fl__wrap { max-width: 1120px; margin: 0 auto; }
+.fl__head { margin-bottom: 20px; }
+.fl__back { display: inline-block; margin-bottom: 14px; color: var(--color-text-secondary); text-decoration: none; font-size: 14px; }
+.fl__back:hover { color: var(--color-primary); }
+.fl__eyebrow { margin: 0 0 4px; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-text-secondary); }
+.fl__title { margin: 0 0 8px; font-family: var(--font-heading); font-size: 34px; font-weight: 700; line-height: 1.1; }
+.fl__lead { margin: 0; max-width: 640px; font-size: 15px; color: var(--color-text-secondary); }
+
+/* Twee schema's onder elkaar: kop (titel + toelichting) per schema, een lijn ertussen */
+.fl__flow + .fl__flow { margin-top: 40px; padding-top: 32px; border-top: 1px solid #d4d4d4; }
+.fl__flow-head { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 12px; margin-bottom: 16px; }
+.fl__flow-title { margin: 0; font-family: var(--font-heading); font-size: 22px; font-weight: 700; line-height: 1.2; }
+.fl__flow-sub { margin: 0; font-size: 14px; color: var(--color-text-secondary); }
+
+/* Tekenruimte: schaalt mee, scrolt horizontaal onder de minimumschaal */
+.fl__canvas-wrap { position: relative; width: 100%; overflow-x: auto; overflow-y: hidden; }
+.fl__stage { position: relative; }
+.fl__canvas { position: absolute; top: 0; left: 0; transform-origin: top left; }
+.fl__lines { position: absolute; inset: 0; }
+.fl__line { fill: none; stroke: #8a8a8a; stroke-width: 1.5; stroke-dasharray: 4 4; }
+.fl__tick { stroke: #c4c4c4; stroke-width: 1.5; }
+
+/* Fases (label links, hairline tot de volgende fase) + tijdlijn + mijlpalen */
+.fl__timeline { position: absolute; left: 20px; right: 20px; height: 6px; border-radius: 3px; background: #141414; }
+.fl__phase { position: absolute; height: 28px; display: flex; align-items: center; gap: 10px; padding: 0 10px 0 2px; }
+.fl__phase::after { content: ''; flex: 1; height: 1px; background: #d4d4d4; }
+.fl__phase-label { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-text-secondary); white-space: nowrap; }
+.fl__milestone { position: absolute; display: flex; flex-direction: column; align-items: center; transform: translate(-50%, -50%); }
+.fl__dot { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; background: var(--color-primary); box-shadow: 0 0 0 4px #f5f5f5, 0 0 0 5px #141414; }
+.fl__milestone--hotel .fl__dot { width: 30px; height: 30px; background: #141414; }
+.fl__milestone--hotel .fl__dot svg { width: 16px; height: 16px; }
+.fl__milestone-label { position: absolute; top: 22px; padding: 0 6px; background: #f5f5f5; white-space: nowrap; font-size: 12px; font-weight: 600; color: var(--color-text-primary); }
+.fl__milestone--hotel .fl__milestone-label { top: 26px; }
+
+/* Kaartjes: wit, icoon + titel; even groot per rij */
+.fl__card { position: absolute; box-sizing: border-box; display: flex; flex-direction: column; justify-content: center; gap: 10px; padding: 14px 16px; border-radius: 12px; background: #fff; border: 1px solid #e3e3e3; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04); transition: transform var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast); }
+.fl__card--link { cursor: pointer; }
+.fl__card--link:hover, .fl__card--link:focus-visible { transform: translateY(-2px); border-color: var(--color-primary); box-shadow: 0 10px 24px rgba(0, 0, 0, 0.1); outline: none; }
+.fl__card--volgt { border-style: dashed; border-color: #c9c9c9; color: var(--color-text-secondary); }
+.fl__card--volgt .fl__card-title { color: var(--color-text-secondary); }
+.fl__card--sm { padding: 12px; }
+.fl__card-head { display: flex; align-items: center; gap: 10px; }
+.fl__card--sm .fl__card-head { gap: 8px; }
+.fl__card-text { min-width: 0; }
+.fl__icon { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 9px; flex-shrink: 0; }
+.fl__icon svg { width: 17px; height: 17px; }
+.fl__card--sm .fl__icon { width: 26px; height: 26px; border-radius: 7px; }
+.fl__card--sm .fl__icon svg { width: 14px; height: 14px; }
+.fl__icon--page { background: #141414; color: #fff; }
+.fl__icon--mail { background: #f4f1ec; color: #141414; }
+.fl__card--volgt .fl__icon { background: #ececec; color: #8a8a8a; }
+.fl__card-title { margin: 0; font-family: var(--font-heading); font-size: 17px; font-weight: 700; line-height: 1.25; white-space: nowrap; }
+.fl__card--sm .fl__card-title { font-size: 14px; }
+.fl__card-sub { margin: 2px 0 0; font-size: 12px; color: var(--color-text-secondary); white-space: nowrap; }
+
+@media (max-width: 800px) {
+  .fl { padding: 20px 12px 40px; }
+  .fl__title { font-size: 26px; }
+}
+</style>

@@ -38,7 +38,8 @@
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12" /></svg>
           </button>
           <div ref="mTrack" class="pg-mphoto__track" data-scroll-lock-allow="true" @scroll.passive="onTrackScroll">
-            <div v-for="img in ordered" :key="img.id" class="pg-mphoto__slide">
+            <div v-for="img in ordered" :key="img.id" class="pg-mphoto__slide" :class="{ 'pg-mphoto__slide--captioned': img.caption }">
+              <p v-if="img.caption" class="pg-mphoto__caption">{{ localized(img.caption) }}</p>
               <img :src="img.url" :alt="localized(img.alt)" />
             </div>
           </div>
@@ -91,7 +92,11 @@
                 <button type="button" class="pg-iconbtn pg-iconbtn--light pg-d__arrow pg-d__arrow--prev" aria-label="Vorige" @click="setIndex(index - 1)">
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6" /></svg>
                 </button>
-                <img :src="ordered[index]?.url" :alt="ordered[index] ? localized(ordered[index].alt) : ''" class="pg-d__stage-img" />
+                <div class="pg-d__stage-body" :class="{ 'pg-d__stage-body--captioned': ordered[index]?.caption }">
+                  <!-- Optional description (e.g. cycling-route maps) — white, directly above the photo. -->
+                  <p v-if="ordered[index]?.caption" class="pg-d__caption">{{ localized(ordered[index]!.caption!) }}</p>
+                  <img :src="ordered[index]?.url" :alt="ordered[index] ? localized(ordered[index].alt) : ''" class="pg-d__stage-img" />
+                </div>
                 <button type="button" class="pg-iconbtn pg-iconbtn--light pg-d__arrow pg-d__arrow--next" aria-label="Volgende" @click="setIndex(index + 1)">
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6" /></svg>
                 </button>
@@ -444,10 +449,25 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   width: 100%;
   scroll-snap-align: center;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 12px;
 }
-.pg-mphoto__slide img { width: 100%; height: 100%; max-height: 100%; object-fit: contain; display: block; }
+/* Same trick as the desktop stage: the img box equals the picture so a
+   caption sits directly above it, not at the top of the viewer. */
+.pg-mphoto__slide img { width: auto; height: auto; max-width: 100%; max-height: 100%; min-height: 0; flex: 0 1 auto; object-fit: contain; display: block; }
+.pg-mphoto__slide--captioned img { max-height: calc(100% - 48px); }
+/* Optional description above the photo — white on the dark viewer. */
+.pg-mphoto__caption {
+  flex-shrink: 0;
+  margin: 0;
+  padding: 0 var(--space-lg);
+  color: #fff;
+  font-size: 15px;
+  line-height: 1.4;
+  text-align: center;
+}
 .pg-mphoto__controls {
   flex-shrink: 0;
   display: flex;
@@ -561,7 +581,31 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   min-height: 0;
   padding: var(--space-lg);
 }
-.pg-d__stage-img { max-width: 100%; max-height: 100%; object-fit: contain; display: block; }
+.pg-d__stage-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+}
+/* width/height auto + max-* constraints → the img box equals the rendered
+   picture (no object-fit letterboxing), so the caption above HUGS the photo
+   instead of floating at the top of the stage. With a caption the photo
+   reserves 40 px (caption + gap) so the pair still fits the stage. */
+.pg-d__stage-img { width: auto; height: auto; max-width: 100%; max-height: 100%; min-height: 0; flex: 0 1 auto; object-fit: contain; display: block; }
+.pg-d__stage-body--captioned .pg-d__stage-img { max-height: calc(100% - 40px); }
+/* Optional description above the photo — white on the dark stage. */
+.pg-d__caption {
+  flex-shrink: 0;
+  margin: 0;
+  color: #fff;
+  font-size: 16px;
+  line-height: 1.4;
+  text-align: center;
+}
 .pg-d__arrow { position: absolute; top: 50%; transform: translateY(-50%); }
 .pg-d__arrow--prev { left: 16px; }
 .pg-d__arrow--next { right: 16px; }

@@ -21,9 +21,13 @@ import SearchFilterPanel from '~/components-multi-hotel-trip/search/SearchFilter
 import HotelMapMobileCard from '~/components-multi-hotel-trip/map/HotelMapMobileCard.vue'
 import FilterSubpage from '~/components-multi-hotel-trip/search/FilterSubpage.vue'
 import { useMultiHotelTripIsMobile } from '~/composables-multi-hotel-trip/useMultiHotelTripIsMobile'
+import { useMultiHotelTripFakeDoor } from '~/composables-multi-hotel-trip/useMultiHotelTripFakeDoor'
 
 const { t } = useMultiHotelTripI18n()
 const isMobile = useMultiHotelTripIsMobile()
+/* Fake door "variabel reisgezelschap": zonder aanbod geen kaart; /search toont de melding. */
+const { blocked: fakeDoorBlocked } = useMultiHotelTripFakeDoor()
+if (fakeDoorBlocked.value) navigateTo('/multi-hotel-trip/search', { replace: true })
 
 useHead({ title: 'Kaart — Via Luxury' })
 
@@ -347,6 +351,8 @@ onMounted(() => {
           alt="ViaLuxury"
         />
       </NuxtLink>
+      <!-- Prototype: prijsweergave vakanties (PRIJS: TOTAAL | PP) onder het logo, zoals in de sitekop. -->
+      <div class="kaart-filter__proto"><MultiHotelTripDemoSwitches price /></div>
       <MultiHotelTripSearchFilterPanel
         :budget-min="budgetMin"
         :budget-max="budgetMax"
@@ -513,6 +519,7 @@ onMounted(() => {
   height: auto;
   display: block;
 }
+.kaart-filter__proto { padding: 10px var(--space-lg) 0; }
 
 /* Drop the FilterPanel's outer card border on the kaart sidebar so the
    horizontal line that read as a stroke "under the logo" disappears.

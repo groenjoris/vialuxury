@@ -69,6 +69,8 @@ interface TableRow {
   price: number
   quantity: number
   scarcity?: string
+  /** Vakantie bij schaarste: maximum aantal personen; de opties erboven zijn uitgegrijsd. */
+  maxPersons?: number
 }
 
 interface TableRoom {
@@ -98,6 +100,7 @@ const tableRooms = reactive<TableRoom[]>(
             price: trip.value.price + pricing.flexibilityPerRoom * trip.value.hotels.length,
             quantity: 0,
             scarcity: trip.value.scarcity,
+            maxPersons: trip.value.maxPersons,
           },
           {
             id: 'trip-nonref',
@@ -107,6 +110,7 @@ const tableRooms = reactive<TableRoom[]>(
             price: trip.value.price,
             quantity: 0,
             scarcity: trip.value.scarcity,
+            maxPersons: trip.value.maxPersons,
           },
         ],
       }]
@@ -516,6 +520,8 @@ const arrangementIncludes = trip.value ? trip.value.includes : [
             <MultiHotelTripCheckoutPriceTag :value="ppTrip ? displayPrice(rowPrice(row), true) : rowPrice(row)" :show-cents="false" size="md" bold color="var(--c-via-orange)" />
             <p v-if="!trip" class="rt__pricenote">inclusief arrangement</p>
             <p v-else-if="ppTrip" class="rt__pricenote">Per persoon<br>(min. 2 pers.)</p>
+            <!-- Totaalprijs-variant: zeg waar de prijs voor is, zoals op de datumstap ("voor 2 personen"). -->
+            <p v-else class="rt__pricenote">Voor 2 personen</p>
           </td>
 
           <!-- Je opties (1e: zonder de vaste vinkjes, begint met de voorwaarde) -->
@@ -535,7 +541,7 @@ const arrangementIncludes = trip.value ? trip.value.includes : [
                 <svg class="rt__check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" /></svg>
                 Flexibel annuleren
               </p>
-              <p class="rt__optsub">Gratis annuleren tot 30 dagen voor aankomst</p>
+              <p class="rt__optsub">Gratis annuleren tot 31 dagen voor aankomst</p>
               <p class="rt__optsub rt__optsub--flush rt__optsub--icon">
                 <svg class="rt__check" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" /></svg>
                 Volledige terugbetaling van {{ trip ? 'vakantieprijs' : 'arrangementsprijs' }}
@@ -564,7 +570,8 @@ const arrangementIncludes = trip.value ? trip.value.includes : [
             <!-- De opties in het menu noemen altijd het aantal personen; het gesloten veld toont na
                  een keuze alleen "x kamers" (overlay-label, de eigen tekst van de select is dan transparant).
                  Vakantie: de waarde blijft het aantal kamers per hotel, maar menu en veld tonen alleen
-                 personen (0, 2, 4 … 10). -->
+                 personen (0, 2, 4 … 10). Bij schaarste (maxPersons) zijn de opties boven het maximum
+                 uitgegrijsd en niet te kiezen. -->
             <div class="rt__dropdownwrap">
               <select
                 class="rt__dropdown"
@@ -576,7 +583,7 @@ const arrangementIncludes = trip.value ? trip.value.includes : [
                 @change="row.quantity = Number(($event.target as HTMLSelectElement).value)"
               >
                 <option :value="0">{{ trip ? '0 personen' : '0 kamers' }}</option>
-                <option v-for="n in 5" :key="n" :value="n">{{ trip ? `${n * 2} personen` : `${n} ${n === 1 ? 'kamer' : 'kamers'} / ${n * 2} personen` }}</option>
+                <option v-for="n in 5" :key="n" :value="n" :disabled="!!row.maxPersons && n * 2 > row.maxPersons">{{ trip ? `${n * 2} personen` : `${n} ${n === 1 ? 'kamer' : 'kamers'} / ${n * 2} personen` }}</option>
               </select>
               <span v-if="row.quantity > 0" class="rt__dropdown-face" :class="{ 'rt__dropdown-face--inactive': isInactive(row) }" aria-hidden="true">{{ trip ? `${row.quantity * 2} personen` : `${row.quantity} ${row.quantity === 1 ? 'kamer' : 'kamers'}` }}</span>
             </div>

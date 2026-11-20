@@ -3,14 +3,20 @@
     <!-- Multi Hotel Trip: de Vakanties-landing krijgt de homepage-achtige hero
          (foto + zoekbalk eronder, zoals de themapagina's in R2). -->
     <div v-if="isTripLanding" class="search-page__trip-hero">
+      <!-- Slogan (schakelaarpaneel linksboven; standaard "Adventure more", slotdeel vet) in de
+           kleinere maat van de oorspronkelijke titel. -->
       <MultiHotelTripLandingHero
         search-below
         compact-title
         :bg-url="tripHeroBg"
         :eyebrow="tripHeroCaption"
-        :title="t('search.holidaysHeroTitle')"
+        :title="tripSlogan.title"
+        :title-em="tripSlogan.em"
         :pitch="tripHeroPitch"
-      />
+      >
+        <!-- Prototype: prijsweergave vakanties (PRIJS: TOTAAL | PP) onder het logo. -->
+        <template #proto><MultiHotelTripDemoSwitches price /></template>
+      </MultiHotelTripLandingHero>
       <!-- Variantenschakelaar voor de vakantie-dealcards (onder het logo, voor de
            opdrachtgever). Dealcard-variant is definitief "collage" (keuze
            2026-09-24); de schakelaar + kleurentuner blijven in de code voor later
@@ -20,7 +26,9 @@
       </div>
       -->
     </div>
-    <MultiHotelTripSiteHeader v-else />
+    <MultiHotelTripSiteHeader v-else>
+      <template #proto><MultiHotelTripDemoSwitches price /></template>
+    </MultiHotelTripSiteHeader>
 
     <main class="search-page__main">
       <!-- Breadcrumbs -->
@@ -29,7 +37,10 @@
       </section>
 
       <!-- Grid: Filter Sidebar + Results -->
-      <div class="search-page__grid container" :class="{ 'search-page__grid--no-sidebar': !sidebarVisible }">
+      <!-- Fake door "variabel reisgezelschap": oneven aantal volwassenen of kinderen → alleen de
+           melding met e-mailveld, geen filters en geen resultaten. -->
+      <MultiHotelTripFakeDoorNotice v-if="fakeDoorBlocked" class="container" />
+      <div v-else class="search-page__grid container" :class="{ 'search-page__grid--no-sidebar': !sidebarVisible }">
         <Transition name="sidebar-slide">
           <div v-if="sidebarVisible" class="search-page__sidebar" ref="sidebarRef">
             <!-- Map preview (fake door) at the top of sidebar -->
@@ -163,7 +174,7 @@
             <!-- Vakanties-variant "Map": linksboven hetzelfde kaartje als in de zijbalk van de
                  gewone zoekpagina (knop "Tonen op kaart"), 75% zo hoog; de pillen staan ernaast. -->
             <MultiHotelTripMapPreviewCard v-if="isTripMode && vakantiesMap" class="search-toolbar__trip-map" @click="handleMapClick" />
-            <div class="search-toolbar__left">
+            <div v-if="!isTripMode" class="search-toolbar__left">
               <!-- Map button: only when filter hidden on desktop (sidebar map is otherwise visible) -->
               <button
                 v-if="!showFilters && !isMobile && !isTripMode"
@@ -199,17 +210,16 @@
                  wrapper to zero so the toolbar stays its natural
                  small height. -->
             <MultiHotelTripFilterPills v-if="!isTripMode" class="search-toolbar__pills" />
-            <!-- Vakantiestand: de quick filters staan als losse flex-items in
-                 deze rij; Sorteren/weergave sluiten er rechts op aan en
-                 verhuizen mee naar de tweede rij als de pillen omlopen.
-                 De wrapper is display:contents (standaard) of, in de variant
-                 "Map", het omlopende vak rechts naast het kaartje. -->
+            <!-- Vakantiestand: de quick filters staan in een eigen omlopend vak (maximaal drie
+                 regels) tussen het kaartje en de weergaveschakelaar, die in een eigen kolom rechts
+                 staat. In de hotelstand is de wrapper display:contents. -->
             <div class="search-toolbar__trip-pills">
-            <MultiHotelTripQuickFilters v-if="isTripMode" inline :counts="tripQuickFilterCounts" />
+              <MultiHotelTripQuickFilters v-if="isTripMode" inline :counts="tripQuickFilterCounts" />
+            </div>
 
             <div class="search-toolbar__right">
-              <!-- Sort dropdown -->
-              <div class="search-toolbar__sort" ref="sortRef">
+              <!-- Sort dropdown (niet in de vakantiestand) -->
+              <div v-if="!isTripMode" class="search-toolbar__sort" ref="sortRef">
                 <button class="search-toolbar__sort-btn" @click="sortOpen = !sortOpen">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M11 5h10M11 9h7M11 13h4M3 17l4 4 4-4M7 3v18" />
@@ -265,7 +275,6 @@
                   </svg>
                 </button>
               </div>
-            </div>
             </div>
           </div>
 
@@ -436,6 +445,7 @@
 </template>
 
 <script setup lang="ts">
+import { useMultiHotelTripTripSlogan } from '~/composables-multi-hotel-trip/useMultiHotelTripTripSlogan'
 // Multi Hotel Trip: de Vakanties-zoekpagina is dezelfde pagina onder een
 // eigen URL (hero + quick filters i.p.v. filterpaneel; toont vakanties).
 // /multi-hotel-trip/vakanties is een eigen pagina (vakanties.vue) die deze
@@ -459,8 +469,11 @@ import { tripMatchesQuickFilters, TRIP_QUICK_FILTERS } from '~/utils-multi-hotel
 import { nightKeyFor, TRIP_NIGHT_KEYS } from '~/utils-multi-hotel-trip/nights'
 import { TRIPS_THEME_ID } from '~/utils-multi-hotel-trip/destinationMatch'
 import { useMobileSearchModalControl } from '~/composables-multi-hotel-trip/useMobileSearchModalControl'
+import { useMultiHotelTripFakeDoor } from '~/composables-multi-hotel-trip/useMultiHotelTripFakeDoor'
 
 const { t } = useMultiHotelTripI18n()
+/* Fake door "variabel reisgezelschap": oneven volwassenen of kinderen → geen resultaten, alleen de melding. */
+const { blocked: fakeDoorBlocked } = useMultiHotelTripFakeDoor()
 const {
   loading, setLoading, persons, rooms, selectedNights,
   selectedFilterTags,
@@ -507,6 +520,7 @@ const tripHeroPitch = computed(() => t('search.holidaysPitch'))
 const sidebarVisible = computed(() => showFilters.value && !isTripMode.value)
 // Variant van de Vakanties-pagina (schakelaarpaneel linksboven): "Map" = kaartje in de toolbar.
 const { showMap: vakantiesMap } = useMultiHotelTripVakantiesVariant()
+const { slogan: tripSlogan } = useMultiHotelTripTripSlogan()
 // NB: de watch die het paneel sluit zodra de vakantiestand aangaat staat
 // verderop, ná `const route = useRoute()` (de watch leest isTripMode direct uit).
 const {
@@ -2429,15 +2443,19 @@ onMounted(() => {
    links en Sorteren/weergave rechts (margin-left:auto). De knoppen rechts
    krijgen de pilhoogte en -stijl. Geen space-between: de pillen staan
    met vaste gap links naast elkaar. */
+/* Vakantiestand: drie kolommen naast elkaar — (kaartje) | pillen (omlopend, max. drie regels)
+   | weergaveschakelaar in een eigen kolom. Geen sorteerknop. */
 .search-toolbar--trips {
-  flex-wrap: wrap;
-  align-items: center;
+  flex-wrap: nowrap;
+  align-items: flex-start;
   justify-content: flex-start;
-  gap: 8px;
+  gap: var(--space-md);
   padding: var(--space-md) 0 var(--space-sm);
 }
 .search-toolbar--trips .search-toolbar__right {
-  margin-left: auto;
+  flex: 0 0 auto;
+  margin-left: 0;
+  align-self: flex-start;
   gap: 8px;
 }
 .search-toolbar--trips .search-toolbar__sort-btn {
@@ -2464,31 +2482,28 @@ onMounted(() => {
   height: 42px;
 }
 
-/* De wrapper om pillen + Sorteren/weergave: standaard onzichtbaar (display:contents), zodat de
-   toolbar zich gedraagt als voorheen. */
+/* De wrapper om de pillen: in de hotelstand onzichtbaar (display:contents); in de vakantiestand het
+   omlopende vak tussen (kaartje en) weergaveschakelaar. Pillen zijn 44 px hoog met 8 px ertussen,
+   dus drie regels = 148 px. */
 .search-toolbar__trip-pills { display: contents; }
-
-/* Vakanties-variant "Map": het kaartje van de gewone zoekpagina (280 px breed, zijbalkbreedte)
-   linksboven, 75% van de normale hoogte (9:5 → 156 px, hier 117 px). De pillen staan ernaast in
-   een omlopend vak en gebruiken twee regels; de geforceerde regelovergang vervalt daar — de
-   auto-/fietsopties lopen gewoon door en Sorteren/weergave sluiten rechts op de laatste regel aan. */
-.search-toolbar--trips-map {
-  align-items: flex-start;
-  gap: var(--space-md);
-}
-.search-toolbar--trips-map .search-toolbar__trip-map {
-  flex: 0 0 280px;
-  width: 280px;
-  height: 117px;
-  aspect-ratio: auto;
-}
-.search-toolbar--trips-map .search-toolbar__trip-pills {
+.search-toolbar--trips .search-toolbar__trip-pills {
   display: flex;
   flex: 1 1 0;
   min-width: 0;
   flex-wrap: wrap;
-  align-items: center;
+  align-items: flex-start;
+  align-content: flex-start;
   gap: 8px;
+}
+
+/* Vakanties-variant "Map": het kaartje van de gewone zoekpagina (280 px breed) linksboven, precies
+   zo hoog als drie regels pillen (148 px), zodat het daarmee uitlijnt. De geforceerde regelovergang
+   in de pillen vervalt hier: ze lopen gewoon door naast het kaartje. */
+.search-toolbar--trips-map .search-toolbar__trip-map {
+  flex: 0 0 280px;
+  width: 280px;
+  height: 148px;
+  aspect-ratio: auto;
 }
 .search-toolbar--trips-map .search-toolbar__trip-pills :deep(.tqf__break) { display: none; }
 

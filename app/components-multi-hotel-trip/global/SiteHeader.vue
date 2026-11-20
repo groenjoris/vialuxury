@@ -13,6 +13,8 @@
       ['3', '4', '5'].includes(effectiveNavVariant) ? 'site-header--nav-v2' : null,
     ]"
   >
+    <!-- Prototype-navigatie: "‹ startscherm" helemaal linksboven (alleen desktop). -->
+    <MultiHotelTripProtoNav />
     <!-- Main nav bar — laid out across TWO rows via CSS grid:
            row 1: logo (left)              | _                | actions (right)
            row 2: pay-off (under logo)     | verticals (mid)  | phone (right)
@@ -22,24 +24,30 @@
       <div class="site-header__nav-inner container">
         <!-- Logo (grid row 1, col 1). Variant 4 (mobile) swaps the
              horizontal logo for the compact vertical one. -->
-        <NuxtLink ref="logoLinkRef" :to="homeHref" class="site-header__logo">
-          <!-- Both logos are always rendered; which one shows is decided by
-               CSS so the swap can be scoped per-page (V4 minimal header only
-               applies on home/search/deal/hotel — see mht-home-variants.css).
-               Default: horizontal visible, vertical hidden. -->
-          <img
-            src="/images/logo-vialuxury.svg"
-            alt="ViaLuxury"
-            class="site-header__logo-img site-header__logo-img--vertical"
-          />
-          <img
-            src="/images/logo-vialuxury-horizontal.svg"
-            alt="ViaLuxury"
-            class="site-header__logo-img site-header__logo-img--horizontal"
-          />
-          <!-- Prototype-sticker (subtiel) onder het logo. -->
-          <span class="site-header__proto" aria-hidden="true">MHR</span>
-        </NuxtLink>
+        <!-- Logo-vak (grid rij 1, kolom 1): het logo plus, voor het prototype, de schakelaars (slot `proto`) —
+             onder het logo en het label (standaard) of rechts naast het logo (proto-placement="right", de
+             accountomgeving: het vak groeit mee en schuift de navigatie op). -->
+        <div class="site-header__logo-cell">
+          <NuxtLink ref="logoLinkRef" :to="homeHref" class="site-header__logo">
+            <!-- Both logos are always rendered; which one shows is decided by
+                 CSS so the swap can be scoped per-page (V4 minimal header only
+                 applies on home/search/deal/hotel — see mht-home-variants.css).
+                 Default: horizontal visible, vertical hidden. -->
+            <img
+              src="/images/logo-vialuxury.svg"
+              alt="ViaLuxury"
+              class="site-header__logo-img site-header__logo-img--vertical"
+            />
+            <img
+              src="/images/logo-vialuxury-horizontal.svg"
+              alt="ViaLuxury"
+              class="site-header__logo-img site-header__logo-img--horizontal"
+            />
+            <!-- Variant-label (subtiel) onder het logo. -->
+            <span class="site-header__proto" aria-hidden="true">MHR</span>
+          </NuxtLink>
+          <div v-if="$slots.proto" class="site-header__proto-slot" :class="`site-header__proto-slot--${props.protoPlacement}`"><slot name="proto" /></div>
+        </div>
 
         <!-- Opt-in pay-off under the logo (grid row 2, col 1 on desktop;
              flows under the logo on mobile). Off by default — the
@@ -352,7 +360,7 @@
                           {{ t('header.holidays') }}
                           <span class="menu-panel__badge">{{ t('header.new') }}</span>
                         </span>
-                        <span class="menu-panel__row-sub">Meerdere hotels in één reis, met de auto of de fiets</span>
+                        <span class="menu-panel__row-sub">Meerdere hotels in één reis, met eigen auto of fiets</span>
                       </span>
                       <svg class="menu-panel__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
                     </NuxtLink>
@@ -836,7 +844,7 @@
              + N kamers), closes the popup, fills the field. The full
              adults/children/rooms/dog stepper UI below is kept (gated on
              `false`) so it can be revived when the MVP is done. -->
-        <div v-if="activePopup === 'who'" class="popup popup--who popup--who-mvp">
+        <div v-if="activePopup === 'who' && !fakeDoorOn" class="popup popup--who popup--who-mvp">
           <ul class="who-mvp__list" role="listbox" aria-label="Aantal personen">
             <li
               v-for="opt in whoMvpOptions"
@@ -859,6 +867,46 @@
               </svg>
             </li>
           </ul>
+        </div>
+
+        <!-- FAKE DOOR "variabel reisgezelschap" (useMultiHotelTripFakeDoor): volwassenen en
+             kinderen (met leeftijd) tellen, geen kamers. Oneven volwassenen of kinderen →
+             /search toont alleen de melding met e-mailveld. -->
+        <div v-if="activePopup === 'who' && fakeDoorOn" class="popup popup--who">
+          <div class="who-row">
+            <div class="who-row__info">
+              <span class="who-row__label">{{ t('travelGroup.adults') }}</span>
+              <span class="who-row__sub">{{ t('fakeDoor.adultsSub') }}</span>
+            </div>
+            <div class="stepper">
+              <button class="stepper__btn" :disabled="searchGroup.adults <= 1" @click="fakeDoorStepAdults(-1)">&#8722;</button>
+              <span class="stepper__val">{{ searchGroup.adults }}</span>
+              <button class="stepper__btn" :disabled="searchGroup.adults >= FAKE_DOOR_MAX_ADULTS" @click="fakeDoorStepAdults(1)">+</button>
+            </div>
+          </div>
+          <div class="who-row">
+            <div class="who-row__info">
+              <span class="who-row__label">{{ t('travelGroup.children') }}</span>
+              <span class="who-row__sub">{{ t('header.childrenAge') }}</span>
+            </div>
+            <div class="stepper">
+              <button class="stepper__btn" :disabled="searchGroup.children.length <= 0" @click="fakeDoorStepChildren(-1)">&#8722;</button>
+              <span class="stepper__val">{{ searchGroup.children.length }}</span>
+              <button class="stepper__btn" :disabled="searchGroup.children.length >= FAKE_DOOR_MAX_CHILDREN" @click="fakeDoorStepChildren(1)">+</button>
+            </div>
+          </div>
+          <div v-if="searchGroup.children.length > 0" class="who-children-ages">
+            <div v-for="(child, idx) in searchGroup.children" :key="idx" class="who-child-age">
+              <label>{{ t('travelGroup.childAge') }} {{ idx + 1 }}</label>
+              <select v-model.number="child.age">
+                <option v-for="a in 18" :key="a - 1" :value="a - 1">{{ a - 1 }} {{ t('travelGroup.years') }}</option>
+              </select>
+            </div>
+          </div>
+          <div class="popup__footer">
+            <a href="#" class="popup__clear-link" @click.prevent="clearWho">{{ t('header.clear') }}</a>
+            <button class="popup__done-btn" @click="closePopup()">{{ t('header.done') }}</button>
+          </div>
         </div>
 
         <!-- LEGACY WHO POPUP — adults/children/rooms/dog steppers. Hidden
@@ -987,6 +1035,7 @@
       :flexibility="flexibility"
       :selected-durations="selectedDurations"
       :search-group="searchGroup"
+      :fake-door="fakeDoorOn"
       :destination-label="destinationLabel"
       :destination-is-placeholder="destinationIsPlaceholder"
       :when-label="whenLabel"
@@ -1024,6 +1073,7 @@
 <script setup lang="ts">
 import { TRIP_NIGHT_KEYS, isNightKey, nightKeyFor, joinNightKeys, summarizeNightKeys } from '~/utils-multi-hotel-trip/nights'
 import { TRIPS_THEME_ID } from '~/utils-multi-hotel-trip/destinationMatch'
+import { useMultiHotelTripFakeDoor, FAKE_DOOR_MAX_ADULTS, FAKE_DOOR_MAX_CHILDREN } from '~/composables-multi-hotel-trip/useMultiHotelTripFakeDoor'
 import { useMultiHotelTripLocaleStore } from '~/stores-multi-hotel-trip/locale'
 import { searchHotels } from '~/data/mock/search-hotels'
 import { mappedHotels } from '~/data/deals-mapper'
@@ -1038,6 +1088,8 @@ const props = withDefaults(defineProps<{
   /** Hide the inline horizontal search bar — used by homepage variant 2
    *  which renders its own vertical search card instead. */
   hideSearchDock?: boolean
+  /** Plek van de prototype-schakelaars in de slot `proto`: onder het logo (standaard) of rechts ernaast. */
+  protoPlacement?: 'below' | 'right'
   /** Which of the three FR nav-bar layouts to render. Defaults to the
    *  variant that's currently stored in the composable so internal
    *  pages don't have to pass anything. */
@@ -1046,7 +1098,7 @@ const props = withDefaults(defineProps<{
   payoff?: string
   /** CSS font-family for the pay-off (defaults to the component's own rule). */
   payoffFont?: string
-}>(), { variant: 'solid', hideSearchDock: false })
+}>(), { variant: 'solid', hideSearchDock: false, protoPlacement: 'below' })
 
 // --- PAY-OFF: fit the line to the logo's exact width ---------------------
 const logoLinkRef = ref<{ $el?: HTMLElement } | HTMLElement | null>(null)
@@ -2158,13 +2210,34 @@ function removeSearchChild() {
  *  the deal page's own travel-group control says. */
 const whoExplicit = ref(false)
 
+/* ── Fake door "variabel reisgezelschap" (variant binnen R1, zie useMultiHotelTripFakeDoor) ── */
+const { enabled: fakeDoorOn, adults: fakeDoorAdults, children: fakeDoorChildren, setGroup: setFakeDoorGroup } = useMultiHotelTripFakeDoor()
+// De melding op de zoekpagina kan de groep zelf aanpassen ("Zoek dan voor 4 volwassenen"):
+// spiegel dat in de balk, zodat het veld en de snapshot niet achterlopen.
+watch(() => [fakeDoorOn.value, fakeDoorAdults.value, fakeDoorChildren.value.length] as const, ([on, a, k]) => {
+  if (!on) return
+  if (searchGroup.value.adults === a && searchGroup.value.children.length === k) return
+  whoExplicit.value = true
+  searchGroup.value = { adults: a, children: fakeDoorChildren.value.map(c => ({ age: c.age })), rooms: Math.max(1, Math.ceil(a / 2)), dog: false }
+  saveBarSnapshot()
+})
+function fakeDoorStepAdults(delta: number) {
+  whoExplicit.value = true
+  searchGroup.value.adults = Math.min(FAKE_DOOR_MAX_ADULTS, Math.max(1, searchGroup.value.adults + delta))
+}
+function fakeDoorStepChildren(delta: number) {
+  whoExplicit.value = true
+  if (delta > 0 && searchGroup.value.children.length < FAKE_DOOR_MAX_CHILDREN) searchGroup.value.children.push({ age: 4 })
+  if (delta < 0) searchGroup.value.children.pop()
+}
+
 /** The bar's own memory of what the user last committed IN THE BAR —
  *  independent from the shared search state, which the deal page's
  *  calendar / travel-group controls also write to. Covers the fields the
  *  spec wants "prefilled only when selected earlier": arrival date,
  *  flexible and travel group. */
 const BAR_SNAPSHOT_KEY = 'vl_mht_searchbar'
-type BarSnapshot = { date: string | null; flexible: boolean; whoExplicit: boolean; adults: number; rooms: number }
+type BarSnapshot = { date: string | null; flexible: boolean; whoExplicit: boolean; adults: number; rooms: number; children?: { age: number }[] }
 function saveBarSnapshot() {
   if (!import.meta.client) return
   const snap: BarSnapshot = {
@@ -2173,6 +2246,7 @@ function saveBarSnapshot() {
     whoExplicit: whoExplicit.value,
     adults: searchGroup.value.adults,
     rooms: searchGroup.value.rooms,
+    children: searchGroup.value.children.map(c => ({ age: c.age })),
   }
   try { localStorage.setItem(BAR_SNAPSHOT_KEY, JSON.stringify(snap)) } catch { /* ignore */ }
 }
@@ -2186,7 +2260,7 @@ function restoreBarSnapshot() {
     if (snap.flexible) localFlexible.value = true
     if (snap.whoExplicit && snap.adults && snap.rooms) {
       whoExplicit.value = true
-      searchGroup.value = { adults: snap.adults, children: [], rooms: snap.rooms, dog: false }
+      searchGroup.value = { adults: snap.adults, children: (snap.children ?? []).map(c => ({ age: c.age })), rooms: snap.rooms, dog: false }
     }
   } catch { /* ignore */ }
 }
@@ -2223,6 +2297,14 @@ function pickWhoMvp(opt: { adults: number; rooms: number }) {
 }
 
 const whoLabel = computed(() => {
+  // Fake door: "3 volwassenen, 1 kind" (geen kamers).
+  if (fakeDoorOn.value) {
+    const a = searchGroup.value.adults
+    const kids = searchGroup.value.children.length
+    const parts = [`${a} ${a === 1 ? t('fakeDoor.adultSingular') : t('fakeDoor.adultPlural')}`]
+    if (kids > 0) parts.push(`${kids} ${kids === 1 ? t('common.childSingular') : t('common.childPlural')}`)
+    return parts.join(', ')
+  }
   // Compact "personen / kamer(s)" format — mirrors the popup options
   // exactly so the field value reads the same as what the user picks.
   // Children + dog fall back to the old comma-joined form.
@@ -2261,8 +2343,16 @@ async function commitSearch() {
   }
 
   // Apply When + Who drafts.
-  const totalPersons = searchGroup.value.adults + searchGroup.value.children.length
-  setSearchGroup(totalPersons, searchGroup.value.rooms)
+  if (fakeDoorOn.value) {
+    // Fake door: alleen de volwassenen tellen als personen (een arrangement is altijd voor 2,
+    // dus volwassenen / 2 kamers); de kinderen gaan apart mee voor de melding op /search.
+    const a = searchGroup.value.adults
+    setSearchGroup(a, Math.max(1, Math.ceil(a / 2)))
+    setFakeDoorGroup(a, searchGroup.value.children)
+  } else {
+    const totalPersons = searchGroup.value.adults + searchGroup.value.children.length
+    setSearchGroup(totalPersons, searchGroup.value.rooms)
+  }
   setArrivalDate(selectedDate.value)
   setSelectedNights(localNights.value.filter(v => isNightKey(v)))
   setFlexType(localFlexType.value)
@@ -2867,8 +2957,8 @@ function handleSelectHotelInPopup(slug: string) {
  *  rij-1-knoppen en pillen (de grid-standaard). Alleen mét pay-off onder
  *  het logo (R2-stijl / payoff-varianten-pagina) staat het logo boven, zodat
  *  logo + pay-off samen één blok vormen. ─── */
-.site-header--nav-v1.site-header--has-payoff .site-header__logo,
-.site-header--nav-v6.site-header--has-payoff .site-header__logo {
+.site-header--nav-v1.site-header--has-payoff .site-header__logo-cell,
+.site-header--nav-v6.site-header--has-payoff .site-header__logo-cell {
   align-self: start;
 }
 
@@ -2882,11 +2972,19 @@ function handleSelectHotelInPopup(slug: string) {
   gap: 13px;
 }
 
-/* Logo (grid row 1, col 1) — width pinned to 244 px per design. */
-.site-header__logo {
+/* Logo-vak (grid row 1, col 1): logo + eventueel de prototype-schakelaars ernaast. */
+.site-header__logo-cell {
   grid-row: 1;
   grid-column: 1;
-  flex-shrink: 0;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+/* Logo — width pinned to 244 px per design; mag krimpen als de kop te smal wordt (zoals vóór het logo-vak). */
+.site-header__logo {
+  flex-shrink: 1;
+  min-width: 0;
   display: flex;
   align-items: center;
 }
@@ -2909,6 +3007,19 @@ function handleSelectHotelInPopup(slug: string) {
 
 /* Subtiele prototype-sticker onder het logo (absoluut, dus geen invloed op de layout). */
 .site-header__logo { position: relative; }
+/* Prototype-schakelaars: onder het logo en het label (absoluut, uitgelijnd met de linkerkant van het logo) of rechts
+   naast het logo (in de flow, twee rijen hoog, het vak groeit mee en de navigatie schuift op — naast het logo is
+   maar ~170px vrij, dus alleen vanaf 1248px; smaller valt `right` terug op onder het logo). */
+.site-header__proto-slot--below { position: absolute; left: 0; top: calc(100% + 26px); }
+.site-header__proto-slot--right { position: static; flex-shrink: 0; }
+.site-header__proto-slot--right :slotted(.demo-sw) { flex-direction: column; }
+@media (min-width: 1248px) {
+  .site-header__logo-cell:has(.site-header__proto-slot--right) { min-width: max-content; }
+}
+@media (max-width: 1247px) {
+  .site-header__proto-slot--right { position: absolute; left: 0; top: calc(100% + 26px); }
+  .site-header__proto-slot--right :slotted(.demo-sw) { flex-direction: row; }
+}
 .site-header__proto {
   position: absolute; left: 0; top: 100%; margin-top: 4px; pointer-events: none;
   font-family: var(--font-body, inherit); font-size: 9px; line-height: 1; font-weight: 600;

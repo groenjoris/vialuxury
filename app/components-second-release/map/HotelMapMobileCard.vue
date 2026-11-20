@@ -99,6 +99,7 @@ import { formatPrice } from '~/utils-second-release/formatPrice'
 import { nightsLabel, personsLabel } from '~/utils-second-release/plural'
 import { priceForArrival, PRICED_PERSONS } from '~/utils-second-release/priceFormula'
 import { isDealAvailableInWindow } from '~/utils-second-release/availability'
+import { pickSmartInclusions } from '~/utils-second-release/smartInclusions'
 
 const { t, localized, locale } = useSecondReleaseI18n()
 const { persons, arrivalDate, selectedFlexibility } = useSecondReleaseSearchState()
@@ -161,6 +162,7 @@ function hrefFor(deal: SearchHotelDeal): string {
 const dealViews = computed(() => {
   const h = props.hotel
   if (!h) return []
+  const siblingInclusions = h.deals.map(d => d.inclusions || [])
   return [...h.deals]
     .sort((a, b) => a.basePrice - b.basePrice)
     .map((deal) => {
@@ -185,7 +187,10 @@ const dealViews = computed(() => {
         // Prototype: always the PRICED_PERSONS / 1-room price (party size doesn't scale it).
         price: priceForArrival(deal.basePrice, deal.id, effArrival, PRICED_PERSONS),
         originalPrice: priceForArrival(deal.originalPrice, deal.id, effArrival, PRICED_PERSONS),
-        includes: (deal.inclusions || []).slice(0, 2).map(i => localized(i)),
+        // De eerste vier highlights zoals op de dealcard (zelfde keuze: zonder de
+        // overnachting, onderscheidende punten t.o.v. de andere arrangementen eerst),
+        // niet simpelweg de eerste vier van de inclusielijst.
+        includes: pickSmartInclusions(deal.inclusions || [], siblingInclusions, locale.value as 'nl' | 'en', 4).map(i => localized(i)),
         href,
       }
     })

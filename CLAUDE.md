@@ -9,11 +9,89 @@ prefix, localStorage-keys, CSS-bestanden) zodat ze elkaar nooit raken:
 | Release 1 (R1, "Redesign") | `*-first-release` | `FirstRelease*` / `useFirstRelease*` | `/first-release/...` | `fr-*.css` |
 | Release 2 (R2, "Variable Travel Group") | `*-second-release` | `SecondRelease*` / `useSecondRelease*` | `/second-release/...` | `sr-*.css` |
 | Multi Hotel Trip (MHT) | `*-multi-hotel-trip` | `MultiHotelTrip*` / `useMultiHotelTrip*` | `/multi-hotel-trip/...` | `mht-*.css` |
-| Multi Hotel Trip - Jesse | `*-mht-jesse` | `MhtJesse*` / `useMhtJesse*` | `/mht-jesse/...` | `mhtj-*.css` |
+| MVP 12-11-2026 (MVP) | `*-mvp-trip` | `MvpTrip*` / `useMvpTrip*` | `/mvp-trip/...` | `mvp-*.css` |
 | Huisstijl / Northstar | bevroren oude prototypes | `Huisstijl*` / `Northstar*` | | |
 
 Startscherm: `app/pages/index.vue`. Gedeeld: `app/data`, `app/types`,
 `app/i18n`, `app/assets/css/{variables,base,typography,fonts}.css`.
+
+R1 heeft sinds 2026-09-29 ook de checkout met room table (`app/pages/first-release/checkout/*`,
+mobiele site `app/pages/first-release/m/checkout/*`, `components-first-release/checkout/*`,
+`app/data/fr-checkout/`, `fr-checkout.css` gescoped onder `.fr-checkout`, middleware
+`fr-mobile.global.ts`). Het is een poort van de MHT-checkout zónder vakantielogica; de
+MHT-checkout wijkt daardoor sterk af, dus R1-checkoutwijzigingen leveren bij de automatische
+sync (zie hieronder) vaak conflicten op — die in de MHT-bestanden oplossen.
+
+## Variant-label en prototype-navigatie (sinds 2026-10-27)
+
+Elk prototype draagt onder het logo een subtiel variant-label (`.site-header__proto`, in de checkout
+`.nav__proto` / `.mnav__proto`: 9px, uppercase, wit 50 %, dun randje — nooit oranje): `R1`,
+`R1 + fake door` (fake door-vlag aan), `R2 VR` (variabel reisgezelschap; onder de pay-off, want die
+staat in R2 direct onder het logo), `MHR` en `MHR MVP` (ook bovenin de MVP-mails). Prototype-navigatie
+(`<Prefix>ProtoNav`, in de sitekop en de desktop-checkoutbalk): helemaal linksboven "‹ startscherm",
+op de post-bookingschermen van MHT/MVP (bevestiging, tips & routes, account, mailpreview) met
+"‹ flow" erboven; op mobiel verborgen — daar staat de startscherm-link alleen in de footer
+(`SiteFooter` en `CheckoutFooter`). In de desktop-sitefooter staat de startschermknop 284px naar
+links zodat de helpwidget ("Hoe kan ik je helpen?") hem niet overlapt.
+
+Prijsweergave-schakelaar van MHT (sinds 2026-11-08): "PRIJS: TOTAAL | PP" (`MultiHotelTripDemoSwitches`
+met prop `price`, state `useMultiHotelTripPriceVariant`, localStorage, standaard p.p.) linksboven onder het
+logo via de slot `proto` op elke pagina met vakantieprijzen: homepage, zoekpagina en Vakanties-landing,
+kaart (in de filterkolom onder het logo), vakantie-PDP en de desktop-checkout t/m de gegevensstap (de
+zwevende room-table-schakelaar staat daar onder de prijsschakelaar). Alleen vakanties rekenen om (helft
+van de 2-persoonsprijs, "per persoon … (min. 2 pers.)"); de kassabon na de kamerkeuze, de
+post-bookingschermen en de mails tonen altijd de totaalprijs, dus daar staat de schakelaar niet. Op mobiel
+verborgen, zoals alle prototype-schakelaars. Niet in de MVP (geen prototype-schakelaars).
+
+## Fake door-test "variabel reisgezelschap" (variant bínnen R1, sinds 2026-10-26)
+
+Eigen, deelbare URL: `/first-release/fake-door` — de R1-homepage (alias van `/first-release/home`,
+hook `pages:extend` in `nuxt.config.ts`) met de vlag aan (cookie `vl_fr_fakedoor`,
+`useFirstReleaseFakeDoor`). De middleware `app/middleware/fr-fakedoor.global.ts` zet de vlag aan
+wie die URL opent en stuurt, zolang de vlag aanstaat, `/first-release/home` terug naar die URL, zodat
+de adresbalk op de homepage altijd de deelbare link toont; diepere pagina's werken op de cookie. De
+startknop "Fake door-test" in het vak Variable Travel Group op het startscherm opent die URL. Alias en
+middleware syncen niet mee naar MHT. Met de vlag
+aan telt de personenselector in de zoekbalk (desktop-popup in `SiteHeader.vue`, mobiel in
+`MobileSearchModal.vue`) volwassenen en kinderen (met leeftijd) in plaats van personen/kamers;
+bij een oneven aantal volwassenen of bij kinderen toont `/first-release/search` alleen
+`FirstReleaseFakeDoorNotice` (kop echoot de keuze, één zin reden, bij oneven zonder kinderen de
+link "Zoek dan voor 4 volwassenen" die de groep even maakt, e-mailveld; geen resultaten) en stuurt
+`/kaart` terug naar `/search`. Een even aantal zoekt gewoon (volwassenen / 2 kamers). Teksten onder `fakeDoor.*`
+in `app/i18n`. Zolang de vlag aanstaat luidt het variant-label onder het logo op elke R1-pagina
+"R1 + fake door" (in `SiteHeader`, `CheckoutTopNav` en `CheckoutMobileHeader`, zie "Variant-label en
+prototype-navigatie"). Elke andere startknop zet de vlag weer uit. De code synct mee naar MHT, maar
+staat daar nooit aan.
+
+## MVP 12-11-2026 = losstaande kopie van MHT (niet gesynchroniseerd)
+
+Gemaakt met `scripts/copy-mht-to-mvp.sh` (eenmalig) en daarna teruggeschaald naar de
+MVP-definitie in `vakanties voorbeeld content/MVP-scope multi-hotel vakanties.md`: geen
+hoofdlink/speciale Vakanties-pagina (thema "Auto- en fietsvakanties" op de gewone
+zoekpagina), nachten 1–4, geen reviewscores/gastbeoordelingen, routekaartjes als PNG
+(`public/images/vakanties/maps/<tripId>-card.png` en `-pdp.png`), samengevat reisschema
+als vrije tekst (`summaryText`) + sidepanel als één tekstblok, includes classic, geen
+POI's op de grote kaart, room table met één standaardkamer, geen
+prototype-schakelaars. Data in `app/data/mvp-*`. MVP-wijzigingen alleen in de
+`*-mvp-trip`-bestanden; MHT blijft ongewijzigd.
+
+Post-bookingflow van de MVP (definitie 2026-11-11): alles behalve de tips- en routespagina en de
+accountdetailpagina. Bevestigingspagina (`app/pages/mvp-trip/checkout/bevestiging.vue`) en
+boekingsbevestigingsmail (`email-designs/emails/mvp-vakantie-bevestiging.tsx`) zijn eenmalige kopieën
+van de MHT-versies die los van MHT worden uitgekleed (bevestigingspagina: alleen het cirkeltje als
+preloader, geen route/confetti op de foto, geen tipsblok, in de tijdlijn geen stap "Een mail vol tips"; mail: geen
+tipsblok). De pre-travelmail en de
+incheckmails zijn dezelfde componenten als de volledige versie met de prop `mvp` (label "MHR MVP"
+bovenin via `MvpLabel`, zonder het blok "Praktische informatie en tips", boekingslinks naar het
+MVP-boekingenoverzicht; registry-slugs `mvp-vakantie-pre-travel(-fiets)(-nonflex)` en
+`mvp-vakantie-incheck-hotel-N(-fiets)`, preview `/mvp-trip/emails/<slug>`). De accountomgeving
+(`app/pages/mvp-trip/account/*`) heeft alleen het boekingenoverzicht; de boekingskaart linkt naar de
+MVP-bevestigingspagina (zonder `load=1`, dus zonder preloader; die heeft geen confetti), want daar staat
+de hele boeking met de veelgestelde vragen. De MVP-pagina's dragen onder het logo het variant-label
+"MHR MVP" en de MVP-mails bovenin hetzelfde label. Het MVP-schema staat op dezelfde flowpagina als de
+volledige versie (`/multi-hotel-trip/flow`, boven de lijn, met dezelfde kaartjes minus Tips & routes); de
+flow-link linksboven op de MVP-post-bookingschermen (`MvpTripProtoNav`) verwijst daar ook naartoe. Er is
+geen MVP-tipspagina.
 
 ## Multi Hotel Trip (MHT) = kopie van R1 — houd ze in sync
 
@@ -40,11 +118,128 @@ automatisch:
   alleen in de `*-multi-hotel-trip`-bestanden, nooit door R1 aan te passen.
 - R2 wordt niet automatisch gesynchroniseerd; "R1&R2"-wijzigingen worden
   handmatig in beide doorgevoerd.
-- "Multi Hotel Trip - Jesse" is een losstaande kopie van MHT (persoonlijke
-  speeltuin) en wordt evenmin automatisch gesynchroniseerd. Let op: bij het
-  kopiëren verdween de segment-deduplicatie die Nuxt op de MHT-prefix toepaste
-  (`MultiHotelTrip` + `TripRouteMap` = `MultiHotelTripRouteMap`); in deze
-  namespace heten die componenten voluit `MhtJesseTripRouteMap` etc.
+
+## Post-bookingflow (`/multi-hotel-trip/flow`)
+
+Schema van de klantreis na het boeken (MVP boven de lijn, volledige versie eronder). De stand van
+de prototype-schakelaars staat in de URL (auto en flex = zonder query): reis (`?demo=fiets`) en
+annuleringskeuze (`?rate=nonflex`). Het schema zelf heeft geen schakelaars (bewust weggehaald);
+je kiest op de schermen en komt via "‹ flow" met die stand terug. De stand bepaalt waar álle
+kaartjes naartoe linken: pagina's met `?demo=` en `?rate=`, mails met de `-fiets`-slug en `?rate=nonflex` (de MVP-kaartjes naar de pagina's onder `/mvp-trip` en de
+mails met het voorvoegsel `mvp-`). De pagina's lezen beide uit de URL (`useDemoBookingFromQuery`, `demoHref`,
+`demoQuery`, `useDemoSwitches` in `useMultiHotelTripDemoBooking` / `useMvpTripDemoBooking`) en
+tonen dezelfde schakelaars als één rij (`<Prefix>DemoSwitches`, desktop) via de slot `proto` van
+`SiteHeader`/`CheckoutTopNav` (doorgegeven door `AccountShell`): op de webpagina's onder het logo
+en het label, in de accountomgeving rechts naast het logo in de zwarte balk (`SiteHeader`-prop
+`proto-placement="right"`, het logo-vak groeit mee), op de mailpreview in de balk naast de titel — op álle schermen en
+mailpreviews van de flow: bevestigingspagina, tips & routes (daar ook de Vandaag-schakelaar als
+extra knop), account (overzicht en detail), MVP-account en de mailpreviews (daar: reis via de slug,
+Fiets gedempt als er geen fietsversie is). De "‹ flow"-link in `ProtoNav` (MHT/MVP) en op de
+mailpreview geeft beide standen mee terug. Inhoud volgt de stand: bevestigingspagina en
+accountdetail tonen bij non-flex "Niet terugbetaalbaar — Bij zowel wijzigen als annuleren ontvang je geen bedrag retour" (de zin uit het annuleerblok onderaan de mail)
+(flex: annuleren t/m 31 dagen voor aankomst, 23:59 uur — sinds 2026-11-12 overal 31 dagen, ook in de room table en
+de PDP-FAQ, en de uiterste datum altijd voluit mét tijd, bijv. "zaterdag 17 april 23:59 uur"),
+de prijs zonder toeslag en geen annuleerlink (zonder `?rate=` volgt de pagina de keuze uit de room
+table, via `rate`/`isFlex` in `useMultiHotelTripAccountBooking`); het accountdetail heeft bij flex
+bovendien de subtiele schakelaar "Op tijd | Te laat" (`?late=1`, vóór of ná de annuleringsdeadline)
+in het blok Boeking beheren, met een eigen tekst voor te laat; de mails met annuleringstekst
+(boekingsbevestiging, MVP-bevestiging, pre-travel) hebben een `rate`-prop en in de registry een
+`<slug>-nonflex`-variant (`variantOf`), die de preview bij Non-flex laadt; de incheckmails
+verschillen niet.
+
+Boekingsnummers (sinds 2026-11-12): het "ViaLuxury Ordernummer" (`bookingRefFor`, beige vlakje `BookingRef`) en per
+hotel een eigen "Hotelboekingsnummer" van 10 cijfers (`HOTEL_BOOKING_REFS` in `app/utils-*/bookingRef.ts` en
+`email-designs/lib/hotelBookingRefs.ts`, dezelfde nummers): op de bevestigingspagina als klein vlakje onder de
+inclusies (`BookingRef small label="Hotelboekingsnummer"`), in de bevestigingsmail als beige balkje over de
+breedte van het hotelblok, in de pre-travelmail onder "Niet vergeten" (alle drie onder elkaar) en in de
+incheckmails bij "Morgen in het kort" (het nummer van dat hotel). Tekstlinks en knoppen in de mails zonder
+chevron ("›"), dat is geen huisstijl.
+
+Annuleringsformulier (sinds 2026-11-12): `/multi-hotel-trip/annuleren?bookingId=<ordernummer>` (MVP-kopie
+`/mvp-trip/annuleren`) is een mockup van het echte formulier op vialuxury.com/nl-NL/cancel (zelfde teksten,
+Boekings-ID uit de URL, e-mailadres van de demo-gast voorgevuld, "Annuleer boeking" toont direct de bevestiging).
+Alle links "Boeking annuleren" / "Mijn boeking annuleren" (bevestigingspagina-FAQ, accountdetail, bevestigings-,
+pre-travel- en incheckmails; de MVP-mails naar de MVP-kopie) wijzen hiernaartoe.
+
+## Twee reizen: auto én fiets (regel sinds 2026-11-06)
+
+Elke pagina en elke mail van de post-bookingflow bestaat in een auto- (Opaalkust) én een
+fietsvariant (Twente & Salland), plus flex/non-flex waar annuleren ter sprake komt. Nieuwe of
+gewijzigde onderdelen altijd in beide reizen maken (mails: `<slug>-fiets`, voorbeelddata zoals
+`fietsPreviewProps` in `vakantie-bevestiging.tsx` en `vakantie-pre-travel.tsx`).
+
+## E-mails van de vakanties (`email-designs/`)
+
+Alleen de e-mails van de multi-hotel vakanties (react-email) staan in `email-designs/`; de
+overige ViaLuxury-mails blijven in het losse, git-genegeerde project `vialuxury-emails/`
+(eigen repo + eigen Vercel-URL). `npm run export` in `email-designs/` rendert elke e-mail (licht
++ donker) naar `public/emails/<slug>[.dark].html` en de lijst naar `app/data/mht-emails.json`;
+de preview is `app/pages/multi-hotel-trip/emails/[slug].vue`. Afbeeldingen voor de mails in
+`public/images/mail/`. Na elke wijziging aan een e-mail: exporteren én het resultaat committen.
+Links naar de mails staan in het vakje "Multi Hotel Trip" op het startscherm (mails die nog
+volgen staan er grijs bij). Links in e-mails naar het prototype gebruiken
+`https://vialuxury.vercel.app/...`.
+
+Sinds 2026-11-06 gebruiken de vakantiemails dezelfde `CrmHeader`/`CrmFooter` als de CRM-mails
+(zwarte balken over de hele breedte, Trustpilot 16.000+, afzenderreden "omdat je bij ons boekte";
+beide met `mode` en mobiele klassen `stack`/`m-center`), en heeft elke mail in de registry een
+`subject` en `preheader` (de preheader staat ook als `<Preview>` in de mail; de incheckmails
+halen beide uit `incheckSubject`/`incheckPreheader` in `vakantie-incheck-hotel.tsx`). De preview
+toont die, net als de CRM-preview, in één frame zoals in de inbox (afzender, onderwerp, preheader
+boven de mail) in plaats van de beschrijving. De vakantiemails geven `CrmFooter` de prop
+`transactional` mee (sinds 2026-11-11): linksonder geen afzenderzin "Je ontvangt deze e-mail op … omdat je bij ons
+boekte" (dubbelop) en rechts geen nieuwsbrief-opt-out maar "Je ontvangt deze e-mail
+omdat je een account of boeking hebt bij ViaLuxury."; de CRM-mails houden de opt-out.
+
+## CRM (concept, sinds 2026-11-02)
+
+Artist impression van geautomatiseerde e-mails, alleen desktop + light mode. Mails (in de volgorde
+van het paneel links in de preview): `crm-jaar-geleden`, `crm-winkelmandje`
+(2 uur na verlaten; variant `crm-winkelmandje-naam-onbekend` via de schakelaar "Naam bekend | Naam onbekend" in de previewkop,
+registry `variantOf`, labels in `variantLabels` in `app/pages/crm/[slug].vue`), `crm-winkelmandje-2-dagen`, `crm-thema-stedentrips` (A6), `crm-zoekopdracht`,
+`crm-verlanglijst`, `crm-review`, `crm-terugkomactie` (€20), `crm-terugkomactie-herinnering` (zelfde
+component met `daysLeft`) en `crm-nagenieten` (staat bewust als laatste). Bronnen in
+`email-designs/emails/crm-*.tsx`, bouwstenen in `email-designs/components/crm.tsx` (`DealRow`,
+`FeaturedDeal`, `DealList`, `CodeBlock`, `ThemePicker`, `IconLine`) plus `CrmHeader`/`CrmFooter`,
+voorbeelddeals in `email-designs/lib/crmDeals.ts`, registry-sectie `"crm"`; de export schrijft alleen
+light HTML en de lijst `app/data/crm-emails.json`. Preview `/crm/<slug>` (één frame zoals in de inbox:
+afzender, onderwerp en preheader boven de mail; links tegen de rand een wit paneel met alle mails: naam,
+daaronder het verzendmoment, actieve mail op beige, pijltjes ↑ ↓ bladeren); bevestigingspagina's
+`/crm/volgende-vakantie?keuze=…` (nagenieten) en `/crm/thema?keuze=…` (themakiezer). Startscherm: vak "CRM"
+met één knop "Voorbeeldmails" (naar de eerste mail).
+
+Regels voor elke CRM-mail:
+- Drie lettergroottes: titel 32, subtitel en hotelnaam 20, alle overige tekst 16 px (footer uitgezonderd).
+- Alles links uitgelijnd, nooit gecentreerd (alleen de inhoud van de coupon staat gecentreerd).
+- Klaviyo: nooit twee lettertypen (serif-kop en sans-tekst) naast elkaar op één regel; onder elkaar mag
+  wel. Hotelnaam, sterren, plaats, dealtitel en prijs staan daarom elk op een eigen regel.
+- Dealblokken: wit met grijze rand (#E5E5E5, de randkleur van de website), foto tot aan de rand; suggesties als één groot blok + rijen
+  (`DealList`). Geen labels of stickers ("Populair"). De knop "Bekijk" in een dealkaart
+  is altijd oranje, ook als de mail bovenaan al een oranje knop heeft.
+- Geen grijze vlakken; beige (#F4F1EC) alleen als echte highlight: het vlak achter de blokken met keuzeknoppen (`beigeBox`). Keuzes (thema, nagenietvraag) zijn witte snelfilterknoppen in een raster van twee (`PillGrid`) op dat beige vlak.
+- Elke deal staat op de uitgebreide kaart, de zoekkaart van de website als e-mail (`DealRow`/`FeaturedDeal` tonen
+  die zodra de deal een `price` heeft): hotel met sterren en plaats (sans, ondergeschikt), lijntje, dealtitel 20 serif,
+  "Arrangement" met maximaal vier inclusies (groen vinkje), "2 personen, 2 nachten" en onderaan één rij: links het
+  zwarte kortingsblokje ("-37%"), daarnaast "Vanaf €409" met de doorgestreepte kamerprijs, rechts de knop "Bekijk".
+  Kortingsblokje en knop zijn even hoog (42 px) met dezelfde afronding (6 px). Klaviyo: geen tekst op een foto, en elke
+  regel één lettertype (hotelnaam en de hele prijsrij in de sans). De kale kaart (zonder `price`) blijft voor een
+  verblijf met datums ("Jouw verblijf", `asStay`). De
+  winkelmandjemail van 2 uur zet onder de titel de regels in dezelfde bodytekst (hotelnaam vet met sterren, plaats, "20 november · 2 nachten
+  · 2 personen", "Bespaar €441 (47%)"; geen icoon, geen kleur) en de knop bóven de kaart; "Door jou bekeken" in de mail
+  van 2 dagen is dezelfde uitgebreide rij als de suggesties (met inclusies), alleen de onderkant verschilt: die twee
+  regels in plaats van de prijsrij (`lines`) en de link "Ga verder met boeken"; de kaart zelf is de uitgebreide zonder hotel, plaats en prijsrij (`priceRow={false}`).
+- Prijzen uit `deals.json` zijn het totaal voor 2 personen: "Vanaf €319 voor 2 personen", nooit p.p.
+- Knoppen linken naar de R1-dealpagina (zachte landing; die neemt `?checkin=` en `?adults=` over).
+- Jesse de Groot heeft eigen CRM-mails op `origin/redesign-jesse`; mails worden daarvan per stuk
+  overgenomen (niet mergen) en omgezet naar deze regels.
+
+## Kaarten (Leaflet)
+
+De kaartweergave van de zoekresultaten (`*/map/HotelBrowseMap.vue`) haalt
+basiskaart-tegels via `app/utils/mapTiles.ts`: CARTO Voyager mét API-key
+(`NUXT_PUBLIC_CARTO_API_KEY` in `.env`, zie `.env.example`; gratis via
+carto.com/basemaps/api-key), zonder key OpenStreetMap-tegels. CARTO geeft
+sinds sept. 2026 zonder key alleen "API KEY REQUIRED"-tegels terug.
 
 ## Werkwijze
 

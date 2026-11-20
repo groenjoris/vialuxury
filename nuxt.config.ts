@@ -41,11 +41,11 @@ export default defineNuxtConfig({
       prefix: 'MultiHotelTrip',
       pathPrefix: false,
     },
-    // Multi Hotel Trip - Jesse — losstaande kopie van MHT als persoonlijke
-    // speeltuin. Eigen namespace, wordt niet automatisch gesynchroniseerd.
+    // MVP 12-11-2026 — losstaande kopie van MHT (scripts/copy-mht-to-mvp.sh),
+    // teruggeschaald naar de MVP-definitie; wordt niet gesynchroniseerd.
     {
-      path: '~/components-mht-jesse',
-      prefix: 'MhtJesse',
+      path: '~/components-mvp-trip',
+      prefix: 'MvpTrip',
       pathPrefix: false,
     },
     // Huisstijl variants — frozen snapshot of the 5-homepage prototype.
@@ -75,13 +75,13 @@ export default defineNuxtConfig({
       'composables-first-release/**',
       'composables-second-release/**',
       'composables-multi-hotel-trip/**',
-      'composables-mht-jesse/**',
+      'composables-mvp-trip/**',
       'composables-huisstijl/**',
       'composables-northstar/**',
       'stores-first-release/**',
       'stores-second-release/**',
       'stores-multi-hotel-trip/**',
-      'stores-mht-jesse/**',
+      'stores-mvp-trip/**',
       'stores-huisstijl/**',
       'stores-northstar/**',
     ],
@@ -92,6 +92,17 @@ export default defineNuxtConfig({
     '@vueuse/nuxt',
   ],
 
+  hooks: {
+    // Fake door-test "variabel reisgezelschap" (R1) heeft een eigen, deelbare URL:
+    // /first-release/fake-door toont dezelfde homepage als /first-release/home, maar met de vlag
+    // aan (zet app/middleware/fr-fakedoor.global.ts). Als alias hier en niet via definePageMeta in
+    // home.vue, zodat de URL niet meesynct naar MHT.
+    'pages:extend'(pages) {
+      const home = pages.find(p => p.path === '/first-release/home')
+      if (home) home.alias = ['/first-release/fake-door']
+    },
+  },
+
   css: [
     '~/assets/css/fonts.css',
     '~/assets/css/variables.css',
@@ -101,7 +112,7 @@ export default defineNuxtConfig({
     'leaflet.markercluster/dist/MarkerCluster.css',
     '~/assets/css/leaflet-overrides.css',
     '~/assets/css/mht-trip-map.css',
-    '~/assets/css/mhtj-trip-map.css',
+    '~/assets/css/mvp-trip-map.css',
     '~/assets/css/variant-2.css',
     '~/assets/css/fr-variant-6.css',
     '~/assets/css/fr-home-variants.css',
@@ -109,13 +120,13 @@ export default defineNuxtConfig({
     '~/assets/css/sr-home-variants.css',
     '~/assets/css/mht-variant-6.css',
     '~/assets/css/mht-home-variants.css',
-    '~/assets/css/mhtj-variant-6.css',
-    '~/assets/css/mhtj-home-variants.css',
+    '~/assets/css/mvp-variant-6.css',
+    '~/assets/css/mvp-home-variants.css',
     // Checkout (room table) design system, scoped under .mht-checkout.
     '~/assets/css/fr-checkout.css',
     '~/assets/css/mht-checkout.css',
-    '~/assets/css/mhtj-checkout.css',
-    '~/assets/css/mhtj-originals.css',
+    '~/assets/css/mvp-checkout.css',
+    '~/assets/css/mvp-originals.css',
     '~/assets/css/home-categories.css',
   ],
 
@@ -133,7 +144,7 @@ export default defineNuxtConfig({
       // (1200 px container etc.) applies on first paint — without it,
       // the page briefly renders at the legacy 1137 px width and then
       // jumps to 1200 px once the client-side watcher mounts.
-      htmlAttrs: { lang: 'nl', 'data-fr-variant': '6', 'data-sr-variant': '6', 'data-mht-variant': '6', 'data-mhtj-variant': '6' },
+      htmlAttrs: { lang: 'nl', 'data-fr-variant': '6', 'data-sr-variant': '6', 'data-mht-variant': '6', 'data-mvp-variant': '6' },
       title: 'Via Luxury - Luxe Hotel Arrangementen',
       link: [
         { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },

@@ -1,0 +1,80 @@
+[
+  {
+    "slug": "crm-review",
+    "title": "Reviewmail (1 dag na thuiskomst)",
+    "description": "Eén doel: de review. Vijf klikbare Trustpilot-sterren boven de vouw, daaronder het verblijf in een omlijnd blok. Gebaseerd op de reviewmail van Jesse.",
+    "subject": "Hoe was je verblijf?",
+    "preheader": "We horen graag hoe je het vond. Het kost je een minuut."
+  },
+  {
+    "slug": "crm-terugkomactie",
+    "title": "Terugkomactie €20 (14 dagen na vertrek)",
+    "description": "Kortingscode als coupon, één knop, jouw verblijf, drie deals in de sfeer van dat hotel en de themakiezer.",
+    "subject": "Sanne, €20 cadeau voor je volgende verblijf",
+    "preheader": "Een persoonlijk bedankje, alleen voor jou. Geldig tot en met 16 december 2026."
+  },
+  {
+    "slug": "crm-terugkomactie-herinnering",
+    "title": "Terugkomactie herinnering (30 dagen na vertrek)",
+    "description": "Voor wie de code nog niet gebruikte: dezelfde coupon met het aantal dagen dat hij nog geldig is, één knop en drie deals.",
+    "subject": "Sanne, je persoonlijke €20 cadeau verloopt op 16 december",
+    "preheader": "Je persoonlijke cadeau ligt nog klaar. Nog 14 dagen geldig."
+  },
+  {
+    "slug": "crm-zoekopdracht",
+    "title": "Zoekopdracht (1 minuut na verlaten)",
+    "description": "De zoekopdracht als samenvatting met één knop naar alle resultaten, daaronder de drie best passende arrangementen.",
+    "subject": "Jouw zoekopdracht: Den Haag",
+    "preheader": "De beste arrangementen voor 20 november."
+  },
+  {
+    "slug": "crm-verlanglijst",
+    "title": "Verlanglijst €10 (3 dagen na eerste mail)",
+    "description": "Code voor het eerste favoriet, direct boven dat arrangement; daaronder de andere favorieten en twee vergelijkbare arrangementen.",
+    "subject": "€10 cadeau op Kasteel Steenenburg van je verlanglijst",
+    "preheader": "Jouw unieke code, geldig tot en met 12 november 2026."
+  },
+  {
+    "slug": "crm-nagenieten",
+    "title": "Nagenietmail (3 dagen na vertrek)",
+    "description": "Haalt één gegeven op: wanneer de volgende vakantie is, om latere mails te timen. Grote foto van het hotel met \"We hopen dat je genoten hebt van …\", daarna één vraag met zes gelijkwaardige knoppen. Geen deals, geen code.",
+    "subject": "Wanneer ga je weer?",
+    "preheader": "Eén klik, dan sturen we je op het juiste moment inspiratie."
+  },
+  {
+    "slug": "crm-jaar-geleden",
+    "title": "Precies een jaar geleden",
+    "description": "On this day-herinnering op de aankomstdatum +1 jaar: grote foto, datum en hotel, één knop naar het arrangement met dezelfde periode en personen vooringevuld. Kortingsregel alleen bij een actieve code; drie deals met frame-titel.",
+    "subject": "Vandaag een jaar geleden",
+    "preheader": "Je verblijf in Hotel Des Indes, en een code voor €25 korting."
+  },
+  {
+    "slug": "crm-winkelmandje",
+    "title": "Winkelmandje (2 uur na verlaten)",
+    "description": "Eén doel: de boeking afronden. Titel met voornaam, de vraag met de hotelnaam, datums, nachten en personen, de besparing en één knop terug naar de boeking; daaronder de deal op de uitgebreide kaart zonder prijsrij. Gastenoordeel met Trustpilot-sterren en drie reviews. Geen alternatieve deals.",
+    "subject": "Sanne, we hebben deze nog even voor je bewaard",
+    "preheader": "Je boeking staat klaar. Rond af wanneer het jou uitkomt."
+  },
+  {
+    "slug": "crm-winkelmandje-naam-onbekend",
+    "title": "Winkelmandje (2 uur na verlaten)",
+    "description": "Variant van de winkelmandjemail voor als de voornaam niet bekend is: titel en onderwerp zonder naam.",
+    "subject": "We hebben deze nog even voor je bewaard",
+    "preheader": "Je boeking staat klaar. Rond af wanneer het jou uitkomt.",
+    "variantOf": "crm-winkelmandje"
+  },
+  {
+    "slug": "crm-winkelmandje-2-dagen",
+    "title": "Winkelmandje (2 dagen na verlaten)",
+    "description": "Na de mail van 2 uur nu alternatieven: Door jou bekeken (de deal uit het winkelmandje met prijs en knop), daaronder drie vergelijkbare deals in de list view van de zoekkaarten.",
+    "subject": "Dit zijn 3 deals die lijken op Hotel Des Indes",
+    "preheader": "Ook in Den Haag en aan de kust, vanaf €309 voor 2 personen."
+  },
+  {
+    "slug": "crm-thema-stedentrips",
+    "title": "Themamail stedentrips (A6)",
+    "description": "Drie populaire stedentrips (één groot, twee als rij) met de reden onder de kop, daarna een ander thema kiezen met zes witte snelfilterknoppen in een raster.",
+    "subject": "Dit zijn de populairste stedentrips van dit moment",
+    "preheader": "Parijs, Den Haag en Amsterdam, vanaf €279 voor 2 personen."
+  }
+]

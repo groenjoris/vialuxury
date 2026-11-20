@@ -161,6 +161,13 @@ onMounted(() => {
 .psw__btn:hover { background: rgba(255, 255, 255, 0.12); }
 .psw__btn--on, .psw__btn--on:hover { background: #fff; color: #141414; }
 .psw__btn:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+/* Dropdown (bv. slogan): zelfde pilvorm als een actieve knop, met eigen chevron. */
+.psw__select {
+  align-self: flex-start; min-height: 32px; padding: 6px 34px 6px 14px; border: 0; border-radius: 999px;
+  background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23141414' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 12px center;
+  color: #141414; font-family: var(--font-body); font-size: 13px; font-weight: 600; cursor: pointer; appearance: none; -webkit-appearance: none;
+}
+.psw__select:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
 /* Stapper (‹ 1/8 ›): ronde pijlknoppen met de teller ertussen. */
 .psw__btn--icon { width: 32px; padding: 0; display: inline-flex; align-items: center; justify-content: center; }
 .psw__count { min-width: 34px; text-align: center; font-family: var(--font-body); font-size: 13px; font-weight: 700; color: #fff; font-variant-numeric: tabular-nums; }

@@ -36,6 +36,8 @@ interface RateRow {
   price: number
   quantity: number
   scarcity?: string
+  /** Vakantie bij schaarste: maximum aantal personen; de plusknop stopt daar. */
+  maxPersons?: number
 }
 
 interface ListRoom {
@@ -57,8 +59,8 @@ const listRooms = reactive<ListRoom[]>(
         description: '',
         facilities: [],
         rows: [
-          { id: 'trip-flex', baseId: 'trip', rateKey: 'flexible', priceWas: trip.value.priceWas + pricing.flexibilityPerRoom * trip.value.hotels.length, price: trip.value.price + pricing.flexibilityPerRoom * trip.value.hotels.length, quantity: 0, scarcity: trip.value.scarcity },
-          { id: 'trip-nonref', baseId: 'trip', rateKey: 'nonrefundable', priceWas: trip.value.priceWas, price: trip.value.price, quantity: 0, scarcity: trip.value.scarcity },
+          { id: 'trip-flex', baseId: 'trip', rateKey: 'flexible', priceWas: trip.value.priceWas + pricing.flexibilityPerRoom * trip.value.hotels.length, price: trip.value.price + pricing.flexibilityPerRoom * trip.value.hotels.length, quantity: 0, scarcity: trip.value.scarcity, maxPersons: trip.value.maxPersons },
+          { id: 'trip-nonref', baseId: 'trip', rateKey: 'nonrefundable', priceWas: trip.value.priceWas, price: trip.value.price, quantity: 0, scarcity: trip.value.scarcity, maxPersons: trip.value.maxPersons },
         ],
       }]
     : roomsData.map((r) => ({
@@ -113,13 +115,16 @@ function isInactive(row: RateRow) {
 
 const policyPopupOpen = ref(false)
 
+/** Hoogste stand van de stepper: 5 kamers, of bij schaarste het maximum aantal personen (2 per kamer). */
+const maxQty = (row: RateRow) => (row.maxPersons ? Math.min(5, Math.floor(row.maxPersons / 2)) : 5)
+
 function setQty(row: RateRow, next: number) {
   if (isInactive(row) && next > row.quantity) {
     policyPopupOpen.value = true
     return
   }
   const increased = next > row.quantity
-  row.quantity = Math.max(0, Math.min(5, next))
+  row.quantity = Math.max(0, Math.min(maxQty(row), next))
   // Na een selectie iets meescrollen zodat de "Opslaan en doorgaan"-knop
   // in de uitgeklapte kaart altijd zichtbaar is. Kleine vertraging: de
   // kassabon rendert eerst en de focus-scroll van de knop is dan klaar.
@@ -350,7 +355,7 @@ useHead({ title: trip.value ? 'Kies je opties â€” ViaLuxury' : 'Kies je kamer â€
                 <!-- Zelfde vlakke stijl als de nonref-regel (geen vinkjes),
                      met een vaste afbreking na de datum -->
                 <p v-if="row.rateKey === 'flexible'" class="mrate__line mrate__line--block">
-                  Gratis annuleren tot 30 dagen voor aankomst:<br />je krijgt de volledige {{ trip ? 'vakantieprijs' : 'arrangementsprijs' }} terug
+                  Gratis annuleren tot 31 dagen voor aankomst:<br />je krijgt de volledige {{ trip ? 'vakantieprijs' : 'arrangementsprijs' }} terug
                 </p>
                 <p v-else class="mrate__line">Geen geld terug bij annuleren of wijzigen</p>
                 <p v-if="row.scarcity" class="mrate__line mrate__line--red">Â· {{ row.scarcity }}</p>
@@ -393,7 +398,7 @@ useHead({ title: trip.value ? 'Kies je opties â€” ViaLuxury' : 'Kies je kamer â€
                     <button
                       class="mrate__btn"
                       type="button"
-                      :disabled="row.quantity >= 5"
+                      :disabled="row.quantity >= maxQty(row)"
                       :aria-label="trip ? 'Meer personen' : 'Meer kamers'"
                       @click="setQty(row, row.quantity + 1)"
                     >

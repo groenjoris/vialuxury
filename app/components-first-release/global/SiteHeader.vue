@@ -13,6 +13,8 @@
       ['3', '4', '5'].includes(effectiveNavVariant) ? 'site-header--nav-v2' : null,
     ]"
   >
+    <!-- Prototype-navigatie: "‹ startscherm" helemaal linksboven (alleen desktop). -->
+    <FirstReleaseProtoNav />
     <!-- Main nav bar — laid out across TWO rows via CSS grid:
            row 1: logo (left)              | _                | actions (right)
            row 2: pay-off (under logo)     | verticals (mid)  | phone (right)
@@ -37,6 +39,8 @@
             alt="ViaLuxury"
             class="site-header__logo-img site-header__logo-img--horizontal"
           />
+          <!-- Variant-label (subtiel) onder het logo; met de fake door-vlag aan "R1 + fake door". -->
+          <span class="site-header__proto" aria-hidden="true">{{ fakeDoorOn ? 'R1 + fake door' : 'R1' }}</span>
         </NuxtLink>
 
         <!-- Opt-in pay-off under the logo (grid row 2, col 1 on desktop;
@@ -811,7 +815,7 @@
              + N kamers), closes the popup, fills the field. The full
              adults/children/rooms/dog stepper UI below is kept (gated on
              `false`) so it can be revived when the MVP is done. -->
-        <div v-if="activePopup === 'who'" class="popup popup--who popup--who-mvp">
+        <div v-if="activePopup === 'who' && !fakeDoorOn" class="popup popup--who popup--who-mvp">
           <ul class="who-mvp__list" role="listbox" aria-label="Aantal personen">
             <li
               v-for="opt in whoMvpOptions"
@@ -834,6 +838,46 @@
               </svg>
             </li>
           </ul>
+        </div>
+
+        <!-- FAKE DOOR "variabel reisgezelschap" (useFirstReleaseFakeDoor): volwassenen en
+             kinderen (met leeftijd) tellen, geen kamers. Oneven volwassenen of kinderen →
+             /search toont alleen de melding met e-mailveld. -->
+        <div v-if="activePopup === 'who' && fakeDoorOn" class="popup popup--who">
+          <div class="who-row">
+            <div class="who-row__info">
+              <span class="who-row__label">{{ t('travelGroup.adults') }}</span>
+              <span class="who-row__sub">{{ t('fakeDoor.adultsSub') }}</span>
+            </div>
+            <div class="stepper">
+              <button class="stepper__btn" :disabled="searchGroup.adults <= 1" @click="fakeDoorStepAdults(-1)">&#8722;</button>
+              <span class="stepper__val">{{ searchGroup.adults }}</span>
+              <button class="stepper__btn" :disabled="searchGroup.adults >= FAKE_DOOR_MAX_ADULTS" @click="fakeDoorStepAdults(1)">+</button>
+            </div>
+          </div>
+          <div class="who-row">
+            <div class="who-row__info">
+              <span class="who-row__label">{{ t('travelGroup.children') }}</span>
+              <span class="who-row__sub">{{ t('header.childrenAge') }}</span>
+            </div>
+            <div class="stepper">
+              <button class="stepper__btn" :disabled="searchGroup.children.length <= 0" @click="fakeDoorStepChildren(-1)">&#8722;</button>
+              <span class="stepper__val">{{ searchGroup.children.length }}</span>
+              <button class="stepper__btn" :disabled="searchGroup.children.length >= FAKE_DOOR_MAX_CHILDREN" @click="fakeDoorStepChildren(1)">+</button>
+            </div>
+          </div>
+          <div v-if="searchGroup.children.length > 0" class="who-children-ages">
+            <div v-for="(child, idx) in searchGroup.children" :key="idx" class="who-child-age">
+              <label>{{ t('travelGroup.childAge') }} {{ idx + 1 }}</label>
+              <select v-model.number="child.age">
+                <option v-for="a in 18" :key="a - 1" :value="a - 1">{{ a - 1 }} {{ t('travelGroup.years') }}</option>
+              </select>
+            </div>
+          </div>
+          <div class="popup__footer">
+            <a href="#" class="popup__clear-link" @click.prevent="clearWho">{{ t('header.clear') }}</a>
+            <button class="popup__done-btn" @click="closePopup()">{{ t('header.done') }}</button>
+          </div>
         </div>
 
         <!-- LEGACY WHO POPUP — adults/children/rooms/dog steppers. Hidden
@@ -962,6 +1006,7 @@
       :flexibility="flexibility"
       :selected-durations="selectedDurations"
       :search-group="searchGroup"
+      :fake-door="fakeDoorOn"
       :destination-label="destinationLabel"
       :destination-is-placeholder="destinationIsPlaceholder"
       :when-label="whenLabel"
@@ -996,6 +1041,7 @@
 </template>
 
 <script setup lang="ts">
+import { useFirstReleaseFakeDoor, FAKE_DOOR_MAX_ADULTS, FAKE_DOOR_MAX_CHILDREN } from '~/composables-first-release/useFirstReleaseFakeDoor'
 import { useFirstReleaseLocaleStore } from '~/stores-first-release/locale'
 import { searchHotels } from '~/data/mock/search-hotels'
 import { mappedHotels } from '~/data/deals-mapper'
@@ -2127,13 +2173,34 @@ function removeSearchChild() {
  *  the deal page's own travel-group control says. */
 const whoExplicit = ref(false)
 
+/* ── Fake door "variabel reisgezelschap" (variant binnen R1, zie useFirstReleaseFakeDoor) ── */
+const { enabled: fakeDoorOn, adults: fakeDoorAdults, children: fakeDoorChildren, setGroup: setFakeDoorGroup } = useFirstReleaseFakeDoor()
+// De melding op de zoekpagina kan de groep zelf aanpassen ("Zoek dan voor 4 volwassenen"):
+// spiegel dat in de balk, zodat het veld en de snapshot niet achterlopen.
+watch(() => [fakeDoorOn.value, fakeDoorAdults.value, fakeDoorChildren.value.length] as const, ([on, a, k]) => {
+  if (!on) return
+  if (searchGroup.value.adults === a && searchGroup.value.children.length === k) return
+  whoExplicit.value = true
+  searchGroup.value = { adults: a, children: fakeDoorChildren.value.map(c => ({ age: c.age })), rooms: Math.max(1, Math.ceil(a / 2)), dog: false }
+  saveBarSnapshot()
+})
+function fakeDoorStepAdults(delta: number) {
+  whoExplicit.value = true
+  searchGroup.value.adults = Math.min(FAKE_DOOR_MAX_ADULTS, Math.max(1, searchGroup.value.adults + delta))
+}
+function fakeDoorStepChildren(delta: number) {
+  whoExplicit.value = true
+  if (delta > 0 && searchGroup.value.children.length < FAKE_DOOR_MAX_CHILDREN) searchGroup.value.children.push({ age: 4 })
+  if (delta < 0) searchGroup.value.children.pop()
+}
+
 /** The bar's own memory of what the user last committed IN THE BAR —
  *  independent from the shared search state, which the deal page's
  *  calendar / travel-group controls also write to. Covers the fields the
  *  spec wants "prefilled only when selected earlier": arrival date,
  *  flexible and travel group. */
 const BAR_SNAPSHOT_KEY = 'vl_fr_searchbar'
-type BarSnapshot = { date: string | null; flexible: boolean; whoExplicit: boolean; adults: number; rooms: number }
+type BarSnapshot = { date: string | null; flexible: boolean; whoExplicit: boolean; adults: number; rooms: number; children?: { age: number }[] }
 function saveBarSnapshot() {
   if (!import.meta.client) return
   const snap: BarSnapshot = {
@@ -2142,6 +2209,7 @@ function saveBarSnapshot() {
     whoExplicit: whoExplicit.value,
     adults: searchGroup.value.adults,
     rooms: searchGroup.value.rooms,
+    children: searchGroup.value.children.map(c => ({ age: c.age })),
   }
   try { localStorage.setItem(BAR_SNAPSHOT_KEY, JSON.stringify(snap)) } catch { /* ignore */ }
 }
@@ -2155,7 +2223,7 @@ function restoreBarSnapshot() {
     if (snap.flexible) localFlexible.value = true
     if (snap.whoExplicit && snap.adults && snap.rooms) {
       whoExplicit.value = true
-      searchGroup.value = { adults: snap.adults, children: [], rooms: snap.rooms, dog: false }
+      searchGroup.value = { adults: snap.adults, children: (snap.children ?? []).map(c => ({ age: c.age })), rooms: snap.rooms, dog: false }
     }
   } catch { /* ignore */ }
 }
@@ -2192,6 +2260,14 @@ function pickWhoMvp(opt: { adults: number; rooms: number }) {
 }
 
 const whoLabel = computed(() => {
+  // Fake door: "3 volwassenen, 1 kind" (geen kamers).
+  if (fakeDoorOn.value) {
+    const a = searchGroup.value.adults
+    const kids = searchGroup.value.children.length
+    const parts = [`${a} ${a === 1 ? t('fakeDoor.adultSingular') : t('fakeDoor.adultPlural')}`]
+    if (kids > 0) parts.push(`${kids} ${kids === 1 ? t('common.childSingular') : t('common.childPlural')}`)
+    return parts.join(', ')
+  }
   // Compact "personen / kamer(s)" format — mirrors the popup options
   // exactly so the field value reads the same as what the user picks.
   // Children + dog fall back to the old comma-joined form.
@@ -2230,8 +2306,16 @@ async function commitSearch() {
   }
 
   // Apply When + Who drafts.
-  const totalPersons = searchGroup.value.adults + searchGroup.value.children.length
-  setSearchGroup(totalPersons, searchGroup.value.rooms)
+  if (fakeDoorOn.value) {
+    // Fake door: alleen de volwassenen tellen als personen (een arrangement is altijd voor 2,
+    // dus volwassenen / 2 kamers); de kinderen gaan apart mee voor de melding op /search.
+    const a = searchGroup.value.adults
+    setSearchGroup(a, Math.max(1, Math.ceil(a / 2)))
+    setFakeDoorGroup(a, searchGroup.value.children)
+  } else {
+    const totalPersons = searchGroup.value.adults + searchGroup.value.children.length
+    setSearchGroup(totalPersons, searchGroup.value.rooms)
+  }
   setArrivalDate(selectedDate.value)
   setSelectedNights(localNights.value.filter(v => ['1', '2', '3', '4', '5+'].includes(v)))
   setFlexType(localFlexType.value)
@@ -2845,6 +2929,15 @@ function handleSelectHotelInPopup(slug: string) {
    the horizontal one) for V4 on home/search/deal/hotel. */
 .site-header__logo-img--vertical {
   display: none;
+}
+
+/* Subtiele prototype-sticker onder het logo (absoluut, dus geen invloed op de layout). */
+.site-header__logo { position: relative; }
+.site-header__proto {
+  position: absolute; left: 0; top: 100%; margin-top: 4px; pointer-events: none;
+  font-family: var(--font-body, inherit); font-size: 9px; line-height: 1; font-weight: 600;
+  letter-spacing: 0.14em; text-transform: uppercase; white-space: nowrap;
+  color: rgba(255, 255, 255, 0.5); border: 1px solid rgba(255, 255, 255, 0.22); border-radius: 3px; padding: 2px 5px;
 }
 
 /* Pay-off block (grid row 2, col 1) — vertical stack: main tagline on

@@ -146,15 +146,17 @@ useHead({ title: 'Selecteer aankomstdatum — ViaLuxury' })
       <MultiHotelTripCheckoutMobileHeader :step="1" />
 
       <main class="mpage__main">
-        <h1 class="mtitle">Selecteer aankomstdatum</h1>
-
-        <section class="mcal">
-          <p class="mcal__intro">
+        <header class="mhead">
+          <h1 class="mtitle">Selecteer aankomstdatum</h1>
+          <!-- Subtitel: toelichting op de prijzen in de kalender, links uitgelijnd met de titel -->
+          <p class="msub">
             <template v-if="ppTrip && checkoutTrip">Getoonde prijs is per persoon voor de complete {{ checkoutTrip.typeWord }} ({{ checkoutTrip.hotels.length }} hotels) voor {{ NIGHTS }} nachten (min. 2 pers.)</template>
             <template v-else-if="checkoutTrip">Getoonde prijs is voor de complete {{ checkoutTrip.typeWord }} ({{ checkoutTrip.hotels.length }} hotels) voor 2 personen voor {{ NIGHTS }} nachten.</template>
             <template v-else>Getoonde prijs is voor het complete arrangement voor 2 personen voor 2 nachten.</template>
           </p>
+        </header>
 
+        <section class="mcal">
           <!-- Zelfde kalenderlayout als op de dealpagina (CalendarMonth/DayCell) -->
           <div class="mcal__nav">
             <button class="mcal__navbtn" type="button" aria-label="Vorige maand" @click="prevMonth">
@@ -264,13 +266,18 @@ useHead({ title: 'Selecteer aankomstdatum — ViaLuxury' })
   flex-direction: column;
   gap: 20px;
 }
-.mcal__intro {
-  text-align: center;
-  font-weight: var(--w-black);
-  font-size: 17px;
-  line-height: 26px;
+/* Titel + subtitel: de toelichting op de prijzen staat als subtitel direct
+   onder de titel, links uitgelijnd, in het bodyfont (14/20, medium). */
+.mhead {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.msub {
+  font-weight: var(--w-medium);
+  font-size: var(--t-body);
+  line-height: var(--lh-body);
   color: var(--c-grey);
-  padding: 0 8px;
 }
 /* Kalender exact als op de dealpagina: de variant-6 overrides uit
    mht-variant-6.css (mobiele waarden), R1-tokens hardcoded —

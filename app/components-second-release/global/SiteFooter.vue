@@ -403,6 +403,12 @@ function onNewsletterInput(e: Event) {
   color: #fff;
 }
 
+/* Desktop: de startschermknop schuift naar links zodat de vaste helpwidget ("Hoe kan ik je helpen?",
+   rechtsonder, 269px breed + 20px marge) hem nooit overlapt. Zelfde plek in elk prototype. */
+@media (min-width: 769px) {
+  .site-footer__proto-controls { margin-right: 284px; }
+}
+
 /* ── Responsive ── */
 @media (max-width: 768px) {
   .site-footer__inner {

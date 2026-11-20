@@ -1,0 +1,144 @@
+<script setup lang="ts">
+// Preview van één e-mailontwerp: de geëxporteerde HTML (public/emails/<slug>.html, of
+// .dark.html) in een iframe, in één frame zoals de ontvanger hem ziet (afzender, onderwerp en
+// preheader erboven, zoals de CRM-preview), met licht/donker, desktop/mobiel, Kopieer HTML en Download.
+// Bij kopiëren/downloaden worden de relatieve afbeeldings-URL's absoluut gemaakt, zodat
+// de HTML ook in een e-mailclient of ESP werkt.
+import emails from '~/data/mht-emails.json'
+import { isDemoRate, navigateAfterPaint, type DemoRate } from '~/composables-multi-hotel-trip/useMultiHotelTripDemoBooking'
+
+const route = useRoute()
+const slug = computed(() => String(route.params.slug))
+const entry = computed(() => emails.find(e => e.slug === slug.value))
+if (!entry.value) throw createError({ statusCode: 404, statusMessage: 'E-mail niet gevonden' })
+
+/** Terug naar de flow met de reis van deze mail en de annuleringskeuze uit de URL, zodat de schakelaars daar kloppen. */
+const flowHref = computed(() => {
+  const q = new URLSearchParams()
+  if (slug.value.endsWith('-fiets')) q.set('demo', 'fiets')
+  if (route.query.rate === 'nonflex') q.set('rate', 'nonflex')
+  const qs = q.toString()
+  return `/multi-hotel-trip/flow${qs ? `?${qs}` : ''}`
+})
+
+/* Prototype-schakelaars linksboven (DemoSwitches): de reis zit in de slug (incheckmails hebben een
+   -fiets-versie, de andere mails alleen auto), de annuleringskeuze in ?rate=; mails met een
+   -nonflex-export (registry: variantOf) tonen die bij Non-flex, de andere mails verschillen niet. */
+const isFiets = computed(() => slug.value.endsWith('-fiets'))
+const baseSlug = computed(() => isFiets.value ? slug.value.slice(0, -'-fiets'.length) : slug.value)
+const hasFiets = computed(() => emails.some(e => e.slug === `${baseSlug.value}-fiets`))
+const rate = computed<DemoRate>(() => isDemoRate(route.query.rate) ? route.query.rate : 'flex')
+const hasNonflex = computed(() => emails.some(e => (e as { variantOf?: string }).variantOf === slug.value))
+const fileSlug = computed(() => rate.value === 'nonflex' && hasNonflex.value ? `${slug.value}-nonflex` : slug.value)
+const withRate = (path: string) => `${path}${rate.value === 'nonflex' ? '?rate=nonflex' : ''}`
+const switchLinks = computed(() => ({
+  auto: isFiets.value ? withRate(`/multi-hotel-trip/emails/${baseSlug.value}`) : null,
+  fiets: !isFiets.value && hasFiets.value ? withRate(`/multi-hotel-trip/emails/${baseSlug.value}-fiets`) : null,
+  flex: route.path,
+  nonflex: `${route.path}?rate=nonflex`,
+}))
+
+const mode = ref<'light' | 'dark'>('light')
+const device = ref<'desktop' | 'mobile'>('desktop')
+const src = computed(() => `/emails/${fileSlug.value}${mode.value === 'dark' ? '.dark' : ''}.html`)
+const copied = ref(false)
+
+async function absoluteHtml(): Promise<string> {
+  const html = await (await fetch(src.value)).text()
+  const origin = window.location.origin
+  return html.replace(/(src|href)="\/(images|emails)\//g, `$1="${origin}/$2/`)
+}
+async function copyHtml() {
+  await navigator.clipboard.writeText(await absoluteHtml())
+  copied.value = true
+  setTimeout(() => { copied.value = false }, 2000)
+}
+async function downloadHtml() {
+  const blob = new Blob([await absoluteHtml()], { type: 'text/html' })
+  const a = document.createElement('a')
+  a.href = URL.createObjectURL(blob)
+  a.download = `${fileSlug.value}${mode.value === 'dark' ? '-dark' : ''}.html`
+  a.click()
+  URL.revokeObjectURL(a.href)
+}
+
+useHead({ title: `${entry.value?.title ?? 'E-mail'} — ViaLuxury e-maildesigns` })
+</script>
+
+<template>
+  <div class="ev">
+    <header class="ev__bar">
+      <div class="ev__bar-left">
+        <!-- Prototype-navigatie: flow erboven, startscherm eronder (zoals linksboven op de andere schermen). -->
+        <div class="ev__links">
+          <NuxtLink class="ev__back" :to="flowHref">‹ Flow</NuxtLink>
+          <a class="ev__back" href="/" @click="navigateAfterPaint('/', $event)">‹ Startscherm</a>
+        </div>
+        <h1 class="ev__title">{{ entry?.title }}</h1>
+        <!-- Prototype-schakelaars (niet voor de gast), in de balk naast de titel: Auto | Fiets en Flex | Non-flex. -->
+        <MultiHotelTripDemoSwitches :variant="isFiets ? 'fiets' : 'auto'" :rate="rate" :links="switchLinks" />
+      </div>
+      <div class="ev__controls">
+        <div class="ev__group" role="group" aria-label="Kleurmodus">
+          <button type="button" class="ev__btn" :class="{ 'ev__btn--on': mode === 'light' }" @click="mode = 'light'">Licht</button>
+          <button type="button" class="ev__btn" :class="{ 'ev__btn--on': mode === 'dark' }" @click="mode = 'dark'">Donker</button>
+        </div>
+        <div class="ev__group" role="group" aria-label="Weergave">
+          <button type="button" class="ev__btn" :class="{ 'ev__btn--on': device === 'desktop' }" @click="device = 'desktop'">Desktop</button>
+          <button type="button" class="ev__btn" :class="{ 'ev__btn--on': device === 'mobile' }" @click="device = 'mobile'">Mobiel</button>
+        </div>
+        <button type="button" class="ev__btn ev__btn--primary" @click="copyHtml">{{ copied ? 'Gekopieerd ✓' : 'Kopieer HTML' }}</button>
+        <button type="button" class="ev__btn" @click="downloadHtml">Download HTML</button>
+      </div>
+    </header>
+    <div class="ev__stage">
+      <div class="ev__mail" :class="{ 'ev__mail--mobile': device === 'mobile' }">
+        <!-- Zoals in de inbox: afzender, onderwerp en preheader boven de mail. -->
+        <div class="ev__inbox">
+          <span class="ev__avatar" aria-hidden="true">V</span>
+          <div class="ev__meta">
+            <p class="ev__from"><strong>ViaLuxury</strong> <span>&lt;info@vialuxury.nl&gt;</span><span class="ev__time">10:24</span></p>
+            <p class="ev__subject">{{ entry?.subject }}</p>
+            <p class="ev__preheader">{{ entry?.preheader }}</p>
+          </div>
+        </div>
+        <iframe :key="src" class="ev__frame" :src="src" :title="entry?.title" />
+      </div>
+    </div>
+  </div>
+</template>
+
+<style scoped>
+.ev { min-height: 100vh; background: #f5f5f5; font-family: var(--font-body); color: var(--color-text-primary); }
+.ev__bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 24px; padding: 16px 24px; background: #fff; border-bottom: 1px solid var(--color-border); }
+.ev__bar-left { display: flex; align-items: center; gap: 16px; min-width: 0; }
+.ev__links { display: flex; flex-direction: column; gap: 2px; flex-shrink: 0; }
+.ev__back { color: var(--color-text-secondary); text-decoration: none; font-size: 13px; line-height: 1.3; }
+.ev__back:hover { color: var(--color-primary); }
+.ev__title { margin: 0; font-family: var(--font-heading); font-size: 20px; font-weight: 700; }
+.ev__controls { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.ev__group { display: inline-flex; border: 1.5px solid var(--color-border); border-radius: var(--radius-md); overflow: hidden; }
+.ev__group .ev__btn { border: 0; border-radius: 0; }
+.ev__group .ev__btn + .ev__btn { border-left: 1.5px solid var(--color-border); }
+.ev__btn {
+  height: 36px; padding: 0 14px; border: 1.5px solid var(--color-border); border-radius: var(--radius-md);
+  background: #fff; color: var(--color-text-primary); font-family: var(--font-body); font-size: 14px; font-weight: 600; cursor: pointer;
+}
+.ev__btn:hover { color: var(--color-primary); }
+.ev__btn--on { background: var(--color-text-primary); color: #fff; }
+.ev__btn--on:hover { color: #fff; }
+.ev__btn--primary { background: var(--color-primary); border-color: var(--color-primary); color: #fff; }
+.ev__btn--primary:hover { background: var(--color-primary-hover); border-color: var(--color-primary-hover); color: #fff; }
+.ev__stage { display: flex; justify-content: center; padding: 20px 24px 48px; }
+.ev__mail { width: 700px; max-width: 100%; background: #fff; border: 1px solid var(--color-border); border-radius: 8px; overflow: hidden; transition: width 200ms ease; }
+.ev__mail--mobile { width: 375px; }
+.ev__inbox { display: flex; gap: 12px; padding: 16px 20px; border-bottom: 1px solid var(--color-border); }
+.ev__avatar { flex-shrink: 0; width: 40px; height: 40px; border-radius: 50%; background: #141414; color: #fff; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+.ev__meta { min-width: 0; flex: 1; }
+.ev__from { display: flex; gap: 6px; margin: 0; font-size: 14px; }
+.ev__from span { color: var(--color-text-secondary); }
+.ev__from .ev__time { margin-left: auto; font-size: 13px; }
+.ev__subject { margin: 4px 0 0; font-size: 17px; font-weight: 700; }
+.ev__preheader { margin: 2px 0 0; font-size: 14px; color: var(--color-text-secondary); }
+.ev__frame { display: block; width: 100%; height: calc(100vh - 200px); min-height: 640px; border: 0; background: #fff; }
+</style>

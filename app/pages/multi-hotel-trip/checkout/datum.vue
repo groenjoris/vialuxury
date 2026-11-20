@@ -174,7 +174,10 @@ useHead({ title: 'Kies datum — ViaLuxury' })
 
 <template>
   <div class="mht-checkout page page--white">
-    <MultiHotelTripCheckoutTopNav />
+    <MultiHotelTripCheckoutTopNav>
+      <!-- Prototype: prijsweergave vakanties (PRIJS: TOTAAL | PP) onder het logo. -->
+      <template #proto><MultiHotelTripDemoSwitches price /></template>
+    </MultiHotelTripCheckoutTopNav>
 
     <div class="page__stepper">
       <MultiHotelTripCheckoutStepper :active="1" />
@@ -184,18 +187,17 @@ useHead({ title: 'Kies datum — ViaLuxury' })
       <div class="page__grid">
         <!-- Kalender -->
         <div class="col-form">
-          <h1 class="t-display">Selecteer datum</h1>
+          <!-- Eén titel (geen tweede kop in de kaart) met de toelichting op de prijzen als subtitel eronder, zoals op mobiel. -->
+          <header class="head">
+            <h1 class="t-display">Selecteer aankomstdatum</h1>
+            <p class="t-body head__sub">
+              <!-- Prijs-p.p.-variant (homepage-schakelaar) bij een vakantie: prijs per persoon, min. 2 personen. -->
+              <template v-if="ppTrip && checkoutTrip">Getoonde prijs is per persoon voor de complete {{ checkoutTrip.typeWord }} ({{ checkoutTrip.hotels.length }} hotels) voor {{ nights }} nachten <span class="cal__note">(min. 2 pers.)</span></template>
+              <template v-else>Getoonde prijs is voor {{ checkoutTrip ? `de complete ${checkoutTrip.typeWord} (${checkoutTrip.hotels.length} hotels)` : 'het complete arrangement' }} voor 2 personen voor {{ nights }} nachten.</template>
+            </p>
+          </header>
 
           <section class="card cal">
-            <header class="cal__head">
-              <h2 class="t-h1">Selecteer aankomstdatum</h2>
-              <p class="t-body t-bold">
-                <!-- Prijs-p.p.-variant (homepage-schakelaar) bij een vakantie: prijs per persoon, min. 2 personen. -->
-                <template v-if="ppTrip && checkoutTrip">Getoonde prijs is per persoon voor de complete {{ checkoutTrip.typeWord }} ({{ checkoutTrip.hotels.length }} hotels) voor {{ nights }} nachten <span class="cal__note">(min. 2 pers.)</span></template>
-                <template v-else>Getoonde prijs is voor {{ checkoutTrip ? `de complete ${checkoutTrip.typeWord} (${checkoutTrip.hotels.length} hotels)` : 'het complete arrangement' }} voor 2 personen voor {{ nights }} nachten.</template>
-              </p>
-            </header>
-
             <div class="cal__nav">
               <button class="cal__navbtn" type="button" aria-label="Vorige maand" @click="prevMonth">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M15 6l-6 6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
@@ -361,11 +363,14 @@ useHead({ title: 'Kies datum — ViaLuxury' })
   gap: 24px;
   box-shadow: none;
 }
-.cal__head {
+/* Titel + subtitel boven de kalenderkaart: de toelichting op de prijzen staat
+   als subtitel direct onder de titel, in het bodyfont (niet vet). */
+.head {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
 }
+.head__sub { color: var(--c-grey); }
 .cal__nav {
   display: flex;
   align-items: center;

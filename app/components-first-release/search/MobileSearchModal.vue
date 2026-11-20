@@ -224,7 +224,7 @@
             </button>
             <Transition name="msm-fade">
               <div v-if="active === 'who'" class="msm-field__panel msm-field__panel--list">
-                <ul class="msm-who__list" role="listbox" :aria-label="t('header.whosComing')">
+                <ul v-if="!fakeDoor" class="msm-who__list" role="listbox" :aria-label="t('header.whosComing')">
                   <li
                     v-for="opt in whoMvpOptions"
                     :key="`${opt.adults}-${opt.rooms}`"
@@ -248,6 +248,39 @@
                     </svg>
                   </li>
                 </ul>
+                <!-- Fake door: tellers voor volwassenen en kinderen (met leeftijd), geen kamers. -->
+                <div v-else class="msm-who__steppers">
+                  <div class="msm-who__row">
+                    <div class="msm-who__info">
+                      <span class="msm-who__label">{{ t('travelGroup.adults') }}</span>
+                      <span class="msm-who__sub">{{ t('fakeDoor.adultsSub') }}</span>
+                    </div>
+                    <div class="msm-stepper">
+                      <button type="button" class="msm-stepper__btn" :disabled="searchGroup.adults <= 1" @click="fakeDoorAdults(-1)">&#8722;</button>
+                      <span class="msm-stepper__val">{{ searchGroup.adults }}</span>
+                      <button type="button" class="msm-stepper__btn" :disabled="searchGroup.adults >= FAKE_DOOR_MAX_ADULTS" @click="fakeDoorAdults(1)">+</button>
+                    </div>
+                  </div>
+                  <div class="msm-who__row">
+                    <div class="msm-who__info">
+                      <span class="msm-who__label">{{ t('travelGroup.children') }}</span>
+                      <span class="msm-who__sub">{{ t('header.childrenAge') }}</span>
+                    </div>
+                    <div class="msm-stepper">
+                      <button type="button" class="msm-stepper__btn" :disabled="searchGroup.children.length <= 0" @click="fakeDoorChildren(-1)">&#8722;</button>
+                      <span class="msm-stepper__val">{{ searchGroup.children.length }}</span>
+                      <button type="button" class="msm-stepper__btn" :disabled="searchGroup.children.length >= FAKE_DOOR_MAX_CHILDREN" @click="fakeDoorChildren(1)">+</button>
+                    </div>
+                  </div>
+                  <div v-if="searchGroup.children.length > 0" class="msm-who__ages">
+                    <label v-for="(child, idx) in searchGroup.children" :key="idx" class="msm-who__age">
+                      <span>{{ t('travelGroup.childAge') }} {{ idx + 1 }}</span>
+                      <select :value="child.age" @change="fakeDoorChildAge(idx, Number(($event.target as HTMLSelectElement).value))">
+                        <option v-for="a in 18" :key="a - 1" :value="a - 1">{{ a - 1 }} {{ t('travelGroup.years') }}</option>
+                      </select>
+                    </label>
+                  </div>
+                </div>
               </div>
             </Transition>
           </section>
@@ -268,6 +301,7 @@
 </template>
 
 <script setup lang="ts">
+import { FAKE_DOOR_MAX_ADULTS, FAKE_DOOR_MAX_CHILDREN } from '~/composables-first-release/useFirstReleaseFakeDoor'
 import { useBodyScrollLock } from '~/composables-first-release/useBodyScrollLock'
 
 const { t } = useFirstReleaseI18n()
@@ -285,6 +319,8 @@ const props = defineProps<{
   flexibility: number
   selectedDurations: string[]
   searchGroup: { adults: number; children: { age: number }[]; rooms: number; dog?: boolean }
+  /** Fake door "variabel reisgezelschap": volwassenen + kinderen (met leeftijd) tellen, geen kamers. */
+  fakeDoor?: boolean
   destinationLabel?: string
   /** True while the bar's destination field is in placeholder state. */
   destinationIsPlaceholder?: boolean
@@ -524,6 +560,24 @@ const whoMvpSelectedKey = computed(() => {
   if (props.searchGroup.dog) return null
   return `${props.searchGroup.adults}-${props.searchGroup.rooms}`
 })
+
+/* Fake door: volwassenen/kinderen aanpassen → nieuw gezelschap omhoog (kamers = volwassenen / 2). */
+function fakeDoorEmit(adults: number, children: { age: number }[]) {
+  emit('update:searchGroup', { adults, children, rooms: Math.max(1, Math.ceil(adults / 2)), dog: false })
+}
+function fakeDoorAdults(delta: number) {
+  fakeDoorEmit(Math.min(FAKE_DOOR_MAX_ADULTS, Math.max(1, props.searchGroup.adults + delta)), props.searchGroup.children.map(c => ({ age: c.age })))
+}
+function fakeDoorChildren(delta: number) {
+  const kids = props.searchGroup.children.map(c => ({ age: c.age }))
+  if (delta > 0 && kids.length < FAKE_DOOR_MAX_CHILDREN) kids.push({ age: 4 })
+  if (delta < 0) kids.pop()
+  fakeDoorEmit(props.searchGroup.adults, kids)
+}
+function fakeDoorChildAge(idx: number, age: number) {
+  const kids = props.searchGroup.children.map((c, i) => ({ age: i === idx ? age : c.age }))
+  fakeDoorEmit(props.searchGroup.adults, kids)
+}
 
 function pickWho(opt: { adults: number; rooms: number }) {
   emit('update:searchGroup', {
@@ -919,4 +973,18 @@ function pickWho(opt: { adults: number; rooms: number }) {
 .msm-fade-leave-active { transition: opacity 160ms ease, transform 160ms ease; }
 .msm-fade-enter-from,
 .msm-fade-leave-to { opacity: 0; transform: translateY(-4px); }
+
+/* Fake door: tellers in het mobiele zoekscherm */
+.msm-who__steppers { display: flex; flex-direction: column; gap: 14px; padding: 4px 2px 2px; }
+.msm-who__row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.msm-who__info { display: flex; flex-direction: column; }
+.msm-who__label { font-size: 15px; font-weight: 600; color: var(--color-text-primary); }
+.msm-who__sub { font-size: 12px; color: var(--color-text-secondary); }
+.msm-stepper { display: inline-flex; align-items: center; gap: 12px; }
+.msm-stepper__btn { width: 36px; height: 36px; border-radius: 50%; border: 1.5px solid #c9c9c9; background: #fff; font-size: 20px; line-height: 1; color: var(--color-text-primary); cursor: pointer; }
+.msm-stepper__btn:disabled { opacity: 0.35; cursor: default; }
+.msm-stepper__val { min-width: 20px; text-align: center; font-size: 16px; font-weight: 600; }
+.msm-who__ages { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.msm-who__age { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--color-text-secondary); }
+.msm-who__age select { height: 38px; padding: 0 10px; border: 1.5px solid #c9c9c9; border-radius: 8px; background: #fff; font-family: var(--font-body); font-size: 14px; color: var(--color-text-primary); }
 </style>

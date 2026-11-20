@@ -9,7 +9,11 @@
     <TripItineraryStats v-if="showStats && days.length" class="tisum__stats" :days="days.length" :hotels="hotels.length" :sights="sightsCount" />
     <ul v-if="days.length" class="tisum__list">
       <li v-for="day in days" :key="`sum-${day.day}`" class="tisum__item">
-        <button type="button" class="tisum__link" @click="$emit('select', day.day)">
+        <!-- `static`: zelfde opmaak, maar de dagen zijn niet klikbaar (reispagina, MVP). -->
+        <span v-if="isStatic" class="tisum__link tisum__link--static">
+          <span class="tisum__day">{{ day.label }}</span><span class="tisum__text">{{ summaryLineOfDay(day, t) }}</span>
+        </span>
+        <button v-else type="button" class="tisum__link" @click="$emit('select', day.day)">
           <span class="tisum__day">{{ day.label }}</span><span class="tisum__text">{{ summaryLineOfDay(day, t) }}</span>
         </button>
       </li>
@@ -34,7 +38,10 @@ const props = withDefaults(defineProps<{
   fullLink?: boolean
   /** Subtiele stippellijntjes tussen de dagen (alleen onder de beschrijvingen, niet onder "Dag x"). */
   lines?: boolean
-}>(), { hotels: () => [], showStats: true, fullLink: false, lines: false })
+  /** Dagen niet klikbaar (geen select-event); alleen de link naar het volledige schema. */
+  static?: boolean
+}>(), { hotels: () => [], showStats: true, fullLink: false, lines: false, static: false })
+const isStatic = computed(() => props.static)
 
 defineEmits<{ select: [day: number]; 'open-full': [] }>()
 
@@ -78,8 +85,10 @@ const sightsCount = computed(() => countTripSights(props.days))
   text-align: left;
   cursor: pointer;
 }
-.tisum__link:hover .tisum__text,
-.tisum__link:focus-visible .tisum__text { color: var(--color-primary); text-decoration: underline; text-underline-offset: 3px; }
+/* Hover/focus-effect alleen op de klikbare variant (knop); de statische regels blijven gewone tekst. */
+button.tisum__link:hover .tisum__text,
+button.tisum__link:focus-visible .tisum__text { color: var(--color-primary); text-decoration: underline; text-underline-offset: 3px; }
+.tisum__link--static { cursor: default; }
 .tisum__day { font-weight: 700; white-space: nowrap; }
 .tisum__text { color: var(--color-text-secondary); transition: color var(--transition-fast); }
 .tisum__full {

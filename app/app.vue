@@ -46,11 +46,10 @@ const { restoreHomeLayoutVariant: restoreHomeLayoutVariantSr } = useSecondReleas
 const { restore: restoreMht, set: setMht } = useMultiHotelTripPartner()
 const { restoreSearchSession: restoreSearchSessionMht } = useMultiHotelTripSearchState()
 const { restoreHomeLayoutVariant: restoreHomeLayoutVariantMht } = useMultiHotelTripHomeVariant()
-// Multi Hotel Trip - Jesse mirror — losstaande kopie van MHT met een eigen
-// localStorage-namespace, zodat beide prototypes elkaars sessie niet overschrijven.
-const { restore: restoreMhtj, set: setMhtj } = useMhtJessePartner()
-const { restoreSearchSession: restoreSearchSessionMhtj } = useMhtJesseSearchState()
-const { restoreHomeLayoutVariant: restoreHomeLayoutVariantMhtj } = useMhtJesseHomeVariant()
+// MVP 12-11-2026 — losstaande kopie van MHT met een eigen localStorage-namespace.
+const { restore: restoreMvp, set: setMvp } = useMvpTripPartner()
+const { restoreSearchSession: restoreSearchSessionMvp } = useMvpTripSearchState()
+const { restoreHomeLayoutVariant: restoreHomeLayoutVariantMvp } = useMvpTripHomeVariant()
 // Homepage variant ('1' / '2' / '3' / '4') — restored from URL first,
 // then localStorage. The active variant is also reflected on <body> as
 // `vl-variant-2` etc., so global CSS (e.g. variant-2.css) can re-style
@@ -86,12 +85,12 @@ onMounted(() => {
   restoreMht()
   restoreSearchSessionMht()
   restoreHomeLayoutVariantMht()
-  restoreMhtj()
-  restoreSearchSessionMhtj()
-  restoreHomeLayoutVariantMhtj()
+  restoreMvp()
+  restoreSearchSessionMvp()
+  restoreHomeLayoutVariantMvp()
   restoreHomeVariant(route.path)
   const p = route.query.partner
-  if (p === 'nu') { set('nu'); setSr('nu'); setMht('nu'); setMhtj('nu') }
+  if (p === 'nu') { set('nu'); setSr('nu'); setMht('nu'); setMvp('nu') }
   applyCheckinFromUrl(route.query.checkin)
   applyGroupFromUrl(route.query.persons, route.query.rooms)
 })
@@ -117,7 +116,7 @@ const releaseScope = computed(() => {
   if (route.path.startsWith('/first-release')) return 'first'
   if (route.path.startsWith('/second-release')) return 'second'
   if (route.path.startsWith('/multi-hotel-trip')) return 'mht'
-  if (route.path.startsWith('/mht-jesse')) return 'mhtj'
+  if (route.path.startsWith('/mvp-trip')) return 'mvp'
   return null
 })
 // Set via useHead, NOT a client-side watch: the class has to be in the
@@ -131,7 +130,7 @@ useHead({
   },
 })
 watch(() => route.query.partner, (val) => {
-  if (val === 'nu') { set('nu'); setSr('nu'); setMht('nu'); setMhtj('nu') }
+  if (val === 'nu') { set('nu'); setSr('nu'); setMht('nu'); setMvp('nu') }
 })
 watch(() => route.query.checkin, applyCheckinFromUrl)
 watch(() => [route.query.persons, route.query.rooms], ([p, r]) => applyGroupFromUrl(p, r))

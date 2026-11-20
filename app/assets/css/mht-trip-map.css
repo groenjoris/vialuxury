@@ -3,7 +3,8 @@
    dus deze stijlen zijn globaal (zie utils-multi-hotel-trip/tripMapLayers.ts). */
 
 /* Genummerde hotelmarker + naam/plaats ernaast. Standaardstijl: zwarte bol,
-   oranje bij hover (zelfde als de nummers op het dealcard-kaartje). */
+   oranje bij hover (zelfde als de nummers op het dealcard-kaartje); de naam
+   ernaast blijft bij hover zwart. */
 .tml-hotel { pointer-events: none; }
 .tml-hotel--clickable { pointer-events: auto; cursor: pointer; }
 .tml-hotel__num {
@@ -38,7 +39,6 @@
   line-height: 1.2;
   white-space: nowrap;
 }
-.tml-hotel--clickable:hover .tml-hotel__name { color: var(--color-primary, #ff7e00); }
 /* Label links van de bol als het rechts buiten de kaart zou vallen (keepLabelsInView). */
 .tml-hotel--flip .tml-hotel__name { left: auto; right: var(--tml-gap, 36px); }
 

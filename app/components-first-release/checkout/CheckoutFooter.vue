@@ -16,6 +16,8 @@
         <a href="#">Privacyverklaring</a>
         <a href="#">Cookiebeleid</a>
         <a href="#">Algemene voorwaarden</a>
+        <!-- Prototype: terug naar het startscherm (zelfde knop als in de sitefooter). -->
+        <NuxtLink to="/" class="footer__start">Start scherm</NuxtLink>
       </div>
     </div>
   </footer>
@@ -63,5 +65,22 @@
 }
 .footer__meta a:hover {
   color: var(--c-white);
+}
+.footer__meta .footer__start {
+  display: inline-flex;
+  align-items: center;
+  height: 32px;
+  padding: 0 12px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+}
+.footer__meta .footer__start:hover {
+  background: rgba(255, 255, 255, 0.22);
+  color: #fff;
 }
 </style>

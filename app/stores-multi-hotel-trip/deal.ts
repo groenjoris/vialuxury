@@ -402,9 +402,22 @@ export const useMultiHotelTripDealStore = defineStore('multi-hotel-trip-deal', (
     if (query.room) {
       selectedRoomId.value = query.room
     }
+    // Personen zonder kamers in de URL (bijv. een link uit een mail): minimaal
+    // aantal kamers voor dat gezelschap, niet het aantal van een eerdere zoekopdracht.
+    if ((query.adults || query.children) && !query.rooms) {
+      const total = travelGroup.value.adults + travelGroup.value.children.length
+      travelGroup.value = { ...travelGroup.value, rooms: minRoomsFor(total) }
+    }
     if (query.checkin) {
       setCheckIn(query.checkin)
     }
+    // Direct naar de globale zoekstatus (en localStorage) schrijven, zodat het
+    // herstel in app.vue de URL-waarden niet overschrijft met een eerdere sessie.
+    // (Altijd schrijven, ook als de waarde gelijk is aan de standaard vóór dat herstel.)
+    if (query.adults || query.children || query.rooms) {
+      setSearchGroup(travelGroup.value.adults + travelGroup.value.children.length, travelGroup.value.rooms)
+    }
+    if (query.checkin) setArrivalDate(query.checkin)
   }
 
   return {

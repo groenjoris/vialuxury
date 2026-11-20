@@ -9,14 +9,6 @@
            client has picked to pursue. No homepage-variant switcher. -->
       <section class="start-section">
         <h2 class="start-section__title">Redesign (first release)</h2>
-        <p class="start-section__lead">
-          <a
-            href="https://docs.google.com/spreadsheets/d/1II0u8mkbtFpg16CWzlYGMD2yO4QR9dtOI6bDxPRREqo/edit?gid=379133869#gid=379133869"
-            target="_blank"
-            rel="noopener"
-            class="start-section__link"
-          >Scope sheet (Google Spreadsheets) ↗</a>
-        </p>
         <div class="start-section__buttons">
           <button
             type="button"
@@ -43,42 +35,37 @@
       <section class="start-section">
         <h2 class="start-section__title">Multi Hotel Trip</h2>
         <p class="start-section__lead">
-          Kopie van release één + checkout met room table (flexibel annuleren).
+          Design voor auto- en fietsvakanties met meerdere hotels
         </p>
         <div class="start-section__buttons">
+          <!-- MVP (12-11-2026): losstaande kopie van Multi Hotel Trip, teruggeschaald naar de MVP-definitie. -->
           <button
             type="button"
             class="start-btn start-btn--primary"
-            @click="startMultiHotelTripFromHome"
-          >Homepage</button>
+            @click="startMvpTrip"
+          >MVP</button>
+          <!-- Post-bookingflow: schema van de klantreis na het boeken; van daaruit zijn de
+               bevestigingspagina, de reispagina en de mails te openen. -->
+          <NuxtLink class="start-btn" to="/multi-hotel-trip/flow">Post-bookingflow</NuxtLink>
+          <!-- De volledige (niet-teruggeschaalde) versie van Multi Hotel Trip. -->
           <button
             type="button"
             class="start-btn"
-            @click="startMultiHotelTripCheckout"
-          >Direct naar checkout</button>
+            @click="startMultiHotelTripFromHome"
+          >Volledige versie</button>
         </div>
       </section>
 
-      <!-- Multi Hotel Trip - Jesse — losstaande kopie van MHT in een eigen
-           namespace (components/composables/stores/utils -mht-jesse, mhtj-*.css,
-           routes /mht-jesse/...). Persoonlijke speeltuin: wijzigingen hier
-           raken het MHT-prototype niet, en worden er ook niet mee gesynct. -->
+
+      <!-- CRM — concept voor de geautomatiseerde e-mails (artist impression, alleen
+           desktop en light mode). Eén knop naar de eerste mail; de preview (/crm/<slug>) heeft links een paneel met alle mails. -->
       <section class="start-section">
-        <h2 class="start-section__title">Multi Hotel Trip - Jesse</h2>
+        <h2 class="start-section__title">CRM</h2>
         <p class="start-section__lead">
-          Kopie van release één + checkout met room table (flexibel annuleren).
+          Concept voor geautomatiseerde e-mails (desktop, light mode)
         </p>
         <div class="start-section__buttons">
-          <button
-            type="button"
-            class="start-btn start-btn--primary"
-            @click="startMhtJesseFromHome"
-          >Homepage</button>
-          <button
-            type="button"
-            class="start-btn"
-            @click="startMhtJesseCheckout"
-          >Direct naar checkout</button>
+          <NuxtLink class="start-btn" to="/crm/crm-jaar-geleden">Voorbeeldmails</NuxtLink>
         </div>
       </section>
 
@@ -87,9 +74,16 @@
       <section class="start-section">
         <h2 class="start-section__title">Variable Travel Group (second release)</h2>
         <div class="start-section__buttons">
+          <!-- Fake door-test: het Redesign (R1) met een personenselector voor volwassenen en
+               kinderen; oneven aantal of kinderen → melding + e-mailveld op de zoekpagina. -->
           <button
             type="button"
             class="start-btn start-btn--primary"
+            @click="startFakeDoorTest"
+          >Fake door-test</button>
+          <button
+            type="button"
+            class="start-btn"
             @click="startSecondReleaseFromHome"
           >Homepage</button>
           <button
@@ -182,6 +176,7 @@
 </template>
 
 <script setup lang="ts">
+import { useFirstReleaseFakeDoor } from '~/composables-first-release/useFirstReleaseFakeDoor'
 import { useHomeVariant } from '~/composables/useHomeVariant'
 const { clear } = usePartner()
 const { setHomeVariant } = useHomeVariant()
@@ -224,19 +219,6 @@ const {
   clearDestinations: clearDestinationsMht,
 } = useMultiHotelTripSearchState()
 
-// Multi Hotel Trip - Jesse mirror — eigen kopie met eigen composables.
-const { setHeroPhotoIndex: setHeroPhotoIndexMhtj } = useMhtJesseHomeVariant()
-const { clear: clearMhtj } = useMhtJessePartner()
-const {
-  clearArrivalDate: clearArrivalDateMhtj,
-  setSearchGroup: setSearchGroupMhtj,
-  clearDuration: clearDurationMhtj,
-  setFlexibility: setFlexibilityMhtj,
-  resetBudget: resetBudgetMhtj,
-  clearFilterTags: clearFilterTagsMhtj,
-  clearDestinations: clearDestinationsMhtj,
-} = useMhtJesseSearchState()
-
 // Northstar mirror — separate state lives in its own composables.
 const { clear: clearNs } = useNorthstarPartner()
 const {
@@ -258,7 +240,10 @@ onMounted(() => {
   clearMht()
 })
 
+const fakeDoor = useFirstReleaseFakeDoor()
+
 function resetAll() {
+  fakeDoor.disable()
   clear()
   clearArrivalDate()
   setSearchGroup(2, 1)
@@ -300,6 +285,17 @@ function startHotelFirstFromHome() {
   setHomeVariant('hf')
   setHeroPhotoIndex(0)   // always open on picture 1 (the default hero)
   navigateTo('/first-release/home')
+}
+
+/** Fake door-test "variabel reisgezelschap" (vak Variable Travel Group): het Redesign (R1)
+ *  met de vlag aan — personenselector telt volwassenen en kinderen; bij een oneven aantal of
+ *  kinderen toont de zoekpagina alleen de melding met e-mailveld. Zie useFirstReleaseFakeDoor.
+ *  Eigen, deelbare URL: /first-release/fake-door (de middleware fr-fakedoor zet daar de vlag aan). */
+function startFakeDoorTest() {
+  resetAll()
+  setHomeVariant('hf')
+  setHeroPhotoIndex(0)
+  navigateTo('/first-release/fake-door')
 }
 
 /** First-release "Hotel First" — start on the partner advertisement
@@ -374,37 +370,25 @@ function startMultiHotelTripFromHome() {
   navigateTo('/multi-hotel-trip/home')
 }
 
-/** Multi Hotel Trip — jump straight into the merged checkout (room table
- *  flow from the flexibel-annuleren prototype): kalenderstap eerst. */
-function startMultiHotelTripCheckout() {
-  resetAllMultiHotelTrip()
-  navigateTo('/multi-hotel-trip/checkout/datum')
+/** MVP 12-11-2026 — losstaande kopie van MHT, teruggeschaald naar de MVP-definitie. */
+function startMvpTrip() {
+  const { clear } = useMvpTripPartner()
+  const { clearArrivalDate, setSearchGroup, clearDuration, setFlexibility, resetBudget, clearFilterTags, clearDestinations } = useMvpTripSearchState()
+  const { setHeroPhotoIndex } = useMvpTripHomeVariant()
+  clear()
+  clearArrivalDate()
+  setSearchGroup(2, 1)
+  clearDuration()
+  setFlexibility(0)
+  resetBudget()
+  clearFilterTags()
+  clearDestinations()
+  setHeroPhotoIndex(0)
+  navigateTo('/mvp-trip/home')
 }
 
-/** Reset Multi Hotel Trip - Jesse session state so each run starts clean. */
-function resetAllMhtJesse() {
-  clearMhtj()
-  clearArrivalDateMhtj()
-  setSearchGroupMhtj(2, 1)
-  clearDurationMhtj()
-  setFlexibilityMhtj(0)
-  resetBudgetMhtj()
-  clearFilterTagsMhtj()
-  clearDestinationsMhtj()
-}
-
-/** Multi Hotel Trip - Jesse — start on its own /mht-jesse/home page. */
-function startMhtJesseFromHome() {
-  resetAllMhtJesse()
-  setHeroPhotoIndexMhtj(0)
-  navigateTo('/mht-jesse/home')
-}
-
-/** Multi Hotel Trip - Jesse — straight into its own checkout, datumstap eerst. */
-function startMhtJesseCheckout() {
-  resetAllMhtJesse()
-  navigateTo('/mht-jesse/checkout/datum')
-}
+/** Multi Hotel Trip — direct naar de bevestigingspagina na het boeken van een vakantie
+ *  (Opaalkust, 2 personen, flexibel annuleren, demo-datum), zonder de checkout te doorlopen. */
 
 /** "Start with ad" for the experimental homepage variants. Same static
  *  HTML page, but doesn't touch homeVariant so subsequent "home" links
@@ -507,8 +491,7 @@ definePageMeta({ layout: false })
   color: var(--color-text-primary);
 }
 
-/* Lead line under the section title — used by the "First release"
-   block to surface the Google Sheets scope link. */
+/* Lead line under the section title. */
 .start-section__lead {
   margin: 0 0 var(--space-md);
   font-size: 14px;
@@ -516,22 +499,12 @@ definePageMeta({ layout: false })
   text-align: left;
 }
 
-.start-section__link {
-  color: var(--color-primary);
-  text-decoration: none;
-  font-weight: 600;
-}
-
-.start-section__link:hover,
-.start-section__link:focus-visible {
-  text-decoration: underline;
-}
-
 .start-section__buttons {
   display: flex;
   flex-direction: column;
   gap: var(--space-sm);
 }
+
 
 .start-btn {
   display: flex;

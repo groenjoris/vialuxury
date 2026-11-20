@@ -1,6 +1,9 @@
 <template>
   <div class="deal-page">
-    <MultiHotelTripSiteHeader />
+    <MultiHotelTripSiteHeader>
+      <!-- Prototype: prijsweergave vakanties (PRIJS: TOTAAL | PP) onder het logo. -->
+      <template #proto><MultiHotelTripDemoSwitches price /></template>
+    </MultiHotelTripSiteHeader>
     <!-- Prototype: zwevende schakelaar voor de reisschema-varianten (alleen Noord-Frankrijk). -->
     <!-- Prototype-schakelaarpaneel: alleen op desktop (op mobiel viel het over de hotelnamen). -->
     <TripItineraryVariantSwitch v-if="showItinVariants && !isMobile" target="arrangement" />
@@ -300,7 +303,7 @@
             <TripItineraryCities v-if="itinNew" :days="tripDaysView" :stops="tripItinStops" :legs="tripRouteLegs" :return-label="tripReturnLabel" :hotels="tripHotelLinks" stacked @open-hotel="openTripHotel" @open-map="tripMapOpen = true" />
             <TripItineraryAccordion v-else-if="itinHybrid" :days="tripDaysView" :stops="tripItinStops" :hotels="tripHotelLinks" stacked :show-stats="false" @open-hotel="openTripHotel" />
             <TripItineraryAccordion v-else-if="itinCollapsed" :days="tripDaysView" :stops="tripItinStops" :hotels="tripHotelLinks" stacked @open-hotel="openTripHotel" />
-            <TripItineraryPerCity v-else-if="itinCity" :chapters="tripCityChapters" :days="tripDaysView" :hotels="tripHotelLinks" stacked :show-stats="false" :show-toggle="false" @open-hotel="openTripHotel" />
+            <TripItineraryPerCity v-else-if="itinCity" :chapters="tripCityChapters" :days="tripDaysView" :hotels="tripHotelLinks" stacked :show-stats="false" @open-hotel="openTripHotel" />
             <MultiHotelTripItinerary v-else :days="tripDaysView" :hotels="tripHotelLinks" stacked @open-hotel="openTripHotel" />
           </template>
           <template v-else>
@@ -846,15 +849,9 @@
            reviews/FAQ. Wisselen met de zwevende schakelaar linksboven. -->
       <section v-if="itinFull && !isMobile" id="arrangement" class="container deal-page__itinerary-full">
         <h2 class="section-title">{{ itinCity ? t('trip.itin.city.heading') : itinSummary ? t('trip.itineraryFullHeading') : t('trip.itineraryHeading') }}</h2>
-        <!-- Intro met rechts de knop "Alles inklappen/uitklappen" (Per stad), zodat er 24px zit tussen de intro en de eerste stop. -->
-        <div class="deal-page__itinerary-introrow">
-          <p class="deal-page__itinerary-intro">{{ itinCity ? t('trip.itin.city.intro') : t('trip.itineraryIntro') }}</p>
-          <button v-if="itinCity" type="button" class="deal-page__itinerary-toggle" @click="perCityAllOpen ? perCityRef?.collapseAll() : perCityRef?.expandAll()">
-            {{ perCityAllOpen ? t('trip.itin.collapseAll') : t('trip.itin.expandAll') }}
-          </button>
-        </div>
+        <p class="deal-page__itinerary-intro">{{ itinCity ? t('trip.itin.city.intro') : t('trip.itineraryIntro') }}</p>
         <TripItineraryAccordion v-if="itinHybrid" :days="tripDaysView" :stops="tripItinStops" :hotels="tripHotelLinks" wide :show-stats="false" @open-hotel="openTripHotel" />
-        <TripItineraryPerCity v-else-if="itinCity" ref="perCityRef" :chapters="tripCityChapters" :days="tripDaysView" :hotels="tripHotelLinks" :show-stats="false" :show-toggle="false" @open-hotel="openTripHotel" />
+        <TripItineraryPerCity v-else-if="itinCity" :chapters="tripCityChapters" :days="tripDaysView" :hotels="tripHotelLinks" :show-stats="false" @open-hotel="openTripHotel" />
         <TripItineraryCities v-else :days="tripDaysView" :stops="tripItinStops" :legs="tripRouteLegs" :return-label="tripReturnLabel" :hotels="tripHotelLinks" @open-hotel="openTripHotel" @open-map="tripMapOpen = true" />
       </section>
 
@@ -1197,6 +1194,7 @@
       :came-direct="galleryCameDirect"
       :stickers="tripGalleryStickers"
       :captions="tripGalleryCaptions"
+      :captions="tripGalleryCaptions"
       @update:view="galleryView = $event"
       @update:index="galleryIndex = $event"
       @close="galleryOpen = false"
@@ -1238,6 +1236,7 @@ import type { TripReviewView } from '~/components-multi-hotel-trip/deal/TripRevi
 import TripItineraryPanel from '~/components-multi-hotel-trip/deal/TripItineraryPanel.vue'
 import type { TripCityChapter, TripCityAttraction } from '~/components-multi-hotel-trip/deal/TripItineraryPerCity.vue'
 import { isTripSight } from '~/utils-multi-hotel-trip/tripSights'
+import { buildTripDaysView } from '~/composables-multi-hotel-trip/useMultiHotelTripDaysView'
 import type { TripItineraryStop } from '~/components-multi-hotel-trip/deal/TripItineraryCities.vue'
 import TripItineraryVariantSwitch from '~/components-multi-hotel-trip/deal/TripItineraryVariantSwitch.vue'
 import { useMultiHotelTripFinalOptions } from '~/composables-multi-hotel-trip/useMultiHotelTripFinalOptions'
@@ -1283,10 +1282,15 @@ const priceForLabel = computed(() => {
   if (!deal) return ''
   // Prototype: the price is always for PRICED_PERSONS in minRoomsFor(those)
   // rooms — the party-size picker doesn't change it (see PRICED_PERSONS).
+  // Vakantie (totaalprijs-variant): niet "1 kamer" maar het aantal hotels — "Voor 6 nachten,
+  // 2 personen, 3 hotels"; de prijs is voor 2 personen in 1 kamer per hotel.
+  const lastPart = isTrip && trip
+    ? `${trip.stops.length} ${lang.value === 'de' ? 'Hotels' : 'hotels'}`
+    : roomsLabel(minRoomsFor(PRICED_PERSONS), lang.value)
   return t('deal.priceFor')
     .replace('{nightsLabel}', nightsLabel(deal.nights, lang.value))
     .replace('{personsLabel}', personsLabel(PRICED_PERSONS, lang.value))
-    .replace('{roomsLabel}', roomsLabel(minRoomsFor(PRICED_PERSONS), lang.value))
+    .replace('{roomsLabel}', lastPart)
 })
 
 // ---------------------------------------------------------------------------
@@ -1666,6 +1670,7 @@ const tripIncluded = computed(() =>
 const tripCitiesLabel = computed(() => trip ? trip.stops.map(s => s.city).join(' · ') : '')
 /** Hotelnaam-sticker per gallery-foto. */
 const tripGalleryStickers = tripPdp?.stickers
+const tripGalleryCaptions = tripPdp?.captions
 /** Bijschrift per gallery-foto: wat er te zien is. */
 const tripGalleryCaptions = tripPdp?.captions
 /** Stops met ligging voor de kaarten (minimap + fullscreen). */
@@ -1691,8 +1696,6 @@ const tripMapNightsLabels = computed(() => (trip?.stops ?? []).map(s => nightsLa
  *  de fietsvakantie heeft vast het gekozen ontwerp "Per stad" (met reviews);
  *  andere vakanties het bestaande schema. */
 /* "Wat te doen tijdens je vakantie" (desktop): de knop "Alles inklappen" staat naast de intro. */
-const perCityRef = ref<InstanceType<typeof TripItineraryPerCity> | null>(null)
-const perCityAllOpen = computed(() => perCityRef.value?.allOpen ?? true)
 
 const FIXED_ITIN_VARIANT: Record<string, ItineraryVariant> = {
   'ontdek-noord-frankrijk-en-de-opaalkust-in-7-dagen': 'city',
@@ -1811,13 +1814,6 @@ function tripDurationLabel(minutes: number): string {
   const h = Math.floor(minutes / 60), m = minutes % 60
   return m === 0 ? t('trip.dur.hours').replace('{h}', String(h)) : t('trip.dur.hoursMinutes').replace('{h}', String(h)).replace('{m}', String(m))
 }
-/** Korte reistijd voor op één regel: "45 min", "3 uur", "3 u 45 min" (de: "4:30 h"). */
-function tripDurationShort(minutes: number): string {
-  if (minutes < 60) return t('trip.durShort.minutes').replace('{m}', String(minutes))
-  const h = Math.floor(minutes / 60), m = minutes % 60
-  if (m === 0) return t('trip.durShort.hours').replace('{h}', String(h))
-  return t('trip.durCompact.hoursMinutes').replace('{h}', String(h)).replace('{m}', String(m)).replace('{mm}', String(m).padStart(2, '0'))
-}
 /** Mobiel, titel boven de routekaart: "Autovakantie met 3 hotels" / "Fietsvakantie met bagagetransfer"
  *  — gesplitst in kop + laatste woord, zodat het Nieuw-stickertje met het laatste woord meegaat. */
 const tripMapTitle = computed(() => {
@@ -1859,21 +1855,19 @@ const tripMapSummary = computed<({ icon: string; text: string } | undefined)[]>(
     const minH = Math.max(1, Math.floor(Math.min(...mins) / 60))
     const maxH = Math.max(minH, Math.ceil(Math.max(...mins) / 60))
     return [
-      trip.fromHome && first ? { icon: 'car', text: t('trip.bike.arrivalLine').replace('{duration}', tripDurationLabel(trip.fromHome.minutes)).replace('{city}', trip.fromHome.city) } : undefined,
+      trip.fromHome && first ? { icon: 'car', text: t('trip.arrivalLine').replace('{duration}', tripDurationLabel(trip.fromHome.minutes)).replace('{city}', trip.fromHome.city) } : undefined,
       total ? { icon: 'route', text: t('trip.bike.stagesLine').replace('{n}', String(legKm.length)).replace('{list}', legKm.join(' · ')).replace('{total}', String(total)) } : undefined,
       mins.length ? { icon: 'clock', text: t('trip.bike.timeLine').replace('{min}', String(minH)).replace('{max}', String(maxH)) } : undefined,
     ]
   }
-  // Vertrekplaats per taalinstelling (nl Utrecht, nl-BE Brussel, de Düsseldorf), kort zodat het
-  // op één regel past: "Utrecht → Tilques: ca. 3 u 45 min (332 km)".
+  // Vertrekplaats per taalinstelling (nl Utrecht, nl-BE Brussel, de Düsseldorf); dezelfde regel als bij de
+  // fietsvakantie (sinds 2026-11-16): "Heenreis: ca. 3 uur 45 min met de auto vanuit Utrecht".
   const byLocale = trip.fromHomeByLocale
-  const origin = byLocale ? (byLocale[locale.value as keyof typeof byLocale] ?? byLocale.nl) : undefined
+  const origin = (byLocale ? (byLocale[locale.value as keyof typeof byLocale] ?? byLocale.nl) : undefined) ?? trip.fromHome
   const km = trip.stops.reduce((sum, s, i) => sum + (s.travel?.km ?? legs.find(l => l.to === i && !l.return)?.km ?? 0), 0)
   const fromHomeLine = origin && first
-    ? { icon: 'car', text: t('trip.fromHomeShort').replace('{city}', origin.city).replace('{to}', first.city).replace('{duration}', tripDurationShort(origin.minutes)).replace('{km}', String(origin.km)) }
-    : trip.fromHome && first
-      ? { icon: 'car', text: t('trip.fromHomeShortNoKm').replace('{city}', trip.fromHome.city).replace('{duration}', tripDurationShort(trip.fromHome.minutes)).replace('{to}', first.city) }
-      : undefined
+    ? { icon: 'car', text: t('trip.arrivalLine').replace('{duration}', tripDurationLabel(origin.minutes)).replace('{city}', origin.city) }
+    : undefined
   return [
     fromHomeLine,
     km ? { icon: 'route', text: t('trip.totalRouteLine').replace('{km}', String(km)) } : undefined,
@@ -1902,115 +1896,7 @@ function tripDistanceLabel(travel?: { km: number; minutes: number }): string {
  *  onderweg/uitchecken, diner, terugreis) krijgen hier hun tekst; met een
  *  gekozen aankomstdatum krijgt elke dag zijn datum. */
 const cap = (str: string) => (str ? str.charAt(0).toUpperCase() + str.slice(1) : str)
-const tripDaysView = computed<TripDayView[]>(() => {
-  if (!tripPdp || !trip) return []
-  const checkIn = store.checkInDate
-  const content = tripPdp.content
-  return tripPdp.days.map((d) => {
-    const stop = d.stopIndex != null ? trip.stops[d.stopIndex] : undefined
-    const from = d.fromStopIndex != null ? trip.stops[d.fromStopIndex] : undefined
-    const blocks: TripBlockView[] = d.blocks.map((b) => {
-      const st = b.stopIndex != null ? trip.stops[b.stopIndex] : undefined
-      const name = st?.hotelName ?? ''
-      const view: TripBlockView = (() => { switch (b.kind) {
-        case 'checkin':
-          return {
-            kind: 'checkin',
-            tag: t('trip.tag.checkin'),
-            title: t('trip.checkinAt').replace('{hotel}', name),
-            // Dag 1 met eigen aankomsttekst (heenreis, inchecktijd); anders de hotelbeschrijving.
-            text: b.text ? localized(b.text) : localized(content?.hotels[name]?.description ?? trip.pitch),
-            image: b.image,
-            starRating: st?.starRating,
-            meta: st ? `${st.city}, ${st.region}` : undefined,
-            stopIndex: b.stopIndex,
-            hotelName: name || undefined,
-          }
-        case 'checkout':
-          return {
-            kind: 'checkout',
-            tag: t('trip.tag.route'),
-            title: b.title ? localized(b.title) : t('trip.checkoutAt').replace('{hotel}', name),
-            text: b.text ? localized(b.text) : t('trip.checkoutText').replace('{hotel}', name),
-            meta: b.meta ? localized(b.meta) : undefined,
-            image: b.image,
-            stopIndex: b.stopIndex,
-            hotelName: name || undefined,
-          }
-        case 'dinner': {
-          const dl = b.dinnerLabel ? localized(b.dinnerLabel) : t('trip.tag.dinner').toLowerCase()
-          return {
-            kind: 'dinner',
-            tag: t('trip.tag.dinner'),
-            title: cap(t('trip.dinnerAt').replace('{dinner}', dl).replace('{hotel}', name)),
-            text: b.text ? localized(b.text) : t('trip.dinnerText').replace('{dinner}', dl),
-            image: b.image,
-            stopIndex: b.stopIndex,
-            hotelName: name || undefined,
-          }
-        }
-        case 'breakfast': {
-          const bl = b.breakfastLabel ? localized(b.breakfastLabel) : t('trip.tag.breakfast')
-          return {
-            kind: 'breakfast',
-            tag: t('trip.tag.breakfast'),
-            title: t('trip.breakfastAt').replace('{hotel}', name),
-            // Eigen tekst uit de content; anders op een uitcheckdag het "laatste
-            // ontbijt"-sjabloon (met de volgende plaats), op de vertrekdag het
-            // thuis-sjabloon, en op een verblijfsdag het gewone sjabloon.
-            text: b.text
-              ? localized(b.text)
-              : b.last
-                ? (b.nextCity ? t('trip.breakfastLastText').replace('{city}', b.nextCity) : t('trip.breakfastHomeText'))
-                : t('trip.breakfastText').replace('{breakfast}', bl.charAt(0).toLowerCase() + bl.slice(1)),
-            image: b.image,
-            stopIndex: b.stopIndex,
-            hotelName: name || undefined,
-          }
-        }
-        case 'homeward':
-          return {
-            kind: 'homeward',
-            tag: t('trip.tag.homeward'),
-            title: b.title ? localized(b.title) : t('trip.homewardTitle'),
-            meta: b.meta ? localized(b.meta) : undefined,
-            text: b.text ? localized(b.text) : t('trip.checkoutText').replace('{hotel}', name),
-            image: b.image,
-            stopIndex: b.stopIndex,
-            hotelName: name || undefined,
-          }
-        default:
-          return {
-            kind: 'activity',
-            tag: t('trip.tag.activity'),
-            title: b.title ? localized(b.title) : '',
-            text: b.text ? localized(b.text) : '',
-            image: b.image,
-          }
-      } })()
-      // "Meer over …"-pop-up: korte tekst in het blok, achtergrond achter een klik.
-      if (b.more) view.more = { label: localized(b.more.label), title: localized(b.more.title), paragraphs: b.more.paragraphs.map(p => localized(p)), image: b.more.image }
-      return view
-    })
-    const type: TripDayView['type'] = d.day === 1 && stop ? 'arrival' : (from && stop && from !== stop) ? 'transfer' : stop ? 'stay' : 'home'
-    const view: TripDayView = { day: d.day, label: t('trip.daySingle').replace('{a}', String(d.day)), blocks, stopIndex: d.stopIndex, fromStopIndex: d.fromStopIndex, type }
-    if (checkIn) view.date = formatDateWeekdayShort(dayjs(checkIn).add(d.day - 1, 'day').format('YYYY-MM-DD'))
-    // Informatieve ondertitel per dagtype (aankomst / wisseldag / verblijf / terugreis).
-    if (d.day === 1 && stop) {
-      view.subtitle = t('trip.subtitle.arrival').replace('{city}', stop.city).replace('{region}', stop.region).replace('{hotel}', stop.hotelName).replace('{time}', stop.checkIn)
-    } else if (from && stop && from !== stop) {
-      view.subtitle = t('trip.subtitle.transfer').replace('{distance}', tripDistanceLabel(stop.travel)).replace('{city}', stop.city).replace('{hotel}', stop.hotelName).replace('{time}', stop.checkIn)
-    } else if (stop) {
-      view.subtitle = t('trip.subtitle.stay').replace('{city}', stop.city).replace('{hotel}', stop.hotelName)
-    } else if (from) {
-      view.subtitle = t('trip.subtitle.home').replace('{hotel}', from.hotelName)
-    }
-    // Eigen dagkop (sidepanel) en samenvattingsregel uit de content (Opaalkust: het reisdocument).
-    if (d.heading) view.heading = localized(d.heading)
-    if (d.summary) view.summary = localized(d.summary)
-    return view
-  })
-})
+const tripDaysView = computed<TripDayView[]>(() => buildTripDaysView(tripPdp, trip, store.checkInDate, t, localized))
 
 /** Fullscreen kaart (klik op het kaartje): route + hotels + omgevingshighlights. */
 const tripMapOpen = ref(false)
@@ -2692,22 +2578,6 @@ onMounted(() => {
 /* Vakantie: intro onder de dagprogramma-kop. */
 .deal-page__itinerary-intro { margin: calc(-1 * var(--space-md)) 0 var(--space-lg); font-size: 14px; color: var(--color-text-secondary); }
 /* Introregel van "Wat te doen": tekst links, "Alles inklappen" rechts; 24px tot de eerste stop. */
-.deal-page__itinerary-introrow { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-md); margin: calc(-1 * var(--space-md)) 0 var(--space-lg); }
-.deal-page__itinerary-introrow .deal-page__itinerary-intro { margin: 0; }
-.deal-page__itinerary-toggle {
-  flex-shrink: 0;
-  padding: 0;
-  border: 0;
-  background: none;
-  font-family: var(--font-body);
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--color-primary);
-  text-decoration: underline;
-  text-underline-offset: 3px;
-  cursor: pointer;
-}
-.deal-page__itinerary-toggle:hover { color: var(--color-primary-hover); }
 
 /* Mini map */
 /* Map preview + below-the-map footer (address left, "Bekijk kaart"

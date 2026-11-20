@@ -1,7 +1,16 @@
 <!-- First Release checkout — donkere afrekenbalk (uit het
      flexibel-annuleren prototype: TopNav). -->
+<script setup lang="ts">
+// Variant-label onder het logo: met de fake door-vlag aan "R1 + fake door".
+import { useFirstReleaseFakeDoor } from '~/composables-first-release/useFirstReleaseFakeDoor'
+
+const { enabled: fakeDoorOn } = useFirstReleaseFakeDoor()
+</script>
+
 <template>
   <header class="nav">
+    <!-- Prototype-navigatie: "‹ startscherm" helemaal linksboven. -->
+    <FirstReleaseProtoNav />
     <div class="nav__inner">
       <div class="nav__brand">
         <NuxtLink to="/first-release/home" aria-label="Naar de homepage">
@@ -10,6 +19,7 @@
             src="/images/logos/logo-vialuxury-horizontal-black.svg"
             alt="ViaLuxury"
           />
+          <span class="nav__proto" aria-hidden="true">{{ fakeDoorOn ? 'R1 + fake door' : 'R1' }}</span>
         </NuxtLink>
       </div>
 
@@ -33,6 +43,7 @@
 
 <style scoped>
 .nav {
+  position: relative; /* positioneringscontext voor de prototype-navigatie linksboven */
   background: var(--c-via-black);
   color: var(--c-white);
   height: 72px;
@@ -60,6 +71,14 @@
   width: auto;
   /* Black wordmark -> white for the dark bar */
   filter: brightness(0) invert(1);
+}
+/* Subtiel variant-label onder het logo. */
+.nav__brand a { position: relative; display: block; }
+.nav__proto {
+  position: absolute; left: 0; top: 100%; margin-top: 4px; pointer-events: none;
+  font-family: var(--font-body, inherit); font-size: 9px; line-height: 1; font-weight: 600;
+  letter-spacing: 0.14em; text-transform: uppercase; white-space: nowrap;
+  color: rgba(255, 255, 255, 0.5); border: 1px solid rgba(255, 255, 255, 0.22); border-radius: 3px; padding: 2px 5px;
 }
 .nav__service {
   display: inline-flex;
