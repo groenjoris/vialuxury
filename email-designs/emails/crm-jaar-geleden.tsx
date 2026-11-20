@@ -41,7 +41,7 @@ export default function CrmJaarGeleden({ recipientEmail, hotelName, packageTitle
         <CrmHeader />
         <Container style={{ width: "100%", maxWidth: "626px" }}>
           {/* Grote arrangementfoto; geen intro */}
-          <Img src={image} alt={packageTitle} width="626" height="380" style={{ display: "block", width: "100%", height: "380px", objectFit: "cover" }} />
+          <Img src={image} alt={packageTitle} width="626" height="391" style={{ display: "block", width: "100%", height: "auto" }} />
 
           <Section className="m-pad" style={{ padding: "28px 32px 0" }}>
             <Heading as="h1" className="m-h1" style={s.h1}>Vorig jaar op {arrivalDayLastYear}</Heading>

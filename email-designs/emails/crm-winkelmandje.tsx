@@ -1,6 +1,6 @@
 import { Body, Container, Head, Heading, Html, Img, Link, Preview, Section, Text } from "@react-email/components";
 import * as React from "react";
-import { crmCss, FeaturedDeal, PrimaryButton, type RowDeal, s, site } from "../components/crm";
+import { CollageDeal, crmCss, PrimaryButton, type RowDeal, s, site } from "../components/crm";
 import { desIndes } from "../lib/crmDeals";
 import CrmFooter from "../components/CrmFooter";
 import CrmHeader from "../components/CrmHeader";
@@ -75,7 +75,7 @@ export default function CrmWinkelmandje({ recipientEmail, firstName, deal, arriv
           {/* De deal op de uitgebreide kaart, zonder hotel en plaats (die staan boven) en zonder prijsrij;
               de foto linkt naar de boeking */}
           <Section className="m-pad" style={{ padding: "12px 32px 0" }}>
-            <FeaturedDeal deal={{ ...deal, hotelName: undefined, stars: undefined, place: undefined, url: checkoutUrl }} priceRow={false} />
+            <CollageDeal deal={{ ...deal, hotelName: undefined, stars: undefined, place: undefined, url: checkoutUrl }} priceRow={false} />
           </Section>
 
           {/* Gastenoordeel: zonder vlak; één keer sterren met het gemiddelde, drie reviews in 20 px serif */}

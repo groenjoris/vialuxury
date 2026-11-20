@@ -208,17 +208,14 @@ function RichDealPrice({ d, cta }: { d: RowDeal; cta: string }) {
   );
 }
 
-/** Dealrij met grijze rand: foto links tot aan de rand en over de volle hoogte. Met een prijs de
- *  uitgebreide kaart (knop "Bekijk"), anders de tekstregels met een oranje link. Met inclusies maar
- *  zonder prijs (de bekeken deal): de uitgebreide kaart met onderaan de eigen regels en de link. */
+/** Dealrij met grijze rand: foto links, tekst rechts. De foto is een gewone `<img>` en geen
+ *  CSS-achtergrond, want die laat Outlook weg; hij staat bovenaan in de cel op zijn eigen
+ *  verhouding en de beige cel vult de rest als de tekst hoger is. */
 export function DealRow({ deal: d, cta }: { deal: RowDeal; cta?: string }) {
   const rich = !!d.price || !!d.includes;
   return (
     <Section style={{ border: `1px solid #E5E5E5`, borderRadius: "8px", marginTop: "12px", overflow: "hidden" }}>
       <Row>
-        {/* Foto als gewone <img>, niet als CSS-achtergrond: die laat Outlook namelijk weg.
-            De foto staat bovenaan in de cel op zijn eigen verhouding (190x119); is de
-            tekstkolom hoger, dan vult de beige cel de rest. */}
         <Column className="stack" style={{ width: "190px", verticalAlign: "top", backgroundColor: "#F4F1EC" }}>
           <Link href={d.url}>
             <Img src={d.image} alt={d.packageTitle ?? d.hotelName ?? ""} width="190" height="119" style={{ display: "block", width: "100%", height: "auto" }} />
@@ -232,7 +229,6 @@ export function DealRow({ deal: d, cta }: { deal: RowDeal; cta?: string }) {
                 <RichDealPrice d={d} cta={cta ?? "Bekijk"} />
               ) : (
                 <>
-                  {/* Bekeken deal: geen prijsrij maar de eigen regels en een link */}
                   {d.lines?.map((l, i) => (
                     <Text key={l} style={{ ...s.title, margin: i ? "2px 0 0" : "14px 0 0" }}>{l}</Text>
                   ))}
@@ -248,33 +244,6 @@ export function DealRow({ deal: d, cta }: { deal: RowDeal; cta?: string }) {
           )}
         </Column>
       </Row>
-    </Section>
-  );
-}
-
-/** Uitgelichte deal over de hele breedte: grote foto, daaronder met een prijs de uitgebreide kaart
- *  (knop "Bekijk"), anders de tekstregels en een oranje knop "Bekijk arrangement".
- *  `priceRow={false}`: zonder de prijsrij en de knop (winkelmandje: prijs en knop staan erboven). */
-export function FeaturedDeal({ deal: d, cta, priceRow = true }: { deal: RowDeal; cta?: string; priceRow?: boolean }) {
-  const rich = !!d.price;
-  return (
-    <Section style={{ border: `1px solid #E5E5E5`, borderRadius: "8px", marginTop: "12px", overflow: "hidden" }}>
-      <Link href={d.url}>
-        <Img src={d.image} alt={d.packageTitle ?? d.hotelName ?? ""} width="560" height="240" style={{ display: "block", width: "100%", height: "auto" }} />
-      </Link>
-      {rich ? (
-        <Section style={{ padding: "16px 20px 20px" }}>
-          <RichDealText d={d} />
-          {priceRow && <RichDealPrice d={d} cta={cta ?? "Bekijk"} />}
-        </Section>
-      ) : (
-        <Section style={{ padding: "18px 20px 22px" }}>
-          <DealText d={d} />
-          <Section style={{ marginTop: "14px" }}>
-            <PrimaryButton href={d.url} small>{cta ?? "Bekijk arrangement"}</PrimaryButton>
-          </Section>
-        </Section>
-      )}
     </Section>
   );
 }
@@ -339,6 +308,32 @@ export function CollageDeal({ deal: d, cta, priceRow = true }: { deal: RowDeal; 
           </>
         )}
       </Section>
+    </Section>
+  );
+}
+
+/** Uitgelichte deal over de hele breedte: grote foto, daaronder de tekst en de prijsrij.
+ *  `priceRow={false}`: zonder de prijsrij en de knop (winkelmandje: die staan erboven). */
+export function FeaturedDeal({ deal: d, cta, priceRow = true }: { deal: RowDeal; cta?: string; priceRow?: boolean }) {
+  const rich = !!d.price;
+  return (
+    <Section style={{ border: `1px solid #E5E5E5`, borderRadius: "8px", marginTop: "12px", overflow: "hidden" }}>
+      <Link href={d.url}>
+        <Img src={d.image} alt={d.packageTitle ?? d.hotelName ?? ""} width="560" height="350" style={{ display: "block", width: "100%", height: "auto" }} />
+      </Link>
+      {rich ? (
+        <Section style={{ padding: "16px 20px 20px" }}>
+          <RichDealText d={d} />
+          {priceRow && <RichDealPrice d={d} cta={cta ?? "Bekijk"} />}
+        </Section>
+      ) : (
+        <Section style={{ padding: "18px 20px 22px" }}>
+          <DealText d={d} />
+          <Section style={{ marginTop: "14px" }}>
+            <PrimaryButton href={d.url} small>{cta ?? "Bekijk arrangement"}</PrimaryButton>
+          </Section>
+        </Section>
+      )}
     </Section>
   );
 }

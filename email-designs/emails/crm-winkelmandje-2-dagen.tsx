@@ -2,8 +2,7 @@ import { Body, Container, Head, Html, Preview, Section, Text } from "@react-emai
 import * as React from "react";
 import CrmFooter from "../components/CrmFooter";
 import CrmHeader from "../components/CrmHeader";
-import { baseUrl } from "../components/theme";
-import { CollageDeal, crmCss, FeaturedDeal, type RowDeal, s, site } from "../components/crm";
+import { CollageDeal, crmCss, type RowDeal, s, site } from "../components/crm";
 import { font, newsletter } from "../components/theme";
 
 // CRM mail 4: winkelmandje, 2 dagen na het verlaten van de checkout. Na de mail van
@@ -41,7 +40,7 @@ export default function CrmWinkelmandje2Dagen({ recipientEmail, cart, deals }: P
           <Section className="m-pad" style={{ padding: "32px 32px 0" }}>
             <Text style={s.kop}>Geboekt door anderen die {cart.hotelName} bekeken</Text>
             {[first, ...rest].filter(Boolean).map((d) => (
-              <FeaturedDeal key={d!.url} deal={d!} />
+              <CollageDeal key={d!.url} deal={d!} />
             ))}
           </Section>
 
@@ -80,7 +79,8 @@ CrmWinkelmandje2Dagen.PreviewProps = {
       place: "Den Haag",
       packageTitle: "Verblijf in het mooiste hotel van Nederland",
       line: "Vanaf €319 voor 2 personen",
-      image: `${baseUrl}/images/mail/crm/deals/voco-the-hague.jpg`,
+      image: "https://asset.vialuxury.com/assets/37e3155c-a965-4518-b38e-b9e93483766f?key=card",
+    extraImages: ["https://asset.vialuxury.com/assets/04007e67-62ca-4ffc-9ecf-a7b932695586?key=card", "https://asset.vialuxury.com/assets/bba340c3-3e92-44be-befd-0023753156cf?key=card"],
       url: deal("voco-the-hague-1-1-gratis-verblijf-in-het-mooiste-hotel-van-nederland"),
       includes: ["Dagelijks ontbijtbuffet", "3-Gangendiner in Ultramarijn", "Welkomstattentie", "Late check-out"],
       discount: "-47%",
@@ -94,7 +94,8 @@ CrmWinkelmandje2Dagen.PreviewProps = {
       place: "Den Haag",
       packageTitle: "Gloednieuw hotel in het voormalige KLM-hoofdkantoor",
       line: "Vanaf €309 voor 2 personen",
-      image: `${baseUrl}/images/mail/crm/deals/de-plesman.jpg`,
+      image: "https://asset.vialuxury.com/assets/e14b892d-4bfd-423d-9789-4e36ca5599af?key=card",
+    extraImages: ["https://asset.vialuxury.com/assets/1dfdfc8a-2097-482f-b9ac-7809f3e27562?key=card", "https://asset.vialuxury.com/assets/651039ef-9247-4fe6-9b73-75f6c1eb05b8?key=card"],
       url: deal("de-plesman-openingsactie-beleef-den-haag-in-stijl-vanuit-een-nieuw-5-hotel-incl-3-gangendiner"),
       includes: ["Dagelijks ontbijtbuffet", "3-Gangendiner", "Gratis parkeren", "Voormalig kantoor van KLM"],
       discount: "-41%",
@@ -108,7 +109,8 @@ CrmWinkelmandje2Dagen.PreviewProps = {
       place: "Scheveningen",
       packageTitle: "Luxe overnachten aan het strand van Scheveningen",
       line: "Vanaf €399 voor 2 personen",
-      image: `${baseUrl}/images/mail/crm/deals/kurhaus.jpg`,
+      image: "https://asset.vialuxury.com/assets/96624129-9f31-44d0-9d7a-c9e4ec027ecd?key=card",
+    extraImages: ["https://asset.vialuxury.com/assets/8c8c5d7a-d2aa-4b8b-9f1c-cc46cd79ec2d?key=card", "https://asset.vialuxury.com/assets/704e26a1-36b1-4d33-b6db-ee2929c51808?key=card"],
       url: deal("grand-hotel-amrath-kurhaus-luxe-overnachting-aan-het-strand-van-scheveningen"),
       includes: ["Dagelijks ontbijtbuffet", "3-Gangendiner", "Aan het strand", "Late check-out"],
       discount: "-41%",
