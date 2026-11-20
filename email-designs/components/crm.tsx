@@ -276,30 +276,40 @@ export function FeaturedDeal({ deal: d, cta, priceRow = true }: { deal: RowDeal;
 }
 
 /** Fotocollage bovenaan de kaart: links de hoofdfoto, rechts twee kleinere onder elkaar.
- *  Losse `<img>`-tags in een tabel — geen CSS-achtergrond, zodat Outlook de foto's ook toont.
- *  Op mobiel (max-width 480) vallen de kolommen onder elkaar via `.stack`. */
+ *
+ *  Losse `<img>`-tags in een tabel, geen CSS-achtergrond: Outlook toont achtergronden niet.
+ *  Geen `object-fit` — Outlook en Gmail kennen dat niet en zouden de foto uitrekken. In plaats
+ *  daarvan hebben alle vakken exact de verhouding van de bronfoto (`?key=card` is 966x604,
+ *  oftewel 1,599), zodat er niets bijgesneden hoeft te worden:
+ *    groot 372x233, klein 184x115 (115 + 3 tussenruimte + 115 = 233).
+ *  De tussenruimte is padding op de cel, niet marge op de foto; marge op een `<img>` is in
+ *  Outlook onbetrouwbaar. Breedte- en hoogte-attributen staan erop voor Outlook, de stijl
+ *  `height:auto` laat de foto meeschalen in de clients die dat wel kunnen. */
 function DealCollage({ d }: { d: RowDeal }) {
   const extra = (d.extraImages ?? []).slice(0, 2);
   const alt = d.packageTitle ?? d.hotelName ?? "";
+  const fluid = { display: "block", width: "100%", height: "auto" as const };
   if (extra.length < 2) {
     return (
       <Link href={d.url}>
-        <Img src={d.image} alt={alt} width="560" height="300" style={{ display: "block", width: "100%", height: "300px", objectFit: "cover" }} />
+        <Img src={d.image} alt={alt} width="560" height="350" style={fluid} />
       </Link>
     );
   }
   return (
     <Row>
-      <Column className="stack" style={{ width: "372px", verticalAlign: "top", paddingRight: "4px" }}>
+      <Column className="stack" style={{ width: "372px", verticalAlign: "top", paddingRight: "3px" }}>
         <Link href={d.url}>
-          <Img src={d.image} alt={alt} width="372" height="248" style={{ display: "block", width: "100%", height: "248px", objectFit: "cover" }} />
+          <Img src={d.image} alt={alt} width="372" height="233" style={fluid} />
         </Link>
       </Column>
       <Column className="stack" style={{ width: "184px", verticalAlign: "top" }}>
         {extra.map((src, i) => (
-          <Link key={src} href={d.url}>
-            <Img src={src} alt="" width="184" height="122" style={{ display: "block", width: "100%", height: "122px", objectFit: "cover", marginTop: i ? "4px" : 0 }} />
-          </Link>
+          <Section key={src} style={i ? { paddingTop: "3px" } : undefined}>
+            <Link href={d.url}>
+              <Img src={src} alt="" width="184" height="115" style={fluid} />
+            </Link>
+          </Section>
         ))}
       </Column>
     </Row>
