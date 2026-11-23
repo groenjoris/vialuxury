@@ -16,9 +16,9 @@ import { desIndes, lauswolt, steenenburg, vanOys, villaRuimzicht } from "../lib/
 // uur geldig) en €15 op de tweede. Eén boeking kan alleen een veelvoud van hetzelfde arrangement
 // bevatten, dus de tweede boeking heeft een eigen code nodig: daarvan staat alleen het vaste begin
 // in de mail ("WENS2-#####"); de volledige code komt in een nieuwe mail zodra de eerste is gebruikt.
-// Daaronder drie groepen op een beige vlak (DealGroup, zoals in de terugkomactie): "Hier geldt je
-// code" (het favoriet, groot), "Ook bij je favorieten" (met een zwarte knop naar de favorieten) en
-// "Vergelijkbare deals".
+// Daaronder twee blokken op een beige vlak (DealGroup), elk met een grote titel: "Jouw favorieten"
+// (de eerste groot, de rest als rij, met een zwarte knop naar de favorieten) en "Vergelijkbaar met
+// je favorieten" met de regel "Ook hier is je korting geldig!".
 // Onderwerp: "Alsjeblieft [voornaam], €10 korting op [hotelnaam]" (geen haast in het onderwerp: de
 // ontvanger krijgt de coupon hier voor het eerst). Preheader: tot wanneer de code geldig is.
 
@@ -70,19 +70,14 @@ export default function CrmFavorieten({ recipientEmail, firstName, first: code1,
             />
           </Section>
 
-          {/* Drie groepen op een beige vlak, zoals in de terugkomactie: het favoriet waarop de code
-              geldt (groot), de andere favorieten met de knop naar de favorieten, en vergelijkbare deals */}
+          {/* Twee blokken op een beige vlak, elk met een grote titel: de favorieten (de eerste groot,
+              de rest als rij, met de knop naar de favorieten) en vergelijkbare deals */}
           <Section style={{ padding: "20px 16px 40px" }}>
             {first && (
-              <DealGroup title="Hier geldt je code">
+              <DealGroup big title={others.length ? "Jouw favorieten" : "Jouw favoriet"}>
                 <FeaturedDeal deal={first} />
-              </DealGroup>
-            )}
-
-            {others.length > 0 && (
-              <DealGroup title="Ook bij je favorieten" subtitle="Gebruik je code voor een van je favorieten">
-                {others.map((d, i) => (
-                  <DealRow key={d.url} deal={d} top={i ? groupGap : undefined} />
+                {others.map((d) => (
+                  <DealRow key={d.url} deal={d} top={groupGap} />
                 ))}
                 <Section style={{ marginTop: "16px" }}>
                   <SecondaryButton href={favoritesUrl} dark>Bekijk je favorieten</SecondaryButton>
@@ -90,7 +85,7 @@ export default function CrmFavorieten({ recipientEmail, firstName, first: code1,
               </DealGroup>
             )}
 
-            <DealGroup title="Vergelijkbare deals" subtitle={`Die lijken op ${name}`}>
+            <DealGroup big title="Vergelijkbaar met je favorieten" subtitle="Ook hier is je korting geldig!">
               {similar.map((d, i) => (
                 <DealRow key={d.url} deal={d} top={i ? groupGap : undefined} />
               ))}
