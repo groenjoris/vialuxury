@@ -65,7 +65,7 @@
           Concept voor geautomatiseerde e-mails (desktop, light mode)
         </p>
         <div class="start-section__buttons">
-          <NuxtLink class="start-btn" to="/crm/crm-jaar-geleden">Voorbeeldmails</NuxtLink>
+          <NuxtLink class="start-btn" to="/crm/crm-winkelmandje">Voorbeeldmails</NuxtLink>
         </div>
       </section>
 

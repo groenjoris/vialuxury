@@ -194,11 +194,12 @@ omdat je een account of boeking hebt bij ViaLuxury."; de CRM-mails houden de opt
 ## CRM (concept, sinds 2026-11-02)
 
 Artist impression van geautomatiseerde e-mails, alleen desktop + light mode. Mails (in de volgorde
-van het paneel links in de preview): `crm-jaar-geleden`, `crm-winkelmandje`
-(2 uur na verlaten; variant `crm-winkelmandje-naam-onbekend` via de schakelaar "Naam bekend | Naam onbekend" in de previewkop,
-registry `variantOf`, labels in `variantLabels` in `app/pages/crm/[slug].vue`), `crm-winkelmandje-2-dagen`, `crm-thema-stedentrips` (A6), `crm-zoekopdracht`,
-`crm-verlanglijst`, `crm-review`, `crm-terugkomactie` (€20), `crm-terugkomactie-herinnering` (zelfde
-component met `daysLeft`) en `crm-nagenieten` (staat bewust als laatste). Bronnen in
+van het paneel links in de preview, de klantreis): `crm-winkelmandje` (2 uur na verlaten; variant
+`crm-winkelmandje-naam-onbekend` via de schakelaar "Naam bekend | Naam onbekend" in de previewkop, registry
+`variantOf`, labels in `variantLabels` in `app/pages/crm/[slug].vue`), `crm-winkelmandje-2-dagen`,
+`crm-zoekopdracht`, `crm-verlanglijst`, `crm-review`, de repeat-bookingflow `crm-nagenieten`,
+`crm-terugkomactie` (€20), `crm-terugkomactie-herinnering` (zelfde component met `daysLeft`) en
+`crm-jaar-geleden`, en als laatste `crm-thema-stedentrips` (A6). Bronnen in
 `email-designs/emails/crm-*.tsx`, bouwstenen in `email-designs/components/crm.tsx` (`DealRow`,
 `FeaturedDeal`, `DealList`, `CodeBlock`, `ThemePicker`, `IconLine`) plus `CrmHeader`/`CrmFooter`,
 voorbeelddeals in `email-designs/lib/crmDeals.ts`, registry-sectie `"crm"`; de export schrijft alleen
