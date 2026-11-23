@@ -239,7 +239,7 @@ export const emails: EmailEntry[] = [
   {
     slug: "crm-terugkomactie",
     title: "Terugkomactie €20 (14 dagen na vertrek)",
-    description: "Kortingscode als coupon, één knop, jouw verblijf, 'Pas je korting toe' met drie groepjes van twee suggesties en de themakiezer.",
+    description: "Kortingscode als coupon, één knop, jouw verblijf, 'Tips voor je kortingscode' met drie groepjes van twee suggesties en de themakiezer.",
     section: "crm",
     subject: "Sanne, €20 cadeau voor je volgende verblijf",
     preheader: "Een persoonlijk bedankje, alleen voor jou. Geldig tot en met 16 december 2026.",

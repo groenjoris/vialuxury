@@ -15,7 +15,7 @@ import { asStay, carltonBeach, desIndes, fashionHotel, lauswolt, steenenburg, va
 //   2. de coupon: bedrag, code, geldigheid en "Vul de code in bij het boeken" in één blok,
 //   3. waar je heen kunt (de ene oranje knop: Bekijk arrangementen),
 //   4. context: jouw verblijf als dealrij,
-//   5. "Pas je korting toe" (grote titel) met "Boek uiterlijk [vervaldatum]" en drie groepjes van
+//   5. "Tips voor je kortingscode" (grote titel) met "Boek uiterlijk [vervaldatum] 23:59 uur" en drie groepjes van
 //      twee suggesties: in de sfeer van het vorige hotel, populair deze maand, deals met wellness,
 //   6. de themakiezer.
 // Onderwerp: "[voornaam], €20 cadeau voor je volgende verblijf"
@@ -79,8 +79,8 @@ export default function CrmTerugkomactie({ recipientEmail, firstName, stay, code
           {/* Waar je de korting kunt gebruiken: grote titel met de uiterste datum, daaronder groepjes
               van twee suggesties, elk met een subtitel */}
           <Section className="m-pad" style={{ padding: reminder ? "44px 32px 40px" : "44px 32px 0" }}>
-            <Heading as="h2" className="m-h1" style={s.h1}>Pas je korting toe</Heading>
-            <Text style={{ ...s.body, color: c.muted, margin: "8px 0 0" }}>Boek uiterlijk {code.deadline}</Text>
+            <Heading as="h2" className="m-h1" style={s.h1}>Tips voor je kortingscode</Heading>
+            <Text style={{ ...s.body, color: c.muted, margin: "8px 0 0" }}>Boek uiterlijk {code.deadline} 23:59 uur</Text>
             {groups.map((g, gi) => (
               <Section key={g.title} style={{ marginTop: gi ? "36px" : "24px" }}>
                 <Text style={s.kop}>{g.title}</Text>
