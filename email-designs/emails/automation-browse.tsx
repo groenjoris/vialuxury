@@ -2,7 +2,7 @@ import { Body, Container, Head, Heading, Html, Preview, Section, Text } from "@r
 import * as React from "react";
 import CrmFooter from "../components/CrmFooter";
 import CrmHeader from "../components/CrmHeader";
-import { BrandSection, crmCss, DealList, FeaturedDeal, type RowDeal, s } from "../components/crm";
+import { BrandSection, cardGap, crmCss, DealRow, FeaturedDeal, type RowDeal, s } from "../components/crm";
 import { lauswolt, steenenburg, vanOys } from "../lib/crmDeals";
 import { font, newsletter } from "../components/theme";
 
@@ -12,6 +12,8 @@ import { font, newsletter } from "../components/theme";
 //   S1 Header (logo) → Kop → Intro → S17 Achtergelaten arrangement (het bekeken arrangement:
 //   foto, hotelnaam, plaats, prijs en wat er inbegrepen is) → S4 Hoteldeals (twee alternatieven) →
 //   S6 Merksectie (alleen mail 2) → S13 Footer.
+// De bovenste kaart van een mail is altijd de grote kaart (foto boven de tekst), alle kaarten
+// daaronder zijn dealrijen (foto links). Hier is dat het bekeken arrangement.
 // Mergevelden in de teksten: [hotelnaam] en [plaats], hier ingevuld met voorbeelddata.
 
 type Props = {
@@ -53,7 +55,9 @@ export default function AutomationBrowse({ recipientEmail, preheader, heading, i
 
           {/* S4 Hoteldeals: vergelijkbare arrangementen als alternatief */}
           <Section className="m-pad" style={{ padding: "28px 32px 0" }}>
-            <DealList deals={alternatives} />
+            {alternatives.map((d) => (
+              <DealRow key={d.url} deal={d} top={cardGap} />
+            ))}
           </Section>
 
           {/* S6 Merksectie */}

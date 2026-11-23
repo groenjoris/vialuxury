@@ -2,7 +2,7 @@ import { Body, Container, Head, Heading, Html, Preview, Section, Text } from "@r
 import * as React from "react";
 import CrmFooter from "../components/CrmFooter";
 import CrmHeader from "../components/CrmHeader";
-import { crmCss, DealList, FeaturedDeal, type GuestRating, GuestRatingSection, type RowDeal, s, ServiceSection } from "../components/crm";
+import { cardGap, crmCss, DealRow, FeaturedDeal, type GuestRating, GuestRatingSection, type RowDeal, s, ServiceSection } from "../components/crm";
 import { desIndes, dePlesman, voco } from "../lib/crmDeals";
 import { font, newsletter } from "../components/theme";
 
@@ -11,6 +11,8 @@ import { font, newsletter } from "../components/theme";
 // Secties in de volgorde van de sheet:
 //   S1 Header (logo) → Kop → Intro → S17 Achtergelaten arrangement (het winkelmandje) →
 //   S21 Gastenoordeel (alleen mail 3) → S4 Hoteldeals (mail 2 en 3, twee alternatieven) →
+// De bovenste kaart van een mail is altijd de grote kaart (foto boven de tekst), alle kaarten
+// daaronder zijn dealrijen (foto links). Hier is dat het winkelmandje, dus de alternatieven zijn rijen.
 //   S15 Servicesectie (alleen mail 1) → S13 Footer.
 // Mergevelden in de teksten: [hotelnaam], [aankomstdatum], [nachten], [personen]. Hier ingevuld
 // met voorbeelddata uit deals.json, zodat het ontwerp leesbaar is; in Klaviyo worden het merge tags.
@@ -65,7 +67,9 @@ export default function AutomationCart({ recipientEmail, preheader, heading, int
           {/* S4 Hoteldeals: vergelijkbare arrangementen als alternatief */}
           {alternatives && alternatives.length > 0 && (
             <Section className="m-pad" style={{ padding: "28px 32px 0" }}>
-              <DealList deals={alternatives} />
+              {alternatives.map((d) => (
+                <DealRow key={d.url} deal={d} top={cardGap} />
+              ))}
             </Section>
           )}
 

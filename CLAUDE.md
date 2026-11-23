@@ -292,6 +292,11 @@ Open punten in de sheet zelf: de preheader van `tf027` zegt "Drie alternatieven"
 twee dealplekken heeft (rij 20 is leeg), en voor de themategel "Hotels met experiences" bestaat nog
 geen landingspagina, dus die staat niet in de themasectie van `tf031`.
 
+Kaartvolgorde: de bovenste dealkaart van een mail is altijd de grote kaart (foto boven de tekst,
+`FeaturedDeal`), alle kaarten daaronder zijn dealrijen (foto links, `DealRow`). In de winkelmandje-
+en browsemails is die bovenste kaart het achtergelaten of bekeken arrangement, dus de alternatieven
+zijn rijen; in de zoekmails is het het eerste zoekresultaat.
+
 Foto's in alle CRM- en automationmails staan op 16:9: de uitgelichte dealkaart 560×315, de dealrij
 190×107 en de grote sfeerfoto's 626×352, met `object-fit: cover`.
 
