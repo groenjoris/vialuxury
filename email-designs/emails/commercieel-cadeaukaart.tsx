@@ -87,9 +87,9 @@ export default function CommercieelCadeaukaart({ recipientEmail, firstName, hero
   );
 }
 
-// Staffel uit de aangeleverde bonusbeelden (€50 → €15, €100 → €25, €200 → 2 x €30, €300 → 3 x €40).
+// Staffel uit de aangeleverde bonusbeelden (€50 → €15, €100 → €25, €200 → 2 x €30, €300, €400 en €500 → 3 x €40).
 // Elke rij linkt naar de productpagina van die kaart in de echte cadeaukaartshop
-// (cadeaukaart.vialuxury.com, productId 11 t/m 14); de knop gaat naar het productoverzicht daar.
+// (cadeaukaart.vialuxury.com, productId 11 t/m 16); de knop gaat naar het productoverzicht daar.
 const product = (id: number) => `https://cadeaukaart.vialuxury.com/Product/ProductDetails?productId=${id}`;
 CommercieelCadeaukaart.PreviewProps = {
   recipientEmail: "sanne.devries@example.com",
@@ -99,7 +99,7 @@ CommercieelCadeaukaart.PreviewProps = {
   title: "Maak iemand blij met een cadeaukaart en ontvang zelf tot €120 korting",
   intro: (
     <>
-      Met een ViaLuxury-cadeaukaart geef je een hotelovernachting cadeau, vrij te besteden bij meer dan 600 arrangementen. En jij krijgt er zelf ook iets voor terug: bij elke cadeaukaart die je bestelt, sturen we jou een <strong>persoonlijke kortingscode</strong>. Hoe hoger de waarde, hoe hoger je korting. Bij een cadeaukaart van €300 is dat <strong>€120</strong>.
+      Met een ViaLuxury-cadeaukaart geef je een hotelovernachting cadeau, vrij te besteden bij meer dan 600 arrangementen. En jij krijgt er zelf ook iets voor terug: bij elke cadeaukaart die je bestelt, sturen we jou een <strong>persoonlijke kortingscode</strong>. Hoe hoger de waarde, hoe hoger je korting. Vanaf een cadeaukaart van €300 is dat <strong>€120</strong>.
     </>
   ),
   tiers: [
@@ -107,6 +107,8 @@ CommercieelCadeaukaart.PreviewProps = {
     { value: "€100", bonus: "€25 korting", url: product(12) },
     { value: "€200", bonus: "€60 korting", note: "2 codes van €30", url: product(13) },
     { value: "€300", bonus: "€120 korting", note: "3 codes van €40", url: product(14) },
+    { value: "€400", bonus: "€120 korting", note: "3 codes van €40", url: product(15) },
+    { value: "€500", bonus: "€120 korting", note: "3 codes van €40", url: product(16) },
   ],
   closing: "Of je die korting zelf gebruikt of ook cadeau geeft, bepaal je helemaal zelf. Wat een feest!",
   orderUrl: "https://cadeaukaart.vialuxury.com/Product/Products",

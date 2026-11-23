@@ -244,9 +244,9 @@ de R1-zoekpagina); bronnen `email-designs/emails/commercieel-*.tsx`, foto's in
 5. `commercieel-cadeaukaart` ("Cadeaukaart"): cadeaukaarten verkopen. Sfeerbeeld in twee helften over de hele breedte
    (`cadeaukaart-hero.jpg`: links de experience, rechts de productfoto op beige), titel "Maak iemand blij met een
    cadeaukaart en ontvang zelf tot €120 korting", brief met de uitleg, de staffel als tabel met twee kolommen ("Waarde
-   cadeaukaart" | "Jouw persoonlijke korting": €50 → €15, €100 → €25, €200 → €60 (2 x €30), €300 → €120 (3 x €40)),
+   cadeaukaart" | "Jouw persoonlijke korting": €50 → €15, €100 → €25, €200 → €60 (2 x €30), €300, €400 en €500 → €120 (3 x €40)),
    slotzin en de knop "Bestel een cadeaukaart". Elke rij van de tabel linkt naar de productpagina in de echte
-   cadeaukaartshop (`cadeaukaart.vialuxury.com/Product/ProductDetails?productId=11` t/m `14`), de knop naar het
+   cadeaukaartshop (`cadeaukaart.vialuxury.com/Product/ProductDetails?productId=11` t/m `16`), de knop naar het
    productoverzicht (`/Product/Products`). Daaronder alleen de
    hulplijn, geen Snel zoeken.
 
