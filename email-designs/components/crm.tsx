@@ -23,9 +23,6 @@ body { margin: 0 !important; padding: 0 !important; }
   .stack { display: block !important; width: 100% !important; padding: 0 0 12px !important; }
   .m-pad { padding-left: 16px !important; padding-right: 16px !important; }
   .m-h1 { font-size: 28px !important; }
-  /* Prijsrij: het kortingsblokje en de prijs blijven naast elkaar, de knop zakt eronder.
-     Samen op een regel vraagt de rij ruim 470 px en zou de hele mail horizontaal uitlopen. */
-  .m-cta { display: block !important; width: 100% !important; text-align: left !important; padding: 14px 0 0 !important; }
 }
 `;
 
@@ -193,27 +190,19 @@ function RichDealPrice({ d, cta }: { d: RowDeal; cta: string }) {
         <Text key={l} style={{ ...s.title, margin: i ? "2px 0 0" : "14px 0 0" }}>{l}</Text>
       ))}
       {d.priceFor && <Text style={{ ...s.name, margin: "14px 0 0" }}>{d.priceFor}</Text>}
-      {/* Kortingsblokje en prijs zitten in één cel (eigen tabelletje), de knop in de tweede.
-          Op mobiel krijgen beide de klasse stack, dus zakt de knop onder de prijs in plaats van
-          dat de rij de mail horizontaal uit laat lopen; een losse cel op display:block zou in de
-          rij blijven staan. Outlook negeert de mediaquery en houdt alles op één regel. */}
       <Row style={{ marginTop: "8px" }}>
-        <Column className="stack" style={{ verticalAlign: "middle" }}>
-          <Row>
-            {d.discount && (
-              <Column style={{ verticalAlign: "middle", width: "1%", paddingRight: "12px" }}>
-                <span style={{ ...priceRowBox, display: "inline-block", whiteSpace: "nowrap", backgroundColor: c.text, fontFamily: font.body, padding: "11px 12px" }}>{d.discount}</span>
-              </Column>
-            )}
-            <Column style={{ verticalAlign: "middle" }}>
-              <Text style={{ fontFamily: font.body, fontSize: "16px", lineHeight: "24px", color: c.muted, margin: 0, whiteSpace: "nowrap" }}>
-                Vanaf <span style={{ fontSize: "20px", fontWeight: 700, color: c.text }}>{d.price}</span>
-                {d.original && <span style={{ color: "#D32F2F", textDecoration: "line-through", marginLeft: "8px" }}>{d.original}</span>}
-              </Text>
-            </Column>
-          </Row>
+        {d.discount && (
+          <Column style={{ verticalAlign: "middle", width: "1%", paddingRight: "12px" }}>
+            <span style={{ ...priceRowBox, display: "inline-block", whiteSpace: "nowrap", backgroundColor: c.text, fontFamily: font.body, padding: "11px 12px" }}>{d.discount}</span>
+          </Column>
+        )}
+        <Column style={{ verticalAlign: "middle" }}>
+          <Text style={{ fontFamily: font.body, fontSize: "16px", lineHeight: "24px", color: c.muted, margin: 0, whiteSpace: "nowrap" }}>
+            Vanaf <span style={{ fontSize: "20px", fontWeight: 700, color: c.text }}>{d.price}</span>
+            {d.original && <span style={{ color: "#D32F2F", textDecoration: "line-through", marginLeft: "8px" }}>{d.original}</span>}
+          </Text>
         </Column>
-        <Column className="stack m-cta" style={{ verticalAlign: "middle", textAlign: "right", width: "1%" }}>
+        <Column style={{ verticalAlign: "middle", textAlign: "right", width: "1%" }}>
           <Button href={d.url} style={{ ...priceRowBox, backgroundColor: c.cta, fontFamily: font.body, padding: "11px 20px", textDecoration: "none", whiteSpace: "nowrap" }}>
             {cta}
           </Button>
@@ -272,12 +261,7 @@ export function DealRow({ deal: d, cta }: { deal: RowDeal; cta?: string }) {
  *    groot 372x233, klein 184x115 (115 + 3 tussenruimte + 115 = 233).
  *  De tussenruimte is padding op de cel, niet marge op de foto; marge op een `<img>` is in
  *  Outlook onbetrouwbaar. Breedte- en hoogte-attributen staan erop voor Outlook, de stijl
- *  `height:auto` laat de foto meeschalen in de clients die dat wel kunnen.
- *
- *  De cellen krijgen hun breedte in procenten (66,43 % en 32,86 %, samen met de 3 px precies
- *  100 %) en géén klasse `stack`: op mobiel blijft de collage dus dezelfde drie vakken naast
- *  elkaar, alleen kleiner, in plaats van drie foto's onder elkaar. Outlook negeert de stijlen en
- *  gebruikt de breedte-attributen, dus daar blijft het 372 + 184. */
+ *  `height:auto` laat de foto meeschalen in de clients die dat wel kunnen. */
 function DealCollage({ d }: { d: RowDeal }) {
   const extra = (d.extraImages ?? []).slice(0, 2);
   const alt = d.packageTitle ?? d.hotelName ?? "";
@@ -291,12 +275,12 @@ function DealCollage({ d }: { d: RowDeal }) {
   }
   return (
     <Row>
-      <Column style={{ width: "66.43%", verticalAlign: "top", paddingRight: "3px" }}>
+      <Column className="stack" style={{ width: "372px", verticalAlign: "top", paddingRight: "3px" }}>
         <Link href={d.url}>
           <Img src={d.image} alt={alt} width="372" height="233" style={fluid} />
         </Link>
       </Column>
-      <Column style={{ width: "32.86%", verticalAlign: "top" }}>
+      <Column className="stack" style={{ width: "184px", verticalAlign: "top" }}>
         {extra.map((src, i) => (
           <Section key={src} style={i ? { paddingTop: "3px" } : undefined}>
             <Link href={d.url}>
