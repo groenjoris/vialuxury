@@ -280,7 +280,7 @@ export function DealRow({ deal: d, cta, top = "12px" }: { deal: RowDeal; cta?: s
 export function FeaturedDeal({ deal: d, cta, priceRow = true }: { deal: RowDeal; cta?: string; priceRow?: boolean }) {
   const rich = !!d.price;
   return (
-    <Section style={{ border: `1px solid #E5E5E5`, borderRadius: "8px", marginTop: "12px", overflow: "hidden" }}>
+    <Section style={{ backgroundColor: "#FFFFFF", border: `1px solid #E5E5E5`, borderRadius: "8px", marginTop: "12px", overflow: "hidden" }}>
       <Link href={d.url}>
         <Img src={d.image} alt={d.packageTitle ?? d.hotelName ?? ""} width="560" height="300" style={{ display: "block", width: "100%", height: "300px", objectFit: "cover" }} />
       </Link>
@@ -297,6 +297,22 @@ export function FeaturedDeal({ deal: d, cta, priceRow = true }: { deal: RowDeal;
           </Section>
         </Section>
       )}
+    </Section>
+  );
+}
+
+/** Ruimte tussen twee dealkaarten binnen een DealGroup. */
+export const groupGap = "16px";
+
+/** Groep suggesties op een beige vlak: subtitel (20 serif) en eventueel een grijze regel eronder,
+ *  dan de dealkaarten (wit). Zet groepen in een Section met `padding: "… 16px"`: het vlak steekt dan
+ *  links en rechts 16 px buiten de tekstkolom, zodat de kaarten even breed blijven als elders. */
+export function DealGroup({ title, subtitle, children }: { title: string; subtitle?: string; children: React.ReactNode }) {
+  return (
+    <Section style={{ backgroundColor: "#F4F1EC", borderRadius: "8px", padding: "20px 16px", marginTop: "16px" }}>
+      <Text style={s.kop}>{title}</Text>
+      {subtitle && <Text style={{ ...s.muted, margin: "2px 0 0" }}>{subtitle}</Text>}
+      {children}
     </Section>
   );
 }

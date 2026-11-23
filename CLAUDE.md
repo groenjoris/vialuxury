@@ -246,6 +246,9 @@ Regels voor elke CRM-mail:
 - Terugkomactie (14 dagen) en herinnering (30 dagen, copy op haast): één coupon van €20. Daaronder de grote titel "Tips voor je
   kortingscode" met "Boek uiterlijk [vervaldatum] 23:59 uur" en drie groepjes van twee dealrijen, elk op een eigen beige vlak met de
   subtitel erin: "In de sfeer van [vorig hotel]", "Populair deze maand" en "Deals met wellness". Geen blok "Jouw verblijf".
+- Gegroepeerde suggesties (`DealGroup`, in de terugkomactie en de favorietenmail): elke groep op een eigen beige vlak met
+  de subtitel (20 serif) en eventueel een grijze regel erin, kaarten wit, 16 px ertussen; het vlak steekt 16 px buiten de
+  tekstkolom zodat de kaarten even breed blijven.
 - Tussen twee dealkaarten onder elkaar staat 24 px (`cardGap`), tussen een titel en de eerste kaart 12 px.
 - Preheaders zonder gegevens die lastig te automatiseren zijn of niet altijd bestaan (geen plaatsen of prijzen van de
   suggesties, geen datum uit de zoekopdracht).

@@ -2,7 +2,7 @@ import { Body, Container, Head, Heading, Html, Preview, Section, Text } from "@r
 import * as React from "react";
 import CrmFooter from "../components/CrmFooter";
 import CrmHeader from "../components/CrmHeader";
-import { CodeBlock, crmCss, CrmHelp, DealRow, Letter, PrimaryButton, type RowDeal, s, site, ThemePicker } from "../components/crm";
+import { CodeBlock, crmCss, CrmHelp, DealGroup, DealRow, groupGap, Letter, PrimaryButton, type RowDeal, s, site, ThemePicker } from "../components/crm";
 import { font, newsletter } from "../components/theme";
 import { carltonBeach, desIndes, fashionHotel, steenenburg, vanOys, villaRuimzicht } from "../lib/crmDeals";
 
@@ -77,12 +77,11 @@ export default function CrmTerugkomactie({ recipientEmail, firstName, code, days
               steekt links en rechts 16 px uit, zodat de kaarten even breed blijven als elders. */}
           <Section style={{ padding: reminder ? "8px 16px 40px" : "8px 16px 0" }}>
             {groups.map((g) => (
-              <Section key={g.title} style={{ backgroundColor: "#F4F1EC", borderRadius: "8px", padding: "20px 16px 20px", marginTop: "16px" }}>
-                <Text style={s.kop}>{g.title}</Text>
+              <DealGroup key={g.title} title={g.title}>
                 {g.deals.map((d, i) => (
-                  <DealRow key={d.url} deal={d} top={i ? "16px" : undefined} />
+                  <DealRow key={d.url} deal={d} top={i ? groupGap : undefined} />
                 ))}
-              </Section>
+              </DealGroup>
             ))}
           </Section>
 

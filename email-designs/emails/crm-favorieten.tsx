@@ -2,7 +2,7 @@ import { Body, Container, Head, Heading, Html, Preview, Section, Text } from "@r
 import * as React from "react";
 import CrmFooter from "../components/CrmFooter";
 import CrmHeader from "../components/CrmHeader";
-import { cardGap, CouponPair, crmCss, CrmHelp, DealRow, FeaturedDeal, Letter, type RowDeal, s, SecondaryButton, site } from "../components/crm";
+import { CouponPair, crmCss, CrmHelp, DealGroup, DealRow, FeaturedDeal, groupGap, Letter, type RowDeal, s, SecondaryButton, site } from "../components/crm";
 import { font, newsletter } from "../components/theme";
 import { desIndes, lauswolt, steenenburg, vanOys, villaRuimzicht } from "../lib/crmDeals";
 
@@ -10,16 +10,15 @@ import { desIndes, lauswolt, steenenburg, vanOys, villaRuimzicht } from "../lib/
 // Oorspronkelijk van Jesse (origin/redesign-jesse, crm-verlanglijst.tsx), omgezet naar onze
 // bouwstenen en regels. Wie iets aan zijn favorieten toevoegt, krijgt een code met korting daarop.
 // (De code is in werkelijkheid algemeen geldig; dat benadrukken we niet.)
-// De mail begint als brief (Letter): aanhef, het bericht op haast (je favoriet staat klaar, de code
-// verloopt, populaire datums zijn snel vol) en de ondertekening. Twee coupons naast elkaar
-// (CouponPair): €10 op de eerste boeking (code direct te gebruiken, 24 uur geldig) en €15 op de
-// tweede. Eén boeking kan alleen een veelvoud van hetzelfde arrangement bevatten, dus de tweede
-// boeking heeft een eigen code nodig: daarvan staat alleen het vaste begin in de mail
-// ("WENS2-#####"); de volledige code komt in een nieuwe mail zodra de eerste is gebruikt. De
-// coupons staan boven de vouw, direct boven het favoriet. De titels
-// "Hier geldt je code" en "Ook bij je favorieten" staan in het grote formaat (32) direct boven hun
-// blok, net als "Vergelijkbare deals" met de subtitel "Die lijken op [hotel]". Onder de andere
-// favorieten (0, 1 of 2) een zwarte knop naar de favorieten.
+// De mail begint als brief (Letter): aanhef, het bericht (leuk dat je dit favoriet opsloeg, daarom
+// extra korting als je binnen 24 uur boekt, en nog meer bij twee arrangementen) en de ondertekening.
+// Twee coupons naast elkaar (CouponPair): €10 op de eerste boeking (code direct te gebruiken, 24
+// uur geldig) en €15 op de tweede. Eén boeking kan alleen een veelvoud van hetzelfde arrangement
+// bevatten, dus de tweede boeking heeft een eigen code nodig: daarvan staat alleen het vaste begin
+// in de mail ("WENS2-#####"); de volledige code komt in een nieuwe mail zodra de eerste is gebruikt.
+// Daaronder drie groepen op een beige vlak (DealGroup, zoals in de terugkomactie): "Hier geldt je
+// code" (het favoriet, groot), "Ook bij je favorieten" (met een zwarte knop naar de favorieten) en
+// "Vergelijkbare deals".
 // Onderwerp: "Alsjeblieft [voornaam], €10 korting op [hotelnaam]" (geen haast in het onderwerp: de
 // ontvanger krijgt de coupon hier voor het eerst). Preheader: tot wanneer de code geldig is.
 
@@ -53,10 +52,11 @@ export default function CrmFavorieten({ recipientEmail, firstName, first: code1,
       <Body style={{ backgroundColor: c.bg, margin: 0, padding: 0, fontFamily: font.body }}>
         <CrmHeader />
         <Container style={{ width: "100%", maxWidth: "626px" }}>
-          {/* Briefopening: aanhef, het bericht op haast en de ondertekening */}
+          {/* Briefopening: aanhef, het bericht (leuk dat je dit favoriet opsloeg, daarom extra korting) en
+              de ondertekening */}
           <Section className="m-pad" style={{ padding: "32px 32px 0" }}>
             <Letter firstName={firstName}>
-              {name} staat bij je favorieten. Boek je nu, dan krijg je {code1.value} cadeau, en {code2.value} op je tweede boeking. Wees er snel bij: je eerste code is nog maar {code1.hoursLeft} uur geldig en populaire datums zijn snel vol.
+              Leuk dat je {name} als favoriet hebt opgeslagen! Nu snappen we beter wat jouw hartje bekoort en daarom bieden we een extra korting als je in de komende {code1.hoursLeft} uur boekt. En nog meer korting als je 2 arrangementen boekt!
             </Letter>
           </Section>
 
@@ -70,34 +70,31 @@ export default function CrmFavorieten({ recipientEmail, firstName, first: code1,
             />
           </Section>
 
-          {/* Het favoriet waarop de code geldt, met de ene oranje knop */}
-          {first && (
-            <Section className="m-pad" style={{ padding: "36px 32px 0" }}>
-              <Heading as="h1" className="m-h1" style={s.h1}>Hier geldt je code</Heading>
-              <FeaturedDeal deal={first} />
-            </Section>
-          )}
+          {/* Drie groepen op een beige vlak, zoals in de terugkomactie: het favoriet waarop de code
+              geldt (groot), de andere favorieten met de knop naar de favorieten, en vergelijkbare deals */}
+          <Section style={{ padding: "20px 16px 40px" }}>
+            {first && (
+              <DealGroup title="Hier geldt je code">
+                <FeaturedDeal deal={first} />
+              </DealGroup>
+            )}
 
-          {others.length > 0 && (
-            <Section className="m-pad" style={{ padding: "44px 32px 0" }}>
-              <Heading as="h2" className="m-h1" style={s.h1}>Ook bij je favorieten</Heading>
-              <Text style={{ ...s.body, color: c.muted, margin: "8px 0 0" }}>Gebruik je code voor een van je favorieten</Text>
-              {others.map((d, i) => (
-                <DealRow key={d.url} deal={d} top={i ? cardGap : undefined} />
+            {others.length > 0 && (
+              <DealGroup title="Ook bij je favorieten" subtitle="Gebruik je code voor een van je favorieten">
+                {others.map((d, i) => (
+                  <DealRow key={d.url} deal={d} top={i ? groupGap : undefined} />
+                ))}
+                <Section style={{ marginTop: "16px" }}>
+                  <SecondaryButton href={favoritesUrl} dark>Bekijk je favorieten</SecondaryButton>
+                </Section>
+              </DealGroup>
+            )}
+
+            <DealGroup title="Vergelijkbare deals" subtitle={`Die lijken op ${name}`}>
+              {similar.map((d, i) => (
+                <DealRow key={d.url} deal={d} top={i ? groupGap : undefined} />
               ))}
-              <Section style={{ marginTop: "20px" }}>
-                <SecondaryButton href={favoritesUrl} dark>Bekijk je favorieten</SecondaryButton>
-              </Section>
-            </Section>
-          )}
-
-          <Section className="m-pad" style={{ padding: "44px 32px 40px" }}>
-            {/* Korte titel in het grote formaat, de hotelnaam als subtitel eronder (zoals de themamail) */}
-            <Heading as="h2" className="m-h1" style={s.h1}>Vergelijkbare deals</Heading>
-            <Text style={{ ...s.body, color: c.muted, margin: "8px 0 0" }}>Die lijken op {name}</Text>
-            {similar.map((d, i) => (
-              <DealRow key={d.url} deal={d} top={i ? cardGap : undefined} />
-            ))}
+            </DealGroup>
           </Section>
           {/* Hulplijn */}
           <CrmHelp />
