@@ -309,6 +309,12 @@ Dealrij: de fotokolom toont twee foto's van hetzelfde arrangement onder elkaar (
 `image` en `secondImage` uit deals.json) met 3 px wit ertussen, samen de volle kaarthoogte. Op
 mobiel valt de tweede foto weg en blijft de hoofdfoto op 16:9 boven de tekst, zoals bij elke kaart.
 
+Voor Figma staat er een tweede versie van dezelfde elf mails in `public/figma/` (met een
+overzichtspagina op `/figma/`): dezelfde inhoud, maar met `div` en flexbox in plaats van tabellen,
+achtergrondfoto's als echte `<img>` en alle afbeeldingen als volledige URL. Zo maakt een
+Figma-importer er autolayout-frames van. Gemaakt met `scripts/html-naar-flexbox.js` uit de gewone
+export; verzenden gaat altijd met de tabelversie onder `public/emails/`.
+
 Secties uit de sheet als bouwstenen in `email-designs/components/crm.tsx`. Bestaand: `CrmHeader` (S1),
 `FeaturedDeal`/`DealRow`/`DealList` (S4) en `CrmFooter` (S13). Nieuw voor deze flows:
 `GuestRatingSection` (S21), `BrandSection` (S6), `ServiceSection` (S15), `SearchSection` (S18) en
