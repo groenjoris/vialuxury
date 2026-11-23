@@ -191,8 +191,10 @@ function RichDealText({ d }: { d: RowDeal }) {
       {d.includes && d.includes.length > 0 && (
         <>
           <Text style={{ fontFamily: font.heading, fontWeight: 600, fontSize: "16px", lineHeight: "1.4", color: c.cta, margin: "12px 0 2px" }}>Arrangement</Text>
+          {/* Hangende inspringing: een inclusie die over twee regels loopt, lijnt op de tweede regel
+              uit met de tekst erboven en niet met het vinkje. 22 px = vinkje (14) plus de ruimte (8). */}
           {d.includes.slice(0, 4).map((inc) => (
-            <Text key={inc} style={{ ...s.muted, margin: "4px 0 0" }}>
+            <Text key={inc} style={{ ...s.muted, margin: "4px 0 0", paddingLeft: "22px", textIndent: "-22px" }}>
               <Img src={checkIcon} alt="" width="14" height="14" style={{ display: "inline-block", verticalAlign: "-1px", marginRight: "8px" }} />
               {inc}
             </Text>
