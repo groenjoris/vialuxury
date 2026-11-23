@@ -2,7 +2,7 @@ import { Body, Column, Container, Head, Heading, Html, Img, Link, Preview, Row, 
 import * as React from "react";
 import CrmFooter from "../components/CrmFooter";
 import CrmHeader from "../components/CrmHeader";
-import { crmCss, DealRow, s, site } from "../components/crm";
+import { crmCss, CrmHelp, DealRow, s, site } from "../components/crm";
 import { baseUrl, font, newsletter } from "../components/theme";
 
 // CRM: reviewmail, 1 dag na thuiskomst. Gebaseerd op de reviewmail van Jesse
@@ -75,15 +75,14 @@ export default function CrmReview({ recipientEmail, firstName, hotelName, stars,
             <DealRow deal={{ hotelName, stars, place, packageTitle, line: stayDates, image, url: dealUrl }} />
           </Section>
 
-          {/* Service als vangnet */}
-          <Section className="m-pad" style={{ padding: "28px 32px 40px" }}>
+          {/* Vangnet voor wie iets te melden heeft; de hulplijn eronder zegt hoe */}
+          <Section className="m-pad" style={{ padding: "28px 32px 20px" }}>
             <Text style={{ ...s.title, margin: 0, color: c.muted }}>
-              Heb je nog vragen, of ging er iets niet zoals je had gehoopt? Laat het ons weten, we helpen je graag.{" "}
-              <Link href={`${site}/veelgestelde-vragen`} style={underline}>Veelgestelde vragen</Link>
-              {" · "}
-              <Link href={`${site}/klantenservice`} style={underline}>Klantenservice</Link>
+              Heb je nog vragen, of ging er iets niet zoals je had gehoopt? Laat het ons weten, we helpen je graag.
             </Text>
           </Section>
+          {/* Hulplijn */}
+          <CrmHelp />
         </Container>
         <CrmFooter recipientEmail={recipientEmail} reason="omdat je bij ons boekte" />
       </Body>

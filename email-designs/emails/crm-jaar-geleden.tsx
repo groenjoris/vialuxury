@@ -1,6 +1,6 @@
 import { Body, Container, Head, Heading, Html, Img, Preview, Section, Text } from "@react-email/components";
 import * as React from "react";
-import { CodeBlock, crmCss, DealRow, PrimaryButton, type RowDeal, s, site } from "../components/crm";
+import { CrmHelp, CodeBlock, crmCss, DealRow, PrimaryButton, type RowDeal, s, site } from "../components/crm";
 import CrmFooter from "../components/CrmFooter";
 import CrmHeader from "../components/CrmHeader";
 import { font, newsletter } from "../components/theme";
@@ -66,6 +66,8 @@ export default function CrmJaarGeleden({ recipientEmail, hotelName, packageTitle
               <DealRow key={d.url} deal={d} />
             ))}
           </Section>
+          {/* Hulplijn */}
+          <CrmHelp />
         </Container>
         <CrmFooter recipientEmail={recipientEmail} reason="omdat je vorig jaar bij ons boekte" />
       </Body>

@@ -2,8 +2,7 @@ import { Body, Container, Head, Html, Preview, Section, Text } from "@react-emai
 import * as React from "react";
 import CrmFooter from "../components/CrmFooter";
 import CrmHeader from "../components/CrmHeader";
-import HelpBanner from "../components/HelpBanner";
-import { crmCss, DealRow, FeaturedDeal, type RowDeal, s, site } from "../components/crm";
+import { crmCss, CrmHelp, DealRow, FeaturedDeal, type RowDeal, s, site } from "../components/crm";
 import { font, newsletter } from "../components/theme";
 
 // CRM mail 4: winkelmandje, 2 dagen na het verlaten van de checkout. Na de mail van
@@ -52,8 +51,8 @@ export default function CrmWinkelmandje2Dagen({ recipientEmail, cart, deals }: P
             <DealRow deal={cart} cta="Ga verder met boeken" />
           </Section>
 
-          {/* Hulplijn, zoals in de mail van 2 uur: er is nog niet geboekt */}
-          <HelpBanner lead="Hulp nodig bij het boeken?" fontSize="16px" padding="36px 32px 40px" />
+          {/* Hulplijn */}
+          <CrmHelp top="36px" />
         </Container>
         <CrmFooter recipientEmail={recipientEmail} reason="omdat je een boeking bij ons startte" />
       </Body>

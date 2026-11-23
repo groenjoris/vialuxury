@@ -2,7 +2,7 @@ import { Body, Container, Head, Heading, Html, Preview, Section, Text } from "@r
 import * as React from "react";
 import CrmFooter from "../components/CrmFooter";
 import CrmHeader from "../components/CrmHeader";
-import { crmCss, DealList, IconLine, PrimaryButton, type RowDeal, s, site } from "../components/crm";
+import { crmCss, CrmHelp, DealList, IconLine, PrimaryButton, type RowDeal, s, site } from "../components/crm";
 import { font, newsletter } from "../components/theme";
 import { dePlesman, desIndes, voco } from "../lib/crmDeals";
 
@@ -59,6 +59,8 @@ export default function CrmZoekopdracht({ recipientEmail, searchTerm, arrivalDat
             <Text style={s.kop}>De arrangementen die het best passen bij wat je zoekt</Text>
             <DealList deals={results} />
           </Section>
+          {/* Hulplijn */}
+          <CrmHelp />
         </Container>
         <CrmFooter recipientEmail={recipientEmail} reason="omdat je een account hebt bij ViaLuxury" />
       </Body>

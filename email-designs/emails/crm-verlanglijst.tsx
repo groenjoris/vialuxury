@@ -2,7 +2,7 @@ import { Body, Container, Head, Heading, Html, Preview, Section, Text } from "@r
 import * as React from "react";
 import CrmFooter from "../components/CrmFooter";
 import CrmHeader from "../components/CrmHeader";
-import { CodeBlock, crmCss, DealRow, FeaturedDeal, type RowDeal, s, SecondaryButton, site } from "../components/crm";
+import { CrmHelp, CodeBlock, crmCss, DealRow, FeaturedDeal, type RowDeal, s, SecondaryButton, site } from "../components/crm";
 import { font, newsletter } from "../components/theme";
 import { desIndes, lauswolt, steenenburg, vanOys, villaRuimzicht } from "../lib/crmDeals";
 
@@ -74,6 +74,8 @@ export default function CrmVerlanglijst({ recipientEmail, code, daysLeft, favori
               <DealRow key={d.url} deal={d} />
             ))}
           </Section>
+          {/* Hulplijn */}
+          <CrmHelp />
         </Container>
         <CrmFooter recipientEmail={recipientEmail} reason="omdat je een account hebt bij ViaLuxury" />
       </Body>

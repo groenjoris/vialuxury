@@ -1,5 +1,6 @@
 import { Button, Column, Img, Link, Row, Section, Text } from "@react-email/components";
 import * as React from "react";
+import HelpBanner from "./HelpBanner";
 import { baseUrl, font, newsletter } from "./theme";
 
 // Gedeelde bouwstenen van de CRM-mails (concept, alleen desktop + light mode).
@@ -12,6 +13,7 @@ import { baseUrl, font, newsletter } from "./theme";
 // - Geen labels ("Populair" e.d.) op deals; prijzen zijn het totaal voor 2 personen.
 // - Deals staan op de uitgebreide kaart (zoals de zoekkaart op de website); geen tekst op een foto.
 // - Links naar het prototype gaan naar de R1-dealpagina (zachte landing).
+// - Elke mail eindigt met de hulplijn "Hulp nodig?" (CrmHelp).
 
 const c = newsletter.light;
 
@@ -40,6 +42,12 @@ export const s = {
   /** Bijregel (plaats, toelichting): 16 px grijs. */
   muted: { fontFamily: font.body, fontSize: "16px", lineHeight: "1.4", color: c.muted, margin: "4px 0 0" },
 };
+
+/** Hulplijn onderaan elke CRM-mail: hetzelfde blok "Hulp nodig?" als in de post-bookingmails
+ *  (HelpBanner), met 16 px tekst. `top`: witruimte erboven als de sectie ervoor er geen heeft. */
+export function CrmHelp({ top = "0" }: { top?: string }) {
+  return <HelpBanner fontSize="16px" padding={`${top} 32px 40px`} />;
+}
 
 /** Primaire, oranje knop. `small`: compacter, voor in een dealblok. */
 export function PrimaryButton({ href, children, small }: { href: string; children: React.ReactNode; small?: boolean }) {

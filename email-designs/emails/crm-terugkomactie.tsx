@@ -2,7 +2,7 @@ import { Body, Container, Head, Heading, Html, Preview, Section, Text } from "@r
 import * as React from "react";
 import CrmFooter from "../components/CrmFooter";
 import CrmHeader from "../components/CrmHeader";
-import { CodeBlock, crmCss, DealList, DealRow, PrimaryButton, type RowDeal, s, site, ThemePicker } from "../components/crm";
+import { CrmHelp, CodeBlock, crmCss, DealList, DealRow, PrimaryButton, type RowDeal, s, site, ThemePicker } from "../components/crm";
 import { font, newsletter } from "../components/theme";
 import { asStay, lauswolt, steenenburg, vanOys, villaRuimzicht } from "../lib/crmDeals";
 
@@ -84,6 +84,8 @@ export default function CrmTerugkomactie({ recipientEmail, firstName, stay, code
               <ThemePicker />
             </Section>
           )}
+          {/* Hulplijn */}
+          <CrmHelp />
         </Container>
         <CrmFooter recipientEmail={recipientEmail} reason="omdat je bij ons boekte" />
       </Body>

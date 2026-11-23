@@ -2,7 +2,7 @@ import { Body, Container, Head, Heading, Html, Preview, Section, Text } from "@r
 import * as React from "react";
 import CrmFooter from "../components/CrmFooter";
 import CrmHeader from "../components/CrmHeader";
-import { crmCss, DealList, type RowDeal, s, site, ThemePicker } from "../components/crm";
+import { crmCss, CrmHelp, DealList, type RowDeal, s, site, ThemePicker } from "../components/crm";
 import { font, newsletter } from "../components/theme";
 
 // CRM: themamail stedentrips (A6). Kop met de reden ("Omdat je zocht op 'stedentrips'"),
@@ -46,6 +46,8 @@ export default function CrmThemaStedentrips({ recipientEmail, searchedFor, deals
           <Section className="m-pad" style={{ padding: "48px 32px 40px" }}>
             <ThemePicker />
           </Section>
+          {/* Hulplijn */}
+          <CrmHelp />
         </Container>
         <CrmFooter recipientEmail={recipientEmail} reason="omdat je je hebt aangemeld voor onze nieuwsbrief" />
       </Body>
