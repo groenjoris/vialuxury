@@ -61,7 +61,7 @@ export default function CrmTerugkomactie({ recipientEmail, firstName, code, days
 
           {/* De coupon (bedrag, code en geldigheid in één blok) en de ene knop */}
           <Section className="m-pad" style={{ padding: "24px 32px 0" }}>
-            <CodeBlock title={`${code.value} cadeau`} code={code.code} deadline={code.deadline} daysLeft={daysLeft} />
+            <CodeBlock title={`${code.value} cadeau`} code={code.code} deadline={`${code.deadline} 23:59 uur`} daysLeft={daysLeft} />
             <Section style={{ marginTop: "24px" }}>
               <PrimaryButton href={ctaUrl}>Bekijk arrangementen</PrimaryButton>
             </Section>
