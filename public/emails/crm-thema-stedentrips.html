@@ -21,8 +21,11 @@
         /* De cel zelf zonder padding, anders komt stack's 12 px onderaan bij de foto en is het vlak
            niet meer precies 16:9. */
         .m-rowphoto-cell { padding: 0 !important; }
-        /* Twee foto's onder elkaar: op mobiel vervalt de halve hoogte, elk vlak wordt 16:9. */
+        /* Twee foto's onder elkaar: op mobiel vervalt de halve hoogte (het vlak wordt 16:9) en valt de
+           tweede foto weg. Gestapeld zouden twee foto's van de volle breedte boven de tekst staan; nu
+           ziet de kaart er op een telefoon hetzelfde uit als alle andere dealrijen. */
         .m-halfphoto { height: auto !important; }
+        .m-hide { display: none !important; }
         /* De vaste kaarthoogte vervalt: de foto staat hier boven de tekst, dus de kaart is hoger. */
         .m-auto-h { height: auto !important; }
         .m-pad { padding-left: 16px !important; padding-right: 16px !important; }
@@ -303,7 +306,7 @@
                                               cellpadding="0"
                                               cellspacing="0"
                                               role="presentation"
-                                              class="m-halfphoto"
+                                              class="m-halfphoto m-hide"
                                               style="height:212px;border-top:3px solid #FFFFFF;background-image:url(https://asset.vialuxury.com/assets/ec2bfd91-fc7d-4fa4-91b9-9fc61298b804?key=card);background-size:cover;background-position:center"><tbody><tr><td><a
                                                       href="https://vialuxury.vercel.app/first-release/deal/hotel-des-indes-verblijf-3-dagen-in-luxe-5-hotel-in-hartje-centrum"
                                                       aria-label="Hotel Des Indes"
@@ -457,7 +460,7 @@
                                               cellpadding="0"
                                               cellspacing="0"
                                               role="presentation"
-                                              class="m-halfphoto"
+                                              class="m-halfphoto m-hide"
                                               style="height:212px;border-top:3px solid #FFFFFF;background-image:url(https://asset.vialuxury.com/assets/cdb4a7a3-078c-4c90-ac4b-cbec6e7452b6?key=card);background-size:cover;background-position:center"><tbody><tr><td><a
                                                       href="https://vialuxury.vercel.app/first-release/deal/fashion-hotel-amsterdam-3-daags-verblijf-in-een-4-hotel-met-wellness-en-sky-bar-met-panoramisch-uitzicht"
                                                       aria-label="WestCord Fashion Hotel Amsterdam"

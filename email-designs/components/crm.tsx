@@ -35,8 +35,11 @@ body { margin: 0 !important; padding: 0 !important; }
   /* De cel zelf zonder padding, anders komt stack's 12 px onderaan bij de foto en is het vlak
      niet meer precies 16:9. */
   .m-rowphoto-cell { padding: 0 !important; }
-  /* Twee foto's onder elkaar: op mobiel vervalt de halve hoogte, elk vlak wordt 16:9. */
+  /* Twee foto's onder elkaar: op mobiel vervalt de halve hoogte (het vlak wordt 16:9) en valt de
+     tweede foto weg. Gestapeld zouden twee foto's van de volle breedte boven de tekst staan; nu
+     ziet de kaart er op een telefoon hetzelfde uit als alle andere dealrijen. */
   .m-halfphoto { height: auto !important; }
+  .m-hide { display: none !important; }
   /* De vaste kaarthoogte vervalt: de foto staat hier boven de tekst, dus de kaart is hoger. */
   .m-auto-h { height: auto !important; }
   .m-pad { padding-left: 16px !important; padding-right: 16px !important; }
@@ -313,7 +316,7 @@ export function DealRow({ deal: d, cta, top = "12px" }: { deal: RowDeal; cta?: s
           // tweede foto; een achtergrondfoto loopt niet door onder een rand.
           <Column className="stack m-rowphoto-cell" style={{ width: "190px", verticalAlign: "top" }}>
             {[d.image, d.secondImage].map((src, i) => (
-              <Section key={src} className="m-halfphoto" style={{ height: i ? "212px" : "211px", borderTop: i ? "3px solid #FFFFFF" : undefined, backgroundImage: `url(${src})`, backgroundSize: "cover", backgroundPosition: "center" }}>
+              <Section key={src} className={`m-halfphoto${i ? " m-hide" : ""}`} style={{ height: i ? "212px" : "211px", borderTop: i ? "3px solid #FFFFFF" : undefined, backgroundImage: `url(${src})`, backgroundSize: "cover", backgroundPosition: "center" }}>
                 <Link href={d.url} aria-label={d.hotelName ?? cta ?? "Bekijk"} className="m-rowphoto" style={{ display: "block", width: "190px", minHeight: "107px" }} />
               </Section>
             ))}
