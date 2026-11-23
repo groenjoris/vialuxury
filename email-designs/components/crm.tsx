@@ -585,18 +585,22 @@ export function ThemePicker({ items = themes }: { items?: Theme[] }) {
 // (CrmHeader, Letter, DealList/DealRow/FeaturedDeal, CrmFooter en CrmHelp); hieronder staan de
 // secties die alleen in deze flows voorkomen.
 
-/** S21 Gastenoordeel: de gemiddelde score van het hotel en één korte review, als die er is.
- *  Alleen wat de sheet noemt: score en review, zonder kop eromheen. */
-export type GuestRating = { score: string; label: string; review?: { text: string; author: string } };
+/** S21 Gastenoordeel: de score met de Trustpilot-sterren en één korte review, als die er is. */
+export type GuestRating = { average: 3 | 3.5 | 4 | 4.5 | 5; label: string; review?: { text: string; author: string } };
 
 export function GuestRatingSection({ hotelName, rating }: { hotelName: string; rating: GuestRating }) {
   return (
     <>
-      <Text style={{ ...s.name, margin: 0 }}>
-        {rating.score} <span style={{ fontWeight: 400, color: c.muted }}>{rating.label}</span>
-      </Text>
+      <Img
+        src={`${baseUrl}/images/mail/crm/trustpilot-sterren-${String(rating.average).replace(".", "-")}.png`}
+        alt={`${String(rating.average).replace(".", ",")} van 5 sterren`}
+        width="152"
+        height="28"
+        style={{ display: "block", width: "152px", height: "28px" }}
+      />
+      <Text style={{ ...s.body, margin: "6px 0 0" }}>{rating.label}</Text>
       {rating.review && (
-        <Section style={{ marginTop: "14px" }}>
+        <Section style={{ marginTop: "22px" }}>
           <Text style={{ fontFamily: font.heading, fontSize: "20px", lineHeight: "1.35", color: c.text, margin: 0 }}>&ldquo;{rating.review.text}&rdquo;</Text>
           <Text style={{ ...s.muted, margin: "4px 0 0" }}>{rating.review.author}</Text>
         </Section>

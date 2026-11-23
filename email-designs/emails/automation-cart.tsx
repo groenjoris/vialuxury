@@ -133,8 +133,8 @@ export const cart3Props = {
   intro: `Twijfel je nog? Lees wat andere gasten van ${HOTEL} vonden, of kies een van de alternatieven.`,
   cart,
   guestRating: {
-    score: "8,8",
-    label: "uit 312 beoordelingen",
+    average: 4.5,
+    label: "4,5 uit 312 reviews",
     review: { text: "Prachtige kamer en een feestelijk diner.", author: "Marieke" },
   },
   alternatives,

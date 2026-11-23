@@ -311,6 +311,8 @@ hulplijn die de CRM-mails wel hebben) en geen velden die de sheet niet noemt —
 toont dus geen inclusies. Wat de sheet open laat, zoals welke vijf themategels bij de verzendmaand
 horen, komt uit de tabbladen Themategels en Seizoensthema's.
 
+Het gastenoordeel (S21) toont de Trustpilot-sterren met "4,5 uit 312 reviews" en één korte review.
+
 Open punten in de sheet zelf: de preheader van `tf027` zegt "Drie alternatieven" terwijl de template
 twee dealplekken heeft (rij 20 is leeg), en voor de themategel "Hotels met experiences" bestaat nog
 geen landingspagina, dus die staat niet in de themasectie van `tf031`.
