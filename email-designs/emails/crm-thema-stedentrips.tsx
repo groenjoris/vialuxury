@@ -2,7 +2,7 @@ import { Body, Container, Head, Heading, Html, Preview, Section, Text } from "@r
 import * as React from "react";
 import CrmFooter from "../components/CrmFooter";
 import CrmHeader from "../components/CrmHeader";
-import { crmCss, CrmHelp, DealList, type RowDeal, s, site, ThemePicker } from "../components/crm";
+import { BeigeBand, crmCss, CrmHelp, DealList, type RowDeal, s, site, ThemePicker } from "../components/crm";
 import { font, newsletter } from "../components/theme";
 
 // CRM: themamail stedentrips (A6). Kop met de reden ("Omdat je zocht op 'stedentrips'"),
@@ -34,7 +34,7 @@ export default function CrmThemaStedentrips({ recipientEmail, searchedFor, deals
         <Container style={{ width: "100%", maxWidth: "626px" }}>
           <Section className="m-pad" style={{ padding: "32px 32px 0" }}>
             <Heading as="h1" className="m-h1" style={s.h1}>De populairste stedentrips</Heading>
-            {searchedFor && <Text style={{ ...s.body, color: c.muted, margin: "8px 0 0" }}>Omdat je zocht op '{searchedFor}'.</Text>}
+            {searchedFor && <Text style={{ ...s.body, color: c.muted, margin: "2px 0 0" }}>Omdat je zocht op '{searchedFor}'.</Text>}
           </Section>
 
           {/* Drie deals: de eerste groot, de rest als rij */}
@@ -42,12 +42,16 @@ export default function CrmThemaStedentrips({ recipientEmail, searchedFor, deals
             <DealList deals={deals} />
           </Section>
 
-          {/* Themakiezer: raster van even brede snelfilterknoppen */}
-          <Section className="m-pad" style={{ padding: "48px 32px 40px" }}>
-            <ThemePicker />
-          </Section>
+        </Container>
+
+        {/* Themakiezer op een beige band over de hele breedte: raster van even brede snelfilterknoppen */}
+        <BeigeBand top="48px">
+          <ThemePicker />
+        </BeigeBand>
+
+        <Container style={{ width: "100%", maxWidth: "626px" }}>
           {/* Hulplijn */}
-          <CrmHelp />
+          <CrmHelp top="36px" />
         </Container>
         <CrmFooter recipientEmail={recipientEmail} reason="omdat je je hebt aangemeld voor onze nieuwsbrief" />
       </Body>

@@ -1,4 +1,4 @@
-import { Button, Column, Img, Link, Row, Section, Text } from "@react-email/components";
+import { Button, Column, Container, Img, Link, Row, Section, Text } from "@react-email/components";
 import * as React from "react";
 import HelpBanner from "./HelpBanner";
 import { baseUrl, font, newsletter } from "./theme";
@@ -10,7 +10,8 @@ import { baseUrl, font, newsletter } from "./theme";
 //   de dealtitel in een dealkaart is 18 px.
 // - Alles links uitgelijnd (alleen de inhoud van de coupon staat gecentreerd).
 // - Klaviyo: nooit twee lettertypen naast elkaar op één regel; onder elkaar mag wel.
-// - Geen grijze vlakken; beige alleen als highlight (achter de blokken met keuzeknoppen). Blokken zijn wit met een grijze rand (#E5E5E5, zoals de website).
+// - Geen grijze vlakken; beige alleen als highlight, als band over de hele breedte (BeigeBand)
+//   achter keuzeblokken en groepen suggesties. Blokken zijn wit met een grijze rand (#E5E5E5, zoals de website).
 // - Geen labels ("Populair" e.d.) op deals; prijzen zijn het totaal voor 2 personen.
 // - Deals staan op de uitgebreide kaart (zoals de zoekkaart op de website); geen tekst op een foto.
 // - Links naar het prototype gaan naar de R1-dealpagina (zachte landing).
@@ -302,20 +303,33 @@ export function FeaturedDeal({ deal: d, cta, priceRow = true }: { deal: RowDeal;
   );
 }
 
+/** Beige band over de hele breedte van de mail (highlight achter een keuzeblok of een groep
+ *  suggesties). De inhoud staat in dezelfde kolom van 626 px met 32 px marge als de rest van de
+ *  mail, dus tekst en kaarten lijnen uit met wat erboven en eronder staat. Net als de zwarte
+ *  header en footer staat de band BUITEN de <Container> van de mail: sluit die ervoor en open er
+ *  een nieuwe na. `top`: witte ruimte boven de band. */
+export function BeigeBand({ children, top = "16px" }: { children: React.ReactNode; top?: string }) {
+  return (
+    <Section style={{ backgroundColor: "#F4F1EC", width: "100%", marginTop: top }}>
+      <Container style={{ width: "100%", maxWidth: "626px" }}>
+        <Section className="m-pad" style={{ padding: "24px 32px 28px" }}>{children}</Section>
+      </Container>
+    </Section>
+  );
+}
+
 /** Ruimte tussen twee dealkaarten binnen een DealGroup. */
 export const groupGap = "16px";
 
-/** Groep suggesties op een beige vlak: subtitel (20 serif; met `big` een hoofdtitel van 32, voor
- *  een mail zonder titel boven de groepen) en eventueel een grijze regel eronder,
- *  dan de dealkaarten (wit). Zet groepen in een Section met `padding: "… 16px"`: het vlak steekt dan
- *  links en rechts 16 px buiten de tekstkolom, zodat de kaarten even breed blijven als elders. */
-export function DealGroup({ title, subtitle, big, children }: { title: string; subtitle?: string; big?: boolean; children: React.ReactNode }) {
+/** Groep suggesties op een beige band over de hele breedte: subtitel (20 serif) en eventueel een
+ *  grijze regel eronder, dan de dealkaarten (wit). Staat net als BeigeBand buiten de <Container>. */
+export function DealGroup({ title, subtitle, top, children }: { title: string; subtitle?: string; top?: string; children: React.ReactNode }) {
   return (
-    <Section style={{ backgroundColor: "#F4F1EC", borderRadius: "8px", padding: big ? "24px 16px 20px" : "20px 16px", marginTop: "16px" }}>
-      <Text style={big ? s.h1 : s.kop}>{title}</Text>
-      {subtitle && <Text style={{ ...s.muted, margin: big ? "6px 0 4px" : "2px 0 0" }}>{subtitle}</Text>}
+    <BeigeBand top={top}>
+      <Text style={s.kop}>{title}</Text>
+      {subtitle && <Text style={{ ...s.muted, margin: "2px 0 0" }}>{subtitle}</Text>}
       {children}
-    </Section>
+    </BeigeBand>
   );
 }
 
@@ -421,9 +435,6 @@ export const themes: Theme[] = [
   { id: "romantisch", label: "Romantisch", icon: themeIcon("heart") },
 ];
 
-/** Beige vlak (highlight) achter een blok met keuzeknoppen: themakiezer en nagenietvraag. */
-export const beigeBox = { backgroundColor: "#F4F1EC", borderRadius: "8px", padding: "24px 24px 28px" };
-
 /** Raster van witte snelfilterknoppen (zoals "Snel zoeken" op de homepage): dun randje, optioneel
  *  een icoon, label links; twee even brede kolommen. */
 export type Pill = { label: string; href: string; icon?: string };
@@ -457,13 +468,13 @@ export function PillGrid({ items }: { items: Pill[] }) {
   );
 }
 
-/** Themakiezer: de snelfilterknoppen met icoon. Elke keuze gaat naar /crm/thema?keuze=<id>. */
+/** Themakiezer (zet hem in een BeigeBand): de snelfilterknoppen met icoon. Elke keuze gaat naar /crm/thema?keuze=<id>. */
 export function ThemePicker({ items = themes }: { items?: Theme[] }) {
   return (
-    <Section style={beigeBox}>
+    <>
       <Text style={s.kop}>Waarover wil je aanbiedingen ontvangen?</Text>
-      <Text style={s.body}>Eén klik is genoeg, dan sturen we voortaan wat je zoekt.</Text>
+      <Text style={{ ...s.body, margin: "2px 0 0" }}>Eén klik is genoeg, dan sturen we voortaan wat je zoekt.</Text>
       <PillGrid items={items.map((t) => ({ label: t.label, icon: t.icon, href: `${site}/crm/thema?keuze=${t.id}` }))} />
-    </Section>
+    </>
   );
 }

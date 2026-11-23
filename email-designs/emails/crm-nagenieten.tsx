@@ -1,6 +1,6 @@
 import { Body, Container, Head, Heading, Html, Img, Preview, Section, Text } from "@react-email/components";
 import * as React from "react";
-import { crmCss, CrmHelp, beigeBox, PillGrid, s, site } from "../components/crm";
+import { BeigeBand, crmCss, CrmHelp, PillGrid, s, site } from "../components/crm";
 import CrmFooter from "../components/CrmFooter";
 import CrmHeader from "../components/CrmHeader";
 import { baseUrl, font, newsletter } from "../components/theme";
@@ -54,16 +54,18 @@ export default function CrmNagenieten({ firstName, recipientEmail, hotelName, im
             </Heading>
           </Section>
 
-          {/* De vraag: zelfde opbouw en knoppen als de themakiezer in de andere mails */}
-          <Section className="m-pad" style={{ padding: "36px 32px 40px" }}>
-            <Section style={beigeBox}>
-              <Text style={{ ...s.muted, margin: 0 }}>Om je nog beter te kunnen helpen, één vraag</Text>
-              <Text style={{ ...s.kop, margin: "4px 0 0" }}>Wanneer is je volgende vakantie?</Text>
-              <PillGrid items={choices} />
-            </Section>
-          </Section>
+        </Container>
+
+        {/* De vraag op een beige band over de hele breedte: zelfde opbouw en knoppen als de themakiezer */}
+        <BeigeBand top="36px">
+          <Text style={{ ...s.muted, margin: 0 }}>Om je nog beter te kunnen helpen, één vraag</Text>
+          <Text style={{ ...s.kop, margin: "2px 0 0" }}>Wanneer is je volgende vakantie?</Text>
+          <PillGrid items={choices} />
+        </BeigeBand>
+
+        <Container style={{ width: "100%", maxWidth: "626px" }}>
           {/* Hulplijn */}
-          <CrmHelp />
+          <CrmHelp top="36px" />
         </Container>
         <CrmFooter recipientEmail={recipientEmail} reason="omdat je bij ons boekte" />
       </Body>

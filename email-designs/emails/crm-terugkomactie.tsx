@@ -2,7 +2,7 @@ import { Body, Container, Head, Heading, Html, Preview, Section, Text } from "@r
 import * as React from "react";
 import CrmFooter from "../components/CrmFooter";
 import CrmHeader from "../components/CrmHeader";
-import { CodeBlock, crmCss, CrmHelp, DealGroup, DealRow, groupGap, Letter, PrimaryButton, type RowDeal, s, site, ThemePicker } from "../components/crm";
+import { BeigeBand, CodeBlock, crmCss, CrmHelp, DealGroup, DealRow, groupGap, Letter, PrimaryButton, type RowDeal, s, site, ThemePicker } from "../components/crm";
 import { font, newsletter } from "../components/theme";
 import { carltonBeach, desIndes, fashionHotel, steenenburg, vanOys, villaRuimzicht } from "../lib/crmDeals";
 
@@ -70,28 +70,29 @@ export default function CrmTerugkomactie({ recipientEmail, firstName, code, days
           {/* Waar je de korting kunt gebruiken: grote titel met de uiterste datum */}
           <Section className="m-pad" style={{ padding: "44px 32px 0" }}>
             <Heading as="h2" className="m-h1" style={s.h1}>Tips voor je kortingscode</Heading>
-            <Text style={{ ...s.body, color: c.muted, margin: "8px 0 0" }}>Boek uiterlijk {code.deadline} 23:59 uur</Text>
+            <Text style={{ ...s.body, color: c.muted, margin: "2px 0 0" }}>Boek uiterlijk {code.deadline} 23:59 uur</Text>
           </Section>
 
-          {/* Groepjes van twee suggesties, elk op een eigen beige vlak met de subtitel erin. Het vlak
-              steekt links en rechts 16 px uit, zodat de kaarten even breed blijven als elders. */}
-          <Section style={{ padding: reminder ? "8px 16px 40px" : "8px 16px 0" }}>
-            {groups.map((g) => (
-              <DealGroup key={g.title} title={g.title}>
-                {g.deals.map((d, i) => (
-                  <DealRow key={d.url} deal={d} top={i ? groupGap : undefined} />
-                ))}
-              </DealGroup>
+        </Container>
+
+        {/* Groepjes van twee suggesties, elk op een eigen beige band over de hele breedte met de subtitel
+            erin; daarna (niet in de herinnering) de themakiezer, ook op een band */}
+        {groups.map((g, gi) => (
+          <DealGroup key={g.title} title={g.title} top={gi ? undefined : "24px"}>
+            {g.deals.map((d, i) => (
+              <DealRow key={d.url} deal={d} top={i ? groupGap : undefined} />
             ))}
-          </Section>
+          </DealGroup>
+        ))}
+        {!reminder && (
+          <BeigeBand top="40px">
+            <ThemePicker />
+          </BeigeBand>
+        )}
 
-          {!reminder && (
-            <Section className="m-pad" style={{ padding: "48px 32px 40px" }}>
-              <ThemePicker />
-            </Section>
-          )}
+        <Container style={{ width: "100%", maxWidth: "626px" }}>
           {/* Hulplijn */}
-          <CrmHelp />
+          <CrmHelp top="36px" />
         </Container>
         <CrmFooter recipientEmail={recipientEmail} reason="omdat je bij ons boekte" />
       </Body>

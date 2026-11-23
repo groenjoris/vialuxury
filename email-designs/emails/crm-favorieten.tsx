@@ -74,32 +74,34 @@ export default function CrmFavorieten({ recipientEmail, firstName, first: code1,
           {/* Grote titel boven de blokken, zoals "Tips voor je kortingscode" in de terugkomactie */}
           <Section className="m-pad" style={{ padding: "44px 32px 0" }}>
             <Heading as="h1" className="m-h1" style={s.h1}>Hier geldt je code</Heading>
-            <Text style={{ ...s.body, color: c.muted, margin: "8px 0 0" }}>Boek uiterlijk {code1.deadline}</Text>
+            <Text style={{ ...s.body, color: c.muted, margin: "2px 0 0" }}>Boek uiterlijk {code1.deadline}</Text>
           </Section>
 
-          {/* Twee blokken op een beige vlak met een kleine subtitel erin: de favorieten (de eerste groot,
-              de rest als rij, met de knop naar de favorieten) en vergelijkbare deals */}
-          <Section style={{ padding: "8px 16px 40px" }}>
-            {first && (
-              <DealGroup title={others.length ? "Jouw favorieten" : "Jouw favoriet"}>
-                <FeaturedDeal deal={first} />
-                {others.map((d) => (
-                  <DealRow key={d.url} deal={d} top={groupGap} />
-                ))}
-                <Section style={{ marginTop: "16px" }}>
-                  <SecondaryButton href={favoritesUrl} dark>Bekijk je favorieten</SecondaryButton>
-                </Section>
-              </DealGroup>
-            )}
+        </Container>
 
-            <DealGroup title="Vergelijkbaar met je favorieten" subtitle="Ook hier is je korting geldig!">
-              {similar.map((d, i) => (
-                <DealRow key={d.url} deal={d} top={i ? groupGap : undefined} />
-              ))}
-            </DealGroup>
-          </Section>
+        {/* Twee blokken, elk op een beige band over de hele breedte met een kleine subtitel erin: de
+            favorieten (de eerste groot, de rest als rij, met de knop naar de favorieten) en
+            vergelijkbare deals */}
+        {first && (
+          <DealGroup title={others.length ? "Jouw favorieten" : "Jouw favoriet"} top="24px">
+            <FeaturedDeal deal={first} />
+            {others.map((d) => (
+              <DealRow key={d.url} deal={d} top={groupGap} />
+            ))}
+            <Section style={{ marginTop: "16px" }}>
+              <SecondaryButton href={favoritesUrl} dark>Bekijk je favorieten</SecondaryButton>
+            </Section>
+          </DealGroup>
+        )}
+        <DealGroup title="Vergelijkbaar met je favorieten" subtitle="Ook hier is je korting geldig!">
+          {similar.map((d, i) => (
+            <DealRow key={d.url} deal={d} top={i ? groupGap : undefined} />
+          ))}
+        </DealGroup>
+
+        <Container style={{ width: "100%", maxWidth: "626px" }}>
           {/* Hulplijn */}
-          <CrmHelp />
+          <CrmHelp top="36px" />
         </Container>
         <CrmFooter recipientEmail={recipientEmail} reason="omdat je een account hebt bij ViaLuxury" />
       </Body>

@@ -224,7 +224,10 @@ Regels voor elke CRM-mail:
 - Dealblokken: wit met grijze rand (#E5E5E5, de randkleur van de website), foto tot aan de rand; suggesties als één groot blok + rijen
   (`DealList`). Geen labels of stickers ("Populair"). De knop "Bekijk" in een dealkaart
   is altijd oranje, ook als de mail bovenaan al een oranje knop heeft.
-- Geen grijze vlakken; beige (#F4F1EC) alleen als echte highlight: het vlak achter de blokken met keuzeknoppen (`beigeBox`). Keuzes (thema, nagenietvraag) zijn witte snelfilterknoppen in een raster van twee (`PillGrid`) op dat beige vlak.
+- Geen grijze vlakken; beige (#F4F1EC) alleen als echte highlight, altijd als band over de hele breedte van de mail
+  (`BeigeBand`, buiten de `<Container>`, inhoud in dezelfde kolom met 32 px marge): achter keuzeblokken (themakiezer,
+  nagenietvraag, reviewsterren) en achter groepen suggesties. Keuzes zijn witte snelfilterknoppen in een raster van twee
+  (`PillGrid`). Een subtitel staat dicht onder zijn titel (2 px).
 - Elke deal staat op de uitgebreide kaart, de zoekkaart van de website als e-mail (`DealRow`/`FeaturedDeal` tonen
   die zodra de deal een `price` heeft): hotel met sterren en plaats (sans, ondergeschikt), lijntje, dealtitel 18 serif,
   "Arrangement" met maximaal vier inclusies (groen vinkje), "2 personen, 2 nachten" en onderaan één rij: links het
@@ -247,9 +250,8 @@ Regels voor elke CRM-mail:
 - Terugkomactie (14 dagen) en herinnering (30 dagen, copy op haast): één coupon van €20. Daaronder de grote titel "Tips voor je
   kortingscode" met "Boek uiterlijk [vervaldatum] 23:59 uur" en drie groepjes van twee dealrijen, elk op een eigen beige vlak met de
   subtitel erin: "In de sfeer van [vorig hotel]", "Populair deze maand" en "Deals met wellness". Geen blok "Jouw verblijf".
-- Gegroepeerde suggesties (`DealGroup`, in de terugkomactie en de favorietenmail): elke groep op een eigen beige vlak met
-  de subtitel (20 serif) en eventueel een grijze regel erin, kaarten wit, 16 px ertussen; het vlak steekt 16 px buiten de
-  tekstkolom zodat de kaarten even breed blijven.
+- Gegroepeerde suggesties (`DealGroup`, in de terugkomactie en de favorietenmail): elke groep op een eigen beige band over
+  de hele breedte, met de subtitel (20 serif) en eventueel een grijze regel erin, kaarten wit, 16 px ertussen.
 - Reviewmail: de sterren zijn een keuzeblok op het beige vlak: vijf lege, omlijnde sterren (`ster-leeg.png`) met "Slecht"
   en "Uitstekend" eronder. Leeg leest als "vul mij in"; gevulde sterren lezen als een score die er al staat. Variant
   `crm-review-knoppen` (schakelaar "Lege ster | Knop" in de previewkop): vijf witte knoppen met cijfer en ster.
