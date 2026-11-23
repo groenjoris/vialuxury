@@ -1,10 +1,9 @@
-import { Body, Container, Head, Heading, Html, Preview, Section, Text } from "@react-email/components";
+import { Body, Container, Head, Heading, Html, Preview, Section } from "@react-email/components";
 import * as React from "react";
 import CrmFooter from "../components/CrmFooter";
 import CrmHeader from "../components/CrmHeader";
-import { BeigeBand, crmCss, DealList, type Pill, type RowDeal, s, SearchSection, ThemeSection } from "../components/crm";
+import { BeigeBand, crmCss, CrmHelp, DealList, Letter, type Pill, type RowDeal, s, SearchSection, site, ThemeSection } from "../components/crm";
 import { dePlesman, desIndes, kurhaus, voco } from "../lib/crmDeals";
-import { site } from "../components/crm";
 import { font, newsletter } from "../components/theme";
 
 // Automationflow fl013 "abandoned search" — vier mails uit één component.
@@ -13,14 +12,16 @@ import { font, newsletter } from "../components/theme";
 //   S1 Header (logo) → Kop → Intro → S18 Zoekopdracht (zoekterm, datum en personen, met de knop
 //   naar alle resultaten) → S4 Hoteldeals (drie zoekresultaten) → S7 Themasectie (alleen mail 4) →
 //   S13 Footer.
-// De secties staan op banden over de hele breedte. De banden met dealkaarten blijven wit; beige is
-// voor de secties zonder kaarten, zodat die zich visueel onderscheiden.
-// Mergevelden in de teksten: [zoekterm], [aankomstdatum] en [personen], hier ingevuld met
-// voorbeelddata.
+// Opbouw zoals de winkelmandjemails en crm-zoekopdracht: de intro uit de sheet is de brief
+// (Letter), daaronder het zoekblok, dan de kop uit de sheet direct boven de resultaten, en elke
+// mail eindigt met de hulplijn. De themasectie staat als keuzeblok op een beige band.
+// Mergevelden: [voornaam], [zoekterm], [aankomstdatum] en [personen], hier met voorbeelddata.
 
 type Props = {
   recipientEmail: string;
   preheader: string;
+  /** Leeg → "Beste gast,". */
+  firstName?: string;
   heading: string;
   intro: string;
   /** S18 Zoekopdracht. Leeg → "jouw zoekopdracht". */
@@ -34,7 +35,7 @@ type Props = {
   themeSection?: { title: string; note: string; items: Pill[] };
 };
 
-export default function AutomationSearch({ recipientEmail, preheader, heading, intro, searchTerm, arrivalDate, persons, resultsUrl, results, themeSection }: Props) {
+export default function AutomationSearch({ recipientEmail, preheader, firstName, heading, intro, searchTerm, arrivalDate, persons, resultsUrl, results, themeSection }: Props) {
   const c = newsletter.light;
 
   return (
@@ -47,32 +48,33 @@ export default function AutomationSearch({ recipientEmail, preheader, heading, i
       <Body style={{ backgroundColor: c.bg, margin: 0, padding: 0, fontFamily: font.body }}>
         <CrmHeader />
         <Container style={{ width: "100%", maxWidth: "626px" }}>
-          {/* Kop en intro */}
-          <Section className="m-pad" style={{ padding: "36px 32px 28px" }}>
+          {/* Briefopening: aanhef, de intro uit de sheet en de ondertekening */}
+          <Section className="m-pad" style={{ padding: "32px 32px 0" }}>
+            <Letter firstName={firstName}>{intro}</Letter>
+          </Section>
+
+          {/* S18 Zoekopdracht, direct onder de ondertekening */}
+          <Section className="m-pad" style={{ padding: "32px 32px 0" }}>
+            <SearchSection searchTerm={searchTerm} arrivalDate={arrivalDate} persons={persons} resultsUrl={resultsUrl} />
+          </Section>
+
+          {/* S4 Hoteldeals: de zoekresultaten, met de kop erboven */}
+          <Section className="m-pad" style={{ padding: "44px 32px 0" }}>
             <Heading as="h1" className="m-h1" style={s.h1}>{heading}</Heading>
-            <Text style={{ ...s.body, margin: "12px 0 0" }}>{intro}</Text>
+            <DealList deals={results} />
           </Section>
         </Container>
 
-        {/* S18 Zoekopdracht */}
-        <BeigeBand>
-          <SearchSection searchTerm={searchTerm} arrivalDate={arrivalDate} persons={persons} resultsUrl={resultsUrl} />
-        </BeigeBand>
-
-        {/* S4 Hoteldeals: de zoekresultaten */}
-        <BeigeBand white>
-          <DealList deals={results} />
-        </BeigeBand>
-
-        {/* S7 Themasectie */}
+        {/* S7 Themasectie: keuzeblok op een beige band over de hele breedte */}
         {themeSection && (
-          <BeigeBand>
+          <BeigeBand top="44px">
             <ThemeSection title={themeSection.title} note={themeSection.note} items={themeSection.items} />
           </BeigeBand>
         )}
 
         <Container style={{ width: "100%", maxWidth: "626px" }}>
-          <Section className="m-pad" style={{ padding: "0 32px 40px" }} />
+          {/* Hulplijn */}
+          <CrmHelp top="36px" />
         </Container>
         <CrmFooter recipientEmail={recipientEmail} reason="omdat je je hebt aangemeld voor de nieuwsbrief van ViaLuxury" />
       </Body>
@@ -85,7 +87,7 @@ export default function AutomationSearch({ recipientEmail, preheader, heading, i
 const TERM = "Den Haag";
 const DATUM = "20 november";
 const resultsUrl = (campaign: string) => `${site}/first-release/search?utm_source=email&utm_medium=crm&utm_campaign=${campaign}`;
-const base = { recipientEmail: "sanne.devries@example.com", searchTerm: TERM, arrivalDate: DATUM, persons: 2 };
+const base = { recipientEmail: "sanne.devries@example.com", firstName: "Sanne", searchTerm: TERM, arrivalDate: DATUM, persons: 2 };
 
 /** De themategels van de verzendmaand, met naam en landingspagina uit het tabblad Themategels.
  *  November heeft volgens Seizoensthema's wellness, culinair wild en wijn, en experiences;

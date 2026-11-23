@@ -294,10 +294,16 @@ template in Klaviyo; die naam staat ook onder de titel in de preview. Registry-s
 alleen light, lijst `app/data/automation-emails.json`, preview `/automation/<slug>` (zelfde frame als
 de CRM-preview, paneel links gegroepeerd per flow). Startscherm: knop "Automations" in het vak CRM.
 
-Elke sectie na de intro staat op een `BeigeBand` over de hele breedte, die zonder tussenruimte op
-elkaar aansluiten. De banden met dealkaarten blijven wit; beige is voor de secties zonder kaarten
-(gastenoordeel, merksectie, zoekopdracht, themakiezer), zodat die zich onderscheiden. Kop en intro
-staan boven de eerste band in de gewone kolom, en de serviceregel eronder.
+De twee winkelmandjemails van het CRM (`crm-winkelmandje` en `crm-winkelmandje-2-dagen`) zijn
+leidend voor het ontwerp. De tien automationmails volgen die opzet: de intro uit de sheet is de
+brief (`Letter`: "Beste Sanne,", de tekst en de ondertekening "Groetjes Yvette"), de kop uit de
+sheet staat als titel direct boven het blok waar hij bij hoort, de secties staan gewoon in de
+kolom op wit, en elke mail eindigt met de hulplijn `CrmHelp` ("Hulp nodig?"). De enige beige band
+is de themakiezer in `tf031`, want een keuzeblok staat altijd op beige.
+
+Dealrij: de fotokolom toont twee foto's van hetzelfde arrangement onder elkaar (hoofdbeeld boven,
+`image` en `secondImage` uit deals.json) met 3 px wit ertussen, samen de volle kaarthoogte. Op
+mobiel valt de tweede foto weg en blijft de hoofdfoto op 16:9 boven de tekst, zoals bij elke kaart.
 
 Secties uit de sheet als bouwstenen in `email-designs/components/crm.tsx`. Bestaand: `CrmHeader` (S1),
 `FeaturedDeal`/`DealRow`/`DealList` (S4) en `CrmFooter` (S13). Nieuw voor deze flows:
@@ -326,10 +332,6 @@ iets afgesneden; bij een kortere kaart staat de tekst verticaal gecentreerd, zod
 overblijft zich boven en onder verdeelt in plaats van als een gat onder de prijsrij. De winkelmandjekaart heeft geen
 inclusies en is daarom een eigen, van zichzelf al gelijke hoogte (556 px). Op mobiel vervalt de
 vaste hoogte (klasse `m-auto-h`), want daar staat de foto boven de tekst.
-
-Dealrij: de fotokolom toont twee foto's van hetzelfde arrangement onder elkaar (hoofdbeeld boven,
-`image` en `secondImage` uit deals.json) met 3 px wit ertussen, samen de volle kaarthoogte. Op
-mobiel valt de tweede foto weg en blijft de hoofdfoto op 16:9 boven de tekst, zoals bij elke kaart.
 
 Kaartvolgorde: de bovenste dealkaart van een mail is altijd de grote kaart (foto boven de tekst,
 `FeaturedDeal`), alle kaarten daaronder zijn dealrijen (foto links, `DealRow`). In de winkelmandje-

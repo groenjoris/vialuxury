@@ -1,8 +1,8 @@
-import { Body, Container, Head, Heading, Html, Preview, Section, Text } from "@react-email/components";
+import { Body, Container, Head, Heading, Html, Preview, Section } from "@react-email/components";
 import * as React from "react";
 import CrmFooter from "../components/CrmFooter";
 import CrmHeader from "../components/CrmHeader";
-import { BeigeBand, BrandSection, cardGap, crmCss, DealRow, FeaturedDeal, groupGap, type RowDeal, s } from "../components/crm";
+import { BrandSection, cardGap, crmCss, CrmHelp, DealRow, FeaturedDeal, Letter, type RowDeal, s } from "../components/crm";
 import { lauswolt, steenenburg, vanOys } from "../lib/crmDeals";
 import { font, newsletter } from "../components/theme";
 
@@ -12,17 +12,19 @@ import { font, newsletter } from "../components/theme";
 //   S1 Header (logo) → Kop → Intro → S17 Achtergelaten arrangement (het bekeken arrangement:
 //   foto, hotelnaam, plaats, prijs en wat er inbegrepen is) → S4 Hoteldeals (twee alternatieven) →
 //   S6 Merksectie (alleen mail 2) → S13 Footer.
-// De secties staan op banden over de hele breedte. De banden met dealkaarten blijven wit; beige is
-// voor de secties zonder kaarten, zodat die zich visueel onderscheiden.
-// De bovenste kaart van een mail is altijd de grote kaart (foto boven de tekst), alle kaarten
-// daaronder zijn dealrijen (foto links). Hier is dat het bekeken arrangement.
-// Mergevelden in de teksten: [hotelnaam] en [plaats], hier ingevuld met voorbeelddata.
+// Opbouw zoals de winkelmandjemails van het CRM: de intro uit de sheet is de brief (Letter), de
+// kop uit de sheet staat direct boven het blok waar hij bij hoort, en elke mail eindigt met de
+// hulplijn. Mergevelden: [voornaam], [hotelnaam] en [plaats], hier ingevuld met voorbeelddata.
 
 type Props = {
   recipientEmail: string;
   preheader: string;
+  /** Leeg → "Beste gast,". */
+  firstName?: string;
   heading: string;
   intro: string;
+  /** Waar de kop staat: boven het bekeken arrangement of boven de alternatieven. */
+  headingAt?: "viewed" | "alternatives";
   /** S17: het bekeken arrangement, met prijs en inclusies. */
   viewed: RowDeal & { hotelName: string };
   /** S4: twee vergelijkbare arrangementen in dezelfde sfeer. */
@@ -31,7 +33,7 @@ type Props = {
   brand?: string;
 };
 
-export default function AutomationBrowse({ recipientEmail, preheader, heading, intro, viewed, alternatives, brand }: Props) {
+export default function AutomationBrowse({ recipientEmail, preheader, firstName, heading, intro, headingAt = "viewed", viewed, alternatives, brand }: Props) {
   const c = newsletter.light;
 
   return (
@@ -44,34 +46,34 @@ export default function AutomationBrowse({ recipientEmail, preheader, heading, i
       <Body style={{ backgroundColor: c.bg, margin: 0, padding: 0, fontFamily: font.body }}>
         <CrmHeader />
         <Container style={{ width: "100%", maxWidth: "626px" }}>
-          {/* Kop en intro */}
-          <Section className="m-pad" style={{ padding: "36px 32px 28px" }}>
-            <Heading as="h1" className="m-h1" style={s.h1}>{heading}</Heading>
-            <Text style={{ ...s.body, margin: "12px 0 0" }}>{intro}</Text>
+          {/* Briefopening: aanhef, de intro uit de sheet en de ondertekening */}
+          <Section className="m-pad" style={{ padding: "32px 32px 0" }}>
+            <Letter firstName={firstName}>{intro}</Letter>
           </Section>
-        </Container>
 
-        {/* S17 Achtergelaten arrangement: het bekeken arrangement */}
-        <BeigeBand white>
-          <FeaturedDeal deal={viewed} cta="Bekijk arrangement" />
-        </BeigeBand>
+          {/* S17 Achtergelaten arrangement: het bekeken arrangement */}
+          <Section className="m-pad" style={{ padding: "40px 32px 0" }}>
+            {headingAt === "viewed" && <Heading as="h1" className="m-h1" style={s.h1}>{heading}</Heading>}
+            <FeaturedDeal deal={viewed} cta="Bekijk arrangement" />
+          </Section>
 
-        {/* S4 Hoteldeals: vergelijkbare arrangementen als alternatief */}
-        <BeigeBand white>
-          {alternatives.map((d, i) => (
-            <DealRow key={d.url} deal={d} top={i ? groupGap : cardGap} />
-          ))}
-        </BeigeBand>
+          {/* S4 Hoteldeals: vergelijkbare arrangementen als alternatief */}
+          <Section className="m-pad" style={{ padding: "44px 32px 0" }}>
+            {headingAt === "alternatives" && <Heading as="h1" className="m-h1" style={s.h1}>{heading}</Heading>}
+            {alternatives.map((d, i) => (
+              <DealRow key={d.url} deal={d} top={i ? cardGap : undefined} />
+            ))}
+          </Section>
 
-        {/* S6 Merksectie */}
-        {brand && (
-          <BeigeBand>
-            <BrandSection>{brand}</BrandSection>
-          </BeigeBand>
-        )}
+          {/* S6 Merksectie */}
+          {brand && (
+            <Section className="m-pad" style={{ padding: "40px 32px 0" }}>
+              <BrandSection>{brand}</BrandSection>
+            </Section>
+          )}
 
-        <Container style={{ width: "100%", maxWidth: "626px" }}>
-          <Section className="m-pad" style={{ padding: "0 32px 40px" }} />
+          {/* Hulplijn */}
+          <CrmHelp top="36px" />
         </Container>
         <CrmFooter recipientEmail={recipientEmail} reason="omdat je je hebt aangemeld voor de nieuwsbrief van ViaLuxury" />
       </Body>
@@ -86,38 +88,34 @@ const HOTEL = "Landgoed Lauswolt";
 const PLAATS = "Beetsterzwaag";
 const viewed: RowDeal & { hotelName: string } = { ...lauswolt, hotelName: HOTEL, line: undefined };
 const alternatives = [vanOys, steenenburg];
+const base = { recipientEmail: "sanne.devries@example.com", firstName: "Sanne", viewed, alternatives };
 
 /** v01_tf025_fl012_nl-NL_1_abandoned_browse — 2 uur na het bekijken. */
 export const browse1Props = {
-  recipientEmail: "sanne.devries@example.com",
+  ...base,
   preheader: "Nog steeds zin in dit verblijf?",
   heading: "Nog aan het twijfelen?",
   intro: `Je bekeek net ${HOTEL} in ${PLAATS}. Een mooie keuze. Het arrangement staat hieronder nog even voor je klaar.`,
-  viewed,
-  alternatives,
 } satisfies Props;
 
 /** v01_tf026_fl012_nl-NL_2_abandoned_browse — 1 dag na het bekijken. */
 export const browse2Props = {
-  recipientEmail: "sanne.devries@example.com",
+  ...base,
   preheader: "Dit maakt het verblijf bijzonder.",
   heading: `Dit maakt ${HOTEL} bijzonder`,
   intro: `Gisteren bekeek je ${HOTEL}. Bij dit arrangement is al veel inbegrepen, zodat jij alleen nog hoeft te genieten.`,
-  viewed,
-  alternatives,
   brand: "Bij ViaLuxury selecteren we elk hotel zelf en stellen we arrangementen samen waarin alles al geregeld is. Jij boekt één keer en hoeft daarna alleen nog te genieten.",
 } satisfies Props;
 
 /** v01_tf027_fl012_nl-NL_3_abandoned_browse — 2 dagen na het bekijken. */
 export const browse3Props = {
-  recipientEmail: "sanne.devries@example.com",
+  ...base,
   // Letterlijk uit de sheet. Let op: de sheet zegt drie, maar deze template heeft twee
   // dealplekken (rij 20 Hoteldeal 3 is leeg voor deze flow).
   preheader: "Drie alternatieven in dezelfde sfeer.",
   heading: "Nog niet het juiste?",
+  headingAt: "alternatives" as const,
   intro: `Twijfel je nog over ${HOTEL}? Dit zijn arrangementen in dezelfde sfeer, misschien zit jouw verblijf ertussen.`,
-  viewed,
-  alternatives,
 } satisfies Props;
 
 AutomationBrowse.PreviewProps = browse1Props;
