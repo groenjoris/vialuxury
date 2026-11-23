@@ -6,7 +6,8 @@ import { baseUrl, font, newsletter } from "./theme";
 // Gedeelde bouwstenen van de CRM-mails (concept, alleen desktop + light mode).
 //
 // Spelregels (zie ook CLAUDE.md, sectie CRM):
-// - Drie lettergroottes: titel 32, subtitel/hotelnaam 20, alle overige tekst 16 px.
+// - Drie lettergroottes: titel 32, subtitel/hotelnaam 20, alle overige tekst 16 px. Uitzondering:
+//   de dealtitel in een dealkaart is 18 px.
 // - Alles links uitgelijnd (alleen de inhoud van de coupon staat gecentreerd).
 // - Klaviyo: nooit twee lettertypen naast elkaar op één regel; onder elkaar mag wel.
 // - Geen grijze vlakken; beige alleen als highlight (achter de blokken met keuzeknoppen). Blokken zijn wit met een grijze rand (#E5E5E5, zoals de website).
@@ -186,7 +187,7 @@ function RichDealText({ d }: { d: RowDeal }) {
       )}
       {d.place && <Text style={{ ...s.muted, margin: "2px 0 0" }}>{d.place}</Text>}
       {(d.hotelName || d.place) && <Section style={{ borderTop: "1px solid #E5E5E5", marginTop: "12px", fontSize: "1px", lineHeight: "1px" }}>&nbsp;</Section>}
-      {d.packageTitle && <Text style={{ ...s.kop, margin: d.hotelName || d.place ? "10px 0 0" : 0 }}>{d.packageTitle}</Text>}
+      {d.packageTitle && <Text style={{ ...s.kop, fontSize: "18px", margin: d.hotelName || d.place ? "10px 0 0" : 0 }}>{d.packageTitle}</Text>}
       {d.includes && d.includes.length > 0 && (
         <>
           <Text style={{ fontFamily: font.heading, fontWeight: 600, fontSize: "16px", lineHeight: "1.4", color: c.cta, margin: "12px 0 2px" }}>Arrangement</Text>

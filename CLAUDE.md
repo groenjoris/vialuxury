@@ -216,7 +216,8 @@ Regels voor elke CRM-mail:
   als afbeelding (`public/images/mail/crm/groetjes-yvette.png`: lettertype Oooh Baby, donkergrijs #555555; geen
   webfont, want die werkt niet in elke mailclient). Een titel (bijv. "Anderen boekten ook", 32 serif) is de titel van
   het blok eronder en staat direct boven dat blok, nooit boven de aanhef.
-- Drie lettergroottes: titel 32, subtitel en hotelnaam 20, alle overige tekst 16 px (footer uitgezonderd).
+- Drie lettergroottes: titel 32, subtitel en hotelnaam 20, alle overige tekst 16 px (footer uitgezonderd). Uitzondering:
+  de dealtitel in een dealkaart is 18 px serif.
 - Alles links uitgelijnd, nooit gecentreerd (alleen de inhoud van de coupon staat gecentreerd).
 - Klaviyo: nooit twee lettertypen (serif-kop en sans-tekst) naast elkaar op één regel; onder elkaar mag
   wel. Hotelnaam, sterren, plaats, dealtitel en prijs staan daarom elk op een eigen regel.
@@ -225,7 +226,7 @@ Regels voor elke CRM-mail:
   is altijd oranje, ook als de mail bovenaan al een oranje knop heeft.
 - Geen grijze vlakken; beige (#F4F1EC) alleen als echte highlight: het vlak achter de blokken met keuzeknoppen (`beigeBox`). Keuzes (thema, nagenietvraag) zijn witte snelfilterknoppen in een raster van twee (`PillGrid`) op dat beige vlak.
 - Elke deal staat op de uitgebreide kaart, de zoekkaart van de website als e-mail (`DealRow`/`FeaturedDeal` tonen
-  die zodra de deal een `price` heeft): hotel met sterren en plaats (sans, ondergeschikt), lijntje, dealtitel 20 serif,
+  die zodra de deal een `price` heeft): hotel met sterren en plaats (sans, ondergeschikt), lijntje, dealtitel 18 serif,
   "Arrangement" met maximaal vier inclusies (groen vinkje), "2 personen, 2 nachten" en onderaan één rij: links het
   zwarte kortingsblokje ("-37%"), daarnaast "Vanaf €409" met de doorgestreepte kamerprijs, rechts de knop "Bekijk".
   Kortingsblokje en knop zijn even hoog (42 px) met dezelfde afronding (6 px). Klaviyo: geen tekst op een foto, en elke
