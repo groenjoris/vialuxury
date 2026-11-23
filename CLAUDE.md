@@ -293,7 +293,8 @@ twee dealplekken heeft (rij 20 is leeg), en voor de themategel "Hotels met exper
 geen landingspagina, dus die staat niet in de themasectie van `tf031`.
 
 Kaarthoogte: elke dealkaart is op desktop even hoog — de dealrij 425 px (`CARD_HEIGHT_ROW`) en de
-grote kaart 696 px (`CARD_HEIGHT_FEATURED`) — want in Klaviyo moet een herhalend blok één hoogte
+grote kaart 696 px, gezet als 379 px tekstblok onder de foto (`CARD_TEXT_HEIGHT_FEATURED`; een vaste
+hoogte op de kaart zelf verdeelt de ruimte over de rijen en zet een witte strook boven de foto) — want in Klaviyo moet een herhalend blok één hoogte
 hebben. Zonder die hoogte scheelt elke kaart een paar regels, afhankelijk van hoeveel regels de
 titel en de inclusies innemen. De waarden zijn de hoogste kaart die voorkomt, dus er wordt nooit
 iets afgesneden; een kortere kaart houdt onderaan ruimte over. De winkelmandjekaart heeft geen

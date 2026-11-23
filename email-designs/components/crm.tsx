@@ -43,7 +43,7 @@ body { margin: 0 !important; padding: 0 !important; }
   .m-badge { font-size: 12px !important; padding: 9px 6px !important; }
   .m-price { font-size: 12px !important; }
   .m-price-big { font-size: 16px !important; }
-  .m-cta { font-size: 12px !important; padding: 9px 9px !important; }
+  .m-cta { font-size: 12px !important; padding: 9px 7px !important; }
 }
 `;
 
@@ -266,7 +266,10 @@ export const cardGap = "24px";
  *  mails voorkomt, dus er wordt niets afgesneden; een kortere kaart houdt onderaan wat ruimte over.
  *  Op mobiel vervalt de hoogte (klasse `m-auto-h`), want daar staat de foto boven de tekst. */
 export const CARD_HEIGHT_ROW = "425px";
-export const CARD_HEIGHT_FEATURED = "696px";
+/** Bij de grote kaart staat de hoogte op het tekstblok onder de foto, niet op de kaart zelf: een
+ *  vaste hoogte op de kaart verdeelt de overgebleven ruimte over de rijen en zet dan een witte
+ *  strook boven en onder de foto. 379 px tekstblok + 315 px foto + 2 px rand = 696 px kaart. */
+export const CARD_TEXT_HEIGHT_FEATURED = "379px";
 
 /** Dealrij met grijze rand: foto links tot aan de rand en over de volle hoogte. Met een prijs de
  *  uitgebreide kaart (knop "Bekijk"), anders de tekstregels met een oranje link. Met inclusies maar
@@ -318,12 +321,12 @@ export function FeaturedDeal({ deal: d, cta, priceRow = true }: { deal: RowDeal;
   // winkelmandje heeft geen inclusies en is daarom van zichzelf al overal even hoog.
   const fixed = rich && priceRow && !!d.includes?.length;
   return (
-    <Section className={fixed ? "m-auto-h" : undefined} style={{ backgroundColor: "#FFFFFF", border: `1px solid #E5E5E5`, borderRadius: "8px", marginTop: "12px", overflow: "hidden", height: fixed ? CARD_HEIGHT_FEATURED : undefined }}>
+    <Section style={{ backgroundColor: "#FFFFFF", border: `1px solid #E5E5E5`, borderRadius: "8px", marginTop: "12px", overflow: "hidden" }}>
       <Link href={d.url}>
         <Img src={d.image} alt={d.packageTitle ?? d.hotelName ?? ""} width="560" height="315" style={{ display: "block", width: "100%", height: "auto", aspectRatio: "16 / 9", objectFit: "cover" }} />
       </Link>
       {rich ? (
-        <Section style={{ padding: "16px 20px 20px" }}>
+        <Section className={fixed ? "m-auto-h" : undefined} style={{ padding: "16px 20px 20px", height: fixed ? CARD_TEXT_HEIGHT_FEATURED : undefined }}>
           <RichDealText d={d} />
           {priceRow && <RichDealPrice d={d} cta={cta ?? "Bekijk"} />}
         </Section>
