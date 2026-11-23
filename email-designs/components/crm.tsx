@@ -31,6 +31,7 @@ body { margin: 0 !important; padding: 0 !important; }
      kortingsblokje, de prijs en de knop samen binnen de kaart passen. */
   /* De foto van een dealrij staat op mobiel boven de tekst over de volle breedte; padding-top van
      56,25 % maakt dat vlak 16:9, want een achtergrondfoto heeft zelf geen hoogte. */
+  .m-auto-h { height: auto !important; }
   .m-rowphoto { width: 100% !important; height: 0 !important; min-height: 0 !important; padding-top: 56.25% !important; }
   .m-badge-cell { padding-right: 8px !important; }
   .m-badge { font-size: 12px !important; padding: 9px 7px !important; }
@@ -255,6 +256,14 @@ function RichDealPrice({ d, cta }: { d: RowDeal; cta: string }) {
 /** Ruimte tussen twee dealkaarten onder elkaar. */
 export const cardGap = "24px";
 
+/** Vaste hoogte van een dealkaart op desktop. Zonder deze hoogte verschilt elke kaart een paar
+ *  regels (de titel loopt over twee of drie regels, een inclusie wel of niet over twee), en in
+ *  Klaviyo moet een herhalend blok één hoogte hebben. De waarden zijn de hoogste kaart die in de
+ *  mails voorkomt, dus er wordt niets afgesneden; een kortere kaart houdt onderaan wat ruimte over.
+ *  Op mobiel vervalt de hoogte (klasse `m-auto-h`), want daar staat de foto boven de tekst. */
+export const CARD_HEIGHT_ROW = "425px";
+export const CARD_HEIGHT_FEATURED = "696px";
+
 /** Dealrij met grijze rand: foto links tot aan de rand en over de volle hoogte. Met een prijs de
  *  uitgebreide kaart (knop "Bekijk"), anders de tekstregels met een oranje link. Met inclusies maar
  *  zonder prijs (de bekeken deal): de uitgebreide kaart met onderaan de eigen regels en de link.
@@ -262,7 +271,7 @@ export const cardGap = "24px";
 export function DealRow({ deal: d, cta, top = "12px" }: { deal: RowDeal; cta?: string; top?: string }) {
   const rich = !!d.price || !!d.includes;
   return (
-    <Section style={{ backgroundColor: "#FFFFFF", border: `1px solid #E5E5E5`, borderRadius: "8px", marginTop: top, overflow: "hidden" }}>
+    <Section className={rich ? "m-auto-h" : undefined} style={{ backgroundColor: "#FFFFFF", border: `1px solid #E5E5E5`, borderRadius: "8px", marginTop: top, overflow: "hidden", height: rich ? CARD_HEIGHT_ROW : undefined }}>
       <Row>
         {/* Foto als achtergrond: sluit aan op de rand en vult de hele hoogte van het blok */}
         <Column className="stack" style={{ width: "190px", verticalAlign: "top", backgroundImage: `url(${d.image})`, backgroundSize: "cover", backgroundPosition: "center" }}>
@@ -301,8 +310,11 @@ export function DealRow({ deal: d, cta, top = "12px" }: { deal: RowDeal; cta?: s
  *  `priceRow={false}`: zonder de prijsrij en de knop (winkelmandje: prijs en knop staan erboven). */
 export function FeaturedDeal({ deal: d, cta, priceRow = true }: { deal: RowDeal; cta?: string; priceRow?: boolean }) {
   const rich = !!d.price;
+  // Alleen de volledige kaart (met inclusies en prijsrij) krijgt de vaste hoogte; de kaart van het
+  // winkelmandje heeft geen inclusies en is daarom van zichzelf al overal even hoog.
+  const fixed = rich && priceRow && !!d.includes?.length;
   return (
-    <Section style={{ backgroundColor: "#FFFFFF", border: `1px solid #E5E5E5`, borderRadius: "8px", marginTop: "12px", overflow: "hidden" }}>
+    <Section className={fixed ? "m-auto-h" : undefined} style={{ backgroundColor: "#FFFFFF", border: `1px solid #E5E5E5`, borderRadius: "8px", marginTop: "12px", overflow: "hidden", height: fixed ? CARD_HEIGHT_FEATURED : undefined }}>
       <Link href={d.url}>
         <Img src={d.image} alt={d.packageTitle ?? d.hotelName ?? ""} width="560" height="315" style={{ display: "block", width: "100%", height: "auto", aspectRatio: "16 / 9", objectFit: "cover" }} />
       </Link>

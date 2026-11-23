@@ -292,6 +292,14 @@ Open punten in de sheet zelf: de preheader van `tf027` zegt "Drie alternatieven"
 twee dealplekken heeft (rij 20 is leeg), en voor de themategel "Hotels met experiences" bestaat nog
 geen landingspagina, dus die staat niet in de themasectie van `tf031`.
 
+Kaarthoogte: elke dealkaart is op desktop even hoog — de dealrij 425 px (`CARD_HEIGHT_ROW`) en de
+grote kaart 696 px (`CARD_HEIGHT_FEATURED`) — want in Klaviyo moet een herhalend blok één hoogte
+hebben. Zonder die hoogte scheelt elke kaart een paar regels, afhankelijk van hoeveel regels de
+titel en de inclusies innemen. De waarden zijn de hoogste kaart die voorkomt, dus er wordt nooit
+iets afgesneden; een kortere kaart houdt onderaan ruimte over. De winkelmandjekaart heeft geen
+inclusies en is daarom een eigen, van zichzelf al gelijke hoogte (556 px). Op mobiel vervalt de
+vaste hoogte (klasse `m-auto-h`), want daar staat de foto boven de tekst.
+
 Kaartvolgorde: de bovenste dealkaart van een mail is altijd de grote kaart (foto boven de tekst,
 `FeaturedDeal`), alle kaarten daaronder zijn dealrijen (foto links, `DealRow`). In de winkelmandje-
 en browsemails is die bovenste kaart het achtergelaten of bekeken arrangement, dus de alternatieven
