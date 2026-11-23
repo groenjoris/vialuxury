@@ -34,6 +34,8 @@ body { margin: 0 !important; padding: 0 !important; }
   /* De cel zelf zonder padding, anders komt stack's 12 px onderaan bij de foto en is het vlak
      niet meer precies 16:9. */
   .m-rowphoto-cell { padding: 0 !important; }
+  /* Twee foto's onder elkaar: op mobiel vervalt de halve hoogte, elk vlak wordt 16:9. */
+  .m-halfphoto { height: auto !important; }
   /* De vaste kaarthoogte vervalt: de foto staat hier boven de tekst, dus de kaart is hoger. */
   .m-auto-h { height: auto !important; }
   .m-pad { padding-left: 16px !important; padding-right: 16px !important; }
@@ -154,6 +156,9 @@ export type RowDeal = {
   /** Gewone bodyregels onder de dealtitel (bekeken deal: aankomst, nachten en personen, besparing). */
   lines?: string[];
   image: string;
+  /** Tweede foto van het arrangement. Staat die erin, dan toont de dealrij twee foto's onder
+   *  elkaar in de fotokolom (hoofdbeeld boven) in plaats van één over de volle hoogte. */
+  secondImage?: string;
   url: string;
   /** Uitgebreide kaart (zoals de zoekkaart op de website); een deal met `price` krijgt die: */
   /** Inclusies met een groen vinkje, maximaal vier. */
@@ -284,9 +289,21 @@ export function DealRow({ deal: d, cta, top = "12px" }: { deal: RowDeal; cta?: s
     <Section className={rich ? "m-auto-h" : undefined} style={{ backgroundColor: "#FFFFFF", border: `1px solid #E5E5E5`, borderRadius: "8px", marginTop: top, overflow: "hidden", height: rich ? CARD_HEIGHT_ROW : undefined }}>
       <Row>
         {/* Foto als achtergrond: sluit aan op de rand en vult de hele hoogte van het blok */}
-        <Column className="stack m-rowphoto-cell" style={{ width: "190px", verticalAlign: "top", backgroundImage: `url(${d.image})`, backgroundSize: "cover", backgroundPosition: "center" }}>
-          <Link href={d.url} aria-label={d.hotelName ?? cta ?? "Bekijk"} className="m-rowphoto" style={{ display: "block", width: "190px", minHeight: "107px" }} />
-        </Column>
+        {d.secondImage ? (
+          // Twee foto's onder elkaar: het hoofdbeeld boven, het tweede beeld van het arrangement
+          // eronder. Samen vullen ze de vaste kaarthoogte (211 + 212 = 423 px binnen de rand).
+          <Column className="stack m-rowphoto-cell" style={{ width: "190px", verticalAlign: "top" }}>
+            {[d.image, d.secondImage].map((src, i) => (
+              <Section key={src} className="m-halfphoto" style={{ height: i ? "212px" : "211px", backgroundImage: `url(${src})`, backgroundSize: "cover", backgroundPosition: "center" }}>
+                <Link href={d.url} aria-label={d.hotelName ?? cta ?? "Bekijk"} className="m-rowphoto" style={{ display: "block", width: "190px", minHeight: "107px" }} />
+              </Section>
+            ))}
+          </Column>
+        ) : (
+          <Column className="stack m-rowphoto-cell" style={{ width: "190px", verticalAlign: "top", backgroundImage: `url(${d.image})`, backgroundSize: "cover", backgroundPosition: "center" }}>
+            <Link href={d.url} aria-label={d.hotelName ?? cta ?? "Bekijk"} className="m-rowphoto" style={{ display: "block", width: "190px", minHeight: "107px" }} />
+          </Column>
+        )}
         <Column className="stack m-cardtext" style={{ verticalAlign: "top", padding: rich ? "16px 18px 18px" : "16px 18px" }}>
           {rich ? (
             <>

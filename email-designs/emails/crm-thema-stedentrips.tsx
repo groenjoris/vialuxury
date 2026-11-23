@@ -10,6 +10,8 @@ import { font, newsletter } from "../components/theme";
 // twee als omlijnde dealrij) en onderaan de themakiezer: zes witte snelfilterknoppen met
 // icoon, zoals "Snel zoeken" op de homepage, in een raster van twee even brede kolommen.
 // Elke keuze gaat naar /crm/thema?keuze=<id>.
+// De twee dealrijen in deze mail tonen twee foto's onder elkaar in de fotokolom: het hoofdbeeld
+// boven en het tweede beeld van het arrangement eronder (veld `secondImage`).
 // De deals staan op de uitgebreide kaart (zoals de zoekkaart op de website).
 // Onderwerp: "Dit zijn de populairste stedentrips van dit moment"
 
@@ -82,6 +84,8 @@ CrmThemaStedentrips.PreviewProps = {
       packageTitle: "Verblijf 3 dagen in een luxe 5*-hotel in hartje Den Haag",
       line: "Vanaf €379 voor 2 personen",
       image: "https://asset.vialuxury.com/assets/910163b4-1308-4f1f-989c-66e6d9202593?key=card",
+      // Tweede foto van het arrangement uit deals.json; de dealrij toont ze onder elkaar.
+      secondImage: "https://asset.vialuxury.com/assets/ec2bfd91-fc7d-4fa4-91b9-9fc61298b804?key=card",
       url: deal("hotel-des-indes-verblijf-3-dagen-in-luxe-5-hotel-in-hartje-centrum"),
       includes: ["Kamerupgrade", "Dagelijks luxe ontbijtbuffet", "Welkomstdrankje", "Late check-out"],
       discount: "-54%",
@@ -96,6 +100,7 @@ CrmThemaStedentrips.PreviewProps = {
       packageTitle: "3-daags verblijf in een 4*-hotel met skybar",
       line: "Vanaf €279 voor 2 personen",
       image: "https://asset.vialuxury.com/assets/a0943077-0b0f-4022-96ec-eda45927e263?key=card",
+      secondImage: "https://asset.vialuxury.com/assets/cdb4a7a3-078c-4c90-ac4b-cbec6e7452b6?key=card",
       url: deal("fashion-hotel-amsterdam-3-daags-verblijf-in-een-4-hotel-met-wellness-en-sky-bar-met-panoramisch-uitzicht"),
       includes: ["Dagelijks ontbijtbuffet", "Gebruik zwembad", "Wellness & Fitness", "Late check-out"],
       discount: "-49%",
