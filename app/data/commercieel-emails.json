@@ -54,5 +54,12 @@
     "description": "Mail zonder deals: actiegraphic (feestelijke coupon van €15), korte brief, de persoonlijke code als coupon, één knop en drie stappen om de code te verzilveren.",
     "subject": "Sanne, alleen vandaag: €15 korting voor jou",
     "preheader": "Je persoonlijke code vervalt om middernacht."
+  },
+  {
+    "slug": "commercieel-cadeaukaart",
+    "title": "Cadeaukaart",
+    "description": "Cadeaukaarten verkopen: sfeerbeeld in twee helften, titel, brief met de uitleg, de staffel als tabel (waarde cadeaukaart en jouw persoonlijke korting), slotzin en knop.",
+    "subject": "Geef een cadeaukaart, krijg zelf tot €120 korting",
+    "preheader": "Het cadeau waar ze nog jaren over vertellen."
   }
 ]

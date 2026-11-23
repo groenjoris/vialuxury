@@ -15,6 +15,7 @@ import CrmFavorieten from "../emails/crm-favorieten";
 import CommercieelContentMultiDeal from "../emails/commercieel-content-multi-deal";
 import CommercieelActie from "../emails/commercieel-actie";
 import CommercieelTekst from "../emails/commercieel-tekst";
+import CommercieelCadeaukaart from "../emails/commercieel-cadeaukaart";
 import CommercieelDedicatedHotel, { metTitelProps, zonderPrijsMetTitelProps, zonderPrijsProps } from "../emails/commercieel-dedicated-hotel";
 import { incheckMails } from "./incheckMails";
 
@@ -455,6 +456,15 @@ export const emails: EmailEntry[] = [
     subject: "Sanne, alleen vandaag: €15 korting voor jou",
     preheader: "Je persoonlijke code vervalt om middernacht.",
     Component: CommercieelTekst,
+  },
+  {
+    slug: "commercieel-cadeaukaart",
+    title: "Cadeaukaart",
+    description: "Cadeaukaarten verkopen: sfeerbeeld in twee helften, titel, brief met de uitleg, de staffel als tabel (waarde cadeaukaart en jouw persoonlijke korting), slotzin en knop.",
+    section: "commercieel",
+    subject: "Geef een cadeaukaart, krijg zelf tot €120 korting",
+    preheader: "Het cadeau waar ze nog jaren over vertellen.",
+    Component: CommercieelCadeaukaart,
   },
 ];
 

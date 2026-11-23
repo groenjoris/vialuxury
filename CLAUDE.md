@@ -241,6 +241,12 @@ de R1-zoekpagina); bronnen `email-designs/emails/commercieel-*.tsx`, foto's in
    en Basis Grotesque uit `public/fonts`), brief, de persoonlijke code als coupon (`CodeBlock`, SV15V-2FHT, "vandaag
    23:59 uur"), "Zo verzilver je je code" in drie stappen en daaronder de oranje knop "Bekijk onze
    arrangementen".
+5. `commercieel-cadeaukaart` ("Cadeaukaart"): cadeaukaarten verkopen. Sfeerbeeld in twee helften over de hele breedte
+   (`cadeaukaart-hero.jpg`: links de experience, rechts de productfoto op beige), titel "Maak iemand blij met een
+   cadeaukaart en ontvang zelf tot €120 korting", brief met de uitleg, de staffel als tabel met twee kolommen ("Waarde
+   cadeaukaart" | "Jouw persoonlijke korting": €50 → €15, €100 → €25, €200 → €60 (2 x €30), €300 → €120 (3 x €40)),
+   slotzin en de knop "Bestel een cadeaukaart" (R1-homepage; er is geen cadeaukaartpagina). Daaronder alleen de
+   hulplijn, geen Snel zoeken.
 
 Regels voor elke CRM-mail:
 - Briefopzet (het format voor alle CRM-mails, tot nu toe in `crm-winkelmandje-2-dagen`, `crm-favorieten`, `crm-zoekopdracht`,
