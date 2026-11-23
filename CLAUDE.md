@@ -260,6 +260,8 @@ Regels voor elke CRM-mail:
 - Precies een jaar geleden heeft twee varianten (schakelaar "Social proof | Persoonlijk"): social proof met de knop "Check
   beschikbaarheid" en "Anderen boekten ook" boven de suggesties; persoonlijk (`crm-jaar-geleden-persoonlijk`) met een brief
   onder de titel (link naar de beschikbare datums in de tekst) en "Geselecteerd voor [voornaam]" boven de suggesties.
+- Nagenietmail heeft twee varianten (schakelaar "Titel | Bericht"): de grote titel onder de foto, of
+  (`crm-nagenieten-bericht`) een brief met aanhef en ondertekening en in het blok alleen de vraag als titel.
 - Tussen twee dealkaarten onder elkaar staat 24 px (`cardGap`), tussen een titel en de eerste kaart 12 px.
 - Preheaders zonder gegevens die lastig te automatiseren zijn of niet altijd bestaan (geen plaatsen of prijzen van de
   suggesties, geen datum uit de zoekopdracht).

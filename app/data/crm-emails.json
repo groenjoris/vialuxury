@@ -50,6 +50,14 @@
     "preheader": "Eén klik, dan sturen we je op het juiste moment inspiratie."
   },
   {
+    "slug": "crm-nagenieten-bericht",
+    "title": "Nagenietmail (3 dagen na vertrek)",
+    "description": "Variant: onder de foto een brief (aanhef, we hopen dat je genoten hebt, ondertekening) in plaats van de grote titel; in het blok alleen de vraag.",
+    "subject": "Wanneer ga je weer?",
+    "preheader": "Eén klik, dan sturen we je op het juiste moment inspiratie.",
+    "variantOf": "crm-nagenieten"
+  },
+  {
     "slug": "crm-jaar-geleden",
     "title": "Precies een jaar geleden",
     "description": "On this day-herinnering op de aankomstdatum +1 jaar: grote foto, datum en hotel, één knop naar het arrangement met dezelfde periode en personen vooringevuld. Kortingsregel alleen bij een actieve code; drie deals met frame-titel.",

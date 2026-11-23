@@ -3,7 +3,7 @@ import VakantieBevestiging, { fietsPreviewProps as bevestigingFiets } from "../e
 import VakantiePreTravel, { fietsPreviewProps as preTravelFiets } from "../emails/vakantie-pre-travel";
 import VakantieIncheckHotel from "../emails/vakantie-incheck-hotel";
 import MvpVakantieBevestiging from "../emails/mvp-vakantie-bevestiging";
-import CrmNagenieten from "../emails/crm-nagenieten";
+import CrmNagenieten, { berichtProps } from "../emails/crm-nagenieten";
 import CrmJaarGeleden, { persoonlijkProps } from "../emails/crm-jaar-geleden";
 import CrmWinkelmandje, { naamOnbekendProps } from "../emails/crm-winkelmandje";
 import CrmWinkelmandje2Dagen, { naamOnbekendProps as naamOnbekend2DagenProps } from "../emails/crm-winkelmandje-2-dagen";
@@ -292,6 +292,17 @@ export const emails: EmailEntry[] = [
     subject: "Wanneer ga je weer?",
     preheader: "Eén klik, dan sturen we je op het juiste moment inspiratie.",
     Component: CrmNagenieten,
+  },
+  {
+    slug: "crm-nagenieten-bericht",
+    title: "Nagenietmail (3 dagen na vertrek)",
+    description: "Variant: onder de foto een brief (aanhef, we hopen dat je genoten hebt, ondertekening) in plaats van de grote titel; in het blok alleen de vraag.",
+    section: "crm",
+    variantOf: "crm-nagenieten",
+    subject: "Wanneer ga je weer?",
+    preheader: "Eén klik, dan sturen we je op het juiste moment inspiratie.",
+    Component: CrmNagenieten,
+    props: berichtProps,
   },
   {
     slug: "crm-jaar-geleden",

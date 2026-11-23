@@ -32,6 +32,8 @@ const variantLabels: Record<string, string> = {
   'crm-winkelmandje-naam-onbekend': 'Naam onbekend',
   'crm-jaar-geleden': 'Social proof',
   'crm-jaar-geleden-persoonlijk': 'Persoonlijk',
+  'crm-nagenieten': 'Titel',
+  'crm-nagenieten-bericht': 'Bericht',
   'crm-review': 'Lege ster',
   'crm-review-knoppen': 'Knop',
   'crm-winkelmandje-2-dagen': 'Naam bekend',
