@@ -2,7 +2,7 @@ import { Body, Container, Head, Heading, Html, Preview, Section, Text } from "@r
 import * as React from "react";
 import CrmFooter from "../components/CrmFooter";
 import CrmHeader from "../components/CrmHeader";
-import { CollageDeal, crmCss, DealList, type GuestRating, GuestRatingSection, type RowDeal, s, ServiceSection } from "../components/crm";
+import { crmCss, CrmHelp, DealList, FeaturedDeal, type GuestRating, GuestRatingSection, type RowDeal, s } from "../components/crm";
 import { desIndes, dePlesman, voco } from "../lib/crmDeals";
 import { font, newsletter } from "../components/theme";
 
@@ -11,7 +11,7 @@ import { font, newsletter } from "../components/theme";
 // Secties in de volgorde van de sheet:
 //   S1 Header (logo) → Kop → Intro → S17 Achtergelaten arrangement (het winkelmandje) →
 //   S21 Gastenoordeel (alleen mail 3) → S4 Hoteldeals (mail 2 en 3, twee alternatieven) →
-//   S15 Servicesectie (alleen mail 1) → S13 Footer.
+//   S15 Servicesectie (de vaste hulplijn onderaan elke mail) → S13 Footer.
 // Mergevelden in de teksten: [hotelnaam], [aankomstdatum], [nachten], [personen]. Hier ingevuld
 // met voorbeelddata uit deals.json, zodat het ontwerp leesbaar is; in Klaviyo worden het merge tags.
 
@@ -27,11 +27,9 @@ type Props = {
   guestRating?: GuestRating;
   /** S4: twee vergelijkbare arrangementen (mail 2 en 3). */
   alternatives?: RowDeal[];
-  /** S15: de serviceregel onderaan (mail 1). */
-  service?: boolean;
 };
 
-export default function AutomationCart({ recipientEmail, preheader, heading, intro, cart, guestRating, alternatives, service }: Props) {
+export default function AutomationCart({ recipientEmail, preheader, heading, intro, cart, guestRating, alternatives }: Props) {
   const c = newsletter.light;
 
   return (
@@ -53,7 +51,7 @@ export default function AutomationCart({ recipientEmail, preheader, heading, int
           {/* S17 Achtergelaten arrangement: het winkelmandje met de knop om af te ronden */}
           <Section className="m-pad" style={{ padding: "24px 32px 0" }}>
             <Text style={s.kop}>Je winkelmandje</Text>
-            <CollageDeal deal={cart} cta="Rond je boeking af" />
+            <FeaturedDeal deal={cart} cta="Rond je boeking af" />
           </Section>
 
           {/* S21 Gastenoordeel */}
@@ -71,10 +69,8 @@ export default function AutomationCart({ recipientEmail, preheader, heading, int
             </Section>
           )}
 
-          {/* S15 Servicesectie */}
-          <Section className="m-pad" style={{ padding: service ? "36px 32px 40px" : "0 32px 40px" }}>
-            {service && <ServiceSection />}
-          </Section>
+          {/* S15 Servicesectie: de vaste hulplijn */}
+          <CrmHelp top="36px" />
         </Container>
         <CrmFooter recipientEmail={recipientEmail} reason="omdat je je hebt aangemeld voor de nieuwsbrief van ViaLuxury" />
       </Body>
@@ -102,7 +98,6 @@ export const cart1Props = {
   heading: "Je bent er bijna",
   intro: `Je was bijna klaar met je boeking voor ${HOTEL}. We hebben alles voor je bewaard, zodat je zo verder kunt.`,
   cart,
-  service: true,
 } satisfies Props;
 
 /** v01_tf022_fl011_nl-NL_2_abandoned_cart — 2 dagen na het verlaten van het winkelmandje. */

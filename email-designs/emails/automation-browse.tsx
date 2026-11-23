@@ -2,7 +2,7 @@ import { Body, Container, Head, Heading, Html, Preview, Section, Text } from "@r
 import * as React from "react";
 import CrmFooter from "../components/CrmFooter";
 import CrmHeader from "../components/CrmHeader";
-import { BrandSection, CollageDeal, crmCss, DealList, type RowDeal, s } from "../components/crm";
+import { BrandSection, crmCss, CrmHelp, DealList, FeaturedDeal, type RowDeal, s } from "../components/crm";
 import { lauswolt, steenenburg, vanOys } from "../lib/crmDeals";
 import { font, newsletter } from "../components/theme";
 
@@ -11,7 +11,7 @@ import { font, newsletter } from "../components/theme";
 // Secties in de volgorde van de sheet:
 //   S1 Header (logo) → Kop → Intro → S17 Achtergelaten arrangement (het bekeken arrangement:
 //   foto, hotelnaam, plaats, prijs en wat er inbegrepen is) → S4 Hoteldeals (twee alternatieven) →
-//   S6 Merksectie (alleen mail 2) → S13 Footer.
+//   S6 Merksectie (alleen mail 2) → S15 de vaste hulplijn → S13 Footer.
 // Mergevelden in de teksten: [hotelnaam] en [plaats], hier ingevuld met voorbeelddata.
 
 type Props = {
@@ -49,7 +49,7 @@ export default function AutomationBrowse({ recipientEmail, preheader, heading, i
           {/* S17 Achtergelaten arrangement: het bekeken arrangement */}
           <Section className="m-pad" style={{ padding: "24px 32px 0" }}>
             <Text style={s.kop}>Het arrangement dat je bekeek</Text>
-            <CollageDeal deal={viewed} cta="Bekijk arrangement" />
+            <FeaturedDeal deal={viewed} cta="Bekijk arrangement" />
           </Section>
 
           {/* S4 Hoteldeals: vergelijkbare arrangementen als alternatief */}
@@ -59,9 +59,14 @@ export default function AutomationBrowse({ recipientEmail, preheader, heading, i
           </Section>
 
           {/* S6 Merksectie */}
-          <Section className="m-pad" style={{ padding: brand ? "40px 32px 40px" : "0 32px 40px" }}>
-            {brand && <BrandSection>{brand}</BrandSection>}
-          </Section>
+          {brand && (
+            <Section className="m-pad" style={{ padding: "40px 32px 0" }}>
+              <BrandSection>{brand}</BrandSection>
+            </Section>
+          )}
+
+          {/* S15 Servicesectie: de vaste hulplijn */}
+          <CrmHelp top="40px" />
         </Container>
         <CrmFooter recipientEmail={recipientEmail} reason="omdat je je hebt aangemeld voor de nieuwsbrief van ViaLuxury" />
       </Body>

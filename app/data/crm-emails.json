@@ -7,32 +7,40 @@
     "preheader": "We horen graag hoe je het vond. Het kost je een minuut."
   },
   {
+    "slug": "crm-review-knoppen",
+    "title": "Reviewmail (1 dag na thuiskomst)",
+    "description": "Variant van de reviewmail: de vijf keuzes als witte knoppen met cijfer en ster in plaats van lege sterren.",
+    "subject": "Hoe was je verblijf?",
+    "preheader": "We horen graag hoe je het vond. Het kost je een minuut.",
+    "variantOf": "crm-review"
+  },
+  {
     "slug": "crm-terugkomactie",
     "title": "Terugkomactie €20 (14 dagen na vertrek)",
-    "description": "Kortingscode als coupon, één knop, jouw verblijf, drie deals in de sfeer van dat hotel en de themakiezer.",
+    "description": "Kortingscode als coupon, één knop, jouw verblijf, 'Tips voor je kortingscode' met drie groepjes van twee suggesties en de themakiezer.",
     "subject": "Sanne, €20 cadeau voor je volgende verblijf",
     "preheader": "Een persoonlijk bedankje, alleen voor jou. Geldig tot en met 16 december 2026."
   },
   {
     "slug": "crm-terugkomactie-herinnering",
     "title": "Terugkomactie herinnering (30 dagen na vertrek)",
-    "description": "Voor wie de code nog niet gebruikte: dezelfde coupon met het aantal dagen dat hij nog geldig is, één knop en drie deals.",
-    "subject": "Sanne, je persoonlijke €20 cadeau verloopt op 16 december",
-    "preheader": "Je persoonlijke cadeau ligt nog klaar. Nog 14 dagen geldig."
+    "description": "Voor wie de code nog niet gebruikte, op haast: dezelfde coupon met het aantal dagen dat hij nog geldig is, één knop en dezelfde groepjes suggesties.",
+    "subject": "Sanne, je €20 cadeau verloopt over 14 dagen",
+    "preheader": "Na 16 december 2026 vervalt je code."
   },
   {
     "slug": "crm-zoekopdracht",
     "title": "Zoekopdracht (1 minuut na verlaten)",
-    "description": "De zoekopdracht als samenvatting met één knop naar alle resultaten, daaronder de drie best passende arrangementen.",
+    "description": "Briefopening (Beste Sanne, intro, Groetjes Yvette), de zoekopdracht als samenvatting met één knop naar alle resultaten, daaronder de titel 'Dit vonden we voor je' met de drie best passende arrangementen.",
     "subject": "Jouw zoekopdracht: Den Haag",
-    "preheader": "De beste arrangementen voor 20 november."
+    "preheader": "Kijk of er iets voor je bij zit."
   },
   {
-    "slug": "crm-verlanglijst",
-    "title": "Verlanglijst €10 (3 dagen na eerste mail)",
-    "description": "Code voor het eerste favoriet, direct boven dat arrangement; daaronder de andere favorieten en twee vergelijkbare arrangementen.",
-    "subject": "€10 cadeau op Kasteel Steenenburg van je verlanglijst",
-    "preheader": "Jouw unieke code, geldig tot en met 12 november 2026."
+    "slug": "crm-favorieten",
+    "title": "Favorieten €10 en €15 (3 dagen na eerste mail)",
+    "description": "Twee coupons boven het eerste favoriet: €10 op de eerste boeking (24 uur geldig) en €15 op de tweede (code volgt per mail na de eerste boeking); daaronder de andere favorieten en twee vergelijkbare deals. Copy op haast.",
+    "subject": "Alsjeblieft Sanne, €10 korting op Kasteel Steenenburg",
+    "preheader": "Je code is geldig tot 12 november 2026 10:24 uur."
   },
   {
     "slug": "crm-nagenieten",
@@ -66,9 +74,17 @@
   {
     "slug": "crm-winkelmandje-2-dagen",
     "title": "Winkelmandje (2 dagen na verlaten)",
-    "description": "Na de mail van 2 uur nu alternatieven: Door jou bekeken (de deal uit het winkelmandje met prijs en knop), daaronder drie vergelijkbare deals in de list view van de zoekkaarten.",
-    "subject": "Dit zijn 3 deals die lijken op Hotel Des Indes",
-    "preheader": "Ook in Den Haag en aan de kust, vanaf €309 voor 2 personen."
+    "description": "Na de mail van 2 uur nu alternatieven: titel 'Anderen boekten ook', korte persoonlijke intro met ondertekening, drie vergelijkbare deals en daaronder de bekeken deal.",
+    "subject": "Anderen die Hotel Des Indes bekeken, boekten vaak deze deals",
+    "preheader": "Misschien zit jouw volgende verblijf erbij."
+  },
+  {
+    "slug": "crm-winkelmandje-2-dagen-naam-onbekend",
+    "title": "Winkelmandje (2 dagen na verlaten)",
+    "description": "Variant voor als de voornaam niet bekend is: de intro begint met 'Beste gast,'.",
+    "subject": "Anderen die Hotel Des Indes bekeken, boekten vaak deze deals",
+    "preheader": "Misschien zit jouw volgende verblijf erbij.",
+    "variantOf": "crm-winkelmandje-2-dagen"
   },
   {
     "slug": "crm-thema-stedentrips",

@@ -2,13 +2,15 @@ import { Column, Img, Link, Row, Section, Text } from "@react-email/components";
 import * as React from "react";
 import { baseUrl, font, newsletter, type EmailMode } from "./theme";
 
-/** "Hulp nodig?" — één regel in een warm vlak met het telefoonicoon, zoals op de reispagina. */
-export default function HelpBanner({ mode = "light" }: { mode?: EmailMode }) {
+/** "Hulp nodig?" — één regel in een warm vlak met het telefoonicoon, zoals op de reispagina.
+ *  `lead`: de vette openingsvraag (bijv. "Hulp nodig bij het boeken?" als er nog niet geboekt is);
+ *  `fontSize` en `padding` voor de CRM-mails (16 px tekst, eigen witruimte). */
+export default function HelpBanner({ mode = "light", lead = "Hulp nodig?", fontSize = "14px", padding = "24px 32px 0" }: { mode?: EmailMode; lead?: string; fontSize?: string; padding?: string }) {
   const c = newsletter[mode];
   const dark = mode === "dark";
   const link = { color: c.link, textDecoration: "underline", fontWeight: 700 }; // tekstlinks altijd oranje (huisstijl)
   return (
-    <Section className="m-pad" style={{ padding: "24px 32px 0" }}>
+    <Section className="m-pad" style={{ padding }}>
       <Section style={{ backgroundColor: dark ? "#3A3A3A" : "#FFF0E4", borderRadius: "8px", padding: "14px 18px" }}>
         <Row>
           <Column style={{ width: "48px", verticalAlign: "middle" }}>
@@ -24,8 +26,8 @@ export default function HelpBanner({ mode = "light" }: { mode?: EmailMode }) {
             </table>
           </Column>
           <Column style={{ verticalAlign: "middle" }}>
-            <Text style={{ fontFamily: font.body, fontSize: "14px", lineHeight: "1.45", color: c.text, margin: 0 }}>
-              <strong>Hulp nodig?</strong> Bel{" "}
+            <Text style={{ fontFamily: font.body, fontSize, lineHeight: "1.45", color: c.text, margin: 0 }}>
+              <strong>{lead}</strong> Bel{" "}
               <Link href="tel:+31207052222" style={link}>+31 20 705 2222</Link> of WhatsApp{" "}
               <Link href="https://wa.me/31208088809" style={link}>+31 20 808 8809</Link>
               <span style={{ color: c.muted }}> · ma t/m vr 8:00 – 18:00</span>

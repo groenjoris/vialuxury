@@ -6,12 +6,12 @@ import MvpVakantieBevestiging from "../emails/mvp-vakantie-bevestiging";
 import CrmNagenieten from "../emails/crm-nagenieten";
 import CrmJaarGeleden from "../emails/crm-jaar-geleden";
 import CrmWinkelmandje, { naamOnbekendProps } from "../emails/crm-winkelmandje";
-import CrmWinkelmandje2Dagen from "../emails/crm-winkelmandje-2-dagen";
+import CrmWinkelmandje2Dagen, { naamOnbekendProps as naamOnbekend2DagenProps } from "../emails/crm-winkelmandje-2-dagen";
 import CrmThemaStedentrips from "../emails/crm-thema-stedentrips";
-import CrmReview from "../emails/crm-review";
+import CrmReview, { knoppenProps } from "../emails/crm-review";
 import CrmTerugkomactie, { herinneringProps } from "../emails/crm-terugkomactie";
 import CrmZoekopdracht from "../emails/crm-zoekopdracht";
-import CrmVerlanglijst from "../emails/crm-verlanglijst";
+import CrmFavorieten from "../emails/crm-favorieten";
 import AutomationCart, { cart1Props, cart2Props, cart3Props } from "../emails/automation-cart";
 import AutomationBrowse, { browse1Props, browse2Props, browse3Props } from "../emails/automation-browse";
 import AutomationSearch, { search1Props, search2Props, search3Props, search4Props } from "../emails/automation-search";
@@ -241,11 +241,22 @@ export const emails: EmailEntry[] = [
     preheader: "We horen graag hoe je het vond. Het kost je een minuut.",
     Component: CrmReview,
   },
+  {
+    slug: "crm-review-knoppen",
+    title: "Reviewmail (1 dag na thuiskomst)",
+    description: "Variant van de reviewmail: de vijf keuzes als witte knoppen met cijfer en ster in plaats van lege sterren.",
+    section: "crm",
+    variantOf: "crm-review",
+    subject: "Hoe was je verblijf?",
+    preheader: "We horen graag hoe je het vond. Het kost je een minuut.",
+    Component: CrmReview,
+    props: knoppenProps,
+  },
   // Overgenomen van Jesse (origin/redesign-jesse), omgezet naar onze bouwstenen.
   {
     slug: "crm-terugkomactie",
     title: "Terugkomactie €20 (14 dagen na vertrek)",
-    description: "Kortingscode als coupon, één knop, jouw verblijf, drie deals in de sfeer van dat hotel en de themakiezer.",
+    description: "Kortingscode als coupon, één knop, jouw verblijf, 'Tips voor je kortingscode' met drie groepjes van twee suggesties en de themakiezer.",
     section: "crm",
     subject: "Sanne, €20 cadeau voor je volgende verblijf",
     preheader: "Een persoonlijk bedankje, alleen voor jou. Geldig tot en met 16 december 2026.",
@@ -254,30 +265,30 @@ export const emails: EmailEntry[] = [
   {
     slug: "crm-terugkomactie-herinnering",
     title: "Terugkomactie herinnering (30 dagen na vertrek)",
-    description: "Voor wie de code nog niet gebruikte: dezelfde coupon met het aantal dagen dat hij nog geldig is, één knop en drie deals.",
+    description: "Voor wie de code nog niet gebruikte, op haast: dezelfde coupon met het aantal dagen dat hij nog geldig is, één knop en dezelfde groepjes suggesties.",
     section: "crm",
-    subject: "Sanne, je persoonlijke €20 cadeau verloopt op 16 december",
-    preheader: "Je persoonlijke cadeau ligt nog klaar. Nog 14 dagen geldig.",
+    subject: "Sanne, je €20 cadeau verloopt over 14 dagen",
+    preheader: "Na 16 december 2026 vervalt je code.",
     Component: CrmTerugkomactie,
     props: herinneringProps,
   },
   {
     slug: "crm-zoekopdracht",
     title: "Zoekopdracht (1 minuut na verlaten)",
-    description: "De zoekopdracht als samenvatting met één knop naar alle resultaten, daaronder de drie best passende arrangementen.",
+    description: "Briefopening (Beste Sanne, intro, Groetjes Yvette), de zoekopdracht als samenvatting met één knop naar alle resultaten, daaronder de titel 'Dit vonden we voor je' met de drie best passende arrangementen.",
     section: "crm",
     subject: "Jouw zoekopdracht: Den Haag",
-    preheader: "De beste arrangementen voor 20 november.",
+    preheader: "Kijk of er iets voor je bij zit.",
     Component: CrmZoekopdracht,
   },
   {
-    slug: "crm-verlanglijst",
-    title: "Verlanglijst €10 (3 dagen na eerste mail)",
-    description: "Code voor het eerste favoriet, direct boven dat arrangement; daaronder de andere favorieten en twee vergelijkbare arrangementen.",
+    slug: "crm-favorieten",
+    title: "Favorieten €10 en €15 (3 dagen na eerste mail)",
+    description: "Twee coupons boven het eerste favoriet: €10 op de eerste boeking (24 uur geldig) en €15 op de tweede (code volgt per mail na de eerste boeking); daaronder de andere favorieten en twee vergelijkbare deals. Copy op haast.",
     section: "crm",
-    subject: "€10 cadeau op Kasteel Steenenburg van je verlanglijst",
-    preheader: "Jouw unieke code, geldig tot en met 12 november 2026.",
-    Component: CrmVerlanglijst,
+    subject: "Alsjeblieft Sanne, €10 korting op Kasteel Steenenburg",
+    preheader: "Je code is geldig tot 12 november 2026 10:24 uur.",
+    Component: CrmFavorieten,
   },
   {
     slug: "crm-nagenieten",
@@ -320,10 +331,10 @@ export const emails: EmailEntry[] = [
   {
     slug: "crm-winkelmandje-2-dagen",
     title: "Winkelmandje (2 dagen na verlaten)",
-    description: "Na de mail van 2 uur nu alternatieven: Door jou bekeken (de deal uit het winkelmandje met prijs en knop), daaronder drie vergelijkbare deals in de list view van de zoekkaarten.",
+    description: "Na de mail van 2 uur nu alternatieven: titel 'Anderen boekten ook', korte persoonlijke intro met ondertekening, drie vergelijkbare deals en daaronder de bekeken deal.",
     section: "crm",
-    subject: "Dit zijn 3 deals die lijken op Hotel Des Indes",
-    preheader: "Ook in Den Haag en aan de kust, vanaf €309 voor 2 personen.",
+    subject: "Anderen die Hotel Des Indes bekeken, boekten vaak deze deals",
+    preheader: "Misschien zit jouw volgende verblijf erbij.",
     Component: CrmWinkelmandje2Dagen,
   },
   // ── Automationmails (fase 1) ─────────────────────────────────────────────────────────────
@@ -431,6 +442,17 @@ export const emails: EmailEntry[] = [
     preheader: "Kies je thema, dan sturen we je wat bij je past.",
     Component: AutomationSearch,
     props: search4Props,
+  },
+  {
+    slug: "crm-winkelmandje-2-dagen-naam-onbekend",
+    title: "Winkelmandje (2 dagen na verlaten)",
+    description: "Variant voor als de voornaam niet bekend is: de intro begint met 'Beste gast,'.",
+    section: "crm",
+    variantOf: "crm-winkelmandje-2-dagen",
+    subject: "Anderen die Hotel Des Indes bekeken, boekten vaak deze deals",
+    preheader: "Misschien zit jouw volgende verblijf erbij.",
+    Component: CrmWinkelmandje2Dagen,
+    props: naamOnbekend2DagenProps,
   },
   {
     slug: "crm-thema-stedentrips",

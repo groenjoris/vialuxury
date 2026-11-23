@@ -1,6 +1,6 @@
 import { Body, Container, Head, Heading, Html, Img, Preview, Section, Text } from "@react-email/components";
 import * as React from "react";
-import { crmCss, beigeBox, PillGrid, s, site } from "../components/crm";
+import { crmCss, CrmHelp, beigeBox, PillGrid, s, site } from "../components/crm";
 import CrmFooter from "../components/CrmFooter";
 import CrmHeader from "../components/CrmHeader";
 import { baseUrl, font, newsletter } from "../components/theme";
@@ -62,6 +62,8 @@ export default function CrmNagenieten({ firstName, recipientEmail, hotelName, im
               <PillGrid items={choices} />
             </Section>
           </Section>
+          {/* Hulplijn */}
+          <CrmHelp />
         </Container>
         <CrmFooter recipientEmail={recipientEmail} reason="omdat je bij ons boekte" />
       </Body>

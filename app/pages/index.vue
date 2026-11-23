@@ -65,7 +65,7 @@
           Concept voor geautomatiseerde e-mails (desktop, light mode)
         </p>
         <div class="start-section__buttons">
-          <NuxtLink class="start-btn" to="/crm/crm-jaar-geleden">Voorbeeldmails</NuxtLink>
+          <NuxtLink class="start-btn" to="/crm/crm-winkelmandje">Voorbeeldmails</NuxtLink>
           <!-- De uitgewerkte automationmails voor Klaviyo (slug = de Klaviyo-naam). -->
           <NuxtLink class="start-btn" to="/automation/v01_tf021_fl011_nl-NL_1_abandoned_cart">Automations</NuxtLink>
         </div>

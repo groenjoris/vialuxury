@@ -11,9 +11,11 @@ const slug = computed(() => String(route.params.slug))
 const entry = computed(() => emails.find(e => e.slug === slug.value))
 if (!entry.value) throw createError({ statusCode: 404, statusMessage: 'E-mail niet gevonden' })
 
-// Alle mails in het paneel links, in de volgorde van het startscherm. De titel
+// Alle mails in het paneel links, in de volgorde van de klantreis: winkelmandje, zoekopdracht
+// (en favorieten), review, de repeat-bookingflow (nagenieten, terugkomactie, herinnering, een
+// jaar geleden) en als laatste de themamail. De titel
 // "Winkelmandje (2 uur na verlaten)" wordt gesplitst in naam en moment.
-const navOrder = ['crm-jaar-geleden', 'crm-winkelmandje', 'crm-winkelmandje-2-dagen', 'crm-thema-stedentrips', 'crm-zoekopdracht', 'crm-verlanglijst', 'crm-review', 'crm-terugkomactie', 'crm-terugkomactie-herinnering', 'crm-nagenieten']
+const navOrder = ['crm-winkelmandje', 'crm-winkelmandje-2-dagen', 'crm-zoekopdracht', 'crm-favorieten', 'crm-review', 'crm-nagenieten', 'crm-terugkomactie', 'crm-terugkomactie-herinnering', 'crm-jaar-geleden', 'crm-thema-stedentrips']
 const nav = navOrder
   .map(s => emails.find(e => e.slug === s))
   .filter((e): e is (typeof emails)[number] => !!e)
@@ -28,6 +30,10 @@ const baseSlug = computed(() => (entry.value as { variantOf?: string } | undefin
 const variantLabels: Record<string, string> = {
   'crm-winkelmandje': 'Naam bekend',
   'crm-winkelmandje-naam-onbekend': 'Naam onbekend',
+  'crm-review': 'Lege ster',
+  'crm-review-knoppen': 'Knop',
+  'crm-winkelmandje-2-dagen': 'Naam bekend',
+  'crm-winkelmandje-2-dagen-naam-onbekend': 'Naam onbekend',
 }
 const variants = computed(() => {
   const list = emails.filter(e => e.slug === baseSlug.value || (e as { variantOf?: string }).variantOf === baseSlug.value)

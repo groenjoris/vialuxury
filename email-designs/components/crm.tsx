@@ -1,17 +1,20 @@
 import { Button, Column, Img, Link, Row, Section, Text } from "@react-email/components";
 import * as React from "react";
+import HelpBanner from "./HelpBanner";
 import { baseUrl, font, newsletter } from "./theme";
 
 // Gedeelde bouwstenen van de CRM-mails (concept, alleen desktop + light mode).
 //
 // Spelregels (zie ook CLAUDE.md, sectie CRM):
-// - Drie lettergroottes: titel 32, subtitel/hotelnaam 20, alle overige tekst 16 px.
+// - Drie lettergroottes: titel 32, subtitel/hotelnaam 20, alle overige tekst 16 px. Uitzondering:
+//   de dealtitel in een dealkaart is 18 px.
 // - Alles links uitgelijnd (alleen de inhoud van de coupon staat gecentreerd).
 // - Klaviyo: nooit twee lettertypen naast elkaar op één regel; onder elkaar mag wel.
 // - Geen grijze vlakken; beige alleen als highlight (achter de blokken met keuzeknoppen). Blokken zijn wit met een grijze rand (#E5E5E5, zoals de website).
 // - Geen labels ("Populair" e.d.) op deals; prijzen zijn het totaal voor 2 personen.
 // - Deals staan op de uitgebreide kaart (zoals de zoekkaart op de website); geen tekst op een foto.
 // - Links naar het prototype gaan naar de R1-dealpagina (zachte landing).
+// - Elke mail eindigt met de hulplijn "Hulp nodig?" (CrmHelp).
 
 const c = newsletter.light;
 
@@ -41,6 +44,28 @@ export const s = {
   muted: { fontFamily: font.body, fontSize: "16px", lineHeight: "1.4", color: c.muted, margin: "4px 0 0" },
 };
 
+/** Briefopening, het vaste begin van een CRM-mail: aanhef ("Beste Sanne," of zonder naam
+ *  "Beste gast,"; in elke mail dezelfde aanhef), een korte intro en de ondertekening "Groetjes Yvette". De ondertekening is een
+ *  afbeelding (handgeschreven lettertype Oooh Baby, donkergrijs #555555), zodat hij in elke
+ *  mailclient en in Klaviyo hetzelfde is. Titels van blokken (bijv. "Anderen boekten ook") komen
+ *  ná de brief, direct boven het blok waar ze bij horen. */
+export function Letter({ firstName, children }: { firstName?: string; children: React.ReactNode }) {
+  const salutation = firstName ? `Beste ${firstName},` : "Beste gast,";
+  return (
+    <>
+      <Text style={{ ...s.body, margin: 0 }}>{salutation}</Text>
+      <Text style={{ ...s.body, margin: "8px 0 0" }}>{children}</Text>
+      <Img src={`${baseUrl}/images/mail/crm/groetjes-yvette.png`} alt="Groetjes Yvette" width="133" height="29" style={{ display: "block", width: "133px", height: "29px", marginTop: "14px" }} />
+    </>
+  );
+}
+
+/** Hulplijn onderaan elke CRM-mail: hetzelfde blok "Hulp nodig?" als in de post-bookingmails
+ *  (HelpBanner), met 16 px tekst. `top`: witruimte erboven als de sectie ervoor er geen heeft. */
+export function CrmHelp({ top = "0" }: { top?: string }) {
+  return <HelpBanner fontSize="16px" padding={`${top} 32px 40px`} />;
+}
+
 /** Primaire, oranje knop. `small`: compacter, voor in een dealblok. */
 export function PrimaryButton({ href, children, small }: { href: string; children: React.ReactNode; small?: boolean }) {
   return (
@@ -62,17 +87,18 @@ export function PrimaryButton({ href, children, small }: { href: string; childre
   );
 }
 
-/** Secundaire knop: wit met grijze rand (zoals de website), nooit oranje (kleur alleen voor de kern). */
-export function SecondaryButton({ href, children, block }: { href: string; children: React.ReactNode; block?: boolean }) {
+/** Secundaire knop: wit met grijze rand (zoals de website), of met `dark` zwart met witte tekst;
+ *  nooit oranje (kleur alleen voor de kern). */
+export function SecondaryButton({ href, children, block, dark }: { href: string; children: React.ReactNode; block?: boolean; dark?: boolean }) {
   return (
     <Button
       href={href}
       style={{
         display: block ? "block" : "inline-block",
         textAlign: "center",
-        backgroundColor: "#FFFFFF",
-        border: `1px solid #E5E5E5`,
-        color: c.text,
+        backgroundColor: dark ? c.text : "#FFFFFF",
+        border: `1px solid ${dark ? c.text : "#E5E5E5"}`,
+        color: dark ? "#FFFFFF" : c.text,
         fontFamily: font.body,
         fontSize: "16px",
         fontWeight: 700,
@@ -107,9 +133,6 @@ export type RowDeal = {
   /** Gewone bodyregels onder de dealtitel (bekeken deal: aankomst, nachten en personen, besparing). */
   lines?: string[];
   image: string;
-  /** Twee extra foto's voor de collagekaart (rechts naast de hoofdfoto). Zonder deze
-   *  valt de collage terug op alleen de hoofdfoto over de volle breedte. */
-  extraImages?: string[];
   url: string;
   /** Uitgebreide kaart (zoals de zoekkaart op de website); een deal met `price` krijgt die: */
   /** Inclusies met een groen vinkje, maximaal vier. */
@@ -164,7 +187,7 @@ function RichDealText({ d }: { d: RowDeal }) {
       )}
       {d.place && <Text style={{ ...s.muted, margin: "2px 0 0" }}>{d.place}</Text>}
       {(d.hotelName || d.place) && <Section style={{ borderTop: "1px solid #E5E5E5", marginTop: "12px", fontSize: "1px", lineHeight: "1px" }}>&nbsp;</Section>}
-      {d.packageTitle && <Text style={{ ...s.kop, margin: d.hotelName || d.place ? "10px 0 0" : 0 }}>{d.packageTitle}</Text>}
+      {d.packageTitle && <Text style={{ ...s.kop, fontSize: "18px", margin: d.hotelName || d.place ? "10px 0 0" : 0 }}>{d.packageTitle}</Text>}
       {d.includes && d.includes.length > 0 && (
         <>
           <Text style={{ fontFamily: font.heading, fontWeight: 600, fontSize: "16px", lineHeight: "1.4", color: c.cta, margin: "12px 0 2px" }}>Arrangement</Text>
@@ -212,18 +235,21 @@ function RichDealPrice({ d, cta }: { d: RowDeal; cta: string }) {
   );
 }
 
-/** Dealrij met grijze rand: foto links, tekst rechts. De foto is een gewone `<img>` en geen
- *  CSS-achtergrond, want die laat Outlook weg; hij staat bovenaan in de cel op zijn eigen
- *  verhouding en de beige cel vult de rest als de tekst hoger is. */
-export function DealRow({ deal: d, cta }: { deal: RowDeal; cta?: string }) {
+/** Ruimte tussen twee dealkaarten onder elkaar. */
+export const cardGap = "24px";
+
+/** Dealrij met grijze rand: foto links tot aan de rand en over de volle hoogte. Met een prijs de
+ *  uitgebreide kaart (knop "Bekijk"), anders de tekstregels met een oranje link. Met inclusies maar
+ *  zonder prijs (de bekeken deal): de uitgebreide kaart met onderaan de eigen regels en de link.
+ *  `top`: 12 px onder een titel (standaard), `cardGap` (24 px) onder een andere kaart. */
+export function DealRow({ deal: d, cta, top = "12px" }: { deal: RowDeal; cta?: string; top?: string }) {
   const rich = !!d.price || !!d.includes;
   return (
-    <Section style={{ border: `1px solid #E5E5E5`, borderRadius: "8px", marginTop: "12px", overflow: "hidden" }}>
+    <Section style={{ backgroundColor: "#FFFFFF", border: `1px solid #E5E5E5`, borderRadius: "8px", marginTop: top, overflow: "hidden" }}>
       <Row>
-        <Column className="stack" style={{ width: "190px", verticalAlign: "top", backgroundColor: "#F4F1EC" }}>
-          <Link href={d.url}>
-            <Img src={d.image} alt={d.packageTitle ?? d.hotelName ?? ""} width="190" height="119" style={{ display: "block", width: "100%", height: "auto" }} />
-          </Link>
+        {/* Foto als achtergrond: sluit aan op de rand en vult de hele hoogte van het blok */}
+        <Column className="stack" style={{ width: "190px", verticalAlign: "top", backgroundImage: `url(${d.image})`, backgroundSize: "cover", backgroundPosition: "center" }}>
+          <Link href={d.url} aria-label={d.hotelName ?? cta ?? "Bekijk"} style={{ display: "block", width: "190px", minHeight: "150px" }} />
         </Column>
         <Column className="stack" style={{ verticalAlign: "top", padding: rich ? "16px 18px 18px" : "16px 18px" }}>
           {rich ? (
@@ -233,6 +259,7 @@ export function DealRow({ deal: d, cta }: { deal: RowDeal; cta?: string }) {
                 <RichDealPrice d={d} cta={cta ?? "Bekijk"} />
               ) : (
                 <>
+                  {/* Bekeken deal: geen prijsrij maar de eigen regels en een link */}
                   {d.lines?.map((l, i) => (
                     <Text key={l} style={{ ...s.title, margin: i ? "2px 0 0" : "14px 0 0" }}>{l}</Text>
                   ))}
@@ -252,78 +279,15 @@ export function DealRow({ deal: d, cta }: { deal: RowDeal; cta?: string }) {
   );
 }
 
-/** Fotocollage bovenaan de kaart: links de hoofdfoto, rechts twee kleinere onder elkaar.
- *
- *  Losse `<img>`-tags in een tabel, geen CSS-achtergrond: Outlook toont achtergronden niet.
- *  Geen `object-fit` — Outlook en Gmail kennen dat niet en zouden de foto uitrekken. In plaats
- *  daarvan hebben alle vakken exact de verhouding van de bronfoto (`?key=card` is 966x604,
- *  oftewel 1,599), zodat er niets bijgesneden hoeft te worden:
- *    groot 372x233, klein 184x115 (115 + 3 tussenruimte + 115 = 233).
- *  De tussenruimte is padding op de cel, niet marge op de foto; marge op een `<img>` is in
- *  Outlook onbetrouwbaar. Breedte- en hoogte-attributen staan erop voor Outlook, de stijl
- *  `height:auto` laat de foto meeschalen in de clients die dat wel kunnen. */
-function DealCollage({ d }: { d: RowDeal }) {
-  const extra = (d.extraImages ?? []).slice(0, 2);
-  const alt = d.packageTitle ?? d.hotelName ?? "";
-  const fluid = { display: "block", width: "100%", height: "auto" as const };
-  if (extra.length < 2) {
-    return (
-      <Link href={d.url}>
-        <Img src={d.image} alt={alt} width="560" height="350" style={fluid} />
-      </Link>
-    );
-  }
-  return (
-    <Row>
-      <Column className="stack" style={{ width: "372px", verticalAlign: "top", paddingRight: "3px" }}>
-        <Link href={d.url}>
-          <Img src={d.image} alt={alt} width="372" height="233" style={fluid} />
-        </Link>
-      </Column>
-      <Column className="stack" style={{ width: "184px", verticalAlign: "top" }}>
-        {extra.map((src, i) => (
-          <Section key={src} style={i ? { paddingTop: "3px" } : undefined}>
-            <Link href={d.url}>
-              <Img src={src} alt="" width="184" height="115" style={fluid} />
-            </Link>
-          </Section>
-        ))}
-      </Column>
-    </Row>
-  );
-}
-
-/** Dealkaart met de fotocollage bovenaan en daaronder de tekst en de prijsrij. Dezelfde
- *  inhoud als `DealRow`, alleen staat het beeld boven de tekst in plaats van ernaast. */
-export function CollageDeal({ deal: d, cta, priceRow = true }: { deal: RowDeal; cta?: string; priceRow?: boolean }) {
-  return (
-    <Section style={{ border: `1px solid #E5E5E5`, borderRadius: "8px", marginTop: "12px", overflow: "hidden" }}>
-      <DealCollage d={d} />
-      <Section style={{ padding: "16px 20px 20px" }}>
-        <RichDealText d={d} />
-        {d.price && priceRow ? (
-          <RichDealPrice d={d} cta={cta ?? "Bekijk"} />
-        ) : (
-          <>
-            {d.lines?.map((l, i) => (
-              <Text key={l} style={{ ...s.title, margin: i ? "2px 0 0" : "14px 0 0" }}>{l}</Text>
-            ))}
-            <TextLink href={d.url}>{cta ?? "Bekijk"}</TextLink>
-          </>
-        )}
-      </Section>
-    </Section>
-  );
-}
-
-/** Uitgelichte deal over de hele breedte: grote foto, daaronder de tekst en de prijsrij.
- *  `priceRow={false}`: zonder de prijsrij en de knop (winkelmandje: die staan erboven). */
+/** Uitgelichte deal over de hele breedte: grote foto, daaronder met een prijs de uitgebreide kaart
+ *  (knop "Bekijk"), anders de tekstregels en een oranje knop "Bekijk arrangement".
+ *  `priceRow={false}`: zonder de prijsrij en de knop (winkelmandje: prijs en knop staan erboven). */
 export function FeaturedDeal({ deal: d, cta, priceRow = true }: { deal: RowDeal; cta?: string; priceRow?: boolean }) {
   const rich = !!d.price;
   return (
-    <Section style={{ border: `1px solid #E5E5E5`, borderRadius: "8px", marginTop: "12px", overflow: "hidden" }}>
+    <Section style={{ backgroundColor: "#FFFFFF", border: `1px solid #E5E5E5`, borderRadius: "8px", marginTop: "12px", overflow: "hidden" }}>
       <Link href={d.url}>
-        <Img src={d.image} alt={d.packageTitle ?? d.hotelName ?? ""} width="560" height="350" style={{ display: "block", width: "100%", height: "auto" }} />
+        <Img src={d.image} alt={d.packageTitle ?? d.hotelName ?? ""} width="560" height="300" style={{ display: "block", width: "100%", height: "300px", objectFit: "cover" }} />
       </Link>
       {rich ? (
         <Section style={{ padding: "16px 20px 20px" }}>
@@ -342,6 +306,23 @@ export function FeaturedDeal({ deal: d, cta, priceRow = true }: { deal: RowDeal;
   );
 }
 
+/** Ruimte tussen twee dealkaarten binnen een DealGroup. */
+export const groupGap = "16px";
+
+/** Groep suggesties op een beige vlak: subtitel (20 serif; met `big` een hoofdtitel van 32, voor
+ *  een mail zonder titel boven de groepen) en eventueel een grijze regel eronder,
+ *  dan de dealkaarten (wit). Zet groepen in een Section met `padding: "… 16px"`: het vlak steekt dan
+ *  links en rechts 16 px buiten de tekstkolom, zodat de kaarten even breed blijven als elders. */
+export function DealGroup({ title, subtitle, big, children }: { title: string; subtitle?: string; big?: boolean; children: React.ReactNode }) {
+  return (
+    <Section style={{ backgroundColor: "#F4F1EC", borderRadius: "8px", padding: big ? "24px 16px 20px" : "20px 16px", marginTop: "16px" }}>
+      <Text style={big ? s.h1 : s.kop}>{title}</Text>
+      {subtitle && <Text style={{ ...s.muted, margin: big ? "6px 0 4px" : "2px 0 0" }}>{subtitle}</Text>}
+      {children}
+    </Section>
+  );
+}
+
 /** Eén groot, de rest als rij: de vaste opbouw van een rij suggesties. */
 export function DealList({ deals }: { deals: RowDeal[] }) {
   const [first, ...rest] = deals;
@@ -349,7 +330,7 @@ export function DealList({ deals }: { deals: RowDeal[] }) {
     <>
       {first && <FeaturedDeal deal={first} />}
       {rest.map((d) => (
-        <DealRow key={d.url} deal={d} />
+        <DealRow key={d.url} deal={d} top={cardGap} />
       ))}
     </>
   );
@@ -383,6 +364,51 @@ export function CodeBlock({ title, code, label = "Jouw persoonlijke code", deadl
         {daysLeft ? `Nog ${daysLeft} dagen geldig, tot en met ${deadline}` : `Geldig tot en met ${deadline}`}
       </Text>
       <Text style={{ ...s.muted, ...center, margin: "2px 0 0" }}>Vul de code in bij het boeken.</Text>
+    </Section>
+  );
+}
+
+/** Eén coupon in een CouponPair. `locked`: de code is er nog niet (grijze rand, code deels verborgen). */
+export type Coupon = {
+  /** "€10 cadeau" */
+  title: string;
+  /** "Op je 1e boeking" */
+  label: string;
+  /** "WENS1-387KW", of bij een code die nog komt "WENS2-#####". */
+  code: string;
+  /** Vette regel met het klokje, bijv. "Nog 24 uur geldig". */
+  validity?: string;
+  /** Kleine regel onderaan: hoe je de code gebruikt of wanneer je hem krijgt. */
+  note: string;
+  locked?: boolean;
+};
+
+/** Twee coupons naast elkaar, even hoog (favorieten: €10 op de eerste en €15 op de tweede
+ *  boeking). Zelfde opbouw als CodeBlock: alles gecentreerd onder elkaar, bedrag het grootst. De
+ *  tweede is `locked`: grijze stippelrand en een code waarvan alleen het begin zichtbaar is. */
+export function CouponPair({ coupons }: { coupons: [Coupon, Coupon] }) {
+  const center = { textAlign: "center" as const };
+  const cell = (k: Coupon) => (
+    <Column className="stack" width="275" style={{ width: "275px", verticalAlign: "top", border: `2px dashed ${k.locked ? "#BDBDBD" : c.cta}`, borderRadius: "8px", padding: "20px 14px 22px", textAlign: "center" }}>
+      <Text style={{ ...s.h1, fontWeight: 700, color: k.locked ? c.muted : c.cta, ...center, margin: "0 0 10px" }}>{k.title}</Text>
+      <Text style={{ ...s.title, ...center, margin: 0 }}>{k.label}</Text>
+      <Text style={{ fontFamily: font.heading, fontWeight: 700, fontSize: "20px", lineHeight: "1.3", letterSpacing: "0.02em", color: k.locked ? c.muted : c.text, margin: "4px 0 0", whiteSpace: "nowrap", ...center }}>{k.code}</Text>
+      {k.validity && (
+        <Text style={{ ...s.name, ...center, margin: "14px 0 0" }}>
+          <Img src={mailIcon("clock-donker")} alt="" width="18" height="18" style={{ display: "inline-block", verticalAlign: "-3px", marginRight: "8px" }} />
+          {k.validity}
+        </Text>
+      )}
+      <Text style={{ ...s.muted, ...center, margin: k.validity ? "2px 0 0" : "14px 0 0" }}>{k.note}</Text>
+    </Column>
+  );
+  return (
+    <Section style={{ width: "100%", borderCollapse: "separate" }}>
+      <Row style={{ borderCollapse: "separate" }}>
+        {cell(coupons[0])}
+        <Column width="12" style={{ width: "12px", minWidth: "12px", fontSize: "1px", lineHeight: "1px" }}>&nbsp;</Column>
+        {cell(coupons[1])}
+      </Row>
     </Section>
   );
 }
@@ -447,6 +473,9 @@ export function ThemePicker({ items = themes }: { items?: Theme[] }) {
 }
 
 // ── Secties van de automationmails (nummers uit "Automations in kaart.xlsx", tabblad Secties) ──
+// S1 header, S2 intro, S4 hoteldeals, S13 footer en S15 service zijn de bestaande bouwstenen
+// (CrmHeader, Letter, DealList/DealRow/FeaturedDeal, CrmFooter en CrmHelp); hieronder staan de
+// secties die alleen in deze flows voorkomen.
 
 /** S21 Gastenoordeel: Trustpilot-sterren met het gemiddelde en één korte review, als die er is. */
 export type GuestRating = { average: 3 | 3.5 | 4 | 4.5 | 5; label: string; review?: { text: string; author: string } };
@@ -475,17 +504,6 @@ export function GuestRatingSection({ hotelName, rating }: { hotelName: string; r
   );
 }
 
-/** S15 Servicesectie: één regel met een link naar de klantenservice. */
-export function ServiceSection({ lead = "Vragen over dit arrangement?" }: { lead?: string }) {
-  return (
-    <Text style={{ ...s.title, margin: 0, color: c.muted }}>
-      {lead}{" "}
-      <Link href={`${site}/klantenservice`} style={{ color: c.text, textDecoration: "underline" }}>Onze klantenservice</Link>{" "}
-      helpt je graag.
-    </Text>
-  );
-}
-
 /** S6 Merksectie: waarom ViaLuxury, in één alinea. Geen vlak eromheen (beige blijft voor keuzeknoppen). */
 export function BrandSection({ children }: { children: React.ReactNode }) {
   return (
@@ -496,20 +514,18 @@ export function BrandSection({ children }: { children: React.ReactNode }) {
   );
 }
 
-/** S18 Zoekopdracht: zoekterm, datum en personen in een omlijnd blok, met de knop naar alle resultaten. */
+/** S18 Zoekopdracht: zoekterm, datum en personen in een omlijnd blok, met de knop naar alle
+ *  resultaten. Zelfde blok als in crm-zoekopdracht. */
 export function SearchSection({ searchTerm, arrivalDate, persons, resultsUrl }: { searchTerm?: string; arrivalDate?: string; persons?: number; resultsUrl: string }) {
   return (
-    <>
-      <Text style={s.kop}>Jouw zoekopdracht</Text>
-      <Section style={{ border: `1px solid #E5E5E5`, borderRadius: "8px", padding: "14px 20px 22px", marginTop: "12px" }}>
-        <IconLine icon="magnifier-donker" bold>{searchTerm ?? "Jouw zoekopdracht"}</IconLine>
-        {arrivalDate && <IconLine icon="calendar-donker">{arrivalDate}</IconLine>}
-        {persons && <IconLine icon="users-donker">{persons} {persons === 1 ? "persoon" : "personen"}</IconLine>}
-        <Section style={{ marginTop: "18px" }}>
-          <PrimaryButton href={resultsUrl}>Bekijk alle resultaten</PrimaryButton>
-        </Section>
+    <Section style={{ border: `1px solid #E5E5E5`, borderRadius: "8px", padding: "14px 20px 22px" }}>
+      <IconLine icon="magnifier-donker" bold>{searchTerm ?? "Jouw zoekopdracht"}</IconLine>
+      {arrivalDate && <IconLine icon="calendar-donker">{arrivalDate}</IconLine>}
+      {persons && <IconLine icon="users-donker">{persons} {persons === 1 ? "persoon" : "personen"}</IconLine>}
+      <Section style={{ marginTop: "18px" }}>
+        <PrimaryButton href={resultsUrl}>Bekijk alle resultaten</PrimaryButton>
       </Section>
-    </>
+    </Section>
   );
 }
 

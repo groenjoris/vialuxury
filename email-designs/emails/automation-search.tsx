@@ -2,7 +2,7 @@ import { Body, Container, Head, Heading, Html, Preview, Section, Text } from "@r
 import * as React from "react";
 import CrmFooter from "../components/CrmFooter";
 import CrmHeader from "../components/CrmHeader";
-import { crmCss, DealList, type RowDeal, s, SearchSection, type Theme, ThemeSection, themes } from "../components/crm";
+import { crmCss, CrmHelp, DealList, type RowDeal, s, SearchSection, type Theme, ThemeSection, themes } from "../components/crm";
 import { dePlesman, desIndes, kurhaus, voco } from "../lib/crmDeals";
 import { site } from "../components/crm";
 import { font, newsletter } from "../components/theme";
@@ -12,7 +12,7 @@ import { font, newsletter } from "../components/theme";
 // Secties in de volgorde van de sheet:
 //   S1 Header (logo) → Kop → Intro → S18 Zoekopdracht (zoekterm, datum en personen, met de knop
 //   naar alle resultaten) → S4 Hoteldeals (drie zoekresultaten) → S7 Themasectie (alleen mail 4) →
-//   S13 Footer.
+//   S15 de vaste hulplijn → S13 Footer.
 // Mergevelden in de teksten: [zoekterm], [aankomstdatum] en [personen], hier ingevuld met
 // voorbeelddata.
 
@@ -63,9 +63,14 @@ export default function AutomationSearch({ recipientEmail, preheader, heading, i
           </Section>
 
           {/* S7 Themasectie */}
-          <Section className="m-pad" style={{ padding: themeSection ? "40px 32px 40px" : "0 32px 40px" }}>
-            {themeSection && <ThemeSection title={themeSection.title} note={themeSection.note} items={themeSection.items} />}
-          </Section>
+          {themeSection && (
+            <Section className="m-pad" style={{ padding: "40px 32px 0" }}>
+              <ThemeSection title={themeSection.title} note={themeSection.note} items={themeSection.items} />
+            </Section>
+          )}
+
+          {/* S15 Servicesectie: de vaste hulplijn */}
+          <CrmHelp top="40px" />
         </Container>
         <CrmFooter recipientEmail={recipientEmail} reason="omdat je je hebt aangemeld voor de nieuwsbrief van ViaLuxury" />
       </Body>

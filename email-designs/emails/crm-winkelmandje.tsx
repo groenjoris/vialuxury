@@ -1,6 +1,6 @@
 import { Body, Container, Head, Heading, Html, Img, Link, Preview, Section, Text } from "@react-email/components";
 import * as React from "react";
-import { CollageDeal, crmCss, PrimaryButton, type RowDeal, s, site } from "../components/crm";
+import { crmCss, CrmHelp, FeaturedDeal, PrimaryButton, type RowDeal, s, site } from "../components/crm";
 import { desIndes } from "../lib/crmDeals";
 import CrmFooter from "../components/CrmFooter";
 import CrmHeader from "../components/CrmHeader";
@@ -75,7 +75,7 @@ export default function CrmWinkelmandje({ recipientEmail, firstName, deal, arriv
           {/* De deal op de uitgebreide kaart, zonder hotel en plaats (die staan boven) en zonder prijsrij;
               de foto linkt naar de boeking */}
           <Section className="m-pad" style={{ padding: "12px 32px 0" }}>
-            <CollageDeal deal={{ ...deal, hotelName: undefined, stars: undefined, place: undefined, url: checkoutUrl }} priceRow={false} />
+            <FeaturedDeal deal={{ ...deal, hotelName: undefined, stars: undefined, place: undefined, url: checkoutUrl }} priceRow={false} />
           </Section>
 
           {/* Gastenoordeel: zonder vlak; één keer sterren met het gemiddelde, drie reviews in 20 px serif */}
@@ -105,14 +105,8 @@ export default function CrmWinkelmandje({ recipientEmail, firstName, deal, arriv
             </Section>
           )}
 
-          {/* Service */}
-          <Section className="m-pad" style={{ padding: "32px 32px 40px" }}>
-            <Text style={{ ...line, margin: 0, color: c.muted }}>
-              Vragen over je boeking?{" "}
-              <Link href={`${site}/klantenservice`} style={{ color: c.text, textDecoration: "underline" }}>Onze klantenservice</Link>{" "}
-              helpt je graag.
-            </Text>
-          </Section>
+          {/* Hulplijn */}
+          <CrmHelp top="36px" />
         </Container>
         <CrmFooter recipientEmail={recipientEmail} reason="omdat je een boeking bij ons startte" />
       </Body>

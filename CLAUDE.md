@@ -194,11 +194,11 @@ omdat je een account of boeking hebt bij ViaLuxury."; de CRM-mails houden de opt
 ## CRM (concept, sinds 2026-11-02)
 
 Artist impression van geautomatiseerde e-mails, alleen desktop + light mode. Mails (in de volgorde
-van het paneel links in de preview): `crm-jaar-geleden`, `crm-winkelmandje`
-(2 uur na verlaten; variant `crm-winkelmandje-naam-onbekend` via de schakelaar "Naam bekend | Naam onbekend" in de previewkop,
-registry `variantOf`, labels in `variantLabels` in `app/pages/crm/[slug].vue`), `crm-winkelmandje-2-dagen`, `crm-thema-stedentrips` (A6), `crm-zoekopdracht`,
-`crm-verlanglijst`, `crm-review`, `crm-terugkomactie` (€20), `crm-terugkomactie-herinnering` (zelfde
-component met `daysLeft`) en `crm-nagenieten` (staat bewust als laatste). Bronnen in
+van het paneel links in de preview, de klantreis): `crm-winkelmandje` (2 uur na verlaten; variant
+`crm-winkelmandje-naam-onbekend` via de schakelaar "Naam bekend | Naam onbekend" in de previewkop, registry
+`variantOf`, labels in `variantLabels` in `app/pages/crm/[slug].vue`), `crm-winkelmandje-2-dagen` (ook met de variant `-naam-onbekend`), `crm-zoekopdracht`, `crm-favorieten`, `crm-review`, de repeat-bookingflow `crm-nagenieten`,
+`crm-terugkomactie` (€20), `crm-terugkomactie-herinnering` (zelfde component met `daysLeft`) en
+`crm-jaar-geleden`, en als laatste `crm-thema-stedentrips` (A6). Bronnen in
 `email-designs/emails/crm-*.tsx`, bouwstenen in `email-designs/components/crm.tsx` (`DealRow`,
 `FeaturedDeal`, `DealList`, `CodeBlock`, `ThemePicker`, `IconLine`) plus `CrmHeader`/`CrmFooter`,
 voorbeelddeals in `email-designs/lib/crmDeals.ts`, registry-sectie `"crm"`; de export schrijft alleen
@@ -209,7 +209,15 @@ daaronder het verzendmoment, actieve mail op beige, pijltjes ↑ ↓ bladeren); 
 met één knop "Voorbeeldmails" (naar de eerste mail).
 
 Regels voor elke CRM-mail:
-- Drie lettergroottes: titel 32, subtitel en hotelnaam 20, alle overige tekst 16 px (footer uitgezonderd).
+- Briefopzet (het format voor alle CRM-mails, tot nu toe in `crm-winkelmandje-2-dagen`, `crm-favorieten`, `crm-zoekopdracht` en
+  `crm-terugkomactie` (met herinnering); de aanhef is
+  overal "Beste …", nooit "Hi"): de mail begint met
+  de bouwsteen `Letter`: aanhef ("Beste Sanne," / "Beste gast,"), een korte intro en de ondertekening "Groetjes Yvette"
+  als afbeelding (`public/images/mail/crm/groetjes-yvette.png`: lettertype Oooh Baby, donkergrijs #555555; geen
+  webfont, want die werkt niet in elke mailclient). Een titel (bijv. "Anderen boekten ook", 32 serif) is de titel van
+  het blok eronder en staat direct boven dat blok, nooit boven de aanhef.
+- Drie lettergroottes: titel 32, subtitel en hotelnaam 20, alle overige tekst 16 px (footer uitgezonderd). Uitzondering:
+  de dealtitel in een dealkaart is 18 px serif.
 - Alles links uitgelijnd, nooit gecentreerd (alleen de inhoud van de coupon staat gecentreerd).
 - Klaviyo: nooit twee lettertypen (serif-kop en sans-tekst) naast elkaar op één regel; onder elkaar mag
   wel. Hotelnaam, sterren, plaats, dealtitel en prijs staan daarom elk op een eigen regel.
@@ -218,7 +226,7 @@ Regels voor elke CRM-mail:
   is altijd oranje, ook als de mail bovenaan al een oranje knop heeft.
 - Geen grijze vlakken; beige (#F4F1EC) alleen als echte highlight: het vlak achter de blokken met keuzeknoppen (`beigeBox`). Keuzes (thema, nagenietvraag) zijn witte snelfilterknoppen in een raster van twee (`PillGrid`) op dat beige vlak.
 - Elke deal staat op de uitgebreide kaart, de zoekkaart van de website als e-mail (`DealRow`/`FeaturedDeal` tonen
-  die zodra de deal een `price` heeft): hotel met sterren en plaats (sans, ondergeschikt), lijntje, dealtitel 20 serif,
+  die zodra de deal een `price` heeft): hotel met sterren en plaats (sans, ondergeschikt), lijntje, dealtitel 18 serif,
   "Arrangement" met maximaal vier inclusies (groen vinkje), "2 personen, 2 nachten" en onderaan één rij: links het
   zwarte kortingsblokje ("-37%"), daarnaast "Vanaf €409" met de doorgestreepte kamerprijs, rechts de knop "Bekijk".
   Kortingsblokje en knop zijn even hoog (42 px) met dezelfde afronding (6 px). Klaviyo: geen tekst op een foto, en elke
@@ -228,6 +236,26 @@ Regels voor elke CRM-mail:
   · 2 personen", "Bespaar €441 (47%)"; geen icoon, geen kleur) en de knop bóven de kaart; "Door jou bekeken" in de mail
   van 2 dagen is dezelfde uitgebreide rij als de suggesties (met inclusies), alleen de onderkant verschilt: die twee
   regels in plaats van de prijsrij (`lines`) en de link "Ga verder met boeken"; de kaart zelf is de uitgebreide zonder hotel, plaats en prijsrij (`priceRow={false}`).
+- Elke CRM-mail eindigt met de hulplijn "Hulp nodig?" (`CrmHelp` = `HelpBanner` uit de post-bookingmails, zelfde tekst,
+  lichtoranje vlak, 16 px).
+- Favorietenmail (`crm-favorieten`, heette "verlanglijst"): wie iets aan zijn favorieten toevoegt, krijgt korting daarop
+  (in werkelijkheid algemeen geldig; niet benadrukken). Twee coupons naast elkaar (`CouponPair`): €10 op de eerste boeking
+  (code direct te gebruiken, 24 uur geldig) en €15 op de tweede. Van de tweede code staat alleen het vaste begin in de mail
+  ("WENS2-#####", grijze stippelrand); de volledige code komt in een nieuwe mail zodra de eerste is gebruikt (één boeking
+  kan alleen een veelvoud van hetzelfde arrangement bevatten, dus de tweede boeking heeft een eigen trigger nodig). Copy
+  op haast.
+- Terugkomactie (14 dagen) en herinnering (30 dagen, copy op haast): één coupon van €20. Daaronder de grote titel "Tips voor je
+  kortingscode" met "Boek uiterlijk [vervaldatum] 23:59 uur" en drie groepjes van twee dealrijen, elk op een eigen beige vlak met de
+  subtitel erin: "In de sfeer van [vorig hotel]", "Populair deze maand" en "Deals met wellness". Geen blok "Jouw verblijf".
+- Gegroepeerde suggesties (`DealGroup`, in de terugkomactie en de favorietenmail): elke groep op een eigen beige vlak met
+  de subtitel (20 serif) en eventueel een grijze regel erin, kaarten wit, 16 px ertussen; het vlak steekt 16 px buiten de
+  tekstkolom zodat de kaarten even breed blijven.
+- Reviewmail: de sterren zijn een keuzeblok op het beige vlak: vijf lege, omlijnde sterren (`ster-leeg.png`) met "Slecht"
+  en "Uitstekend" eronder. Leeg leest als "vul mij in"; gevulde sterren lezen als een score die er al staat. Variant
+  `crm-review-knoppen` (schakelaar "Lege ster | Knop" in de previewkop): vijf witte knoppen met cijfer en ster.
+- Tussen twee dealkaarten onder elkaar staat 24 px (`cardGap`), tussen een titel en de eerste kaart 12 px.
+- Preheaders zonder gegevens die lastig te automatiseren zijn of niet altijd bestaan (geen plaatsen of prijzen van de
+  suggesties, geen datum uit de zoekopdracht).
 - Prijzen uit `deals.json` zijn het totaal voor 2 personen: "Vanaf €319 voor 2 personen", nooit p.p.
 - Knoppen linken naar de R1-dealpagina (zachte landing; die neemt `?checkin=` en `?adults=` over).
 - Jesse de Groot heeft eigen CRM-mails op `origin/redesign-jesse`; mails worden daarvan per stuk
@@ -248,10 +276,11 @@ template in Klaviyo; die naam staat ook onder de titel in de preview. Registry-s
 alleen light, lijst `app/data/automation-emails.json`, preview `/automation/<slug>` (zelfde frame als
 de CRM-preview, paneel links gegroepeerd per flow). Startscherm: knop "Automations" in het vak CRM.
 
-Secties uit de sheet als bouwstenen in `email-designs/components/crm.tsx`: `GuestRatingSection` (S21),
-`ServiceSection` (S15), `BrandSection` (S6), `SearchSection` (S18) en `ThemeSection` (S7); de deals
-blijven `CollageDeal` (het achtergelaten/bekeken arrangement) en `DealList` (de alternatieven en
-zoekresultaten). Verder gelden alle CRM-regels hierboven.
+Secties uit de sheet als bouwstenen in `email-designs/components/crm.tsx`. Bestaand: `CrmHeader` (S1),
+`Letter` (S2), `FeaturedDeal`/`DealRow`/`DealList` (S4), `CrmHelp` (S15, de vaste hulplijn onderaan
+elke mail) en `CrmFooter` (S13). Nieuw voor deze flows: `GuestRatingSection` (S21), `BrandSection`
+(S6), `SearchSection` (S18) en `ThemeSection` (S7). Het achtergelaten of bekeken arrangement staat op
+`FeaturedDeal`, de alternatieven en zoekresultaten op `DealList`. Verder gelden alle CRM-regels hierboven.
 
 Afwijkingen van de sheet, bewust: de preheader van `tf027` zegt "Twee alternatieven" in plaats van
 drie (de template heeft twee dealplekken), en in de themasectie van `tf031` staat kasteelhotels op de
