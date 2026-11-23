@@ -625,7 +625,7 @@ export function ServiceSection() {
  *  resultaten. Zelfde blok als in crm-zoekopdracht. */
 export function SearchSection({ searchTerm, arrivalDate, persons, resultsUrl }: { searchTerm?: string; arrivalDate?: string; persons?: number; resultsUrl: string }) {
   return (
-    <Section style={{ border: `1px solid #E5E5E5`, borderRadius: "8px", padding: "14px 20px 22px" }}>
+    <Section style={{ backgroundColor: "#FFFFFF", border: `1px solid #E5E5E5`, borderRadius: "8px", padding: "14px 20px 22px" }}>
       <IconLine icon="magnifier-donker" bold>{searchTerm ?? "Jouw zoekopdracht"}</IconLine>
       {arrivalDate && <IconLine icon="calendar-donker">{arrivalDate}</IconLine>}
       {persons && <IconLine icon="users-donker">{persons} {persons === 1 ? "persoon" : "personen"}</IconLine>}
