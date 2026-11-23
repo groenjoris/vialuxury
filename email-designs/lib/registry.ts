@@ -281,7 +281,7 @@ export const emails: EmailEntry[] = [
     description: "Twee coupons boven het eerste favoriet: €10 op de eerste boeking (24 uur geldig) en €15 op de tweede (code volgt per mail na de eerste boeking); daaronder de andere favorieten en twee vergelijkbare deals. Copy op haast.",
     section: "crm",
     subject: "Alsjeblieft Sanne, €10 korting op Kasteel Steenenburg",
-    preheader: "Je code is geldig tot 12 november 10:24 uur.",
+    preheader: "Je code is geldig tot 12 november 2026 10:24 uur.",
     Component: CrmFavorieten,
   },
   {

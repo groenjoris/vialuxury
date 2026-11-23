@@ -28,7 +28,7 @@ type Props = {
   /** Leeg → "Beste gast,". */
   firstName?: string;
   /** Code voor de eerste boeking: direct te gebruiken, kort geldig. */
-  first: { value: string; code: string; hoursLeft: number; /** "12 november 10:24 uur", voor de preheader. */ deadline: string };
+  first: { value: string; code: string; hoursLeft: number; /** "12 november 2026 10:24 uur", voor de preheader en de regel onder de titel. */ deadline: string };
   /** Code voor de tweede boeking: alleen het vaste begin is bekend ("WENS2"); de rest volgt in een
    *  nieuwe mail zodra de eerste code is gebruikt. */
   second: { value: string; prefix: string };
@@ -74,6 +74,7 @@ export default function CrmFavorieten({ recipientEmail, firstName, first: code1,
           {/* Grote titel boven de blokken, zoals "Tips voor je kortingscode" in de terugkomactie */}
           <Section className="m-pad" style={{ padding: "44px 32px 0" }}>
             <Heading as="h1" className="m-h1" style={s.h1}>Hier geldt je code</Heading>
+            <Text style={{ ...s.body, color: c.muted, margin: "8px 0 0" }}>Boek uiterlijk {code1.deadline}</Text>
           </Section>
 
           {/* Twee blokken op een beige vlak met een kleine subtitel erin: de favorieten (de eerste groot,
@@ -109,7 +110,7 @@ export default function CrmFavorieten({ recipientEmail, firstName, first: code1,
 CrmFavorieten.PreviewProps = {
   recipientEmail: "sanne.devries@example.com",
   firstName: "Sanne",
-  first: { value: "€10", code: "WENS1-387KW", hoursLeft: 24, deadline: "12 november 10:24 uur" },
+  first: { value: "€10", code: "WENS1-387KW", hoursLeft: 24, deadline: "12 november 2026 10:24 uur" },
   second: { value: "€15", prefix: "WENS2" },
   favorites: [steenenburg, villaRuimzicht, desIndes],
   similar: [vanOys, lauswolt],
