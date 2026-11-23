@@ -15,6 +15,9 @@
         /* De foto van een dealrij staat op mobiel boven de tekst over de volle breedte; padding-top van
            56,25 % maakt dat vlak 16:9, want een achtergrondfoto heeft zelf geen hoogte. */
         .m-rowphoto { width: 100% !important; height: 0 !important; min-height: 0 !important; padding-top: 56.25% !important; }
+        /* De cel zelf zonder padding, anders komt stack's 12 px onderaan bij de foto en is het vlak
+           niet meer precies 16:9. */
+        .m-rowphoto-cell { padding: 0 !important; }
         /* De vaste kaarthoogte vervalt: de foto staat hier boven de tekst, dus de kaart is hoger. */
         .m-auto-h { height: auto !important; }
         .m-pad { padding-left: 16px !important; padding-right: 16px !important; }
@@ -226,7 +229,7 @@
                                               cellpadding="0"
                                               cellspacing="0"
                                               role="presentation"><tbody style="width:100%"><tr style="width:100%"><td
-                                                    class="stack"
+                                                    class="stack m-rowphoto-cell"
                                                     data-id="__react-email-column"
                                                     style="width:190px;vertical-align:top;background-image:url(https://asset.vialuxury.com/assets/57faa15d-2992-49ef-87b4-1ae26418a12f?key=card);background-size:cover;background-position:center"><a
                                                       href="https://vialuxury.vercel.app/first-release/deal/van-oys-maastricht-retreat-ervaar-wereldklasse-comfort-in-een-5-sterren-superior-hotel"
@@ -365,7 +368,7 @@
                                               cellpadding="0"
                                               cellspacing="0"
                                               role="presentation"><tbody style="width:100%"><tr style="width:100%"><td
-                                                    class="stack"
+                                                    class="stack m-rowphoto-cell"
                                                     data-id="__react-email-column"
                                                     style="width:190px;vertical-align:top;background-image:url(https://asset.vialuxury.com/assets/8e9e4c45-ae41-49a5-be41-3ec8d6fc915c?key=card);background-size:cover;background-position:center"><a
                                                       href="https://vialuxury.vercel.app/first-release/deal/hotel-villa-ruimzicht-2-daags-verblijf-in-een-monumentale-villa-incl-4-gangendiner"
@@ -511,7 +514,7 @@
                                               cellpadding="0"
                                               cellspacing="0"
                                               role="presentation"><tbody style="width:100%"><tr style="width:100%"><td
-                                                    class="stack"
+                                                    class="stack m-rowphoto-cell"
                                                     data-id="__react-email-column"
                                                     style="width:190px;vertical-align:top;background-image:url(https://asset.vialuxury.com/assets/ec2bfd91-fc7d-4fa4-91b9-9fc61298b804?key=card);background-size:cover;background-position:center"><a
                                                       href="https://vialuxury.vercel.app/first-release/deal/hotel-des-indes-verken-en-beleef-den-haag-vanuit-luxe-5-hotel-incl-3-gangendiner"
@@ -648,7 +651,7 @@
                                               cellpadding="0"
                                               cellspacing="0"
                                               role="presentation"><tbody style="width:100%"><tr style="width:100%"><td
-                                                    class="stack"
+                                                    class="stack m-rowphoto-cell"
                                                     data-id="__react-email-column"
                                                     style="width:190px;vertical-align:top;background-image:url(https://asset.vialuxury.com/assets/67fadf3c-0b73-4afa-9c44-9eebbf26ad8f?key=card);background-size:cover;background-position:center"><a
                                                       href="https://vialuxury.vercel.app/first-release/deal/kasteel-steenenburg-culinair-verblijf-in-middeleeuws-4-kasteelhotel-op-prachtig-landgoed"
@@ -797,7 +800,7 @@
                                               cellpadding="0"
                                               cellspacing="0"
                                               role="presentation"><tbody style="width:100%"><tr style="width:100%"><td
-                                                    class="stack"
+                                                    class="stack m-rowphoto-cell"
                                                     data-id="__react-email-column"
                                                     style="width:190px;vertical-align:top;background-image:url(https://asset.vialuxury.com/assets/4556da77-0dd5-48b3-895c-b24662691264?key=card);background-size:cover;background-position:center"><a
                                                       href="https://vialuxury.vercel.app/first-release/deal/carlton-beach-uitwaaien-aan-de-kust-vanuit-een-sfeervol-4-hotel"
@@ -932,7 +935,7 @@
                                               cellpadding="0"
                                               cellspacing="0"
                                               role="presentation"><tbody style="width:100%"><tr style="width:100%"><td
-                                                    class="stack"
+                                                    class="stack m-rowphoto-cell"
                                                     data-id="__react-email-column"
                                                     style="width:190px;vertical-align:top;background-image:url(https://asset.vialuxury.com/assets/a0943077-0b0f-4022-96ec-eda45927e263?key=card);background-size:cover;background-position:center"><a
                                                       href="https://vialuxury.vercel.app/first-release/deal/fashion-hotel-amsterdam-3-daags-verblijf-in-een-4-hotel-met-wellness-en-sky-bar-met-panoramisch-uitzicht"

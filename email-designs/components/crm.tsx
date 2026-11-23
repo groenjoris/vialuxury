@@ -31,6 +31,9 @@ body { margin: 0 !important; padding: 0 !important; }
   /* De foto van een dealrij staat op mobiel boven de tekst over de volle breedte; padding-top van
      56,25 % maakt dat vlak 16:9, want een achtergrondfoto heeft zelf geen hoogte. */
   .m-rowphoto { width: 100% !important; height: 0 !important; min-height: 0 !important; padding-top: 56.25% !important; }
+  /* De cel zelf zonder padding, anders komt stack's 12 px onderaan bij de foto en is het vlak
+     niet meer precies 16:9. */
+  .m-rowphoto-cell { padding: 0 !important; }
   /* De vaste kaarthoogte vervalt: de foto staat hier boven de tekst, dus de kaart is hoger. */
   .m-auto-h { height: auto !important; }
   .m-pad { padding-left: 16px !important; padding-right: 16px !important; }
@@ -281,7 +284,7 @@ export function DealRow({ deal: d, cta, top = "12px" }: { deal: RowDeal; cta?: s
     <Section className={rich ? "m-auto-h" : undefined} style={{ backgroundColor: "#FFFFFF", border: `1px solid #E5E5E5`, borderRadius: "8px", marginTop: top, overflow: "hidden", height: rich ? CARD_HEIGHT_ROW : undefined }}>
       <Row>
         {/* Foto als achtergrond: sluit aan op de rand en vult de hele hoogte van het blok */}
-        <Column className="stack" style={{ width: "190px", verticalAlign: "top", backgroundImage: `url(${d.image})`, backgroundSize: "cover", backgroundPosition: "center" }}>
+        <Column className="stack m-rowphoto-cell" style={{ width: "190px", verticalAlign: "top", backgroundImage: `url(${d.image})`, backgroundSize: "cover", backgroundPosition: "center" }}>
           <Link href={d.url} aria-label={d.hotelName ?? cta ?? "Bekijk"} className="m-rowphoto" style={{ display: "block", width: "190px", minHeight: "107px" }} />
         </Column>
         <Column className="stack m-cardtext" style={{ verticalAlign: "top", padding: rich ? "16px 18px 18px" : "16px 18px" }}>

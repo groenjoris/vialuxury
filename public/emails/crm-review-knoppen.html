@@ -12,6 +12,9 @@
         /* De foto van een dealrij staat op mobiel boven de tekst over de volle breedte; padding-top van
            56,25 % maakt dat vlak 16:9, want een achtergrondfoto heeft zelf geen hoogte. */
         .m-rowphoto { width: 100% !important; height: 0 !important; min-height: 0 !important; padding-top: 56.25% !important; }
+        /* De cel zelf zonder padding, anders komt stack's 12 px onderaan bij de foto en is het vlak
+           niet meer precies 16:9. */
+        .m-rowphoto-cell { padding: 0 !important; }
         /* De vaste kaarthoogte vervalt: de foto staat hier boven de tekst, dus de kaart is hoger. */
         .m-auto-h { height: auto !important; }
         .m-pad { padding-left: 16px !important; padding-right: 16px !important; }
@@ -214,7 +217,7 @@
                                       cellpadding="0"
                                       cellspacing="0"
                                       role="presentation"><tbody style="width:100%"><tr style="width:100%"><td
-                                            class="stack"
+                                            class="stack m-rowphoto-cell"
                                             data-id="__react-email-column"
                                             style="width:190px;vertical-align:top;background-image:url(https://asset.vialuxury.com/assets/57455675-0f6e-4334-aaa2-bc3d1747f31f?key=card);background-size:cover;background-position:center"><a
                                               href="https://vialuxury.vercel.app/first-release/deal/landgoed-lauswolt-geniet-van-5-sterren-luxe-in-de-bosrijke-omgeving-van-friesland-incl-culinair-diner"
