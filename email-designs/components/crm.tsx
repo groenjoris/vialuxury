@@ -287,7 +287,10 @@ export const cardGap = "24px";
  *  Klaviyo moet een herhalend blok één hoogte hebben. De waarden zijn de hoogste kaart die in de
  *  mails voorkomt, dus er wordt niets afgesneden; een kortere kaart houdt onderaan wat ruimte over.
  *  Op mobiel vervalt de hoogte (klasse `m-auto-h`), want daar staat de foto boven de tekst. */
-export const CARD_HEIGHT_ROW = "457px";
+export const CARD_HEIGHT_ROW = "425px";
+/** Dealrijen met de prijs na aftrek van de code (terugkomactie) hebben een regel extra en dus een
+ *  eigen hoogte; binnen die mail zijn ze onderling weer gelijk. */
+export const CARD_HEIGHT_ROW_CODE = "457px";
 /** Bij de grote kaart staat de hoogte op het tekstblok onder de foto, niet op de kaart zelf: een
  *  vaste hoogte op de kaart verdeelt de overgebleven ruimte over de rijen en zet dan een witte
  *  strook boven en onder de foto. 379 px tekstblok + 315 px foto + 2 px rand = 696 px kaart. */
@@ -300,17 +303,17 @@ export const CARD_TEXT_HEIGHT_FEATURED = "379px";
 export function DealRow({ deal: d, cta, top = "12px" }: { deal: RowDeal; cta?: string; top?: string }) {
   const rich = !!d.price || !!d.includes;
   return (
-    <Section className={rich ? "m-auto-h" : undefined} style={{ backgroundColor: "#FFFFFF", border: `1px solid #E5E5E5`, borderRadius: "8px", marginTop: top, overflow: "hidden", height: rich ? CARD_HEIGHT_ROW : undefined }}>
+    <Section className={rich ? "m-auto-h" : undefined} style={{ backgroundColor: "#FFFFFF", border: `1px solid #E5E5E5`, borderRadius: "8px", marginTop: top, overflow: "hidden", height: rich ? (d.withCode ? CARD_HEIGHT_ROW_CODE : CARD_HEIGHT_ROW) : undefined }}>
       <Row>
         {/* Foto als achtergrond: sluit aan op de rand en vult de hele hoogte van het blok */}
         {d.secondImage ? (
           // Twee foto's onder elkaar: het hoofdbeeld boven, het tweede beeld van het arrangement
           // eronder, met een wit randje ertussen. Samen vullen ze de vaste kaarthoogte
-          // (227 + 228 = 455 px binnen de rand, waarvan 3 px wit). Het randje is een witte bovenrand op de
+          // (211 + 212 = 423 px binnen de rand, waarvan 3 px wit). Het randje is een witte bovenrand op de
           // tweede foto; een achtergrondfoto loopt niet door onder een rand.
           <Column className="stack m-rowphoto-cell" style={{ width: "190px", verticalAlign: "top" }}>
             {[d.image, d.secondImage].map((src, i) => (
-              <Section key={src} className="m-halfphoto" style={{ height: i ? "228px" : "227px", borderTop: i ? "3px solid #FFFFFF" : undefined, backgroundImage: `url(${src})`, backgroundSize: "cover", backgroundPosition: "center" }}>
+              <Section key={src} className="m-halfphoto" style={{ height: i ? "212px" : "211px", borderTop: i ? "3px solid #FFFFFF" : undefined, backgroundImage: `url(${src})`, backgroundSize: "cover", backgroundPosition: "center" }}>
                 <Link href={d.url} aria-label={d.hotelName ?? cta ?? "Bekijk"} className="m-rowphoto" style={{ display: "block", width: "190px", minHeight: "107px" }} />
               </Section>
             ))}
@@ -320,7 +323,10 @@ export function DealRow({ deal: d, cta, top = "12px" }: { deal: RowDeal; cta?: s
             <Link href={d.url} aria-label={d.hotelName ?? cta ?? "Bekijk"} className="m-rowphoto" style={{ display: "block", width: "190px", minHeight: "107px" }} />
           </Column>
         )}
-        <Column className="stack m-cardtext" style={{ verticalAlign: "top", padding: rich ? "16px 18px 18px" : "16px 18px" }}>
+        {/* Bij een vaste kaarthoogte staat de tekst verticaal gecentreerd: de ruimte die overblijft
+            als de kaart korter is dan de hoogte, verdeelt zich dan boven en onder in plaats van als
+            een gat onder de prijsrij. Op mobiel (stack) valt de hoogte weg en staat hij weer boven. */}
+        <Column className="stack m-cardtext" style={{ verticalAlign: rich ? "middle" : "top", padding: rich ? "16px 18px 18px" : "16px 18px" }}>
           {rich ? (
             <>
               <RichDealText d={d} />
