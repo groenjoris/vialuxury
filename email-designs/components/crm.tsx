@@ -43,6 +43,21 @@ export const s = {
   muted: { fontFamily: font.body, fontSize: "16px", lineHeight: "1.4", color: c.muted, margin: "4px 0 0" },
 };
 
+/** Briefopening, het vaste begin van een CRM-mail: aanhef ("Beste Sanne," of zonder naam
+ *  "Beste gast,"), een korte intro en de ondertekening "Groetjes Yvette". De ondertekening is een
+ *  afbeelding (handgeschreven lettertype Oooh Baby, donkergrijs #555555), zodat hij in elke
+ *  mailclient en in Klaviyo hetzelfde is. Titels van blokken (bijv. "Anderen boekten ook") komen
+ *  ná de brief, direct boven het blok waar ze bij horen. */
+export function Letter({ firstName, children }: { firstName?: string; children: React.ReactNode }) {
+  return (
+    <>
+      <Text style={{ ...s.body, margin: 0 }}>{firstName ? `Beste ${firstName},` : "Beste gast,"}</Text>
+      <Text style={{ ...s.body, margin: "8px 0 0" }}>{children}</Text>
+      <Img src={`${baseUrl}/images/mail/crm/groetjes-yvette.png`} alt="Groetjes Yvette" width="200" height="43" style={{ display: "block", width: "200px", height: "43px", marginTop: "16px" }} />
+    </>
+  );
+}
+
 /** Hulplijn onderaan elke CRM-mail: hetzelfde blok "Hulp nodig?" als in de post-bookingmails
  *  (HelpBanner), met 16 px tekst. `top`: witruimte erboven als de sectie ervoor er geen heeft. */
 export function CrmHelp({ top = "0" }: { top?: string }) {

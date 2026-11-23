@@ -196,9 +196,7 @@ omdat je een account of boeking hebt bij ViaLuxury."; de CRM-mails houden de opt
 Artist impression van geautomatiseerde e-mails, alleen desktop + light mode. Mails (in de volgorde
 van het paneel links in de preview, de klantreis): `crm-winkelmandje` (2 uur na verlaten; variant
 `crm-winkelmandje-naam-onbekend` via de schakelaar "Naam bekend | Naam onbekend" in de previewkop, registry
-`variantOf`, labels in `variantLabels` in `app/pages/crm/[slug].vue`), `crm-winkelmandje-2-dagen` (ook met de variant `-naam-onbekend`;
-titel "Anderen boekten ook", intro "Beste Sanne," / "Beste gast," en de ondertekening "Groetjes Yvette" in het
-handgeschreven Google-lettertype La Belle Aurore, 28 px), `crm-zoekopdracht`, `crm-verlanglijst`, `crm-review`, de repeat-bookingflow `crm-nagenieten`,
+`variantOf`, labels in `variantLabels` in `app/pages/crm/[slug].vue`), `crm-winkelmandje-2-dagen` (ook met de variant `-naam-onbekend`), `crm-zoekopdracht`, `crm-verlanglijst`, `crm-review`, de repeat-bookingflow `crm-nagenieten`,
 `crm-terugkomactie` (€20), `crm-terugkomactie-herinnering` (zelfde component met `daysLeft`) en
 `crm-jaar-geleden`, en als laatste `crm-thema-stedentrips` (A6). Bronnen in
 `email-designs/emails/crm-*.tsx`, bouwstenen in `email-designs/components/crm.tsx` (`DealRow`,
@@ -211,6 +209,11 @@ daaronder het verzendmoment, actieve mail op beige, pijltjes ↑ ↓ bladeren); 
 met één knop "Voorbeeldmails" (naar de eerste mail).
 
 Regels voor elke CRM-mail:
+- Briefopzet (het format voor alle CRM-mails, als eerste doorgevoerd in `crm-winkelmandje-2-dagen`): de mail begint met
+  de bouwsteen `Letter`: aanhef ("Beste Sanne," / "Beste gast,"), een korte intro en de ondertekening "Groetjes Yvette"
+  als afbeelding (`public/images/mail/crm/groetjes-yvette.png`: lettertype Oooh Baby, donkergrijs #555555; geen
+  webfont, want die werkt niet in elke mailclient). Een titel (bijv. "Anderen boekten ook", 32 serif) is de titel van
+  het blok eronder en staat direct boven dat blok, nooit boven de aanhef.
 - Drie lettergroottes: titel 32, subtitel en hotelnaam 20, alle overige tekst 16 px (footer uitgezonderd).
 - Alles links uitgelijnd, nooit gecentreerd (alleen de inhoud van de coupon staat gecentreerd).
 - Klaviyo: nooit twee lettertypen (serif-kop en sans-tekst) naast elkaar op één regel; onder elkaar mag
