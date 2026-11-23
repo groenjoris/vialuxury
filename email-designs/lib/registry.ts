@@ -6,7 +6,7 @@ import MvpVakantieBevestiging from "../emails/mvp-vakantie-bevestiging";
 import CrmNagenieten from "../emails/crm-nagenieten";
 import CrmJaarGeleden from "../emails/crm-jaar-geleden";
 import CrmWinkelmandje, { naamOnbekendProps } from "../emails/crm-winkelmandje";
-import CrmWinkelmandje2Dagen from "../emails/crm-winkelmandje-2-dagen";
+import CrmWinkelmandje2Dagen, { naamOnbekendProps as naamOnbekend2DagenProps } from "../emails/crm-winkelmandje-2-dagen";
 import CrmThemaStedentrips from "../emails/crm-thema-stedentrips";
 import CrmReview from "../emails/crm-review";
 import CrmTerugkomactie, { herinneringProps } from "../emails/crm-terugkomactie";
@@ -314,11 +314,22 @@ export const emails: EmailEntry[] = [
   {
     slug: "crm-winkelmandje-2-dagen",
     title: "Winkelmandje (2 dagen na verlaten)",
-    description: "Na de mail van 2 uur nu alternatieven: Door jou bekeken (de deal uit het winkelmandje met prijs en knop), daaronder drie vergelijkbare deals in de list view van de zoekkaarten.",
+    description: "Na de mail van 2 uur nu alternatieven: titel 'Anderen boekten ook', korte persoonlijke intro met ondertekening, drie vergelijkbare deals en daaronder de bekeken deal.",
     section: "crm",
     subject: "Dit zijn 3 deals die lijken op Hotel Des Indes",
     preheader: "Ook in Den Haag en aan de kust, vanaf €309 voor 2 personen.",
     Component: CrmWinkelmandje2Dagen,
+  },
+  {
+    slug: "crm-winkelmandje-2-dagen-naam-onbekend",
+    title: "Winkelmandje (2 dagen na verlaten)",
+    description: "Variant voor als de voornaam niet bekend is: de intro begint met 'Beste gast,'.",
+    section: "crm",
+    variantOf: "crm-winkelmandje-2-dagen",
+    subject: "Dit zijn 3 deals die lijken op Hotel Des Indes",
+    preheader: "Ook in Den Haag en aan de kust, vanaf €309 voor 2 personen.",
+    Component: CrmWinkelmandje2Dagen,
+    props: naamOnbekend2DagenProps,
   },
   {
     slug: "crm-thema-stedentrips",

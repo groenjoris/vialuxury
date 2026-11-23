@@ -1,4 +1,4 @@
-import { Body, Container, Head, Html, Preview, Section, Text } from "@react-email/components";
+import { Body, Container, Head, Heading, Html, Preview, Section, Text } from "@react-email/components";
 import * as React from "react";
 import CrmFooter from "../components/CrmFooter";
 import CrmHeader from "../components/CrmHeader";
@@ -6,23 +6,29 @@ import { crmCss, CrmHelp, DealRow, FeaturedDeal, type RowDeal, s, site } from ".
 import { font, newsletter } from "../components/theme";
 
 // CRM mail 4: winkelmandje, 2 dagen na het verlaten van de checkout. Na de mail van
-// 2 uur (zelfde deal, afronden) nu alternatieven. Eerst drie vergelijkbare deals onder elkaar:
-// de eerste groot over de hele breedte met een oranje knop (naar Jesse's terugkomactie), de
-// andere twee als dealrij. Daaronder "Door jou bekeken": de deal uit het winkelmandje als
-// dealrij op dezelfde uitgebreide kaart als de suggesties (met inclusies), zonder prijsrij: onderin de aankomst met
-// nachten en personen en de besparing, dezelfde regels als in de mail van 2 uur, met de link
-// "Ga verder met boeken".
+// 2 uur (zelfde deal, afronden) nu alternatieven. Titel "Anderen boekten ook" (zelfde opzet als de
+// themamail), daaronder een korte persoonlijke intro ("Beste Sanne," of zonder naam "Beste gast,")
+// met de ondertekening "Groetjes Yvette" in het handgeschreven lettertype La Belle Aurore.
+// Dan drie vergelijkbare deals: de eerste groot, de andere twee als dealrij. Daaronder
+// "Door jou bekeken": de deal uit het winkelmandje op dezelfde kaart, zonder prijsrij (aankomst
+// met nachten en personen, de besparing en de link "Ga verder met boeken").
+// Twee varianten (schakelaar in de preview): naam bekend en naam onbekend
+// (crm-winkelmandje-2-dagen-naam-onbekend).
 // Geen labels. Klaviyo: nooit twee lettertypen op één regel, daarom staat alles onder elkaar.
 // Onderwerp: "Dit zijn 3 deals die lijken op [hotelnaam]"
 
 type Props = {
   recipientEmail: string;
+  /** Leeg → "Beste gast,". */
+  firstName?: string;
+  /** Voornaam van de afzender onder de intro, in het handgeschreven lettertype. */
+  senderName?: string;
   /** Deal uit het winkelmandje; url met datum en personen vooringevuld. */
   cart: RowDeal & { hotelName: string };
   deals: RowDeal[];
 };
 
-export default function CrmWinkelmandje2Dagen({ recipientEmail, cart, deals }: Props) {
+export default function CrmWinkelmandje2Dagen({ recipientEmail, firstName, senderName = "Yvette", cart, deals }: Props) {
   const c = newsletter.light;
   const [first, ...rest] = deals;
 
@@ -31,14 +37,28 @@ export default function CrmWinkelmandje2Dagen({ recipientEmail, cart, deals }: P
       <Head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <style>{crmCss}</style>
+        {/* Handgeschreven lettertype voor de ondertekening (Google Fonts); mailclients zonder
+            webfonts vallen terug op een cursief schreeflettertype */}
+        <link href="https://fonts.googleapis.com/css2?family=La+Belle+Aurore&display=swap" rel="stylesheet" />
       </Head>
       <Preview>Ook in Den Haag en aan de kust, vanaf €309 voor 2 personen.</Preview>
       <Body style={{ backgroundColor: c.bg, margin: 0, padding: 0, fontFamily: font.body }}>
         <CrmHeader />
         <Container style={{ width: "100%", maxWidth: "626px" }}>
-          {/* Eerst de drie vergelijkbare deals: de eerste groot, de rest als rij */}
+          {/* Titel en een korte, persoonlijke intro met ondertekening */}
           <Section className="m-pad" style={{ padding: "32px 32px 0" }}>
-            <Text style={s.kop}>Geboekt door anderen die {cart.hotelName} bekeken</Text>
+            <Heading as="h1" className="m-h1" style={s.h1}>Anderen boekten ook</Heading>
+            <Text style={{ ...s.body, margin: "16px 0 0" }}>{firstName ? `Beste ${firstName},` : "Beste gast,"}</Text>
+            <Text style={{ ...s.body, margin: "8px 0 0" }}>
+              Klanten die interesse hadden in {cart.hotelName}, boekten vaak ook de volgende deals. Misschien interessant voor jou!
+            </Text>
+            <Text style={{ fontFamily: "'La Belle Aurore', 'Brush Script MT', 'Segoe Script', cursive", fontSize: "28px", lineHeight: "1.3", color: c.text, margin: "14px 0 0" }}>
+              Groetjes {senderName}
+            </Text>
+          </Section>
+
+          {/* De drie vergelijkbare deals: de eerste groot, de rest als rij */}
+          <Section className="m-pad" style={{ padding: "12px 32px 0" }}>
             {first && <FeaturedDeal deal={first} />}
             {rest.map((d) => (
               <DealRow key={d.url} deal={d} />
@@ -64,6 +84,8 @@ const deal = (permalink: string) => `${site}/first-release/deal/${permalink}`;
 
 CrmWinkelmandje2Dagen.PreviewProps = {
   recipientEmail: "sanne.devries@example.com",
+  firstName: "Sanne",
+  senderName: "Yvette",
   cart: {
     hotelName: "Hotel Des Indes",
     stars: 5,
@@ -120,3 +142,6 @@ CrmWinkelmandje2Dagen.PreviewProps = {
     },
   ],
 } satisfies Props;
+
+/** Variant zonder voornaam (naam onbekend): "Beste gast,". */
+export const naamOnbekendProps = { ...CrmWinkelmandje2Dagen.PreviewProps, firstName: undefined };

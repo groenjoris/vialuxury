@@ -30,6 +30,8 @@ const baseSlug = computed(() => (entry.value as { variantOf?: string } | undefin
 const variantLabels: Record<string, string> = {
   'crm-winkelmandje': 'Naam bekend',
   'crm-winkelmandje-naam-onbekend': 'Naam onbekend',
+  'crm-winkelmandje-2-dagen': 'Naam bekend',
+  'crm-winkelmandje-2-dagen-naam-onbekend': 'Naam onbekend',
 }
 const variants = computed(() => {
   const list = emails.filter(e => e.slug === baseSlug.value || (e as { variantOf?: string }).variantOf === baseSlug.value)
