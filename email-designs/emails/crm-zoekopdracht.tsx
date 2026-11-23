@@ -15,7 +15,7 @@ import { dePlesman, desIndes, voco } from "../lib/crmDeals";
 
 type Props = {
   recipientEmail: string;
-  /** Leeg → "Hi,". */
+  /** Leeg → "Beste gast,". */
   firstName?: string;
   /** Leeg → "jouw zoekopdracht". */
   searchTerm?: string;
@@ -36,13 +36,14 @@ export default function CrmZoekopdracht({ recipientEmail, firstName, searchTerm,
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <style>{crmCss}</style>
       </Head>
-      <Preview>{arrivalDate ? `De beste arrangementen voor ${arrivalDate}.` : "De beste arrangementen voor jouw zoekopdracht."}</Preview>
+      {/* Algemeen: de breedste zoekopdracht heeft alleen een thema of bestemming, geen datum */}
+      <Preview>Kijk of er iets voor je bij zit.</Preview>
       <Body style={{ backgroundColor: c.bg, margin: 0, padding: 0, fontFamily: font.body }}>
         <CrmHeader />
         <Container style={{ width: "100%", maxWidth: "626px" }}>
           {/* Briefopening: aanhef, korte intro en de ondertekening */}
           <Section className="m-pad" style={{ padding: "32px 32px 0" }}>
-            <Letter firstName={firstName} greeting="Hi">
+            <Letter firstName={firstName}>
               We hebben nog een paar hele mooie arrangementen gevonden bij jouw zoekopdracht.
             </Letter>
           </Section>

@@ -44,12 +44,12 @@ export const s = {
 };
 
 /** Briefopening, het vaste begin van een CRM-mail: aanhef ("Beste Sanne," of zonder naam
- *  "Beste gast,"; met `greeting="Hi"`: "Hi Sanne," of "Hi,"), een korte intro en de ondertekening "Groetjes Yvette". De ondertekening is een
+ *  "Beste gast,"; in elke mail dezelfde aanhef), een korte intro en de ondertekening "Groetjes Yvette". De ondertekening is een
  *  afbeelding (handgeschreven lettertype Oooh Baby, donkergrijs #555555), zodat hij in elke
  *  mailclient en in Klaviyo hetzelfde is. Titels van blokken (bijv. "Anderen boekten ook") komen
  *  ná de brief, direct boven het blok waar ze bij horen. */
-export function Letter({ firstName, greeting = "Beste", children }: { firstName?: string; greeting?: "Beste" | "Hi"; children: React.ReactNode }) {
-  const salutation = firstName ? `${greeting} ${firstName},` : greeting === "Hi" ? "Hi," : "Beste gast,";
+export function Letter({ firstName, children }: { firstName?: string; children: React.ReactNode }) {
+  const salutation = firstName ? `Beste ${firstName},` : "Beste gast,";
   return (
     <>
       <Text style={{ ...s.body, margin: 0 }}>{salutation}</Text>

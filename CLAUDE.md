@@ -209,8 +209,8 @@ daaronder het verzendmoment, actieve mail op beige, pijltjes ↑ ↓ bladeren); 
 met één knop "Voorbeeldmails" (naar de eerste mail).
 
 Regels voor elke CRM-mail:
-- Briefopzet (het format voor alle CRM-mails, tot nu toe in `crm-winkelmandje-2-dagen`, `crm-verlanglijst` en `crm-zoekopdracht`, die laatste met
-  `greeting="Hi"`: "Hi Sanne,"): de mail begint met
+- Briefopzet (het format voor alle CRM-mails, tot nu toe in `crm-winkelmandje-2-dagen`, `crm-verlanglijst` en `crm-zoekopdracht`; de aanhef is
+  overal "Beste …", nooit "Hi"): de mail begint met
   de bouwsteen `Letter`: aanhef ("Beste Sanne," / "Beste gast,"), een korte intro en de ondertekening "Groetjes Yvette"
   als afbeelding (`public/images/mail/crm/groetjes-yvette.png`: lettertype Oooh Baby, donkergrijs #555555; geen
   webfont, want die werkt niet in elke mailclient). Een titel (bijv. "Anderen boekten ook", 32 serif) is de titel van
@@ -237,7 +237,8 @@ Regels voor elke CRM-mail:
 - Elke CRM-mail eindigt met de hulplijn "Hulp nodig?" (`CrmHelp` = `HelpBanner` uit de post-bookingmails, zelfde tekst,
   lichtoranje vlak, 16 px).
 - Tussen twee dealkaarten onder elkaar staat 24 px (`cardGap`), tussen een titel en de eerste kaart 12 px.
-- Preheaders zonder gegevens die lastig te automatiseren zijn (geen plaatsen of prijzen van de suggesties).
+- Preheaders zonder gegevens die lastig te automatiseren zijn of niet altijd bestaan (geen plaatsen of prijzen van de
+  suggesties, geen datum uit de zoekopdracht).
 - Prijzen uit `deals.json` zijn het totaal voor 2 personen: "Vanaf €319 voor 2 personen", nooit p.p.
 - Knoppen linken naar de R1-dealpagina (zachte landing; die neemt `?checkin=` en `?adults=` over).
 - Jesse de Groot heeft eigen CRM-mails op `origin/redesign-jesse`; mails worden daarvan per stuk
