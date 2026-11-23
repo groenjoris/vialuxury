@@ -250,8 +250,10 @@ Regels voor elke CRM-mail:
 - Terugkomactie (14 dagen) en herinnering (30 dagen, copy op haast): één coupon van €20. Daaronder de grote titel "Tips voor je
   kortingscode" met "Boek uiterlijk [vervaldatum] 23:59 uur" en drie groepjes van twee dealrijen, elk op een eigen beige vlak met de
   subtitel erin: "In de sfeer van [vorig hotel]", "Populair deze maand" en "Deals met wellness". Geen blok "Jouw verblijf".
-- Gegroepeerde suggesties (`DealGroup`, in de terugkomactie en de favorietenmail): elke groep op een eigen beige band over
-  de hele breedte, met de subtitel (20 serif) en eventueel een grijze regel erin, kaarten wit, 16 px ertussen.
+- Gegroepeerde suggesties (`DealGroup`, in de terugkomactie en de favorietenmail): elke groep op een eigen band over de
+  hele breedte, met de subtitel (20 serif) en eventueel een grijze regel erin, kaarten wit, 16 px ertussen. Banden onder
+  elkaar sluiten zonder tussenruimte aan en wisselen af: beige, wit, beige (nooit twee beige banden na elkaar); de
+  themakiezer in de terugkomactie is de volgende band in die reeks.
 - Reviewmail: de sterren zijn een keuzeblok op het beige vlak: vijf lege, omlijnde sterren (`ster-leeg.png`) met "Slecht"
   en "Uitstekend" eronder. Leeg leest als "vul mij in"; gevulde sterren lezen als een score die er al staat. Variant
   `crm-review-knoppen` (schakelaar "Lege ster | Knop" in de previewkop): vijf witte knoppen met cijfer en ster.

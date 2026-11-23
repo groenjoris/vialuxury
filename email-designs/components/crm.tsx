@@ -307,10 +307,11 @@ export function FeaturedDeal({ deal: d, cta, priceRow = true }: { deal: RowDeal;
  *  suggesties). De inhoud staat in dezelfde kolom van 626 px met 32 px marge als de rest van de
  *  mail, dus tekst en kaarten lijnen uit met wat erboven en eronder staat. Net als de zwarte
  *  header en footer staat de band BUITEN de <Container> van de mail: sluit die ervoor en open er
- *  een nieuwe na. `top`: witte ruimte boven de band. */
-export function BeigeBand({ children, top = "16px" }: { children: React.ReactNode; top?: string }) {
+ *  een nieuwe na. `top`: witte ruimte boven de band. Meerdere banden onder elkaar sluiten zonder
+ *  tussenruimte op elkaar aan en wisselen af: beige, wit (`white`), beige. */
+export function BeigeBand({ children, top = "0", white }: { children: React.ReactNode; top?: string; white?: boolean }) {
   return (
-    <Section style={{ backgroundColor: "#F4F1EC", width: "100%", marginTop: top }}>
+    <Section style={{ backgroundColor: white ? "#FFFFFF" : "#F4F1EC", width: "100%", marginTop: top }}>
       <Container style={{ width: "100%", maxWidth: "626px" }}>
         <Section className="m-pad" style={{ padding: "24px 32px 28px" }}>{children}</Section>
       </Container>
@@ -321,11 +322,12 @@ export function BeigeBand({ children, top = "16px" }: { children: React.ReactNod
 /** Ruimte tussen twee dealkaarten binnen een DealGroup. */
 export const groupGap = "16px";
 
-/** Groep suggesties op een beige band over de hele breedte: subtitel (20 serif) en eventueel een
+/** Groep suggesties op een band over de hele breedte (om en om beige en wit: geef de even groepen
+ *  `white` mee): subtitel (20 serif) en eventueel een
  *  grijze regel eronder, dan de dealkaarten (wit). Staat net als BeigeBand buiten de <Container>. */
-export function DealGroup({ title, subtitle, top, children }: { title: string; subtitle?: string; top?: string; children: React.ReactNode }) {
+export function DealGroup({ title, subtitle, top, white, children }: { title: string; subtitle?: string; top?: string; white?: boolean; children: React.ReactNode }) {
   return (
-    <BeigeBand top={top}>
+    <BeigeBand top={top} white={white}>
       <Text style={s.kop}>{title}</Text>
       {subtitle && <Text style={{ ...s.muted, margin: "2px 0 0" }}>{subtitle}</Text>}
       {children}

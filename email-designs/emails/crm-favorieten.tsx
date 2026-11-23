@@ -79,7 +79,8 @@ export default function CrmFavorieten({ recipientEmail, firstName, first: code1,
 
         </Container>
 
-        {/* Twee blokken, elk op een beige band over de hele breedte met een kleine subtitel erin: de
+        {/* Twee blokken, elk op een band over de hele breedte (de eerste beige, de tweede wit, zonder
+            ruimte ertussen) met een kleine subtitel erin: de
             favorieten (de eerste groot, de rest als rij, met de knop naar de favorieten) en
             vergelijkbare deals */}
         {first && (
@@ -93,7 +94,7 @@ export default function CrmFavorieten({ recipientEmail, firstName, first: code1,
             </Section>
           </DealGroup>
         )}
-        <DealGroup title="Vergelijkbaar met je favorieten" subtitle="Ook hier is je korting geldig!">
+        <DealGroup title="Vergelijkbaar met je favorieten" subtitle="Ook hier is je korting geldig!" white={!!first}>
           {similar.map((d, i) => (
             <DealRow key={d.url} deal={d} top={i ? groupGap : undefined} />
           ))}

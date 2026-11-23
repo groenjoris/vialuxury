@@ -75,17 +75,18 @@ export default function CrmTerugkomactie({ recipientEmail, firstName, code, days
 
         </Container>
 
-        {/* Groepjes van twee suggesties, elk op een eigen beige band over de hele breedte met de subtitel
-            erin; daarna (niet in de herinnering) de themakiezer, ook op een band */}
+        {/* Groepjes van twee suggesties, elk op een eigen band over de hele breedte met de subtitel erin.
+            De banden sluiten op elkaar aan en wisselen af: beige, wit, beige; daarna (niet in de
+            herinnering) de themakiezer als volgende band in die reeks */}
         {groups.map((g, gi) => (
-          <DealGroup key={g.title} title={g.title} top={gi ? undefined : "24px"}>
+          <DealGroup key={g.title} title={g.title} top={gi ? undefined : "24px"} white={gi % 2 === 1}>
             {g.deals.map((d, i) => (
               <DealRow key={d.url} deal={d} top={i ? groupGap : undefined} />
             ))}
           </DealGroup>
         ))}
         {!reminder && (
-          <BeigeBand top="40px">
+          <BeigeBand white={groups.length % 2 === 1}>
             <ThemePicker />
           </BeigeBand>
         )}
