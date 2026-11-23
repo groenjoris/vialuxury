@@ -2,7 +2,7 @@ import { Body, Container, Head, Heading, Html, Preview, Section, Text } from "@r
 import * as React from "react";
 import CrmFooter from "../components/CrmFooter";
 import CrmHeader from "../components/CrmHeader";
-import { crmCss, CrmHelp, DealList, IconLine, PrimaryButton, type RowDeal, s, site } from "../components/crm";
+import { crmCss, CrmHelp, DealList, IconLine, Letter, PrimaryButton, type RowDeal, s, site } from "../components/crm";
 import { font, newsletter } from "../components/theme";
 import { dePlesman, desIndes, voco } from "../lib/crmDeals";
 
@@ -15,6 +15,8 @@ import { dePlesman, desIndes, voco } from "../lib/crmDeals";
 
 type Props = {
   recipientEmail: string;
+  /** Leeg → "Hi,". */
+  firstName?: string;
   /** Leeg → "jouw zoekopdracht". */
   searchTerm?: string;
   /** "20 november"; leeg → regel valt weg. */
@@ -25,7 +27,7 @@ type Props = {
   results: RowDeal[];
 };
 
-export default function CrmZoekopdracht({ recipientEmail, searchTerm, arrivalDate, persons, resultsUrl, results }: Props) {
+export default function CrmZoekopdracht({ recipientEmail, firstName, searchTerm, arrivalDate, persons, resultsUrl, results }: Props) {
   const c = newsletter.light;
 
   return (
@@ -38,12 +40,15 @@ export default function CrmZoekopdracht({ recipientEmail, searchTerm, arrivalDat
       <Body style={{ backgroundColor: c.bg, margin: 0, padding: 0, fontFamily: font.body }}>
         <CrmHeader />
         <Container style={{ width: "100%", maxWidth: "626px" }}>
-          <Section className="m-pad" style={{ padding: "36px 32px 0" }}>
-            <Heading as="h1" className="m-h1" style={s.h1}>Dit vonden we voor je</Heading>
+          {/* Briefopening: aanhef, korte intro en de ondertekening */}
+          <Section className="m-pad" style={{ padding: "32px 32px 0" }}>
+            <Letter firstName={firstName} greeting="Hi">
+              We hebben nog een paar hele mooie arrangementen gevonden bij jouw zoekopdracht.
+            </Letter>
           </Section>
 
           {/* De zoekopdracht als samenvatting, met de ene knop */}
-          <Section className="m-pad" style={{ padding: "28px 32px 0" }}>
+          <Section className="m-pad" style={{ padding: "40px 32px 0" }}>
             <Text style={s.kop}>Jouw zoekopdracht</Text>
             <Section style={{ border: `1px solid #E5E5E5`, borderRadius: "8px", padding: "14px 20px 22px", marginTop: "12px" }}>
               <IconLine icon="magnifier-donker" bold>{searchTerm ?? "Jouw zoekopdracht"}</IconLine>
@@ -56,7 +61,8 @@ export default function CrmZoekopdracht({ recipientEmail, searchTerm, arrivalDat
           </Section>
 
           <Section className="m-pad" style={{ padding: "44px 32px 40px" }}>
-            <Text style={s.kop}>De arrangementen die het best passen bij wat je zoekt</Text>
+            {/* De titel hoort bij de lijst en staat er direct boven */}
+            <Heading as="h1" className="m-h1" style={s.h1}>Dit vonden we voor je</Heading>
             <DealList deals={results} />
           </Section>
           {/* Hulplijn */}
@@ -70,6 +76,7 @@ export default function CrmZoekopdracht({ recipientEmail, searchTerm, arrivalDat
 
 CrmZoekopdracht.PreviewProps = {
   recipientEmail: "sanne.devries@example.com",
+  firstName: "Sanne",
   searchTerm: "Den Haag",
   arrivalDate: "20 november",
   persons: 2,

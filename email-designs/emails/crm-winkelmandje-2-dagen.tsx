@@ -2,7 +2,7 @@ import { Body, Container, Head, Heading, Html, Preview, Section, Text } from "@r
 import * as React from "react";
 import CrmFooter from "../components/CrmFooter";
 import CrmHeader from "../components/CrmHeader";
-import { crmCss, CrmHelp, DealRow, FeaturedDeal, Letter, type RowDeal, s, site } from "../components/crm";
+import { cardGap, crmCss, CrmHelp, DealRow, FeaturedDeal, Letter, type RowDeal, s, site } from "../components/crm";
 import { font, newsletter } from "../components/theme";
 
 // CRM mail 4: winkelmandje, 2 dagen na het verlaten van de checkout. Na de mail van
@@ -15,7 +15,8 @@ import { font, newsletter } from "../components/theme";
 // Twee varianten (schakelaar in de preview): naam bekend en naam onbekend
 // (crm-winkelmandje-2-dagen-naam-onbekend).
 // Geen labels. Klaviyo: nooit twee lettertypen op één regel, daarom staat alles onder elkaar.
-// Onderwerp: "Dit zijn 3 deals die lijken op [hotelnaam]"
+// Onderwerp: "Anderen die [hotelnaam] bekeken, boekten vaak deze deals"
+// Preheader: algemeen (zonder plaatsen of prijzen), zodat hij zonder extra data te automatiseren is.
 
 type Props = {
   recipientEmail: string;
@@ -36,7 +37,7 @@ export default function CrmWinkelmandje2Dagen({ recipientEmail, firstName, cart,
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <style>{crmCss}</style>
       </Head>
-      <Preview>Ook in Den Haag en aan de kust, vanaf €309 voor 2 personen.</Preview>
+      <Preview>Misschien zit jouw volgende verblijf erbij.</Preview>
       <Body style={{ backgroundColor: c.bg, margin: 0, padding: 0, fontFamily: font.body }}>
         <CrmHeader />
         <Container style={{ width: "100%", maxWidth: "626px" }}>
@@ -53,7 +54,7 @@ export default function CrmWinkelmandje2Dagen({ recipientEmail, firstName, cart,
             <Heading as="h1" className="m-h1" style={s.h1}>Anderen boekten ook</Heading>
             {first && <FeaturedDeal deal={first} />}
             {rest.map((d) => (
-              <DealRow key={d.url} deal={d} />
+              <DealRow key={d.url} deal={d} top={cardGap} />
             ))}
           </Section>
 

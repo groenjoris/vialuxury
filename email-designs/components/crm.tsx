@@ -44,14 +44,15 @@ export const s = {
 };
 
 /** Briefopening, het vaste begin van een CRM-mail: aanhef ("Beste Sanne," of zonder naam
- *  "Beste gast,"), een korte intro en de ondertekening "Groetjes Yvette". De ondertekening is een
+ *  "Beste gast,"; met `greeting="Hi"`: "Hi Sanne," of "Hi,"), een korte intro en de ondertekening "Groetjes Yvette". De ondertekening is een
  *  afbeelding (handgeschreven lettertype Oooh Baby, donkergrijs #555555), zodat hij in elke
  *  mailclient en in Klaviyo hetzelfde is. Titels van blokken (bijv. "Anderen boekten ook") komen
  *  ná de brief, direct boven het blok waar ze bij horen. */
-export function Letter({ firstName, children }: { firstName?: string; children: React.ReactNode }) {
+export function Letter({ firstName, greeting = "Beste", children }: { firstName?: string; greeting?: "Beste" | "Hi"; children: React.ReactNode }) {
+  const salutation = firstName ? `${greeting} ${firstName},` : greeting === "Hi" ? "Hi," : "Beste gast,";
   return (
     <>
-      <Text style={{ ...s.body, margin: 0 }}>{firstName ? `Beste ${firstName},` : "Beste gast,"}</Text>
+      <Text style={{ ...s.body, margin: 0 }}>{salutation}</Text>
       <Text style={{ ...s.body, margin: "8px 0 0" }}>{children}</Text>
       <Img src={`${baseUrl}/images/mail/crm/groetjes-yvette.png`} alt="Groetjes Yvette" width="200" height="43" style={{ display: "block", width: "200px", height: "43px", marginTop: "16px" }} />
     </>
@@ -228,13 +229,17 @@ function RichDealPrice({ d, cta }: { d: RowDeal; cta: string }) {
   );
 }
 
+/** Ruimte tussen twee dealkaarten onder elkaar. */
+export const cardGap = "24px";
+
 /** Dealrij met grijze rand: foto links tot aan de rand en over de volle hoogte. Met een prijs de
  *  uitgebreide kaart (knop "Bekijk"), anders de tekstregels met een oranje link. Met inclusies maar
- *  zonder prijs (de bekeken deal): de uitgebreide kaart met onderaan de eigen regels en de link. */
-export function DealRow({ deal: d, cta }: { deal: RowDeal; cta?: string }) {
+ *  zonder prijs (de bekeken deal): de uitgebreide kaart met onderaan de eigen regels en de link.
+ *  `top`: 12 px onder een titel (standaard), `cardGap` (24 px) onder een andere kaart. */
+export function DealRow({ deal: d, cta, top = "12px" }: { deal: RowDeal; cta?: string; top?: string }) {
   const rich = !!d.price || !!d.includes;
   return (
-    <Section style={{ border: `1px solid #E5E5E5`, borderRadius: "8px", marginTop: "12px", overflow: "hidden" }}>
+    <Section style={{ border: `1px solid #E5E5E5`, borderRadius: "8px", marginTop: top, overflow: "hidden" }}>
       <Row>
         {/* Foto als achtergrond: sluit aan op de rand en vult de hele hoogte van het blok */}
         <Column className="stack" style={{ width: "190px", verticalAlign: "top", backgroundImage: `url(${d.image})`, backgroundSize: "cover", backgroundPosition: "center" }}>
@@ -302,7 +307,7 @@ export function DealList({ deals }: { deals: RowDeal[] }) {
     <>
       {first && <FeaturedDeal deal={first} />}
       {rest.map((d) => (
-        <DealRow key={d.url} deal={d} />
+        <DealRow key={d.url} deal={d} top={cardGap} />
       ))}
     </>
   );

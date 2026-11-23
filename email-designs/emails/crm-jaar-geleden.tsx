@@ -1,6 +1,6 @@
 import { Body, Container, Head, Heading, Html, Img, Preview, Section, Text } from "@react-email/components";
 import * as React from "react";
-import { CrmHelp, CodeBlock, crmCss, DealRow, PrimaryButton, type RowDeal, s, site } from "../components/crm";
+import { cardGap, CodeBlock, crmCss, CrmHelp, DealRow, PrimaryButton, type RowDeal, s, site } from "../components/crm";
 import CrmFooter from "../components/CrmFooter";
 import CrmHeader from "../components/CrmHeader";
 import { font, newsletter } from "../components/theme";
@@ -62,8 +62,8 @@ export default function CrmJaarGeleden({ recipientEmail, hotelName, packageTitle
           {/* Deals met frame-titel, onder elkaar */}
           <Section className="m-pad" style={{ padding: "48px 32px 40px" }}>
             <Text style={s.kop}>Anderen die {hotelName} boekten, boekten ook</Text>
-            {deals.map((d) => (
-              <DealRow key={d.url} deal={d} />
+            {deals.map((d, i) => (
+              <DealRow key={d.url} deal={d} top={i ? cardGap : undefined} />
             ))}
           </Section>
           {/* Hulplijn */}

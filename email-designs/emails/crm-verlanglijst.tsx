@@ -2,7 +2,7 @@ import { Body, Container, Head, Heading, Html, Preview, Section, Text } from "@r
 import * as React from "react";
 import CrmFooter from "../components/CrmFooter";
 import CrmHeader from "../components/CrmHeader";
-import { CrmHelp, CodeBlock, crmCss, DealRow, FeaturedDeal, type RowDeal, s, SecondaryButton, site } from "../components/crm";
+import { cardGap, CodeBlock, crmCss, CrmHelp, DealRow, FeaturedDeal, type RowDeal, s, SecondaryButton, site } from "../components/crm";
 import { font, newsletter } from "../components/theme";
 import { desIndes, lauswolt, steenenburg, vanOys, villaRuimzicht } from "../lib/crmDeals";
 
@@ -59,8 +59,8 @@ export default function CrmVerlanglijst({ recipientEmail, code, daysLeft, favori
           {others.length > 0 && (
             <Section className="m-pad" style={{ padding: "44px 32px 0" }}>
               <Text style={s.kop}>Ook op je lijst</Text>
-              {others.map((d) => (
-                <DealRow key={d.url} deal={d} />
+              {others.map((d, i) => (
+                <DealRow key={d.url} deal={d} top={i ? cardGap : undefined} />
               ))}
               <Section style={{ marginTop: "20px" }}>
                 <SecondaryButton href={wishlistUrl}>Bekijk je verlanglijst</SecondaryButton>
@@ -70,8 +70,8 @@ export default function CrmVerlanglijst({ recipientEmail, code, daysLeft, favori
 
           <Section className="m-pad" style={{ padding: "44px 32px 40px" }}>
             <Text style={s.kop}>Vergelijkbaar met {name}</Text>
-            {similar.map((d) => (
-              <DealRow key={d.url} deal={d} />
+            {similar.map((d, i) => (
+              <DealRow key={d.url} deal={d} top={i ? cardGap : undefined} />
             ))}
           </Section>
           {/* Hulplijn */}

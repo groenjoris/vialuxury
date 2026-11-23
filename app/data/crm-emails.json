@@ -23,7 +23,7 @@
   {
     "slug": "crm-zoekopdracht",
     "title": "Zoekopdracht (1 minuut na verlaten)",
-    "description": "De zoekopdracht als samenvatting met één knop naar alle resultaten, daaronder de drie best passende arrangementen.",
+    "description": "Briefopening (Hi Sanne, intro, Groetjes Yvette), de zoekopdracht als samenvatting met één knop naar alle resultaten, daaronder de titel 'Dit vonden we voor je' met de drie best passende arrangementen.",
     "subject": "Jouw zoekopdracht: Den Haag",
     "preheader": "De beste arrangementen voor 20 november."
   },
@@ -67,15 +67,15 @@
     "slug": "crm-winkelmandje-2-dagen",
     "title": "Winkelmandje (2 dagen na verlaten)",
     "description": "Na de mail van 2 uur nu alternatieven: titel 'Anderen boekten ook', korte persoonlijke intro met ondertekening, drie vergelijkbare deals en daaronder de bekeken deal.",
-    "subject": "Dit zijn 3 deals die lijken op Hotel Des Indes",
-    "preheader": "Ook in Den Haag en aan de kust, vanaf €309 voor 2 personen."
+    "subject": "Anderen die Hotel Des Indes bekeken, boekten vaak deze deals",
+    "preheader": "Misschien zit jouw volgende verblijf erbij."
   },
   {
     "slug": "crm-winkelmandje-2-dagen-naam-onbekend",
     "title": "Winkelmandje (2 dagen na verlaten)",
     "description": "Variant voor als de voornaam niet bekend is: de intro begint met 'Beste gast,'.",
-    "subject": "Dit zijn 3 deals die lijken op Hotel Des Indes",
-    "preheader": "Ook in Den Haag en aan de kust, vanaf €309 voor 2 personen.",
+    "subject": "Anderen die Hotel Des Indes bekeken, boekten vaak deze deals",
+    "preheader": "Misschien zit jouw volgende verblijf erbij.",
     "variantOf": "crm-winkelmandje-2-dagen"
   },
   {
