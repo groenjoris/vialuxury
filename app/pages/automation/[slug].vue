@@ -29,6 +29,11 @@ const groups = [
 }))
 const nav = groups.flatMap(g => g.items)
 
+// Dropdown in de kop: alle tien de mails, gegroepeerd per flow.
+function onPick(ev: Event) {
+  navigateTo(`/automation/${(ev.target as HTMLSelectElement).value}`)
+}
+
 // Pijltjes omhoog/omlaag: vorige/volgende mail
 function onKey(ev: KeyboardEvent) {
   if (ev.key !== 'ArrowDown' && ev.key !== 'ArrowUp') return
@@ -53,6 +58,13 @@ useHead({ title: `${entry.value?.title ?? 'E-mail'} — ViaLuxury automations` }
           <h1 class="aut__title">{{ entry?.title }}</h1>
           <code class="aut__slug">{{ slug }}</code>
         </div>
+        <select class="aut__picker" :value="slug" aria-label="Kies een mail" @change="onPick">
+          <optgroup v-for="g in groups" :key="g.flow" :label="g.title">
+            <option v-for="e in g.items" :key="e.slug" :value="e.slug">
+              {{ e.label }}{{ e.when ? ` — ${e.when}` : '' }}
+            </option>
+          </optgroup>
+        </select>
       </div>
     </header>
     <div class="aut__stage">
@@ -93,13 +105,15 @@ useHead({ title: `${entry.value?.title ?? 'E-mail'} — ViaLuxury automations` }
 <style scoped>
 .aut { min-height: 100vh; background: #f5f5f5; font-family: var(--font-body); color: var(--color-text-primary); }
 .aut__bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 24px; padding: 16px 24px; background: #fff; border-bottom: 1px solid var(--color-border); }
-.aut__left { display: flex; align-items: center; gap: 16px; min-width: 0; }
-.aut__back { color: var(--color-text-secondary); text-decoration: none; font-size: 13px; }
+.aut__left { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; min-width: 0; }
+.aut__back { flex-shrink: 0; color: var(--color-text-secondary); text-decoration: none; font-size: 13px; white-space: nowrap; }
 .aut__back:hover { color: var(--color-primary); }
-.aut__heading { min-width: 0; }
-.aut__title { margin: 0; font-family: var(--font-heading); font-size: 20px; font-weight: 700; }
+.aut__heading { min-width: 0; flex: 1 1 auto; }
+.aut__title { margin: 0; font-family: var(--font-heading); font-size: 20px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 /* De Klaviyo-naam, zodat de template daar net zo kan heten */
-.aut__slug { display: block; margin-top: 2px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; color: var(--color-text-secondary); }
+.aut__slug { display: block; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; color: var(--color-text-secondary); }
+/* Dropdown naar elke mail, voor als het paneel links niet past */
+.aut__picker { flex: 0 0 auto; max-width: 320px; padding: 7px 10px; font-family: inherit; font-size: 13px; line-height: 1.3; color: var(--color-text-primary); background: #fff; border: 1px solid var(--color-border); border-radius: 6px; }
 .aut__stage { display: flex; align-items: flex-start; gap: 24px; padding: 20px 24px 48px; }
 .aut__nav { position: sticky; top: 20px; display: flex; flex-direction: column; gap: 2px; width: 264px; flex-shrink: 0; padding: 12px 8px; background: #fff; border: 1px solid var(--color-border); border-radius: 8px; }
 .aut__nav-title { margin: 10px 0 6px; padding: 0 12px; font-size: 12px; font-weight: 700; color: var(--color-text-secondary); }
