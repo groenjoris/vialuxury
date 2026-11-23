@@ -2,7 +2,7 @@ import { Body, Container, Head, Heading, Html, Preview, Section, Text } from "@r
 import * as React from "react";
 import CrmFooter from "../components/CrmFooter";
 import CrmHeader from "../components/CrmHeader";
-import { CodeBlock, crmCss, CrmHelp, DealRow, PrimaryButton, type RowDeal, s, site, ThemePicker } from "../components/crm";
+import { CodeBlock, crmCss, CrmHelp, DealRow, Letter, PrimaryButton, type RowDeal, s, site, ThemePicker } from "../components/crm";
 import { font, newsletter } from "../components/theme";
 import { carltonBeach, desIndes, fashionHotel, steenenburg, vanOys, villaRuimzicht } from "../lib/crmDeals";
 
@@ -11,7 +11,8 @@ import { carltonBeach, desIndes, fashionHotel, steenenburg, vanOys, villaRuimzic
 // herinnering van 30 dagen na vertrek: zelfde code, copy op haast ("verloopt over x dagen"),
 // zonder de themakiezer.
 // Opbouw, in de volgorde waarin de lezer het wil weten:
-//   1. briefhoofd: "Beste [voornaam]," en waarom je dit krijgt (we zijn dankbaar dat je boekte),
+//   1. briefopening (Letter): "Beste [voornaam]," als gewone tekst, waarom je dit krijgt (we zijn
+//      dankbaar dat je boekte) en de ondertekening "Groetjes Yvette",
 //   2. de coupon: bedrag, code, geldigheid en "Vul de code in bij het boeken" in één blok,
 //   3. waar je heen kunt (de ene oranje knop: Bekijk arrangementen),
 //   4. "Tips voor je kortingscode" (grote titel) met "Boek uiterlijk [vervaldatum] 23:59 uur" en drie groepjes van
@@ -48,14 +49,14 @@ export default function CrmTerugkomactie({ recipientEmail, firstName, code, days
       <Body style={{ backgroundColor: c.bg, margin: 0, padding: 0, fontFamily: font.body }}>
         <CrmHeader />
         <Container style={{ width: "100%", maxWidth: "626px" }}>
-          {/* Briefhoofd: aanhef en waarom je dit krijgt (dankbaarheid voorop) */}
-          <Section className="m-pad" style={{ padding: "36px 32px 0" }}>
-            <Heading as="h1" className="m-h1" style={s.h1}>{firstName ? `Beste ${firstName},` : "Beste gast,"}</Heading>
-            <Text style={{ ...s.body, margin: "12px 0 0" }}>
+          {/* Briefopening: aanhef, waarom je dit krijgt (dankbaarheid voorop, in de herinnering haast)
+              en de ondertekening */}
+          <Section className="m-pad" style={{ padding: "32px 32px 0" }}>
+            <Letter firstName={firstName}>
               {reminder
                 ? `Je ${code.value} cadeau verloopt over ${daysLeft} dagen. Daarna vervalt je code, dus wacht niet te lang met boeken.`
                 : `Omdat we dankbaar zijn dat je bij ons hebt geboekt, krijg je van ons een ${code.value} cadeau.`}
-            </Text>
+            </Letter>
           </Section>
 
           {/* De coupon (bedrag, code en geldigheid in één blok) en de ene knop */}

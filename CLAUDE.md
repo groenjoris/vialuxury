@@ -209,7 +209,8 @@ daaronder het verzendmoment, actieve mail op beige, pijltjes ↑ ↓ bladeren); 
 met één knop "Voorbeeldmails" (naar de eerste mail).
 
 Regels voor elke CRM-mail:
-- Briefopzet (het format voor alle CRM-mails, tot nu toe in `crm-winkelmandje-2-dagen`, `crm-favorieten` en `crm-zoekopdracht`; de aanhef is
+- Briefopzet (het format voor alle CRM-mails, tot nu toe in `crm-winkelmandje-2-dagen`, `crm-favorieten`, `crm-zoekopdracht` en
+  `crm-terugkomactie` (met herinnering); de aanhef is
   overal "Beste …", nooit "Hi"): de mail begint met
   de bouwsteen `Letter`: aanhef ("Beste Sanne," / "Beste gast,"), een korte intro en de ondertekening "Groetjes Yvette"
   als afbeelding (`public/images/mail/crm/groetjes-yvette.png`: lettertype Oooh Baby, donkergrijs #555555; geen
