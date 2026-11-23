@@ -120,6 +120,22 @@ export const dePlesman: RowDeal = {
   priceFor: "2 personen, 2 nachten",
 };
 
+export const kurhaus: RowDeal = {
+  hotelName: "Grand Hotel Amrâth Kurhaus",
+  stars: 5,
+  place: "Scheveningen",
+  packageTitle: "Luxe overnachten aan het strand van Scheveningen",
+  line: from("€399"),
+  image: img("96624129-9f31-44d0-9d7a-c9e4ec027ecd"),
+  extraImages: [img("8c8c5d7a-d2aa-4b8b-9f1c-cc46cd79ec2d"), img("704e26a1-36b1-4d33-b6db-ee2929c51808")],
+  url: dealUrl("grand-hotel-amrath-kurhaus-luxe-overnachting-aan-het-strand-van-scheveningen"),
+  includes: ["Dagelijks ontbijtbuffet", "3-Gangendiner", "Aan het strand", "Late check-out"],
+  discount: "-41%",
+  price: "€399",
+  original: "€681",
+  priceFor: "2 personen, 2 nachten",
+};
+
 /** Een deal als afgerond verblijf: alleen hotel, plaats en dealtitel met de verblijfsdatums, zonder
  *  aanbod (prijs, korting, inclusies), zodat het de kale kaart blijft. */
 export const asStay = (d: RowDeal, dates: string): RowDeal => ({

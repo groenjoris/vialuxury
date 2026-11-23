@@ -12,13 +12,19 @@ import CrmReview from "../emails/crm-review";
 import CrmTerugkomactie, { herinneringProps } from "../emails/crm-terugkomactie";
 import CrmZoekopdracht from "../emails/crm-zoekopdracht";
 import CrmVerlanglijst from "../emails/crm-verlanglijst";
+import AutomationCart, { cart1Props, cart2Props, cart3Props } from "../emails/automation-cart";
+import AutomationBrowse, { browse1Props, browse2Props, browse3Props } from "../emails/automation-browse";
+import AutomationSearch, { search1Props, search2Props, search3Props, search4Props } from "../emails/automation-search";
 import { incheckMails } from "./incheckMails";
 
 /** MVP: geen accountdetailpagina, boekingslinks gaan naar het boekingenoverzicht. */
 const MVP_ACCOUNT = "https://vialuxury.vercel.app/mvp-trip/account/boekingen";
 
 // "crm": concept-mails voor het CRM-project (alleen light, eigen lijst app/data/crm-emails.json).
-export type EmailSection = "designs" | "inspiration" | "crm";
+// "automation": de uitgewerkte automationmails voor Klaviyo (alleen light, eigen lijst
+// app/data/automation-emails.json). De slug is exact de Klaviyo-naam uit de briefing, zodat de
+// geëxporteerde HTML (public/emails/<slug>.html) net zo heet als de template in Klaviyo.
+export type EmailSection = "designs" | "inspiration" | "crm" | "automation";
 
 export type EmailEntry = {
   slug: string;
@@ -319,6 +325,112 @@ export const emails: EmailEntry[] = [
     subject: "Dit zijn 3 deals die lijken op Hotel Des Indes",
     preheader: "Ook in Den Haag en aan de kust, vanaf €309 voor 2 personen.",
     Component: CrmWinkelmandje2Dagen,
+  },
+  // ── Automationmails (fase 1) ─────────────────────────────────────────────────────────────
+  // Bron: "Automations in kaart.xlsx", tabblad Automation per variant. Elke kolom is één mail;
+  // de secties staan in de volgorde waarin ze in de mail komen. De slug is de Klaviyo-naam.
+  // Flow fl011: achtergelaten winkelmandje.
+  {
+    slug: "v01_tf021_fl011_nl-NL_1_abandoned_cart",
+    title: "Winkelmandje 1 (1 uur na verlaten)",
+    description: "Kop, intro, het winkelmandje met datums, nachten, personen en prijs, en de knop Rond je boeking af. Onderaan de serviceregel. Geen alternatieven.",
+    section: "automation",
+    subject: "Je verblijf in Hotel Des Indes staat nog klaar",
+    preheader: "Rond je boeking af wanneer het jou uitkomt.",
+    Component: AutomationCart,
+    props: cart1Props,
+  },
+  {
+    slug: "v01_tf022_fl011_nl-NL_2_abandoned_cart",
+    title: "Winkelmandje 2 (2 dagen na verlaten)",
+    description: "Schaarste: zijn je data nog vrij? Het winkelmandje met de knop, daaronder twee vergelijkbare arrangementen.",
+    section: "automation",
+    subject: "Zijn jouw data nog vrij?",
+    preheader: "Rond je boeking voor Hotel Des Indes af.",
+    Component: AutomationCart,
+    props: cart2Props,
+  },
+  {
+    slug: "v01_tf023_fl011_nl-NL_3_abandoned_cart",
+    title: "Winkelmandje 3 (3 dagen na verlaten)",
+    description: "Sociale bevestiging: het winkelmandje, daarna het gastenoordeel met de Trustpilot-score en één review, en twee alternatieven.",
+    section: "automation",
+    subject: "Twijfel je nog over Hotel Des Indes?",
+    preheader: "Dit vonden andere gasten.",
+    Component: AutomationCart,
+    props: cart3Props,
+  },
+  // Flow fl012: bekeken arrangement.
+  {
+    slug: "v01_tf025_fl012_nl-NL_1_abandoned_browse",
+    title: "Bekeken arrangement 1 (2 uur na bekijken)",
+    description: "Het bekeken arrangement met plaats, prijs en inclusies, en de knop Bekijk arrangement. Daaronder twee arrangementen in dezelfde sfeer.",
+    section: "automation",
+    subject: "Je bekeek Landgoed Lauswolt",
+    preheader: "Nog steeds zin in dit verblijf?",
+    Component: AutomationBrowse,
+    props: browse1Props,
+  },
+  {
+    slug: "v01_tf026_fl012_nl-NL_2_abandoned_browse",
+    title: "Bekeken arrangement 2 (1 dag na bekijken)",
+    description: "Nadruk op wat er inbegrepen is. Zelfde opbouw als mail 1, met onderaan de merksectie Waarom ViaLuxury.",
+    section: "automation",
+    subject: "Nog steeds zin in Landgoed Lauswolt?",
+    preheader: "Dit maakt het verblijf bijzonder.",
+    Component: AutomationBrowse,
+    props: browse2Props,
+  },
+  {
+    slug: "v01_tf027_fl012_nl-NL_3_abandoned_browse",
+    title: "Bekeken arrangement 3 (2 dagen na bekijken)",
+    description: "Alternatieven voorop: het bekeken arrangement en twee arrangementen in dezelfde sfeer.",
+    section: "automation",
+    subject: "Misschien past deze nog beter",
+    preheader: "Twee alternatieven in dezelfde sfeer.",
+    Component: AutomationBrowse,
+    props: browse3Props,
+  },
+  // Flow fl013: zoekopdracht.
+  {
+    slug: "v01_tf028_fl013_nl-NL_1_abandoned_search",
+    title: "Zoekopdracht 1 (1 minuut na zoeken)",
+    description: "De zoekopdracht als samenvatting met de knop naar alle resultaten, daaronder de drie best passende arrangementen.",
+    section: "automation",
+    subject: "Jouw zoekopdracht: Den Haag",
+    preheader: "De beste arrangementen voor 20 november.",
+    Component: AutomationSearch,
+    props: search1Props,
+  },
+  {
+    slug: "v01_tf029_fl013_nl-NL_2_abandoned_search",
+    title: "Zoekopdracht 2 (1 dag na zoeken)",
+    description: "Dezelfde opbouw, met de populairste arrangementen voor die data eerst.",
+    section: "automation",
+    subject: "Nog op zoek naar Den Haag?",
+    preheader: "Onze favorieten voor jouw data.",
+    Component: AutomationSearch,
+    props: search2Props,
+  },
+  {
+    slug: "v01_tf030_fl013_nl-NL_3_abandoned_search",
+    title: "Zoekopdracht 3 (3 dagen na zoeken)",
+    description: "Verbreedt de zoekopdracht: ook arrangementen net buiten het zoekgebied, zoals Scheveningen.",
+    section: "automation",
+    subject: "Meer voor jouw zoekopdracht",
+    preheader: "Misschien zit je verblijf ertussen.",
+    Component: AutomationSearch,
+    props: search3Props,
+  },
+  {
+    slug: "v01_tf031_fl013_nl-NL_4_abandoned_search",
+    title: "Zoekopdracht 4 (7 dagen na zoeken)",
+    description: "Laatste mail van de flow: drie arrangementen en daaronder de themakiezer met de vijf thema's van de verzendmaand plus Alle thema's.",
+    section: "automation",
+    subject: "Nog steeds zin in Den Haag?",
+    preheader: "Kies je thema, dan sturen we je wat bij je past.",
+    Component: AutomationSearch,
+    props: search4Props,
   },
   {
     slug: "crm-thema-stedentrips",

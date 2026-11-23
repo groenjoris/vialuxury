@@ -233,6 +233,30 @@ Regels voor elke CRM-mail:
 - Jesse de Groot heeft eigen CRM-mails op `origin/redesign-jesse`; mails worden daarvan per stuk
   overgenomen (niet mergen) en omgezet naar deze regels.
 
+## Automationmails voor Klaviyo (sinds 2026-11-23)
+
+De uitgewerkte automationmails die Bart in Klaviyo bouwt. Bron van de inhoud: `vakanties voorbeeld
+content/Automations in kaart.xlsx`, tabblad **Automation per variant** — elke kolom is één mail en
+leest van boven naar beneden als de volgorde van de secties (tabblad Secties geeft per S-nummer wat
+erin zit, Mergevelden de `[…]`-velden, Seizoensthema's welke thema's bij welke maand horen).
+
+Fase 1 = de drie abandoned-flows, tien mails: `fl011` winkelmandje (3), `fl012` bekeken arrangement
+(3) en `fl013` zoekopdracht (4). Drie componenten, één per flow — `email-designs/emails/automation-
+{cart,browse,search}.tsx` — met per mail een export `…Props`. **De slug is exact de Klaviyo-naam**
+(`v01_tf021_fl011_nl-NL_1_abandoned_cart`), zodat `public/emails/<slug>.html` net zo heet als de
+template in Klaviyo; die naam staat ook onder de titel in de preview. Registry-sectie `"automation"`,
+alleen light, lijst `app/data/automation-emails.json`, preview `/automation/<slug>` (zelfde frame als
+de CRM-preview, paneel links gegroepeerd per flow). Startscherm: knop "Automations" in het vak CRM.
+
+Secties uit de sheet als bouwstenen in `email-designs/components/crm.tsx`: `GuestRatingSection` (S21),
+`ServiceSection` (S15), `BrandSection` (S6), `SearchSection` (S18) en `ThemeSection` (S7); de deals
+blijven `CollageDeal` (het achtergelaten/bekeken arrangement) en `DealList` (de alternatieven en
+zoekresultaten). Verder gelden alle CRM-regels hierboven.
+
+Afwijkingen van de sheet, bewust: de preheader van `tf027` zegt "Twee alternatieven" in plaats van
+drie (de template heeft twee dealplekken), en in de themasectie van `tf031` staat kasteelhotels op de
+plek van "Hotels met experiences", omdat daar nog geen landingspagina voor is.
+
 ## Kaarten (Leaflet)
 
 De kaartweergave van de zoekresultaten (`*/map/HotelBrowseMap.vue`) haalt

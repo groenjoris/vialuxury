@@ -185,6 +185,10 @@ function RichDealText({ d }: { d: RowDeal }) {
 function RichDealPrice({ d, cta }: { d: RowDeal; cta: string }) {
   return (
     <>
+      {/* Winkelmandjekaart: eerst de gekozen datums, nachten en personen, daarna pas de prijsrij. */}
+      {d.lines?.map((l, i) => (
+        <Text key={l} style={{ ...s.title, margin: i ? "2px 0 0" : "14px 0 0" }}>{l}</Text>
+      ))}
       {d.priceFor && <Text style={{ ...s.name, margin: "14px 0 0" }}>{d.priceFor}</Text>}
       <Row style={{ marginTop: "8px" }}>
         {d.discount && (
@@ -438,6 +442,91 @@ export function ThemePicker({ items = themes }: { items?: Theme[] }) {
       <Text style={s.kop}>Waarover wil je aanbiedingen ontvangen?</Text>
       <Text style={s.body}>Eén klik is genoeg, dan sturen we voortaan wat je zoekt.</Text>
       <PillGrid items={items.map((t) => ({ label: t.label, icon: t.icon, href: `${site}/crm/thema?keuze=${t.id}` }))} />
+    </Section>
+  );
+}
+
+// ── Secties van de automationmails (nummers uit "Automations in kaart.xlsx", tabblad Secties) ──
+
+/** S21 Gastenoordeel: Trustpilot-sterren met het gemiddelde en één korte review, als die er is. */
+export type GuestRating = { average: 3 | 3.5 | 4 | 4.5 | 5; label: string; review?: { text: string; author: string } };
+
+export function GuestRatingSection({ hotelName, rating }: { hotelName: string; rating: GuestRating }) {
+  return (
+    <>
+      <Text style={s.kop}>Dit vinden gasten van {hotelName}</Text>
+      <Section style={{ marginTop: "14px" }}>
+        <Img
+          src={`${baseUrl}/images/mail/crm/trustpilot-sterren-${String(rating.average).replace(".", "-")}.png`}
+          alt={`${String(rating.average).replace(".", ",")} van 5 sterren op Trustpilot`}
+          width="152"
+          height="28"
+          style={{ display: "block", width: "152px", height: "28px" }}
+        />
+        <Text style={{ ...s.body, margin: "6px 0 0" }}>{rating.label}</Text>
+        {rating.review && (
+          <Section style={{ marginTop: "22px" }}>
+            <Text style={{ fontFamily: font.heading, fontSize: "20px", lineHeight: "1.35", color: c.text, margin: 0 }}>&ldquo;{rating.review.text}&rdquo;</Text>
+            <Text style={{ ...s.muted, margin: "4px 0 0" }}>{rating.review.author}</Text>
+          </Section>
+        )}
+      </Section>
+    </>
+  );
+}
+
+/** S15 Servicesectie: één regel met een link naar de klantenservice. */
+export function ServiceSection({ lead = "Vragen over dit arrangement?" }: { lead?: string }) {
+  return (
+    <Text style={{ ...s.title, margin: 0, color: c.muted }}>
+      {lead}{" "}
+      <Link href={`${site}/klantenservice`} style={{ color: c.text, textDecoration: "underline" }}>Onze klantenservice</Link>{" "}
+      helpt je graag.
+    </Text>
+  );
+}
+
+/** S6 Merksectie: waarom ViaLuxury, in één alinea. Geen vlak eromheen (beige blijft voor keuzeknoppen). */
+export function BrandSection({ children }: { children: React.ReactNode }) {
+  return (
+    <>
+      <Text style={s.kop}>Waarom ViaLuxury</Text>
+      <Text style={s.body}>{children}</Text>
+    </>
+  );
+}
+
+/** S18 Zoekopdracht: zoekterm, datum en personen in een omlijnd blok, met de knop naar alle resultaten. */
+export function SearchSection({ searchTerm, arrivalDate, persons, resultsUrl }: { searchTerm?: string; arrivalDate?: string; persons?: number; resultsUrl: string }) {
+  return (
+    <>
+      <Text style={s.kop}>Jouw zoekopdracht</Text>
+      <Section style={{ border: `1px solid #E5E5E5`, borderRadius: "8px", padding: "14px 20px 22px", marginTop: "12px" }}>
+        <IconLine icon="magnifier-donker" bold>{searchTerm ?? "Jouw zoekopdracht"}</IconLine>
+        {arrivalDate && <IconLine icon="calendar-donker">{arrivalDate}</IconLine>}
+        {persons && <IconLine icon="users-donker">{persons} {persons === 1 ? "persoon" : "personen"}</IconLine>}
+        <Section style={{ marginTop: "18px" }}>
+          <PrimaryButton href={resultsUrl}>Bekijk alle resultaten</PrimaryButton>
+        </Section>
+      </Section>
+    </>
+  );
+}
+
+/** S7 Themasectie compact: beige vlak met vijf themaknoppen plus "Alle thema's".
+ *  De vijf thema's volgen de seizoensthema's van de verzendmaand (tabblad Seizoensthema's):
+ *  november = wellness, culinair en experiences. Elke keuze landt op /crm/thema?keuze=<id>. */
+export function ThemeSection({ title, note, items = themes.slice(0, 5) }: { title: string; note: string; items?: Theme[] }) {
+  return (
+    <Section style={beigeBox}>
+      <Text style={s.kop}>{title}</Text>
+      <PillGrid
+        items={[
+          ...items.map((t) => ({ label: t.label, icon: t.icon, href: `${site}/crm/thema?keuze=${t.id}` })),
+          { label: "Alle thema's", href: "https://vialuxury.com/nl-NL/zoeken" },
+        ]}
+      />
+      <Text style={{ ...s.muted, margin: "14px 0 0" }}>{note}</Text>
     </Section>
   );
 }
