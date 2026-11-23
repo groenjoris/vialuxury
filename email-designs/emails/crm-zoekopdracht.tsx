@@ -47,10 +47,10 @@ export default function CrmZoekopdracht({ recipientEmail, firstName, searchTerm,
             </Letter>
           </Section>
 
-          {/* De zoekopdracht als samenvatting, met de ene knop */}
-          <Section className="m-pad" style={{ padding: "40px 32px 0" }}>
-            <Text style={s.kop}>Jouw zoekopdracht</Text>
-            <Section style={{ border: `1px solid #E5E5E5`, borderRadius: "8px", padding: "14px 20px 22px", marginTop: "12px" }}>
+          {/* De zoekopdracht als samenvatting in een kader, direct onder de ondertekening (zonder kopje),
+              met de ene knop */}
+          <Section className="m-pad" style={{ padding: "24px 32px 0" }}>
+            <Section style={{ border: `1px solid #E5E5E5`, borderRadius: "8px", padding: "14px 20px 22px" }}>
               <IconLine icon="magnifier-donker" bold>{searchTerm ?? "Jouw zoekopdracht"}</IconLine>
               {arrivalDate && <IconLine icon="calendar-donker">{arrivalDate}</IconLine>}
               {persons && <IconLine icon="users-donker">{persons} personen</IconLine>}
