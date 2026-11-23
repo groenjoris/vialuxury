@@ -1,8 +1,8 @@
-import { Body, Column, Container, Head, Heading, Html, Img, Preview, Row, Section, Text } from "@react-email/components";
+import { Body, Column, Container, Head, Heading, Html, Img, Link, Preview, Row, Section, Text } from "@react-email/components";
 import * as React from "react";
 import CrmFooter from "../components/CrmFooter";
 import CrmHeader from "../components/CrmHeader";
-import { crmCss, CrmHelp, Letter, PrimaryButton, s, site } from "../components/crm";
+import { crmCss, CrmHelp, Letter, PrimaryButton, s } from "../components/crm";
 import { baseUrl, font, newsletter } from "../components/theme";
 
 // Commerciële mail 5: Cadeaukaart. Puur om cadeaukaarten te verkopen: wie er één bestelt, krijgt
@@ -13,7 +13,8 @@ import { baseUrl, font, newsletter } from "../components/theme";
 // Zelfde bouwstenen en regels als de CRM-mails (zie components/crm.tsx).
 // Onderwerp: "Geef een cadeaukaart, krijg zelf tot €120 korting"
 
-type Tier = { value: string; bonus: string; note?: string };
+/** Eén trede van de staffel; `url` is de productpagina van die cadeaukaart in de cadeaukaartshop. */
+type Tier = { value: string; bonus: string; note?: string; url: string };
 
 type Props = {
   recipientEmail: string;
@@ -62,10 +63,10 @@ export default function CommercieelCadeaukaart({ recipientEmail, firstName, hero
               </Row>
               {tiers.map((t) => (
                 <Row key={t.value}>
-                  <Column style={{ ...cell, width: "50%", borderTop: line }}><Text style={{ ...s.title, margin: 0 }}>{t.value}</Text></Column>
+                  <Column style={{ ...cell, width: "50%", borderTop: line }}><Text style={{ ...s.title, margin: 0 }}><Link href={t.url} style={{ color: c.text, textDecoration: "underline" }}>{t.value}</Link></Text></Column>
                   <Column style={{ ...cell, width: "50%", borderTop: line }}>
-                    <Text style={{ ...s.name, color: c.cta, margin: 0 }}>{t.bonus}</Text>
-                    {t.note && <Text style={{ ...s.muted, margin: "2px 0 0" }}>{t.note}</Text>}
+                    <Text style={{ ...s.name, margin: 0 }}><Link href={t.url} style={{ color: c.cta, textDecoration: "none" }}>{t.bonus}</Link></Text>
+                    {t.note && <Text style={{ ...s.muted, margin: "2px 0 0" }}><Link href={t.url} style={{ color: c.muted, textDecoration: "none" }}>{t.note}</Link></Text>}
                   </Column>
                 </Row>
               ))}
@@ -87,7 +88,9 @@ export default function CommercieelCadeaukaart({ recipientEmail, firstName, hero
 }
 
 // Staffel uit de aangeleverde bonusbeelden (€50 → €15, €100 → €25, €200 → 2 x €30, €300 → 3 x €40).
-// Het prototype heeft geen cadeaukaartpagina; de knop gaat naar de R1-homepage.
+// Elke rij linkt naar de productpagina van die kaart in de echte cadeaukaartshop
+// (cadeaukaart.vialuxury.com, productId 11 t/m 14); de knop gaat naar het productoverzicht daar.
+const product = (id: number) => `https://cadeaukaart.vialuxury.com/Product/ProductDetails?productId=${id}`;
 CommercieelCadeaukaart.PreviewProps = {
   recipientEmail: "sanne.devries@example.com",
   firstName: "Sanne",
@@ -100,11 +103,11 @@ CommercieelCadeaukaart.PreviewProps = {
     </>
   ),
   tiers: [
-    { value: "€50", bonus: "€15 korting" },
-    { value: "€100", bonus: "€25 korting" },
-    { value: "€200", bonus: "€60 korting", note: "2 codes van €30" },
-    { value: "€300", bonus: "€120 korting", note: "3 codes van €40" },
+    { value: "€50", bonus: "€15 korting", url: product(11) },
+    { value: "€100", bonus: "€25 korting", url: product(12) },
+    { value: "€200", bonus: "€60 korting", note: "2 codes van €30", url: product(13) },
+    { value: "€300", bonus: "€120 korting", note: "3 codes van €40", url: product(14) },
   ],
   closing: "Of je die korting zelf gebruikt of ook cadeau geeft, bepaal je helemaal zelf. Wat een feest!",
-  orderUrl: `${site}/first-release/home`,
+  orderUrl: "https://cadeaukaart.vialuxury.com/Product/Products",
 } satisfies Props;
