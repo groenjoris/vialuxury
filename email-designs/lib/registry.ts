@@ -11,7 +11,7 @@ import CrmThemaStedentrips from "../emails/crm-thema-stedentrips";
 import CrmReview from "../emails/crm-review";
 import CrmTerugkomactie, { herinneringProps } from "../emails/crm-terugkomactie";
 import CrmZoekopdracht from "../emails/crm-zoekopdracht";
-import CrmVerlanglijst from "../emails/crm-verlanglijst";
+import CrmFavorieten from "../emails/crm-favorieten";
 import { incheckMails } from "./incheckMails";
 
 /** MVP: geen accountdetailpagina, boekingslinks gaan naar het boekingenoverzicht. */
@@ -238,11 +238,11 @@ export const emails: EmailEntry[] = [
   // Overgenomen van Jesse (origin/redesign-jesse), omgezet naar onze bouwstenen.
   {
     slug: "crm-terugkomactie",
-    title: "Terugkomactie €20 (14 dagen na vertrek)",
-    description: "Kortingscode als coupon, één knop, jouw verblijf, drie deals in de sfeer van dat hotel en de themakiezer.",
+    title: "Terugkomactie €10 en €15 (14 dagen na vertrek)",
+    description: "Twee coupons: €10 op de volgende boeking (24 uur geldig) en €15 op de boeking daarna (code volgt per mail na de eerste boeking); één knop, jouw verblijf, drie deals in de sfeer van dat hotel en de themakiezer.",
     section: "crm",
-    subject: "Sanne, €20 cadeau voor je volgende verblijf",
-    preheader: "Een persoonlijk bedankje, alleen voor jou. Geldig tot en met 16 december 2026.",
+    subject: "Sanne, nog 24 uur: €10 cadeau op je volgende verblijf",
+    preheader: "En €15 op de boeking daarna.",
     Component: CrmTerugkomactie,
   },
   {
@@ -265,13 +265,13 @@ export const emails: EmailEntry[] = [
     Component: CrmZoekopdracht,
   },
   {
-    slug: "crm-verlanglijst",
-    title: "Verlanglijst €10 en €15 (3 dagen na eerste mail)",
-    description: "Twee coupons: €10 op de eerste boeking (24 uur geldig) en €15 op de tweede (code volgt per mail na de eerste boeking); daaronder de favorieten en twee vergelijkbare arrangementen.",
+    slug: "crm-favorieten",
+    title: "Favorieten €10 (3 dagen na eerste mail)",
+    description: "Code voor het eerste favoriet, direct boven dat arrangement; daaronder de andere favorieten en twee vergelijkbare arrangementen. Copy op haast.",
     section: "crm",
-    subject: "Nog 24 uur: €10 cadeau op je verlanglijst",
-    preheader: "En €15 op je tweede boeking.",
-    Component: CrmVerlanglijst,
+    subject: "Je €10 cadeau op Kasteel Steenenburg verloopt over 7 dagen",
+    preheader: "Boek je favoriet voordat je code verloopt.",
+    Component: CrmFavorieten,
   },
   {
     slug: "crm-nagenieten",

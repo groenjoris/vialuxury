@@ -8,10 +8,10 @@
   },
   {
     "slug": "crm-terugkomactie",
-    "title": "Terugkomactie €20 (14 dagen na vertrek)",
-    "description": "Kortingscode als coupon, één knop, jouw verblijf, drie deals in de sfeer van dat hotel en de themakiezer.",
-    "subject": "Sanne, €20 cadeau voor je volgende verblijf",
-    "preheader": "Een persoonlijk bedankje, alleen voor jou. Geldig tot en met 16 december 2026."
+    "title": "Terugkomactie €10 en €15 (14 dagen na vertrek)",
+    "description": "Twee coupons: €10 op de volgende boeking (24 uur geldig) en €15 op de boeking daarna (code volgt per mail na de eerste boeking); één knop, jouw verblijf, drie deals in de sfeer van dat hotel en de themakiezer.",
+    "subject": "Sanne, nog 24 uur: €10 cadeau op je volgende verblijf",
+    "preheader": "En €15 op de boeking daarna."
   },
   {
     "slug": "crm-terugkomactie-herinnering",
@@ -28,11 +28,11 @@
     "preheader": "Kijk of er iets voor je bij zit."
   },
   {
-    "slug": "crm-verlanglijst",
-    "title": "Verlanglijst €10 en €15 (3 dagen na eerste mail)",
-    "description": "Twee coupons: €10 op de eerste boeking (24 uur geldig) en €15 op de tweede (code volgt per mail na de eerste boeking); daaronder de favorieten en twee vergelijkbare arrangementen.",
-    "subject": "Nog 24 uur: €10 cadeau op je verlanglijst",
-    "preheader": "En €15 op je tweede boeking."
+    "slug": "crm-favorieten",
+    "title": "Favorieten €10 (3 dagen na eerste mail)",
+    "description": "Code voor het eerste favoriet, direct boven dat arrangement; daaronder de andere favorieten en twee vergelijkbare arrangementen. Copy op haast.",
+    "subject": "Je €10 cadeau op Kasteel Steenenburg verloopt over 7 dagen",
+    "preheader": "Boek je favoriet voordat je code verloopt."
   },
   {
     "slug": "crm-nagenieten",

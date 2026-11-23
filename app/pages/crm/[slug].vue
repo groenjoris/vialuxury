@@ -12,10 +12,10 @@ const entry = computed(() => emails.find(e => e.slug === slug.value))
 if (!entry.value) throw createError({ statusCode: 404, statusMessage: 'E-mail niet gevonden' })
 
 // Alle mails in het paneel links, in de volgorde van de klantreis: winkelmandje, zoekopdracht
-// (en verlanglijst), review, de repeat-bookingflow (nagenieten, terugkomactie, herinnering, een
+// (en favorieten), review, de repeat-bookingflow (nagenieten, terugkomactie, herinnering, een
 // jaar geleden) en als laatste de themamail. De titel
 // "Winkelmandje (2 uur na verlaten)" wordt gesplitst in naam en moment.
-const navOrder = ['crm-winkelmandje', 'crm-winkelmandje-2-dagen', 'crm-zoekopdracht', 'crm-verlanglijst', 'crm-review', 'crm-nagenieten', 'crm-terugkomactie', 'crm-terugkomactie-herinnering', 'crm-jaar-geleden', 'crm-thema-stedentrips']
+const navOrder = ['crm-winkelmandje', 'crm-winkelmandje-2-dagen', 'crm-zoekopdracht', 'crm-favorieten', 'crm-review', 'crm-nagenieten', 'crm-terugkomactie', 'crm-terugkomactie-herinnering', 'crm-jaar-geleden', 'crm-thema-stedentrips']
 const nav = navOrder
   .map(s => emails.find(e => e.slug === s))
   .filter((e): e is (typeof emails)[number] => !!e)

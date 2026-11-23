@@ -196,8 +196,8 @@ omdat je een account of boeking hebt bij ViaLuxury."; de CRM-mails houden de opt
 Artist impression van geautomatiseerde e-mails, alleen desktop + light mode. Mails (in de volgorde
 van het paneel links in de preview, de klantreis): `crm-winkelmandje` (2 uur na verlaten; variant
 `crm-winkelmandje-naam-onbekend` via de schakelaar "Naam bekend | Naam onbekend" in de previewkop, registry
-`variantOf`, labels in `variantLabels` in `app/pages/crm/[slug].vue`), `crm-winkelmandje-2-dagen` (ook met de variant `-naam-onbekend`), `crm-zoekopdracht`, `crm-verlanglijst`, `crm-review`, de repeat-bookingflow `crm-nagenieten`,
-`crm-terugkomactie` (€20), `crm-terugkomactie-herinnering` (zelfde component met `daysLeft`) en
+`variantOf`, labels in `variantLabels` in `app/pages/crm/[slug].vue`), `crm-winkelmandje-2-dagen` (ook met de variant `-naam-onbekend`), `crm-zoekopdracht`, `crm-favorieten`, `crm-review`, de repeat-bookingflow `crm-nagenieten`,
+`crm-terugkomactie` (€10 en €15), `crm-terugkomactie-herinnering` (zelfde component met `daysLeft`) en
 `crm-jaar-geleden`, en als laatste `crm-thema-stedentrips` (A6). Bronnen in
 `email-designs/emails/crm-*.tsx`, bouwstenen in `email-designs/components/crm.tsx` (`DealRow`,
 `FeaturedDeal`, `DealList`, `CodeBlock`, `ThemePicker`, `IconLine`) plus `CrmHeader`/`CrmFooter`,
@@ -209,7 +209,7 @@ daaronder het verzendmoment, actieve mail op beige, pijltjes ↑ ↓ bladeren); 
 met één knop "Voorbeeldmails" (naar de eerste mail).
 
 Regels voor elke CRM-mail:
-- Briefopzet (het format voor alle CRM-mails, tot nu toe in `crm-winkelmandje-2-dagen`, `crm-verlanglijst` en `crm-zoekopdracht`; de aanhef is
+- Briefopzet (het format voor alle CRM-mails, tot nu toe in `crm-winkelmandje-2-dagen`, `crm-favorieten` en `crm-zoekopdracht`; de aanhef is
   overal "Beste …", nooit "Hi"): de mail begint met
   de bouwsteen `Letter`: aanhef ("Beste Sanne," / "Beste gast,"), een korte intro en de ondertekening "Groetjes Yvette"
   als afbeelding (`public/images/mail/crm/groetjes-yvette.png`: lettertype Oooh Baby, donkergrijs #555555; geen
@@ -236,10 +236,13 @@ Regels voor elke CRM-mail:
   regels in plaats van de prijsrij (`lines`) en de link "Ga verder met boeken"; de kaart zelf is de uitgebreide zonder hotel, plaats en prijsrij (`priceRow={false}`).
 - Elke CRM-mail eindigt met de hulplijn "Hulp nodig?" (`CrmHelp` = `HelpBanner` uit de post-bookingmails, zelfde tekst,
   lichtoranje vlak, 16 px).
-- Verlanglijstmail: twee coupons naast elkaar (`CouponPair`): €10 op de eerste boeking (code direct te gebruiken, 24 uur
-  geldig) en €15 op de tweede. Van de tweede code staat alleen het vaste begin in de mail ("WENS2-#####", grijze
-  stippelrand); de volledige code komt in een nieuwe mail zodra de eerste is gebruikt (één boeking kan alleen een veelvoud
-  van hetzelfde arrangement bevatten, dus de tweede boeking heeft een eigen trigger nodig). Copy op haast.
+- Terugkomactie (14 dagen): twee coupons naast elkaar (`CouponPair`): €10 op de volgende boeking (code direct te
+  gebruiken, 24 uur geldig) en €15 op de boeking daarna. Van de tweede code staat alleen het vaste begin in de mail
+  ("TERUG2-#####", grijze stippelrand); de volledige code komt in een nieuwe mail zodra de eerste is gebruikt (één boeking
+  kan alleen een veelvoud van hetzelfde arrangement bevatten, dus de tweede boeking heeft een eigen trigger nodig). Copy
+  op haast. De herinnering (30 dagen) heeft nog de oude opzet met één code van €20.
+- Favorietenmail (`crm-favorieten`, heette "verlanglijst"): wie iets aan zijn favorieten toevoegt, krijgt een code met
+  €10 korting daarop (in werkelijkheid algemeen geldig; niet benadrukken). Eén coupon, copy op haast.
 - Tussen twee dealkaarten onder elkaar staat 24 px (`cardGap`), tussen een titel en de eerste kaart 12 px.
 - Preheaders zonder gegevens die lastig te automatiseren zijn of niet altijd bestaan (geen plaatsen of prijzen van de
   suggesties, geen datum uit de zoekopdracht).
