@@ -11,13 +11,14 @@ import { baseUrl, font, newsletter } from "../components/theme";
 // snelfilterknoppen op een beige vlak (zelfde stijl als de themakiezer): vijf tijdvakken en
 // "Weet ik nog niet". Geen deals, geen code. Gelijkwaardige knoppen; elke knop gaat naar een
 // bevestigingspagina met de keuze als parameter.
-// Twee varianten (schakelaar in de preview): "Titel" (grote titel onder de foto) en "Bericht"
-// (crm-nagenieten-bericht: een brief met aanhef en ondertekening, en in het blok alleen de vraag).
+// Twee varianten (schakelaar in de preview): "Bericht" (standaard: een brief met aanhef en
+// ondertekening, en in het blok alleen de vraag) en "Titel" (crm-nagenieten-titel: grote titel
+// onder de foto).
 // Onderwerp: "Wanneer ga je weer?"
 
 type Props = {
-  /** "titel" (standaard): grote titel onder de foto. "bericht": een brief met aanhef en ondertekening,
-   *  en in het blok alleen de vraag als titel. */
+  /** "bericht" (standaard): een brief met aanhef en ondertekening, en in het blok alleen de vraag
+   *  als titel. "titel": grote titel onder de foto. */
   opening?: "titel" | "bericht";
   /** Leeg → kop zonder naam. */
   firstName?: string;
@@ -26,7 +27,7 @@ type Props = {
   image: string;
 };
 
-export default function CrmNagenieten({ firstName, recipientEmail, hotelName, image, opening = "titel" }: Props) {
+export default function CrmNagenieten({ firstName, recipientEmail, hotelName, image, opening = "bericht" }: Props) {
   const message = opening === "bericht";
   const c = newsletter.light;
   // Zes tijdvakken vanaf nu, in tijdsvolgorde: ze sluiten op elkaar aan (geen overlap, geen gat)
@@ -94,5 +95,5 @@ CrmNagenieten.PreviewProps = {
   image: `${baseUrl}/images/hotel-ter-zand-tower.jpg`,
 } satisfies Props;
 
-/** Variant "Bericht": brief onder de foto in plaats van de grote titel. */
-export const berichtProps = { ...CrmNagenieten.PreviewProps, opening: "bericht" as const };
+/** Variant "Titel": grote titel onder de foto in plaats van de brief. */
+export const titelProps = { ...CrmNagenieten.PreviewProps, opening: "titel" as const };
