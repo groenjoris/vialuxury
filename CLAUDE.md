@@ -294,9 +294,10 @@ template in Klaviyo; die naam staat ook onder de titel in de preview. Registry-s
 alleen light, lijst `app/data/automation-emails.json`, preview `/automation/<slug>` (zelfde frame als
 de CRM-preview, paneel links gegroepeerd per flow). Startscherm: knop "Automations" in het vak CRM.
 
-Elke sectie na de intro staat op een `BeigeBand` over de hele breedte, om en om beige en wit, net
-als in de CRM-mails: de banden sluiten zonder tussenruimte op elkaar aan. Kop en intro staan boven
-de eerste band in de gewone kolom, en de serviceregel eronder.
+Elke sectie na de intro staat op een `BeigeBand` over de hele breedte, die zonder tussenruimte op
+elkaar aansluiten. De banden met dealkaarten blijven wit; beige is voor de secties zonder kaarten
+(gastenoordeel, merksectie, zoekopdracht, themakiezer), zodat die zich onderscheiden. Kop en intro
+staan boven de eerste band in de gewone kolom, en de serviceregel eronder.
 
 Secties uit de sheet als bouwstenen in `email-designs/components/crm.tsx`. Bestaand: `CrmHeader` (S1),
 `FeaturedDeal`/`DealRow`/`DealList` (S4) en `CrmFooter` (S13). Nieuw voor deze flows:

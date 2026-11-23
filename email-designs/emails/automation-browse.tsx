@@ -12,8 +12,8 @@ import { font, newsletter } from "../components/theme";
 //   S1 Header (logo) → Kop → Intro → S17 Achtergelaten arrangement (het bekeken arrangement:
 //   foto, hotelnaam, plaats, prijs en wat er inbegrepen is) → S4 Hoteldeals (twee alternatieven) →
 //   S6 Merksectie (alleen mail 2) → S13 Footer.
-// Elke sectie na de intro staat op een band over de hele breedte, die om en om beige en wit is
-// (zoals in de CRM-mails): de banden sluiten zonder tussenruimte op elkaar aan.
+// De secties staan op banden over de hele breedte. De banden met dealkaarten blijven wit; beige is
+// voor de secties zonder kaarten, zodat die zich visueel onderscheiden.
 // De bovenste kaart van een mail is altijd de grote kaart (foto boven de tekst), alle kaarten
 // daaronder zijn dealrijen (foto links). Hier is dat het bekeken arrangement.
 // Mergevelden in de teksten: [hotelnaam] en [plaats], hier ingevuld met voorbeelddata.
@@ -33,9 +33,6 @@ type Props = {
 
 export default function AutomationBrowse({ recipientEmail, preheader, heading, intro, viewed, alternatives, brand }: Props) {
   const c = newsletter.light;
-  // De banden onder elkaar wisselen af: de eerste beige, de volgende wit, enzovoort.
-  let band = 0;
-  const next = () => band++ % 2 === 1;
 
   return (
     <Html lang="nl">
@@ -55,12 +52,12 @@ export default function AutomationBrowse({ recipientEmail, preheader, heading, i
         </Container>
 
         {/* S17 Achtergelaten arrangement: het bekeken arrangement */}
-        <BeigeBand white={next()}>
+        <BeigeBand white>
           <FeaturedDeal deal={viewed} cta="Bekijk arrangement" />
         </BeigeBand>
 
         {/* S4 Hoteldeals: vergelijkbare arrangementen als alternatief */}
-        <BeigeBand white={next()}>
+        <BeigeBand white>
           {alternatives.map((d, i) => (
             <DealRow key={d.url} deal={d} top={i ? groupGap : cardGap} />
           ))}
@@ -68,7 +65,7 @@ export default function AutomationBrowse({ recipientEmail, preheader, heading, i
 
         {/* S6 Merksectie */}
         {brand && (
-          <BeigeBand white={next()}>
+          <BeigeBand>
             <BrandSection>{brand}</BrandSection>
           </BeigeBand>
         )}

@@ -13,8 +13,8 @@ import { font, newsletter } from "../components/theme";
 //   S1 Header (logo) → Kop → Intro → S18 Zoekopdracht (zoekterm, datum en personen, met de knop
 //   naar alle resultaten) → S4 Hoteldeals (drie zoekresultaten) → S7 Themasectie (alleen mail 4) →
 //   S13 Footer.
-// Elke sectie na de intro staat op een band over de hele breedte, die om en om beige en wit is
-// (zoals in de CRM-mails): de banden sluiten zonder tussenruimte op elkaar aan.
+// De secties staan op banden over de hele breedte. De banden met dealkaarten blijven wit; beige is
+// voor de secties zonder kaarten, zodat die zich visueel onderscheiden.
 // Mergevelden in de teksten: [zoekterm], [aankomstdatum] en [personen], hier ingevuld met
 // voorbeelddata.
 
@@ -36,9 +36,6 @@ type Props = {
 
 export default function AutomationSearch({ recipientEmail, preheader, heading, intro, searchTerm, arrivalDate, persons, resultsUrl, results, themeSection }: Props) {
   const c = newsletter.light;
-  // De banden onder elkaar wisselen af: de eerste beige, de volgende wit, enzovoort.
-  let band = 0;
-  const next = () => band++ % 2 === 1;
 
   return (
     <Html lang="nl">
@@ -58,18 +55,18 @@ export default function AutomationSearch({ recipientEmail, preheader, heading, i
         </Container>
 
         {/* S18 Zoekopdracht */}
-        <BeigeBand white={next()}>
+        <BeigeBand>
           <SearchSection searchTerm={searchTerm} arrivalDate={arrivalDate} persons={persons} resultsUrl={resultsUrl} />
         </BeigeBand>
 
         {/* S4 Hoteldeals: de zoekresultaten */}
-        <BeigeBand white={next()}>
+        <BeigeBand white>
           <DealList deals={results} />
         </BeigeBand>
 
         {/* S7 Themasectie */}
         {themeSection && (
-          <BeigeBand white={next()}>
+          <BeigeBand>
             <ThemeSection title={themeSection.title} note={themeSection.note} items={themeSection.items} />
           </BeigeBand>
         )}

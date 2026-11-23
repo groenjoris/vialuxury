@@ -12,8 +12,8 @@ import { font, newsletter } from "../components/theme";
 //   S1 Header (logo) → Kop → Intro → S17 Achtergelaten arrangement (het winkelmandje) →
 //   S21 Gastenoordeel (alleen mail 3) → S4 Hoteldeals (mail 2 en 3, twee alternatieven) →
 //   S15 Servicesectie (alleen mail 1) → S13 Footer.
-// Elke sectie na de intro staat op een band over de hele breedte, die om en om beige en wit is
-// (zoals in de CRM-mails): de banden sluiten zonder tussenruimte op elkaar aan.
+// De secties staan op banden over de hele breedte. De banden met dealkaarten blijven wit; beige is
+// voor de secties zonder kaarten, zodat die zich visueel onderscheiden.
 // De bovenste kaart van een mail is altijd de grote kaart (foto boven de tekst), alle kaarten
 // daaronder zijn dealrijen (foto links). Hier is dat het winkelmandje, dus de alternatieven zijn rijen.
 // Mergevelden in de teksten: [hotelnaam], [aankomstdatum], [nachten], [personen]. Hier ingevuld
@@ -37,9 +37,6 @@ type Props = {
 
 export default function AutomationCart({ recipientEmail, preheader, heading, intro, cart, guestRating, alternatives, service }: Props) {
   const c = newsletter.light;
-  // De banden onder elkaar wisselen af: de eerste beige, de volgende wit, enzovoort.
-  let band = 0;
-  const next = () => band++ % 2 === 1;
 
   return (
     <Html lang="nl">
@@ -59,20 +56,20 @@ export default function AutomationCart({ recipientEmail, preheader, heading, int
         </Container>
 
         {/* S17 Achtergelaten arrangement: het winkelmandje met de knop om af te ronden */}
-        <BeigeBand white={next()}>
+        <BeigeBand white>
           <FeaturedDeal deal={cart} cta="Rond je boeking af" />
         </BeigeBand>
 
         {/* S21 Gastenoordeel */}
         {guestRating && (
-          <BeigeBand white={next()}>
+          <BeigeBand>
             <GuestRatingSection hotelName={cart.hotelName} rating={guestRating} />
           </BeigeBand>
         )}
 
         {/* S4 Hoteldeals: vergelijkbare arrangementen als alternatief */}
         {alternatives && alternatives.length > 0 && (
-          <BeigeBand white={next()}>
+          <BeigeBand white>
             {alternatives.map((d, i) => (
               <DealRow key={d.url} deal={d} top={i ? groupGap : cardGap} />
             ))}
