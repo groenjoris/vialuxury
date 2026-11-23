@@ -4,6 +4,7 @@ import { crmCss, FeaturedDeal, PrimaryButton, type RowDeal, s, site } from "../c
 import { desIndes } from "../lib/crmDeals";
 import CrmFooter from "../components/CrmFooter";
 import CrmHeader from "../components/CrmHeader";
+import HelpBanner from "../components/HelpBanner";
 import { baseUrl, font, newsletter } from "../components/theme";
 
 // CRM mail 3: winkelmandje, 2 uur na het verlaten van de checkout.
@@ -12,7 +13,7 @@ import { baseUrl, font, newsletter } from "../components/theme";
 // besparing voor die datum ("Bespaar €441 (47%)", zonder icoon of kleur). Dan de ene knop
 // naar de boeking met alles vooringevuld. Daaronder de deal op de uitgebreide kaart, zonder
 // prijsrij. Gastenoordeel: gemiddelde met Trustpilot-sterren en drie korte reviews, alleen als die
-// er zijn. Geen alternatieve deals.
+// er zijn, en onderaan de hulplijn ("Hulp nodig bij het boeken?"). Geen alternatieve deals.
 // Twee varianten (schakelaar in de preview): naam bekend (crm-winkelmandje) en naam onbekend
 // (crm-winkelmandje-naam-onbekend).
 // Onderwerp: "[Voornaam], we hebben deze nog even voor je bewaard" / "We hebben deze nog even voor je bewaard"
@@ -105,14 +106,9 @@ export default function CrmWinkelmandje({ recipientEmail, firstName, deal, arriv
             </Section>
           )}
 
-          {/* Service */}
-          <Section className="m-pad" style={{ padding: "32px 32px 40px" }}>
-            <Text style={{ ...line, margin: 0, color: c.muted }}>
-              Vragen over je boeking?{" "}
-              <Link href={`${site}/klantenservice`} style={{ color: c.text, textDecoration: "underline" }}>Onze klantenservice</Link>{" "}
-              helpt je graag.
-            </Text>
-          </Section>
+          {/* Hulplijn: hetzelfde blok als in de vakantiemails, met een vraag die past bij iemand die
+              nog niet geboekt heeft */}
+          <HelpBanner lead="Hulp nodig bij het boeken?" fontSize="16px" padding="36px 32px 40px" />
         </Container>
         <CrmFooter recipientEmail={recipientEmail} reason="omdat je een boeking bij ons startte" />
       </Body>
