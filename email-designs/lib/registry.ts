@@ -14,6 +14,7 @@ import CrmZoekopdracht from "../emails/crm-zoekopdracht";
 import CrmFavorieten from "../emails/crm-favorieten";
 import CommercieelContentMultiDeal from "../emails/commercieel-content-multi-deal";
 import CommercieelActie from "../emails/commercieel-actie";
+import CommercieelTekst from "../emails/commercieel-tekst";
 import CommercieelDedicatedHotel, { metTitelProps, zonderPrijsMetTitelProps, zonderPrijsProps } from "../emails/commercieel-dedicated-hotel";
 import { incheckMails } from "./incheckMails";
 
@@ -445,6 +446,15 @@ export const emails: EmailEntry[] = [
     subject: "Sanne, je Goodiebox t.w.v. €150 staat klaar",
     preheader: "Boek voor 7 december en hij is van jou.",
     Component: CommercieelActie,
+  },
+  {
+    slug: "commercieel-tekst",
+    title: "Tekst (Zaterdagkorting)",
+    description: "Mail zonder deals: actiegraphic (feestelijke coupon van €15), korte brief, de persoonlijke code als coupon, één knop en drie stappen om de code te verzilveren.",
+    section: "commercieel",
+    subject: "Sanne, alleen vandaag: €15 korting voor jou",
+    preheader: "Je persoonlijke code vervalt om middernacht.",
+    Component: CommercieelTekst,
   },
 ];
 

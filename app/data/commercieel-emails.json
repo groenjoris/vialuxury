@@ -47,5 +47,12 @@
     "description": "Een cadeau of extra bij een boeking: actiefoto, titel met de deadline, korte brief, de actiecode als coupon, vier geselecteerde deals en een knop naar alle aanbiedingen.",
     "subject": "Sanne, je Goodiebox t.w.v. €150 staat klaar",
     "preheader": "Boek voor 7 december en hij is van jou."
+  },
+  {
+    "slug": "commercieel-tekst",
+    "title": "Tekst (Zaterdagkorting)",
+    "description": "Mail zonder deals: actiegraphic (feestelijke coupon van €15), korte brief, de persoonlijke code als coupon, één knop en drie stappen om de code te verzilveren.",
+    "subject": "Sanne, alleen vandaag: €15 korting voor jou",
+    "preheader": "Je persoonlijke code vervalt om middernacht."
   }
 ]
