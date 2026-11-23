@@ -4,7 +4,7 @@ import VakantiePreTravel, { fietsPreviewProps as preTravelFiets } from "../email
 import VakantieIncheckHotel from "../emails/vakantie-incheck-hotel";
 import MvpVakantieBevestiging from "../emails/mvp-vakantie-bevestiging";
 import CrmNagenieten from "../emails/crm-nagenieten";
-import CrmJaarGeleden from "../emails/crm-jaar-geleden";
+import CrmJaarGeleden, { persoonlijkProps } from "../emails/crm-jaar-geleden";
 import CrmWinkelmandje, { naamOnbekendProps } from "../emails/crm-winkelmandje";
 import CrmWinkelmandje2Dagen, { naamOnbekendProps as naamOnbekend2DagenProps } from "../emails/crm-winkelmandje-2-dagen";
 import CrmThemaStedentrips from "../emails/crm-thema-stedentrips";
@@ -301,6 +301,17 @@ export const emails: EmailEntry[] = [
     subject: "Vandaag een jaar geleden 🎉",
     preheader: "Je verblijf in Hotel Des Indes, en een code voor €25 korting.",
     Component: CrmJaarGeleden,
+  },
+  {
+    slug: "crm-jaar-geleden-persoonlijk",
+    title: "Precies een jaar geleden",
+    description: "Variant: onder de titel een brief met het verblijf van vorig jaar en een link naar de beschikbare datums, de coupon, en de suggesties onder 'Geselecteerd voor Sanne'.",
+    section: "crm",
+    variantOf: "crm-jaar-geleden",
+    subject: "Vandaag een jaar geleden 🎉",
+    preheader: "Je verblijf in Hotel Des Indes, en een code voor €25 korting.",
+    Component: CrmJaarGeleden,
+    props: persoonlijkProps,
   },
   {
     slug: "crm-winkelmandje",

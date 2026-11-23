@@ -57,6 +57,14 @@
     "preheader": "Je verblijf in Hotel Des Indes, en een code voor €25 korting."
   },
   {
+    "slug": "crm-jaar-geleden-persoonlijk",
+    "title": "Precies een jaar geleden",
+    "description": "Variant: onder de titel een brief met het verblijf van vorig jaar en een link naar de beschikbare datums, de coupon, en de suggesties onder 'Geselecteerd voor Sanne'.",
+    "subject": "Vandaag een jaar geleden 🎉",
+    "preheader": "Je verblijf in Hotel Des Indes, en een code voor €25 korting.",
+    "variantOf": "crm-jaar-geleden"
+  },
+  {
     "slug": "crm-winkelmandje",
     "title": "Winkelmandje (2 uur na verlaten)",
     "description": "Eén doel: de boeking afronden. Titel met voornaam, de vraag met de hotelnaam, datums, nachten en personen, de besparing en één knop terug naar de boeking; daaronder de deal op de uitgebreide kaart zonder prijsrij. Gastenoordeel met Trustpilot-sterren en drie reviews. Geen alternatieve deals.",

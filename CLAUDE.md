@@ -257,6 +257,9 @@ Regels voor elke CRM-mail:
 - Reviewmail: de sterren zijn een keuzeblok op het beige vlak: vijf lege, omlijnde sterren (`ster-leeg.png`) met "Slecht"
   en "Uitstekend" eronder. Leeg leest als "vul mij in"; gevulde sterren lezen als een score die er al staat. Variant
   `crm-review-knoppen` (schakelaar "Lege ster | Knop" in de previewkop): vijf witte knoppen met cijfer en ster.
+- Precies een jaar geleden heeft twee varianten (schakelaar "Social proof | Persoonlijk"): social proof met de knop "Check
+  beschikbaarheid" en "Anderen boekten ook" boven de suggesties; persoonlijk (`crm-jaar-geleden-persoonlijk`) met een brief
+  onder de titel (link naar de beschikbare datums in de tekst) en "Geselecteerd voor [voornaam]" boven de suggesties.
 - Tussen twee dealkaarten onder elkaar staat 24 px (`cardGap`), tussen een titel en de eerste kaart 12 px.
 - Preheaders zonder gegevens die lastig te automatiseren zijn of niet altijd bestaan (geen plaatsen of prijzen van de
   suggesties, geen datum uit de zoekopdracht).
