@@ -20,14 +20,15 @@ import { desIndes, lauswolt, steenenburg, vanOys, villaRuimzicht } from "../lib/
 // "Hier geldt je code" en "Ook bij je favorieten" staan in het grote formaat (32) direct boven hun
 // blok, net als "Vergelijkbare deals" met de subtitel "Die lijken op [hotel]". Onder de andere
 // favorieten (0, 1 of 2) een zwarte knop naar de favorieten.
-// Onderwerp: "Nog 24 uur: €10 cadeau op [hotelnaam]"
+// Onderwerp: "Alsjeblieft [voornaam], €10 korting op [hotelnaam]" (geen haast in het onderwerp: de
+// ontvanger krijgt de coupon hier voor het eerst). Preheader: tot wanneer de code geldig is.
 
 type Props = {
   recipientEmail: string;
   /** Leeg → "Beste gast,". */
   firstName?: string;
   /** Code voor de eerste boeking: direct te gebruiken, kort geldig. */
-  first: { value: string; code: string; hoursLeft: number };
+  first: { value: string; code: string; hoursLeft: number; /** "12 november 10:24 uur", voor de preheader. */ deadline: string };
   /** Code voor de tweede boeking: alleen het vaste begin is bekend ("WENS2"); de rest volgt in een
    *  nieuwe mail zodra de eerste code is gebruikt. */
   second: { value: string; prefix: string };
@@ -48,7 +49,7 @@ export default function CrmFavorieten({ recipientEmail, firstName, first: code1,
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <style>{crmCss}</style>
       </Head>
-      <Preview>En {code2.value} op je tweede boeking.</Preview>
+      <Preview>Je code is geldig tot {code1.deadline}.</Preview>
       <Body style={{ backgroundColor: c.bg, margin: 0, padding: 0, fontFamily: font.body }}>
         <CrmHeader />
         <Container style={{ width: "100%", maxWidth: "626px" }}>
@@ -80,6 +81,7 @@ export default function CrmFavorieten({ recipientEmail, firstName, first: code1,
           {others.length > 0 && (
             <Section className="m-pad" style={{ padding: "44px 32px 0" }}>
               <Heading as="h2" className="m-h1" style={s.h1}>Ook bij je favorieten</Heading>
+              <Text style={{ ...s.body, color: c.muted, margin: "8px 0 0" }}>Gebruik je code voor een van je favorieten</Text>
               {others.map((d, i) => (
                 <DealRow key={d.url} deal={d} top={i ? cardGap : undefined} />
               ))}
@@ -109,7 +111,7 @@ export default function CrmFavorieten({ recipientEmail, firstName, first: code1,
 CrmFavorieten.PreviewProps = {
   recipientEmail: "sanne.devries@example.com",
   firstName: "Sanne",
-  first: { value: "€10", code: "WENS1-387KW", hoursLeft: 24 },
+  first: { value: "€10", code: "WENS1-387KW", hoursLeft: 24, deadline: "12 november 10:24 uur" },
   second: { value: "€15", prefix: "WENS2" },
   favorites: [steenenburg, villaRuimzicht, desIndes],
   similar: [vanOys, lauswolt],
