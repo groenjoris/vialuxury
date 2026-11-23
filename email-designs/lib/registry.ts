@@ -13,6 +13,7 @@ import CrmTerugkomactie, { herinneringProps } from "../emails/crm-terugkomactie"
 import CrmZoekopdracht from "../emails/crm-zoekopdracht";
 import CrmFavorieten from "../emails/crm-favorieten";
 import CommercieelContentMultiDeal from "../emails/commercieel-content-multi-deal";
+import CommercieelDedicatedHotel from "../emails/commercieel-dedicated-hotel";
 import { incheckMails } from "./incheckMails";
 
 /** MVP: geen accountdetailpagina, boekingslinks gaan naar het boekingenoverzicht. */
@@ -387,6 +388,15 @@ export const emails: EmailEntry[] = [
     subject: "Winter Wonderweken: slapen bij de mooiste kerstmarkten",
     preheader: "Glühwein, lichtjes en een hotel om de hoek.",
     Component: CommercieelContentMultiDeal,
+  },
+  {
+    slug: "commercieel-dedicated-hotel",
+    title: "Dedicated hotel",
+    description: "Eén hotel: korte brief met het aanbod, de knop 'Bekijk aanbieding' en het arrangement op de verticale dealkaart.",
+    section: "commercieel",
+    subject: "Ons beste hotelarrangement van de maand",
+    preheader: "2 nachten voor 2 personen op de Veluwe, inclusief diner.",
+    Component: CommercieelDedicatedHotel,
   },
 ];
 

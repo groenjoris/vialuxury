@@ -220,6 +220,9 @@ maximaal (`components/crm.tsx`, zelfde regels); bronnen `email-designs/emails/co
    kerstmarkten" boven vier dealrijen (`DealRow`). Het arrangement blijft hetzelfde; alleen dealtitel en foto
    verwijzen naar de kerstmarkt in de buurt. Alleen voco The Hague staat in `deals.json`; de andere drie hebben
    voorbeeldprijzen en linken naar de R1-zoekpagina.
+2. `commercieel-dedicated-hotel` ("Dedicated hotel"): één hotel. Brief (`Letter`) met het aanbod vet, de knop "Bekijk
+   aanbieding" onder het bericht en daaronder het arrangement op de verticale kaart (`FeaturedDeal`). Voorbeeld:
+   Veluwe Hotel de Beyaerd (Stakenberg staat niet in `deals.json`).
 
 Regels voor elke CRM-mail:
 - Briefopzet (het format voor alle CRM-mails, tot nu toe in `crm-winkelmandje-2-dagen`, `crm-favorieten`, `crm-zoekopdracht`,
