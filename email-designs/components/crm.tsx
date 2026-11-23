@@ -86,17 +86,18 @@ export function PrimaryButton({ href, children, small }: { href: string; childre
   );
 }
 
-/** Secundaire knop: wit met grijze rand (zoals de website), nooit oranje (kleur alleen voor de kern). */
-export function SecondaryButton({ href, children, block }: { href: string; children: React.ReactNode; block?: boolean }) {
+/** Secundaire knop: wit met grijze rand (zoals de website), of met `dark` zwart met witte tekst;
+ *  nooit oranje (kleur alleen voor de kern). */
+export function SecondaryButton({ href, children, block, dark }: { href: string; children: React.ReactNode; block?: boolean; dark?: boolean }) {
   return (
     <Button
       href={href}
       style={{
         display: block ? "block" : "inline-block",
         textAlign: "center",
-        backgroundColor: "#FFFFFF",
-        border: `1px solid #E5E5E5`,
-        color: c.text,
+        backgroundColor: dark ? c.text : "#FFFFFF",
+        border: `1px solid ${dark ? c.text : "#E5E5E5"}`,
+        color: dark ? "#FFFFFF" : c.text,
         fontFamily: font.body,
         fontSize: "16px",
         fontWeight: 700,
