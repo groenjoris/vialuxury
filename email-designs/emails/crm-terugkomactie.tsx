@@ -2,30 +2,28 @@ import { Body, Container, Head, Heading, Html, Preview, Section, Text } from "@r
 import * as React from "react";
 import CrmFooter from "../components/CrmFooter";
 import CrmHeader from "../components/CrmHeader";
-import { cardGap, CodeBlock, crmCss, CrmHelp, DealRow, PrimaryButton, type RowDeal, s, site, ThemePicker } from "../components/crm";
+import { CodeBlock, crmCss, CrmHelp, DealRow, PrimaryButton, type RowDeal, s, site, ThemePicker } from "../components/crm";
 import { font, newsletter } from "../components/theme";
-import { asStay, carltonBeach, desIndes, fashionHotel, lauswolt, steenenburg, vanOys, villaRuimzicht } from "../lib/crmDeals";
+import { carltonBeach, desIndes, fashionHotel, steenenburg, vanOys, villaRuimzicht } from "../lib/crmDeals";
 
 // CRM A3: terugkomactie €20, 14 dagen na vertrek. Oorspronkelijk van Jesse (origin/redesign-jesse,
 // crm-terugkomactie.tsx), omgezet naar onze bouwstenen en regels. Met `daysLeft` is het de
 // herinnering van 30 dagen na vertrek: zelfde code, copy op haast ("verloopt over x dagen"),
-// zonder het verblijf en de themakiezer.
+// zonder de themakiezer.
 // Opbouw, in de volgorde waarin de lezer het wil weten:
 //   1. briefhoofd: "Beste [voornaam]," en waarom je dit krijgt (we zijn dankbaar dat je boekte),
 //   2. de coupon: bedrag, code, geldigheid en "Vul de code in bij het boeken" in één blok,
 //   3. waar je heen kunt (de ene oranje knop: Bekijk arrangementen),
-//   4. context: jouw verblijf als dealrij,
-//   5. "Tips voor je kortingscode" (grote titel) met "Boek uiterlijk [vervaldatum] 23:59 uur" en drie groepjes van
-//      twee suggesties: in de sfeer van het vorige hotel, populair deze maand, deals met wellness,
-//   6. de themakiezer.
+//   4. "Tips voor je kortingscode" (grote titel) met "Boek uiterlijk [vervaldatum] 23:59 uur" en drie groepjes van
+//      twee suggesties, elk op een eigen beige vlak met de subtitel erin: in de sfeer van het vorige
+//      hotel, populair deze maand, deals met wellness,
+//   5. de themakiezer.
 // Onderwerp: "[voornaam], €20 cadeau voor je volgende verblijf"
 
 type Props = {
   recipientEmail: string;
   /** Leeg → "Beste gast,". */
   firstName?: string;
-  /** Vorig verblijf; leeg → blok valt weg en het frame wordt "Ook in de sfeer van je vorige verblijf". */
-  stay?: RowDeal;
   code: { code: string; value: string; deadline: string };
   /** Alleen in de herinnering: aantal dagen dat de code nog geldig is. */
   daysLeft?: number;
@@ -34,7 +32,7 @@ type Props = {
   groups: { title: string; deals: RowDeal[] }[];
 };
 
-export default function CrmTerugkomactie({ recipientEmail, firstName, stay, code, daysLeft, ctaUrl, groups }: Props) {
+export default function CrmTerugkomactie({ recipientEmail, firstName, code, daysLeft, ctaUrl, groups }: Props) {
   const c = newsletter.light;
   const reminder = daysLeft !== undefined;
 
@@ -68,24 +66,20 @@ export default function CrmTerugkomactie({ recipientEmail, firstName, stay, code
             </Section>
           </Section>
 
-          {/* Context: jouw verblijf (niet in de herinnering) */}
-          {stay && !reminder && (
-            <Section className="m-pad" style={{ padding: "44px 32px 0" }}>
-              <Text style={s.kop}>Jouw verblijf</Text>
-              <DealRow deal={stay} />
-            </Section>
-          )}
-
-          {/* Waar je de korting kunt gebruiken: grote titel met de uiterste datum, daaronder groepjes
-              van twee suggesties, elk met een subtitel */}
-          <Section className="m-pad" style={{ padding: reminder ? "44px 32px 40px" : "44px 32px 0" }}>
+          {/* Waar je de korting kunt gebruiken: grote titel met de uiterste datum */}
+          <Section className="m-pad" style={{ padding: "44px 32px 0" }}>
             <Heading as="h2" className="m-h1" style={s.h1}>Tips voor je kortingscode</Heading>
             <Text style={{ ...s.body, color: c.muted, margin: "8px 0 0" }}>Boek uiterlijk {code.deadline} 23:59 uur</Text>
-            {groups.map((g, gi) => (
-              <Section key={g.title} style={{ marginTop: gi ? "36px" : "24px" }}>
+          </Section>
+
+          {/* Groepjes van twee suggesties, elk op een eigen beige vlak met de subtitel erin. Het vlak
+              steekt links en rechts 16 px uit, zodat de kaarten even breed blijven als elders. */}
+          <Section style={{ padding: reminder ? "8px 16px 40px" : "8px 16px 0" }}>
+            {groups.map((g) => (
+              <Section key={g.title} style={{ backgroundColor: "#F4F1EC", borderRadius: "8px", padding: "20px 16px 20px", marginTop: "16px" }}>
                 <Text style={s.kop}>{g.title}</Text>
                 {g.deals.map((d, i) => (
-                  <DealRow key={d.url} deal={d} top={i ? cardGap : undefined} />
+                  <DealRow key={d.url} deal={d} top={i ? "16px" : undefined} />
                 ))}
               </Section>
             ))}
@@ -108,7 +102,6 @@ export default function CrmTerugkomactie({ recipientEmail, firstName, stay, code
 const base = {
   recipientEmail: "sanne.devries@example.com",
   firstName: "Sanne",
-  stay: asStay(lauswolt, "31 oktober tot 2 november 2026"),
   code: { code: "TERUG20-8KQ3", value: "€20", deadline: "16 december 2026" },
   groups: [
     { title: "In de sfeer van Landgoed Lauswolt", deals: [vanOys, villaRuimzicht] },
