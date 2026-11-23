@@ -8,6 +8,12 @@
       body { margin: 0 !important; padding: 0 !important; }
       @media only screen and (max-width: 480px) {
         .stack { display: block !important; width: 100% !important; padding: 0 0 12px !important; }
+        /* De tekst van een dealrij houdt op mobiel zijn ruimte tot de rand van de kaart; zonder dit
+           haalt stack de padding van de cel weg en plakt de tekst tegen het randje. */
+        .m-cardtext { padding: 16px 18px 18px !important; }
+        /* Prijsrij: het kortingsblokje en de prijs blijven naast elkaar, de knop zakt eronder. Samen op
+           een regel vraagt de rij ruim 400 px en wordt de hele mail breder dan het scherm. */
+        .m-cta { display: block !important; width: 100% !important; text-align: left !important; padding: 14px 0 0 !important; }
         .m-pad { padding-left: 16px !important; padding-right: 16px !important; }
         .m-h1 { font-size: 28px !important; }
       }
@@ -214,7 +220,7 @@
                                                       aria-label="Van Oys Maastricht Retreat"
                                                       style="color:#067df7;text-decoration-line:none;display:block;width:190px;min-height:107px"
                                                       target="_blank"></a></td><td
-                                                    class="stack"
+                                                    class="stack m-cardtext"
                                                     data-id="__react-email-column"
                                                     style="vertical-align:top;padding:16px 18px 18px"><p
                                                       style="font-size:16px;line-height:1.4;font-family:&#x27;Basis Grotesque Pro&#x27;, Helvetica, Arial, sans-serif;font-weight:700;color:#141414;margin:0;margin-top:0;margin-bottom:0;margin-left:0;margin-right:0">
@@ -284,22 +290,34 @@
                                                       cellspacing="0"
                                                       role="presentation"
                                                       style="margin-top:8px"><tbody style="width:100%"><tr style="width:100%"><td
+                                                            class="stack"
                                                             data-id="__react-email-column"
-                                                            style="vertical-align:middle;width:1%;padding-right:12px"><span
-                                                              style="font-size:16px;font-weight:700;line-height:20px;border-radius:6px;color:#FFFFFF;display:inline-block;white-space:nowrap;background-color:#141414;font-family:&#x27;Basis Grotesque Pro&#x27;, Helvetica, Arial, sans-serif;padding:11px 12px"
-                                                              >-36%</span
-                                                            ></td><td
-                                                            data-id="__react-email-column"
-                                                            style="vertical-align:middle"><p
-                                                              style="font-size:16px;line-height:24px;font-family:&#x27;Basis Grotesque Pro&#x27;, Helvetica, Arial, sans-serif;color:#6B6B6B;margin:0;white-space:nowrap;margin-top:0;margin-bottom:0;margin-left:0;margin-right:0">
-                                                              Vanaf
-                                                              <span
-                                                                style="font-size:20px;font-weight:700;color:#141414"
-                                                                >€519</span
-                                                              ><span
-                                                                style="color:#D32F2F;text-decoration:line-through;margin-left:8px"
-                                                                >€808</span
-                                                              ></p></td><td
+                                                            style="vertical-align:middle"><table
+                                                              align="center"
+                                                              width="100%"
+                                                              border="0"
+                                                              cellpadding="0"
+                                                              cellspacing="0"
+                                                              role="presentation"><tbody
+                                                                style="width:100%"><tr
+                                                                  style="width:100%"><td
+                                                                    data-id="__react-email-column"
+                                                                    style="vertical-align:middle;width:1%;padding-right:12px"><span
+                                                                      style="font-size:16px;font-weight:700;line-height:20px;border-radius:6px;color:#FFFFFF;display:inline-block;white-space:nowrap;background-color:#141414;font-family:&#x27;Basis Grotesque Pro&#x27;, Helvetica, Arial, sans-serif;padding:11px 12px"
+                                                                      >-36%</span
+                                                                    ></td><td
+                                                                    data-id="__react-email-column"
+                                                                    style="vertical-align:middle"><p
+                                                                      style="font-size:16px;line-height:24px;font-family:&#x27;Basis Grotesque Pro&#x27;, Helvetica, Arial, sans-serif;color:#6B6B6B;margin:0;white-space:nowrap;margin-top:0;margin-bottom:0;margin-left:0;margin-right:0">
+                                                                      Vanaf
+                                                                      <span
+                                                                        style="font-size:20px;font-weight:700;color:#141414"
+                                                                        >€519</span
+                                                                      ><span
+                                                                        style="color:#D32F2F;text-decoration:line-through;margin-left:8px"
+                                                                        >€808</span
+                                                                      ></p></td></tr></tbody></table></td><td
+                                                            class="stack m-cta"
                                                             data-id="__react-email-column"
                                                             style="vertical-align:middle;text-align:right;width:1%"><a
                                                               href="https://vialuxury.vercel.app/first-release/deal/van-oys-maastricht-retreat-ervaar-wereldklasse-comfort-in-een-5-sterren-superior-hotel"
@@ -346,7 +364,7 @@
                                                       aria-label="Hotel Villa Ruimzicht"
                                                       style="color:#067df7;text-decoration-line:none;display:block;width:190px;min-height:107px"
                                                       target="_blank"></a></td><td
-                                                    class="stack"
+                                                    class="stack m-cardtext"
                                                     data-id="__react-email-column"
                                                     style="vertical-align:top;padding:16px 18px 18px"><p
                                                       style="font-size:16px;line-height:1.4;font-family:&#x27;Basis Grotesque Pro&#x27;, Helvetica, Arial, sans-serif;font-weight:700;color:#141414;margin:0;margin-top:0;margin-bottom:0;margin-left:0;margin-right:0">
@@ -413,22 +431,34 @@
                                                       cellspacing="0"
                                                       role="presentation"
                                                       style="margin-top:8px"><tbody style="width:100%"><tr style="width:100%"><td
+                                                            class="stack"
                                                             data-id="__react-email-column"
-                                                            style="vertical-align:middle;width:1%;padding-right:12px"><span
-                                                              style="font-size:16px;font-weight:700;line-height:20px;border-radius:6px;color:#FFFFFF;display:inline-block;white-space:nowrap;background-color:#141414;font-family:&#x27;Basis Grotesque Pro&#x27;, Helvetica, Arial, sans-serif;padding:11px 12px"
-                                                              >-40%</span
-                                                            ></td><td
-                                                            data-id="__react-email-column"
-                                                            style="vertical-align:middle"><p
-                                                              style="font-size:16px;line-height:24px;font-family:&#x27;Basis Grotesque Pro&#x27;, Helvetica, Arial, sans-serif;color:#6B6B6B;margin:0;white-space:nowrap;margin-top:0;margin-bottom:0;margin-left:0;margin-right:0">
-                                                              Vanaf
-                                                              <span
-                                                                style="font-size:20px;font-weight:700;color:#141414"
-                                                                >€229</span
-                                                              ><span
-                                                                style="color:#D32F2F;text-decoration:line-through;margin-left:8px"
-                                                                >€382</span
-                                                              ></p></td><td
+                                                            style="vertical-align:middle"><table
+                                                              align="center"
+                                                              width="100%"
+                                                              border="0"
+                                                              cellpadding="0"
+                                                              cellspacing="0"
+                                                              role="presentation"><tbody
+                                                                style="width:100%"><tr
+                                                                  style="width:100%"><td
+                                                                    data-id="__react-email-column"
+                                                                    style="vertical-align:middle;width:1%;padding-right:12px"><span
+                                                                      style="font-size:16px;font-weight:700;line-height:20px;border-radius:6px;color:#FFFFFF;display:inline-block;white-space:nowrap;background-color:#141414;font-family:&#x27;Basis Grotesque Pro&#x27;, Helvetica, Arial, sans-serif;padding:11px 12px"
+                                                                      >-40%</span
+                                                                    ></td><td
+                                                                    data-id="__react-email-column"
+                                                                    style="vertical-align:middle"><p
+                                                                      style="font-size:16px;line-height:24px;font-family:&#x27;Basis Grotesque Pro&#x27;, Helvetica, Arial, sans-serif;color:#6B6B6B;margin:0;white-space:nowrap;margin-top:0;margin-bottom:0;margin-left:0;margin-right:0">
+                                                                      Vanaf
+                                                                      <span
+                                                                        style="font-size:20px;font-weight:700;color:#141414"
+                                                                        >€229</span
+                                                                      ><span
+                                                                        style="color:#D32F2F;text-decoration:line-through;margin-left:8px"
+                                                                        >€382</span
+                                                                      ></p></td></tr></tbody></table></td><td
+                                                            class="stack m-cta"
                                                             data-id="__react-email-column"
                                                             style="vertical-align:middle;text-align:right;width:1%"><a
                                                               href="https://vialuxury.vercel.app/first-release/deal/hotel-villa-ruimzicht-2-daags-verblijf-in-een-monumentale-villa-incl-4-gangendiner"
@@ -485,7 +515,7 @@
                                                       aria-label="Hotel Des Indes"
                                                       style="color:#067df7;text-decoration-line:none;display:block;width:190px;min-height:107px"
                                                       target="_blank"></a></td><td
-                                                    class="stack"
+                                                    class="stack m-cardtext"
                                                     data-id="__react-email-column"
                                                     style="vertical-align:top;padding:16px 18px 18px"><p
                                                       style="font-size:16px;line-height:1.4;font-family:&#x27;Basis Grotesque Pro&#x27;, Helvetica, Arial, sans-serif;font-weight:700;color:#141414;margin:0;margin-top:0;margin-bottom:0;margin-left:0;margin-right:0">
@@ -553,22 +583,34 @@
                                                       cellspacing="0"
                                                       role="presentation"
                                                       style="margin-top:8px"><tbody style="width:100%"><tr style="width:100%"><td
+                                                            class="stack"
                                                             data-id="__react-email-column"
-                                                            style="vertical-align:middle;width:1%;padding-right:12px"><span
-                                                              style="font-size:16px;font-weight:700;line-height:20px;border-radius:6px;color:#FFFFFF;display:inline-block;white-space:nowrap;background-color:#141414;font-family:&#x27;Basis Grotesque Pro&#x27;, Helvetica, Arial, sans-serif;padding:11px 12px"
-                                                              >-47%</span
-                                                            ></td><td
-                                                            data-id="__react-email-column"
-                                                            style="vertical-align:middle"><p
-                                                              style="font-size:16px;line-height:24px;font-family:&#x27;Basis Grotesque Pro&#x27;, Helvetica, Arial, sans-serif;color:#6B6B6B;margin:0;white-space:nowrap;margin-top:0;margin-bottom:0;margin-left:0;margin-right:0">
-                                                              Vanaf
-                                                              <span
-                                                                style="font-size:20px;font-weight:700;color:#141414"
-                                                                >€499</span
-                                                              ><span
-                                                                style="color:#D32F2F;text-decoration:line-through;margin-left:8px"
-                                                                >€940</span
-                                                              ></p></td><td
+                                                            style="vertical-align:middle"><table
+                                                              align="center"
+                                                              width="100%"
+                                                              border="0"
+                                                              cellpadding="0"
+                                                              cellspacing="0"
+                                                              role="presentation"><tbody
+                                                                style="width:100%"><tr
+                                                                  style="width:100%"><td
+                                                                    data-id="__react-email-column"
+                                                                    style="vertical-align:middle;width:1%;padding-right:12px"><span
+                                                                      style="font-size:16px;font-weight:700;line-height:20px;border-radius:6px;color:#FFFFFF;display:inline-block;white-space:nowrap;background-color:#141414;font-family:&#x27;Basis Grotesque Pro&#x27;, Helvetica, Arial, sans-serif;padding:11px 12px"
+                                                                      >-47%</span
+                                                                    ></td><td
+                                                                    data-id="__react-email-column"
+                                                                    style="vertical-align:middle"><p
+                                                                      style="font-size:16px;line-height:24px;font-family:&#x27;Basis Grotesque Pro&#x27;, Helvetica, Arial, sans-serif;color:#6B6B6B;margin:0;white-space:nowrap;margin-top:0;margin-bottom:0;margin-left:0;margin-right:0">
+                                                                      Vanaf
+                                                                      <span
+                                                                        style="font-size:20px;font-weight:700;color:#141414"
+                                                                        >€499</span
+                                                                      ><span
+                                                                        style="color:#D32F2F;text-decoration:line-through;margin-left:8px"
+                                                                        >€940</span
+                                                                      ></p></td></tr></tbody></table></td><td
+                                                            class="stack m-cta"
                                                             data-id="__react-email-column"
                                                             style="vertical-align:middle;text-align:right;width:1%"><a
                                                               href="https://vialuxury.vercel.app/first-release/deal/hotel-des-indes-verken-en-beleef-den-haag-vanuit-luxe-5-hotel-incl-3-gangendiner"
@@ -615,7 +657,7 @@
                                                       aria-label="Kasteel Steenenburg"
                                                       style="color:#067df7;text-decoration-line:none;display:block;width:190px;min-height:107px"
                                                       target="_blank"></a></td><td
-                                                    class="stack"
+                                                    class="stack m-cardtext"
                                                     data-id="__react-email-column"
                                                     style="vertical-align:top;padding:16px 18px 18px"><p
                                                       style="font-size:16px;line-height:1.4;font-family:&#x27;Basis Grotesque Pro&#x27;, Helvetica, Arial, sans-serif;font-weight:700;color:#141414;margin:0;margin-top:0;margin-bottom:0;margin-left:0;margin-right:0">
@@ -685,22 +727,34 @@
                                                       cellspacing="0"
                                                       role="presentation"
                                                       style="margin-top:8px"><tbody style="width:100%"><tr style="width:100%"><td
+                                                            class="stack"
                                                             data-id="__react-email-column"
-                                                            style="vertical-align:middle;width:1%;padding-right:12px"><span
-                                                              style="font-size:16px;font-weight:700;line-height:20px;border-radius:6px;color:#FFFFFF;display:inline-block;white-space:nowrap;background-color:#141414;font-family:&#x27;Basis Grotesque Pro&#x27;, Helvetica, Arial, sans-serif;padding:11px 12px"
-                                                              >-49%</span
-                                                            ></td><td
-                                                            data-id="__react-email-column"
-                                                            style="vertical-align:middle"><p
-                                                              style="font-size:16px;line-height:24px;font-family:&#x27;Basis Grotesque Pro&#x27;, Helvetica, Arial, sans-serif;color:#6B6B6B;margin:0;white-space:nowrap;margin-top:0;margin-bottom:0;margin-left:0;margin-right:0">
-                                                              Vanaf
-                                                              <span
-                                                                style="font-size:20px;font-weight:700;color:#141414"
-                                                                >€249</span
-                                                              ><span
-                                                                style="color:#D32F2F;text-decoration:line-through;margin-left:8px"
-                                                                >€489</span
-                                                              ></p></td><td
+                                                            style="vertical-align:middle"><table
+                                                              align="center"
+                                                              width="100%"
+                                                              border="0"
+                                                              cellpadding="0"
+                                                              cellspacing="0"
+                                                              role="presentation"><tbody
+                                                                style="width:100%"><tr
+                                                                  style="width:100%"><td
+                                                                    data-id="__react-email-column"
+                                                                    style="vertical-align:middle;width:1%;padding-right:12px"><span
+                                                                      style="font-size:16px;font-weight:700;line-height:20px;border-radius:6px;color:#FFFFFF;display:inline-block;white-space:nowrap;background-color:#141414;font-family:&#x27;Basis Grotesque Pro&#x27;, Helvetica, Arial, sans-serif;padding:11px 12px"
+                                                                      >-49%</span
+                                                                    ></td><td
+                                                                    data-id="__react-email-column"
+                                                                    style="vertical-align:middle"><p
+                                                                      style="font-size:16px;line-height:24px;font-family:&#x27;Basis Grotesque Pro&#x27;, Helvetica, Arial, sans-serif;color:#6B6B6B;margin:0;white-space:nowrap;margin-top:0;margin-bottom:0;margin-left:0;margin-right:0">
+                                                                      Vanaf
+                                                                      <span
+                                                                        style="font-size:20px;font-weight:700;color:#141414"
+                                                                        >€249</span
+                                                                      ><span
+                                                                        style="color:#D32F2F;text-decoration:line-through;margin-left:8px"
+                                                                        >€489</span
+                                                                      ></p></td></tr></tbody></table></td><td
+                                                            class="stack m-cta"
                                                             data-id="__react-email-column"
                                                             style="vertical-align:middle;text-align:right;width:1%"><a
                                                               href="https://vialuxury.vercel.app/first-release/deal/kasteel-steenenburg-culinair-verblijf-in-middeleeuws-4-kasteelhotel-op-prachtig-landgoed"
@@ -757,7 +811,7 @@
                                                       aria-label="Carlton Beach"
                                                       style="color:#067df7;text-decoration-line:none;display:block;width:190px;min-height:107px"
                                                       target="_blank"></a></td><td
-                                                    class="stack"
+                                                    class="stack m-cardtext"
                                                     data-id="__react-email-column"
                                                     style="vertical-align:top;padding:16px 18px 18px"><p
                                                       style="font-size:16px;line-height:1.4;font-family:&#x27;Basis Grotesque Pro&#x27;, Helvetica, Arial, sans-serif;font-weight:700;color:#141414;margin:0;margin-top:0;margin-bottom:0;margin-left:0;margin-right:0">
@@ -823,22 +877,34 @@
                                                       cellspacing="0"
                                                       role="presentation"
                                                       style="margin-top:8px"><tbody style="width:100%"><tr style="width:100%"><td
+                                                            class="stack"
                                                             data-id="__react-email-column"
-                                                            style="vertical-align:middle;width:1%;padding-right:12px"><span
-                                                              style="font-size:16px;font-weight:700;line-height:20px;border-radius:6px;color:#FFFFFF;display:inline-block;white-space:nowrap;background-color:#141414;font-family:&#x27;Basis Grotesque Pro&#x27;, Helvetica, Arial, sans-serif;padding:11px 12px"
-                                                              >-50%</span
-                                                            ></td><td
-                                                            data-id="__react-email-column"
-                                                            style="vertical-align:middle"><p
-                                                              style="font-size:16px;line-height:24px;font-family:&#x27;Basis Grotesque Pro&#x27;, Helvetica, Arial, sans-serif;color:#6B6B6B;margin:0;white-space:nowrap;margin-top:0;margin-bottom:0;margin-left:0;margin-right:0">
-                                                              Vanaf
-                                                              <span
-                                                                style="font-size:20px;font-weight:700;color:#141414"
-                                                                >€229</span
-                                                              ><span
-                                                                style="color:#D32F2F;text-decoration:line-through;margin-left:8px"
-                                                                >€462</span
-                                                              ></p></td><td
+                                                            style="vertical-align:middle"><table
+                                                              align="center"
+                                                              width="100%"
+                                                              border="0"
+                                                              cellpadding="0"
+                                                              cellspacing="0"
+                                                              role="presentation"><tbody
+                                                                style="width:100%"><tr
+                                                                  style="width:100%"><td
+                                                                    data-id="__react-email-column"
+                                                                    style="vertical-align:middle;width:1%;padding-right:12px"><span
+                                                                      style="font-size:16px;font-weight:700;line-height:20px;border-radius:6px;color:#FFFFFF;display:inline-block;white-space:nowrap;background-color:#141414;font-family:&#x27;Basis Grotesque Pro&#x27;, Helvetica, Arial, sans-serif;padding:11px 12px"
+                                                                      >-50%</span
+                                                                    ></td><td
+                                                                    data-id="__react-email-column"
+                                                                    style="vertical-align:middle"><p
+                                                                      style="font-size:16px;line-height:24px;font-family:&#x27;Basis Grotesque Pro&#x27;, Helvetica, Arial, sans-serif;color:#6B6B6B;margin:0;white-space:nowrap;margin-top:0;margin-bottom:0;margin-left:0;margin-right:0">
+                                                                      Vanaf
+                                                                      <span
+                                                                        style="font-size:20px;font-weight:700;color:#141414"
+                                                                        >€229</span
+                                                                      ><span
+                                                                        style="color:#D32F2F;text-decoration:line-through;margin-left:8px"
+                                                                        >€462</span
+                                                                      ></p></td></tr></tbody></table></td><td
+                                                            class="stack m-cta"
                                                             data-id="__react-email-column"
                                                             style="vertical-align:middle;text-align:right;width:1%"><a
                                                               href="https://vialuxury.vercel.app/first-release/deal/carlton-beach-uitwaaien-aan-de-kust-vanuit-een-sfeervol-4-hotel"
@@ -885,7 +951,7 @@
                                                       aria-label="WestCord Fashion Hotel Amsterdam"
                                                       style="color:#067df7;text-decoration-line:none;display:block;width:190px;min-height:107px"
                                                       target="_blank"></a></td><td
-                                                    class="stack"
+                                                    class="stack m-cardtext"
                                                     data-id="__react-email-column"
                                                     style="vertical-align:top;padding:16px 18px 18px"><p
                                                       style="font-size:16px;line-height:1.4;font-family:&#x27;Basis Grotesque Pro&#x27;, Helvetica, Arial, sans-serif;font-weight:700;color:#141414;margin:0;margin-top:0;margin-bottom:0;margin-left:0;margin-right:0">
@@ -953,22 +1019,34 @@
                                                       cellspacing="0"
                                                       role="presentation"
                                                       style="margin-top:8px"><tbody style="width:100%"><tr style="width:100%"><td
+                                                            class="stack"
                                                             data-id="__react-email-column"
-                                                            style="vertical-align:middle;width:1%;padding-right:12px"><span
-                                                              style="font-size:16px;font-weight:700;line-height:20px;border-radius:6px;color:#FFFFFF;display:inline-block;white-space:nowrap;background-color:#141414;font-family:&#x27;Basis Grotesque Pro&#x27;, Helvetica, Arial, sans-serif;padding:11px 12px"
-                                                              >-49%</span
-                                                            ></td><td
-                                                            data-id="__react-email-column"
-                                                            style="vertical-align:middle"><p
-                                                              style="font-size:16px;line-height:24px;font-family:&#x27;Basis Grotesque Pro&#x27;, Helvetica, Arial, sans-serif;color:#6B6B6B;margin:0;white-space:nowrap;margin-top:0;margin-bottom:0;margin-left:0;margin-right:0">
-                                                              Vanaf
-                                                              <span
-                                                                style="font-size:20px;font-weight:700;color:#141414"
-                                                                >€279</span
-                                                              ><span
-                                                                style="color:#D32F2F;text-decoration:line-through;margin-left:8px"
-                                                                >€543</span
-                                                              ></p></td><td
+                                                            style="vertical-align:middle"><table
+                                                              align="center"
+                                                              width="100%"
+                                                              border="0"
+                                                              cellpadding="0"
+                                                              cellspacing="0"
+                                                              role="presentation"><tbody
+                                                                style="width:100%"><tr
+                                                                  style="width:100%"><td
+                                                                    data-id="__react-email-column"
+                                                                    style="vertical-align:middle;width:1%;padding-right:12px"><span
+                                                                      style="font-size:16px;font-weight:700;line-height:20px;border-radius:6px;color:#FFFFFF;display:inline-block;white-space:nowrap;background-color:#141414;font-family:&#x27;Basis Grotesque Pro&#x27;, Helvetica, Arial, sans-serif;padding:11px 12px"
+                                                                      >-49%</span
+                                                                    ></td><td
+                                                                    data-id="__react-email-column"
+                                                                    style="vertical-align:middle"><p
+                                                                      style="font-size:16px;line-height:24px;font-family:&#x27;Basis Grotesque Pro&#x27;, Helvetica, Arial, sans-serif;color:#6B6B6B;margin:0;white-space:nowrap;margin-top:0;margin-bottom:0;margin-left:0;margin-right:0">
+                                                                      Vanaf
+                                                                      <span
+                                                                        style="font-size:20px;font-weight:700;color:#141414"
+                                                                        >€279</span
+                                                                      ><span
+                                                                        style="color:#D32F2F;text-decoration:line-through;margin-left:8px"
+                                                                        >€543</span
+                                                                      ></p></td></tr></tbody></table></td><td
+                                                            class="stack m-cta"
                                                             data-id="__react-email-column"
                                                             style="vertical-align:middle;text-align:right;width:1%"><a
                                                               href="https://vialuxury.vercel.app/first-release/deal/fashion-hotel-amsterdam-3-daags-verblijf-in-een-4-hotel-met-wellness-en-sky-bar-met-panoramisch-uitzicht"
