@@ -324,6 +324,10 @@ overblijft zich boven en onder verdeelt in plaats van als een gat onder de prijs
 inclusies en is daarom een eigen, van zichzelf al gelijke hoogte (556 px). Op mobiel vervalt de
 vaste hoogte (klasse `m-auto-h`), want daar staat de foto boven de tekst.
 
+Dealrij: de fotokolom toont twee foto's van hetzelfde arrangement onder elkaar (hoofdbeeld boven,
+`image` en `secondImage` uit deals.json) met 3 px wit ertussen, samen de volle kaarthoogte. Op
+mobiel valt de tweede foto weg en blijft de hoofdfoto op 16:9 boven de tekst, zoals bij elke kaart.
+
 Kaartvolgorde: de bovenste dealkaart van een mail is altijd de grote kaart (foto boven de tekst,
 `FeaturedDeal`), alle kaarten daaronder zijn dealrijen (foto links, `DealRow`). In de winkelmandje-
 en browsemails is die bovenste kaart het achtergelaten of bekeken arrangement, dus de alternatieven
