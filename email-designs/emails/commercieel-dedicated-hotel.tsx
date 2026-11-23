@@ -2,7 +2,7 @@ import { Body, Container, Head, Heading, Html, Preview, Section } from "@react-e
 import * as React from "react";
 import CrmFooter from "../components/CrmFooter";
 import CrmHeader from "../components/CrmHeader";
-import { crmCss, CrmHelp, FeaturedDeal, Letter, PrimaryButton, type RowDeal, s, site } from "../components/crm";
+import { BeigeBand, QuickSearch, crmCss, CrmHelp, FeaturedDeal, Letter, PrimaryButton, type RowDeal, s, site } from "../components/crm";
 import { font, newsletter } from "../components/theme";
 
 // Commerciële mail 2: Dedicated hotel. De hele mail gaat over één hotel. Hij begint als brief
@@ -64,7 +64,14 @@ export default function CommercieelDedicatedHotel({ recipientEmail, firstName, l
           <Section className="m-pad" style={{ padding: "20px 32px 0" }}>
             <FeaturedDeal deal={deal} priceRow={showPrice} cta="Bekijk aanbieding" />
           </Section>
+        </Container>
 
+        {/* Snel zoeken op een beige band over de hele breedte */}
+        <BeigeBand top="48px">
+          <QuickSearch />
+        </BeigeBand>
+
+        <Container style={{ width: "100%", maxWidth: "626px" }}>
           {/* Hulplijn */}
           <CrmHelp top="36px" />
         </Container>

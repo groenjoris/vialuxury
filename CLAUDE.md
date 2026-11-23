@@ -213,7 +213,9 @@ Commerciële mails (sinds 2026-11-23): nieuwsbrieven en acties, zelfde opzet als
 die er al zijn (geen lege plekken). Mails komen in de registry met sectie `"commercieel"` (volgorde van de registry =
 volgorde in het paneel; varianten met `variantOf` en `variantLabel`); de export schrijft alleen light HTML en de lijst
 `app/data/commercieel-emails.json`. De commerciële mails hergebruiken de vormgeving en bouwstenen van de CRM-mails
-maximaal (`components/crm.tsx`, zelfde regels); bronnen `email-designs/emails/commercieel-*.tsx`, foto's in
+maximaal (`components/crm.tsx`, zelfde regels) en eindigen, boven de hulplijn, met het blok "Snel zoeken" op een beige
+band (`QuickSearch`: Best geboekt, Stedentrips, Aan zee, Romantisch, Wellness, Met diner; witte snelfilterknoppen naar
+de R1-zoekpagina); bronnen `email-designs/emails/commercieel-*.tsx`, foto's in
 `public/images/mail/commercieel/`. De voorbeelden worden per stuk gebriefd:
 1. `commercieel-content-multi-deal` ("Content (Multi-deal)"): meerdere deals rond een thema (kerstmarkten). Sfeerfoto
    over de hele breedte, campagnetitel "Winter Wonderweken", brief (`Letter`), titel "Hotels bij de mooiste
@@ -229,7 +231,7 @@ maximaal (`components/crm.tsx`, zelfde regels); bronnen `email-designs/emails/co
 3. `commercieel-actie` ("Actie (Goodiebox)"): een cadeau of extra bij een boeking. Actiefoto over de hele breedte
    (`goodiebox-hero.jpg`: een graphic van de actie, geen foto, dus mét tekst; de regel "geen tekst op een foto"
    geldt voor echte foto's zoals hotel- en sfeerbeelden, niet voor een aangeleverde actiegraphic/infographic), titel "Boek voor 7 december en ontvang onze Goodiebox", brief,
-   de actiecode als coupon (`CodeBlock`, HERFSTGB372, t/m 6 december 23:59 uur), daaronder de oranje knop "Bekijk ons aanbod"
+   de actiecode als coupon (`CodeBlock`, HERFSTGB372, t/m 6 december 23:59 uur), daaronder de zwarte knop "Bekijk ons aanbod"
    (zoekpagina), titel "Voor jou geselecteerde deals"
    met subtitel boven vier dealrijen, en omdat het cadeau bij elke boeking geldt onderaan één regel met de zwarte knop
    "Bekijk alle aanbiedingen" naar de R1-zoekpagina.

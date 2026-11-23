@@ -498,6 +498,26 @@ export function PillGrid({ items }: { items: Pill[] }) {
   );
 }
 
+/** "Snel zoeken", het blok van de homepage als e-mail (zet het in een BeigeBand): titel en zes
+ *  witte snelfilterknoppen met icoon in een raster van twee. Onderaan elke commerciële mail, boven
+ *  de hulplijn. Elke knop gaat naar de R1-zoekpagina. */
+export const quickSearches: { label: string; icon: string }[] = [
+  { label: "Best geboekt", icon: themeIcon("diamond") },
+  { label: "Stedentrips", icon: themeIcon("building") },
+  { label: "Aan zee", icon: themeIcon("waves") },
+  { label: "Romantisch", icon: themeIcon("heart") },
+  { label: "Wellness", icon: themeIcon("bath") },
+  { label: "Met diner", icon: themeIcon("utensils") },
+];
+export function QuickSearch() {
+  return (
+    <>
+      <Text style={s.kop}>Snel zoeken</Text>
+      <PillGrid items={quickSearches.map((q) => ({ ...q, href: `${site}/first-release/search` }))} />
+    </>
+  );
+}
+
 /** Themakiezer (zet hem in een BeigeBand): de snelfilterknoppen met icoon. Elke keuze gaat naar /crm/thema?keuze=<id>. */
 export function ThemePicker({ items = themes }: { items?: Theme[] }) {
   return (

@@ -2,14 +2,14 @@ import { Body, Container, Head, Heading, Html, Img, Preview, Section, Text } fro
 import * as React from "react";
 import CrmFooter from "../components/CrmFooter";
 import CrmHeader from "../components/CrmHeader";
-import { cardGap, CodeBlock, crmCss, CrmHelp, DealRow, Letter, PrimaryButton, type RowDeal, s, SecondaryButton, site } from "../components/crm";
+import { BeigeBand, QuickSearch, cardGap, CodeBlock, crmCss, CrmHelp, DealRow, Letter, type RowDeal, s, SecondaryButton, site } from "../components/crm";
 import { baseUrl, font, newsletter } from "../components/theme";
 import { lauswolt, steenenburg, vanOys, villaRuimzicht } from "../lib/crmDeals";
 
 // Commerciële mail 3: Actie. Een cadeau of extra bij een boeking, hier de Goodiebox t.w.v. €150
 // (plus een voucher van €25 voor de volgende boeking). Opbouw: de actiefoto over de hele breedte,
 // de titel met de deadline, een korte brief, de actiecode als coupon (CodeBlock) met daaronder de
-// oranje knop "Bekijk ons aanbod" (zoekpagina) en dan de lijst:
+// zwarte knop "Bekijk ons aanbod" (zoekpagina) en dan de lijst:
 // titel "Voor jou geselecteerde deals" met een subtitel en vier dealrijen. Het cadeau geldt bij
 // elke boeking; daarom onder de lijst één regel en de zwarte knop "Bekijk alle aanbiedingen" naar
 // de zoekpagina. Zelfde bouwstenen en regels als de CRM-mails (zie components/crm.tsx).
@@ -62,7 +62,7 @@ export default function CommercieelActie({ recipientEmail, firstName, hero, hero
             </Section>
             {/* Knop onder de code: naar alle aanbiedingen */}
             <Section style={{ marginTop: "20px" }}>
-              <PrimaryButton href={allDealsUrl}>Bekijk ons aanbod</PrimaryButton>
+              <SecondaryButton href={allDealsUrl} dark>Bekijk ons aanbod</SecondaryButton>
             </Section>
           </Section>
 
@@ -80,7 +80,14 @@ export default function CommercieelActie({ recipientEmail, firstName, hero, hero
               <SecondaryButton href={allDealsUrl} dark>Bekijk alle aanbiedingen</SecondaryButton>
             </Section>
           </Section>
+        </Container>
 
+        {/* Snel zoeken op een beige band over de hele breedte */}
+        <BeigeBand top="48px">
+          <QuickSearch />
+        </BeigeBand>
+
+        <Container style={{ width: "100%", maxWidth: "626px" }}>
           {/* Hulplijn */}
           <CrmHelp top="36px" />
         </Container>

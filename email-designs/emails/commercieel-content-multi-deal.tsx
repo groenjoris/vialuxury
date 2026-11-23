@@ -2,7 +2,7 @@ import { Body, Container, Head, Heading, Html, Img, Preview, Section } from "@re
 import * as React from "react";
 import CrmFooter from "../components/CrmFooter";
 import CrmHeader from "../components/CrmHeader";
-import { cardGap, crmCss, CrmHelp, DealRow, Letter, type RowDeal, s, site } from "../components/crm";
+import { BeigeBand, QuickSearch, cardGap, crmCss, CrmHelp, DealRow, Letter, type RowDeal, s, site } from "../components/crm";
 import { baseUrl, font, newsletter } from "../components/theme";
 
 // Commerciële mail 1: Content (Multi-deal). Meerdere deals rond één thema of selectie, hier
@@ -60,7 +60,14 @@ export default function CommercieelContentMultiDeal({ recipientEmail, firstName,
               <DealRow key={d.url + i} deal={d} top={i ? cardGap : "12px"} />
             ))}
           </Section>
+        </Container>
 
+        {/* Snel zoeken op een beige band over de hele breedte */}
+        <BeigeBand top="48px">
+          <QuickSearch />
+        </BeigeBand>
+
+        <Container style={{ width: "100%", maxWidth: "626px" }}>
           {/* Hulplijn */}
           <CrmHelp top="36px" />
         </Container>
