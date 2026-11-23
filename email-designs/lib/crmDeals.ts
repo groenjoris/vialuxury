@@ -113,6 +113,36 @@ export const dePlesman: RowDeal = {
   priceFor: "2 personen, 2 nachten",
 };
 
+export const carltonBeach: RowDeal = {
+  hotelName: "Carlton Beach",
+  stars: 4,
+  place: "Scheveningen",
+  packageTitle: "Ervaar het ultieme kustgevoel in Scheveningen",
+  line: from("€229"),
+  image: img("4556da77-0dd5-48b3-895c-b24662691264"),
+  url: dealUrl("carlton-beach-uitwaaien-aan-de-kust-vanuit-een-sfeervol-4-hotel"),
+  includes: ["Dagelijks ontbijtbuffet", "Welkomstdrankje", "Gebruik zwembad en wellness", "Direct aan zee"],
+  discount: "-50%",
+  price: "€229",
+  original: "€462",
+  priceFor: "2 personen, 2 nachten",
+};
+
+export const fashionHotel: RowDeal = {
+  hotelName: "WestCord Fashion Hotel Amsterdam",
+  stars: 4,
+  place: "Amsterdam",
+  packageTitle: "3-daags verblijf in een 4*-hotel met skybar",
+  line: from("€279"),
+  image: img("a0943077-0b0f-4022-96ec-eda45927e263"),
+  url: dealUrl("fashion-hotel-amsterdam-3-daags-verblijf-in-een-4-hotel-met-wellness-en-sky-bar-met-panoramisch-uitzicht"),
+  includes: ["Dagelijks ontbijtbuffet", "Gebruik zwembad", "Wellness & Fitness", "Late check-out"],
+  discount: "-49%",
+  price: "€279",
+  original: "€543",
+  priceFor: "2 personen, 2 nachten",
+};
+
 /** Een deal als afgerond verblijf: alleen hotel, plaats en dealtitel met de verblijfsdatums, zonder
  *  aanbod (prijs, korting, inclusies), zodat het de kale kaart blijft. */
 export const asStay = (d: RowDeal, dates: string): RowDeal => ({

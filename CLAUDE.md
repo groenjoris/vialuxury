@@ -197,7 +197,7 @@ Artist impression van geautomatiseerde e-mails, alleen desktop + light mode. Mai
 van het paneel links in de preview, de klantreis): `crm-winkelmandje` (2 uur na verlaten; variant
 `crm-winkelmandje-naam-onbekend` via de schakelaar "Naam bekend | Naam onbekend" in de previewkop, registry
 `variantOf`, labels in `variantLabels` in `app/pages/crm/[slug].vue`), `crm-winkelmandje-2-dagen` (ook met de variant `-naam-onbekend`), `crm-zoekopdracht`, `crm-favorieten`, `crm-review`, de repeat-bookingflow `crm-nagenieten`,
-`crm-terugkomactie` (€10 en €15), `crm-terugkomactie-herinnering` (zelfde component met `daysLeft`) en
+`crm-terugkomactie` (€20), `crm-terugkomactie-herinnering` (zelfde component met `daysLeft`) en
 `crm-jaar-geleden`, en als laatste `crm-thema-stedentrips` (A6). Bronnen in
 `email-designs/emails/crm-*.tsx`, bouwstenen in `email-designs/components/crm.tsx` (`DealRow`,
 `FeaturedDeal`, `DealList`, `CodeBlock`, `ThemePicker`, `IconLine`) plus `CrmHeader`/`CrmFooter`,
@@ -236,13 +236,15 @@ Regels voor elke CRM-mail:
   regels in plaats van de prijsrij (`lines`) en de link "Ga verder met boeken"; de kaart zelf is de uitgebreide zonder hotel, plaats en prijsrij (`priceRow={false}`).
 - Elke CRM-mail eindigt met de hulplijn "Hulp nodig?" (`CrmHelp` = `HelpBanner` uit de post-bookingmails, zelfde tekst,
   lichtoranje vlak, 16 px).
-- Terugkomactie (14 dagen): twee coupons naast elkaar (`CouponPair`): €10 op de volgende boeking (code direct te
-  gebruiken, 24 uur geldig) en €15 op de boeking daarna. Van de tweede code staat alleen het vaste begin in de mail
-  ("TERUG2-#####", grijze stippelrand); de volledige code komt in een nieuwe mail zodra de eerste is gebruikt (één boeking
+- Favorietenmail (`crm-favorieten`, heette "verlanglijst"): wie iets aan zijn favorieten toevoegt, krijgt korting daarop
+  (in werkelijkheid algemeen geldig; niet benadrukken). Twee coupons naast elkaar (`CouponPair`): €10 op de eerste boeking
+  (code direct te gebruiken, 24 uur geldig) en €15 op de tweede. Van de tweede code staat alleen het vaste begin in de mail
+  ("WENS2-#####", grijze stippelrand); de volledige code komt in een nieuwe mail zodra de eerste is gebruikt (één boeking
   kan alleen een veelvoud van hetzelfde arrangement bevatten, dus de tweede boeking heeft een eigen trigger nodig). Copy
-  op haast. De herinnering (30 dagen) heeft nog de oude opzet met één code van €20.
-- Favorietenmail (`crm-favorieten`, heette "verlanglijst"): wie iets aan zijn favorieten toevoegt, krijgt een code met
-  €10 korting daarop (in werkelijkheid algemeen geldig; niet benadrukken). Eén coupon, copy op haast.
+  op haast.
+- Terugkomactie (14 dagen) en herinnering (30 dagen, copy op haast): één coupon van €20. Daaronder de grote titel "Pas je
+  korting toe" met "Boek uiterlijk [vervaldatum]" en drie groepjes van twee dealrijen met een subtitel: "In de sfeer van
+  [vorig hotel]", "Populair deze maand" en "Deals met wellness".
 - Tussen twee dealkaarten onder elkaar staat 24 px (`cardGap`), tussen een titel en de eerste kaart 12 px.
 - Preheaders zonder gegevens die lastig te automatiseren zijn of niet altijd bestaan (geen plaatsen of prijzen van de
   suggesties, geen datum uit de zoekopdracht).

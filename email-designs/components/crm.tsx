@@ -361,7 +361,7 @@ export type Coupon = {
   locked?: boolean;
 };
 
-/** Twee coupons naast elkaar, even hoog (terugkomactie: €10 op de volgende en €15 op de
+/** Twee coupons naast elkaar, even hoog (favorieten: €10 op de eerste en €15 op de tweede
  *  boeking). Zelfde opbouw als CodeBlock: alles gecentreerd onder elkaar, bedrag het grootst. De
  *  tweede is `locked`: grijze stippelrand en een code waarvan alleen het begin zichtbaar is. */
 export function CouponPair({ coupons }: { coupons: [Coupon, Coupon] }) {
