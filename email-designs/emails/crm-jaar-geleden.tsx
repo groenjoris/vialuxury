@@ -61,7 +61,9 @@ export default function CrmJaarGeleden({ recipientEmail, hotelName, packageTitle
 
           {/* Deals met frame-titel, onder elkaar */}
           <Section className="m-pad" style={{ padding: "48px 32px 40px" }}>
-            <Text style={s.kop}>Anderen die {hotelName} boekten, boekten ook</Text>
+            {/* Eén groep suggesties, dus geen beige band: grote titel met de regel eronder */}
+            <Heading as="h2" className="m-h1" style={s.h1}>Tips voor je kortingscode</Heading>
+            <Text style={{ ...s.body, color: c.muted, margin: "2px 0 0" }}>Anderen die {hotelName} boekten, boekten ook</Text>
             {deals.map((d, i) => (
               <DealRow key={d.url} deal={d} top={i ? cardGap : undefined} />
             ))}
