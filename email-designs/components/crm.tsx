@@ -54,7 +54,7 @@ export function Letter({ firstName, greeting = "Beste", children }: { firstName?
     <>
       <Text style={{ ...s.body, margin: 0 }}>{salutation}</Text>
       <Text style={{ ...s.body, margin: "8px 0 0" }}>{children}</Text>
-      <Img src={`${baseUrl}/images/mail/crm/groetjes-yvette.png`} alt="Groetjes Yvette" width="200" height="43" style={{ display: "block", width: "200px", height: "43px", marginTop: "16px" }} />
+      <Img src={`${baseUrl}/images/mail/crm/groetjes-yvette.png`} alt="Groetjes Yvette" width="133" height="29" style={{ display: "block", width: "133px", height: "29px", marginTop: "14px" }} />
     </>
   );
 }
