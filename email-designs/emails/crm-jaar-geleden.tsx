@@ -11,7 +11,7 @@ import { font, newsletter } from "../components/theme";
 // periode +1 jaar en hetzelfde aantal personen. Kortingscode als coupon (stijl van Jesse's
 // terugkomactie), alleen als er een actieve code is. Daaronder drie deals onder elkaar in
 // de omlijnde dealrij van de reviewmail, met vanafprijs en zonder labels.
-// Onderwerp: "Vandaag een jaar geleden"
+// Onderwerp: "Vandaag een jaar geleden 🎉" (feest-emoji achter de zin)
 
 type Props = {
   recipientEmail: string;
