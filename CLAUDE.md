@@ -229,7 +229,8 @@ maximaal (`components/crm.tsx`, zelfde regels); bronnen `email-designs/emails/co
 3. `commercieel-actie` ("Actie (Goodiebox)"): een cadeau of extra bij een boeking. Actiefoto over de hele breedte
    (`goodiebox-hero.jpg`: een graphic van de actie, geen foto, dus mét tekst; de regel "geen tekst op een foto"
    geldt voor echte foto's zoals hotel- en sfeerbeelden, niet voor een aangeleverde actiegraphic/infographic), titel "Boek voor 7 december en ontvang onze Goodiebox", brief,
-   de actiecode als coupon (`CodeBlock`, HERFSTGB372, t/m 6 december 23:59 uur), titel "Voor jou geselecteerde deals"
+   de actiecode als coupon (`CodeBlock`, HERFSTGB372, t/m 6 december 23:59 uur), daaronder de oranje knop "Bekijk ons aanbod"
+   (zoekpagina), titel "Voor jou geselecteerde deals"
    met subtitel boven vier dealrijen, en omdat het cadeau bij elke boeking geldt onderaan één regel met de zwarte knop
    "Bekijk alle aanbiedingen" naar de R1-zoekpagina.
 
