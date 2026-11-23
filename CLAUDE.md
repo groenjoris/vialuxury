@@ -205,12 +205,18 @@ voorbeelddeals in `email-designs/lib/crmDeals.ts`, registry-sectie `"crm"`; de e
 light HTML en de lijst `app/data/crm-emails.json`. Preview `/crm/<slug>` (één frame zoals in de inbox:
 afzender, onderwerp en preheader boven de mail; links tegen de rand een wit paneel met alle mails: naam,
 daaronder het verzendmoment, actieve mail op beige, pijltjes ↑ ↓ bladeren); bevestigingspagina's
-`/crm/volgende-vakantie?keuze=…` (nagenieten) en `/crm/thema?keuze=…` (themakiezer). Startscherm: vak "CRM"
-met één knop "Voorbeeldmails" (naar de eerste mail).
+`/crm/volgende-vakantie?keuze=…` (nagenieten) en `/crm/thema?keuze=…` (themakiezer). Startscherm: vak "E-mailmarketing"
+met de knoppen "CRM-mails" (naar de eerste CRM-mail) en "Commerciële mails".
+
+Commerciële mails (sinds 2026-11-23): nieuwsbrieven en acties, zelfde opzet als de CRM-preview. Pagina
+`app/pages/commercieel/[[slug]].vue` (`/commercieel` opent de eerste mail), links een paneel met tien plekken (een plek
+zonder mail staat grijs, "volgt"). Mails komen in de registry met sectie `"commercieel"` (volgorde van de registry =
+volgorde in het paneel; varianten met `variantOf` en `variantLabel`); de export schrijft alleen light HTML en de lijst
+`app/data/commercieel-emails.json`. De tien voorbeelden worden nog gebriefd.
 
 Regels voor elke CRM-mail:
-- Briefopzet (het format voor alle CRM-mails, tot nu toe in `crm-winkelmandje-2-dagen`, `crm-favorieten`, `crm-zoekopdracht` en
-  `crm-terugkomactie` (met herinnering); de aanhef is
+- Briefopzet (het format voor alle CRM-mails, tot nu toe in `crm-winkelmandje-2-dagen`, `crm-favorieten`, `crm-zoekopdracht`,
+  `crm-thema-stedentrips` en `crm-terugkomactie` (met herinnering); de aanhef is
   overal "Beste …", nooit "Hi"): de mail begint met
   de bouwsteen `Letter`: aanhef ("Beste Sanne," / "Beste gast,"), een korte intro en de ondertekening "Groetjes Yvette"
   als afbeelding (`public/images/mail/crm/groetjes-yvette.png`: lettertype Oooh Baby, donkergrijs #555555; geen
@@ -224,7 +230,10 @@ Regels voor elke CRM-mail:
 - Dealblokken: wit met grijze rand (#E5E5E5, de randkleur van de website), foto tot aan de rand; suggesties als één groot blok + rijen
   (`DealList`). Geen labels of stickers ("Populair"). De knop "Bekijk" in een dealkaart
   is altijd oranje, ook als de mail bovenaan al een oranje knop heeft.
-- Geen grijze vlakken; beige (#F4F1EC) alleen als echte highlight: het vlak achter de blokken met keuzeknoppen (`beigeBox`). Keuzes (thema, nagenietvraag) zijn witte snelfilterknoppen in een raster van twee (`PillGrid`) op dat beige vlak.
+- Geen grijze vlakken; beige (#F4F1EC) alleen als echte highlight, altijd als band over de hele breedte van de mail
+  (`BeigeBand`, buiten de `<Container>`, inhoud in dezelfde kolom met 32 px marge): achter keuzeblokken (themakiezer,
+  nagenietvraag, reviewsterren) en achter groepen suggesties. Keuzes zijn witte snelfilterknoppen in een raster van twee
+  (`PillGrid`). Een subtitel staat dicht onder zijn titel (2 px).
 - Elke deal staat op de uitgebreide kaart, de zoekkaart van de website als e-mail (`DealRow`/`FeaturedDeal` tonen
   die zodra de deal een `price` heeft): hotel met sterren en plaats (sans, ondergeschikt), lijntje, dealtitel 18 serif,
   "Arrangement" met maximaal vier inclusies (groen vinkje), "2 personen, 2 nachten" en onderaan één rij: links het
@@ -244,15 +253,24 @@ Regels voor elke CRM-mail:
   ("WENS2-#####", grijze stippelrand); de volledige code komt in een nieuwe mail zodra de eerste is gebruikt (één boeking
   kan alleen een veelvoud van hetzelfde arrangement bevatten, dus de tweede boeking heeft een eigen trigger nodig). Copy
   op haast.
-- Terugkomactie (14 dagen) en herinnering (30 dagen, copy op haast): één coupon van €20. Daaronder de grote titel "Tips voor je
-  kortingscode" met "Boek uiterlijk [vervaldatum] 23:59 uur" en drie groepjes van twee dealrijen, elk op een eigen beige vlak met de
-  subtitel erin: "In de sfeer van [vorig hotel]", "Populair deze maand" en "Deals met wellness". Geen blok "Jouw verblijf".
-- Gegroepeerde suggesties (`DealGroup`, in de terugkomactie en de favorietenmail): elke groep op een eigen beige vlak met
-  de subtitel (20 serif) en eventueel een grijze regel erin, kaarten wit, 16 px ertussen; het vlak steekt 16 px buiten de
-  tekstkolom zodat de kaarten even breed blijven.
+- Terugkomactie (14 dagen) en herinnering (30 dagen): één coupon van €20. Daaronder een grote titel en drie groepjes van
+  twee dealrijen op banden (om en om beige en wit) met de subtitel erin: "In de sfeer van [vorig hotel]", "Populair deze
+  maand" en "Deals met wellness". In elke dealkaart staat onder de prijsrij "Met jouw code: €499" (`withCode`,
+  `priceWithCode`). Eerste mail: titel "Tips voor je kortingscode" met "Boek uiterlijk [vervaldatum] 23:59 uur". De
+  herinnering stuurt op haast: verliesframe in de intro, de termijn als held van de coupon ("Nog 14 dagen", `urgent`), knop
+  "Verzilver je €20" en de titel "Nog 14 dagen: hier gebruik je je €20". Geen blok "Jouw verblijf".
+- Gegroepeerde suggesties (`DealGroup`, in de terugkomactie en de favorietenmail): elke groep op een eigen band over de
+  hele breedte, met de subtitel (20 serif) en eventueel een grijze regel erin, kaarten wit, 16 px ertussen. Banden onder
+  elkaar sluiten zonder tussenruimte aan en wisselen af: beige, wit, beige (nooit twee beige banden na elkaar); de
+  themakiezer in de terugkomactie is de volgende band in die reeks.
 - Reviewmail: de sterren zijn een keuzeblok op het beige vlak: vijf lege, omlijnde sterren (`ster-leeg.png`) met "Slecht"
   en "Uitstekend" eronder. Leeg leest als "vul mij in"; gevulde sterren lezen als een score die er al staat. Variant
   `crm-review-knoppen` (schakelaar "Lege ster | Knop" in de previewkop): vijf witte knoppen met cijfer en ster.
+- Precies een jaar geleden heeft twee varianten (schakelaar "Social proof | Persoonlijk"): social proof met de knop "Check
+  beschikbaarheid" en "Anderen boekten ook" boven de suggesties; persoonlijk (`crm-jaar-geleden-persoonlijk`) met een brief
+  onder de titel (link naar de beschikbare datums in de tekst) en "Geselecteerd voor [voornaam]" boven de suggesties.
+- Nagenietmail heeft twee varianten (schakelaar "Bericht | Titel"): standaard een brief met aanhef en ondertekening en
+  in het blok alleen de vraag als titel; of (`crm-nagenieten-titel`) de grote titel onder de foto.
 - Tussen twee dealkaarten onder elkaar staat 24 px (`cardGap`), tussen een titel en de eerste kaart 12 px.
 - Preheaders zonder gegevens die lastig te automatiseren zijn of niet altijd bestaan (geen plaatsen of prijzen van de
   suggesties, geen datum uit de zoekopdracht).
@@ -276,6 +294,8 @@ template in Klaviyo; die naam staat ook onder de titel in de preview. Registry-s
 alleen light, lijst `app/data/automation-emails.json`, preview `/automation/<slug>` (zelfde frame als
 de CRM-preview, paneel links gegroepeerd per flow). Startscherm: knop "Automations" in het vak CRM.
 
+De themasectie (S7) staat op een `BeigeBand` over de hele breedte, net als in de CRM-mails.
+
 Secties uit de sheet als bouwstenen in `email-designs/components/crm.tsx`. Bestaand: `CrmHeader` (S1),
 `FeaturedDeal`/`DealRow`/`DealList` (S4) en `CrmFooter` (S13). Nieuw voor deze flows:
 `GuestRatingSection` (S21), `BrandSection` (S6), `ServiceSection` (S15), `SearchSection` (S18) en
@@ -292,7 +312,7 @@ Open punten in de sheet zelf: de preheader van `tf027` zegt "Drie alternatieven"
 twee dealplekken heeft (rij 20 is leeg), en voor de themategel "Hotels met experiences" bestaat nog
 geen landingspagina, dus die staat niet in de themasectie van `tf031`.
 
-Kaarthoogte: elke dealkaart is op desktop even hoog — de dealrij 425 px (`CARD_HEIGHT_ROW`) en de
+Kaarthoogte: elke dealkaart is op desktop even hoog — de dealrij 457 px (`CARD_HEIGHT_ROW`) en de
 grote kaart 696 px, gezet als 379 px tekstblok onder de foto (`CARD_TEXT_HEIGHT_FEATURED`; een vaste
 hoogte op de kaart zelf verdeelt de ruimte over de rijen en zet een witte strook boven de foto) — want in Klaviyo moet een herhalend blok één hoogte
 hebben. Zonder die hoogte scheelt elke kaart een paar regels, afhankelijk van hoeveel regels de

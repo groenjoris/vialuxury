@@ -2,14 +2,15 @@ import { Body, Container, Head, Heading, Html, Preview, Section, Text } from "@r
 import * as React from "react";
 import CrmFooter from "../components/CrmFooter";
 import CrmHeader from "../components/CrmHeader";
-import { crmCss, CrmHelp, DealList, type RowDeal, s, site, ThemePicker } from "../components/crm";
+import { BeigeBand, crmCss, CrmHelp, DealList, Letter, type RowDeal, s, site, ThemePicker } from "../components/crm";
 import { font, newsletter } from "../components/theme";
 
-// CRM: themamail stedentrips (A6). Kop met de reden ("Omdat je zocht op 'stedentrips'"),
-// drie populaire stedentrips onder elkaar (de eerste groot over de hele breedte, de andere
-// twee als omlijnde dealrij) en onderaan de themakiezer: zes witte snelfilterknoppen met
-// icoon, zoals "Snel zoeken" op de homepage, in een raster van twee even brede kolommen.
-// Elke keuze gaat naar /crm/thema?keuze=<id>.
+// CRM: themamail stedentrips (A6). De mail begint als brief (Letter): aanhef, de reden ("Omdat je
+// zocht op stedentrips, hierbij …") en de ondertekening. Daarna de titel "De populairste
+// stedentrips" direct boven de lijst: drie deals onder elkaar (de eerste groot over de hele
+// breedte, de andere twee als dealrij), zonder beige band want het is één groep. Onderaan de
+// themakiezer op een beige band: zes witte snelfilterknoppen met icoon, zoals "Snel zoeken" op de
+// homepage, in een raster van twee even brede kolommen. Elke keuze gaat naar /crm/thema?keuze=<id>.
 // De twee dealrijen in deze mail tonen twee foto's onder elkaar in de fotokolom: het hoofdbeeld
 // boven en het tweede beeld van het arrangement eronder (veld `secondImage`).
 // De deals staan op de uitgebreide kaart (zoals de zoekkaart op de website).
@@ -17,12 +18,14 @@ import { font, newsletter } from "../components/theme";
 
 type Props = {
   recipientEmail: string;
-  /** Zoekterm of thema waarop de ontvanger zocht; leeg → geen reden onder de kop. */
+  /** Leeg → "Beste gast,". */
+  firstName?: string;
+  /** Zoekterm of thema waarop de ontvanger zocht; leeg → de intro zonder reden. */
   searchedFor?: string;
   deals: RowDeal[];
 };
 
-export default function CrmThemaStedentrips({ recipientEmail, searchedFor, deals }: Props) {
+export default function CrmThemaStedentrips({ recipientEmail, firstName, searchedFor, deals }: Props) {
   const c = newsletter.light;
   return (
     <Html lang="nl">
@@ -34,22 +37,30 @@ export default function CrmThemaStedentrips({ recipientEmail, searchedFor, deals
       <Body style={{ backgroundColor: c.bg, margin: 0, padding: 0, fontFamily: font.body }}>
         <CrmHeader />
         <Container style={{ width: "100%", maxWidth: "626px" }}>
+          {/* Briefopening: aanhef, de reden (waar je op zocht) en de ondertekening */}
           <Section className="m-pad" style={{ padding: "32px 32px 0" }}>
-            <Heading as="h1" className="m-h1" style={s.h1}>De populairste stedentrips</Heading>
-            {searchedFor && <Text style={{ ...s.body, color: c.muted, margin: "8px 0 0" }}>Omdat je zocht op '{searchedFor}'.</Text>}
+            <Letter firstName={firstName}>
+              {searchedFor ? `Omdat je zocht op ${searchedFor}, hierbij de meest populaire stedentrips van dit moment.` : "Hierbij de meest populaire stedentrips van dit moment."}
+            </Letter>
           </Section>
 
-          {/* Drie deals: de eerste groot, de rest als rij */}
-          <Section className="m-pad" style={{ padding: "12px 32px 0" }}>
+          {/* De titel hoort bij de lijst en staat er direct boven (geen subtitel: de reden staat al in
+              de aanhef; geen beige band: het is één groep). Drie deals: de eerste groot, de rest als rij */}
+          <Section className="m-pad" style={{ padding: "40px 32px 0" }}>
+            <Heading as="h1" className="m-h1" style={s.h1}>De populairste stedentrips</Heading>
             <DealList deals={deals} />
           </Section>
 
-          {/* Themakiezer: raster van even brede snelfilterknoppen */}
-          <Section className="m-pad" style={{ padding: "48px 32px 40px" }}>
-            <ThemePicker />
-          </Section>
+        </Container>
+
+        {/* Themakiezer op een beige band over de hele breedte: raster van even brede snelfilterknoppen */}
+        <BeigeBand top="48px">
+          <ThemePicker />
+        </BeigeBand>
+
+        <Container style={{ width: "100%", maxWidth: "626px" }}>
           {/* Hulplijn */}
-          <CrmHelp />
+          <CrmHelp top="36px" />
         </Container>
         <CrmFooter recipientEmail={recipientEmail} reason="omdat je je hebt aangemeld voor onze nieuwsbrief" />
       </Body>
@@ -61,6 +72,7 @@ const deal = (permalink: string) => `${site}/first-release/deal/${permalink}`;
 
 CrmThemaStedentrips.PreviewProps = {
   recipientEmail: "sanne.devries@example.com",
+  firstName: "Sanne",
   searchedFor: "stedentrips",
   deals: [
     {

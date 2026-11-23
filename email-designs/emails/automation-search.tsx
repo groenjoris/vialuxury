@@ -2,7 +2,7 @@ import { Body, Container, Head, Heading, Html, Preview, Section, Text } from "@r
 import * as React from "react";
 import CrmFooter from "../components/CrmFooter";
 import CrmHeader from "../components/CrmHeader";
-import { crmCss, DealList, type Pill, type RowDeal, s, SearchSection, ThemeSection } from "../components/crm";
+import { BeigeBand, crmCss, DealList, type Pill, type RowDeal, s, SearchSection, ThemeSection } from "../components/crm";
 import { dePlesman, desIndes, kurhaus, voco } from "../lib/crmDeals";
 import { site } from "../components/crm";
 import { font, newsletter } from "../components/theme";
@@ -61,15 +61,15 @@ export default function AutomationSearch({ recipientEmail, preheader, heading, i
             <DealList deals={results} />
           </Section>
 
-          {/* S7 Themasectie */}
-          {themeSection && (
-            <Section className="m-pad" style={{ padding: "32px 32px 0" }}>
-              <ThemeSection title={themeSection.title} note={themeSection.note} items={themeSection.items} />
-            </Section>
-          )}
-
           <Section className="m-pad" style={{ padding: "0 32px 40px" }} />
         </Container>
+
+        {/* S7 Themasectie op een beige band over de hele breedte */}
+        {themeSection && (
+          <BeigeBand>
+            <ThemeSection title={themeSection.title} note={themeSection.note} items={themeSection.items} />
+          </BeigeBand>
+        )}
         <CrmFooter recipientEmail={recipientEmail} reason="omdat je je hebt aangemeld voor de nieuwsbrief van ViaLuxury" />
       </Body>
     </Html>

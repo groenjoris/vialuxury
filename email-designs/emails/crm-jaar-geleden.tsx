@@ -1,20 +1,29 @@
-import { Body, Container, Head, Heading, Html, Img, Preview, Section, Text } from "@react-email/components";
+import { Body, Container, Head, Heading, Html, Img, Link, Preview, Section, Text } from "@react-email/components";
 import * as React from "react";
-import { cardGap, CodeBlock, crmCss, CrmHelp, DealRow, PrimaryButton, type RowDeal, s, site } from "../components/crm";
+import { cardGap, CodeBlock, crmCss, CrmHelp, DealRow, Letter, PrimaryButton, type RowDeal, s, site } from "../components/crm";
 import CrmFooter from "../components/CrmFooter";
 import CrmHeader from "../components/CrmHeader";
 import { font, newsletter } from "../components/theme";
 
 // CRM mail 2: precies een jaar geleden (vervangt A2 1 jaar). Trigger: 1 jaar na
-// aankomstdatum. "On this day"-herinnering: grote foto, daaronder "Vorig jaar op [datum]",
-// de hotelnaam, "Nog een keer beleven?" en één knop naar het arrangement met dezelfde
-// periode +1 jaar en hetzelfde aantal personen. Kortingscode als coupon (stijl van Jesse's
-// terugkomactie), alleen als er een actieve code is. Daaronder drie deals onder elkaar in
-// de omlijnde dealrij van de reviewmail, met vanafprijs en zonder labels.
-// Onderwerp: "Vandaag een jaar geleden"
+// aankomstdatum. "On this day"-herinnering: grote foto, daaronder "Vorig jaar op [datum]".
+// Twee varianten (schakelaar in de preview):
+// - Social proof (crm-jaar-geleden): hotelnaam, "Nog een keer beleven?" en één knop naar het
+//   arrangement met dezelfde periode +1 jaar en hetzelfde aantal personen; boven de suggesties
+//   "Anderen boekten ook" met "Gasten die in [hotel] verbleven, kozen daarna vaak deze arrangementen".
+// - Persoonlijk (crm-jaar-geleden-persoonlijk): onder de titel een brief (aanhef, het verblijf van
+//   vorig jaar, een link naar de beschikbare datums, de selectie, ondertekening); boven de
+//   suggesties "Geselecteerd voor [voornaam]".
+// Kortingscode als coupon, alleen als er een actieve code is. Daaronder drie deals onder elkaar.
+// Onderwerp: "Vandaag een jaar geleden 🎉" (feest-emoji achter de zin)
 
 type Props = {
   recipientEmail: string;
+  /** Alleen in de variant "persoonlijk": leeg → "Beste gast," en "Geselecteerd voor jou". */
+  firstName?: string;
+  /** "social" (standaard): social proof boven de suggesties ("Anderen boekten ook"). "persoonlijk":
+   *  brief onder de titel en "Geselecteerd voor [voornaam]" boven de suggesties. */
+  variant?: "social" | "persoonlijk";
   hotelName: string;
   packageTitle: string;
   /** "2 november" */
@@ -27,8 +36,9 @@ type Props = {
   deals: RowDeal[];
 };
 
-export default function CrmJaarGeleden({ recipientEmail, hotelName, packageTitle, arrivalDayLastYear, image, availabilityUrl, code, deals }: Props) {
+export default function CrmJaarGeleden({ recipientEmail, firstName, variant = "social", hotelName, packageTitle, arrivalDayLastYear, image, availabilityUrl, code, deals }: Props) {
   const c = newsletter.light;
+  const personal = variant === "persoonlijk";
 
   return (
     <Html lang="nl">
@@ -45,11 +55,24 @@ export default function CrmJaarGeleden({ recipientEmail, hotelName, packageTitle
 
           <Section className="m-pad" style={{ padding: "28px 32px 0" }}>
             <Heading as="h1" className="m-h1" style={s.h1}>Vorig jaar op {arrivalDayLastYear}</Heading>
-            <Text style={{ ...s.kop, margin: "6px 0 0" }}>{hotelName}</Text>
-            <Text style={{ ...s.body, margin: "24px 0 0" }}>Nog een keer beleven?</Text>
-            <Section style={{ marginTop: "14px" }}>
-              <PrimaryButton href={availabilityUrl}>Check beschikbaarheid</PrimaryButton>
-            </Section>
+            {personal ? (
+              // Variant "Persoonlijk": brief onder de titel; de link naar de beschikbare datums staat in de tekst
+              <Section style={{ marginTop: "20px" }}>
+                <Letter firstName={firstName}>
+                  Vorig jaar op {arrivalDayLastYear} verbleef je in {hotelName}. Nog een keer beleven?{" "}
+                  <Link href={availabilityUrl} style={{ color: c.link, fontWeight: 700, textDecoration: "underline" }}>Klik hier voor beschikbare datums</Link>
+                  . Wil je wat anders? Dan hebben we speciaal voor jou vergelijkbare arrangementen geselecteerd.
+                </Letter>
+              </Section>
+            ) : (
+              <>
+                <Text style={{ ...s.kop, margin: "6px 0 0" }}>{hotelName}</Text>
+                <Text style={{ ...s.body, margin: "24px 0 0" }}>Nog een keer beleven?</Text>
+                <Section style={{ marginTop: "14px" }}>
+                  <PrimaryButton href={availabilityUrl}>Check beschikbaarheid</PrimaryButton>
+                </Section>
+              </>
+            )}
           </Section>
 
           {code && (
@@ -61,7 +84,15 @@ export default function CrmJaarGeleden({ recipientEmail, hotelName, packageTitle
 
           {/* Deals met frame-titel, onder elkaar */}
           <Section className="m-pad" style={{ padding: "48px 32px 40px" }}>
-            <Text style={s.kop}>Anderen die {hotelName} boekten, boekten ook</Text>
+            {/* Eén groep suggesties, dus geen beige band: grote titel met de regel eronder */}
+            {personal ? (
+              <Heading as="h2" className="m-h1" style={s.h1}>{firstName ? `Geselecteerd voor ${firstName}` : "Geselecteerd voor jou"}</Heading>
+            ) : (
+              <>
+                <Heading as="h2" className="m-h1" style={s.h1}>Anderen boekten ook</Heading>
+                <Text style={{ ...s.body, color: c.muted, margin: "2px 0 0" }}>Gasten die in {hotelName} verbleven, kozen daarna vaak deze arrangementen</Text>
+              </>
+            )}
             {deals.map((d, i) => (
               <DealRow key={d.url} deal={d} top={i ? cardGap : undefined} />
             ))}
@@ -79,6 +110,7 @@ const deal = (permalink: string) => `${site}/first-release/deal/${permalink}`;
 
 CrmJaarGeleden.PreviewProps = {
   recipientEmail: "sanne.devries@example.com",
+  firstName: "Sanne",
   hotelName: "Hotel Des Indes",
   packageTitle: "Verblijf 3 dagen in een luxe 5*-hotel in hartje Den Haag",
   arrivalDayLastYear: "2 november",
@@ -130,3 +162,6 @@ CrmJaarGeleden.PreviewProps = {
     },
   ],
 } satisfies Props;
+
+/** Variant "Persoonlijk": brief onder de titel en "Geselecteerd voor Sanne" boven de suggesties. */
+export const persoonlijkProps = { ...CrmJaarGeleden.PreviewProps, variant: "persoonlijk" as const };

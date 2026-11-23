@@ -3,8 +3,8 @@ import VakantieBevestiging, { fietsPreviewProps as bevestigingFiets } from "../e
 import VakantiePreTravel, { fietsPreviewProps as preTravelFiets } from "../emails/vakantie-pre-travel";
 import VakantieIncheckHotel from "../emails/vakantie-incheck-hotel";
 import MvpVakantieBevestiging from "../emails/mvp-vakantie-bevestiging";
-import CrmNagenieten from "../emails/crm-nagenieten";
-import CrmJaarGeleden from "../emails/crm-jaar-geleden";
+import CrmNagenieten, { titelProps } from "../emails/crm-nagenieten";
+import CrmJaarGeleden, { persoonlijkProps } from "../emails/crm-jaar-geleden";
 import CrmWinkelmandje, { naamOnbekendProps } from "../emails/crm-winkelmandje";
 import CrmWinkelmandje2Dagen, { naamOnbekendProps as naamOnbekend2DagenProps } from "../emails/crm-winkelmandje-2-dagen";
 import CrmThemaStedentrips from "../emails/crm-thema-stedentrips";
@@ -24,7 +24,9 @@ const MVP_ACCOUNT = "https://vialuxury.vercel.app/mvp-trip/account/boekingen";
 // "automation": de uitgewerkte automationmails voor Klaviyo (alleen light, eigen lijst
 // app/data/automation-emails.json). De slug is exact de Klaviyo-naam uit de briefing, zodat de
 // geëxporteerde HTML (public/emails/<slug>.html) net zo heet als de template in Klaviyo.
-export type EmailSection = "designs" | "inspiration" | "crm" | "automation";
+// "commercieel": commerciële mails (nieuwsbrieven en acties; alleen light, eigen lijst
+// app/data/commercieel-emails.json, preview /commercieel/<slug>, tien plekken).
+export type EmailSection = "designs" | "inspiration" | "crm" | "automation" | "commercieel";
 
 export type EmailEntry = {
   slug: string;
@@ -38,6 +40,8 @@ export type EmailEntry = {
   /** Variant van een andere mail (slug), bijv. de niet-terugbetaalbare versie `<slug>-nonflex`; de
    *  preview toont die bij de schakelaar Non-flex, in lijsten blijft hij verborgen. */
   variantOf?: string;
+  /** Label van deze mail in de variantschakelaar van de preview (sectie "commercieel"). */
+  variantLabel?: string;
   // Elke e-mail exporteert PreviewProps met representatieve voorbeelddata
   // en accepteert een optionele `mode`-prop ("light" | "dark").
   Component: React.ComponentType<any> & { PreviewProps?: Record<string, unknown> };
@@ -300,13 +304,35 @@ export const emails: EmailEntry[] = [
     Component: CrmNagenieten,
   },
   {
+    slug: "crm-nagenieten-titel",
+    title: "Nagenietmail (3 dagen na vertrek)",
+    description: "Variant: onder de foto een grote titel in plaats van de brief, en in het blok een regel boven de vraag.",
+    section: "crm",
+    variantOf: "crm-nagenieten",
+    subject: "Wanneer ga je weer?",
+    preheader: "Eén klik, dan sturen we je op het juiste moment inspiratie.",
+    Component: CrmNagenieten,
+    props: titelProps,
+  },
+  {
     slug: "crm-jaar-geleden",
     title: "Precies een jaar geleden",
     description: "On this day-herinnering op de aankomstdatum +1 jaar: grote foto, datum en hotel, één knop naar het arrangement met dezelfde periode en personen vooringevuld. Kortingsregel alleen bij een actieve code; drie deals met frame-titel.",
     section: "crm",
-    subject: "Vandaag een jaar geleden",
+    subject: "Vandaag een jaar geleden 🎉",
     preheader: "Je verblijf in Hotel Des Indes, en een code voor €25 korting.",
     Component: CrmJaarGeleden,
+  },
+  {
+    slug: "crm-jaar-geleden-persoonlijk",
+    title: "Precies een jaar geleden",
+    description: "Variant: onder de titel een brief met het verblijf van vorig jaar en een link naar de beschikbare datums, de coupon, en de suggesties onder 'Geselecteerd voor Sanne'.",
+    section: "crm",
+    variantOf: "crm-jaar-geleden",
+    subject: "Vandaag een jaar geleden 🎉",
+    preheader: "Je verblijf in Hotel Des Indes, en een code voor €25 korting.",
+    Component: CrmJaarGeleden,
+    props: persoonlijkProps,
   },
   {
     slug: "crm-winkelmandje",
@@ -457,7 +483,7 @@ export const emails: EmailEntry[] = [
   {
     slug: "crm-thema-stedentrips",
     title: "Themamail stedentrips (A6)",
-    description: "Drie populaire stedentrips (één groot, twee als rij) met de reden onder de kop, daarna een ander thema kiezen met zes witte snelfilterknoppen in een raster.",
+    description: "Briefopening met de reden (waar je op zocht), drie populaire stedentrips (één groot, twee als rij), daarna een ander thema kiezen met zes witte snelfilterknoppen in een raster.",
     section: "crm",
     subject: "Dit zijn de populairste stedentrips van dit moment",
     preheader: "Parijs, Den Haag en Amsterdam, vanaf €279 voor 2 personen.",

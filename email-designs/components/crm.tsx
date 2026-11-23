@@ -1,4 +1,4 @@
-import { Button, Column, Img, Link, Row, Section, Text } from "@react-email/components";
+import { Button, Column, Container, Img, Link, Row, Section, Text } from "@react-email/components";
 import * as React from "react";
 import HelpBanner from "./HelpBanner";
 import { baseUrl, font, newsletter } from "./theme";
@@ -10,7 +10,8 @@ import { baseUrl, font, newsletter } from "./theme";
 //   de dealtitel in een dealkaart is 18 px.
 // - Alles links uitgelijnd (alleen de inhoud van de coupon staat gecentreerd).
 // - Klaviyo: nooit twee lettertypen naast elkaar op één regel; onder elkaar mag wel.
-// - Geen grijze vlakken; beige alleen als highlight (achter de blokken met keuzeknoppen). Blokken zijn wit met een grijze rand (#E5E5E5, zoals de website).
+// - Geen grijze vlakken; beige alleen als highlight, als band over de hele breedte (BeigeBand)
+//   achter keuzeblokken en groepen suggesties. Blokken zijn wit met een grijze rand (#E5E5E5, zoals de website).
 // - Geen labels ("Populair" e.d.) op deals; prijzen zijn het totaal voor 2 personen.
 // - Deals staan op de uitgebreide kaart (zoals de zoekkaart op de website); geen tekst op een foto.
 // - Links naar het prototype gaan naar de R1-dealpagina (zachte landing).
@@ -170,6 +171,8 @@ export type RowDeal = {
   original?: string;
   /** Waar de prijs voor geldt, bijv. "2 personen, 2 nachten". */
   priceFor?: string;
+  /** Prijs na aftrek van de kortingscode van de ontvanger, bijv. "€499"; regel onder de prijsrij. */
+  withCode?: string;
 };
 
 /** De tekstregels van een dealblok: hotelnaam (20 serif), sterren, plaats, dealtitel en de vette regel. */
@@ -261,9 +264,20 @@ function RichDealPrice({ d, cta }: { d: RowDeal; cta: string }) {
           </Button>
         </Column>
       </Row>
+      {d.withCode && (
+        <Text style={{ ...s.title, margin: "10px 0 0" }}>
+          Met jouw code: <span style={{ fontWeight: 700 }}>{d.withCode}</span>
+        </Text>
+      )}
     </>
   );
 }
+
+/** Prijs van een deal na aftrek van een kortingsbedrag: ("€519", 20) → "€499". */
+export const priceWithCode = (price: string | undefined, discount: number) => {
+  const n = Number((price ?? "").replace(/[^0-9]/g, ""));
+  return n > discount ? `€${n - discount}` : undefined;
+};
 
 /** Ruimte tussen twee dealkaarten onder elkaar. */
 export const cardGap = "24px";
@@ -273,7 +287,7 @@ export const cardGap = "24px";
  *  Klaviyo moet een herhalend blok één hoogte hebben. De waarden zijn de hoogste kaart die in de
  *  mails voorkomt, dus er wordt niets afgesneden; een kortere kaart houdt onderaan wat ruimte over.
  *  Op mobiel vervalt de hoogte (klasse `m-auto-h`), want daar staat de foto boven de tekst. */
-export const CARD_HEIGHT_ROW = "425px";
+export const CARD_HEIGHT_ROW = "457px";
 /** Bij de grote kaart staat de hoogte op het tekstblok onder de foto, niet op de kaart zelf: een
  *  vaste hoogte op de kaart verdeelt de overgebleven ruimte over de rijen en zet dan een witte
  *  strook boven en onder de foto. 379 px tekstblok + 315 px foto + 2 px rand = 696 px kaart. */
@@ -292,11 +306,11 @@ export function DealRow({ deal: d, cta, top = "12px" }: { deal: RowDeal; cta?: s
         {d.secondImage ? (
           // Twee foto's onder elkaar: het hoofdbeeld boven, het tweede beeld van het arrangement
           // eronder, met een wit randje ertussen. Samen vullen ze de vaste kaarthoogte
-          // (211 + 212 = 423 px binnen de rand, waarvan 3 px wit). Het randje is een witte bovenrand op de
+          // (227 + 228 = 455 px binnen de rand, waarvan 3 px wit). Het randje is een witte bovenrand op de
           // tweede foto; een achtergrondfoto loopt niet door onder een rand.
           <Column className="stack m-rowphoto-cell" style={{ width: "190px", verticalAlign: "top" }}>
             {[d.image, d.secondImage].map((src, i) => (
-              <Section key={src} className="m-halfphoto" style={{ height: i ? "212px" : "211px", borderTop: i ? "3px solid #FFFFFF" : undefined, backgroundImage: `url(${src})`, backgroundSize: "cover", backgroundPosition: "center" }}>
+              <Section key={src} className="m-halfphoto" style={{ height: i ? "228px" : "227px", borderTop: i ? "3px solid #FFFFFF" : undefined, backgroundImage: `url(${src})`, backgroundSize: "cover", backgroundPosition: "center" }}>
                 <Link href={d.url} aria-label={d.hotelName ?? cta ?? "Bekijk"} className="m-rowphoto" style={{ display: "block", width: "190px", minHeight: "107px" }} />
               </Section>
             ))}
@@ -364,20 +378,35 @@ export function FeaturedDeal({ deal: d, cta, priceRow = true }: { deal: RowDeal;
   );
 }
 
+/** Beige band over de hele breedte van de mail (highlight achter een keuzeblok of een groep
+ *  suggesties). De inhoud staat in dezelfde kolom van 626 px met 32 px marge als de rest van de
+ *  mail, dus tekst en kaarten lijnen uit met wat erboven en eronder staat. Net als de zwarte
+ *  header en footer staat de band BUITEN de <Container> van de mail: sluit die ervoor en open er
+ *  een nieuwe na. `top`: witte ruimte boven de band. Meerdere banden onder elkaar sluiten zonder
+ *  tussenruimte op elkaar aan en wisselen af: beige, wit (`white`), beige. */
+export function BeigeBand({ children, top = "0", white }: { children: React.ReactNode; top?: string; white?: boolean }) {
+  return (
+    <Section style={{ backgroundColor: white ? "#FFFFFF" : "#F4F1EC", width: "100%", marginTop: top }}>
+      <Container style={{ width: "100%", maxWidth: "626px" }}>
+        <Section className="m-pad" style={{ padding: "24px 32px 28px" }}>{children}</Section>
+      </Container>
+    </Section>
+  );
+}
+
 /** Ruimte tussen twee dealkaarten binnen een DealGroup. */
 export const groupGap = "16px";
 
-/** Groep suggesties op een beige vlak: subtitel (20 serif; met `big` een hoofdtitel van 32, voor
- *  een mail zonder titel boven de groepen) en eventueel een grijze regel eronder,
- *  dan de dealkaarten (wit). Zet groepen in een Section met `padding: "… 16px"`: het vlak steekt dan
- *  links en rechts 16 px buiten de tekstkolom, zodat de kaarten even breed blijven als elders. */
-export function DealGroup({ title, subtitle, big, children }: { title: string; subtitle?: string; big?: boolean; children: React.ReactNode }) {
+/** Groep suggesties op een band over de hele breedte (om en om beige en wit: geef de even groepen
+ *  `white` mee): subtitel (20 serif) en eventueel een
+ *  grijze regel eronder, dan de dealkaarten (wit). Staat net als BeigeBand buiten de <Container>. */
+export function DealGroup({ title, subtitle, top, white, children }: { title: string; subtitle?: string; top?: string; white?: boolean; children: React.ReactNode }) {
   return (
-    <Section style={{ backgroundColor: "#F4F1EC", borderRadius: "8px", padding: big ? "24px 16px 20px" : "20px 16px", marginTop: "16px" }}>
-      <Text style={big ? s.h1 : s.kop}>{title}</Text>
-      {subtitle && <Text style={{ ...s.muted, margin: big ? "6px 0 4px" : "2px 0 0" }}>{subtitle}</Text>}
+    <BeigeBand top={top} white={white}>
+      <Text style={s.kop}>{title}</Text>
+      {subtitle && <Text style={{ ...s.muted, margin: "2px 0 0" }}>{subtitle}</Text>}
       {children}
-    </Section>
+    </BeigeBand>
   );
 }
 
@@ -410,8 +439,23 @@ export function IconLine({ icon, children, bold }: { icon: string; children: Rea
  *  gestippelde rand waarin alles gecentreerd onder elkaar staat: wat je krijgt (`title`, bijv.
  *  "€20 cadeau"), het label, de code als selecteerbare tekst in oranje serif, de geldigheid en de
  *  instructie. Met `daysLeft`: "Nog 14 dagen geldig, tot en met …". */
-export function CodeBlock({ title, code, label = "Jouw persoonlijke code", deadline, daysLeft }: { title?: string; code: string; label?: string; deadline: string; daysLeft?: number }) {
+export function CodeBlock({ title, code, label = "Jouw persoonlijke code", deadline, daysLeft, urgent }: { title?: string; code: string; label?: string; deadline: string; daysLeft?: number; /** Herinnering: de termijn is het grootst ("Nog 14 dagen"), het bedrag staat eronder; geef het bedrag mee als `title` ("€20 cadeau"). */ urgent?: boolean }) {
   const center = { textAlign: "center" as const };
+  if (urgent && daysLeft) {
+    return (
+      <Section style={{ width: "100%", border: `2px dashed ${c.cta}`, borderRadius: "8px", padding: "22px 22px 24px", textAlign: "center" }}>
+        <Text style={{ ...s.h1, fontWeight: 700, color: c.cta, ...center, margin: 0 }}>Nog {daysLeft} dagen</Text>
+        {title && <Text style={{ ...s.name, ...center, margin: "4px 0 14px" }}>om je {title} te gebruiken</Text>}
+        <Text style={{ ...s.title, ...center, margin: 0 }}>{label}</Text>
+        <Text style={{ fontFamily: font.heading, fontWeight: 700, fontSize: "20px", lineHeight: "1.3", letterSpacing: "0.02em", color: c.text, margin: "4px 0 0", ...center }}>{code}</Text>
+        <Text style={{ ...s.name, ...center, margin: "14px 0 0" }}>
+          <Img src={mailIcon("clock-donker")} alt="" width="18" height="18" style={{ display: "inline-block", verticalAlign: "-3px", marginRight: "8px" }} />
+          Geldig tot en met {deadline}
+        </Text>
+        <Text style={{ ...s.muted, ...center, margin: "2px 0 0" }}>Vul de code in bij het boeken.</Text>
+      </Section>
+    );
+  }
   return (
     <Section style={{ width: "100%", border: `2px dashed ${c.cta}`, borderRadius: "8px", padding: "22px 22px 24px", textAlign: "center" }}>
       {title && <Text style={{ ...s.h1, fontWeight: 700, color: c.cta, ...center, margin: "0 0 12px" }}>{title}</Text>}
@@ -483,9 +527,6 @@ export const themes: Theme[] = [
   { id: "romantisch", label: "Romantisch", icon: themeIcon("heart") },
 ];
 
-/** Beige vlak (highlight) achter een blok met keuzeknoppen: themakiezer en nagenietvraag. */
-export const beigeBox = { backgroundColor: "#F4F1EC", borderRadius: "8px", padding: "24px 24px 28px" };
-
 /** Raster van witte snelfilterknoppen (zoals "Snel zoeken" op de homepage): dun randje, optioneel
  *  een icoon, label links; twee even brede kolommen. */
 export type Pill = { label: string; href: string; icon?: string };
@@ -519,14 +560,14 @@ export function PillGrid({ items }: { items: Pill[] }) {
   );
 }
 
-/** Themakiezer: de snelfilterknoppen met icoon. Elke keuze gaat naar /crm/thema?keuze=<id>. */
+/** Themakiezer (zet hem in een BeigeBand): de snelfilterknoppen met icoon. Elke keuze gaat naar /crm/thema?keuze=<id>. */
 export function ThemePicker({ items = themes }: { items?: Theme[] }) {
   return (
-    <Section style={beigeBox}>
+    <>
       <Text style={s.kop}>Waarover wil je aanbiedingen ontvangen?</Text>
-      <Text style={s.body}>Eén klik is genoeg, dan sturen we voortaan wat je zoekt.</Text>
+      <Text style={{ ...s.body, margin: "2px 0 0" }}>Eén klik is genoeg, dan sturen we voortaan wat je zoekt.</Text>
       <PillGrid items={items.map((t) => ({ label: t.label, icon: t.icon, href: `${site}/crm/thema?keuze=${t.id}` }))} />
-    </Section>
+    </>
   );
 }
 
@@ -586,15 +627,15 @@ export function SearchSection({ searchTerm, arrivalDate, persons, resultsUrl }: 
   );
 }
 
-/** S7 Themasectie compact: beige vlak met de themaknoppen en de knop "Alle thema's".
+/** S7 Themasectie compact: de themaknoppen met de knop "Alle thema's" (zet hem in een BeigeBand).
  *  De tegels en hun landingspagina's komen uit het tabblad Themategels, de keuze volgt de
  *  seizoensthema's van de verzendmaand (tabblad Seizoensthema's). */
 export function ThemeSection({ title, note, items }: { title: string; note: string; items: Pill[] }) {
   return (
-    <Section style={beigeBox}>
+    <>
       <Text style={s.kop}>{title}</Text>
       <PillGrid items={[...items, { label: "Alle thema's", href: "https://vialuxury.com/nl-NL/zoeken" }]} />
       <Text style={{ ...s.muted, margin: "14px 0 0" }}>{note}</Text>
-    </Section>
+    </>
   );
 }
