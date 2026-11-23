@@ -322,9 +322,10 @@ export function FeaturedDeal({ deal: d, cta, priceRow = true }: { deal: RowDeal;
  *  header en footer staat de band BUITEN de <Container> van de mail: sluit die ervoor en open er
  *  een nieuwe na. `top`: witte ruimte boven de band. Meerdere banden onder elkaar sluiten zonder
  *  tussenruimte op elkaar aan en wisselen af: beige, wit (`white`), beige. */
-export function BeigeBand({ children, top = "0", white }: { children: React.ReactNode; top?: string; white?: boolean }) {
+export function BeigeBand({ children, top = "0", white, notch }: { children: React.ReactNode; top?: string; white?: boolean; /** Wit driehoekje (punt omlaag) midden in de bovenrand van de band: een hint om verder te scrollen. */ notch?: boolean }) {
   return (
     <Section style={{ backgroundColor: white ? "#FFFFFF" : "#F4F1EC", width: "100%", marginTop: top }}>
+      {notch && <div style={{ width: 0, height: 0, margin: "0 auto", borderLeft: "18px solid transparent", borderRight: "18px solid transparent", borderTop: "16px solid #FFFFFF", fontSize: 0, lineHeight: 0 }} />}
       <Container style={{ width: "100%", maxWidth: "626px" }}>
         <Section className="m-pad" style={{ padding: "24px 32px 28px" }}>{children}</Section>
       </Container>
@@ -338,9 +339,9 @@ export const groupGap = "16px";
 /** Groep suggesties op een band over de hele breedte (om en om beige en wit: geef de even groepen
  *  `white` mee): subtitel (20 serif) en eventueel een
  *  grijze regel eronder, dan de dealkaarten (wit). Staat net als BeigeBand buiten de <Container>. */
-export function DealGroup({ title, subtitle, top, white, children }: { title: string; subtitle?: string; top?: string; white?: boolean; children: React.ReactNode }) {
+export function DealGroup({ title, subtitle, top, white, notch, children }: { title: string; subtitle?: string; top?: string; white?: boolean; notch?: boolean; children: React.ReactNode }) {
   return (
-    <BeigeBand top={top} white={white}>
+    <BeigeBand top={top} white={white} notch={notch}>
       <Text style={s.kop}>{title}</Text>
       {subtitle && <Text style={{ ...s.muted, margin: "2px 0 0" }}>{subtitle}</Text>}
       {children}

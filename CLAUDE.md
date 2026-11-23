@@ -290,9 +290,10 @@ Regels voor elke CRM-mail:
 - Terugkomactie (14 dagen) en herinnering (30 dagen): één coupon van €20. Daaronder een grote titel en drie groepjes van
   twee dealrijen op banden (om en om beige en wit) met de subtitel erin: "In de sfeer van [vorig hotel]", "Populair deze
   maand" en "Deals met wellness". In elke dealkaart staat onder de prijsrij "Met jouw code: €499" (`withCode`,
-  `priceWithCode`). Eerste mail: titel "Tips voor je kortingscode" met "Boek uiterlijk [vervaldatum] 23:59 uur". De
+  `priceWithCode`). Eerste mail: titel "Je kortingscode geldt hier", zonder subtitel. In de bovenrand van de
+  eerste band staat in het midden een wit driehoekje met de punt omlaag (`notch`), als hint om verder te scrollen. De
   herinnering stuurt op haast: verliesframe in de intro, de termijn als held van de coupon ("Nog 14 dagen", `urgent`), knop
-  "Verzilver je €20" en de titel "Nog 14 dagen: hier gebruik je je €20". Geen blok "Jouw verblijf".
+  "Verzilver je €20" en de titel "Hier gebruik je je €20". Geen blok "Jouw verblijf".
 - Gegroepeerde suggesties (`DealGroup`, in de terugkomactie en de favorietenmail): elke groep op een eigen band over de
   hele breedte, met de subtitel (20 serif) en eventueel een grijze regel erin, kaarten wit, 16 px ertussen. Banden onder
   elkaar sluiten zonder tussenruimte aan en wisselen af: beige, wit, beige (nooit twee beige banden na elkaar); de
