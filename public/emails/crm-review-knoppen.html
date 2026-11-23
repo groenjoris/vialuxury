@@ -10,6 +10,9 @@
         .m-cardtext { padding: 16px 18px 18px !important; }
         /* Prijsrij blijft op één regel, ook op een scherm van 375 px: alles iets kleiner, zodat het
            kortingsblokje, de prijs en de knop samen binnen de kaart passen. */
+        /* De foto van een dealrij staat op mobiel boven de tekst over de volle breedte; padding-top van
+           56,25 % maakt dat vlak 16:9, want een achtergrondfoto heeft zelf geen hoogte. */
+        .m-rowphoto { width: 100% !important; height: 0 !important; min-height: 0 !important; padding-top: 56.25% !important; }
         .m-badge-cell { padding-right: 8px !important; }
         .m-badge { font-size: 12px !important; padding: 9px 7px !important; }
         .m-price { font-size: 12px !important; }
@@ -211,6 +214,7 @@
                                             style="width:190px;vertical-align:top;background-image:url(https://asset.vialuxury.com/assets/57455675-0f6e-4334-aaa2-bc3d1747f31f?key=card);background-size:cover;background-position:center"><a
                                               href="https://vialuxury.vercel.app/first-release/deal/landgoed-lauswolt-geniet-van-5-sterren-luxe-in-de-bosrijke-omgeving-van-friesland-incl-culinair-diner"
                                               aria-label="Landgoed Lauswolt"
+                                              class="m-rowphoto"
                                               style="color:#067df7;text-decoration-line:none;display:block;width:190px;min-height:107px"
                                               target="_blank"></a></td><td
                                             class="stack m-cardtext"

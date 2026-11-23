@@ -13,6 +13,9 @@
         .m-cardtext { padding: 16px 18px 18px !important; }
         /* Prijsrij blijft op één regel, ook op een scherm van 375 px: alles iets kleiner, zodat het
            kortingsblokje, de prijs en de knop samen binnen de kaart passen. */
+        /* De foto van een dealrij staat op mobiel boven de tekst over de volle breedte; padding-top van
+           56,25 % maakt dat vlak 16:9, want een achtergrondfoto heeft zelf geen hoogte. */
+        .m-rowphoto { width: 100% !important; height: 0 !important; min-height: 0 !important; padding-top: 56.25% !important; }
         .m-badge-cell { padding-right: 8px !important; }
         .m-badge { font-size: 12px !important; padding: 9px 7px !important; }
         .m-price { font-size: 12px !important; }
@@ -122,7 +125,7 @@
                                         alt="3 dagen Parijs met een riviercruise op de Seine"
                                         height="315"
                                         src="https://asset.vialuxury.com/assets/8b56b66e-8948-4731-b8a5-600b37337c16?key=card"
-                                        style="display:block;outline:none;border:none;text-decoration:none;width:100%;height:315px;object-fit:cover"
+                                        style="display:block;outline:none;border:none;text-decoration:none;width:100%;height:auto;aspect-ratio:16 / 9;object-fit:cover"
                                         width="560"
                                     /></a><table
                                       align="center"
@@ -259,6 +262,7 @@
                                             style="width:190px;vertical-align:top;background-image:url(https://asset.vialuxury.com/assets/910163b4-1308-4f1f-989c-66e6d9202593?key=card);background-size:cover;background-position:center"><a
                                               href="https://vialuxury.vercel.app/first-release/deal/hotel-des-indes-verblijf-3-dagen-in-luxe-5-hotel-in-hartje-centrum"
                                               aria-label="Hotel Des Indes"
+                                              class="m-rowphoto"
                                               style="color:#067df7;text-decoration-line:none;display:block;width:190px;min-height:107px"
                                               target="_blank"></a></td><td
                                             class="stack m-cardtext"
@@ -390,6 +394,7 @@
                                             style="width:190px;vertical-align:top;background-image:url(https://asset.vialuxury.com/assets/a0943077-0b0f-4022-96ec-eda45927e263?key=card);background-size:cover;background-position:center"><a
                                               href="https://vialuxury.vercel.app/first-release/deal/fashion-hotel-amsterdam-3-daags-verblijf-in-een-4-hotel-met-wellness-en-sky-bar-met-panoramisch-uitzicht"
                                               aria-label="WestCord Fashion Hotel Amsterdam"
+                                              class="m-rowphoto"
                                               style="color:#067df7;text-decoration-line:none;display:block;width:190px;min-height:107px"
                                               target="_blank"></a></td><td
                                             class="stack m-cardtext"

@@ -303,8 +303,11 @@ door het kortingsblokje, de prijs en de knop iets kleiner te maken (`m-badge`, `
 `m-price`, `m-price-big`, `m-cta`): op 16 px vraagt die rij ruim 400 px en wordt de hele mail
 breder dan het scherm. Op desktop en in Outlook verandert er niets.
 
-Foto's in alle CRM- en automationmails staan op 16:9: de uitgelichte dealkaart 560×315, de dealrij
-190×107 en de grote sfeerfoto's 626×352, met `object-fit: cover`.
+Foto's in alle CRM- en automationmails staan op 16:9, op elke schermbreedte: de uitgelichte
+dealkaart 560×315, de dealrij 190×107 en de grote sfeerfoto's 626×352, met `object-fit: cover`.
+De hoofdfoto's houden hun verhouding met `aspect-ratio: 16 / 9` naast de breedte- en
+hoogte-attributen (die Outlook gebruikt); de achtergrondfoto van de dealrij krijgt op mobiel een
+`padding-top` van 56,25 % (klasse `m-rowphoto`), want een achtergrondfoto heeft zelf geen hoogte.
 
 ## Kaarten (Leaflet)
 

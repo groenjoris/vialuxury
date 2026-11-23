@@ -29,6 +29,9 @@ body { margin: 0 !important; padding: 0 !important; }
   .m-cardtext { padding: 16px 18px 18px !important; }
   /* Prijsrij blijft op één regel, ook op een scherm van 375 px: alles iets kleiner, zodat het
      kortingsblokje, de prijs en de knop samen binnen de kaart passen. */
+  /* De foto van een dealrij staat op mobiel boven de tekst over de volle breedte; padding-top van
+     56,25 % maakt dat vlak 16:9, want een achtergrondfoto heeft zelf geen hoogte. */
+  .m-rowphoto { width: 100% !important; height: 0 !important; min-height: 0 !important; padding-top: 56.25% !important; }
   .m-badge-cell { padding-right: 8px !important; }
   .m-badge { font-size: 12px !important; padding: 9px 7px !important; }
   .m-price { font-size: 12px !important; }
@@ -263,7 +266,7 @@ export function DealRow({ deal: d, cta, top = "12px" }: { deal: RowDeal; cta?: s
       <Row>
         {/* Foto als achtergrond: sluit aan op de rand en vult de hele hoogte van het blok */}
         <Column className="stack" style={{ width: "190px", verticalAlign: "top", backgroundImage: `url(${d.image})`, backgroundSize: "cover", backgroundPosition: "center" }}>
-          <Link href={d.url} aria-label={d.hotelName ?? cta ?? "Bekijk"} style={{ display: "block", width: "190px", minHeight: "107px" }} />
+          <Link href={d.url} aria-label={d.hotelName ?? cta ?? "Bekijk"} className="m-rowphoto" style={{ display: "block", width: "190px", minHeight: "107px" }} />
         </Column>
         <Column className="stack m-cardtext" style={{ verticalAlign: "top", padding: rich ? "16px 18px 18px" : "16px 18px" }}>
           {rich ? (
@@ -301,7 +304,7 @@ export function FeaturedDeal({ deal: d, cta, priceRow = true }: { deal: RowDeal;
   return (
     <Section style={{ backgroundColor: "#FFFFFF", border: `1px solid #E5E5E5`, borderRadius: "8px", marginTop: "12px", overflow: "hidden" }}>
       <Link href={d.url}>
-        <Img src={d.image} alt={d.packageTitle ?? d.hotelName ?? ""} width="560" height="315" style={{ display: "block", width: "100%", height: "315px", objectFit: "cover" }} />
+        <Img src={d.image} alt={d.packageTitle ?? d.hotelName ?? ""} width="560" height="315" style={{ display: "block", width: "100%", height: "auto", aspectRatio: "16 / 9", objectFit: "cover" }} />
       </Link>
       {rich ? (
         <Section style={{ padding: "16px 20px 20px" }}>

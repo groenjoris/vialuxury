@@ -19,6 +19,9 @@
         .m-cardtext { padding: 16px 18px 18px !important; }
         /* Prijsrij blijft op één regel, ook op een scherm van 375 px: alles iets kleiner, zodat het
            kortingsblokje, de prijs en de knop samen binnen de kaart passen. */
+        /* De foto van een dealrij staat op mobiel boven de tekst over de volle breedte; padding-top van
+           56,25 % maakt dat vlak 16:9, want een achtergrondfoto heeft zelf geen hoogte. */
+        .m-rowphoto { width: 100% !important; height: 0 !important; min-height: 0 !important; padding-top: 56.25% !important; }
         .m-badge-cell { padding-right: 8px !important; }
         .m-badge { font-size: 12px !important; padding: 9px 7px !important; }
         .m-price { font-size: 12px !important; }
@@ -197,7 +200,7 @@
                                         alt="Verken en beleef Den Haag vanuit een luxe 5*-hotel, incl. 3-gangendiner"
                                         height="315"
                                         src="https://asset.vialuxury.com/assets/ec2bfd91-fc7d-4fa4-91b9-9fc61298b804?key=card"
-                                        style="display:block;outline:none;border:none;text-decoration:none;width:100%;height:315px;object-fit:cover"
+                                        style="display:block;outline:none;border:none;text-decoration:none;width:100%;height:auto;aspect-ratio:16 / 9;object-fit:cover"
                                         width="560"
                                     /></a><table
                                       align="center"
@@ -335,6 +338,7 @@
                                             style="width:190px;vertical-align:top;background-image:url(https://asset.vialuxury.com/assets/e14b892d-4bfd-423d-9789-4e36ca5599af?key=card);background-size:cover;background-position:center"><a
                                               href="https://vialuxury.vercel.app/first-release/deal/de-plesman-openingsactie-beleef-den-haag-in-stijl-vanuit-een-nieuw-5-hotel-incl-3-gangendiner"
                                               aria-label="Hotel De Plesman"
+                                              class="m-rowphoto"
                                               style="color:#067df7;text-decoration-line:none;display:block;width:190px;min-height:107px"
                                               target="_blank"></a></td><td
                                             class="stack m-cardtext"
@@ -468,6 +472,7 @@
                                             style="width:190px;vertical-align:top;background-image:url(https://asset.vialuxury.com/assets/37e3155c-a965-4518-b38e-b9e93483766f?key=card);background-size:cover;background-position:center"><a
                                               href="https://vialuxury.vercel.app/first-release/deal/voco-the-hague-1-1-gratis-verblijf-in-het-mooiste-hotel-van-nederland"
                                               aria-label="voco® The Hague"
+                                              class="m-rowphoto"
                                               style="color:#067df7;text-decoration-line:none;display:block;width:190px;min-height:107px"
                                               target="_blank"></a></td><td
                                             class="stack m-cardtext"
