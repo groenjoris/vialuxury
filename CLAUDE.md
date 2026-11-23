@@ -209,8 +209,8 @@ daaronder het verzendmoment, actieve mail op beige, pijltjes ↑ ↓ bladeren); 
 met de knoppen "CRM-mails" (naar de eerste CRM-mail) en "Commerciële mails".
 
 Commerciële mails (sinds 2026-11-23): nieuwsbrieven en acties, zelfde opzet als de CRM-preview. Pagina
-`app/pages/commercieel/[[slug]].vue` (`/commercieel` opent de eerste mail), links een paneel met tien plekken (een plek
-zonder mail staat grijs, "volgt"). Mails komen in de registry met sectie `"commercieel"` (volgorde van de registry =
+`app/pages/commercieel/[[slug]].vue` (`/commercieel` opent de eerste mail), links een paneel met alleen de mails
+die er al zijn (geen lege plekken). Mails komen in de registry met sectie `"commercieel"` (volgorde van de registry =
 volgorde in het paneel; varianten met `variantOf` en `variantLabel`); de export schrijft alleen light HTML en de lijst
 `app/data/commercieel-emails.json`. De commerciële mails hergebruiken de vormgeving en bouwstenen van de CRM-mails
 maximaal (`components/crm.tsx`, zelfde regels); bronnen `email-designs/emails/commercieel-*.tsx`, foto's in

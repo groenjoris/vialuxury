@@ -62,7 +62,7 @@ export default function CommercieelDedicatedHotel({ recipientEmail, firstName, l
 
           {/* Het arrangement op de verticale kaart */}
           <Section className="m-pad" style={{ padding: "20px 32px 0" }}>
-            <FeaturedDeal deal={deal} priceRow={showPrice} />
+            <FeaturedDeal deal={deal} priceRow={showPrice} cta="Bekijk aanbieding" />
           </Section>
 
           {/* Hulplijn */}

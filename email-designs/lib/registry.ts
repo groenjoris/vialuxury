@@ -22,7 +22,7 @@ const MVP_ACCOUNT = "https://vialuxury.vercel.app/mvp-trip/account/boekingen";
 
 // "crm": concept-mails voor het CRM-project (alleen light, eigen lijst app/data/crm-emails.json).
 // "commercieel": commerciële mails (nieuwsbrieven en acties; alleen light, eigen lijst
-// app/data/commercieel-emails.json, preview /commercieel/<slug>, tien plekken).
+// app/data/commercieel-emails.json, preview /commercieel/<slug>).
 export type EmailSection = "designs" | "inspiration" | "crm" | "commercieel";
 
 export type EmailEntry = {
