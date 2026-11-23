@@ -298,9 +298,10 @@ en browsemails is die bovenste kaart het achtergelaten of bekeken arrangement, d
 zijn rijen; in de zoekmails is het het eerste zoekresultaat.
 
 Op mobiel (max-width 480) houdt de tekst van een dealrij zijn ruimte tot de rand van de kaart
-(klasse `m-cardtext`; `stack` haalt de celpadding anders weg) en zakt in de prijsrij alleen de knop
-onder de prijs (klasse `m-cta`), want samen op een regel vraagt die rij ruim 400 px en wordt de hele
-mail breder dan het scherm. Op desktop en in Outlook verandert er niets.
+(klasse `m-cardtext`; `stack` haalt de celpadding anders weg) en blijft de prijsrij op één regel
+door het kortingsblokje, de prijs en de knop iets kleiner te maken (`m-badge`, `m-badge-cell`,
+`m-price`, `m-price-big`, `m-cta`): op 16 px vraagt die rij ruim 400 px en wordt de hele mail
+breder dan het scherm. Op desktop en in Outlook verandert er niets.
 
 Foto's in alle CRM- en automationmails staan op 16:9: de uitgelichte dealkaart 560×315, de dealrij
 190×107 en de grote sfeerfoto's 626×352, met `object-fit: cover`.

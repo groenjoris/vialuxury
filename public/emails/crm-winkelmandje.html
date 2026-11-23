@@ -14,9 +14,13 @@
         /* De tekst van een dealrij houdt op mobiel zijn ruimte tot de rand van de kaart; zonder dit
            haalt stack de padding van de cel weg en plakt de tekst tegen het randje. */
         .m-cardtext { padding: 16px 18px 18px !important; }
-        /* Prijsrij: het kortingsblokje en de prijs blijven naast elkaar, de knop zakt eronder. Samen op
-           een regel vraagt de rij ruim 400 px en wordt de hele mail breder dan het scherm. */
-        .m-cta { display: block !important; width: 100% !important; text-align: left !important; padding: 14px 0 0 !important; }
+        /* Prijsrij blijft op één regel, ook op een scherm van 375 px: alles iets kleiner, zodat het
+           kortingsblokje, de prijs en de knop samen binnen de kaart passen. */
+        .m-badge-cell { padding-right: 8px !important; }
+        .m-badge { font-size: 12px !important; padding: 9px 7px !important; }
+        .m-price { font-size: 12px !important; }
+        .m-price-big { font-size: 16px !important; }
+        .m-cta { font-size: 12px !important; padding: 9px 10px !important; }
         .m-pad { padding-left: 16px !important; padding-right: 16px !important; }
         .m-h1 { font-size: 28px !important; }
       }
