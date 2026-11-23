@@ -11,7 +11,7 @@ import { desIndes, lauswolt, steenenburg, vanOys, villaRuimzicht } from "../lib/
 // bouwstenen en regels. Wie iets aan zijn favorieten toevoegt, krijgt een code met korting daarop.
 // (De code is in werkelijkheid algemeen geldig; dat benadrukken we niet.)
 // De mail begint als brief (Letter): aanhef, het bericht (leuk dat je dit favoriet opsloeg, daarom
-// extra korting als je binnen 24 uur boekt, en nog meer bij twee arrangementen) en de ondertekening.
+// extra korting als je binnen 24 uur boekt, en nog meer op de tweede boeking) en de ondertekening.
 // Twee coupons naast elkaar (CouponPair): €10 op de eerste boeking (code direct te gebruiken, 24
 // uur geldig) en €15 op de tweede. Eén boeking kan alleen een veelvoud van hetzelfde arrangement
 // bevatten, dus de tweede boeking heeft een eigen code nodig: daarvan staat alleen het vaste begin
@@ -56,7 +56,7 @@ export default function CrmFavorieten({ recipientEmail, firstName, first: code1,
               de ondertekening */}
           <Section className="m-pad" style={{ padding: "32px 32px 0" }}>
             <Letter firstName={firstName}>
-              Leuk dat je {name} als favoriet hebt opgeslagen! Nu snappen we beter wat jouw hartje bekoort en daarom bieden we een extra korting als je in de komende {code1.hoursLeft} uur boekt. En nog meer korting als je 2 arrangementen boekt!
+              Leuk dat je {name} als favoriet hebt opgeslagen! Nu snappen we beter wat jouw hartje bekoort en daarom bieden we een extra korting als je in de komende {code1.hoursLeft} uur boekt. En op je tweede boeking krijg je nog meer korting!
             </Letter>
           </Section>
 
