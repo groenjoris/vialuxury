@@ -305,11 +305,13 @@ Kaartvolgorde: de bovenste dealkaart van een mail is altijd de grote kaart (foto
 en browsemails is die bovenste kaart het achtergelaten of bekeken arrangement, dus de alternatieven
 zijn rijen; in de zoekmails is het het eerste zoekresultaat.
 
-Op mobiel (max-width 480) houdt de tekst van een dealrij zijn ruimte tot de rand van de kaart
-(klasse `m-cardtext`; `stack` haalt de celpadding anders weg) en blijft de prijsrij op één regel
-door het kortingsblokje, de prijs en de knop iets kleiner te maken (`m-badge`, `m-badge-cell`,
-`m-price`, `m-price-big`, `m-cta`): op 16 px vraagt die rij ruim 400 px en wordt de hele mail
-breder dan het scherm. Op desktop en in Outlook verandert er niets.
+Twee breekpunten: onder 600 px stapelen de kolommen (`stack`) — een dealrij heeft dan de foto boven
+de tekst — en onder 640 px krimpt de prijsrij (`m-badge`, `m-badge-cell`, `m-price`, `m-price-big`,
+`m-cta`), want op 16 px vraagt die rij ruim 400 px en valt de knop buiten de kaart. De tekst van een
+dealrij houdt daarbij zijn ruimte tot de rand (`m-cardtext`, met `box-sizing: border-box`, anders
+telt `stack`'s `width: 100%` de padding er nog bij op). Getest van 360 tot 900 px: niets steekt
+buiten een kaart en geen mail is breder dan het scherm. Op 320 px is de kop (logo 201 + Trustpilot
+106) de beperking, niet de kaarten. Op desktop en in Outlook verandert er niets.
 
 Foto's in alle CRM- en automationmails staan op 16:9, op elke schermbreedte: de uitgelichte
 dealkaart 560×315, de dealrij 190×107 en de grote sfeerfoto's 626×352, met `object-fit: cover`.

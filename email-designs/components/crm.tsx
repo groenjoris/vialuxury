@@ -22,24 +22,28 @@ export const site = "https://vialuxury.vercel.app";
 
 export const crmCss = `
 body { margin: 0 !important; padding: 0 !important; }
-@media only screen and (max-width: 480px) {
+@media only screen and (max-width: 600px) {
   .stack { display: block !important; width: 100% !important; padding: 0 0 12px !important; }
-  /* De tekst van een dealrij houdt op mobiel zijn ruimte tot de rand van de kaart; zonder dit
-     haalt stack de padding van de cel weg en plakt de tekst tegen het randje. */
-  .m-cardtext { padding: 16px 18px 18px !important; }
-  /* Prijsrij blijft op één regel, ook op een scherm van 375 px: alles iets kleiner, zodat het
-     kortingsblokje, de prijs en de knop samen binnen de kaart passen. */
+  /* De tekst van een dealrij houdt op mobiel zijn ruimte tot de rand van de kaart. box-sizing is
+     nodig omdat stack width:100% zet: zonder dat telt de padding er nog bij op en steekt de cel
+     (en dus de knop) buiten de kaart uit. */
+  .m-cardtext { padding: 16px 18px 18px !important; box-sizing: border-box !important; }
   /* De foto van een dealrij staat op mobiel boven de tekst over de volle breedte; padding-top van
      56,25 % maakt dat vlak 16:9, want een achtergrondfoto heeft zelf geen hoogte. */
-  .m-auto-h { height: auto !important; }
   .m-rowphoto { width: 100% !important; height: 0 !important; min-height: 0 !important; padding-top: 56.25% !important; }
-  .m-badge-cell { padding-right: 8px !important; }
-  .m-badge { font-size: 12px !important; padding: 9px 7px !important; }
-  .m-price { font-size: 12px !important; }
-  .m-price-big { font-size: 16px !important; }
-  .m-cta { font-size: 12px !important; padding: 9px 10px !important; }
+  /* De vaste kaarthoogte vervalt: de foto staat hier boven de tekst, dus de kaart is hoger. */
+  .m-auto-h { height: auto !important; }
   .m-pad { padding-left: 16px !important; padding-right: 16px !important; }
   .m-h1 { font-size: 28px !important; }
+}
+/* Alles smaller dan de volle 626 px: alleen de prijsrij krimpt, de kolommen blijven naast elkaar.
+   Op 16 px vraagt die rij ruim 400 px en zou de knop buiten de kaart vallen. */
+@media only screen and (max-width: 640px) {
+  .m-badge-cell { padding-right: 6px !important; }
+  .m-badge { font-size: 12px !important; padding: 9px 6px !important; }
+  .m-price { font-size: 12px !important; }
+  .m-price-big { font-size: 16px !important; }
+  .m-cta { font-size: 12px !important; padding: 9px 9px !important; }
 }
 `;
 
