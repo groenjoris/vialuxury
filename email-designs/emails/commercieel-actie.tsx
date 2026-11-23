@@ -47,9 +47,10 @@ export default function CommercieelActie({ recipientEmail, firstName, hero, hero
       <Preview>Boek voor 7 december en hij is van jou.</Preview>
       <Body style={{ backgroundColor: c.bg, margin: 0, padding: 0, fontFamily: font.body }}>
         <CrmHeader />
+        {/* Actiegraphic direct onder de header, over de hele breedte van de mail (net als de zwarte
+            header buiten de <Container>) */}
+        <Img src={hero} alt={heroAlt} width="700" style={{ display: "block", width: "100%", height: "auto" }} />
         <Container style={{ width: "100%", maxWidth: "626px" }}>
-          {/* Actiefoto, tot aan de rand */}
-          <Img src={hero} alt={heroAlt} width="626" height="370" style={{ display: "block", width: "100%", height: "auto" }} />
 
           {/* Titel met de deadline, de brief en de actiecode als coupon */}
           <Section className="m-pad" style={{ padding: "32px 32px 0" }}>

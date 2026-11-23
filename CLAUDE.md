@@ -228,8 +228,8 @@ de R1-zoekpagina); bronnen `email-designs/emails/commercieel-*.tsx`, foto's in
    Zonder prijs"): de brief steekt in op nieuwsgierigheid en noemt geen prijs, de kaart heeft geen prijsrij. Tweede schakelaar "Zonder titel |
    Met titel" (`-met-titel`: grote titel "Deal van de maand november" boven het bericht); de schakelaars zijn los te
    combineren: een `variantLabel` met " / " ("Met prijs / Zonder titel") geeft in de preview per deel een schakelaar.
-3. `commercieel-actie` ("Actie (Goodiebox)"): een cadeau of extra bij een boeking. Actiefoto over de hele breedte
-   (`goodiebox-hero.jpg`: een graphic van de actie, geen foto, dus mét tekst; de regel "geen tekst op een foto"
+3. `commercieel-actie` ("Actie (Goodiebox)"): een cadeau of extra bij een boeking. Actiegraphic direct onder de header over de hele breedte van de mail,
+   buiten de `<Container>` (`goodiebox-hero.jpg`: een graphic van de actie, geen foto, dus mét tekst; de regel "geen tekst op een foto"
    geldt voor echte foto's zoals hotel- en sfeerbeelden, niet voor een aangeleverde actiegraphic/infographic), titel "Boek voor 7 december en ontvang onze Goodiebox", brief,
    de actiecode als coupon (`CodeBlock`, HERFSTGB372, t/m 6 december 23:59 uur), daaronder de zwarte knop "Bekijk ons aanbod"
    (zoekpagina), titel "Voor jou geselecteerde deals"
