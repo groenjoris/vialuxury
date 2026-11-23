@@ -2,7 +2,7 @@ import { Body, Container, Head, Heading, Html, Preview, Section, Text } from "@r
 import * as React from "react";
 import CrmFooter from "../components/CrmFooter";
 import CrmHeader from "../components/CrmHeader";
-import { cardGap, crmCss, CrmHelp, DealRow, FeaturedDeal, type GuestRating, GuestRatingSection, Letter, type RowDeal, s, ServiceSection } from "../components/crm";
+import { cardGap, crmCss, CrmHelp, DealRow, FeaturedDeal, type GuestRating, GuestRatingSection, Letter, PrimaryButton, type RowDeal, s, ServiceSection } from "../components/crm";
 import { desIndes, dePlesman, voco } from "../lib/crmDeals";
 import { font, newsletter } from "../components/theme";
 
@@ -32,9 +32,11 @@ type Props = {
   intro: string;
   /** Waar de kop staat: boven het winkelmandje of boven het gastenoordeel. */
   headingAt?: "cart" | "rating";
-  /** "direct": kop en intro bovenaan (mail 1 en 2, één ding te doen). "brief": aanhef, intro en
-   *  de ondertekening van Yvette (mail 3, het oordeel van anderen en alternatieven). */
-  opening?: "direct" | "brief";
+  /** "direct": kop en intro bovenaan (mail 2, één ding te doen). "brief": aanhef, intro en de
+   *  ondertekening van Yvette (mail 3, het oordeel van anderen en alternatieven).
+   *  "winkelmandje": de opzet van crm-winkelmandje — kop, intro, wat er klaarstaat als losse
+   *  regels, de knop en daaronder de kaart zonder prijsrij (mail 1). */
+  opening?: "direct" | "brief" | "winkelmandje";
   /** S17: het achtergelaten winkelmandje, met datums, nachten, personen en de prijs. */
   cart: RowDeal & { hotelName: string };
   /** S21: de score met de Trustpilot-sterren en één korte review (mail 3). */
@@ -70,11 +72,39 @@ export default function AutomationCart({ recipientEmail, preheader, firstName, h
             )}
           </Section>
 
-          {/* S17 Achtergelaten arrangement: het winkelmandje met de knop om af te ronden */}
-          <Section className="m-pad" style={{ padding: opening === "brief" ? "40px 32px 0" : "24px 32px 0" }}>
-            {opening === "brief" && headingAt === "cart" && <Heading as="h1" className="m-h1" style={s.h1}>{heading}</Heading>}
-            <FeaturedDeal deal={cart} cta="Rond je boeking af" />
-          </Section>
+          {/* S17 Achtergelaten arrangement. In de opzet van crm-winkelmandje staat eerst wat er
+              klaarstaat als losse regels met de knop eronder, en daarna de kaart zonder prijsrij. */}
+          {opening === "winkelmandje" ? (
+            <>
+              <Section className="m-pad" style={{ padding: "20px 32px 0" }}>
+                <Text style={{ ...s.name, margin: 0 }}>
+                  {cart.hotelName}
+                  {cart.stars ? <span style={{ letterSpacing: "1px", marginLeft: "8px" }}>{"★".repeat(cart.stars)}</span> : null}
+                </Text>
+                {cart.place && <Text style={{ ...s.muted, margin: "2px 0 0" }}>{cart.place}</Text>}
+                {cart.lines?.map((l) => (
+                  <Text key={l} style={{ ...s.title, margin: "2px 0 0" }}>{l}</Text>
+                ))}
+                {cart.price && (
+                  <Text style={{ ...s.title, margin: "2px 0 0" }}>
+                    Vanaf {cart.price}
+                    {cart.original && <span style={{ color: "#D32F2F", textDecoration: "line-through", marginLeft: "8px" }}>{cart.original}</span>}
+                  </Text>
+                )}
+                <Section style={{ marginTop: "20px" }}>
+                  <PrimaryButton href={cart.url}>Rond je boeking af</PrimaryButton>
+                </Section>
+              </Section>
+              <Section className="m-pad" style={{ padding: "12px 32px 0" }}>
+                <FeaturedDeal deal={{ ...cart, hotelName: undefined, stars: undefined, place: undefined }} priceRow={false} />
+              </Section>
+            </>
+          ) : (
+            <Section className="m-pad" style={{ padding: opening === "brief" ? "40px 32px 0" : "24px 32px 0" }}>
+              {opening === "brief" && headingAt === "cart" && <Heading as="h1" className="m-h1" style={s.h1}>{heading}</Heading>}
+              <FeaturedDeal deal={cart} cta="Rond je boeking af" />
+            </Section>
+          )}
 
           {/* S21 Gastenoordeel */}
           {guestRating && (
@@ -133,6 +163,7 @@ export const cart1Props = {
   preheader: "Rond je boeking af wanneer het jou uitkomt.",
   heading: "Je bent er bijna",
   intro: `Je was bijna klaar met je boeking voor ${HOTEL}. We hebben alles voor je bewaard, zodat je zo verder kunt.`,
+  opening: "winkelmandje" as const,
   cart,
   service: true,
 } satisfies Props;

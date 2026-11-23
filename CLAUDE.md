@@ -296,9 +296,9 @@ de CRM-preview, paneel links gegroepeerd per flow). Startscherm: knop "Automatio
 
 De twee winkelmandjemails van het CRM (`crm-winkelmandje` en `crm-winkelmandje-2-dagen`) zijn
 leidend voor het ontwerp. De tien automationmails volgen die opzet. De opening hangt af van het soort
-mail, net als bij die twee: gaat de mail over iets wat de ontvanger zelf heeft laten liggen en is
-er één ding te doen, dan begint hij direct met de kop en de intro (`crm-winkelmandje`, `tf021`,
-`tf022`, `tf025`, `tf026`); gaat hij over suggesties of het oordeel van anderen, dan is het een
+mail, net als bij die twee: `tf021` heeft de opzet van `crm-winkelmandje` zelf — kop, intro, wat er
+klaarstaat als losse regels, de knop en daaronder de kaart zonder prijsrij. `tf022`, `tf025` en
+`tf026` beginnen ook direct met de kop en de intro, met de kaart compleet; gaat hij over suggesties of het oordeel van anderen, dan is het een
 brief van Yvette (`crm-winkelmandje-2-dagen`, `tf023`, `tf027` en alle zoekmails, zoals
 `crm-zoekopdracht`). Bij een brief staat de kop uit de sheet als titel direct boven het blok waar
 hij bij hoort. De secties staan gewoon in de kolom op wit en elke mail eindigt met de hulplijn
