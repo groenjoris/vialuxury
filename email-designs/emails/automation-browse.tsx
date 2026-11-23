@@ -2,7 +2,7 @@ import { Body, Container, Head, Heading, Html, Preview, Section, Text } from "@r
 import * as React from "react";
 import CrmFooter from "../components/CrmFooter";
 import CrmHeader from "../components/CrmHeader";
-import { BrandSection, cardGap, crmCss, DealRow, FeaturedDeal, type RowDeal, s } from "../components/crm";
+import { BeigeBand, BrandSection, cardGap, crmCss, DealRow, FeaturedDeal, groupGap, type RowDeal, s } from "../components/crm";
 import { lauswolt, steenenburg, vanOys } from "../lib/crmDeals";
 import { font, newsletter } from "../components/theme";
 
@@ -12,6 +12,8 @@ import { font, newsletter } from "../components/theme";
 //   S1 Header (logo) → Kop → Intro → S17 Achtergelaten arrangement (het bekeken arrangement:
 //   foto, hotelnaam, plaats, prijs en wat er inbegrepen is) → S4 Hoteldeals (twee alternatieven) →
 //   S6 Merksectie (alleen mail 2) → S13 Footer.
+// Elke sectie na de intro staat op een band over de hele breedte, die om en om beige en wit is
+// (zoals in de CRM-mails): de banden sluiten zonder tussenruimte op elkaar aan.
 // De bovenste kaart van een mail is altijd de grote kaart (foto boven de tekst), alle kaarten
 // daaronder zijn dealrijen (foto links). Hier is dat het bekeken arrangement.
 // Mergevelden in de teksten: [hotelnaam] en [plaats], hier ingevuld met voorbeelddata.
@@ -31,6 +33,9 @@ type Props = {
 
 export default function AutomationBrowse({ recipientEmail, preheader, heading, intro, viewed, alternatives, brand }: Props) {
   const c = newsletter.light;
+  // De banden onder elkaar wisselen af: de eerste beige, de volgende wit, enzovoort.
+  let band = 0;
+  const next = () => band++ % 2 === 1;
 
   return (
     <Html lang="nl">
@@ -43,30 +48,32 @@ export default function AutomationBrowse({ recipientEmail, preheader, heading, i
         <CrmHeader />
         <Container style={{ width: "100%", maxWidth: "626px" }}>
           {/* Kop en intro */}
-          <Section className="m-pad" style={{ padding: "36px 32px 0" }}>
+          <Section className="m-pad" style={{ padding: "36px 32px 28px" }}>
             <Heading as="h1" className="m-h1" style={s.h1}>{heading}</Heading>
             <Text style={{ ...s.body, margin: "12px 0 0" }}>{intro}</Text>
           </Section>
+        </Container>
 
-          {/* S17 Achtergelaten arrangement: het bekeken arrangement */}
-          <Section className="m-pad" style={{ padding: "24px 32px 0" }}>
-            <FeaturedDeal deal={viewed} cta="Bekijk arrangement" />
-          </Section>
+        {/* S17 Achtergelaten arrangement: het bekeken arrangement */}
+        <BeigeBand white={next()}>
+          <FeaturedDeal deal={viewed} cta="Bekijk arrangement" />
+        </BeigeBand>
 
-          {/* S4 Hoteldeals: vergelijkbare arrangementen als alternatief */}
-          <Section className="m-pad" style={{ padding: "28px 32px 0" }}>
-            {alternatives.map((d) => (
-              <DealRow key={d.url} deal={d} top={cardGap} />
-            ))}
-          </Section>
+        {/* S4 Hoteldeals: vergelijkbare arrangementen als alternatief */}
+        <BeigeBand white={next()}>
+          {alternatives.map((d, i) => (
+            <DealRow key={d.url} deal={d} top={i ? groupGap : cardGap} />
+          ))}
+        </BeigeBand>
 
-          {/* S6 Merksectie */}
-          {brand && (
-            <Section className="m-pad" style={{ padding: "32px 32px 0" }}>
-              <BrandSection>{brand}</BrandSection>
-            </Section>
-          )}
+        {/* S6 Merksectie */}
+        {brand && (
+          <BeigeBand white={next()}>
+            <BrandSection>{brand}</BrandSection>
+          </BeigeBand>
+        )}
 
+        <Container style={{ width: "100%", maxWidth: "626px" }}>
           <Section className="m-pad" style={{ padding: "0 32px 40px" }} />
         </Container>
         <CrmFooter recipientEmail={recipientEmail} reason="omdat je je hebt aangemeld voor de nieuwsbrief van ViaLuxury" />

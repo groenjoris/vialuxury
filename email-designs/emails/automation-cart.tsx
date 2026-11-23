@@ -2,7 +2,7 @@ import { Body, Container, Head, Heading, Html, Preview, Section, Text } from "@r
 import * as React from "react";
 import CrmFooter from "../components/CrmFooter";
 import CrmHeader from "../components/CrmHeader";
-import { cardGap, crmCss, DealRow, FeaturedDeal, type GuestRating, GuestRatingSection, type RowDeal, s, ServiceSection } from "../components/crm";
+import { BeigeBand, cardGap, crmCss, DealRow, FeaturedDeal, type GuestRating, GuestRatingSection, groupGap, type RowDeal, s, ServiceSection } from "../components/crm";
 import { desIndes, dePlesman, voco } from "../lib/crmDeals";
 import { font, newsletter } from "../components/theme";
 
@@ -11,9 +11,11 @@ import { font, newsletter } from "../components/theme";
 // Secties in de volgorde van de sheet:
 //   S1 Header (logo) → Kop → Intro → S17 Achtergelaten arrangement (het winkelmandje) →
 //   S21 Gastenoordeel (alleen mail 3) → S4 Hoteldeals (mail 2 en 3, twee alternatieven) →
+//   S15 Servicesectie (alleen mail 1) → S13 Footer.
+// Elke sectie na de intro staat op een band over de hele breedte, die om en om beige en wit is
+// (zoals in de CRM-mails): de banden sluiten zonder tussenruimte op elkaar aan.
 // De bovenste kaart van een mail is altijd de grote kaart (foto boven de tekst), alle kaarten
 // daaronder zijn dealrijen (foto links). Hier is dat het winkelmandje, dus de alternatieven zijn rijen.
-//   S15 Servicesectie (alleen mail 1) → S13 Footer.
 // Mergevelden in de teksten: [hotelnaam], [aankomstdatum], [nachten], [personen]. Hier ingevuld
 // met voorbeelddata uit deals.json, zodat het ontwerp leesbaar is; in Klaviyo worden het merge tags.
 
@@ -35,6 +37,9 @@ type Props = {
 
 export default function AutomationCart({ recipientEmail, preheader, heading, intro, cart, guestRating, alternatives, service }: Props) {
   const c = newsletter.light;
+  // De banden onder elkaar wisselen af: de eerste beige, de volgende wit, enzovoort.
+  let band = 0;
+  const next = () => band++ % 2 === 1;
 
   return (
     <Html lang="nl">
@@ -47,32 +52,34 @@ export default function AutomationCart({ recipientEmail, preheader, heading, int
         <CrmHeader />
         <Container style={{ width: "100%", maxWidth: "626px" }}>
           {/* Kop en intro */}
-          <Section className="m-pad" style={{ padding: "36px 32px 0" }}>
+          <Section className="m-pad" style={{ padding: "36px 32px 28px" }}>
             <Heading as="h1" className="m-h1" style={s.h1}>{heading}</Heading>
             <Text style={{ ...s.body, margin: "12px 0 0" }}>{intro}</Text>
           </Section>
+        </Container>
 
-          {/* S17 Achtergelaten arrangement: het winkelmandje met de knop om af te ronden */}
-          <Section className="m-pad" style={{ padding: "24px 32px 0" }}>
-            <FeaturedDeal deal={cart} cta="Rond je boeking af" />
-          </Section>
+        {/* S17 Achtergelaten arrangement: het winkelmandje met de knop om af te ronden */}
+        <BeigeBand white={next()}>
+          <FeaturedDeal deal={cart} cta="Rond je boeking af" />
+        </BeigeBand>
 
-          {/* S21 Gastenoordeel */}
-          {guestRating && (
-            <Section className="m-pad" style={{ padding: "32px 32px 0" }}>
-              <GuestRatingSection hotelName={cart.hotelName} rating={guestRating} />
-            </Section>
-          )}
+        {/* S21 Gastenoordeel */}
+        {guestRating && (
+          <BeigeBand white={next()}>
+            <GuestRatingSection hotelName={cart.hotelName} rating={guestRating} />
+          </BeigeBand>
+        )}
 
-          {/* S4 Hoteldeals: vergelijkbare arrangementen als alternatief */}
-          {alternatives && alternatives.length > 0 && (
-            <Section className="m-pad" style={{ padding: "28px 32px 0" }}>
-              {alternatives.map((d) => (
-                <DealRow key={d.url} deal={d} top={cardGap} />
-              ))}
-            </Section>
-          )}
+        {/* S4 Hoteldeals: vergelijkbare arrangementen als alternatief */}
+        {alternatives && alternatives.length > 0 && (
+          <BeigeBand white={next()}>
+            {alternatives.map((d, i) => (
+              <DealRow key={d.url} deal={d} top={i ? groupGap : cardGap} />
+            ))}
+          </BeigeBand>
+        )}
 
+        <Container style={{ width: "100%", maxWidth: "626px" }}>
           {/* S15 Servicesectie */}
           <Section className="m-pad" style={{ padding: service ? "36px 32px 40px" : "0 32px 40px" }}>
             {service && <ServiceSection />}

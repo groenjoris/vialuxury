@@ -13,6 +13,8 @@ import { font, newsletter } from "../components/theme";
 //   S1 Header (logo) → Kop → Intro → S18 Zoekopdracht (zoekterm, datum en personen, met de knop
 //   naar alle resultaten) → S4 Hoteldeals (drie zoekresultaten) → S7 Themasectie (alleen mail 4) →
 //   S13 Footer.
+// Elke sectie na de intro staat op een band over de hele breedte, die om en om beige en wit is
+// (zoals in de CRM-mails): de banden sluiten zonder tussenruimte op elkaar aan.
 // Mergevelden in de teksten: [zoekterm], [aankomstdatum] en [personen], hier ingevuld met
 // voorbeelddata.
 
@@ -34,6 +36,9 @@ type Props = {
 
 export default function AutomationSearch({ recipientEmail, preheader, heading, intro, searchTerm, arrivalDate, persons, resultsUrl, results, themeSection }: Props) {
   const c = newsletter.light;
+  // De banden onder elkaar wisselen af: de eerste beige, de volgende wit, enzovoort.
+  let band = 0;
+  const next = () => band++ % 2 === 1;
 
   return (
     <Html lang="nl">
@@ -46,30 +51,32 @@ export default function AutomationSearch({ recipientEmail, preheader, heading, i
         <CrmHeader />
         <Container style={{ width: "100%", maxWidth: "626px" }}>
           {/* Kop en intro */}
-          <Section className="m-pad" style={{ padding: "36px 32px 0" }}>
+          <Section className="m-pad" style={{ padding: "36px 32px 28px" }}>
             <Heading as="h1" className="m-h1" style={s.h1}>{heading}</Heading>
             <Text style={{ ...s.body, margin: "12px 0 0" }}>{intro}</Text>
           </Section>
-
-          {/* S18 Zoekopdracht */}
-          <Section className="m-pad" style={{ padding: "24px 32px 0" }}>
-            <SearchSection searchTerm={searchTerm} arrivalDate={arrivalDate} persons={persons} resultsUrl={resultsUrl} />
-          </Section>
-
-          {/* S4 Hoteldeals: de zoekresultaten */}
-          <Section className="m-pad" style={{ padding: "28px 32px 0" }}>
-            <DealList deals={results} />
-          </Section>
-
-          <Section className="m-pad" style={{ padding: "0 32px 40px" }} />
         </Container>
 
-        {/* S7 Themasectie op een beige band over de hele breedte */}
+        {/* S18 Zoekopdracht */}
+        <BeigeBand white={next()}>
+          <SearchSection searchTerm={searchTerm} arrivalDate={arrivalDate} persons={persons} resultsUrl={resultsUrl} />
+        </BeigeBand>
+
+        {/* S4 Hoteldeals: de zoekresultaten */}
+        <BeigeBand white={next()}>
+          <DealList deals={results} />
+        </BeigeBand>
+
+        {/* S7 Themasectie */}
         {themeSection && (
-          <BeigeBand>
+          <BeigeBand white={next()}>
             <ThemeSection title={themeSection.title} note={themeSection.note} items={themeSection.items} />
           </BeigeBand>
         )}
+
+        <Container style={{ width: "100%", maxWidth: "626px" }}>
+          <Section className="m-pad" style={{ padding: "0 32px 40px" }} />
+        </Container>
         <CrmFooter recipientEmail={recipientEmail} reason="omdat je je hebt aangemeld voor de nieuwsbrief van ViaLuxury" />
       </Body>
     </Html>
