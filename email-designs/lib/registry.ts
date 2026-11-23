@@ -12,6 +12,7 @@ import CrmReview, { knoppenProps } from "../emails/crm-review";
 import CrmTerugkomactie, { herinneringProps } from "../emails/crm-terugkomactie";
 import CrmZoekopdracht from "../emails/crm-zoekopdracht";
 import CrmFavorieten from "../emails/crm-favorieten";
+import CommercieelContentMultiDeal from "../emails/commercieel-content-multi-deal";
 import { incheckMails } from "./incheckMails";
 
 /** MVP: geen accountdetailpagina, boekingslinks gaan naar het boekingenoverzicht. */
@@ -376,6 +377,16 @@ export const emails: EmailEntry[] = [
     subject: "Dit zijn de populairste stedentrips van dit moment",
     preheader: "Parijs, Den Haag en Amsterdam, vanaf €279 voor 2 personen.",
     Component: CrmThemaStedentrips,
+  },
+  // ── Commerciële mails (volgorde = volgorde in het paneel van /commercieel) ──
+  {
+    slug: "commercieel-content-multi-deal",
+    title: "Content (Multi-deal)",
+    description: "Meerdere deals rond één thema of selectie (kerstmarkten): sfeerfoto, campagnetitel, korte brief en vier dealrijen waarvan de dealtitel en de foto naar de kerstmarkt in de buurt verwijzen.",
+    section: "commercieel",
+    subject: "Winter Wonderweken: slapen bij de mooiste kerstmarkten",
+    preheader: "Glühwein, lichtjes en een hotel om de hoek.",
+    Component: CommercieelContentMultiDeal,
   },
 ];
 

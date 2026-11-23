@@ -212,7 +212,14 @@ Commerciële mails (sinds 2026-11-23): nieuwsbrieven en acties, zelfde opzet als
 `app/pages/commercieel/[[slug]].vue` (`/commercieel` opent de eerste mail), links een paneel met tien plekken (een plek
 zonder mail staat grijs, "volgt"). Mails komen in de registry met sectie `"commercieel"` (volgorde van de registry =
 volgorde in het paneel; varianten met `variantOf` en `variantLabel`); de export schrijft alleen light HTML en de lijst
-`app/data/commercieel-emails.json`. De tien voorbeelden worden nog gebriefd.
+`app/data/commercieel-emails.json`. De commerciële mails hergebruiken de vormgeving en bouwstenen van de CRM-mails
+maximaal (`components/crm.tsx`, zelfde regels); bronnen `email-designs/emails/commercieel-*.tsx`, foto's in
+`public/images/mail/commercieel/`. De voorbeelden worden per stuk gebriefd:
+1. `commercieel-content-multi-deal` ("Content (Multi-deal)"): meerdere deals rond een thema (kerstmarkten). Sfeerfoto
+   over de hele breedte, campagnetitel "Winter Wonderweken", brief (`Letter`), titel "Hotels bij de mooiste
+   kerstmarkten" boven vier dealrijen (`DealRow`). Het arrangement blijft hetzelfde; alleen dealtitel en foto
+   verwijzen naar de kerstmarkt in de buurt. Alleen voco The Hague staat in `deals.json`; de andere drie hebben
+   voorbeeldprijzen en linken naar de R1-zoekpagina.
 
 Regels voor elke CRM-mail:
 - Briefopzet (het format voor alle CRM-mails, tot nu toe in `crm-winkelmandje-2-dagen`, `crm-favorieten`, `crm-zoekopdracht`,
