@@ -346,6 +346,51 @@ export function CodeBlock({ title, code, label = "Jouw persoonlijke code", deadl
   );
 }
 
+/** Eén coupon in een CouponPair. `locked`: de code is er nog niet (grijze rand, code deels verborgen). */
+export type Coupon = {
+  /** "€10 cadeau" */
+  title: string;
+  /** "Op je 1e boeking" */
+  label: string;
+  /** "WENS1-387KW", of bij een code die nog komt "WENS2-#####". */
+  code: string;
+  /** Vette regel met het klokje, bijv. "Nog 24 uur geldig". */
+  validity?: string;
+  /** Kleine regel onderaan: hoe je de code gebruikt of wanneer je hem krijgt. */
+  note: string;
+  locked?: boolean;
+};
+
+/** Twee coupons naast elkaar, even hoog (verlanglijst: €10 op de eerste en €15 op de tweede
+ *  boeking). Zelfde opbouw als CodeBlock: alles gecentreerd onder elkaar, bedrag het grootst. De
+ *  tweede is `locked`: grijze stippelrand en een code waarvan alleen het begin zichtbaar is. */
+export function CouponPair({ coupons }: { coupons: [Coupon, Coupon] }) {
+  const center = { textAlign: "center" as const };
+  const cell = (k: Coupon) => (
+    <Column className="stack" width="275" style={{ width: "275px", verticalAlign: "top", border: `2px dashed ${k.locked ? "#BDBDBD" : c.cta}`, borderRadius: "8px", padding: "20px 14px 22px", textAlign: "center" }}>
+      <Text style={{ ...s.h1, fontWeight: 700, color: k.locked ? c.muted : c.cta, ...center, margin: "0 0 10px" }}>{k.title}</Text>
+      <Text style={{ ...s.title, ...center, margin: 0 }}>{k.label}</Text>
+      <Text style={{ fontFamily: font.heading, fontWeight: 700, fontSize: "20px", lineHeight: "1.3", letterSpacing: "0.02em", color: k.locked ? c.muted : c.text, margin: "4px 0 0", whiteSpace: "nowrap", ...center }}>{k.code}</Text>
+      {k.validity && (
+        <Text style={{ ...s.name, ...center, margin: "14px 0 0" }}>
+          <Img src={mailIcon("clock-donker")} alt="" width="18" height="18" style={{ display: "inline-block", verticalAlign: "-3px", marginRight: "8px" }} />
+          {k.validity}
+        </Text>
+      )}
+      <Text style={{ ...s.muted, ...center, margin: k.validity ? "2px 0 0" : "14px 0 0" }}>{k.note}</Text>
+    </Column>
+  );
+  return (
+    <Section style={{ width: "100%", borderCollapse: "separate" }}>
+      <Row style={{ borderCollapse: "separate" }}>
+        {cell(coupons[0])}
+        <Column width="12" style={{ width: "12px", minWidth: "12px", fontSize: "1px", lineHeight: "1px" }}>&nbsp;</Column>
+        {cell(coupons[1])}
+      </Row>
+    </Section>
+  );
+}
+
 /** Thema uit de snelfilters van de homepage. */
 export type Theme = { id: string; label: string; icon: string };
 const themeIcon = (key: string) => `${baseUrl}/images/mail/theme-${key}.png`;

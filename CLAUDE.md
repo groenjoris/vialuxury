@@ -236,6 +236,10 @@ Regels voor elke CRM-mail:
   regels in plaats van de prijsrij (`lines`) en de link "Ga verder met boeken"; de kaart zelf is de uitgebreide zonder hotel, plaats en prijsrij (`priceRow={false}`).
 - Elke CRM-mail eindigt met de hulplijn "Hulp nodig?" (`CrmHelp` = `HelpBanner` uit de post-bookingmails, zelfde tekst,
   lichtoranje vlak, 16 px).
+- Verlanglijstmail: twee coupons naast elkaar (`CouponPair`): €10 op de eerste boeking (code direct te gebruiken, 24 uur
+  geldig) en €15 op de tweede. Van de tweede code staat alleen het vaste begin in de mail ("WENS2-#####", grijze
+  stippelrand); de volledige code komt in een nieuwe mail zodra de eerste is gebruikt (één boeking kan alleen een veelvoud
+  van hetzelfde arrangement bevatten, dus de tweede boeking heeft een eigen trigger nodig). Copy op haast.
 - Tussen twee dealkaarten onder elkaar staat 24 px (`cardGap`), tussen een titel en de eerste kaart 12 px.
 - Preheaders zonder gegevens die lastig te automatiseren zijn of niet altijd bestaan (geen plaatsen of prijzen van de
   suggesties, geen datum uit de zoekopdracht).

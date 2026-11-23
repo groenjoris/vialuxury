@@ -266,11 +266,11 @@ export const emails: EmailEntry[] = [
   },
   {
     slug: "crm-verlanglijst",
-    title: "Verlanglijst €10 (3 dagen na eerste mail)",
-    description: "Code voor het eerste favoriet, direct boven dat arrangement; daaronder de andere favorieten en twee vergelijkbare arrangementen.",
+    title: "Verlanglijst €10 en €15 (3 dagen na eerste mail)",
+    description: "Twee coupons: €10 op de eerste boeking (24 uur geldig) en €15 op de tweede (code volgt per mail na de eerste boeking); daaronder de favorieten en twee vergelijkbare arrangementen.",
     section: "crm",
-    subject: "€10 cadeau op Kasteel Steenenburg van je verlanglijst",
-    preheader: "Jouw unieke code, geldig tot en met 12 november 2026.",
+    subject: "Nog 24 uur: €10 cadeau op je verlanglijst",
+    preheader: "En €15 op je tweede boeking.",
     Component: CrmVerlanglijst,
   },
   {
