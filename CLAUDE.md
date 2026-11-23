@@ -226,6 +226,11 @@ maximaal (`components/crm.tsx`, zelfde regels); bronnen `email-designs/emails/co
    Zonder prijs"): de brief steekt in op nieuwsgierigheid en noemt geen prijs, de kaart heeft geen prijsrij. Tweede schakelaar "Zonder titel |
    Met titel" (`-met-titel`: grote titel "Deal van de maand november" boven het bericht); de schakelaars zijn los te
    combineren: een `variantLabel` met " / " ("Met prijs / Zonder titel") geeft in de preview per deel een schakelaar.
+3. `commercieel-actie` ("Actie (Goodiebox)"): een cadeau of extra bij een boeking. Actiefoto over de hele breedte
+   (`goodiebox-hero.jpg`, aangeleverde banner mét tekst), titel "Boek voor 7 december en ontvang onze Goodiebox", brief,
+   de actiecode als coupon (`CodeBlock`, HERFSTGB372, t/m 6 december 23:59 uur), titel "Voor jou geselecteerde deals"
+   met subtitel boven vier dealrijen, en omdat het cadeau bij elke boeking geldt onderaan één regel met de zwarte knop
+   "Bekijk alle aanbiedingen" naar de R1-zoekpagina.
 
 Regels voor elke CRM-mail:
 - Briefopzet (het format voor alle CRM-mails, tot nu toe in `crm-winkelmandje-2-dagen`, `crm-favorieten`, `crm-zoekopdracht`,

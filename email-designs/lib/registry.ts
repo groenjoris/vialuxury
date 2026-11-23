@@ -13,6 +13,7 @@ import CrmTerugkomactie, { herinneringProps } from "../emails/crm-terugkomactie"
 import CrmZoekopdracht from "../emails/crm-zoekopdracht";
 import CrmFavorieten from "../emails/crm-favorieten";
 import CommercieelContentMultiDeal from "../emails/commercieel-content-multi-deal";
+import CommercieelActie from "../emails/commercieel-actie";
 import CommercieelDedicatedHotel, { metTitelProps, zonderPrijsMetTitelProps, zonderPrijsProps } from "../emails/commercieel-dedicated-hotel";
 import { incheckMails } from "./incheckMails";
 
@@ -435,6 +436,15 @@ export const emails: EmailEntry[] = [
     variantLabel: "Zonder prijs / Met titel",
     Component: CommercieelDedicatedHotel,
     props: zonderPrijsMetTitelProps,
+  },
+  {
+    slug: "commercieel-actie",
+    title: "Actie (Goodiebox)",
+    description: "Een cadeau of extra bij een boeking: actiefoto, titel met de deadline, korte brief, de actiecode als coupon, vier geselecteerde deals en een knop naar alle aanbiedingen.",
+    section: "commercieel",
+    subject: "Sanne, je Goodiebox t.w.v. €150 staat klaar",
+    preheader: "Boek voor 7 december en hij is van jou.",
+    Component: CommercieelActie,
   },
 ];
 

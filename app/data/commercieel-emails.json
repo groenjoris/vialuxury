@@ -40,5 +40,12 @@
     "preheader": "Midden in de bossen van de Veluwe. De prijs is lager dan je denkt.",
     "variantOf": "commercieel-dedicated-hotel",
     "variantLabel": "Zonder prijs / Met titel"
+  },
+  {
+    "slug": "commercieel-actie",
+    "title": "Actie (Goodiebox)",
+    "description": "Een cadeau of extra bij een boeking: actiefoto, titel met de deadline, korte brief, de actiecode als coupon, vier geselecteerde deals en een knop naar alle aanbiedingen.",
+    "subject": "Sanne, je Goodiebox t.w.v. €150 staat klaar",
+    "preheader": "Boek voor 7 december en hij is van jou."
   }
 ]
