@@ -2,7 +2,7 @@ import { Body, Container, Head, Heading, Html, Preview, Section, Text } from "@r
 import * as React from "react";
 import CrmFooter from "../components/CrmFooter";
 import CrmHeader from "../components/CrmHeader";
-import { crmCss, CrmHelp, DealList, type RowDeal, s, SearchSection, type Theme, ThemeSection, themes } from "../components/crm";
+import { crmCss, DealList, type Pill, type RowDeal, s, SearchSection, ThemeSection } from "../components/crm";
 import { dePlesman, desIndes, kurhaus, voco } from "../lib/crmDeals";
 import { site } from "../components/crm";
 import { font, newsletter } from "../components/theme";
@@ -12,7 +12,7 @@ import { font, newsletter } from "../components/theme";
 // Secties in de volgorde van de sheet:
 //   S1 Header (logo) → Kop → Intro → S18 Zoekopdracht (zoekterm, datum en personen, met de knop
 //   naar alle resultaten) → S4 Hoteldeals (drie zoekresultaten) → S7 Themasectie (alleen mail 4) →
-//   S15 de vaste hulplijn → S13 Footer.
+//   S13 Footer.
 // Mergevelden in de teksten: [zoekterm], [aankomstdatum] en [personen], hier ingevuld met
 // voorbeelddata.
 
@@ -28,8 +28,8 @@ type Props = {
   resultsUrl: string;
   /** S4: drie zoekresultaten die passen bij de zoekopdracht. */
   results: RowDeal[];
-  /** S7 Themasectie (mail 4): kop, de vijf thema's van de verzendmaand en de onderregel. */
-  themeSection?: { title: string; note: string; items?: Theme[] };
+  /** S7 Themasectie (mail 4): kop, de thema's van de verzendmaand en de onderregel. */
+  themeSection?: { title: string; note: string; items: Pill[] };
 };
 
 export default function AutomationSearch({ recipientEmail, preheader, heading, intro, searchTerm, arrivalDate, persons, resultsUrl, results, themeSection }: Props) {
@@ -57,20 +57,18 @@ export default function AutomationSearch({ recipientEmail, preheader, heading, i
           </Section>
 
           {/* S4 Hoteldeals: de zoekresultaten */}
-          <Section className="m-pad" style={{ padding: "40px 32px 0" }}>
-            <Text style={s.kop}>De arrangementen die het best passen bij wat je zoekt</Text>
+          <Section className="m-pad" style={{ padding: "28px 32px 0" }}>
             <DealList deals={results} />
           </Section>
 
           {/* S7 Themasectie */}
           {themeSection && (
-            <Section className="m-pad" style={{ padding: "40px 32px 0" }}>
+            <Section className="m-pad" style={{ padding: "32px 32px 0" }}>
               <ThemeSection title={themeSection.title} note={themeSection.note} items={themeSection.items} />
             </Section>
           )}
 
-          {/* S15 Servicesectie: de vaste hulplijn */}
-          <CrmHelp top="40px" />
+          <Section className="m-pad" style={{ padding: "0 32px 40px" }} />
         </Container>
         <CrmFooter recipientEmail={recipientEmail} reason="omdat je je hebt aangemeld voor de nieuwsbrief van ViaLuxury" />
       </Body>
@@ -85,12 +83,17 @@ const DATUM = "20 november";
 const resultsUrl = (campaign: string) => `${site}/first-release/search?utm_source=email&utm_medium=crm&utm_campaign=${campaign}`;
 const base = { recipientEmail: "sanne.devries@example.com", searchTerm: TERM, arrivalDate: DATUM, persons: 2 };
 
-/** De vijf thema's van de verzendmaand. November: wellness, culinair en experiences
- *  (tabblad Seizoensthema's). Voor "Hotels met experiences" is er nog geen landingspagina,
- *  dus die plek is ingevuld met kasteelhotels. */
-const novemberThemes: Theme[] = ["wellness", "culinair", "kasteel", "natuur", "romantisch"]
-  .map((id) => themes.find((t) => t.id === id)!)
-  .filter(Boolean);
+/** De themategels van de verzendmaand, met naam en landingspagina uit het tabblad Themategels.
+ *  November heeft volgens Seizoensthema's wellness, culinair wild en wijn, en experiences;
+ *  "Hotels met experiences" heeft nog geen landingspagina en staat er daarom niet bij. */
+const theme = (path: string) => `https://vialuxury.com/nl-NL/zoeken?theme=${path}`;
+const novemberThemes: Pill[] = [
+  { label: "Wellness", href: theme("arrangementen-wellness-overnachting") },
+  { label: "Bubbelbad op kamer", href: theme("hotelkamer-jacuzzi") },
+  { label: "Hotels met zwembad", href: theme("hotelkamer-zwembad") },
+  { label: "Culinaire experiences", href: theme("arrangementen-culinair-genieten") },
+  { label: "Overnachting met diner", href: theme("arrangementen-overnachting-met-diner") },
+];
 
 /** v01_tf028_fl013_nl-NL_1_abandoned_search — 1 minuut na het zoeken. */
 export const search1Props = {

@@ -2,7 +2,7 @@ import { Body, Container, Head, Heading, Html, Preview, Section, Text } from "@r
 import * as React from "react";
 import CrmFooter from "../components/CrmFooter";
 import CrmHeader from "../components/CrmHeader";
-import { BrandSection, crmCss, CrmHelp, DealList, FeaturedDeal, type RowDeal, s } from "../components/crm";
+import { BrandSection, crmCss, DealList, FeaturedDeal, type RowDeal, s } from "../components/crm";
 import { lauswolt, steenenburg, vanOys } from "../lib/crmDeals";
 import { font, newsletter } from "../components/theme";
 
@@ -11,7 +11,7 @@ import { font, newsletter } from "../components/theme";
 // Secties in de volgorde van de sheet:
 //   S1 Header (logo) → Kop → Intro → S17 Achtergelaten arrangement (het bekeken arrangement:
 //   foto, hotelnaam, plaats, prijs en wat er inbegrepen is) → S4 Hoteldeals (twee alternatieven) →
-//   S6 Merksectie (alleen mail 2) → S15 de vaste hulplijn → S13 Footer.
+//   S6 Merksectie (alleen mail 2) → S13 Footer.
 // Mergevelden in de teksten: [hotelnaam] en [plaats], hier ingevuld met voorbeelddata.
 
 type Props = {
@@ -48,25 +48,22 @@ export default function AutomationBrowse({ recipientEmail, preheader, heading, i
 
           {/* S17 Achtergelaten arrangement: het bekeken arrangement */}
           <Section className="m-pad" style={{ padding: "24px 32px 0" }}>
-            <Text style={s.kop}>Het arrangement dat je bekeek</Text>
             <FeaturedDeal deal={viewed} cta="Bekijk arrangement" />
           </Section>
 
           {/* S4 Hoteldeals: vergelijkbare arrangementen als alternatief */}
-          <Section className="m-pad" style={{ padding: "40px 32px 0" }}>
-            <Text style={s.kop}>In dezelfde sfeer</Text>
+          <Section className="m-pad" style={{ padding: "28px 32px 0" }}>
             <DealList deals={alternatives} />
           </Section>
 
           {/* S6 Merksectie */}
           {brand && (
-            <Section className="m-pad" style={{ padding: "40px 32px 0" }}>
+            <Section className="m-pad" style={{ padding: "32px 32px 0" }}>
               <BrandSection>{brand}</BrandSection>
             </Section>
           )}
 
-          {/* S15 Servicesectie: de vaste hulplijn */}
-          <CrmHelp top="40px" />
+          <Section className="m-pad" style={{ padding: "0 32px 40px" }} />
         </Container>
         <CrmFooter recipientEmail={recipientEmail} reason="omdat je je hebt aangemeld voor de nieuwsbrief van ViaLuxury" />
       </Body>
@@ -106,9 +103,9 @@ export const browse2Props = {
 /** v01_tf027_fl012_nl-NL_3_abandoned_browse — 2 dagen na het bekijken. */
 export const browse3Props = {
   recipientEmail: "sanne.devries@example.com",
-  // De sheet schrijft hier "Drie alternatieven in dezelfde sfeer", maar de template heeft twee
-  // dealplekken (rij 20 is leeg voor deze flow), dus de preheader telt mee met het ontwerp.
-  preheader: "Twee alternatieven in dezelfde sfeer.",
+  // Letterlijk uit de sheet. Let op: de sheet zegt drie, maar deze template heeft twee
+  // dealplekken (rij 20 Hoteldeal 3 is leeg voor deze flow).
+  preheader: "Drie alternatieven in dezelfde sfeer.",
   heading: "Nog niet het juiste?",
   intro: `Twijfel je nog over ${HOTEL}? Dit zijn arrangementen in dezelfde sfeer, misschien zit jouw verblijf ertussen.`,
   viewed,

@@ -277,14 +277,23 @@ alleen light, lijst `app/data/automation-emails.json`, preview `/automation/<slu
 de CRM-preview, paneel links gegroepeerd per flow). Startscherm: knop "Automations" in het vak CRM.
 
 Secties uit de sheet als bouwstenen in `email-designs/components/crm.tsx`. Bestaand: `CrmHeader` (S1),
-`Letter` (S2), `FeaturedDeal`/`DealRow`/`DealList` (S4), `CrmHelp` (S15, de vaste hulplijn onderaan
-elke mail) en `CrmFooter` (S13). Nieuw voor deze flows: `GuestRatingSection` (S21), `BrandSection`
-(S6), `SearchSection` (S18) en `ThemeSection` (S7). Het achtergelaten of bekeken arrangement staat op
-`FeaturedDeal`, de alternatieven en zoekresultaten op `DealList`. Verder gelden alle CRM-regels hierboven.
+`FeaturedDeal`/`DealRow`/`DealList` (S4) en `CrmFooter` (S13). Nieuw voor deze flows:
+`GuestRatingSection` (S21), `BrandSection` (S6), `ServiceSection` (S15), `SearchSection` (S18) en
+`ThemeSection` (S7). Het achtergelaten of bekeken arrangement staat op `FeaturedDeal`, de
+alternatieven en zoekresultaten op `DealList`. Verder gelden alle CRM-regels hierboven.
 
-Afwijkingen van de sheet, bewust: de preheader van `tf027` zegt "Twee alternatieven" in plaats van
-drie (de template heeft twee dealplekken), en in de themasectie van `tf031` staat kasteelhotels op de
-plek van "Hotels met experiences", omdat daar nog geen landingspagina voor is.
+**Regel: niets toevoegen wat niet in de sheet staat.** De mails bevatten alleen de secties die in de
+kolom aan staan, met de teksten uit de sheet; geen eigen blokkoppen, geen extra secties (ook niet de
+hulplijn die de CRM-mails wel hebben) en geen velden die de sheet niet noemt — de winkelmandjekaart
+toont dus geen inclusies. Wat de sheet open laat, zoals welke vijf themategels bij de verzendmaand
+horen, komt uit de tabbladen Themategels en Seizoensthema's.
+
+Open punten in de sheet zelf: de preheader van `tf027` zegt "Drie alternatieven" terwijl de template
+twee dealplekken heeft (rij 20 is leeg), en voor de themategel "Hotels met experiences" bestaat nog
+geen landingspagina, dus die staat niet in de themasectie van `tf031`.
+
+Foto's in alle CRM- en automationmails staan op 16:9: de uitgelichte dealkaart 560×315, de dealrij
+190×107 en de grote sfeerfoto's 626×352, met `object-fit: cover`.
 
 ## Kaarten (Leaflet)
 

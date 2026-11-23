@@ -2,7 +2,7 @@ import { Body, Container, Head, Heading, Html, Preview, Section, Text } from "@r
 import * as React from "react";
 import CrmFooter from "../components/CrmFooter";
 import CrmHeader from "../components/CrmHeader";
-import { crmCss, CrmHelp, DealList, FeaturedDeal, type GuestRating, GuestRatingSection, type RowDeal, s } from "../components/crm";
+import { crmCss, DealList, FeaturedDeal, type GuestRating, GuestRatingSection, type RowDeal, s, ServiceSection } from "../components/crm";
 import { desIndes, dePlesman, voco } from "../lib/crmDeals";
 import { font, newsletter } from "../components/theme";
 
@@ -11,7 +11,7 @@ import { font, newsletter } from "../components/theme";
 // Secties in de volgorde van de sheet:
 //   S1 Header (logo) → Kop → Intro → S17 Achtergelaten arrangement (het winkelmandje) →
 //   S21 Gastenoordeel (alleen mail 3) → S4 Hoteldeals (mail 2 en 3, twee alternatieven) →
-//   S15 Servicesectie (de vaste hulplijn onderaan elke mail) → S13 Footer.
+//   S15 Servicesectie (alleen mail 1) → S13 Footer.
 // Mergevelden in de teksten: [hotelnaam], [aankomstdatum], [nachten], [personen]. Hier ingevuld
 // met voorbeelddata uit deals.json, zodat het ontwerp leesbaar is; in Klaviyo worden het merge tags.
 
@@ -27,9 +27,11 @@ type Props = {
   guestRating?: GuestRating;
   /** S4: twee vergelijkbare arrangementen (mail 2 en 3). */
   alternatives?: RowDeal[];
+  /** S15: de serviceregel (alleen mail 1). */
+  service?: boolean;
 };
 
-export default function AutomationCart({ recipientEmail, preheader, heading, intro, cart, guestRating, alternatives }: Props) {
+export default function AutomationCart({ recipientEmail, preheader, heading, intro, cart, guestRating, alternatives, service }: Props) {
   const c = newsletter.light;
 
   return (
@@ -50,27 +52,27 @@ export default function AutomationCart({ recipientEmail, preheader, heading, int
 
           {/* S17 Achtergelaten arrangement: het winkelmandje met de knop om af te ronden */}
           <Section className="m-pad" style={{ padding: "24px 32px 0" }}>
-            <Text style={s.kop}>Je winkelmandje</Text>
             <FeaturedDeal deal={cart} cta="Rond je boeking af" />
           </Section>
 
           {/* S21 Gastenoordeel */}
           {guestRating && (
-            <Section className="m-pad" style={{ padding: "40px 32px 0" }}>
+            <Section className="m-pad" style={{ padding: "32px 32px 0" }}>
               <GuestRatingSection hotelName={cart.hotelName} rating={guestRating} />
             </Section>
           )}
 
           {/* S4 Hoteldeals: vergelijkbare arrangementen als alternatief */}
           {alternatives && alternatives.length > 0 && (
-            <Section className="m-pad" style={{ padding: "40px 32px 0" }}>
-              <Text style={s.kop}>Vergelijkbare arrangementen</Text>
+            <Section className="m-pad" style={{ padding: "28px 32px 0" }}>
               <DealList deals={alternatives} />
             </Section>
           )}
 
-          {/* S15 Servicesectie: de vaste hulplijn */}
-          <CrmHelp top="36px" />
+          {/* S15 Servicesectie */}
+          <Section className="m-pad" style={{ padding: service ? "36px 32px 40px" : "0 32px 40px" }}>
+            {service && <ServiceSection />}
+          </Section>
         </Container>
         <CrmFooter recipientEmail={recipientEmail} reason="omdat je je hebt aangemeld voor de nieuwsbrief van ViaLuxury" />
       </Body>
@@ -85,6 +87,10 @@ const HOTEL = "Hotel Des Indes";
 const cart: RowDeal & { hotelName: string } = {
   ...desIndes,
   hotelName: HOTEL,
+  // De sheet noemt voor het winkelmandje: foto, hotelnaam, aankomstdatum, nachten, personen en
+  // de prijs — dus zonder de inclusies en zonder de regel "voor wie de prijs geldt".
+  includes: undefined,
+  priceFor: undefined,
   line: undefined,
   lines: ["20 november · 2 nachten · 2 personen"],
   url: `${desIndes.url}?checkin=2026-11-20&adults=2`,
@@ -98,6 +104,7 @@ export const cart1Props = {
   heading: "Je bent er bijna",
   intro: `Je was bijna klaar met je boeking voor ${HOTEL}. We hebben alles voor je bewaard, zodat je zo verder kunt.`,
   cart,
+  service: true,
 } satisfies Props;
 
 /** v01_tf022_fl011_nl-NL_2_abandoned_cart — 2 dagen na het verlaten van het winkelmandje. */
@@ -118,8 +125,8 @@ export const cart3Props = {
   intro: `Twijfel je nog? Lees wat andere gasten van ${HOTEL} vonden, of kies een van de alternatieven.`,
   cart,
   guestRating: {
-    average: 4.5,
-    label: "4,5 uit 312 reviews",
+    score: "8,8",
+    label: "uit 312 beoordelingen",
     review: { text: "Prachtige kamer en een feestelijk diner.", author: "Marieke" },
   },
   alternatives,

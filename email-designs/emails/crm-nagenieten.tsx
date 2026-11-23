@@ -47,7 +47,7 @@ export default function CrmNagenieten({ firstName, recipientEmail, hotelName, im
         <Container style={{ width: "100%", maxWidth: "626px" }}>
 
           {/* Grote foto van het hotel met het nagenietframe; geen datums of arrangement, dat weet de gast al */}
-          <Img src={image} alt={hotelName} width="626" height="391" style={{ display: "block", width: "100%", height: "auto" }} />
+          <Img src={image} alt={hotelName} width="626" height="352" style={{ display: "block", width: "100%", height: "352px", objectFit: "cover" }} />
           <Section className="m-pad" style={{ padding: "28px 32px 0" }}>
             <Heading as="h1" className="m-h1" style={s.h1}>
               {firstName ? `${firstName}, we hopen dat je genoten hebt van ${hotelName}` : `We hopen dat je genoten hebt van ${hotelName}`}

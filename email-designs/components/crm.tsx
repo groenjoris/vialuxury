@@ -249,7 +249,7 @@ export function DealRow({ deal: d, cta, top = "12px" }: { deal: RowDeal; cta?: s
       <Row>
         {/* Foto als achtergrond: sluit aan op de rand en vult de hele hoogte van het blok */}
         <Column className="stack" style={{ width: "190px", verticalAlign: "top", backgroundImage: `url(${d.image})`, backgroundSize: "cover", backgroundPosition: "center" }}>
-          <Link href={d.url} aria-label={d.hotelName ?? cta ?? "Bekijk"} style={{ display: "block", width: "190px", minHeight: "150px" }} />
+          <Link href={d.url} aria-label={d.hotelName ?? cta ?? "Bekijk"} style={{ display: "block", width: "190px", minHeight: "107px" }} />
         </Column>
         <Column className="stack" style={{ verticalAlign: "top", padding: rich ? "16px 18px 18px" : "16px 18px" }}>
           {rich ? (
@@ -287,7 +287,7 @@ export function FeaturedDeal({ deal: d, cta, priceRow = true }: { deal: RowDeal;
   return (
     <Section style={{ backgroundColor: "#FFFFFF", border: `1px solid #E5E5E5`, borderRadius: "8px", marginTop: "12px", overflow: "hidden" }}>
       <Link href={d.url}>
-        <Img src={d.image} alt={d.packageTitle ?? d.hotelName ?? ""} width="560" height="300" style={{ display: "block", width: "100%", height: "300px", objectFit: "cover" }} />
+        <Img src={d.image} alt={d.packageTitle ?? d.hotelName ?? ""} width="560" height="315" style={{ display: "block", width: "100%", height: "315px", objectFit: "cover" }} />
       </Link>
       {rich ? (
         <Section style={{ padding: "16px 20px 20px" }}>
@@ -477,40 +477,39 @@ export function ThemePicker({ items = themes }: { items?: Theme[] }) {
 // (CrmHeader, Letter, DealList/DealRow/FeaturedDeal, CrmFooter en CrmHelp); hieronder staan de
 // secties die alleen in deze flows voorkomen.
 
-/** S21 Gastenoordeel: Trustpilot-sterren met het gemiddelde en één korte review, als die er is. */
-export type GuestRating = { average: 3 | 3.5 | 4 | 4.5 | 5; label: string; review?: { text: string; author: string } };
+/** S21 Gastenoordeel: de gemiddelde score van het hotel en één korte review, als die er is.
+ *  Alleen wat de sheet noemt: score en review, zonder kop eromheen. */
+export type GuestRating = { score: string; label: string; review?: { text: string; author: string } };
 
 export function GuestRatingSection({ hotelName, rating }: { hotelName: string; rating: GuestRating }) {
   return (
     <>
-      <Text style={s.kop}>Dit vinden gasten van {hotelName}</Text>
-      <Section style={{ marginTop: "14px" }}>
-        <Img
-          src={`${baseUrl}/images/mail/crm/trustpilot-sterren-${String(rating.average).replace(".", "-")}.png`}
-          alt={`${String(rating.average).replace(".", ",")} van 5 sterren op Trustpilot`}
-          width="152"
-          height="28"
-          style={{ display: "block", width: "152px", height: "28px" }}
-        />
-        <Text style={{ ...s.body, margin: "6px 0 0" }}>{rating.label}</Text>
-        {rating.review && (
-          <Section style={{ marginTop: "22px" }}>
-            <Text style={{ fontFamily: font.heading, fontSize: "20px", lineHeight: "1.35", color: c.text, margin: 0 }}>&ldquo;{rating.review.text}&rdquo;</Text>
-            <Text style={{ ...s.muted, margin: "4px 0 0" }}>{rating.review.author}</Text>
-          </Section>
-        )}
-      </Section>
+      <Text style={{ ...s.name, margin: 0 }}>
+        {rating.score} <span style={{ fontWeight: 400, color: c.muted }}>{rating.label}</span>
+      </Text>
+      {rating.review && (
+        <Section style={{ marginTop: "14px" }}>
+          <Text style={{ fontFamily: font.heading, fontSize: "20px", lineHeight: "1.35", color: c.text, margin: 0 }}>&ldquo;{rating.review.text}&rdquo;</Text>
+          <Text style={{ ...s.muted, margin: "4px 0 0" }}>{rating.review.author}</Text>
+        </Section>
+      )}
     </>
   );
 }
 
 /** S6 Merksectie: waarom ViaLuxury, in één alinea. Geen vlak eromheen (beige blijft voor keuzeknoppen). */
 export function BrandSection({ children }: { children: React.ReactNode }) {
+  return <Text style={{ ...s.body, margin: 0 }}>{children}</Text>;
+}
+
+/** S15 Servicesectie: de regel uit de sheet, met de link naar de klantenservice. */
+export function ServiceSection() {
   return (
-    <>
-      <Text style={s.kop}>Waarom ViaLuxury</Text>
-      <Text style={s.body}>{children}</Text>
-    </>
+    <Text style={{ ...s.title, margin: 0 }}>
+      Vragen over dit arrangement? Onze{" "}
+      <Link href="https://vialuxury.com/nl-NL/klantenservice" style={{ color: c.link, textDecoration: "underline" }}>klantenservice</Link>{" "}
+      helpt je graag.
+    </Text>
   );
 }
 
@@ -529,19 +528,14 @@ export function SearchSection({ searchTerm, arrivalDate, persons, resultsUrl }: 
   );
 }
 
-/** S7 Themasectie compact: beige vlak met vijf themaknoppen plus "Alle thema's".
- *  De vijf thema's volgen de seizoensthema's van de verzendmaand (tabblad Seizoensthema's):
- *  november = wellness, culinair en experiences. Elke keuze landt op /crm/thema?keuze=<id>. */
-export function ThemeSection({ title, note, items = themes.slice(0, 5) }: { title: string; note: string; items?: Theme[] }) {
+/** S7 Themasectie compact: beige vlak met de themaknoppen en de knop "Alle thema's".
+ *  De tegels en hun landingspagina's komen uit het tabblad Themategels, de keuze volgt de
+ *  seizoensthema's van de verzendmaand (tabblad Seizoensthema's). */
+export function ThemeSection({ title, note, items }: { title: string; note: string; items: Pill[] }) {
   return (
     <Section style={beigeBox}>
       <Text style={s.kop}>{title}</Text>
-      <PillGrid
-        items={[
-          ...items.map((t) => ({ label: t.label, icon: t.icon, href: `${site}/crm/thema?keuze=${t.id}` })),
-          { label: "Alle thema's", href: "https://vialuxury.com/nl-NL/zoeken" },
-        ]}
-      />
+      <PillGrid items={[...items, { label: "Alle thema's", href: "https://vialuxury.com/nl-NL/zoeken" }]} />
       <Text style={{ ...s.muted, margin: "14px 0 0" }}>{note}</Text>
     </Section>
   );
