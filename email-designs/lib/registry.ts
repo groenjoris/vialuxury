@@ -13,7 +13,7 @@ import CrmTerugkomactie, { herinneringProps } from "../emails/crm-terugkomactie"
 import CrmZoekopdracht from "../emails/crm-zoekopdracht";
 import CrmFavorieten from "../emails/crm-favorieten";
 import CommercieelContentMultiDeal from "../emails/commercieel-content-multi-deal";
-import CommercieelDedicatedHotel from "../emails/commercieel-dedicated-hotel";
+import CommercieelDedicatedHotel, { zonderPrijsProps } from "../emails/commercieel-dedicated-hotel";
 import { incheckMails } from "./incheckMails";
 
 /** MVP: geen accountdetailpagina, boekingslinks gaan naar het boekingenoverzicht. */
@@ -396,7 +396,20 @@ export const emails: EmailEntry[] = [
     section: "commercieel",
     subject: "Ons beste hotelarrangement van de maand",
     preheader: "2 nachten voor 2 personen op de Veluwe, inclusief diner.",
+    variantLabel: "Met prijs",
     Component: CommercieelDedicatedHotel,
+  },
+  {
+    slug: "commercieel-dedicated-hotel-zonder-prijs",
+    title: "Dedicated hotel",
+    description: "Variant zonder prijs: de brief maakt nieuwsgierig en noemt geen prijs, de kaart heeft geen prijsrij.",
+    section: "commercieel",
+    subject: "Ons beste hotelarrangement van de maand",
+    preheader: "Midden in de bossen van de Veluwe. De prijs is lager dan je denkt.",
+    variantOf: "commercieel-dedicated-hotel",
+    variantLabel: "Zonder prijs",
+    Component: CommercieelDedicatedHotel,
+    props: zonderPrijsProps,
   },
 ];
 

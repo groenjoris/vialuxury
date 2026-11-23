@@ -9,6 +9,10 @@ import { font, newsletter } from "../components/theme";
 // (aanhef, een korte, krachtige alinea met het aanbod vet, ondertekening), daaronder de knop
 // "Bekijk aanbieding" en dan het arrangement op de verticale dealkaart (grote foto, daaronder de
 // uitgebreide kaart). Zelfde bouwstenen en regels als de CRM-mails (zie components/crm.tsx).
+// Twee varianten (schakelaar "Met prijs | Zonder prijs" in de preview): met prijs noemt de brief het
+// aanbod met de prijs en heeft de kaart de prijsrij; zonder prijs (`showPrice={false}`) steekt de
+// brief in op nieuwsgierigheid, noemt geen prijs en heeft de kaart geen prijsrij (de prijs staat
+// pas op de dealpagina).
 // Onderwerp: "Ons beste hotelarrangement van de maand"
 
 type Props = {
@@ -19,12 +23,15 @@ type Props = {
   lead: string;
   /** Het aanbod, vet in de brief. */
   offer: string;
+  /** false → de kaart zonder prijsrij (variant "Zonder prijs"). */
+  showPrice?: boolean;
+  preheader?: string;
   /** De rest van de alinea: waarom dit hotel. */
   pitch: string;
   deal: RowDeal;
 };
 
-export default function CommercieelDedicatedHotel({ recipientEmail, firstName, lead, offer, pitch, deal }: Props) {
+export default function CommercieelDedicatedHotel({ recipientEmail, firstName, lead, offer, pitch, deal, showPrice = true, preheader = "2 nachten voor 2 personen op de Veluwe, inclusief diner." }: Props) {
   const c = newsletter.light;
   return (
     <Html lang="nl">
@@ -32,7 +39,7 @@ export default function CommercieelDedicatedHotel({ recipientEmail, firstName, l
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <style>{crmCss}</style>
       </Head>
-      <Preview>2 nachten voor 2 personen op de Veluwe, inclusief diner.</Preview>
+      <Preview>{preheader}</Preview>
       <Body style={{ backgroundColor: c.bg, margin: 0, padding: 0, fontFamily: font.body }}>
         <CrmHeader />
         <Container style={{ width: "100%", maxWidth: "626px" }}>
@@ -50,7 +57,7 @@ export default function CommercieelDedicatedHotel({ recipientEmail, firstName, l
 
           {/* Het arrangement op de verticale kaart */}
           <Section className="m-pad" style={{ padding: "20px 32px 0" }}>
-            <FeaturedDeal deal={deal} />
+            <FeaturedDeal deal={deal} priceRow={showPrice} />
           </Section>
 
           {/* Hulplijn */}
@@ -83,4 +90,14 @@ CommercieelDedicatedHotel.PreviewProps = {
     original: "€449",
     priceFor: "2 personen, 2 nachten",
   },
+} satisfies Props;
+
+/** Variant "Zonder prijs": de brief maakt nieuwsgierig en noemt geen prijs; de kaart heeft geen prijsrij. */
+export const zonderPrijsProps = {
+  ...CommercieelDedicatedHotel.PreviewProps,
+  lead: "Elke maand kiezen we één arrangement dat er voor ons bovenuit steekt. Deze maand ligt het midden in de bossen van de Veluwe:",
+  offer: "2 nachten voor 2 personen, inclusief diner.",
+  pitch: "Voor welke prijs? Die is lager dan je denkt.",
+  showPrice: false,
+  preheader: "Midden in de bossen van de Veluwe. De prijs is lager dan je denkt.",
 } satisfies Props;
