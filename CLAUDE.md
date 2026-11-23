@@ -249,6 +249,9 @@ Regels voor elke CRM-mail:
 - Gegroepeerde suggesties (`DealGroup`, in de terugkomactie en de favorietenmail): elke groep op een eigen beige vlak met
   de subtitel (20 serif) en eventueel een grijze regel erin, kaarten wit, 16 px ertussen; het vlak steekt 16 px buiten de
   tekstkolom zodat de kaarten even breed blijven.
+- Reviewmail: de sterren zijn een keuzeblok op het beige vlak: vijf lege, omlijnde sterren (`ster-leeg.png`) met "Slecht"
+  en "Uitstekend" eronder. Leeg leest als "vul mij in"; gevulde sterren lezen als een score die er al staat. Variant
+  `crm-review-knoppen` (schakelaar "Lege ster | Knop" in de previewkop): vijf witte knoppen met cijfer en ster.
 - Tussen twee dealkaarten onder elkaar staat 24 px (`cardGap`), tussen een titel en de eerste kaart 12 px.
 - Preheaders zonder gegevens die lastig te automatiseren zijn of niet altijd bestaan (geen plaatsen of prijzen van de
   suggesties, geen datum uit de zoekopdracht).

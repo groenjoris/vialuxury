@@ -7,6 +7,14 @@
     "preheader": "We horen graag hoe je het vond. Het kost je een minuut."
   },
   {
+    "slug": "crm-review-knoppen",
+    "title": "Reviewmail (1 dag na thuiskomst)",
+    "description": "Variant van de reviewmail: de vijf keuzes als witte knoppen met cijfer en ster in plaats van lege sterren.",
+    "subject": "Hoe was je verblijf?",
+    "preheader": "We horen graag hoe je het vond. Het kost je een minuut.",
+    "variantOf": "crm-review"
+  },
+  {
     "slug": "crm-terugkomactie",
     "title": "Terugkomactie €20 (14 dagen na vertrek)",
     "description": "Kortingscode als coupon, één knop, jouw verblijf, 'Tips voor je kortingscode' met drie groepjes van twee suggesties en de themakiezer.",

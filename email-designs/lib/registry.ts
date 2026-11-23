@@ -8,7 +8,7 @@ import CrmJaarGeleden from "../emails/crm-jaar-geleden";
 import CrmWinkelmandje, { naamOnbekendProps } from "../emails/crm-winkelmandje";
 import CrmWinkelmandje2Dagen, { naamOnbekendProps as naamOnbekend2DagenProps } from "../emails/crm-winkelmandje-2-dagen";
 import CrmThemaStedentrips from "../emails/crm-thema-stedentrips";
-import CrmReview from "../emails/crm-review";
+import CrmReview, { knoppenProps } from "../emails/crm-review";
 import CrmTerugkomactie, { herinneringProps } from "../emails/crm-terugkomactie";
 import CrmZoekopdracht from "../emails/crm-zoekopdracht";
 import CrmFavorieten from "../emails/crm-favorieten";
@@ -234,6 +234,17 @@ export const emails: EmailEntry[] = [
     subject: "Hoe was je verblijf?",
     preheader: "We horen graag hoe je het vond. Het kost je een minuut.",
     Component: CrmReview,
+  },
+  {
+    slug: "crm-review-knoppen",
+    title: "Reviewmail (1 dag na thuiskomst)",
+    description: "Variant van de reviewmail: de vijf keuzes als witte knoppen met cijfer en ster in plaats van lege sterren.",
+    section: "crm",
+    variantOf: "crm-review",
+    subject: "Hoe was je verblijf?",
+    preheader: "We horen graag hoe je het vond. Het kost je een minuut.",
+    Component: CrmReview,
+    props: knoppenProps,
   },
   // Overgenomen van Jesse (origin/redesign-jesse), omgezet naar onze bouwstenen.
   {

@@ -30,6 +30,8 @@ const baseSlug = computed(() => (entry.value as { variantOf?: string } | undefin
 const variantLabels: Record<string, string> = {
   'crm-winkelmandje': 'Naam bekend',
   'crm-winkelmandje-naam-onbekend': 'Naam onbekend',
+  'crm-review': 'Lege ster',
+  'crm-review-knoppen': 'Knop',
   'crm-winkelmandje-2-dagen': 'Naam bekend',
   'crm-winkelmandje-2-dagen-naam-onbekend': 'Naam onbekend',
 }
