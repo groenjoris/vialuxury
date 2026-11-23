@@ -145,6 +145,8 @@ export type RowDeal = {
   original?: string;
   /** Waar de prijs voor geldt, bijv. "2 personen, 2 nachten". */
   priceFor?: string;
+  /** Prijs na aftrek van de kortingscode van de ontvanger, bijv. "€499"; regel onder de prijsrij. */
+  withCode?: string;
 };
 
 /** De tekstregels van een dealblok: hotelnaam (20 serif), sterren, plaats, dealtitel en de vette regel. */
@@ -228,9 +230,20 @@ function RichDealPrice({ d, cta }: { d: RowDeal; cta: string }) {
           </Button>
         </Column>
       </Row>
+      {d.withCode && (
+        <Text style={{ ...s.title, margin: "10px 0 0" }}>
+          Met jouw code: <span style={{ fontWeight: 700 }}>{d.withCode}</span>
+        </Text>
+      )}
     </>
   );
 }
+
+/** Prijs van een deal na aftrek van een kortingsbedrag: ("€519", 20) → "€499". */
+export const priceWithCode = (price: string | undefined, discount: number) => {
+  const n = Number((price ?? "").replace(/[^0-9]/g, ""));
+  return n > discount ? `€${n - discount}` : undefined;
+};
 
 /** Ruimte tussen twee dealkaarten onder elkaar. */
 export const cardGap = "24px";
@@ -364,8 +377,23 @@ export function IconLine({ icon, children, bold }: { icon: string; children: Rea
  *  gestippelde rand waarin alles gecentreerd onder elkaar staat: wat je krijgt (`title`, bijv.
  *  "€20 cadeau"), het label, de code als selecteerbare tekst in oranje serif, de geldigheid en de
  *  instructie. Met `daysLeft`: "Nog 14 dagen geldig, tot en met …". */
-export function CodeBlock({ title, code, label = "Jouw persoonlijke code", deadline, daysLeft }: { title?: string; code: string; label?: string; deadline: string; daysLeft?: number }) {
+export function CodeBlock({ title, code, label = "Jouw persoonlijke code", deadline, daysLeft, urgent }: { title?: string; code: string; label?: string; deadline: string; daysLeft?: number; /** Herinnering: de termijn is het grootst ("Nog 14 dagen"), het bedrag staat eronder; geef het bedrag mee als `title` ("€20 cadeau"). */ urgent?: boolean }) {
   const center = { textAlign: "center" as const };
+  if (urgent && daysLeft) {
+    return (
+      <Section style={{ width: "100%", border: `2px dashed ${c.cta}`, borderRadius: "8px", padding: "22px 22px 24px", textAlign: "center" }}>
+        <Text style={{ ...s.h1, fontWeight: 700, color: c.cta, ...center, margin: 0 }}>Nog {daysLeft} dagen</Text>
+        {title && <Text style={{ ...s.name, ...center, margin: "4px 0 14px" }}>om je {title} te gebruiken</Text>}
+        <Text style={{ ...s.title, ...center, margin: 0 }}>{label}</Text>
+        <Text style={{ fontFamily: font.heading, fontWeight: 700, fontSize: "20px", lineHeight: "1.3", letterSpacing: "0.02em", color: c.text, margin: "4px 0 0", ...center }}>{code}</Text>
+        <Text style={{ ...s.name, ...center, margin: "14px 0 0" }}>
+          <Img src={mailIcon("clock-donker")} alt="" width="18" height="18" style={{ display: "inline-block", verticalAlign: "-3px", marginRight: "8px" }} />
+          Geldig tot en met {deadline}
+        </Text>
+        <Text style={{ ...s.muted, ...center, margin: "2px 0 0" }}>Vul de code in bij het boeken.</Text>
+      </Section>
+    );
+  }
   return (
     <Section style={{ width: "100%", border: `2px dashed ${c.cta}`, borderRadius: "8px", padding: "22px 22px 24px", textAlign: "center" }}>
       {title && <Text style={{ ...s.h1, fontWeight: 700, color: c.cta, ...center, margin: "0 0 12px" }}>{title}</Text>}
