@@ -9,7 +9,8 @@ import { baseUrl, font, newsletter } from "../components/theme";
 // zaterdagkorting: op zaterdag krijgt de ontvanger een persoonlijke code van €15 die alleen die dag
 // geldt. Opbouw: de actiegraphic over de hele breedte (feestelijke coupon, gemaakt met
 // scripts/mail-graphics/zaterdag-coupon.py; een graphic, dus mét tekst), een korte brief, de code
-// als coupon (CodeBlock), één knop en daaronder in drie stappen hoe je de code verzilvert.
+// als coupon (CodeBlock), in drie stappen hoe je de code verzilvert en daaronder de ene knop
+// "Bekijk onze arrangementen".
 // Zelfde bouwstenen en regels als de CRM-mails (zie components/crm.tsx).
 // Onderwerp: "Sanne, alleen vandaag: €15 korting voor jou"
 
@@ -44,14 +45,11 @@ export default function CommercieelTekst({ recipientEmail, firstName, hero, hero
         {/* Actiegraphic direct onder de header, over de hele breedte van de mail */}
         <Img src={hero} alt={heroAlt} width="700" style={{ display: "block", width: "100%", height: "auto" }} />
         <Container style={{ width: "100%", maxWidth: "626px" }}>
-          {/* Brief, de code als coupon en de ene knop */}
+          {/* Brief en de code als coupon */}
           <Section className="m-pad" style={{ padding: "32px 32px 0" }}>
             <Letter firstName={firstName}>{intro}</Letter>
             <Section style={{ marginTop: "24px" }}>
               <CodeBlock title={gift} code={code} deadline={deadline} />
-            </Section>
-            <Section style={{ marginTop: "20px" }}>
-              <PrimaryButton href={allDealsUrl}>Verzilver je code</PrimaryButton>
             </Section>
           </Section>
 
@@ -63,6 +61,10 @@ export default function CommercieelTekst({ recipientEmail, firstName, hero, hero
                 <strong>{i + 1}.</strong> {step}
               </Text>
             ))}
+            {/* De ene knop, onder de stappen */}
+            <Section style={{ marginTop: "24px" }}>
+              <PrimaryButton href={allDealsUrl}>Bekijk onze arrangementen</PrimaryButton>
+            </Section>
           </Section>
         </Container>
 

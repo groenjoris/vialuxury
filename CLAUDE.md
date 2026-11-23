@@ -239,7 +239,8 @@ de R1-zoekpagina); bronnen `email-designs/emails/commercieel-*.tsx`, foto's in
    (`zaterdag-kortingsdag.jpg`: gouden coupon "€15 persoonlijke korting, alleen vandaag" met confetti op donkerblauw,
    in de stijl van de Goodiebox-graphic; gemaakt met `scripts/mail-graphics/zaterdag-coupon.py <uitvoerpad>`, Recoleta
    en Basis Grotesque uit `public/fonts`), brief, de persoonlijke code als coupon (`CodeBlock`, SV15V-2FHT, "vandaag
-   23:59 uur"), de oranje knop "Verzilver je code" en "Zo verzilver je je code" in drie stappen.
+   23:59 uur"), "Zo verzilver je je code" in drie stappen en daaronder de oranje knop "Bekijk onze
+   arrangementen".
 
 Regels voor elke CRM-mail:
 - Briefopzet (het format voor alle CRM-mails, tot nu toe in `crm-winkelmandje-2-dagen`, `crm-favorieten`, `crm-zoekopdracht`,
