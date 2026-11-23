@@ -1,6 +1,7 @@
 // Exporteert alle e-mails uit de registry als statische HTML naar de hoofdapp:
 //   public/emails/<slug>.html en <slug>.dark.html  (gehost onder /emails/…)
 //   app/data/mht-emails.json                         (lijst voor /multi-hotel-trip/emails)
+//   app/data/crm-emails.json, commercieel-emails.json (lijsten voor /crm en /commercieel)
 // Draaien: `npm run export` in email-designs/ (na elke wijziging aan een e-mail).
 // Met EMAIL_BASE_URL=https://vialuxury.vercel.app krijgen afbeeldingen absolute URL's.
 import { mkdirSync, writeFileSync } from "node:fs";
@@ -15,6 +16,9 @@ async function main() {
   const dataFile = resolve(here, "../../app/data/mht-emails.json");
   // CRM-concepten: alleen light, eigen lijst voor /crm/<slug>.
   const crmFile = resolve(here, "../../app/data/crm-emails.json");
+  // Commerciële mails (nieuwsbrieven en acties): alleen light, eigen lijst voor /commercieel/<slug>.
+  const commercieelFile = resolve(here, "../../app/data/commercieel-emails.json");
+  const commercieel: { slug: string; title: string; description: string; subject?: string; preheader?: string; variantOf?: string; variantLabel?: string }[] = [];
   mkdirSync(outDir, { recursive: true });
   const index: { slug: string; title: string; description: string; section: string; subject?: string; preheader?: string; variantOf?: string }[] = [];
   const crm: { slug: string; title: string; description: string; subject?: string; preheader?: string; variantOf?: string }[] = [];
@@ -25,6 +29,12 @@ async function main() {
       console.log("✓", e.slug);
       continue;
     }
+    if (e.section === "commercieel") {
+      writeFileSync(resolve(outDir, `${e.slug}.html`), await renderEmail(e, "light"));
+      commercieel.push({ slug: e.slug, title: e.title, description: e.description, subject: e.subject, preheader: e.preheader, variantOf: e.variantOf, variantLabel: e.variantLabel });
+      console.log("✓", e.slug);
+      continue;
+    }
     writeFileSync(resolve(outDir, `${e.slug}.html`), await renderEmail(e, "light"));
     writeFileSync(resolve(outDir, `${e.slug}.dark.html`), await renderEmail(e, "dark"));
     index.push({ slug: e.slug, title: e.title, description: e.description, section: e.section, subject: e.subject, preheader: e.preheader, variantOf: e.variantOf });
@@ -32,6 +42,7 @@ async function main() {
   }
   writeFileSync(dataFile, JSON.stringify(index, null, 2) + "\n");
   writeFileSync(crmFile, JSON.stringify(crm, null, 2) + "\n");
+  writeFileSync(commercieelFile, JSON.stringify(commercieel, null, 2) + "\n");
   console.log(`${index.length} e-mails → ${outDir}`);
 }
 main().catch((err) => { console.error(err); process.exit(1); });

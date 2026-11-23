@@ -205,8 +205,14 @@ voorbeelddeals in `email-designs/lib/crmDeals.ts`, registry-sectie `"crm"`; de e
 light HTML en de lijst `app/data/crm-emails.json`. Preview `/crm/<slug>` (één frame zoals in de inbox:
 afzender, onderwerp en preheader boven de mail; links tegen de rand een wit paneel met alle mails: naam,
 daaronder het verzendmoment, actieve mail op beige, pijltjes ↑ ↓ bladeren); bevestigingspagina's
-`/crm/volgende-vakantie?keuze=…` (nagenieten) en `/crm/thema?keuze=…` (themakiezer). Startscherm: vak "CRM"
-met één knop "Voorbeeldmails" (naar de eerste mail).
+`/crm/volgende-vakantie?keuze=…` (nagenieten) en `/crm/thema?keuze=…` (themakiezer). Startscherm: vak "E-mailmarketing"
+met de knoppen "CRM-mails" (naar de eerste CRM-mail) en "Commerciële mails".
+
+Commerciële mails (sinds 2026-11-23): nieuwsbrieven en acties, zelfde opzet als de CRM-preview. Pagina
+`app/pages/commercieel/[[slug]].vue` (`/commercieel` opent de eerste mail), links een paneel met tien plekken (een plek
+zonder mail staat grijs, "volgt"). Mails komen in de registry met sectie `"commercieel"` (volgorde van de registry =
+volgorde in het paneel; varianten met `variantOf` en `variantLabel`); de export schrijft alleen light HTML en de lijst
+`app/data/commercieel-emails.json`. De tien voorbeelden worden nog gebriefd.
 
 Regels voor elke CRM-mail:
 - Briefopzet (het format voor alle CRM-mails, tot nu toe in `crm-winkelmandje-2-dagen`, `crm-favorieten`, `crm-zoekopdracht`,

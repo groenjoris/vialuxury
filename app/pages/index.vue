@@ -57,15 +57,17 @@
       </section>
 
 
-      <!-- CRM — concept voor de geautomatiseerde e-mails (artist impression, alleen
-           desktop en light mode). Eén knop naar de eerste mail; de preview (/crm/<slug>) heeft links een paneel met alle mails. -->
+      <!-- E-mailmarketing — concepten (artist impression, alleen desktop en light mode).
+           CRM-mails: de geautomatiseerde mails, preview /crm/<slug> met links een paneel met alle mails.
+           Commerciële mails: nieuwsbrieven en acties, preview /commercieel met tien plekken. -->
       <section class="start-section">
-        <h2 class="start-section__title">CRM</h2>
+        <h2 class="start-section__title">E-mailmarketing</h2>
         <p class="start-section__lead">
-          Concept voor geautomatiseerde e-mails (desktop, light mode)
+          Concept voor geautomatiseerde en commerciële e-mails (desktop, light mode)
         </p>
         <div class="start-section__buttons">
-          <NuxtLink class="start-btn" to="/crm/crm-winkelmandje">Voorbeeldmails</NuxtLink>
+          <NuxtLink class="start-btn" to="/crm/crm-winkelmandje">CRM-mails</NuxtLink>
+          <NuxtLink class="start-btn" to="/commercieel">Commerciële mails</NuxtLink>
         </div>
       </section>
 

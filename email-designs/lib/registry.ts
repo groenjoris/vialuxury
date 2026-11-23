@@ -18,7 +18,9 @@ import { incheckMails } from "./incheckMails";
 const MVP_ACCOUNT = "https://vialuxury.vercel.app/mvp-trip/account/boekingen";
 
 // "crm": concept-mails voor het CRM-project (alleen light, eigen lijst app/data/crm-emails.json).
-export type EmailSection = "designs" | "inspiration" | "crm";
+// "commercieel": commerciële mails (nieuwsbrieven en acties; alleen light, eigen lijst
+// app/data/commercieel-emails.json, preview /commercieel/<slug>, tien plekken).
+export type EmailSection = "designs" | "inspiration" | "crm" | "commercieel";
 
 export type EmailEntry = {
   slug: string;
@@ -32,6 +34,8 @@ export type EmailEntry = {
   /** Variant van een andere mail (slug), bijv. de niet-terugbetaalbare versie `<slug>-nonflex`; de
    *  preview toont die bij de schakelaar Non-flex, in lijsten blijft hij verborgen. */
   variantOf?: string;
+  /** Label van deze mail in de variantschakelaar van de preview (sectie "commercieel"). */
+  variantLabel?: string;
   // Elke e-mail exporteert PreviewProps met representatieve voorbeelddata
   // en accepteert een optionele `mode`-prop ("light" | "dark").
   Component: React.ComponentType<any> & { PreviewProps?: Record<string, unknown> };
