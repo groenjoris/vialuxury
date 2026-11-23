@@ -291,10 +291,12 @@ export function DealRow({ deal: d, cta, top = "12px" }: { deal: RowDeal; cta?: s
         {/* Foto als achtergrond: sluit aan op de rand en vult de hele hoogte van het blok */}
         {d.secondImage ? (
           // Twee foto's onder elkaar: het hoofdbeeld boven, het tweede beeld van het arrangement
-          // eronder. Samen vullen ze de vaste kaarthoogte (211 + 212 = 423 px binnen de rand).
+          // eronder, met een wit randje ertussen. Samen vullen ze de vaste kaarthoogte
+          // (211 + 212 = 423 px binnen de rand, waarvan 3 px wit). Het randje is een witte bovenrand op de
+          // tweede foto; een achtergrondfoto loopt niet door onder een rand.
           <Column className="stack m-rowphoto-cell" style={{ width: "190px", verticalAlign: "top" }}>
             {[d.image, d.secondImage].map((src, i) => (
-              <Section key={src} className="m-halfphoto" style={{ height: i ? "212px" : "211px", backgroundImage: `url(${src})`, backgroundSize: "cover", backgroundPosition: "center" }}>
+              <Section key={src} className="m-halfphoto" style={{ height: i ? "212px" : "211px", borderTop: i ? "3px solid #FFFFFF" : undefined, backgroundImage: `url(${src})`, backgroundSize: "cover", backgroundPosition: "center" }}>
                 <Link href={d.url} aria-label={d.hotelName ?? cta ?? "Bekijk"} className="m-rowphoto" style={{ display: "block", width: "190px", minHeight: "107px" }} />
               </Section>
             ))}
