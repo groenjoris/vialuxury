@@ -12,7 +12,7 @@ import CrmReview, { knoppenProps } from "../emails/crm-review";
 import CrmTerugkomactie, { herinneringProps } from "../emails/crm-terugkomactie";
 import CrmZoekopdracht from "../emails/crm-zoekopdracht";
 import CrmFavorieten from "../emails/crm-favorieten";
-import AutomationCart, { cart1Props, cart2Props, cart3Props } from "../emails/automation-cart";
+import AutomationCart, { cart1Props, cart2Props, cart3Props, cart4Props } from "../emails/automation-cart";
 import AutomationBrowse, { browse1Props, browse2Props, browse3Props } from "../emails/automation-browse";
 import AutomationSearch, { search1Props, search2Props, search3Props, search4Props } from "../emails/automation-search";
 import { incheckMails } from "./incheckMails";
@@ -396,6 +396,16 @@ export const emails: EmailEntry[] = [
     preheader: "Dit vonden andere gasten.",
     Component: AutomationCart,
     props: cart3Props,
+  },
+  {
+    slug: "v01_tf024_fl011_nl-NL_4_abandoned_cart_discount_10euro",
+    title: "Winkelmandje 4 (4 dagen na verlaten)",
+    description: "Laatste mail van de flow: brief van Yvette, het winkelmandje met de knop, en daaronder de unieke code van €10 als coupon met de adviesregel eronder.",
+    section: "automation",
+    subject: "€10 cadeau voor je verblijf in Hotel Des Indes",
+    preheader: "Jouw unieke code, geldig tot en met 7 december 2026.",
+    Component: AutomationCart,
+    props: cart4Props,
   },
   // Flow fl012: bekeken arrangement.
   {

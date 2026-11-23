@@ -286,8 +286,8 @@ content/Automations in kaart.xlsx`, tabblad **Automation per variant** — elke 
 leest van boven naar beneden als de volgorde van de secties (tabblad Secties geeft per S-nummer wat
 erin zit, Mergevelden de `[…]`-velden, Seizoensthema's welke thema's bij welke maand horen).
 
-Fase 1 = de drie abandoned-flows, tien mails: `fl011` winkelmandje (3), `fl012` bekeken arrangement
-(3) en `fl013` zoekopdracht (4). Drie componenten, één per flow — `email-designs/emails/automation-
+Fase 1 = de drie abandoned-flows, elf mails: `fl011` winkelmandje (4, waarvan `tf024` met een
+code van €10), `fl012` bekeken arrangement (3) en `fl013` zoekopdracht (4). Drie componenten, één per flow — `email-designs/emails/automation-
 {cart,browse,search}.tsx` — met per mail een export `…Props`. **De slug is exact de Klaviyo-naam**
 (`v01_tf021_fl011_nl-NL_1_abandoned_cart`), zodat `public/emails/<slug>.html` net zo heet als de
 template in Klaviyo; die naam staat ook onder de titel in de preview. Registry-sectie `"automation"`,

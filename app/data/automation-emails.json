@@ -21,6 +21,13 @@
     "preheader": "Dit vonden andere gasten."
   },
   {
+    "slug": "v01_tf024_fl011_nl-NL_4_abandoned_cart_discount_10euro",
+    "title": "Winkelmandje 4 (4 dagen na verlaten)",
+    "description": "Laatste mail van de flow: brief van Yvette, het winkelmandje met de knop, en daaronder de unieke code van €10 als coupon met de adviesregel eronder.",
+    "subject": "€10 cadeau voor je verblijf in Hotel Des Indes",
+    "preheader": "Jouw unieke code, geldig tot en met 7 december 2026."
+  },
+  {
     "slug": "v01_tf025_fl012_nl-NL_1_abandoned_browse",
     "title": "Bekeken arrangement 1 (2 uur na bekijken)",
     "description": "Het bekeken arrangement met plaats, prijs en inclusies, en de knop Bekijk arrangement. Daaronder twee arrangementen in dezelfde sfeer.",

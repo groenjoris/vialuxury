@@ -2,7 +2,7 @@ import { Body, Container, Head, Heading, Html, Preview, Section, Text } from "@r
 import * as React from "react";
 import CrmFooter from "../components/CrmFooter";
 import CrmHeader from "../components/CrmHeader";
-import { cardGap, crmCss, CrmHelp, DealRow, FeaturedDeal, type GuestRating, GuestRatingSection, Letter, PrimaryButton, type RowDeal, s, ServiceSection } from "../components/crm";
+import { cardGap, CodeBlock, crmCss, CrmHelp, DealRow, FeaturedDeal, type GuestRating, GuestRatingSection, Letter, PrimaryButton, type RowDeal, s, ServiceSection } from "../components/crm";
 import { desIndes, dePlesman, voco } from "../lib/crmDeals";
 import { font, newsletter } from "../components/theme";
 
@@ -11,7 +11,8 @@ import { font, newsletter } from "../components/theme";
 // Secties in de volgorde van de sheet:
 //   S1 Header (logo) → Kop → Intro → S17 Achtergelaten arrangement (het winkelmandje) →
 //   S21 Gastenoordeel (alleen mail 3) → S4 Hoteldeals (mail 2 en 3, twee alternatieven) →
-//   S15 Servicesectie (alleen mail 1) → S13 Footer.
+//   S10 Codesectie met de adviesregel (alleen mail 4) → S15 Servicesectie (alleen mail 1) →
+//   S13 Footer.
 // Opening per soort mail, zoals bij de twee winkelmandjemails van het CRM. Gaat de mail over iets
 // wat de ontvanger zelf heeft laten liggen en is er één ding te doen, dan begint hij direct met de
 // kop en de intro (zoals crm-winkelmandje). Gaat de mail over suggesties of een oordeel van
@@ -30,8 +31,8 @@ type Props = {
   /** Kop (rij 5) en intro (rij 6) van de sheet. */
   heading: string;
   intro: string;
-  /** Waar de kop staat: boven het winkelmandje of boven het gastenoordeel. */
-  headingAt?: "cart" | "rating";
+  /** Waar de kop staat: boven het winkelmandje, het gastenoordeel of de codesectie. */
+  headingAt?: "cart" | "rating" | "code";
   /** "direct": kop en intro bovenaan (mail 2, één ding te doen). "brief": aanhef, intro en de
    *  ondertekening van Yvette (mail 3, het oordeel van anderen en alternatieven).
    *  "winkelmandje": de opzet van crm-winkelmandje — kop, intro, wat er klaarstaat als losse
@@ -43,11 +44,14 @@ type Props = {
   guestRating?: GuestRating;
   /** S4: twee vergelijkbare arrangementen (mail 2 en 3). */
   alternatives?: RowDeal[];
+  /** S10: de kortingscode met de adviesregel eronder (mail 4). Opbouw als in crm-terugkomactie:
+   *  het bedrag als kop van de coupon, de code, de geldigheid en "Vul de code in bij het boeken". */
+  code?: { code: string; value: string; deadline: string; advice: string };
   /** S15: de serviceregel (alleen mail 1). */
   service?: boolean;
 };
 
-export default function AutomationCart({ recipientEmail, preheader, firstName, heading, intro, headingAt = "cart", opening = "direct", cart, guestRating, alternatives, service }: Props) {
+export default function AutomationCart({ recipientEmail, preheader, firstName, heading, intro, headingAt = "cart", opening = "direct", cart, guestRating, alternatives, code, service }: Props) {
   const c = newsletter.light;
 
   return (
@@ -123,6 +127,15 @@ export default function AutomationCart({ recipientEmail, preheader, firstName, h
             </Section>
           )}
 
+          {/* S10 Codesectie: de coupon met de adviesregel eronder */}
+          {code && (
+            <Section className="m-pad" style={{ padding: "44px 32px 0" }}>
+              {headingAt === "code" && <Heading as="h1" className="m-h1" style={{ ...s.h1, marginBottom: "20px" }}>{heading}</Heading>}
+              <CodeBlock title={`${code.value} cadeau`} code={code.code} label="Jouw unieke code" deadline={code.deadline} />
+              <Text style={{ ...s.body, margin: "14px 0 0" }}>{code.advice}</Text>
+            </Section>
+          )}
+
           {/* S15 Servicesectie */}
           {service && (
             <Section className="m-pad" style={{ padding: "36px 32px 0" }}>
@@ -195,6 +208,25 @@ export const cart3Props = {
     review: { text: "Prachtige kamer en een feestelijk diner.", author: "Marieke" },
   },
   alternatives,
+} satisfies Props;
+
+/** v01_tf024_fl011_nl-NL_4_abandoned_cart_discount_10euro — 4 dagen na het verlaten van het
+ *  winkelmandje, met een unieke code van €10. Code en deadline zijn voorbeelddata. */
+export const cart4Props = {
+  recipientEmail: "sanne.devries@example.com",
+  firstName: "Sanne",
+  preheader: "Jouw unieke code, geldig tot en met 7 december 2026.",
+  heading: "Een extraatje om je te helpen kiezen",
+  headingAt: "code" as const,
+  opening: "brief" as const,
+  intro: `Je verblijf in ${HOTEL} staat nog in je winkelmandje. Om je op weg te helpen krijg je €10 cadeau met jouw unieke code.`,
+  cart,
+  code: {
+    code: "MANDJE10-4XQ7",
+    value: "€10",
+    deadline: "7 december 2026 23:59 uur",
+    advice: `Je code staat klaar voor ${HOTEL}.`,
+  },
 } satisfies Props;
 
 AutomationCart.PreviewProps = cart1Props;

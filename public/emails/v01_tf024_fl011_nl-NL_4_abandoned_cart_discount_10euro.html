@@ -1,0 +1,474 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html dir="ltr" lang="nl"><head><meta name="viewport" content="width=device-width, initial-scale=1" /><link
+      rel="preload"
+      as="image"
+      href="/images/logo-vialuxury-horizontal.png" /><link rel="preload" as="image" href="/images/mail/trustpilot-16000.png" /><link
+      rel="preload"
+      as="image"
+      href="/images/mail/crm/groetjes-yvette.png" /><link
+      rel="preload"
+      as="image"
+      href="https://asset.vialuxury.com/assets/ec2bfd91-fc7d-4fa4-91b9-9fc61298b804?key=card" /><link rel="preload" as="image" href="/images/mail/crm/clock-donker.png" /><link rel="preload" as="image" href="/images/mail/icon-phone-orange.png" /><link rel="preload" as="image" href="/images/mail/icon-instagram.png" /><link rel="preload" as="image" href="/images/mail/icon-facebook.png" /><link rel="preload" as="image" href="/images/mail/icon-phone.png" /><link rel="preload" as="image" href="/images/mail/icon-whatsapp.png" /><meta content="text/html; charset=UTF-8" http-equiv="Content-Type" /><meta name="x-apple-disable-message-reformatting" /><style>
+      body { margin: 0 !important; padding: 0 !important; }
+      @media only screen and (max-width: 600px) {
+        .stack { display: block !important; width: 100% !important; padding: 0 0 12px !important; }
+        /* De tekst van een dealrij houdt op mobiel zijn ruimte tot de rand van de kaart. box-sizing is
+           nodig omdat stack width:100% zet: zonder dat telt de padding er nog bij op en steekt de cel
+           (en dus de knop) buiten de kaart uit. */
+        .m-cardtext { padding: 16px 18px 18px !important; box-sizing: border-box !important; }
+        /* De foto van een dealrij staat op mobiel boven de tekst over de volle breedte; padding-top van
+           56,25 % maakt dat vlak 16:9, want een achtergrondfoto heeft zelf geen hoogte. */
+        .m-rowphoto { width: 100% !important; height: 0 !important; min-height: 0 !important; padding-top: 56.25% !important; }
+        /* De cel zelf zonder padding, anders komt stack's 12 px onderaan bij de foto en is het vlak
+           niet meer precies 16:9. */
+        .m-rowphoto-cell { padding: 0 !important; }
+        /* Twee foto's onder elkaar: op mobiel vervalt de halve hoogte (het vlak wordt 16:9) en valt de
+           tweede foto weg. Gestapeld zouden twee foto's van de volle breedte boven de tekst staan; nu
+           ziet de kaart er op een telefoon hetzelfde uit als alle andere dealrijen. */
+        .m-halfphoto { height: auto !important; }
+        .m-hide { display: none !important; }
+        /* De vaste kaarthoogte vervalt: de foto staat hier boven de tekst, dus de kaart is hoger. */
+        .m-auto-h { height: auto !important; }
+        .m-pad { padding-left: 16px !important; padding-right: 16px !important; }
+        .m-h1 { font-size: 28px !important; }
+      }
+      /* Alles smaller dan de volle 626 px: alleen de prijsrij krimpt, de kolommen blijven naast elkaar.
+         Op 16 px vraagt die rij ruim 400 px en zou de knop buiten de kaart vallen. */
+      @media only screen and (max-width: 640px) {
+        .m-badge-cell { padding-right: 6px !important; }
+        .m-badge { font-size: 12px !important; padding: 9px 6px !important; }
+        .m-price { font-size: 12px !important; }
+        .m-price-big { font-size: 16px !important; }
+        .m-cta { font-size: 12px !important; padding: 9px 7px !important; }
+      }
+    </style></head><body style="background-color:#FFFFFF"><!--$--><!--html--><!--head--><div
+      style="display:none;overflow:hidden;line-height:1px;opacity:0;max-height:0;max-width:0"
+      data-skip-in-text="true">
+      Jouw unieke code, geldig tot en met 7 december 2026.
+      <div>
+         ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿
+      </div></div><!--body--><table
+      border="0"
+      width="100%"
+      cellpadding="0"
+      cellspacing="0"
+      role="presentation"
+      align="center"><tbody><tr><td
+            style="background-color:#FFFFFF;margin:0;padding:0;font-family:&#x27;Basis Grotesque Pro&#x27;, Helvetica, Arial, sans-serif"><table
+              align="center"
+              width="100%"
+              border="0"
+              cellpadding="0"
+              cellspacing="0"
+              role="presentation"
+              style="background-color:#141414;width:100%"><tbody><tr><td><table
+                      align="center"
+                      width="100%"
+                      border="0"
+                      cellpadding="0"
+                      cellspacing="0"
+                      role="presentation"
+                      style="max-width:626px;width:100%"><tbody><tr style="width:100%"><td><table
+                              align="center"
+                              width="100%"
+                              border="0"
+                              cellpadding="0"
+                              cellspacing="0"
+                              role="presentation"
+                              style="padding:20px 24px"><tbody><tr><td><table
+                                      align="center"
+                                      width="100%"
+                                      border="0"
+                                      cellpadding="0"
+                                      cellspacing="0"
+                                      role="presentation"><tbody style="width:100%"><tr style="width:100%"><td
+                                            data-id="__react-email-column"
+                                            style="vertical-align:middle"><img
+                                              class="m-logo"
+                                              alt="ViaLuxury"
+                                              src="/images/logo-vialuxury-horizontal.png"
+                                              style="display:block;outline:none;border:none;text-decoration:none;height:auto"
+                                              width="201" /></td><td
+                                            align="right"
+                                            data-id="__react-email-column"
+                                            style="vertical-align:middle"><img
+                                              class="m-trustpilot"
+                                              alt="Trustpilot 4,5/5, 16.000+ reviews"
+                                              height="50"
+                                              src="/images/mail/trustpilot-16000.png"
+                                              style="display:block;outline:none;border:none;text-decoration:none"
+                                              width="106" /></td></tr></tbody></table></td></tr></tbody></table></td></tr></tbody></table></td></tr></tbody></table><table
+              align="center"
+              width="100%"
+              border="0"
+              cellpadding="0"
+              cellspacing="0"
+              role="presentation"
+              style="max-width:626px;width:100%"><tbody><tr style="width:100%"><td><table
+                      align="center"
+                      width="100%"
+                      border="0"
+                      cellpadding="0"
+                      cellspacing="0"
+                      role="presentation"
+                      class="m-pad"
+                      style="padding:32px 32px 0"><tbody><tr><td><p
+                              style="font-size:16px;line-height:1.5;font-family:&#x27;Basis Grotesque Pro&#x27;, Helvetica, Arial, sans-serif;color:#141414;margin:0;margin-top:0;margin-bottom:0;margin-left:0;margin-right:0">
+                              Beste Sanne,
+                            </p><p
+                              style="font-size:16px;line-height:1.5;font-family:&#x27;Basis Grotesque Pro&#x27;, Helvetica, Arial, sans-serif;color:#141414;margin:8px 0 0;margin-top:8px;margin-right:0;margin-bottom:0;margin-left:0">
+                              Je verblijf in Hotel Des Indes staat nog in je
+                              winkelmandje. Om je op weg te helpen krijg je €10
+                              cadeau met jouw unieke code.
+                            </p><img
+                              alt="Groetjes Yvette"
+                              height="29"
+                              src="/images/mail/crm/groetjes-yvette.png"
+                              style="display:block;outline:none;border:none;text-decoration:none;width:133px;height:29px;margin-top:14px"
+                              width="133" /></td></tr></tbody></table><table
+                      align="center"
+                      width="100%"
+                      border="0"
+                      cellpadding="0"
+                      cellspacing="0"
+                      role="presentation"
+                      class="m-pad"
+                      style="padding:40px 32px 0"><tbody><tr><td><table
+                              align="center"
+                              width="100%"
+                              border="0"
+                              cellpadding="0"
+                              cellspacing="0"
+                              role="presentation"
+                              style="background-color:#FFFFFF;border:1px solid #E5E5E5;border-radius:8px;margin-top:12px;overflow:hidden"><tbody><tr><td><a
+                                      href="https://vialuxury.vercel.app/first-release/deal/hotel-des-indes-verken-en-beleef-den-haag-vanuit-luxe-5-hotel-incl-3-gangendiner?checkin=2026-11-20&amp;adults=2"
+                                      style="color:#067df7;text-decoration-line:none"
+                                      target="_blank"
+                                      ><img
+                                        alt="Verken en beleef Den Haag vanuit een luxe 5*-hotel, incl. 3-gangendiner"
+                                        height="315"
+                                        src="https://asset.vialuxury.com/assets/ec2bfd91-fc7d-4fa4-91b9-9fc61298b804?key=card"
+                                        style="display:block;outline:none;border:none;text-decoration:none;width:100%;height:auto;aspect-ratio:16 / 9;object-fit:cover"
+                                        width="560"
+                                    /></a><table
+                                      align="center"
+                                      width="100%"
+                                      border="0"
+                                      cellpadding="0"
+                                      cellspacing="0"
+                                      role="presentation"
+                                      style="padding:16px 20px 20px"><tbody><tr><td><p
+                                              style="font-size:16px;line-height:1.4;font-family:&#x27;Basis Grotesque Pro&#x27;, Helvetica, Arial, sans-serif;font-weight:700;color:#141414;margin:0;margin-top:0;margin-bottom:0;margin-left:0;margin-right:0">
+                                              Hotel Des Indes<span
+                                                style="letter-spacing:1px;margin-left:8px"
+                                                >★★★★★</span
+                                              ></p><p
+                                              style="font-size:16px;line-height:1.4;font-family:&#x27;Basis Grotesque Pro&#x27;, Helvetica, Arial, sans-serif;color:#6B6B6B;margin:2px 0 0;margin-top:2px;margin-right:0;margin-bottom:0;margin-left:0">
+                                              Den Haag
+                                            </p><table
+                                              align="center"
+                                              width="100%"
+                                              border="0"
+                                              cellpadding="0"
+                                              cellspacing="0"
+                                              role="presentation"
+                                              style="border-top:1px solid #E5E5E5;margin-top:12px;font-size:1px;line-height:1px"><tbody><tr><td></td></tr></tbody></table><p
+                                              style="font-size:18px;line-height:1.3;font-family:&#x27;Recoleta&#x27;, Georgia, &#x27;Times New Roman&#x27;, serif;font-weight:600;color:#141414;margin:10px 0 0;margin-top:10px;margin-right:0;margin-bottom:0;margin-left:0">
+                                              Verken en beleef Den Haag vanuit
+                                              een luxe 5*-hotel, incl.
+                                              3-gangendiner
+                                            </p><p
+                                              style="font-size:16px;line-height:1.4;font-family:&#x27;Basis Grotesque Pro&#x27;, Helvetica, Arial, sans-serif;color:#141414;margin:14px 0 0;margin-top:14px;margin-right:0;margin-bottom:0;margin-left:0">
+                                              20 november · 2 nachten · 2
+                                              personen
+                                            </p><table
+                                              align="center"
+                                              width="100%"
+                                              border="0"
+                                              cellpadding="0"
+                                              cellspacing="0"
+                                              role="presentation"
+                                              style="margin-top:8px"><tbody style="width:100%"><tr style="width:100%"><td
+                                                    class="m-badge-cell"
+                                                    data-id="__react-email-column"
+                                                    style="vertical-align:middle;width:1%;padding-right:12px"><span
+                                                      class="m-badge"
+                                                      style="font-size:16px;font-weight:700;line-height:20px;border-radius:6px;color:#FFFFFF;display:inline-block;white-space:nowrap;background-color:#141414;font-family:&#x27;Basis Grotesque Pro&#x27;, Helvetica, Arial, sans-serif;padding:11px 12px"
+                                                      >-47%</span
+                                                    ></td><td
+                                                    data-id="__react-email-column"
+                                                    style="vertical-align:middle"><p
+                                                      class="m-price"
+                                                      style="font-size:16px;line-height:24px;font-family:&#x27;Basis Grotesque Pro&#x27;, Helvetica, Arial, sans-serif;color:#6B6B6B;margin:0;white-space:nowrap;margin-top:0;margin-bottom:0;margin-left:0;margin-right:0">
+                                                      Vanaf
+                                                      <span
+                                                        class="m-price-big"
+                                                        style="font-size:20px;font-weight:700;color:#141414"
+                                                        >€499</span
+                                                      ><span
+                                                        style="color:#D32F2F;text-decoration:line-through;margin-left:8px"
+                                                        >€940</span
+                                                      ></p></td><td
+                                                    data-id="__react-email-column"
+                                                    style="vertical-align:middle;text-align:right;width:1%"><a
+                                                      href="https://vialuxury.vercel.app/first-release/deal/hotel-des-indes-verken-en-beleef-den-haag-vanuit-luxe-5-hotel-incl-3-gangendiner?checkin=2026-11-20&amp;adults=2"
+                                                      class="m-cta"
+                                                      style="line-height:20px;text-decoration:none;display:inline-block;max-width:100%;mso-padding-alt:0px;font-size:16px;font-weight:700;border-radius:6px;color:#FFFFFF;background-color:#FB862C;font-family:&#x27;Basis Grotesque Pro&#x27;, Helvetica, Arial, sans-serif;padding:11px 20px;white-space:nowrap;padding-top:11px;padding-right:20px;padding-bottom:11px;padding-left:20px"
+                                                      target="_blank"
+                                                      ><span
+                                                        ><!--[if mso
+                                                          ]><i
+                                                            style="mso-font-width:500%;mso-text-raise:16.5"
+                                                            hidden
+                                                            >&#8202;&#8202;</i
+                                                          ><!
+                                                        [endif]--></span
+                                                      ><span
+                                                        style="max-width:100%;display:inline-block;line-height:120%;mso-padding-alt:0px;mso-text-raise:8.25px"
+                                                        >Rond je boeking
+                                                        af</span
+                                                      ><span
+                                                        ><!--[if mso
+                                                          ]><i
+                                                            style="mso-font-width:500%"
+                                                            hidden
+                                                            >&#8202;&#8202;&#8203;</i
+                                                          ><!
+                                                        [endif]--></span
+                                                      ></a
+                                                    ></td></tr></tbody></table></td></tr></tbody></table></td></tr></tbody></table></td></tr></tbody></table><table
+                      align="center"
+                      width="100%"
+                      border="0"
+                      cellpadding="0"
+                      cellspacing="0"
+                      role="presentation"
+                      class="m-pad"
+                      style="padding:44px 32px 0"><tbody><tr><td><h1
+                              class="m-h1"
+                              style="font-family:&#x27;Recoleta&#x27;, Georgia, &#x27;Times New Roman&#x27;, serif;font-weight:600;font-size:32px;line-height:1.2;color:#141414;margin:0;margin-bottom:20px">
+                              Een extraatje om je te helpen kiezen
+                            </h1><table
+                              align="center"
+                              width="100%"
+                              border="0"
+                              cellpadding="0"
+                              cellspacing="0"
+                              role="presentation"
+                              style="width:100%;border:2px dashed #FB862C;border-radius:8px;padding:22px 22px 24px;text-align:center"><tbody><tr><td><p
+                                      style="font-size:32px;line-height:1.2;font-family:&#x27;Recoleta&#x27;, Georgia, &#x27;Times New Roman&#x27;, serif;font-weight:700;color:#FB862C;margin:0 0 12px;text-align:center;margin-top:0;margin-right:0;margin-bottom:12px;margin-left:0">
+                                      €10 cadeau
+                                    </p><p
+                                      style="font-size:16px;line-height:1.4;font-family:&#x27;Basis Grotesque Pro&#x27;, Helvetica, Arial, sans-serif;color:#141414;margin:0;text-align:center;margin-top:0;margin-bottom:0;margin-left:0;margin-right:0">
+                                      Jouw unieke code
+                                    </p><p
+                                      style="font-size:20px;line-height:1.3;font-family:&#x27;Recoleta&#x27;, Georgia, &#x27;Times New Roman&#x27;, serif;font-weight:700;letter-spacing:0.02em;color:#141414;margin:4px 0 0;text-align:center;margin-top:4px;margin-right:0;margin-bottom:0;margin-left:0">
+                                      MANDJE10-4XQ7
+                                    </p><p
+                                      style="font-size:16px;line-height:1.4;font-family:&#x27;Basis Grotesque Pro&#x27;, Helvetica, Arial, sans-serif;font-weight:700;color:#141414;margin:14px 0 0;text-align:center;margin-top:14px;margin-right:0;margin-bottom:0;margin-left:0"><img
+                                        alt=""
+                                        height="18"
+                                        src="/images/mail/crm/clock-donker.png"
+                                        style="display:inline-block;outline:none;border:none;text-decoration:none;vertical-align:-3px;margin-right:8px"
+                                        width="18" />Geldig tot en met 7
+                                      december 2026 23:59 uur
+                                    </p><p
+                                      style="font-size:16px;line-height:1.4;font-family:&#x27;Basis Grotesque Pro&#x27;, Helvetica, Arial, sans-serif;color:#6B6B6B;margin:2px 0 0;text-align:center;margin-top:2px;margin-right:0;margin-bottom:0;margin-left:0">
+                                      Vul de code in bij het boeken.
+                                    </p></td></tr></tbody></table><p
+                              style="font-size:16px;line-height:1.5;font-family:&#x27;Basis Grotesque Pro&#x27;, Helvetica, Arial, sans-serif;color:#141414;margin:14px 0 0;margin-top:14px;margin-right:0;margin-bottom:0;margin-left:0">
+                              Je code staat klaar voor Hotel Des Indes.
+                            </p></td></tr></tbody></table><table
+                      align="center"
+                      width="100%"
+                      border="0"
+                      cellpadding="0"
+                      cellspacing="0"
+                      role="presentation"
+                      class="m-pad"
+                      style="padding:36px 32px 40px"><tbody><tr><td><table
+                              align="center"
+                              width="100%"
+                              border="0"
+                              cellpadding="0"
+                              cellspacing="0"
+                              role="presentation"
+                              style="background-color:#FFF0E4;border-radius:8px;padding:14px 18px"><tbody><tr><td><table
+                                      align="center"
+                                      width="100%"
+                                      border="0"
+                                      cellpadding="0"
+                                      cellspacing="0"
+                                      role="presentation"><tbody style="width:100%"><tr style="width:100%"><td
+                                            data-id="__react-email-column"
+                                            style="width:48px;vertical-align:middle"><table
+                                              role="presentation"
+                                              cellpadding="0"
+                                              cellspacing="0"
+                                              border="0"
+                                              style="width:36px;height:36px;border-collapse:separate"><tbody><tr><td
+                                                    style="width:36px;height:36px;padding:0;border-radius:18px;background-color:#FFFFFF;text-align:center;vertical-align:middle"><img
+                                                      alt=""
+                                                      height="20"
+                                                      src="/images/mail/icon-phone-orange.png"
+                                                      style="display:block;outline:none;border:none;text-decoration:none;margin:0 auto"
+                                                      width="20" /></td></tr></tbody></table></td><td
+                                            data-id="__react-email-column"
+                                            style="vertical-align:middle"><p
+                                              style="font-size:16px;line-height:1.45;font-family:&#x27;Basis Grotesque Pro&#x27;, Helvetica, Arial, sans-serif;color:#141414;margin:0;margin-top:0;margin-bottom:0;margin-left:0;margin-right:0"><strong>Hulp nodig?</strong>
+                                              Bel <a
+                                                href="tel:+31207052222"
+                                                style="color:#FB862C;text-decoration-line:none;text-decoration:underline;font-weight:700"
+                                                target="_blank"
+                                                >+31 20 705 2222</a
+                                              >
+                                              of WhatsApp <a
+                                                href="https://wa.me/31208088809"
+                                                style="color:#FB862C;text-decoration-line:none;text-decoration:underline;font-weight:700"
+                                                target="_blank"
+                                                >+31 20 808 8809</a
+                                              ><span style="color:#6B6B6B">
+                                                · ma t/m vr 8:00 – 18:00</span
+                                              ></p></td></tr></tbody></table></td></tr></tbody></table></td></tr></tbody></table></td></tr></tbody></table><table
+              align="center"
+              width="100%"
+              border="0"
+              cellpadding="0"
+              cellspacing="0"
+              role="presentation"
+              style="background-color:#141414;width:100%"><tbody><tr><td><table
+                      align="center"
+                      width="100%"
+                      border="0"
+                      cellpadding="0"
+                      cellspacing="0"
+                      role="presentation"
+                      style="max-width:626px;width:100%"><tbody><tr style="width:100%"><td><table
+                              align="center"
+                              width="100%"
+                              border="0"
+                              cellpadding="0"
+                              cellspacing="0"
+                              role="presentation"
+                              class="m-pad"
+                              style="padding:32px"><tbody><tr><td><table
+                                      align="center"
+                                      width="100%"
+                                      border="0"
+                                      cellpadding="0"
+                                      cellspacing="0"
+                                      role="presentation"><tbody style="width:100%"><tr style="width:100%"><td
+                                            class="stack m-center"
+                                            data-id="__react-email-column"
+                                            style="width:50%;vertical-align:top"><img
+                                              class="m-mx-auto"
+                                              alt="ViaLuxury"
+                                              src="/images/logo-vialuxury-horizontal.png"
+                                              style="display:block;outline:none;border:none;text-decoration:none;height:auto"
+                                              width="201" /><p
+                                              class="m-center"
+                                              style="font-size:12px;line-height:16px;font-family:&#x27;Basis Grotesque Pro&#x27;, Helvetica, Arial, sans-serif;color:#FFFFFF;margin:22px 0 10px;font-weight:700;margin-top:22px;margin-right:0;margin-bottom:10px;margin-left:0">
+                                              Volg ons op
+                                            </p><a
+                                              href="https://www.instagram.com/vialuxury"
+                                              style="color:#067df7;text-decoration-line:none"
+                                              target="_blank"
+                                              ><img
+                                                alt="Instagram"
+                                                height="19"
+                                                src="/images/mail/icon-instagram.png"
+                                                style="display:inline;outline:none;border:none;text-decoration:none;margin-right:10px"
+                                                width="19" /></a
+                                            ><a
+                                              href="https://www.facebook.com/vialuxury"
+                                              style="color:#067df7;text-decoration-line:none"
+                                              target="_blank"
+                                              ><img
+                                                alt="Facebook"
+                                                height="19"
+                                                src="/images/mail/icon-facebook.png"
+                                                style="display:inline;outline:none;border:none;text-decoration:none"
+                                                width="19"
+                                            /></a></td><td
+                                            class="stack m-center m-mt"
+                                            data-id="__react-email-column"
+                                            style="width:50%;vertical-align:top"><p
+                                              class="m-center"
+                                              style="font-size:12px;line-height:16px;font-family:&#x27;Basis Grotesque Pro&#x27;, Helvetica, Arial, sans-serif;color:#FFFFFF;margin:0 0 8px;font-weight:700;margin-top:0;margin-right:0;margin-bottom:8px;margin-left:0">
+                                              Hulp nodig?
+                                            </p><p
+                                              class="m-center"
+                                              style="font-size:12px;line-height:16px;font-family:&#x27;Basis Grotesque Pro&#x27;, Helvetica, Arial, sans-serif;color:#FFFFFF;margin:0 0 8px;margin-top:0;margin-right:0;margin-bottom:8px;margin-left:0"><img
+                                                alt=""
+                                                height="18"
+                                                src="/images/mail/icon-phone.png"
+                                                style="display:inline;outline:none;border:none;text-decoration:none;vertical-align:middle;margin-right:10px"
+                                                width="18" />+31 20 705 2222
+                                            </p><p
+                                              class="m-center"
+                                              style="font-size:12px;line-height:16px;font-family:&#x27;Basis Grotesque Pro&#x27;, Helvetica, Arial, sans-serif;color:#FFFFFF;margin:0 0 8px;margin-top:0;margin-right:0;margin-bottom:8px;margin-left:0"><img
+                                                alt=""
+                                                height="18"
+                                                src="/images/mail/icon-whatsapp.png"
+                                                style="display:inline;outline:none;border:none;text-decoration:none;vertical-align:middle;margin-right:10px"
+                                                width="18" />+31 20 808 8809
+                                            </p><p
+                                              class="m-center"
+                                              style="font-size:12px;line-height:16px;font-family:&#x27;Basis Grotesque Pro&#x27;, Helvetica, Arial, sans-serif;color:#FFFFFF;margin:0 0 8px;margin-top:0;margin-right:0;margin-bottom:8px;margin-left:0">
+                                              Ma t/m Vr: 8:00 — 18:00
+                                            </p></td></tr></tbody></table><table
+                                      align="center"
+                                      width="100%"
+                                      border="0"
+                                      cellpadding="0"
+                                      cellspacing="0"
+                                      role="presentation"
+                                      style="margin-top:28px"><tbody style="width:100%"><tr style="width:100%"><td
+                                            class="stack m-center"
+                                            data-id="__react-email-column"
+                                            style="width:50%;vertical-align:bottom;padding-right:24px"><p
+                                              class="m-center m-small"
+                                              style="font-size:12px;line-height:16px;font-family:&#x27;Basis Grotesque Pro&#x27;, Helvetica, Arial, sans-serif;color:#FFFFFF;margin:0;margin-top:0;margin-bottom:0;margin-left:0;margin-right:0">
+                                              Je ontvangt deze e-mail op
+                                              <strong
+                                                >sanne.devries@example.com</strong
+                                              > omdat je je hebt aangemeld
+                                              voor de nieuwsbrief van ViaLuxury.
+                                            </p></td><td
+                                            class="stack m-center m-mt"
+                                            data-id="__react-email-column"
+                                            style="width:50%;vertical-align:bottom"><p
+                                              class="m-center m-small"
+                                              style="font-size:12px;line-height:16px;font-family:&#x27;Basis Grotesque Pro&#x27;, Helvetica, Arial, sans-serif;color:#FFFFFF;margin:0 0 8px;margin-top:0;margin-right:0;margin-bottom:8px;margin-left:0">
+                                              Prijswijzigingen en/of zetfouten
+                                              voorbehouden.
+                                            </p><p
+                                              class="m-center m-small"
+                                              style="font-size:12px;line-height:16px;font-family:&#x27;Basis Grotesque Pro&#x27;, Helvetica, Arial, sans-serif;color:#FFFFFF;margin:0 0 8px;margin-top:0;margin-right:0;margin-bottom:8px;margin-left:0">
+                                              Copyright © ViaLuxury, All Rights
+                                              Reserved
+                                            </p><p
+                                              class="m-center m-small"
+                                              style="font-size:12px;line-height:16px;font-family:&#x27;Basis Grotesque Pro&#x27;, Helvetica, Arial, sans-serif;color:#FFFFFF;margin:0 0 8px;margin-top:0;margin-right:0;margin-bottom:8px;margin-left:0">
+                                              Liever geen updates meer? Ontvang
+                                              onze nieuwsbrief minder vaak, of
+                                              helemaal niet meer.
+                                            </p><p
+                                              class="m-center m-small"
+                                              style="font-size:12px;line-height:16px;font-family:&#x27;Basis Grotesque Pro&#x27;, Helvetica, Arial, sans-serif;color:#FFFFFF;margin:0;margin-top:0;margin-bottom:0;margin-left:0;margin-right:0"><a
+                                                href="https://vialuxury.nl"
+                                                style="color:#FFFFFF;text-decoration-line:none;text-decoration:underline"
+                                                target="_blank"
+                                                >Wijzig e-mailvoorkeuren</a
+                                              >
+                                              | <a
+                                                href="https://vialuxury.nl"
+                                                style="color:#FFFFFF;text-decoration-line:none;text-decoration:underline"
+                                                target="_blank"
+                                                >Uitschrijven</a
+                                              >
+                                              | <a
+                                                href="https://vialuxury.nl"
+                                                style="color:#FFFFFF;text-decoration-line:none;text-decoration:underline"
+                                                target="_blank"
+                                                >Webversie</a
+                                              ></p></td></tr></tbody></table></td></tr></tbody></table></td></tr></tbody></table></td></tr></tbody></table></td></tr></tbody></table><!--/$--></body></html>
