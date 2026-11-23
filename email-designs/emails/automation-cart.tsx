@@ -1,4 +1,4 @@
-import { Body, Container, Head, Heading, Html, Preview, Section } from "@react-email/components";
+import { Body, Container, Head, Heading, Html, Preview, Section, Text } from "@react-email/components";
 import * as React from "react";
 import CrmFooter from "../components/CrmFooter";
 import CrmHeader from "../components/CrmHeader";
@@ -12,9 +12,12 @@ import { font, newsletter } from "../components/theme";
 //   S1 Header (logo) → Kop → Intro → S17 Achtergelaten arrangement (het winkelmandje) →
 //   S21 Gastenoordeel (alleen mail 3) → S4 Hoteldeals (mail 2 en 3, twee alternatieven) →
 //   S15 Servicesectie (alleen mail 1) → S13 Footer.
-// Opbouw zoals de winkelmandjemails van het CRM: de intro uit de sheet is de brief (bouwsteen
-// Letter: aanhef, tekst en de ondertekening "Groetjes Yvette"), de kop uit de sheet staat als
-// titel direct boven het blok waar hij bij hoort, en elke mail eindigt met de hulplijn.
+// Opening per soort mail, zoals bij de twee winkelmandjemails van het CRM. Gaat de mail over iets
+// wat de ontvanger zelf heeft laten liggen en is er één ding te doen, dan begint hij direct met de
+// kop en de intro (zoals crm-winkelmandje). Gaat de mail over suggesties of een oordeel van
+// anderen, dan is het een brief van Yvette (zoals crm-winkelmandje-2-dagen).
+// De kop uit de sheet staat als titel direct boven het blok waar hij bij hoort, en elke mail
+// eindigt met de hulplijn.
 // De bovenste kaart is de grote kaart (foto boven de tekst), alles daaronder een dealrij.
 // Mergevelden in de teksten: [voornaam], [hotelnaam], [aankomstdatum], [nachten], [personen].
 // Hier ingevuld met voorbeelddata; in Klaviyo worden het merge tags.
@@ -29,6 +32,9 @@ type Props = {
   intro: string;
   /** Waar de kop staat: boven het winkelmandje of boven het gastenoordeel. */
   headingAt?: "cart" | "rating";
+  /** "direct": kop en intro bovenaan (mail 1 en 2, één ding te doen). "brief": aanhef, intro en
+   *  de ondertekening van Yvette (mail 3, het oordeel van anderen en alternatieven). */
+  opening?: "direct" | "brief";
   /** S17: het achtergelaten winkelmandje, met datums, nachten, personen en de prijs. */
   cart: RowDeal & { hotelName: string };
   /** S21: de score met de Trustpilot-sterren en één korte review (mail 3). */
@@ -39,7 +45,7 @@ type Props = {
   service?: boolean;
 };
 
-export default function AutomationCart({ recipientEmail, preheader, firstName, heading, intro, headingAt = "cart", cart, guestRating, alternatives, service }: Props) {
+export default function AutomationCart({ recipientEmail, preheader, firstName, heading, intro, headingAt = "cart", opening = "direct", cart, guestRating, alternatives, service }: Props) {
   const c = newsletter.light;
 
   return (
@@ -52,21 +58,28 @@ export default function AutomationCart({ recipientEmail, preheader, firstName, h
       <Body style={{ backgroundColor: c.bg, margin: 0, padding: 0, fontFamily: font.body }}>
         <CrmHeader />
         <Container style={{ width: "100%", maxWidth: "626px" }}>
-          {/* Briefopening: aanhef, de intro uit de sheet en de ondertekening */}
+          {/* Opening: direct de kop met de intro, of de brief met de ondertekening */}
           <Section className="m-pad" style={{ padding: "32px 32px 0" }}>
-            <Letter firstName={firstName}>{intro}</Letter>
+            {opening === "brief" ? (
+              <Letter firstName={firstName}>{intro}</Letter>
+            ) : (
+              <>
+                <Heading as="h1" className="m-h1" style={s.h1}>{heading}</Heading>
+                <Text style={{ ...s.body, margin: "12px 0 0" }}>{intro}</Text>
+              </>
+            )}
           </Section>
 
           {/* S17 Achtergelaten arrangement: het winkelmandje met de knop om af te ronden */}
-          <Section className="m-pad" style={{ padding: "40px 32px 0" }}>
-            {headingAt === "cart" && <Heading as="h1" className="m-h1" style={s.h1}>{heading}</Heading>}
+          <Section className="m-pad" style={{ padding: opening === "brief" ? "40px 32px 0" : "24px 32px 0" }}>
+            {opening === "brief" && headingAt === "cart" && <Heading as="h1" className="m-h1" style={s.h1}>{heading}</Heading>}
             <FeaturedDeal deal={cart} cta="Rond je boeking af" />
           </Section>
 
           {/* S21 Gastenoordeel */}
           {guestRating && (
             <Section className="m-pad" style={{ padding: "44px 32px 0" }}>
-              {headingAt === "rating" && <Heading as="h1" className="m-h1" style={{ ...s.h1, marginBottom: "18px" }}>{heading}</Heading>}
+              {opening === "brief" && headingAt === "rating" && <Heading as="h1" className="m-h1" style={{ ...s.h1, marginBottom: "18px" }}>{heading}</Heading>}
               <GuestRatingSection hotelName={cart.hotelName} rating={guestRating} />
             </Section>
           )}
@@ -142,6 +155,7 @@ export const cart3Props = {
   preheader: "Dit vonden andere gasten.",
   heading: "Dit vonden andere gasten",
   headingAt: "rating" as const,
+  opening: "brief" as const,
   intro: `Twijfel je nog? Lees wat andere gasten van ${HOTEL} vonden, of kies een van de alternatieven.`,
   cart,
   guestRating: {

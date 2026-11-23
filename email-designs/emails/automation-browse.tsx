@@ -1,4 +1,4 @@
-import { Body, Container, Head, Heading, Html, Preview, Section } from "@react-email/components";
+import { Body, Container, Head, Heading, Html, Preview, Section, Text } from "@react-email/components";
 import * as React from "react";
 import CrmFooter from "../components/CrmFooter";
 import CrmHeader from "../components/CrmHeader";
@@ -12,9 +12,11 @@ import { font, newsletter } from "../components/theme";
 //   S1 Header (logo) → Kop → Intro → S17 Achtergelaten arrangement (het bekeken arrangement:
 //   foto, hotelnaam, plaats, prijs en wat er inbegrepen is) → S4 Hoteldeals (twee alternatieven) →
 //   S6 Merksectie (alleen mail 2) → S13 Footer.
-// Opbouw zoals de winkelmandjemails van het CRM: de intro uit de sheet is de brief (Letter), de
-// kop uit de sheet staat direct boven het blok waar hij bij hoort, en elke mail eindigt met de
-// hulplijn. Mergevelden: [voornaam], [hotelnaam] en [plaats], hier ingevuld met voorbeelddata.
+// Opening per soort mail, zoals bij de twee winkelmandjemails van het CRM. Mail 1 en 2 gaan over
+// het arrangement dat de ontvanger zelf bekeek en hebben één ding te doen: die beginnen direct met
+// de kop en de intro. Mail 3 gaat over alternatieven en is een brief van Yvette. De kop uit de
+// sheet staat direct boven het blok waar hij bij hoort en elke mail eindigt met de hulplijn.
+// Mergevelden: [voornaam], [hotelnaam] en [plaats], hier ingevuld met voorbeelddata.
 
 type Props = {
   recipientEmail: string;
@@ -25,6 +27,9 @@ type Props = {
   intro: string;
   /** Waar de kop staat: boven het bekeken arrangement of boven de alternatieven. */
   headingAt?: "viewed" | "alternatives";
+  /** "direct": kop en intro bovenaan (mail 1 en 2). "brief": aanhef, intro en de ondertekening
+   *  van Yvette (mail 3, alternatieven). */
+  opening?: "direct" | "brief";
   /** S17: het bekeken arrangement, met prijs en inclusies. */
   viewed: RowDeal & { hotelName: string };
   /** S4: twee vergelijkbare arrangementen in dezelfde sfeer. */
@@ -33,7 +38,7 @@ type Props = {
   brand?: string;
 };
 
-export default function AutomationBrowse({ recipientEmail, preheader, firstName, heading, intro, headingAt = "viewed", viewed, alternatives, brand }: Props) {
+export default function AutomationBrowse({ recipientEmail, preheader, firstName, heading, intro, headingAt = "viewed", opening = "direct", viewed, alternatives, brand }: Props) {
   const c = newsletter.light;
 
   return (
@@ -46,20 +51,26 @@ export default function AutomationBrowse({ recipientEmail, preheader, firstName,
       <Body style={{ backgroundColor: c.bg, margin: 0, padding: 0, fontFamily: font.body }}>
         <CrmHeader />
         <Container style={{ width: "100%", maxWidth: "626px" }}>
-          {/* Briefopening: aanhef, de intro uit de sheet en de ondertekening */}
+          {/* Opening: direct de kop met de intro, of de brief met de ondertekening */}
           <Section className="m-pad" style={{ padding: "32px 32px 0" }}>
-            <Letter firstName={firstName}>{intro}</Letter>
+            {opening === "brief" ? (
+              <Letter firstName={firstName}>{intro}</Letter>
+            ) : (
+              <>
+                <Heading as="h1" className="m-h1" style={s.h1}>{heading}</Heading>
+                <Text style={{ ...s.body, margin: "12px 0 0" }}>{intro}</Text>
+              </>
+            )}
           </Section>
 
           {/* S17 Achtergelaten arrangement: het bekeken arrangement */}
-          <Section className="m-pad" style={{ padding: "40px 32px 0" }}>
-            {headingAt === "viewed" && <Heading as="h1" className="m-h1" style={s.h1}>{heading}</Heading>}
+          <Section className="m-pad" style={{ padding: opening === "brief" ? "40px 32px 0" : "24px 32px 0" }}>
             <FeaturedDeal deal={viewed} cta="Bekijk arrangement" />
           </Section>
 
           {/* S4 Hoteldeals: vergelijkbare arrangementen als alternatief */}
           <Section className="m-pad" style={{ padding: "44px 32px 0" }}>
-            {headingAt === "alternatives" && <Heading as="h1" className="m-h1" style={s.h1}>{heading}</Heading>}
+            {opening === "brief" && headingAt === "alternatives" && <Heading as="h1" className="m-h1" style={s.h1}>{heading}</Heading>}
             {alternatives.map((d, i) => (
               <DealRow key={d.url} deal={d} top={i ? cardGap : undefined} />
             ))}
@@ -115,6 +126,7 @@ export const browse3Props = {
   preheader: "Drie alternatieven in dezelfde sfeer.",
   heading: "Nog niet het juiste?",
   headingAt: "alternatives" as const,
+  opening: "brief" as const,
   intro: `Twijfel je nog over ${HOTEL}? Dit zijn arrangementen in dezelfde sfeer, misschien zit jouw verblijf ertussen.`,
 } satisfies Props;
 
