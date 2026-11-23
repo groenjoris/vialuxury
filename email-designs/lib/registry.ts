@@ -13,7 +13,7 @@ import CrmTerugkomactie, { herinneringProps } from "../emails/crm-terugkomactie"
 import CrmZoekopdracht from "../emails/crm-zoekopdracht";
 import CrmFavorieten from "../emails/crm-favorieten";
 import CommercieelContentMultiDeal from "../emails/commercieel-content-multi-deal";
-import CommercieelDedicatedHotel, { zonderPrijsProps } from "../emails/commercieel-dedicated-hotel";
+import CommercieelDedicatedHotel, { metTitelProps, zonderPrijsMetTitelProps, zonderPrijsProps } from "../emails/commercieel-dedicated-hotel";
 import { incheckMails } from "./incheckMails";
 
 /** MVP: geen accountdetailpagina, boekingslinks gaan naar het boekingenoverzicht. */
@@ -36,7 +36,8 @@ export type EmailEntry = {
   /** Variant van een andere mail (slug), bijv. de niet-terugbetaalbare versie `<slug>-nonflex`; de
    *  preview toont die bij de schakelaar Non-flex, in lijsten blijft hij verborgen. */
   variantOf?: string;
-  /** Label van deze mail in de variantschakelaar van de preview (sectie "commercieel"). */
+  /** Label van deze mail in de variantschakelaar van de preview (sectie "commercieel"). Met " / "
+   *  ertussen zijn het meerdere, los te combineren schakelaars: "Met prijs / Zonder titel". */
   variantLabel?: string;
   // Elke e-mail exporteert PreviewProps met representatieve voorbeelddata
   // en accepteert een optionele `mode`-prop ("light" | "dark").
@@ -396,7 +397,7 @@ export const emails: EmailEntry[] = [
     section: "commercieel",
     subject: "Ons beste hotelarrangement van de maand",
     preheader: "2 nachten voor 2 personen op de Veluwe, inclusief diner.",
-    variantLabel: "Met prijs",
+    variantLabel: "Met prijs / Zonder titel",
     Component: CommercieelDedicatedHotel,
   },
   {
@@ -407,9 +408,33 @@ export const emails: EmailEntry[] = [
     subject: "Ons beste hotelarrangement van de maand",
     preheader: "Midden in de bossen van de Veluwe. De prijs is lager dan je denkt.",
     variantOf: "commercieel-dedicated-hotel",
-    variantLabel: "Zonder prijs",
+    variantLabel: "Zonder prijs / Zonder titel",
     Component: CommercieelDedicatedHotel,
     props: zonderPrijsProps,
+  },
+  {
+    slug: "commercieel-dedicated-hotel-met-titel",
+    title: "Dedicated hotel",
+    description: "Variant met titel: 'Deal van de maand november' groot boven het bericht.",
+    section: "commercieel",
+    subject: "Ons beste hotelarrangement van de maand",
+    preheader: "2 nachten voor 2 personen op de Veluwe, inclusief diner.",
+    variantOf: "commercieel-dedicated-hotel",
+    variantLabel: "Met prijs / Met titel",
+    Component: CommercieelDedicatedHotel,
+    props: metTitelProps,
+  },
+  {
+    slug: "commercieel-dedicated-hotel-zonder-prijs-met-titel",
+    title: "Dedicated hotel",
+    description: "Variant met titel en zonder prijs.",
+    section: "commercieel",
+    subject: "Ons beste hotelarrangement van de maand",
+    preheader: "Midden in de bossen van de Veluwe. De prijs is lager dan je denkt.",
+    variantOf: "commercieel-dedicated-hotel",
+    variantLabel: "Zonder prijs / Met titel",
+    Component: CommercieelDedicatedHotel,
+    props: zonderPrijsMetTitelProps,
   },
 ];
 

@@ -1,8 +1,8 @@
-import { Body, Container, Head, Html, Preview, Section } from "@react-email/components";
+import { Body, Container, Head, Heading, Html, Preview, Section } from "@react-email/components";
 import * as React from "react";
 import CrmFooter from "../components/CrmFooter";
 import CrmHeader from "../components/CrmHeader";
-import { crmCss, CrmHelp, FeaturedDeal, Letter, PrimaryButton, type RowDeal, site } from "../components/crm";
+import { crmCss, CrmHelp, FeaturedDeal, Letter, PrimaryButton, type RowDeal, s, site } from "../components/crm";
 import { font, newsletter } from "../components/theme";
 
 // Commerciële mail 2: Dedicated hotel. De hele mail gaat over één hotel. Hij begint als brief
@@ -13,6 +13,8 @@ import { font, newsletter } from "../components/theme";
 // aanbod met de prijs en heeft de kaart de prijsrij; zonder prijs (`showPrice={false}`) steekt de
 // brief in op nieuwsgierigheid, noemt geen prijs en heeft de kaart geen prijsrij (de prijs staat
 // pas op de dealpagina).
+// Daarnaast "Met titel | Zonder titel": met titel staat er een grote titel boven het bericht
+// ("Deal van de maand november"). De twee schakelaars zijn los te combineren (vier versies).
 // Onderwerp: "Ons beste hotelarrangement van de maand"
 
 type Props = {
@@ -26,12 +28,14 @@ type Props = {
   /** false → de kaart zonder prijsrij (variant "Zonder prijs"). */
   showPrice?: boolean;
   preheader?: string;
+  /** Grote titel boven het bericht (variant "Met titel"). */
+  title?: string;
   /** De rest van de alinea: waarom dit hotel. */
   pitch: string;
   deal: RowDeal;
 };
 
-export default function CommercieelDedicatedHotel({ recipientEmail, firstName, lead, offer, pitch, deal, showPrice = true, preheader = "2 nachten voor 2 personen op de Veluwe, inclusief diner." }: Props) {
+export default function CommercieelDedicatedHotel({ recipientEmail, firstName, lead, offer, pitch, deal, title, showPrice = true, preheader = "2 nachten voor 2 personen op de Veluwe, inclusief diner." }: Props) {
   const c = newsletter.light;
   return (
     <Html lang="nl">
@@ -45,6 +49,7 @@ export default function CommercieelDedicatedHotel({ recipientEmail, firstName, l
         <Container style={{ width: "100%", maxWidth: "626px" }}>
           {/* Brief: aanhef, het aanbod (vet) met één zin over het hotel, ondertekening */}
           <Section className="m-pad" style={{ padding: "32px 32px 0" }}>
+            {title && <Heading as="h1" className="m-h1" style={{ ...s.h1, marginBottom: "16px" }}>{title}</Heading>}
             <Letter firstName={firstName}>
               {lead} <strong>{offer}</strong> {pitch}
             </Letter>
@@ -101,3 +106,8 @@ export const zonderPrijsProps = {
   showPrice: false,
   preheader: "Midden in de bossen van de Veluwe. De prijs is lager dan je denkt.",
 } satisfies Props;
+
+/** Varianten "Met titel": een grote titel boven het bericht, met en zonder prijs. */
+const title = "Deal van de maand november";
+export const metTitelProps = { ...CommercieelDedicatedHotel.PreviewProps, title } satisfies Props;
+export const zonderPrijsMetTitelProps = { ...zonderPrijsProps, title } satisfies Props;

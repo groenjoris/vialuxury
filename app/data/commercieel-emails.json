@@ -12,7 +12,7 @@
     "description": "Eén hotel: korte brief met het aanbod, de knop 'Bekijk aanbieding' en het arrangement op de verticale dealkaart.",
     "subject": "Ons beste hotelarrangement van de maand",
     "preheader": "2 nachten voor 2 personen op de Veluwe, inclusief diner.",
-    "variantLabel": "Met prijs"
+    "variantLabel": "Met prijs / Zonder titel"
   },
   {
     "slug": "commercieel-dedicated-hotel-zonder-prijs",
@@ -21,6 +21,24 @@
     "subject": "Ons beste hotelarrangement van de maand",
     "preheader": "Midden in de bossen van de Veluwe. De prijs is lager dan je denkt.",
     "variantOf": "commercieel-dedicated-hotel",
-    "variantLabel": "Zonder prijs"
+    "variantLabel": "Zonder prijs / Zonder titel"
+  },
+  {
+    "slug": "commercieel-dedicated-hotel-met-titel",
+    "title": "Dedicated hotel",
+    "description": "Variant met titel: 'Deal van de maand november' groot boven het bericht.",
+    "subject": "Ons beste hotelarrangement van de maand",
+    "preheader": "2 nachten voor 2 personen op de Veluwe, inclusief diner.",
+    "variantOf": "commercieel-dedicated-hotel",
+    "variantLabel": "Met prijs / Met titel"
+  },
+  {
+    "slug": "commercieel-dedicated-hotel-zonder-prijs-met-titel",
+    "title": "Dedicated hotel",
+    "description": "Variant met titel en zonder prijs.",
+    "subject": "Ons beste hotelarrangement van de maand",
+    "preheader": "Midden in de bossen van de Veluwe. De prijs is lager dan je denkt.",
+    "variantOf": "commercieel-dedicated-hotel",
+    "variantLabel": "Zonder prijs / Met titel"
   }
 ]
