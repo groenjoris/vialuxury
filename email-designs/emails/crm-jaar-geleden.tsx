@@ -1,7 +1,7 @@
 import { Body, Container, Head, Heading, Html, Img, Link, Preview, Section, Text } from "@react-email/components";
 import * as React from "react";
 import { cardGap, CodeBlock, crmCss, CrmHelp, DealRow, Letter, PrimaryButton, type RowDeal, s, site } from "../components/crm";
-import CrmFooter from "../components/CrmFooter";
+import CrmFooter, { type FooterHelp } from "../components/CrmFooter";
 import CrmHeader, { type Payoff } from "../components/CrmHeader";
 import { font, newsletter } from "../components/theme";
 
@@ -37,9 +37,12 @@ type Props = {
   /** Pay-off "Dit moeten we vaker doen" onder het logo in de kop, in dit lettertype (voorbeeldmail
    *  "Dit moeten we vaker doen" met de headervarianten). Leeg → de gewone kop. */
   payoff?: Payoff;
+  /** Hulpblok opgenomen in de footer (variant 1 t/m 5, zie CrmFooter); het losse blok "Hulp nodig?"
+   *  in de mail vervalt dan. Alleen in de voorbeeldmail "Dit moeten we vaker doen". */
+  footerHelp?: FooterHelp;
 };
 
-export default function CrmJaarGeleden({ recipientEmail, firstName, variant = "social", hotelName, packageTitle, arrivalDayLastYear, image, availabilityUrl, code, deals, payoff }: Props) {
+export default function CrmJaarGeleden({ recipientEmail, firstName, variant = "social", hotelName, packageTitle, arrivalDayLastYear, image, availabilityUrl, code, deals, payoff, footerHelp }: Props) {
   const c = newsletter.light;
   const personal = variant === "persoonlijk";
 
@@ -86,7 +89,7 @@ export default function CrmJaarGeleden({ recipientEmail, firstName, variant = "s
           )}
 
           {/* Hulplijn: direct na de hoofdboodschap, niet als onderste blok */}
-          <CrmHelp top="32px" bottom="0" />
+          {!footerHelp && <CrmHelp top="32px" bottom="0" />}
 
           {/* Deals met frame-titel, onder elkaar */}
           <Section className="m-pad" style={{ padding: "48px 32px 40px" }}>
@@ -104,7 +107,7 @@ export default function CrmJaarGeleden({ recipientEmail, firstName, variant = "s
             ))}
           </Section>
         </Container>
-        <CrmFooter recipientEmail={recipientEmail} reason="omdat je vorig jaar bij ons boekte" />
+        <CrmFooter recipientEmail={recipientEmail} reason="omdat je vorig jaar bij ons boekte" help={footerHelp} />
       </Body>
     </Html>
   );
@@ -172,4 +175,4 @@ export const persoonlijkProps = { ...CrmJaarGeleden.PreviewProps, variant: "pers
 
 /** Voorbeeldmail "Dit moeten we vaker doen": dezelfde mail met de pay-off onder het logo in de kop,
  *  in een van de vier lettertypes (schakelaar in de preview). */
-export const payoffProps = (payoff: Payoff) => ({ ...CrmJaarGeleden.PreviewProps, payoff });
+export const payoffProps = (payoff: Payoff, footerHelp: FooterHelp = 1) => ({ ...CrmJaarGeleden.PreviewProps, payoff, footerHelp });

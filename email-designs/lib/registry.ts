@@ -40,7 +40,8 @@ export type EmailEntry = {
   /** Variant van een andere mail (slug), bijv. de niet-terugbetaalbare versie `<slug>-nonflex`; de
    *  preview toont die bij de schakelaar Non-flex, in lijsten blijft hij verborgen. */
   variantOf?: string;
-  /** Label van deze mail in de variantschakelaar van de preview (sectie "commercieel"). Met " / "
+  /** Label van deze mail in de variantschakelaar van de preview (secties "commercieel" en "crm"; in
+   *  "crm" heeft het voorrang op `variantLabels` in de previewpagina). Met " / "
    *  ertussen zijn het meerdere, los te combineren schakelaars: "Met prijs / Zonder titel". */
   variantLabel?: string;
   // Elke e-mail exporteert PreviewProps met representatieve voorbeelddata
@@ -395,38 +396,26 @@ export const emails: EmailEntry[] = [
     preheader: "Parijs, Den Haag en Amsterdam, vanaf €279 voor 2 personen.",
     Component: CrmThemaStedentrips,
   },
-  {
-    slug: "crm-vaker-doen",
-    title: "Dit moeten we vaker doen (headervarianten)",
-    description: "Kopie van 'Precies een jaar geleden' als voorbeeldmail voor de kop: de pay-off 'Dit moeten we vaker doen !' onder het logo in Caveat.",
-    section: "crm",
-    subject: "Vandaag een jaar geleden 🎉",
-    preheader: "Je verblijf in Hotel Des Indes, en een code voor €25 korting.",
-    Component: CrmJaarGeleden,
-    props: payoffProps("caveat"),
-  },
-  {
-    slug: "crm-vaker-doen-lora",
-    title: "Dit moeten we vaker doen (headervarianten)",
-    description: "Kopie van 'Precies een jaar geleden' als voorbeeldmail voor de kop: de pay-off 'Dit moeten we vaker doen !' onder het logo in Lora Medium Italic.",
-    section: "crm",
-    variantOf: "crm-vaker-doen",
-    subject: "Vandaag een jaar geleden 🎉",
-    preheader: "Je verblijf in Hotel Des Indes, en een code voor €25 korting.",
-    Component: CrmJaarGeleden,
-    props: payoffProps("lora"),
-  },
-  {
-    slug: "crm-vaker-doen-recoleta",
-    title: "Dit moeten we vaker doen (headervarianten)",
-    description: "Kopie van 'Precies een jaar geleden' als voorbeeldmail voor de kop: de pay-off 'Dit moeten we vaker doen !' onder het logo in Recoleta Light.",
-    section: "crm",
-    variantOf: "crm-vaker-doen",
-    subject: "Vandaag een jaar geleden 🎉",
-    preheader: "Je verblijf in Hotel Des Indes, en een code voor €25 korting.",
-    Component: CrmJaarGeleden,
-    props: payoffProps("recoleta"),
-  },
+  // "Dit moeten we vaker doen": kopie van "Precies een jaar geleden" als voorbeeldmail voor de kop en de
+  // footer. Twee schakelaars in de preview: het lettertype van de pay-off (3) en de footervariant
+  // met het hulpblok erin (5). Slug: crm-vaker-doen[-lora|-recoleta][-footer-2..5].
+  ...([["caveat", "", "Caveat"], ["lora", "-lora", "Lora Medium Italic"], ["recoleta", "-recoleta", "Recoleta Light"]] as const).flatMap(([payoff, fontSuffix, fontLabel]) =>
+    ([1, 2, 3, 4, 5] as const).map((footer): EmailEntry => {
+      const slug = `crm-vaker-doen${fontSuffix}${footer === 1 ? "" : `-footer-${footer}`}`;
+      return {
+        slug,
+        title: "Dit moeten we vaker doen (header en footer)",
+        description: `Voorbeeldmail voor kop en footer: de pay-off onder het logo in ${fontLabel}, footervariant ${footer} met het hulpblok erin.`,
+        section: "crm",
+        ...(slug === "crm-vaker-doen" ? {} : { variantOf: "crm-vaker-doen" }),
+        variantLabel: `${fontLabel} / Footer ${footer}`,
+        subject: "Vandaag een jaar geleden 🎉",
+        preheader: "Je verblijf in Hotel Des Indes, en een code voor €25 korting.",
+        Component: CrmJaarGeleden,
+        props: payoffProps(payoff, footer),
+      };
+    }),
+  ),
   {
     slug: "crm-dealkaart-vaste-hoogte",
     title: "Dealkaart vaste hoogte (voorbeeld)",

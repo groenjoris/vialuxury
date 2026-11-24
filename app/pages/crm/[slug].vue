@@ -38,15 +38,26 @@ const variantLabels: Record<string, string> = {
   'crm-review-sterren': 'Lege ster',
   'crm-favorieten': 'Eén coupon',
   'crm-favorieten-twee-coupons': 'Twee coupons',
-  'crm-vaker-doen': 'Caveat',
-  'crm-vaker-doen-lora': 'Lora Medium Italic',
-  'crm-vaker-doen-recoleta': 'Recoleta Light',
   'crm-winkelmandje-2-dagen': 'Naam bekend',
   'crm-winkelmandje-2-dagen-naam-onbekend': 'Naam onbekend',
 }
-const variants = computed(() => {
-  const list = emails.filter(e => e.slug === baseSlug.value || (e as { variantOf?: string }).variantOf === baseSlug.value)
-  return list.length > 1 ? list.map(e => ({ slug: e.slug, label: variantLabels[e.slug] ?? e.slug })) : []
+// Een label met " / " ("Caveat / Footer 2", uit `variantLabel` in de registry) staat voor meerdere, los
+// te combineren schakelaars: per deel één schakelaar; een knop gaat naar de variant die alleen op dat
+// deel verschilt.
+type CrmEntry = (typeof emails)[number] & { variantOf?: string; variantLabel?: string }
+const parts = (e: CrmEntry) => (e.variantLabel ?? variantLabels[e.slug] ?? e.slug).split(' / ')
+const variantGroups = computed(() => {
+  const list = (emails as CrmEntry[]).filter(e => e.slug === baseSlug.value || e.variantOf === baseSlug.value)
+  if (list.length < 2 || !entry.value) return []
+  const cur = parts(entry.value as CrmEntry)
+  return cur.map((_, axis) => {
+    const labels = [...new Set(list.map(e => parts(e)[axis] ?? ''))]
+    return labels.map((label) => {
+      const want = cur.map((p, i) => (i === axis ? label : p)).join(' / ')
+      const target = list.find(e => parts(e).join(' / ') === want) ?? list.find(e => parts(e)[axis] === label)
+      return { slug: target?.slug ?? slug.value, label, on: cur[axis] === label }
+    })
+  }).filter(g => g.length > 1)
 })
 
 // Voorbeeldbladen (geen mail): zonder inboxframe, op hun eigen ontwerpmaat en in de breedte passend
@@ -92,14 +103,14 @@ useHead({ title: `${entry.value?.title ?? 'E-mail'} — ViaLuxury CRM` })
       <div class="crm__left">
         <a class="crm__back" href="/">‹ Startscherm</a>
         <h1 class="crm__title">{{ entry?.title }}</h1>
-        <div v-if="variants.length" class="crm__variants" role="group" aria-label="Variant">
+        <div v-for="(variants, gi) in variantGroups" :key="gi" class="crm__variants" role="group" aria-label="Variant">
           <NuxtLink
             v-for="v in variants"
-            :key="v.slug"
+            :key="v.label"
             :to="`/crm/${v.slug}`"
             class="crm__variant"
-            :class="{ 'crm__variant--on': v.slug === slug }"
-            :aria-current="v.slug === slug ? 'true' : undefined"
+            :class="{ 'crm__variant--on': v.on }"
+            :aria-current="v.on ? 'true' : undefined"
           >{{ v.label }}</NuxtLink>
         </div>
       </div>
