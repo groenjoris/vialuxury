@@ -359,6 +359,10 @@ de brief eronder ("Twijfel je nog? Lees wat andere gasten vinden, of bekijk onze
 voor jou uitkozen."), het gastenoordeel toont drie reviews zoals de eerste winkelmandjemail van het
 CRM (`GuestRating.reviews`) en boven de alternatieven staat "Anderen boekten ook".
 
+`tf024` wijkt sinds 24-11-2026 af van de sheet: de titel "Een extraatje om je te helpen kiezen" staat
+bovenaan, daaronder de brief, dan de codesectie (`codeFirst`) en pas daarna het hotelblok met de
+inclusies.
+
 Feedback 24-11-2026 (Anoeska, na de meeting met Bart): in `tf021` staan boven de knop geen prijs en
 geen korting meer. Dat wijkt af van de sheet, die bij S17 ook "en de prijs" noemt.
 

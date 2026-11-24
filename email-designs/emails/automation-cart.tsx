@@ -46,6 +46,8 @@ type Props = {
   cart: AutomationDeal & { hotelName: string };
   /** S21: de score met de Trustpilot-sterren en één korte review (mail 3). */
   guestRating?: GuestRating;
+  /** Zet de codesectie direct onder de introtekst, boven het hotelblok (mail 4). */
+  codeFirst?: boolean;
   /** S4: twee vergelijkbare arrangementen (mail 2 en 3), met een eigen titel erboven. */
   alternatives?: AutomationDeal[];
   alternativesTitle?: string;
@@ -56,8 +58,17 @@ type Props = {
   service?: boolean;
 };
 
-export default function AutomationCart({ recipientEmail, preheader, firstName, heading, intro, headingAt = "cart", opening = "direct", cart, guestRating, alternatives, alternativesTitle, code, service }: Props) {
+export default function AutomationCart({ recipientEmail, preheader, firstName, heading, intro, headingAt = "cart", opening = "direct", cart, guestRating, alternatives, alternativesTitle, code, codeFirst, service }: Props) {
   const c = newsletter.light;
+
+  // De codesectie staat normaal onderaan, in mail 4 direct onder de introtekst.
+  const codeSection = code ? (
+    <Section className="m-pad" style={{ padding: codeFirst ? "28px 32px 0" : "44px 32px 0" }}>
+      {headingAt === "code" && <Heading as="h1" className="m-h1" style={{ ...s.h1, marginBottom: "20px" }}>{heading}</Heading>}
+      <AutomationCodeBlock title={`${code.value} cadeau`} code={code.code} label="Jouw unieke code" deadline={code.deadline} />
+      <Text style={{ ...s.body, margin: "14px 0 0" }}>{code.advice}</Text>
+    </Section>
+  ) : null;
 
   return (
     <Html lang="nl">
@@ -80,6 +91,9 @@ export default function AutomationCart({ recipientEmail, preheader, firstName, h
               intro && <Text style={{ ...s.body, margin: "12px 0 0" }}>{intro}</Text>
             )}
           </Section>
+
+          {/* S10 Codesectie boven het hotelblok (mail 4) */}
+          {codeFirst && codeSection}
 
           {/* S17 Achtergelaten arrangement. In de opzet van crm-winkelmandje staat eerst wat er
               klaarstaat als losse regels met de knop eronder, en daarna de kaart zonder prijsrij. */}
@@ -129,13 +143,7 @@ export default function AutomationCart({ recipientEmail, preheader, firstName, h
           )}
 
           {/* S10 Codesectie: de coupon met de adviesregel eronder */}
-          {code && (
-            <Section className="m-pad" style={{ padding: "44px 32px 0" }}>
-              {headingAt === "code" && <Heading as="h1" className="m-h1" style={{ ...s.h1, marginBottom: "20px" }}>{heading}</Heading>}
-              <AutomationCodeBlock title={`${code.value} cadeau`} code={code.code} label="Jouw unieke code" deadline={code.deadline} />
-              <Text style={{ ...s.body, margin: "14px 0 0" }}>{code.advice}</Text>
-            </Section>
-          )}
+          {!codeFirst && codeSection}
 
           {/* S15 Servicesectie */}
           {service && (
@@ -237,8 +245,10 @@ export const cart4Props = {
   recipientEmail: "sanne.devries@example.com",
   firstName: "Sanne",
   preheader: "Jouw unieke code, geldig tot en met 7 december 2026.",
+  // Feedback 24-11-2026: titel bovenaan, dan de intro, dan de code en pas daarna het hotelblok.
   heading: "Een extraatje om je te helpen kiezen",
-  headingAt: "code" as const,
+  headingAt: "top" as const,
+  codeFirst: true,
   opening: "brief" as const,
   intro: `Je verblijf in ${HOTEL} staat nog in je winkelmandje. Om je op weg te helpen krijg je €10 cadeau met jouw unieke code.`,
   cart,
