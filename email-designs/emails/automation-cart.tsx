@@ -185,7 +185,7 @@ export const cart1Props = {
   preheader: "Rond je boeking af wanneer het jou uitkomt.",
   // Feedback 24-11-2026, tweede ronde: kortere kop, de zin "Nog steeds interesse in:" als subtitel
   // boven de hotelgegevens en de serviceregel onder het hotelblok.
-  heading: "Sanne, we hebben het even voor je bewaard.",
+  heading: "Sanne, we hebben het even voor je bewaard",
   opening: "winkelmandje" as const,
   cart,
   cartTitle: "Nog steeds interesse in:",
@@ -196,7 +196,7 @@ export const cart1Props = {
 export const cart1ZonderNaamProps = {
   ...cart1Props,
   firstName: undefined,
-  heading: "We hebben het even voor je bewaard.",
+  heading: "We hebben het even voor je bewaard",
 } satisfies Props;
 
 /** v01_tf022_fl011_nl-NL_2_abandoned_cart — 2 dagen na het verlaten van het winkelmandje. */

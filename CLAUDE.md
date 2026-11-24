@@ -349,7 +349,7 @@ horen, komt uit de tabbladen Themategels en Seizoensthema's.
 Het gastenoordeel (S21) toont de Trustpilot-sterren met "4,5 uit 312 reviews" en één korte review.
 
 `tf021` wijkt sinds 24-11-2026 af van de sheet: de kop is "[Voornaam], we hebben het even voor je
-bewaard." met een variant zonder naam (`-naam-onbekend`, schakelaar in de previewkop), er staat geen
+bewaard" (zonder punt, dat doen we nergens) met een variant zonder naam (`-naam-onbekend`, schakelaar in de previewkop), er staat geen
 introtekst meer onder, boven de hotelgegevens staat de subtitel "Nog steeds interesse in:"
 (`cartTitle`), de kaart toont de inclusies, er staat geen prijs en geen korting in de mail en onder
 het hotelblok staat de serviceregel (S15).
@@ -381,15 +381,16 @@ alternatieven staat "Anderen bekeken ook".
 `tf026` wijkt sinds 24-11-2026 af van de sheet: de kop staat bovenaan met de brief eronder ("Er is al
 veel inbegrepen, dus jij hoeft alleen te genieten. Vragen? We denken graag mee."), boven het bekeken
 arrangement staat de subtitel "Door jou bekeken:", boven de alternatieven "Anderen bekeken ook", het
-merkblok (S6) staat op een beige band met de groet "Groetjes, ViaLuxury team" erin en daaronder staat
-de tekstlink "Bekijk alle arrangementen".
+merkblok (S6) staat op een beige band met de kop "Zo werkt ViaLuxury", de merktekst uit de sheet, die
+tekst als drie korte punten met een vinkje, de groet "Groetjes, ViaLuxury team" en onderin de
+tekstlink "Bekijk al onze arrangementen" (die link staat dus in het blok, niet eronder).
 
 `tf027` wijkt sinds 24-11-2026 af van de sheet: de kop is "[Voornaam], misschien past deze jou nog
 beter" met een variant zonder naam (`-naam-onbekend`), staat bovenaan met de intro eronder ("Gasten
 die interesse hadden in [hotelnaam], boekten vaak ook de volgende deals. Misschien interessant voor
 jou!"), zonder aanhef, want de naam staat al in de kop. De alternatieven staan bovenaan (de eerste als grote kaart) en het bekeken arrangement staat
 onderaan als dealrij onder de subtitel "Door jou bekeken" (`viewedAtBottom`), de opzet van
-`crm-winkelmandje-2-dagen`.
+`crm-winkelmandje-2-dagen`, met dezelfde knop "Bekijk" als elke andere dealrij.
 
 Titelgroottes in de automationmails, zoals in de CRM-mails: de titel van de mail en de titel boven een
 lijst arrangementen of een themablok zijn 32 px serif, de regel boven één losse kaart ("Door jou

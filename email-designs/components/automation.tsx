@@ -267,15 +267,29 @@ export function GuestRatingSection({ rating }: { rating: GuestRating }) {
   );
 }
 
-/** S6 Merksectie: waarom ViaLuxury, in één alinea. */
-/** S6 Merksectie. Feedback 24-11-2026: geen platte tekst meer maar een merkblok op een beige band
- *  over de hele breedte, met een algemene groet eronder. Staat net als elke band buiten de
- *  <Container>. */
-export function BrandSection({ children, greeting, top = "40px" }: { children: React.ReactNode; greeting?: string; top?: string }) {
+/** S6 Merksectie. Feedback 24-11-2026: meer merkgevoel. Een beige band over de hele breedte met
+ *  een kop, de merktekst uit de sheet, die tekst nog eens als drie korte punten met een vinkje,
+ *  de groet en onderaan de tekstlink naar alle arrangementen. */
+export function BrandSection({ children, greeting, link, top = "40px" }: { children: React.ReactNode; greeting?: string; link?: { href: string; label: string }; top?: string }) {
+  const punten = [
+    "Elk hotel zelf geselecteerd",
+    "Alles geregeld in één arrangement",
+    "Eén keer boeken, daarna genieten",
+  ];
   return (
     <BeigeBand top={top}>
-      <Text style={{ ...s.body, margin: 0 }}>{children}</Text>
-      {greeting && <Text style={{ ...s.body, margin: "16px 0 0" }}>{greeting}</Text>}
+      <Text style={{ ...s.kop, margin: 0 }}>Zo werkt ViaLuxury</Text>
+      <Text style={{ ...s.body, margin: "10px 0 0" }}>{children}</Text>
+      <Section style={{ marginTop: "14px" }}>
+        {punten.map((t) => (
+          <Text key={t} style={{ ...s.body, margin: "6px 0 0", paddingLeft: "26px", textIndent: "-26px" }}>
+            <Img src={checkIcon} alt="" width="16" height="16" style={{ display: "inline-block", verticalAlign: "-2px", marginRight: "10px" }} />
+            {t}
+          </Text>
+        ))}
+      </Section>
+      {greeting && <Text style={{ ...s.body, margin: "18px 0 0" }}>{greeting}</Text>}
+      {link && <TextLink href={link.href}>{link.label}</TextLink>}
     </BeigeBand>
   );
 }

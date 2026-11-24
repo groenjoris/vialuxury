@@ -1,7 +1,7 @@
 import { Body, Container, Head, Heading, Html, Preview, Section, Text } from "@react-email/components";
 import * as React from "react";
 import CrmHeader from "../components/CrmHeader";
-import { s, TextLink } from "../components/crm";
+import { s } from "../components/crm";
 import { AutomationDealRow, AutomationFeaturedDeal, AutomationLetter, automationCss, BrandSection, cardGap, AutomationFooter } from "../components/automation";
 import { type AutomationDeal } from "../lib/automationDeals";
 import { lauswolt, steenenburg, vanOys } from "../lib/automationDeals";
@@ -85,7 +85,7 @@ export default function AutomationBrowse({ recipientEmail, preheader, firstName,
 
           {/* S4 Hoteldeals: vergelijkbare arrangementen als alternatief. Staat het bekeken
               arrangement onderaan, dan is de eerste alternatief de grote kaart. */}
-          <Section className="m-pad" style={{ padding: viewedAtBottom && opening === "brief" ? "40px 32px 0" : "44px 32px 0" }}>
+          <Section className="m-pad" style={{ padding: viewedAtBottom ? (opening === "brief" ? "40px 32px 0" : "24px 32px 0") : "44px 32px 0" }}>
             {opening === "brief" && headingAt === "alternatives" && <Heading as="h1" className="m-h1" style={s.h1}>{heading}</Heading>}
             {alternativesTitle && <Heading as="h2" className="m-h1" style={s.h1}>{alternativesTitle}</Heading>}
             {viewedAtBottom ? (
@@ -106,22 +106,16 @@ export default function AutomationBrowse({ recipientEmail, preheader, firstName,
           {viewedAtBottom && (
             <Section className="m-pad" style={{ padding: "44px 32px 0" }}>
               {viewedTitle && <Text style={{ ...s.kop, marginBottom: "12px" }}>{viewedTitle}</Text>}
-              <AutomationDealRow deal={viewed} cta="Bekijk arrangement" />
+              <AutomationDealRow deal={viewed} />
             </Section>
           )}
 
         </Container>
 
         {/* S6 Merksectie: een merkblok op een beige band, met de groet erin */}
-        {brand && <BrandSection greeting={brandGreeting}>{brand}</BrandSection>}
+        {brand && <BrandSection greeting={brandGreeting} link={footerLink}>{brand}</BrandSection>}
 
         <Container style={{ width: "100%", maxWidth: "626px" }}>
-          {footerLink && (
-            <Section className="m-pad" style={{ padding: "24px 32px 0" }}>
-              <TextLink href={footerLink.href}>{footerLink.label}</TextLink>
-            </Section>
-          )}
-
           {/* Witruimte tussen de inhoud en de footer */}
           <Section style={{ height: "44px", lineHeight: "44px", fontSize: 0 }}>&nbsp;</Section>
         </Container>
@@ -175,7 +169,7 @@ export const browse2Props = {
   alternativesTitle: "Anderen bekeken ook",
   brand: "Bij ViaLuxury selecteren we elk hotel zelf en stellen we arrangementen samen waarin alles al geregeld is. Jij boekt één keer en hoeft daarna alleen nog te genieten.",
   brandGreeting: "Groetjes, ViaLuxury team",
-  footerLink: { href: "https://www.vialuxury.com/nl-NL/", label: "Bekijk alle arrangementen" },
+  footerLink: { href: "https://www.vialuxury.com/nl-NL/", label: "Bekijk al onze arrangementen" },
 } satisfies Props;
 
 /** v01_tf027_fl012_nl-NL_3_abandoned_browse — 2 dagen na het bekijken. */
