@@ -119,13 +119,13 @@ useHead({ title: `${entry.value?.title ?? 'E-mail'} — ViaLuxury CRM` })
 <style scoped>
 .crm { min-height: 100vh; background: #f5f5f5; font-family: var(--font-body); color: var(--color-text-primary); }
 .crm__bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 24px; padding: 16px 24px; background: #fff; border-bottom: 1px solid var(--color-border); }
-.crm__left { display: flex; align-items: center; gap: 16px; min-width: 0; }
+.crm__left { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; min-width: 0; }
 .crm__back { color: var(--color-text-secondary); text-decoration: none; font-size: 13px; }
 .crm__back:hover { color: var(--color-primary); }
 .crm__title { margin: 0; font-family: var(--font-heading); font-size: 20px; font-weight: 700; }
 /* Variantschakelaar rechts van de naam: twee segmenten, het actieve zwart */
 .crm__variants { display: inline-flex; border: 1px solid var(--color-border); border-radius: 6px; overflow: hidden; background: #fff; }
-.crm__variant { padding: 6px 12px; font-size: 13px; line-height: 1.3; color: var(--color-text-secondary); text-decoration: none; }
+.crm__variant { padding: 6px 12px; font-size: 13px; line-height: 1.3; white-space: nowrap; color: var(--color-text-secondary); text-decoration: none; }
 .crm__variant + .crm__variant { border-left: 1px solid var(--color-border); }
 .crm__variant:hover { color: var(--color-text-primary); }
 .crm__variant--on, .crm__variant--on:hover { background: #141414; color: #fff; }
