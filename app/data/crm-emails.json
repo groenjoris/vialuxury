@@ -112,38 +112,14 @@
   {
     "slug": "crm-vaker-doen",
     "title": "Dit moeten we vaker doen (headervarianten)",
-    "description": "Kopie van 'Precies een jaar geleden' als voorbeeldmail voor de kop: de pay-off 'Dit moeten we vaker doen!' onder het logo in Oooh Baby.",
+    "description": "Kopie van 'Precies een jaar geleden' als voorbeeldmail voor de kop: de pay-off 'Dit moeten we vaker doen !' onder het logo in Caveat.",
     "subject": "Vandaag een jaar geleden 🎉",
     "preheader": "Je verblijf in Hotel Des Indes, en een code voor €25 korting."
   },
   {
-    "slug": "crm-vaker-doen-la-belle-aurore",
+    "slug": "crm-vaker-doen-lora",
     "title": "Dit moeten we vaker doen (headervarianten)",
-    "description": "Kopie van 'Precies een jaar geleden' als voorbeeldmail voor de kop: de pay-off 'Dit moeten we vaker doen!' onder het logo in La Belle Aurore.",
-    "subject": "Vandaag een jaar geleden 🎉",
-    "preheader": "Je verblijf in Hotel Des Indes, en een code voor €25 korting.",
-    "variantOf": "crm-vaker-doen"
-  },
-  {
-    "slug": "crm-vaker-doen-caveat",
-    "title": "Dit moeten we vaker doen (headervarianten)",
-    "description": "Kopie van 'Precies een jaar geleden' als voorbeeldmail voor de kop: de pay-off 'Dit moeten we vaker doen!' onder het logo in Caveat.",
-    "subject": "Vandaag een jaar geleden 🎉",
-    "preheader": "Je verblijf in Hotel Des Indes, en een code voor €25 korting.",
-    "variantOf": "crm-vaker-doen"
-  },
-  {
-    "slug": "crm-vaker-doen-bradley-hand",
-    "title": "Dit moeten we vaker doen (headervarianten)",
-    "description": "Kopie van 'Precies een jaar geleden' als voorbeeldmail voor de kop: de pay-off 'Dit moeten we vaker doen!' onder het logo in Bradley Hand.",
-    "subject": "Vandaag een jaar geleden 🎉",
-    "preheader": "Je verblijf in Hotel Des Indes, en een code voor €25 korting.",
-    "variantOf": "crm-vaker-doen"
-  },
-  {
-    "slug": "crm-vaker-doen-basis-grotesque",
-    "title": "Dit moeten we vaker doen (headervarianten)",
-    "description": "Kopie van 'Precies een jaar geleden' als voorbeeldmail voor de kop: de pay-off 'Dit moeten we vaker doen!' onder het logo in Basis Grotesque.",
+    "description": "Kopie van 'Precies een jaar geleden' als voorbeeldmail voor de kop: de pay-off 'Dit moeten we vaker doen !' onder het logo in Lora Medium Italic.",
     "subject": "Vandaag een jaar geleden 🎉",
     "preheader": "Je verblijf in Hotel Des Indes, en een code voor €25 korting.",
     "variantOf": "crm-vaker-doen"
@@ -151,7 +127,7 @@
   {
     "slug": "crm-vaker-doen-recoleta",
     "title": "Dit moeten we vaker doen (headervarianten)",
-    "description": "Kopie van 'Precies een jaar geleden' als voorbeeldmail voor de kop: de pay-off 'Dit moeten we vaker doen!' onder het logo in Recoleta.",
+    "description": "Kopie van 'Precies een jaar geleden' als voorbeeldmail voor de kop: de pay-off 'Dit moeten we vaker doen !' onder het logo in Recoleta Light.",
     "subject": "Vandaag een jaar geleden 🎉",
     "preheader": "Je verblijf in Hotel Des Indes, en een code voor €25 korting.",
     "variantOf": "crm-vaker-doen"
