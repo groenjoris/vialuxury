@@ -4,7 +4,7 @@ import VakantiePreTravel, { fietsPreviewProps as preTravelFiets } from "../email
 import VakantieIncheckHotel from "../emails/vakantie-incheck-hotel";
 import MvpVakantieBevestiging from "../emails/mvp-vakantie-bevestiging";
 import CrmNagenieten, { titelProps } from "../emails/crm-nagenieten";
-import CrmJaarGeleden, { payoffProps, persoonlijkProps } from "../emails/crm-jaar-geleden";
+import CrmJaarGeleden, { persoonlijkProps, vakerDoenProps } from "../emails/crm-jaar-geleden";
 import CrmWinkelmandje, { naamOnbekendProps } from "../emails/crm-winkelmandje";
 import CrmWinkelmandje2Dagen, { naamOnbekendProps as naamOnbekend2DagenProps } from "../emails/crm-winkelmandje-2-dagen";
 import CrmThemaStedentrips from "../emails/crm-thema-stedentrips";
@@ -396,23 +396,23 @@ export const emails: EmailEntry[] = [
     preheader: "Parijs, Den Haag en Amsterdam, vanaf €279 voor 2 personen.",
     Component: CrmThemaStedentrips,
   },
-  // "Dit moeten we vaker doen": kopie van "Precies een jaar geleden" als voorbeeldmail voor de kop en de
-  // footer. Twee schakelaars in de preview: het lettertype van de pay-off (3) en de footervariant
-  // met het hulpblok erin (5). Slug: crm-vaker-doen[-lora|-recoleta][-footer-2..5].
-  ...([["caveat", "", "Caveat"], ["lora", "-lora", "Lora Medium Italic"], ["recoleta", "-recoleta", "Recoleta Light"]] as const).flatMap(([payoff, fontSuffix, fontLabel]) =>
+  // "Dit moeten we vaker doen": kopie van "Precies een jaar geleden" als voorbeeldmail voor de gastquote
+  // en de footer. Twee schakelaars in de preview: de plek van de quote (3) en de footervariant met
+  // het hulpblok erin (5). Slug: crm-vaker-doen[-in-footer|-tussendoor][-footer-2..5].
+  ...([["boven", "", "Boven de footer"], ["in", "-in-footer", "In de footer"], ["tussendoor", "-tussendoor", "Tussendoor"]] as const).flatMap(([quote, quoteSuffix, quoteLabel]) =>
     ([1, 2, 3, 4, 5] as const).map((footer): EmailEntry => {
-      const slug = `crm-vaker-doen${fontSuffix}${footer === 1 ? "" : `-footer-${footer}`}`;
+      const slug = `crm-vaker-doen${quoteSuffix}${footer === 1 ? "" : `-footer-${footer}`}`;
       return {
         slug,
-        title: "Dit moeten we vaker doen (header en footer)",
-        description: `Voorbeeldmail voor kop en footer: de pay-off onder het logo in ${fontLabel}, footervariant ${footer} met het hulpblok erin.`,
+        title: "Dit moeten we vaker doen (quote en footer)",
+        description: `Voorbeeldmail voor de gastquote en de footer: de quote ${quoteLabel.toLowerCase()}, footervariant ${footer} met het hulpblok erin.`,
         section: "crm",
         ...(slug === "crm-vaker-doen" ? {} : { variantOf: "crm-vaker-doen" }),
-        variantLabel: `${fontLabel} / Footer ${footer}`,
+        variantLabel: `${quoteLabel} / Footer ${footer}`,
         subject: "Vandaag een jaar geleden 🎉",
         preheader: "Je verblijf in Hotel Des Indes, en een code voor €25 korting.",
         Component: CrmJaarGeleden,
-        props: payoffProps(payoff, footer),
+        props: vakerDoenProps(quote, footer),
       };
     }),
   ),

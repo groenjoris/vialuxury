@@ -82,18 +82,27 @@ onMounted(() => {
 })
 onBeforeUnmount(() => sheetObserver?.disconnect())
 
-// Footervarianten ("Footer 1 … 5"): na een klik op zo'n variant scrolt de mail vanzelf naar de footer,
-// zodat je de varianten kunt vergelijken zonder steeds zelf naar beneden te scrollen. Bij een
-// andere schakelaar (lettertype) of een andere mail begint de mail weer bovenaan.
+// Voorbeeldmail "Dit moeten we vaker doen": na een klik op een footervariant ("Footer 1 … 5") scrolt
+// de mail vanzelf naar de footer, na een klik op een plek van de gastquote naar de quote, zodat je
+// de varianten kunt vergelijken zonder zelf te scrollen. Een andere mail begint weer bovenaan.
 const isFooterVariant = (label: string) => label.startsWith('Footer')
-const toFooter = useState('crm-to-footer', () => false)
+const scrollTarget = useState<'' | 'footer' | 'quote'>('crm-scroll-target', () => '')
+function pickVariant(label: string) {
+  scrollTarget.value = isFooterVariant(label) ? 'footer' : baseSlug.value === 'crm-vaker-doen' ? 'quote' : ''
+}
 function onMailLoad(ev: Event) {
-  if (!toFooter.value) return
+  const target = scrollTarget.value
+  if (!target) return
   const win = (ev.target as HTMLIFrameElement).contentWindow
   if (!win) return
-  const go = () => win.scrollTo(0, win.document.documentElement.scrollHeight)
+  const go = () => {
+    const quote = target === 'quote' ? win.document.getElementById('gastquote') : null
+    // zelf rekenen in plaats van scrollIntoView: die scrolt ook de pagina eromheen mee
+    if (quote) win.scrollTo(0, quote.getBoundingClientRect().top + win.scrollY - (win.innerHeight - quote.offsetHeight) / 2)
+    else win.scrollTo(0, win.document.documentElement.scrollHeight)
+  }
   go()
-  // afbeeldingen laden na: nog een paar keer naar het einde, tot de hoogte vaststaat
+  // afbeeldingen laden na: nog een paar keer, tot de hoogte vaststaat
   ;[150, 500, 1200].forEach(ms => setTimeout(go, ms))
 }
 
@@ -104,7 +113,7 @@ function onKey(ev: KeyboardEvent) {
   const next = nav[i + (ev.key === 'ArrowDown' ? 1 : -1)]
   if (!next) return
   ev.preventDefault()
-  toFooter.value = false
+  scrollTarget.value = ''
   navigateTo(`/crm/${next.slug}`)
 }
 onMounted(() => window.addEventListener('keydown', onKey))
@@ -124,7 +133,7 @@ useHead({ title: `${entry.value?.title ?? 'E-mail'} — ViaLuxury CRM` })
             v-for="v in variants"
             :key="v.label"
             :to="`/crm/${v.slug}`"
-            @click="toFooter = isFooterVariant(v.label)"
+            @click="pickVariant(v.label)"
             class="crm__variant"
             :class="{ 'crm__variant--on': v.on }"
             :aria-current="v.on ? 'true' : undefined"
@@ -140,7 +149,7 @@ useHead({ title: `${entry.value?.title ?? 'E-mail'} — ViaLuxury CRM` })
           :key="e.slug"
           :to="`/crm/${e.slug}`"
           class="crm__nav-link"
-          @click="toFooter = false"
+          @click="scrollTarget = ''"
           :class="{ 'crm__nav-link--on': e.slug === baseSlug }"
           :aria-current="e.slug === baseSlug ? 'page' : undefined"
         >

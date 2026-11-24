@@ -119,137 +119,137 @@
   },
   {
     "slug": "crm-vaker-doen",
-    "title": "Dit moeten we vaker doen (header en footer)",
-    "description": "Voorbeeldmail voor kop en footer: de pay-off onder het logo in Caveat, footervariant 1 met het hulpblok erin.",
+    "title": "Dit moeten we vaker doen (quote en footer)",
+    "description": "Voorbeeldmail voor de gastquote en de footer: de quote boven de footer, footervariant 1 met het hulpblok erin.",
     "subject": "Vandaag een jaar geleden 🎉",
     "preheader": "Je verblijf in Hotel Des Indes, en een code voor €25 korting.",
-    "variantLabel": "Caveat / Footer 1"
+    "variantLabel": "Boven de footer / Footer 1"
   },
   {
     "slug": "crm-vaker-doen-footer-2",
-    "title": "Dit moeten we vaker doen (header en footer)",
-    "description": "Voorbeeldmail voor kop en footer: de pay-off onder het logo in Caveat, footervariant 2 met het hulpblok erin.",
+    "title": "Dit moeten we vaker doen (quote en footer)",
+    "description": "Voorbeeldmail voor de gastquote en de footer: de quote boven de footer, footervariant 2 met het hulpblok erin.",
     "subject": "Vandaag een jaar geleden 🎉",
     "preheader": "Je verblijf in Hotel Des Indes, en een code voor €25 korting.",
     "variantOf": "crm-vaker-doen",
-    "variantLabel": "Caveat / Footer 2"
+    "variantLabel": "Boven de footer / Footer 2"
   },
   {
     "slug": "crm-vaker-doen-footer-3",
-    "title": "Dit moeten we vaker doen (header en footer)",
-    "description": "Voorbeeldmail voor kop en footer: de pay-off onder het logo in Caveat, footervariant 3 met het hulpblok erin.",
+    "title": "Dit moeten we vaker doen (quote en footer)",
+    "description": "Voorbeeldmail voor de gastquote en de footer: de quote boven de footer, footervariant 3 met het hulpblok erin.",
     "subject": "Vandaag een jaar geleden 🎉",
     "preheader": "Je verblijf in Hotel Des Indes, en een code voor €25 korting.",
     "variantOf": "crm-vaker-doen",
-    "variantLabel": "Caveat / Footer 3"
+    "variantLabel": "Boven de footer / Footer 3"
   },
   {
     "slug": "crm-vaker-doen-footer-4",
-    "title": "Dit moeten we vaker doen (header en footer)",
-    "description": "Voorbeeldmail voor kop en footer: de pay-off onder het logo in Caveat, footervariant 4 met het hulpblok erin.",
+    "title": "Dit moeten we vaker doen (quote en footer)",
+    "description": "Voorbeeldmail voor de gastquote en de footer: de quote boven de footer, footervariant 4 met het hulpblok erin.",
     "subject": "Vandaag een jaar geleden 🎉",
     "preheader": "Je verblijf in Hotel Des Indes, en een code voor €25 korting.",
     "variantOf": "crm-vaker-doen",
-    "variantLabel": "Caveat / Footer 4"
+    "variantLabel": "Boven de footer / Footer 4"
   },
   {
     "slug": "crm-vaker-doen-footer-5",
-    "title": "Dit moeten we vaker doen (header en footer)",
-    "description": "Voorbeeldmail voor kop en footer: de pay-off onder het logo in Caveat, footervariant 5 met het hulpblok erin.",
+    "title": "Dit moeten we vaker doen (quote en footer)",
+    "description": "Voorbeeldmail voor de gastquote en de footer: de quote boven de footer, footervariant 5 met het hulpblok erin.",
     "subject": "Vandaag een jaar geleden 🎉",
     "preheader": "Je verblijf in Hotel Des Indes, en een code voor €25 korting.",
     "variantOf": "crm-vaker-doen",
-    "variantLabel": "Caveat / Footer 5"
+    "variantLabel": "Boven de footer / Footer 5"
   },
   {
-    "slug": "crm-vaker-doen-lora",
-    "title": "Dit moeten we vaker doen (header en footer)",
-    "description": "Voorbeeldmail voor kop en footer: de pay-off onder het logo in Lora Medium Italic, footervariant 1 met het hulpblok erin.",
+    "slug": "crm-vaker-doen-in-footer",
+    "title": "Dit moeten we vaker doen (quote en footer)",
+    "description": "Voorbeeldmail voor de gastquote en de footer: de quote in de footer, footervariant 1 met het hulpblok erin.",
     "subject": "Vandaag een jaar geleden 🎉",
     "preheader": "Je verblijf in Hotel Des Indes, en een code voor €25 korting.",
     "variantOf": "crm-vaker-doen",
-    "variantLabel": "Lora Medium Italic / Footer 1"
+    "variantLabel": "In de footer / Footer 1"
   },
   {
-    "slug": "crm-vaker-doen-lora-footer-2",
-    "title": "Dit moeten we vaker doen (header en footer)",
-    "description": "Voorbeeldmail voor kop en footer: de pay-off onder het logo in Lora Medium Italic, footervariant 2 met het hulpblok erin.",
+    "slug": "crm-vaker-doen-in-footer-footer-2",
+    "title": "Dit moeten we vaker doen (quote en footer)",
+    "description": "Voorbeeldmail voor de gastquote en de footer: de quote in de footer, footervariant 2 met het hulpblok erin.",
     "subject": "Vandaag een jaar geleden 🎉",
     "preheader": "Je verblijf in Hotel Des Indes, en een code voor €25 korting.",
     "variantOf": "crm-vaker-doen",
-    "variantLabel": "Lora Medium Italic / Footer 2"
+    "variantLabel": "In de footer / Footer 2"
   },
   {
-    "slug": "crm-vaker-doen-lora-footer-3",
-    "title": "Dit moeten we vaker doen (header en footer)",
-    "description": "Voorbeeldmail voor kop en footer: de pay-off onder het logo in Lora Medium Italic, footervariant 3 met het hulpblok erin.",
+    "slug": "crm-vaker-doen-in-footer-footer-3",
+    "title": "Dit moeten we vaker doen (quote en footer)",
+    "description": "Voorbeeldmail voor de gastquote en de footer: de quote in de footer, footervariant 3 met het hulpblok erin.",
     "subject": "Vandaag een jaar geleden 🎉",
     "preheader": "Je verblijf in Hotel Des Indes, en een code voor €25 korting.",
     "variantOf": "crm-vaker-doen",
-    "variantLabel": "Lora Medium Italic / Footer 3"
+    "variantLabel": "In de footer / Footer 3"
   },
   {
-    "slug": "crm-vaker-doen-lora-footer-4",
-    "title": "Dit moeten we vaker doen (header en footer)",
-    "description": "Voorbeeldmail voor kop en footer: de pay-off onder het logo in Lora Medium Italic, footervariant 4 met het hulpblok erin.",
+    "slug": "crm-vaker-doen-in-footer-footer-4",
+    "title": "Dit moeten we vaker doen (quote en footer)",
+    "description": "Voorbeeldmail voor de gastquote en de footer: de quote in de footer, footervariant 4 met het hulpblok erin.",
     "subject": "Vandaag een jaar geleden 🎉",
     "preheader": "Je verblijf in Hotel Des Indes, en een code voor €25 korting.",
     "variantOf": "crm-vaker-doen",
-    "variantLabel": "Lora Medium Italic / Footer 4"
+    "variantLabel": "In de footer / Footer 4"
   },
   {
-    "slug": "crm-vaker-doen-lora-footer-5",
-    "title": "Dit moeten we vaker doen (header en footer)",
-    "description": "Voorbeeldmail voor kop en footer: de pay-off onder het logo in Lora Medium Italic, footervariant 5 met het hulpblok erin.",
+    "slug": "crm-vaker-doen-in-footer-footer-5",
+    "title": "Dit moeten we vaker doen (quote en footer)",
+    "description": "Voorbeeldmail voor de gastquote en de footer: de quote in de footer, footervariant 5 met het hulpblok erin.",
     "subject": "Vandaag een jaar geleden 🎉",
     "preheader": "Je verblijf in Hotel Des Indes, en een code voor €25 korting.",
     "variantOf": "crm-vaker-doen",
-    "variantLabel": "Lora Medium Italic / Footer 5"
+    "variantLabel": "In de footer / Footer 5"
   },
   {
-    "slug": "crm-vaker-doen-recoleta",
-    "title": "Dit moeten we vaker doen (header en footer)",
-    "description": "Voorbeeldmail voor kop en footer: de pay-off onder het logo in Recoleta Light, footervariant 1 met het hulpblok erin.",
+    "slug": "crm-vaker-doen-tussendoor",
+    "title": "Dit moeten we vaker doen (quote en footer)",
+    "description": "Voorbeeldmail voor de gastquote en de footer: de quote tussendoor, footervariant 1 met het hulpblok erin.",
     "subject": "Vandaag een jaar geleden 🎉",
     "preheader": "Je verblijf in Hotel Des Indes, en een code voor €25 korting.",
     "variantOf": "crm-vaker-doen",
-    "variantLabel": "Recoleta Light / Footer 1"
+    "variantLabel": "Tussendoor / Footer 1"
   },
   {
-    "slug": "crm-vaker-doen-recoleta-footer-2",
-    "title": "Dit moeten we vaker doen (header en footer)",
-    "description": "Voorbeeldmail voor kop en footer: de pay-off onder het logo in Recoleta Light, footervariant 2 met het hulpblok erin.",
+    "slug": "crm-vaker-doen-tussendoor-footer-2",
+    "title": "Dit moeten we vaker doen (quote en footer)",
+    "description": "Voorbeeldmail voor de gastquote en de footer: de quote tussendoor, footervariant 2 met het hulpblok erin.",
     "subject": "Vandaag een jaar geleden 🎉",
     "preheader": "Je verblijf in Hotel Des Indes, en een code voor €25 korting.",
     "variantOf": "crm-vaker-doen",
-    "variantLabel": "Recoleta Light / Footer 2"
+    "variantLabel": "Tussendoor / Footer 2"
   },
   {
-    "slug": "crm-vaker-doen-recoleta-footer-3",
-    "title": "Dit moeten we vaker doen (header en footer)",
-    "description": "Voorbeeldmail voor kop en footer: de pay-off onder het logo in Recoleta Light, footervariant 3 met het hulpblok erin.",
+    "slug": "crm-vaker-doen-tussendoor-footer-3",
+    "title": "Dit moeten we vaker doen (quote en footer)",
+    "description": "Voorbeeldmail voor de gastquote en de footer: de quote tussendoor, footervariant 3 met het hulpblok erin.",
     "subject": "Vandaag een jaar geleden 🎉",
     "preheader": "Je verblijf in Hotel Des Indes, en een code voor €25 korting.",
     "variantOf": "crm-vaker-doen",
-    "variantLabel": "Recoleta Light / Footer 3"
+    "variantLabel": "Tussendoor / Footer 3"
   },
   {
-    "slug": "crm-vaker-doen-recoleta-footer-4",
-    "title": "Dit moeten we vaker doen (header en footer)",
-    "description": "Voorbeeldmail voor kop en footer: de pay-off onder het logo in Recoleta Light, footervariant 4 met het hulpblok erin.",
+    "slug": "crm-vaker-doen-tussendoor-footer-4",
+    "title": "Dit moeten we vaker doen (quote en footer)",
+    "description": "Voorbeeldmail voor de gastquote en de footer: de quote tussendoor, footervariant 4 met het hulpblok erin.",
     "subject": "Vandaag een jaar geleden 🎉",
     "preheader": "Je verblijf in Hotel Des Indes, en een code voor €25 korting.",
     "variantOf": "crm-vaker-doen",
-    "variantLabel": "Recoleta Light / Footer 4"
+    "variantLabel": "Tussendoor / Footer 4"
   },
   {
-    "slug": "crm-vaker-doen-recoleta-footer-5",
-    "title": "Dit moeten we vaker doen (header en footer)",
-    "description": "Voorbeeldmail voor kop en footer: de pay-off onder het logo in Recoleta Light, footervariant 5 met het hulpblok erin.",
+    "slug": "crm-vaker-doen-tussendoor-footer-5",
+    "title": "Dit moeten we vaker doen (quote en footer)",
+    "description": "Voorbeeldmail voor de gastquote en de footer: de quote tussendoor, footervariant 5 met het hulpblok erin.",
     "subject": "Vandaag een jaar geleden 🎉",
     "preheader": "Je verblijf in Hotel Des Indes, en een code voor €25 korting.",
     "variantOf": "crm-vaker-doen",
-    "variantLabel": "Recoleta Light / Footer 5"
+    "variantLabel": "Tussendoor / Footer 5"
   },
   {
     "slug": "crm-dealkaart-vaste-hoogte",

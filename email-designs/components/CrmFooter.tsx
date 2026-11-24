@@ -1,6 +1,7 @@
 import { Button, Column, Container, Img, Link, Row, Section, Text } from "@react-email/components";
 import * as React from "react";
 import { baseUrl, font, newsletter, type EmailMode } from "./theme";
+import { GuestQuote } from "./crm";
 
 // Footer van de CRM- en vakantiemails. Staat buiten de 626px-container van de mail: het zwarte
 // vlak loopt over de hele breedte, de inhoud blijft 626px breed. Links logo, "Volg ons op" en
@@ -31,7 +32,13 @@ const HOURS = "ma t/m vr 8:00 – 18:00";
 const WARM = "#FFF0E4";
 const BEIGE = "#F4F1EC";
 
+/** Plek van de gastquote “Dit moeten we vaker doen!” bij de footer: "boven" = beige band over de hele
+ *  breedte direct boven de footer (en boven een eventuele hulpband), met de quote in een witte
+ *  tekstballon; "in" = het bovenste deel van de zwarte footer, wit op zwart met een lijn eronder. */
+export type FooterQuote = "boven" | "in";
+
 type Props = {
+  quote?: FooterQuote;
   /** Hulpblok in de footer opgenomen, variant 1 t/m 5 (zie boven). Leeg → de gewone footer. */
   help?: FooterHelp;
   recipientEmail: string;
@@ -42,7 +49,7 @@ type Props = {
   mode?: EmailMode;
 };
 
-export default function CrmFooter({ recipientEmail, reason, transactional = false, mode = "light", help }: Props) {
+export default function CrmFooter({ recipientEmail, reason, transactional = false, mode = "light", help, quote }: Props) {
   const c = newsletter[mode];
   const text = { fontFamily: font.body, color: "#FFFFFF", fontSize: "12px", lineHeight: "16px", margin: "0 0 8px" };
   const bold = { ...text, fontWeight: 700 };
@@ -97,6 +104,8 @@ export default function CrmFooter({ recipientEmail, reason, transactional = fals
 
   return (
     <>
+    {/* Gastquote boven de footer: beige band met de quote in een witte tekstballon */}
+    {quote === "boven" && band(BEIGE, <GuestQuote balloon />)}
     {/* Variant 1: lichtoranje band over de hele breedte, direct boven de footer */}
     {help === 1 &&
       band(WARM, (
@@ -125,6 +134,12 @@ export default function CrmFooter({ recipientEmail, reason, transactional = fals
     <Section style={{ backgroundColor: c.frame, width: "100%" }}>
       <Container style={{ width: "100%", maxWidth: "626px" }}>
         <Section className="m-pad" style={{ padding: "32px" }}>
+          {/* Gastquote als bovenste deel van de footer: wit op zwart, lijn eronder */}
+          {quote === "in" && (
+            <Section style={{ marginBottom: "30px", paddingBottom: "28px", borderBottom: "1px solid #3A3A3A" }}>
+              <GuestQuote tone="wit" />
+            </Section>
+          )}
           {/* Variant 2: het hulpblok als lichtoranje kaart bovenin de zwarte footer */}
           {help === 2 && (
             <Section style={{ backgroundColor: WARM, borderRadius: "8px", padding: "16px 18px", marginBottom: "30px" }}>

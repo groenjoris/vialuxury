@@ -317,21 +317,23 @@ Regels voor elke CRM-mail:
   breedte van de mail, buiten de `<Container>`. De mail heeft twee varianten (schakelaar "Social proof | Persoonlijk"): social proof met de knop "Check
   beschikbaarheid" en "Anderen boekten ook" boven de suggesties; persoonlijk (`crm-jaar-geleden-persoonlijk`) met een brief
   onder de titel (link naar de beschikbare datums in de tekst) en "Geselecteerd voor [voornaam]" boven de suggesties.
-- "Dit moeten we vaker doen" (`crm-vaker-doen`): kopie van "Precies een jaar geleden" (zelfde
-  component, prop `payoff`) als voorbeeldmail om kop en footer te beoordelen. Onder het logo in de zwarte kop staat de pay-off "Dit
-  moeten we vaker doen !" (`CrmHeader`-prop `payoff`; het uitroepteken hoort er altijd bij en staat met een kleine ruimte
-  los van de laatste letter), precies even breed als het logo (201 px), met de schakelaar "Caveat |
-  Lora Medium Italic | Recoleta Light" in de previewkop (Caveat en Lora komen van Google Fonts; alle fonts staan in
-  `public/fonts`). De pay-off is een afbeelding (witte tekst, transparant; `payoff-<font>.png`, gemaakt met
-  `scripts/mail-graphics/payoff-header.py`), want webfonts werken niet in elke mailclient.
-  Footer (2026-11-25, alleen in deze mail): het losse blok "Hulp nodig?" is samengevoegd met de klantenservice-informatie
-  in de footer, die daardoor veel prominenter is (`CrmFooter`-prop `help`, in de mail `footerHelp`; het blok in de mail
+- "Dit moeten we vaker doen" (`crm-vaker-doen`): kopie van "Precies een jaar geleden" (zelfde component) als voorbeeldmail
+  om de gastquote en de footer te beoordelen. "Dit moeten we vaker doen!" staat NIET meer als pay-off onder het logo
+  (vervallen op 2026-11-25); het is een uitspraak van een gast en is dus vormgegeven als review: tussen aanhalingstekens in
+  het handgeschreven lettertype Caveat, met "Een van onze gasten" eronder (`GuestQuote`; de quote is een afbeelding,
+  `gastquote-donker.png` / `-wit.png`, gemaakt met `scripts/mail-graphics/guest-quote.py`, want een webfont werkt niet in
+  elke mailclient). Drie plekken, schakelaar "Boven de footer | In de footer | Tussendoor" (prop `quote`): beige band
+  direct boven de footer met de quote in een witte tekstballon; als bovenste deel van de zwarte footer (wit op zwart, lijn
+  eronder); of als beige strook tussen de hoofdboodschap en de suggesties.
+  Footer (alleen in deze mail): het losse blok "Hulp nodig?" is samengevoegd met de klantenservice-informatie in de
+  footer, die daardoor veel prominenter is (`CrmFooter`-prop `help`, in de mail `footerHelp`; het blok in de mail
   vervalt). Vijf varianten met een tweede schakelaar "Footer 1 … 5": 1 lichtoranje band over de hele breedte boven de
   zwarte footer; 2 lichtoranje kaart bovenin het zwart; 3 in het zwart een titel met twee grote knoppen (bellen oranje,
   WhatsApp omlijnd); 4 de rechterkolom als lichtoranje kaart; 5 beige band met twee witte snelfilterknoppen. De twee
-  schakelaars zijn los te combineren (15 mails, slug `crm-vaker-doen[-lora|-recoleta][-footer-2..5]`, labels via
-  `variantLabel` "Caveat / Footer 2" in de registry; de CRM-preview maakt per deel een schakelaar). Een klik op een footervariant scrolt de mail
-  in de preview vanzelf naar de footer; een klik op een lettertype of een andere mail begint weer bovenaan.
+  schakelaars zijn los te combineren (15 mails, slug `crm-vaker-doen[-in-footer|-tussendoor][-footer-2..5]`, labels via
+  `variantLabel` "Boven de footer / Footer 2" in de registry; de CRM-preview maakt per deel een schakelaar). Een klik op
+  een footervariant scrolt de mail in de preview vanzelf naar de footer, een klik op een plek van de quote naar de quote;
+  een andere mail begint weer bovenaan.
 - Nagenietmail heeft twee varianten (schakelaar "Bericht | Titel"): standaard een brief met aanhef en
   in het blok alleen de vraag als titel; of (`crm-nagenieten-titel`) de grote titel onder de foto.
 - Dealrij met vaste hoogte (concept, 2026-11-25; nog niet in de mails doorgevoerd): `DealRowFixed` zet links twee foto's
