@@ -12,7 +12,8 @@ import CrmReview, { knoppenProps } from "../emails/crm-review";
 import CrmTerugkomactie, { herinneringProps } from "../emails/crm-terugkomactie";
 import CrmZoekopdracht from "../emails/crm-zoekopdracht";
 import CrmFavorieten from "../emails/crm-favorieten";
-import AutomationCart, { cart1Props, cart1ZonderNaamProps, cart2Props, cart3Props, cart4Props } from "../emails/automation-cart";
+import AutomationCart, { cart1Props, cart1ZonderNaamProps, cart2Props,
+  cart2ZonderNaamProps, cart3Props, cart4Props } from "../emails/automation-cart";
 import AutomationBrowse, { browse1Props, browse2Props, browse3Props } from "../emails/automation-browse";
 import AutomationSearch, { search1Props, search2Props, search3Props, search4Props } from "../emails/automation-search";
 import { incheckMails } from "./incheckMails";
@@ -393,12 +394,25 @@ export const emails: EmailEntry[] = [
   {
     slug: "v01_tf022_fl011_nl-NL_2_abandoned_cart",
     title: "Winkelmandje 2 (2 dagen na verlaten)",
-    description: "Schaarste: zijn je data nog vrij? Het winkelmandje met de knop, daaronder twee vergelijkbare arrangementen.",
+    description: "Kop We helpen je graag, daaronder de brief met de aanhef. Het winkelmandje als standaard hotelblok met de knop, daarna Anderen boekten ook met twee vergelijkbare arrangementen.",
     section: "automation",
     subject: "Zijn jouw data nog vrij?",
     preheader: "Rond je boeking voor Hotel Des Indes af.",
     Component: AutomationCart,
     props: cart2Props,
+    variantLabel: "Naam bekend",
+  },
+  {
+    slug: "v01_tf022_fl011_nl-NL_2_abandoned_cart-naam-onbekend",
+    variantOf: "v01_tf022_fl011_nl-NL_2_abandoned_cart",
+    title: "Winkelmandje 2 (2 dagen na verlaten)",
+    description: "Variant voor als de voornaam niet bekend is: de brief begint met Beste gast.",
+    section: "automation",
+    subject: "Zijn jouw data nog vrij?",
+    preheader: "Rond je boeking voor Hotel Des Indes af.",
+    Component: AutomationCart,
+    props: cart2ZonderNaamProps,
+    variantLabel: "Naam onbekend",
   },
   {
     slug: "v01_tf023_fl011_nl-NL_3_abandoned_cart",

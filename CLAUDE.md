@@ -346,6 +346,13 @@ bewaard. Nog steeds interesse in [hotelnaam]?" met een variant zonder naam
 (`-naam-onbekend`, schakelaar in de previewkop), er staat geen introtekst meer onder, de kaart toont
 de inclusies en er staat geen prijs en geen korting in de mail.
 
+`tf022` wijkt sinds 24-11-2026 af van de sheet: de kop is "We helpen je graag" en staat bovenaan,
+met daaronder de brief ("Beste [voornaam], Je verblijf in [hotelnaam] staat voor je klaar. Twijfel je
+over je data of heb je een vraag? Laat het ons weten, we helpen je graag.") en een variant zonder naam
+(`-naam-onbekend`). Het winkelmandje is het standaard hotelblok: met inclusies en met "2 personen,
+2 nachten", zonder de datumregel. Boven de alternatieven staat de titel "Anderen boekten ook".
+Doordat de kaart weer het standaard blok is, tonen `tf023` en `tf024` ook de inclusies.
+
 Feedback 24-11-2026 (Anoeska, na de meeting met Bart): in `tf021` staan boven de knop geen prijs en
 geen korting meer. Dat wijkt af van de sheet, die bij S17 ook "en de prijs" noemt.
 

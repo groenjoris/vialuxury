@@ -76,9 +76,9 @@ useHead({ title: `${entry.value?.title ?? 'E-mail'} — ViaLuxury automations` }
             :aria-current="v.slug === slug ? 'true' : undefined"
           >{{ v.label }}</NuxtLink>
         </div>
-        <select class="aut__picker" :value="slug" aria-label="Kies een mail" @change="onPick">
+        <select class="aut__picker" :value="baseSlug" aria-label="Kies een mail" @change="onPick">
           <optgroup v-for="g in groups" :key="g.flow" :label="g.title">
-            <option v-for="e in g.items" :key="e.slug" :value="e.slug">
+            <option v-for="e in g.items" :key="e.slug" :value="e.slug" :selected="e.slug === baseSlug">
               {{ e.label }}{{ e.when ? ` — ${e.when}` : '' }}
             </option>
           </optgroup>

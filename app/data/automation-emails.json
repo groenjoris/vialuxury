@@ -19,9 +19,19 @@
   {
     "slug": "v01_tf022_fl011_nl-NL_2_abandoned_cart",
     "title": "Winkelmandje 2 (2 dagen na verlaten)",
-    "description": "Schaarste: zijn je data nog vrij? Het winkelmandje met de knop, daaronder twee vergelijkbare arrangementen.",
+    "description": "Kop We helpen je graag, daaronder de brief met de aanhef. Het winkelmandje als standaard hotelblok met de knop, daarna Anderen boekten ook met twee vergelijkbare arrangementen.",
     "subject": "Zijn jouw data nog vrij?",
-    "preheader": "Rond je boeking voor Hotel Des Indes af."
+    "preheader": "Rond je boeking voor Hotel Des Indes af.",
+    "variantLabel": "Naam bekend"
+  },
+  {
+    "slug": "v01_tf022_fl011_nl-NL_2_abandoned_cart-naam-onbekend",
+    "title": "Winkelmandje 2 (2 dagen na verlaten)",
+    "description": "Variant voor als de voornaam niet bekend is: de brief begint met Beste gast.",
+    "subject": "Zijn jouw data nog vrij?",
+    "preheader": "Rond je boeking voor Hotel Des Indes af.",
+    "variantOf": "v01_tf022_fl011_nl-NL_2_abandoned_cart",
+    "variantLabel": "Naam onbekend"
   },
   {
     "slug": "v01_tf023_fl011_nl-NL_3_abandoned_cart",

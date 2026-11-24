@@ -34,8 +34,9 @@ type Props = {
   heading: string;
   /** Leeg → geen introtekst onder de kop (mail 1). */
   intro?: string;
-  /** Waar de kop staat: boven het winkelmandje, het gastenoordeel of de codesectie. */
-  headingAt?: "cart" | "rating" | "code";
+  /** Waar de kop staat: bovenaan de mail, of boven het winkelmandje, het gastenoordeel of de
+   *  codesectie. */
+  headingAt?: "top" | "cart" | "rating" | "code";
   /** "direct": kop en intro bovenaan (mail 2, één ding te doen). "brief": aanhef, intro en de
    *  ondertekening van Yvette (mail 3, het oordeel van anderen en alternatieven).
    *  "winkelmandje": de opzet van crm-winkelmandje — kop, intro, wat er klaarstaat als losse
@@ -45,8 +46,9 @@ type Props = {
   cart: AutomationDeal & { hotelName: string };
   /** S21: de score met de Trustpilot-sterren en één korte review (mail 3). */
   guestRating?: GuestRating;
-  /** S4: twee vergelijkbare arrangementen (mail 2 en 3). */
+  /** S4: twee vergelijkbare arrangementen (mail 2 en 3), met een eigen titel erboven. */
   alternatives?: AutomationDeal[];
+  alternativesTitle?: string;
   /** S10: de kortingscode met de adviesregel eronder (mail 4). Opbouw als in crm-terugkomactie:
    *  het bedrag als kop van de coupon, de code, de geldigheid en "Vul de code in bij het boeken". */
   code?: { code: string; value: string; deadline: string; advice: string };
@@ -54,7 +56,7 @@ type Props = {
   service?: boolean;
 };
 
-export default function AutomationCart({ recipientEmail, preheader, firstName, heading, intro, headingAt = "cart", opening = "direct", cart, guestRating, alternatives, code, service }: Props) {
+export default function AutomationCart({ recipientEmail, preheader, firstName, heading, intro, headingAt = "cart", opening = "direct", cart, guestRating, alternatives, alternativesTitle, code, service }: Props) {
   const c = newsletter.light;
 
   return (
@@ -69,13 +71,13 @@ export default function AutomationCart({ recipientEmail, preheader, firstName, h
         <Container style={{ width: "100%", maxWidth: "626px" }}>
           {/* Opening: direct de kop met de intro, of de brief met de ondertekening */}
           <Section className="m-pad" style={{ padding: "32px 32px 0" }}>
+            {(headingAt === "top" || opening !== "brief") && (
+              <Heading as="h1" className="m-h1" style={{ ...s.h1, marginBottom: headingAt === "top" ? "16px" : undefined }}>{heading}</Heading>
+            )}
             {opening === "brief" ? (
               <AutomationLetter firstName={firstName}>{intro}</AutomationLetter>
             ) : (
-              <>
-                <Heading as="h1" className="m-h1" style={s.h1}>{heading}</Heading>
-                {intro && <Text style={{ ...s.body, margin: "12px 0 0" }}>{intro}</Text>}
-              </>
+              intro && <Text style={{ ...s.body, margin: "12px 0 0" }}>{intro}</Text>
             )}
           </Section>
 
@@ -103,7 +105,8 @@ export default function AutomationCart({ recipientEmail, preheader, firstName, h
           ) : (
             <Section className="m-pad" style={{ padding: opening === "brief" ? "40px 32px 0" : "24px 32px 0" }}>
               {opening === "brief" && headingAt === "cart" && <Heading as="h1" className="m-h1" style={s.h1}>{heading}</Heading>}
-              <AutomationFeaturedDeal deal={cart} cta="Rond je boeking af" />
+              {/* Het standaard hotelblok: de datumregel hoort bij de winkelmandje-opzet, niet hier. */}
+              <AutomationFeaturedDeal deal={{ ...cart, lines: undefined }} cta="Rond je boeking af" />
             </Section>
           )}
 
@@ -118,6 +121,7 @@ export default function AutomationCart({ recipientEmail, preheader, firstName, h
           {/* S4 Hoteldeals: vergelijkbare arrangementen als alternatief */}
           {alternatives && alternatives.length > 0 && (
             <Section className="m-pad" style={{ padding: "44px 32px 0" }}>
+              {alternativesTitle && <Heading as="h2" className="m-h1" style={s.h1}>{alternativesTitle}</Heading>}
               {alternatives.map((d, i) => (
                 <AutomationDealRow key={d.url} deal={d} top={i ? cardGap : undefined} />
               ))}
@@ -156,9 +160,8 @@ const HOTEL = "Hotel Des Indes";
 const cart: AutomationDeal & { hotelName: string } = {
   ...desIndes,
   hotelName: HOTEL,
-  // Feedback 24-11-2026: de kaart toont de inclusies, zonder prijs en zonder korting. De regel
-  // "voor wie de prijs geldt" hoort bij de prijsrij en vervalt dus ook.
-  priceFor: undefined,
+  // Feedback 24-11-2026: het standaard hotelblok, dus met de inclusies. In mail 1 staat de
+  // prijsrij uit, daar vervallen de prijs en de korting vanzelf.
   line: undefined,
   lines: ["20 november · 2 nachten · 2 personen"],
   url: `${desIndes.url}?checkin=2026-11-20&adults=2`,
@@ -189,11 +192,18 @@ export const cart2Props = {
   recipientEmail: "sanne.devries@example.com",
   firstName: "Sanne",
   preheader: `Rond je boeking voor ${HOTEL} af.`,
-  heading: "Kijk of je data nog vrij zijn",
-  intro: `Populaire data raken sneller vol. Rond je boeking af, dan weet je zeker dat je verblijf in ${HOTEL} geregeld is.`,
+  // Feedback 24-11-2026: kop bovenaan, daaronder de brief met de aanhef.
+  heading: "We helpen je graag",
+  headingAt: "top" as const,
+  opening: "brief" as const,
+  intro: `Je verblijf in ${HOTEL} staat voor je klaar. Twijfel je over je data of heb je een vraag? Laat het ons weten, we helpen je graag.`,
   cart,
   alternatives,
+  alternativesTitle: "Anderen boekten ook",
 } satisfies Props;
+
+/** Zelfde mail zonder voornaam: de brief begint dan met "Beste gast,". */
+export const cart2ZonderNaamProps = { ...cart2Props, firstName: undefined } satisfies Props;
 
 /** v01_tf023_fl011_nl-NL_3_abandoned_cart — 3 dagen na het verlaten van het winkelmandje. */
 export const cart3Props = {
