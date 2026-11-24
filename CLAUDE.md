@@ -392,10 +392,10 @@ geen korting meer. Dat wijkt af van de sheet, die bij S17 ook "en de prijs" noem
 voor jouw zoekopdracht" bovenaan (`topHeading`), boven de resultaten de kortere kop "Onze favorieten
 voor jou" en onderaan de tekstlink "Bekijk alle ViaLuxury arrangementen". `tf030`: nieuwe intro en de
 kop "Nog meer verborgen parels", met onder de resultaten de knop "Ontdek onze verborgen parels".
-`tf031`: kop "Waar heb jij zin in?" bovenaan, géén zoekresultaten, en de themasectie is beeldend
-geworden — elk thema is een tegel met een foto (16:9) en de naam eronder, twee naast elkaar op de
-beige band, met daaronder de regel "Eén klik is genoeg…" en de tekstlink "Bekijk alle arrangementen".
-De themafoto's zijn nu arrangementfoto's als plaatsvervanger; de echte themafoto's volgen nog.
+`tf031`: kop "Waar heb jij zin in?" bovenaan, géén zoekresultaten, de themasectie met de titel
+"Niet jouw verblijf gevonden? Kies je thema." (32 px) en daaronder de witte snelfilterknoppen op de
+beige band, de regel "Eén klik is genoeg…" en de tekstlink "Bekijk alle arrangementen". De thema's
+blijven snelfilterknoppen, geen tegels met foto's.
 
 Open punten in de sheet zelf: de preheader van `tf027` zegt "Drie alternatieven" terwijl de template
 twee dealplekken heeft (rij 20 is leeg), en voor de themategel "Hotels met experiences" bestaat nog

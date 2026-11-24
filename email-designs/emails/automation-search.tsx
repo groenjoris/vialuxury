@@ -5,7 +5,7 @@ import CrmHeader from "../components/CrmHeader";
 import { BeigeBand, CrmHelp, type Pill, PrimaryButton, s, site, TextLink } from "../components/crm";
 import { AutomationDealList, AutomationLetter, automationCss, SearchSection, ThemeSection, type ThemeTile } from "../components/automation";
 import { type AutomationDeal } from "../lib/automationDeals";
-import { carltonBeach, dePlesman, desIndes, kurhaus, lauswolt, steenenburg, vanOys, villaRuimzicht, voco } from "../lib/automationDeals";
+import { dePlesman, desIndes, kurhaus, voco } from "../lib/automationDeals";
 import { font, newsletter } from "../components/theme";
 
 // Automationflow fl013 "abandoned search" — vier mails uit één component.
@@ -120,14 +120,13 @@ const base = { recipientEmail: "sanne.devries@example.com", firstName: "Sanne", 
  *  November heeft volgens Seizoensthema's wellness, culinair wild en wijn, en experiences;
  *  "Hotels met experiences" heeft nog geen landingspagina en staat er daarom niet bij. */
 const theme = (path: string) => `https://vialuxury.com/nl-NL/zoeken?theme=${path}`;
-// Feedback 24-11-2026: de thema's zijn beeldend, dus elk thema is een tegel met een foto. De foto's
-// hieronder zijn arrangementfoto's als plaatsvervanger; de echte themafoto's volgen nog.
+// De thema's als witte snelfilterknoppen op de beige band, zoals in de CRM-mails.
 const novemberThemes: ThemeTile[] = [
-  { label: "Wellness", href: theme("arrangementen-wellness-overnachting"), image: vanOys.image },
-  { label: "Bubbelbad op kamer", href: theme("hotelkamer-jacuzzi"), image: villaRuimzicht.image },
-  { label: "Hotels met zwembad", href: theme("hotelkamer-zwembad"), image: carltonBeach.image },
-  { label: "Culinaire experiences", href: theme("arrangementen-culinair-genieten"), image: lauswolt.image },
-  { label: "Overnachting met diner", href: theme("arrangementen-overnachting-met-diner"), image: steenenburg.image },
+  { label: "Wellness", href: theme("arrangementen-wellness-overnachting") },
+  { label: "Bubbelbad op kamer", href: theme("hotelkamer-jacuzzi") },
+  { label: "Hotels met zwembad", href: theme("hotelkamer-zwembad") },
+  { label: "Culinaire experiences", href: theme("arrangementen-culinair-genieten") },
+  { label: "Overnachting met diner", href: theme("arrangementen-overnachting-met-diner") },
 ];
 
 /** v01_tf028_fl013_nl-NL_1_abandoned_search — 1 minuut na het zoeken. */
@@ -171,8 +170,7 @@ export const search3Props = {
 export const search4Props = {
   ...base,
   preheader: "Kies je thema, dan sturen we je wat bij je past.",
-  // Feedback 24-11-2026: kop bovenaan, geen zoekresultaten, de thema's als beeldende tegels en
-  // onderaan een tekstlink.
+  // Feedback 24-11-2026: kop bovenaan, geen zoekresultaten en onderaan een tekstlink.
   topHeading: "Waar heb jij zin in?",
   intro: `Een week geleden zocht je naar ${TERM}. Nog niet jouw optimale hotelverblijf gevonden? Laat ons weten waar je zin in hebt.`,
   resultsUrl: resultsUrl("retargeting_abandonedsearch_4"),
