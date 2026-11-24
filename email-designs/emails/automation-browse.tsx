@@ -2,7 +2,7 @@ import { Body, Container, Head, Heading, Html, Preview, Section, Text } from "@r
 import * as React from "react";
 import CrmFooter from "../components/CrmFooter";
 import CrmHeader from "../components/CrmHeader";
-import { CrmHelp, s } from "../components/crm";
+import { CrmHelp, s, TextLink } from "../components/crm";
 import { AutomationDealRow, AutomationFeaturedDeal, AutomationLetter, automationCss, BrandSection, cardGap } from "../components/automation";
 import { type AutomationDeal } from "../lib/automationDeals";
 import { lauswolt, steenenburg, vanOys } from "../lib/automationDeals";
@@ -38,11 +38,17 @@ type Props = {
   alternatives: AutomationDeal[];
   /** Titel boven de alternatieven. */
   alternativesTitle?: string;
+  /** Subtitel boven het bekeken arrangement. */
+  viewedTitle?: string;
+  /** Algemene groet onderin het merkblok. */
+  brandGreeting?: string;
+  /** Tekstlink onder het merkblok. */
+  footerLink?: { href: string; label: string };
   /** S6: waarom ViaLuxury (mail 2). */
   brand?: string;
 };
 
-export default function AutomationBrowse({ recipientEmail, preheader, firstName, heading, intro, headingAt = "viewed", opening = "direct", viewed, alternatives, alternativesTitle, brand }: Props) {
+export default function AutomationBrowse({ recipientEmail, preheader, firstName, heading, intro, headingAt = "viewed", opening = "direct", viewed, viewedTitle, alternatives, alternativesTitle, brand, brandGreeting, footerLink }: Props) {
   const c = newsletter.light;
 
   return (
@@ -69,6 +75,7 @@ export default function AutomationBrowse({ recipientEmail, preheader, firstName,
 
           {/* S17 Achtergelaten arrangement: het bekeken arrangement */}
           <Section className="m-pad" style={{ padding: opening === "brief" ? "40px 32px 0" : "24px 32px 0" }}>
+            {viewedTitle && <Text style={{ ...s.kop, marginBottom: "12px" }}>{viewedTitle}</Text>}
             <AutomationFeaturedDeal deal={viewed} cta="Bekijk arrangement" />
           </Section>
 
@@ -81,10 +88,15 @@ export default function AutomationBrowse({ recipientEmail, preheader, firstName,
             ))}
           </Section>
 
-          {/* S6 Merksectie */}
-          {brand && (
-            <Section className="m-pad" style={{ padding: "40px 32px 0" }}>
-              <BrandSection>{brand}</BrandSection>
+        </Container>
+
+        {/* S6 Merksectie: een merkblok op een beige band, met de groet erin */}
+        {brand && <BrandSection greeting={brandGreeting}>{brand}</BrandSection>}
+
+        <Container style={{ width: "100%", maxWidth: "626px" }}>
+          {footerLink && (
+            <Section className="m-pad" style={{ padding: "24px 32px 0" }}>
+              <TextLink href={footerLink.href}>{footerLink.label}</TextLink>
             </Section>
           )}
 
@@ -130,9 +142,17 @@ export const browse1ZonderNaamProps = {
 export const browse2Props = {
   ...base,
   preheader: "Dit maakt het verblijf bijzonder.",
+  // Feedback 24-11-2026: kop bovenaan, daaronder de brief. Het bekeken arrangement krijgt een
+  // subtitel, het merkblok staat op een beige band met een groet en daaronder een tekstlink.
   heading: `Dit maakt ${HOTEL} bijzonder`,
-  intro: `Gisteren bekeek je ${HOTEL}. Bij dit arrangement is al veel inbegrepen, zodat jij alleen nog hoeft te genieten.`,
+  headingAt: "top" as const,
+  opening: "brief" as const,
+  intro: "Er is al veel inbegrepen, dus jij hoeft alleen te genieten. Vragen? We denken graag mee.",
+  viewedTitle: "Door jou bekeken:",
+  alternativesTitle: "Anderen bekeken ook",
   brand: "Bij ViaLuxury selecteren we elk hotel zelf en stellen we arrangementen samen waarin alles al geregeld is. Jij boekt één keer en hoeft daarna alleen nog te genieten.",
+  brandGreeting: "Groetjes, ViaLuxury team",
+  footerLink: { href: "https://www.vialuxury.com/nl-NL/", label: "Bekijk alle arrangementen" },
 } satisfies Props;
 
 /** v01_tf027_fl012_nl-NL_3_abandoned_browse — 2 dagen na het bekijken. */

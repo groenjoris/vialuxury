@@ -1,7 +1,7 @@
 import { Button, Column, Img, Link, Row, Section, Text } from "@react-email/components";
 import * as React from "react";
 import { type AutomationDeal } from "../lib/automationDeals";
-import { IconLine, type Pill, PillGrid, PrimaryButton, s, site, TextLink } from "./crm";
+import { BeigeBand, IconLine, type Pill, PillGrid, PrimaryButton, s, site, TextLink } from "./crm";
 import { baseUrl, font, newsletter } from "./theme";
 
 // Bouwstenen van de automationmails voor Klaviyo.
@@ -236,8 +236,16 @@ export function GuestRatingSection({ rating }: { rating: GuestRating }) {
 }
 
 /** S6 Merksectie: waarom ViaLuxury, in één alinea. */
-export function BrandSection({ children }: { children: React.ReactNode }) {
-  return <Text style={{ ...s.body, margin: 0 }}>{children}</Text>;
+/** S6 Merksectie. Feedback 24-11-2026: geen platte tekst meer maar een merkblok op een beige band
+ *  over de hele breedte, met een algemene groet eronder. Staat net als elke band buiten de
+ *  <Container>. */
+export function BrandSection({ children, greeting, top = "40px" }: { children: React.ReactNode; greeting?: string; top?: string }) {
+  return (
+    <BeigeBand top={top}>
+      <Text style={{ ...s.body, margin: 0 }}>{children}</Text>
+      {greeting && <Text style={{ ...s.body, margin: "16px 0 0" }}>{greeting}</Text>}
+    </BeigeBand>
+  );
 }
 
 /** S15 Servicesectie: de regel uit de sheet, met de link naar de klantenservice. */

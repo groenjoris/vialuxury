@@ -314,8 +314,8 @@ verviel en er komt voorlopig niets voor in de plaats (feedback 24-11-2026). De C
 hun eigen ondertekening. In de automationmails staat **alles links uitgelijnd**, met één uitzondering: de inhoud van de
 coupon (`AutomationCodeBlock`) staat gecentreerd, want een coupon is een ding op zichzelf
 (afstemming 24-11-2026). Blokken lopen over de hele breedte, daar speelt uitlijnen niet. De secties staan gewoon in de kolom op wit en elke mail eindigt met de hulplijn
-`CrmHelp` ("Hulp nodig?"). De enige beige band is de themakiezer in `tf031`, want een keuzeblok
-staat altijd op beige.
+`CrmHelp` ("Hulp nodig?"). Beige banden zijn er twee: de themakiezer in `tf031` (een keuzeblok staat altijd op
+beige) en het merkblok in `tf026`.
 
 Dealrij: de fotokolom toont twee foto's van hetzelfde arrangement onder elkaar (hoofdbeeld boven,
 `image` en `secondImage` uit deals.json) met 3 px wit ertussen, samen de volle kaarthoogte. Op
@@ -367,6 +367,12 @@ inclusies.
 variant zonder naam (`-naam-onbekend`, kop "Dit vonden we voor jou"), staat bovenaan met de brief
 eronder ("Je bekeek net [hotelnaam]. Een mooie keuze! We hebben het voor je klaargezet.") en boven de
 alternatieven staat "Anderen bekeken ook".
+
+`tf026` wijkt sinds 24-11-2026 af van de sheet: de kop staat bovenaan met de brief eronder ("Er is al
+veel inbegrepen, dus jij hoeft alleen te genieten. Vragen? We denken graag mee."), boven het bekeken
+arrangement staat de subtitel "Door jou bekeken:", boven de alternatieven "Anderen bekeken ook", het
+merkblok (S6) staat op een beige band met de groet "Groetjes, ViaLuxury team" erin en daaronder staat
+de tekstlink "Bekijk alle arrangementen".
 
 Feedback 24-11-2026 (Anoeska, na de meeting met Bart): in `tf021` staan boven de knop geen prijs en
 geen korting meer. Dat wijkt af van de sheet, die bij S17 ook "en de prijs" noemt.
