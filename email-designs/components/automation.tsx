@@ -260,20 +260,21 @@ export function SearchSection({ searchTerm, arrivalDate, persons, resultsUrl }: 
   );
 }
 
-/** S10 Codesectie: de coupon met het bedrag, de code, de geldigheid en de instructie. Zelfde
- *  blok als in de CRM-mails, maar links uitgelijnd in plaats van gecentreerd: in de
- *  automationmails staat alles links (afstemming 24-11-2026). */
+/** S10 Codesectie: de coupon met het bedrag, de code, de geldigheid en de instructie.
+ *  De inhoud staat gecentreerd: een coupon is een ding op zichzelf en de enige uitzondering op
+ *  "alles links" in de automationmails (afstemming 24-11-2026). */
 export function AutomationCodeBlock({ title, code, label = "Jouw persoonlijke code", deadline }: { title?: string; code: string; label?: string; deadline: string }) {
+  const center = { textAlign: "center" as const };
   return (
-    <Section style={{ width: "100%", border: `2px dashed ${c.cta}`, borderRadius: "8px", padding: "22px 22px 24px" }}>
-      {title && <Text style={{ ...s.h1, fontWeight: 700, color: c.cta, margin: "0 0 12px" }}>{title}</Text>}
-      <Text style={{ ...s.title, margin: 0 }}>{label}</Text>
-      <Text style={{ fontFamily: font.heading, fontWeight: 700, fontSize: "20px", lineHeight: "1.3", letterSpacing: "0.02em", color: c.text, margin: "4px 0 0" }}>{code}</Text>
-      <Text style={{ ...s.name, margin: "14px 0 0" }}>
+    <Section style={{ width: "100%", border: `2px dashed ${c.cta}`, borderRadius: "8px", padding: "22px 22px 24px", textAlign: "center" }}>
+      {title && <Text style={{ ...s.h1, fontWeight: 700, color: c.cta, ...center, margin: "0 0 12px" }}>{title}</Text>}
+      <Text style={{ ...s.title, ...center, margin: 0 }}>{label}</Text>
+      <Text style={{ fontFamily: font.heading, fontWeight: 700, fontSize: "20px", lineHeight: "1.3", letterSpacing: "0.02em", color: c.text, margin: "4px 0 0", ...center }}>{code}</Text>
+      <Text style={{ ...s.name, ...center, margin: "14px 0 0" }}>
         <Img src={`${baseUrl}/images/mail/crm/clock-donker.png`} alt="" width="18" height="18" style={{ display: "inline-block", verticalAlign: "-3px", marginRight: "8px" }} />
         Geldig tot en met {deadline}
       </Text>
-      <Text style={{ ...s.muted, margin: "2px 0 0" }}>Vul de code in bij het boeken.</Text>
+      <Text style={{ ...s.muted, ...center, margin: "2px 0 0" }}>Vul de code in bij het boeken.</Text>
     </Section>
   );
 }
