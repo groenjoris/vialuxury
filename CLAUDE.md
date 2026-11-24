@@ -218,9 +218,9 @@ Regels voor elke CRM-mail:
 - Briefopzet (het format voor alle CRM-mails, tot nu toe in `crm-winkelmandje-2-dagen`, `crm-favorieten`, `crm-zoekopdracht`,
   `crm-thema-stedentrips` en `crm-terugkomactie` (met herinnering); de aanhef is
   overal "Beste …", nooit "Hi"): de mail begint met
-  de bouwsteen `Letter`: aanhef ("Beste Sanne," / "Beste gast,"), een korte intro en de ondertekening
-  "Groetjes het ViaLuxury team" als gewone vette bodytekst (16 px, 700). Sinds 24-11-2026; daarvoor was het
-  "Groetjes Yvette" als afbeelding in een handgeschreven lettertype (`groetjes-yvette.png`, nu ongebruikt). Een titel (bijv. "Anderen boekten ook", 32 serif) is de titel van
+  de bouwsteen `Letter`: aanhef ("Beste Sanne," / "Beste gast,"), een korte intro en de ondertekening "Groetjes Yvette"
+  als afbeelding (`public/images/mail/crm/groetjes-yvette.png`: lettertype Oooh Baby, donkergrijs #555555; geen
+  webfont, want die werkt niet in elke mailclient). Een titel (bijv. "Anderen boekten ook", 32 serif) is de titel van
   het blok eronder en staat direct boven dat blok, nooit boven de aanhef.
 - Drie lettergroottes: titel 32, subtitel en hotelnaam 20, alle overige tekst 16 px (footer uitgezonderd). Uitzondering:
   de dealtitel in een dealkaart is 18 px serif.
@@ -294,6 +294,14 @@ template in Klaviyo; die naam staat ook onder de titel in de preview. Registry-s
 alleen light, lijst `app/data/automation-emails.json`, preview `/automation/<slug>` (zelfde frame als
 de CRM-preview, paneel links gegroepeerd per flow). Startscherm: knop "Automations" in het vak CRM.
 
+**Regel: de automationmails staan los van de CRM-mails.** De CRM-mails worden door Joris beheerd en
+mogen hier nooit door veranderen, ook niet via een gedeelde bouwsteen. De automationmails hebben
+daarom hun eigen bestanden: `email-designs/components/automation.tsx` (eigen dealkaart, briefopening,
+mobiele CSS en de S-secties) en `email-designs/lib/automationDeals.ts` (eigen voorbeelddeals, met
+`secondImage`). Uit `components/crm.tsx` komt alleen wat onveranderd blijft: de tekststijlen `s`, de
+knoppen, `IconLine`, `PillGrid`, `BeigeBand`, `CodeBlock` en `CrmHelp`. De export perst alleen de
+automationmails samen (`renderEmail`), zodat de andere mails hun opmaak houden.
+
 De twee winkelmandjemails van het CRM (`crm-winkelmandje` en `crm-winkelmandje-2-dagen`) zijn
 leidend voor het ontwerp. De tien automationmails volgen die opzet. De opening hangt af van het soort
 mail, net als bij die twee: `tf021` heeft de opzet van `crm-winkelmandje` zelf — kop, intro, wat er
@@ -301,7 +309,8 @@ klaarstaat als losse regels, de knop en daaronder de kaart zonder prijsrij. `tf0
 `tf026` beginnen ook direct met de kop en de intro, met de kaart compleet; gaat hij over suggesties of het oordeel van anderen, dan is het een
 brief van Yvette (`crm-winkelmandje-2-dagen`, `tf023`, `tf027` en alle zoekmails, zoals
 `crm-zoekopdracht`). Bij een brief staat de kop uit de sheet als titel direct boven het blok waar
-hij bij hoort. De secties staan gewoon in de kolom op wit en elke mail eindigt met de hulplijn
+hij bij hoort. De ondertekening is "Groetjes het ViaLuxury team" als gewone vette bodytekst
+(feedback 24-11-2026); de CRM-mails houden hun eigen ondertekening. De secties staan gewoon in de kolom op wit en elke mail eindigt met de hulplijn
 `CrmHelp` ("Hulp nodig?"). De enige beige band is de themakiezer in `tf031`, want een keuzeblok
 staat altijd op beige.
 

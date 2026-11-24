@@ -51,7 +51,7 @@ export default function CrmJaarGeleden({ recipientEmail, firstName, variant = "s
         <CrmHeader />
         <Container style={{ width: "100%", maxWidth: "626px" }}>
           {/* Grote arrangementfoto; geen intro */}
-          <Img src={image} alt={packageTitle} width="626" height="352" style={{ display: "block", width: "100%", height: "auto", aspectRatio: "16 / 9", objectFit: "cover" }} />
+          <Img src={image} alt={packageTitle} width="626" height="380" style={{ display: "block", width: "100%", height: "380px", objectFit: "cover" }} />
 
           <Section className="m-pad" style={{ padding: "28px 32px 0" }}>
             <Heading as="h1" className="m-h1" style={s.h1}>Vorig jaar op {arrivalDayLastYear}</Heading>
@@ -125,7 +125,6 @@ CrmJaarGeleden.PreviewProps = {
       packageTitle: "Verblijf in het mooiste hotel van Nederland",
       line: "Vanaf €319 voor 2 personen",
       image: "https://asset.vialuxury.com/assets/37e3155c-a965-4518-b38e-b9e93483766f?key=card",
-      secondImage: "https://asset.vialuxury.com/assets/04007e67-62ca-4ffc-9ecf-a7b932695586?key=card",
       url: deal("voco-the-hague-1-1-gratis-verblijf-in-het-mooiste-hotel-van-nederland"),
       includes: ["Dagelijks ontbijtbuffet", "3-Gangendiner in Ultramarijn", "Welkomstattentie", "Late check-out"],
       discount: "-47%",
@@ -140,7 +139,6 @@ CrmJaarGeleden.PreviewProps = {
       packageTitle: "Gloednieuw hotel in het voormalige KLM-hoofdkantoor",
       line: "Vanaf €309 voor 2 personen",
       image: "https://asset.vialuxury.com/assets/e14b892d-4bfd-423d-9789-4e36ca5599af?key=card",
-      secondImage: "https://asset.vialuxury.com/assets/1dfdfc8a-2097-482f-b9ac-7809f3e27562?key=card",
       url: deal("de-plesman-openingsactie-beleef-den-haag-in-stijl-vanuit-een-nieuw-5-hotel-incl-3-gangendiner"),
       includes: ["Dagelijks ontbijtbuffet", "3-Gangendiner", "Gratis parkeren", "Voormalig kantoor van KLM"],
       discount: "-41%",
@@ -155,7 +153,6 @@ CrmJaarGeleden.PreviewProps = {
       packageTitle: "Luxe overnachten aan het strand van Scheveningen",
       line: "Vanaf €399 voor 2 personen",
       image: "https://asset.vialuxury.com/assets/96624129-9f31-44d0-9d7a-c9e4ec027ecd?key=card",
-      secondImage: "https://asset.vialuxury.com/assets/8c8c5d7a-d2aa-4b8b-9f1c-cc46cd79ec2d?key=card",
       url: deal("grand-hotel-amrath-kurhaus-luxe-overnachting-aan-het-strand-van-scheveningen"),
       includes: ["Dagelijks ontbijtbuffet", "3-Gangendiner", "Aan het strand", "Late check-out"],
       discount: "-41%",

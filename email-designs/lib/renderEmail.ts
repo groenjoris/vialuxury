@@ -8,7 +8,8 @@ export async function renderEmail(entry: EmailEntry, mode: EmailMode = "light"):
     createElement(entry.Component, { ...(entry.props ?? entry.Component.PreviewProps ?? {}), mode }),
     { pretty: true },
   );
-  return compact(html);
+  // Alleen de automationmails worden samengeperst; de andere mails blijven zoals ze waren.
+  return entry.section === "automation" ? compact(html) : html;
 }
 
 /**

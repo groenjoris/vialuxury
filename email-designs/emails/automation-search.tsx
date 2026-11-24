@@ -2,8 +2,10 @@ import { Body, Container, Head, Heading, Html, Preview, Section } from "@react-e
 import * as React from "react";
 import CrmFooter from "../components/CrmFooter";
 import CrmHeader from "../components/CrmHeader";
-import { BeigeBand, crmCss, CrmHelp, DealList, Letter, type Pill, type RowDeal, s, SearchSection, site, ThemeSection } from "../components/crm";
-import { dePlesman, desIndes, kurhaus, voco } from "../lib/crmDeals";
+import { BeigeBand, CrmHelp, type Pill, s, site } from "../components/crm";
+import { AutomationDealList, AutomationLetter, automationCss, SearchSection, ThemeSection } from "../components/automation";
+import { type AutomationDeal } from "../lib/automationDeals";
+import { dePlesman, desIndes, kurhaus, voco } from "../lib/automationDeals";
 import { font, newsletter } from "../components/theme";
 
 // Automationflow fl013 "abandoned search" — vier mails uit één component.
@@ -30,7 +32,7 @@ type Props = {
   persons?: number;
   resultsUrl: string;
   /** S4: drie zoekresultaten die passen bij de zoekopdracht. */
-  results: RowDeal[];
+  results: AutomationDeal[];
   /** S7 Themasectie (mail 4): kop, de thema's van de verzendmaand en de onderregel. */
   themeSection?: { title: string; note: string; items: Pill[] };
 };
@@ -42,7 +44,7 @@ export default function AutomationSearch({ recipientEmail, preheader, firstName,
     <Html lang="nl">
       <Head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <style>{crmCss}</style>
+        <style>{automationCss}</style>
       </Head>
       <Preview>{preheader}</Preview>
       <Body style={{ backgroundColor: c.bg, margin: 0, padding: 0, fontFamily: font.body }}>
@@ -50,7 +52,7 @@ export default function AutomationSearch({ recipientEmail, preheader, firstName,
         <Container style={{ width: "100%", maxWidth: "626px" }}>
           {/* Briefopening: aanhef, de intro uit de sheet en de ondertekening */}
           <Section className="m-pad" style={{ padding: "32px 32px 0" }}>
-            <Letter firstName={firstName}>{intro}</Letter>
+            <AutomationLetter firstName={firstName}>{intro}</AutomationLetter>
           </Section>
 
           {/* S18 Zoekopdracht, direct onder de ondertekening */}
@@ -61,7 +63,7 @@ export default function AutomationSearch({ recipientEmail, preheader, firstName,
           {/* S4 Hoteldeals: de zoekresultaten, met de kop erboven */}
           <Section className="m-pad" style={{ padding: "44px 32px 0" }}>
             <Heading as="h1" className="m-h1" style={s.h1}>{heading}</Heading>
-            <DealList deals={results} />
+            <AutomationDealList deals={results} />
           </Section>
         </Container>
 

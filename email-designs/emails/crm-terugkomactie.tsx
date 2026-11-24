@@ -17,7 +17,7 @@ import { carltonBeach, desIndes, fashionHotel, steenenburg, vanOys, villaRuimzic
 //      dankbaar dat je boekte) en de ondertekening "Groetjes Yvette",
 //   2. de coupon: bedrag, code, geldigheid en "Vul de code in bij het boeken" in één blok,
 //   3. waar je heen kunt (de ene oranje knop: Bekijk arrangementen),
-//   4. "Tips voor je kortingscode" (grote titel) met "Boek uiterlijk [vervaldatum] 23:59 uur" en drie groepjes van
+//   4. "Je kortingscode geldt hier" (grote titel, zonder subtitel; herinnering: "Hier gebruik je je €20") en drie groepjes van
 //      twee suggesties, elk op een eigen beige vlak met de subtitel erin: in de sfeer van het vorige
 //      hotel, populair deze maand, deals met wellness,
 //   5. de themakiezer.
@@ -72,17 +72,9 @@ export default function CrmTerugkomactie({ recipientEmail, firstName, code, days
             </Section>
           </Section>
 
-          {/* Waar je de korting kunt gebruiken: grote titel. In de eerste mail met de uiterste datum
-              eronder; in de herinnering staat de termijn in de titel zelf (de datum staat al in de coupon) */}
+          {/* Waar je de korting kunt gebruiken: grote titel, zonder subtitel (de datum staat al in de coupon) */}
           <Section className="m-pad" style={{ padding: "44px 32px 0" }}>
-            {reminder ? (
-              <Heading as="h2" className="m-h1" style={s.h1}>Nog {daysLeft} dagen: hier gebruik je je {code.value}</Heading>
-            ) : (
-              <>
-                <Heading as="h2" className="m-h1" style={s.h1}>Tips voor je kortingscode</Heading>
-                <Text style={{ ...s.body, color: c.muted, margin: "2px 0 0" }}>Boek uiterlijk {code.deadline} 23:59 uur</Text>
-              </>
-            )}
+            <Heading as="h2" className="m-h1" style={s.h1}>{reminder ? `Hier gebruik je je ${code.value}` : "Je kortingscode geldt hier"}</Heading>
           </Section>
 
         </Container>
@@ -91,7 +83,7 @@ export default function CrmTerugkomactie({ recipientEmail, firstName, code, days
             De banden sluiten op elkaar aan en wisselen af: beige, wit, beige; daarna (niet in de
             herinnering) de themakiezer als volgende band in die reeks */}
         {groups.map((g, gi) => (
-          <DealGroup key={g.title} title={g.title} top={gi ? undefined : "24px"} white={gi % 2 === 1}>
+          <DealGroup key={g.title} title={g.title} top={gi ? undefined : "24px"} white={gi % 2 === 1} notch={gi === 0}>
             {g.deals.map((d, i) => (
               <DealRow key={d.url} deal={{ ...d, withCode: priceWithCode(d.price, codeAmount) }} top={i ? groupGap : undefined} />
             ))}

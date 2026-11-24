@@ -23,36 +23,10 @@ export const site = "https://vialuxury.vercel.app";
 
 export const crmCss = `
 body { margin: 0 !important; padding: 0 !important; }
-@media only screen and (max-width: 600px) {
+@media only screen and (max-width: 480px) {
   .stack { display: block !important; width: 100% !important; padding: 0 0 12px !important; }
-  /* De tekst van een dealrij houdt op mobiel zijn ruimte tot de rand van de kaart. box-sizing is
-     nodig omdat stack width:100% zet: zonder dat telt de padding er nog bij op en steekt de cel
-     (en dus de knop) buiten de kaart uit. */
-  .m-cardtext { padding: 16px 18px 18px !important; box-sizing: border-box !important; }
-  /* De foto van een dealrij staat op mobiel boven de tekst over de volle breedte; padding-top van
-     56,25 % maakt dat vlak 16:9, want een achtergrondfoto heeft zelf geen hoogte. */
-  .m-rowphoto { width: 100% !important; height: 0 !important; min-height: 0 !important; padding-top: 56.25% !important; }
-  /* De cel zelf zonder padding, anders komt stack's 12 px onderaan bij de foto en is het vlak
-     niet meer precies 16:9. */
-  .m-rowphoto-cell { padding: 0 !important; }
-  /* Twee foto's onder elkaar: op mobiel vervalt de halve hoogte (het vlak wordt 16:9) en valt de
-     tweede foto weg. Gestapeld zouden twee foto's van de volle breedte boven de tekst staan; nu
-     ziet de kaart er op een telefoon hetzelfde uit als alle andere dealrijen. */
-  .m-halfphoto { height: auto !important; }
-  .m-hide { display: none !important; }
-  /* De vaste kaarthoogte vervalt: de foto staat hier boven de tekst, dus de kaart is hoger. */
-  .m-auto-h { height: auto !important; }
   .m-pad { padding-left: 16px !important; padding-right: 16px !important; }
   .m-h1 { font-size: 28px !important; }
-}
-/* Alles smaller dan de volle 626 px: alleen de prijsrij krimpt, de kolommen blijven naast elkaar.
-   Op 16 px vraagt die rij ruim 400 px en zou de knop buiten de kaart vallen. */
-@media only screen and (max-width: 640px) {
-  .m-badge-cell { padding-right: 6px !important; }
-  .m-badge { font-size: 12px !important; padding: 9px 6px !important; }
-  .m-price { font-size: 12px !important; }
-  .m-price-big { font-size: 16px !important; }
-  .m-cta { font-size: 12px !important; padding: 9px 7px !important; }
 }
 `;
 
@@ -72,17 +46,17 @@ export const s = {
 };
 
 /** Briefopening, het vaste begin van een CRM-mail: aanhef ("Beste Sanne," of zonder naam
- *  "Beste gast,"; in elke mail dezelfde aanhef), een korte intro en de ondertekening
- *  "Groetjes het ViaLuxury team" als gewone vette bodytekst (sinds 24-11-2026; was een
- *  afbeelding met een handgeschreven lettertype en de naam Yvette). Titels van blokken (bijv.
- *  "Anderen boekten ook") komen ná de brief, direct boven het blok waar ze bij horen. */
+ *  "Beste gast,"; in elke mail dezelfde aanhef), een korte intro en de ondertekening "Groetjes Yvette". De ondertekening is een
+ *  afbeelding (handgeschreven lettertype Oooh Baby, donkergrijs #555555), zodat hij in elke
+ *  mailclient en in Klaviyo hetzelfde is. Titels van blokken (bijv. "Anderen boekten ook") komen
+ *  ná de brief, direct boven het blok waar ze bij horen. */
 export function Letter({ firstName, children }: { firstName?: string; children: React.ReactNode }) {
   const salutation = firstName ? `Beste ${firstName},` : "Beste gast,";
   return (
     <>
       <Text style={{ ...s.body, margin: 0 }}>{salutation}</Text>
       <Text style={{ ...s.body, margin: "8px 0 0" }}>{children}</Text>
-      <Text style={{ ...s.name, margin: "14px 0 0" }}>Groetjes het ViaLuxury team</Text>
+      <Img src={`${baseUrl}/images/mail/crm/groetjes-yvette.png`} alt="Groetjes Yvette" width="133" height="29" style={{ display: "block", width: "133px", height: "29px", marginTop: "14px" }} />
     </>
   );
 }
@@ -160,9 +134,6 @@ export type RowDeal = {
   /** Gewone bodyregels onder de dealtitel (bekeken deal: aankomst, nachten en personen, besparing). */
   lines?: string[];
   image: string;
-  /** Tweede foto van het arrangement. Staat die erin, dan toont de dealrij twee foto's onder
-   *  elkaar in de fotokolom (hoofdbeeld boven) in plaats van één over de volle hoogte. */
-  secondImage?: string;
   url: string;
   /** Uitgebreide kaart (zoals de zoekkaart op de website); een deal met `price` krijgt die: */
   /** Inclusies met een groen vinkje, maximaal vier. */
@@ -223,10 +194,8 @@ function RichDealText({ d }: { d: RowDeal }) {
       {d.includes && d.includes.length > 0 && (
         <>
           <Text style={{ fontFamily: font.heading, fontWeight: 600, fontSize: "16px", lineHeight: "1.4", color: c.cta, margin: "12px 0 2px" }}>Arrangement</Text>
-          {/* Hangende inspringing: een inclusie die over twee regels loopt, lijnt op de tweede regel
-              uit met de tekst erboven en niet met het vinkje. 22 px = vinkje (14) plus de ruimte (8). */}
           {d.includes.slice(0, 4).map((inc) => (
-            <Text key={inc} style={{ ...s.muted, margin: "4px 0 0", paddingLeft: "22px", textIndent: "-22px" }}>
+            <Text key={inc} style={{ ...s.muted, margin: "4px 0 0" }}>
               <Img src={checkIcon} alt="" width="14" height="14" style={{ display: "inline-block", verticalAlign: "-1px", marginRight: "8px" }} />
               {inc}
             </Text>
@@ -242,27 +211,21 @@ function RichDealText({ d }: { d: RowDeal }) {
 function RichDealPrice({ d, cta }: { d: RowDeal; cta: string }) {
   return (
     <>
-      {/* Winkelmandjekaart: eerst de gekozen datums, nachten en personen, daarna pas de prijsrij. */}
-      {d.lines?.map((l, i) => (
-        <Text key={l} style={{ ...s.title, margin: i ? "2px 0 0" : "14px 0 0" }}>{l}</Text>
-      ))}
       {d.priceFor && <Text style={{ ...s.name, margin: "14px 0 0" }}>{d.priceFor}</Text>}
-      {/* Eén regel, ook op mobiel: daar maken de klassen m-badge, m-price en m-cta het blokje,
-          de prijs en de knop net genoeg kleiner om samen binnen de kaart te passen. */}
       <Row style={{ marginTop: "8px" }}>
         {d.discount && (
-          <Column className="m-badge-cell" style={{ verticalAlign: "middle", width: "1%", paddingRight: "12px" }}>
-            <span className="m-badge" style={{ ...priceRowBox, display: "inline-block", whiteSpace: "nowrap", backgroundColor: c.text, fontFamily: font.body, padding: "11px 12px" }}>{d.discount}</span>
+          <Column style={{ verticalAlign: "middle", width: "1%", paddingRight: "12px" }}>
+            <span style={{ ...priceRowBox, display: "inline-block", whiteSpace: "nowrap", backgroundColor: c.text, fontFamily: font.body, padding: "11px 12px" }}>{d.discount}</span>
           </Column>
         )}
         <Column style={{ verticalAlign: "middle" }}>
-          <Text className="m-price" style={{ fontFamily: font.body, fontSize: "16px", lineHeight: "24px", color: c.muted, margin: 0, whiteSpace: "nowrap" }}>
-            Vanaf <span className="m-price-big" style={{ fontSize: "20px", fontWeight: 700, color: c.text }}>{d.price}</span>
+          <Text style={{ fontFamily: font.body, fontSize: "16px", lineHeight: "24px", color: c.muted, margin: 0, whiteSpace: "nowrap" }}>
+            Vanaf <span style={{ fontSize: "20px", fontWeight: 700, color: c.text }}>{d.price}</span>
             {d.original && <span style={{ color: "#D32F2F", textDecoration: "line-through", marginLeft: "8px" }}>{d.original}</span>}
           </Text>
         </Column>
         <Column style={{ verticalAlign: "middle", textAlign: "right", width: "1%" }}>
-          <Button href={d.url} className="m-cta" style={{ ...priceRowBox, backgroundColor: c.cta, fontFamily: font.body, padding: "11px 20px", textDecoration: "none", whiteSpace: "nowrap" }}>
+          <Button href={d.url} style={{ ...priceRowBox, backgroundColor: c.cta, fontFamily: font.body, padding: "11px 20px", textDecoration: "none", whiteSpace: "nowrap" }}>
             {cta}
           </Button>
         </Column>
@@ -285,20 +248,6 @@ export const priceWithCode = (price: string | undefined, discount: number) => {
 /** Ruimte tussen twee dealkaarten onder elkaar. */
 export const cardGap = "24px";
 
-/** Vaste hoogte van een dealkaart op desktop. Zonder deze hoogte verschilt elke kaart een paar
- *  regels (de titel loopt over twee of drie regels, een inclusie wel of niet over twee), en in
- *  Klaviyo moet een herhalend blok één hoogte hebben. De waarden zijn de hoogste kaart die in de
- *  mails voorkomt, dus er wordt niets afgesneden; een kortere kaart houdt onderaan wat ruimte over.
- *  Op mobiel vervalt de hoogte (klasse `m-auto-h`), want daar staat de foto boven de tekst. */
-export const CARD_HEIGHT_ROW = "425px";
-/** Dealrijen met de prijs na aftrek van de code (terugkomactie) hebben een regel extra en dus een
- *  eigen hoogte; binnen die mail zijn ze onderling weer gelijk. */
-export const CARD_HEIGHT_ROW_CODE = "457px";
-/** Bij de grote kaart staat de hoogte op het tekstblok onder de foto, niet op de kaart zelf: een
- *  vaste hoogte op de kaart verdeelt de overgebleven ruimte over de rijen en zet dan een witte
- *  strook boven en onder de foto. 379 px tekstblok + 315 px foto + 2 px rand = 696 px kaart. */
-export const CARD_TEXT_HEIGHT_FEATURED = "379px";
-
 /** Dealrij met grijze rand: foto links tot aan de rand en over de volle hoogte. Met een prijs de
  *  uitgebreide kaart (knop "Bekijk"), anders de tekstregels met een oranje link. Met inclusies maar
  *  zonder prijs (de bekeken deal): de uitgebreide kaart met onderaan de eigen regels en de link.
@@ -306,30 +255,13 @@ export const CARD_TEXT_HEIGHT_FEATURED = "379px";
 export function DealRow({ deal: d, cta, top = "12px" }: { deal: RowDeal; cta?: string; top?: string }) {
   const rich = !!d.price || !!d.includes;
   return (
-    <Section className={rich ? "m-auto-h" : undefined} style={{ backgroundColor: "#FFFFFF", border: `1px solid #E5E5E5`, borderRadius: "8px", marginTop: top, overflow: "hidden", height: rich ? (d.withCode ? CARD_HEIGHT_ROW_CODE : CARD_HEIGHT_ROW) : undefined }}>
+    <Section style={{ backgroundColor: "#FFFFFF", border: `1px solid #E5E5E5`, borderRadius: "8px", marginTop: top, overflow: "hidden" }}>
       <Row>
         {/* Foto als achtergrond: sluit aan op de rand en vult de hele hoogte van het blok */}
-        {d.secondImage ? (
-          // Twee foto's onder elkaar: het hoofdbeeld boven, het tweede beeld van het arrangement
-          // eronder, met een wit randje ertussen. Samen vullen ze de vaste kaarthoogte
-          // (211 + 212 = 423 px binnen de rand, waarvan 3 px wit). Het randje is een witte bovenrand op de
-          // tweede foto; een achtergrondfoto loopt niet door onder een rand.
-          <Column className="stack m-rowphoto-cell" style={{ width: "190px", verticalAlign: "top" }}>
-            {[d.image, d.secondImage].map((src, i) => (
-              <Section key={src} className={`m-halfphoto${i ? " m-hide" : ""}`} style={{ height: i ? "212px" : "211px", borderTop: i ? "3px solid #FFFFFF" : undefined, backgroundImage: `url(${src})`, backgroundSize: "cover", backgroundPosition: "center" }}>
-                <Link href={d.url} aria-label={d.hotelName ?? cta ?? "Bekijk"} className="m-rowphoto" style={{ display: "block", width: "190px", minHeight: "107px" }} />
-              </Section>
-            ))}
-          </Column>
-        ) : (
-          <Column className="stack m-rowphoto-cell" style={{ width: "190px", verticalAlign: "top", backgroundImage: `url(${d.image})`, backgroundSize: "cover", backgroundPosition: "center" }}>
-            <Link href={d.url} aria-label={d.hotelName ?? cta ?? "Bekijk"} className="m-rowphoto" style={{ display: "block", width: "190px", minHeight: "107px" }} />
-          </Column>
-        )}
-        {/* Bij een vaste kaarthoogte staat de tekst verticaal gecentreerd: de ruimte die overblijft
-            als de kaart korter is dan de hoogte, verdeelt zich dan boven en onder in plaats van als
-            een gat onder de prijsrij. Op mobiel (stack) valt de hoogte weg en staat hij weer boven. */}
-        <Column className="stack m-cardtext" style={{ verticalAlign: rich ? "middle" : "top", padding: rich ? "16px 18px 18px" : "16px 18px" }}>
+        <Column className="stack" style={{ width: "190px", verticalAlign: "top", backgroundImage: `url(${d.image})`, backgroundSize: "cover", backgroundPosition: "center" }}>
+          <Link href={d.url} aria-label={d.hotelName ?? cta ?? "Bekijk"} style={{ display: "block", width: "190px", minHeight: "150px" }} />
+        </Column>
+        <Column className="stack" style={{ verticalAlign: "top", padding: rich ? "16px 18px 18px" : "16px 18px" }}>
           {rich ? (
             <>
               <RichDealText d={d} />
@@ -362,16 +294,13 @@ export function DealRow({ deal: d, cta, top = "12px" }: { deal: RowDeal; cta?: s
  *  `priceRow={false}`: zonder de prijsrij en de knop (winkelmandje: prijs en knop staan erboven). */
 export function FeaturedDeal({ deal: d, cta, priceRow = true }: { deal: RowDeal; cta?: string; priceRow?: boolean }) {
   const rich = !!d.price;
-  // Alleen de volledige kaart (met inclusies en prijsrij) krijgt de vaste hoogte; de kaart van het
-  // winkelmandje heeft geen inclusies en is daarom van zichzelf al overal even hoog.
-  const fixed = rich && priceRow && !!d.includes?.length;
   return (
     <Section style={{ backgroundColor: "#FFFFFF", border: `1px solid #E5E5E5`, borderRadius: "8px", marginTop: "12px", overflow: "hidden" }}>
       <Link href={d.url}>
-        <Img src={d.image} alt={d.packageTitle ?? d.hotelName ?? ""} width="560" height="315" style={{ display: "block", width: "100%", height: "auto", aspectRatio: "16 / 9", objectFit: "cover" }} />
+        <Img src={d.image} alt={d.packageTitle ?? d.hotelName ?? ""} width="560" height="300" style={{ display: "block", width: "100%", height: "300px", objectFit: "cover" }} />
       </Link>
       {rich ? (
-        <Section className={fixed ? "m-auto-h" : undefined} style={{ padding: "16px 20px 20px", height: fixed ? CARD_TEXT_HEIGHT_FEATURED : undefined }}>
+        <Section style={{ padding: "16px 20px 20px" }}>
           <RichDealText d={d} />
           {priceRow && <RichDealPrice d={d} cta={cta ?? "Bekijk"} />}
         </Section>
@@ -393,9 +322,10 @@ export function FeaturedDeal({ deal: d, cta, priceRow = true }: { deal: RowDeal;
  *  header en footer staat de band BUITEN de <Container> van de mail: sluit die ervoor en open er
  *  een nieuwe na. `top`: witte ruimte boven de band. Meerdere banden onder elkaar sluiten zonder
  *  tussenruimte op elkaar aan en wisselen af: beige, wit (`white`), beige. */
-export function BeigeBand({ children, top = "0", white }: { children: React.ReactNode; top?: string; white?: boolean }) {
+export function BeigeBand({ children, top = "0", white, notch }: { children: React.ReactNode; top?: string; white?: boolean; /** Wit driehoekje (punt omlaag) midden in de bovenrand van de band: een hint om verder te scrollen. */ notch?: boolean }) {
   return (
     <Section style={{ backgroundColor: white ? "#FFFFFF" : "#F4F1EC", width: "100%", marginTop: top }}>
+      {notch && <div style={{ width: 0, height: 0, margin: "0 auto", borderLeft: "18px solid transparent", borderRight: "18px solid transparent", borderTop: "16px solid #FFFFFF", fontSize: 0, lineHeight: 0 }} />}
       <Container style={{ width: "100%", maxWidth: "626px" }}>
         <Section className="m-pad" style={{ padding: "24px 32px 28px" }}>{children}</Section>
       </Container>
@@ -409,9 +339,9 @@ export const groupGap = "16px";
 /** Groep suggesties op een band over de hele breedte (om en om beige en wit: geef de even groepen
  *  `white` mee): subtitel (20 serif) en eventueel een
  *  grijze regel eronder, dan de dealkaarten (wit). Staat net als BeigeBand buiten de <Container>. */
-export function DealGroup({ title, subtitle, top, white, children }: { title: string; subtitle?: string; top?: string; white?: boolean; children: React.ReactNode }) {
+export function DealGroup({ title, subtitle, top, white, notch, children }: { title: string; subtitle?: string; top?: string; white?: boolean; notch?: boolean; children: React.ReactNode }) {
   return (
-    <BeigeBand top={top} white={white}>
+    <BeigeBand top={top} white={white} notch={notch}>
       <Text style={s.kop}>{title}</Text>
       {subtitle && <Text style={{ ...s.muted, margin: "2px 0 0" }}>{subtitle}</Text>}
       {children}
@@ -569,6 +499,26 @@ export function PillGrid({ items }: { items: Pill[] }) {
   );
 }
 
+/** "Snel zoeken", het blok van de homepage als e-mail (zet het in een BeigeBand): titel en zes
+ *  witte snelfilterknoppen met icoon in een raster van twee. Onderaan elke commerciële mail, boven
+ *  de hulplijn. Elke knop gaat naar de R1-zoekpagina. */
+export const quickSearches: { label: string; icon: string }[] = [
+  { label: "Best geboekt", icon: themeIcon("diamond") },
+  { label: "Stedentrips", icon: themeIcon("building") },
+  { label: "Aan zee", icon: themeIcon("waves") },
+  { label: "Romantisch", icon: themeIcon("heart") },
+  { label: "Wellness", icon: themeIcon("bath") },
+  { label: "Met diner", icon: themeIcon("utensils") },
+];
+export function QuickSearch() {
+  return (
+    <>
+      <Text style={s.kop}>Snel zoeken</Text>
+      <PillGrid items={quickSearches.map((q) => ({ ...q, href: `${site}/first-release/search` }))} />
+    </>
+  );
+}
+
 /** Themakiezer (zet hem in een BeigeBand): de snelfilterknoppen met icoon. Elke keuze gaat naar /crm/thema?keuze=<id>. */
 export function ThemePicker({ items = themes }: { items?: Theme[] }) {
   return (
@@ -576,79 +526,6 @@ export function ThemePicker({ items = themes }: { items?: Theme[] }) {
       <Text style={s.kop}>Waarover wil je aanbiedingen ontvangen?</Text>
       <Text style={{ ...s.body, margin: "2px 0 0" }}>Eén klik is genoeg, dan sturen we voortaan wat je zoekt.</Text>
       <PillGrid items={items.map((t) => ({ label: t.label, icon: t.icon, href: `${site}/crm/thema?keuze=${t.id}` }))} />
-    </>
-  );
-}
-
-// ── Secties van de automationmails (nummers uit "Automations in kaart.xlsx", tabblad Secties) ──
-// S1 header, S2 intro, S4 hoteldeals, S13 footer en S15 service zijn de bestaande bouwstenen
-// (CrmHeader, Letter, DealList/DealRow/FeaturedDeal, CrmFooter en CrmHelp); hieronder staan de
-// secties die alleen in deze flows voorkomen.
-
-/** S21 Gastenoordeel: de score met de Trustpilot-sterren en één korte review, als die er is. */
-export type GuestRating = { average: 3 | 3.5 | 4 | 4.5 | 5; label: string; review?: { text: string; author: string } };
-
-export function GuestRatingSection({ hotelName, rating }: { hotelName: string; rating: GuestRating }) {
-  return (
-    <>
-      <Img
-        src={`${baseUrl}/images/mail/crm/trustpilot-sterren-${String(rating.average).replace(".", "-")}.png`}
-        alt={`${String(rating.average).replace(".", ",")} van 5 sterren`}
-        width="152"
-        height="28"
-        style={{ display: "block", width: "152px", height: "28px" }}
-      />
-      <Text style={{ ...s.body, margin: "6px 0 0" }}>{rating.label}</Text>
-      {rating.review && (
-        <Section style={{ marginTop: "22px" }}>
-          <Text style={{ fontFamily: font.heading, fontSize: "20px", lineHeight: "1.35", color: c.text, margin: 0 }}>&ldquo;{rating.review.text}&rdquo;</Text>
-          <Text style={{ ...s.muted, margin: "4px 0 0" }}>{rating.review.author}</Text>
-        </Section>
-      )}
-    </>
-  );
-}
-
-/** S6 Merksectie: waarom ViaLuxury, in één alinea. Geen vlak eromheen (beige blijft voor keuzeknoppen). */
-export function BrandSection({ children }: { children: React.ReactNode }) {
-  return <Text style={{ ...s.body, margin: 0 }}>{children}</Text>;
-}
-
-/** S15 Servicesectie: de regel uit de sheet, met de link naar de klantenservice. */
-export function ServiceSection() {
-  return (
-    <Text style={{ ...s.title, margin: 0 }}>
-      Vragen over dit arrangement? Onze{" "}
-      <Link href="https://vialuxury.com/nl-NL/klantenservice" style={{ color: c.link, textDecoration: "underline" }}>klantenservice</Link>{" "}
-      helpt je graag.
-    </Text>
-  );
-}
-
-/** S18 Zoekopdracht: zoekterm, datum en personen in een omlijnd blok, met de knop naar alle
- *  resultaten. Zelfde blok als in crm-zoekopdracht. */
-export function SearchSection({ searchTerm, arrivalDate, persons, resultsUrl }: { searchTerm?: string; arrivalDate?: string; persons?: number; resultsUrl: string }) {
-  return (
-    <Section style={{ backgroundColor: "#FFFFFF", border: `1px solid #E5E5E5`, borderRadius: "8px", padding: "14px 20px 22px" }}>
-      <IconLine icon="magnifier-donker" bold>{searchTerm ?? "Jouw zoekopdracht"}</IconLine>
-      {arrivalDate && <IconLine icon="calendar-donker">{arrivalDate}</IconLine>}
-      {persons && <IconLine icon="users-donker">{persons} {persons === 1 ? "persoon" : "personen"}</IconLine>}
-      <Section style={{ marginTop: "18px" }}>
-        <PrimaryButton href={resultsUrl}>Bekijk alle resultaten</PrimaryButton>
-      </Section>
-    </Section>
-  );
-}
-
-/** S7 Themasectie compact: de themaknoppen met de knop "Alle thema's" (zet hem in een BeigeBand).
- *  De tegels en hun landingspagina's komen uit het tabblad Themategels, de keuze volgt de
- *  seizoensthema's van de verzendmaand (tabblad Seizoensthema's). */
-export function ThemeSection({ title, note, items }: { title: string; note: string; items: Pill[] }) {
-  return (
-    <>
-      <Text style={s.kop}>{title}</Text>
-      <PillGrid items={[...items, { label: "Alle thema's", href: "https://vialuxury.com/nl-NL/zoeken" }]} />
-      <Text style={{ ...s.muted, margin: "14px 0 0" }}>{note}</Text>
     </>
   );
 }

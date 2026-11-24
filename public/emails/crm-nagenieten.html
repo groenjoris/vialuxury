@@ -1,108 +1,152 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html dir="ltr" lang="nl"><head><meta name="viewport" content="width=device-width, initial-scale=1" /><link
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html dir="ltr" lang="nl">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
       rel="preload"
       as="image"
-      href="/images/logo-vialuxury-horizontal.png" /><link rel="preload" as="image" href="/images/mail/trustpilot-16000.png" /><link rel="preload" as="image" href="/images/hotel-ter-zand-tower.jpg" /><link rel="preload" as="image" href="/images/mail/icon-phone-orange.png" /><link rel="preload" as="image" href="/images/mail/icon-instagram.png" /><link rel="preload" as="image" href="/images/mail/icon-facebook.png" /><link rel="preload" as="image" href="/images/mail/icon-phone.png" /><link rel="preload" as="image" href="/images/mail/icon-whatsapp.png" /><meta content="text/html; charset=UTF-8" http-equiv="Content-Type" /><meta name="x-apple-disable-message-reformatting" /><style>
+      href="/images/logo-vialuxury-horizontal.png" />
+    <link rel="preload" as="image" href="/images/mail/trustpilot-16000.png" />
+    <link rel="preload" as="image" href="/images/hotel-ter-zand-tower.jpg" />
+    <link
+      rel="preload"
+      as="image"
+      href="/images/mail/crm/groetjes-yvette.png" />
+    <link rel="preload" as="image" href="/images/mail/icon-phone-orange.png" />
+    <link rel="preload" as="image" href="/images/mail/icon-instagram.png" />
+    <link rel="preload" as="image" href="/images/mail/icon-facebook.png" />
+    <link rel="preload" as="image" href="/images/mail/icon-phone.png" />
+    <link rel="preload" as="image" href="/images/mail/icon-whatsapp.png" />
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
+    <meta name="x-apple-disable-message-reformatting" />
+    <style>
       body { margin: 0 !important; padding: 0 !important; }
-      @media only screen and (max-width: 600px) {
+      @media only screen and (max-width: 480px) {
         .stack { display: block !important; width: 100% !important; padding: 0 0 12px !important; }
-        /* De tekst van een dealrij houdt op mobiel zijn ruimte tot de rand van de kaart. box-sizing is
-           nodig omdat stack width:100% zet: zonder dat telt de padding er nog bij op en steekt de cel
-           (en dus de knop) buiten de kaart uit. */
-        .m-cardtext { padding: 16px 18px 18px !important; box-sizing: border-box !important; }
-        /* De foto van een dealrij staat op mobiel boven de tekst over de volle breedte; padding-top van
-           56,25 % maakt dat vlak 16:9, want een achtergrondfoto heeft zelf geen hoogte. */
-        .m-rowphoto { width: 100% !important; height: 0 !important; min-height: 0 !important; padding-top: 56.25% !important; }
-        /* De cel zelf zonder padding, anders komt stack's 12 px onderaan bij de foto en is het vlak
-           niet meer precies 16:9. */
-        .m-rowphoto-cell { padding: 0 !important; }
-        /* Twee foto's onder elkaar: op mobiel vervalt de halve hoogte (het vlak wordt 16:9) en valt de
-           tweede foto weg. Gestapeld zouden twee foto's van de volle breedte boven de tekst staan; nu
-           ziet de kaart er op een telefoon hetzelfde uit als alle andere dealrijen. */
-        .m-halfphoto { height: auto !important; }
-        .m-hide { display: none !important; }
-        /* De vaste kaarthoogte vervalt: de foto staat hier boven de tekst, dus de kaart is hoger. */
-        .m-auto-h { height: auto !important; }
         .m-pad { padding-left: 16px !important; padding-right: 16px !important; }
         .m-h1 { font-size: 28px !important; }
       }
-      /* Alles smaller dan de volle 626 px: alleen de prijsrij krimpt, de kolommen blijven naast elkaar.
-         Op 16 px vraagt die rij ruim 400 px en zou de knop buiten de kaart vallen. */
-      @media only screen and (max-width: 640px) {
-        .m-badge-cell { padding-right: 6px !important; }
-        .m-badge { font-size: 12px !important; padding: 9px 6px !important; }
-        .m-price { font-size: 12px !important; }
-        .m-price-big { font-size: 16px !important; }
-        .m-cta { font-size: 12px !important; padding: 9px 7px !important; }
-      }
-    </style></head><body style="background-color:#FFFFFF"><!--$--><!--html--><!--head--><div
+    </style>
+  </head>
+  <body style="background-color:#FFFFFF">
+    <!--$--><!--html--><!--head-->
+    <div
       style="display:none;overflow:hidden;line-height:1px;opacity:0;max-height:0;max-width:0"
       data-skip-in-text="true">
       Eén klik, dan sturen we je op het juiste moment inspiratie.
       <div>
          ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿
-      </div></div><!--body--><table
+      </div>
+    </div>
+    <!--body-->
+    <table
       border="0"
       width="100%"
       cellpadding="0"
       cellspacing="0"
       role="presentation"
-      align="center"><tbody><tr><td
-            style="background-color:#FFFFFF;margin:0;padding:0;font-family:&#x27;Basis Grotesque Pro&#x27;, Helvetica, Arial, sans-serif"><table
+      align="center">
+      <tbody>
+        <tr>
+          <td
+            style="background-color:#FFFFFF;margin:0;padding:0;font-family:&#x27;Basis Grotesque Pro&#x27;, Helvetica, Arial, sans-serif">
+            <table
               align="center"
               width="100%"
               border="0"
               cellpadding="0"
               cellspacing="0"
               role="presentation"
-              style="background-color:#141414;width:100%"><tbody><tr><td><table
+              style="background-color:#141414;width:100%">
+              <tbody>
+                <tr>
+                  <td>
+                    <table
                       align="center"
                       width="100%"
                       border="0"
                       cellpadding="0"
                       cellspacing="0"
                       role="presentation"
-                      style="max-width:626px;width:100%"><tbody><tr style="width:100%"><td><table
+                      style="max-width:626px;width:100%">
+                      <tbody>
+                        <tr style="width:100%">
+                          <td>
+                            <table
                               align="center"
                               width="100%"
                               border="0"
                               cellpadding="0"
                               cellspacing="0"
                               role="presentation"
-                              style="padding:20px 24px"><tbody><tr><td><table
+                              style="padding:20px 24px">
+                              <tbody>
+                                <tr>
+                                  <td>
+                                    <table
                                       align="center"
                                       width="100%"
                                       border="0"
                                       cellpadding="0"
                                       cellspacing="0"
-                                      role="presentation"><tbody style="width:100%"><tr style="width:100%"><td
+                                      role="presentation">
+                                      <tbody style="width:100%">
+                                        <tr style="width:100%">
+                                          <td
                                             data-id="__react-email-column"
-                                            style="vertical-align:middle"><img
+                                            style="vertical-align:middle">
+                                            <img
                                               class="m-logo"
                                               alt="ViaLuxury"
                                               src="/images/logo-vialuxury-horizontal.png"
                                               style="display:block;outline:none;border:none;text-decoration:none;height:auto"
-                                              width="201" /></td><td
+                                              width="201" />
+                                          </td>
+                                          <td
                                             align="right"
                                             data-id="__react-email-column"
-                                            style="vertical-align:middle"><img
+                                            style="vertical-align:middle">
+                                            <img
                                               class="m-trustpilot"
                                               alt="Trustpilot 4,5/5, 16.000+ reviews"
                                               height="50"
                                               src="/images/mail/trustpilot-16000.png"
                                               style="display:block;outline:none;border:none;text-decoration:none"
-                                              width="106" /></td></tr></tbody></table></td></tr></tbody></table></td></tr></tbody></table></td></tr></tbody></table><table
+                                              width="106" />
+                                          </td>
+                                        </tr>
+                                      </tbody>
+                                    </table>
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <table
               align="center"
               width="100%"
               border="0"
               cellpadding="0"
               cellspacing="0"
               role="presentation"
-              style="max-width:626px;width:100%"><tbody><tr style="width:100%"><td><img
+              style="max-width:626px;width:100%">
+              <tbody>
+                <tr style="width:100%">
+                  <td>
+                    <img
                       alt="Hotel Ter Zand"
-                      height="352"
+                      height="380"
                       src="/images/hotel-ter-zand-tower.jpg"
-                      style="display:block;outline:none;border:none;text-decoration:none;width:100%;height:auto;aspect-ratio:16 / 9;object-fit:cover"
-                      width="626" /><table
+                      style="display:block;outline:none;border:none;text-decoration:none;width:100%;height:380px;object-fit:cover"
+                      width="626" />
+                    <table
                       align="center"
                       width="100%"
                       border="0"
@@ -110,32 +154,58 @@
                       cellspacing="0"
                       role="presentation"
                       class="m-pad"
-                      style="padding:28px 32px 0"><tbody><tr><td><p
+                      style="padding:28px 32px 0">
+                      <tbody>
+                        <tr>
+                          <td>
+                            <p
                               style="font-size:16px;line-height:1.5;font-family:&#x27;Basis Grotesque Pro&#x27;, Helvetica, Arial, sans-serif;color:#141414;margin:0;margin-top:0;margin-bottom:0;margin-left:0;margin-right:0">
                               Beste Sanne,
-                            </p><p
+                            </p>
+                            <p
                               style="font-size:16px;line-height:1.5;font-family:&#x27;Basis Grotesque Pro&#x27;, Helvetica, Arial, sans-serif;color:#141414;margin:8px 0 0;margin-top:8px;margin-right:0;margin-bottom:0;margin-left:0">
-                              We hopen dat je genoten hebt van Hotel Ter Zand. Laat weten wanneer
+                              We hopen dat je genoten hebt van
+                              <!-- -->Hotel Ter Zand<!-- -->. Laat weten wanneer
                               je weer gaat, dan sturen we je op het juiste
                               moment inspiratie.
-                            </p><p
-                              style="font-size:16px;line-height:1.4;font-family:&#x27;Basis Grotesque Pro&#x27;, Helvetica, Arial, sans-serif;font-weight:700;color:#141414;margin:14px 0 0;margin-top:14px;margin-right:0;margin-bottom:0;margin-left:0">
-                              Groetjes het ViaLuxury team
-                            </p></td></tr></tbody></table></td></tr></tbody></table><table
+                            </p>
+                            <img
+                              alt="Groetjes Yvette"
+                              height="29"
+                              src="/images/mail/crm/groetjes-yvette.png"
+                              style="display:block;outline:none;border:none;text-decoration:none;width:133px;height:29px;margin-top:14px"
+                              width="133" />
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <table
               align="center"
               width="100%"
               border="0"
               cellpadding="0"
               cellspacing="0"
               role="presentation"
-              style="background-color:#F4F1EC;width:100%;margin-top:36px"><tbody><tr><td><table
+              style="background-color:#F4F1EC;width:100%;margin-top:36px">
+              <tbody>
+                <tr>
+                  <td>
+                    <table
                       align="center"
                       width="100%"
                       border="0"
                       cellpadding="0"
                       cellspacing="0"
                       role="presentation"
-                      style="max-width:626px;width:100%"><tbody><tr style="width:100%"><td><table
+                      style="max-width:626px;width:100%">
+                      <tbody>
+                        <tr style="width:100%">
+                          <td>
+                            <table
                               align="center"
                               width="100%"
                               border="0"
@@ -143,93 +213,158 @@
                               cellspacing="0"
                               role="presentation"
                               class="m-pad"
-                              style="padding:24px 32px 28px"><tbody><tr><td><p
+                              style="padding:24px 32px 28px">
+                              <tbody>
+                                <tr>
+                                  <td>
+                                    <p
                                       style="font-size:20px;line-height:1.3;font-family:&#x27;Recoleta&#x27;, Georgia, &#x27;Times New Roman&#x27;, serif;font-weight:600;color:#141414;margin:0;margin-top:0;margin-bottom:0;margin-left:0;margin-right:0">
                                       Wanneer is je volgende vakantie?
-                                    </p><table
+                                    </p>
+                                    <table
                                       align="center"
                                       width="100%"
                                       border="0"
                                       cellpadding="0"
                                       cellspacing="0"
                                       role="presentation"
-                                      style="margin-top:8px"><tbody><tr><td><table
+                                      style="margin-top:8px">
+                                      <tbody>
+                                        <tr>
+                                          <td>
+                                            <table
                                               align="center"
                                               width="100%"
                                               border="0"
                                               cellpadding="0"
                                               cellspacing="0"
                                               role="presentation"
-                                              style="margin-top:8px"><tbody style="width:100%"><tr style="width:100%"><td
+                                              style="margin-top:8px">
+                                              <tbody style="width:100%">
+                                                <tr style="width:100%">
+                                                  <td
                                                     class="stack"
                                                     data-id="__react-email-column"
-                                                    style="width:50%;vertical-align:top;padding-left:0;padding-right:4px"><a
+                                                    style="width:50%;vertical-align:top;padding-left:0;padding-right:4px">
+                                                    <a
                                                       href="https://vialuxury.vercel.app/crm/volgende-vakantie?keuze=binnen-1-maand"
                                                       style="color:#141414;text-decoration-line:none;display:block;background-color:#FFFFFF;border:1px solid #E5E5E5;border-radius:4px;padding:13px 16px;font-family:&#x27;Basis Grotesque Pro&#x27;, Helvetica, Arial, sans-serif;font-size:16px;line-height:20px;text-decoration:none"
                                                       target="_blank"
                                                       >Binnen een maand</a
-                                                    ></td><td
+                                                    >
+                                                  </td>
+                                                  <td
                                                     class="stack"
                                                     data-id="__react-email-column"
-                                                    style="width:50%;vertical-align:top;padding-left:4px;padding-right:0"><a
+                                                    style="width:50%;vertical-align:top;padding-left:4px;padding-right:0">
+                                                    <a
                                                       href="https://vialuxury.vercel.app/crm/volgende-vakantie?keuze=1-3-maanden"
                                                       style="color:#141414;text-decoration-line:none;display:block;background-color:#FFFFFF;border:1px solid #E5E5E5;border-radius:4px;padding:13px 16px;font-family:&#x27;Basis Grotesque Pro&#x27;, Helvetica, Arial, sans-serif;font-size:16px;line-height:20px;text-decoration:none"
                                                       target="_blank"
                                                       >Over 1 tot 3 maanden</a
-                                                    ></td></tr></tbody></table><table
+                                                    >
+                                                  </td>
+                                                </tr>
+                                              </tbody>
+                                            </table>
+                                            <table
                                               align="center"
                                               width="100%"
                                               border="0"
                                               cellpadding="0"
                                               cellspacing="0"
                                               role="presentation"
-                                              style="margin-top:8px"><tbody style="width:100%"><tr style="width:100%"><td
+                                              style="margin-top:8px">
+                                              <tbody style="width:100%">
+                                                <tr style="width:100%">
+                                                  <td
                                                     class="stack"
                                                     data-id="__react-email-column"
-                                                    style="width:50%;vertical-align:top;padding-left:0;padding-right:4px"><a
+                                                    style="width:50%;vertical-align:top;padding-left:0;padding-right:4px">
+                                                    <a
                                                       href="https://vialuxury.vercel.app/crm/volgende-vakantie?keuze=3-6-maanden"
                                                       style="color:#141414;text-decoration-line:none;display:block;background-color:#FFFFFF;border:1px solid #E5E5E5;border-radius:4px;padding:13px 16px;font-family:&#x27;Basis Grotesque Pro&#x27;, Helvetica, Arial, sans-serif;font-size:16px;line-height:20px;text-decoration:none"
                                                       target="_blank"
                                                       >Over 3 tot 6 maanden</a
-                                                    ></td><td
+                                                    >
+                                                  </td>
+                                                  <td
                                                     class="stack"
                                                     data-id="__react-email-column"
-                                                    style="width:50%;vertical-align:top;padding-left:4px;padding-right:0"><a
+                                                    style="width:50%;vertical-align:top;padding-left:4px;padding-right:0">
+                                                    <a
                                                       href="https://vialuxury.vercel.app/crm/volgende-vakantie?keuze=6-12-maanden"
                                                       style="color:#141414;text-decoration-line:none;display:block;background-color:#FFFFFF;border:1px solid #E5E5E5;border-radius:4px;padding:13px 16px;font-family:&#x27;Basis Grotesque Pro&#x27;, Helvetica, Arial, sans-serif;font-size:16px;line-height:20px;text-decoration:none"
                                                       target="_blank"
                                                       >Over 6 tot 12 maanden</a
-                                                    ></td></tr></tbody></table><table
+                                                    >
+                                                  </td>
+                                                </tr>
+                                              </tbody>
+                                            </table>
+                                            <table
                                               align="center"
                                               width="100%"
                                               border="0"
                                               cellpadding="0"
                                               cellspacing="0"
                                               role="presentation"
-                                              style="margin-top:8px"><tbody style="width:100%"><tr style="width:100%"><td
+                                              style="margin-top:8px">
+                                              <tbody style="width:100%">
+                                                <tr style="width:100%">
+                                                  <td
                                                     class="stack"
                                                     data-id="__react-email-column"
-                                                    style="width:50%;vertical-align:top;padding-left:0;padding-right:4px"><a
+                                                    style="width:50%;vertical-align:top;padding-left:0;padding-right:4px">
+                                                    <a
                                                       href="https://vialuxury.vercel.app/crm/volgende-vakantie?keuze=over-een-jaar"
                                                       style="color:#141414;text-decoration-line:none;display:block;background-color:#FFFFFF;border:1px solid #E5E5E5;border-radius:4px;padding:13px 16px;font-family:&#x27;Basis Grotesque Pro&#x27;, Helvetica, Arial, sans-serif;font-size:16px;line-height:20px;text-decoration:none"
                                                       target="_blank"
                                                       >Over een jaar of later</a
-                                                    ></td><td
+                                                    >
+                                                  </td>
+                                                  <td
                                                     class="stack"
                                                     data-id="__react-email-column"
-                                                    style="width:50%;vertical-align:top;padding-left:4px;padding-right:0"><a
+                                                    style="width:50%;vertical-align:top;padding-left:4px;padding-right:0">
+                                                    <a
                                                       href="https://vialuxury.vercel.app/crm/volgende-vakantie?keuze=weet-ik-nog-niet"
                                                       style="color:#141414;text-decoration-line:none;display:block;background-color:#FFFFFF;border:1px solid #E5E5E5;border-radius:4px;padding:13px 16px;font-family:&#x27;Basis Grotesque Pro&#x27;, Helvetica, Arial, sans-serif;font-size:16px;line-height:20px;text-decoration:none"
                                                       target="_blank"
                                                       >Weet ik nog niet</a
-                                                    ></td></tr></tbody></table></td></tr></tbody></table></td></tr></tbody></table></td></tr></tbody></table></td></tr></tbody></table><table
+                                                    >
+                                                  </td>
+                                                </tr>
+                                              </tbody>
+                                            </table>
+                                          </td>
+                                        </tr>
+                                      </tbody>
+                                    </table>
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <table
               align="center"
               width="100%"
               border="0"
               cellpadding="0"
               cellspacing="0"
               role="presentation"
-              style="max-width:626px;width:100%"><tbody><tr style="width:100%"><td><table
+              style="max-width:626px;width:100%">
+              <tbody>
+                <tr style="width:100%">
+                  <td>
+                    <table
                       align="center"
                       width="100%"
                       border="0"
@@ -237,64 +372,116 @@
                       cellspacing="0"
                       role="presentation"
                       class="m-pad"
-                      style="padding:36px 32px 40px"><tbody><tr><td><table
+                      style="padding:36px 32px 40px">
+                      <tbody>
+                        <tr>
+                          <td>
+                            <table
                               align="center"
                               width="100%"
                               border="0"
                               cellpadding="0"
                               cellspacing="0"
                               role="presentation"
-                              style="background-color:#FFF0E4;border-radius:8px;padding:14px 18px"><tbody><tr><td><table
+                              style="background-color:#FFF0E4;border-radius:8px;padding:14px 18px">
+                              <tbody>
+                                <tr>
+                                  <td>
+                                    <table
                                       align="center"
                                       width="100%"
                                       border="0"
                                       cellpadding="0"
                                       cellspacing="0"
-                                      role="presentation"><tbody style="width:100%"><tr style="width:100%"><td
+                                      role="presentation">
+                                      <tbody style="width:100%">
+                                        <tr style="width:100%">
+                                          <td
                                             data-id="__react-email-column"
-                                            style="width:48px;vertical-align:middle"><table
+                                            style="width:48px;vertical-align:middle">
+                                            <table
                                               role="presentation"
                                               cellpadding="0"
                                               cellspacing="0"
                                               border="0"
-                                              style="width:36px;height:36px;border-collapse:separate"><tbody><tr><td
-                                                    style="width:36px;height:36px;padding:0;border-radius:18px;background-color:#FFFFFF;text-align:center;vertical-align:middle"><img
+                                              style="width:36px;height:36px;border-collapse:separate">
+                                              <tbody>
+                                                <tr>
+                                                  <td
+                                                    style="width:36px;height:36px;padding:0;border-radius:18px;background-color:#FFFFFF;text-align:center;vertical-align:middle">
+                                                    <img
                                                       alt=""
                                                       height="20"
                                                       src="/images/mail/icon-phone-orange.png"
                                                       style="display:block;outline:none;border:none;text-decoration:none;margin:0 auto"
-                                                      width="20" /></td></tr></tbody></table></td><td
+                                                      width="20" />
+                                                  </td>
+                                                </tr>
+                                              </tbody>
+                                            </table>
+                                          </td>
+                                          <td
                                             data-id="__react-email-column"
-                                            style="vertical-align:middle"><p
-                                              style="font-size:16px;line-height:1.45;font-family:&#x27;Basis Grotesque Pro&#x27;, Helvetica, Arial, sans-serif;color:#141414;margin:0;margin-top:0;margin-bottom:0;margin-left:0;margin-right:0"><strong>Hulp nodig?</strong>
-                                              Bel <a
+                                            style="vertical-align:middle">
+                                            <p
+                                              style="font-size:16px;line-height:1.45;font-family:&#x27;Basis Grotesque Pro&#x27;, Helvetica, Arial, sans-serif;color:#141414;margin:0;margin-top:0;margin-bottom:0;margin-left:0;margin-right:0">
+                                              <strong>Hulp nodig?</strong>
+                                              Bel<!-- -->
+                                              <a
                                                 href="tel:+31207052222"
                                                 style="color:#FB862C;text-decoration-line:none;text-decoration:underline;font-weight:700"
                                                 target="_blank"
                                                 >+31 20 705 2222</a
                                               >
-                                              of WhatsApp <a
+                                              of WhatsApp<!-- -->
+                                              <a
                                                 href="https://wa.me/31208088809"
                                                 style="color:#FB862C;text-decoration-line:none;text-decoration:underline;font-weight:700"
                                                 target="_blank"
                                                 >+31 20 808 8809</a
                                               ><span style="color:#6B6B6B">
                                                 · ma t/m vr 8:00 – 18:00</span
-                                              ></p></td></tr></tbody></table></td></tr></tbody></table></td></tr></tbody></table></td></tr></tbody></table><table
+                                              >
+                                            </p>
+                                          </td>
+                                        </tr>
+                                      </tbody>
+                                    </table>
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <table
               align="center"
               width="100%"
               border="0"
               cellpadding="0"
               cellspacing="0"
               role="presentation"
-              style="background-color:#141414;width:100%"><tbody><tr><td><table
+              style="background-color:#141414;width:100%">
+              <tbody>
+                <tr>
+                  <td>
+                    <table
                       align="center"
                       width="100%"
                       border="0"
                       cellpadding="0"
                       cellspacing="0"
                       role="presentation"
-                      style="max-width:626px;width:100%"><tbody><tr style="width:100%"><td><table
+                      style="max-width:626px;width:100%">
+                      <tbody>
+                        <tr style="width:100%">
+                          <td>
+                            <table
                               align="center"
                               width="100%"
                               border="0"
@@ -302,25 +489,35 @@
                               cellspacing="0"
                               role="presentation"
                               class="m-pad"
-                              style="padding:32px"><tbody><tr><td><table
+                              style="padding:32px">
+                              <tbody>
+                                <tr>
+                                  <td>
+                                    <table
                                       align="center"
                                       width="100%"
                                       border="0"
                                       cellpadding="0"
                                       cellspacing="0"
-                                      role="presentation"><tbody style="width:100%"><tr style="width:100%"><td
+                                      role="presentation">
+                                      <tbody style="width:100%">
+                                        <tr style="width:100%">
+                                          <td
                                             class="stack m-center"
                                             data-id="__react-email-column"
-                                            style="width:50%;vertical-align:top"><img
+                                            style="width:50%;vertical-align:top">
+                                            <img
                                               class="m-mx-auto"
                                               alt="ViaLuxury"
                                               src="/images/logo-vialuxury-horizontal.png"
                                               style="display:block;outline:none;border:none;text-decoration:none;height:auto"
-                                              width="201" /><p
+                                              width="201" />
+                                            <p
                                               class="m-center"
                                               style="font-size:12px;line-height:16px;font-family:&#x27;Basis Grotesque Pro&#x27;, Helvetica, Arial, sans-serif;color:#FFFFFF;margin:22px 0 10px;font-weight:700;margin-top:22px;margin-right:0;margin-bottom:10px;margin-left:0">
                                               Volg ons op
-                                            </p><a
+                                            </p>
+                                            <a
                                               href="https://www.instagram.com/vialuxury"
                                               style="color:#067df7;text-decoration-line:none"
                                               target="_blank"
@@ -340,86 +537,137 @@
                                                 src="/images/mail/icon-facebook.png"
                                                 style="display:inline;outline:none;border:none;text-decoration:none"
                                                 width="19"
-                                            /></a></td><td
+                                            /></a>
+                                          </td>
+                                          <td
                                             class="stack m-center m-mt"
                                             data-id="__react-email-column"
-                                            style="width:50%;vertical-align:top"><p
+                                            style="width:50%;vertical-align:top">
+                                            <p
                                               class="m-center"
                                               style="font-size:12px;line-height:16px;font-family:&#x27;Basis Grotesque Pro&#x27;, Helvetica, Arial, sans-serif;color:#FFFFFF;margin:0 0 8px;font-weight:700;margin-top:0;margin-right:0;margin-bottom:8px;margin-left:0">
                                               Hulp nodig?
-                                            </p><p
+                                            </p>
+                                            <p
                                               class="m-center"
-                                              style="font-size:12px;line-height:16px;font-family:&#x27;Basis Grotesque Pro&#x27;, Helvetica, Arial, sans-serif;color:#FFFFFF;margin:0 0 8px;margin-top:0;margin-right:0;margin-bottom:8px;margin-left:0"><img
+                                              style="font-size:12px;line-height:16px;font-family:&#x27;Basis Grotesque Pro&#x27;, Helvetica, Arial, sans-serif;color:#FFFFFF;margin:0 0 8px;margin-top:0;margin-right:0;margin-bottom:8px;margin-left:0">
+                                              <img
                                                 alt=""
                                                 height="18"
                                                 src="/images/mail/icon-phone.png"
                                                 style="display:inline;outline:none;border:none;text-decoration:none;vertical-align:middle;margin-right:10px"
                                                 width="18" />+31 20 705 2222
-                                            </p><p
+                                            </p>
+                                            <p
                                               class="m-center"
-                                              style="font-size:12px;line-height:16px;font-family:&#x27;Basis Grotesque Pro&#x27;, Helvetica, Arial, sans-serif;color:#FFFFFF;margin:0 0 8px;margin-top:0;margin-right:0;margin-bottom:8px;margin-left:0"><img
+                                              style="font-size:12px;line-height:16px;font-family:&#x27;Basis Grotesque Pro&#x27;, Helvetica, Arial, sans-serif;color:#FFFFFF;margin:0 0 8px;margin-top:0;margin-right:0;margin-bottom:8px;margin-left:0">
+                                              <img
                                                 alt=""
                                                 height="18"
                                                 src="/images/mail/icon-whatsapp.png"
                                                 style="display:inline;outline:none;border:none;text-decoration:none;vertical-align:middle;margin-right:10px"
                                                 width="18" />+31 20 808 8809
-                                            </p><p
+                                            </p>
+                                            <p
                                               class="m-center"
                                               style="font-size:12px;line-height:16px;font-family:&#x27;Basis Grotesque Pro&#x27;, Helvetica, Arial, sans-serif;color:#FFFFFF;margin:0 0 8px;margin-top:0;margin-right:0;margin-bottom:8px;margin-left:0">
                                               Ma t/m Vr: 8:00 — 18:00
-                                            </p></td></tr></tbody></table><table
+                                            </p>
+                                          </td>
+                                        </tr>
+                                      </tbody>
+                                    </table>
+                                    <table
                                       align="center"
                                       width="100%"
                                       border="0"
                                       cellpadding="0"
                                       cellspacing="0"
                                       role="presentation"
-                                      style="margin-top:28px"><tbody style="width:100%"><tr style="width:100%"><td
+                                      style="margin-top:28px">
+                                      <tbody style="width:100%">
+                                        <tr style="width:100%">
+                                          <td
                                             class="stack m-center"
                                             data-id="__react-email-column"
-                                            style="width:50%;vertical-align:bottom;padding-right:24px"><p
+                                            style="width:50%;vertical-align:bottom;padding-right:24px">
+                                            <p
                                               class="m-center m-small"
                                               style="font-size:12px;line-height:16px;font-family:&#x27;Basis Grotesque Pro&#x27;, Helvetica, Arial, sans-serif;color:#FFFFFF;margin:0;margin-top:0;margin-bottom:0;margin-left:0;margin-right:0">
                                               Je ontvangt deze e-mail op
                                               <strong
                                                 >sanne.devries@example.com</strong
-                                              > omdat je bij ons boekte.
-                                            </p></td><td
+                                              >
+                                              <!-- -->omdat je bij ons boekte<!-- -->.
+                                            </p>
+                                          </td>
+                                          <td
                                             class="stack m-center m-mt"
                                             data-id="__react-email-column"
-                                            style="width:50%;vertical-align:bottom"><p
+                                            style="width:50%;vertical-align:bottom">
+                                            <p
                                               class="m-center m-small"
                                               style="font-size:12px;line-height:16px;font-family:&#x27;Basis Grotesque Pro&#x27;, Helvetica, Arial, sans-serif;color:#FFFFFF;margin:0 0 8px;margin-top:0;margin-right:0;margin-bottom:8px;margin-left:0">
                                               Prijswijzigingen en/of zetfouten
                                               voorbehouden.
-                                            </p><p
+                                            </p>
+                                            <p
                                               class="m-center m-small"
                                               style="font-size:12px;line-height:16px;font-family:&#x27;Basis Grotesque Pro&#x27;, Helvetica, Arial, sans-serif;color:#FFFFFF;margin:0 0 8px;margin-top:0;margin-right:0;margin-bottom:8px;margin-left:0">
                                               Copyright © ViaLuxury, All Rights
                                               Reserved
-                                            </p><p
+                                            </p>
+                                            <p
                                               class="m-center m-small"
                                               style="font-size:12px;line-height:16px;font-family:&#x27;Basis Grotesque Pro&#x27;, Helvetica, Arial, sans-serif;color:#FFFFFF;margin:0 0 8px;margin-top:0;margin-right:0;margin-bottom:8px;margin-left:0">
                                               Liever geen updates meer? Ontvang
                                               onze nieuwsbrief minder vaak, of
                                               helemaal niet meer.
-                                            </p><p
+                                            </p>
+                                            <p
                                               class="m-center m-small"
-                                              style="font-size:12px;line-height:16px;font-family:&#x27;Basis Grotesque Pro&#x27;, Helvetica, Arial, sans-serif;color:#FFFFFF;margin:0;margin-top:0;margin-bottom:0;margin-left:0;margin-right:0"><a
+                                              style="font-size:12px;line-height:16px;font-family:&#x27;Basis Grotesque Pro&#x27;, Helvetica, Arial, sans-serif;color:#FFFFFF;margin:0;margin-top:0;margin-bottom:0;margin-left:0;margin-right:0">
+                                              <a
                                                 href="https://vialuxury.nl"
                                                 style="color:#FFFFFF;text-decoration-line:none;text-decoration:underline"
                                                 target="_blank"
                                                 >Wijzig e-mailvoorkeuren</a
                                               >
-                                              | <a
+                                              |<!-- -->
+                                              <a
                                                 href="https://vialuxury.nl"
                                                 style="color:#FFFFFF;text-decoration-line:none;text-decoration:underline"
                                                 target="_blank"
                                                 >Uitschrijven</a
                                               >
-                                              | <a
+                                              |<!-- -->
+                                              <a
                                                 href="https://vialuxury.nl"
                                                 style="color:#FFFFFF;text-decoration-line:none;text-decoration:underline"
                                                 target="_blank"
                                                 >Webversie</a
-                                              ></p></td></tr></tbody></table></td></tr></tbody></table></td></tr></tbody></table></td></tr></tbody></table></td></tr></tbody></table><!--/$--></body></html>
+                                              >
+                                            </p>
+                                          </td>
+                                        </tr>
+                                      </tbody>
+                                    </table>
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <!--/$-->
+  </body>
+</html>

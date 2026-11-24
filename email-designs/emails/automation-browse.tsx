@@ -2,8 +2,10 @@ import { Body, Container, Head, Heading, Html, Preview, Section, Text } from "@r
 import * as React from "react";
 import CrmFooter from "../components/CrmFooter";
 import CrmHeader from "../components/CrmHeader";
-import { BrandSection, cardGap, crmCss, CrmHelp, DealRow, FeaturedDeal, Letter, type RowDeal, s } from "../components/crm";
-import { lauswolt, steenenburg, vanOys } from "../lib/crmDeals";
+import { CrmHelp, s } from "../components/crm";
+import { AutomationDealRow, AutomationFeaturedDeal, AutomationLetter, automationCss, BrandSection, cardGap } from "../components/automation";
+import { type AutomationDeal } from "../lib/automationDeals";
+import { lauswolt, steenenburg, vanOys } from "../lib/automationDeals";
 import { font, newsletter } from "../components/theme";
 
 // Automationflow fl012 "abandoned browse" — drie mails uit één component.
@@ -31,9 +33,9 @@ type Props = {
    *  van Yvette (mail 3, alternatieven). */
   opening?: "direct" | "brief";
   /** S17: het bekeken arrangement, met prijs en inclusies. */
-  viewed: RowDeal & { hotelName: string };
+  viewed: AutomationDeal & { hotelName: string };
   /** S4: twee vergelijkbare arrangementen in dezelfde sfeer. */
-  alternatives: RowDeal[];
+  alternatives: AutomationDeal[];
   /** S6: waarom ViaLuxury (mail 2). */
   brand?: string;
 };
@@ -45,7 +47,7 @@ export default function AutomationBrowse({ recipientEmail, preheader, firstName,
     <Html lang="nl">
       <Head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <style>{crmCss}</style>
+        <style>{automationCss}</style>
       </Head>
       <Preview>{preheader}</Preview>
       <Body style={{ backgroundColor: c.bg, margin: 0, padding: 0, fontFamily: font.body }}>
@@ -54,7 +56,7 @@ export default function AutomationBrowse({ recipientEmail, preheader, firstName,
           {/* Opening: direct de kop met de intro, of de brief met de ondertekening */}
           <Section className="m-pad" style={{ padding: "32px 32px 0" }}>
             {opening === "brief" ? (
-              <Letter firstName={firstName}>{intro}</Letter>
+              <AutomationLetter firstName={firstName}>{intro}</AutomationLetter>
             ) : (
               <>
                 <Heading as="h1" className="m-h1" style={s.h1}>{heading}</Heading>
@@ -65,14 +67,14 @@ export default function AutomationBrowse({ recipientEmail, preheader, firstName,
 
           {/* S17 Achtergelaten arrangement: het bekeken arrangement */}
           <Section className="m-pad" style={{ padding: opening === "brief" ? "40px 32px 0" : "24px 32px 0" }}>
-            <FeaturedDeal deal={viewed} cta="Bekijk arrangement" />
+            <AutomationFeaturedDeal deal={viewed} cta="Bekijk arrangement" />
           </Section>
 
           {/* S4 Hoteldeals: vergelijkbare arrangementen als alternatief */}
           <Section className="m-pad" style={{ padding: "44px 32px 0" }}>
             {opening === "brief" && headingAt === "alternatives" && <Heading as="h1" className="m-h1" style={s.h1}>{heading}</Heading>}
             {alternatives.map((d, i) => (
-              <DealRow key={d.url} deal={d} top={i ? cardGap : undefined} />
+              <AutomationDealRow key={d.url} deal={d} top={i ? cardGap : undefined} />
             ))}
           </Section>
 
@@ -97,7 +99,7 @@ export default function AutomationBrowse({ recipientEmail, preheader, firstName,
 // dezelfde sfeer (culinair verblijf op een landgoed of kasteel).
 const HOTEL = "Landgoed Lauswolt";
 const PLAATS = "Beetsterzwaag";
-const viewed: RowDeal & { hotelName: string } = { ...lauswolt, hotelName: HOTEL, line: undefined };
+const viewed: AutomationDeal & { hotelName: string } = { ...lauswolt, hotelName: HOTEL, line: undefined };
 const alternatives = [vanOys, steenenburg];
 const base = { recipientEmail: "sanne.devries@example.com", firstName: "Sanne", viewed, alternatives };
 

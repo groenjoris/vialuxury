@@ -8,19 +8,15 @@
       body { margin: 0 !important; padding: 0 !important; }
       @media only screen and (max-width: 600px) {
         .stack { display: block !important; width: 100% !important; padding: 0 0 12px !important; }
-        /* De tekst van een dealrij houdt op mobiel zijn ruimte tot de rand van de kaart. box-sizing is
-           nodig omdat stack width:100% zet: zonder dat telt de padding er nog bij op en steekt de cel
-           (en dus de knop) buiten de kaart uit. */
+        /* De tekst van een dealrij houdt zijn ruimte tot de rand. box-sizing is nodig omdat stack
+           width:100% zet: zonder dat telt de padding er nog bij op en steekt de cel buiten de kaart. */
         .m-cardtext { padding: 16px 18px 18px !important; box-sizing: border-box !important; }
-        /* De foto van een dealrij staat op mobiel boven de tekst over de volle breedte; padding-top van
-           56,25 % maakt dat vlak 16:9, want een achtergrondfoto heeft zelf geen hoogte. */
+        /* De foto van een dealrij staat boven de tekst over de volle breedte; padding-top van 56,25 %
+           maakt dat vlak 16:9, want een achtergrondfoto heeft zelf geen hoogte. */
         .m-rowphoto { width: 100% !important; height: 0 !important; min-height: 0 !important; padding-top: 56.25% !important; }
-        /* De cel zelf zonder padding, anders komt stack's 12 px onderaan bij de foto en is het vlak
-           niet meer precies 16:9. */
         .m-rowphoto-cell { padding: 0 !important; }
-        /* Twee foto's onder elkaar: op mobiel vervalt de halve hoogte (het vlak wordt 16:9) en valt de
-           tweede foto weg. Gestapeld zouden twee foto's van de volle breedte boven de tekst staan; nu
-           ziet de kaart er op een telefoon hetzelfde uit als alle andere dealrijen. */
+        /* Twee foto's onder elkaar: de halve hoogte vervalt en de tweede foto valt weg, zodat de kaart
+           er op een telefoon hetzelfde uitziet als elke andere dealrij. */
         .m-halfphoto { height: auto !important; }
         .m-hide { display: none !important; }
         /* De vaste kaarthoogte vervalt: de foto staat hier boven de tekst, dus de kaart is hoger. */
@@ -28,8 +24,6 @@
         .m-pad { padding-left: 16px !important; padding-right: 16px !important; }
         .m-h1 { font-size: 28px !important; }
       }
-      /* Alles smaller dan de volle 626 px: alleen de prijsrij krimpt, de kolommen blijven naast elkaar.
-         Op 16 px vraagt die rij ruim 400 px en zou de knop buiten de kaart vallen. */
       @media only screen and (max-width: 640px) {
         .m-badge-cell { padding-right: 6px !important; }
         .m-badge { font-size: 12px !important; padding: 9px 6px !important; }

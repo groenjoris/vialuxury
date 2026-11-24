@@ -2,8 +2,10 @@ import { Body, Container, Head, Heading, Html, Preview, Section, Text } from "@r
 import * as React from "react";
 import CrmFooter from "../components/CrmFooter";
 import CrmHeader from "../components/CrmHeader";
-import { cardGap, CodeBlock, crmCss, CrmHelp, DealRow, FeaturedDeal, type GuestRating, GuestRatingSection, Letter, PrimaryButton, type RowDeal, s, ServiceSection } from "../components/crm";
-import { desIndes, dePlesman, voco } from "../lib/crmDeals";
+import { CodeBlock, CrmHelp, PrimaryButton, s } from "../components/crm";
+import { AutomationDealRow, AutomationFeaturedDeal, AutomationLetter, automationCss, cardGap, type GuestRating, GuestRatingSection, ServiceSection } from "../components/automation";
+import { type AutomationDeal } from "../lib/automationDeals";
+import { desIndes, dePlesman, voco } from "../lib/automationDeals";
 import { font, newsletter } from "../components/theme";
 
 // Automationflow fl011 "abandoned cart" — drie mails uit één component.
@@ -39,11 +41,11 @@ type Props = {
    *  regels, de knop en daaronder de kaart zonder prijsrij (mail 1). */
   opening?: "direct" | "brief" | "winkelmandje";
   /** S17: het achtergelaten winkelmandje, met datums, nachten, personen en de prijs. */
-  cart: RowDeal & { hotelName: string };
+  cart: AutomationDeal & { hotelName: string };
   /** S21: de score met de Trustpilot-sterren en één korte review (mail 3). */
   guestRating?: GuestRating;
   /** S4: twee vergelijkbare arrangementen (mail 2 en 3). */
-  alternatives?: RowDeal[];
+  alternatives?: AutomationDeal[];
   /** S10: de kortingscode met de adviesregel eronder (mail 4). Opbouw als in crm-terugkomactie:
    *  het bedrag als kop van de coupon, de code, de geldigheid en "Vul de code in bij het boeken". */
   code?: { code: string; value: string; deadline: string; advice: string };
@@ -58,7 +60,7 @@ export default function AutomationCart({ recipientEmail, preheader, firstName, h
     <Html lang="nl">
       <Head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <style>{crmCss}</style>
+        <style>{automationCss}</style>
       </Head>
       <Preview>{preheader}</Preview>
       <Body style={{ backgroundColor: c.bg, margin: 0, padding: 0, fontFamily: font.body }}>
@@ -67,7 +69,7 @@ export default function AutomationCart({ recipientEmail, preheader, firstName, h
           {/* Opening: direct de kop met de intro, of de brief met de ondertekening */}
           <Section className="m-pad" style={{ padding: "32px 32px 0" }}>
             {opening === "brief" ? (
-              <Letter firstName={firstName}>{intro}</Letter>
+              <AutomationLetter firstName={firstName}>{intro}</AutomationLetter>
             ) : (
               <>
                 <Heading as="h1" className="m-h1" style={s.h1}>{heading}</Heading>
@@ -94,13 +96,13 @@ export default function AutomationCart({ recipientEmail, preheader, firstName, h
                 </Section>
               </Section>
               <Section className="m-pad" style={{ padding: "12px 32px 0" }}>
-                <FeaturedDeal deal={{ ...cart, hotelName: undefined, stars: undefined, place: undefined }} priceRow={false} />
+                <AutomationFeaturedDeal deal={{ ...cart, hotelName: undefined, stars: undefined, place: undefined }} priceRow={false} />
               </Section>
             </>
           ) : (
             <Section className="m-pad" style={{ padding: opening === "brief" ? "40px 32px 0" : "24px 32px 0" }}>
               {opening === "brief" && headingAt === "cart" && <Heading as="h1" className="m-h1" style={s.h1}>{heading}</Heading>}
-              <FeaturedDeal deal={cart} cta="Rond je boeking af" />
+              <AutomationFeaturedDeal deal={cart} cta="Rond je boeking af" />
             </Section>
           )}
 
@@ -108,7 +110,7 @@ export default function AutomationCart({ recipientEmail, preheader, firstName, h
           {guestRating && (
             <Section className="m-pad" style={{ padding: "44px 32px 0" }}>
               {opening === "brief" && headingAt === "rating" && <Heading as="h1" className="m-h1" style={{ ...s.h1, marginBottom: "18px" }}>{heading}</Heading>}
-              <GuestRatingSection hotelName={cart.hotelName} rating={guestRating} />
+              <GuestRatingSection rating={guestRating} />
             </Section>
           )}
 
@@ -116,7 +118,7 @@ export default function AutomationCart({ recipientEmail, preheader, firstName, h
           {alternatives && alternatives.length > 0 && (
             <Section className="m-pad" style={{ padding: "44px 32px 0" }}>
               {alternatives.map((d, i) => (
-                <DealRow key={d.url} deal={d} top={i ? cardGap : undefined} />
+                <AutomationDealRow key={d.url} deal={d} top={i ? cardGap : undefined} />
               ))}
             </Section>
           )}
@@ -150,7 +152,7 @@ export default function AutomationCart({ recipientEmail, preheader, firstName, h
 // Het winkelmandje: Hotel Des Indes, 20 november, 2 nachten, 2 personen. De knop en de foto's
 // gaan naar de dealpagina met datum en personen vooringevuld (zachte landing).
 const HOTEL = "Hotel Des Indes";
-const cart: RowDeal & { hotelName: string } = {
+const cart: AutomationDeal & { hotelName: string } = {
   ...desIndes,
   hotelName: HOTEL,
   // De sheet noemt voor het winkelmandje: foto, hotelnaam, aankomstdatum, nachten, personen en
