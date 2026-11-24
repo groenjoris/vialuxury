@@ -99,6 +99,8 @@ export default function AutomationSearch({ recipientEmail, preheader, firstName,
             </Section>
           )}
 
+          {/* Witruimte tussen de inhoud en de footer */}
+          <Section style={{ height: "44px", lineHeight: "44px", fontSize: 0 }}>&nbsp;</Section>
         </Container>
         <AutomationFooter recipientEmail={recipientEmail} reason="omdat je je hebt aangemeld voor de nieuwsbrief van ViaLuxury" />
       </Body>
