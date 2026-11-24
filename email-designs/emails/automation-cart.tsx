@@ -2,8 +2,8 @@ import { Body, Container, Head, Heading, Html, Preview, Section, Text } from "@r
 import * as React from "react";
 import CrmFooter from "../components/CrmFooter";
 import CrmHeader from "../components/CrmHeader";
-import { CodeBlock, CrmHelp, PrimaryButton, s } from "../components/crm";
-import { AutomationDealRow, AutomationFeaturedDeal, AutomationLetter, automationCss, cardGap, type GuestRating, GuestRatingSection, ServiceSection } from "../components/automation";
+import { CrmHelp, PrimaryButton, s } from "../components/crm";
+import { AutomationCodeBlock, AutomationDealRow, AutomationFeaturedDeal, AutomationLetter, automationCss, cardGap, type GuestRating, GuestRatingSection, ServiceSection } from "../components/automation";
 import { type AutomationDeal } from "../lib/automationDeals";
 import { desIndes, dePlesman, voco } from "../lib/automationDeals";
 import { font, newsletter } from "../components/theme";
@@ -127,7 +127,7 @@ export default function AutomationCart({ recipientEmail, preheader, firstName, h
           {code && (
             <Section className="m-pad" style={{ padding: "44px 32px 0" }}>
               {headingAt === "code" && <Heading as="h1" className="m-h1" style={{ ...s.h1, marginBottom: "20px" }}>{heading}</Heading>}
-              <CodeBlock title={`${code.value} cadeau`} code={code.code} label="Jouw unieke code" deadline={code.deadline} />
+              <AutomationCodeBlock title={`${code.value} cadeau`} code={code.code} label="Jouw unieke code" deadline={code.deadline} />
               <Text style={{ ...s.body, margin: "14px 0 0" }}>{code.advice}</Text>
             </Section>
           )}

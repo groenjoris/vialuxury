@@ -311,7 +311,9 @@ brief van Yvette (`crm-winkelmandje-2-dagen`, `tf023`, `tf027` en alle zoekmails
 `crm-zoekopdracht`). Bij een brief staat de kop uit de sheet als titel direct boven het blok waar
 hij bij hoort. De brief heeft geen ondertekening: "Groetjes Yvette"
 verviel en er komt voorlopig niets voor in de plaats (feedback 24-11-2026). De CRM-mails houden
-hun eigen ondertekening. De secties staan gewoon in de kolom op wit en elke mail eindigt met de hulplijn
+hun eigen ondertekening. In de automationmails staat **alles links uitgelijnd**, ook de inhoud van de coupon
+(`AutomationCodeBlock`, afstemming 24-11-2026); de CRM-regel dat de coupon gecentreerd is, geldt
+hier dus niet. De secties staan gewoon in de kolom op wit en elke mail eindigt met de hulplijn
 `CrmHelp` ("Hulp nodig?"). De enige beige band is de themakiezer in `tf031`, want een keuzeblok
 staat altijd op beige.
 
