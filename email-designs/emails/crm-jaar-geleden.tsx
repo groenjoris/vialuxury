@@ -38,7 +38,7 @@ type Props = {
    *  boven de footer, als bovenste deel van de footer, of als strook tussendoor (tussen de
    *  hoofdboodschap en de suggesties). Leeg → geen quote. */
   quote?: FooterQuote | "tussendoor";
-  /** Hulpblok opgenomen in de footer (variant 1 t/m 5, zie CrmFooter); het losse blok "Hulp nodig?"
+  /** Hulpblok opgenomen in de footer (variant 0 t/m 5, zie CrmFooter); het losse blok "Hulp nodig?"
    *  in de mail vervalt dan. Alleen in de voorbeeldmail "Dit moeten we vaker doen". */
   footerHelp?: FooterHelp;
 };
@@ -90,7 +90,7 @@ export default function CrmJaarGeleden({ recipientEmail, firstName, variant = "s
           )}
 
           {/* Hulplijn: direct na de hoofdboodschap, niet als onderste blok */}
-          {!footerHelp && <CrmHelp top="32px" bottom="0" />}
+          {footerHelp === undefined && <CrmHelp top="32px" bottom="0" />}
         </Container>
 
         {/* Gastquote als strook tussendoor: beige band over de hele breedte, tussen de hoofdboodschap
@@ -186,5 +186,5 @@ CrmJaarGeleden.PreviewProps = {
 export const persoonlijkProps = { ...CrmJaarGeleden.PreviewProps, variant: "persoonlijk" as const };
 
 /** Voorbeeldmail "Dit moeten we vaker doen": dezelfde mail met de gastquote op een van drie plekken en
- *  het hulpblok in de footer (variant 1 t/m 5); twee schakelaars in de preview. */
+ *  het hulpblok in de footer (variant 0 t/m 5); twee schakelaars in de preview. */
 export const vakerDoenProps = (quote: FooterQuote | "tussendoor", footerHelp: FooterHelp = 1) => ({ ...CrmJaarGeleden.PreviewProps, quote, footerHelp });

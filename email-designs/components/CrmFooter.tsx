@@ -16,7 +16,8 @@ import { GuestQuote } from "./crm";
 
 // Concept (alleen in de voorbeeldmail "Dit moeten we vaker doen", prop `help`): het blok "Hulp
 // nodig?" uit de mail en de klantenservice-informatie in de footer zijn samengevoegd. De footer
-// blijft de footer, maar de klantenservice springt eruit. Vijf varianten:
+// blijft de footer, maar de klantenservice springt eruit. Zes varianten:
+//   0  als 1, maar bellen en WhatsApp staan onder elkaar, elk op een eigen regel
 //   1  lichtoranje band over de hele breedte, direct boven de zwarte footer
 //   2  lichtoranje kaart bovenin de zwarte footer (het hulpblok zoals het in de mail stond)
 //   3  in het zwart: titel en twee grote knoppen (bellen oranje, WhatsApp omlijnd)
@@ -24,7 +25,7 @@ import { GuestQuote } from "./crm";
 //   5  beige band over de hele breedte met twee witte snelfilterknoppen (zoals Snel zoeken)
 // Met `help` vervalt de gewone kolom "Hulp nodig?" rechtsboven; "Volg ons op" schuift daarheen
 // (behalve in variant 4, waar de kaart op die plek staat).
-export type FooterHelp = 1 | 2 | 3 | 4 | 5;
+export type FooterHelp = 0 | 1 | 2 | 3 | 4 | 5;
 
 const TEL = { href: "tel:+31207052222", label: "+31 20 705 2222" };
 const WA = { href: "https://wa.me/31208088809", label: "+31 20 808 8809" };
@@ -39,7 +40,7 @@ export type FooterQuote = "boven" | "in";
 
 type Props = {
   quote?: FooterQuote;
-  /** Hulpblok in de footer opgenomen, variant 1 t/m 5 (zie boven). Leeg → de gewone footer. */
+  /** Hulpblok in de footer opgenomen, variant 0 t/m 5 (zie boven). Leeg → de gewone footer. */
   help?: FooterHelp;
   recipientEmail: string;
   /** Afzenderreden die bij de trigger past, bijv. "omdat je bij ons boekte". */
@@ -50,6 +51,7 @@ type Props = {
 };
 
 export default function CrmFooter({ recipientEmail, reason, transactional = false, mode = "light", help, quote }: Props) {
+  const hasHelp = help !== undefined;
   const c = newsletter[mode];
   const text = { fontFamily: font.body, color: "#FFFFFF", fontSize: "12px", lineHeight: "16px", margin: "0 0 8px" };
   const bold = { ...text, fontWeight: 700 };
@@ -76,15 +78,27 @@ export default function CrmFooter({ recipientEmail, reason, transactional = fals
   const helpLines = (
     <>
       <Text style={{ ...serif, color: c.heading }}>Hulp nodig?</Text>
-      <Text style={{ ...body16, color: c.text, marginTop: "2px" }}>
-        Bel <Link href={TEL.href} style={orangeLink}>{TEL.label}</Link> of WhatsApp <Link href={WA.href} style={orangeLink}>{WA.label}</Link>
-      </Text>
+      {help === 0 ? (
+        // Variant 0: bellen en WhatsApp onder elkaar
+        <>
+          <Text style={{ ...body16, color: c.text, marginTop: "2px" }}>
+            Bel <Link href={TEL.href} style={orangeLink}>{TEL.label}</Link>
+          </Text>
+          <Text style={{ ...body16, color: c.text, marginTop: "2px" }}>
+            WhatsApp <Link href={WA.href} style={orangeLink}>{WA.label}</Link>
+          </Text>
+        </>
+      ) : (
+        <Text style={{ ...body16, color: c.text, marginTop: "2px" }}>
+          Bel <Link href={TEL.href} style={orangeLink}>{TEL.label}</Link> of WhatsApp <Link href={WA.href} style={orangeLink}>{WA.label}</Link>
+        </Text>
+      )}
       <Text style={{ ...body16, color: c.muted, marginTop: "2px" }}>Bereikbaar {HOURS}</Text>
     </>
   );
   const social = (
     <>
-      <Text className="m-center" style={{ ...bold, margin: help ? "0 0 10px" : "22px 0 10px" }}>Volg ons op</Text>
+      <Text className="m-center" style={{ ...bold, margin: hasHelp ? "0 0 10px" : "22px 0 10px" }}>Volg ons op</Text>
       <Link href="https://www.instagram.com/vialuxury">
         <Img src={`${baseUrl}/images/mail/icon-instagram.png`} alt="Instagram" width="19" height="19" style={{ display: "inline", marginRight: "10px" }} />
       </Link>
@@ -106,8 +120,8 @@ export default function CrmFooter({ recipientEmail, reason, transactional = fals
     <>
     {/* Gastquote boven de footer: beige band met de quote in een witte tekstballon */}
     {quote === "boven" && band(BEIGE, <GuestQuote balloon />)}
-    {/* Variant 1: lichtoranje band over de hele breedte, direct boven de footer */}
-    {help === 1 &&
+    {/* Variant 0 en 1: lichtoranje band over de hele breedte, direct boven de footer */}
+    {(help === 0 || help === 1) &&
       band(WARM, (
         <Row>
           <Column style={{ width: "62px", verticalAlign: "middle" }}>{phoneCircle}</Column>
@@ -173,10 +187,10 @@ export default function CrmFooter({ recipientEmail, reason, transactional = fals
           <Row>
             <Column className="stack m-center" style={{ width: "50%", verticalAlign: "top" }}>
               <Img src={`${baseUrl}/images/logo-vialuxury-horizontal.png`} alt="ViaLuxury" width="201" className="m-mx-auto" style={{ height: "auto" }} />
-              {!help ? social : help === 4 ? <Section style={{ marginTop: "22px" }}>{social}</Section> : null}
+              {!hasHelp ? social : help === 4 ? <Section style={{ marginTop: "22px" }}>{social}</Section> : null}
             </Column>
             <Column className="stack m-center m-mt" style={{ width: "50%", verticalAlign: "top" }}>
-              {!help && (
+              {!hasHelp && (
                 <>
                   <Text className="m-center" style={bold}>Hulp nodig?</Text>
                   <Text className="m-center" style={text}>
@@ -203,7 +217,7 @@ export default function CrmFooter({ recipientEmail, reason, transactional = fals
                   <Text style={{ ...body16, color: c.muted, marginTop: "8px" }}>Bereikbaar {HOURS}</Text>
                 </Section>
               )}
-              {help && help !== 4 ? social : null}
+              {hasHelp && help !== 4 ? social : null}
             </Column>
           </Row>
           <Row style={{ marginTop: "28px" }}>

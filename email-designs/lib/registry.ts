@@ -398,9 +398,10 @@ export const emails: EmailEntry[] = [
   },
   // "Dit moeten we vaker doen": kopie van "Precies een jaar geleden" als voorbeeldmail voor de gastquote
   // en de footer. Twee schakelaars in de preview: de plek van de quote (3) en de footervariant met
-  // het hulpblok erin (5). Slug: crm-vaker-doen[-in-footer|-tussendoor][-footer-2..5].
+  // het hulpblok erin (6; footer 0 is footer 1 met bellen en WhatsApp onder elkaar). Slug:
+  // crm-vaker-doen[-in-footer|-tussendoor][-footer-0|-footer-2..5]; footer 1 is de basis.
   ...([["boven", "", "Boven de footer"], ["in", "-in-footer", "In de footer"], ["tussendoor", "-tussendoor", "Tussendoor"]] as const).flatMap(([quote, quoteSuffix, quoteLabel]) =>
-    ([1, 2, 3, 4, 5] as const).map((footer): EmailEntry => {
+    ([0, 1, 2, 3, 4, 5] as const).map((footer): EmailEntry => {
       const slug = `crm-vaker-doen${quoteSuffix}${footer === 1 ? "" : `-footer-${footer}`}`;
       return {
         slug,

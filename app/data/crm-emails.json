@@ -118,6 +118,15 @@
     "preheader": "Parijs, Den Haag en Amsterdam, vanaf €279 voor 2 personen."
   },
   {
+    "slug": "crm-vaker-doen-footer-0",
+    "title": "Dit moeten we vaker doen (quote en footer)",
+    "description": "Voorbeeldmail voor de gastquote en de footer: de quote boven de footer, footervariant 0 met het hulpblok erin.",
+    "subject": "Vandaag een jaar geleden 🎉",
+    "preheader": "Je verblijf in Hotel Des Indes, en een code voor €25 korting.",
+    "variantOf": "crm-vaker-doen",
+    "variantLabel": "Boven de footer / Footer 0"
+  },
+  {
     "slug": "crm-vaker-doen",
     "title": "Dit moeten we vaker doen (quote en footer)",
     "description": "Voorbeeldmail voor de gastquote en de footer: de quote boven de footer, footervariant 1 met het hulpblok erin.",
@@ -160,6 +169,15 @@
     "preheader": "Je verblijf in Hotel Des Indes, en een code voor €25 korting.",
     "variantOf": "crm-vaker-doen",
     "variantLabel": "Boven de footer / Footer 5"
+  },
+  {
+    "slug": "crm-vaker-doen-in-footer-footer-0",
+    "title": "Dit moeten we vaker doen (quote en footer)",
+    "description": "Voorbeeldmail voor de gastquote en de footer: de quote in de footer, footervariant 0 met het hulpblok erin.",
+    "subject": "Vandaag een jaar geleden 🎉",
+    "preheader": "Je verblijf in Hotel Des Indes, en een code voor €25 korting.",
+    "variantOf": "crm-vaker-doen",
+    "variantLabel": "In de footer / Footer 0"
   },
   {
     "slug": "crm-vaker-doen-in-footer",
@@ -205,6 +223,15 @@
     "preheader": "Je verblijf in Hotel Des Indes, en een code voor €25 korting.",
     "variantOf": "crm-vaker-doen",
     "variantLabel": "In de footer / Footer 5"
+  },
+  {
+    "slug": "crm-vaker-doen-tussendoor-footer-0",
+    "title": "Dit moeten we vaker doen (quote en footer)",
+    "description": "Voorbeeldmail voor de gastquote en de footer: de quote tussendoor, footervariant 0 met het hulpblok erin.",
+    "subject": "Vandaag een jaar geleden 🎉",
+    "preheader": "Je verblijf in Hotel Des Indes, en een code voor €25 korting.",
+    "variantOf": "crm-vaker-doen",
+    "variantLabel": "Tussendoor / Footer 0"
   },
   {
     "slug": "crm-vaker-doen-tussendoor",

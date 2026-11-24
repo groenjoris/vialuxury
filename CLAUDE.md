@@ -327,10 +327,11 @@ Regels voor elke CRM-mail:
   eronder); of als beige strook tussen de hoofdboodschap en de suggesties (daar gecentreerd, de enige uitzondering op "alles links").
   Footer (alleen in deze mail): het losse blok "Hulp nodig?" is samengevoegd met de klantenservice-informatie in de
   footer, die daardoor veel prominenter is (`CrmFooter`-prop `help`, in de mail `footerHelp`; het blok in de mail
-  vervalt). Vijf varianten met een tweede schakelaar "Footer 1 … 5": 1 lichtoranje band over de hele breedte boven de
+  vervalt). Zes varianten met een tweede schakelaar "Footer 0 … 5": 0 als 1, maar bellen en WhatsApp onder elkaar, elk
+  op een eigen regel; 1 lichtoranje band over de hele breedte boven de
   zwarte footer; 2 lichtoranje kaart bovenin het zwart; 3 in het zwart een titel met twee grote knoppen (bellen oranje,
   WhatsApp omlijnd); 4 de rechterkolom als lichtoranje kaart; 5 beige band met twee witte snelfilterknoppen. De twee
-  schakelaars zijn los te combineren (15 mails, slug `crm-vaker-doen[-in-footer|-tussendoor][-footer-2..5]`, labels via
+  schakelaars zijn los te combineren (18 mails, slug `crm-vaker-doen[-in-footer|-tussendoor][-footer-0|-footer-2..5]`, footer 1 is de basis, labels via
   `variantLabel` "Boven de footer / Footer 2" in de registry; de CRM-preview maakt per deel een schakelaar). Een klik op
   een footervariant scrolt de mail in de preview vanzelf naar de footer, een klik op een plek van de quote naar de quote;
   een andere mail begint weer bovenaan.
