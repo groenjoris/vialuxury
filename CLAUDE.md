@@ -354,6 +354,11 @@ mail. Het winkelmandje is het standaard hotelblok: met inclusies en met "2 perso
 2 nachten", zonder de datumregel. Boven de alternatieven staat de titel "Anderen boekten ook".
 Doordat de kaart weer het standaard blok is, tonen `tf023` en `tf024` ook de inclusies.
 
+`tf023` wijkt sinds 24-11-2026 af van de sheet: de kop "Dit vonden andere gasten" staat bovenaan met
+de brief eronder ("Twijfel je nog? Lees wat andere gasten vinden, of bekijk onze tips die we speciaal
+voor jou uitkozen."), het gastenoordeel toont drie reviews zoals de eerste winkelmandjemail van het
+CRM (`GuestRating.reviews`) en boven de alternatieven staat "Anderen boekten ook".
+
 Feedback 24-11-2026 (Anoeska, na de meeting met Bart): in `tf021` staan boven de knop geen prijs en
 geen korting meer. Dat wijkt af van de sheet, die bij S17 ook "en de prijs" noemt.
 

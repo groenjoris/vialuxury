@@ -207,7 +207,12 @@ export function AutomationDealList({ deals }: { deals: AutomationDeal[] }) {
 // ── Secties uit de sheet ("Automations in kaart.xlsx", tabblad Secties) ─────────────────────
 
 /** S21 Gastenoordeel: de score met de Trustpilot-sterren en één korte review, als die er is. */
-export type GuestRating = { average: 3 | 3.5 | 4 | 4.5 | 5; label: string; review?: { text: string; author: string } };
+export type GuestRating = {
+  average: 3 | 3.5 | 4 | 4.5 | 5;
+  label: string;
+  /** Maximaal drie korte reviews, zoals in de eerste winkelmandjemail van het CRM. */
+  reviews?: { text: string; author: string }[];
+};
 
 export function GuestRatingSection({ rating }: { rating: GuestRating }) {
   return (
@@ -220,12 +225,12 @@ export function GuestRatingSection({ rating }: { rating: GuestRating }) {
         style={{ display: "block", width: "152px", height: "28px" }}
       />
       <Text style={{ ...s.body, margin: "6px 0 0" }}>{rating.label}</Text>
-      {rating.review && (
-        <Section style={{ marginTop: "22px" }}>
-          <Text style={{ fontFamily: font.heading, fontSize: "20px", lineHeight: "1.35", color: c.text, margin: 0 }}>&ldquo;{rating.review.text}&rdquo;</Text>
-          <Text style={{ ...s.muted, margin: "4px 0 0" }}>{rating.review.author}</Text>
+      {rating.reviews?.slice(0, 3).map((r) => (
+        <Section key={r.author} style={{ marginTop: "22px" }}>
+          <Text style={{ fontFamily: font.heading, fontSize: "20px", lineHeight: "1.35", color: c.text, margin: 0 }}>&ldquo;{r.text}&rdquo;</Text>
+          <Text style={{ ...s.muted, margin: "4px 0 0" }}>{r.author}</Text>
         </Section>
-      )}
+      ))}
     </>
   );
 }

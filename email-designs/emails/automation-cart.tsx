@@ -211,17 +211,24 @@ export const cart3Props = {
   recipientEmail: "sanne.devries@example.com",
   firstName: "Sanne",
   preheader: "Dit vonden andere gasten.",
+  // Feedback 24-11-2026: kop bovenaan, daaronder de brief. Drie reviews, zoals in de eerste
+  // winkelmandjemail van het CRM.
   heading: "Dit vonden andere gasten",
-  headingAt: "rating" as const,
+  headingAt: "top" as const,
   opening: "brief" as const,
-  intro: `Twijfel je nog? Lees wat andere gasten van ${HOTEL} vonden, of kies een van de alternatieven.`,
+  intro: "Twijfel je nog? Lees wat andere gasten vinden, of bekijk onze tips die we speciaal voor jou uitkozen.",
   cart,
   guestRating: {
     average: 4.5,
     label: "4,5 uit 312 reviews",
-    review: { text: "Prachtige kamer en een feestelijk diner.", author: "Marieke" },
+    reviews: [
+      { text: "Prachtige kamer en een feestelijk diner.", author: "Marieke" },
+      { text: "Stijlvol hotel en een heerlijk rustige kamer.", author: "Jeroen" },
+      { text: "Fijne locatie, alles op loopafstand.", author: "Annelies" },
+    ],
   },
   alternatives,
+  alternativesTitle: "Anderen boekten ook",
 } satisfies Props;
 
 /** v01_tf024_fl011_nl-NL_4_abandoned_cart_discount_10euro — 4 dagen na het verlaten van het
