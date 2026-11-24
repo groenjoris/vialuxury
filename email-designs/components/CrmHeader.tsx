@@ -4,7 +4,8 @@ import { baseUrl, newsletter, type EmailMode } from "./theme";
 
 /** Pay-off "Dit moeten we vaker doen!" onder het logo, als afbeelding (witte tekst, transparant) in
  *  een van zes lettertypes; gemaakt met scripts/mail-graphics/payoff-header.py. Elke afbeelding is
- *  precies even breed als het logo (201 px). */
+ *  precies even breed als het logo (201 px). Het uitroepteken hoort er in elk lettertype bij. `?v=`
+ *  in de afbeeldings-URL ophogen als de afbeeldingen opnieuw gemaakt zijn (anders toont de browser de oude). */
 export const payoffs = {
   "oooh-baby": "Oooh Baby",
   "la-belle-aurore": "La Belle Aurore",
@@ -27,7 +28,7 @@ export default function CrmHeader({ mode = "light", payoff }: { mode?: EmailMode
             <Column style={{ verticalAlign: "middle" }}>
               <Img src={`${baseUrl}/images/logo-vialuxury-horizontal.png`} alt="ViaLuxury" width="201" className="m-logo" style={{ height: "auto" }} />
               {payoff && (
-                <Img src={`${baseUrl}/images/mail/crm/payoff-${payoff}.png`} alt="Dit moeten we vaker doen!" width="201" style={{ display: "block", width: "201px", height: "auto", marginTop: "8px" }} />
+                <Img src={`${baseUrl}/images/mail/crm/payoff-${payoff}.png?v=3`} alt="Dit moeten we vaker doen!" width="201" style={{ display: "block", width: "201px", height: "auto", marginTop: "8px" }} />
               )}
             </Column>
             <Column align="right" style={{ verticalAlign: "middle" }}>
