@@ -82,6 +82,21 @@ onMounted(() => {
 })
 onBeforeUnmount(() => sheetObserver?.disconnect())
 
+// Footervarianten ("Footer 1 … 5"): na een klik op zo'n variant scrolt de mail vanzelf naar de footer,
+// zodat je de varianten kunt vergelijken zonder steeds zelf naar beneden te scrollen. Bij een
+// andere schakelaar (lettertype) of een andere mail begint de mail weer bovenaan.
+const isFooterVariant = (label: string) => label.startsWith('Footer')
+const toFooter = useState('crm-to-footer', () => false)
+function onMailLoad(ev: Event) {
+  if (!toFooter.value) return
+  const win = (ev.target as HTMLIFrameElement).contentWindow
+  if (!win) return
+  const go = () => win.scrollTo(0, win.document.documentElement.scrollHeight)
+  go()
+  // afbeeldingen laden na: nog een paar keer naar het einde, tot de hoogte vaststaat
+  ;[150, 500, 1200].forEach(ms => setTimeout(go, ms))
+}
+
 // Pijltjes omhoog/omlaag: vorige/volgende mail
 function onKey(ev: KeyboardEvent) {
   if (ev.key !== 'ArrowDown' && ev.key !== 'ArrowUp') return
@@ -89,6 +104,7 @@ function onKey(ev: KeyboardEvent) {
   const next = nav[i + (ev.key === 'ArrowDown' ? 1 : -1)]
   if (!next) return
   ev.preventDefault()
+  toFooter.value = false
   navigateTo(`/crm/${next.slug}`)
 }
 onMounted(() => window.addEventListener('keydown', onKey))
@@ -108,6 +124,7 @@ useHead({ title: `${entry.value?.title ?? 'E-mail'} — ViaLuxury CRM` })
             v-for="v in variants"
             :key="v.label"
             :to="`/crm/${v.slug}`"
+            @click="toFooter = isFooterVariant(v.label)"
             class="crm__variant"
             :class="{ 'crm__variant--on': v.on }"
             :aria-current="v.on ? 'true' : undefined"
@@ -123,6 +140,7 @@ useHead({ title: `${entry.value?.title ?? 'E-mail'} — ViaLuxury CRM` })
           :key="e.slug"
           :to="`/crm/${e.slug}`"
           class="crm__nav-link"
+          @click="toFooter = false"
           :class="{ 'crm__nav-link--on': e.slug === baseSlug }"
           :aria-current="e.slug === baseSlug ? 'page' : undefined"
         >
@@ -150,7 +168,7 @@ useHead({ title: `${entry.value?.title ?? 'E-mail'} — ViaLuxury CRM` })
             <p class="crm__preheader">{{ entry?.preheader }}</p>
           </div>
         </div>
-        <iframe :key="slug" class="crm__frame" :src="`/emails/${slug}.html`" :title="entry?.title" />
+        <iframe :key="slug" class="crm__frame" :src="`/emails/${slug}.html`" :title="entry?.title" @load="onMailLoad" />
       </div>
       </div>
     </div>

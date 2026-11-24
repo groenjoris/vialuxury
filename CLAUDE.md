@@ -330,7 +330,8 @@ Regels voor elke CRM-mail:
   zwarte footer; 2 lichtoranje kaart bovenin het zwart; 3 in het zwart een titel met twee grote knoppen (bellen oranje,
   WhatsApp omlijnd); 4 de rechterkolom als lichtoranje kaart; 5 beige band met twee witte snelfilterknoppen. De twee
   schakelaars zijn los te combineren (15 mails, slug `crm-vaker-doen[-lora|-recoleta][-footer-2..5]`, labels via
-  `variantLabel` "Caveat / Footer 2" in de registry; de CRM-preview maakt per deel een schakelaar).
+  `variantLabel` "Caveat / Footer 2" in de registry; de CRM-preview maakt per deel een schakelaar). Een klik op een footervariant scrolt de mail
+  in de preview vanzelf naar de footer; een klik op een lettertype of een andere mail begint weer bovenaan.
 - Nagenietmail heeft twee varianten (schakelaar "Bericht | Titel"): standaard een brief met aanhef en ondertekening en
   in het blok alleen de vraag als titel; of (`crm-nagenieten-titel`) de grote titel onder de foto.
 - Dealrij met vaste hoogte (concept, 2026-11-25; nog niet in de mails doorgevoerd): `DealRowFixed` zet links twee foto's
