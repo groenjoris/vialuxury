@@ -333,8 +333,8 @@ export; verzenden gaat altijd met de tabelversie onder `public/emails/`.
 Secties uit de sheet als bouwstenen in `email-designs/components/crm.tsx`. Bestaand: `CrmHeader` (S1),
 `FeaturedDeal`/`DealRow`/`DealList` (S4) en `CrmFooter` (S13). Nieuw voor deze flows:
 `GuestRatingSection` (S21), `BrandSection` (S6), `SearchSection` (S18) en `ThemeSection` (S7). De
-serviceregel (S15, "Vragen over dit arrangement? Onze klantenservice helpt je graag") staat sinds
-24-11-2026 in geen enkele mail meer: die was dubbelop met het klantenserviceblok in de footer. Het achtergelaten of bekeken arrangement staat op `FeaturedDeal`, de
+serviceregel (S15, "Vragen over dit arrangement? Onze klantenservice helpt je graag") staat alleen in
+`tf021`, onder het hotelblok. Het achtergelaten of bekeken arrangement staat op `FeaturedDeal`, de
 alternatieven en zoekresultaten op `DealList`. Verder gelden alle CRM-regels hierboven.
 
 **Regel: niets toevoegen wat niet in de sheet staat.** De mails bevatten alleen de secties die in de
@@ -345,16 +345,16 @@ horen, komt uit de tabbladen Themategels en Seizoensthema's.
 
 Het gastenoordeel (S21) toont de Trustpilot-sterren met "4,5 uit 312 reviews" en één korte review.
 
-`tf021` wijkt sinds 24-11-2026 af van de sheet: de kop is "[Voornaam], we hebben het nog even voor je
-bewaard. Nog steeds interesse in [hotelnaam]?" met een variant zonder naam
-(`-naam-onbekend`, schakelaar in de previewkop), er staat geen introtekst meer onder, de kaart toont
-de inclusies en er staat geen prijs en geen korting in de mail.
+`tf021` wijkt sinds 24-11-2026 af van de sheet: de kop is "[Voornaam], we hebben het even voor je
+bewaard." met een variant zonder naam (`-naam-onbekend`, schakelaar in de previewkop), er staat geen
+introtekst meer onder, boven de hotelgegevens staat de subtitel "Nog steeds interesse in:"
+(`cartTitle`), de kaart toont de inclusies, er staat geen prijs en geen korting in de mail en onder
+het hotelblok staat de serviceregel (S15).
 
 `tf022` wijkt sinds 24-11-2026 af van de sheet: de kop is "We helpen je graag" en staat bovenaan,
 met daaronder de brief ("Beste [voornaam], Je verblijf in [hotelnaam] staat voor je klaar. Twijfel je
-over je data of heb je een vraag? Laat het ons weten, we helpen je graag.") en een tweede titelversie
-om tegen elkaar te testen: `-data-nog-vrij` met de kop "Kijk of je data nog vrij zijn", verder dezelfde
-mail. Het winkelmandje is het standaard hotelblok: met inclusies en met "2 personen,
+over je data of heb je een vraag? Laat het ons weten, we helpen je graag."). De oude kop "Kijk of je
+data nog vrij zijn" is helemaal vervallen; er is dus maar één versie. Het winkelmandje is het standaard hotelblok: met inclusies en met "2 personen,
 2 nachten", zonder de datumregel. Boven de alternatieven staat de titel "Anderen boekten ook".
 Doordat de kaart weer het standaard blok is, tonen `tf023` en `tf024` ook de inclusies.
 
@@ -364,8 +364,10 @@ voor jou uitkozen."), het gastenoordeel toont drie reviews zoals de eerste winke
 CRM (`GuestRating.reviews`) en boven de alternatieven staat "Anderen boekten ook".
 
 `tf024` wijkt sinds 24-11-2026 af van de sheet: de titel "Een extraatje om je te helpen kiezen" staat
-bovenaan, daaronder de brief, dan de codesectie (`codeFirst`) en pas daarna het hotelblok met de
-inclusies.
+bovenaan, daaronder de brief ("We zien je graag binnenkort genieten als gast in [hotelnaam]. Daarom
+krijg je €10 cadeau met jouw unieke code."), dan de codesectie (`codeFirst`) met de adviesregel "Je
+code staat klaar voor [hotelnaam]. Toch liever een ander arrangement? Ook dan kun je je code gewoon
+gebruiken." en pas daarna het hotelblok met de inclusies.
 
 `tf025` wijkt sinds 24-11-2026 af van de sheet: de kop is "[Voornaam], dit vonden we voor jou" met een
 variant zonder naam (`-naam-onbekend`, kop "Dit vonden we voor jou"), staat bovenaan met de intro

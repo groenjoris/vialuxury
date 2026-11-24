@@ -2,7 +2,7 @@ import { Body, Container, Head, Heading, Html, Preview, Section, Text } from "@r
 import * as React from "react";
 import CrmHeader from "../components/CrmHeader";
 import { PrimaryButton, s } from "../components/crm";
-import { AutomationCodeBlock, AutomationDealRow, AutomationFeaturedDeal, AutomationLetter, automationCss, cardGap, type GuestRating, GuestRatingSection, AutomationFooter } from "../components/automation";
+import { AutomationCodeBlock, AutomationDealRow, AutomationFeaturedDeal, AutomationLetter, automationCss, cardGap, type GuestRating, GuestRatingSection, ServiceSection, AutomationFooter } from "../components/automation";
 import { type AutomationDeal } from "../lib/automationDeals";
 import { desIndes, dePlesman, voco } from "../lib/automationDeals";
 import { font, newsletter } from "../components/theme";
@@ -45,6 +45,10 @@ type Props = {
   cart: AutomationDeal & { hotelName: string };
   /** S21: de score met de Trustpilot-sterren en één korte review (mail 3). */
   guestRating?: GuestRating;
+  /** Subtitel boven de hotelgegevens in de winkelmandje-opzet (mail 1). */
+  cartTitle?: string;
+  /** S15: de serviceregel onder het hotelblok (alleen mail 1). */
+  service?: boolean;
   /** Zet de codesectie direct onder de introtekst, boven het hotelblok (mail 4). */
   codeFirst?: boolean;
   /** S4: twee vergelijkbare arrangementen (mail 2 en 3), met een eigen titel erboven. */
@@ -55,7 +59,7 @@ type Props = {
   code?: { code: string; value: string; deadline: string; advice: string };
 };
 
-export default function AutomationCart({ recipientEmail, preheader, firstName, heading, intro, headingAt = "cart", opening = "direct", cart, guestRating, alternatives, alternativesTitle, code, codeFirst }: Props) {
+export default function AutomationCart({ recipientEmail, preheader, firstName, heading, intro, headingAt = "cart", opening = "direct", cart, cartTitle, guestRating, alternatives, alternativesTitle, code, codeFirst, service }: Props) {
   const c = newsletter.light;
 
   // De codesectie staat normaal onderaan, in mail 4 direct onder de introtekst.
@@ -97,6 +101,7 @@ export default function AutomationCart({ recipientEmail, preheader, firstName, h
           {opening === "winkelmandje" ? (
             <>
               <Section className="m-pad" style={{ padding: "20px 32px 0" }}>
+                {cartTitle && <Text style={{ ...s.kop, margin: "0 0 10px" }}>{cartTitle}</Text>}
                 <Text style={{ ...s.name, margin: 0 }}>
                   {cart.hotelName}
                   {cart.stars ? <span style={{ letterSpacing: "1px", marginLeft: "8px" }}>{"★".repeat(cart.stars)}</span> : null}
@@ -142,6 +147,13 @@ export default function AutomationCart({ recipientEmail, preheader, firstName, h
           {/* S10 Codesectie: de coupon met de adviesregel eronder */}
           {!codeFirst && codeSection}
 
+          {/* S15 Serviceregel, onder het hotelblok */}
+          {service && (
+            <Section className="m-pad" style={{ padding: "28px 32px 0" }}>
+              <ServiceSection />
+            </Section>
+          )}
+
           {/* Witruimte tussen de inhoud en de footer */}
           <Section style={{ height: "44px", lineHeight: "44px", fontSize: 0 }}>&nbsp;</Section>
         </Container>
@@ -171,17 +183,20 @@ export const cart1Props = {
   recipientEmail: "sanne.devries@example.com",
   firstName: "Sanne",
   preheader: "Rond je boeking af wanneer het jou uitkomt.",
-  // Feedback 24-11-2026: nieuwe kop met de voornaam en de hotelnaam, en geen introtekst meer.
-  heading: `Sanne, we hebben het nog even voor je bewaard. Nog steeds interesse in ${HOTEL}?`,
+  // Feedback 24-11-2026, tweede ronde: kortere kop, de zin "Nog steeds interesse in:" als subtitel
+  // boven de hotelgegevens en de serviceregel onder het hotelblok.
+  heading: "Sanne, we hebben het even voor je bewaard.",
   opening: "winkelmandje" as const,
   cart,
+  cartTitle: "Nog steeds interesse in:",
+  service: true,
 } satisfies Props;
 
 /** Zelfde mail met een onbekende voornaam: de kop begint dan zonder naam. */
 export const cart1ZonderNaamProps = {
   ...cart1Props,
   firstName: undefined,
-  heading: `We hebben het nog even voor je bewaard. Nog steeds interesse in ${HOTEL}?`,
+  heading: "We hebben het even voor je bewaard.",
 } satisfies Props;
 
 /** v01_tf022_fl011_nl-NL_2_abandoned_cart — 2 dagen na het verlaten van het winkelmandje. */
@@ -189,8 +204,7 @@ export const cart2Props = {
   recipientEmail: "sanne.devries@example.com",
   firstName: "Sanne",
   preheader: `Rond je boeking voor ${HOTEL} af.`,
-  // Feedback 24-11-2026: kop bovenaan, daaronder de brief met de aanhef. Twee titelversies,
-  // zie cart2DataVrijProps.
+  // Feedback 24-11-2026: kop bovenaan, daaronder de brief met de aanhef.
   heading: "We helpen je graag",
   headingAt: "top" as const,
   opening: "brief" as const,
@@ -200,8 +214,6 @@ export const cart2Props = {
   alternativesTitle: "Anderen boekten ook",
 } satisfies Props;
 
-/** Tweede titelversie van dezelfde mail: schaarste in plaats van service. */
-export const cart2DataVrijProps = { ...cart2Props, heading: "Kijk of je data nog vrij zijn" } satisfies Props;
 
 /** v01_tf023_fl011_nl-NL_3_abandoned_cart — 3 dagen na het verlaten van het winkelmandje. */
 export const cart3Props = {
@@ -239,13 +251,13 @@ export const cart4Props = {
   headingAt: "top" as const,
   codeFirst: true,
   opening: "brief" as const,
-  intro: `Je verblijf in ${HOTEL} staat nog in je winkelmandje. Om je op weg te helpen krijg je €10 cadeau met jouw unieke code.`,
+  intro: `We zien je graag binnenkort genieten als gast in ${HOTEL}. Daarom krijg je €10 cadeau met jouw unieke code.`,
   cart,
   code: {
     code: "MANDJE10-4XQ7",
     value: "€10",
     deadline: "7 december 2026 23:59 uur",
-    advice: `Je code staat klaar voor ${HOTEL}.`,
+    advice: `Je code staat klaar voor ${HOTEL}. Toch liever een ander arrangement? Ook dan kun je je code gewoon gebruiken.`,
   },
 } satisfies Props;
 
