@@ -170,10 +170,12 @@ export const search3Props = {
 export const search4Props = {
   ...base,
   preheader: "Kies je thema, dan sturen we je wat bij je past.",
-  // Feedback 24-11-2026: kop bovenaan, geen zoekresultaten en onderaan een tekstlink.
+  // Feedback 24-11-2026: kop bovenaan en onderaan een tekstlink. De zoekresultaten staan onder
+  // de zoekopdracht, zonder eigen kop (die staat bovenaan).
   topHeading: "Waar heb jij zin in?",
   intro: `Een week geleden zocht je naar ${TERM}. Nog niet jouw optimale hotelverblijf gevonden? Laat ons weten waar je zin in hebt.`,
   resultsUrl: resultsUrl("retargeting_abandonedsearch_4"),
+  results: [dePlesman, kurhaus, desIndes],
   themeSection: {
     title: "Niet jouw verblijf gevonden? Kies je thema.",
     note: "Eén klik is genoeg, dan sturen we je voortaan wat je zoekt.",
