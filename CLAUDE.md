@@ -364,8 +364,9 @@ bovenaan, daaronder de brief, dan de codesectie (`codeFirst`) en pas daarna het 
 inclusies.
 
 `tf025` wijkt sinds 24-11-2026 af van de sheet: de kop is "[Voornaam], dit vonden we voor jou" met een
-variant zonder naam (`-naam-onbekend`, kop "Dit vonden we voor jou"), staat bovenaan met de brief
-eronder ("Je bekeek net [hotelnaam]. Een mooie keuze! We hebben het voor je klaargezet.") en boven de
+variant zonder naam (`-naam-onbekend`, kop "Dit vonden we voor jou"), staat bovenaan met de intro
+eronder ("Je bekeek net [hotelnaam]. Een mooie keuze! We hebben het voor je klaargezet."), zonder
+aanhef, want de naam staat al in de kop en boven de
 alternatieven staat "Anderen bekeken ook".
 
 `tf026` wijkt sinds 24-11-2026 af van de sheet: de kop staat bovenaan met de brief eronder ("Er is al
@@ -375,9 +376,9 @@ merkblok (S6) staat op een beige band met de groet "Groetjes, ViaLuxury team" er
 de tekstlink "Bekijk alle arrangementen".
 
 `tf027` wijkt sinds 24-11-2026 af van de sheet: de kop is "[Voornaam], misschien past deze jou nog
-beter" met een variant zonder naam (`-naam-onbekend`), staat bovenaan met de brief eronder ("Gasten
+beter" met een variant zonder naam (`-naam-onbekend`), staat bovenaan met de intro eronder ("Gasten
 die interesse hadden in [hotelnaam], boekten vaak ook de volgende deals. Misschien interessant voor
-jou!"). De alternatieven staan bovenaan (de eerste als grote kaart) en het bekeken arrangement staat
+jou!"), zonder aanhef, want de naam staat al in de kop. De alternatieven staan bovenaan (de eerste als grote kaart) en het bekeken arrangement staat
 onderaan als dealrij onder de subtitel "Door jou bekeken" (`viewedAtBottom`), de opzet van
 `crm-winkelmandje-2-dagen`.
 

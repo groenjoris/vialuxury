@@ -72,7 +72,7 @@ export default function AutomationBrowse({ recipientEmail, preheader, firstName,
             {opening === "brief" ? (
               <AutomationLetter firstName={firstName}>{intro}</AutomationLetter>
             ) : (
-              <Text style={{ ...s.body, margin: "12px 0 0" }}>{intro}</Text>
+              <Text style={{ ...s.body, margin: headingAt === "top" ? 0 : "12px 0 0" }}>{intro}</Text>
             )}
           </Section>
 
@@ -149,7 +149,8 @@ export const browse1Props = {
   // zie browse1ZonderNaamProps.
   heading: `${base.firstName}, dit vonden we voor jou`,
   headingAt: "top" as const,
-  opening: "brief" as const,
+  // De voornaam staat in de kop, dus geen aanhef eronder.
+  opening: "direct" as const,
   intro: `Je bekeek net ${HOTEL}. Een mooie keuze! We hebben het voor je klaargezet.`,
   alternativesTitle: "Anderen bekeken ook",
 } satisfies Props;
@@ -189,7 +190,8 @@ export const browse3Props = {
   // van crm-winkelmandje-2-dagen. Twee varianten, zie browse3ZonderNaamProps.
   heading: `${base.firstName}, misschien past deze jou nog beter`,
   headingAt: "top" as const,
-  opening: "brief" as const,
+  // De voornaam staat in de kop, dus geen aanhef eronder.
+  opening: "direct" as const,
   intro: `Gasten die interesse hadden in ${HOTEL}, boekten vaak ook de volgende deals. Misschien interessant voor jou!`,
   viewedTitle: "Door jou bekeken",
   viewedAtBottom: true,
