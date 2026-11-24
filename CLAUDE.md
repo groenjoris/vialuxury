@@ -324,7 +324,7 @@ mobiel valt de tweede foto weg en blijft de hoofdfoto op 16:9 boven de tekst, zo
 Voor Figma staat er een tweede versie van dezelfde elf mails in `public/figma/` (met een
 overzichtspagina op `/figma/`): dezelfde inhoud, maar met `div` en flexbox in plaats van tabellen,
 achtergrondfoto's als echte `<img>` en alle afbeeldingen als volledige URL. Zo maakt een
-Figma-importer er autolayout-frames van. Gemaakt met `scripts/html-naar-flexbox.js` uit de gewone
+Figma-importer er autolayout-frames van. Gemaakt met `scripts/html-naar-flexbox.cjs` uit de gewone
 export; verzenden gaat altijd met de tabelversie onder `public/emails/`.
 
 Secties uit de sheet als bouwstenen in `email-designs/components/crm.tsx`. Bestaand: `CrmHeader` (S1),
