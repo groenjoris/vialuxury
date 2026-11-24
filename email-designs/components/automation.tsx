@@ -1,7 +1,6 @@
 import { Button, Column, Container, Heading, Img, Link, Row, Section, Text } from "@react-email/components";
 import * as React from "react";
 import { type AutomationDeal } from "../lib/automationDeals";
-import HelpBanner from "./HelpBanner";
 import { BeigeBand, IconLine, type Pill, PillGrid, PrimaryButton, s, site, TextLink } from "./crm";
 import { baseUrl, font, newsletter } from "./theme";
 
@@ -357,8 +356,34 @@ export function AutomationFooter({ recipientEmail, reason }: { recipientEmail: s
     <Section style={{ backgroundColor: c.frame, width: "100%" }}>
       <Container style={{ width: "100%", maxWidth: "626px" }}>
         <Section className="m-pad" style={{ padding: "32px" }}>
-          {/* Het klantenserviceblok, prominent bovenin de footer */}
-          <HelpBanner fontSize="16px" padding="0 0 28px" />
+          {/* Het klantenserviceblok, prominent bovenin de footer. Eigen blok in plaats van
+              HelpBanner: die zet op mobiel zijn eigen zijmarge (m-pad) en dan staat hij niet meer
+              gelijk met het logo eronder. */}
+          <Section style={{ paddingBottom: "28px" }}>
+            <Section style={{ backgroundColor: "#FFF0E4", borderRadius: "8px", padding: "14px 18px" }}>
+              <Row>
+                <Column style={{ width: "48px", verticalAlign: "middle" }}>
+                  <table role="presentation" cellPadding={0} cellSpacing={0} border={0} style={{ width: "36px", height: "36px", borderCollapse: "separate" }}>
+                    <tbody>
+                      <tr>
+                        <td style={{ width: "36px", height: "36px", padding: 0, borderRadius: "18px", backgroundColor: "#FFFFFF", textAlign: "center", verticalAlign: "middle" }}>
+                          <Img src={`${baseUrl}/images/mail/icon-phone-orange.png`} alt="" width="20" height="20" style={{ display: "block", margin: "0 auto" }} />
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </Column>
+                <Column style={{ verticalAlign: "middle" }}>
+                  <Text style={{ fontFamily: font.body, fontSize: "16px", lineHeight: "1.45", color: c.text, margin: 0 }}>
+                    <strong>Hulp nodig?</strong> Bel{" "}
+                    <Link href="tel:+31207052222" style={{ color: c.link, textDecoration: "underline", fontWeight: 700 }}>+31 20 705 2222</Link> of WhatsApp{" "}
+                    <Link href="https://wa.me/31208088809" style={{ color: c.link, textDecoration: "underline", fontWeight: 700 }}>+31 20 808 8809</Link>
+                    <span style={{ color: c.muted }}> · ma t/m vr 8:00 – 18:00</span>
+                  </Text>
+                </Column>
+              </Row>
+            </Section>
+          </Section>
 
           <Row>
             <Column className="stack m-center" style={{ width: "100%", verticalAlign: "top" }}>
