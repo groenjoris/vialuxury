@@ -15,7 +15,7 @@ if (!entry.value) throw createError({ statusCode: 404, statusMessage: 'E-mail ni
 // (en favorieten), review, de repeat-bookingflow (nagenieten, terugkomactie, herinnering, een
 // jaar geleden) en als laatste de themamail. De titel
 // "Winkelmandje (2 uur na verlaten)" wordt gesplitst in naam en moment.
-const navOrder = ['crm-winkelmandje', 'crm-winkelmandje-2-dagen', 'crm-zoekopdracht', 'crm-favorieten', 'crm-review', 'crm-nagenieten', 'crm-terugkomactie', 'crm-terugkomactie-herinnering', 'crm-jaar-geleden', 'crm-thema-stedentrips']
+const navOrder = ['crm-winkelmandje', 'crm-winkelmandje-2-dagen', 'crm-zoekopdracht', 'crm-favorieten', 'crm-review', 'crm-nagenieten', 'crm-terugkomactie', 'crm-terugkomactie-herinnering', 'crm-jaar-geleden', 'crm-thema-stedentrips', 'crm-vaker-doen']
 const nav = navOrder
   .map(s => emails.find(e => e.slug === s))
   .filter((e): e is (typeof emails)[number] => !!e)
@@ -36,6 +36,10 @@ const variantLabels: Record<string, string> = {
   'crm-nagenieten-titel': 'Titel',
   'crm-review': 'Lege ster',
   'crm-review-knoppen': 'Knop',
+  'crm-vaker-doen': 'Oooh Baby',
+  'crm-vaker-doen-biro-script': 'Biro Script',
+  'crm-vaker-doen-bradley-hand': 'Bradley Hand',
+  'crm-vaker-doen-basis-grotesque': 'Basis Grotesque',
   'crm-winkelmandje-2-dagen': 'Naam bekend',
   'crm-winkelmandje-2-dagen-naam-onbekend': 'Naam onbekend',
 }

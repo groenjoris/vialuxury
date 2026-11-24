@@ -2,7 +2,7 @@ import { Body, Container, Head, Heading, Html, Img, Link, Preview, Section, Text
 import * as React from "react";
 import { cardGap, CodeBlock, crmCss, CrmHelp, DealRow, Letter, PrimaryButton, type RowDeal, s, site } from "../components/crm";
 import CrmFooter from "../components/CrmFooter";
-import CrmHeader from "../components/CrmHeader";
+import CrmHeader, { type Payoff } from "../components/CrmHeader";
 import { font, newsletter } from "../components/theme";
 
 // CRM mail 2: precies een jaar geleden (vervangt A2 1 jaar). Trigger: 1 jaar na
@@ -34,9 +34,12 @@ type Props = {
   /** Leeg → geen coupon. */
   code?: { code: string; value: string; deadline: string };
   deals: RowDeal[];
+  /** Pay-off "Dit moeten we vaker doen" onder het logo in de kop, in dit lettertype (voorbeeldmail
+   *  "Dit moeten we vaker doen" met de headervarianten). Leeg → de gewone kop. */
+  payoff?: Payoff;
 };
 
-export default function CrmJaarGeleden({ recipientEmail, firstName, variant = "social", hotelName, packageTitle, arrivalDayLastYear, image, availabilityUrl, code, deals }: Props) {
+export default function CrmJaarGeleden({ recipientEmail, firstName, variant = "social", hotelName, packageTitle, arrivalDayLastYear, image, availabilityUrl, code, deals, payoff }: Props) {
   const c = newsletter.light;
   const personal = variant === "persoonlijk";
 
@@ -48,7 +51,7 @@ export default function CrmJaarGeleden({ recipientEmail, firstName, variant = "s
       </Head>
       <Preview>{code ? `Je verblijf in ${hotelName}, en een code voor ${code.value} korting.` : `Je verblijf in ${hotelName}.`}</Preview>
       <Body style={{ backgroundColor: c.bg, margin: 0, padding: 0, fontFamily: font.body }}>
-        <CrmHeader />
+        <CrmHeader payoff={payoff} />
         <Container style={{ width: "100%", maxWidth: "626px" }}>
           {/* Grote arrangementfoto; geen intro */}
           <Img src={image} alt={packageTitle} width="626" height="380" style={{ display: "block", width: "100%", height: "380px", objectFit: "cover" }} />
@@ -165,3 +168,7 @@ CrmJaarGeleden.PreviewProps = {
 
 /** Variant "Persoonlijk": brief onder de titel en "Geselecteerd voor Sanne" boven de suggesties. */
 export const persoonlijkProps = { ...CrmJaarGeleden.PreviewProps, variant: "persoonlijk" as const };
+
+/** Voorbeeldmail "Dit moeten we vaker doen": dezelfde mail met de pay-off onder het logo in de kop,
+ *  in een van de vier lettertypes (schakelaar in de preview). */
+export const payoffProps = (payoff: Payoff) => ({ ...CrmJaarGeleden.PreviewProps, payoff });

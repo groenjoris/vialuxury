@@ -306,6 +306,11 @@ Regels voor elke CRM-mail:
 - Precies een jaar geleden heeft twee varianten (schakelaar "Social proof | Persoonlijk"): social proof met de knop "Check
   beschikbaarheid" en "Anderen boekten ook" boven de suggesties; persoonlijk (`crm-jaar-geleden-persoonlijk`) met een brief
   onder de titel (link naar de beschikbare datums in de tekst) en "Geselecteerd voor [voornaam]" boven de suggesties.
+- "Dit moeten we vaker doen" (`crm-vaker-doen`, laatste in het paneel): kopie van "Precies een jaar geleden" (zelfde
+  component, prop `payoff`) als voorbeeldmail voor headervarianten. Onder het logo in de zwarte kop staat de pay-off "Dit
+  moeten we vaker doen" (`CrmHeader`-prop `payoff`), met de schakelaar "Oooh Baby | Biro Script | Bradley Hand | Basis
+  Grotesque" in de previewkop. De pay-off is een afbeelding (witte tekst, transparant; `payoff-<font>.png`, gemaakt met
+  `scripts/mail-graphics/payoff-header.py`), want webfonts werken niet in elke mailclient.
 - Nagenietmail heeft twee varianten (schakelaar "Bericht | Titel"): standaard een brief met aanhef en ondertekening en
   in het blok alleen de vraag als titel; of (`crm-nagenieten-titel`) de grote titel onder de foto.
 - Tussen twee dealkaarten onder elkaar staat 24 px (`cardGap`), tussen een titel en de eerste kaart 12 px.

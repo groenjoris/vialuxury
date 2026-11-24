@@ -4,7 +4,7 @@ import VakantiePreTravel, { fietsPreviewProps as preTravelFiets } from "../email
 import VakantieIncheckHotel from "../emails/vakantie-incheck-hotel";
 import MvpVakantieBevestiging from "../emails/mvp-vakantie-bevestiging";
 import CrmNagenieten, { titelProps } from "../emails/crm-nagenieten";
-import CrmJaarGeleden, { persoonlijkProps } from "../emails/crm-jaar-geleden";
+import CrmJaarGeleden, { payoffProps, persoonlijkProps } from "../emails/crm-jaar-geleden";
 import CrmWinkelmandje, { naamOnbekendProps } from "../emails/crm-winkelmandje";
 import CrmWinkelmandje2Dagen, { naamOnbekendProps as naamOnbekend2DagenProps } from "../emails/crm-winkelmandje-2-dagen";
 import CrmThemaStedentrips from "../emails/crm-thema-stedentrips";
@@ -382,6 +382,49 @@ export const emails: EmailEntry[] = [
     subject: "Dit zijn de populairste stedentrips van dit moment",
     preheader: "Parijs, Den Haag en Amsterdam, vanaf €279 voor 2 personen.",
     Component: CrmThemaStedentrips,
+  },
+  {
+    slug: "crm-vaker-doen",
+    title: "Dit moeten we vaker doen (headervarianten)",
+    description: "Kopie van 'Precies een jaar geleden' als voorbeeldmail voor de kop: de pay-off 'Dit moeten we vaker doen' onder het logo in Oooh Baby.",
+    section: "crm",
+    subject: "Vandaag een jaar geleden 🎉",
+    preheader: "Je verblijf in Hotel Des Indes, en een code voor €25 korting.",
+    Component: CrmJaarGeleden,
+    props: payoffProps("oooh-baby"),
+  },
+  {
+    slug: "crm-vaker-doen-biro-script",
+    title: "Dit moeten we vaker doen (headervarianten)",
+    description: "Kopie van 'Precies een jaar geleden' als voorbeeldmail voor de kop: de pay-off 'Dit moeten we vaker doen' onder het logo in Biro Script.",
+    section: "crm",
+    variantOf: "crm-vaker-doen",
+    subject: "Vandaag een jaar geleden 🎉",
+    preheader: "Je verblijf in Hotel Des Indes, en een code voor €25 korting.",
+    Component: CrmJaarGeleden,
+    props: payoffProps("biro-script"),
+  },
+  {
+    slug: "crm-vaker-doen-bradley-hand",
+    title: "Dit moeten we vaker doen (headervarianten)",
+    description: "Kopie van 'Precies een jaar geleden' als voorbeeldmail voor de kop: de pay-off 'Dit moeten we vaker doen' onder het logo in Bradley Hand.",
+    section: "crm",
+    variantOf: "crm-vaker-doen",
+    subject: "Vandaag een jaar geleden 🎉",
+    preheader: "Je verblijf in Hotel Des Indes, en een code voor €25 korting.",
+    Component: CrmJaarGeleden,
+    props: payoffProps("bradley-hand"),
+  },
+  {
+    slug: "crm-vaker-doen-basis-grotesque",
+    title: "Dit moeten we vaker doen (headervarianten)",
+    description: "Kopie van 'Precies een jaar geleden' als voorbeeldmail voor de kop: de pay-off 'Dit moeten we vaker doen' onder het logo in Basis Grotesque.",
+    section: "crm",
+    variantOf: "crm-vaker-doen",
+    subject: "Vandaag een jaar geleden 🎉",
+    preheader: "Je verblijf in Hotel Des Indes, en een code voor €25 korting.",
+    Component: CrmJaarGeleden,
+    props: payoffProps("basis-grotesque"),
   },
   // ── Commerciële mails (volgorde = volgorde in het paneel van /commercieel) ──
   {

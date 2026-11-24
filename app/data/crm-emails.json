@@ -108,5 +108,36 @@
     "description": "Briefopening met de reden (waar je op zocht), drie populaire stedentrips (één groot, twee als rij), daarna een ander thema kiezen met zes witte snelfilterknoppen in een raster.",
     "subject": "Dit zijn de populairste stedentrips van dit moment",
     "preheader": "Parijs, Den Haag en Amsterdam, vanaf €279 voor 2 personen."
+  },
+  {
+    "slug": "crm-vaker-doen",
+    "title": "Dit moeten we vaker doen (headervarianten)",
+    "description": "Kopie van 'Precies een jaar geleden' als voorbeeldmail voor de kop: de pay-off 'Dit moeten we vaker doen' onder het logo in Oooh Baby.",
+    "subject": "Vandaag een jaar geleden 🎉",
+    "preheader": "Je verblijf in Hotel Des Indes, en een code voor €25 korting."
+  },
+  {
+    "slug": "crm-vaker-doen-biro-script",
+    "title": "Dit moeten we vaker doen (headervarianten)",
+    "description": "Kopie van 'Precies een jaar geleden' als voorbeeldmail voor de kop: de pay-off 'Dit moeten we vaker doen' onder het logo in Biro Script.",
+    "subject": "Vandaag een jaar geleden 🎉",
+    "preheader": "Je verblijf in Hotel Des Indes, en een code voor €25 korting.",
+    "variantOf": "crm-vaker-doen"
+  },
+  {
+    "slug": "crm-vaker-doen-bradley-hand",
+    "title": "Dit moeten we vaker doen (headervarianten)",
+    "description": "Kopie van 'Precies een jaar geleden' als voorbeeldmail voor de kop: de pay-off 'Dit moeten we vaker doen' onder het logo in Bradley Hand.",
+    "subject": "Vandaag een jaar geleden 🎉",
+    "preheader": "Je verblijf in Hotel Des Indes, en een code voor €25 korting.",
+    "variantOf": "crm-vaker-doen"
+  },
+  {
+    "slug": "crm-vaker-doen-basis-grotesque",
+    "title": "Dit moeten we vaker doen (headervarianten)",
+    "description": "Kopie van 'Precies een jaar geleden' als voorbeeldmail voor de kop: de pay-off 'Dit moeten we vaker doen' onder het logo in Basis Grotesque.",
+    "subject": "Vandaag een jaar geleden 🎉",
+    "preheader": "Je verblijf in Hotel Des Indes, en een code voor €25 korting.",
+    "variantOf": "crm-vaker-doen"
   }
 ]
