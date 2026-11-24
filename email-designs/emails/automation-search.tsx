@@ -2,7 +2,7 @@ import { Body, Container, Head, Heading, Html, Preview, Section } from "@react-e
 import * as React from "react";
 import CrmFooter from "../components/CrmFooter";
 import CrmHeader from "../components/CrmHeader";
-import { BeigeBand, CrmHelp, type Pill, s, site } from "../components/crm";
+import { BeigeBand, CrmHelp, type Pill, s, site, TextLink } from "../components/crm";
 import { AutomationDealList, AutomationLetter, automationCss, SearchSection, ThemeSection } from "../components/automation";
 import { type AutomationDeal } from "../lib/automationDeals";
 import { dePlesman, desIndes, kurhaus, voco } from "../lib/automationDeals";
@@ -25,6 +25,8 @@ type Props = {
   /** Leeg → "Beste gast,". */
   firstName?: string;
   heading: string;
+  /** Kop bovenaan de mail, boven de brief (mail 2). */
+  topHeading?: string;
   intro: string;
   /** S18 Zoekopdracht. Leeg → "jouw zoekopdracht". */
   searchTerm?: string;
@@ -35,9 +37,11 @@ type Props = {
   results: AutomationDeal[];
   /** S7 Themasectie (mail 4): kop, de thema's van de verzendmaand en de onderregel. */
   themeSection?: { title: string; note: string; items: Pill[] };
+  /** Tekstlink onder de resultaten. */
+  footerLink?: { href: string; label: string };
 };
 
-export default function AutomationSearch({ recipientEmail, preheader, firstName, heading, intro, searchTerm, arrivalDate, persons, resultsUrl, results, themeSection }: Props) {
+export default function AutomationSearch({ recipientEmail, preheader, firstName, heading, topHeading, intro, searchTerm, arrivalDate, persons, resultsUrl, results, themeSection, footerLink }: Props) {
   const c = newsletter.light;
 
   return (
@@ -50,8 +54,9 @@ export default function AutomationSearch({ recipientEmail, preheader, firstName,
       <Body style={{ backgroundColor: c.bg, margin: 0, padding: 0, fontFamily: font.body }}>
         <CrmHeader />
         <Container style={{ width: "100%", maxWidth: "626px" }}>
-          {/* Briefopening: aanhef, de intro uit de sheet en de ondertekening */}
+          {/* Briefopening: aanhef en de intro uit de sheet, eventueel met een kop erboven */}
           <Section className="m-pad" style={{ padding: "32px 32px 0" }}>
+            {topHeading && <Heading as="h1" className="m-h1" style={{ ...s.h1, marginBottom: "16px" }}>{topHeading}</Heading>}
             <AutomationLetter firstName={firstName}>{intro}</AutomationLetter>
           </Section>
 
@@ -62,9 +67,16 @@ export default function AutomationSearch({ recipientEmail, preheader, firstName,
 
           {/* S4 Hoteldeals: de zoekresultaten, met de kop erboven */}
           <Section className="m-pad" style={{ padding: "44px 32px 0" }}>
-            <Heading as="h1" className="m-h1" style={s.h1}>{heading}</Heading>
+            <Heading as={topHeading ? "h2" : "h1"} className="m-h1" style={s.h1}>{heading}</Heading>
             <AutomationDealList deals={results} />
           </Section>
+
+          {/* Tekstlink onder de resultaten */}
+          {footerLink && (
+            <Section className="m-pad" style={{ padding: "24px 32px 0" }}>
+              <TextLink href={footerLink.href}>{footerLink.label}</TextLink>
+            </Section>
+          )}
         </Container>
 
         {/* S7 Themasectie: keuzeblok op een beige band over de hele breedte */}
@@ -118,10 +130,13 @@ export const search1Props = {
 export const search2Props = {
   ...base,
   preheader: "Onze favorieten voor jouw data.",
-  heading: "Onze favorieten voor jouw zoekopdracht",
-  intro: `Gisteren zocht je naar ${TERM}. Dit zijn de arrangementen voor jouw data, met de populairste eerst.`,
+  // Feedback 24-11-2026: kop bovenaan, de kop boven de resultaten ingekort, en een tekstlink eronder.
+  topHeading: "Onze favorieten voor jouw zoekopdracht",
+  heading: "Onze favorieten voor jou",
+  intro: `Je keek naar ${TERM}. We hebben een paar mooie arrangementen voor je uitgezocht.`,
   resultsUrl: resultsUrl("retargeting_abandonedsearch_2"),
   results: [voco, desIndes, dePlesman],
+  footerLink: { href: "https://www.vialuxury.com/nl-NL/", label: "Bekijk alle ViaLuxury arrangementen" },
 } satisfies Props;
 
 /** v01_tf030_fl013_nl-NL_3_abandoned_search — 3 dagen na het zoeken. Ook net buiten het
