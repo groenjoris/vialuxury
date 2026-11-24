@@ -314,7 +314,8 @@ Regels voor elke CRM-mail:
   onder de titel (link naar de beschikbare datums in de tekst) en "Geselecteerd voor [voornaam]" boven de suggesties.
 - "Dit moeten we vaker doen" (`crm-vaker-doen`, laatste in het paneel): kopie van "Precies een jaar geleden" (zelfde
   component, prop `payoff`) als voorbeeldmail voor headervarianten. Onder het logo in de zwarte kop staat de pay-off "Dit
-  moeten we vaker doen!" (`CrmHeader`-prop `payoff`), precies even breed als het logo (201 px), met de schakelaar "Oooh
+  moeten we vaker doen !" (`CrmHeader`-prop `payoff`; het uitroepteken hoort er altijd bij en staat met een kleine ruimte
+  los van de laatste letter), precies even breed als het logo (201 px), met de schakelaar "Oooh
   Baby | La Belle Aurore | Caveat | Bradley Hand | Basis Grotesque | Recoleta" in de previewkop (La Belle Aurore en
   Caveat komen van Google Fonts en staan in `public/fonts`). De pay-off is een afbeelding (witte tekst, transparant; `payoff-<font>.png`, gemaakt met
   `scripts/mail-graphics/payoff-header.py`), want webfonts werken niet in elke mailclient.
