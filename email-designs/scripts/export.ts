@@ -23,13 +23,13 @@ async function main() {
   const commercieel: { slug: string; title: string; description: string; subject?: string; preheader?: string; variantOf?: string; variantLabel?: string }[] = [];
   mkdirSync(outDir, { recursive: true });
   const index: { slug: string; title: string; description: string; section: string; subject?: string; preheader?: string; variantOf?: string }[] = [];
-  const crm: { slug: string; title: string; description: string; subject?: string; preheader?: string; variantOf?: string }[] = [];
+  const crm: { slug: string; title: string; description: string; subject?: string; preheader?: string; variantOf?: string; variantLabel?: string }[] = [];
   const automation: typeof crm = [];
   for (const e of emails) {
     if (e.section === "crm" || e.section === "automation") {
       const list = e.section === "crm" ? crm : automation;
       writeFileSync(resolve(outDir, `${e.slug}.html`), await renderEmail(e, "light"));
-      list.push({ slug: e.slug, title: e.title, description: e.description, subject: e.subject, preheader: e.preheader, variantOf: e.variantOf });
+      list.push({ slug: e.slug, title: e.title, description: e.description, subject: e.subject, preheader: e.preheader, variantOf: e.variantOf, variantLabel: e.variantLabel });
       console.log("✓", e.slug);
       continue;
     }

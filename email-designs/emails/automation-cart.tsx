@@ -32,7 +32,8 @@ type Props = {
   firstName?: string;
   /** Kop (rij 5) en intro (rij 6) van de sheet. */
   heading: string;
-  intro: string;
+  /** Leeg → geen introtekst onder de kop (mail 1). */
+  intro?: string;
   /** Waar de kop staat: boven het winkelmandje, het gastenoordeel of de codesectie. */
   headingAt?: "cart" | "rating" | "code";
   /** "direct": kop en intro bovenaan (mail 2, één ding te doen). "brief": aanhef, intro en de
@@ -73,7 +74,7 @@ export default function AutomationCart({ recipientEmail, preheader, firstName, h
             ) : (
               <>
                 <Heading as="h1" className="m-h1" style={s.h1}>{heading}</Heading>
-                <Text style={{ ...s.body, margin: "12px 0 0" }}>{intro}</Text>
+                {intro && <Text style={{ ...s.body, margin: "12px 0 0" }}>{intro}</Text>}
               </>
             )}
           </Section>
@@ -155,10 +156,8 @@ const HOTEL = "Hotel Des Indes";
 const cart: AutomationDeal & { hotelName: string } = {
   ...desIndes,
   hotelName: HOTEL,
-  // De sheet noemt voor het winkelmandje: foto, hotelnaam, aankomstdatum, nachten, personen en
-  // de prijs — dus zonder de inclusies en zonder de regel "voor wie de prijs geldt". In mail 1
-  // blijft de prijs helemaal weg (feedback 2026-11-24); mail 2, 3 en 4 tonen hem in de prijsrij.
-  includes: undefined,
+  // Feedback 24-11-2026: de kaart toont de inclusies, zonder prijs en zonder korting. De regel
+  // "voor wie de prijs geldt" hoort bij de prijsrij en vervalt dus ook.
   priceFor: undefined,
   line: undefined,
   lines: ["20 november · 2 nachten · 2 personen"],
@@ -171,11 +170,18 @@ export const cart1Props = {
   recipientEmail: "sanne.devries@example.com",
   firstName: "Sanne",
   preheader: "Rond je boeking af wanneer het jou uitkomt.",
-  heading: "Je bent er bijna",
-  intro: `Je was bijna klaar met je boeking voor ${HOTEL}. We hebben alles voor je bewaard, zodat je zo verder kunt.`,
+  // Feedback 24-11-2026: nieuwe kop met de voornaam en de hotelnaam, en geen introtekst meer.
+  heading: `Sanne, we hebben het nog even voor je bewaard. Nog steeds interesse in ${HOTEL}?`,
   opening: "winkelmandje" as const,
   cart,
   service: true,
+} satisfies Props;
+
+/** Zelfde mail met een onbekende voornaam: de kop begint dan zonder naam. */
+export const cart1ZonderNaamProps = {
+  ...cart1Props,
+  firstName: undefined,
+  heading: `We hebben het nog even voor je bewaard. Nog steeds interesse in ${HOTEL}?`,
 } satisfies Props;
 
 /** v01_tf022_fl011_nl-NL_2_abandoned_cart — 2 dagen na het verlaten van het winkelmandje. */

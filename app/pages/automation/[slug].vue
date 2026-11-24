@@ -20,13 +20,21 @@ const groups = [
   { title: 'Zoekopdracht', flow: 'fl013' },
 ].map(g => ({
   ...g,
+  // Varianten van een mail (registry: variantOf) staan niet in het paneel maar als schakelaar
+  // in de kop; in het paneel blijft de hoofdmail actief.
   items: emails
-    .filter(e => e.slug.includes(g.flow))
+    .filter(e => e.slug.includes(g.flow) && !(e as { variantOf?: string }).variantOf)
     .map((e) => {
       const m = e.title.match(/^(.*?)\s*\((.*)\)$/)
       return { slug: e.slug, label: m ? m[1] : e.title, when: m ? m[2] : '' }
     }),
 }))
+
+const baseSlug = computed(() => (entry.value as { variantOf?: string } | undefined)?.variantOf ?? slug.value)
+const variants = computed(() => {
+  const list = emails.filter(e => e.slug === baseSlug.value || (e as { variantOf?: string }).variantOf === baseSlug.value)
+  return list.length > 1 ? list.map(e => ({ slug: e.slug, label: (e as { variantLabel?: string }).variantLabel ?? e.slug })) : []
+})
 const nav = groups.flatMap(g => g.items)
 
 // Dropdown in de kop: alle tien de mails, gegroepeerd per flow.
@@ -37,7 +45,7 @@ function onPick(ev: Event) {
 // Pijltjes omhoog/omlaag: vorige/volgende mail
 function onKey(ev: KeyboardEvent) {
   if (ev.key !== 'ArrowDown' && ev.key !== 'ArrowUp') return
-  const i = nav.findIndex(e => e.slug === slug.value)
+  const i = nav.findIndex(e => e.slug === baseSlug.value)
   const next = nav[i + (ev.key === 'ArrowDown' ? 1 : -1)]
   if (!next) return
   ev.preventDefault()
@@ -58,6 +66,16 @@ useHead({ title: `${entry.value?.title ?? 'E-mail'} — ViaLuxury automations` }
           <h1 class="aut__title">{{ entry?.title }}</h1>
           <code class="aut__slug">{{ slug }}</code>
         </div>
+        <div v-if="variants.length" class="aut__variants" role="group" aria-label="Variant">
+          <NuxtLink
+            v-for="v in variants"
+            :key="v.slug"
+            :to="`/automation/${v.slug}`"
+            class="aut__variant"
+            :class="{ 'aut__variant--on': v.slug === slug }"
+            :aria-current="v.slug === slug ? 'true' : undefined"
+          >{{ v.label }}</NuxtLink>
+        </div>
         <select class="aut__picker" :value="slug" aria-label="Kies een mail" @change="onPick">
           <optgroup v-for="g in groups" :key="g.flow" :label="g.title">
             <option v-for="e in g.items" :key="e.slug" :value="e.slug">
@@ -76,8 +94,8 @@ useHead({ title: `${entry.value?.title ?? 'E-mail'} — ViaLuxury automations` }
             :key="e.slug"
             :to="`/automation/${e.slug}`"
             class="aut__nav-link"
-            :class="{ 'aut__nav-link--on': e.slug === slug }"
-            :aria-current="e.slug === slug ? 'page' : undefined"
+            :class="{ 'aut__nav-link--on': e.slug === baseSlug }"
+            :aria-current="e.slug === baseSlug ? 'page' : undefined"
           >
             <span class="aut__nav-label">{{ e.label }}</span>
             <span v-if="e.when" class="aut__nav-when">{{ e.when }}</span>
@@ -112,6 +130,12 @@ useHead({ title: `${entry.value?.title ?? 'E-mail'} — ViaLuxury automations` }
 .aut__title { margin: 0; font-family: var(--font-heading); font-size: 20px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 /* De Klaviyo-naam, zodat de template daar net zo kan heten */
 .aut__slug { display: block; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; color: var(--color-text-secondary); }
+/* Variantschakelaar naast de titel: twee segmenten, het actieve zwart */
+.aut__variants { display: inline-flex; flex-shrink: 0; border: 1px solid var(--color-border); border-radius: 6px; overflow: hidden; background: #fff; }
+.aut__variant { padding: 6px 12px; font-size: 13px; line-height: 1.3; color: var(--color-text-secondary); text-decoration: none; white-space: nowrap; }
+.aut__variant + .aut__variant { border-left: 1px solid var(--color-border); }
+.aut__variant:hover { color: var(--color-text-primary); }
+.aut__variant--on, .aut__variant--on:hover { background: #141414; color: #fff; }
 /* Dropdown naar elke mail, voor als het paneel links niet past */
 .aut__picker { flex: 0 0 auto; max-width: 320px; padding: 7px 10px; font-family: inherit; font-size: 13px; line-height: 1.3; color: var(--color-text-primary); background: #fff; border: 1px solid var(--color-border); border-radius: 6px; }
 .aut__stage { display: flex; align-items: flex-start; gap: 24px; padding: 20px 24px 48px; }

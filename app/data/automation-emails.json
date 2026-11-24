@@ -4,7 +4,17 @@
     "title": "Winkelmandje 1 (1 uur na verlaten)",
     "description": "Kop, intro, het winkelmandje met datums, nachten, personen en prijs, en de knop Rond je boeking af. Onderaan de serviceregel. Geen alternatieven.",
     "subject": "Je verblijf in Hotel Des Indes staat nog klaar",
-    "preheader": "Rond je boeking af wanneer het jou uitkomt."
+    "preheader": "Rond je boeking af wanneer het jou uitkomt.",
+    "variantLabel": "Naam bekend"
+  },
+  {
+    "slug": "v01_tf021_fl011_nl-NL_1_abandoned_cart-naam-onbekend",
+    "title": "Winkelmandje 1 (1 uur na verlaten)",
+    "description": "Variant voor als de voornaam niet bekend is: de kop begint zonder naam.",
+    "subject": "Je verblijf in Hotel Des Indes staat nog klaar",
+    "preheader": "Rond je boeking af wanneer het jou uitkomt.",
+    "variantOf": "v01_tf021_fl011_nl-NL_1_abandoned_cart",
+    "variantLabel": "Naam onbekend"
   },
   {
     "slug": "v01_tf022_fl011_nl-NL_2_abandoned_cart",

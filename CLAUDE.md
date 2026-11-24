@@ -341,6 +341,11 @@ horen, komt uit de tabbladen Themategels en Seizoensthema's.
 
 Het gastenoordeel (S21) toont de Trustpilot-sterren met "4,5 uit 312 reviews" en één korte review.
 
+`tf021` wijkt sinds 24-11-2026 af van de sheet: de kop is "[Voornaam], we hebben het nog even voor je
+bewaard. Nog steeds interesse in [hotelnaam]?" met een variant zonder naam
+(`-naam-onbekend`, schakelaar in de previewkop), er staat geen introtekst meer onder, de kaart toont
+de inclusies en er staat geen prijs en geen korting in de mail.
+
 Feedback 24-11-2026 (Anoeska, na de meeting met Bart): in `tf021` staan boven de knop geen prijs en
 geen korting meer. Dat wijkt af van de sheet, die bij S17 ook "en de prijs" noemt.
 

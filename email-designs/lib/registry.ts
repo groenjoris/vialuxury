@@ -12,7 +12,7 @@ import CrmReview, { knoppenProps } from "../emails/crm-review";
 import CrmTerugkomactie, { herinneringProps } from "../emails/crm-terugkomactie";
 import CrmZoekopdracht from "../emails/crm-zoekopdracht";
 import CrmFavorieten from "../emails/crm-favorieten";
-import AutomationCart, { cart1Props, cart2Props, cart3Props, cart4Props } from "../emails/automation-cart";
+import AutomationCart, { cart1Props, cart1ZonderNaamProps, cart2Props, cart3Props, cart4Props } from "../emails/automation-cart";
 import AutomationBrowse, { browse1Props, browse2Props, browse3Props } from "../emails/automation-browse";
 import AutomationSearch, { search1Props, search2Props, search3Props, search4Props } from "../emails/automation-search";
 import { incheckMails } from "./incheckMails";
@@ -376,6 +376,19 @@ export const emails: EmailEntry[] = [
     preheader: "Rond je boeking af wanneer het jou uitkomt.",
     Component: AutomationCart,
     props: cart1Props,
+    variantLabel: "Naam bekend",
+  },
+  {
+    slug: "v01_tf021_fl011_nl-NL_1_abandoned_cart-naam-onbekend",
+    variantOf: "v01_tf021_fl011_nl-NL_1_abandoned_cart",
+    title: "Winkelmandje 1 (1 uur na verlaten)",
+    description: "Variant voor als de voornaam niet bekend is: de kop begint zonder naam.",
+    section: "automation",
+    subject: "Je verblijf in Hotel Des Indes staat nog klaar",
+    preheader: "Rond je boeking af wanneer het jou uitkomt.",
+    Component: AutomationCart,
+    props: cart1ZonderNaamProps,
+    variantLabel: "Naam onbekend",
   },
   {
     slug: "v01_tf022_fl011_nl-NL_2_abandoned_cart",
