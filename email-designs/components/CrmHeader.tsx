@@ -2,18 +2,20 @@ import { Column, Container, Img, Row, Section } from "@react-email/components";
 import * as React from "react";
 import { baseUrl, newsletter, type EmailMode } from "./theme";
 
-/** Pay-off "Dit moeten we vaker doen" onder het logo, als afbeelding (witte tekst, transparant) in
- *  een van vier lettertypes; gemaakt met scripts/mail-graphics/payoff-header.py. Breedte en hoogte in px. */
+/** Pay-off "Dit moeten we vaker doen!" onder het logo, als afbeelding (witte tekst, transparant) in
+ *  een van vijf lettertypes; gemaakt met scripts/mail-graphics/payoff-header.py. Elke afbeelding is
+ *  precies even breed als het logo (201 px). */
 export const payoffs = {
-  "oooh-baby": { label: "Oooh Baby", width: 215, height: 23 },
-  "biro-script": { label: "Biro Script", width: 204, height: 23 },
-  "bradley-hand": { label: "Bradley Hand", width: 202, height: 18 },
-  "basis-grotesque": { label: "Basis Grotesque", width: 184, height: 14 },
+  "oooh-baby": "Oooh Baby",
+  "biro-script": "Biro Script",
+  "bradley-hand": "Bradley Hand",
+  "basis-grotesque": "Basis Grotesque",
+  recoleta: "Recoleta",
 } as const;
 export type Payoff = keyof typeof payoffs;
 
 /** Header van de CRM- en vakantiemails: zwarte balk over de hele breedte (inhoud 626px) met logo links en de Trustpilot-score rechts.
- *  `payoff`: de pay-off "Dit moeten we vaker doen" onder het logo, in het gekozen lettertype. */
+ *  `payoff`: de pay-off "Dit moeten we vaker doen!" onder het logo, in het gekozen lettertype. */
 export default function CrmHeader({ mode = "light", payoff }: { mode?: EmailMode; payoff?: Payoff }) {
   const c = newsletter[mode];
   return (
@@ -24,7 +26,7 @@ export default function CrmHeader({ mode = "light", payoff }: { mode?: EmailMode
             <Column style={{ verticalAlign: "middle" }}>
               <Img src={`${baseUrl}/images/logo-vialuxury-horizontal.png`} alt="ViaLuxury" width="201" className="m-logo" style={{ height: "auto" }} />
               {payoff && (
-                <Img src={`${baseUrl}/images/mail/crm/payoff-${payoff}.png`} alt="Dit moeten we vaker doen" width={payoffs[payoff].width} height={payoffs[payoff].height} style={{ display: "block", marginTop: "8px" }} />
+                <Img src={`${baseUrl}/images/mail/crm/payoff-${payoff}.png`} alt="Dit moeten we vaker doen!" width="201" style={{ display: "block", width: "201px", height: "auto", marginTop: "8px" }} />
               )}
             </Column>
             <Column align="right" style={{ verticalAlign: "middle" }}>

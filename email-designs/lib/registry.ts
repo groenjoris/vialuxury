@@ -386,7 +386,7 @@ export const emails: EmailEntry[] = [
   {
     slug: "crm-vaker-doen",
     title: "Dit moeten we vaker doen (headervarianten)",
-    description: "Kopie van 'Precies een jaar geleden' als voorbeeldmail voor de kop: de pay-off 'Dit moeten we vaker doen' onder het logo in Oooh Baby.",
+    description: "Kopie van 'Precies een jaar geleden' als voorbeeldmail voor de kop: de pay-off 'Dit moeten we vaker doen!' onder het logo in Oooh Baby.",
     section: "crm",
     subject: "Vandaag een jaar geleden 🎉",
     preheader: "Je verblijf in Hotel Des Indes, en een code voor €25 korting.",
@@ -396,7 +396,7 @@ export const emails: EmailEntry[] = [
   {
     slug: "crm-vaker-doen-biro-script",
     title: "Dit moeten we vaker doen (headervarianten)",
-    description: "Kopie van 'Precies een jaar geleden' als voorbeeldmail voor de kop: de pay-off 'Dit moeten we vaker doen' onder het logo in Biro Script.",
+    description: "Kopie van 'Precies een jaar geleden' als voorbeeldmail voor de kop: de pay-off 'Dit moeten we vaker doen!' onder het logo in Biro Script.",
     section: "crm",
     variantOf: "crm-vaker-doen",
     subject: "Vandaag een jaar geleden 🎉",
@@ -407,7 +407,7 @@ export const emails: EmailEntry[] = [
   {
     slug: "crm-vaker-doen-bradley-hand",
     title: "Dit moeten we vaker doen (headervarianten)",
-    description: "Kopie van 'Precies een jaar geleden' als voorbeeldmail voor de kop: de pay-off 'Dit moeten we vaker doen' onder het logo in Bradley Hand.",
+    description: "Kopie van 'Precies een jaar geleden' als voorbeeldmail voor de kop: de pay-off 'Dit moeten we vaker doen!' onder het logo in Bradley Hand.",
     section: "crm",
     variantOf: "crm-vaker-doen",
     subject: "Vandaag een jaar geleden 🎉",
@@ -418,13 +418,24 @@ export const emails: EmailEntry[] = [
   {
     slug: "crm-vaker-doen-basis-grotesque",
     title: "Dit moeten we vaker doen (headervarianten)",
-    description: "Kopie van 'Precies een jaar geleden' als voorbeeldmail voor de kop: de pay-off 'Dit moeten we vaker doen' onder het logo in Basis Grotesque.",
+    description: "Kopie van 'Precies een jaar geleden' als voorbeeldmail voor de kop: de pay-off 'Dit moeten we vaker doen!' onder het logo in Basis Grotesque.",
     section: "crm",
     variantOf: "crm-vaker-doen",
     subject: "Vandaag een jaar geleden 🎉",
     preheader: "Je verblijf in Hotel Des Indes, en een code voor €25 korting.",
     Component: CrmJaarGeleden,
     props: payoffProps("basis-grotesque"),
+  },
+  {
+    slug: "crm-vaker-doen-recoleta",
+    title: "Dit moeten we vaker doen (headervarianten)",
+    description: "Kopie van 'Precies een jaar geleden' als voorbeeldmail voor de kop: de pay-off 'Dit moeten we vaker doen!' onder het logo in Recoleta.",
+    section: "crm",
+    variantOf: "crm-vaker-doen",
+    subject: "Vandaag een jaar geleden 🎉",
+    preheader: "Je verblijf in Hotel Des Indes, en een code voor €25 korting.",
+    Component: CrmJaarGeleden,
+    props: payoffProps("recoleta"),
   },
   // ── Commerciële mails (volgorde = volgorde in het paneel van /commercieel) ──
   {

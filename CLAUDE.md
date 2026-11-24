@@ -308,8 +308,8 @@ Regels voor elke CRM-mail:
   onder de titel (link naar de beschikbare datums in de tekst) en "Geselecteerd voor [voornaam]" boven de suggesties.
 - "Dit moeten we vaker doen" (`crm-vaker-doen`, laatste in het paneel): kopie van "Precies een jaar geleden" (zelfde
   component, prop `payoff`) als voorbeeldmail voor headervarianten. Onder het logo in de zwarte kop staat de pay-off "Dit
-  moeten we vaker doen" (`CrmHeader`-prop `payoff`), met de schakelaar "Oooh Baby | Biro Script | Bradley Hand | Basis
-  Grotesque" in de previewkop. De pay-off is een afbeelding (witte tekst, transparant; `payoff-<font>.png`, gemaakt met
+  moeten we vaker doen!" (`CrmHeader`-prop `payoff`), precies even breed als het logo (201 px), met de schakelaar "Oooh
+  Baby | Biro Script | Bradley Hand | Basis Grotesque | Recoleta" in de previewkop. De pay-off is een afbeelding (witte tekst, transparant; `payoff-<font>.png`, gemaakt met
   `scripts/mail-graphics/payoff-header.py`), want webfonts werken niet in elke mailclient.
 - Nagenietmail heeft twee varianten (schakelaar "Bericht | Titel"): standaard een brief met aanhef en ondertekening en
   in het blok alleen de vraag als titel; of (`crm-nagenieten-titel`) de grote titel onder de foto.

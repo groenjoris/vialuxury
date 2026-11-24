@@ -40,6 +40,7 @@ const variantLabels: Record<string, string> = {
   'crm-vaker-doen-biro-script': 'Biro Script',
   'crm-vaker-doen-bradley-hand': 'Bradley Hand',
   'crm-vaker-doen-basis-grotesque': 'Basis Grotesque',
+  'crm-vaker-doen-recoleta': 'Recoleta',
   'crm-winkelmandje-2-dagen': 'Naam bekend',
   'crm-winkelmandje-2-dagen-naam-onbekend': 'Naam onbekend',
 }
