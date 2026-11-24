@@ -309,7 +309,8 @@ Regels voor elke CRM-mail:
 - Reviewmail: de sterren zijn een keuzeblok op het beige vlak: vijf lege, omlijnde sterren (`ster-leeg.png`) met "Slecht"
   en "Uitstekend" eronder. Leeg leest als "vul mij in"; gevulde sterren lezen als een score die er al staat. Variant
   `crm-review-knoppen` (schakelaar "Lege ster | Knop" in de previewkop): vijf witte knoppen met cijfer en ster.
-- Precies een jaar geleden heeft twee varianten (schakelaar "Social proof | Persoonlijk"): social proof met de knop "Check
+- Precies een jaar geleden (en de kopie "Dit moeten we vaker doen"): de foto staat direct onder de header over de hele
+  breedte van de mail, buiten de `<Container>`. De mail heeft twee varianten (schakelaar "Social proof | Persoonlijk"): social proof met de knop "Check
   beschikbaarheid" en "Anderen boekten ook" boven de suggesties; persoonlijk (`crm-jaar-geleden-persoonlijk`) met een brief
   onder de titel (link naar de beschikbare datums in de tekst) en "Geselecteerd voor [voornaam]" boven de suggesties.
 - "Dit moeten we vaker doen" (`crm-vaker-doen`, laatste in het paneel): kopie van "Precies een jaar geleden" (zelfde

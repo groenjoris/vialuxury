@@ -52,10 +52,10 @@ export default function CrmJaarGeleden({ recipientEmail, firstName, variant = "s
       <Preview>{code ? `Je verblijf in ${hotelName}, en een code voor ${code.value} korting.` : `Je verblijf in ${hotelName}.`}</Preview>
       <Body style={{ backgroundColor: c.bg, margin: 0, padding: 0, fontFamily: font.body }}>
         <CrmHeader payoff={payoff} />
+        {/* Grote arrangementfoto direct onder de header, over de hele breedte van de mail (buiten de
+            <Container>, net als de header); geen intro */}
+        <Img src={image} alt={packageTitle} width="700" height="400" style={{ display: "block", width: "100%", height: "400px", objectFit: "cover" }} />
         <Container style={{ width: "100%", maxWidth: "626px" }}>
-          {/* Grote arrangementfoto; geen intro */}
-          <Img src={image} alt={packageTitle} width="626" height="380" style={{ display: "block", width: "100%", height: "380px", objectFit: "cover" }} />
-
           <Section className="m-pad" style={{ padding: "28px 32px 0" }}>
             <Heading as="h1" className="m-h1" style={s.h1}>Vorig jaar op {arrivalDayLastYear}</Heading>
             {personal ? (
