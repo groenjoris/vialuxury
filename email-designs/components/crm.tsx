@@ -72,17 +72,17 @@ export const s = {
 };
 
 /** Briefopening, het vaste begin van een CRM-mail: aanhef ("Beste Sanne," of zonder naam
- *  "Beste gast,"; in elke mail dezelfde aanhef), een korte intro en de ondertekening "Groetjes Yvette". De ondertekening is een
- *  afbeelding (handgeschreven lettertype Oooh Baby, donkergrijs #555555), zodat hij in elke
- *  mailclient en in Klaviyo hetzelfde is. Titels van blokken (bijv. "Anderen boekten ook") komen
- *  ná de brief, direct boven het blok waar ze bij horen. */
+ *  "Beste gast,"; in elke mail dezelfde aanhef), een korte intro en de ondertekening
+ *  "Groetjes het ViaLuxury team" als gewone vette bodytekst (sinds 24-11-2026; was een
+ *  afbeelding met een handgeschreven lettertype en de naam Yvette). Titels van blokken (bijv.
+ *  "Anderen boekten ook") komen ná de brief, direct boven het blok waar ze bij horen. */
 export function Letter({ firstName, children }: { firstName?: string; children: React.ReactNode }) {
   const salutation = firstName ? `Beste ${firstName},` : "Beste gast,";
   return (
     <>
       <Text style={{ ...s.body, margin: 0 }}>{salutation}</Text>
       <Text style={{ ...s.body, margin: "8px 0 0" }}>{children}</Text>
-      <Img src={`${baseUrl}/images/mail/crm/groetjes-yvette.png`} alt="Groetjes Yvette" width="133" height="29" style={{ display: "block", width: "133px", height: "29px", marginTop: "14px" }} />
+      <Text style={{ ...s.name, margin: "14px 0 0" }}>Groetjes het ViaLuxury team</Text>
     </>
   );
 }

@@ -218,9 +218,9 @@ Regels voor elke CRM-mail:
 - Briefopzet (het format voor alle CRM-mails, tot nu toe in `crm-winkelmandje-2-dagen`, `crm-favorieten`, `crm-zoekopdracht`,
   `crm-thema-stedentrips` en `crm-terugkomactie` (met herinnering); de aanhef is
   overal "Beste …", nooit "Hi"): de mail begint met
-  de bouwsteen `Letter`: aanhef ("Beste Sanne," / "Beste gast,"), een korte intro en de ondertekening "Groetjes Yvette"
-  als afbeelding (`public/images/mail/crm/groetjes-yvette.png`: lettertype Oooh Baby, donkergrijs #555555; geen
-  webfont, want die werkt niet in elke mailclient). Een titel (bijv. "Anderen boekten ook", 32 serif) is de titel van
+  de bouwsteen `Letter`: aanhef ("Beste Sanne," / "Beste gast,"), een korte intro en de ondertekening
+  "Groetjes het ViaLuxury team" als gewone vette bodytekst (16 px, 700). Sinds 24-11-2026; daarvoor was het
+  "Groetjes Yvette" als afbeelding in een handgeschreven lettertype (`groetjes-yvette.png`, nu ongebruikt). Een titel (bijv. "Anderen boekten ook", 32 serif) is de titel van
   het blok eronder en staat direct boven dat blok, nooit boven de aanhef.
 - Drie lettergroottes: titel 32, subtitel en hotelnaam 20, alle overige tekst 16 px (footer uitgezonderd). Uitzondering:
   de dealtitel in een dealkaart is 18 px serif.
