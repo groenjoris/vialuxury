@@ -44,18 +44,14 @@ body { margin: 0 !important; padding: 0 !important; }
 }
 `;
 
-/** Briefopening: aanhef, een korte intro en de ondertekening als gewone vette bodytekst,
- *  op twee regels: "Groetjes," regulier en daaronder de afzender vet. Een afsluiting is lopende
- *  tekst; krijgt er één nadruk, dan is dat de afzender en niet de beleefdheidsformule. */
+/** Briefopening: aanhef en een korte intro. Zonder ondertekening: die laten we voorlopig
+ *  helemaal weg (feedback 24-11-2026; "Groetjes Yvette" verviel en er komt voorlopig niets
+ *  voor in de plaats). */
 export function AutomationLetter({ firstName, children }: { firstName?: string; children: React.ReactNode }) {
   return (
     <>
       <Text style={{ ...s.body, margin: 0 }}>{firstName ? `Beste ${firstName},` : "Beste gast,"}</Text>
       <Text style={{ ...s.body, margin: "8px 0 0" }}>{children}</Text>
-      {/* Ondertekening op twee regels, zoals je een mail afsluit. Twee losse regels in plaats van
-          een <br />, want die doet het niet in elke mailclient hetzelfde. */}
-      <Text style={{ ...s.body, margin: "14px 0 0" }}>Groetjes,</Text>
-      <Text style={{ ...s.name, margin: 0 }}>Het ViaLuxury team</Text>
     </>
   );
 }

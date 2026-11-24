@@ -309,8 +309,9 @@ klaarstaat als losse regels, de knop en daaronder de kaart zonder prijsrij. `tf0
 `tf026` beginnen ook direct met de kop en de intro, met de kaart compleet; gaat hij over suggesties of het oordeel van anderen, dan is het een
 brief van Yvette (`crm-winkelmandje-2-dagen`, `tf023`, `tf027` en alle zoekmails, zoals
 `crm-zoekopdracht`). Bij een brief staat de kop uit de sheet als titel direct boven het blok waar
-hij bij hoort. De ondertekening is "Groetjes het ViaLuxury team" als gewone vette bodytekst
-(feedback 24-11-2026); de CRM-mails houden hun eigen ondertekening. De secties staan gewoon in de kolom op wit en elke mail eindigt met de hulplijn
+hij bij hoort. De brief heeft geen ondertekening: "Groetjes Yvette"
+verviel en er komt voorlopig niets voor in de plaats (feedback 24-11-2026). De CRM-mails houden
+hun eigen ondertekening. De secties staan gewoon in de kolom op wit en elke mail eindigt met de hulplijn
 `CrmHelp` ("Hulp nodig?"). De enige beige band is de themakiezer in `tf031`, want een keuzeblok
 staat altijd op beige.
 
