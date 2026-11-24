@@ -167,9 +167,9 @@ export const browse2Props = {
   intro: "Er is al veel inbegrepen, dus jij hoeft alleen te genieten. Vragen? We denken graag mee.",
   viewedTitle: "Door jou bekeken:",
   alternativesTitle: "Anderen bekeken ook",
-  brand: "Bij ViaLuxury selecteren we elk hotel zelf en stellen we arrangementen samen waarin alles al geregeld is. Jij boekt één keer en hoeft daarna alleen nog te genieten.",
-  brandGreeting: "Groetjes, ViaLuxury team",
-  footerLink: { href: "https://www.vialuxury.com/nl-NL/", label: "Bekijk al onze arrangementen" },
+  brand: "Elk hotel kiezen we zelf uit, en elk arrangement stellen we met zorg samen. Zo weet je zeker dat je verblijf klopt, tot in de details.",
+  brandGreeting: "Groetjes, team ViaLuxury",
+  footerLink: { href: "https://www.vialuxury.com/nl-NL/", label: "Ontdek onze hotelervaringen" },
 } satisfies Props;
 
 /** v01_tf027_fl012_nl-NL_3_abandoned_browse — 2 dagen na het bekijken. */

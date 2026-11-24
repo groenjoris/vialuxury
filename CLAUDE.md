@@ -381,9 +381,10 @@ alternatieven staat "Anderen bekeken ook".
 `tf026` wijkt sinds 24-11-2026 af van de sheet: de kop staat bovenaan met de brief eronder ("Er is al
 veel inbegrepen, dus jij hoeft alleen te genieten. Vragen? We denken graag mee."), boven het bekeken
 arrangement staat de subtitel "Door jou bekeken:", boven de alternatieven "Anderen bekeken ook", het
-merkblok (S6) staat op een beige band met de kop "Zo werkt ViaLuxury", de merktekst uit de sheet, die
-tekst als drie korte punten met een vinkje, de groet "Groetjes, ViaLuxury team" en onderin de
-tekstlink "Bekijk al onze arrangementen" (die link staat dus in het blok, niet eronder).
+merkblok (S6) staat op een beige band met de kop "Zorgvuldig samengestelde hotelervaringen" (de
+toekomstige pay-off), de merktekst, vier punten met een vinkje (de laatste met de Trustpilot-ster:
+4.5/5 met 16.000+ reviews), de groet "Groetjes, team ViaLuxury" en onderin de tekstlink "Ontdek onze
+hotelervaringen" (die link staat dus in het blok, niet eronder). Copy van Anoeska, 24-11-2026.
 
 `tf027` wijkt sinds 24-11-2026 af van de sheet: de kop is "[Voornaam], misschien past deze jou nog
 beter" met een variant zonder naam (`-naam-onbekend`), staat bovenaan met de intro eronder ("Gasten

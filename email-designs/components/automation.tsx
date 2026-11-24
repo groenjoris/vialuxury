@@ -267,24 +267,25 @@ export function GuestRatingSection({ rating }: { rating: GuestRating }) {
   );
 }
 
-/** S6 Merksectie. Feedback 24-11-2026: meer merkgevoel. Een beige band over de hele breedte met
- *  een kop, de merktekst uit de sheet, die tekst nog eens als drie korte punten met een vinkje,
- *  de groet en onderaan de tekstlink naar alle arrangementen. */
+/** S6 Merksectie. Feedback 24-11-2026 (derde ronde): een merkblok dat vertrouwen opbouwt, met de
+ *  toekomstige pay-off als kop. Beige band over de hele breedte met de kop, de merktekst, vier
+ *  punten (het laatste met de Trustpilot-ster), de groet en een tekstlink. */
 export function BrandSection({ children, greeting, link, top = "40px" }: { children: React.ReactNode; greeting?: string; link?: { href: string; label: string }; top?: string }) {
-  const punten = [
-    "Elk hotel zelf geselecteerd",
-    "Alles geregeld in één arrangement",
-    "Eén keer boeken, daarna genieten",
+  const punten: { icon: string; lead: string; text: string }[] = [
+    { icon: checkIcon, lead: "Persoonlijk geselecteerd:", text: "we kennen onze hotels en kiezen alleen wat we zelf zouden boeken." },
+    { icon: checkIcon, lead: "Alles al geregeld:", text: "overnachting, ontbijt en extra’s zitten in één arrangement." },
+    { icon: checkIcon, lead: "Altijd een aanspreekpunt:", text: "vragen voor of na je boeking? Ons team helpt je graag." },
+    { icon: `${baseUrl}/images/mail/crm/trustpilot-ster-groen.png`, lead: "Trustpilot score:", text: "4.5/5 met 16.000+ reviews" },
   ];
   return (
     <BeigeBand top={top}>
-      <Text style={{ ...s.kop, margin: 0 }}>Zo werkt ViaLuxury</Text>
+      <Text style={{ ...s.kop, margin: 0 }}>Zorgvuldig samengestelde hotelervaringen</Text>
       <Text style={{ ...s.body, margin: "10px 0 0" }}>{children}</Text>
       <Section style={{ marginTop: "14px" }}>
-        {punten.map((t) => (
-          <Text key={t} style={{ ...s.body, margin: "6px 0 0", paddingLeft: "26px", textIndent: "-26px" }}>
-            <Img src={checkIcon} alt="" width="16" height="16" style={{ display: "inline-block", verticalAlign: "-2px", marginRight: "10px" }} />
-            {t}
+        {punten.map((p) => (
+          <Text key={p.lead} style={{ ...s.body, margin: "8px 0 0", paddingLeft: "26px", textIndent: "-26px" }}>
+            <Img src={p.icon} alt="" width="16" height="16" style={{ display: "inline-block", verticalAlign: "-2px", marginRight: "10px" }} />
+            <strong>{p.lead}</strong> {p.text}
           </Text>
         ))}
       </Section>
