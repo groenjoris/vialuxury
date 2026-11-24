@@ -44,13 +44,17 @@ body { margin: 0 !important; padding: 0 !important; }
 }
 `;
 
-/** Briefopening: aanhef, een korte intro en de ondertekening als gewone vette bodytekst. */
+/** Briefopening: aanhef, een korte intro en de ondertekening als gewone vette bodytekst,
+ *  op twee regels: "Groetjes," en daaronder "Het ViaLuxury team". */
 export function AutomationLetter({ firstName, children }: { firstName?: string; children: React.ReactNode }) {
   return (
     <>
       <Text style={{ ...s.body, margin: 0 }}>{firstName ? `Beste ${firstName},` : "Beste gast,"}</Text>
       <Text style={{ ...s.body, margin: "8px 0 0" }}>{children}</Text>
-      <Text style={{ ...s.name, margin: "14px 0 0" }}>Groetjes het ViaLuxury team</Text>
+      {/* Ondertekening op twee regels, zoals je een mail afsluit. Twee losse regels in plaats van
+          een <br />, want die doet het niet in elke mailclient hetzelfde. */}
+      <Text style={{ ...s.name, margin: "14px 0 0" }}>Groetjes,</Text>
+      <Text style={{ ...s.name, margin: 0 }}>Het ViaLuxury team</Text>
     </>
   );
 }
