@@ -320,11 +320,11 @@ Regels voor elke CRM-mail:
 - "Dit moeten we vaker doen" (`crm-vaker-doen`): kopie van "Precies een jaar geleden" (zelfde component) als voorbeeldmail
   om de gastquote en de footer te beoordelen. "Dit moeten we vaker doen!" staat NIET meer als pay-off onder het logo
   (vervallen op 2026-11-25); het is een uitspraak van een gast en is dus vormgegeven als review: tussen aanhalingstekens in
-  het handgeschreven lettertype Caveat, met "Een van onze gasten" eronder (`GuestQuote`; de quote is een afbeelding,
+  het handgeschreven lettertype Caveat, met de afzender "— Onze tevreden gasten" eronder (streepje ervoor, zoals bij een echte quote) (`GuestQuote`; de quote is een afbeelding,
   `gastquote-donker.png` / `-wit.png`, gemaakt met `scripts/mail-graphics/guest-quote.py`, want een webfont werkt niet in
   elke mailclient). Drie plekken, schakelaar "Boven de footer | In de footer | Tussendoor" (prop `quote`): beige band
   direct boven de footer met de quote in een witte tekstballon; als bovenste deel van de zwarte footer (wit op zwart, lijn
-  eronder); of als beige strook tussen de hoofdboodschap en de suggesties.
+  eronder); of als beige strook tussen de hoofdboodschap en de suggesties (daar gecentreerd, de enige uitzondering op "alles links").
   Footer (alleen in deze mail): het losse blok "Hulp nodig?" is samengevoegd met de klantenservice-informatie in de
   footer, die daardoor veel prominenter is (`CrmFooter`-prop `help`, in de mail `footerHelp`; het blok in de mail
   vervalt). Vijf varianten met een tweede schakelaar "Footer 1 … 5": 1 lichtoranje band over de hele breedte boven de

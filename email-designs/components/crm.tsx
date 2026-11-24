@@ -60,30 +60,36 @@ export function Letter({ firstName, children }: { firstName?: string; children: 
 }
 
 /** De gastquote “Dit moeten we vaker doen!”: een uitspraak van een gast, dus vormgegeven als review
- *  (tussen aanhalingstekens, handgeschreven lettertype Caveat) met eronder van wie hij is. De quote
+ *  (tussen aanhalingstekens, handgeschreven lettertype Caveat) met eronder de afzender ("— Onze tevreden gasten"). De quote
  *  is een afbeelding (scripts/mail-graphics/guest-quote.py), want een webfont werkt niet in elke
  *  mailclient. `tone`: "donker" op een licht vlak, "wit" in de zwarte footer. `balloon`: de quote in
- *  een witte tekstballon (op een gekleurd vlak). Alles links uitgelijnd. Concept, alleen in de
+ *  een witte tekstballon (op een gekleurd vlak). Links uitgelijnd, behalve de strook tussendoor
+ *  (`center`). Concept, alleen in de
  *  voorbeeldmail "Dit moeten we vaker doen". */
-export function GuestQuote({ tone = "donker", balloon }: { tone?: "donker" | "wit"; balloon?: boolean }) {
+export function GuestQuote({ tone = "donker", balloon, center }: { tone?: "donker" | "wit"; balloon?: boolean; /** Gecentreerd (de strook tussendoor): ballon, puntje en afzender in het midden. */ center?: boolean }) {
   const quote = (
     <Img src={`${baseUrl}/images/mail/crm/gastquote-${tone}.png`} alt="“Dit moeten we vaker doen!”" width="367" height="34" style={{ display: "block", width: "367px", maxWidth: "100%", height: "auto" }} />
   );
+  // De afzender, zoals onder een echte quote: streepje ervoor
   const by = (
-    <Text style={{ ...s.muted, color: tone === "wit" ? "#FFFFFF" : c.muted, margin: balloon ? "12px 0 0" : "8px 0 0" }}>Een van onze gasten</Text>
+    <Text style={{ ...s.muted, color: tone === "wit" ? "#FFFFFF" : c.muted, margin: balloon ? "12px 0 0" : "8px 0 0", textAlign: center ? "center" : "left" }}>— Onze tevreden gasten</Text>
   );
   if (!balloon) return <div id="gastquote">{quote}{by}</div>;
   return (
     <div id="gastquote">
-      <table role="presentation" cellPadding={0} cellSpacing={0} border={0} style={{ borderCollapse: "separate" }}>
+      <table role="presentation" align={center ? "center" : undefined} cellPadding={0} cellSpacing={0} border={0} style={{ borderCollapse: "separate", margin: center ? "0 auto" : undefined }}>
         <tbody>
           <tr>
             <td style={{ backgroundColor: "#FFFFFF", borderRadius: "14px", padding: "18px 24px 20px" }}>{quote}</td>
           </tr>
         </tbody>
       </table>
-      {/* Het puntje van de tekstballon, links onder */}
-      <div style={{ width: 0, height: 0, marginLeft: "34px", borderLeft: "0 solid transparent", borderRight: "18px solid transparent", borderTop: "14px solid #FFFFFF", fontSize: 0, lineHeight: 0 }} />
+      {/* Het puntje van de tekstballon: links onder, of in het midden als de quote gecentreerd staat */}
+      {center ? (
+        <div style={{ width: 0, height: 0, margin: "0 auto", borderLeft: "10px solid transparent", borderRight: "10px solid transparent", borderTop: "14px solid #FFFFFF", fontSize: 0, lineHeight: 0 }} />
+      ) : (
+        <div style={{ width: 0, height: 0, marginLeft: "34px", borderLeft: "0 solid transparent", borderRight: "18px solid transparent", borderTop: "14px solid #FFFFFF", fontSize: 0, lineHeight: 0 }} />
+      )}
       {by}
     </div>
   );

@@ -94,10 +94,10 @@ export default function CrmJaarGeleden({ recipientEmail, firstName, variant = "s
         </Container>
 
         {/* Gastquote als strook tussendoor: beige band over de hele breedte, tussen de hoofdboodschap
-            en de suggesties, met de quote in een witte tekstballon */}
+            en de suggesties, met de quote gecentreerd in een witte tekstballon */}
         {quote === "tussendoor" && (
           <BeigeBand top="40px">
-            <GuestQuote balloon />
+            <GuestQuote balloon center />
           </BeigeBand>
         )}
 
