@@ -33,7 +33,7 @@ type Props = {
   starStyle?: "leeg" | "knop";
 };
 
-export default function CrmReview({ recipientEmail, firstName, hotelName, stars, place, packageTitle, stayDates, image, dealUrl, reviewUrl, starStyle = "leeg" }: Props) {
+export default function CrmReview({ recipientEmail, firstName, hotelName, stars, place, packageTitle, stayDates, image, dealUrl, reviewUrl, starStyle = "knop" }: Props) {
   const c = newsletter.light;
   const sep = reviewUrl.includes("?") ? "&" : "?";
   const underline = { color: c.text, textDecoration: "underline" };
@@ -155,4 +155,5 @@ CrmReview.PreviewProps = {
 } satisfies Props;
 
 /** Variant met knoppen in plaats van lege sterren. */
-export const knoppenProps = { ...CrmReview.PreviewProps, starStyle: "knop" as const };
+/** Variant "Lege ster": vijf lege, omlijnde sterren in plaats van de knoppen (de knopversie is de gekozen standaard). */
+export const sterrenProps = { ...CrmReview.PreviewProps, starStyle: "leeg" as const };

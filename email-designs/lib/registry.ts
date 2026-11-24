@@ -8,10 +8,10 @@ import CrmJaarGeleden, { payoffProps, persoonlijkProps } from "../emails/crm-jaa
 import CrmWinkelmandje, { naamOnbekendProps } from "../emails/crm-winkelmandje";
 import CrmWinkelmandje2Dagen, { naamOnbekendProps as naamOnbekend2DagenProps } from "../emails/crm-winkelmandje-2-dagen";
 import CrmThemaStedentrips from "../emails/crm-thema-stedentrips";
-import CrmReview, { knoppenProps } from "../emails/crm-review";
+import CrmReview, { sterrenProps } from "../emails/crm-review";
 import CrmTerugkomactie, { herinneringProps } from "../emails/crm-terugkomactie";
 import CrmZoekopdracht from "../emails/crm-zoekopdracht";
-import CrmFavorieten from "../emails/crm-favorieten";
+import CrmFavorieten, { tweeCouponsProps } from "../emails/crm-favorieten";
 import CommercieelContentMultiDeal from "../emails/commercieel-content-multi-deal";
 import CommercieelActie from "../emails/commercieel-actie";
 import CommercieelTekst from "../emails/commercieel-tekst";
@@ -239,22 +239,22 @@ export const emails: EmailEntry[] = [
   {
     slug: "crm-review",
     title: "Reviewmail (1 dag na thuiskomst)",
-    description: "Eén doel: de review. Vijf klikbare Trustpilot-sterren boven de vouw, daaronder het verblijf in een omlijnd blok. Gebaseerd op de reviewmail van Jesse.",
+    description: "Eén doel: de review. Vijf witte knoppen met cijfer en ster boven de vouw (de gekozen versie), daaronder het verblijf in een omlijnd blok. Gebaseerd op de reviewmail van Jesse.",
     section: "crm",
     subject: "Hoe was je verblijf?",
     preheader: "We horen graag hoe je het vond. Het kost je een minuut.",
     Component: CrmReview,
   },
   {
-    slug: "crm-review-knoppen",
+    slug: "crm-review-sterren",
     title: "Reviewmail (1 dag na thuiskomst)",
-    description: "Variant van de reviewmail: de vijf keuzes als witte knoppen met cijfer en ster in plaats van lege sterren.",
+    description: "Variant van de reviewmail: vijf lege, omlijnde sterren in plaats van de knoppen.",
     section: "crm",
     variantOf: "crm-review",
     subject: "Hoe was je verblijf?",
     preheader: "We horen graag hoe je het vond. Het kost je een minuut.",
     Component: CrmReview,
-    props: knoppenProps,
+    props: sterrenProps,
   },
   // Overgenomen van Jesse (origin/redesign-jesse), omgezet naar onze bouwstenen.
   {
@@ -287,12 +287,23 @@ export const emails: EmailEntry[] = [
   },
   {
     slug: "crm-favorieten",
-    title: "Favorieten €10 en €15 (3 dagen na eerste mail)",
-    description: "Twee coupons boven het eerste favoriet: €10 op de eerste boeking (24 uur geldig) en €15 op de tweede (code volgt per mail na de eerste boeking); daaronder de andere favorieten en twee vergelijkbare deals. Copy op haast.",
+    title: "Favorieten €10 (3 dagen na eerste mail)",
+    description: "Eén coupon van €10 (24 uur geldig) boven de favorieten; daaronder de andere favorieten en twee vergelijkbare deals. Copy op haast.",
     section: "crm",
     subject: "Alsjeblieft Sanne, €10 korting op Kasteel Steenenburg",
     preheader: "Je code is geldig tot 12 november 2026 10:24 uur.",
     Component: CrmFavorieten,
+  },
+  {
+    slug: "crm-favorieten-twee-coupons",
+    title: "Favorieten €10 (3 dagen na eerste mail)",
+    description: "Variant voor de test in januari 2027: twee coupons, €10 op de eerste boeking (24 uur geldig) en €15 op de tweede (code volgt per mail na de eerste boeking).",
+    section: "crm",
+    variantOf: "crm-favorieten",
+    subject: "Alsjeblieft Sanne, €10 korting op Kasteel Steenenburg",
+    preheader: "Je code is geldig tot 12 november 2026 10:24 uur.",
+    Component: CrmFavorieten,
+    props: tweeCouponsProps,
   },
   {
     slug: "crm-nagenieten",

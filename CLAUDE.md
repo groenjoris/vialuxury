@@ -278,7 +278,7 @@ Regels voor elke CRM-mail:
   regel één lettertype (hotelnaam en de hele prijsrij in de sans). De kale kaart (zonder `price`) blijft voor een
   verblijf met datums ("Jouw verblijf", `asStay`). De
   winkelmandjemail van 2 uur zet onder de titel de regels in dezelfde bodytekst (hotelnaam vet met sterren, plaats, "20 november · 2 nachten
-  · 2 personen", "Bespaar €441 (47%)"; geen icoon, geen kleur) en de knop bóven de kaart; "Door jou bekeken" in de mail
+  · 2 personen"; geen prijs of besparing bovenin, geen icoon, geen kleur) en de knop bóven de kaart; "Door jou bekeken" in de mail
   van 2 dagen is dezelfde uitgebreide rij als de suggesties (met inclusies), alleen de onderkant verschilt: die twee
   regels in plaats van de prijsrij (`lines`) en de link "Ga verder met boeken"; de kaart zelf is de uitgebreide zonder hotel, plaats en prijsrij (`priceRow={false}`).
 - Elke CRM- en commerciële mail heeft de hulplijn "Hulp nodig?" (`CrmHelp` = `HelpBanner` uit de post-bookingmails,
@@ -290,10 +290,13 @@ Regels voor elke CRM-mail:
   (themamail vóór de themakiezer; Content, Dedicated hotel en Tekst vóór "Snel zoeken"). Alleen waar geen betere plek is,
   blijft hij onderaan: nagenieten (de brief en de vraag zijn één boodschap) en Cadeaukaart (er komt niets na de knop).
 - Favorietenmail (`crm-favorieten`, heette "verlanglijst"): wie iets aan zijn favorieten toevoegt, krijgt korting daarop
-  (in werkelijkheid algemeen geldig; niet benadrukken). Twee coupons naast elkaar (`CouponPair`): €10 op de eerste boeking
-  (code direct te gebruiken, 24 uur geldig) en €15 op de tweede. Van de tweede code staat alleen het vaste begin in de mail
-  ("WENS2-#####", grijze stippelrand); de volledige code komt in een nieuwe mail zodra de eerste is gebruikt (één boeking
-  kan alleen een veelvoud van hetzelfde arrangement bevatten, dus de tweede boeking heeft een eigen trigger nodig). Copy
+  (in werkelijkheid algemeen geldig; niet benadrukken). Eerste opzet (standaard): één coupon van €10 (`CodeBlock`, 24 uur
+  geldig). Variant `crm-favorieten-twee-coupons` (schakelaar "Eén coupon | Twee coupons"; wordt in januari 2027 getest):
+  twee coupons naast elkaar (`CouponPair`), €10 op de eerste boeking (code direct te gebruiken, 24 uur geldig) en €15 op
+  de tweede. Van de tweede code staat alleen het vaste begin in de mail ("WENS2-#####", grijze stippelrand); de volledige
+  code komt in een nieuwe mail zodra de eerste is gebruikt (één boeking kan alleen een veelvoud van hetzelfde arrangement
+  bevatten, dus de tweede boeking heeft een eigen trigger nodig). Geen titel "Hier geldt je code" of "Boek uiterlijk …"
+  onder de coupon(s): na de hulplijn volgen direct de banden "Jouw favorieten" en "Vergelijkbaar met je favorieten". Copy
   op haast.
 - Terugkomactie (14 dagen) en herinnering (30 dagen): één coupon van €20. Daaronder een grote titel en drie groepjes van
   twee dealrijen op banden (om en om beige en wit) met de subtitel erin: "In de sfeer van [vorig hotel]", "Populair deze
@@ -306,9 +309,10 @@ Regels voor elke CRM-mail:
   hele breedte, met de subtitel (20 serif) en eventueel een grijze regel erin, kaarten wit, 16 px ertussen. Banden onder
   elkaar sluiten zonder tussenruimte aan en wisselen af: beige, wit, beige (nooit twee beige banden na elkaar); de
   themakiezer in de terugkomactie is de volgende band in die reeks.
-- Reviewmail: de sterren zijn een keuzeblok op het beige vlak: vijf lege, omlijnde sterren (`ster-leeg.png`) met "Slecht"
-  en "Uitstekend" eronder. Leeg leest als "vul mij in"; gevulde sterren lezen als een score die er al staat. Variant
-  `crm-review-knoppen` (schakelaar "Lege ster | Knop" in de previewkop): vijf witte knoppen met cijfer en ster.
+- Reviewmail: gekozen is de knopversie (2026-11-25; Jesse gebruikt deze bij de uitwerking): op het beige vlak vijf witte
+  knoppen met cijfer en ster, "Slecht" en "Uitstekend" als uiteinden. Variant `crm-review-sterren` (schakelaar "Knop |
+  Lege ster" in de previewkop): vijf lege, omlijnde sterren (`ster-leeg.png`); leeg leest als "vul mij in", gevulde
+  sterren lezen als een score die er al staat.
 - Precies een jaar geleden (en de kopie "Dit moeten we vaker doen"): de foto staat direct onder de header over de hele
   breedte van de mail, buiten de `<Container>`. De mail heeft twee varianten (schakelaar "Social proof | Persoonlijk"): social proof met de knop "Check
   beschikbaarheid" en "Anderen boekten ook" boven de suggesties; persoonlijk (`crm-jaar-geleden-persoonlijk`) met een brief

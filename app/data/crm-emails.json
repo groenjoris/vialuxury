@@ -2,14 +2,14 @@
   {
     "slug": "crm-review",
     "title": "Reviewmail (1 dag na thuiskomst)",
-    "description": "Eén doel: de review. Vijf klikbare Trustpilot-sterren boven de vouw, daaronder het verblijf in een omlijnd blok. Gebaseerd op de reviewmail van Jesse.",
+    "description": "Eén doel: de review. Vijf witte knoppen met cijfer en ster boven de vouw (de gekozen versie), daaronder het verblijf in een omlijnd blok. Gebaseerd op de reviewmail van Jesse.",
     "subject": "Hoe was je verblijf?",
     "preheader": "We horen graag hoe je het vond. Het kost je een minuut."
   },
   {
-    "slug": "crm-review-knoppen",
+    "slug": "crm-review-sterren",
     "title": "Reviewmail (1 dag na thuiskomst)",
-    "description": "Variant van de reviewmail: de vijf keuzes als witte knoppen met cijfer en ster in plaats van lege sterren.",
+    "description": "Variant van de reviewmail: vijf lege, omlijnde sterren in plaats van de knoppen.",
     "subject": "Hoe was je verblijf?",
     "preheader": "We horen graag hoe je het vond. Het kost je een minuut.",
     "variantOf": "crm-review"
@@ -37,10 +37,18 @@
   },
   {
     "slug": "crm-favorieten",
-    "title": "Favorieten €10 en €15 (3 dagen na eerste mail)",
-    "description": "Twee coupons boven het eerste favoriet: €10 op de eerste boeking (24 uur geldig) en €15 op de tweede (code volgt per mail na de eerste boeking); daaronder de andere favorieten en twee vergelijkbare deals. Copy op haast.",
+    "title": "Favorieten €10 (3 dagen na eerste mail)",
+    "description": "Eén coupon van €10 (24 uur geldig) boven de favorieten; daaronder de andere favorieten en twee vergelijkbare deals. Copy op haast.",
     "subject": "Alsjeblieft Sanne, €10 korting op Kasteel Steenenburg",
     "preheader": "Je code is geldig tot 12 november 2026 10:24 uur."
+  },
+  {
+    "slug": "crm-favorieten-twee-coupons",
+    "title": "Favorieten €10 (3 dagen na eerste mail)",
+    "description": "Variant voor de test in januari 2027: twee coupons, €10 op de eerste boeking (24 uur geldig) en €15 op de tweede (code volgt per mail na de eerste boeking).",
+    "subject": "Alsjeblieft Sanne, €10 korting op Kasteel Steenenburg",
+    "preheader": "Je code is geldig tot 12 november 2026 10:24 uur.",
+    "variantOf": "crm-favorieten"
   },
   {
     "slug": "crm-nagenieten",

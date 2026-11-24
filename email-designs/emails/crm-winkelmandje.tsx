@@ -8,8 +8,8 @@ import { baseUrl, font, newsletter } from "../components/theme";
 
 // CRM mail 3: winkelmandje, 2 uur na het verlaten van de checkout.
 // Eén doel: de boeking afronden. Bovenaan de titel (met voornaam als die bekend is), daaronder drie
-// regels in dezelfde bodytekst: de hotelnaam (vet) met de sterren, de plaats, aankomst met nachten en personen, en de
-// besparing voor die datum ("Bespaar €441 (47%)", zonder icoon of kleur). Dan de ene knop
+// regels in dezelfde bodytekst: de hotelnaam (vet) met de sterren, de plaats en aankomst met nachten en personen
+// (geen prijs of besparing bovenin). Dan de ene knop
 // naar de boeking met alles vooringevuld. Daaronder de deal op de uitgebreide kaart, zonder
 // prijsrij. Gastenoordeel: gemiddelde met Trustpilot-sterren en drie korte reviews, alleen als die
 // er zijn. Geen alternatieve deals.
@@ -27,8 +27,6 @@ type Props = {
   arrivalDate: string;
   nights: number;
   persons: number;
-  /** Besparing voor de gekozen datum t.o.v. de kamerprijs; leeg → geen besparingsregel. */
-  saving?: { amount: string; percentage?: string };
   /** Gemiddelde en aantal reviews van het hotel (schaal tot 5), boven de losse reviews. */
   reviewSummary?: { average: 3 | 3.5 | 4 | 4.5 | 5; label: string };
   /** Drie gastenoordelen; leeg → geen gastenoordeel. */
@@ -36,7 +34,7 @@ type Props = {
   checkoutUrl: string;
 };
 
-export default function CrmWinkelmandje({ recipientEmail, firstName, deal, arrivalDate, nights, persons, saving, reviewSummary, reviews, checkoutUrl }: Props) {
+export default function CrmWinkelmandje({ recipientEmail, firstName, deal, arrivalDate, nights, persons, reviewSummary, reviews, checkoutUrl }: Props) {
   const hotelName = deal.hotelName;
   const c = newsletter.light;
   const line = s.title;
@@ -57,14 +55,13 @@ export default function CrmWinkelmandje({ recipientEmail, firstName, deal, arriv
               {firstName ? `${firstName}, we hebben 'm nog even voor je bewaard.` : "We hebben 'm nog even voor je bewaard."}
             </Heading>
             {/* Wat er klaarstaat, drie regels in dezelfde bodytekst: hotel (vet), aankomst met nachten
-                en personen, en de besparing voor die datum */}
+                en personen (geen prijs of besparing bovenin) */}
             <Text style={{ ...s.name, margin: "12px 0 0" }}>
               {hotelName}
               {deal.stars ? <span style={{ letterSpacing: "1px", marginLeft: "8px" }}>{"★".repeat(deal.stars)}</span> : null}
             </Text>
             {deal.place && <Text style={{ ...muted, margin: "2px 0 0" }}>{deal.place}</Text>}
             <Text style={{ ...line, margin: "2px 0 0" }}>{arrivalDate} · {nights} {nights === 1 ? "nacht" : "nachten"} · {persons} {persons === 1 ? "persoon" : "personen"}</Text>
-            {saving && <Text style={{ ...line, margin: "2px 0 0" }}>Bespaar {saving.amount}{saving.percentage ? ` (${saving.percentage})` : ""}</Text>}
 
             {/* De ene knop, buiten de kaart */}
             <Section style={{ marginTop: "20px" }}>
@@ -125,7 +122,6 @@ CrmWinkelmandje.PreviewProps = {
   nights: 2,
   persons: 2,
   // deals.json: €499 in plaats van €940 voor 2 personen en 2 nachten.
-  saving: { amount: "€441", percentage: "47%" },
   reviewSummary: { average: 4.5, label: "4,5 uit 312 reviews" },
   reviews: [
     { text: "Prachtige kamer en een feestelijk diner.", author: "Marieke" },
