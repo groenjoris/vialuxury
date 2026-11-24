@@ -74,9 +74,19 @@
   {
     "slug": "v01_tf027_fl012_nl-NL_3_abandoned_browse",
     "title": "Bekeken arrangement 3 (2 dagen na bekijken)",
-    "description": "Alternatieven voorop: het bekeken arrangement en twee arrangementen in dezelfde sfeer.",
+    "description": "Kop met de voornaam, daaronder de brief. Twee arrangementen in dezelfde sfeer en onderaan Door jou bekeken met het bekeken arrangement.",
     "subject": "Misschien past deze nog beter",
-    "preheader": "Twee alternatieven in dezelfde sfeer."
+    "preheader": "Twee alternatieven in dezelfde sfeer.",
+    "variantLabel": "Naam bekend"
+  },
+  {
+    "slug": "v01_tf027_fl012_nl-NL_3_abandoned_browse-naam-onbekend",
+    "title": "Bekeken arrangement 3 (2 dagen na bekijken)",
+    "description": "Variant voor als de voornaam niet bekend is: de kop en de aanhef zonder naam.",
+    "subject": "Misschien past deze nog beter",
+    "preheader": "Twee alternatieven in dezelfde sfeer.",
+    "variantOf": "v01_tf027_fl012_nl-NL_3_abandoned_browse",
+    "variantLabel": "Naam onbekend"
   },
   {
     "slug": "v01_tf028_fl013_nl-NL_1_abandoned_search",

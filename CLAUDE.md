@@ -374,6 +374,17 @@ arrangement staat de subtitel "Door jou bekeken:", boven de alternatieven "Ander
 merkblok (S6) staat op een beige band met de groet "Groetjes, ViaLuxury team" erin en daaronder staat
 de tekstlink "Bekijk alle arrangementen".
 
+`tf027` wijkt sinds 24-11-2026 af van de sheet: de kop is "[Voornaam], misschien past deze jou nog
+beter" met een variant zonder naam (`-naam-onbekend`), staat bovenaan met de brief eronder ("Gasten
+die interesse hadden in [hotelnaam], boekten vaak ook de volgende deals. Misschien interessant voor
+jou!"). De alternatieven staan bovenaan (de eerste als grote kaart) en het bekeken arrangement staat
+onderaan als dealrij onder de subtitel "Door jou bekeken" (`viewedAtBottom`), de opzet van
+`crm-winkelmandje-2-dagen`.
+
+Titelgroottes in de automationmails, zoals in de CRM-mails: de titel van de mail en de titel boven een
+lijst arrangementen of een themablok zijn 32 px serif, de regel boven één losse kaart ("Door jou
+bekeken") 20 px serif.
+
 Feedback 24-11-2026 (Anoeska, na de meeting met Bart): in `tf021` staan boven de knop geen prijs en
 geen korting meer. Dat wijkt af van de sheet, die bij S17 ook "en de prijs" noemt.
 

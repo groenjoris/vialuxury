@@ -14,7 +14,7 @@ import CrmZoekopdracht from "../emails/crm-zoekopdracht";
 import CrmFavorieten from "../emails/crm-favorieten";
 import AutomationCart, { cart1Props, cart1ZonderNaamProps, cart2Props,
   cart2DataVrijProps, cart3Props, cart4Props } from "../emails/automation-cart";
-import AutomationBrowse, { browse1Props, browse1ZonderNaamProps, browse2Props, browse3Props } from "../emails/automation-browse";
+import AutomationBrowse, { browse1Props, browse1ZonderNaamProps, browse2Props, browse3Props, browse3ZonderNaamProps } from "../emails/automation-browse";
 import AutomationSearch, { search1Props, search2Props, search3Props, search4Props } from "../emails/automation-search";
 import { incheckMails } from "./incheckMails";
 
@@ -471,12 +471,25 @@ export const emails: EmailEntry[] = [
   {
     slug: "v01_tf027_fl012_nl-NL_3_abandoned_browse",
     title: "Bekeken arrangement 3 (2 dagen na bekijken)",
-    description: "Alternatieven voorop: het bekeken arrangement en twee arrangementen in dezelfde sfeer.",
+    description: "Kop met de voornaam, daaronder de brief. Twee arrangementen in dezelfde sfeer en onderaan Door jou bekeken met het bekeken arrangement.",
     section: "automation",
     subject: "Misschien past deze nog beter",
     preheader: "Twee alternatieven in dezelfde sfeer.",
     Component: AutomationBrowse,
     props: browse3Props,
+    variantLabel: "Naam bekend",
+  },
+  {
+    slug: "v01_tf027_fl012_nl-NL_3_abandoned_browse-naam-onbekend",
+    variantOf: "v01_tf027_fl012_nl-NL_3_abandoned_browse",
+    title: "Bekeken arrangement 3 (2 dagen na bekijken)",
+    description: "Variant voor als de voornaam niet bekend is: de kop en de aanhef zonder naam.",
+    section: "automation",
+    subject: "Misschien past deze nog beter",
+    preheader: "Twee alternatieven in dezelfde sfeer.",
+    Component: AutomationBrowse,
+    props: browse3ZonderNaamProps,
+    variantLabel: "Naam onbekend",
   },
   // Flow fl013: zoekopdracht.
   {

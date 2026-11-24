@@ -40,6 +40,9 @@ type Props = {
   alternativesTitle?: string;
   /** Subtitel boven het bekeken arrangement. */
   viewedTitle?: string;
+  /** Zet het bekeken arrangement onderaan als dealrij, in de opzet van crm-winkelmandje-2-dagen.
+   *  De alternatieven staan dan bovenaan, de eerste als grote kaart. */
+  viewedAtBottom?: boolean;
   /** Algemene groet onderin het merkblok. */
   brandGreeting?: string;
   /** Tekstlink onder het merkblok. */
@@ -48,7 +51,7 @@ type Props = {
   brand?: string;
 };
 
-export default function AutomationBrowse({ recipientEmail, preheader, firstName, heading, intro, headingAt = "viewed", opening = "direct", viewed, viewedTitle, alternatives, alternativesTitle, brand, brandGreeting, footerLink }: Props) {
+export default function AutomationBrowse({ recipientEmail, preheader, firstName, heading, intro, headingAt = "viewed", opening = "direct", viewed, viewedTitle, viewedAtBottom, alternatives, alternativesTitle, brand, brandGreeting, footerLink }: Props) {
   const c = newsletter.light;
 
   return (
@@ -74,19 +77,39 @@ export default function AutomationBrowse({ recipientEmail, preheader, firstName,
           </Section>
 
           {/* S17 Achtergelaten arrangement: het bekeken arrangement */}
-          <Section className="m-pad" style={{ padding: opening === "brief" ? "40px 32px 0" : "24px 32px 0" }}>
-            {viewedTitle && <Text style={{ ...s.kop, marginBottom: "12px" }}>{viewedTitle}</Text>}
-            <AutomationFeaturedDeal deal={viewed} cta="Bekijk arrangement" />
-          </Section>
+          {!viewedAtBottom && (
+            <Section className="m-pad" style={{ padding: opening === "brief" ? "40px 32px 0" : "24px 32px 0" }}>
+              {viewedTitle && <Text style={{ ...s.kop, marginBottom: "12px" }}>{viewedTitle}</Text>}
+              <AutomationFeaturedDeal deal={viewed} cta="Bekijk arrangement" />
+            </Section>
+          )}
 
-          {/* S4 Hoteldeals: vergelijkbare arrangementen als alternatief */}
-          <Section className="m-pad" style={{ padding: "44px 32px 0" }}>
+          {/* S4 Hoteldeals: vergelijkbare arrangementen als alternatief. Staat het bekeken
+              arrangement onderaan, dan is de eerste alternatief de grote kaart. */}
+          <Section className="m-pad" style={{ padding: viewedAtBottom && opening === "brief" ? "40px 32px 0" : "44px 32px 0" }}>
             {opening === "brief" && headingAt === "alternatives" && <Heading as="h1" className="m-h1" style={s.h1}>{heading}</Heading>}
             {alternativesTitle && <Heading as="h2" className="m-h1" style={s.h1}>{alternativesTitle}</Heading>}
-            {alternatives.map((d, i) => (
-              <AutomationDealRow key={d.url} deal={d} top={i ? cardGap : undefined} />
-            ))}
+            {viewedAtBottom ? (
+              <>
+                <AutomationFeaturedDeal deal={alternatives[0]!} cta="Bekijk arrangement" />
+                {alternatives.slice(1).map((d) => (
+                  <AutomationDealRow key={d.url} deal={d} top={cardGap} />
+                ))}
+              </>
+            ) : (
+              alternatives.map((d, i) => (
+                <AutomationDealRow key={d.url} deal={d} top={i ? cardGap : undefined} />
+              ))
+            )}
           </Section>
+
+          {/* Het bekeken arrangement onderaan, als kleiner hotelblok */}
+          {viewedAtBottom && (
+            <Section className="m-pad" style={{ padding: "44px 32px 0" }}>
+              {viewedTitle && <Text style={{ ...s.kop, marginBottom: "12px" }}>{viewedTitle}</Text>}
+              <AutomationDealRow deal={viewed} cta="Bekijk arrangement" />
+            </Section>
+          )}
 
         </Container>
 
@@ -161,10 +184,22 @@ export const browse3Props = {
   // Letterlijk uit de sheet. Let op: de sheet zegt drie, maar deze template heeft twee
   // dealplekken (rij 20 Hoteldeal 3 is leeg voor deze flow).
   preheader: "Drie alternatieven in dezelfde sfeer.",
-  heading: "Nog niet het juiste?",
-  headingAt: "alternatives" as const,
+  // Feedback 24-11-2026: kop met de voornaam bovenaan, daaronder de brief. De alternatieven staan
+  // bovenaan (de eerste als grote kaart) en het bekeken arrangement onderaan als dealrij, de opzet
+  // van crm-winkelmandje-2-dagen. Twee varianten, zie browse3ZonderNaamProps.
+  heading: `${base.firstName}, misschien past deze jou nog beter`,
+  headingAt: "top" as const,
   opening: "brief" as const,
-  intro: `Twijfel je nog over ${HOTEL}? Dit zijn arrangementen in dezelfde sfeer, misschien zit jouw verblijf ertussen.`,
+  intro: `Gasten die interesse hadden in ${HOTEL}, boekten vaak ook de volgende deals. Misschien interessant voor jou!`,
+  viewedTitle: "Door jou bekeken",
+  viewedAtBottom: true,
+} satisfies Props;
+
+/** Variant voor als de voornaam niet bekend is: de kop en de aanhef zonder naam. */
+export const browse3ZonderNaamProps = {
+  ...browse3Props,
+  firstName: undefined,
+  heading: "Misschien past deze jou nog beter",
 } satisfies Props;
 
 AutomationBrowse.PreviewProps = browse1Props;
