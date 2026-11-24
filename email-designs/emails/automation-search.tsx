@@ -4,7 +4,7 @@ import CrmHeader from "../components/CrmHeader";
 import { BeigeBand, type Pill, PrimaryButton, s, site, TextLink } from "../components/crm";
 import { AutomationDealList, AutomationLetter, automationCss, SearchSection, ThemeSection, type ThemeTile, AutomationFooter } from "../components/automation";
 import { type AutomationDeal } from "../lib/automationDeals";
-import { dePlesman, desIndes, kurhaus, voco } from "../lib/automationDeals";
+import { carltonBeach, dePlesman, desIndes, kurhaus, lauswolt, steenenburg, vanOys, villaRuimzicht, voco } from "../lib/automationDeals";
 import { font, newsletter } from "../components/theme";
 
 // Automationflow fl013 "abandoned search" — vier mails uit één component.
@@ -27,7 +27,8 @@ type Props = {
   heading?: string;
   /** Kop bovenaan de mail, boven de brief (mail 2 en 4). */
   topHeading?: string;
-  intro: string;
+  /** Leeg → geen aanhef en geen introtekst (mail 2). */
+  intro?: string;
   /** S18 Zoekopdracht. Leeg → "jouw zoekopdracht". */
   searchTerm?: string;
   arrivalDate?: string;
@@ -56,10 +57,10 @@ export default function AutomationSearch({ recipientEmail, preheader, firstName,
       <Body style={{ backgroundColor: c.bg, margin: 0, padding: 0, fontFamily: font.body }}>
         <CrmHeader />
         <Container style={{ width: "100%", maxWidth: "626px" }}>
-          {/* Briefopening: aanhef en de intro uit de sheet, eventueel met een kop erboven */}
+          {/* Opening: de kop en, als er een introtekst is, de brief met de aanhef */}
           <Section className="m-pad" style={{ padding: "32px 32px 0" }}>
-            {topHeading && <Heading as="h1" className="m-h1" style={{ ...s.h1, marginBottom: "16px" }}>{topHeading}</Heading>}
-            <AutomationLetter firstName={firstName}>{intro}</AutomationLetter>
+            {topHeading && <Heading as="h1" className="m-h1" style={{ ...s.h1, marginBottom: intro ? "16px" : 0 }}>{topHeading}</Heading>}
+            {intro && <AutomationLetter firstName={firstName}>{intro}</AutomationLetter>}
           </Section>
 
           {/* S18 Zoekopdracht, direct onder de ondertekening */}
@@ -119,13 +120,14 @@ const base = { recipientEmail: "sanne.devries@example.com", firstName: "Sanne", 
  *  November heeft volgens Seizoensthema's wellness, culinair wild en wijn, en experiences;
  *  "Hotels met experiences" heeft nog geen landingspagina en staat er daarom niet bij. */
 const theme = (path: string) => `https://vialuxury.com/nl-NL/zoeken?theme=${path}`;
-// De thema's als witte snelfilterknoppen op de beige band, zoals in de CRM-mails.
+// De thema's van de verzendmaand als beeldende tegels. De foto's hieronder zijn arrangementfoto's
+// als plaatsvervanger; de echte themafoto's volgen nog.
 const novemberThemes: ThemeTile[] = [
-  { label: "Wellness", href: theme("arrangementen-wellness-overnachting") },
-  { label: "Bubbelbad op kamer", href: theme("hotelkamer-jacuzzi") },
-  { label: "Hotels met zwembad", href: theme("hotelkamer-zwembad") },
-  { label: "Culinaire experiences", href: theme("arrangementen-culinair-genieten") },
-  { label: "Overnachting met diner", href: theme("arrangementen-overnachting-met-diner") },
+  { label: "Wellness", href: theme("arrangementen-wellness-overnachting"), image: vanOys.image },
+  { label: "Bubbelbad op kamer", href: theme("hotelkamer-jacuzzi"), image: villaRuimzicht.image },
+  { label: "Hotels met zwembad", href: theme("hotelkamer-zwembad"), image: carltonBeach.image },
+  { label: "Culinaire experiences", href: theme("arrangementen-culinair-genieten"), image: lauswolt.image },
+  { label: "Overnachting met diner", href: theme("arrangementen-overnachting-met-diner"), image: steenenburg.image },
 ];
 
 /** v01_tf028_fl013_nl-NL_1_abandoned_search — 1 minuut na het zoeken. */
@@ -144,12 +146,18 @@ export const search2Props = {
   ...base,
   preheader: "Onze favorieten voor jouw data.",
   // Feedback 24-11-2026: kop bovenaan, de kop boven de resultaten ingekort, en een tekstlink eronder.
-  // Eén titel, bovenaan: de kop boven de resultaten is eruit (die zei twee keer hetzelfde).
-  topHeading: "Onze favorieten voor jouw zoekopdracht",
-  intro: `Je keek naar ${TERM}. We hebben een paar mooie arrangementen voor je uitgezocht.`,
+  // Feedback 24-11-2026, tweede ronde: alleen de kop, geen aanhef en geen introtekst meer.
+  topHeading: `${base.firstName}, onze favorieten voor jouw zoekopdracht`,
   resultsUrl: resultsUrl("retargeting_abandonedsearch_2"),
   results: [voco, desIndes, dePlesman],
   footerLink: { href: "https://www.vialuxury.com/nl-NL/", label: "Bekijk alle ViaLuxury arrangementen" },
+} satisfies Props;
+
+/** Variant voor als de voornaam niet bekend is: de kop zonder naam. */
+export const search2ZonderNaamProps = {
+  ...search2Props,
+  firstName: undefined,
+  topHeading: "Onze favorieten voor jouw zoekopdracht",
 } satisfies Props;
 
 /** v01_tf030_fl013_nl-NL_3_abandoned_search — 3 dagen na het zoeken. Ook net buiten het
@@ -158,11 +166,11 @@ export const search3Props = {
   ...base,
   preheader: "Misschien zit je verblijf ertussen.",
   // Feedback 24-11-2026: nieuwe kop boven de resultaten, nieuwe introtekst en een knop eronder.
-  heading: "Nog meer verborgen parels",
+  heading: "Onze verborgen parels voor jou",
   intro: `Je keek naar ${TERM}. We hebben er een paar verborgen parels bij gezocht, die je misschien nog niet kende.`,
   resultsUrl: resultsUrl("retargeting_abandonedsearch_3"),
   results: [kurhaus, dePlesman, voco],
-  footerCta: { href: resultsUrl("retargeting_abandonedsearch_3"), label: "Ontdek onze verborgen parels" },
+  footerCta: { href: resultsUrl("retargeting_abandonedsearch_3"), label: "Vind jouw favoriet" },
 } satisfies Props;
 
 /** v01_tf031_fl013_nl-NL_4_abandoned_search — 7 dagen na het zoeken, met de themakiezer. */
@@ -174,7 +182,6 @@ export const search4Props = {
   topHeading: "Waar heb jij zin in?",
   intro: `Een week geleden zocht je naar ${TERM}. Nog niet jouw optimale hotelverblijf gevonden? Laat ons weten waar je zin in hebt.`,
   resultsUrl: resultsUrl("retargeting_abandonedsearch_4"),
-  results: [dePlesman, kurhaus, desIndes],
   themeSection: {
     title: "Niet jouw verblijf gevonden? Kies je thema.",
     note: "Eén klik is genoeg, dan sturen we je voortaan wat je zoekt.",

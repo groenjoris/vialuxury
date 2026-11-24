@@ -90,7 +90,17 @@
     "title": "Zoekopdracht 2 (1 dag na zoeken)",
     "description": "Dezelfde opbouw, met de populairste arrangementen voor die data eerst.",
     "subject": "Nog op zoek naar Den Haag?",
-    "preheader": "Onze favorieten voor jouw data."
+    "preheader": "Onze favorieten voor jouw data.",
+    "variantLabel": "Naam bekend"
+  },
+  {
+    "slug": "v01_tf029_fl013_nl-NL_2_abandoned_search-naam-onbekend",
+    "title": "Zoekopdracht 2 (1 dag na zoeken)",
+    "description": "Variant voor als de voornaam niet bekend is: de kop zonder naam.",
+    "subject": "Onze favorieten voor jouw zoekopdracht",
+    "preheader": "Onze favorieten voor jouw data.",
+    "variantOf": "v01_tf029_fl013_nl-NL_2_abandoned_search",
+    "variantLabel": "Naam onbekend"
   },
   {
     "slug": "v01_tf030_fl013_nl-NL_3_abandoned_search",

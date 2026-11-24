@@ -320,7 +320,7 @@ direct boven de zwarte footer, en in de footer zelf bovenin de gastquote "Dit mo
 (afbeelding `gastquote-wit.png`, handgeschreven Caveat) met een lijn eronder; de kolom met de
 telefoonnummers rechtsboven is vervangen door "Volg ons op". Dat is de opzet uit het ontwerp van
 Joris (`CrmFooter` met `help={1}` en `quote="in"` op `main`), nagebouwd in een eigen
-`AutomationFooter` in `components/automation.tsx`; de CRM-mails houden `CrmFooter` zoals hij was. Beige banden zijn er twee: de themakiezer in `tf031` (een keuzeblok staat altijd op
+`AutomationFooter` in `components/automation.tsx`; de CRM-mails houden `CrmFooter` zoals hij was. Beige banden zijn er twee: de themategels in `tf031` (een keuzeblok staat altijd op
 beige) en het merkblok in `tf026`.
 
 Dealrij: de fotokolom toont twee foto's van hetzelfde arrangement onder elkaar (hoofdbeeld boven,
@@ -399,15 +399,16 @@ bekeken") 20 px serif.
 Feedback 24-11-2026 (Anoeska, na de meeting met Bart): in `tf021` staan boven de knop geen prijs en
 geen korting meer. Dat wijkt af van de sheet, die bij S17 ook "en de prijs" noemt.
 
-`tf029`, `tf030` en `tf031` wijken sinds 24-11-2026 af van de sheet. `tf029`: kop "Onze favorieten
-voor jouw zoekopdracht" bovenaan (`topHeading`), geen kop meer boven de resultaten en onderaan de
-tekstlink "Bekijk alle ViaLuxury arrangementen". `tf030`: nieuwe intro en de
-kop "Nog meer verborgen parels", met onder de resultaten de knop "Ontdek onze verborgen parels".
-`tf031`: kop "Waar heb jij zin in?" bovenaan (de zoekresultaten blijven, maar hebben geen eigen kop
-meer), de themasectie met de titel
-"Niet jouw verblijf gevonden? Kies je thema." (32 px) en daaronder de witte snelfilterknoppen op de
-beige band, de regel "Eén klik is genoeg…" en de tekstlink "Bekijk alle arrangementen". De thema's
-blijven snelfilterknoppen, geen tegels met foto's.
+`tf029`, `tf030` en `tf031` wijken sinds 24-11-2026 af van de sheet. `tf029`: alleen de kop "[Voornaam], onze
+favorieten voor jouw zoekopdracht" bovenaan (`topHeading`, variant `-naam-onbekend` zonder naam),
+geen aanhef en geen introtekst meer, geen kop boven de resultaten en onderaan de tekstlink "Bekijk
+alle ViaLuxury arrangementen". `tf030`: nieuwe intro en de
+kop "Onze verborgen parels voor jou", met onder de resultaten de knop "Vind jouw favoriet".
+`tf031`: kop "Waar heb jij zin in?" bovenaan, géén zoekresultaten, de themasectie met de titel
+"Niet jouw verblijf gevonden? Kies je thema." (32 px) en daaronder de thema's als beeldende tegels op
+de beige band — per thema een foto (16:9), de naam en de link "Bekijk" — met eronder de regel "Eén
+klik is genoeg…" en de tekstlink "Bekijk alle arrangementen". De themafoto's zijn arrangementfoto's
+als plaatsvervanger; de echte themafoto's volgen nog.
 
 Open punten in de sheet zelf: de preheader van `tf027` zegt "Drie alternatieven" terwijl de template
 twee dealplekken heeft (rij 20 is leeg), en voor de themategel "Hotels met experiences" bestaat nog

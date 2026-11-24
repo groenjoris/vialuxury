@@ -14,7 +14,7 @@ import CrmZoekopdracht from "../emails/crm-zoekopdracht";
 import CrmFavorieten from "../emails/crm-favorieten";
 import AutomationCart, { cart1Props, cart1ZonderNaamProps, cart2Props, cart3Props, cart4Props } from "../emails/automation-cart";
 import AutomationBrowse, { browse1Props, browse1ZonderNaamProps, browse2Props, browse3Props, browse3ZonderNaamProps } from "../emails/automation-browse";
-import AutomationSearch, { search1Props, search2Props, search3Props, search4Props } from "../emails/automation-search";
+import AutomationSearch, { search1Props, search2Props, search2ZonderNaamProps, search3Props, search4Props } from "../emails/automation-search";
 import { incheckMails } from "./incheckMails";
 
 /** MVP: geen accountdetailpagina, boekingslinks gaan naar het boekingenoverzicht. */
@@ -497,6 +497,19 @@ export const emails: EmailEntry[] = [
     preheader: "Onze favorieten voor jouw data.",
     Component: AutomationSearch,
     props: search2Props,
+    variantLabel: "Naam bekend",
+  },
+  {
+    slug: "v01_tf029_fl013_nl-NL_2_abandoned_search-naam-onbekend",
+    variantOf: "v01_tf029_fl013_nl-NL_2_abandoned_search",
+    title: "Zoekopdracht 2 (1 dag na zoeken)",
+    description: "Variant voor als de voornaam niet bekend is: de kop zonder naam.",
+    section: "automation",
+    subject: "Onze favorieten voor jouw zoekopdracht",
+    preheader: "Onze favorieten voor jouw data.",
+    Component: AutomationSearch,
+    props: search2ZonderNaamProps,
+    variantLabel: "Naam onbekend",
   },
   {
     slug: "v01_tf030_fl013_nl-NL_3_abandoned_search",
