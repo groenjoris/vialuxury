@@ -363,6 +363,11 @@ CRM (`GuestRating.reviews`) en boven de alternatieven staat "Anderen boekten ook
 bovenaan, daaronder de brief, dan de codesectie (`codeFirst`) en pas daarna het hotelblok met de
 inclusies.
 
+`tf025` wijkt sinds 24-11-2026 af van de sheet: de kop is "[Voornaam], dit vonden we voor jou" met een
+variant zonder naam (`-naam-onbekend`, kop "Dit vonden we voor jou"), staat bovenaan met de brief
+eronder ("Je bekeek net [hotelnaam]. Een mooie keuze! We hebben het voor je klaargezet.") en boven de
+alternatieven staat "Anderen bekeken ook".
+
 Feedback 24-11-2026 (Anoeska, na de meeting met Bart): in `tf021` staan boven de knop geen prijs en
 geen korting meer. Dat wijkt af van de sheet, die bij S17 ook "en de prijs" noemt.
 

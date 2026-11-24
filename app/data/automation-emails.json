@@ -50,9 +50,19 @@
   {
     "slug": "v01_tf025_fl012_nl-NL_1_abandoned_browse",
     "title": "Bekeken arrangement 1 (2 uur na bekijken)",
-    "description": "Het bekeken arrangement met plaats, prijs en inclusies, en de knop Bekijk arrangement. Daaronder twee arrangementen in dezelfde sfeer.",
+    "description": "Kop met de voornaam, daaronder de brief. Het bekeken arrangement met de knop Bekijk arrangement, daarna Anderen bekeken ook met twee arrangementen in dezelfde sfeer.",
     "subject": "Je bekeek Landgoed Lauswolt",
-    "preheader": "Nog steeds zin in dit verblijf?"
+    "preheader": "Nog steeds zin in dit verblijf?",
+    "variantLabel": "Naam bekend"
+  },
+  {
+    "slug": "v01_tf025_fl012_nl-NL_1_abandoned_browse-naam-onbekend",
+    "title": "Bekeken arrangement 1 (2 uur na bekijken)",
+    "description": "Variant voor als de voornaam niet bekend is: de kop en de aanhef zonder naam.",
+    "subject": "Je bekeek Landgoed Lauswolt",
+    "preheader": "Nog steeds zin in dit verblijf?",
+    "variantOf": "v01_tf025_fl012_nl-NL_1_abandoned_browse",
+    "variantLabel": "Naam onbekend"
   },
   {
     "slug": "v01_tf026_fl012_nl-NL_2_abandoned_browse",

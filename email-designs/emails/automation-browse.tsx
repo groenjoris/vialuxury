@@ -28,7 +28,7 @@ type Props = {
   heading: string;
   intro: string;
   /** Waar de kop staat: boven het bekeken arrangement of boven de alternatieven. */
-  headingAt?: "viewed" | "alternatives";
+  headingAt?: "top" | "viewed" | "alternatives";
   /** "direct": kop en intro bovenaan (mail 1 en 2). "brief": aanhef, intro en de ondertekening
    *  van Yvette (mail 3, alternatieven). */
   opening?: "direct" | "brief";
@@ -36,11 +36,13 @@ type Props = {
   viewed: AutomationDeal & { hotelName: string };
   /** S4: twee vergelijkbare arrangementen in dezelfde sfeer. */
   alternatives: AutomationDeal[];
+  /** Titel boven de alternatieven. */
+  alternativesTitle?: string;
   /** S6: waarom ViaLuxury (mail 2). */
   brand?: string;
 };
 
-export default function AutomationBrowse({ recipientEmail, preheader, firstName, heading, intro, headingAt = "viewed", opening = "direct", viewed, alternatives, brand }: Props) {
+export default function AutomationBrowse({ recipientEmail, preheader, firstName, heading, intro, headingAt = "viewed", opening = "direct", viewed, alternatives, alternativesTitle, brand }: Props) {
   const c = newsletter.light;
 
   return (
@@ -55,13 +57,13 @@ export default function AutomationBrowse({ recipientEmail, preheader, firstName,
         <Container style={{ width: "100%", maxWidth: "626px" }}>
           {/* Opening: direct de kop met de intro, of de brief met de ondertekening */}
           <Section className="m-pad" style={{ padding: "32px 32px 0" }}>
+            {(headingAt === "top" || opening !== "brief") && (
+              <Heading as="h1" className="m-h1" style={{ ...s.h1, marginBottom: headingAt === "top" ? "16px" : undefined }}>{heading}</Heading>
+            )}
             {opening === "brief" ? (
               <AutomationLetter firstName={firstName}>{intro}</AutomationLetter>
             ) : (
-              <>
-                <Heading as="h1" className="m-h1" style={s.h1}>{heading}</Heading>
-                <Text style={{ ...s.body, margin: "12px 0 0" }}>{intro}</Text>
-              </>
+              <Text style={{ ...s.body, margin: "12px 0 0" }}>{intro}</Text>
             )}
           </Section>
 
@@ -73,6 +75,7 @@ export default function AutomationBrowse({ recipientEmail, preheader, firstName,
           {/* S4 Hoteldeals: vergelijkbare arrangementen als alternatief */}
           <Section className="m-pad" style={{ padding: "44px 32px 0" }}>
             {opening === "brief" && headingAt === "alternatives" && <Heading as="h1" className="m-h1" style={s.h1}>{heading}</Heading>}
+            {alternativesTitle && <Heading as="h2" className="m-h1" style={s.h1}>{alternativesTitle}</Heading>}
             {alternatives.map((d, i) => (
               <AutomationDealRow key={d.url} deal={d} top={i ? cardGap : undefined} />
             ))}
@@ -107,8 +110,20 @@ const base = { recipientEmail: "sanne.devries@example.com", firstName: "Sanne", 
 export const browse1Props = {
   ...base,
   preheader: "Nog steeds zin in dit verblijf?",
-  heading: "Nog aan het twijfelen?",
-  intro: `Je bekeek net ${HOTEL} in ${PLAATS}. Een mooie keuze. Het arrangement staat hieronder nog even voor je klaar.`,
+  // Feedback 24-11-2026: kop met de voornaam bovenaan, daaronder de brief. Twee varianten,
+  // zie browse1ZonderNaamProps.
+  heading: `${base.firstName}, dit vonden we voor jou`,
+  headingAt: "top" as const,
+  opening: "brief" as const,
+  intro: `Je bekeek net ${HOTEL}. Een mooie keuze! We hebben het voor je klaargezet.`,
+  alternativesTitle: "Anderen bekeken ook",
+} satisfies Props;
+
+/** Variant voor als de voornaam niet bekend is: de kop en de aanhef zonder naam. */
+export const browse1ZonderNaamProps = {
+  ...browse1Props,
+  firstName: undefined,
+  heading: "Dit vonden we voor jou",
 } satisfies Props;
 
 /** v01_tf026_fl012_nl-NL_2_abandoned_browse — 1 dag na het bekijken. */
