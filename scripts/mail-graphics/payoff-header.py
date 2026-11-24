@@ -14,6 +14,7 @@ FONTS = [
     ("recoleta", "public/fonts/recoleta/Recoleta-SemiBold.ttf"),
 ]
 S = 2
+THIN_EXCLAMATION = {"oooh-baby"}
 probe = ImageDraw.Draw(Image.new("L", (10, 10)))
 def load(path, size):
     f = ImageFont.truetype(path, size)
@@ -30,6 +31,13 @@ for key, path in FONTS:
     f = load(path, size)
     l, t, r, b = probe.textbbox((0, 0), TEXT, font=f)
     im = Image.new("RGBA", (target, b - t + 2 * S), (0, 0, 0, 0))
-    ImageDraw.Draw(im).text((-l + (target - (r - l)) / 2, S - t), TEXT, font=f, fill=(255, 255, 255, 255))
+    d = ImageDraw.Draw(im)
+    x0 = -l + (target - (r - l)) / 2
+    if key in THIN_EXCLAMATION:
+        x0 -= S  # ruimte voor de aangedikte rand rechts
+    d.text((x0, S - t), TEXT, font=f, fill=(255, 255, 255, 255))
+    if key in THIN_EXCLAMATION:
+        # het uitroepteken van dit lettertype is een haarlijn: iets aandikken, zodat het klein ook leest
+        d.text((x0 + d.textlength(TEXT[:-1], font=f), S - t), TEXT[-1], font=f, fill=(255, 255, 255, 255), stroke_width=1, stroke_fill=(255, 255, 255, 255))
     im.save(OUT % key)
     print(key, im.width // S, round(im.height / S), "font", round(size / S, 1))

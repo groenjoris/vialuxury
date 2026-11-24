@@ -28,7 +28,7 @@ export default function CrmHeader({ mode = "light", payoff }: { mode?: EmailMode
             <Column style={{ verticalAlign: "middle" }}>
               <Img src={`${baseUrl}/images/logo-vialuxury-horizontal.png`} alt="ViaLuxury" width="201" className="m-logo" style={{ height: "auto" }} />
               {payoff && (
-                <Img src={`${baseUrl}/images/mail/crm/payoff-${payoff}.png?v=3`} alt="Dit moeten we vaker doen!" width="201" style={{ display: "block", width: "201px", height: "auto", marginTop: "8px" }} />
+                <Img src={`${baseUrl}/images/mail/crm/payoff-${payoff}.png?v=4`} alt="Dit moeten we vaker doen!" width="201" style={{ display: "block", width: "201px", height: "auto", marginTop: "8px" }} />
               )}
             </Column>
             <Column align="right" style={{ verticalAlign: "middle" }}>
