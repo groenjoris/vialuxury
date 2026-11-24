@@ -414,8 +414,10 @@ grote kaart 696 px, gezet als 379 px tekstblok onder de foto (`CARD_TEXT_HEIGHT_
 hoogte op de kaart zelf verdeelt de ruimte over de rijen en zet een witte strook boven de foto) — want in Klaviyo moet een herhalend blok één hoogte
 hebben. Zonder die hoogte scheelt elke kaart een paar regels, afhankelijk van hoeveel regels de
 titel en de inclusies innemen. De waarden zijn de hoogste kaart die voorkomt, dus er wordt nooit
-iets afgesneden; bij een kortere kaart staat de tekst verticaal gecentreerd, zodat de ruimte die
-overblijft zich boven en onder verdeelt in plaats van als een gat onder de prijsrij. De winkelmandjekaart heeft geen
+iets afgesneden. Binnen die hoogte staat de bovenkant van de kaart (hotel, dealtitel, inclusies)
+bovenaan en de onderkant ("2 personen, 2 nachten" en de prijsrij) onderaan: de ruimte die overblijft
+valt dus tussen de inclusies en de prijsrij, zodat de prijsrijen van alle kaarten op dezelfde hoogte
+staan, ook als de ene titel één regel is en de andere drie. De winkelmandjekaart heeft geen
 inclusies en is daarom een eigen, van zichzelf al gelijke hoogte (556 px). Op mobiel vervalt de
 vaste hoogte (klasse `m-auto-h`), want daar staat de foto boven de tekst.
 

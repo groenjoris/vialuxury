@@ -59,12 +59,19 @@ export function AutomationLetter({ firstName, children }: { firstName?: string; 
 // ── Dealkaart ────────────────────────────────────────────────────────────────────────────────
 // Elke kaart is op desktop even hoog, want in Klaviyo moet een herhalend blok één hoogte hebben.
 // De waarden zijn de hoogste kaart die voorkomt, dus er wordt nooit iets afgesneden; bij een
-// kortere kaart staat de tekst verticaal gecentreerd. Op mobiel vervalt de hoogte (`m-auto-h`).
+// kortere kaart valt de ruimte die overblijft tussen de inclusies en de prijsrij: de bovenkant
+// staat bovenaan, de prijsrij onderaan. Op mobiel vervalt de hoogte (`m-auto-h`).
 export const CARD_HEIGHT_ROW = "425px";
 /** Bij de grote kaart staat de hoogte op het tekstblok onder de foto, niet op de kaart zelf: een
  *  vaste hoogte op de kaart verdeelt de overgebleven ruimte over de rijen en zet dan een witte
  *  strook boven de foto. 379 px tekstblok + 315 px foto + 2 px rand = 696 px kaart. */
 export const CARD_TEXT_HEIGHT_FEATURED = "379px";
+/** Hoogte van het tekstblok binnen de kaart (kaarthoogte minus de padding), zodat de bovenkant
+ *  (hotel, dealtitel, inclusies) bovenaan staat en de onderkant (voor wie de prijs geldt en de
+ *  prijsrij) onderaan: een mail kan geen meegroeiende kaart hebben, dus de ruimte die overblijft
+ *  valt tussen die twee blokken in plaats van eromheen. */
+const CARD_TEXT_INNER_ROW = "389px";
+const CARD_TEXT_INNER_FEATURED = "343px";
 /** Ruimte tussen twee dealkaarten onder elkaar. */
 export const cardGap = "24px";
 
@@ -134,6 +141,25 @@ function DealPrice({ d, cta }: { d: AutomationDeal; cta: string }) {
   );
 }
 
+/** Het tekstblok van een kaart met een vaste hoogte: bovenin DealText, onderin DealPrice. Een
+ *  tabel met een vaste hoogte, want percentages werken niet in elke mailclient. Op mobiel vervalt
+ *  de hoogte (`m-auto-h`) en staat alles gewoon onder elkaar. */
+function CardText({ height, top, bottom }: { height?: string; top: React.ReactNode; bottom?: React.ReactNode }) {
+  if (!height) return <>{top}{bottom}</>;
+  return (
+    <table role="presentation" cellPadding={0} cellSpacing={0} border={0} className="m-auto-h" style={{ width: "100%", height, borderCollapse: "collapse" }}>
+      <tbody>
+        <tr>
+          <td style={{ verticalAlign: "top" }}>{top}</td>
+        </tr>
+        <tr>
+          <td style={{ verticalAlign: "bottom", height: "1px" }}>{bottom}</td>
+        </tr>
+      </tbody>
+    </table>
+  );
+}
+
 /** Dealrij: foto links over de volle hoogte, tekst rechts. Heeft de deal een tweede foto, dan
  *  staan er twee foto's onder elkaar met 3 px wit ertussen (samen 211 + 212 = 423 px binnen de
  *  rand). Het randje is een witte bovenrand op de tweede foto; een achtergrondfoto loopt niet
@@ -156,18 +182,21 @@ export function AutomationDealRow({ deal: d, cta, top = "12px" }: { deal: Automa
             <Link href={d.url} aria-label={d.hotelName ?? cta ?? "Bekijk"} className="m-rowphoto" style={{ display: "block", width: "190px", minHeight: "107px" }} />
           </Column>
         )}
-        <Column className="stack m-cardtext" style={{ verticalAlign: rich ? "middle" : "top", padding: rich ? "16px 18px 18px" : "16px 18px" }}>
-          <DealText d={d} />
-          {d.price ? (
-            <DealPrice d={d} cta={cta ?? "Bekijk"} />
-          ) : (
-            <>
-              {d.lines?.map((l, i) => (
-                <Text key={l} style={{ ...s.title, margin: i ? "2px 0 0" : "14px 0 0" }}>{l}</Text>
-              ))}
-              <TextLink href={d.url}>{cta ?? "Bekijk"}</TextLink>
-            </>
-          )}
+        <Column className="stack m-cardtext" style={{ verticalAlign: "top", padding: rich ? "16px 18px 18px" : "16px 18px" }}>
+          <CardText
+            height={rich ? CARD_TEXT_INNER_ROW : undefined}
+            top={<DealText d={d} />}
+            bottom={d.price ? (
+              <DealPrice d={d} cta={cta ?? "Bekijk"} />
+            ) : (
+              <>
+                {d.lines?.map((l, i) => (
+                  <Text key={l} style={{ ...s.title, margin: i ? "2px 0 0" : "14px 0 0" }}>{l}</Text>
+                ))}
+                <TextLink href={d.url}>{cta ?? "Bekijk"}</TextLink>
+              </>
+            )}
+          />
         </Column>
       </Row>
     </Section>
@@ -184,8 +213,11 @@ export function AutomationFeaturedDeal({ deal: d, cta, priceRow = true }: { deal
         <Img src={d.image} alt={d.packageTitle ?? d.hotelName ?? ""} width="560" height="315" style={{ display: "block", width: "100%", height: "auto", aspectRatio: "16 / 9", objectFit: "cover" }} />
       </Link>
       <Section className={fixed ? "m-auto-h" : undefined} style={{ padding: "16px 20px 20px", height: fixed ? CARD_TEXT_HEIGHT_FEATURED : undefined }}>
-        <DealText d={d} />
-        {d.price && priceRow && <DealPrice d={d} cta={cta ?? "Bekijk"} />}
+        <CardText
+          height={fixed ? CARD_TEXT_INNER_FEATURED : undefined}
+          top={<DealText d={d} />}
+          bottom={d.price && priceRow ? <DealPrice d={d} cta={cta ?? "Bekijk"} /> : undefined}
+        />
       </Section>
     </Section>
   );
