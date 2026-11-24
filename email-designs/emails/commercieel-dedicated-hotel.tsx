@@ -6,7 +6,7 @@ import { BeigeBand, QuickSearch, crmCss, CrmHelp, FeaturedDeal, Letter, PrimaryB
 import { font, newsletter } from "../components/theme";
 
 // Commerciële mail 2: Dedicated hotel. De hele mail gaat over één hotel. Hij begint als brief
-// (aanhef, een korte, krachtige alinea met het aanbod vet, ondertekening), daaronder de knop
+// (aanhef, een korte, krachtige alinea met het aanbod vet), daaronder de knop
 // "Bekijk aanbieding" en dan het arrangement op de verticale dealkaart (grote foto, daaronder de
 // uitgebreide kaart). Zelfde bouwstenen en regels als de CRM-mails (zie components/crm.tsx).
 // Twee varianten (schakelaar "Met prijs | Zonder prijs" in de preview): met prijs noemt de brief het
@@ -47,7 +47,7 @@ export default function CommercieelDedicatedHotel({ recipientEmail, firstName, l
       <Body style={{ backgroundColor: c.bg, margin: 0, padding: 0, fontFamily: font.body }}>
         <CrmHeader />
         <Container style={{ width: "100%", maxWidth: "626px" }}>
-          {/* Brief: aanhef, het aanbod (vet) met één zin over het hotel, ondertekening */}
+          {/* Brief: aanhef, het aanbod (vet) met één zin over het hotel */}
           <Section className="m-pad" style={{ padding: "32px 32px 0" }}>
             {title && <Heading as="h1" className="m-h1" style={{ ...s.h1, marginBottom: "16px" }}>{title}</Heading>}
             <Letter firstName={firstName}>

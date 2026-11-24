@@ -254,9 +254,9 @@ Regels voor elke CRM-mail:
 - Briefopzet (het format voor alle CRM-mails, tot nu toe in `crm-winkelmandje-2-dagen`, `crm-favorieten`, `crm-zoekopdracht`,
   `crm-thema-stedentrips` en `crm-terugkomactie` (met herinnering); de aanhef is
   overal "Beste …", nooit "Hi"): de mail begint met
-  de bouwsteen `Letter`: aanhef ("Beste Sanne," / "Beste gast,"), een korte intro en de ondertekening "Groetjes Yvette"
-  als afbeelding (`public/images/mail/crm/groetjes-yvette.png`: lettertype Oooh Baby, donkergrijs #555555; geen
-  webfont, want die werkt niet in elke mailclient). Een titel (bijv. "Anderen boekten ook", 32 serif) is de titel van
+  de bouwsteen `Letter`: aanhef ("Beste Sanne," / "Beste gast,") en een korte intro. Geen ondertekening: er is op dit
+  moment geen afzender, dus "Groetjes Yvette" is op 2026-11-25 uit alle mails gehaald (de afbeelding
+  `public/images/mail/crm/groetjes-yvette.png` staat er nog voor als er weer een afzender komt). Een titel (bijv. "Anderen boekten ook", 32 serif) is de titel van
   het blok eronder en staat direct boven dat blok, nooit boven de aanhef.
 - Drie lettergroottes: titel 32, subtitel en hotelnaam 20, alle overige tekst 16 px (footer uitgezonderd). Uitzondering:
   de dealtitel in een dealkaart is 18 px serif.
@@ -332,7 +332,7 @@ Regels voor elke CRM-mail:
   schakelaars zijn los te combineren (15 mails, slug `crm-vaker-doen[-lora|-recoleta][-footer-2..5]`, labels via
   `variantLabel` "Caveat / Footer 2" in de registry; de CRM-preview maakt per deel een schakelaar). Een klik op een footervariant scrolt de mail
   in de preview vanzelf naar de footer; een klik op een lettertype of een andere mail begint weer bovenaan.
-- Nagenietmail heeft twee varianten (schakelaar "Bericht | Titel"): standaard een brief met aanhef en ondertekening en
+- Nagenietmail heeft twee varianten (schakelaar "Bericht | Titel"): standaard een brief met aanhef en
   in het blok alleen de vraag als titel; of (`crm-nagenieten-titel`) de grote titel onder de foto.
 - Dealrij met vaste hoogte (concept, 2026-11-25; nog niet in de mails doorgevoerd): `DealRowFixed` zet links twee foto's
   onder elkaar met 6 px wit ertussen in plaats van één langwerpige foto, en houdt de kaart altijd 416 px hoog. De prijsrij

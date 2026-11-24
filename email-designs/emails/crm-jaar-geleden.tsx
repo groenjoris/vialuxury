@@ -12,7 +12,7 @@ import { font, newsletter } from "../components/theme";
 //   arrangement met dezelfde periode +1 jaar en hetzelfde aantal personen; boven de suggesties
 //   "Anderen boekten ook" met "Gasten die in [hotel] verbleven, kozen daarna vaak deze arrangementen".
 // - Persoonlijk (crm-jaar-geleden-persoonlijk): onder de titel een brief (aanhef, het verblijf van
-//   vorig jaar, een link naar de beschikbare datums, de selectie, ondertekening); boven de
+//   vorig jaar, een link naar de beschikbare datums, de selectie); boven de
 //   suggesties "Geselecteerd voor [voornaam]".
 // Kortingscode als coupon, alleen als er een actieve code is. Daaronder drie deals onder elkaar.
 // Onderwerp: "Vandaag een jaar geleden 🎉" (feest-emoji achter de zin)

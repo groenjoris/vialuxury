@@ -8,7 +8,7 @@ import { baseUrl, font, newsletter } from "../components/theme";
 // Commerciële mail 1: Content (Multi-deal). Meerdere deals rond één thema of selectie, hier
 // kerstmarkten. Lijkt op de themamail uit het CRM (die volgt op gedrag op de site), maar is
 // commerciëler: de mail opent met een sfeerfoto over de hele breedte, daaronder de campagnetitel
-// ("Winter Wonderweken") en een korte brief (aanhef, één alinea, ondertekening). Dan de titel van
+// ("Winter Wonderweken") en een korte brief (aanhef, één alinea). Dan de titel van
 // de lijst ("Hotels bij de mooiste kerstmarkten") direct boven vier dealrijen. De arrangementen
 // zijn de gewone arrangementen; alleen de dealtitel en de foto zijn geladen met de kerstmarkt in
 // de buurt. Zelfde regels als de CRM-mails (zie components/crm.tsx).
@@ -45,7 +45,7 @@ export default function CommercieelContentMultiDeal({ recipientEmail, firstName,
           {/* Sfeerfoto van het thema, tot aan de rand */}
           <Img src={hero} alt={heroAlt} width="626" height="352" style={{ display: "block", width: "100%", height: "352px", objectFit: "cover" }} />
 
-          {/* Campagnetitel en de brief: aanhef, één alinea en de ondertekening */}
+          {/* Campagnetitel en de brief: aanhef, één alinea */}
           <Section className="m-pad" style={{ padding: "32px 32px 0" }}>
             <Heading as="h1" className="m-h1" style={s.h1}>{title}</Heading>
             <Section style={{ marginTop: "16px" }}>

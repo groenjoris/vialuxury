@@ -41,14 +41,14 @@ export default function CrmZoekopdracht({ recipientEmail, firstName, searchTerm,
       <Body style={{ backgroundColor: c.bg, margin: 0, padding: 0, fontFamily: font.body }}>
         <CrmHeader />
         <Container style={{ width: "100%", maxWidth: "626px" }}>
-          {/* Briefopening: aanhef, korte intro en de ondertekening */}
+          {/* Briefopening: aanhef, korte intro */}
           <Section className="m-pad" style={{ padding: "32px 32px 0" }}>
             <Letter firstName={firstName}>
               We hebben nog een paar hele mooie arrangementen gevonden bij jouw zoekopdracht.
             </Letter>
           </Section>
 
-          {/* De zoekopdracht als samenvatting in een kader, direct onder de ondertekening (zonder kopje),
+          {/* De zoekopdracht als samenvatting in een kader, direct onder de brief (zonder kopje),
               met de ene knop */}
           <Section className="m-pad" style={{ padding: "24px 32px 0" }}>
             <Section style={{ border: `1px solid #E5E5E5`, borderRadius: "8px", padding: "14px 20px 22px" }}>

@@ -281,7 +281,7 @@ export const emails: EmailEntry[] = [
   {
     slug: "crm-zoekopdracht",
     title: "Zoekopdracht (1 minuut na verlaten)",
-    description: "Briefopening (Beste Sanne, intro, Groetjes Yvette), de zoekopdracht als samenvatting met één knop naar alle resultaten, daaronder de titel 'Dit vonden we voor je' met de drie best passende arrangementen.",
+    description: "Briefopening (Beste Sanne, intro), de zoekopdracht als samenvatting met één knop naar alle resultaten, daaronder de titel 'Dit vonden we voor je' met de drie best passende arrangementen.",
     section: "crm",
     subject: "Jouw zoekopdracht: Den Haag",
     preheader: "Kijk of er iets voor je bij zit.",
