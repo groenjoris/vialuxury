@@ -2,7 +2,7 @@ import { Body, Container, Head, Heading, Html, Preview, Section } from "@react-e
 import * as React from "react";
 import CrmFooter from "../components/CrmFooter";
 import CrmHeader from "../components/CrmHeader";
-import { BeigeBand, CrmHelp, type Pill, PrimaryButton, s, site, TextLink } from "../components/crm";
+import { BeigeBand, type Pill, PrimaryButton, s, site, TextLink } from "../components/crm";
 import { AutomationDealList, AutomationLetter, automationCss, SearchSection, ThemeSection, type ThemeTile } from "../components/automation";
 import { type AutomationDeal } from "../lib/automationDeals";
 import { dePlesman, desIndes, kurhaus, voco } from "../lib/automationDeals";
@@ -100,8 +100,6 @@ export default function AutomationSearch({ recipientEmail, preheader, firstName,
             </Section>
           )}
 
-          {/* Hulplijn */}
-          <CrmHelp top="36px" />
         </Container>
         <CrmFooter recipientEmail={recipientEmail} reason="omdat je je hebt aangemeld voor de nieuwsbrief van ViaLuxury" />
       </Body>

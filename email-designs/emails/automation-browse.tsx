@@ -2,7 +2,7 @@ import { Body, Container, Head, Heading, Html, Preview, Section, Text } from "@r
 import * as React from "react";
 import CrmFooter from "../components/CrmFooter";
 import CrmHeader from "../components/CrmHeader";
-import { CrmHelp, s, TextLink } from "../components/crm";
+import { s, TextLink } from "../components/crm";
 import { AutomationDealRow, AutomationFeaturedDeal, AutomationLetter, automationCss, BrandSection, cardGap } from "../components/automation";
 import { type AutomationDeal } from "../lib/automationDeals";
 import { lauswolt, steenenburg, vanOys } from "../lib/automationDeals";
@@ -123,8 +123,6 @@ export default function AutomationBrowse({ recipientEmail, preheader, firstName,
             </Section>
           )}
 
-          {/* Hulplijn */}
-          <CrmHelp top="36px" />
         </Container>
         <CrmFooter recipientEmail={recipientEmail} reason="omdat je je hebt aangemeld voor de nieuwsbrief van ViaLuxury" />
       </Body>

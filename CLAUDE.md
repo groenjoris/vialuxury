@@ -313,8 +313,8 @@ hij bij hoort. De brief heeft geen ondertekening: "Groetjes Yvette"
 verviel en er komt voorlopig niets voor in de plaats (feedback 24-11-2026). De CRM-mails houden
 hun eigen ondertekening. In de automationmails staat **alles links uitgelijnd**, met één uitzondering: de inhoud van de
 coupon (`AutomationCodeBlock`) staat gecentreerd, want een coupon is een ding op zichzelf
-(afstemming 24-11-2026). Blokken lopen over de hele breedte, daar speelt uitlijnen niet. De secties staan gewoon in de kolom op wit en elke mail eindigt met de hulplijn
-`CrmHelp` ("Hulp nodig?"). Beige banden zijn er twee: de themakiezer in `tf031` (een keuzeblok staat altijd op
+(afstemming 24-11-2026). Blokken lopen over de hele breedte, daar speelt uitlijnen niet. De secties staan gewoon in de kolom op wit. De hulplijn `CrmHelp` ("Hulp nodig?") staat
+sinds 24-11-2026 in geen enkele automationmail meer; de CRM-mails houden hem wel. Beige banden zijn er twee: de themakiezer in `tf031` (een keuzeblok staat altijd op
 beige) en het merkblok in `tf026`.
 
 Dealrij: de fotokolom toont twee foto's van hetzelfde arrangement onder elkaar (hoofdbeeld boven,
@@ -335,7 +335,7 @@ alternatieven en zoekresultaten op `DealList`. Verder gelden alle CRM-regels hie
 
 **Regel: niets toevoegen wat niet in de sheet staat.** De mails bevatten alleen de secties die in de
 kolom aan staan, met de teksten uit de sheet; geen eigen blokkoppen, geen extra secties (ook niet de
-hulplijn die de CRM-mails wel hebben) en geen velden die de sheet niet noemt — de winkelmandjekaart
+hulplijn die de CRM-mails wel hebben, die staat er dus niet in) en geen velden die de sheet niet noemt — de winkelmandjekaart
 toont dus geen inclusies. Wat de sheet open laat, zoals welke vijf themategels bij de verzendmaand
 horen, komt uit de tabbladen Themategels en Seizoensthema's.
 
