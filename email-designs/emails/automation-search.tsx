@@ -108,7 +108,8 @@ export const search1Props = {
   ...base,
   preheader: `De beste arrangementen voor ${DATUM}.`,
   heading: "Dit vonden we voor je",
-  intro: `Je zocht naar ${TERM} voor ${DATUM}. Dit zijn de arrangementen die het best passen bij wat je zoekt.`,
+  // Feedback 24-11-2026.
+  intro: "We hebben nog een paar hele mooie arrangementen gevonden bij jouw zoekopdracht.",
   resultsUrl: resultsUrl("retargeting_abandonedsearch_1"),
   results: [desIndes, dePlesman, voco],
 } satisfies Props;
