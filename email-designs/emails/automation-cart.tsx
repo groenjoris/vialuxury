@@ -89,12 +89,6 @@ export default function AutomationCart({ recipientEmail, preheader, firstName, h
                 {cart.lines?.map((l) => (
                   <Text key={l} style={{ ...s.title, margin: "2px 0 0" }}>{l}</Text>
                 ))}
-                {cart.price && (
-                  <Text style={{ ...s.title, margin: "2px 0 0" }}>
-                    Vanaf {cart.price}
-                    {cart.original && <span style={{ color: "#D32F2F", textDecoration: "line-through", marginLeft: "8px" }}>{cart.original}</span>}
-                  </Text>
-                )}
                 <Section style={{ marginTop: "20px" }}>
                   <PrimaryButton href={cart.url}>Rond je boeking af</PrimaryButton>
                 </Section>
@@ -160,7 +154,8 @@ const cart: RowDeal & { hotelName: string } = {
   ...desIndes,
   hotelName: HOTEL,
   // De sheet noemt voor het winkelmandje: foto, hotelnaam, aankomstdatum, nachten, personen en
-  // de prijs — dus zonder de inclusies en zonder de regel "voor wie de prijs geldt".
+  // de prijs — dus zonder de inclusies en zonder de regel "voor wie de prijs geldt". In mail 1
+  // blijft de prijs helemaal weg (feedback 2026-11-24); mail 2, 3 en 4 tonen hem in de prijsrij.
   includes: undefined,
   priceFor: undefined,
   line: undefined,

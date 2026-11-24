@@ -329,6 +329,9 @@ horen, komt uit de tabbladen Themategels en Seizoensthema's.
 
 Het gastenoordeel (S21) toont de Trustpilot-sterren met "4,5 uit 312 reviews" en één korte review.
 
+Feedback 24-11-2026 (Anoeska, na de meeting met Bart): in `tf021` staan boven de knop geen prijs en
+geen korting meer. Dat wijkt af van de sheet, die bij S17 ook "en de prijs" noemt.
+
 Open punten in de sheet zelf: de preheader van `tf027` zegt "Drie alternatieven" terwijl de template
 twee dealplekken heeft (rij 20 is leeg), en voor de themategel "Hotels met experiences" bestaat nog
 geen landingspagina, dus die staat niet in de themasectie van `tf031`.
