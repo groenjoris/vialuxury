@@ -139,5 +139,10 @@
     "subject": "Vandaag een jaar geleden 🎉",
     "preheader": "Je verblijf in Hotel Des Indes, en een code voor €25 korting.",
     "variantOf": "crm-vaker-doen"
+  },
+  {
+    "slug": "crm-dealkaart-vaste-hoogte",
+    "title": "Dealkaart vaste hoogte (voorbeeld)",
+    "description": "Geen mail maar een voorbeeld: drie dealrijen met vaste hoogte naast elkaar (twee foto's onder elkaar), met een dealtitel van één, twee en drie regels."
   }
 ]

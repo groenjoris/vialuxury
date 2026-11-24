@@ -290,6 +290,53 @@ export function DealRow({ deal: d, cta, top = "12px" }: { deal: RowDeal; cta?: s
   );
 }
 
+/** Hoogte van de dealrij met vaste hoogte (zonder rand) en de witruimte tussen de twee foto's. */
+export const fixedRowHeight = 416;
+const fixedPhotoGap = 6;
+
+/** Dealrij met VASTE hoogte (concept): links twee foto's onder elkaar met wat witruimte ertussen
+ *  in plaats van één langwerpige foto, rechts de uitgebreide kaart. De kaart is altijd even hoog,
+ *  hoe lang de dealtitel ook is: de prijsrij staat onderaan vast en de ruimte tussen de laatste
+ *  inclusie en de prijsrij vangt het verschil op (titel van drie regels → minder witruimte).
+ *  Voorwaarde: elke inclusie past op één regel en de titel is maximaal drie regels. */
+export function DealRowFixed({ deal: d, image2, cta, top = "12px" }: { deal: RowDeal; /** Tweede foto, onder de eerste. */ image2: string; cta?: string; top?: string }) {
+  const h = fixedRowHeight;
+  const photoH = (h - fixedPhotoGap) / 2;
+  const photo = (src: string) => (
+    <Link href={d.url}>
+      <Img src={src} alt={d.hotelName ?? ""} width="190" height={photoH} style={{ display: "block", width: "190px", height: `${photoH}px`, objectFit: "cover" }} />
+    </Link>
+  );
+  return (
+    <Section style={{ backgroundColor: "#FFFFFF", border: `1px solid #E5E5E5`, borderRadius: "8px", marginTop: top, overflow: "hidden" }}>
+      <Row>
+        <Column style={{ width: "190px", verticalAlign: "top", fontSize: 0, lineHeight: 0 }}>
+          {photo(d.image)}
+          <div style={{ height: `${fixedPhotoGap}px`, lineHeight: `${fixedPhotoGap}px`, fontSize: "1px" }}>&nbsp;</div>
+          {photo(image2)}
+        </Column>
+        <Column style={{ verticalAlign: "top", padding: 0 }}>
+          {/* Vaste hoogte: bovenste rij groeit mee met de titel, de prijsrij staat onderaan vast */}
+          <table role="presentation" cellPadding={0} cellSpacing={0} width="100%" style={{ width: "100%", height: `${h}px`, borderCollapse: "collapse" }}>
+            <tbody>
+              <tr>
+                <td valign="top" style={{ padding: "16px 18px 0", verticalAlign: "top" }}>
+                  <RichDealText d={d} />
+                </td>
+              </tr>
+              <tr>
+                <td valign="bottom" style={{ padding: "0 18px 18px", verticalAlign: "bottom", height: "1px" }}>
+                  <RichDealPrice d={d} cta={cta ?? "Bekijk"} />
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </Column>
+      </Row>
+    </Section>
+  );
+}
+
 /** Uitgelichte deal over de hele breedte: grote foto, daaronder met een prijs de uitgebreide kaart
  *  (knop "Bekijk"), anders de tekstregels en een oranje knop "Bekijk arrangement".
  *  `priceRow={false}`: zonder de prijsrij en de knop (winkelmandje: prijs en knop staan erboven). */

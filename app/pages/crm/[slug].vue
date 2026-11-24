@@ -15,7 +15,7 @@ if (!entry.value) throw createError({ statusCode: 404, statusMessage: 'E-mail ni
 // (en favorieten), review, de repeat-bookingflow (nagenieten, terugkomactie, herinnering, een
 // jaar geleden) en als laatste de themamail. De titel
 // "Winkelmandje (2 uur na verlaten)" wordt gesplitst in naam en moment.
-const navOrder = ['crm-winkelmandje', 'crm-winkelmandje-2-dagen', 'crm-zoekopdracht', 'crm-favorieten', 'crm-review', 'crm-nagenieten', 'crm-terugkomactie', 'crm-terugkomactie-herinnering', 'crm-jaar-geleden', 'crm-thema-stedentrips', 'crm-vaker-doen']
+const navOrder = ['crm-winkelmandje', 'crm-winkelmandje-2-dagen', 'crm-zoekopdracht', 'crm-favorieten', 'crm-review', 'crm-nagenieten', 'crm-terugkomactie', 'crm-terugkomactie-herinnering', 'crm-jaar-geleden', 'crm-thema-stedentrips', 'crm-vaker-doen', 'crm-dealkaart-vaste-hoogte']
 const nav = navOrder
   .map(s => emails.find(e => e.slug === s))
   .filter((e): e is (typeof emails)[number] => !!e)
@@ -48,6 +48,28 @@ const variants = computed(() => {
   const list = emails.filter(e => e.slug === baseSlug.value || (e as { variantOf?: string }).variantOf === baseSlug.value)
   return list.length > 1 ? list.map(e => ({ slug: e.slug, label: variantLabels[e.slug] ?? e.slug })) : []
 })
+
+// Voorbeeldbladen (geen mail): zonder inboxframe, op hun eigen ontwerpmaat en in de breedte passend
+// geschaald. Maten in px van de geëxporteerde HTML (zie email-designs/emails/<slug>.tsx).
+const sheets: Record<string, { w: number; h: number }> = {
+  'crm-dealkaart-vaste-hoogte': { w: 1782, h: 500 },
+}
+const sheet = computed(() => sheets[slug.value])
+const sheetBox = ref<HTMLElement | null>(null)
+const sheetScale = ref(1)
+let sheetObserver: ResizeObserver | undefined
+function fitSheet() {
+  if (!sheet.value || !sheetBox.value) return
+  sheetScale.value = Math.min(1, sheetBox.value.clientWidth / sheet.value.w)
+}
+onMounted(() => {
+  sheetObserver = new ResizeObserver(fitSheet)
+  watch(sheetBox, (el, old) => {
+    if (old) sheetObserver?.unobserve(old)
+    if (el) { sheetObserver?.observe(el); fitSheet() }
+  }, { immediate: true })
+})
+onBeforeUnmount(() => sheetObserver?.disconnect())
 
 // Pijltjes omhoog/omlaag: vorige/volgende mail
 function onKey(ev: KeyboardEvent) {
@@ -98,7 +120,16 @@ useHead({ title: `${entry.value?.title ?? 'E-mail'} — ViaLuxury CRM` })
         </NuxtLink>
         <p class="crm__nav-hint">↑ ↓ om te bladeren</p>
       </nav>
-      <div class="crm__center">
+      <div v-if="sheet" ref="sheetBox" class="crm__sheet" :style="{ height: `${sheet.h * sheetScale}px` }">
+        <iframe
+          :key="slug"
+          class="crm__sheet-frame"
+          :src="`/emails/${slug}.html`"
+          :title="entry?.title"
+          :style="{ width: `${sheet.w}px`, height: `${sheet.h}px`, transform: `scale(${sheetScale})` }"
+        />
+      </div>
+      <div v-else class="crm__center">
       <div class="crm__mail">
         <div class="crm__inbox">
           <span class="crm__avatar" aria-hidden="true">V</span>
@@ -139,6 +170,9 @@ useHead({ title: `${entry.value?.title ?? 'E-mail'} — ViaLuxury CRM` })
 .crm__nav-link--on, .crm__nav-link--on:hover { background: #F4F1EC; }
 .crm__nav-link--on .crm__nav-label { font-weight: 700; }
 .crm__nav-hint { margin: 8px 0 0; padding: 0 12px; font-size: 12px; color: var(--color-text-secondary); }
+/* Voorbeeldblad: de hele breedte naast het paneel, het blad geschaald vanaf linksboven */
+.crm__sheet { flex: 1; min-width: 0; overflow: hidden; background: #fff; border: 1px solid var(--color-border); border-radius: 8px; }
+.crm__sheet-frame { display: block; border: 0; transform-origin: top left; }
 .crm__center { flex: 1; min-width: 0; display: flex; justify-content: center; }
 @media (max-width: 900px) { .crm__nav { display: none; } }
 .crm__mail { width: 700px; max-width: 100%; background: #fff; border: 1px solid var(--color-border); border-radius: 8px; overflow: hidden; }

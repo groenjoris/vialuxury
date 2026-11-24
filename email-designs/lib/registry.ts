@@ -11,6 +11,7 @@ import CrmThemaStedentrips from "../emails/crm-thema-stedentrips";
 import CrmReview, { sterrenProps } from "../emails/crm-review";
 import CrmTerugkomactie, { herinneringProps } from "../emails/crm-terugkomactie";
 import CrmZoekopdracht from "../emails/crm-zoekopdracht";
+import CrmDealkaartVasteHoogte from "../emails/crm-dealkaart-vaste-hoogte";
 import CrmFavorieten, { tweeCouponsProps } from "../emails/crm-favorieten";
 import CommercieelContentMultiDeal from "../emails/commercieel-content-multi-deal";
 import CommercieelActie from "../emails/commercieel-actie";
@@ -425,6 +426,13 @@ export const emails: EmailEntry[] = [
     preheader: "Je verblijf in Hotel Des Indes, en een code voor €25 korting.",
     Component: CrmJaarGeleden,
     props: payoffProps("recoleta"),
+  },
+  {
+    slug: "crm-dealkaart-vaste-hoogte",
+    title: "Dealkaart vaste hoogte (voorbeeld)",
+    description: "Geen mail maar een voorbeeld: drie dealrijen met vaste hoogte naast elkaar (twee foto's onder elkaar), met een dealtitel van één, twee en drie regels.",
+    section: "crm",
+    Component: CrmDealkaartVasteHoogte,
   },
   // ── Commerciële mails (volgorde = volgorde in het paneel van /commercieel) ──
   {

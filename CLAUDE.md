@@ -326,6 +326,13 @@ Regels voor elke CRM-mail:
   `scripts/mail-graphics/payoff-header.py`), want webfonts werken niet in elke mailclient.
 - Nagenietmail heeft twee varianten (schakelaar "Bericht | Titel"): standaard een brief met aanhef en ondertekening en
   in het blok alleen de vraag als titel; of (`crm-nagenieten-titel`) de grote titel onder de foto.
+- Dealrij met vaste hoogte (concept, 2026-11-25; nog niet in de mails doorgevoerd): `DealRowFixed` zet links twee foto's
+  onder elkaar met 6 px wit ertussen in plaats van één langwerpige foto, en houdt de kaart altijd 416 px hoog. De prijsrij
+  staat onderaan vast; de ruimte tussen de laatste inclusie en de prijsrij vangt de lengte van de dealtitel op (voorwaarde:
+  titel maximaal drie regels, elke inclusie op één regel). Voorbeeldblad onderaan het CRM-paneel:
+  `/crm/crm-dealkaart-vaste-hoogte` (`crm-dealkaart-vaste-hoogte.tsx`: drie kaarten naast elkaar met een titel van 1, 2 en
+  3 regels; de preview toont zo'n blad zonder inboxframe en schaalt het in de breedte, maten in `sheets` in
+  `app/pages/crm/[slug].vue`).
 - Tussen twee dealkaarten onder elkaar staat 24 px (`cardGap`), tussen een titel en de eerste kaart 12 px.
 - Preheaders zonder gegevens die lastig te automatiseren zijn of niet altijd bestaan (geen plaatsen of prijzen van de
   suggesties, geen datum uit de zoekopdracht).
