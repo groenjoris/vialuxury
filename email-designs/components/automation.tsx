@@ -1,4 +1,4 @@
-import { Button, Column, Img, Link, Row, Section, Text } from "@react-email/components";
+import { Button, Column, Heading, Img, Link, Row, Section, Text } from "@react-email/components";
 import * as React from "react";
 import { type AutomationDeal } from "../lib/automationDeals";
 import { BeigeBand, IconLine, type Pill, PillGrid, PrimaryButton, s, site, TextLink } from "./crm";
@@ -295,12 +295,48 @@ export function AutomationCodeBlock({ title, code, label = "Jouw persoonlijke co
 /** S7 Themasectie: de themaknoppen met de knop "Alle thema's" (zet hem in een BeigeBand).
  *  De tegels en hun landingspagina's komen uit het tabblad Themategels, de keuze volgt de
  *  seizoensthema's van de verzendmaand (tabblad Seizoensthema's). */
-export function ThemeSection({ title, note, items }: { title: string; note: string; items: Pill[] }) {
+/** Een themategel: dezelfde keuzeknop als in de CRM-mails, maar met een foto erboven. */
+export type ThemeTile = Pill & { image?: string };
+
+/** S7 Themasectie. Feedback 24-11-2026: de thema's zijn beeldend, dus elk thema is een tegel met
+ *  een foto (16:9) en de naam eronder. Zonder foto valt hij terug op de kale keuzeknop. */
+export function ThemeSection({ title, note, items }: { title: string; note: string; items: ThemeTile[] }) {
+  const withImages = items.filter((t) => t.image);
+  const perRow = 2;
+  const rows = Array.from({ length: Math.ceil(withImages.length / perRow) }, (_, i) => withImages.slice(i * perRow, (i + 1) * perRow));
   return (
     <>
-      <Text style={s.kop}>{title}</Text>
-      <PillGrid items={[...items, { label: "Alle thema's", href: "https://vialuxury.com/nl-NL/zoeken" }]} />
-      <Text style={{ ...s.muted, margin: "14px 0 0" }}>{note}</Text>
+      <Heading as="h2" className="m-h1" style={{ ...s.h1, marginBottom: "16px" }}>{title}</Heading>
+      {withImages.length === items.length ? (
+        <Section>
+          {rows.map((row, ri) => (
+            <Row key={ri} style={{ marginTop: ri ? "16px" : 0 }}>
+              {Array.from({ length: perRow }, (_, i) => {
+                const t = row[i];
+                return (
+                  <Column key={i} className="stack" style={{ width: `${100 / perRow}%`, verticalAlign: "top", paddingLeft: i ? "8px" : 0, paddingRight: i < perRow - 1 ? "8px" : 0 }}>
+                    {t && (
+                      <Link href={t.href} style={{ display: "block", backgroundColor: "#FFFFFF", border: "1px solid #E5E5E5", borderRadius: "4px", textDecoration: "none" }}>
+                        <Img
+                          src={t.image}
+                          alt=""
+                          width="271"
+                          height="152"
+                          style={{ display: "block", width: "100%", height: "auto", aspectRatio: "16 / 9", objectFit: "cover" }}
+                        />
+                        <Text style={{ ...s.body, fontWeight: 700, color: c.text, margin: 0, padding: "12px 16px" }}>{t.label}</Text>
+                      </Link>
+                    )}
+                  </Column>
+                );
+              })}
+            </Row>
+          ))}
+        </Section>
+      ) : (
+        <PillGrid items={[...items, { label: "Alle thema's", href: "https://vialuxury.com/nl-NL/zoeken" }]} />
+      )}
+      <Text style={{ ...s.muted, margin: "16px 0 0" }}>{note}</Text>
     </>
   );
 }
