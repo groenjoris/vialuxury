@@ -2,7 +2,7 @@ import { Body, Container, Head, Heading, Html, Preview, Section } from "@react-e
 import * as React from "react";
 import CrmFooter from "../components/CrmFooter";
 import CrmHeader from "../components/CrmHeader";
-import { BeigeBand, CrmHelp, type Pill, s, site, TextLink } from "../components/crm";
+import { BeigeBand, CrmHelp, type Pill, PrimaryButton, s, site, TextLink } from "../components/crm";
 import { AutomationDealList, AutomationLetter, automationCss, SearchSection, ThemeSection } from "../components/automation";
 import { type AutomationDeal } from "../lib/automationDeals";
 import { dePlesman, desIndes, kurhaus, voco } from "../lib/automationDeals";
@@ -39,9 +39,11 @@ type Props = {
   themeSection?: { title: string; note: string; items: Pill[] };
   /** Tekstlink onder de resultaten. */
   footerLink?: { href: string; label: string };
+  /** Knop onder de resultaten. */
+  footerCta?: { href: string; label: string };
 };
 
-export default function AutomationSearch({ recipientEmail, preheader, firstName, heading, topHeading, intro, searchTerm, arrivalDate, persons, resultsUrl, results, themeSection, footerLink }: Props) {
+export default function AutomationSearch({ recipientEmail, preheader, firstName, heading, topHeading, intro, searchTerm, arrivalDate, persons, resultsUrl, results, themeSection, footerLink, footerCta }: Props) {
   const c = newsletter.light;
 
   return (
@@ -70,6 +72,13 @@ export default function AutomationSearch({ recipientEmail, preheader, firstName,
             <Heading as={topHeading ? "h2" : "h1"} className="m-h1" style={s.h1}>{heading}</Heading>
             <AutomationDealList deals={results} />
           </Section>
+
+          {/* Knop onder de resultaten */}
+          {footerCta && (
+            <Section className="m-pad" style={{ padding: "28px 32px 0" }}>
+              <PrimaryButton href={footerCta.href}>{footerCta.label}</PrimaryButton>
+            </Section>
+          )}
 
           {/* Tekstlink onder de resultaten */}
           {footerLink && (
@@ -144,10 +153,12 @@ export const search2Props = {
 export const search3Props = {
   ...base,
   preheader: "Misschien zit je verblijf ertussen.",
-  heading: "Nog meer mogelijkheden",
-  intro: `Je zocht naar ${TERM}. Deze arrangementen passen er goed bij, ook net buiten je zoekgebied.`,
+  // Feedback 24-11-2026: nieuwe kop boven de resultaten, nieuwe introtekst en een knop eronder.
+  heading: "Nog meer verborgen parels",
+  intro: `Je keek naar ${TERM}. We hebben er een paar verborgen parels bij gezocht, die je misschien nog niet kende.`,
   resultsUrl: resultsUrl("retargeting_abandonedsearch_3"),
   results: [kurhaus, dePlesman, voco],
+  footerCta: { href: resultsUrl("retargeting_abandonedsearch_3"), label: "Ontdek onze verborgen parels" },
 } satisfies Props;
 
 /** v01_tf031_fl013_nl-NL_4_abandoned_search — 7 dagen na het zoeken, met de themakiezer. */
