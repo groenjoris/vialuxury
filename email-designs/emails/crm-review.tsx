@@ -120,20 +120,20 @@ export default function CrmReview({ recipientEmail, firstName, hotelName, stars,
         </BeigeBand>
 
         <Container style={{ width: "100%", maxWidth: "626px" }}>
-          {/* Jouw verblijf: dealrij met grijze rand, hotelnaam bovenaan */}
-          <Section className="m-pad" style={{ padding: "44px 32px 0" }}>
-            <Text style={s.kop}>Jouw verblijf</Text>
-            <DealRow deal={{ hotelName, stars, place, packageTitle, line: stayDates, image, url: dealUrl }} />
-          </Section>
-
-          {/* Vangnet voor wie iets te melden heeft; de hulplijn eronder zegt hoe */}
-          <Section className="m-pad" style={{ padding: "28px 32px 20px" }}>
+          {/* Vangnet voor wie iets te melden heeft, direct onder de sterren; de hulplijn eronder zegt hoe */}
+          <Section className="m-pad" style={{ padding: "32px 32px 20px" }}>
             <Text style={{ ...s.title, margin: 0, color: c.muted }}>
               Heb je nog vragen, of ging er iets niet zoals je had gehoopt? Laat het ons weten, we helpen je graag.
             </Text>
           </Section>
           {/* Hulplijn */}
-          <CrmHelp />
+          <CrmHelp bottom="0" />
+
+          {/* Jouw verblijf: dealrij met grijze rand, hotelnaam bovenaan */}
+          <Section className="m-pad" style={{ padding: "44px 32px 40px" }}>
+            <Text style={s.kop}>Jouw verblijf</Text>
+            <DealRow deal={{ hotelName, stars, place, packageTitle, line: stayDates, image, url: dealUrl }} />
+          </Section>
         </Container>
         <CrmFooter recipientEmail={recipientEmail} reason="omdat je bij ons boekte" />
       </Body>

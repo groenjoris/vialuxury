@@ -58,14 +58,15 @@ export default function CrmWinkelmandje2Dagen({ recipientEmail, firstName, cart,
             ))}
           </Section>
 
+          {/* Hulplijn: direct na de hoofdboodschap, niet als onderste blok */}
+          <CrmHelp top="32px" bottom="0" />
+
           {/* Daaronder "Door jou bekeken": de deal uit het winkelmandje */}
-          <Section className="m-pad" style={{ padding: "44px 32px 0" }}>
+          <Section className="m-pad" style={{ padding: "44px 32px 40px" }}>
             <Text style={s.kop}>Door jou bekeken</Text>
             <DealRow deal={cart} cta="Ga verder met boeken" />
           </Section>
 
-          {/* Hulplijn */}
-          <CrmHelp top="36px" />
         </Container>
         <CrmFooter recipientEmail={recipientEmail} reason="omdat je een boeking bij ons startte" />
       </Body>

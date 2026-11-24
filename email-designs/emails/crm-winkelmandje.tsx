@@ -78,9 +78,12 @@ export default function CrmWinkelmandje({ recipientEmail, firstName, deal, arriv
             <FeaturedDeal deal={{ ...deal, hotelName: undefined, stars: undefined, place: undefined, url: checkoutUrl }} priceRow={false} />
           </Section>
 
+          {/* Hulplijn: direct onder de boeking die klaarstaat, niet als onderste blok */}
+          <CrmHelp top="32px" bottom={reviews && reviews.length > 0 ? "0" : "40px"} />
+
           {/* Gastenoordeel: zonder vlak; één keer sterren met het gemiddelde, drie reviews in 20 px serif */}
           {reviews && reviews.length > 0 && (
-            <Section className="m-pad" style={{ padding: "36px 32px 0" }}>
+            <Section className="m-pad" style={{ padding: "36px 32px 40px" }}>
               <Text style={s.kop}>Dit vinden gasten van {hotelName}</Text>
               <Section style={{ marginTop: "14px" }}>
                 {reviewSummary && (
@@ -105,8 +108,6 @@ export default function CrmWinkelmandje({ recipientEmail, firstName, deal, arriv
             </Section>
           )}
 
-          {/* Hulplijn */}
-          <CrmHelp top="36px" />
         </Container>
         <CrmFooter recipientEmail={recipientEmail} reason="omdat je een boeking bij ons startte" />
       </Body>

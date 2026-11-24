@@ -61,13 +61,14 @@ export default function CrmZoekopdracht({ recipientEmail, firstName, searchTerm,
             </Section>
           </Section>
 
+          {/* Hulplijn: direct na de hoofdboodschap, niet als onderste blok */}
+          <CrmHelp top="32px" bottom="0" />
+
           <Section className="m-pad" style={{ padding: "44px 32px 40px" }}>
             {/* De titel hoort bij de lijst en staat er direct boven */}
             <Heading as="h1" className="m-h1" style={s.h1}>Dit vonden we voor je</Heading>
             <DealList deals={results} />
           </Section>
-          {/* Hulplijn */}
-          <CrmHelp />
         </Container>
         <CrmFooter recipientEmail={recipientEmail} reason="omdat je een account hebt bij ViaLuxury" />
       </Body>

@@ -85,6 +85,9 @@ export default function CrmJaarGeleden({ recipientEmail, firstName, variant = "s
             </Section>
           )}
 
+          {/* Hulplijn: direct na de hoofdboodschap, niet als onderste blok */}
+          <CrmHelp top="32px" bottom="0" />
+
           {/* Deals met frame-titel, onder elkaar */}
           <Section className="m-pad" style={{ padding: "48px 32px 40px" }}>
             {/* Eén groep suggesties, dus geen beige band: grote titel met de regel eronder */}
@@ -100,8 +103,6 @@ export default function CrmJaarGeleden({ recipientEmail, firstName, variant = "s
               <DealRow key={d.url} deal={d} top={i ? cardGap : undefined} />
             ))}
           </Section>
-          {/* Hulplijn */}
-          <CrmHelp />
         </Container>
         <CrmFooter recipientEmail={recipientEmail} reason="omdat je vorig jaar bij ons boekte" />
       </Body>

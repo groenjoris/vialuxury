@@ -49,17 +49,16 @@ export default function CrmThemaStedentrips({ recipientEmail, firstName, searche
             <DealList deals={deals} />
           </Section>
 
+
+          {/* Hulplijn: direct na de hoofdboodschap, niet als onderste blok */}
+          <CrmHelp top="32px" bottom="0" />
         </Container>
 
         {/* Themakiezer op een beige band over de hele breedte: raster van even brede snelfilterknoppen */}
-        <BeigeBand top="48px">
+        <BeigeBand top="40px">
           <ThemePicker />
         </BeigeBand>
 
-        <Container style={{ width: "100%", maxWidth: "626px" }}>
-          {/* Hulplijn */}
-          <CrmHelp top="36px" />
-        </Container>
         <CrmFooter recipientEmail={recipientEmail} reason="omdat je je hebt aangemeld voor onze nieuwsbrief" />
       </Body>
     </Html>

@@ -71,6 +71,9 @@ export default function CrmFavorieten({ recipientEmail, firstName, first: code1,
             />
           </Section>
 
+          {/* Hulplijn: direct na de hoofdboodschap, niet als onderste blok */}
+          <CrmHelp top="32px" bottom="0" />
+
           {/* Grote titel boven de blokken, zoals "Tips voor je kortingscode" in de terugkomactie */}
           <Section className="m-pad" style={{ padding: "44px 32px 0" }}>
             <Heading as="h1" className="m-h1" style={s.h1}>Hier geldt je code</Heading>
@@ -100,10 +103,6 @@ export default function CrmFavorieten({ recipientEmail, firstName, first: code1,
           ))}
         </DealGroup>
 
-        <Container style={{ width: "100%", maxWidth: "626px" }}>
-          {/* Hulplijn */}
-          <CrmHelp top="36px" />
-        </Container>
         <CrmFooter recipientEmail={recipientEmail} reason="omdat je een account hebt bij ViaLuxury" />
       </Body>
     </Html>

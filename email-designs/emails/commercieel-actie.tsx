@@ -67,6 +67,9 @@ export default function CommercieelActie({ recipientEmail, firstName, hero, hero
             </Section>
           </Section>
 
+          {/* Hulplijn: direct na de hoofdboodschap, niet als onderste blok */}
+          <CrmHelp top="32px" bottom="0" />
+
           {/* De lijst: titel en subtitel direct erboven, vier dealrijen */}
           <Section className="m-pad" style={{ padding: "40px 32px 0" }}>
             <Heading as="h2" className="m-h1" style={s.h1}>{listTitle}</Heading>
@@ -88,10 +91,6 @@ export default function CommercieelActie({ recipientEmail, firstName, hero, hero
           <QuickSearch />
         </BeigeBand>
 
-        <Container style={{ width: "100%", maxWidth: "626px" }}>
-          {/* Hulplijn */}
-          <CrmHelp top="36px" />
-        </Container>
         <CrmFooter recipientEmail={recipientEmail} reason="omdat je je hebt aangemeld voor onze nieuwsbrief" />
       </Body>
     </Html>

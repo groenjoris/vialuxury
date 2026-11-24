@@ -60,17 +60,16 @@ export default function CommercieelContentMultiDeal({ recipientEmail, firstName,
               <DealRow key={d.url + i} deal={d} top={i ? cardGap : "12px"} />
             ))}
           </Section>
+
+          {/* Hulplijn: direct na de hoofdboodschap, niet als onderste blok */}
+          <CrmHelp top="32px" bottom="0" />
         </Container>
 
         {/* Snel zoeken op een beige band over de hele breedte */}
-        <BeigeBand top="48px">
+        <BeigeBand top="40px">
           <QuickSearch />
         </BeigeBand>
 
-        <Container style={{ width: "100%", maxWidth: "626px" }}>
-          {/* Hulplijn */}
-          <CrmHelp top="36px" />
-        </Container>
         <CrmFooter recipientEmail={recipientEmail} reason="omdat je je hebt aangemeld voor onze nieuwsbrief" />
       </Body>
     </Html>

@@ -15,7 +15,7 @@ import { baseUrl, font, newsletter } from "./theme";
 // - Geen labels ("Populair" e.d.) op deals; prijzen zijn het totaal voor 2 personen.
 // - Deals staan op de uitgebreide kaart (zoals de zoekkaart op de website); geen tekst op een foto.
 // - Links naar het prototype gaan naar de R1-dealpagina (zachte landing).
-// - Elke mail eindigt met de hulplijn "Hulp nodig?" (CrmHelp).
+// - Elke mail heeft de hulplijn "Hulp nodig?" (CrmHelp), direct na de hoofdboodschap, niet als onderste blok.
 
 const c = newsletter.light;
 
@@ -61,10 +61,11 @@ export function Letter({ firstName, children }: { firstName?: string; children: 
   );
 }
 
-/** Hulplijn onderaan elke CRM-mail: hetzelfde blok "Hulp nodig?" als in de post-bookingmails
+/** Hulplijn van elke CRM- en commerciële mail, direct na de hoofdboodschap (alleen onderaan als er geen
+ *  betere plek is; zie CLAUDE.md): hetzelfde blok "Hulp nodig?" als in de post-bookingmails
  *  (HelpBanner), met 16 px tekst. `top`: witruimte erboven als de sectie ervoor er geen heeft. */
-export function CrmHelp({ top = "0" }: { top?: string }) {
-  return <HelpBanner fontSize="16px" padding={`${top} 32px 40px`} />;
+export function CrmHelp({ top = "0", bottom = "40px" }: { top?: string; /** "0" als er nog een blok met eigen bovenmarge onder staat. */ bottom?: string }) {
+  return <HelpBanner fontSize="16px" padding={`${top} 32px ${bottom}`} />;
 }
 
 /** Primaire, oranje knop. `small`: compacter, voor in een dealblok. */

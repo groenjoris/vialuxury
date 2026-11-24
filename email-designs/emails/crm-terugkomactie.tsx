@@ -72,6 +72,9 @@ export default function CrmTerugkomactie({ recipientEmail, firstName, code, days
             </Section>
           </Section>
 
+          {/* Hulplijn: direct na de hoofdboodschap, niet als onderste blok */}
+          <CrmHelp top="32px" bottom="0" />
+
           {/* Waar je de korting kunt gebruiken: grote titel, zonder subtitel (de datum staat al in de coupon) */}
           <Section className="m-pad" style={{ padding: "44px 32px 0" }}>
             <Heading as="h2" className="m-h1" style={s.h1}>{reminder ? `Hier gebruik je je ${code.value}` : "Je kortingscode geldt hier"}</Heading>
@@ -95,10 +98,6 @@ export default function CrmTerugkomactie({ recipientEmail, firstName, code, days
           </BeigeBand>
         )}
 
-        <Container style={{ width: "100%", maxWidth: "626px" }}>
-          {/* Hulplijn */}
-          <CrmHelp top="36px" />
-        </Container>
         <CrmFooter recipientEmail={recipientEmail} reason="omdat je bij ons boekte" />
       </Body>
     </Html>

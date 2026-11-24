@@ -213,7 +213,7 @@ Commerciële mails (sinds 2026-11-23): nieuwsbrieven en acties, zelfde opzet als
 die er al zijn (geen lege plekken). Mails komen in de registry met sectie `"commercieel"` (volgorde van de registry =
 volgorde in het paneel; varianten met `variantOf` en `variantLabel`); de export schrijft alleen light HTML en de lijst
 `app/data/commercieel-emails.json`. De commerciële mails hergebruiken de vormgeving en bouwstenen van de CRM-mails
-maximaal (`components/crm.tsx`, zelfde regels) en eindigen, boven de hulplijn, met het blok "Snel zoeken" op een beige
+maximaal (`components/crm.tsx`, zelfde regels) en eindigen met het blok "Snel zoeken" op een beige
 band (`QuickSearch`: Best geboekt, Stedentrips, Aan zee, Romantisch, Wellness, Met diner; witte snelfilterknoppen naar
 de R1-zoekpagina); bronnen `email-designs/emails/commercieel-*.tsx`, foto's in
 `public/images/mail/commercieel/`. De voorbeelden worden per stuk gebriefd:
@@ -248,7 +248,7 @@ de R1-zoekpagina); bronnen `email-designs/emails/commercieel-*.tsx`, foto's in
    slotzin en de knop "Bestel een cadeaukaart". Elke rij van de tabel linkt naar de productpagina in de echte
    cadeaukaartshop (`cadeaukaart.vialuxury.com/Product/ProductDetails?productId=11` t/m `16`), de knop naar het
    productoverzicht (`/Product/Products`). Daaronder alleen de
-   hulplijn, geen Snel zoeken.
+   hulplijn (hier wel onderaan), geen Snel zoeken.
 
 Regels voor elke CRM-mail:
 - Briefopzet (het format voor alle CRM-mails, tot nu toe in `crm-winkelmandje-2-dagen`, `crm-favorieten`, `crm-zoekopdracht`,
@@ -281,8 +281,14 @@ Regels voor elke CRM-mail:
   · 2 personen", "Bespaar €441 (47%)"; geen icoon, geen kleur) en de knop bóven de kaart; "Door jou bekeken" in de mail
   van 2 dagen is dezelfde uitgebreide rij als de suggesties (met inclusies), alleen de onderkant verschilt: die twee
   regels in plaats van de prijsrij (`lines`) en de link "Ga verder met boeken"; de kaart zelf is de uitgebreide zonder hotel, plaats en prijsrij (`priceRow={false}`).
-- Elke CRM-mail eindigt met de hulplijn "Hulp nodig?" (`CrmHelp` = `HelpBanner` uit de post-bookingmails, zelfde tekst,
-  lichtoranje vlak, 16 px).
+- Elke CRM- en commerciële mail heeft de hulplijn "Hulp nodig?" (`CrmHelp` = `HelpBanner` uit de post-bookingmails,
+  zelfde tekst, lichtoranje vlak, 16 px). Sinds 2026-11-24 staat hij niet meer onderaan maar direct na de hoofdboodschap
+  (`<CrmHelp top="32px" bottom="0" />`): na de coupon of knop en vóór de titel van de suggesties (favorieten,
+  terugkomactie en herinnering, jaar geleden, zoekopdracht, Actie); na de kaart en vóór de reviews (winkelmandje 2 uur);
+  tussen de suggesties en "Door jou bekeken" (winkelmandje 2 dagen); direct onder de sterren met de vangnetzin, vóór "Jouw
+  verblijf" (review); en waar de lijst of kaart zelf de hoofdboodschap is, daaronder en vóór de afsluitende beige band
+  (themamail vóór de themakiezer; Content, Dedicated hotel en Tekst vóór "Snel zoeken"). Alleen waar geen betere plek is,
+  blijft hij onderaan: nagenieten (de brief en de vraag zijn één boodschap) en Cadeaukaart (er komt niets na de knop).
 - Favorietenmail (`crm-favorieten`, heette "verlanglijst"): wie iets aan zijn favorieten toevoegt, krijgt korting daarop
   (in werkelijkheid algemeen geldig; niet benadrukken). Twee coupons naast elkaar (`CouponPair`): €10 op de eerste boeking
   (code direct te gebruiken, 24 uur geldig) en €15 op de tweede. Van de tweede code staat alleen het vaste begin in de mail
