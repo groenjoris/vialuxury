@@ -1,6 +1,7 @@
-import { Button, Column, Heading, Img, Link, Row, Section, Text } from "@react-email/components";
+import { Button, Column, Container, Heading, Img, Link, Row, Section, Text } from "@react-email/components";
 import * as React from "react";
 import { type AutomationDeal } from "../lib/automationDeals";
+import HelpBanner from "./HelpBanner";
 import { BeigeBand, IconLine, type Pill, PillGrid, PrimaryButton, s, site, TextLink } from "./crm";
 import { baseUrl, font, newsletter } from "./theme";
 
@@ -342,3 +343,54 @@ export function ThemeSection({ title, note, items }: { title: string; note: stri
 }
 
 export { site };
+
+/** Footer van de automationmails. Zelfde zwarte footer als de CRM-mails, maar het
+ *  klantenserviceblok staat er nu in: het lichtoranje blok bovenin de footer vervangt de kolom
+ *  "Hulp nodig?" met de telefoonnummers (afstemming 24-11-2026, Sven). De CRM-mails houden hun
+ *  eigen footer, dus dit is een eigen component. */
+export function AutomationFooter({ recipientEmail, reason }: { recipientEmail: string; reason: string }) {
+  const text = { fontFamily: font.body, color: "#FFFFFF", fontSize: "12px", lineHeight: "16px", margin: "0 0 8px" };
+  const bold = { ...text, fontWeight: 700 };
+  const link = { color: "#FFFFFF", textDecoration: "underline" };
+
+  return (
+    <Section style={{ backgroundColor: c.frame, width: "100%" }}>
+      <Container style={{ width: "100%", maxWidth: "626px" }}>
+        <Section className="m-pad" style={{ padding: "32px" }}>
+          {/* Het klantenserviceblok, prominent bovenin de footer */}
+          <HelpBanner fontSize="16px" padding="0 0 28px" />
+
+          <Row>
+            <Column className="stack m-center" style={{ width: "100%", verticalAlign: "top" }}>
+              <Img src={`${baseUrl}/images/logo-vialuxury-horizontal.png`} alt="ViaLuxury" width="201" className="m-mx-auto" style={{ height: "auto" }} />
+              <Text className="m-center" style={{ ...bold, margin: "22px 0 10px" }}>Volg ons op</Text>
+              <Link href="https://www.instagram.com/vialuxury">
+                <Img src={`${baseUrl}/images/mail/icon-instagram.png`} alt="Instagram" width="19" height="19" style={{ display: "inline", marginRight: "10px" }} />
+              </Link>
+              <Link href="https://www.facebook.com/vialuxury">
+                <Img src={`${baseUrl}/images/mail/icon-facebook.png`} alt="Facebook" width="19" height="19" style={{ display: "inline" }} />
+              </Link>
+            </Column>
+          </Row>
+          <Row style={{ marginTop: "28px" }}>
+            <Column className="stack m-center" style={{ width: "50%", verticalAlign: "bottom", paddingRight: "24px" }}>
+              <Text className="m-center m-small" style={{ ...text, margin: 0 }}>
+                Je ontvangt deze e-mail op <strong>{recipientEmail}</strong> {reason}.
+              </Text>
+            </Column>
+            <Column className="stack m-center m-mt" style={{ width: "50%", verticalAlign: "bottom" }}>
+              <Text className="m-center m-small" style={text}>Prijswijzigingen en/of zetfouten voorbehouden.</Text>
+              <Text className="m-center m-small" style={text}>Copyright © ViaLuxury, All Rights Reserved</Text>
+              <Text className="m-center m-small" style={text}>Liever geen updates meer? Ontvang onze nieuwsbrief minder vaak, of helemaal niet meer.</Text>
+              <Text className="m-center m-small" style={{ ...text, margin: 0 }}>
+                <Link href="https://vialuxury.nl" style={link}>Wijzig e-mailvoorkeuren</Link> |{" "}
+                <Link href="https://vialuxury.nl" style={link}>Uitschrijven</Link> |{" "}
+                <Link href="https://vialuxury.nl" style={link}>Webversie</Link>
+              </Text>
+            </Column>
+          </Row>
+        </Section>
+      </Container>
+    </Section>
+  );
+}

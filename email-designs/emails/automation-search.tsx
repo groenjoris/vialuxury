@@ -1,9 +1,8 @@
 import { Body, Container, Head, Heading, Html, Preview, Section } from "@react-email/components";
 import * as React from "react";
-import CrmFooter from "../components/CrmFooter";
 import CrmHeader from "../components/CrmHeader";
 import { BeigeBand, type Pill, PrimaryButton, s, site, TextLink } from "../components/crm";
-import { AutomationDealList, AutomationLetter, automationCss, SearchSection, ThemeSection, type ThemeTile } from "../components/automation";
+import { AutomationDealList, AutomationLetter, automationCss, SearchSection, ThemeSection, type ThemeTile, AutomationFooter } from "../components/automation";
 import { type AutomationDeal } from "../lib/automationDeals";
 import { dePlesman, desIndes, kurhaus, voco } from "../lib/automationDeals";
 import { font, newsletter } from "../components/theme";
@@ -101,7 +100,7 @@ export default function AutomationSearch({ recipientEmail, preheader, firstName,
           )}
 
         </Container>
-        <CrmFooter recipientEmail={recipientEmail} reason="omdat je je hebt aangemeld voor de nieuwsbrief van ViaLuxury" />
+        <AutomationFooter recipientEmail={recipientEmail} reason="omdat je je hebt aangemeld voor de nieuwsbrief van ViaLuxury" />
       </Body>
     </Html>
   );

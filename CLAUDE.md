@@ -313,8 +313,11 @@ hij bij hoort. De brief heeft geen ondertekening: "Groetjes Yvette"
 verviel en er komt voorlopig niets voor in de plaats (feedback 24-11-2026). De CRM-mails houden
 hun eigen ondertekening. In de automationmails staat **alles links uitgelijnd**, met één uitzondering: de inhoud van de
 coupon (`AutomationCodeBlock`) staat gecentreerd, want een coupon is een ding op zichzelf
-(afstemming 24-11-2026). Blokken lopen over de hele breedte, daar speelt uitlijnen niet. De secties staan gewoon in de kolom op wit. De hulplijn `CrmHelp` ("Hulp nodig?") staat
-sinds 24-11-2026 in geen enkele automationmail meer; de CRM-mails houden hem wel. Beige banden zijn er twee: de themakiezer in `tf031` (een keuzeblok staat altijd op
+(afstemming 24-11-2026). Blokken lopen over de hele breedte, daar speelt uitlijnen niet. De secties staan gewoon in de kolom op wit. Het klantenserviceblok ("Hulp nodig?") staat sinds
+24-11-2026 niet meer onderin de mail zelf maar bovenin de zwarte footer, waar het de kolom met de
+telefoonnummers vervangt (afstemming met Sven: templates die goed te managen zijn, geen dubbele
+content onder elkaar). Daarvoor hebben de automationmails een eigen `AutomationFooter` in
+`components/automation.tsx`; de CRM-mails houden `CrmFooter` zoals hij was. Beige banden zijn er twee: de themakiezer in `tf031` (een keuzeblok staat altijd op
 beige) en het merkblok in `tf026`.
 
 Dealrij: de fotokolom toont twee foto's van hetzelfde arrangement onder elkaar (hoofdbeeld boven,

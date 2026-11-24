@@ -1,9 +1,8 @@
 import { Body, Container, Head, Heading, Html, Preview, Section, Text } from "@react-email/components";
 import * as React from "react";
-import CrmFooter from "../components/CrmFooter";
 import CrmHeader from "../components/CrmHeader";
 import { s, TextLink } from "../components/crm";
-import { AutomationDealRow, AutomationFeaturedDeal, AutomationLetter, automationCss, BrandSection, cardGap } from "../components/automation";
+import { AutomationDealRow, AutomationFeaturedDeal, AutomationLetter, automationCss, BrandSection, cardGap, AutomationFooter } from "../components/automation";
 import { type AutomationDeal } from "../lib/automationDeals";
 import { lauswolt, steenenburg, vanOys } from "../lib/automationDeals";
 import { font, newsletter } from "../components/theme";
@@ -124,7 +123,7 @@ export default function AutomationBrowse({ recipientEmail, preheader, firstName,
           )}
 
         </Container>
-        <CrmFooter recipientEmail={recipientEmail} reason="omdat je je hebt aangemeld voor de nieuwsbrief van ViaLuxury" />
+        <AutomationFooter recipientEmail={recipientEmail} reason="omdat je je hebt aangemeld voor de nieuwsbrief van ViaLuxury" />
       </Body>
     </Html>
   );
