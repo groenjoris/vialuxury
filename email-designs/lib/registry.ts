@@ -13,7 +13,7 @@ import CrmTerugkomactie, { herinneringProps } from "../emails/crm-terugkomactie"
 import CrmZoekopdracht from "../emails/crm-zoekopdracht";
 import CrmFavorieten from "../emails/crm-favorieten";
 import AutomationCart, { cart1Props, cart1ZonderNaamProps, cart2Props,
-  cart2ZonderNaamProps, cart3Props, cart4Props } from "../emails/automation-cart";
+  cart2DataVrijProps, cart3Props, cart4Props } from "../emails/automation-cart";
 import AutomationBrowse, { browse1Props, browse2Props, browse3Props } from "../emails/automation-browse";
 import AutomationSearch, { search1Props, search2Props, search3Props, search4Props } from "../emails/automation-search";
 import { incheckMails } from "./incheckMails";
@@ -400,19 +400,19 @@ export const emails: EmailEntry[] = [
     preheader: "Rond je boeking voor Hotel Des Indes af.",
     Component: AutomationCart,
     props: cart2Props,
-    variantLabel: "Naam bekend",
+    variantLabel: "We helpen je graag",
   },
   {
-    slug: "v01_tf022_fl011_nl-NL_2_abandoned_cart-naam-onbekend",
+    slug: "v01_tf022_fl011_nl-NL_2_abandoned_cart-data-nog-vrij",
     variantOf: "v01_tf022_fl011_nl-NL_2_abandoned_cart",
     title: "Winkelmandje 2 (2 dagen na verlaten)",
-    description: "Variant voor als de voornaam niet bekend is: de brief begint met Beste gast.",
+    description: "Tweede titelversie: Kijk of je data nog vrij zijn, dezelfde mail eronder.",
     section: "automation",
     subject: "Zijn jouw data nog vrij?",
     preheader: "Rond je boeking voor Hotel Des Indes af.",
     Component: AutomationCart,
-    props: cart2ZonderNaamProps,
-    variantLabel: "Naam onbekend",
+    props: cart2DataVrijProps,
+    variantLabel: "Kijk of je data nog vrij zijn",
   },
   {
     slug: "v01_tf023_fl011_nl-NL_3_abandoned_cart",

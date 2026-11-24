@@ -192,7 +192,8 @@ export const cart2Props = {
   recipientEmail: "sanne.devries@example.com",
   firstName: "Sanne",
   preheader: `Rond je boeking voor ${HOTEL} af.`,
-  // Feedback 24-11-2026: kop bovenaan, daaronder de brief met de aanhef.
+  // Feedback 24-11-2026: kop bovenaan, daaronder de brief met de aanhef. Twee titelversies,
+  // zie cart2DataVrijProps.
   heading: "We helpen je graag",
   headingAt: "top" as const,
   opening: "brief" as const,
@@ -202,8 +203,8 @@ export const cart2Props = {
   alternativesTitle: "Anderen boekten ook",
 } satisfies Props;
 
-/** Zelfde mail zonder voornaam: de brief begint dan met "Beste gast,". */
-export const cart2ZonderNaamProps = { ...cart2Props, firstName: undefined } satisfies Props;
+/** Tweede titelversie van dezelfde mail: schaarste in plaats van service. */
+export const cart2DataVrijProps = { ...cart2Props, heading: "Kijk of je data nog vrij zijn" } satisfies Props;
 
 /** v01_tf023_fl011_nl-NL_3_abandoned_cart — 3 dagen na het verlaten van het winkelmandje. */
 export const cart3Props = {
