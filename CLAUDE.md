@@ -394,8 +394,8 @@ Feedback 24-11-2026 (Anoeska, na de meeting met Bart): in `tf021` staan boven de
 geen korting meer. Dat wijkt af van de sheet, die bij S17 ook "en de prijs" noemt.
 
 `tf029`, `tf030` en `tf031` wijken sinds 24-11-2026 af van de sheet. `tf029`: kop "Onze favorieten
-voor jouw zoekopdracht" bovenaan (`topHeading`), boven de resultaten de kortere kop "Onze favorieten
-voor jou" en onderaan de tekstlink "Bekijk alle ViaLuxury arrangementen". `tf030`: nieuwe intro en de
+voor jouw zoekopdracht" bovenaan (`topHeading`), geen kop meer boven de resultaten en onderaan de
+tekstlink "Bekijk alle ViaLuxury arrangementen". `tf030`: nieuwe intro en de
 kop "Nog meer verborgen parels", met onder de resultaten de knop "Ontdek onze verborgen parels".
 `tf031`: kop "Waar heb jij zin in?" bovenaan (de zoekresultaten blijven, maar hebben geen eigen kop
 meer), de themasectie met de titel

@@ -144,8 +144,8 @@ export const search2Props = {
   ...base,
   preheader: "Onze favorieten voor jouw data.",
   // Feedback 24-11-2026: kop bovenaan, de kop boven de resultaten ingekort, en een tekstlink eronder.
+  // Eén titel, bovenaan: de kop boven de resultaten is eruit (die zei twee keer hetzelfde).
   topHeading: "Onze favorieten voor jouw zoekopdracht",
-  heading: "Onze favorieten voor jou",
   intro: `Je keek naar ${TERM}. We hebben een paar mooie arrangementen voor je uitgezocht.`,
   resultsUrl: resultsUrl("retargeting_abandonedsearch_2"),
   results: [voco, desIndes, dePlesman],
