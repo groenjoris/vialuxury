@@ -375,79 +375,92 @@ export function ThemeSection({ title, note, items }: { title: string; note: stri
 
 export { site };
 
-/** Footer van de automationmails. Zelfde zwarte footer als de CRM-mails, maar het
- *  klantenserviceblok staat er nu in: het lichtoranje blok bovenin de footer vervangt de kolom
- *  "Hulp nodig?" met de telefoonnummers (afstemming 24-11-2026, Sven). De CRM-mails houden hun
- *  eigen footer, dus dit is een eigen component. */
+/** Footer van de automationmails. Opzet zoals in het ontwerp van Joris (afstemming 24-11-2026):
+ *  een lichtoranje band met de klantenservice over de hele breedte direct boven de zwarte footer,
+ *  en bovenin de footer de gastquote "Dit moeten we vaker doen!" (handgeschreven, Caveat, als
+ *  afbeelding) met een lijn eronder. De kolom met de telefoonnummers rechtsboven vervalt, daar
+ *  staat nu "Volg ons op". Eigen component, zodat de CRM-mails hun eigen footer houden. */
 export function AutomationFooter({ recipientEmail, reason }: { recipientEmail: string; reason: string }) {
   const text = { fontFamily: font.body, color: "#FFFFFF", fontSize: "12px", lineHeight: "16px", margin: "0 0 8px" };
   const bold = { ...text, fontWeight: 700 };
   const link = { color: "#FFFFFF", textDecoration: "underline" };
+  const serif = { fontFamily: font.heading, fontWeight: 600, fontSize: "20px", lineHeight: "1.3", margin: 0 };
+  const body16 = { fontFamily: font.body, fontSize: "16px", lineHeight: "1.45", margin: 0 };
+  const orangeLink = { color: c.link, textDecoration: "underline", fontWeight: 700 };
 
   return (
-    <Section style={{ backgroundColor: c.frame, width: "100%" }}>
-      <Container style={{ width: "100%", maxWidth: "626px" }}>
-        <Section className="m-pad" style={{ padding: "32px" }}>
-          {/* Het klantenserviceblok, prominent bovenin de footer. Eigen blok in plaats van
-              HelpBanner: die zet op mobiel zijn eigen zijmarge (m-pad) en dan staat hij niet meer
-              gelijk met het logo eronder. */}
-          <Section style={{ paddingBottom: "28px" }}>
-            <Section style={{ backgroundColor: "#FFF0E4", borderRadius: "8px", padding: "14px 18px" }}>
-              <Row>
-                <Column style={{ width: "48px", verticalAlign: "middle" }}>
-                  <table role="presentation" cellPadding={0} cellSpacing={0} border={0} style={{ width: "36px", height: "36px", borderCollapse: "separate" }}>
-                    <tbody>
-                      <tr>
-                        <td style={{ width: "36px", height: "36px", padding: 0, borderRadius: "18px", backgroundColor: "#FFFFFF", textAlign: "center", verticalAlign: "middle" }}>
-                          <Img src={`${baseUrl}/images/mail/icon-phone-orange.png`} alt="" width="20" height="20" style={{ display: "block", margin: "0 auto" }} />
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </Column>
-                <Column style={{ verticalAlign: "middle" }}>
-                  <Text style={{ fontFamily: font.body, fontSize: "16px", lineHeight: "1.45", color: c.text, margin: 0 }}>
-                    <strong>Hulp nodig?</strong> Bel{" "}
-                    <Link href="tel:+31207052222" style={{ color: c.link, textDecoration: "underline", fontWeight: 700 }}>+31 20 705 2222</Link> of WhatsApp{" "}
-                    <Link href="https://wa.me/31208088809" style={{ color: c.link, textDecoration: "underline", fontWeight: 700 }}>+31 20 808 8809</Link>
-                    <span style={{ color: c.muted }}> · ma t/m vr 8:00 – 18:00</span>
-                  </Text>
-                </Column>
-              </Row>
-            </Section>
+    <>
+      {/* Klantenservice: lichtoranje band over de hele breedte, direct boven de footer */}
+      <Section style={{ backgroundColor: "#FFF0E4", width: "100%" }}>
+        <Container style={{ width: "100%", maxWidth: "626px" }}>
+          <Section className="m-pad" style={{ padding: "26px 32px 28px" }}>
+            <Row>
+              <Column style={{ width: "62px", verticalAlign: "middle" }}>
+                <table role="presentation" cellPadding={0} cellSpacing={0} border={0} style={{ width: "44px", height: "44px", borderCollapse: "separate" }}>
+                  <tbody>
+                    <tr>
+                      <td style={{ width: "44px", height: "44px", padding: 0, borderRadius: "22px", backgroundColor: "#FFFFFF", textAlign: "center", verticalAlign: "middle" }}>
+                        <Img src={`${baseUrl}/images/mail/icon-phone-orange.png`} alt="" width="22" height="22" style={{ display: "block", margin: "0 auto" }} />
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </Column>
+              <Column style={{ verticalAlign: "middle" }}>
+                <Text style={{ ...serif, color: c.heading }}>Hulp nodig?</Text>
+                <Text style={{ ...body16, color: c.text, marginTop: "2px" }}>
+                  Bel <Link href="tel:+31207052222" style={orangeLink}>+31 20 705 2222</Link> of WhatsApp <Link href="https://wa.me/31208088809" style={orangeLink}>+31 20 808 8809</Link>
+                </Text>
+                <Text style={{ ...body16, color: c.muted, marginTop: "2px" }}>Bereikbaar ma t/m vr 8:00 – 18:00</Text>
+              </Column>
+            </Row>
           </Section>
+        </Container>
+      </Section>
 
-          <Row>
-            <Column className="stack m-center" style={{ width: "100%", verticalAlign: "top" }}>
-              <Img src={`${baseUrl}/images/logo-vialuxury-horizontal.png`} alt="ViaLuxury" width="201" className="m-mx-auto" style={{ height: "auto" }} />
-              <Text className="m-center" style={{ ...bold, margin: "22px 0 10px" }}>Volg ons op</Text>
-              <Link href="https://www.instagram.com/vialuxury">
-                <Img src={`${baseUrl}/images/mail/icon-instagram.png`} alt="Instagram" width="19" height="19" style={{ display: "inline", marginRight: "10px" }} />
-              </Link>
-              <Link href="https://www.facebook.com/vialuxury">
-                <Img src={`${baseUrl}/images/mail/icon-facebook.png`} alt="Facebook" width="19" height="19" style={{ display: "inline" }} />
-              </Link>
-            </Column>
-          </Row>
-          <Row style={{ marginTop: "28px" }}>
-            <Column className="stack m-center" style={{ width: "50%", verticalAlign: "bottom", paddingRight: "24px" }}>
-              <Text className="m-center m-small" style={{ ...text, margin: 0 }}>
-                Je ontvangt deze e-mail op <strong>{recipientEmail}</strong> {reason}.
-              </Text>
-            </Column>
-            <Column className="stack m-center m-mt" style={{ width: "50%", verticalAlign: "bottom" }}>
-              <Text className="m-center m-small" style={text}>Prijswijzigingen en/of zetfouten voorbehouden.</Text>
-              <Text className="m-center m-small" style={text}>Copyright © ViaLuxury, All Rights Reserved</Text>
-              <Text className="m-center m-small" style={text}>Liever geen updates meer? Ontvang onze nieuwsbrief minder vaak, of helemaal niet meer.</Text>
-              <Text className="m-center m-small" style={{ ...text, margin: 0 }}>
-                <Link href="https://vialuxury.nl" style={link}>Wijzig e-mailvoorkeuren</Link> |{" "}
-                <Link href="https://vialuxury.nl" style={link}>Uitschrijven</Link> |{" "}
-                <Link href="https://vialuxury.nl" style={link}>Webversie</Link>
-              </Text>
-            </Column>
-          </Row>
-        </Section>
-      </Container>
-    </Section>
+      <Section style={{ backgroundColor: c.frame, width: "100%" }}>
+        <Container style={{ width: "100%", maxWidth: "626px" }}>
+          <Section className="m-pad" style={{ padding: "32px" }}>
+            {/* De gastquote bovenin de footer, wit op zwart met een lijn eronder */}
+            <Section style={{ marginBottom: "30px", paddingBottom: "28px", borderBottom: "1px solid #3A3A3A" }}>
+              <Img src={`${baseUrl}/images/mail/crm/gastquote-wit.png`} alt="“Dit moeten we vaker doen!”" width="367" height="34" style={{ display: "block", width: "367px", maxWidth: "100%", height: "auto" }} />
+              <Text style={{ ...s.muted, color: "#FFFFFF", margin: "8px 0 0" }}>— Onze tevreden gasten</Text>
+            </Section>
+
+            <Row>
+              <Column className="stack m-center" style={{ width: "50%", verticalAlign: "top" }}>
+                <Img src={`${baseUrl}/images/logo-vialuxury-horizontal.png`} alt="ViaLuxury" width="201" className="m-mx-auto" style={{ height: "auto" }} />
+              </Column>
+              <Column className="stack m-center m-mt" style={{ width: "50%", verticalAlign: "top" }}>
+                <Text className="m-center" style={{ ...bold, margin: "0 0 10px" }}>Volg ons op</Text>
+                <Link href="https://www.instagram.com/vialuxury">
+                  <Img src={`${baseUrl}/images/mail/icon-instagram.png`} alt="Instagram" width="19" height="19" style={{ display: "inline", marginRight: "10px" }} />
+                </Link>
+                <Link href="https://www.facebook.com/vialuxury">
+                  <Img src={`${baseUrl}/images/mail/icon-facebook.png`} alt="Facebook" width="19" height="19" style={{ display: "inline" }} />
+                </Link>
+              </Column>
+            </Row>
+            <Row style={{ marginTop: "28px" }}>
+              <Column className="stack m-center" style={{ width: "50%", verticalAlign: "bottom", paddingRight: "24px" }}>
+                <Text className="m-center m-small" style={{ ...text, margin: 0 }}>
+                  Je ontvangt deze e-mail op <strong>{recipientEmail}</strong> {reason}.
+                </Text>
+              </Column>
+              <Column className="stack m-center m-mt" style={{ width: "50%", verticalAlign: "bottom" }}>
+                <Text className="m-center m-small" style={text}>Prijswijzigingen en/of zetfouten voorbehouden.</Text>
+                <Text className="m-center m-small" style={text}>Copyright © ViaLuxury, All Rights Reserved</Text>
+                <Text className="m-center m-small" style={text}>Liever geen updates meer? Ontvang onze nieuwsbrief minder vaak, of helemaal niet meer.</Text>
+                <Text className="m-center m-small" style={{ ...text, margin: 0 }}>
+                  <Link href="https://vialuxury.nl" style={link}>Wijzig e-mailvoorkeuren</Link> |{" "}
+                  <Link href="https://vialuxury.nl" style={link}>Uitschrijven</Link> |{" "}
+                  <Link href="https://vialuxury.nl" style={link}>Webversie</Link>
+                </Text>
+              </Column>
+            </Row>
+          </Section>
+        </Container>
+      </Section>
+    </>
   );
 }

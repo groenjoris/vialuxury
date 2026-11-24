@@ -314,10 +314,13 @@ verviel en er komt voorlopig niets voor in de plaats (feedback 24-11-2026). De C
 hun eigen ondertekening. In de automationmails staat **alles links uitgelijnd**, met één uitzondering: de inhoud van de
 coupon (`AutomationCodeBlock`) staat gecentreerd, want een coupon is een ding op zichzelf
 (afstemming 24-11-2026). Blokken lopen over de hele breedte, daar speelt uitlijnen niet. De secties staan gewoon in de kolom op wit. Het klantenserviceblok ("Hulp nodig?") staat sinds
-24-11-2026 niet meer onderin de mail zelf maar bovenin de zwarte footer, waar het de kolom met de
-telefoonnummers vervangt (afstemming met Sven: templates die goed te managen zijn, geen dubbele
-content onder elkaar). Daarvoor hebben de automationmails een eigen `AutomationFooter` in
-`components/automation.tsx`; de CRM-mails houden `CrmFooter` zoals hij was. Beige banden zijn er twee: de themakiezer in `tf031` (een keuzeblok staat altijd op
+24-11-2026 niet meer onderin de mail zelf maar bij de footer (afstemming met Sven: templates die
+goed te managen zijn, geen dubbele content onder elkaar): een lichtoranje band over de hele breedte
+direct boven de zwarte footer, en in de footer zelf bovenin de gastquote "Dit moeten we vaker doen!"
+(afbeelding `gastquote-wit.png`, handgeschreven Caveat) met een lijn eronder; de kolom met de
+telefoonnummers rechtsboven is vervangen door "Volg ons op". Dat is de opzet uit het ontwerp van
+Joris (`CrmFooter` met `help={1}` en `quote="in"` op `main`), nagebouwd in een eigen
+`AutomationFooter` in `components/automation.tsx`; de CRM-mails houden `CrmFooter` zoals hij was. Beige banden zijn er twee: de themakiezer in `tf031` (een keuzeblok staat altijd op
 beige) en het merkblok in `tf026`.
 
 Dealrij: de fotokolom toont twee foto's van hetzelfde arrangement onder elkaar (hoofdbeeld boven,
