@@ -3,11 +3,12 @@ import * as React from "react";
 import { baseUrl, newsletter, type EmailMode } from "./theme";
 
 /** Pay-off "Dit moeten we vaker doen!" onder het logo, als afbeelding (witte tekst, transparant) in
- *  een van vijf lettertypes; gemaakt met scripts/mail-graphics/payoff-header.py. Elke afbeelding is
+ *  een van zes lettertypes; gemaakt met scripts/mail-graphics/payoff-header.py. Elke afbeelding is
  *  precies even breed als het logo (201 px). */
 export const payoffs = {
   "oooh-baby": "Oooh Baby",
-  "biro-script": "Biro Script",
+  "la-belle-aurore": "La Belle Aurore",
+  caveat: "Caveat",
   "bradley-hand": "Bradley Hand",
   "basis-grotesque": "Basis Grotesque",
   recoleta: "Recoleta",
