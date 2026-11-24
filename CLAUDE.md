@@ -332,8 +332,9 @@ export; verzenden gaat altijd met de tabelversie onder `public/emails/`.
 
 Secties uit de sheet als bouwstenen in `email-designs/components/crm.tsx`. Bestaand: `CrmHeader` (S1),
 `FeaturedDeal`/`DealRow`/`DealList` (S4) en `CrmFooter` (S13). Nieuw voor deze flows:
-`GuestRatingSection` (S21), `BrandSection` (S6), `ServiceSection` (S15), `SearchSection` (S18) en
-`ThemeSection` (S7). Het achtergelaten of bekeken arrangement staat op `FeaturedDeal`, de
+`GuestRatingSection` (S21), `BrandSection` (S6), `SearchSection` (S18) en `ThemeSection` (S7). De
+serviceregel (S15, "Vragen over dit arrangement? Onze klantenservice helpt je graag") staat sinds
+24-11-2026 in geen enkele mail meer: die was dubbelop met het klantenserviceblok in de footer. Het achtergelaten of bekeken arrangement staat op `FeaturedDeal`, de
 alternatieven en zoekresultaten op `DealList`. Verder gelden alle CRM-regels hierboven.
 
 **Regel: niets toevoegen wat niet in de sheet staat.** De mails bevatten alleen de secties die in de

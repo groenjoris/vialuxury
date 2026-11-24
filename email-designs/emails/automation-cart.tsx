@@ -2,7 +2,7 @@ import { Body, Container, Head, Heading, Html, Preview, Section, Text } from "@r
 import * as React from "react";
 import CrmHeader from "../components/CrmHeader";
 import { PrimaryButton, s } from "../components/crm";
-import { AutomationCodeBlock, AutomationDealRow, AutomationFeaturedDeal, AutomationLetter, automationCss, cardGap, type GuestRating, GuestRatingSection, ServiceSection, AutomationFooter } from "../components/automation";
+import { AutomationCodeBlock, AutomationDealRow, AutomationFeaturedDeal, AutomationLetter, automationCss, cardGap, type GuestRating, GuestRatingSection, AutomationFooter } from "../components/automation";
 import { type AutomationDeal } from "../lib/automationDeals";
 import { desIndes, dePlesman, voco } from "../lib/automationDeals";
 import { font, newsletter } from "../components/theme";
@@ -53,11 +53,9 @@ type Props = {
   /** S10: de kortingscode met de adviesregel eronder (mail 4). Opbouw als in crm-terugkomactie:
    *  het bedrag als kop van de coupon, de code, de geldigheid en "Vul de code in bij het boeken". */
   code?: { code: string; value: string; deadline: string; advice: string };
-  /** S15: de serviceregel (alleen mail 1). */
-  service?: boolean;
 };
 
-export default function AutomationCart({ recipientEmail, preheader, firstName, heading, intro, headingAt = "cart", opening = "direct", cart, guestRating, alternatives, alternativesTitle, code, codeFirst, service }: Props) {
+export default function AutomationCart({ recipientEmail, preheader, firstName, heading, intro, headingAt = "cart", opening = "direct", cart, guestRating, alternatives, alternativesTitle, code, codeFirst }: Props) {
   const c = newsletter.light;
 
   // De codesectie staat normaal onderaan, in mail 4 direct onder de introtekst.
@@ -144,13 +142,6 @@ export default function AutomationCart({ recipientEmail, preheader, firstName, h
           {/* S10 Codesectie: de coupon met de adviesregel eronder */}
           {!codeFirst && codeSection}
 
-          {/* S15 Servicesectie */}
-          {service && (
-            <Section className="m-pad" style={{ padding: "36px 32px 0" }}>
-              <ServiceSection />
-            </Section>
-          )}
-
         </Container>
         <AutomationFooter recipientEmail={recipientEmail} reason="omdat je je hebt aangemeld voor de nieuwsbrief van ViaLuxury" />
       </Body>
@@ -182,7 +173,6 @@ export const cart1Props = {
   heading: `Sanne, we hebben het nog even voor je bewaard. Nog steeds interesse in ${HOTEL}?`,
   opening: "winkelmandje" as const,
   cart,
-  service: true,
 } satisfies Props;
 
 /** Zelfde mail met een onbekende voornaam: de kop begint dan zonder naam. */
