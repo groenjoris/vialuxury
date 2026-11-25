@@ -21,9 +21,11 @@ import { GuestQuote } from "./crm";
 //   1  bellen en WhatsApp op één regel
 //   2  de band van 1; de gastquote staat niet op een eigen rij maar bovenaan de rechterkolom (alleen
 //      de quote, zonder afzender) en "Volg ons op" staat links onder het logo
+//   3  als 2, maar de quote is een geanimeerde gif: in 1 seconde van links naar rechts geschreven,
+//      3 seconden rust, en opnieuw (scripts/mail-graphics/guest-quote-gif.py)
 // Met `help` vervalt de gewone kolom "Hulp nodig?" rechtsboven; in 0 en 1 schuift "Volg ons op"
 // daarheen en staat de gastquote als bovenste deel van de footer (wit op zwart, lijn eronder).
-export type FooterHelp = 0 | 1 | 2;
+export type FooterHelp = 0 | 1 | 2 | 3;
 
 const TEL = { href: "tel:+31207052222", label: "+31 20 705 2222" };
 const WA = { href: "https://wa.me/31208088809", label: "+31 20 808 8809" };
@@ -33,7 +35,7 @@ const WARM = "#FFF0E4";
 type Props = {
   /** Gastquote “Dit moeten we vaker doen!” in de footer (plek volgt uit `help`, zie boven). */
   quote?: boolean;
-  /** Hulpblok als band boven de footer, variant 0 t/m 2 (zie boven). Leeg → de gewone footer. */
+  /** Hulpblok als band boven de footer, variant 0 t/m 3 (zie boven). Leeg → de gewone footer. */
   help?: FooterHelp;
   recipientEmail: string;
   /** Afzenderreden die bij de trigger past, bijv. "omdat je bij ons boekte". */
@@ -122,8 +124,8 @@ export default function CrmFooter({ recipientEmail, reason, transactional = fals
     <Section style={{ backgroundColor: c.frame, width: "100%" }}>
       <Container style={{ width: "100%", maxWidth: "626px" }}>
         <Section className="m-pad" style={{ padding: "32px" }}>
-          {/* Gastquote als bovenste deel van de footer: wit op zwart, lijn eronder (niet in variant 2) */}
-          {quote && help !== 2 && (
+          {/* Gastquote als bovenste deel van de footer: wit op zwart, lijn eronder (niet in variant 2 en 3) */}
+          {quote && help !== 2 && help !== 3 && (
             <Section style={{ marginBottom: "30px", paddingBottom: "28px", borderBottom: "1px solid #3A3A3A" }}>
               <GuestQuote tone="wit" />
             </Section>
@@ -131,7 +133,7 @@ export default function CrmFooter({ recipientEmail, reason, transactional = fals
           <Row>
             <Column className="stack m-center" style={{ width: "50%", verticalAlign: "top" }}>
               <Img src={`${baseUrl}/images/logo-vialuxury-horizontal.png`} alt="ViaLuxury" width="201" className="m-mx-auto" style={{ height: "auto" }} />
-              {!hasHelp ? social : help === 2 ? <Section style={{ marginTop: "22px" }}>{social}</Section> : null}
+              {!hasHelp ? social : help === 2 || help === 3 ? <Section style={{ marginTop: "22px" }}>{social}</Section> : null}
             </Column>
             <Column className="stack m-center m-mt" style={{ width: "50%", verticalAlign: "top" }}>
               {!hasHelp && (
@@ -148,8 +150,8 @@ export default function CrmFooter({ recipientEmail, reason, transactional = fals
                   <Text className="m-center" style={text}>Ma t/m Vr: 8:00 — 18:00</Text>
                 </>
               )}
-              {/* Variant 2: alleen de quote bovenaan de rechterkolom, passend in de kolom */}
-              {help === 2 && quote && <GuestQuote tone="wit" bare width={250} />}
+              {/* Variant 2 en 3 (3: geanimeerd): alleen de quote bovenaan de rechterkolom, passend in de kolom */}
+              {(help === 2 || help === 3) && quote && <GuestQuote tone="wit" bare width={250} animated={help === 3} />}
               {help === 0 || help === 1 ? social : null}
             </Column>
           </Row>

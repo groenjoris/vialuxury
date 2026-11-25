@@ -65,10 +65,10 @@ export function Letter({ firstName, children }: { firstName?: string; children: 
  *  "donker" op een licht vlak, "wit" in de zwarte footer. Standaard met de afzender eronder
  *  ("— Onze tevreden gasten"); `bare` laat alleen de quote zien. `width`: breedte van de quote in px.
  *  Concept, alleen in de voorbeeldmail "Dit moeten we vaker doen". */
-export function GuestQuote({ tone = "donker", bare, width = 367 }: { tone?: "donker" | "wit"; bare?: boolean; width?: number }) {
+export function GuestQuote({ tone = "donker", bare, width = 367, animated }: { tone?: "donker" | "wit"; bare?: boolean; width?: number; /** Geanimeerde gif (alleen wit, 250 px breed, op de footerkleur): de quote wordt in 1 s geschreven, 3 s rust, herhaalt. */ animated?: boolean }) {
   return (
     <div id="gastquote">
-      <Img src={`${baseUrl}/images/mail/crm/gastquote-${tone}.png`} alt="“Dit moeten we vaker doen!”" width={width} height={Math.round((width * 34) / 367)} style={{ display: "block", width: `${width}px`, maxWidth: "100%", height: "auto" }} />
+      <Img src={`${baseUrl}/images/mail/crm/gastquote-${tone}.${animated ? "gif" : "png"}`} alt="“Dit moeten we vaker doen!”" width={width} height={Math.round((width * 34) / 367)} style={{ display: "block", width: `${width}px`, maxWidth: "100%", height: "auto" }} />
       {/* De afzender, zoals onder een echte quote: streepje ervoor */}
       {!bare && <Text style={{ ...s.muted, color: tone === "wit" ? "#FFFFFF" : c.muted, margin: "8px 0 0" }}>— Onze tevreden gasten</Text>}
     </div>

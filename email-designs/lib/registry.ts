@@ -397,9 +397,9 @@ export const emails: EmailEntry[] = [
     Component: CrmThemaStedentrips,
   },
   // "Dit moeten we vaker doen": kopie van "Precies een jaar geleden" als voorbeeldmail voor de gastquote
-  // en de footer. Eén schakelaar in de preview: de footervariant (0, 1, 2; zie CrmFooter). Slug:
-  // crm-vaker-doen[-footer-0|-footer-2]; footer 1 is de basis.
-  ...([0, 1, 2] as const).map((footer): EmailEntry => ({
+  // en de footer. Eén schakelaar in de preview: de footervariant (0 t/m 3; zie CrmFooter). Slug:
+  // crm-vaker-doen[-footer-0|-footer-2|-footer-3]; footer 1 is de basis.
+  ...([0, 1, 2, 3] as const).map((footer): EmailEntry => ({
     slug: `crm-vaker-doen${footer === 1 ? "" : `-footer-${footer}`}`,
     title: "Dit moeten we vaker doen (quote en footer)",
     description: `Voorbeeldmail voor de gastquote en de footer: footervariant ${footer}.`,

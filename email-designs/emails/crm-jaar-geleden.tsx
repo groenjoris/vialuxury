@@ -36,7 +36,7 @@ type Props = {
   deals: RowDeal[];
   /** Gastquote “Dit moeten we vaker doen!” in de footer (voorbeeldmail "Dit moeten we vaker doen"). */
   quote?: boolean;
-  /** Hulpblok als band boven de footer (variant 0 t/m 2, zie CrmFooter); het losse blok "Hulp nodig?"
+  /** Hulpblok als band boven de footer (variant 0 t/m 3, zie CrmFooter); het losse blok "Hulp nodig?"
    *  in de mail vervalt dan. Alleen in de voorbeeldmail "Dit moeten we vaker doen". */
   footerHelp?: FooterHelp;
 };
@@ -173,5 +173,5 @@ CrmJaarGeleden.PreviewProps = {
 export const persoonlijkProps = { ...CrmJaarGeleden.PreviewProps, variant: "persoonlijk" as const };
 
 /** Voorbeeldmail "Dit moeten we vaker doen": dezelfde mail met de gastquote in de footer en het
- *  hulpblok als band erboven (footervariant 0 t/m 2); één schakelaar in de preview. */
+ *  hulpblok als band erboven (footervariant 0 t/m 3); één schakelaar in de preview. */
 export const vakerDoenProps = (footerHelp: FooterHelp = 1) => ({ ...CrmJaarGeleden.PreviewProps, quote: true, footerHelp });

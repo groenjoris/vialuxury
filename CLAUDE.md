@@ -325,12 +325,15 @@ Regels voor elke CRM-mail:
   alleen nog in de footer, wit op zwart; de plekken "boven de footer" en "tussendoor" zijn op 2026-11-25 vervallen.
   Footer (alleen in deze mail): het losse blok "Hulp nodig?" is samengevoegd met de klantenservice-informatie in de
   footer tot een lichtoranje band over de hele breedte direct boven de zwarte footer (`CrmFooter`-props `help` en
-  `quote`, in de mail `footerHelp`; het blok in de mail vervalt). Drie varianten, schakelaar "Footer 0 | 1 | 2" (slug
-  `crm-vaker-doen[-footer-0|-footer-2]`, footer 1 is de basis; de oude footers 2 t/m 5 zijn vervallen): 0 bellen en
+  `quote`, in de mail `footerHelp`; het blok in de mail vervalt). Vier varianten, schakelaar "Footer 0 | 1 | 2 | 3" (slug
+  `crm-vaker-doen[-footer-0|-footer-2|-footer-3]`, footer 1 is de basis; de oude footers 2 t/m 5 zijn vervallen): 0 bellen en
   WhatsApp onder elkaar, elk op een eigen regel; 1 bellen en WhatsApp op één regel; in 0 en 1 staat de quote als bovenste
   rij van de footer met de afzender "— Onze tevreden gasten" eronder en een lijn, en staat "Volg ons op" rechtsboven. 2: de
   band van 1, geen aparte rij voor de quote: alleen de quote (zonder afzender, 250 px breed) bovenaan de rechterkolom, en
-  "Volg ons op" links onder het logo. Een klik op een footervariant scrolt de mail in de preview vanzelf naar de footer;
+  "Volg ons op" links onder het logo. 3: als 2, maar de quote is een geanimeerde gif (`gastquote-wit.gif`,
+  `scripts/mail-graphics/guest-quote-gif.py`): in 1 seconde van links naar rechts geschreven, 3 seconden rust, herhaalt;
+  het eerste beeld is de hele quote, zodat een mailclient die geen gif afspeelt (Outlook op Windows) de quote toont. Een
+  klik op een footervariant scrolt de mail in de preview vanzelf naar de footer;
   een andere mail begint weer bovenaan.
 - Nagenietmail heeft twee varianten (schakelaar "Bericht | Titel"): standaard een brief met aanhef en
   in het blok alleen de vraag als titel; of (`crm-nagenieten-titel`) de grote titel onder de foto.
