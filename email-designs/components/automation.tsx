@@ -423,8 +423,12 @@ export function AutomationFooter({ recipientEmail, reason }: { recipientEmail: s
               </Column>
               <Column style={{ verticalAlign: "middle" }}>
                 <Text style={{ ...serif, color: c.heading }}>Hulp nodig?</Text>
+                {/* Bellen en WhatsApp elk op een eigen regel */}
                 <Text style={{ ...body16, color: c.text, marginTop: "2px" }}>
-                  Bel <Link href="tel:+31207052222" style={orangeLink}>+31 20 705 2222</Link> of WhatsApp <Link href="https://wa.me/31208088809" style={orangeLink}>+31 20 808 8809</Link>
+                  Bel <Link href="tel:+31207052222" style={orangeLink}>+31 20 705 2222</Link>
+                </Text>
+                <Text style={{ ...body16, color: c.text, marginTop: "2px" }}>
+                  WhatsApp <Link href="https://wa.me/31208088809" style={orangeLink}>+31 20 808 8809</Link>
                 </Text>
                 <Text style={{ ...body16, color: c.muted, marginTop: "2px" }}>Bereikbaar ma t/m vr 8:00 – 18:00</Text>
               </Column>
