@@ -234,8 +234,8 @@ de R1-zoekpagina); bronnen `email-designs/emails/commercieel-*.tsx`, foto's in
    - Header-titel: de titel staat in de header (`CrmHeader`-prop `title`: vierkant logo `logo-vialuxury-square.png`,
      76 × 60, tegen de linkerrand; titel 32 px wit, gecentreerd tussen logo en Trustpilot); de foto begint dan ook tegen
      de linkerrand en eronder staat alleen een grote, gecentreerde oranje knop (20 px).
-   - Titel op foto: gewone header; de titel staat groot (44 px, wit) linksboven op de foto en de oranje knop linksonder
-     op de foto; een donker verloop boven en onder houdt de tekst leesbaar. Bewuste uitzondering op "geen tekst op een
+   - Titel op foto: gewone header; de titel staat groot (44 px, wit) linksboven op de foto en de zwarte knop linksonder
+     op de foto (zwart staat op deze foto beter dan oranje); een donker verloop boven en onder houdt de tekst leesbaar. Bewuste uitzondering op "geen tekst op een
      foto".
    Daarna de brief (`Letter`) en de titel "Hotels bij de mooiste kerstmarkten" boven vier dealrijen (`DealRow`). Het
    arrangement blijft hetzelfde; alleen dealtitel en foto verwijzen naar de kerstmarkt in de buurt. Alleen voco The

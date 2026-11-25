@@ -14,7 +14,7 @@ import { baseUrl, font, newsletter } from "../components/theme";
 // - Native 2: dezelfde opzet in een andere kleurstelling: beige vlak, zwarte titel, oranje knop.
 // - Header-titel: de titel staat gecentreerd in de header (vierkant logo links); onder de foto alleen
 //   een grote, gecentreerde knop.
-// - Titel op foto: gewone header; de titel staat groot linksboven op de foto en de knop linksonder.
+// - Titel op foto: gewone header; de titel staat groot linksboven op de foto en de zwarte knop linksonder.
 // Daarna een korte brief (aanhef, één alinea) en de titel van de lijst ("Hotels bij de mooiste
 // kerstmarkten") direct boven vier dealrijen. De arrangementen zijn de gewone arrangementen; alleen
 // de dealtitel en de foto zijn geladen met de kerstmarkt in de buurt. Zelfde regels als de CRM-mails.
@@ -75,7 +75,7 @@ export default function CommercieelContentMultiDeal({ variant = "native-1", reci
                   </tr>
                   <tr>
                     <td valign="bottom" style={{ padding: "0 28px 24px", verticalAlign: "bottom" }}>
-                      <PrimaryButton href={ctaUrl}>Bekijk aanbiedingen</PrimaryButton>
+                      <SecondaryButton href={ctaUrl} dark>Bekijk aanbiedingen</SecondaryButton>
                     </td>
                   </tr>
                 </tbody>
