@@ -13,7 +13,7 @@ import CrmTerugkomactie, { herinneringProps } from "../emails/crm-terugkomactie"
 import CrmZoekopdracht from "../emails/crm-zoekopdracht";
 import CrmDealkaartVasteHoogte from "../emails/crm-dealkaart-vaste-hoogte";
 import CrmFavorieten, { tweeCouponsProps } from "../emails/crm-favorieten";
-import CommercieelContentMultiDeal from "../emails/commercieel-content-multi-deal";
+import CommercieelContentMultiDeal, { contentVariantProps } from "../emails/commercieel-content-multi-deal";
 import CommercieelActie from "../emails/commercieel-actie";
 import CommercieelTekst from "../emails/commercieel-tekst";
 import CommercieelCadeaukaart from "../emails/commercieel-cadeaukaart";
@@ -419,18 +419,19 @@ export const emails: EmailEntry[] = [
     Component: CrmDealkaartVasteHoogte,
   },
   // ── Commerciële mails (volgorde = volgorde in het paneel van /commercieel) ──
-  // Elke commerciële mail bestaat met drie headers (CrmHeader `variant`): de schakelaar "Header 1 | 2 | 3"
-  // in de preview, los te combineren met de eigen varianten van de mail. Slug: <slug>[-header-2|-header-3].
-  ...withHeaders([
-    {
-      slug: "commercieel-content-multi-deal",
-      title: "Content (Multi-deal)",
-      description: "Meerdere deals rond één thema of selectie (kerstmarkten): sfeerfoto, campagnetitel, korte brief en vier dealrijen waarvan de dealtitel en de foto naar de kerstmarkt in de buurt verwijzen.",
-      section: "commercieel",
-      subject: "Winter Wonderweken: slapen bij de mooiste kerstmarkten",
-      preheader: "Glühwein, lichtjes en een hotel om de hoek.",
-      Component: CommercieelContentMultiDeal,
-    },
+    // Content (Multi-deal): vier varianten van de opening (schakelaar in de preview)
+  ...([["native-1", "", "Native 1"], ["native-2", "-native-2", "Native 2"], ["header-titel", "-header-titel", "Header-titel"], ["foto-titel", "-foto-titel", "Titel op foto"]] as const).map(([variant, suffix, label]): EmailEntry => ({
+    slug: `commercieel-content-multi-deal${suffix}`,
+    title: "Content (Multi-deal)",
+    description: "Meerdere deals rond één thema of selectie (kerstmarkten): sfeerfoto, campagnetitel met knop, korte brief en vier dealrijen waarvan de dealtitel en de foto naar de kerstmarkt in de buurt verwijzen.",
+    section: "commercieel",
+    subject: "Winter Wonderweken: slapen bij de mooiste kerstmarkten",
+    preheader: "Glühwein, lichtjes en een hotel om de hoek.",
+    ...(suffix ? { variantOf: "commercieel-content-multi-deal" } : {}),
+    variantLabel: label,
+    Component: CommercieelContentMultiDeal,
+    props: contentVariantProps(variant),
+  })),
     {
       slug: "commercieel-dedicated-hotel",
       title: "Dedicated hotel",
@@ -504,21 +505,7 @@ export const emails: EmailEntry[] = [
       preheader: "Het cadeau waar ze nog jaren over vertellen.",
       Component: CommercieelCadeaukaart,
     },
-  ]),
 ];
-
-/** Maakt van elke mail drie mails, één per headervariant; header 1 houdt de eigen slug. */
-function withHeaders(list: EmailEntry[]): EmailEntry[] {
-  return list.flatMap((e) =>
-    ([1, 2, 3] as const).map((header): EmailEntry => ({
-      ...e,
-      slug: header === 1 ? e.slug : `${e.slug}-header-${header}`,
-      ...(header === 1 && !e.variantOf ? {} : { variantOf: e.variantOf ?? e.slug }),
-      variantLabel: `${e.variantLabel ? `${e.variantLabel} / ` : ""}Header ${header}`,
-      props: { ...(e.props ?? e.Component.PreviewProps), header },
-    })),
-  );
-}
 
 export function getEmail(slug: string): EmailEntry | undefined {
   return emails.find((e) => e.slug === slug);

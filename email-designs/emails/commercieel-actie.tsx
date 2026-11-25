@@ -1,7 +1,7 @@
 import { Body, Container, Head, Heading, Html, Img, Preview, Section, Text } from "@react-email/components";
 import * as React from "react";
 import CrmFooter from "../components/CrmFooter";
-import CrmHeader, { type HeaderVariant } from "../components/CrmHeader";
+import CrmHeader from "../components/CrmHeader";
 import { BeigeBand, QuickSearch, cardGap, CodeBlock, crmCss, DealRow, Letter, type RowDeal, s, SecondaryButton, site } from "../components/crm";
 import { baseUrl, font, newsletter } from "../components/theme";
 import { lauswolt, steenenburg, vanOys, villaRuimzicht } from "../lib/crmDeals";
@@ -16,8 +16,6 @@ import { lauswolt, steenenburg, vanOys, villaRuimzicht } from "../lib/crmDeals";
 // Onderwerp: "Sanne, je Goodiebox t.w.v. €150 staat klaar"
 
 type Props = {
-  /** Headervariant (schakelaar in de preview, zie CrmHeader); in variant 3 staat de titel in de header. */
-  header?: HeaderVariant;
   recipientEmail: string;
   /** Leeg → "Beste gast,". */
   firstName?: string;
@@ -38,7 +36,7 @@ type Props = {
   allDealsUrl: string;
 };
 
-export default function CommercieelActie({ header, recipientEmail, firstName, hero, heroAlt, title, intro, gift, code, deadline, listTitle, listSubtitle, deals, allDealsUrl }: Props) {
+export default function CommercieelActie({ recipientEmail, firstName, hero, heroAlt, title, intro, gift, code, deadline, listTitle, listSubtitle, deals, allDealsUrl }: Props) {
   const c = newsletter.light;
   return (
     <Html lang="nl">
@@ -48,7 +46,7 @@ export default function CommercieelActie({ header, recipientEmail, firstName, he
       </Head>
       <Preview>Boek voor 7 december en hij is van jou.</Preview>
       <Body style={{ backgroundColor: c.bg, margin: 0, padding: 0, fontFamily: font.body }}>
-        <CrmHeader variant={header} title={header === 3 ? title : undefined} />
+        <CrmHeader />
         {/* Actiegraphic direct onder de header, over de hele breedte van de mail (net als de zwarte
             header buiten de <Container>) */}
         <Img src={hero} alt={heroAlt} width="700" style={{ display: "block", width: "100%", height: "auto" }} />
@@ -56,8 +54,8 @@ export default function CommercieelActie({ header, recipientEmail, firstName, he
 
           {/* Titel met de deadline, de brief en de actiecode als coupon */}
           <Section className="m-pad" style={{ padding: "32px 32px 0" }}>
-            {header !== 3 && <Heading as="h1" className="m-h1" style={s.h1}>{title}</Heading>}
-            <Section style={{ marginTop: header === 3 ? 0 : "16px" }}>
+            <Heading as="h1" className="m-h1" style={s.h1}>{title}</Heading>
+            <Section style={{ marginTop: "16px" }}>
               <Letter firstName={firstName}>{intro}</Letter>
             </Section>
             <Section style={{ marginTop: "24px" }}>

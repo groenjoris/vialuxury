@@ -1,7 +1,7 @@
 import { Body, Column, Container, Head, Heading, Html, Img, Link, Preview, Row, Section, Text } from "@react-email/components";
 import * as React from "react";
 import CrmFooter from "../components/CrmFooter";
-import CrmHeader, { type HeaderVariant } from "../components/CrmHeader";
+import CrmHeader from "../components/CrmHeader";
 import { crmCss, Letter, PrimaryButton, s } from "../components/crm";
 import { baseUrl, font, newsletter } from "../components/theme";
 
@@ -17,8 +17,6 @@ import { baseUrl, font, newsletter } from "../components/theme";
 type Tier = { value: string; bonus: string; note?: string; url: string };
 
 type Props = {
-  /** Headervariant (schakelaar in de preview, zie CrmHeader); in variant 3 staat de titel in de header. */
-  header?: HeaderVariant;
   recipientEmail: string;
   /** Leeg → "Beste gast,". */
   firstName?: string;
@@ -32,7 +30,7 @@ type Props = {
   orderUrl: string;
 };
 
-export default function CommercieelCadeaukaart({ header, recipientEmail, firstName, hero, heroAlt, title, intro, tiers, closing, orderUrl }: Props) {
+export default function CommercieelCadeaukaart({ recipientEmail, firstName, hero, heroAlt, title, intro, tiers, closing, orderUrl }: Props) {
   const c = newsletter.light;
   const line = "1px solid #E5E5E5";
   const cell = { padding: "12px 16px", verticalAlign: "top" as const };
@@ -44,14 +42,14 @@ export default function CommercieelCadeaukaart({ header, recipientEmail, firstNa
       </Head>
       <Preview>Het cadeau waar ze nog jaren over vertellen.</Preview>
       <Body style={{ backgroundColor: c.bg, margin: 0, padding: 0, fontFamily: font.body }}>
-        <CrmHeader variant={header} title={header === 3 ? title : undefined} />
+        <CrmHeader />
         {/* Sfeerbeeld in twee helften, direct onder de header over de hele breedte van de mail */}
         <Img src={hero} alt={heroAlt} width="700" style={{ display: "block", width: "100%", height: "auto" }} />
         <Container style={{ width: "100%", maxWidth: "626px" }}>
           {/* Titel en de brief met de uitleg */}
           <Section className="m-pad" style={{ padding: "32px 32px 0" }}>
-            {header !== 3 && <Heading as="h1" className="m-h1" style={s.h1}>{title}</Heading>}
-            <Section style={{ marginTop: header === 3 ? 0 : "16px" }}>
+            <Heading as="h1" className="m-h1" style={s.h1}>{title}</Heading>
+            <Section style={{ marginTop: "16px" }}>
               <Letter firstName={firstName}>{intro}</Letter>
             </Section>
           </Section>

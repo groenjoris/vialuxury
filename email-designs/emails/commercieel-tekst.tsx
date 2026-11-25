@@ -1,7 +1,7 @@
 import { Body, Container, Head, Html, Img, Preview, Section, Text } from "@react-email/components";
 import * as React from "react";
 import CrmFooter from "../components/CrmFooter";
-import CrmHeader, { type HeaderVariant } from "../components/CrmHeader";
+import CrmHeader from "../components/CrmHeader";
 import { BeigeBand, CodeBlock, crmCss, Letter, PrimaryButton, QuickSearch, s, site } from "../components/crm";
 import { baseUrl, font, newsletter } from "../components/theme";
 
@@ -15,8 +15,6 @@ import { baseUrl, font, newsletter } from "../components/theme";
 // Onderwerp: "Sanne, alleen vandaag: €15 korting voor jou"
 
 type Props = {
-  /** Headervariant (schakelaar in de preview, zie CrmHeader); in variant 3 staat de titel in de header. */
-  header?: HeaderVariant;
   recipientEmail: string;
   /** Leeg → "Beste gast,". */
   firstName?: string;
@@ -32,7 +30,7 @@ type Props = {
   allDealsUrl: string;
 };
 
-export default function CommercieelTekst({ header, recipientEmail, firstName, hero, heroAlt, intro, gift, code, deadline, allDealsUrl }: Props) {
+export default function CommercieelTekst({ recipientEmail, firstName, hero, heroAlt, intro, gift, code, deadline, allDealsUrl }: Props) {
   const c = newsletter.light;
   const steps = ["Kopieer je code.", "Kies het arrangement waar je zin in hebt.", "Vul de code in bij stap 3 van het boeken, onder Kortingscode."];
   return (
@@ -43,7 +41,7 @@ export default function CommercieelTekst({ header, recipientEmail, firstName, he
       </Head>
       <Preview>Je persoonlijke code vervalt om middernacht.</Preview>
       <Body style={{ backgroundColor: c.bg, margin: 0, padding: 0, fontFamily: font.body }}>
-        <CrmHeader variant={header} />
+        <CrmHeader />
         {/* Actiegraphic direct onder de header, over de hele breedte van de mail */}
         <Img src={hero} alt={heroAlt} width="700" style={{ display: "block", width: "100%", height: "auto" }} />
         <Container style={{ width: "100%", maxWidth: "626px" }}>

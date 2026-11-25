@@ -1,17 +1,20 @@
 import { Body, Button, Container, Head, Heading, Html, Img, Preview, Section } from "@react-email/components";
 import * as React from "react";
 import CrmFooter from "../components/CrmFooter";
-import CrmHeader, { type HeaderVariant } from "../components/CrmHeader";
-import { BeigeBand, QuickSearch, cardGap, crmCss, DealRow, Letter, PrimaryButton, type RowDeal, s, site } from "../components/crm";
+import CrmHeader from "../components/CrmHeader";
+import { BeigeBand, QuickSearch, cardGap, crmCss, DealRow, Letter, PrimaryButton, type RowDeal, s, SecondaryButton, site } from "../components/crm";
 import { baseUrl, font, newsletter } from "../components/theme";
 
 // Commerciële mail 1: Content (Multi-deal). Meerdere deals rond één thema of selectie, hier
 // kerstmarkten. Lijkt op de themamail uit het CRM (die volgt op gedrag op de site), maar is
 // commerciëler. De mail opent met een sfeerfoto binnen de marges van de header (links gelijk met het
-// logo, rechts met het einde van Trustpilot). Twee opzetten, gekoppeld aan de headerschakelaar:
-// - Header 1 en 2: direct onder de foto een donkergroene strook met de campagnetitel in wit
-//   ("Winter Wonderweken") en de oranje knop "Bekijk aanbiedingen".
-// - Header 3: de titel staat al in de header; onder de foto alleen een grote, gecentreerde knop.
+// logo, rechts met het einde van Trustpilot). Vier varianten van die opening (schakelaar in de preview):
+// - Native 1: onder de foto een donkergroen vlak (ronde hoeken onderaan) met de campagnetitel in wit
+//   ("Winter Wonderweken") en de zwarte knop "Bekijk aanbiedingen".
+// - Native 2: dezelfde opzet in een andere kleurstelling: beige vlak, zwarte titel, oranje knop.
+// - Header-titel: de titel staat gecentreerd in de header (vierkant logo links); onder de foto alleen
+//   een grote, gecentreerde knop.
+// - Titel op foto: gewone header; de titel staat groot linksboven op de foto en de knop linksonder.
 // Daarna een korte brief (aanhef, één alinea) en de titel van de lijst ("Hotels bij de mooiste
 // kerstmarkten") direct boven vier dealrijen. De arrangementen zijn de gewone arrangementen; alleen
 // de dealtitel en de foto zijn geladen met de kerstmarkt in de buurt. Zelfde regels als de CRM-mails.
@@ -19,10 +22,13 @@ import { baseUrl, font, newsletter } from "../components/theme";
 
 /** Donkergroen uit de huisstijl (--color-green-dark op de website). */
 const GREEN = "#00675F";
+const BEIGE = "#F4F1EC";
+
+export type ContentVariant = "native-1" | "native-2" | "header-titel" | "foto-titel";
 
 type Props = {
-  /** Headervariant (schakelaar in de preview, zie CrmHeader); in variant 3 staat de titel in de header. */
-  header?: HeaderVariant;
+  /** Opzet van de opening (schakelaar in de preview), zie de toelichting bovenaan. */
+  variant?: ContentVariant;
   recipientEmail: string;
   /** Leeg → "Beste gast,". */
   firstName?: string;
@@ -38,9 +44,11 @@ type Props = {
   deals: RowDeal[];
 };
 
-export default function CommercieelContentMultiDeal({ header, recipientEmail, firstName, hero, heroAlt, title, intro, listTitle, deals }: Props) {
+export default function CommercieelContentMultiDeal({ variant = "native-1", recipientEmail, firstName, hero, heroAlt, title, intro, listTitle, deals }: Props) {
   const c = newsletter.light;
-  const heroW = header === 3 ? 602 : 578;
+  const inHeader = variant === "header-titel";
+  const native2 = variant === "native-2";
+  const bigButton = { backgroundColor: c.cta, color: "#FFFFFF", fontFamily: font.body, fontWeight: 700, borderRadius: "6px", textDecoration: "none" };
   const ctaUrl = `${site}/first-release/search`;
   return (
     <Html lang="nl">
@@ -50,25 +58,44 @@ export default function CommercieelContentMultiDeal({ header, recipientEmail, fi
       </Head>
       <Preview>Glühwein, lichtjes en een hotel om de hoek.</Preview>
       <Body style={{ backgroundColor: c.bg, margin: 0, padding: 0, fontFamily: font.body }}>
-        <CrmHeader variant={header} title={header === 3 ? title : undefined} />
+        <CrmHeader title={inHeader ? title : undefined} />
         <Container style={{ width: "100%", maxWidth: "626px" }}>
           {/* Sfeerfoto binnen de marges van de header: links gelijk met het logo, rechts met het einde van
-              het Trustpilot-logo (header 3: het logo staat tegen de linkerrand) */}
-          <Section style={{ padding: header === 3 ? "0 24px 0 0" : "0 24px" }}>
-            <Img src={hero} alt={heroAlt} width={heroW} height="325" style={{ display: "block", width: "100%", height: "325px", objectFit: "cover" }} />
-            {header === 3 ? (
+              het Trustpilot-logo (Header-titel: het logo staat tegen de linkerrand) */}
+          <Section style={{ padding: inHeader ? "0 24px 0 0" : "0 24px" }}>
+            {variant === "foto-titel" ? (
+              // Titel op foto: de titel linksboven op de foto, de knop linksonder; een verloop maakt de
+              // foto boven en onder iets donkerder zodat de witte tekst leesbaar blijft
+              <table role="presentation" cellPadding={0} cellSpacing={0} width="100%" style={{ width: "100%", height: "325px", borderCollapse: "collapse", backgroundImage: `linear-gradient(180deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 45%, rgba(0,0,0,0) 62%, rgba(0,0,0,0.45) 100%), url(${hero})`, backgroundSize: "cover", backgroundPosition: "center" }}>
+                <tbody>
+                  <tr>
+                    <td valign="top" style={{ padding: "24px 28px 0", verticalAlign: "top" }}>
+                      <Heading as="h1" style={{ ...s.h1, fontSize: "44px", lineHeight: "1.1", color: "#FFFFFF", textShadow: "0 1px 12px rgba(0,0,0,0.45)" }}>{title}</Heading>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td valign="bottom" style={{ padding: "0 28px 24px", verticalAlign: "bottom" }}>
+                      <PrimaryButton href={ctaUrl}>Bekijk aanbiedingen</PrimaryButton>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            ) : (
+              <Img src={hero} alt={heroAlt} width={inHeader ? 602 : 578} height="325" style={{ display: "block", width: "100%", height: "325px", objectFit: "cover" }} />
+            )}
+            {inHeader && (
               // Titel staat al in de header: alleen een grote knop, gecentreerd onder de foto
               <Section style={{ marginTop: "24px", textAlign: "center" }}>
-                <Button href={ctaUrl} style={{ backgroundColor: c.cta, color: "#FFFFFF", fontFamily: font.body, fontSize: "20px", fontWeight: 700, borderRadius: "6px", padding: "18px 48px", textDecoration: "none" }}>
-                  Bekijk aanbiedingen
-                </Button>
+                <Button href={ctaUrl} style={{ ...bigButton, fontSize: "20px", padding: "18px 48px" }}>Bekijk aanbiedingen</Button>
               </Section>
-            ) : (
-              // Donkergroene strook (huisstijl) onder de foto: de campagnetitel in wit en de oranje knop
-              <Section style={{ backgroundColor: GREEN, padding: "22px 28px 26px" }}>
-                <Heading as="h1" className="m-h1" style={{ ...s.h1, color: "#FFFFFF" }}>{title}</Heading>
+            )}
+            {(variant === "native-1" || native2) && (
+              // Vlak onder de foto met ronde hoeken aan de onderkant: de campagnetitel en de knop.
+              // Native 1: donkergroen (huisstijl), witte titel, zwarte knop. Native 2: beige, zwarte titel, oranje knop.
+              <Section style={{ backgroundColor: native2 ? BEIGE : GREEN, padding: "22px 28px 26px", borderRadius: "0 0 14px 14px" }}>
+                <Heading as="h1" className="m-h1" style={{ ...s.h1, color: native2 ? c.heading : "#FFFFFF" }}>{title}</Heading>
                 <Section style={{ marginTop: "16px" }}>
-                  <PrimaryButton href={ctaUrl}>Bekijk aanbiedingen</PrimaryButton>
+                  {native2 ? <PrimaryButton href={ctaUrl}>Bekijk aanbiedingen</PrimaryButton> : <SecondaryButton href={ctaUrl} dark>Bekijk aanbiedingen</SecondaryButton>}
                 </Section>
               </Section>
             )}
@@ -172,3 +199,6 @@ CommercieelContentMultiDeal.PreviewProps = {
     },
   ],
 } satisfies Props;
+
+/** De andere drie openingen van de mail (zie bovenaan). */
+export const contentVariantProps = (variant: ContentVariant) => ({ ...CommercieelContentMultiDeal.PreviewProps, variant });

@@ -218,26 +218,28 @@ maximaal (`components/crm.tsx`, zelfde regels). Sinds 2026-11-25 hebben ze alle 
 rechterkolom); het losse blok "Hulp nodig?" in de mail is daarmee vervallen. In de mails met een lijst (Content, Actie)
 heeft de helft van de dealrijen twee foto's onder elkaar met 6 px wit ertussen in plaats van één langwerpige foto
 (`RowDeal.image2`; de kaart houdt zijn eigen hoogte, anders dan `DealRowFixed`; in Content de kerstmarkt boven en het
-hotel onder). Elke commerciële mail bestaat sinds 2026-11-25 met drie headers (`CrmHeader`-prop `variant`, in de mail
-`header`; schakelaar "Header 1 | 2 | 3" in de previewkop, los te combineren met de eigen varianten; registry
-`withHeaders`, slug `<slug>[-header-2|-header-3]`): 1 de gewone header, gelijk aan die van de CRM-mails (het
-1,5 keer zo grote Trustpilot-logo is op 2026-11-26 teruggedraaid: veel te groot); 2 een lage balk van ongeveer 60%
-(54 px) met een kleiner logo (168 px) en Trustpilot 42 px hoog; 3 zo hoog als 1, met het vierkante logo
-(`logo-vialuxury-square.png`, 76 × 60) helemaal links tegen de rand van de kolom en de hoofdtitel van de mail in de balk
-tussen logo en Trustpilot, zo groot als de titels in de mail (32 px serif, wit); de titel staat dan niet meer in de mail
-zelf. De CRM- en vakantiemails houden de oude header (zonder `variant`). Ze eindigen met het blok "Snel zoeken" op een beige
+hotel onder). De headerschakelaar "Header 1 | 2 | 3" van 2026-11-25 is een dag later vervallen: varianten
+maken we per mail (te beginnen met Content), alle andere commerciële mails hebben de gewone header. Ze eindigen met het blok "Snel zoeken" op een beige
 band (`QuickSearch`: Best geboekt, Stedentrips, Aan zee, Romantisch, Wellness, Met diner; witte snelfilterknoppen naar
 de R1-zoekpagina); bronnen `email-designs/emails/commercieel-*.tsx`, foto's in
 `public/images/mail/commercieel/`. De voorbeelden worden per stuk gebriefd:
 1. `commercieel-content-multi-deal` ("Content (Multi-deal)"): meerdere deals rond een thema (kerstmarkten). Sfeerfoto
-   binnen de marges van de header (links gelijk met het logo, rechts met het einde van het Trustpilot-logo; 24 px,
-   bij header 3 links 0). Twee opzetten, gekoppeld aan de headerschakelaar: bij header 1 en 2 direct onder de foto een
-   donkergroene strook (huisstijlgroen #00675F, even breed als de foto) met de campagnetitel "Winter Wonderweken" in wit
-   en de oranje knop "Bekijk aanbiedingen" (R1-zoekpagina); bij header 3 staat de titel al in de header en staat onder de
-   foto alleen een grote, gecentreerde knop (20 px; bewuste uitzondering op "alles links"). Daarna de brief (`Letter`)
-   en de titel "Hotels bij de mooiste kerstmarkten" boven vier dealrijen (`DealRow`). Het arrangement blijft hetzelfde;
-   alleen dealtitel en foto verwijzen naar de kerstmarkt in de buurt. Alleen voco The Hague staat in `deals.json`; de
-   andere drie hebben voorbeeldprijzen en linken naar de R1-zoekpagina.
+   binnen de marges van de header (links gelijk met het logo, rechts met het einde van het Trustpilot-logo; 24 px).
+   Vier varianten van de opening (prop `variant`, schakelaar in de previewkop, slug
+   `commercieel-content-multi-deal[-native-2|-header-titel|-foto-titel]`):
+   - Native 1 (standaard): onder de foto een donkergroen vlak (huisstijlgroen #00675F, even breed als de foto, ronde
+     hoeken van 14 px aan de onderkant) met de campagnetitel "Winter Wonderweken" in wit en de zwarte knop "Bekijk
+     aanbiedingen" (R1-zoekpagina).
+   - Native 2: dezelfde opzet in een andere kleurstelling: beige vlak, zwarte titel, oranje knop.
+   - Header-titel: de titel staat in de header (`CrmHeader`-prop `title`: vierkant logo `logo-vialuxury-square.png`,
+     76 × 60, tegen de linkerrand; titel 32 px wit, gecentreerd tussen logo en Trustpilot); de foto begint dan ook tegen
+     de linkerrand en eronder staat alleen een grote, gecentreerde oranje knop (20 px).
+   - Titel op foto: gewone header; de titel staat groot (44 px, wit) linksboven op de foto en de oranje knop linksonder
+     op de foto; een donker verloop boven en onder houdt de tekst leesbaar. Bewuste uitzondering op "geen tekst op een
+     foto".
+   Daarna de brief (`Letter`) en de titel "Hotels bij de mooiste kerstmarkten" boven vier dealrijen (`DealRow`). Het
+   arrangement blijft hetzelfde; alleen dealtitel en foto verwijzen naar de kerstmarkt in de buurt. Alleen voco The
+   Hague staat in `deals.json`; de andere drie hebben voorbeeldprijzen en linken naar de R1-zoekpagina.
 2. `commercieel-dedicated-hotel` ("Dedicated hotel"): één hotel. Brief (`Letter`) met het aanbod vet, de knop "Bekijk
    aanbieding" onder het bericht en daaronder het arrangement op de verticale kaart (`FeaturedDeal`), met álle
    inclusies van het arrangement (`allIncludes`, hier zeven; elders maximaal vier). Voorbeeld:
