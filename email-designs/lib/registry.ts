@@ -4,28 +4,34 @@ import VakantiePreTravel, { fietsPreviewProps as preTravelFiets } from "../email
 import VakantieIncheckHotel from "../emails/vakantie-incheck-hotel";
 import MvpVakantieBevestiging from "../emails/mvp-vakantie-bevestiging";
 import CrmNagenieten, { titelProps } from "../emails/crm-nagenieten";
-import CrmJaarGeleden, { persoonlijkProps } from "../emails/crm-jaar-geleden";
+import CrmJaarGeleden, { persoonlijkProps, vakerDoenProps } from "../emails/crm-jaar-geleden";
 import CrmWinkelmandje, { naamOnbekendProps } from "../emails/crm-winkelmandje";
 import CrmWinkelmandje2Dagen, { naamOnbekendProps as naamOnbekend2DagenProps } from "../emails/crm-winkelmandje-2-dagen";
 import CrmThemaStedentrips from "../emails/crm-thema-stedentrips";
-import CrmReview, { knoppenProps } from "../emails/crm-review";
+import CrmReview, { sterrenProps } from "../emails/crm-review";
 import CrmTerugkomactie, { herinneringProps } from "../emails/crm-terugkomactie";
 import CrmZoekopdracht from "../emails/crm-zoekopdracht";
-import CrmFavorieten from "../emails/crm-favorieten";
+import CrmDealkaartVasteHoogte from "../emails/crm-dealkaart-vaste-hoogte";
+import CrmFavorieten, { tweeCouponsProps } from "../emails/crm-favorieten";
+import CommercieelContentMultiDeal from "../emails/commercieel-content-multi-deal";
+import CommercieelActie from "../emails/commercieel-actie";
+import CommercieelTekst from "../emails/commercieel-tekst";
+import CommercieelCadeaukaart from "../emails/commercieel-cadeaukaart";
+import CommercieelDedicatedHotel, { metTitelProps, zonderPrijsMetTitelProps, zonderPrijsProps } from "../emails/commercieel-dedicated-hotel";
+import { incheckMails } from "./incheckMails";
 import AutomationCart, { cart1Props, cart1ZonderNaamProps, cart2Props, cart3Props, cart4Props } from "../emails/automation-cart";
 import AutomationBrowse, { browse1Props, browse1ZonderNaamProps, browse2Props, browse3Props, browse3ZonderNaamProps } from "../emails/automation-browse";
 import AutomationSearch, { search1Props, search2Props, search2ZonderNaamProps, search3Props, search4Props } from "../emails/automation-search";
-import { incheckMails } from "./incheckMails";
 
 /** MVP: geen accountdetailpagina, boekingslinks gaan naar het boekingenoverzicht. */
 const MVP_ACCOUNT = "https://vialuxury.vercel.app/mvp-trip/account/boekingen";
 
 // "crm": concept-mails voor het CRM-project (alleen light, eigen lijst app/data/crm-emails.json).
+// "commercieel": commerciële mails (nieuwsbrieven en acties; alleen light, eigen lijst
+// app/data/commercieel-emails.json, preview /commercieel/<slug>).
 // "automation": de uitgewerkte automationmails voor Klaviyo (alleen light, eigen lijst
 // app/data/automation-emails.json). De slug is exact de Klaviyo-naam uit de briefing, zodat de
 // geëxporteerde HTML (public/emails/<slug>.html) net zo heet als de template in Klaviyo.
-// "commercieel": commerciële mails (nieuwsbrieven en acties; alleen light, eigen lijst
-// app/data/commercieel-emails.json, preview /commercieel/<slug>, tien plekken).
 export type EmailSection = "designs" | "inspiration" | "crm" | "automation" | "commercieel";
 
 export type EmailEntry = {
@@ -40,7 +46,9 @@ export type EmailEntry = {
   /** Variant van een andere mail (slug), bijv. de niet-terugbetaalbare versie `<slug>-nonflex`; de
    *  preview toont die bij de schakelaar Non-flex, in lijsten blijft hij verborgen. */
   variantOf?: string;
-  /** Label van deze mail in de variantschakelaar van de preview (sectie "commercieel"). */
+  /** Label van deze mail in de variantschakelaar van de preview (secties "commercieel" en "crm"; in
+   *  "crm" heeft het voorrang op `variantLabels` in de previewpagina). Met " / "
+   *  ertussen zijn het meerdere, los te combineren schakelaars: "Met prijs / Zonder titel". */
   variantLabel?: string;
   // Elke e-mail exporteert PreviewProps met representatieve voorbeelddata
   // en accepteert een optionele `mode`-prop ("light" | "dark").
@@ -239,28 +247,28 @@ export const emails: EmailEntry[] = [
   {
     slug: "crm-review",
     title: "Reviewmail (1 dag na thuiskomst)",
-    description: "Eén doel: de review. Vijf klikbare Trustpilot-sterren boven de vouw, daaronder het verblijf in een omlijnd blok. Gebaseerd op de reviewmail van Jesse.",
+    description: "Eén doel: de review. Vijf witte knoppen met cijfer en ster boven de vouw (de gekozen versie), daaronder het verblijf in een omlijnd blok. Gebaseerd op de reviewmail van Jesse.",
     section: "crm",
     subject: "Hoe was je verblijf?",
     preheader: "We horen graag hoe je het vond. Het kost je een minuut.",
     Component: CrmReview,
   },
   {
-    slug: "crm-review-knoppen",
+    slug: "crm-review-sterren",
     title: "Reviewmail (1 dag na thuiskomst)",
-    description: "Variant van de reviewmail: de vijf keuzes als witte knoppen met cijfer en ster in plaats van lege sterren.",
+    description: "Variant van de reviewmail: vijf lege, omlijnde sterren in plaats van de knoppen.",
     section: "crm",
     variantOf: "crm-review",
     subject: "Hoe was je verblijf?",
     preheader: "We horen graag hoe je het vond. Het kost je een minuut.",
     Component: CrmReview,
-    props: knoppenProps,
+    props: sterrenProps,
   },
   // Overgenomen van Jesse (origin/redesign-jesse), omgezet naar onze bouwstenen.
   {
     slug: "crm-terugkomactie",
     title: "Terugkomactie €20 (14 dagen na vertrek)",
-    description: "Kortingscode als coupon, één knop, jouw verblijf, 'Tips voor je kortingscode' met drie groepjes van twee suggesties en de themakiezer.",
+    description: "Kortingscode als coupon, één knop, jouw verblijf, 'Je kortingscode geldt hier' met drie groepjes van twee suggesties en de themakiezer.",
     section: "crm",
     subject: "Sanne, €20 cadeau voor je volgende verblijf",
     preheader: "Een persoonlijk bedankje, alleen voor jou. Geldig tot en met 16 december 2026.",
@@ -279,7 +287,7 @@ export const emails: EmailEntry[] = [
   {
     slug: "crm-zoekopdracht",
     title: "Zoekopdracht (1 minuut na verlaten)",
-    description: "Briefopening (Beste Sanne, intro, Groetjes Yvette), de zoekopdracht als samenvatting met één knop naar alle resultaten, daaronder de titel 'Dit vonden we voor je' met de drie best passende arrangementen.",
+    description: "Briefopening (Beste Sanne, intro), de zoekopdracht als samenvatting met één knop naar alle resultaten, daaronder de titel 'Dit vonden we voor je' met de drie best passende arrangementen.",
     section: "crm",
     subject: "Jouw zoekopdracht: Den Haag",
     preheader: "Kijk of er iets voor je bij zit.",
@@ -287,12 +295,23 @@ export const emails: EmailEntry[] = [
   },
   {
     slug: "crm-favorieten",
-    title: "Favorieten €10 en €15 (3 dagen na eerste mail)",
-    description: "Twee coupons boven het eerste favoriet: €10 op de eerste boeking (24 uur geldig) en €15 op de tweede (code volgt per mail na de eerste boeking); daaronder de andere favorieten en twee vergelijkbare deals. Copy op haast.",
+    title: "Favorieten €10 (3 dagen na eerste mail)",
+    description: "Eén coupon van €10 (24 uur geldig) boven de favorieten; daaronder de andere favorieten en twee vergelijkbare deals. Copy op haast.",
     section: "crm",
     subject: "Alsjeblieft Sanne, €10 korting op Kasteel Steenenburg",
     preheader: "Je code is geldig tot 12 november 2026 10:24 uur.",
     Component: CrmFavorieten,
+  },
+  {
+    slug: "crm-favorieten-twee-coupons",
+    title: "Favorieten €10 (3 dagen na eerste mail)",
+    description: "Variant voor de test in januari 2027: twee coupons, €10 op de eerste boeking (24 uur geldig) en €15 op de tweede (code volgt per mail na de eerste boeking).",
+    section: "crm",
+    variantOf: "crm-favorieten",
+    subject: "Alsjeblieft Sanne, €10 korting op Kasteel Steenenburg",
+    preheader: "Je code is geldig tot 12 november 2026 10:24 uur.",
+    Component: CrmFavorieten,
+    props: tweeCouponsProps,
   },
   {
     slug: "crm-nagenieten",
@@ -362,6 +381,137 @@ export const emails: EmailEntry[] = [
     subject: "Anderen die Hotel Des Indes bekeken, boekten vaak deze deals",
     preheader: "Misschien zit jouw volgende verblijf erbij.",
     Component: CrmWinkelmandje2Dagen,
+  },
+  {
+    slug: "crm-winkelmandje-2-dagen-naam-onbekend",
+    title: "Winkelmandje (2 dagen na verlaten)",
+    description: "Variant voor als de voornaam niet bekend is: de intro begint met 'Beste gast,'.",
+    section: "crm",
+    variantOf: "crm-winkelmandje-2-dagen",
+    subject: "Anderen die Hotel Des Indes bekeken, boekten vaak deze deals",
+    preheader: "Misschien zit jouw volgende verblijf erbij.",
+    Component: CrmWinkelmandje2Dagen,
+    props: naamOnbekend2DagenProps,
+  },
+  {
+    slug: "crm-thema-stedentrips",
+    title: "Themamail stedentrips (A6)",
+    description: "Briefopening met de reden (waar je op zocht), drie populaire stedentrips (één groot, twee als rij), daarna een ander thema kiezen met zes witte snelfilterknoppen in een raster.",
+    section: "crm",
+    subject: "Dit zijn de populairste stedentrips van dit moment",
+    preheader: "Parijs, Den Haag en Amsterdam, vanaf €279 voor 2 personen.",
+    Component: CrmThemaStedentrips,
+  },
+  // "Dit moeten we vaker doen": kopie van "Precies een jaar geleden" als voorbeeldmail voor de gastquote
+  // en de footer. Twee schakelaars in de preview: de plek van de quote (3) en de footervariant met
+  // het hulpblok erin (6; footer 0 is footer 1 met bellen en WhatsApp onder elkaar). Slug:
+  // crm-vaker-doen[-in-footer|-tussendoor][-footer-0|-footer-2..5]; footer 1 is de basis.
+  ...([["boven", "", "Boven de footer"], ["in", "-in-footer", "In de footer"], ["tussendoor", "-tussendoor", "Tussendoor"]] as const).flatMap(([quote, quoteSuffix, quoteLabel]) =>
+    ([0, 1, 2, 3, 4, 5] as const).map((footer): EmailEntry => {
+      const slug = `crm-vaker-doen${quoteSuffix}${footer === 1 ? "" : `-footer-${footer}`}`;
+      return {
+        slug,
+        title: "Dit moeten we vaker doen (quote en footer)",
+        description: `Voorbeeldmail voor de gastquote en de footer: de quote ${quoteLabel.toLowerCase()}, footervariant ${footer} met het hulpblok erin.`,
+        section: "crm",
+        ...(slug === "crm-vaker-doen" ? {} : { variantOf: "crm-vaker-doen" }),
+        variantLabel: `${quoteLabel} / Footer ${footer}`,
+        subject: "Vandaag een jaar geleden 🎉",
+        preheader: "Je verblijf in Hotel Des Indes, en een code voor €25 korting.",
+        Component: CrmJaarGeleden,
+        props: vakerDoenProps(quote, footer),
+      };
+    }),
+  ),
+  {
+    slug: "crm-dealkaart-vaste-hoogte",
+    title: "Dealkaart vaste hoogte (voorbeeld)",
+    description: "Geen mail maar een voorbeeld: drie dealrijen met vaste hoogte naast elkaar (twee foto's onder elkaar), met een dealtitel van één, twee en drie regels.",
+    section: "crm",
+    Component: CrmDealkaartVasteHoogte,
+  },
+  // ── Commerciële mails (volgorde = volgorde in het paneel van /commercieel) ──
+  {
+    slug: "commercieel-content-multi-deal",
+    title: "Content (Multi-deal)",
+    description: "Meerdere deals rond één thema of selectie (kerstmarkten): sfeerfoto, campagnetitel, korte brief en vier dealrijen waarvan de dealtitel en de foto naar de kerstmarkt in de buurt verwijzen.",
+    section: "commercieel",
+    subject: "Winter Wonderweken: slapen bij de mooiste kerstmarkten",
+    preheader: "Glühwein, lichtjes en een hotel om de hoek.",
+    Component: CommercieelContentMultiDeal,
+  },
+  {
+    slug: "commercieel-dedicated-hotel",
+    title: "Dedicated hotel",
+    description: "Eén hotel: korte brief met het aanbod, de knop 'Bekijk aanbieding' en het arrangement op de verticale dealkaart.",
+    section: "commercieel",
+    subject: "Ons beste hotelarrangement van de maand",
+    preheader: "2 nachten voor 2 personen op de Veluwe, inclusief diner.",
+    variantLabel: "Met prijs / Zonder titel",
+    Component: CommercieelDedicatedHotel,
+  },
+  {
+    slug: "commercieel-dedicated-hotel-zonder-prijs",
+    title: "Dedicated hotel",
+    description: "Variant zonder prijs: de brief maakt nieuwsgierig en noemt geen prijs, de kaart heeft geen prijsrij.",
+    section: "commercieel",
+    subject: "Ons beste hotelarrangement van de maand",
+    preheader: "Midden in de bossen van de Veluwe. De prijs is lager dan je denkt.",
+    variantOf: "commercieel-dedicated-hotel",
+    variantLabel: "Zonder prijs / Zonder titel",
+    Component: CommercieelDedicatedHotel,
+    props: zonderPrijsProps,
+  },
+  {
+    slug: "commercieel-dedicated-hotel-met-titel",
+    title: "Dedicated hotel",
+    description: "Variant met titel: 'Deal van de maand november' groot boven het bericht.",
+    section: "commercieel",
+    subject: "Ons beste hotelarrangement van de maand",
+    preheader: "2 nachten voor 2 personen op de Veluwe, inclusief diner.",
+    variantOf: "commercieel-dedicated-hotel",
+    variantLabel: "Met prijs / Met titel",
+    Component: CommercieelDedicatedHotel,
+    props: metTitelProps,
+  },
+  {
+    slug: "commercieel-dedicated-hotel-zonder-prijs-met-titel",
+    title: "Dedicated hotel",
+    description: "Variant met titel en zonder prijs.",
+    section: "commercieel",
+    subject: "Ons beste hotelarrangement van de maand",
+    preheader: "Midden in de bossen van de Veluwe. De prijs is lager dan je denkt.",
+    variantOf: "commercieel-dedicated-hotel",
+    variantLabel: "Zonder prijs / Met titel",
+    Component: CommercieelDedicatedHotel,
+    props: zonderPrijsMetTitelProps,
+  },
+  {
+    slug: "commercieel-actie",
+    title: "Actie (Goodiebox)",
+    description: "Een cadeau of extra bij een boeking: actiefoto, titel met de deadline, korte brief, de actiecode als coupon, vier geselecteerde deals en een knop naar alle aanbiedingen.",
+    section: "commercieel",
+    subject: "Sanne, je Goodiebox t.w.v. €150 staat klaar",
+    preheader: "Boek voor 7 december en hij is van jou.",
+    Component: CommercieelActie,
+  },
+  {
+    slug: "commercieel-tekst",
+    title: "Tekst (Zaterdagkorting)",
+    description: "Mail zonder deals: actiegraphic (feestelijke coupon van €15), korte brief, de persoonlijke code als coupon, één knop en drie stappen om de code te verzilveren.",
+    section: "commercieel",
+    subject: "Sanne, alleen vandaag: €15 korting voor jou",
+    preheader: "Je persoonlijke code vervalt om middernacht.",
+    Component: CommercieelTekst,
+  },
+  {
+    slug: "commercieel-cadeaukaart",
+    title: "Cadeaukaart",
+    description: "Cadeaukaarten verkopen: sfeerbeeld in twee helften, titel, brief met de uitleg, de staffel als tabel (waarde cadeaukaart en jouw persoonlijke korting), slotzin en knop.",
+    section: "commercieel",
+    subject: "Geef een cadeaukaart, krijg zelf tot €120 korting",
+    preheader: "Het cadeau waar ze nog jaren over vertellen.",
+    Component: CommercieelCadeaukaart,
   },
   // ── Automationmails (fase 1) ─────────────────────────────────────────────────────────────
   // Bron: "Automations in kaart.xlsx", tabblad Automation per variant. Elke kolom is één mail;
@@ -530,26 +680,6 @@ export const emails: EmailEntry[] = [
     preheader: "Kies je thema, dan sturen we je wat bij je past.",
     Component: AutomationSearch,
     props: search4Props,
-  },
-  {
-    slug: "crm-winkelmandje-2-dagen-naam-onbekend",
-    title: "Winkelmandje (2 dagen na verlaten)",
-    description: "Variant voor als de voornaam niet bekend is: de intro begint met 'Beste gast,'.",
-    section: "crm",
-    variantOf: "crm-winkelmandje-2-dagen",
-    subject: "Anderen die Hotel Des Indes bekeken, boekten vaak deze deals",
-    preheader: "Misschien zit jouw volgende verblijf erbij.",
-    Component: CrmWinkelmandje2Dagen,
-    props: naamOnbekend2DagenProps,
-  },
-  {
-    slug: "crm-thema-stedentrips",
-    title: "Themamail stedentrips (A6)",
-    description: "Briefopening met de reden (waar je op zocht), drie populaire stedentrips (één groot, twee als rij), daarna een ander thema kiezen met zes witte snelfilterknoppen in een raster.",
-    section: "crm",
-    subject: "Dit zijn de populairste stedentrips van dit moment",
-    preheader: "Parijs, Den Haag en Amsterdam, vanaf €279 voor 2 personen.",
-    Component: CrmThemaStedentrips,
   },
 ];
 

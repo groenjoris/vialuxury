@@ -6,7 +6,7 @@ import { BeigeBand, crmCss, CrmHelp, DealList, Letter, type RowDeal, s, site, Th
 import { font, newsletter } from "../components/theme";
 
 // CRM: themamail stedentrips (A6). De mail begint als brief (Letter): aanhef, de reden ("Omdat je
-// zocht op stedentrips, hierbij …") en de ondertekening. Daarna de titel "De populairste
+// zocht op stedentrips, hierbij …"). Daarna de titel "De populairste
 // stedentrips" direct boven de lijst: drie deals onder elkaar (de eerste groot over de hele
 // breedte, de andere twee als dealrij), zonder beige band want het is één groep. Onderaan de
 // themakiezer op een beige band: zes witte snelfilterknoppen met icoon, zoals "Snel zoeken" op de
@@ -35,7 +35,7 @@ export default function CrmThemaStedentrips({ recipientEmail, firstName, searche
       <Body style={{ backgroundColor: c.bg, margin: 0, padding: 0, fontFamily: font.body }}>
         <CrmHeader />
         <Container style={{ width: "100%", maxWidth: "626px" }}>
-          {/* Briefopening: aanhef, de reden (waar je op zocht) en de ondertekening */}
+          {/* Briefopening: aanhef, de reden (waar je op zocht) */}
           <Section className="m-pad" style={{ padding: "32px 32px 0" }}>
             <Letter firstName={firstName}>
               {searchedFor ? `Omdat je zocht op ${searchedFor}, hierbij de meest populaire stedentrips van dit moment.` : "Hierbij de meest populaire stedentrips van dit moment."}
@@ -49,17 +49,16 @@ export default function CrmThemaStedentrips({ recipientEmail, firstName, searche
             <DealList deals={deals} />
           </Section>
 
+
+          {/* Hulplijn: direct na de hoofdboodschap, niet als onderste blok */}
+          <CrmHelp top="32px" bottom="0" />
         </Container>
 
         {/* Themakiezer op een beige band over de hele breedte: raster van even brede snelfilterknoppen */}
-        <BeigeBand top="48px">
+        <BeigeBand top="40px">
           <ThemePicker />
         </BeigeBand>
 
-        <Container style={{ width: "100%", maxWidth: "626px" }}>
-          {/* Hulplijn */}
-          <CrmHelp top="36px" />
-        </Container>
         <CrmFooter recipientEmail={recipientEmail} reason="omdat je je hebt aangemeld voor onze nieuwsbrief" />
       </Body>
     </Html>

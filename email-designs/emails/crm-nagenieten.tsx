@@ -17,7 +17,7 @@ import { baseUrl, font, newsletter } from "../components/theme";
 // Onderwerp: "Wanneer ga je weer?"
 
 type Props = {
-  /** "bericht" (standaard): een brief met aanhef en ondertekening, en in het blok alleen de vraag
+  /** "bericht" (standaard): een brief met aanhef, en in het blok alleen de vraag
    *  als titel. "titel": grote titel onder de foto. */
   opening?: "titel" | "bericht";
   /** Leeg → kop zonder naam. */
@@ -57,7 +57,7 @@ export default function CrmNagenieten({ firstName, recipientEmail, hotelName, im
           <Img src={image} alt={hotelName} width="626" height="380" style={{ display: "block", width: "100%", height: "380px", objectFit: "cover" }} />
           <Section className="m-pad" style={{ padding: "28px 32px 0" }}>
             {message ? (
-              // Variant "Bericht": geen grote titel maar een brief met aanhef en ondertekening
+              // Variant "Bericht": geen grote titel maar een brief met aanhef
               <Letter firstName={firstName}>
                 We hopen dat je genoten hebt van {hotelName}. Laat weten wanneer je weer gaat, dan sturen we je op het juiste moment inspiratie.
               </Letter>

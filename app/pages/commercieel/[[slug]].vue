@@ -2,15 +2,13 @@
 // Preview van de commerciële mails (nieuwsbrieven en acties; alleen desktop + light mode), dezelfde
 // opzet als de CRM-preview (/crm/<slug>): één frame zoals de ontvanger de mail ziet (afzender,
 // onderwerp, preheader, daaronder de geëxporteerde HTML uit public/emails/<slug>.html) en links
-// een paneel met alle mails. Er zijn tien plekken; een plek zonder mail staat grijs in het paneel
-// ("volgt"). Mails komen uit de registry-sectie "commercieel" (email-designs/lib/registry.ts); de
+// een paneel met alle mails (alleen mails die er al zijn, geen lege plekken). Mails komen uit de registry-sectie "commercieel" (email-designs/lib/registry.ts); de
 // export schrijft de lijst naar app/data/commercieel-emails.json, in de volgorde van de registry.
 // /commercieel opent de eerste mail; zolang er nog geen mails zijn, een lege staat.
 import data from '~/data/commercieel-emails.json'
 
 type Entry = { slug: string; title: string; description: string; subject?: string; preheader?: string; variantOf?: string; variantLabel?: string }
 const emails = data as Entry[]
-const SLOTS = 10
 
 const route = useRoute()
 // Hoofdmails (geen varianten), in de volgorde van de registry
@@ -19,8 +17,8 @@ const slug = computed(() => String(route.params.slug || mains[0]?.slug || ''))
 const entry = computed(() => emails.find(e => e.slug === slug.value))
 if (route.params.slug && !entry.value) throw createError({ statusCode: 404, statusMessage: 'E-mail niet gevonden' })
 
-// Paneel: tien plekken. "Naam (toelichting)" wordt gesplitst in naam en toelichting.
-const nav = Array.from({ length: Math.max(SLOTS, mains.length) }, (_, i) => {
+// Paneel: alleen de mails die er zijn. "Naam (toelichting)" wordt gesplitst in naam en toelichting.
+const nav = Array.from({ length: mains.length }, (_, i) => {
   const e = mains[i]
   if (!e) return { slug: '', label: `Voorbeeld ${i + 1}`, when: 'volgt' }
   const m = e.title.match(/^(.*?)\s*\((.*)\)$/)
@@ -29,9 +27,21 @@ const nav = Array.from({ length: Math.max(SLOTS, mains.length) }, (_, i) => {
 
 // Varianten van één mail (registry: variantOf) als schakelaar in de kop, rechts van de naam
 const baseSlug = computed(() => entry.value?.variantOf ?? slug.value)
-const variants = computed(() => {
+// Een variantLabel met " / " ("Met prijs / Zonder titel") staat voor meerdere, los te combineren
+// schakelaars: per deel één schakelaar; een knop gaat naar de variant die alleen op dat deel verschilt.
+const parts = (e: Entry) => (e.variantLabel ?? e.slug).split(' / ')
+const variantGroups = computed(() => {
   const list = emails.filter(e => e.slug === baseSlug.value || e.variantOf === baseSlug.value)
-  return list.length > 1 ? list.map(e => ({ slug: e.slug, label: e.variantLabel ?? e.slug })) : []
+  if (list.length < 2 || !entry.value) return []
+  const cur = parts(entry.value)
+  return cur.map((_, axis) => {
+    const labels = [...new Set(list.map(e => parts(e)[axis] ?? ''))]
+    return labels.map((label) => {
+      const want = cur.map((p, i) => (i === axis ? label : p)).join(' / ')
+      const target = list.find(e => parts(e).join(' / ') === want) ?? list.find(e => parts(e)[axis] === label)
+      return { slug: target?.slug ?? slug.value, label, on: cur[axis] === label }
+    })
+  }).filter(g => g.length > 1)
 })
 
 // Pijltjes omhoog/omlaag: vorige/volgende mail
@@ -56,14 +66,14 @@ useHead({ title: `${entry.value?.title ?? 'Commerciële mails'} — ViaLuxury` }
       <div class="crm__left">
         <a class="crm__back" href="/">‹ Startscherm</a>
         <h1 class="crm__title">{{ entry?.title ?? 'Commerciële mails' }}</h1>
-        <div v-if="variants.length" class="crm__variants" role="group" aria-label="Variant">
+        <div v-for="(variants, gi) in variantGroups" :key="gi" class="crm__variants" role="group" aria-label="Variant">
           <NuxtLink
             v-for="v in variants"
-            :key="v.slug"
+            :key="v.label"
             :to="`/commercieel/${v.slug}`"
             class="crm__variant"
-            :class="{ 'crm__variant--on': v.slug === slug }"
-            :aria-current="v.slug === slug ? 'true' : undefined"
+            :class="{ 'crm__variant--on': v.on }"
+            :aria-current="v.on ? 'true' : undefined"
           >{{ v.label }}</NuxtLink>
         </div>
       </div>

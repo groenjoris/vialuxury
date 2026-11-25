@@ -15,7 +15,7 @@ if (!entry.value) throw createError({ statusCode: 404, statusMessage: 'E-mail ni
 // (en favorieten), review, de repeat-bookingflow (nagenieten, terugkomactie, herinnering, een
 // jaar geleden) en als laatste de themamail. De titel
 // "Winkelmandje (2 uur na verlaten)" wordt gesplitst in naam en moment.
-const navOrder = ['crm-winkelmandje', 'crm-winkelmandje-2-dagen', 'crm-zoekopdracht', 'crm-favorieten', 'crm-review', 'crm-nagenieten', 'crm-terugkomactie', 'crm-terugkomactie-herinnering', 'crm-jaar-geleden', 'crm-thema-stedentrips']
+const navOrder = ['crm-winkelmandje', 'crm-winkelmandje-2-dagen', 'crm-zoekopdracht', 'crm-favorieten', 'crm-review', 'crm-nagenieten', 'crm-terugkomactie', 'crm-terugkomactie-herinnering', 'crm-jaar-geleden', 'crm-thema-stedentrips', 'crm-vaker-doen', 'crm-dealkaart-vaste-hoogte']
 const nav = navOrder
   .map(s => emails.find(e => e.slug === s))
   .filter((e): e is (typeof emails)[number] => !!e)
@@ -34,15 +34,77 @@ const variantLabels: Record<string, string> = {
   'crm-jaar-geleden-persoonlijk': 'Persoonlijk',
   'crm-nagenieten': 'Bericht',
   'crm-nagenieten-titel': 'Titel',
-  'crm-review': 'Lege ster',
-  'crm-review-knoppen': 'Knop',
+  'crm-review': 'Knop',
+  'crm-review-sterren': 'Lege ster',
+  'crm-favorieten': 'Eén coupon',
+  'crm-favorieten-twee-coupons': 'Twee coupons',
   'crm-winkelmandje-2-dagen': 'Naam bekend',
   'crm-winkelmandje-2-dagen-naam-onbekend': 'Naam onbekend',
 }
-const variants = computed(() => {
-  const list = emails.filter(e => e.slug === baseSlug.value || (e as { variantOf?: string }).variantOf === baseSlug.value)
-  return list.length > 1 ? list.map(e => ({ slug: e.slug, label: variantLabels[e.slug] ?? e.slug })) : []
+// Een label met " / " ("Caveat / Footer 2", uit `variantLabel` in de registry) staat voor meerdere, los
+// te combineren schakelaars: per deel één schakelaar; een knop gaat naar de variant die alleen op dat
+// deel verschilt.
+type CrmEntry = (typeof emails)[number] & { variantOf?: string; variantLabel?: string }
+const parts = (e: CrmEntry) => (e.variantLabel ?? variantLabels[e.slug] ?? e.slug).split(' / ')
+const variantGroups = computed(() => {
+  const list = (emails as CrmEntry[]).filter(e => e.slug === baseSlug.value || e.variantOf === baseSlug.value)
+  if (list.length < 2 || !entry.value) return []
+  const cur = parts(entry.value as CrmEntry)
+  return cur.map((_, axis) => {
+    const labels = [...new Set(list.map(e => parts(e)[axis] ?? ''))]
+    return labels.map((label) => {
+      const want = cur.map((p, i) => (i === axis ? label : p)).join(' / ')
+      const target = list.find(e => parts(e).join(' / ') === want) ?? list.find(e => parts(e)[axis] === label)
+      return { slug: target?.slug ?? slug.value, label, on: cur[axis] === label }
+    })
+  }).filter(g => g.length > 1)
 })
+
+// Voorbeeldbladen (geen mail): zonder inboxframe, op hun eigen ontwerpmaat en in de breedte passend
+// geschaald. Maten in px van de geëxporteerde HTML (zie email-designs/emails/<slug>.tsx).
+const sheets: Record<string, { w: number; h: number }> = {
+  'crm-dealkaart-vaste-hoogte': { w: 1782, h: 500 },
+}
+const sheet = computed(() => sheets[slug.value])
+const sheetBox = ref<HTMLElement | null>(null)
+const sheetScale = ref(1)
+let sheetObserver: ResizeObserver | undefined
+function fitSheet() {
+  if (!sheet.value || !sheetBox.value) return
+  sheetScale.value = Math.min(1, sheetBox.value.clientWidth / sheet.value.w)
+}
+onMounted(() => {
+  sheetObserver = new ResizeObserver(fitSheet)
+  watch(sheetBox, (el, old) => {
+    if (old) sheetObserver?.unobserve(old)
+    if (el) { sheetObserver?.observe(el); fitSheet() }
+  }, { immediate: true })
+})
+onBeforeUnmount(() => sheetObserver?.disconnect())
+
+// Voorbeeldmail "Dit moeten we vaker doen": na een klik op een footervariant ("Footer 1 … 5") scrolt
+// de mail vanzelf naar de footer, na een klik op een plek van de gastquote naar de quote, zodat je
+// de varianten kunt vergelijken zonder zelf te scrollen. Een andere mail begint weer bovenaan.
+const isFooterVariant = (label: string) => label.startsWith('Footer')
+const scrollTarget = useState<'' | 'footer' | 'quote'>('crm-scroll-target', () => '')
+function pickVariant(label: string) {
+  scrollTarget.value = isFooterVariant(label) ? 'footer' : baseSlug.value === 'crm-vaker-doen' ? 'quote' : ''
+}
+function onMailLoad(ev: Event) {
+  const target = scrollTarget.value
+  if (!target) return
+  const win = (ev.target as HTMLIFrameElement).contentWindow
+  if (!win) return
+  const go = () => {
+    const quote = target === 'quote' ? win.document.getElementById('gastquote') : null
+    // zelf rekenen in plaats van scrollIntoView: die scrolt ook de pagina eromheen mee
+    if (quote) win.scrollTo(0, quote.getBoundingClientRect().top + win.scrollY - (win.innerHeight - quote.offsetHeight) / 2)
+    else win.scrollTo(0, win.document.documentElement.scrollHeight)
+  }
+  go()
+  // afbeeldingen laden na: nog een paar keer, tot de hoogte vaststaat
+  ;[150, 500, 1200].forEach(ms => setTimeout(go, ms))
+}
 
 // Pijltjes omhoog/omlaag: vorige/volgende mail
 function onKey(ev: KeyboardEvent) {
@@ -51,6 +113,7 @@ function onKey(ev: KeyboardEvent) {
   const next = nav[i + (ev.key === 'ArrowDown' ? 1 : -1)]
   if (!next) return
   ev.preventDefault()
+  scrollTarget.value = ''
   navigateTo(`/crm/${next.slug}`)
 }
 onMounted(() => window.addEventListener('keydown', onKey))
@@ -65,14 +128,15 @@ useHead({ title: `${entry.value?.title ?? 'E-mail'} — ViaLuxury CRM` })
       <div class="crm__left">
         <a class="crm__back" href="/">‹ Startscherm</a>
         <h1 class="crm__title">{{ entry?.title }}</h1>
-        <div v-if="variants.length" class="crm__variants" role="group" aria-label="Variant">
+        <div v-for="(variants, gi) in variantGroups" :key="gi" class="crm__variants" role="group" aria-label="Variant">
           <NuxtLink
             v-for="v in variants"
-            :key="v.slug"
+            :key="v.label"
             :to="`/crm/${v.slug}`"
+            @click="pickVariant(v.label)"
             class="crm__variant"
-            :class="{ 'crm__variant--on': v.slug === slug }"
-            :aria-current="v.slug === slug ? 'true' : undefined"
+            :class="{ 'crm__variant--on': v.on }"
+            :aria-current="v.on ? 'true' : undefined"
           >{{ v.label }}</NuxtLink>
         </div>
       </div>
@@ -85,6 +149,7 @@ useHead({ title: `${entry.value?.title ?? 'E-mail'} — ViaLuxury CRM` })
           :key="e.slug"
           :to="`/crm/${e.slug}`"
           class="crm__nav-link"
+          @click="scrollTarget = ''"
           :class="{ 'crm__nav-link--on': e.slug === baseSlug }"
           :aria-current="e.slug === baseSlug ? 'page' : undefined"
         >
@@ -93,7 +158,16 @@ useHead({ title: `${entry.value?.title ?? 'E-mail'} — ViaLuxury CRM` })
         </NuxtLink>
         <p class="crm__nav-hint">↑ ↓ om te bladeren</p>
       </nav>
-      <div class="crm__center">
+      <div v-if="sheet" ref="sheetBox" class="crm__sheet" :style="{ height: `${sheet.h * sheetScale}px` }">
+        <iframe
+          :key="slug"
+          class="crm__sheet-frame"
+          :src="`/emails/${slug}.html`"
+          :title="entry?.title"
+          :style="{ width: `${sheet.w}px`, height: `${sheet.h}px`, transform: `scale(${sheetScale})` }"
+        />
+      </div>
+      <div v-else class="crm__center">
       <div class="crm__mail">
         <div class="crm__inbox">
           <span class="crm__avatar" aria-hidden="true">V</span>
@@ -103,7 +177,7 @@ useHead({ title: `${entry.value?.title ?? 'E-mail'} — ViaLuxury CRM` })
             <p class="crm__preheader">{{ entry?.preheader }}</p>
           </div>
         </div>
-        <iframe :key="slug" class="crm__frame" :src="`/emails/${slug}.html`" :title="entry?.title" />
+        <iframe :key="slug" class="crm__frame" :src="`/emails/${slug}.html`" :title="entry?.title" @load="onMailLoad" />
       </div>
       </div>
     </div>
@@ -113,13 +187,13 @@ useHead({ title: `${entry.value?.title ?? 'E-mail'} — ViaLuxury CRM` })
 <style scoped>
 .crm { min-height: 100vh; background: #f5f5f5; font-family: var(--font-body); color: var(--color-text-primary); }
 .crm__bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 24px; padding: 16px 24px; background: #fff; border-bottom: 1px solid var(--color-border); }
-.crm__left { display: flex; align-items: center; gap: 16px; min-width: 0; }
+.crm__left { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; min-width: 0; }
 .crm__back { color: var(--color-text-secondary); text-decoration: none; font-size: 13px; }
 .crm__back:hover { color: var(--color-primary); }
 .crm__title { margin: 0; font-family: var(--font-heading); font-size: 20px; font-weight: 700; }
 /* Variantschakelaar rechts van de naam: twee segmenten, het actieve zwart */
 .crm__variants { display: inline-flex; border: 1px solid var(--color-border); border-radius: 6px; overflow: hidden; background: #fff; }
-.crm__variant { padding: 6px 12px; font-size: 13px; line-height: 1.3; color: var(--color-text-secondary); text-decoration: none; }
+.crm__variant { padding: 6px 12px; font-size: 13px; line-height: 1.3; white-space: nowrap; color: var(--color-text-secondary); text-decoration: none; }
 .crm__variant + .crm__variant { border-left: 1px solid var(--color-border); }
 .crm__variant:hover { color: var(--color-text-primary); }
 .crm__variant--on, .crm__variant--on:hover { background: #141414; color: #fff; }
@@ -134,6 +208,9 @@ useHead({ title: `${entry.value?.title ?? 'E-mail'} — ViaLuxury CRM` })
 .crm__nav-link--on, .crm__nav-link--on:hover { background: #F4F1EC; }
 .crm__nav-link--on .crm__nav-label { font-weight: 700; }
 .crm__nav-hint { margin: 8px 0 0; padding: 0 12px; font-size: 12px; color: var(--color-text-secondary); }
+/* Voorbeeldblad: de hele breedte naast het paneel, het blad geschaald vanaf linksboven */
+.crm__sheet { flex: 1; min-width: 0; overflow: hidden; background: #fff; border: 1px solid var(--color-border); border-radius: 8px; }
+.crm__sheet-frame { display: block; border: 0; transform-origin: top left; }
 .crm__center { flex: 1; min-width: 0; display: flex; justify-content: center; }
 @media (max-width: 900px) { .crm__nav { display: none; } }
 .crm__mail { width: 700px; max-width: 100%; background: #fff; border: 1px solid var(--color-border); border-radius: 8px; overflow: hidden; }

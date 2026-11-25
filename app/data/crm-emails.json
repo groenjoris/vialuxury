@@ -2,14 +2,14 @@
   {
     "slug": "crm-review",
     "title": "Reviewmail (1 dag na thuiskomst)",
-    "description": "Eén doel: de review. Vijf klikbare Trustpilot-sterren boven de vouw, daaronder het verblijf in een omlijnd blok. Gebaseerd op de reviewmail van Jesse.",
+    "description": "Eén doel: de review. Vijf witte knoppen met cijfer en ster boven de vouw (de gekozen versie), daaronder het verblijf in een omlijnd blok. Gebaseerd op de reviewmail van Jesse.",
     "subject": "Hoe was je verblijf?",
     "preheader": "We horen graag hoe je het vond. Het kost je een minuut."
   },
   {
-    "slug": "crm-review-knoppen",
+    "slug": "crm-review-sterren",
     "title": "Reviewmail (1 dag na thuiskomst)",
-    "description": "Variant van de reviewmail: de vijf keuzes als witte knoppen met cijfer en ster in plaats van lege sterren.",
+    "description": "Variant van de reviewmail: vijf lege, omlijnde sterren in plaats van de knoppen.",
     "subject": "Hoe was je verblijf?",
     "preheader": "We horen graag hoe je het vond. Het kost je een minuut.",
     "variantOf": "crm-review"
@@ -17,7 +17,7 @@
   {
     "slug": "crm-terugkomactie",
     "title": "Terugkomactie €20 (14 dagen na vertrek)",
-    "description": "Kortingscode als coupon, één knop, jouw verblijf, 'Tips voor je kortingscode' met drie groepjes van twee suggesties en de themakiezer.",
+    "description": "Kortingscode als coupon, één knop, jouw verblijf, 'Je kortingscode geldt hier' met drie groepjes van twee suggesties en de themakiezer.",
     "subject": "Sanne, €20 cadeau voor je volgende verblijf",
     "preheader": "Een persoonlijk bedankje, alleen voor jou. Geldig tot en met 16 december 2026."
   },
@@ -31,16 +31,24 @@
   {
     "slug": "crm-zoekopdracht",
     "title": "Zoekopdracht (1 minuut na verlaten)",
-    "description": "Briefopening (Beste Sanne, intro, Groetjes Yvette), de zoekopdracht als samenvatting met één knop naar alle resultaten, daaronder de titel 'Dit vonden we voor je' met de drie best passende arrangementen.",
+    "description": "Briefopening (Beste Sanne, intro), de zoekopdracht als samenvatting met één knop naar alle resultaten, daaronder de titel 'Dit vonden we voor je' met de drie best passende arrangementen.",
     "subject": "Jouw zoekopdracht: Den Haag",
     "preheader": "Kijk of er iets voor je bij zit."
   },
   {
     "slug": "crm-favorieten",
-    "title": "Favorieten €10 en €15 (3 dagen na eerste mail)",
-    "description": "Twee coupons boven het eerste favoriet: €10 op de eerste boeking (24 uur geldig) en €15 op de tweede (code volgt per mail na de eerste boeking); daaronder de andere favorieten en twee vergelijkbare deals. Copy op haast.",
+    "title": "Favorieten €10 (3 dagen na eerste mail)",
+    "description": "Eén coupon van €10 (24 uur geldig) boven de favorieten; daaronder de andere favorieten en twee vergelijkbare deals. Copy op haast.",
     "subject": "Alsjeblieft Sanne, €10 korting op Kasteel Steenenburg",
     "preheader": "Je code is geldig tot 12 november 2026 10:24 uur."
+  },
+  {
+    "slug": "crm-favorieten-twee-coupons",
+    "title": "Favorieten €10 (3 dagen na eerste mail)",
+    "description": "Variant voor de test in januari 2027: twee coupons, €10 op de eerste boeking (24 uur geldig) en €15 op de tweede (code volgt per mail na de eerste boeking).",
+    "subject": "Alsjeblieft Sanne, €10 korting op Kasteel Steenenburg",
+    "preheader": "Je code is geldig tot 12 november 2026 10:24 uur.",
+    "variantOf": "crm-favorieten"
   },
   {
     "slug": "crm-nagenieten",
@@ -108,5 +116,171 @@
     "description": "Briefopening met de reden (waar je op zocht), drie populaire stedentrips (één groot, twee als rij), daarna een ander thema kiezen met zes witte snelfilterknoppen in een raster.",
     "subject": "Dit zijn de populairste stedentrips van dit moment",
     "preheader": "Parijs, Den Haag en Amsterdam, vanaf €279 voor 2 personen."
+  },
+  {
+    "slug": "crm-vaker-doen-footer-0",
+    "title": "Dit moeten we vaker doen (quote en footer)",
+    "description": "Voorbeeldmail voor de gastquote en de footer: de quote boven de footer, footervariant 0 met het hulpblok erin.",
+    "subject": "Vandaag een jaar geleden 🎉",
+    "preheader": "Je verblijf in Hotel Des Indes, en een code voor €25 korting.",
+    "variantOf": "crm-vaker-doen",
+    "variantLabel": "Boven de footer / Footer 0"
+  },
+  {
+    "slug": "crm-vaker-doen",
+    "title": "Dit moeten we vaker doen (quote en footer)",
+    "description": "Voorbeeldmail voor de gastquote en de footer: de quote boven de footer, footervariant 1 met het hulpblok erin.",
+    "subject": "Vandaag een jaar geleden 🎉",
+    "preheader": "Je verblijf in Hotel Des Indes, en een code voor €25 korting.",
+    "variantLabel": "Boven de footer / Footer 1"
+  },
+  {
+    "slug": "crm-vaker-doen-footer-2",
+    "title": "Dit moeten we vaker doen (quote en footer)",
+    "description": "Voorbeeldmail voor de gastquote en de footer: de quote boven de footer, footervariant 2 met het hulpblok erin.",
+    "subject": "Vandaag een jaar geleden 🎉",
+    "preheader": "Je verblijf in Hotel Des Indes, en een code voor €25 korting.",
+    "variantOf": "crm-vaker-doen",
+    "variantLabel": "Boven de footer / Footer 2"
+  },
+  {
+    "slug": "crm-vaker-doen-footer-3",
+    "title": "Dit moeten we vaker doen (quote en footer)",
+    "description": "Voorbeeldmail voor de gastquote en de footer: de quote boven de footer, footervariant 3 met het hulpblok erin.",
+    "subject": "Vandaag een jaar geleden 🎉",
+    "preheader": "Je verblijf in Hotel Des Indes, en een code voor €25 korting.",
+    "variantOf": "crm-vaker-doen",
+    "variantLabel": "Boven de footer / Footer 3"
+  },
+  {
+    "slug": "crm-vaker-doen-footer-4",
+    "title": "Dit moeten we vaker doen (quote en footer)",
+    "description": "Voorbeeldmail voor de gastquote en de footer: de quote boven de footer, footervariant 4 met het hulpblok erin.",
+    "subject": "Vandaag een jaar geleden 🎉",
+    "preheader": "Je verblijf in Hotel Des Indes, en een code voor €25 korting.",
+    "variantOf": "crm-vaker-doen",
+    "variantLabel": "Boven de footer / Footer 4"
+  },
+  {
+    "slug": "crm-vaker-doen-footer-5",
+    "title": "Dit moeten we vaker doen (quote en footer)",
+    "description": "Voorbeeldmail voor de gastquote en de footer: de quote boven de footer, footervariant 5 met het hulpblok erin.",
+    "subject": "Vandaag een jaar geleden 🎉",
+    "preheader": "Je verblijf in Hotel Des Indes, en een code voor €25 korting.",
+    "variantOf": "crm-vaker-doen",
+    "variantLabel": "Boven de footer / Footer 5"
+  },
+  {
+    "slug": "crm-vaker-doen-in-footer-footer-0",
+    "title": "Dit moeten we vaker doen (quote en footer)",
+    "description": "Voorbeeldmail voor de gastquote en de footer: de quote in de footer, footervariant 0 met het hulpblok erin.",
+    "subject": "Vandaag een jaar geleden 🎉",
+    "preheader": "Je verblijf in Hotel Des Indes, en een code voor €25 korting.",
+    "variantOf": "crm-vaker-doen",
+    "variantLabel": "In de footer / Footer 0"
+  },
+  {
+    "slug": "crm-vaker-doen-in-footer",
+    "title": "Dit moeten we vaker doen (quote en footer)",
+    "description": "Voorbeeldmail voor de gastquote en de footer: de quote in de footer, footervariant 1 met het hulpblok erin.",
+    "subject": "Vandaag een jaar geleden 🎉",
+    "preheader": "Je verblijf in Hotel Des Indes, en een code voor €25 korting.",
+    "variantOf": "crm-vaker-doen",
+    "variantLabel": "In de footer / Footer 1"
+  },
+  {
+    "slug": "crm-vaker-doen-in-footer-footer-2",
+    "title": "Dit moeten we vaker doen (quote en footer)",
+    "description": "Voorbeeldmail voor de gastquote en de footer: de quote in de footer, footervariant 2 met het hulpblok erin.",
+    "subject": "Vandaag een jaar geleden 🎉",
+    "preheader": "Je verblijf in Hotel Des Indes, en een code voor €25 korting.",
+    "variantOf": "crm-vaker-doen",
+    "variantLabel": "In de footer / Footer 2"
+  },
+  {
+    "slug": "crm-vaker-doen-in-footer-footer-3",
+    "title": "Dit moeten we vaker doen (quote en footer)",
+    "description": "Voorbeeldmail voor de gastquote en de footer: de quote in de footer, footervariant 3 met het hulpblok erin.",
+    "subject": "Vandaag een jaar geleden 🎉",
+    "preheader": "Je verblijf in Hotel Des Indes, en een code voor €25 korting.",
+    "variantOf": "crm-vaker-doen",
+    "variantLabel": "In de footer / Footer 3"
+  },
+  {
+    "slug": "crm-vaker-doen-in-footer-footer-4",
+    "title": "Dit moeten we vaker doen (quote en footer)",
+    "description": "Voorbeeldmail voor de gastquote en de footer: de quote in de footer, footervariant 4 met het hulpblok erin.",
+    "subject": "Vandaag een jaar geleden 🎉",
+    "preheader": "Je verblijf in Hotel Des Indes, en een code voor €25 korting.",
+    "variantOf": "crm-vaker-doen",
+    "variantLabel": "In de footer / Footer 4"
+  },
+  {
+    "slug": "crm-vaker-doen-in-footer-footer-5",
+    "title": "Dit moeten we vaker doen (quote en footer)",
+    "description": "Voorbeeldmail voor de gastquote en de footer: de quote in de footer, footervariant 5 met het hulpblok erin.",
+    "subject": "Vandaag een jaar geleden 🎉",
+    "preheader": "Je verblijf in Hotel Des Indes, en een code voor €25 korting.",
+    "variantOf": "crm-vaker-doen",
+    "variantLabel": "In de footer / Footer 5"
+  },
+  {
+    "slug": "crm-vaker-doen-tussendoor-footer-0",
+    "title": "Dit moeten we vaker doen (quote en footer)",
+    "description": "Voorbeeldmail voor de gastquote en de footer: de quote tussendoor, footervariant 0 met het hulpblok erin.",
+    "subject": "Vandaag een jaar geleden 🎉",
+    "preheader": "Je verblijf in Hotel Des Indes, en een code voor €25 korting.",
+    "variantOf": "crm-vaker-doen",
+    "variantLabel": "Tussendoor / Footer 0"
+  },
+  {
+    "slug": "crm-vaker-doen-tussendoor",
+    "title": "Dit moeten we vaker doen (quote en footer)",
+    "description": "Voorbeeldmail voor de gastquote en de footer: de quote tussendoor, footervariant 1 met het hulpblok erin.",
+    "subject": "Vandaag een jaar geleden 🎉",
+    "preheader": "Je verblijf in Hotel Des Indes, en een code voor €25 korting.",
+    "variantOf": "crm-vaker-doen",
+    "variantLabel": "Tussendoor / Footer 1"
+  },
+  {
+    "slug": "crm-vaker-doen-tussendoor-footer-2",
+    "title": "Dit moeten we vaker doen (quote en footer)",
+    "description": "Voorbeeldmail voor de gastquote en de footer: de quote tussendoor, footervariant 2 met het hulpblok erin.",
+    "subject": "Vandaag een jaar geleden 🎉",
+    "preheader": "Je verblijf in Hotel Des Indes, en een code voor €25 korting.",
+    "variantOf": "crm-vaker-doen",
+    "variantLabel": "Tussendoor / Footer 2"
+  },
+  {
+    "slug": "crm-vaker-doen-tussendoor-footer-3",
+    "title": "Dit moeten we vaker doen (quote en footer)",
+    "description": "Voorbeeldmail voor de gastquote en de footer: de quote tussendoor, footervariant 3 met het hulpblok erin.",
+    "subject": "Vandaag een jaar geleden 🎉",
+    "preheader": "Je verblijf in Hotel Des Indes, en een code voor €25 korting.",
+    "variantOf": "crm-vaker-doen",
+    "variantLabel": "Tussendoor / Footer 3"
+  },
+  {
+    "slug": "crm-vaker-doen-tussendoor-footer-4",
+    "title": "Dit moeten we vaker doen (quote en footer)",
+    "description": "Voorbeeldmail voor de gastquote en de footer: de quote tussendoor, footervariant 4 met het hulpblok erin.",
+    "subject": "Vandaag een jaar geleden 🎉",
+    "preheader": "Je verblijf in Hotel Des Indes, en een code voor €25 korting.",
+    "variantOf": "crm-vaker-doen",
+    "variantLabel": "Tussendoor / Footer 4"
+  },
+  {
+    "slug": "crm-vaker-doen-tussendoor-footer-5",
+    "title": "Dit moeten we vaker doen (quote en footer)",
+    "description": "Voorbeeldmail voor de gastquote en de footer: de quote tussendoor, footervariant 5 met het hulpblok erin.",
+    "subject": "Vandaag een jaar geleden 🎉",
+    "preheader": "Je verblijf in Hotel Des Indes, en een code voor €25 korting.",
+    "variantOf": "crm-vaker-doen",
+    "variantLabel": "Tussendoor / Footer 5"
+  },
+  {
+    "slug": "crm-dealkaart-vaste-hoogte",
+    "title": "Dealkaart vaste hoogte (voorbeeld)",
+    "description": "Geen mail maar een voorbeeld: drie dealrijen met vaste hoogte naast elkaar (twee foto's onder elkaar), met een dealtitel van één, twee en drie regels."
   }
 ]

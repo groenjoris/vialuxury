@@ -15,7 +15,7 @@ import { baseUrl, font, newsletter } from "./theme";
 // - Geen labels ("Populair" e.d.) op deals; prijzen zijn het totaal voor 2 personen.
 // - Deals staan op de uitgebreide kaart (zoals de zoekkaart op de website); geen tekst op een foto.
 // - Links naar het prototype gaan naar de R1-dealpagina (zachte landing).
-// - Elke mail eindigt met de hulplijn "Hulp nodig?" (CrmHelp).
+// - Elke mail heeft de hulplijn "Hulp nodig?" (CrmHelp), direct na de hoofdboodschap, niet als onderste blok.
 
 const c = newsletter.light;
 
@@ -46,9 +46,8 @@ export const s = {
 };
 
 /** Briefopening, het vaste begin van een CRM-mail: aanhef ("Beste Sanne," of zonder naam
- *  "Beste gast,"; in elke mail dezelfde aanhef), een korte intro en de ondertekening "Groetjes Yvette". De ondertekening is een
- *  afbeelding (handgeschreven lettertype Oooh Baby, donkergrijs #555555), zodat hij in elke
- *  mailclient en in Klaviyo hetzelfde is. Titels van blokken (bijv. "Anderen boekten ook") komen
+ *  "Beste gast,"; in elke mail dezelfde aanhef) en een korte intro. Geen ondertekening: er is op dit
+ *  moment geen afzender (de ondertekening "Groetjes Yvette" is op 2026-11-25 vervallen). Titels van blokken (bijv. "Anderen boekten ook") komen
  *  ná de brief, direct boven het blok waar ze bij horen. */
 export function Letter({ firstName, children }: { firstName?: string; children: React.ReactNode }) {
   const salutation = firstName ? `Beste ${firstName},` : "Beste gast,";
@@ -56,15 +55,51 @@ export function Letter({ firstName, children }: { firstName?: string; children: 
     <>
       <Text style={{ ...s.body, margin: 0 }}>{salutation}</Text>
       <Text style={{ ...s.body, margin: "8px 0 0" }}>{children}</Text>
-      <Img src={`${baseUrl}/images/mail/crm/groetjes-yvette.png`} alt="Groetjes Yvette" width="133" height="29" style={{ display: "block", width: "133px", height: "29px", marginTop: "14px" }} />
     </>
   );
 }
 
-/** Hulplijn onderaan elke CRM-mail: hetzelfde blok "Hulp nodig?" als in de post-bookingmails
+/** De gastquote “Dit moeten we vaker doen!”: een uitspraak van een gast, dus vormgegeven als review
+ *  (tussen aanhalingstekens, handgeschreven lettertype Caveat) met eronder de afzender ("— Onze tevreden gasten"). De quote
+ *  is een afbeelding (scripts/mail-graphics/guest-quote.py), want een webfont werkt niet in elke
+ *  mailclient. `tone`: "donker" op een licht vlak, "wit" in de zwarte footer. `balloon`: de quote in
+ *  een witte tekstballon (op een gekleurd vlak). Links uitgelijnd, behalve de strook tussendoor
+ *  (`center`). Concept, alleen in de
+ *  voorbeeldmail "Dit moeten we vaker doen". */
+export function GuestQuote({ tone = "donker", balloon, center }: { tone?: "donker" | "wit"; balloon?: boolean; /** Gecentreerd (de strook tussendoor): ballon, puntje en afzender in het midden. */ center?: boolean }) {
+  const quote = (
+    <Img src={`${baseUrl}/images/mail/crm/gastquote-${tone}.png`} alt="“Dit moeten we vaker doen!”" width="367" height="34" style={{ display: "block", width: "367px", maxWidth: "100%", height: "auto" }} />
+  );
+  // De afzender, zoals onder een echte quote: streepje ervoor
+  const by = (
+    <Text style={{ ...s.muted, color: tone === "wit" ? "#FFFFFF" : c.muted, margin: balloon ? "12px 0 0" : "8px 0 0", textAlign: center ? "center" : "left" }}>— Onze tevreden gasten</Text>
+  );
+  if (!balloon) return <div id="gastquote">{quote}{by}</div>;
+  return (
+    <div id="gastquote">
+      <table role="presentation" align={center ? "center" : undefined} cellPadding={0} cellSpacing={0} border={0} style={{ borderCollapse: "separate", margin: center ? "0 auto" : undefined }}>
+        <tbody>
+          <tr>
+            <td style={{ backgroundColor: "#FFFFFF", borderRadius: "14px", padding: "18px 24px 20px" }}>{quote}</td>
+          </tr>
+        </tbody>
+      </table>
+      {/* Het puntje van de tekstballon: links onder, of in het midden als de quote gecentreerd staat */}
+      {center ? (
+        <div style={{ width: 0, height: 0, margin: "0 auto", borderLeft: "10px solid transparent", borderRight: "10px solid transparent", borderTop: "14px solid #FFFFFF", fontSize: 0, lineHeight: 0 }} />
+      ) : (
+        <div style={{ width: 0, height: 0, marginLeft: "34px", borderLeft: "0 solid transparent", borderRight: "18px solid transparent", borderTop: "14px solid #FFFFFF", fontSize: 0, lineHeight: 0 }} />
+      )}
+      {by}
+    </div>
+  );
+}
+
+/** Hulplijn van elke CRM- en commerciële mail, direct na de hoofdboodschap (alleen onderaan als er geen
+ *  betere plek is; zie CLAUDE.md): hetzelfde blok "Hulp nodig?" als in de post-bookingmails
  *  (HelpBanner), met 16 px tekst. `top`: witruimte erboven als de sectie ervoor er geen heeft. */
-export function CrmHelp({ top = "0" }: { top?: string }) {
-  return <HelpBanner fontSize="16px" padding={`${top} 32px 40px`} />;
+export function CrmHelp({ top = "0", bottom = "40px" }: { top?: string; /** "0" als er nog een blok met eigen bovenmarge onder staat. */ bottom?: string }) {
+  return <HelpBanner fontSize="16px" padding={`${top} 32px ${bottom}`} />;
 }
 
 /** Primaire, oranje knop. `small`: compacter, voor in een dealblok. */
@@ -283,6 +318,53 @@ export function DealRow({ deal: d, cta, top = "12px" }: { deal: RowDeal; cta?: s
               <TextLink href={d.url}>{cta ?? "Bekijk"}</TextLink>
             </>
           )}
+        </Column>
+      </Row>
+    </Section>
+  );
+}
+
+/** Hoogte van de dealrij met vaste hoogte (zonder rand) en de witruimte tussen de twee foto's. */
+export const fixedRowHeight = 416;
+const fixedPhotoGap = 6;
+
+/** Dealrij met VASTE hoogte (concept): links twee foto's onder elkaar met wat witruimte ertussen
+ *  in plaats van één langwerpige foto, rechts de uitgebreide kaart. De kaart is altijd even hoog,
+ *  hoe lang de dealtitel ook is: de prijsrij staat onderaan vast en de ruimte tussen de laatste
+ *  inclusie en de prijsrij vangt het verschil op (titel van drie regels → minder witruimte).
+ *  Voorwaarde: elke inclusie past op één regel en de titel is maximaal drie regels. */
+export function DealRowFixed({ deal: d, image2, cta, top = "12px" }: { deal: RowDeal; /** Tweede foto, onder de eerste. */ image2: string; cta?: string; top?: string }) {
+  const h = fixedRowHeight;
+  const photoH = (h - fixedPhotoGap) / 2;
+  const photo = (src: string) => (
+    <Link href={d.url}>
+      <Img src={src} alt={d.hotelName ?? ""} width="190" height={photoH} style={{ display: "block", width: "190px", height: `${photoH}px`, objectFit: "cover" }} />
+    </Link>
+  );
+  return (
+    <Section style={{ backgroundColor: "#FFFFFF", border: `1px solid #E5E5E5`, borderRadius: "8px", marginTop: top, overflow: "hidden" }}>
+      <Row>
+        <Column style={{ width: "190px", verticalAlign: "top", fontSize: 0, lineHeight: 0 }}>
+          {photo(d.image)}
+          <div style={{ height: `${fixedPhotoGap}px`, lineHeight: `${fixedPhotoGap}px`, fontSize: "1px" }}>&nbsp;</div>
+          {photo(image2)}
+        </Column>
+        <Column style={{ verticalAlign: "top", padding: 0 }}>
+          {/* Vaste hoogte: bovenste rij groeit mee met de titel, de prijsrij staat onderaan vast */}
+          <table role="presentation" cellPadding={0} cellSpacing={0} width="100%" style={{ width: "100%", height: `${h}px`, borderCollapse: "collapse" }}>
+            <tbody>
+              <tr>
+                <td valign="top" style={{ padding: "16px 18px 0", verticalAlign: "top" }}>
+                  <RichDealText d={d} />
+                </td>
+              </tr>
+              <tr>
+                <td valign="bottom" style={{ padding: "0 18px 18px", verticalAlign: "bottom", height: "1px" }}>
+                  <RichDealPrice d={d} cta={cta ?? "Bekijk"} />
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </Column>
       </Row>
     </Section>

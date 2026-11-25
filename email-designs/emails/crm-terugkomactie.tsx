@@ -14,7 +14,7 @@ import { carltonBeach, desIndes, fashionHotel, steenenburg, vanOys, villaRuimzic
 // In beide mails staat in elke dealkaart de prijs na aftrek van de code ("Met jouw code: €499").
 // Opbouw, in de volgorde waarin de lezer het wil weten:
 //   1. briefopening (Letter): "Beste [voornaam]," als gewone tekst, waarom je dit krijgt (we zijn
-//      dankbaar dat je boekte) en de ondertekening "Groetjes Yvette",
+//      dankbaar dat je boekte) zonder ondertekening,
 //   2. de coupon: bedrag, code, geldigheid en "Vul de code in bij het boeken" in één blok,
 //   3. waar je heen kunt (de ene oranje knop: Bekijk arrangementen),
 //   4. "Je kortingscode geldt hier" (grote titel, zonder subtitel; herinnering: "Hier gebruik je je €20") en drie groepjes van
@@ -54,7 +54,7 @@ export default function CrmTerugkomactie({ recipientEmail, firstName, code, days
         <CrmHeader />
         <Container style={{ width: "100%", maxWidth: "626px" }}>
           {/* Briefopening: aanhef, waarom je dit krijgt (dankbaarheid voorop, in de herinnering haast)
-              en de ondertekening */}
+              */}
           <Section className="m-pad" style={{ padding: "32px 32px 0" }}>
             <Letter firstName={firstName}>
               {reminder
@@ -71,6 +71,9 @@ export default function CrmTerugkomactie({ recipientEmail, firstName, code, days
               <PrimaryButton href={ctaUrl}>{reminder ? `Verzilver je ${code.value}` : "Bekijk arrangementen"}</PrimaryButton>
             </Section>
           </Section>
+
+          {/* Hulplijn: direct na de hoofdboodschap, niet als onderste blok */}
+          <CrmHelp top="32px" bottom="0" />
 
           {/* Waar je de korting kunt gebruiken: grote titel, zonder subtitel (de datum staat al in de coupon) */}
           <Section className="m-pad" style={{ padding: "44px 32px 0" }}>
@@ -95,10 +98,6 @@ export default function CrmTerugkomactie({ recipientEmail, firstName, code, days
           </BeigeBand>
         )}
 
-        <Container style={{ width: "100%", maxWidth: "626px" }}>
-          {/* Hulplijn */}
-          <CrmHelp top="36px" />
-        </Container>
         <CrmFooter recipientEmail={recipientEmail} reason="omdat je bij ons boekte" />
       </Body>
     </Html>

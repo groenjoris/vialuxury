@@ -7,8 +7,8 @@ import { font, newsletter } from "../components/theme";
 
 // CRM mail 4: winkelmandje, 2 dagen na het verlaten van de checkout. Na de mail van
 // 2 uur (zelfde deal, afronden) nu alternatieven. De mail begint als brief (bouwsteen Letter):
-// aanhef ("Beste Sanne," of zonder naam "Beste gast,"), een korte intro en de ondertekening
-// "Groetjes Yvette" als afbeelding. Daarna de titel "Anderen boekten ook" direct boven de lijst
+// aanhef ("Beste Sanne," of zonder naam "Beste gast,"), een korte intro (geen
+// ondertekening). Daarna de titel "Anderen boekten ook" direct boven de lijst
 // waar hij bij hoort: drie vergelijkbare deals, de eerste groot, de andere twee als dealrij. Daaronder
 // "Door jou bekeken": de deal uit het winkelmandje op dezelfde kaart, zonder prijsrij (aankomst
 // met nachten en personen, de besparing en de link "Ga verder met boeken").
@@ -41,7 +41,7 @@ export default function CrmWinkelmandje2Dagen({ recipientEmail, firstName, cart,
       <Body style={{ backgroundColor: c.bg, margin: 0, padding: 0, fontFamily: font.body }}>
         <CrmHeader />
         <Container style={{ width: "100%", maxWidth: "626px" }}>
-          {/* Briefopening: aanhef, korte intro en de ondertekening */}
+          {/* Briefopening: aanhef, korte intro */}
           <Section className="m-pad" style={{ padding: "32px 32px 0" }}>
             <Letter firstName={firstName}>
               Klanten die interesse hadden in {cart.hotelName}, boekten vaak ook de volgende deals. Misschien interessant voor jou!
@@ -58,14 +58,15 @@ export default function CrmWinkelmandje2Dagen({ recipientEmail, firstName, cart,
             ))}
           </Section>
 
+          {/* Hulplijn: direct na de hoofdboodschap, niet als onderste blok */}
+          <CrmHelp top="32px" bottom="0" />
+
           {/* Daaronder "Door jou bekeken": de deal uit het winkelmandje */}
-          <Section className="m-pad" style={{ padding: "44px 32px 0" }}>
+          <Section className="m-pad" style={{ padding: "44px 32px 40px" }}>
             <Text style={s.kop}>Door jou bekeken</Text>
             <DealRow deal={cart} cta="Ga verder met boeken" />
           </Section>
 
-          {/* Hulplijn */}
-          <CrmHelp top="36px" />
         </Container>
         <CrmFooter recipientEmail={recipientEmail} reason="omdat je een boeking bij ons startte" />
       </Body>
