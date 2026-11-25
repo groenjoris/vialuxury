@@ -2,7 +2,7 @@ import { Body, Container, Head, Heading, Html, Preview, Section, Text } from "@r
 import * as React from "react";
 import CrmHeader from "../components/CrmHeader";
 import { PrimaryButton, s } from "../components/crm";
-import { AutomationCodeBlock, AutomationDealRow, AutomationFeaturedDeal, AutomationLetter, automationCss, automationDarkCss, automationDarkMedia, cardGap, type GuestRating, GuestRatingSection, ServiceSection, AutomationFooter } from "../components/automation";
+import { AutomationCodeBlock, AutomationDealRow, AutomationFeaturedDeal, AutomationLetter, automationCss, automationDarkCss, automationDarkMedia, automationOutlookDarkCss, cardGap, type GuestRating, GuestRatingSection, ServiceSection, AutomationFooter } from "../components/automation";
 import { type AutomationDeal } from "../lib/automationDeals";
 import { desIndes, dePlesman, voco } from "../lib/automationDeals";
 import { font, newsletter } from "../components/theme";
@@ -85,6 +85,7 @@ export default function AutomationCart({ recipientEmail, preheader, firstName, h
         {darkMode && <meta name="supported-color-schemes" content="light dark" />}
         <style>{automationCss}</style>
         {darkMode === true && <style>{automationDarkMedia}</style>}
+        {darkMode === true && <style>{automationOutlookDarkCss}</style>}
         {darkMode === "forced" && <style>{automationDarkCss}</style>}
       </Head>
       <Preview>{preheader}</Preview>

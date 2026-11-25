@@ -71,6 +71,30 @@ body { margin: 0 !important; padding: 0 !important; }
 }
 `;
 
+/** Outlook.com en Outlook op het web volgen `prefers-color-scheme` niet: die draaien in hun
+ *  donkere thema zelf kleuren om en zetten dan `data-ogsc` (tekst) of `data-ogsb` (achtergrond)
+ *  op wat ze hebben aangepast. Via die haakjes zetten we onze eigen kleuren er alsnog overheen,
+ *  zodat die clients niet hun eigen omkering laten zien maar dit ontwerp. Buiten de mediaquery,
+ *  want die zien ze niet. In alle andere clients bestaan deze attributen niet, dus daar doet dit
+ *  blok niets. */
+export const automationOutlookDarkCss = `
+[data-ogsb] body, body[data-ogsb], [data-ogsb] .d-bg, .d-bg[data-ogsb] { background-color: #161616 !important; }
+[data-ogsb] .d-card, .d-card[data-ogsb] { background-color: #212121 !important; }
+[data-ogsb] .d-band, .d-band[data-ogsb] { background-color: #22201C !important; }
+[data-ogsb] .d-warm, .d-warm[data-ogsb] { background-color: #2A2119 !important; }
+[data-ogsb] .d-circle, .d-circle[data-ogsb] { background-color: #3A2E23 !important; }
+[data-ogsb] .d-badge, .d-badge[data-ogsb] { background-color: #FFFFFF !important; }
+[data-ogsc] .d-head, .d-head[data-ogsc] { color: #FFFFFF !important; }
+[data-ogsc] .d-text, .d-text[data-ogsc], [data-ogsc] .d-text strong { color: #F2F2F2 !important; }
+[data-ogsc] .d-muted, .d-muted[data-ogsc] { color: #ABABAB !important; }
+[data-ogsc] .d-badge, .d-badge[data-ogsc] { color: #141414 !important; }
+[data-ogsc] .d-old, .d-old[data-ogsc] { color: #FF8585 !important; }
+[data-ogsc] .d-box p { color: #F2F2F2 !important; }
+/* De zwarte kop- en voetbalk moeten zwart blijven: draait Outlook die om, dan valt het witte
+   logo weg. Dit zet dezelfde kleur terug. */
+[data-ogsb] td[style*="background-color:#141414"], td[style*="background-color:#141414"][data-ogsb] { background-color: #141414 !important; }
+`;
+
 /** De donkere regels als mediaquery. Staat alleen in de mails die een donkere versie hebben
  *  (nu alleen winkelmandje 1); de rest blijft licht. */
 export const automationDarkMedia = `

@@ -336,8 +336,14 @@ staat er witte tekst op wit. Donkere kleuren: #161616 achtergrond,
 #212121 kaart met rand #333333, #22201C band, #2A2119 hulpband, tekst #F2F2F2, gedempt #ABABAB,
 koppen wit. De oranje knop, de oranje links en de foto's blijven zoals ze zijn. In de kop staan
 `color-scheme` en `supported-color-schemes` op "light dark", zodat de client er zelf vanaf blijft.
-Apple Mail, iOS Mail en Outlook voor Mac volgen de mediaquery; Gmail en Outlook op Windows negeren
-hem en tonen de lichte mail of draaien zelf kleuren om, daar valt niets aan te sturen.
+Apple Mail, iOS Mail en Outlook voor Mac volgen de mediaquery. Outlook.com en Outlook op het web
+volgen hem niet maar draaien in hun donkere thema zelf kleuren om; daarbij zetten ze `data-ogsc`
+(tekst) of `data-ogsb` (achtergrond) op wat ze aanpasten. Via die haakjes zet
+`automationOutlookDarkCss` (buiten de mediaquery) onze eigen kleuren er alsnog overheen, inclusief
+een regel die de zwarte kop- en voetbalk zwart houdt, anders valt het witte logo daar weg. Outlook
+op Windows negeert mediaqueries en toont gewoon de lichte mail. Gmail kent de mediaquery niet en
+draait in zijn donkere thema zelf kleuren om, zonder haakjes om op te sturen; daar valt niets aan
+te doen.
 
 Alleen de mails met `dark: true` in de registry krijgen die mediaquery en de twee metatags; de
 andere tien blijven altijd licht. Voor de preview schrijft de export er twee bestanden bij:
