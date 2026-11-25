@@ -4,7 +4,26 @@
     "title": "Content (Multi-deal)",
     "description": "Meerdere deals rond één thema of selectie (kerstmarkten): sfeerfoto, campagnetitel, korte brief en vier dealrijen waarvan de dealtitel en de foto naar de kerstmarkt in de buurt verwijzen.",
     "subject": "Winter Wonderweken: slapen bij de mooiste kerstmarkten",
-    "preheader": "Glühwein, lichtjes en een hotel om de hoek."
+    "preheader": "Glühwein, lichtjes en een hotel om de hoek.",
+    "variantLabel": "Header 1"
+  },
+  {
+    "slug": "commercieel-content-multi-deal-header-2",
+    "title": "Content (Multi-deal)",
+    "description": "Meerdere deals rond één thema of selectie (kerstmarkten): sfeerfoto, campagnetitel, korte brief en vier dealrijen waarvan de dealtitel en de foto naar de kerstmarkt in de buurt verwijzen.",
+    "subject": "Winter Wonderweken: slapen bij de mooiste kerstmarkten",
+    "preheader": "Glühwein, lichtjes en een hotel om de hoek.",
+    "variantOf": "commercieel-content-multi-deal",
+    "variantLabel": "Header 2"
+  },
+  {
+    "slug": "commercieel-content-multi-deal-header-3",
+    "title": "Content (Multi-deal)",
+    "description": "Meerdere deals rond één thema of selectie (kerstmarkten): sfeerfoto, campagnetitel, korte brief en vier dealrijen waarvan de dealtitel en de foto naar de kerstmarkt in de buurt verwijzen.",
+    "subject": "Winter Wonderweken: slapen bij de mooiste kerstmarkten",
+    "preheader": "Glühwein, lichtjes en een hotel om de hoek.",
+    "variantOf": "commercieel-content-multi-deal",
+    "variantLabel": "Header 3"
   },
   {
     "slug": "commercieel-dedicated-hotel",
@@ -12,7 +31,25 @@
     "description": "Eén hotel: korte brief met het aanbod, de knop 'Bekijk aanbieding' en het arrangement op de verticale dealkaart.",
     "subject": "Ons beste hotelarrangement van de maand",
     "preheader": "2 nachten voor 2 personen op de Veluwe, inclusief diner.",
-    "variantLabel": "Met prijs / Zonder titel"
+    "variantLabel": "Met prijs / Zonder titel / Header 1"
+  },
+  {
+    "slug": "commercieel-dedicated-hotel-header-2",
+    "title": "Dedicated hotel",
+    "description": "Eén hotel: korte brief met het aanbod, de knop 'Bekijk aanbieding' en het arrangement op de verticale dealkaart.",
+    "subject": "Ons beste hotelarrangement van de maand",
+    "preheader": "2 nachten voor 2 personen op de Veluwe, inclusief diner.",
+    "variantOf": "commercieel-dedicated-hotel",
+    "variantLabel": "Met prijs / Zonder titel / Header 2"
+  },
+  {
+    "slug": "commercieel-dedicated-hotel-header-3",
+    "title": "Dedicated hotel",
+    "description": "Eén hotel: korte brief met het aanbod, de knop 'Bekijk aanbieding' en het arrangement op de verticale dealkaart.",
+    "subject": "Ons beste hotelarrangement van de maand",
+    "preheader": "2 nachten voor 2 personen op de Veluwe, inclusief diner.",
+    "variantOf": "commercieel-dedicated-hotel",
+    "variantLabel": "Met prijs / Zonder titel / Header 3"
   },
   {
     "slug": "commercieel-dedicated-hotel-zonder-prijs",
@@ -21,7 +58,25 @@
     "subject": "Ons beste hotelarrangement van de maand",
     "preheader": "Midden in de bossen van de Veluwe. De prijs is lager dan je denkt.",
     "variantOf": "commercieel-dedicated-hotel",
-    "variantLabel": "Zonder prijs / Zonder titel"
+    "variantLabel": "Zonder prijs / Zonder titel / Header 1"
+  },
+  {
+    "slug": "commercieel-dedicated-hotel-zonder-prijs-header-2",
+    "title": "Dedicated hotel",
+    "description": "Variant zonder prijs: de brief maakt nieuwsgierig en noemt geen prijs, de kaart heeft geen prijsrij.",
+    "subject": "Ons beste hotelarrangement van de maand",
+    "preheader": "Midden in de bossen van de Veluwe. De prijs is lager dan je denkt.",
+    "variantOf": "commercieel-dedicated-hotel",
+    "variantLabel": "Zonder prijs / Zonder titel / Header 2"
+  },
+  {
+    "slug": "commercieel-dedicated-hotel-zonder-prijs-header-3",
+    "title": "Dedicated hotel",
+    "description": "Variant zonder prijs: de brief maakt nieuwsgierig en noemt geen prijs, de kaart heeft geen prijsrij.",
+    "subject": "Ons beste hotelarrangement van de maand",
+    "preheader": "Midden in de bossen van de Veluwe. De prijs is lager dan je denkt.",
+    "variantOf": "commercieel-dedicated-hotel",
+    "variantLabel": "Zonder prijs / Zonder titel / Header 3"
   },
   {
     "slug": "commercieel-dedicated-hotel-met-titel",
@@ -30,7 +85,25 @@
     "subject": "Ons beste hotelarrangement van de maand",
     "preheader": "2 nachten voor 2 personen op de Veluwe, inclusief diner.",
     "variantOf": "commercieel-dedicated-hotel",
-    "variantLabel": "Met prijs / Met titel"
+    "variantLabel": "Met prijs / Met titel / Header 1"
+  },
+  {
+    "slug": "commercieel-dedicated-hotel-met-titel-header-2",
+    "title": "Dedicated hotel",
+    "description": "Variant met titel: 'Deal van de maand november' groot boven het bericht.",
+    "subject": "Ons beste hotelarrangement van de maand",
+    "preheader": "2 nachten voor 2 personen op de Veluwe, inclusief diner.",
+    "variantOf": "commercieel-dedicated-hotel",
+    "variantLabel": "Met prijs / Met titel / Header 2"
+  },
+  {
+    "slug": "commercieel-dedicated-hotel-met-titel-header-3",
+    "title": "Dedicated hotel",
+    "description": "Variant met titel: 'Deal van de maand november' groot boven het bericht.",
+    "subject": "Ons beste hotelarrangement van de maand",
+    "preheader": "2 nachten voor 2 personen op de Veluwe, inclusief diner.",
+    "variantOf": "commercieel-dedicated-hotel",
+    "variantLabel": "Met prijs / Met titel / Header 3"
   },
   {
     "slug": "commercieel-dedicated-hotel-zonder-prijs-met-titel",
@@ -39,27 +112,102 @@
     "subject": "Ons beste hotelarrangement van de maand",
     "preheader": "Midden in de bossen van de Veluwe. De prijs is lager dan je denkt.",
     "variantOf": "commercieel-dedicated-hotel",
-    "variantLabel": "Zonder prijs / Met titel"
+    "variantLabel": "Zonder prijs / Met titel / Header 1"
+  },
+  {
+    "slug": "commercieel-dedicated-hotel-zonder-prijs-met-titel-header-2",
+    "title": "Dedicated hotel",
+    "description": "Variant met titel en zonder prijs.",
+    "subject": "Ons beste hotelarrangement van de maand",
+    "preheader": "Midden in de bossen van de Veluwe. De prijs is lager dan je denkt.",
+    "variantOf": "commercieel-dedicated-hotel",
+    "variantLabel": "Zonder prijs / Met titel / Header 2"
+  },
+  {
+    "slug": "commercieel-dedicated-hotel-zonder-prijs-met-titel-header-3",
+    "title": "Dedicated hotel",
+    "description": "Variant met titel en zonder prijs.",
+    "subject": "Ons beste hotelarrangement van de maand",
+    "preheader": "Midden in de bossen van de Veluwe. De prijs is lager dan je denkt.",
+    "variantOf": "commercieel-dedicated-hotel",
+    "variantLabel": "Zonder prijs / Met titel / Header 3"
   },
   {
     "slug": "commercieel-actie",
     "title": "Actie (Goodiebox)",
     "description": "Een cadeau of extra bij een boeking: actiefoto, titel met de deadline, korte brief, de actiecode als coupon, vier geselecteerde deals en een knop naar alle aanbiedingen.",
     "subject": "Sanne, je Goodiebox t.w.v. €150 staat klaar",
-    "preheader": "Boek voor 7 december en hij is van jou."
+    "preheader": "Boek voor 7 december en hij is van jou.",
+    "variantLabel": "Header 1"
+  },
+  {
+    "slug": "commercieel-actie-header-2",
+    "title": "Actie (Goodiebox)",
+    "description": "Een cadeau of extra bij een boeking: actiefoto, titel met de deadline, korte brief, de actiecode als coupon, vier geselecteerde deals en een knop naar alle aanbiedingen.",
+    "subject": "Sanne, je Goodiebox t.w.v. €150 staat klaar",
+    "preheader": "Boek voor 7 december en hij is van jou.",
+    "variantOf": "commercieel-actie",
+    "variantLabel": "Header 2"
+  },
+  {
+    "slug": "commercieel-actie-header-3",
+    "title": "Actie (Goodiebox)",
+    "description": "Een cadeau of extra bij een boeking: actiefoto, titel met de deadline, korte brief, de actiecode als coupon, vier geselecteerde deals en een knop naar alle aanbiedingen.",
+    "subject": "Sanne, je Goodiebox t.w.v. €150 staat klaar",
+    "preheader": "Boek voor 7 december en hij is van jou.",
+    "variantOf": "commercieel-actie",
+    "variantLabel": "Header 3"
   },
   {
     "slug": "commercieel-tekst",
     "title": "Tekst (Zaterdagkorting)",
     "description": "Mail zonder deals: actiegraphic (feestelijke coupon van €15), korte brief, de persoonlijke code als coupon, één knop en drie stappen om de code te verzilveren.",
     "subject": "Sanne, alleen vandaag: €15 korting voor jou",
-    "preheader": "Je persoonlijke code vervalt om middernacht."
+    "preheader": "Je persoonlijke code vervalt om middernacht.",
+    "variantLabel": "Header 1"
+  },
+  {
+    "slug": "commercieel-tekst-header-2",
+    "title": "Tekst (Zaterdagkorting)",
+    "description": "Mail zonder deals: actiegraphic (feestelijke coupon van €15), korte brief, de persoonlijke code als coupon, één knop en drie stappen om de code te verzilveren.",
+    "subject": "Sanne, alleen vandaag: €15 korting voor jou",
+    "preheader": "Je persoonlijke code vervalt om middernacht.",
+    "variantOf": "commercieel-tekst",
+    "variantLabel": "Header 2"
+  },
+  {
+    "slug": "commercieel-tekst-header-3",
+    "title": "Tekst (Zaterdagkorting)",
+    "description": "Mail zonder deals: actiegraphic (feestelijke coupon van €15), korte brief, de persoonlijke code als coupon, één knop en drie stappen om de code te verzilveren.",
+    "subject": "Sanne, alleen vandaag: €15 korting voor jou",
+    "preheader": "Je persoonlijke code vervalt om middernacht.",
+    "variantOf": "commercieel-tekst",
+    "variantLabel": "Header 3"
   },
   {
     "slug": "commercieel-cadeaukaart",
     "title": "Cadeaukaart",
     "description": "Cadeaukaarten verkopen: sfeerbeeld in twee helften, titel, brief met de uitleg, de staffel als tabel (waarde cadeaukaart en jouw persoonlijke korting), slotzin en knop.",
     "subject": "Geef een cadeaukaart, krijg zelf tot €120 korting",
-    "preheader": "Het cadeau waar ze nog jaren over vertellen."
+    "preheader": "Het cadeau waar ze nog jaren over vertellen.",
+    "variantLabel": "Header 1"
+  },
+  {
+    "slug": "commercieel-cadeaukaart-header-2",
+    "title": "Cadeaukaart",
+    "description": "Cadeaukaarten verkopen: sfeerbeeld in twee helften, titel, brief met de uitleg, de staffel als tabel (waarde cadeaukaart en jouw persoonlijke korting), slotzin en knop.",
+    "subject": "Geef een cadeaukaart, krijg zelf tot €120 korting",
+    "preheader": "Het cadeau waar ze nog jaren over vertellen.",
+    "variantOf": "commercieel-cadeaukaart",
+    "variantLabel": "Header 2"
+  },
+  {
+    "slug": "commercieel-cadeaukaart-header-3",
+    "title": "Cadeaukaart",
+    "description": "Cadeaukaarten verkopen: sfeerbeeld in twee helften, titel, brief met de uitleg, de staffel als tabel (waarde cadeaukaart en jouw persoonlijke korting), slotzin en knop.",
+    "subject": "Geef een cadeaukaart, krijg zelf tot €120 korting",
+    "preheader": "Het cadeau waar ze nog jaren over vertellen.",
+    "variantOf": "commercieel-cadeaukaart",
+    "variantLabel": "Header 3"
   }
 ]

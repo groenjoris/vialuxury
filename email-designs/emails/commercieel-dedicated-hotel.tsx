@@ -1,7 +1,7 @@
 import { Body, Container, Head, Heading, Html, Preview, Section } from "@react-email/components";
 import * as React from "react";
 import CrmFooter from "../components/CrmFooter";
-import CrmHeader from "../components/CrmHeader";
+import CrmHeader, { type HeaderVariant } from "../components/CrmHeader";
 import { BeigeBand, QuickSearch, crmCss, FeaturedDeal, Letter, PrimaryButton, type RowDeal, s, site } from "../components/crm";
 import { font, newsletter } from "../components/theme";
 
@@ -18,6 +18,8 @@ import { font, newsletter } from "../components/theme";
 // Onderwerp: "Ons beste hotelarrangement van de maand"
 
 type Props = {
+  /** Headervariant (schakelaar in de preview, zie CrmHeader); in variant 3 staat de titel in de header. */
+  header?: HeaderVariant;
   recipientEmail: string;
   /** Leeg → "Beste gast,". */
   firstName?: string;
@@ -35,7 +37,7 @@ type Props = {
   deal: RowDeal;
 };
 
-export default function CommercieelDedicatedHotel({ recipientEmail, firstName, lead, offer, pitch, deal, title, showPrice = true, preheader = "2 nachten voor 2 personen op de Veluwe, inclusief diner." }: Props) {
+export default function CommercieelDedicatedHotel({ header, recipientEmail, firstName, lead, offer, pitch, deal, title, showPrice = true, preheader = "2 nachten voor 2 personen op de Veluwe, inclusief diner." }: Props) {
   const c = newsletter.light;
   return (
     <Html lang="nl">
@@ -45,11 +47,11 @@ export default function CommercieelDedicatedHotel({ recipientEmail, firstName, l
       </Head>
       <Preview>{preheader}</Preview>
       <Body style={{ backgroundColor: c.bg, margin: 0, padding: 0, fontFamily: font.body }}>
-        <CrmHeader />
+        <CrmHeader variant={header} title={header === 3 ? title : undefined} />
         <Container style={{ width: "100%", maxWidth: "626px" }}>
           {/* Brief: aanhef, het aanbod (vet) met één zin over het hotel */}
           <Section className="m-pad" style={{ padding: "32px 32px 0" }}>
-            {title && <Heading as="h1" className="m-h1" style={{ ...s.h1, marginBottom: "16px" }}>{title}</Heading>}
+            {title && header !== 3 && <Heading as="h1" className="m-h1" style={{ ...s.h1, marginBottom: "16px" }}>{title}</Heading>}
             <Letter firstName={firstName}>
               {lead} <strong>{offer}</strong> {pitch}
             </Letter>

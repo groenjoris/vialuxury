@@ -1,7 +1,7 @@
 import { Body, Container, Head, Heading, Html, Img, Preview, Section } from "@react-email/components";
 import * as React from "react";
 import CrmFooter from "../components/CrmFooter";
-import CrmHeader from "../components/CrmHeader";
+import CrmHeader, { type HeaderVariant } from "../components/CrmHeader";
 import { BeigeBand, QuickSearch, cardGap, crmCss, DealRow, Letter, type RowDeal, s, site } from "../components/crm";
 import { baseUrl, font, newsletter } from "../components/theme";
 
@@ -15,6 +15,8 @@ import { baseUrl, font, newsletter } from "../components/theme";
 // Onderwerp: "Winter Wonderweken: slapen bij de mooiste kerstmarkten"
 
 type Props = {
+  /** Headervariant (schakelaar in de preview, zie CrmHeader); in variant 3 staat de titel in de header. */
+  header?: HeaderVariant;
   recipientEmail: string;
   /** Leeg → "Beste gast,". */
   firstName?: string;
@@ -30,7 +32,7 @@ type Props = {
   deals: RowDeal[];
 };
 
-export default function CommercieelContentMultiDeal({ recipientEmail, firstName, hero, heroAlt, title, intro, listTitle, deals }: Props) {
+export default function CommercieelContentMultiDeal({ header, recipientEmail, firstName, hero, heroAlt, title, intro, listTitle, deals }: Props) {
   const c = newsletter.light;
   return (
     <Html lang="nl">
@@ -40,15 +42,15 @@ export default function CommercieelContentMultiDeal({ recipientEmail, firstName,
       </Head>
       <Preview>Glühwein, lichtjes en een hotel om de hoek.</Preview>
       <Body style={{ backgroundColor: c.bg, margin: 0, padding: 0, fontFamily: font.body }}>
-        <CrmHeader />
+        <CrmHeader variant={header} title={header === 3 ? title : undefined} />
+        {/* Sfeerfoto van het thema direct onder de header, over de hele breedte van de mail (buiten de <Container>) */}
+        <Img src={hero} alt={heroAlt} width="700" height="394" style={{ display: "block", width: "100%", height: "394px", objectFit: "cover" }} />
         <Container style={{ width: "100%", maxWidth: "626px" }}>
-          {/* Sfeerfoto van het thema, tot aan de rand */}
-          <Img src={hero} alt={heroAlt} width="626" height="352" style={{ display: "block", width: "100%", height: "352px", objectFit: "cover" }} />
 
           {/* Campagnetitel en de brief: aanhef, één alinea */}
           <Section className="m-pad" style={{ padding: "32px 32px 0" }}>
-            <Heading as="h1" className="m-h1" style={s.h1}>{title}</Heading>
-            <Section style={{ marginTop: "16px" }}>
+            {header !== 3 && <Heading as="h1" className="m-h1" style={s.h1}>{title}</Heading>}
+            <Section style={{ marginTop: header === 3 ? 0 : "16px" }}>
               <Letter firstName={firstName}>{intro}</Letter>
             </Section>
           </Section>

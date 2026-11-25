@@ -218,12 +218,18 @@ maximaal (`components/crm.tsx`, zelfde regels). Sinds 2026-11-25 hebben ze alle 
 rechterkolom); het losse blok "Hulp nodig?" in de mail is daarmee vervallen. In de mails met een lijst (Content, Actie)
 heeft de helft van de dealrijen twee foto's onder elkaar met 6 px wit ertussen in plaats van één langwerpige foto
 (`RowDeal.image2`; de kaart houdt zijn eigen hoogte, anders dan `DealRowFixed`; in Content de kerstmarkt boven en het
-hotel onder). Ze eindigen met het blok "Snel zoeken" op een beige
+hotel onder). Elke commerciële mail bestaat sinds 2026-11-25 met drie headers (`CrmHeader`-prop `variant`, in de mail
+`header`; schakelaar "Header 1 | 2 | 3" in de previewkop, los te combineren met de eigen varianten; registry
+`withHeaders`, slug `<slug>[-header-2|-header-3]`): 1 de gewone header met het Trustpilot-logo 1,5 keer zo groot
+(159 × 75, balk 99 px hoog); 2 een lage balk van ongeveer 60% (54 px) met een kleiner logo (168 px) en Trustpilot zo
+groot als past (42 px hoog); 3 zo hoog als 1, met het vierkante logo (`logo-vialuxury-square.png`) helemaal links tegen
+de rand van de kolom en de hoofdtitel van de mail (20 px serif, wit) in de balk tussen logo en Trustpilot; de titel
+staat dan niet meer in de mail zelf. De CRM- en vakantiemails houden de oude header (zonder `variant`). Ze eindigen met het blok "Snel zoeken" op een beige
 band (`QuickSearch`: Best geboekt, Stedentrips, Aan zee, Romantisch, Wellness, Met diner; witte snelfilterknoppen naar
 de R1-zoekpagina); bronnen `email-designs/emails/commercieel-*.tsx`, foto's in
 `public/images/mail/commercieel/`. De voorbeelden worden per stuk gebriefd:
 1. `commercieel-content-multi-deal` ("Content (Multi-deal)"): meerdere deals rond een thema (kerstmarkten). Sfeerfoto
-   over de hele breedte, campagnetitel "Winter Wonderweken", brief (`Letter`), titel "Hotels bij de mooiste
+   direct onder de header over de hele breedte van de mail (buiten de `<Container>`), campagnetitel "Winter Wonderweken", brief (`Letter`), titel "Hotels bij de mooiste
    kerstmarkten" boven vier dealrijen (`DealRow`). Het arrangement blijft hetzelfde; alleen dealtitel en foto
    verwijzen naar de kerstmarkt in de buurt. Alleen voco The Hague staat in `deals.json`; de andere drie hebben
    voorbeeldprijzen en linken naar de R1-zoekpagina.
