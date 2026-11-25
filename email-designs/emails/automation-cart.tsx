@@ -2,10 +2,10 @@ import { Body, Container, Head, Heading, Html, Preview, Section, Text } from "@r
 import * as React from "react";
 import CrmHeader from "../components/CrmHeader";
 import { PrimaryButton, s } from "../components/crm";
-import { AutomationCodeBlock, AutomationDealRow, AutomationFeaturedDeal, AutomationLetter, automationCss, automationDarkCss, cardGap, type GuestRating, GuestRatingSection, ServiceSection, AutomationFooter } from "../components/automation";
+import { AutomationCodeBlock, AutomationDealRow, AutomationFeaturedDeal, AutomationLetter, automationCss, automationDarkCss, automationDarkMedia, cardGap, type GuestRating, GuestRatingSection, ServiceSection, AutomationFooter } from "../components/automation";
 import { type AutomationDeal } from "../lib/automationDeals";
 import { desIndes, dePlesman, voco } from "../lib/automationDeals";
-import { type EmailMode, font, newsletter } from "../components/theme";
+import { font, newsletter } from "../components/theme";
 
 // Automationflow fl011 "abandoned cart" — drie mails uit één component.
 // Bron: "Automations in kaart.xlsx", tabblad Automation per variant, kolommen P, Q en R.
@@ -25,9 +25,10 @@ import { type EmailMode, font, newsletter } from "../components/theme";
 // Hier ingevuld met voorbeelddata; in Klaviyo worden het merge tags.
 
 type Props = {
-  /** "dark" rendert de donkere versie voor de preview; de verstuurde mail is de lichte,
-   *  die zichzelf omzet met de mediaquery. */
-  mode?: EmailMode;
+  /** Deze mail heeft een donkere versie: de mail blijft licht en zet zichzelf om zodra de client
+   *  donker staat (`true`). Zonder vlag blijft de mail altijd licht. De preview rendert de twee
+   *  standen apart: "forced" zet de donkere regels vast aan, `false` laat ze helemaal weg. */
+  darkMode?: boolean | "forced";
   recipientEmail: string;
   preheader: string;
   /** Leeg → "Beste gast,". */
@@ -62,7 +63,7 @@ type Props = {
   code?: { code: string; value: string; deadline: string; advice: string };
 };
 
-export default function AutomationCart({ recipientEmail, preheader, firstName, heading, intro, headingAt = "cart", opening = "direct", cart, cartTitle, guestRating, alternatives, alternativesTitle, code, codeFirst, service, mode = "light" }: Props) {
+export default function AutomationCart({ recipientEmail, preheader, firstName, heading, intro, headingAt = "cart", opening = "direct", cart, cartTitle, guestRating, alternatives, alternativesTitle, code, codeFirst, service, darkMode }: Props) {
   const c = newsletter.light;
 
   // De codesectie staat normaal onderaan, in mail 4 direct onder de introtekst.
@@ -78,14 +79,13 @@ export default function AutomationCart({ recipientEmail, preheader, firstName, h
     <Html lang="nl">
       <Head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        {/* Zegt de client dat de mail zelf een donkere stand heeft, zodat hij niet zijn eigen
-            kleuren eroverheen gooit. */}
-        <meta name="color-scheme" content="light dark" />
-        <meta name="supported-color-schemes" content="light dark" />
+        {/* Heeft de mail een donkere versie, dan zegt dit de client dat de mail het zelf regelt
+            en hij er niet zijn eigen kleuren overheen moet gooien. */}
+        {darkMode && <meta name="color-scheme" content="light dark" />}
+        {darkMode && <meta name="supported-color-schemes" content="light dark" />}
         <style>{automationCss}</style>
-        {/* Alleen voor de preview: dezelfde regels zonder de mediaquery, zodat je de donkere
-            stand kunt bekijken zonder je systeem om te zetten. */}
-        {mode === "dark" && <style>{automationDarkCss}</style>}
+        {darkMode === true && <style>{automationDarkMedia}</style>}
+        {darkMode === "forced" && <style>{automationDarkCss}</style>}
       </Head>
       <Preview>{preheader}</Preview>
       <Body className="d-bg" style={{ backgroundColor: c.bg, margin: 0, padding: 0, fontFamily: font.body }}>
@@ -200,6 +200,8 @@ export const cart1Props = {
   cart,
   cartTitle: "Nog steeds interesse in:",
   service: true,
+  // Als enige mail ook een donkere versie (verzoek 25-11-2026).
+  darkMode: true,
 } satisfies Props;
 
 /** Zelfde mail met een onbekende voornaam: de kop begint dan zonder naam. */

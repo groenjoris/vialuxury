@@ -66,6 +66,11 @@ body { margin: 0 !important; padding: 0 !important; }
   .m-price-big { font-size: 16px !important; }
   .m-cta { font-size: 12px !important; padding: 9px 7px !important; }
 }
+`;
+
+/** De donkere regels als mediaquery. Staat alleen in de mails die een donkere versie hebben
+ *  (nu alleen winkelmandje 1); de rest blijft licht. */
+export const automationDarkMedia = `
 @media (prefers-color-scheme: dark) {
 ${automationDarkCss}
 }

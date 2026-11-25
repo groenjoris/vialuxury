@@ -323,7 +323,7 @@ Joris (`CrmFooter` met `help={1}` en `quote="in"` op `main`), nagebouwd in een e
 `AutomationFooter` in `components/automation.tsx`; de CRM-mails houden `CrmFooter` zoals hij was. Beige banden zijn er twee: de themategels in `tf031` (een keuzeblok staat altijd op
 beige) en het merkblok in `tf026`.
 
-Donkere modus (sinds 25-11-2026, alleen de automationmails): één HTML die in beide standen werkt.
+Donkere modus (sinds 25-11-2026, alleen `tf021`): één HTML die in beide standen werkt.
 De inline stijlen blijven licht; in `automationCss` staat een blok
 `@media (prefers-color-scheme: dark)` met de regels uit `automationDarkCss`, die met `!important`
 de inline kleuren overschrijven. De elementen dragen daarvoor klassen: `d-bg` (achtergrond),
@@ -335,10 +335,13 @@ doorgestreepte prijs), `d-box` (de regels in het zoekblok, die uit `IconLine` ko
 koppen wit. De oranje knop, de oranje links en de foto's blijven zoals ze zijn. In de kop staan
 `color-scheme` en `supported-color-schemes` op "light dark", zodat de client er zelf vanaf blijft.
 Apple Mail, iOS Mail en Outlook voor Mac volgen de mediaquery; Gmail en Outlook op Windows negeren
-hem en tonen de lichte mail of draaien zelf kleuren om, daar valt niets aan te sturen. De export
-schrijft daarnaast `<slug>.dark.html`: dezelfde regels zónder mediaquery, puur om in de preview te
-kunnen kijken (de knop "Light | Dark" in de previewkop). Wat naar Klaviyo gaat is altijd de lichte
-`<slug>.html`.
+hem en tonen de lichte mail of draaien zelf kleuren om, daar valt niets aan te sturen.
+
+Alleen de mails met `dark: true` in de registry krijgen die mediaquery en de twee metatags; de
+andere tien blijven altijd licht. Voor de preview schrijft de export er twee bestanden bij:
+`<slug>.light.html` (zonder de donkere regels) en `<slug>.dark.html` (met die regels vast aan),
+zodat de knop "Light | Dark" in de previewkop beide standen laat zien, los van hoe het scherm van
+de kijker staat. Wat naar Klaviyo gaat is altijd `<slug>.html`.
 
 Dealrij: de fotokolom toont twee foto's van hetzelfde arrangement onder elkaar (hoofdbeeld boven,
 `image` en `secondImage` uit deals.json) met 3 px wit ertussen, samen de volle kaarthoogte. Op

@@ -39,6 +39,9 @@ export type EmailEntry = {
   title: string;
   description: string;
   section: EmailSection;
+  /** Deze mail heeft een donkere versie (de mail zet zichzelf om in een donkere client), dus de
+   *  preview toont de knop Light | Dark. */
+  dark?: boolean;
   /** Onderwerpregel en preheader zoals de ontvanger ze in de inbox ziet (de preheader staat ook
    *  als <Preview> in de mail zelf; hier dezelfde tekst met de voorbeelddata ingevuld). */
   subject?: string;
@@ -519,6 +522,7 @@ export const emails: EmailEntry[] = [
   // Flow fl011: achtergelaten winkelmandje.
   {
     slug: "v01_tf021_fl011_nl-NL_1_abandoned_cart",
+    dark: true,
     title: "Winkelmandje 1 (1 uur na verlaten)",
     description: "Kop, intro, het winkelmandje met datums, nachten, personen en prijs, en de knop Rond je boeking af. Onderaan de serviceregel. Geen alternatieven.",
     section: "automation",
@@ -530,6 +534,7 @@ export const emails: EmailEntry[] = [
   },
   {
     slug: "v01_tf021_fl011_nl-NL_1_abandoned_cart-naam-onbekend",
+    dark: true,
     variantOf: "v01_tf021_fl011_nl-NL_1_abandoned_cart",
     title: "Winkelmandje 1 (1 uur na verlaten)",
     description: "Variant voor als de voornaam niet bekend is: de kop begint zonder naam.",

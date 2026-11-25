@@ -30,9 +30,12 @@ const groups = [
     }),
 }))
 
-/** Licht of donker. De verstuurde mail is altijd de lichte: die zet zichzelf om met de
- *  mediaquery `prefers-color-scheme`. De donkere HTML is alleen om hier te bekijken. */
+/** Licht of donker. De mail die verstuurd wordt is één bestand dat zichzelf omzet zodra de client
+ *  donker staat. Voor de preview staan de twee standen als los bestand klaar (.light.html en
+ *  .dark.html), zodat je ze allebei ziet los van hoe je eigen scherm staat. Alleen mails met een
+ *  donkere versie hebben de knop. */
 const dark = ref(false)
+const hasDark = computed(() => Boolean((entry.value as { dark?: boolean } | undefined)?.dark))
 
 const baseSlug = computed(() => (entry.value as { variantOf?: string } | undefined)?.variantOf ?? slug.value)
 const variants = computed(() => {
@@ -80,7 +83,7 @@ useHead({ title: `${entry.value?.title ?? 'E-mail'} — ViaLuxury automations` }
             :aria-current="v.slug === slug ? 'true' : undefined"
           >{{ v.label }}</NuxtLink>
         </div>
-        <div class="aut__variants" role="group" aria-label="Weergave">
+        <div v-if="hasDark" class="aut__variants" role="group" aria-label="Weergave">
           <button type="button" class="aut__variant" :class="{ 'aut__variant--on': !dark }" @click="dark = false">Light</button>
           <button type="button" class="aut__variant" :class="{ 'aut__variant--on': dark }" @click="dark = true">Dark</button>
         </div>
@@ -121,7 +124,7 @@ useHead({ title: `${entry.value?.title ?? 'E-mail'} — ViaLuxury automations` }
               <p class="aut__preheader">{{ entry?.preheader }}</p>
             </div>
           </div>
-          <iframe :key="`${slug}-${dark}`" class="aut__frame" :src="`/emails/${slug}${dark ? '.dark' : ''}.html`" :title="entry?.title" />
+          <iframe :key="`${slug}-${dark}`" class="aut__frame" :src="hasDark ? `/emails/${slug}${dark ? '.dark' : '.light'}.html` : `/emails/${slug}.html`" :title="entry?.title" />
         </div>
       </div>
     </div>
