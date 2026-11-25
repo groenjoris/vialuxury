@@ -2,7 +2,7 @@ import { Body, Container, Head, Html, Img, Preview, Section, Text } from "@react
 import * as React from "react";
 import CrmFooter from "../components/CrmFooter";
 import CrmHeader from "../components/CrmHeader";
-import { BeigeBand, CodeBlock, crmCss, CrmHelp, Letter, PrimaryButton, QuickSearch, s, site } from "../components/crm";
+import { BeigeBand, CodeBlock, crmCss, Letter, PrimaryButton, QuickSearch, s, site } from "../components/crm";
 import { baseUrl, font, newsletter } from "../components/theme";
 
 // Commerciële mail 4: Tekst. Een mail zonder deals die het van de tekst moet hebben, hier de
@@ -67,8 +67,6 @@ export default function CommercieelTekst({ recipientEmail, firstName, hero, hero
             </Section>
           </Section>
 
-          {/* Hulplijn: direct na de hoofdboodschap, niet als onderste blok */}
-          <CrmHelp top="32px" bottom="0" />
         </Container>
 
         {/* Snel zoeken op een beige band over de hele breedte */}
@@ -76,7 +74,7 @@ export default function CommercieelTekst({ recipientEmail, firstName, hero, hero
           <QuickSearch />
         </BeigeBand>
 
-        <CrmFooter recipientEmail={recipientEmail} reason="omdat je je hebt aangemeld voor onze nieuwsbrief" />
+        <CrmFooter recipientEmail={recipientEmail} reason="omdat je je hebt aangemeld voor onze nieuwsbrief" help={2} quote />
       </Body>
     </Html>
   );

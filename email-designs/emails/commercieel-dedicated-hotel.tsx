@@ -2,7 +2,7 @@ import { Body, Container, Head, Heading, Html, Preview, Section } from "@react-e
 import * as React from "react";
 import CrmFooter from "../components/CrmFooter";
 import CrmHeader from "../components/CrmHeader";
-import { BeigeBand, QuickSearch, crmCss, CrmHelp, FeaturedDeal, Letter, PrimaryButton, type RowDeal, s, site } from "../components/crm";
+import { BeigeBand, QuickSearch, crmCss, FeaturedDeal, Letter, PrimaryButton, type RowDeal, s, site } from "../components/crm";
 import { font, newsletter } from "../components/theme";
 
 // Commerciële mail 2: Dedicated hotel. De hele mail gaat over één hotel. Hij begint als brief
@@ -62,11 +62,9 @@ export default function CommercieelDedicatedHotel({ recipientEmail, firstName, l
 
           {/* Het arrangement op de verticale kaart */}
           <Section className="m-pad" style={{ padding: "20px 32px 0" }}>
-            <FeaturedDeal deal={deal} priceRow={showPrice} cta="Bekijk aanbieding" />
+            <FeaturedDeal allIncludes deal={deal} priceRow={showPrice} cta="Bekijk aanbieding" />
           </Section>
 
-          {/* Hulplijn: direct na de hoofdboodschap, niet als onderste blok */}
-          <CrmHelp top="32px" bottom="0" />
         </Container>
 
         {/* Snel zoeken op een beige band over de hele breedte */}
@@ -74,7 +72,7 @@ export default function CommercieelDedicatedHotel({ recipientEmail, firstName, l
           <QuickSearch />
         </BeigeBand>
 
-        <CrmFooter recipientEmail={recipientEmail} reason="omdat je je hebt aangemeld voor onze nieuwsbrief" />
+        <CrmFooter recipientEmail={recipientEmail} reason="omdat je je hebt aangemeld voor onze nieuwsbrief" help={2} quote />
       </Body>
     </Html>
   );
@@ -95,7 +93,7 @@ CommercieelDedicatedHotel.PreviewProps = {
     packageTitle: "Een oase van rust en ontspanning midden in de Veluwse natuur",
     image: "https://asset.vialuxury.com/assets/1503e7ca-fe15-40c8-82dd-4a705dea1254?key=card",
     url: `${site}/first-release/deal/veluwe-hotel-de-beyaerd-een-oase-van-rust-en-ontspanning-midden-in-de-veluwse-natuur-incl-diner`,
-    includes: ["Dagelijks ontbijt", "3-Gangendiner", "Kamerupgrade", "Buitenzwembad"],
+    includes: ["2 x Overnachting", "Kamerupgrade naar Relax Room (o.b.v.b.)", "Dagelijks ontbijt", "3-Gangendiner (aankomstdag)", "Gebruik buitenzwembad (seizoensgebonden)", "Early check-in vanaf 12:00 uur (o.b.v.b.)", "Late check-out tot 14:00 (o.b.v.b.)"],
     discount: "-29%",
     price: "€319",
     original: "€449",

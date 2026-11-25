@@ -2,7 +2,7 @@ import { Body, Container, Head, Heading, Html, Img, Preview, Section, Text } fro
 import * as React from "react";
 import CrmFooter from "../components/CrmFooter";
 import CrmHeader from "../components/CrmHeader";
-import { BeigeBand, QuickSearch, cardGap, CodeBlock, crmCss, CrmHelp, DealRow, Letter, type RowDeal, s, SecondaryButton, site } from "../components/crm";
+import { BeigeBand, QuickSearch, cardGap, CodeBlock, crmCss, DealRow, Letter, type RowDeal, s, SecondaryButton, site } from "../components/crm";
 import { baseUrl, font, newsletter } from "../components/theme";
 import { lauswolt, steenenburg, vanOys, villaRuimzicht } from "../lib/crmDeals";
 
@@ -67,8 +67,6 @@ export default function CommercieelActie({ recipientEmail, firstName, hero, hero
             </Section>
           </Section>
 
-          {/* Hulplijn: direct na de hoofdboodschap, niet als onderste blok */}
-          <CrmHelp top="32px" bottom="0" />
 
           {/* De lijst: titel en subtitel direct erboven, vier dealrijen */}
           <Section className="m-pad" style={{ padding: "40px 32px 0" }}>
@@ -91,7 +89,7 @@ export default function CommercieelActie({ recipientEmail, firstName, hero, hero
           <QuickSearch />
         </BeigeBand>
 
-        <CrmFooter recipientEmail={recipientEmail} reason="omdat je je hebt aangemeld voor onze nieuwsbrief" />
+        <CrmFooter recipientEmail={recipientEmail} reason="omdat je je hebt aangemeld voor onze nieuwsbrief" help={2} quote />
       </Body>
     </Html>
   );
@@ -113,6 +111,12 @@ CommercieelActie.PreviewProps = {
   deadline: "6 december 2026 23:59 uur",
   listTitle: "Voor jou geselecteerde deals",
   listSubtitle: "Boek één van deze parels en ontvang onze Goodiebox ter waarde van €150.",
-  deals: [lauswolt, vanOys, steenenburg, villaRuimzicht],
+  // De helft van de dealrijen heeft twee foto's onder elkaar (tweede foto van het arrangement uit deals.json)
+  deals: [
+    lauswolt,
+    { ...vanOys, image2: "https://asset.vialuxury.com/assets/04699185-f5de-473c-8e48-baf4fbb9e703?key=card" },
+    { ...steenenburg, image2: "https://asset.vialuxury.com/assets/da12201c-0b8f-47d6-8298-29931cc91d37?key=card" },
+    villaRuimzicht,
+  ],
   allDealsUrl: `${site}/first-release/search`,
 } satisfies Props;

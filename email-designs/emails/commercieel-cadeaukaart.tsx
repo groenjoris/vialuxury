@@ -2,7 +2,7 @@ import { Body, Column, Container, Head, Heading, Html, Img, Link, Preview, Row, 
 import * as React from "react";
 import CrmFooter from "../components/CrmFooter";
 import CrmHeader from "../components/CrmHeader";
-import { crmCss, CrmHelp, Letter, PrimaryButton, s } from "../components/crm";
+import { crmCss, Letter, PrimaryButton, s } from "../components/crm";
 import { baseUrl, font, newsletter } from "../components/theme";
 
 // Commerciële mail 5: Cadeaukaart. Puur om cadeaukaarten te verkopen: wie er één bestelt, krijgt
@@ -55,7 +55,7 @@ export default function CommercieelCadeaukaart({ recipientEmail, firstName, hero
           </Section>
 
           {/* De staffel: twee kolommen, wit met grijze rand */}
-          <Section className="m-pad" style={{ padding: "28px 32px 0" }}>
+          <Section className="m-pad" style={{ padding: "28px 32px 40px" }}>
             <Section style={{ border: line, borderRadius: "8px", overflow: "hidden" }}>
               <Row>
                 <Column style={{ ...cell, width: "50%" }}><Text style={{ ...s.name, margin: 0 }}>Waarde cadeaukaart</Text></Column>
@@ -78,10 +78,8 @@ export default function CommercieelCadeaukaart({ recipientEmail, firstName, hero
             </Section>
           </Section>
 
-          {/* Hulplijn */}
-          <CrmHelp top="36px" />
         </Container>
-        <CrmFooter recipientEmail={recipientEmail} reason="omdat je je hebt aangemeld voor onze nieuwsbrief" />
+        <CrmFooter recipientEmail={recipientEmail} reason="omdat je je hebt aangemeld voor onze nieuwsbrief" help={2} quote />
       </Body>
     </Html>
   );

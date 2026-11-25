@@ -149,6 +149,8 @@ export type RowDeal = {
   /** Gewone bodyregels onder de dealtitel (bekeken deal: aankomst, nachten en personen, besparing). */
   lines?: string[];
   image: string;
+  /** Tweede foto (dealrij): twee foto's onder elkaar met 6 px wit ertussen in plaats van één langwerpige foto. */
+  image2?: string;
   url: string;
   /** Uitgebreide kaart (zoals de zoekkaart op de website); een deal met `price` krijgt die: */
   /** Inclusies met een groen vinkje, maximaal vier. */
@@ -194,7 +196,7 @@ const checkIcon = `${baseUrl}/images/mail/crm/check-groen.png`;
 const priceRowBox = { fontSize: "16px", fontWeight: 700, lineHeight: "20px", borderRadius: "6px", color: "#FFFFFF" };
 
 /** Tekstdeel van de uitgebreide kaart, t/m de inclusies. */
-function RichDealText({ d }: { d: RowDeal }) {
+function RichDealText({ d, allIncludes }: { d: RowDeal; /** Alle inclusies in plaats van de eerste vier. */ allIncludes?: boolean }) {
   return (
     <>
       {d.hotelName && (
@@ -209,7 +211,7 @@ function RichDealText({ d }: { d: RowDeal }) {
       {d.includes && d.includes.length > 0 && (
         <>
           <Text style={{ fontFamily: font.heading, fontWeight: 600, fontSize: "16px", lineHeight: "1.4", color: c.cta, margin: "12px 0 2px" }}>Arrangement</Text>
-          {d.includes.slice(0, 4).map((inc) => (
+          {(allIncludes ? d.includes : d.includes.slice(0, 4)).map((inc) => (
             <Text key={inc} style={{ ...s.muted, margin: "4px 0 0" }}>
               <Img src={checkIcon} alt="" width="14" height="14" style={{ display: "inline-block", verticalAlign: "-1px", marginRight: "8px" }} />
               {inc}
@@ -273,9 +275,20 @@ export function DealRow({ deal: d, cta, top = "12px" }: { deal: RowDeal; cta?: s
     <Section style={{ backgroundColor: "#FFFFFF", border: `1px solid #E5E5E5`, borderRadius: "8px", marginTop: top, overflow: "hidden" }}>
       <Row>
         {/* Foto als achtergrond: sluit aan op de rand en vult de hele hoogte van het blok */}
-        <Column className="stack" style={{ width: "190px", verticalAlign: "top", backgroundImage: `url(${d.image})`, backgroundSize: "cover", backgroundPosition: "center" }}>
-          <Link href={d.url} aria-label={d.hotelName ?? cta ?? "Bekijk"} style={{ display: "block", width: "190px", minHeight: "150px" }} />
-        </Column>
+        {d.image2 ? (
+          // Twee foto's onder elkaar met 6 px wit ertussen; samen vullen ze de hele hoogte van het blok
+          <Column className="stack" style={{ width: "190px", height: "1px", verticalAlign: "top", padding: 0 }}>
+            <div style={{ display: "flex", flexDirection: "column", width: "190px", height: "100%", minHeight: "240px" }}>
+              {[d.image, d.image2].map((src, i) => (
+                <Link key={src} href={d.url} aria-label={d.hotelName ?? cta ?? "Bekijk"} style={{ display: "block", flex: "1 1 0", marginTop: i ? "6px" : 0, backgroundImage: `url(${src})`, backgroundSize: "cover", backgroundPosition: "center" }} />
+              ))}
+            </div>
+          </Column>
+        ) : (
+          <Column className="stack" style={{ width: "190px", verticalAlign: "top", backgroundImage: `url(${d.image})`, backgroundSize: "cover", backgroundPosition: "center" }}>
+            <Link href={d.url} aria-label={d.hotelName ?? cta ?? "Bekijk"} style={{ display: "block", width: "190px", minHeight: "150px" }} />
+          </Column>
+        )}
         <Column className="stack" style={{ verticalAlign: "top", padding: rich ? "16px 18px 18px" : "16px 18px" }}>
           {rich ? (
             <>
@@ -354,7 +367,7 @@ export function DealRowFixed({ deal: d, image2, cta, top = "12px" }: { deal: Row
 /** Uitgelichte deal over de hele breedte: grote foto, daaronder met een prijs de uitgebreide kaart
  *  (knop "Bekijk"), anders de tekstregels en een oranje knop "Bekijk arrangement".
  *  `priceRow={false}`: zonder de prijsrij en de knop (winkelmandje: prijs en knop staan erboven). */
-export function FeaturedDeal({ deal: d, cta, priceRow = true }: { deal: RowDeal; cta?: string; priceRow?: boolean }) {
+export function FeaturedDeal({ deal: d, cta, priceRow = true, allIncludes }: { deal: RowDeal; cta?: string; priceRow?: boolean; /** Alle inclusies tonen (dedicated mail), niet alleen de eerste vier. */ allIncludes?: boolean }) {
   const rich = !!d.price;
   return (
     <Section style={{ backgroundColor: "#FFFFFF", border: `1px solid #E5E5E5`, borderRadius: "8px", marginTop: "12px", overflow: "hidden" }}>
@@ -363,7 +376,7 @@ export function FeaturedDeal({ deal: d, cta, priceRow = true }: { deal: RowDeal;
       </Link>
       {rich ? (
         <Section style={{ padding: "16px 20px 20px" }}>
-          <RichDealText d={d} />
+          <RichDealText d={d} allIncludes={allIncludes} />
           {priceRow && <RichDealPrice d={d} cta={cta ?? "Bekijk"} />}
         </Section>
       ) : (

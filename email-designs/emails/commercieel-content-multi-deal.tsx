@@ -2,7 +2,7 @@ import { Body, Container, Head, Heading, Html, Img, Preview, Section } from "@re
 import * as React from "react";
 import CrmFooter from "../components/CrmFooter";
 import CrmHeader from "../components/CrmHeader";
-import { BeigeBand, QuickSearch, cardGap, crmCss, CrmHelp, DealRow, Letter, type RowDeal, s, site } from "../components/crm";
+import { BeigeBand, QuickSearch, cardGap, crmCss, DealRow, Letter, type RowDeal, s, site } from "../components/crm";
 import { baseUrl, font, newsletter } from "../components/theme";
 
 // Commerciële mail 1: Content (Multi-deal). Meerdere deals rond één thema of selectie, hier
@@ -61,8 +61,6 @@ export default function CommercieelContentMultiDeal({ recipientEmail, firstName,
             ))}
           </Section>
 
-          {/* Hulplijn: direct na de hoofdboodschap, niet als onderste blok */}
-          <CrmHelp top="32px" bottom="0" />
         </Container>
 
         {/* Snel zoeken op een beige band over de hele breedte */}
@@ -70,7 +68,7 @@ export default function CommercieelContentMultiDeal({ recipientEmail, firstName,
           <QuickSearch />
         </BeigeBand>
 
-        <CrmFooter recipientEmail={recipientEmail} reason="omdat je je hebt aangemeld voor onze nieuwsbrief" />
+        <CrmFooter recipientEmail={recipientEmail} reason="omdat je je hebt aangemeld voor onze nieuwsbrief" help={2} quote />
       </Body>
     </Html>
   );
@@ -97,6 +95,8 @@ CommercieelContentMultiDeal.PreviewProps = {
       place: "Den Haag",
       packageTitle: "3 dagen Den Haag, op loopafstand van de Royal Christmas Fair",
       image: photo("kerstmarkt-den-haag"),
+      // Twee foto's onder elkaar: de kerstmarkt en het hotel
+      image2: "https://asset.vialuxury.com/assets/04007e67-62ca-4ffc-9ecf-a7b932695586?key=card",
       url: `${site}/first-release/deal/voco-the-hague-1-1-gratis-verblijf-in-het-mooiste-hotel-van-nederland`,
       includes: ["Dagelijks ontbijtbuffet", "3-Gangendiner in Ultramarijn", "Welkomstattentie", "Late check-out"],
       discount: "-47%",
@@ -136,6 +136,7 @@ CommercieelContentMultiDeal.PreviewProps = {
       place: "Béthune, Frankrijk",
       packageTitle: "3 dagen Béthune, bij de Cité de Noël rond het oude belfort",
       image: photo("kerstmarkt-bethune"),
+      image2: `${baseUrl}/images/vakanties/001/beaulaincourt-b1.jpg`,
       url: `${site}/first-release/search`,
       includes: ["Dagelijks ontbijt", "3-Gangendiner (dag van aankomst)", "Welkomstbubbels", "Late check-out tot 15:00 uur"],
       discount: "-39%",

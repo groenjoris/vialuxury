@@ -213,7 +213,12 @@ Commerciële mails (sinds 2026-11-23): nieuwsbrieven en acties, zelfde opzet als
 die er al zijn (geen lege plekken). Mails komen in de registry met sectie `"commercieel"` (volgorde van de registry =
 volgorde in het paneel; varianten met `variantOf` en `variantLabel`); de export schrijft alleen light HTML en de lijst
 `app/data/commercieel-emails.json`. De commerciële mails hergebruiken de vormgeving en bouwstenen van de CRM-mails
-maximaal (`components/crm.tsx`, zelfde regels) en eindigen met het blok "Snel zoeken" op een beige
+maximaal (`components/crm.tsx`, zelfde regels). Sinds 2026-11-25 hebben ze alle vijf footer 2 uit de CRM-voorbeeldmail
+"Dit moeten we vaker doen" (`<CrmFooter help={2} quote />`: lage hulpband boven de footer, de gastquote bovenaan de
+rechterkolom); het losse blok "Hulp nodig?" in de mail is daarmee vervallen. In de mails met een lijst (Content, Actie)
+heeft de helft van de dealrijen twee foto's onder elkaar met 6 px wit ertussen in plaats van één langwerpige foto
+(`RowDeal.image2`; de kaart houdt zijn eigen hoogte, anders dan `DealRowFixed`; in Content de kerstmarkt boven en het
+hotel onder). Ze eindigen met het blok "Snel zoeken" op een beige
 band (`QuickSearch`: Best geboekt, Stedentrips, Aan zee, Romantisch, Wellness, Met diner; witte snelfilterknoppen naar
 de R1-zoekpagina); bronnen `email-designs/emails/commercieel-*.tsx`, foto's in
 `public/images/mail/commercieel/`. De voorbeelden worden per stuk gebriefd:
@@ -223,7 +228,8 @@ de R1-zoekpagina); bronnen `email-designs/emails/commercieel-*.tsx`, foto's in
    verwijzen naar de kerstmarkt in de buurt. Alleen voco The Hague staat in `deals.json`; de andere drie hebben
    voorbeeldprijzen en linken naar de R1-zoekpagina.
 2. `commercieel-dedicated-hotel` ("Dedicated hotel"): één hotel. Brief (`Letter`) met het aanbod vet, de knop "Bekijk
-   aanbieding" onder het bericht en daaronder het arrangement op de verticale kaart (`FeaturedDeal`). Voorbeeld:
+   aanbieding" onder het bericht en daaronder het arrangement op de verticale kaart (`FeaturedDeal`), met álle
+   inclusies van het arrangement (`allIncludes`, hier zeven; elders maximaal vier). Voorbeeld:
    Veluwe Hotel de Beyaerd (Stakenberg staat niet in `deals.json`). Variant `-zonder-prijs` (schakelaar "Met prijs |
    Zonder prijs"): de brief steekt in op nieuwsgierigheid en noemt geen prijs, de kaart heeft geen prijsrij. Tweede schakelaar "Zonder titel |
    Met titel" (`-met-titel`: grote titel "Deal van de maand november" boven het bericht); de schakelaars zijn los te
@@ -247,8 +253,7 @@ de R1-zoekpagina); bronnen `email-designs/emails/commercieel-*.tsx`, foto's in
    cadeaukaart" | "Jouw persoonlijke korting": €50 → €15, €100 → €25, €200 → €60 (2 x €30), €300, €400 en €500 → €120 (3 x €40)),
    slotzin en de knop "Bestel een cadeaukaart". Elke rij van de tabel linkt naar de productpagina in de echte
    cadeaukaartshop (`cadeaukaart.vialuxury.com/Product/ProductDetails?productId=11` t/m `16`), de knop naar het
-   productoverzicht (`/Product/Products`). Daaronder alleen de
-   hulplijn (hier wel onderaan), geen Snel zoeken.
+   productoverzicht (`/Product/Products`). Daaronder direct de footer met de hulpband, geen Snel zoeken.
 
 Regels voor elke CRM-mail:
 - Briefopzet (het format voor alle CRM-mails, tot nu toe in `crm-winkelmandje-2-dagen`, `crm-favorieten`, `crm-zoekopdracht`,
@@ -281,7 +286,7 @@ Regels voor elke CRM-mail:
   · 2 personen"; geen prijs of besparing bovenin, geen icoon, geen kleur) en de knop bóven de kaart; "Door jou bekeken" in de mail
   van 2 dagen is dezelfde uitgebreide rij als de suggesties (met inclusies), alleen de onderkant verschilt: die twee
   regels in plaats van de prijsrij (`lines`) en de link "Ga verder met boeken"; de kaart zelf is de uitgebreide zonder hotel, plaats en prijsrij (`priceRow={false}`).
-- Elke CRM- en commerciële mail heeft de hulplijn "Hulp nodig?" (`CrmHelp` = `HelpBanner` uit de post-bookingmails,
+- Elke CRM-mail heeft de hulplijn "Hulp nodig?" (de commerciële mails hebben hem sinds 2026-11-25 als band in footer 2) (`CrmHelp` = `HelpBanner` uit de post-bookingmails,
   zelfde tekst, lichtoranje vlak, 16 px). Sinds 2026-11-24 staat hij niet meer onderaan maar direct na de hoofdboodschap
   (`<CrmHelp top="32px" bottom="0" />`): na de coupon of knop en vóór de titel van de suggesties (favorieten,
   terugkomactie en herinnering, jaar geleden, zoekopdracht, Actie); na de kaart en vóór de reviews (winkelmandje 2 uur);
