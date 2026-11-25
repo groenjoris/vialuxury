@@ -16,7 +16,7 @@ async function main() {
   const dataFile = resolve(here, "../../app/data/mht-emails.json");
   // CRM-concepten: alleen light, eigen lijst voor /crm/<slug>.
   const crmFile = resolve(here, "../../app/data/crm-emails.json");
-  // Automationmails: alleen light, eigen lijst voor /automation/<slug>.
+  // Automationmails: light + een donkere versie voor de preview, eigen lijst voor /automation/<slug>.
   const automationFile = resolve(here, "../../app/data/automation-emails.json");
   // Commerciële mails (nieuwsbrieven en acties): alleen light, eigen lijst voor /commercieel/<slug>.
   const commercieelFile = resolve(here, "../../app/data/commercieel-emails.json");
@@ -29,6 +29,9 @@ async function main() {
     if (e.section === "crm" || e.section === "automation") {
       const list = e.section === "crm" ? crm : automation;
       writeFileSync(resolve(outDir, `${e.slug}.html`), await renderEmail(e, "light"));
+      // De automationmails hebben ook een donkere versie. Die is alleen voor de preview: de mail
+      // die verstuurd wordt is de lichte, die zichzelf omzet met de mediaquery.
+      if (e.section === "automation") writeFileSync(resolve(outDir, `${e.slug}.dark.html`), await renderEmail(e, "dark"));
       list.push({ slug: e.slug, title: e.title, description: e.description, subject: e.subject, preheader: e.preheader, variantOf: e.variantOf, variantLabel: e.variantLabel });
       console.log("✓", e.slug);
       continue;

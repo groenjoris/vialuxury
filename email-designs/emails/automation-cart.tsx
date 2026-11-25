@@ -2,10 +2,10 @@ import { Body, Container, Head, Heading, Html, Preview, Section, Text } from "@r
 import * as React from "react";
 import CrmHeader from "../components/CrmHeader";
 import { PrimaryButton, s } from "../components/crm";
-import { AutomationCodeBlock, AutomationDealRow, AutomationFeaturedDeal, AutomationLetter, automationCss, cardGap, type GuestRating, GuestRatingSection, ServiceSection, AutomationFooter } from "../components/automation";
+import { AutomationCodeBlock, AutomationDealRow, AutomationFeaturedDeal, AutomationLetter, automationCss, automationDarkCss, cardGap, type GuestRating, GuestRatingSection, ServiceSection, AutomationFooter } from "../components/automation";
 import { type AutomationDeal } from "../lib/automationDeals";
 import { desIndes, dePlesman, voco } from "../lib/automationDeals";
-import { font, newsletter } from "../components/theme";
+import { type EmailMode, font, newsletter } from "../components/theme";
 
 // Automationflow fl011 "abandoned cart" — drie mails uit één component.
 // Bron: "Automations in kaart.xlsx", tabblad Automation per variant, kolommen P, Q en R.
@@ -25,6 +25,9 @@ import { font, newsletter } from "../components/theme";
 // Hier ingevuld met voorbeelddata; in Klaviyo worden het merge tags.
 
 type Props = {
+  /** "dark" rendert de donkere versie voor de preview; de verstuurde mail is de lichte,
+   *  die zichzelf omzet met de mediaquery. */
+  mode?: EmailMode;
   recipientEmail: string;
   preheader: string;
   /** Leeg → "Beste gast,". */
@@ -59,15 +62,15 @@ type Props = {
   code?: { code: string; value: string; deadline: string; advice: string };
 };
 
-export default function AutomationCart({ recipientEmail, preheader, firstName, heading, intro, headingAt = "cart", opening = "direct", cart, cartTitle, guestRating, alternatives, alternativesTitle, code, codeFirst, service }: Props) {
+export default function AutomationCart({ recipientEmail, preheader, firstName, heading, intro, headingAt = "cart", opening = "direct", cart, cartTitle, guestRating, alternatives, alternativesTitle, code, codeFirst, service, mode = "light" }: Props) {
   const c = newsletter.light;
 
   // De codesectie staat normaal onderaan, in mail 4 direct onder de introtekst.
   const codeSection = code ? (
     <Section className="m-pad" style={{ padding: codeFirst ? "28px 32px 0" : "44px 32px 0" }}>
-      {headingAt === "code" && <Heading as="h1" className="m-h1" style={{ ...s.h1, marginBottom: "20px" }}>{heading}</Heading>}
+      {headingAt === "code" && <Heading as="h1" className="m-h1 d-head" style={{ ...s.h1, marginBottom: "20px" }}>{heading}</Heading>}
       <AutomationCodeBlock title={`${code.value} cadeau`} code={code.code} label="Jouw unieke code" deadline={code.deadline} />
-      <Text style={{ ...s.body, margin: "14px 0 0" }}>{code.advice}</Text>
+      <Text className="d-text" style={{ ...s.body, margin: "14px 0 0" }}>{code.advice}</Text>
     </Section>
   ) : null;
 
@@ -75,21 +78,28 @@ export default function AutomationCart({ recipientEmail, preheader, firstName, h
     <Html lang="nl">
       <Head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        {/* Zegt de client dat de mail zelf een donkere stand heeft, zodat hij niet zijn eigen
+            kleuren eroverheen gooit. */}
+        <meta name="color-scheme" content="light dark" />
+        <meta name="supported-color-schemes" content="light dark" />
         <style>{automationCss}</style>
+        {/* Alleen voor de preview: dezelfde regels zonder de mediaquery, zodat je de donkere
+            stand kunt bekijken zonder je systeem om te zetten. */}
+        {mode === "dark" && <style>{automationDarkCss}</style>}
       </Head>
       <Preview>{preheader}</Preview>
-      <Body style={{ backgroundColor: c.bg, margin: 0, padding: 0, fontFamily: font.body }}>
+      <Body className="d-bg" style={{ backgroundColor: c.bg, margin: 0, padding: 0, fontFamily: font.body }}>
         <CrmHeader />
         <Container style={{ width: "100%", maxWidth: "626px" }}>
           {/* Opening: direct de kop met de intro, of de brief met de ondertekening */}
           <Section className="m-pad" style={{ padding: "32px 32px 0" }}>
             {(headingAt === "top" || opening !== "brief") && (
-              <Heading as="h1" className="m-h1" style={{ ...s.h1, marginBottom: headingAt === "top" ? "16px" : undefined }}>{heading}</Heading>
+              <Heading as="h1" className="m-h1 d-head" style={{ ...s.h1, marginBottom: headingAt === "top" ? "16px" : undefined }}>{heading}</Heading>
             )}
             {opening === "brief" ? (
               <AutomationLetter firstName={firstName}>{intro}</AutomationLetter>
             ) : (
-              intro && <Text style={{ ...s.body, margin: "12px 0 0" }}>{intro}</Text>
+              intro && <Text className="d-text" style={{ ...s.body, margin: "12px 0 0" }}>{intro}</Text>
             )}
           </Section>
 
@@ -101,14 +111,14 @@ export default function AutomationCart({ recipientEmail, preheader, firstName, h
           {opening === "winkelmandje" ? (
             <>
               <Section className="m-pad" style={{ padding: "20px 32px 0" }}>
-                {cartTitle && <Text style={{ ...s.kop, margin: "0 0 10px" }}>{cartTitle}</Text>}
-                <Text style={{ ...s.name, margin: 0 }}>
+                {cartTitle && <Text className="d-head" style={{ ...s.kop, margin: "0 0 10px" }}>{cartTitle}</Text>}
+                <Text className="d-text" style={{ ...s.name, margin: 0 }}>
                   {cart.hotelName}
                   {cart.stars ? <span style={{ letterSpacing: "1px", marginLeft: "8px" }}>{"★".repeat(cart.stars)}</span> : null}
                 </Text>
-                {cart.place && <Text style={{ ...s.muted, margin: "2px 0 0" }}>{cart.place}</Text>}
+                {cart.place && <Text className="d-muted" style={{ ...s.muted, margin: "2px 0 0" }}>{cart.place}</Text>}
                 {cart.lines?.map((l) => (
-                  <Text key={l} style={{ ...s.title, margin: "2px 0 0" }}>{l}</Text>
+                  <Text key={l} className="d-text" style={{ ...s.title, margin: "2px 0 0" }}>{l}</Text>
                 ))}
                 <Section style={{ marginTop: "20px" }}>
                   <PrimaryButton href={cart.url}>Rond je boeking af</PrimaryButton>
@@ -120,7 +130,7 @@ export default function AutomationCart({ recipientEmail, preheader, firstName, h
             </>
           ) : (
             <Section className="m-pad" style={{ padding: opening === "brief" ? "40px 32px 0" : "24px 32px 0" }}>
-              {opening === "brief" && headingAt === "cart" && <Heading as="h1" className="m-h1" style={s.h1}>{heading}</Heading>}
+              {opening === "brief" && headingAt === "cart" && <Heading as="h1" className="m-h1 d-head" style={s.h1}>{heading}</Heading>}
               {/* Het standaard hotelblok: de datumregel hoort bij de winkelmandje-opzet, niet hier. */}
               <AutomationFeaturedDeal deal={{ ...cart, lines: undefined }} cta="Rond je boeking af" />
             </Section>
@@ -129,7 +139,7 @@ export default function AutomationCart({ recipientEmail, preheader, firstName, h
           {/* S21 Gastenoordeel */}
           {guestRating && (
             <Section className="m-pad" style={{ padding: "44px 32px 0" }}>
-              {opening === "brief" && headingAt === "rating" && <Heading as="h1" className="m-h1" style={{ ...s.h1, marginBottom: "18px" }}>{heading}</Heading>}
+              {opening === "brief" && headingAt === "rating" && <Heading as="h1" className="m-h1 d-head" style={{ ...s.h1, marginBottom: "18px" }}>{heading}</Heading>}
               <GuestRatingSection rating={guestRating} />
             </Section>
           )}
@@ -137,7 +147,7 @@ export default function AutomationCart({ recipientEmail, preheader, firstName, h
           {/* S4 Hoteldeals: vergelijkbare arrangementen als alternatief */}
           {alternatives && alternatives.length > 0 && (
             <Section className="m-pad" style={{ padding: "44px 32px 0" }}>
-              {alternativesTitle && <Heading as="h2" className="m-h1" style={s.h1}>{alternativesTitle}</Heading>}
+              {alternativesTitle && <Heading as="h2" className="m-h1 d-head" style={s.h1}>{alternativesTitle}</Heading>}
               {alternatives.map((d, i) => (
                 <AutomationDealRow key={d.url} deal={d} top={i ? cardGap : undefined} />
               ))}

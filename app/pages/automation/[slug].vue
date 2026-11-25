@@ -30,6 +30,10 @@ const groups = [
     }),
 }))
 
+/** Licht of donker. De verstuurde mail is altijd de lichte: die zet zichzelf om met de
+ *  mediaquery `prefers-color-scheme`. De donkere HTML is alleen om hier te bekijken. */
+const dark = ref(false)
+
 const baseSlug = computed(() => (entry.value as { variantOf?: string } | undefined)?.variantOf ?? slug.value)
 const variants = computed(() => {
   const list = emails.filter(e => e.slug === baseSlug.value || (e as { variantOf?: string }).variantOf === baseSlug.value)
@@ -76,6 +80,10 @@ useHead({ title: `${entry.value?.title ?? 'E-mail'} — ViaLuxury automations` }
             :aria-current="v.slug === slug ? 'true' : undefined"
           >{{ v.label }}</NuxtLink>
         </div>
+        <div class="aut__variants" role="group" aria-label="Weergave">
+          <button type="button" class="aut__variant" :class="{ 'aut__variant--on': !dark }" @click="dark = false">Light</button>
+          <button type="button" class="aut__variant" :class="{ 'aut__variant--on': dark }" @click="dark = true">Dark</button>
+        </div>
         <select class="aut__picker" :value="baseSlug" aria-label="Kies een mail" @change="onPick">
           <optgroup v-for="g in groups" :key="g.flow" :label="g.title">
             <option v-for="e in g.items" :key="e.slug" :value="e.slug" :selected="e.slug === baseSlug">
@@ -113,7 +121,7 @@ useHead({ title: `${entry.value?.title ?? 'E-mail'} — ViaLuxury automations` }
               <p class="aut__preheader">{{ entry?.preheader }}</p>
             </div>
           </div>
-          <iframe :key="slug" class="aut__frame" :src="`/emails/${slug}.html`" :title="entry?.title" />
+          <iframe :key="`${slug}-${dark}`" class="aut__frame" :src="`/emails/${slug}${dark ? '.dark' : ''}.html`" :title="entry?.title" />
         </div>
       </div>
     </div>
@@ -132,7 +140,7 @@ useHead({ title: `${entry.value?.title ?? 'E-mail'} — ViaLuxury automations` }
 .aut__slug { display: block; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; color: var(--color-text-secondary); }
 /* Variantschakelaar naast de titel: twee segmenten, het actieve zwart */
 .aut__variants { display: inline-flex; flex-shrink: 0; border: 1px solid var(--color-border); border-radius: 6px; overflow: hidden; background: #fff; }
-.aut__variant { padding: 6px 12px; font-size: 13px; line-height: 1.3; color: var(--color-text-secondary); text-decoration: none; white-space: nowrap; }
+.aut__variant { padding: 6px 12px; font-family: inherit; font-size: 13px; line-height: 1.3; color: var(--color-text-secondary); text-decoration: none; white-space: nowrap; background: none; border: 0; cursor: pointer; }
 .aut__variant + .aut__variant { border-left: 1px solid var(--color-border); }
 .aut__variant:hover { color: var(--color-text-primary); }
 .aut__variant--on, .aut__variant--on:hover { background: #141414; color: #fff; }

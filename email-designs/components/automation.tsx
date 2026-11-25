@@ -1,7 +1,7 @@
 import { Button, Column, Container, Heading, Img, Link, Row, Section, Text } from "@react-email/components";
 import * as React from "react";
 import { type AutomationDeal } from "../lib/automationDeals";
-import { BeigeBand, IconLine, type Pill, PillGrid, PrimaryButton, s, site, TextLink } from "./crm";
+import { IconLine, type Pill, PillGrid, PrimaryButton, s, site, TextLink } from "./crm";
 import { baseUrl, font, newsletter } from "./theme";
 
 // Bouwstenen van de automationmails voor Klaviyo.
@@ -11,6 +11,30 @@ import { baseUrl, font, newsletter } from "./theme";
 // kleine, onveranderde dingen (tekststijlen `s`, knoppen, PillGrid, IconLine) uit crm.tsx.
 
 const c = newsletter.light;
+
+/** Donkere modus. Eén HTML die in beide standen werkt: de inline stijlen blijven licht en deze
+ *  regels zetten ze om zodra de client donker staat (Apple Mail, iOS Mail, Outlook voor Mac).
+ *  Daarom overal `!important`: dat wint het van een inline stijl. Gmail en Outlook op Windows
+ *  negeren de mediaquery en tonen gewoon de lichte mail, of draaien zelf kleuren om; daar valt
+ *  niets aan te sturen. De foto's blijven zoals ze zijn, de oranje knop en de oranje links ook:
+ *  die hebben op donker genoeg contrast. Donkergrijze icoontjes (vergrootglas, kalender, klok)
+ *  worden omgekeerd, anders vallen ze weg. */
+export const automationDarkCss = `
+.d-bg { background-color: #161616 !important; }
+.d-card { background-color: #212121 !important; border-color: #333333 !important; }
+.d-band { background-color: #22201C !important; }
+.d-warm { background-color: #2A2119 !important; }
+.d-circle { background-color: #3A2E23 !important; }
+.d-line { border-color: #333333 !important; }
+.d-head, .d-head a { color: #FFFFFF !important; }
+.d-text, .d-text strong { color: #F2F2F2 !important; }
+.d-muted { color: #ABABAB !important; }
+.d-badge { background-color: #FFFFFF !important; color: #141414 !important; }
+.d-old { color: #FF8585 !important; }
+.d-inv img { filter: invert(1) !important; }
+/* De regels in het zoekblok komen uit IconLine (crm.tsx) en hebben zelf geen klasse. */
+.d-box p { color: #F2F2F2 !important; }
+`;
 
 /** Mobiele regels van de automationmails. Twee breekpunten: onder 600 px stapelen de kolommen,
  *  onder 640 px krimpt de prijsrij (op 16 px vraagt die ruim 400 px en valt de knop buiten de
@@ -42,7 +66,22 @@ body { margin: 0 !important; padding: 0 !important; }
   .m-price-big { font-size: 16px !important; }
   .m-cta { font-size: 12px !important; padding: 9px 7px !important; }
 }
+@media (prefers-color-scheme: dark) {
+${automationDarkCss}
+}
 `;
+
+/** Band over de hele breedte (beige in de lichte stand). Eigen versie van `BeigeBand`, zodat de
+ *  band in de donkere stand mee kan kleuren. */
+export function AutomationBand({ children, top = "0" }: { children: React.ReactNode; top?: string }) {
+  return (
+    <Section className="d-band" style={{ backgroundColor: "#F4F1EC", width: "100%", marginTop: top }}>
+      <Container style={{ width: "100%", maxWidth: "626px" }}>
+        <Section className="m-pad" style={{ padding: "24px 32px 28px" }}>{children}</Section>
+      </Container>
+    </Section>
+  );
+}
 
 /** Briefopening: aanhef en een korte intro. Zonder ondertekening: die laten we voorlopig
  *  helemaal weg (feedback 24-11-2026; "Groetjes Yvette" verviel en er komt voorlopig niets
@@ -50,8 +89,8 @@ body { margin: 0 !important; padding: 0 !important; }
 export function AutomationLetter({ firstName, children }: { firstName?: string; children: React.ReactNode }) {
   return (
     <>
-      <Text style={{ ...s.body, margin: 0 }}>{firstName ? `Beste ${firstName},` : "Beste gast,"}</Text>
-      <Text style={{ ...s.body, margin: "8px 0 0" }}>{children}</Text>
+      <Text className="d-text" style={{ ...s.body, margin: 0 }}>{firstName ? `Beste ${firstName},` : "Beste gast,"}</Text>
+      <Text className="d-text" style={{ ...s.body, margin: "8px 0 0" }}>{children}</Text>
     </>
   );
 }
@@ -84,21 +123,21 @@ function DealText({ d }: { d: AutomationDeal }) {
   return (
     <>
       {d.hotelName && (
-        <Text style={{ ...s.name, margin: 0 }}>
+        <Text className="d-text" style={{ ...s.name, margin: 0 }}>
           {d.hotelName}
           {d.stars ? <span style={{ letterSpacing: "1px", marginLeft: "8px" }}>{"★".repeat(d.stars)}</span> : null}
         </Text>
       )}
-      {d.place && <Text style={{ ...s.muted, margin: "2px 0 0" }}>{d.place}</Text>}
-      {(d.hotelName || d.place) && <Section style={{ borderTop: "1px solid #E5E5E5", marginTop: "12px", fontSize: "1px", lineHeight: "1px" }}>&nbsp;</Section>}
-      {d.packageTitle && <Text style={{ ...s.kop, fontSize: "18px", margin: d.hotelName || d.place ? "10px 0 0" : 0 }}>{d.packageTitle}</Text>}
+      {d.place && <Text className="d-muted" style={{ ...s.muted, margin: "2px 0 0" }}>{d.place}</Text>}
+      {(d.hotelName || d.place) && <Section className="d-line" style={{ borderTop: "1px solid #E5E5E5", marginTop: "12px", fontSize: "1px", lineHeight: "1px" }}>&nbsp;</Section>}
+      {d.packageTitle && <Text className="d-head" style={{ ...s.kop, fontSize: "18px", margin: d.hotelName || d.place ? "10px 0 0" : 0 }}>{d.packageTitle}</Text>}
       {d.includes && d.includes.length > 0 && (
         <>
           <Text style={{ fontFamily: font.heading, fontWeight: 600, fontSize: "16px", lineHeight: "1.4", color: c.cta, margin: "12px 0 2px" }}>Arrangement</Text>
           {/* Hangende inspringing: een inclusie over twee regels lijnt op de tweede regel uit met
               de tekst erboven en niet met het vinkje. 22 px = vinkje (14) plus de ruimte (8). */}
           {d.includes.slice(0, 4).map((inc) => (
-            <Text key={inc} style={{ ...s.muted, margin: "4px 0 0", paddingLeft: "22px", textIndent: "-22px" }}>
+            <Text key={inc} className="d-muted" style={{ ...s.muted, margin: "4px 0 0", paddingLeft: "22px", textIndent: "-22px" }}>
               <Img src={checkIcon} alt="" width="14" height="14" style={{ display: "inline-block", verticalAlign: "-1px", marginRight: "8px" }} />
               {inc}
             </Text>
@@ -116,19 +155,19 @@ function DealPrice({ d, cta }: { d: AutomationDeal; cta: string }) {
   return (
     <>
       {d.lines?.map((l, i) => (
-        <Text key={l} style={{ ...s.title, margin: i ? "2px 0 0" : "14px 0 0" }}>{l}</Text>
+        <Text key={l} className="d-text" style={{ ...s.title, margin: i ? "2px 0 0" : "14px 0 0" }}>{l}</Text>
       ))}
-      {d.priceFor && <Text style={{ ...s.name, margin: "14px 0 0" }}>{d.priceFor}</Text>}
+      {d.priceFor && <Text className="d-text" style={{ ...s.name, margin: "14px 0 0" }}>{d.priceFor}</Text>}
       <Row style={{ marginTop: "8px" }}>
         {d.discount && (
           <Column className="m-badge-cell" style={{ verticalAlign: "middle", width: "1%", paddingRight: "12px" }}>
-            <span className="m-badge" style={{ ...priceRowBox, display: "inline-block", whiteSpace: "nowrap", backgroundColor: c.text, fontFamily: font.body, padding: "11px 12px" }}>{d.discount}</span>
+            <span className="m-badge d-badge" style={{ ...priceRowBox, display: "inline-block", whiteSpace: "nowrap", backgroundColor: c.text, fontFamily: font.body, padding: "11px 12px" }}>{d.discount}</span>
           </Column>
         )}
         <Column style={{ verticalAlign: "middle" }}>
-          <Text className="m-price" style={{ fontFamily: font.body, fontSize: "16px", lineHeight: "24px", color: c.muted, margin: 0, whiteSpace: "nowrap" }}>
-            Vanaf <span className="m-price-big" style={{ fontSize: "20px", fontWeight: 700, color: c.text }}>{d.price}</span>
-            {d.original && <span style={{ color: "#D32F2F", textDecoration: "line-through", marginLeft: "8px" }}>{d.original}</span>}
+          <Text className="m-price d-muted" style={{ fontFamily: font.body, fontSize: "16px", lineHeight: "24px", color: c.muted, margin: 0, whiteSpace: "nowrap" }}>
+            Vanaf <span className="m-price-big d-text" style={{ fontSize: "20px", fontWeight: 700, color: c.text }}>{d.price}</span>
+            {d.original && <span className="d-old" style={{ color: "#D32F2F", textDecoration: "line-through", marginLeft: "8px" }}>{d.original}</span>}
           </Text>
         </Column>
         <Column style={{ verticalAlign: "middle", textAlign: "right", width: "1%" }}>
@@ -167,7 +206,7 @@ function CardText({ height, top, bottom }: { height?: string; top: React.ReactNo
 export function AutomationDealRow({ deal: d, cta, top = "12px" }: { deal: AutomationDeal; cta?: string; top?: string }) {
   const rich = !!d.price || !!d.includes;
   return (
-    <Section className={rich ? "m-auto-h" : undefined} style={{ backgroundColor: "#FFFFFF", border: `1px solid #E5E5E5`, borderRadius: "8px", marginTop: top, overflow: "hidden", height: rich ? CARD_HEIGHT_ROW : undefined }}>
+    <Section className={`d-card${rich ? " m-auto-h" : ""}`} style={{ backgroundColor: "#FFFFFF", border: `1px solid #E5E5E5`, borderRadius: "8px", marginTop: top, overflow: "hidden", height: rich ? CARD_HEIGHT_ROW : undefined }}>
       <Row>
         {d.secondImage ? (
           <Column className="stack m-rowphoto-cell" style={{ width: "190px", verticalAlign: "top" }}>
@@ -208,7 +247,7 @@ export function AutomationDealRow({ deal: d, cta, top = "12px" }: { deal: Automa
 export function AutomationFeaturedDeal({ deal: d, cta, priceRow = true }: { deal: AutomationDeal; cta?: string; priceRow?: boolean }) {
   const fixed = !!d.price && priceRow && !!d.includes?.length;
   return (
-    <Section style={{ backgroundColor: "#FFFFFF", border: `1px solid #E5E5E5`, borderRadius: "8px", marginTop: "12px", overflow: "hidden" }}>
+    <Section className="d-card" style={{ backgroundColor: "#FFFFFF", border: `1px solid #E5E5E5`, borderRadius: "8px", marginTop: "12px", overflow: "hidden" }}>
       <Link href={d.url}>
         <Img src={d.image} alt={d.packageTitle ?? d.hotelName ?? ""} width="560" height="315" style={{ display: "block", width: "100%", height: "auto", aspectRatio: "16 / 9", objectFit: "cover" }} />
       </Link>
@@ -256,11 +295,11 @@ export function GuestRatingSection({ rating }: { rating: GuestRating }) {
         height="28"
         style={{ display: "block", width: "152px", height: "28px" }}
       />
-      <Text style={{ ...s.body, margin: "6px 0 0" }}>{rating.label}</Text>
+      <Text className="d-text" style={{ ...s.body, margin: "6px 0 0" }}>{rating.label}</Text>
       {rating.reviews?.slice(0, 3).map((r) => (
         <Section key={r.author} style={{ marginTop: "22px" }}>
-          <Text style={{ fontFamily: font.heading, fontSize: "20px", lineHeight: "1.35", color: c.text, margin: 0 }}>&ldquo;{r.text}&rdquo;</Text>
-          <Text style={{ ...s.muted, margin: "4px 0 0" }}>{r.author}</Text>
+          <Text className="d-head" style={{ fontFamily: font.heading, fontSize: "20px", lineHeight: "1.35", color: c.text, margin: 0 }}>&ldquo;{r.text}&rdquo;</Text>
+          <Text className="d-muted" style={{ ...s.muted, margin: "4px 0 0" }}>{r.author}</Text>
         </Section>
       ))}
     </>
@@ -278,27 +317,27 @@ export function BrandSection({ children, greeting, link, top = "40px" }: { child
     { icon: `${baseUrl}/images/mail/crm/trustpilot-ster-groen.png`, lead: "Trustpilot score:", text: "4.5/5 met 16.000+ reviews" },
   ];
   return (
-    <BeigeBand top={top}>
-      <Text style={{ ...s.kop, margin: 0 }}>Zorgvuldig samengestelde hotelervaringen</Text>
-      <Text style={{ ...s.body, margin: "10px 0 0" }}>{children}</Text>
+    <AutomationBand top={top}>
+      <Text className="d-head" style={{ ...s.kop, margin: 0 }}>Zorgvuldig samengestelde hotelervaringen</Text>
+      <Text className="d-text" style={{ ...s.body, margin: "10px 0 0" }}>{children}</Text>
       <Section style={{ marginTop: "14px" }}>
         {punten.map((p) => (
-          <Text key={p.lead} style={{ ...s.body, margin: "8px 0 0", paddingLeft: "26px", textIndent: "-26px" }}>
+          <Text key={p.lead} className="d-text" style={{ ...s.body, margin: "8px 0 0", paddingLeft: "26px", textIndent: "-26px" }}>
             <Img src={p.icon} alt="" width="16" height="16" style={{ display: "inline-block", verticalAlign: "-2px", marginRight: "10px" }} />
             <strong>{p.lead}</strong> {p.text}
           </Text>
         ))}
       </Section>
-      {greeting && <Text style={{ ...s.body, margin: "18px 0 0" }}>{greeting}</Text>}
+      {greeting && <Text className="d-text" style={{ ...s.body, margin: "18px 0 0" }}>{greeting}</Text>}
       {link && <TextLink href={link.href}>{link.label}</TextLink>}
-    </BeigeBand>
+    </AutomationBand>
   );
 }
 
 /** S15 Servicesectie: de regel uit de sheet, met de link naar de klantenservice. */
 export function ServiceSection() {
   return (
-    <Text style={{ ...s.title, margin: 0 }}>
+    <Text className="d-text" style={{ ...s.title, margin: 0 }}>
       Vragen over dit arrangement? Onze{" "}
       <Link href="https://vialuxury.com/nl-NL/klantenservice" style={{ color: c.link, textDecoration: "underline" }}>klantenservice</Link>{" "}
       helpt je graag.
@@ -309,7 +348,7 @@ export function ServiceSection() {
 /** S18 Zoekopdracht: zoekterm, datum en personen in een wit, omlijnd blok met de knop. */
 export function SearchSection({ searchTerm, arrivalDate, persons, resultsUrl }: { searchTerm?: string; arrivalDate?: string; persons?: number; resultsUrl: string }) {
   return (
-    <Section style={{ backgroundColor: "#FFFFFF", border: `1px solid #E5E5E5`, borderRadius: "8px", padding: "14px 20px 22px" }}>
+    <Section className="d-card d-inv d-box" style={{ backgroundColor: "#FFFFFF", border: `1px solid #E5E5E5`, borderRadius: "8px", padding: "14px 20px 22px" }}>
       <IconLine icon="magnifier-donker" bold>{searchTerm ?? "Jouw zoekopdracht"}</IconLine>
       {arrivalDate && <IconLine icon="calendar-donker">{arrivalDate}</IconLine>}
       {persons && <IconLine icon="users-donker">{persons} {persons === 1 ? "persoon" : "personen"}</IconLine>}
@@ -326,15 +365,15 @@ export function SearchSection({ searchTerm, arrivalDate, persons, resultsUrl }: 
 export function AutomationCodeBlock({ title, code, label = "Jouw persoonlijke code", deadline }: { title?: string; code: string; label?: string; deadline: string }) {
   const center = { textAlign: "center" as const };
   return (
-    <Section style={{ width: "100%", border: `2px dashed ${c.cta}`, borderRadius: "8px", padding: "22px 22px 24px", textAlign: "center" }}>
+    <Section className="d-inv" style={{ width: "100%", border: `2px dashed ${c.cta}`, borderRadius: "8px", padding: "22px 22px 24px", textAlign: "center" }}>
       {title && <Text style={{ ...s.h1, fontWeight: 700, color: c.cta, ...center, margin: "0 0 12px" }}>{title}</Text>}
-      <Text style={{ ...s.title, ...center, margin: 0 }}>{label}</Text>
-      <Text style={{ fontFamily: font.heading, fontWeight: 700, fontSize: "20px", lineHeight: "1.3", letterSpacing: "0.02em", color: c.text, margin: "4px 0 0", ...center }}>{code}</Text>
-      <Text style={{ ...s.name, ...center, margin: "14px 0 0" }}>
+      <Text className="d-text" style={{ ...s.title, ...center, margin: 0 }}>{label}</Text>
+      <Text style={{ fontFamily: font.heading, fontWeight: 700, fontSize: "20px", lineHeight: "1.3", letterSpacing: "0.02em", color: c.text, margin: "4px 0 0", ...center }} className="d-head">{code}</Text>
+      <Text className="d-text" style={{ ...s.name, ...center, margin: "14px 0 0" }}>
         <Img src={`${baseUrl}/images/mail/crm/clock-donker.png`} alt="" width="18" height="18" style={{ display: "inline-block", verticalAlign: "-3px", marginRight: "8px" }} />
         Geldig tot en met {deadline}
       </Text>
-      <Text style={{ ...s.muted, ...center, margin: "2px 0 0" }}>Vul de code in bij het boeken.</Text>
+      <Text className="d-muted" style={{ ...s.muted, ...center, margin: "2px 0 0" }}>Vul de code in bij het boeken.</Text>
     </Section>
   );
 }
@@ -353,7 +392,7 @@ export function ThemeSection({ title, note, items, cta = "Bekijk" }: { title: st
   const rows = Array.from({ length: Math.ceil(withImages.length / perRow) }, (_, i) => withImages.slice(i * perRow, (i + 1) * perRow));
   return (
     <>
-      <Heading as="h2" className="m-h1" style={{ ...s.h1, marginBottom: "16px" }}>{title}</Heading>
+      <Heading as="h2" className="m-h1 d-head" style={{ ...s.h1, marginBottom: "16px" }}>{title}</Heading>
       {withImages.length === items.length ? (
         <Section>
           {rows.map((row, ri) => (
@@ -363,13 +402,13 @@ export function ThemeSection({ title, note, items, cta = "Bekijk" }: { title: st
                 return (
                   <Column key={i} className="stack" style={{ width: `${100 / perRow}%`, verticalAlign: "top", paddingLeft: i ? "8px" : 0, paddingRight: i < perRow - 1 ? "8px" : 0 }}>
                     {t && (
-                      <Section style={{ backgroundColor: "#FFFFFF", border: "1px solid #E5E5E5", borderRadius: "4px", overflow: "hidden" }}>
+                      <Section className="d-card" style={{ backgroundColor: "#FFFFFF", border: "1px solid #E5E5E5", borderRadius: "4px", overflow: "hidden" }}>
                         <Link href={t.href}>
                           <Img src={t.image} alt="" width="271" height="152" style={{ display: "block", width: "100%", height: "auto", aspectRatio: "16 / 9", objectFit: "cover" }} />
                         </Link>
                         <Section style={{ padding: "12px 16px 14px" }}>
-                          <Text style={{ ...s.body, fontWeight: 700, color: c.text, margin: 0 }}>{t.label}</Text>
-                          {t.note && <Text style={{ ...s.muted, margin: "2px 0 0" }}>{t.note}</Text>}
+                          <Text className="d-text" style={{ ...s.body, fontWeight: 700, color: c.text, margin: 0 }}>{t.label}</Text>
+                          {t.note && <Text className="d-muted" style={{ ...s.muted, margin: "2px 0 0" }}>{t.note}</Text>}
                           <Link href={t.href} style={{ display: "inline-block", marginTop: "8px", fontFamily: font.body, fontSize: "16px", fontWeight: 700, color: c.link, textDecoration: "underline" }}>{cta}</Link>
                         </Section>
                       </Section>
@@ -383,7 +422,7 @@ export function ThemeSection({ title, note, items, cta = "Bekijk" }: { title: st
       ) : (
         <PillGrid items={[...items, { label: "Alle thema's", href: "https://vialuxury.com/nl-NL/zoeken" }]} />
       )}
-      <Text style={{ ...s.muted, margin: "16px 0 0" }}>{note}</Text>
+      <Text className="d-muted" style={{ ...s.muted, margin: "16px 0 0" }}>{note}</Text>
     </>
   );
 }
@@ -406,7 +445,7 @@ export function AutomationFooter({ recipientEmail, reason }: { recipientEmail: s
   return (
     <>
       {/* Klantenservice: lichtoranje band over de hele breedte, direct boven de footer */}
-      <Section style={{ backgroundColor: "#FFF0E4", width: "100%" }}>
+      <Section className="d-warm" style={{ backgroundColor: "#FFF0E4", width: "100%" }}>
         <Container style={{ width: "100%", maxWidth: "626px" }}>
           <Section className="m-pad" style={{ padding: "26px 32px 28px" }}>
             <Row>
@@ -414,7 +453,7 @@ export function AutomationFooter({ recipientEmail, reason }: { recipientEmail: s
                 <table role="presentation" cellPadding={0} cellSpacing={0} border={0} style={{ width: "44px", height: "44px", borderCollapse: "separate" }}>
                   <tbody>
                     <tr>
-                      <td style={{ width: "44px", height: "44px", padding: 0, borderRadius: "22px", backgroundColor: "#FFFFFF", textAlign: "center", verticalAlign: "middle" }}>
+                      <td className="d-circle" style={{ width: "44px", height: "44px", padding: 0, borderRadius: "22px", backgroundColor: "#FFFFFF", textAlign: "center", verticalAlign: "middle" }}>
                         <Img src={`${baseUrl}/images/mail/icon-phone-orange.png`} alt="" width="22" height="22" style={{ display: "block", margin: "0 auto" }} />
                       </td>
                     </tr>
@@ -422,15 +461,15 @@ export function AutomationFooter({ recipientEmail, reason }: { recipientEmail: s
                 </table>
               </Column>
               <Column style={{ verticalAlign: "middle" }}>
-                <Text style={{ ...serif, color: c.heading }}>Hulp nodig?</Text>
+                <Text className="d-head" style={{ ...serif, color: c.heading }}>Hulp nodig?</Text>
                 {/* Bellen en WhatsApp elk op een eigen regel */}
-                <Text style={{ ...body16, color: c.text, marginTop: "2px" }}>
+                <Text className="d-text" style={{ ...body16, color: c.text, marginTop: "2px" }}>
                   Bel <Link href="tel:+31207052222" style={orangeLink}>+31 20 705 2222</Link>
                 </Text>
-                <Text style={{ ...body16, color: c.text, marginTop: "2px" }}>
+                <Text className="d-text" style={{ ...body16, color: c.text, marginTop: "2px" }}>
                   WhatsApp <Link href="https://wa.me/31208088809" style={orangeLink}>+31 20 808 8809</Link>
                 </Text>
-                <Text style={{ ...body16, color: c.muted, marginTop: "2px" }}>Bereikbaar ma t/m vr 8:00 – 18:00</Text>
+                <Text className="d-muted" style={{ ...body16, color: c.muted, marginTop: "2px" }}>Bereikbaar ma t/m vr 8:00 – 18:00</Text>
               </Column>
             </Row>
           </Section>

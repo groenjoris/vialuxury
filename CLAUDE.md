@@ -291,7 +291,7 @@ code van €10), `fl012` bekeken arrangement (3) en `fl013` zoekopdracht (4). Dr
 {cart,browse,search}.tsx` — met per mail een export `…Props`. **De slug is exact de Klaviyo-naam**
 (`v01_tf021_fl011_nl-NL_1_abandoned_cart`), zodat `public/emails/<slug>.html` net zo heet als de
 template in Klaviyo; die naam staat ook onder de titel in de preview. Registry-sectie `"automation"`,
-alleen light, lijst `app/data/automation-emails.json`, preview `/automation/<slug>` (zelfde frame als
+lijst `app/data/automation-emails.json`, preview `/automation/<slug>` (zelfde frame als
 de CRM-preview, paneel links gegroepeerd per flow). Startscherm: knop "Automations" in het vak CRM.
 
 **Regel: de automationmails staan los van de CRM-mails.** De CRM-mails worden door Joris beheerd en
@@ -322,6 +322,23 @@ telefoonnummers rechtsboven is vervangen door "Volg ons op". Dat is de opzet uit
 Joris (`CrmFooter` met `help={1}` en `quote="in"` op `main`), nagebouwd in een eigen
 `AutomationFooter` in `components/automation.tsx`; de CRM-mails houden `CrmFooter` zoals hij was. Beige banden zijn er twee: de themategels in `tf031` (een keuzeblok staat altijd op
 beige) en het merkblok in `tf026`.
+
+Donkere modus (sinds 25-11-2026, alleen de automationmails): één HTML die in beide standen werkt.
+De inline stijlen blijven licht; in `automationCss` staat een blok
+`@media (prefers-color-scheme: dark)` met de regels uit `automationDarkCss`, die met `!important`
+de inline kleuren overschrijven. De elementen dragen daarvoor klassen: `d-bg` (achtergrond),
+`d-card` (kaart), `d-band` (beige band), `d-warm` (hulpband), `d-circle`, `d-line`, `d-head`,
+`d-text`, `d-muted`, `d-badge` (het kortingsblokje wordt wit met zwarte tekst), `d-old` (de
+doorgestreepte prijs), `d-box` (de regels in het zoekblok, die uit `IconLine` komen) en `d-inv`
+(donkergrijze icoontjes worden omgekeerd met een filter). Donkere kleuren: #161616 achtergrond,
+#212121 kaart met rand #333333, #22201C band, #2A2119 hulpband, tekst #F2F2F2, gedempt #ABABAB,
+koppen wit. De oranje knop, de oranje links en de foto's blijven zoals ze zijn. In de kop staan
+`color-scheme` en `supported-color-schemes` op "light dark", zodat de client er zelf vanaf blijft.
+Apple Mail, iOS Mail en Outlook voor Mac volgen de mediaquery; Gmail en Outlook op Windows negeren
+hem en tonen de lichte mail of draaien zelf kleuren om, daar valt niets aan te sturen. De export
+schrijft daarnaast `<slug>.dark.html`: dezelfde regels zónder mediaquery, puur om in de preview te
+kunnen kijken (de knop "Light | Dark" in de previewkop). Wat naar Klaviyo gaat is altijd de lichte
+`<slug>.html`.
 
 Dealrij: de fotokolom toont twee foto's van hetzelfde arrangement onder elkaar (hoofdbeeld boven,
 `image` en `secondImage` uit deals.json) met 3 px wit ertussen, samen de volle kaarthoogte. Op
