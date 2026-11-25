@@ -1,18 +1,24 @@
-import { Body, Container, Head, Heading, Html, Img, Preview, Section } from "@react-email/components";
+import { Body, Button, Container, Head, Heading, Html, Img, Preview, Section } from "@react-email/components";
 import * as React from "react";
 import CrmFooter from "../components/CrmFooter";
 import CrmHeader, { type HeaderVariant } from "../components/CrmHeader";
-import { BeigeBand, QuickSearch, cardGap, crmCss, DealRow, Letter, type RowDeal, s, site } from "../components/crm";
+import { BeigeBand, QuickSearch, cardGap, crmCss, DealRow, Letter, PrimaryButton, type RowDeal, s, site } from "../components/crm";
 import { baseUrl, font, newsletter } from "../components/theme";
 
 // Commerciële mail 1: Content (Multi-deal). Meerdere deals rond één thema of selectie, hier
 // kerstmarkten. Lijkt op de themamail uit het CRM (die volgt op gedrag op de site), maar is
-// commerciëler: de mail opent met een sfeerfoto over de hele breedte, daaronder de campagnetitel
-// ("Winter Wonderweken") en een korte brief (aanhef, één alinea). Dan de titel van
-// de lijst ("Hotels bij de mooiste kerstmarkten") direct boven vier dealrijen. De arrangementen
-// zijn de gewone arrangementen; alleen de dealtitel en de foto zijn geladen met de kerstmarkt in
-// de buurt. Zelfde regels als de CRM-mails (zie components/crm.tsx).
+// commerciëler. De mail opent met een sfeerfoto binnen de marges van de header (links gelijk met het
+// logo, rechts met het einde van Trustpilot). Twee opzetten, gekoppeld aan de headerschakelaar:
+// - Header 1 en 2: direct onder de foto een donkergroene strook met de campagnetitel in wit
+//   ("Winter Wonderweken") en de oranje knop "Bekijk aanbiedingen".
+// - Header 3: de titel staat al in de header; onder de foto alleen een grote, gecentreerde knop.
+// Daarna een korte brief (aanhef, één alinea) en de titel van de lijst ("Hotels bij de mooiste
+// kerstmarkten") direct boven vier dealrijen. De arrangementen zijn de gewone arrangementen; alleen
+// de dealtitel en de foto zijn geladen met de kerstmarkt in de buurt. Zelfde regels als de CRM-mails.
 // Onderwerp: "Winter Wonderweken: slapen bij de mooiste kerstmarkten"
+
+/** Donkergroen uit de huisstijl (--color-green-dark op de website). */
+const GREEN = "#00675F";
 
 type Props = {
   /** Headervariant (schakelaar in de preview, zie CrmHeader); in variant 3 staat de titel in de header. */
@@ -34,6 +40,8 @@ type Props = {
 
 export default function CommercieelContentMultiDeal({ header, recipientEmail, firstName, hero, heroAlt, title, intro, listTitle, deals }: Props) {
   const c = newsletter.light;
+  const heroW = header === 3 ? 602 : 578;
+  const ctaUrl = `${site}/first-release/search`;
   return (
     <Html lang="nl">
       <Head>
@@ -43,16 +51,32 @@ export default function CommercieelContentMultiDeal({ header, recipientEmail, fi
       <Preview>Glühwein, lichtjes en een hotel om de hoek.</Preview>
       <Body style={{ backgroundColor: c.bg, margin: 0, padding: 0, fontFamily: font.body }}>
         <CrmHeader variant={header} title={header === 3 ? title : undefined} />
-        {/* Sfeerfoto van het thema direct onder de header, over de hele breedte van de mail (buiten de <Container>) */}
-        <Img src={hero} alt={heroAlt} width="700" height="394" style={{ display: "block", width: "100%", height: "394px", objectFit: "cover" }} />
         <Container style={{ width: "100%", maxWidth: "626px" }}>
+          {/* Sfeerfoto binnen de marges van de header: links gelijk met het logo, rechts met het einde van
+              het Trustpilot-logo (header 3: het logo staat tegen de linkerrand) */}
+          <Section style={{ padding: header === 3 ? "0 24px 0 0" : "0 24px" }}>
+            <Img src={hero} alt={heroAlt} width={heroW} height="325" style={{ display: "block", width: "100%", height: "325px", objectFit: "cover" }} />
+            {header === 3 ? (
+              // Titel staat al in de header: alleen een grote knop, gecentreerd onder de foto
+              <Section style={{ marginTop: "24px", textAlign: "center" }}>
+                <Button href={ctaUrl} style={{ backgroundColor: c.cta, color: "#FFFFFF", fontFamily: font.body, fontSize: "20px", fontWeight: 700, borderRadius: "6px", padding: "18px 48px", textDecoration: "none" }}>
+                  Bekijk aanbiedingen
+                </Button>
+              </Section>
+            ) : (
+              // Donkergroene strook (huisstijl) onder de foto: de campagnetitel in wit en de oranje knop
+              <Section style={{ backgroundColor: GREEN, padding: "22px 28px 26px" }}>
+                <Heading as="h1" className="m-h1" style={{ ...s.h1, color: "#FFFFFF" }}>{title}</Heading>
+                <Section style={{ marginTop: "16px" }}>
+                  <PrimaryButton href={ctaUrl}>Bekijk aanbiedingen</PrimaryButton>
+                </Section>
+              </Section>
+            )}
+          </Section>
 
-          {/* Campagnetitel en de brief: aanhef, één alinea */}
+          {/* De brief: aanhef, één alinea */}
           <Section className="m-pad" style={{ padding: "32px 32px 0" }}>
-            {header !== 3 && <Heading as="h1" className="m-h1" style={s.h1}>{title}</Heading>}
-            <Section style={{ marginTop: header === 3 ? 0 : "16px" }}>
-              <Letter firstName={firstName}>{intro}</Letter>
-            </Section>
+            <Letter firstName={firstName}>{intro}</Letter>
           </Section>
 
           {/* De titel van de lijst staat er direct boven; vier dealrijen onder elkaar */}

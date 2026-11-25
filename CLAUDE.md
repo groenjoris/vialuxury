@@ -229,10 +229,14 @@ band (`QuickSearch`: Best geboekt, Stedentrips, Aan zee, Romantisch, Wellness, M
 de R1-zoekpagina); bronnen `email-designs/emails/commercieel-*.tsx`, foto's in
 `public/images/mail/commercieel/`. De voorbeelden worden per stuk gebriefd:
 1. `commercieel-content-multi-deal` ("Content (Multi-deal)"): meerdere deals rond een thema (kerstmarkten). Sfeerfoto
-   direct onder de header over de hele breedte van de mail (buiten de `<Container>`), campagnetitel "Winter Wonderweken", brief (`Letter`), titel "Hotels bij de mooiste
-   kerstmarkten" boven vier dealrijen (`DealRow`). Het arrangement blijft hetzelfde; alleen dealtitel en foto
-   verwijzen naar de kerstmarkt in de buurt. Alleen voco The Hague staat in `deals.json`; de andere drie hebben
-   voorbeeldprijzen en linken naar de R1-zoekpagina.
+   binnen de marges van de header (links gelijk met het logo, rechts met het einde van het Trustpilot-logo; 24 px,
+   bij header 3 links 0). Twee opzetten, gekoppeld aan de headerschakelaar: bij header 1 en 2 direct onder de foto een
+   donkergroene strook (huisstijlgroen #00675F, even breed als de foto) met de campagnetitel "Winter Wonderweken" in wit
+   en de oranje knop "Bekijk aanbiedingen" (R1-zoekpagina); bij header 3 staat de titel al in de header en staat onder de
+   foto alleen een grote, gecentreerde knop (20 px; bewuste uitzondering op "alles links"). Daarna de brief (`Letter`)
+   en de titel "Hotels bij de mooiste kerstmarkten" boven vier dealrijen (`DealRow`). Het arrangement blijft hetzelfde;
+   alleen dealtitel en foto verwijzen naar de kerstmarkt in de buurt. Alleen voco The Hague staat in `deals.json`; de
+   andere drie hebben voorbeeldprijzen en linken naar de R1-zoekpagina.
 2. `commercieel-dedicated-hotel` ("Dedicated hotel"): één hotel. Brief (`Letter`) met het aanbod vet, de knop "Bekijk
    aanbieding" onder het bericht en daaronder het arrangement op de verticale kaart (`FeaturedDeal`), met álle
    inclusies van het arrangement (`allIncludes`, hier zeven; elders maximaal vier). Voorbeeld:
