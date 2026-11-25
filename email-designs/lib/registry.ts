@@ -13,11 +13,12 @@ import CrmTerugkomactie, { herinneringProps } from "../emails/crm-terugkomactie"
 import CrmZoekopdracht from "../emails/crm-zoekopdracht";
 import CrmDealkaartVasteHoogte from "../emails/crm-dealkaart-vaste-hoogte";
 import CrmFavorieten, { tweeCouponsProps } from "../emails/crm-favorieten";
-import CommercieelContentMultiDeal, { contentVariantProps } from "../emails/commercieel-content-multi-deal";
+import { openingVariants } from "../components/crm";
+import CommercieelContentMultiDeal from "../emails/commercieel-content-multi-deal";
 import CommercieelActie from "../emails/commercieel-actie";
 import CommercieelTekst from "../emails/commercieel-tekst";
 import CommercieelCadeaukaart from "../emails/commercieel-cadeaukaart";
-import CommercieelDedicatedHotel, { metTitelProps, zonderPrijsMetTitelProps, zonderPrijsProps } from "../emails/commercieel-dedicated-hotel";
+import CommercieelDedicatedHotel from "../emails/commercieel-dedicated-hotel";
 import { incheckMails } from "./incheckMails";
 
 /** MVP: geen accountdetailpagina, boekingslinks gaan naar het boekingenoverzicht. */
@@ -419,93 +420,79 @@ export const emails: EmailEntry[] = [
     Component: CrmDealkaartVasteHoogte,
   },
   // ── Commerciële mails (volgorde = volgorde in het paneel van /commercieel) ──
-    // Content (Multi-deal): vier varianten van de opening (schakelaar in de preview)
-  ...([["native-1", "", "Native 1"], ["native-2", "-native-2", "Native 2"], ["header-titel", "-header-titel", "Header-titel"], ["foto-titel", "-foto-titel", "Titel op foto"]] as const).map(([variant, suffix, label]): EmailEntry => ({
-    slug: `commercieel-content-multi-deal${suffix}`,
-    title: "Content (Multi-deal)",
-    description: "Meerdere deals rond één thema of selectie (kerstmarkten): sfeerfoto, campagnetitel met knop, korte brief en vier dealrijen waarvan de dealtitel en de foto naar de kerstmarkt in de buurt verwijzen.",
-    section: "commercieel",
-    subject: "Winter Wonderweken: slapen bij de mooiste kerstmarkten",
-    preheader: "Glühwein, lichtjes en een hotel om de hoek.",
-    ...(suffix ? { variantOf: "commercieel-content-multi-deal" } : {}),
-    variantLabel: label,
-    Component: CommercieelContentMultiDeal,
-    props: contentVariantProps(variant),
-  })),
-    {
-      slug: "commercieel-dedicated-hotel",
+    // Elke commerciële mail bestaat ook als mobiele versie (schakelaar "Desktop | Mobiel" in de preview,
+  // slug <slug>-mobiel, prop `mobile`: de deals als gridview-kaart). Content en Dedicated hebben
+  // daarnaast vier varianten van de opening (zie CampaignOpening).
+  ...withMobile([
+    ...openingVariants.map(([variant, suffix, label]): EmailEntry => ({
+      slug: `commercieel-content-multi-deal${suffix}`,
+      title: "Content (Multi-deal)",
+      description: "Meerdere deals rond één thema of selectie (kerstmarkten): sfeerfoto met campagnetitel en knop, korte brief en vier deals waarvan de dealtitel en de foto naar de kerstmarkt in de buurt verwijzen.",
+      section: "commercieel",
+      subject: "Winter Wonderweken: slapen bij de mooiste kerstmarkten",
+      preheader: "Glühwein, lichtjes en een hotel om de hoek.",
+      ...(suffix ? { variantOf: "commercieel-content-multi-deal" } : {}),
+      variantLabel: label,
+      Component: CommercieelContentMultiDeal,
+      props: { ...CommercieelContentMultiDeal.PreviewProps, variant },
+    })),
+    ...openingVariants.map(([variant, suffix, label]): EmailEntry => ({
+      slug: `commercieel-dedicated-hotel${suffix}`,
       title: "Dedicated hotel",
-      description: "Eén hotel: korte brief met het aanbod, de knop 'Bekijk aanbieding' en het arrangement op de verticale dealkaart.",
+      description: "Eén hotel: headerbeeld met de actie en een knop, korte brief met het aanbod, het arrangement op de verticale dealkaart met alle inclusies en knoppen naar het andere aanbod van het hotel.",
       section: "commercieel",
       subject: "Ons beste hotelarrangement van de maand",
       preheader: "2 nachten voor 2 personen op de Veluwe, inclusief diner.",
-      variantLabel: "Met prijs / Zonder titel",
+      ...(suffix ? { variantOf: "commercieel-dedicated-hotel" } : {}),
+      variantLabel: label,
       Component: CommercieelDedicatedHotel,
-    },
+      props: { ...CommercieelDedicatedHotel.PreviewProps, variant },
+    })),
     {
-      slug: "commercieel-dedicated-hotel-zonder-prijs",
-      title: "Dedicated hotel",
-      description: "Variant zonder prijs: de brief maakt nieuwsgierig en noemt geen prijs, de kaart heeft geen prijsrij.",
-      section: "commercieel",
-      subject: "Ons beste hotelarrangement van de maand",
-      preheader: "Midden in de bossen van de Veluwe. De prijs is lager dan je denkt.",
-      variantOf: "commercieel-dedicated-hotel",
-      variantLabel: "Zonder prijs / Zonder titel",
-      Component: CommercieelDedicatedHotel,
-      props: zonderPrijsProps,
-    },
-    {
-      slug: "commercieel-dedicated-hotel-met-titel",
-      title: "Dedicated hotel",
-      description: "Variant met titel: 'Deal van de maand november' groot boven het bericht.",
-      section: "commercieel",
-      subject: "Ons beste hotelarrangement van de maand",
-      preheader: "2 nachten voor 2 personen op de Veluwe, inclusief diner.",
-      variantOf: "commercieel-dedicated-hotel",
-      variantLabel: "Met prijs / Met titel",
-      Component: CommercieelDedicatedHotel,
-      props: metTitelProps,
-    },
-    {
-      slug: "commercieel-dedicated-hotel-zonder-prijs-met-titel",
-      title: "Dedicated hotel",
-      description: "Variant met titel en zonder prijs.",
-      section: "commercieel",
-      subject: "Ons beste hotelarrangement van de maand",
-      preheader: "Midden in de bossen van de Veluwe. De prijs is lager dan je denkt.",
-      variantOf: "commercieel-dedicated-hotel",
-      variantLabel: "Zonder prijs / Met titel",
-      Component: CommercieelDedicatedHotel,
-      props: zonderPrijsMetTitelProps,
-    },
-    {
-      slug: "commercieel-actie",
-      title: "Actie (Goodiebox)",
-      description: "Een cadeau of extra bij een boeking: actiefoto, titel met de deadline, korte brief, de actiecode als coupon, vier geselecteerde deals en een knop naar alle aanbiedingen.",
-      section: "commercieel",
-      subject: "Sanne, je Goodiebox t.w.v. €150 staat klaar",
-      preheader: "Boek voor 7 december en hij is van jou.",
-      Component: CommercieelActie,
-    },
-    {
-      slug: "commercieel-tekst",
-      title: "Tekst (Zaterdagkorting)",
-      description: "Mail zonder deals: actiegraphic (feestelijke coupon van €15), korte brief, de persoonlijke code als coupon, één knop en drie stappen om de code te verzilveren.",
-      section: "commercieel",
-      subject: "Sanne, alleen vandaag: €15 korting voor jou",
-      preheader: "Je persoonlijke code vervalt om middernacht.",
-      Component: CommercieelTekst,
-    },
-    {
-      slug: "commercieel-cadeaukaart",
-      title: "Cadeaukaart",
-      description: "Cadeaukaarten verkopen: sfeerbeeld in twee helften, titel, brief met de uitleg, de staffel als tabel (waarde cadeaukaart en jouw persoonlijke korting), slotzin en knop.",
-      section: "commercieel",
-      subject: "Geef een cadeaukaart, krijg zelf tot €120 korting",
-      preheader: "Het cadeau waar ze nog jaren over vertellen.",
-      Component: CommercieelCadeaukaart,
-    },
+        slug: "commercieel-actie",
+        title: "Actie (Goodiebox)",
+        description: "Een cadeau of extra bij een boeking: actiefoto, titel met de deadline, korte brief, de actiecode als coupon, vier geselecteerde deals en een knop naar alle aanbiedingen.",
+        section: "commercieel",
+        subject: "Sanne, je Goodiebox t.w.v. €150 staat klaar",
+        preheader: "Boek voor 7 december en hij is van jou.",
+        Component: CommercieelActie,
+      },
+      {
+        slug: "commercieel-tekst",
+        title: "Tekst (Zaterdagkorting)",
+        description: "Mail zonder deals: actiegraphic (feestelijke coupon van €15), korte brief, de persoonlijke code als coupon, één knop en drie stappen om de code te verzilveren.",
+        section: "commercieel",
+        subject: "Sanne, alleen vandaag: €15 korting voor jou",
+        preheader: "Je persoonlijke code vervalt om middernacht.",
+        Component: CommercieelTekst,
+      },
+      {
+        slug: "commercieel-cadeaukaart",
+        title: "Cadeaukaart",
+        description: "Cadeaukaarten verkopen: sfeerbeeld in twee helften, titel, brief met de uitleg, de staffel als tabel (waarde cadeaukaart en jouw persoonlijke korting), slotzin en knop.",
+        section: "commercieel",
+        subject: "Geef een cadeaukaart, krijg zelf tot €120 korting",
+        preheader: "Het cadeau waar ze nog jaren over vertellen.",
+        Component: CommercieelCadeaukaart,
+      },
+  ]),
 ];
+
+/** Voegt van elke mail de mobiele versie toe (slug <slug>-mobiel); de schakelaar is "Desktop | Mobiel". */
+function withMobile(list: EmailEntry[]): EmailEntry[] {
+  return list.flatMap((e) =>
+    (["Desktop", "Mobiel"] as const).map((device): EmailEntry => {
+      const mobile = device === "Mobiel";
+      return {
+        ...e,
+        slug: mobile ? `${e.slug}-mobiel` : e.slug,
+        ...(mobile || e.variantOf ? { variantOf: e.variantOf ?? e.slug } : {}),
+        variantLabel: `${e.variantLabel ? `${e.variantLabel} / ` : ""}${device}`,
+        props: { ...(e.props ?? e.Component.PreviewProps), mobile },
+      };
+    }),
+  );
+}
 
 export function getEmail(slug: string): EmailEntry | undefined {
   return emails.find((e) => e.slug === slug);

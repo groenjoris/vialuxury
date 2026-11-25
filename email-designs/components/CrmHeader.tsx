@@ -12,14 +12,14 @@ export default function CrmHeader({ mode = "light", title }: { mode?: EmailMode;
   return (
     <Section style={{ backgroundColor: c.frame, width: "100%" }}>
       <Container style={{ width: "100%", maxWidth: "626px" }}>
-        <Section style={{ padding: title ? "15px 24px 15px 0" : "20px 24px" }}>
+        <Section className={title ? "m-head-pad" : undefined} style={{ padding: title ? "15px 24px 15px 0" : "20px 24px" }}>
           {title ? (
             <Row>
               <Column style={{ width: "76px", verticalAlign: "middle" }}>
                 <Img src={`${baseUrl}/images/mail/logo-vialuxury-square.png`} alt="ViaLuxury" width="76" height="60" style={{ display: "block" }} />
               </Column>
-              <Column align="center" style={{ verticalAlign: "middle", padding: "0 20px", textAlign: "center" }}>
-                <Text style={{ fontFamily: font.heading, fontWeight: 600, fontSize: "32px", lineHeight: "1.2", color: "#FFFFFF", margin: 0, textAlign: "center" }}>{title}</Text>
+              <Column align="center" className="m-head-cell" style={{ verticalAlign: "middle", padding: "0 20px", textAlign: "center" }}>
+                <Text className="m-head-title" style={{ fontFamily: font.heading, fontWeight: 600, fontSize: "32px", lineHeight: "1.2", color: "#FFFFFF", margin: 0, textAlign: "center" }}>{title}</Text>
               </Column>
               <Column align="right" style={{ verticalAlign: "middle", width: "106px" }}>{trustpilot}</Column>
             </Row>

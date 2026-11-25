@@ -219,47 +219,55 @@ rechterkolom); het losse blok "Hulp nodig?" in de mail is daarmee vervallen. In 
 heeft de helft van de dealrijen twee foto's onder elkaar met 6 px wit ertussen in plaats van één langwerpige foto
 (`RowDeal.image2`; de kaart houdt zijn eigen hoogte, anders dan `DealRowFixed`; in Content de kerstmarkt boven en het
 hotel onder). De headerschakelaar "Header 1 | 2 | 3" van 2026-11-25 is een dag later vervallen: varianten
-maken we per mail (te beginnen met Content), alle andere commerciële mails hebben de gewone header. Ze eindigen met het blok "Snel zoeken" op een beige
-band (`QuickSearch`: Best geboekt, Stedentrips, Aan zee, Romantisch, Wellness, Met diner; witte snelfilterknoppen naar
-de R1-zoekpagina); bronnen `email-designs/emails/commercieel-*.tsx`, foto's in
+maken we per mail. Feedback van de opdrachtgever (2026-11-26) is verwerkt:
+- Mobiele versie van elke commerciële mail: schakelaar "Desktop | Mobiel" in de previewkop (registry `withMobile`, slug
+  `<slug>-mobiel`, prop `mobile`; de preview toont die in een frame van 390 px). Mobiel staan de deals als
+  gridview-kaart (`FeaturedDeal`: één foto boven, tekst eronder), want twee foto's naast de tekst worden te lang. Extra
+  mobiele regels in `commercieelCss` (crm.tsx).
+- Opening met actietitel en knop (`CampaignOpening` in crm.tsx, voor Content en Dedicated), vier varianten met een
+  schakelaar (`openingVariants`, slug `<slug>[-native-2|-header-titel|-foto-titel]`): de sfeerfoto staat binnen de marges
+  van de header (24 px) en is klikbaar. Native 1: onder de foto een donkergroen vlak (huisstijlgroen #00675F, ronde
+  hoeken van 14 px onderaan), witte titel, zwarte knop. Native 2: hetzelfde in beige met zwarte titel en oranje knop.
+  Header-titel: de titel staat in de header (`CrmHeader`-prop `title`: vierkant logo 76 × 60 tegen de linkerrand, titel
+  32 px wit gecentreerd tussen logo en Trustpilot), de foto begint tegen de linkerrand en eronder staat een grote,
+  gecentreerde oranje knop. Titel op foto: gewone header, de titel groot (44 px, wit) linksboven op de foto, de zwarte
+  knop linksonder en rechtsonder een ronde oranje sticker (vanafprijs of korting); een donker verloop houdt de tekst
+  leesbaar. Bewuste uitzondering op "geen tekst op een foto" en "geen stickers".
+- Actiemails met een code (Actie, Tekst): in de footer staan de geldigheid van de code en de link "Bekijk de
+  actievoorwaarden" bovenaan de kleine lettertjes (`CrmFooter`-prop `terms`).
+- "Snel zoeken" (`QuickSearch`: Best geboekt, Stedentrips, Aan zee, Romantisch, Wellness, Met diner; witte
+  snelfilterknoppen op een beige band naar de R1-zoekpagina) staat alleen nog onderaan Content en Tekst, niet in
+  Dedicated, Actie en Cadeaukaart.
+Bronnen `email-designs/emails/commercieel-*.tsx`, foto's in
 `public/images/mail/commercieel/`. De voorbeelden worden per stuk gebriefd:
-1. `commercieel-content-multi-deal` ("Content (Multi-deal)"): meerdere deals rond een thema (kerstmarkten). Sfeerfoto
-   binnen de marges van de header (links gelijk met het logo, rechts met het einde van het Trustpilot-logo; 24 px).
-   Vier varianten van de opening (prop `variant`, schakelaar in de previewkop, slug
-   `commercieel-content-multi-deal[-native-2|-header-titel|-foto-titel]`):
-   - Native 1 (standaard): onder de foto een donkergroen vlak (huisstijlgroen #00675F, even breed als de foto, ronde
-     hoeken van 14 px aan de onderkant) met de campagnetitel "Winter Wonderweken" in wit en de zwarte knop "Bekijk
-     aanbiedingen" (R1-zoekpagina).
-   - Native 2: dezelfde opzet in een andere kleurstelling: beige vlak, zwarte titel, oranje knop.
-   - Header-titel: de titel staat in de header (`CrmHeader`-prop `title`: vierkant logo `logo-vialuxury-square.png`,
-     76 × 60, tegen de linkerrand; titel 32 px wit, gecentreerd tussen logo en Trustpilot); de foto begint dan ook tegen
-     de linkerrand en eronder staat alleen een grote, gecentreerde oranje knop (20 px).
-   - Titel op foto: gewone header; de titel staat groot (44 px, wit) linksboven op de foto en de zwarte knop linksonder
-     op de foto (zwart staat op deze foto beter dan oranje); een donker verloop boven en onder houdt de tekst leesbaar. Bewuste uitzondering op "geen tekst op een
-     foto".
-   Daarna de brief (`Letter`) en de titel "Hotels bij de mooiste kerstmarkten" boven vier dealrijen (`DealRow`). Het
-   arrangement blijft hetzelfde; alleen dealtitel en foto verwijzen naar de kerstmarkt in de buurt. Alleen voco The
+1. `commercieel-content-multi-deal` ("Content (Multi-deal)"): meerdere deals rond een thema (kerstmarkten). Opening
+   met de campagnetitel "Winter Wonderweken" en de knop "Bekijk aanbiedingen" (R1-zoekpagina), sticker "vanaf €239".
+   Daarna de brief (`Letter`) met dezelfde knop eronder (directe CTA bovenin), de titel "Hotels bij de mooiste
+   kerstmarkten" boven vier dealrijen (`DealRow`) en onder de lijst de zwarte knop "Bekijk alle winterarrangementen".
+   Het arrangement blijft hetzelfde; alleen dealtitel en foto verwijzen naar de kerstmarkt in de buurt. Alleen voco The
    Hague staat in `deals.json`; de andere drie hebben voorbeeldprijzen en linken naar de R1-zoekpagina.
-2. `commercieel-dedicated-hotel` ("Dedicated hotel"): één hotel. Brief (`Letter`) met het aanbod vet, de knop "Bekijk
-   aanbieding" onder het bericht en daaronder het arrangement op de verticale kaart (`FeaturedDeal`), met álle
-   inclusies van het arrangement (`allIncludes`, hier zeven; elders maximaal vier). Voorbeeld:
-   Veluwe Hotel de Beyaerd (Stakenberg staat niet in `deals.json`). Variant `-zonder-prijs` (schakelaar "Met prijs |
-   Zonder prijs"): de brief steekt in op nieuwsgierigheid en noemt geen prijs, de kaart heeft geen prijsrij. Tweede schakelaar "Zonder titel |
-   Met titel" (`-met-titel`: grote titel "Deal van de maand november" boven het bericht); de schakelaars zijn los te
-   combineren: een `variantLabel` met " / " ("Met prijs / Zonder titel") geeft in de preview per deel een schakelaar.
+2. `commercieel-dedicated-hotel` ("Dedicated hotel"): één hotel. Opening met het headerbeeld van het hotel en kort de
+   actie ("2 nachten op de Veluwe voor €319", knop "Bekijk aanbieding", sticker "-29% korting"): daar wordt boven de
+   vouw de eerste interesse gewekt en vaak geklikt. Daarna de brief (`Letter`) met het aanbod vet, de knop "Bekijk
+   aanbieding" en het arrangement op de verticale kaart (`FeaturedDeal`) met álle inclusies (`allIncludes`, hier zeven,
+   kan oplopen tot acht à tien; elders maximaal vier). Onder de kaart een beige band "Meer van [hotel]" met witte
+   knoppen naar het andere aanbod van het hotel (1 nacht, 3 nachten; echte arrangementen uit `deals.json`). Geen "Snel
+   zoeken". Voorbeeld: Veluwe Hotel de Beyaerd (Stakenberg staat niet in `deals.json`). De oude schakelaars "Met prijs |
+   Zonder prijs" en "Zonder titel | Met titel" zijn vervallen.
 3. `commercieel-actie` ("Actie (Goodiebox)"): een cadeau of extra bij een boeking. Actiegraphic direct onder de header over de hele breedte van de mail,
    buiten de `<Container>` (`goodiebox-hero.jpg`: een graphic van de actie, geen foto, dus mét tekst; de regel "geen tekst op een foto"
    geldt voor echte foto's zoals hotel- en sfeerbeelden, niet voor een aangeleverde actiegraphic/infographic), titel "Boek voor 7 december en ontvang onze Goodiebox", brief,
    de actiecode als coupon (`CodeBlock`, HERFSTGB372, t/m 6 december 23:59 uur), daaronder de zwarte knop "Bekijk ons aanbod"
    (zoekpagina), titel "Voor jou geselecteerde deals"
    met subtitel boven vier dealrijen, en omdat het cadeau bij elke boeking geldt onderaan één regel met de zwarte knop
-   "Bekijk alle aanbiedingen" naar de R1-zoekpagina.
+   "Bekijk alle aanbiedingen" naar de R1-zoekpagina. Geen "Snel zoeken"; in de footer de geldigheid van de code en de
+   link naar de actievoorwaarden.
 4. `commercieel-tekst` ("Tekst (Zaterdagkorting)"): mail zonder deals. Actiegraphic over de hele breedte
    (`zaterdag-kortingsdag.jpg`: gouden coupon "€15 persoonlijke korting, alleen vandaag" met confetti op donkerblauw,
    in de stijl van de Goodiebox-graphic; gemaakt met `scripts/mail-graphics/zaterdag-coupon.py <uitvoerpad>`, Recoleta
    en Basis Grotesque uit `public/fonts`), brief, de persoonlijke code als coupon (`CodeBlock`, SV15V-2FHT, "vandaag
    23:59 uur"), "Zo verzilver je je code" in drie stappen en daaronder de oranje knop "Bekijk onze
-   arrangementen".
+   arrangementen". In de footer de geldigheid van de code en de link naar de actievoorwaarden.
 5. `commercieel-cadeaukaart` ("Cadeaukaart"): cadeaukaarten verkopen. Sfeerbeeld in twee helften over de hele breedte
    (`cadeaukaart-hero.jpg`: links de experience, rechts de productfoto op beige), titel "Maak iemand blij met een
    cadeaukaart en ontvang zelf tot €120 korting", brief met de uitleg, de staffel als tabel met twee kolommen ("Waarde

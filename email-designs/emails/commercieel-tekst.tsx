@@ -2,7 +2,7 @@ import { Body, Container, Head, Html, Img, Preview, Section, Text } from "@react
 import * as React from "react";
 import CrmFooter from "../components/CrmFooter";
 import CrmHeader from "../components/CrmHeader";
-import { BeigeBand, CodeBlock, crmCss, Letter, PrimaryButton, QuickSearch, s, site } from "../components/crm";
+import { BeigeBand, CodeBlock, commercieelCss, crmCss, Letter, PrimaryButton, QuickSearch, s, site } from "../components/crm";
 import { baseUrl, font, newsletter } from "../components/theme";
 
 // Commerciële mail 4: Tekst. Een mail zonder deals die het van de tekst moet hebben, hier de
@@ -37,7 +37,7 @@ export default function CommercieelTekst({ recipientEmail, firstName, hero, hero
     <Html lang="nl">
       <Head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <style>{crmCss}</style>
+        <style>{crmCss + commercieelCss}</style>
       </Head>
       <Preview>Je persoonlijke code vervalt om middernacht.</Preview>
       <Body style={{ backgroundColor: c.bg, margin: 0, padding: 0, fontFamily: font.body }}>
@@ -74,7 +74,8 @@ export default function CommercieelTekst({ recipientEmail, firstName, hero, hero
           <QuickSearch />
         </BeigeBand>
 
-        <CrmFooter recipientEmail={recipientEmail} reason="omdat je je hebt aangemeld voor onze nieuwsbrief" help={2} quote />
+        <CrmFooter recipientEmail={recipientEmail} reason="omdat je je hebt aangemeld voor onze nieuwsbrief" help={2} quote
+          terms={{ text: `Je persoonlijke code ${code} is geldig tot en met ${deadline}.`, url: "https://vialuxury.nl" }} />
       </Body>
     </Html>
   );

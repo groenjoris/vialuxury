@@ -2,92 +2,194 @@
   {
     "slug": "commercieel-content-multi-deal",
     "title": "Content (Multi-deal)",
-    "description": "Meerdere deals rond één thema of selectie (kerstmarkten): sfeerfoto, campagnetitel met knop, korte brief en vier dealrijen waarvan de dealtitel en de foto naar de kerstmarkt in de buurt verwijzen.",
+    "description": "Meerdere deals rond één thema of selectie (kerstmarkten): sfeerfoto met campagnetitel en knop, korte brief en vier deals waarvan de dealtitel en de foto naar de kerstmarkt in de buurt verwijzen.",
     "subject": "Winter Wonderweken: slapen bij de mooiste kerstmarkten",
     "preheader": "Glühwein, lichtjes en een hotel om de hoek.",
-    "variantLabel": "Native 1"
+    "variantLabel": "Native 1 / Desktop"
+  },
+  {
+    "slug": "commercieel-content-multi-deal-mobiel",
+    "title": "Content (Multi-deal)",
+    "description": "Meerdere deals rond één thema of selectie (kerstmarkten): sfeerfoto met campagnetitel en knop, korte brief en vier deals waarvan de dealtitel en de foto naar de kerstmarkt in de buurt verwijzen.",
+    "subject": "Winter Wonderweken: slapen bij de mooiste kerstmarkten",
+    "preheader": "Glühwein, lichtjes en een hotel om de hoek.",
+    "variantOf": "commercieel-content-multi-deal",
+    "variantLabel": "Native 1 / Mobiel"
   },
   {
     "slug": "commercieel-content-multi-deal-native-2",
     "title": "Content (Multi-deal)",
-    "description": "Meerdere deals rond één thema of selectie (kerstmarkten): sfeerfoto, campagnetitel met knop, korte brief en vier dealrijen waarvan de dealtitel en de foto naar de kerstmarkt in de buurt verwijzen.",
+    "description": "Meerdere deals rond één thema of selectie (kerstmarkten): sfeerfoto met campagnetitel en knop, korte brief en vier deals waarvan de dealtitel en de foto naar de kerstmarkt in de buurt verwijzen.",
     "subject": "Winter Wonderweken: slapen bij de mooiste kerstmarkten",
     "preheader": "Glühwein, lichtjes en een hotel om de hoek.",
     "variantOf": "commercieel-content-multi-deal",
-    "variantLabel": "Native 2"
+    "variantLabel": "Native 2 / Desktop"
+  },
+  {
+    "slug": "commercieel-content-multi-deal-native-2-mobiel",
+    "title": "Content (Multi-deal)",
+    "description": "Meerdere deals rond één thema of selectie (kerstmarkten): sfeerfoto met campagnetitel en knop, korte brief en vier deals waarvan de dealtitel en de foto naar de kerstmarkt in de buurt verwijzen.",
+    "subject": "Winter Wonderweken: slapen bij de mooiste kerstmarkten",
+    "preheader": "Glühwein, lichtjes en een hotel om de hoek.",
+    "variantOf": "commercieel-content-multi-deal",
+    "variantLabel": "Native 2 / Mobiel"
   },
   {
     "slug": "commercieel-content-multi-deal-header-titel",
     "title": "Content (Multi-deal)",
-    "description": "Meerdere deals rond één thema of selectie (kerstmarkten): sfeerfoto, campagnetitel met knop, korte brief en vier dealrijen waarvan de dealtitel en de foto naar de kerstmarkt in de buurt verwijzen.",
+    "description": "Meerdere deals rond één thema of selectie (kerstmarkten): sfeerfoto met campagnetitel en knop, korte brief en vier deals waarvan de dealtitel en de foto naar de kerstmarkt in de buurt verwijzen.",
     "subject": "Winter Wonderweken: slapen bij de mooiste kerstmarkten",
     "preheader": "Glühwein, lichtjes en een hotel om de hoek.",
     "variantOf": "commercieel-content-multi-deal",
-    "variantLabel": "Header-titel"
+    "variantLabel": "Header-titel / Desktop"
+  },
+  {
+    "slug": "commercieel-content-multi-deal-header-titel-mobiel",
+    "title": "Content (Multi-deal)",
+    "description": "Meerdere deals rond één thema of selectie (kerstmarkten): sfeerfoto met campagnetitel en knop, korte brief en vier deals waarvan de dealtitel en de foto naar de kerstmarkt in de buurt verwijzen.",
+    "subject": "Winter Wonderweken: slapen bij de mooiste kerstmarkten",
+    "preheader": "Glühwein, lichtjes en een hotel om de hoek.",
+    "variantOf": "commercieel-content-multi-deal",
+    "variantLabel": "Header-titel / Mobiel"
   },
   {
     "slug": "commercieel-content-multi-deal-foto-titel",
     "title": "Content (Multi-deal)",
-    "description": "Meerdere deals rond één thema of selectie (kerstmarkten): sfeerfoto, campagnetitel met knop, korte brief en vier dealrijen waarvan de dealtitel en de foto naar de kerstmarkt in de buurt verwijzen.",
+    "description": "Meerdere deals rond één thema of selectie (kerstmarkten): sfeerfoto met campagnetitel en knop, korte brief en vier deals waarvan de dealtitel en de foto naar de kerstmarkt in de buurt verwijzen.",
     "subject": "Winter Wonderweken: slapen bij de mooiste kerstmarkten",
     "preheader": "Glühwein, lichtjes en een hotel om de hoek.",
     "variantOf": "commercieel-content-multi-deal",
-    "variantLabel": "Titel op foto"
+    "variantLabel": "Titel op foto / Desktop"
+  },
+  {
+    "slug": "commercieel-content-multi-deal-foto-titel-mobiel",
+    "title": "Content (Multi-deal)",
+    "description": "Meerdere deals rond één thema of selectie (kerstmarkten): sfeerfoto met campagnetitel en knop, korte brief en vier deals waarvan de dealtitel en de foto naar de kerstmarkt in de buurt verwijzen.",
+    "subject": "Winter Wonderweken: slapen bij de mooiste kerstmarkten",
+    "preheader": "Glühwein, lichtjes en een hotel om de hoek.",
+    "variantOf": "commercieel-content-multi-deal",
+    "variantLabel": "Titel op foto / Mobiel"
   },
   {
     "slug": "commercieel-dedicated-hotel",
     "title": "Dedicated hotel",
-    "description": "Eén hotel: korte brief met het aanbod, de knop 'Bekijk aanbieding' en het arrangement op de verticale dealkaart.",
+    "description": "Eén hotel: headerbeeld met de actie en een knop, korte brief met het aanbod, het arrangement op de verticale dealkaart met alle inclusies en knoppen naar het andere aanbod van het hotel.",
     "subject": "Ons beste hotelarrangement van de maand",
     "preheader": "2 nachten voor 2 personen op de Veluwe, inclusief diner.",
-    "variantLabel": "Met prijs / Zonder titel"
+    "variantLabel": "Native 1 / Desktop"
   },
   {
-    "slug": "commercieel-dedicated-hotel-zonder-prijs",
+    "slug": "commercieel-dedicated-hotel-mobiel",
     "title": "Dedicated hotel",
-    "description": "Variant zonder prijs: de brief maakt nieuwsgierig en noemt geen prijs, de kaart heeft geen prijsrij.",
-    "subject": "Ons beste hotelarrangement van de maand",
-    "preheader": "Midden in de bossen van de Veluwe. De prijs is lager dan je denkt.",
-    "variantOf": "commercieel-dedicated-hotel",
-    "variantLabel": "Zonder prijs / Zonder titel"
-  },
-  {
-    "slug": "commercieel-dedicated-hotel-met-titel",
-    "title": "Dedicated hotel",
-    "description": "Variant met titel: 'Deal van de maand november' groot boven het bericht.",
+    "description": "Eén hotel: headerbeeld met de actie en een knop, korte brief met het aanbod, het arrangement op de verticale dealkaart met alle inclusies en knoppen naar het andere aanbod van het hotel.",
     "subject": "Ons beste hotelarrangement van de maand",
     "preheader": "2 nachten voor 2 personen op de Veluwe, inclusief diner.",
     "variantOf": "commercieel-dedicated-hotel",
-    "variantLabel": "Met prijs / Met titel"
+    "variantLabel": "Native 1 / Mobiel"
   },
   {
-    "slug": "commercieel-dedicated-hotel-zonder-prijs-met-titel",
+    "slug": "commercieel-dedicated-hotel-native-2",
     "title": "Dedicated hotel",
-    "description": "Variant met titel en zonder prijs.",
+    "description": "Eén hotel: headerbeeld met de actie en een knop, korte brief met het aanbod, het arrangement op de verticale dealkaart met alle inclusies en knoppen naar het andere aanbod van het hotel.",
     "subject": "Ons beste hotelarrangement van de maand",
-    "preheader": "Midden in de bossen van de Veluwe. De prijs is lager dan je denkt.",
+    "preheader": "2 nachten voor 2 personen op de Veluwe, inclusief diner.",
     "variantOf": "commercieel-dedicated-hotel",
-    "variantLabel": "Zonder prijs / Met titel"
+    "variantLabel": "Native 2 / Desktop"
+  },
+  {
+    "slug": "commercieel-dedicated-hotel-native-2-mobiel",
+    "title": "Dedicated hotel",
+    "description": "Eén hotel: headerbeeld met de actie en een knop, korte brief met het aanbod, het arrangement op de verticale dealkaart met alle inclusies en knoppen naar het andere aanbod van het hotel.",
+    "subject": "Ons beste hotelarrangement van de maand",
+    "preheader": "2 nachten voor 2 personen op de Veluwe, inclusief diner.",
+    "variantOf": "commercieel-dedicated-hotel",
+    "variantLabel": "Native 2 / Mobiel"
+  },
+  {
+    "slug": "commercieel-dedicated-hotel-header-titel",
+    "title": "Dedicated hotel",
+    "description": "Eén hotel: headerbeeld met de actie en een knop, korte brief met het aanbod, het arrangement op de verticale dealkaart met alle inclusies en knoppen naar het andere aanbod van het hotel.",
+    "subject": "Ons beste hotelarrangement van de maand",
+    "preheader": "2 nachten voor 2 personen op de Veluwe, inclusief diner.",
+    "variantOf": "commercieel-dedicated-hotel",
+    "variantLabel": "Header-titel / Desktop"
+  },
+  {
+    "slug": "commercieel-dedicated-hotel-header-titel-mobiel",
+    "title": "Dedicated hotel",
+    "description": "Eén hotel: headerbeeld met de actie en een knop, korte brief met het aanbod, het arrangement op de verticale dealkaart met alle inclusies en knoppen naar het andere aanbod van het hotel.",
+    "subject": "Ons beste hotelarrangement van de maand",
+    "preheader": "2 nachten voor 2 personen op de Veluwe, inclusief diner.",
+    "variantOf": "commercieel-dedicated-hotel",
+    "variantLabel": "Header-titel / Mobiel"
+  },
+  {
+    "slug": "commercieel-dedicated-hotel-foto-titel",
+    "title": "Dedicated hotel",
+    "description": "Eén hotel: headerbeeld met de actie en een knop, korte brief met het aanbod, het arrangement op de verticale dealkaart met alle inclusies en knoppen naar het andere aanbod van het hotel.",
+    "subject": "Ons beste hotelarrangement van de maand",
+    "preheader": "2 nachten voor 2 personen op de Veluwe, inclusief diner.",
+    "variantOf": "commercieel-dedicated-hotel",
+    "variantLabel": "Titel op foto / Desktop"
+  },
+  {
+    "slug": "commercieel-dedicated-hotel-foto-titel-mobiel",
+    "title": "Dedicated hotel",
+    "description": "Eén hotel: headerbeeld met de actie en een knop, korte brief met het aanbod, het arrangement op de verticale dealkaart met alle inclusies en knoppen naar het andere aanbod van het hotel.",
+    "subject": "Ons beste hotelarrangement van de maand",
+    "preheader": "2 nachten voor 2 personen op de Veluwe, inclusief diner.",
+    "variantOf": "commercieel-dedicated-hotel",
+    "variantLabel": "Titel op foto / Mobiel"
   },
   {
     "slug": "commercieel-actie",
     "title": "Actie (Goodiebox)",
     "description": "Een cadeau of extra bij een boeking: actiefoto, titel met de deadline, korte brief, de actiecode als coupon, vier geselecteerde deals en een knop naar alle aanbiedingen.",
     "subject": "Sanne, je Goodiebox t.w.v. €150 staat klaar",
-    "preheader": "Boek voor 7 december en hij is van jou."
+    "preheader": "Boek voor 7 december en hij is van jou.",
+    "variantLabel": "Desktop"
+  },
+  {
+    "slug": "commercieel-actie-mobiel",
+    "title": "Actie (Goodiebox)",
+    "description": "Een cadeau of extra bij een boeking: actiefoto, titel met de deadline, korte brief, de actiecode als coupon, vier geselecteerde deals en een knop naar alle aanbiedingen.",
+    "subject": "Sanne, je Goodiebox t.w.v. €150 staat klaar",
+    "preheader": "Boek voor 7 december en hij is van jou.",
+    "variantOf": "commercieel-actie",
+    "variantLabel": "Mobiel"
   },
   {
     "slug": "commercieel-tekst",
     "title": "Tekst (Zaterdagkorting)",
     "description": "Mail zonder deals: actiegraphic (feestelijke coupon van €15), korte brief, de persoonlijke code als coupon, één knop en drie stappen om de code te verzilveren.",
     "subject": "Sanne, alleen vandaag: €15 korting voor jou",
-    "preheader": "Je persoonlijke code vervalt om middernacht."
+    "preheader": "Je persoonlijke code vervalt om middernacht.",
+    "variantLabel": "Desktop"
+  },
+  {
+    "slug": "commercieel-tekst-mobiel",
+    "title": "Tekst (Zaterdagkorting)",
+    "description": "Mail zonder deals: actiegraphic (feestelijke coupon van €15), korte brief, de persoonlijke code als coupon, één knop en drie stappen om de code te verzilveren.",
+    "subject": "Sanne, alleen vandaag: €15 korting voor jou",
+    "preheader": "Je persoonlijke code vervalt om middernacht.",
+    "variantOf": "commercieel-tekst",
+    "variantLabel": "Mobiel"
   },
   {
     "slug": "commercieel-cadeaukaart",
     "title": "Cadeaukaart",
     "description": "Cadeaukaarten verkopen: sfeerbeeld in twee helften, titel, brief met de uitleg, de staffel als tabel (waarde cadeaukaart en jouw persoonlijke korting), slotzin en knop.",
     "subject": "Geef een cadeaukaart, krijg zelf tot €120 korting",
-    "preheader": "Het cadeau waar ze nog jaren over vertellen."
+    "preheader": "Het cadeau waar ze nog jaren over vertellen.",
+    "variantLabel": "Desktop"
+  },
+  {
+    "slug": "commercieel-cadeaukaart-mobiel",
+    "title": "Cadeaukaart",
+    "description": "Cadeaukaarten verkopen: sfeerbeeld in twee helften, titel, brief met de uitleg, de staffel als tabel (waarde cadeaukaart en jouw persoonlijke korting), slotzin en knop.",
+    "subject": "Geef een cadeaukaart, krijg zelf tot €120 korting",
+    "preheader": "Het cadeau waar ze nog jaren over vertellen.",
+    "variantOf": "commercieel-cadeaukaart",
+    "variantLabel": "Mobiel"
   }
 ]

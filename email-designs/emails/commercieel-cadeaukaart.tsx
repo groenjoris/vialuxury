@@ -2,7 +2,7 @@ import { Body, Column, Container, Head, Heading, Html, Img, Link, Preview, Row, 
 import * as React from "react";
 import CrmFooter from "../components/CrmFooter";
 import CrmHeader from "../components/CrmHeader";
-import { crmCss, Letter, PrimaryButton, s } from "../components/crm";
+import { commercieelCss, crmCss, Letter, PrimaryButton, s } from "../components/crm";
 import { baseUrl, font, newsletter } from "../components/theme";
 
 // Commerciële mail 5: Cadeaukaart. Puur om cadeaukaarten te verkopen: wie er één bestelt, krijgt
@@ -38,7 +38,7 @@ export default function CommercieelCadeaukaart({ recipientEmail, firstName, hero
     <Html lang="nl">
       <Head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <style>{crmCss}</style>
+        <style>{crmCss + commercieelCss}</style>
       </Head>
       <Preview>Het cadeau waar ze nog jaren over vertellen.</Preview>
       <Body style={{ backgroundColor: c.bg, margin: 0, padding: 0, fontFamily: font.body }}>

@@ -1,4 +1,4 @@
-import { Button, Column, Container, Img, Link, Row, Section, Text } from "@react-email/components";
+import { Button, Column, Container, Heading, Img, Link, Row, Section, Text } from "@react-email/components";
 import * as React from "react";
 import HelpBanner from "./HelpBanner";
 import { baseUrl, font, newsletter } from "./theme";
@@ -27,6 +27,20 @@ body { margin: 0 !important; padding: 0 !important; }
   .stack { display: block !important; width: 100% !important; padding: 0 0 12px !important; }
   .m-pad { padding-left: 16px !important; padding-right: 16px !important; }
   .m-h1 { font-size: 28px !important; }
+}
+`;
+
+/** Extra mobiele regels voor de commerciële mails (mobiele versie in de preview, 390 px breed). */
+export const commercieelCss = `
+@media only screen and (max-width: 480px) {
+  .m-hero { height: 230px !important; }
+  .m-hero-pad { padding-left: 16px !important; padding-right: 16px !important; }
+  .m-hero-title { font-size: 32px !important; }
+  .m-head-title { font-size: 18px !important; }
+  .m-head-cell { padding: 0 8px !important; }
+  .m-head-pad { padding: 12px 16px !important; }
+  .m-trustpilot { width: 85px !important; height: auto !important; }
+  .m-block { display: block !important; width: 100% !important; box-sizing: border-box !important; text-align: center !important; }
 }
 `;
 
@@ -602,5 +616,78 @@ export function ThemePicker({ items = themes }: { items?: Theme[] }) {
       <Text style={{ ...s.body, margin: "2px 0 0" }}>Eén klik is genoeg, dan sturen we voortaan wat je zoekt.</Text>
       <PillGrid items={items.map((t) => ({ label: t.label, icon: t.icon, href: `${site}/crm/thema?keuze=${t.id}` }))} />
     </>
+  );
+}
+
+/** Opening van een commerciële mail (Content en Dedicated), vier varianten met een schakelaar in de preview. */
+export type OpeningVariant = "native-1" | "native-2" | "header-titel" | "foto-titel";
+export const openingVariants = [["native-1", "", "Native 1"], ["native-2", "-native-2", "Native 2"], ["header-titel", "-header-titel", "Header-titel"], ["foto-titel", "-foto-titel", "Titel op foto"]] as const;
+
+/** Sfeerfoto binnen de marges van de header (links gelijk met het logo, rechts met het einde van het
+ *  Trustpilot-logo) met de actietitel en de knop:
+ *  - native-1: onder de foto een donkergroen vlak (huisstijl, ronde hoeken onderaan), witte titel, zwarte knop
+ *  - native-2: hetzelfde in beige met een zwarte titel en een oranje knop
+ *  - header-titel: de titel staat in de header (CrmHeader `title`); onder de foto alleen een grote, gecentreerde knop
+ *  - foto-titel: de titel groot linksboven op de foto, de zwarte knop linksonder en rechtsonder een ronde
+ *    sticker (`sticker`, bijv. de vanafprijs of de korting); een verloop houdt de witte tekst leesbaar
+ *  De hele foto is klikbaar (naar `href`). */
+export function CampaignOpening({ variant, hero, heroAlt, title, cta, href, sticker }: { variant: OpeningVariant; hero: string; heroAlt: string; title: string; cta: string; href: string; /** Ronde sticker op de foto (alleen foto-titel): kleine regel en grote regel. */ sticker?: { small?: string; big: string } }) {
+  const inHeader = variant === "header-titel";
+  const native2 = variant === "native-2";
+  return (
+    <Section className="m-hero-pad" style={{ padding: inHeader ? "0 24px 0 0" : "0 24px" }}>
+      {variant === "foto-titel" ? (
+        <table role="presentation" className="m-hero" cellPadding={0} cellSpacing={0} width="100%" style={{ width: "100%", height: "325px", borderCollapse: "collapse", backgroundImage: `linear-gradient(180deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 45%, rgba(0,0,0,0) 62%, rgba(0,0,0,0.45) 100%), url(${hero})`, backgroundSize: "cover", backgroundPosition: "center" }}>
+          <tbody>
+            <tr>
+              <td colSpan={2} valign="top" style={{ padding: "24px 28px 0", verticalAlign: "top" }}>
+                <Heading as="h1" className="m-hero-title" style={{ ...s.h1, fontSize: "44px", lineHeight: "1.1", color: "#FFFFFF", textShadow: "0 1px 12px rgba(0,0,0,0.45)" }}>
+                  <Link href={href} style={{ color: "#FFFFFF", textDecoration: "none" }}>{title}</Link>
+                </Heading>
+              </td>
+            </tr>
+            <tr>
+              <td valign="bottom" style={{ padding: "0 0 24px 28px", verticalAlign: "bottom" }}>
+                <SecondaryButton href={href} dark>{cta}</SecondaryButton>
+              </td>
+              {sticker && (
+                <td valign="bottom" align="right" style={{ padding: "0 24px 20px 0", verticalAlign: "bottom", width: "112px" }}>
+                  {/* Ronde sticker: oranje, tekst in wit */}
+                  <table role="presentation" cellPadding={0} cellSpacing={0} style={{ width: "104px", height: "104px", borderCollapse: "separate" }}>
+                    <tbody>
+                      <tr>
+                        <td align="center" valign="middle" style={{ width: "104px", height: "104px", borderRadius: "52px", backgroundColor: c.cta, textAlign: "center", verticalAlign: "middle", boxShadow: "0 2px 10px rgba(0,0,0,0.25)" }}>
+                          <Link href={href} style={{ textDecoration: "none", color: "#FFFFFF", fontFamily: font.body }}>
+                            {sticker.small && <span style={{ display: "block", fontSize: "14px", lineHeight: "16px" }}>{sticker.small}</span>}
+                            <span style={{ display: "block", fontSize: "28px", lineHeight: "30px", fontWeight: 700 }}>{sticker.big}</span>
+                          </Link>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </td>
+              )}
+            </tr>
+          </tbody>
+        </table>
+      ) : (
+        <Link href={href}>
+          <Img className="m-hero" src={hero} alt={heroAlt} width={inHeader ? 602 : 578} height="325" style={{ display: "block", width: "100%", height: "325px", objectFit: "cover" }} />
+        </Link>
+      )}
+      {inHeader && (
+        <Section style={{ marginTop: "24px", textAlign: "center" }}>
+          <Button href={href} style={{ backgroundColor: c.cta, color: "#FFFFFF", fontFamily: font.body, fontSize: "20px", fontWeight: 700, borderRadius: "6px", padding: "18px 48px", textDecoration: "none" }}>{cta}</Button>
+        </Section>
+      )}
+      {(variant === "native-1" || native2) && (
+        <Section style={{ backgroundColor: native2 ? "#F4F1EC" : "#00675F", padding: "22px 28px 26px", borderRadius: "0 0 14px 14px" }}>
+          <Heading as="h1" className="m-h1" style={{ ...s.h1, color: native2 ? c.heading : "#FFFFFF" }}>{title}</Heading>
+          <Section style={{ marginTop: "16px" }}>
+            {native2 ? <PrimaryButton href={href}>{cta}</PrimaryButton> : <SecondaryButton href={href} dark>{cta}</SecondaryButton>}
+          </Section>
+        </Section>
+      )}
+    </Section>
   );
 }

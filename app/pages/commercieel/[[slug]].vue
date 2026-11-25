@@ -100,7 +100,7 @@ useHead({ title: `${entry.value?.title ?? 'Commerciële mails'} — ViaLuxury` }
         <p v-if="mains.length > 1" class="crm__nav-hint">↑ ↓ om te bladeren</p>
       </nav>
       <div class="crm__center">
-        <div class="crm__mail">
+        <div class="crm__mail" :class="{ 'crm__mail--mobile': slug.endsWith('-mobiel') }">
           <template v-if="entry">
             <div class="crm__inbox">
               <span class="crm__avatar" aria-hidden="true">V</span>
@@ -149,6 +149,8 @@ useHead({ title: `${entry.value?.title ?? 'Commerciële mails'} — ViaLuxury` }
 .crm__center { flex: 1; min-width: 0; display: flex; justify-content: center; }
 @media (max-width: 900px) { .crm__nav { display: none; } }
 .crm__mail { width: 700px; max-width: 100%; background: #fff; border: 1px solid var(--color-border); border-radius: 8px; overflow: hidden; }
+/* Mobiele versie (slug eindigt op -mobiel): het frame is zo breed als een telefoon */
+.crm__mail--mobile { width: 390px; border-radius: 24px; }
 .crm__inbox { display: flex; gap: 12px; padding: 16px 20px; border-bottom: 1px solid var(--color-border); }
 .crm__avatar { flex-shrink: 0; width: 40px; height: 40px; border-radius: 50%; background: #141414; color: #fff; font-weight: 700; display: flex; align-items: center; justify-content: center; }
 .crm__meta { min-width: 0; flex: 1; }

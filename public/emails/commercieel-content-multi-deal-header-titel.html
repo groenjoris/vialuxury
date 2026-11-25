@@ -35,6 +35,17 @@
         .m-pad { padding-left: 16px !important; padding-right: 16px !important; }
         .m-h1 { font-size: 28px !important; }
       }
+
+      @media only screen and (max-width: 480px) {
+        .m-hero { height: 230px !important; }
+        .m-hero-pad { padding-left: 16px !important; padding-right: 16px !important; }
+        .m-hero-title { font-size: 32px !important; }
+        .m-head-title { font-size: 18px !important; }
+        .m-head-cell { padding: 0 8px !important; }
+        .m-head-pad { padding: 12px 16px !important; }
+        .m-trustpilot { width: 85px !important; height: auto !important; }
+        .m-block { display: block !important; width: 100% !important; box-sizing: border-box !important; text-align: center !important; }
+      }
     </style>
   </head>
   <body style="background-color:#FFFFFF">
@@ -88,6 +99,7 @@
                               cellpadding="0"
                               cellspacing="0"
                               role="presentation"
+                              class="m-head-pad"
                               style="padding:15px 24px 15px 0">
                               <tbody>
                                 <tr>
@@ -113,9 +125,11 @@
                                           </td>
                                           <td
                                             align="center"
+                                            class="m-head-cell"
                                             data-id="__react-email-column"
                                             style="vertical-align:middle;padding:0 20px;text-align:center">
                                             <p
+                                              class="m-head-title"
                                               style="font-size:32px;line-height:1.2;font-family:&#x27;Recoleta&#x27;, Georgia, &#x27;Times New Roman&#x27;, serif;font-weight:600;color:#FFFFFF;margin:0;text-align:center;margin-top:0;margin-bottom:0;margin-left:0;margin-right:0">
                                               Winter Wonderweken
                                             </p>
@@ -165,16 +179,23 @@
                       cellpadding="0"
                       cellspacing="0"
                       role="presentation"
+                      class="m-hero-pad"
                       style="padding:0 24px 0 0">
                       <tbody>
                         <tr>
                           <td>
-                            <img
-                              alt="Vrienden proosten met glühwein op een verlichte kerstmarkt"
-                              height="325"
-                              src="/images/mail/commercieel/kerstmarkt-hero.jpg"
-                              style="display:block;outline:none;border:none;text-decoration:none;width:100%;height:325px;object-fit:cover"
-                              width="602" />
+                            <a
+                              href="https://vialuxury.vercel.app/first-release/search"
+                              style="color:#067df7;text-decoration-line:none"
+                              target="_blank"
+                              ><img
+                                class="m-hero"
+                                alt="Vrienden proosten met glühwein op een verlichte kerstmarkt"
+                                height="325"
+                                src="/images/mail/commercieel/kerstmarkt-hero.jpg"
+                                style="display:block;outline:none;border:none;text-decoration:none;width:100%;height:325px;object-fit:cover"
+                                width="602"
+                            /></a>
                             <table
                               align="center"
                               width="100%"
@@ -188,7 +209,7 @@
                                   <td>
                                     <a
                                       href="https://vialuxury.vercel.app/first-release/search"
-                                      style="line-height:100%;text-decoration:none;display:inline-block;max-width:100%;mso-padding-alt:0px;background-color:#FB862C;color:#FFFFFF;font-family:&#x27;Basis Grotesque Pro&#x27;, Helvetica, Arial, sans-serif;font-weight:700;border-radius:6px;font-size:20px;padding:18px 48px;padding-top:18px;padding-right:48px;padding-bottom:18px;padding-left:48px"
+                                      style="line-height:100%;text-decoration:none;display:inline-block;max-width:100%;mso-padding-alt:0px;background-color:#FB862C;color:#FFFFFF;font-family:&#x27;Basis Grotesque Pro&#x27;, Helvetica, Arial, sans-serif;font-size:20px;font-weight:700;border-radius:6px;padding:18px 48px;padding-top:18px;padding-right:48px;padding-bottom:18px;padding-left:48px"
                                       target="_blank"
                                       ><span
                                         ><!--[if mso
@@ -245,6 +266,46 @@
                               zochten vier hotels uit bij de mooiste
                               kerstmarkten van dit jaar.
                             </p>
+                            <table
+                              align="center"
+                              width="100%"
+                              border="0"
+                              cellpadding="0"
+                              cellspacing="0"
+                              role="presentation"
+                              style="margin-top:20px">
+                              <tbody>
+                                <tr>
+                                  <td>
+                                    <a
+                                      href="https://vialuxury.vercel.app/first-release/search"
+                                      style="line-height:100%;text-decoration:none;display:inline-block;max-width:100%;mso-padding-alt:0px;background-color:#FB862C;color:#FFFFFF;font-family:&#x27;Basis Grotesque Pro&#x27;, Helvetica, Arial, sans-serif;font-size:16px;font-weight:700;border-radius:6px;padding:14px 28px;padding-top:14px;padding-right:28px;padding-bottom:14px;padding-left:28px"
+                                      target="_blank"
+                                      ><span
+                                        ><!--[if mso
+                                          ]><i
+                                            style="mso-font-width:466.6666666666667%;mso-text-raise:21"
+                                            hidden
+                                            >&#8202;&#8202;&#8202;</i
+                                          ><!
+                                        [endif]--></span
+                                      ><span
+                                        style="max-width:100%;display:inline-block;line-height:120%;mso-padding-alt:0px;mso-text-raise:10.5px"
+                                        >Bekijk aanbiedingen</span
+                                      ><span
+                                        ><!--[if mso
+                                          ]><i
+                                            style="mso-font-width:466.6666666666667%"
+                                            hidden
+                                            >&#8202;&#8202;&#8202;&#8203;</i
+                                          ><!
+                                        [endif]--></span
+                                      ></a
+                                    >
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
                           </td>
                         </tr>
                       </tbody>
@@ -1009,6 +1070,46 @@
                                         </tr>
                                       </tbody>
                                     </table>
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
+                            <table
+                              align="center"
+                              width="100%"
+                              border="0"
+                              cellpadding="0"
+                              cellspacing="0"
+                              role="presentation"
+                              style="margin-top:24px">
+                              <tbody>
+                                <tr>
+                                  <td>
+                                    <a
+                                      href="https://vialuxury.vercel.app/first-release/search"
+                                      style="line-height:100%;text-decoration:none;display:inline-block;max-width:100%;mso-padding-alt:0px;text-align:center;background-color:#141414;border:1px solid #141414;color:#FFFFFF;font-family:&#x27;Basis Grotesque Pro&#x27;, Helvetica, Arial, sans-serif;font-size:16px;font-weight:700;border-radius:6px;padding:10px 20px;padding-top:10px;padding-right:20px;padding-bottom:10px;padding-left:20px"
+                                      target="_blank"
+                                      ><span
+                                        ><!--[if mso
+                                          ]><i
+                                            style="mso-font-width:500%;mso-text-raise:15"
+                                            hidden
+                                            >&#8202;&#8202;</i
+                                          ><!
+                                        [endif]--></span
+                                      ><span
+                                        style="max-width:100%;display:inline-block;line-height:120%;mso-padding-alt:0px;mso-text-raise:7.5px"
+                                        >Bekijk alle winterarrangementen</span
+                                      ><span
+                                        ><!--[if mso
+                                          ]><i
+                                            style="mso-font-width:500%"
+                                            hidden
+                                            >&#8202;&#8202;&#8203;</i
+                                          ><!
+                                        [endif]--></span
+                                      ></a
+                                    >
                                   </td>
                                 </tr>
                               </tbody>

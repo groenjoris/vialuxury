@@ -2,7 +2,7 @@ import { Body, Container, Head, Heading, Html, Img, Preview, Section, Text } fro
 import * as React from "react";
 import CrmFooter from "../components/CrmFooter";
 import CrmHeader from "../components/CrmHeader";
-import { BeigeBand, QuickSearch, cardGap, CodeBlock, crmCss, DealRow, Letter, type RowDeal, s, SecondaryButton, site } from "../components/crm";
+import { cardGap, CodeBlock, commercieelCss, crmCss, DealRow, FeaturedDeal, Letter, type RowDeal, s, SecondaryButton, site } from "../components/crm";
 import { baseUrl, font, newsletter } from "../components/theme";
 import { lauswolt, steenenburg, vanOys, villaRuimzicht } from "../lib/crmDeals";
 
@@ -16,6 +16,8 @@ import { lauswolt, steenenburg, vanOys, villaRuimzicht } from "../lib/crmDeals";
 // Onderwerp: "Sanne, je Goodiebox t.w.v. €150 staat klaar"
 
 type Props = {
+  /** Mobiele versie: de deals als gridview-kaart (één foto boven, tekst eronder). */
+  mobile?: boolean;
   recipientEmail: string;
   /** Leeg → "Beste gast,". */
   firstName?: string;
@@ -36,13 +38,13 @@ type Props = {
   allDealsUrl: string;
 };
 
-export default function CommercieelActie({ recipientEmail, firstName, hero, heroAlt, title, intro, gift, code, deadline, listTitle, listSubtitle, deals, allDealsUrl }: Props) {
+export default function CommercieelActie({ mobile, recipientEmail, firstName, hero, heroAlt, title, intro, gift, code, deadline, listTitle, listSubtitle, deals, allDealsUrl }: Props) {
   const c = newsletter.light;
   return (
     <Html lang="nl">
       <Head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <style>{crmCss}</style>
+        <style>{crmCss + commercieelCss}</style>
       </Head>
       <Preview>Boek voor 7 december en hij is van jou.</Preview>
       <Body style={{ backgroundColor: c.bg, margin: 0, padding: 0, fontFamily: font.body }}>
@@ -69,12 +71,16 @@ export default function CommercieelActie({ recipientEmail, firstName, hero, hero
 
 
           {/* De lijst: titel en subtitel direct erboven, vier dealrijen */}
-          <Section className="m-pad" style={{ padding: "40px 32px 0" }}>
+          <Section className="m-pad" style={{ padding: "40px 32px 48px" }}>
             <Heading as="h2" className="m-h1" style={s.h1}>{listTitle}</Heading>
             <Text style={{ ...s.body, margin: "2px 0 0" }}>{listSubtitle}</Text>
-            {deals.map((d, i) => (
-              <DealRow key={d.url} deal={d} top={i ? cardGap : "12px"} />
-            ))}
+            {deals.map((d, i) =>
+              mobile ? (
+                <Section key={d.url} style={{ marginTop: i ? "4px" : 0 }}><FeaturedDeal deal={d} /></Section>
+              ) : (
+                <DealRow key={d.url} deal={d} top={i ? cardGap : "12px"} />
+              ),
+            )}
 
             {/* Het cadeau geldt bij elke boeking: naar alle aanbiedingen */}
             <Text style={{ ...s.body, margin: "28px 0 0" }}>Liever iets anders? De Goodiebox krijg je bij elk arrangement.</Text>
@@ -84,12 +90,8 @@ export default function CommercieelActie({ recipientEmail, firstName, hero, hero
           </Section>
         </Container>
 
-        {/* Snel zoeken op een beige band over de hele breedte */}
-        <BeigeBand top="48px">
-          <QuickSearch />
-        </BeigeBand>
-
-        <CrmFooter recipientEmail={recipientEmail} reason="omdat je je hebt aangemeld voor onze nieuwsbrief" help={2} quote />
+        <CrmFooter recipientEmail={recipientEmail} reason="omdat je je hebt aangemeld voor onze nieuwsbrief" help={2} quote
+          terms={{ text: `Actiecode ${code} is geldig bij een boeking tot en met ${deadline}.`, url: "https://vialuxury.nl" }} />
       </Body>
     </Html>
   );
