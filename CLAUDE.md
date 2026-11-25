@@ -332,7 +332,8 @@ Regels voor elke CRM-mail:
   band van 1, geen aparte rij voor de quote: alleen de quote (zonder afzender, 250 px breed) bovenaan de rechterkolom, en
   "Volg ons op" links onder het logo. Footer 2 en 3 zijn zo laag mogelijk: de hulpband heeft minder marge boven en onder
   (14/16 px) en de zwarte footer is één rij (24 px marge) waarin de kolommen in elkaar schuiven: links logo, "Volg ons
-  op" en de afzenderreden, rechts de quote en de kleine lettertjes, onderaan uitgelijnd. 3: als 2, maar de quote is een geanimeerde gif (`gastquote-wit.gif`,
+  op" en de afzenderreden, rechts de quote en de kleine lettertjes, onderaan uitgelijnd; 32 px tussen de quote en de
+  lettertjes en evenveel onder de iconen van "Volg ons op". 3: als 2, maar de quote is een geanimeerde gif (`gastquote-wit.gif`,
   `scripts/mail-graphics/guest-quote-gif.py`): in 1 seconde van links naar rechts geschreven, 3 seconden rust, herhaalt;
   het eerste beeld is de hele quote, zodat een mailclient die geen gif afspeelt (Outlook op Windows) de quote toont. Een
   klik op een footervariant scrolt de mail in de preview vanzelf naar de footer;

@@ -170,7 +170,7 @@ export default function CrmFooter({ recipientEmail, reason, transactional = fals
               {compact && (
                 <>
                   <Section style={{ marginTop: "16px" }}>{social}</Section>
-                  <Section style={{ marginTop: "16px" }}>{reasonLine}</Section>
+                  <Section style={{ marginTop: "32px" }}>{reasonLine}</Section>
                 </>
               )}
             </Column>
@@ -191,7 +191,7 @@ export default function CrmFooter({ recipientEmail, reason, transactional = fals
               )}
               {/* Variant 2 en 3 (3: geanimeerd): alleen de quote bovenaan de rechterkolom, passend in de kolom */}
               {compact && quote && <GuestQuote tone="wit" bare width={250} animated={help === 3} />}
-              {compact && <Section style={{ marginTop: "16px" }}>{smallPrint}</Section>}
+              {compact && <Section style={{ marginTop: "32px" }}>{smallPrint}</Section>}
               {help === 0 || help === 1 ? social : null}
             </Column>
           </Row>
