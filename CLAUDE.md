@@ -220,11 +220,12 @@ heeft de helft van de dealrijen twee foto's onder elkaar met 6 px wit ertussen i
 (`RowDeal.image2`; de kaart houdt zijn eigen hoogte, anders dan `DealRowFixed`; in Content de kerstmarkt boven en het
 hotel onder). Elke commerciële mail bestaat sinds 2026-11-25 met drie headers (`CrmHeader`-prop `variant`, in de mail
 `header`; schakelaar "Header 1 | 2 | 3" in de previewkop, los te combineren met de eigen varianten; registry
-`withHeaders`, slug `<slug>[-header-2|-header-3]`): 1 de gewone header met het Trustpilot-logo 1,5 keer zo groot
-(159 × 75, balk 99 px hoog); 2 een lage balk van ongeveer 60% (54 px) met een kleiner logo (168 px) en Trustpilot zo
-groot als past (42 px hoog); 3 zo hoog als 1, met het vierkante logo (`logo-vialuxury-square.png`) helemaal links tegen
-de rand van de kolom en de hoofdtitel van de mail (20 px serif, wit) in de balk tussen logo en Trustpilot; de titel
-staat dan niet meer in de mail zelf. De CRM- en vakantiemails houden de oude header (zonder `variant`). Ze eindigen met het blok "Snel zoeken" op een beige
+`withHeaders`, slug `<slug>[-header-2|-header-3]`): 1 de gewone header, gelijk aan die van de CRM-mails (het
+1,5 keer zo grote Trustpilot-logo is op 2026-11-26 teruggedraaid: veel te groot); 2 een lage balk van ongeveer 60%
+(54 px) met een kleiner logo (168 px) en Trustpilot 42 px hoog; 3 zo hoog als 1, met het vierkante logo
+(`logo-vialuxury-square.png`, 76 × 60) helemaal links tegen de rand van de kolom en de hoofdtitel van de mail in de balk
+tussen logo en Trustpilot, zo groot als de titels in de mail (32 px serif, wit); de titel staat dan niet meer in de mail
+zelf. De CRM- en vakantiemails houden de oude header (zonder `variant`). Ze eindigen met het blok "Snel zoeken" op een beige
 band (`QuickSearch`: Best geboekt, Stedentrips, Aan zee, Romantisch, Wellness, Met diner; witte snelfilterknoppen naar
 de R1-zoekpagina); bronnen `email-designs/emails/commercieel-*.tsx`, foto's in
 `public/images/mail/commercieel/`. De voorbeelden worden per stuk gebriefd:
