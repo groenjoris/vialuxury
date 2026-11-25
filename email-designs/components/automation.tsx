@@ -20,7 +20,10 @@ const c = newsletter.light;
  *  die hebben op donker genoeg contrast. Donkergrijze icoontjes (vergrootglas, kalender, klok)
  *  worden omgekeerd, anders vallen ze weg. */
 export const automationDarkCss = `
-.d-bg { background-color: #161616 !important; }
+html, body, .d-bg { background-color: #161616 !important; }
+/* React Email zet de achtergrond van de body ook op een cel eromheen; zonder deze regel blijft
+   die cel wit en zie je witte tekst op wit. */
+td[style*="background-color:#FFFFFF"] { background-color: #161616 !important; }
 .d-card { background-color: #212121 !important; border-color: #333333 !important; }
 .d-band { background-color: #22201C !important; }
 .d-warm { background-color: #2A2119 !important; }

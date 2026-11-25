@@ -330,7 +330,9 @@ de inline kleuren overschrijven. De elementen dragen daarvoor klassen: `d-bg` (a
 `d-card` (kaart), `d-band` (beige band), `d-warm` (hulpband), `d-circle`, `d-line`, `d-head`,
 `d-text`, `d-muted`, `d-badge` (het kortingsblokje wordt wit met zwarte tekst), `d-old` (de
 doorgestreepte prijs), `d-box` (de regels in het zoekblok, die uit `IconLine` komen) en `d-inv`
-(donkergrijze icoontjes worden omgekeerd met een filter). Donkere kleuren: #161616 achtergrond,
+(donkergrijze icoontjes worden omgekeerd met een filter). React Email zet de achtergrond van de body ook op een tabelcel eromheen; die
+cel wordt met `td[style*="background-color:#FFFFFF"]` meegenomen, anders blijft het vlak wit en
+staat er witte tekst op wit. Donkere kleuren: #161616 achtergrond,
 #212121 kaart met rand #333333, #22201C band, #2A2119 hulpband, tekst #F2F2F2, gedempt #ABABAB,
 koppen wit. De oranje knop, de oranje links en de foto's blijven zoals ze zijn. In de kop staan
 `color-scheme` en `supported-color-schemes` op "light dark", zodat de client er zelf vanaf blijft.
