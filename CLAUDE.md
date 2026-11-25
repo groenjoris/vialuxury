@@ -318,22 +318,19 @@ Regels voor elke CRM-mail:
   beschikbaarheid" en "Anderen boekten ook" boven de suggesties; persoonlijk (`crm-jaar-geleden-persoonlijk`) met een brief
   onder de titel (link naar de beschikbare datums in de tekst) en "Geselecteerd voor [voornaam]" boven de suggesties.
 - "Dit moeten we vaker doen" (`crm-vaker-doen`): kopie van "Precies een jaar geleden" (zelfde component) als voorbeeldmail
-  om de gastquote en de footer te beoordelen. "Dit moeten we vaker doen!" staat NIET meer als pay-off onder het logo
-  (vervallen op 2026-11-25); het is een uitspraak van een gast en is dus vormgegeven als review: tussen aanhalingstekens in
-  het handgeschreven lettertype Caveat, met de afzender "— Onze tevreden gasten" eronder (streepje ervoor, zoals bij een echte quote) (`GuestQuote`; de quote is een afbeelding,
-  `gastquote-donker.png` / `-wit.png`, gemaakt met `scripts/mail-graphics/guest-quote.py`, want een webfont werkt niet in
-  elke mailclient). Drie plekken, schakelaar "Boven de footer | In de footer | Tussendoor" (prop `quote`): beige band
-  direct boven de footer met de quote in een witte tekstballon; als bovenste deel van de zwarte footer (wit op zwart, lijn
-  eronder); of als beige strook tussen de hoofdboodschap en de suggesties (daar gecentreerd, de enige uitzondering op "alles links").
+  om de gastquote en de footer te beoordelen. "Dit moeten we vaker doen!" staat NIET als pay-off onder het logo (vervallen
+  op 2026-11-25); het is een uitspraak van een gast en is dus vormgegeven als review: tussen aanhalingstekens in het
+  handgeschreven lettertype Caveat (`GuestQuote`; de quote is een afbeelding, `gastquote-donker.png` / `-wit.png`,
+  gemaakt met `scripts/mail-graphics/guest-quote.py`, want een webfont werkt niet in elke mailclient). De quote staat
+  alleen nog in de footer, wit op zwart; de plekken "boven de footer" en "tussendoor" zijn op 2026-11-25 vervallen.
   Footer (alleen in deze mail): het losse blok "Hulp nodig?" is samengevoegd met de klantenservice-informatie in de
-  footer, die daardoor veel prominenter is (`CrmFooter`-prop `help`, in de mail `footerHelp`; het blok in de mail
-  vervalt). Zes varianten met een tweede schakelaar "Footer 0 … 5": 0 als 1, maar bellen en WhatsApp onder elkaar, elk
-  op een eigen regel; 1 lichtoranje band over de hele breedte boven de
-  zwarte footer; 2 lichtoranje kaart bovenin het zwart; 3 in het zwart een titel met twee grote knoppen (bellen oranje,
-  WhatsApp omlijnd); 4 de rechterkolom als lichtoranje kaart; 5 beige band met twee witte snelfilterknoppen. De twee
-  schakelaars zijn los te combineren (18 mails, slug `crm-vaker-doen[-in-footer|-tussendoor][-footer-0|-footer-2..5]`, footer 1 is de basis, labels via
-  `variantLabel` "Boven de footer / Footer 2" in de registry; de CRM-preview maakt per deel een schakelaar). Een klik op
-  een footervariant scrolt de mail in de preview vanzelf naar de footer, een klik op een plek van de quote naar de quote;
+  footer tot een lichtoranje band over de hele breedte direct boven de zwarte footer (`CrmFooter`-props `help` en
+  `quote`, in de mail `footerHelp`; het blok in de mail vervalt). Drie varianten, schakelaar "Footer 0 | 1 | 2" (slug
+  `crm-vaker-doen[-footer-0|-footer-2]`, footer 1 is de basis; de oude footers 2 t/m 5 zijn vervallen): 0 bellen en
+  WhatsApp onder elkaar, elk op een eigen regel; 1 bellen en WhatsApp op één regel; in 0 en 1 staat de quote als bovenste
+  rij van de footer met de afzender "— Onze tevreden gasten" eronder en een lijn, en staat "Volg ons op" rechtsboven. 2: de
+  band van 1, geen aparte rij voor de quote: alleen de quote (zonder afzender, 250 px breed) bovenaan de rechterkolom, en
+  "Volg ons op" links onder het logo. Een klik op een footervariant scrolt de mail in de preview vanzelf naar de footer;
   een andere mail begint weer bovenaan.
 - Nagenietmail heeft twee varianten (schakelaar "Bericht | Titel"): standaard een brief met aanhef en
   in het blok alleen de vraag als titel; of (`crm-nagenieten-titel`) de grote titel onder de foto.

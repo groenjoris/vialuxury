@@ -397,26 +397,20 @@ export const emails: EmailEntry[] = [
     Component: CrmThemaStedentrips,
   },
   // "Dit moeten we vaker doen": kopie van "Precies een jaar geleden" als voorbeeldmail voor de gastquote
-  // en de footer. Twee schakelaars in de preview: de plek van de quote (3) en de footervariant met
-  // het hulpblok erin (6; footer 0 is footer 1 met bellen en WhatsApp onder elkaar). Slug:
-  // crm-vaker-doen[-in-footer|-tussendoor][-footer-0|-footer-2..5]; footer 1 is de basis.
-  ...([["boven", "", "Boven de footer"], ["in", "-in-footer", "In de footer"], ["tussendoor", "-tussendoor", "Tussendoor"]] as const).flatMap(([quote, quoteSuffix, quoteLabel]) =>
-    ([0, 1, 2, 3, 4, 5] as const).map((footer): EmailEntry => {
-      const slug = `crm-vaker-doen${quoteSuffix}${footer === 1 ? "" : `-footer-${footer}`}`;
-      return {
-        slug,
-        title: "Dit moeten we vaker doen (quote en footer)",
-        description: `Voorbeeldmail voor de gastquote en de footer: de quote ${quoteLabel.toLowerCase()}, footervariant ${footer} met het hulpblok erin.`,
-        section: "crm",
-        ...(slug === "crm-vaker-doen" ? {} : { variantOf: "crm-vaker-doen" }),
-        variantLabel: `${quoteLabel} / Footer ${footer}`,
-        subject: "Vandaag een jaar geleden 🎉",
-        preheader: "Je verblijf in Hotel Des Indes, en een code voor €25 korting.",
-        Component: CrmJaarGeleden,
-        props: vakerDoenProps(quote, footer),
-      };
-    }),
-  ),
+  // en de footer. Eén schakelaar in de preview: de footervariant (0, 1, 2; zie CrmFooter). Slug:
+  // crm-vaker-doen[-footer-0|-footer-2]; footer 1 is de basis.
+  ...([0, 1, 2] as const).map((footer): EmailEntry => ({
+    slug: `crm-vaker-doen${footer === 1 ? "" : `-footer-${footer}`}`,
+    title: "Dit moeten we vaker doen (quote en footer)",
+    description: `Voorbeeldmail voor de gastquote en de footer: footervariant ${footer}.`,
+    section: "crm",
+    ...(footer === 1 ? {} : { variantOf: "crm-vaker-doen" }),
+    variantLabel: `Footer ${footer}`,
+    subject: "Vandaag een jaar geleden 🎉",
+    preheader: "Je verblijf in Hotel Des Indes, en een code voor €25 korting.",
+    Component: CrmJaarGeleden,
+    props: vakerDoenProps(footer),
+  })),
   {
     slug: "crm-dealkaart-vaste-hoogte",
     title: "Dealkaart vaste hoogte (voorbeeld)",

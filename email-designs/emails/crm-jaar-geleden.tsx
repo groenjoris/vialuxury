@@ -1,7 +1,7 @@
 import { Body, Container, Head, Heading, Html, Img, Link, Preview, Section, Text } from "@react-email/components";
 import * as React from "react";
-import { BeigeBand, GuestQuote, cardGap, CodeBlock, crmCss, CrmHelp, DealRow, Letter, PrimaryButton, type RowDeal, s, site } from "../components/crm";
-import CrmFooter, { type FooterHelp, type FooterQuote } from "../components/CrmFooter";
+import { cardGap, CodeBlock, crmCss, CrmHelp, DealRow, Letter, PrimaryButton, type RowDeal, s, site } from "../components/crm";
+import CrmFooter, { type FooterHelp } from "../components/CrmFooter";
 import CrmHeader from "../components/CrmHeader";
 import { font, newsletter } from "../components/theme";
 
@@ -34,11 +34,9 @@ type Props = {
   /** Leeg → geen coupon. */
   code?: { code: string; value: string; deadline: string };
   deals: RowDeal[];
-  /** Plek van de gastquote “Dit moeten we vaker doen!” (voorbeeldmail "Dit moeten we vaker doen"):
-   *  boven de footer, als bovenste deel van de footer, of als strook tussendoor (tussen de
-   *  hoofdboodschap en de suggesties). Leeg → geen quote. */
-  quote?: FooterQuote | "tussendoor";
-  /** Hulpblok opgenomen in de footer (variant 0 t/m 5, zie CrmFooter); het losse blok "Hulp nodig?"
+  /** Gastquote “Dit moeten we vaker doen!” in de footer (voorbeeldmail "Dit moeten we vaker doen"). */
+  quote?: boolean;
+  /** Hulpblok als band boven de footer (variant 0 t/m 2, zie CrmFooter); het losse blok "Hulp nodig?"
    *  in de mail vervalt dan. Alleen in de voorbeeldmail "Dit moeten we vaker doen". */
   footerHelp?: FooterHelp;
 };
@@ -91,17 +89,6 @@ export default function CrmJaarGeleden({ recipientEmail, firstName, variant = "s
 
           {/* Hulplijn: direct na de hoofdboodschap, niet als onderste blok */}
           {footerHelp === undefined && <CrmHelp top="32px" bottom="0" />}
-        </Container>
-
-        {/* Gastquote als strook tussendoor: beige band over de hele breedte, tussen de hoofdboodschap
-            en de suggesties, met de quote gecentreerd in een witte tekstballon */}
-        {quote === "tussendoor" && (
-          <BeigeBand top="40px">
-            <GuestQuote balloon center />
-          </BeigeBand>
-        )}
-
-        <Container style={{ width: "100%", maxWidth: "626px" }}>
 
           {/* Deals met frame-titel, onder elkaar */}
           <Section className="m-pad" style={{ padding: "48px 32px 40px" }}>
@@ -119,7 +106,7 @@ export default function CrmJaarGeleden({ recipientEmail, firstName, variant = "s
             ))}
           </Section>
         </Container>
-        <CrmFooter recipientEmail={recipientEmail} reason="omdat je vorig jaar bij ons boekte" help={footerHelp} quote={quote === "tussendoor" ? undefined : quote} />
+        <CrmFooter recipientEmail={recipientEmail} reason="omdat je vorig jaar bij ons boekte" help={footerHelp} quote={quote} />
       </Body>
     </Html>
   );
@@ -185,6 +172,6 @@ CrmJaarGeleden.PreviewProps = {
 /** Variant "Persoonlijk": brief onder de titel en "Geselecteerd voor Sanne" boven de suggesties. */
 export const persoonlijkProps = { ...CrmJaarGeleden.PreviewProps, variant: "persoonlijk" as const };
 
-/** Voorbeeldmail "Dit moeten we vaker doen": dezelfde mail met de gastquote op een van drie plekken en
- *  het hulpblok in de footer (variant 0 t/m 5); twee schakelaars in de preview. */
-export const vakerDoenProps = (quote: FooterQuote | "tussendoor", footerHelp: FooterHelp = 1) => ({ ...CrmJaarGeleden.PreviewProps, quote, footerHelp });
+/** Voorbeeldmail "Dit moeten we vaker doen": dezelfde mail met de gastquote in de footer en het
+ *  hulpblok als band erboven (footervariant 0 t/m 2); één schakelaar in de preview. */
+export const vakerDoenProps = (footerHelp: FooterHelp = 1) => ({ ...CrmJaarGeleden.PreviewProps, quote: true, footerHelp });
