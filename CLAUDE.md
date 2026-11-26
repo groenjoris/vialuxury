@@ -438,8 +438,12 @@ alle ViaLuxury arrangementen". `tf030`: nieuwe intro en de
 kop "Onze verborgen parels voor jou", met onder de resultaten de knop "Vind jouw favoriet".
 `tf031`: kop "Waar heb jij zin in?" bovenaan, géén zoekresultaten, de themasectie met de titel
 "Niet jouw verblijf gevonden? Kies je thema." (32 px) en daaronder de thema's als beeldende tegels op
-de beige band — per thema een foto (16:9), de naam en de link "Bekijk" — met eronder de regel "Eén
-klik is genoeg…" en de tekstlink "Bekijk alle arrangementen". De themafoto's zijn arrangementfoto's
+de beige band, drie naast elkaar zoals op de website (sinds 26-11-2026): een foto van 16:9 met ronde
+hoeken, daaronder de naam in de serif van 20 px (vaste hoogte van twee regels, zodat de links van alle
+tegels op dezelfde hoogte staan) en de oranje tekstlink "Ontdek aanbod >", zonder kaart of rand
+eromheen; de kolommen hebben een vaste breedte van 176 px met een tussenkolom van 17 px, want met
+procenten plus padding wordt de middelste tegel smaller. Eronder de regel "Eén klik is genoeg…" en de
+tekstlink "Bekijk alle arrangementen". De themafoto's zijn arrangementfoto's
 als plaatsvervanger; de echte themafoto's volgen nog.
 
 Open punten in de sheet zelf: de preheader van `tf027` zegt "Drie alternatieven" terwijl de template

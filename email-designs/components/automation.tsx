@@ -421,9 +421,9 @@ export type ThemeTile = Pill & { image?: string; note?: string };
 
 /** S7 Themasectie. Feedback 24-11-2026: de thema's zijn beeldend, dus elk thema is een tegel met
  *  een foto, de naam en een link eronder. Zonder foto's valt hij terug op de kale keuzeknoppen. */
-export function ThemeSection({ title, note, items, cta = "Bekijk" }: { title: string; note: string; items: ThemeTile[]; cta?: string }) {
+export function ThemeSection({ title, note, items, cta = "Ontdek aanbod >" }: { title: string; note: string; items: ThemeTile[]; cta?: string }) {
   const withImages = items.filter((t) => t.image);
-  const perRow = 2;
+  const perRow = 3;
   const rows = Array.from({ length: Math.ceil(withImages.length / perRow) }, (_, i) => withImages.slice(i * perRow, (i + 1) * perRow));
   return (
     <>
@@ -431,25 +431,32 @@ export function ThemeSection({ title, note, items, cta = "Bekijk" }: { title: st
       {withImages.length === items.length ? (
         <Section>
           {rows.map((row, ri) => (
-            <Row key={ri} style={{ marginTop: ri ? "16px" : 0 }}>
-              {Array.from({ length: perRow }, (_, i) => {
+            <Row key={ri} style={{ marginTop: ri ? "28px" : 0 }}>
+              {Array.from({ length: perRow }, (_, i) => i).flatMap((i) => {
                 const t = row[i];
-                return (
-                  <Column key={i} className="stack" style={{ width: `${100 / perRow}%`, verticalAlign: "top", paddingLeft: i ? "8px" : 0, paddingRight: i < perRow - 1 ? "8px" : 0 }}>
+                /* Vaste breedtes met een tussenkolom: procenten plus padding maken de middelste
+                   tegel smaller, en dan verspringen de foto's en de links. */
+                const cols = [];
+                if (i) cols.push(<Column key={`g${i}`} className="m-hide" style={{ width: "17px", fontSize: 0, lineHeight: 0 }}>&nbsp;</Column>);
+                cols.push(
+                  <Column key={i} className="stack" style={{ width: "176px", verticalAlign: "top" }}>
                     {t && (
-                      <Section className="d-card" style={{ backgroundColor: "#FFFFFF", border: "1px solid #E5E5E5", borderRadius: "4px", overflow: "hidden" }}>
+                      <Section>
+                        {/* Zoals op de website: de foto met ronde hoeken, daaronder de naam in de
+                            serif en de oranje tekstlink. Geen kaart met rand eromheen. */}
                         <Link href={t.href}>
-                          <Img src={t.image} alt="" width="271" height="152" style={{ display: "block", width: "100%", height: "auto", aspectRatio: "16 / 9", objectFit: "cover" }} />
+                          <Img src={t.image} alt="" width="176" height="99" style={{ display: "block", width: "100%", height: "auto", aspectRatio: "16 / 9", objectFit: "cover", borderRadius: "8px" }} />
                         </Link>
-                        <Section style={{ padding: "12px 16px 14px" }}>
-                          <Text className="d-text" style={{ ...s.body, fontWeight: 700, color: c.text, margin: 0 }}>{t.label}</Text>
-                          {t.note && <Text className="d-muted" style={{ ...s.muted, margin: "2px 0 0" }}>{t.note}</Text>}
-                          <Link href={t.href} style={{ display: "inline-block", marginTop: "8px", fontFamily: font.body, fontSize: "16px", fontWeight: 700, color: c.link, textDecoration: "underline" }}>{cta}</Link>
-                        </Section>
+                        {/* Vaste hoogte voor twee regels, zodat de links van alle tegels op dezelfde
+                            hoogte staan. Op mobiel staan de tegels onder elkaar en vervalt hij. */}
+                        <Text className="d-head m-auto-h" style={{ fontFamily: font.heading, fontWeight: 600, fontSize: "20px", lineHeight: "25px", height: "50px", color: c.heading, margin: "14px 0 0" }}>{t.label}</Text>
+                        {t.note && <Text className="d-muted" style={{ ...s.muted, margin: "2px 0 0" }}>{t.note}</Text>}
+                        <Link href={t.href} style={{ display: "inline-block", marginTop: "8px", fontFamily: font.body, fontSize: "16px", fontWeight: 700, color: c.link, textDecoration: "underline" }}>{cta}</Link>
                       </Section>
                     )}
-                  </Column>
+                  </Column>,
                 );
+                return cols;
               })}
             </Row>
           ))}
@@ -457,7 +464,7 @@ export function ThemeSection({ title, note, items, cta = "Bekijk" }: { title: st
       ) : (
         <PillGrid items={[...items, { label: "Alle thema's", href: "https://vialuxury.com/nl-NL/zoeken" }]} />
       )}
-      <Text className="d-muted" style={{ ...s.muted, margin: "16px 0 0" }}>{note}</Text>
+      <Text className="d-muted" style={{ ...s.muted, margin: "24px 0 0" }}>{note}</Text>
     </>
   );
 }
