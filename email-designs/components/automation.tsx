@@ -61,6 +61,9 @@ body { margin: 0 !important; padding: 0 !important; }
   .m-auto-h { height: auto !important; }
   .m-pad { padding-left: 16px !important; padding-right: 16px !important; }
   .m-h1 { font-size: 28px !important; }
+  /* Gestapelde footer: de 54 px die op desktop onder de quote staat (om de kleine letters op
+     gelijke hoogte met de afzenderzin te zetten) is hier een gat. */
+  .m-legal { margin-top: 18px !important; }
 }
 @media only screen and (max-width: 640px) {
   .m-badge-cell { padding-right: 6px !important; }
@@ -525,7 +528,7 @@ export function AutomationFooter({ recipientEmail, reason }: { recipientEmail: s
               {/* Rechts: de gastquote bovenaan, op dezelfde hoogte als het logo, met daaronder de kleine letters */}
               <Column className="stack m-center m-mt" style={{ width: "50%", verticalAlign: "top" }}>
                 <Img src={`${baseUrl}/images/mail/crm/gastquote-wit.png`} alt="“Dit moeten we vaker doen!”" width="253" height="23" className="m-mx-auto" style={{ display: "block", width: "253px", maxWidth: "100%", height: "auto" }} />
-                <Text className="m-center m-small" style={{ ...text, margin: "54px 0 8px" }}>Prijswijzigingen en/of zetfouten voorbehouden.</Text>
+                <Text className="m-center m-small m-legal" style={{ ...text, margin: "54px 0 8px" }}>Prijswijzigingen en/of zetfouten voorbehouden.</Text>
                 <Text className="m-center m-small" style={text}>Copyright © ViaLuxury, All Rights Reserved</Text>
                 <Text className="m-center m-small" style={text}>Liever geen updates meer? Ontvang onze nieuwsbrief minder vaak, of helemaal niet meer.</Text>
                 <Text className="m-center m-small" style={{ ...text, margin: 0 }}>
