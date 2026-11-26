@@ -2,7 +2,7 @@ import { Body, Container, Head, Heading, Html, Preview, Section } from "@react-e
 import * as React from "react";
 import CrmFooter from "../components/CrmFooter";
 import CrmHeader from "../components/CrmHeader";
-import { BeigeBand, CampaignOpening, QuickSearch, cardGap, commercieelCss, crmCss, DealRow, FeaturedDeal, Letter, type OpeningVariant, PrimaryButton, type RowDeal, s, SecondaryButton, site } from "../components/crm";
+import { BeigeBand, CampaignOpening, QuickSearch, commercieelCss, crmCss, FeaturedDeal, Letter, type OpeningVariant, PrimaryButton, type RowDeal, s, SecondaryButton, site } from "../components/crm";
 import { baseUrl, font, newsletter } from "../components/theme";
 
 // Commerciële mail 1: Content (Multi-deal). Meerdere deals rond één thema of selectie, hier
@@ -11,16 +11,14 @@ import { baseUrl, font, newsletter } from "../components/theme";
 // knop, in vier varianten (`CampaignOpening`: Native 1, Native 2, Header-titel, Titel op foto; die
 // laatste met een ronde sticker met de vanafprijs). Daarna een korte brief (aanhef, één alinea) met de
 // knop "Bekijk aanbiedingen" eronder, de titel van de lijst ("Hotels bij de mooiste kerstmarkten")
-// direct boven vier dealrijen, en onder de lijst de knop naar alle arrangementen van het thema. De
+// direct boven vier deals als gridview-kaart (foto boven, tekst eronder; geen listview), en onder de lijst de knop naar alle arrangementen van het thema. De
 // arrangementen zijn de gewone arrangementen; alleen de dealtitel en de foto zijn geladen met de
-// kerstmarkt in de buurt. Mobiel (`mobile`): elke deal als gridview-kaart met één foto.
+// kerstmarkt in de buurt.
 // Onderwerp: "Winter Wonderweken: slapen bij de mooiste kerstmarkten"
 
 type Props = {
   /** Opzet van de opening (schakelaar in de preview). */
   variant?: OpeningVariant;
-  /** Mobiele versie: de deals als gridview-kaart (één foto boven, tekst eronder). */
-  mobile?: boolean;
   recipientEmail: string;
   /** Leeg → "Beste gast,". */
   firstName?: string;
@@ -40,7 +38,7 @@ type Props = {
   deals: RowDeal[];
 };
 
-export default function CommercieelContentMultiDeal({ variant = "native-1", mobile, recipientEmail, firstName, hero, heroAlt, title, intro, listTitle, fromPrice, allLabel, deals }: Props) {
+export default function CommercieelContentMultiDeal({ variant = "native-1", recipientEmail, firstName, hero, heroAlt, title, intro, listTitle, fromPrice, allLabel, deals }: Props) {
   const c = newsletter.light;
   const ctaUrl = `${site}/first-release/search`;
   return (
@@ -66,13 +64,10 @@ export default function CommercieelContentMultiDeal({ variant = "native-1", mobi
           {/* De titel van de lijst staat er direct boven; vier deals onder elkaar */}
           <Section className="m-pad" style={{ padding: "40px 32px 0" }}>
             <Heading as="h2" className="m-h1" style={s.h1}>{listTitle}</Heading>
-            {deals.map((d, i) =>
-              mobile ? (
-                <Section key={d.url + i} style={{ marginTop: i ? "4px" : 0 }}><FeaturedDeal deal={d} /></Section>
-              ) : (
-                <DealRow key={d.url + i} deal={d} top={i ? cardGap : "12px"} />
-              ),
-            )}
+            {/* Gridview-kaarten onder elkaar (foto boven, tekst eronder), op desktop en mobiel */}
+            {deals.map((d, i) => (
+              <Section key={d.url + i} style={{ marginTop: i ? "12px" : 0 }}><FeaturedDeal deal={d} /></Section>
+            ))}
             {/* Onder de lijst: naar alle arrangementen van het thema */}
             <Section style={{ marginTop: "24px" }}>
               <SecondaryButton href={ctaUrl} dark>{allLabel}</SecondaryButton>

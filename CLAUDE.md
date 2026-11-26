@@ -246,7 +246,8 @@ Bronnen `email-designs/emails/commercieel-*.tsx`, foto's in
 1. `commercieel-content-multi-deal` ("Content (Multi-deal)"): meerdere deals rond een thema (kerstmarkten). Opening
    met de campagnetitel "Winter Wonderweken" en de knop "Bekijk aanbiedingen" (R1-zoekpagina), sticker "vanaf €239".
    Daarna de brief (`Letter`) met dezelfde knop eronder (directe CTA bovenin), de titel "Hotels bij de mooiste
-   kerstmarkten" boven vier dealrijen (`DealRow`) en onder de lijst de zwarte knop "Bekijk alle winterarrangementen".
+   kerstmarkten" boven vier deals als gridview-kaart onder elkaar (`FeaturedDeal`: foto boven, tekst eronder; sinds
+   2026-11-26 geen listview meer, ook niet op desktop) en onder de lijst de zwarte knop "Bekijk alle winterarrangementen".
    Het arrangement blijft hetzelfde; alleen dealtitel en foto verwijzen naar de kerstmarkt in de buurt. Alleen voco The
    Hague staat in `deals.json`; de andere drie hebben voorbeeldprijzen en linken naar de R1-zoekpagina.
 2. `commercieel-dedicated-hotel` ("Dedicated hotel"): één hotel. Opening met het headerbeeld van het hotel en kort de
