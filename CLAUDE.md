@@ -230,8 +230,8 @@ maken we per mail. Feedback van de opdrachtgever (2026-11-26) is verwerkt:
   eronder lopen over de hele breedte van de mail, van rand tot rand net als de zwarte header (buiten de `<Container>`),
   en de foto is klikbaar; alle
   inhoud staat links gelijk met het logo, ook de tekst op de foto (32 px: de commerciële mails geven `CrmHeader` de prop
-  `pad={32}`, de CRM-mails houden 24). Native 1: onder de foto een donkergroen vlak (huisstijlgroen #00675F, ronde
-  hoeken van 14 px onderaan), witte titel, zwarte knop. Native 2: hetzelfde in beige met zwarte titel en oranje knop.
+  `pad={32}`, de CRM-mails houden 24). Native 1: onder de foto een donkergroen vlak (huisstijlgroen #00675F, rechte
+  hoeken: de ronde hoeken zijn vervallen nu het vlak over de hele breedte loopt), witte titel, zwarte knop. Native 2: hetzelfde in beige met zwarte titel en oranje knop.
   Header-titel: de titel staat in de header (`CrmHeader`-prop `title`: vierkant logo 76 × 60, titel
   32 px wit gecentreerd tussen logo en Trustpilot) en onder de foto staat een grote,
   gecentreerde oranje knop. Titel op foto: gewone header, de titel groot (44 px, wit) linksboven op de foto, de zwarte
