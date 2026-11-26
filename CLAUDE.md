@@ -215,10 +215,11 @@ volgorde in het paneel; varianten met `variantOf` en `variantLabel`); de export 
 `app/data/commercieel-emails.json`. De commerciële mails hergebruiken de vormgeving en bouwstenen van de CRM-mails
 maximaal (`components/crm.tsx`, zelfde regels). Sinds 2026-11-25 hebben ze alle vijf footer 2 uit de CRM-voorbeeldmail
 "Dit moeten we vaker doen" (`<CrmFooter help={2} quote />`: lage hulpband boven de footer, de gastquote bovenaan de
-rechterkolom); het losse blok "Hulp nodig?" in de mail is daarmee vervallen. In de mails met een lijst (Content, Actie)
-heeft de helft van de dealrijen twee foto's onder elkaar met 6 px wit ertussen in plaats van één langwerpige foto
-(`RowDeal.image2`; de kaart houdt zijn eigen hoogte, anders dan `DealRowFixed`; in Content de kerstmarkt boven en het
-hotel onder). De headerschakelaar "Header 1 | 2 | 3" van 2026-11-25 is een dag later vervallen: varianten
+rechterkolom); het losse blok "Hulp nodig?" in de mail is daarmee vervallen. Sinds 2026-11-26 heeft elke dealrij (listview, `DealRow`) in álle mails, ook de CRM-mails, twee foto's onder elkaar
+met 6 px wit ertussen in plaats van één langwerpige foto (de kaart houdt zijn eigen hoogte, anders dan `DealRowFixed`):
+`RowDeal.image2`, en anders de volgende foto van hetzelfde arrangement uit `email-designs/lib/secondImages.json`
+(asset-id → volgende asset-id, gemaakt uit `app/data/deals.json`). Alleen de kale kaart ("Jouw verblijf") houdt één
+foto. In Content staat de kerstmarkt boven en het hotel onder (Düsseldorf en Valkenburg: plaatshouders). De headerschakelaar "Header 1 | 2 | 3" van 2026-11-25 is een dag later vervallen: varianten
 maken we per mail. Feedback van de opdrachtgever (2026-11-26) is verwerkt:
 - Mobiele versie van elke commerciële mail: schakelaar "Desktop | Mobiel" in de previewkop (registry `withMobile`, slug
   `<slug>-mobiel`, prop `mobile`; de preview toont die in een frame van 390 px). Mobiel staan de deals als

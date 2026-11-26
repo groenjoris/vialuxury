@@ -2,6 +2,7 @@ import { Button, Column, Container, Heading, Img, Link, Row, Section, Text } fro
 import * as React from "react";
 import HelpBanner from "./HelpBanner";
 import { baseUrl, font, newsletter } from "./theme";
+import secondImages from "../lib/secondImages.json";
 
 // Gedeelde bouwstenen van de CRM-mails (concept, alleen desktop + light mode).
 //
@@ -164,7 +165,8 @@ export type RowDeal = {
   /** Gewone bodyregels onder de dealtitel (bekeken deal: aankomst, nachten en personen, besparing). */
   lines?: string[];
   image: string;
-  /** Tweede foto (dealrij): twee foto's onder elkaar met 6 px wit ertussen in plaats van één langwerpige foto. */
+  /** Tweede foto (dealrij): de rij heeft altijd twee foto's onder elkaar met 6 px wit ertussen. Leeg → de
+   *  volgende foto van hetzelfde arrangement (zie `secondImage`). */
   image2?: string;
   url: string;
   /** Uitgebreide kaart (zoals de zoekkaart op de website); een deal met `price` krijgt die: */
@@ -284,17 +286,28 @@ export const cardGap = "24px";
  *  uitgebreide kaart (knop "Bekijk"), anders de tekstregels met een oranje link. Met inclusies maar
  *  zonder prijs (de bekeken deal): de uitgebreide kaart met onderaan de eigen regels en de link.
  *  `top`: 12 px onder een titel (standaard), `cardGap` (24 px) onder een andere kaart. */
+/** Tweede foto van een deal voor de dealrij: `image2`, anders de volgende foto van hetzelfde
+ *  arrangement (lib/secondImages.json: asset-id → volgende asset-id, gemaakt uit app/data/deals.json). */
+function secondImage(d: RowDeal): string | undefined {
+  if (d.image2) return d.image2;
+  const id = d.image.match(/assets\/([0-9a-f-]{36})/)?.[1];
+  const next = id ? (secondImages as Record<string, string>)[id] : undefined;
+  return next ? d.image.replace(id!, next) : undefined;
+}
+
 export function DealRow({ deal: d, cta, top = "12px" }: { deal: RowDeal; cta?: string; top?: string }) {
   const rich = !!d.price || !!d.includes;
+  // De uitgebreide rij heeft altijd twee foto's onder elkaar; de kale kaart ("Jouw verblijf") één
+  const image2 = rich ? secondImage(d) : undefined;
   return (
     <Section style={{ backgroundColor: "#FFFFFF", border: `1px solid #E5E5E5`, borderRadius: "8px", marginTop: top, overflow: "hidden" }}>
       <Row>
         {/* Foto als achtergrond: sluit aan op de rand en vult de hele hoogte van het blok */}
-        {d.image2 ? (
+        {image2 ? (
           // Twee foto's onder elkaar met 6 px wit ertussen; samen vullen ze de hele hoogte van het blok
           <Column className="stack" style={{ width: "190px", height: "1px", verticalAlign: "top", padding: 0 }}>
             <div style={{ display: "flex", flexDirection: "column", width: "190px", height: "100%", minHeight: "240px" }}>
-              {[d.image, d.image2].map((src, i) => (
+              {[d.image, image2].map((src, i) => (
                 <Link key={src} href={d.url} aria-label={d.hotelName ?? cta ?? "Bekijk"} style={{ display: "block", flex: "1 1 0", marginTop: i ? "6px" : 0, backgroundImage: `url(${src})`, backgroundSize: "cover", backgroundPosition: "center" }} />
               ))}
             </div>

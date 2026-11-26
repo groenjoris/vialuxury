@@ -129,6 +129,8 @@ CommercieelContentMultiDeal.PreviewProps = {
       place: "Düsseldorf",
       packageTitle: "3 dagen Düsseldorf, met de kerstmarkten van de Altstadt en de Kö",
       image: photo("kerstmarkt-dusseldorf"),
+      // Plaatshouder: van dit hotel is geen foto in het prototype
+      image2: "https://asset.vialuxury.com/assets/bba340c3-3e92-44be-befd-0023753156cf?key=card",
       url: `${site}/first-release/search`,
       includes: ["Dagelijks ontbijtbuffet", "Welkomstdrankje", "Gratis parkeren", "Late check-out"],
       discount: "-41%",
@@ -142,6 +144,8 @@ CommercieelContentMultiDeal.PreviewProps = {
       place: "Valkenburg",
       packageTitle: "3 dagen Kerststad Valkenburg, met de kerstmarkten in de grotten",
       image: photo("kerstmarkt-valkenburg"),
+      // Plaatshouder: van dit hotel is geen foto in het prototype
+      image2: "https://asset.vialuxury.com/assets/04699185-f5de-473c-8e48-baf4fbb9e703?key=card",
       url: `${site}/first-release/search`,
       includes: ["Dagelijks ontbijtbuffet", "3-Gangendiner", "Welkomstdrankje", "Gratis parkeren"],
       discount: "-44%",
