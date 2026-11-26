@@ -42,6 +42,10 @@ export const commercieelCss = `
   .m-head-cell { padding: 0 8px !important; }
   .m-head-pad { padding: 12px 16px !important; }
   .m-trustpilot { width: 85px !important; height: auto !important; }
+  .m-only { display: block !important; }
+  .m-hide { display: none !important; }
+  .m-reason { margin-top: 24px !important; }
+  .m-small-print { margin-top: 4px !important; }
   .m-block { display: block !important; width: 100% !important; box-sizing: border-box !important; text-align: center !important; }
 }
 `;

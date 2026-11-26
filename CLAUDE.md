@@ -224,7 +224,8 @@ maken we per mail. Feedback van de opdrachtgever (2026-11-26) is verwerkt:
 - Mobiele versie van elke commerciële mail: schakelaar "Desktop | Mobiel" in de previewkop (registry `withMobile`, slug
   `<slug>-mobiel`, prop `mobile`; de preview toont die in een frame van 390 px). Mobiel staan de deals als
   gridview-kaart (`FeaturedDeal`: één foto boven, tekst eronder), want twee foto's naast de tekst worden te lang. Extra
-  mobiele regels in `commercieelCss` (crm.tsx).
+  mobiele regels in `commercieelCss` (crm.tsx). In de mobiele footer staat de gastquote direct onder de iconen van
+  "Volg ons op", boven de tekst (afzenderreden en kleine lettertjes).
 - Preview op een telefoon (sinds 2026-11-27, alleen `/commercieel`): op een smal scherm (≤ 700 px) toont de preview
   vanzelf de mobiele versie van de mail (`<slug>-mobiel`, de URL blijft gelijk) over het hele scherm; het frame is zo
   hoog als de mail, zodat de pagina zelf scrolt. Het paneel links en de schakelaars in de kop zijn daar verborgen;
