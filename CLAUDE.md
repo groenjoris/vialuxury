@@ -316,11 +316,14 @@ coupon (`AutomationCodeBlock`) staat gecentreerd, want een coupon is een ding op
 (afstemming 24-11-2026). Blokken lopen over de hele breedte, daar speelt uitlijnen niet. De secties staan gewoon in de kolom op wit. Het klantenserviceblok ("Hulp nodig?") staat sinds
 24-11-2026 niet meer onderin de mail zelf maar bij de footer (afstemming met Sven: templates die
 goed te managen zijn, geen dubbele content onder elkaar): een lichtoranje band over de hele breedte
-direct boven de zwarte footer, en in de footer zelf bovenin de gastquote "Dit moeten we vaker doen!"
-(afbeelding `gastquote-wit.png`, handgeschreven Caveat) met een lijn eronder; de kolom met de
-telefoonnummers rechtsboven is vervangen door "Volg ons op". Dat is de opzet uit het ontwerp van
+direct boven de zwarte footer met bellen en WhatsApp op een regel, en daaronder de footer in twee
+kolommen: links het logo met daaronder "Volg ons op", de social-icoontjes en de afzenderzin, rechts de
+gastquote "Dit moeten we vaker doen!" (afbeelding `gastquote-wit.png`, handgeschreven Caveat, 253 px)
+op dezelfde hoogte als het logo met daaronder de kleine letters en de links. De kolom met de
+telefoonnummers rechtsboven is dus vervallen. Dat is de opzet uit het ontwerp van
 Joris (`CrmFooter` met `help={1}` en `quote="in"` op `main`), nagebouwd in een eigen
-`AutomationFooter` in `components/automation.tsx`; de CRM-mails houden `CrmFooter` zoals hij was. Beige banden zijn er twee: de themategels in `tf031` (een keuzeblok staat altijd op
+`AutomationFooter` in `components/automation.tsx` (vorm vastgelegd 26-11-2026); de CRM-mails houden
+`CrmFooter` zoals hij was. Beige banden zijn er twee: de themategels in `tf031` (een keuzeblok staat altijd op
 beige) en het merkblok in `tf026`.
 
 Donkere modus (sinds 25-11-2026, alleen `tf021`): één HTML die in beide standen werkt.

@@ -461,11 +461,12 @@ export function ThemeSection({ title, note, items, cta = "Bekijk" }: { title: st
 
 export { site };
 
-/** Footer van de automationmails. Opzet zoals in het ontwerp van Joris (afstemming 24-11-2026):
- *  een lichtoranje band met de klantenservice over de hele breedte direct boven de zwarte footer,
- *  en bovenin de footer de gastquote "Dit moeten we vaker doen!" (handgeschreven, Caveat, als
- *  afbeelding) met een lijn eronder. De kolom met de telefoonnummers rechtsboven vervalt, daar
- *  staat nu "Volg ons op". Eigen component, zodat de CRM-mails hun eigen footer houden. */
+/** Footer van de automationmails. Opzet zoals in het ontwerp van Joris (afstemming 26-11-2026):
+ *  een lichtoranje band met de klantenservice over de hele breedte direct boven de zwarte footer
+ *  (bellen en WhatsApp op een regel), en daaronder twee kolommen: links het logo met "Volg ons op",
+ *  de social-icoontjes en de afzenderzin, rechts de gastquote "Dit moeten we vaker doen!"
+ *  (handgeschreven, Caveat, als afbeelding) op dezelfde hoogte als het logo met daaronder de kleine
+ *  letters. Eigen component, zodat de CRM-mails hun eigen footer houden. */
 export function AutomationFooter({ recipientEmail, reason }: { recipientEmail: string; reason: string }) {
   const text = { fontFamily: font.body, color: "#FFFFFF", fontSize: "12px", lineHeight: "16px", margin: "0 0 8px" };
   const bold = { ...text, fontWeight: 700 };
@@ -494,12 +495,8 @@ export function AutomationFooter({ recipientEmail, reason }: { recipientEmail: s
               </Column>
               <Column style={{ verticalAlign: "middle" }}>
                 <Text className="d-head" style={{ ...serif, color: c.heading }}>Hulp nodig?</Text>
-                {/* Bellen en WhatsApp elk op een eigen regel */}
                 <Text className="d-text" style={{ ...body16, color: c.text, marginTop: "2px" }}>
-                  Bel <Link href="tel:+31207052222" style={orangeLink}>+31 20 705 2222</Link>
-                </Text>
-                <Text className="d-text" style={{ ...body16, color: c.text, marginTop: "2px" }}>
-                  WhatsApp <Link href="https://wa.me/31208088809" style={orangeLink}>+31 20 808 8809</Link>
+                  Bel <Link href="tel:+31207052222" style={orangeLink}>+31 20 705 2222</Link> of WhatsApp <Link href="https://wa.me/31208088809" style={orangeLink}>+31 20 808 8809</Link>
                 </Text>
                 <Text className="d-muted" style={{ ...body16, color: c.muted, marginTop: "2px" }}>Bereikbaar ma t/m vr 8:00 – 18:00</Text>
               </Column>
@@ -511,34 +508,24 @@ export function AutomationFooter({ recipientEmail, reason }: { recipientEmail: s
       <Section style={{ backgroundColor: c.frame, width: "100%" }}>
         <Container style={{ width: "100%", maxWidth: "626px" }}>
           <Section className="m-pad" style={{ padding: "32px" }}>
-            {/* De gastquote bovenin de footer, wit op zwart met een lijn eronder */}
-            <Section style={{ marginBottom: "30px", paddingBottom: "28px", borderBottom: "1px solid #3A3A3A" }}>
-              <Img src={`${baseUrl}/images/mail/crm/gastquote-wit.png`} alt="“Dit moeten we vaker doen!”" width="367" height="34" style={{ display: "block", width: "367px", maxWidth: "100%", height: "auto" }} />
-              <Text style={{ ...s.muted, color: "#FFFFFF", margin: "8px 0 0" }}>— Onze tevreden gasten</Text>
-            </Section>
-
             <Row>
-              <Column className="stack m-center" style={{ width: "50%", verticalAlign: "top" }}>
+              <Column className="stack m-center" style={{ width: "50%", verticalAlign: "top", paddingRight: "24px" }}>
                 <Img src={`${baseUrl}/images/logo-vialuxury-horizontal.png`} alt="ViaLuxury" width="201" className="m-mx-auto" style={{ height: "auto" }} />
-              </Column>
-              <Column className="stack m-center m-mt" style={{ width: "50%", verticalAlign: "top" }}>
-                <Text className="m-center" style={{ ...bold, margin: "0 0 10px" }}>Volg ons op</Text>
+                <Text className="m-center" style={{ ...bold, margin: "22px 0 10px" }}>Volg ons op</Text>
                 <Link href="https://www.instagram.com/vialuxury">
                   <Img src={`${baseUrl}/images/mail/icon-instagram.png`} alt="Instagram" width="19" height="19" style={{ display: "inline", marginRight: "10px" }} />
                 </Link>
                 <Link href="https://www.facebook.com/vialuxury">
                   <Img src={`${baseUrl}/images/mail/icon-facebook.png`} alt="Facebook" width="19" height="19" style={{ display: "inline" }} />
                 </Link>
-              </Column>
-            </Row>
-            <Row style={{ marginTop: "28px" }}>
-              <Column className="stack m-center" style={{ width: "50%", verticalAlign: "bottom", paddingRight: "24px" }}>
-                <Text className="m-center m-small" style={{ ...text, margin: 0 }}>
+                <Text className="m-center m-small" style={{ ...text, margin: "26px 0 0" }}>
                   Je ontvangt deze e-mail op <strong>{recipientEmail}</strong> {reason}.
                 </Text>
               </Column>
-              <Column className="stack m-center m-mt" style={{ width: "50%", verticalAlign: "bottom" }}>
-                <Text className="m-center m-small" style={text}>Prijswijzigingen en/of zetfouten voorbehouden.</Text>
+              {/* Rechts: de gastquote bovenaan, op dezelfde hoogte als het logo, met daaronder de kleine letters */}
+              <Column className="stack m-center m-mt" style={{ width: "50%", verticalAlign: "top" }}>
+                <Img src={`${baseUrl}/images/mail/crm/gastquote-wit.png`} alt="“Dit moeten we vaker doen!”" width="253" height="23" className="m-mx-auto" style={{ display: "block", width: "253px", maxWidth: "100%", height: "auto" }} />
+                <Text className="m-center m-small" style={{ ...text, margin: "54px 0 8px" }}>Prijswijzigingen en/of zetfouten voorbehouden.</Text>
                 <Text className="m-center m-small" style={text}>Copyright © ViaLuxury, All Rights Reserved</Text>
                 <Text className="m-center m-small" style={text}>Liever geen updates meer? Ontvang onze nieuwsbrief minder vaak, of helemaal niet meer.</Text>
                 <Text className="m-center m-small" style={{ ...text, margin: 0 }}>
