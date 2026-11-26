@@ -68,7 +68,7 @@ export default function AutomationCart({ recipientEmail, preheader, firstName, h
 
   // De codesectie staat normaal onderaan, in mail 4 direct onder de introtekst.
   const codeSection = code ? (
-    <Section className="m-pad" style={{ padding: codeFirst ? "28px 32px 0" : "44px 32px 0" }}>
+    <Section className="m-pad" style={{ padding: codeFirst ? "28px 24px 0" : "44px 24px 0" }}>
       {headingAt === "code" && <Heading as="h1" className="m-h1 d-head" style={{ ...s.h1, marginBottom: "20px" }}>{heading}</Heading>}
       <AutomationCodeBlock title={`${code.value} cadeau`} code={code.code} label="Jouw unieke code" deadline={code.deadline} />
       <Text className="d-text" style={{ ...s.body, margin: "14px 0 0" }}>{code.advice}</Text>
@@ -93,7 +93,7 @@ export default function AutomationCart({ recipientEmail, preheader, firstName, h
         <CrmHeader />
         <Container style={{ width: "100%", maxWidth: "626px" }}>
           {/* Opening: direct de kop met de intro, of de brief met de ondertekening */}
-          <Section className="m-pad" style={{ padding: "32px 32px 0" }}>
+          <Section className="m-pad" style={{ padding: "32px 24px 0" }}>
             {(headingAt === "top" || opening !== "brief") && (
               <Heading as="h1" className="m-h1 d-head" style={{ ...s.h1, marginBottom: headingAt === "top" ? "16px" : undefined }}>{heading}</Heading>
             )}
@@ -111,7 +111,7 @@ export default function AutomationCart({ recipientEmail, preheader, firstName, h
               klaarstaat als losse regels met de knop eronder, en daarna de kaart zonder prijsrij. */}
           {opening === "winkelmandje" ? (
             <>
-              <Section className="m-pad" style={{ padding: "20px 32px 0" }}>
+              <Section className="m-pad" style={{ padding: "20px 24px 0" }}>
                 {cartTitle && <Text className="d-head" style={{ ...s.kop, margin: "0 0 10px" }}>{cartTitle}</Text>}
                 <Text className="d-text" style={{ ...s.name, margin: 0 }}>
                   {cart.hotelName}
@@ -125,12 +125,12 @@ export default function AutomationCart({ recipientEmail, preheader, firstName, h
                   <PrimaryButton href={cart.url}>Rond je boeking af</PrimaryButton>
                 </Section>
               </Section>
-              <Section className="m-pad" style={{ padding: "12px 32px 0" }}>
+              <Section className="m-pad" style={{ padding: "12px 24px 0" }}>
                 <AutomationFeaturedDeal deal={{ ...cart, hotelName: undefined, stars: undefined, place: undefined }} priceRow={false} />
               </Section>
             </>
           ) : (
-            <Section className="m-pad" style={{ padding: opening === "brief" ? "40px 32px 0" : "24px 32px 0" }}>
+            <Section className="m-pad" style={{ padding: opening === "brief" ? "40px 24px 0" : "24px 24px 0" }}>
               {opening === "brief" && headingAt === "cart" && <Heading as="h1" className="m-h1 d-head" style={s.h1}>{heading}</Heading>}
               {/* Het standaard hotelblok: de datumregel hoort bij de winkelmandje-opzet, niet hier. */}
               <AutomationFeaturedDeal deal={{ ...cart, lines: undefined }} cta="Rond je boeking af" />
@@ -139,7 +139,7 @@ export default function AutomationCart({ recipientEmail, preheader, firstName, h
 
           {/* S21 Gastenoordeel */}
           {guestRating && (
-            <Section className="m-pad" style={{ padding: "44px 32px 0" }}>
+            <Section className="m-pad" style={{ padding: "44px 24px 0" }}>
               {opening === "brief" && headingAt === "rating" && <Heading as="h1" className="m-h1 d-head" style={{ ...s.h1, marginBottom: "18px" }}>{heading}</Heading>}
               <GuestRatingSection rating={guestRating} />
             </Section>
@@ -147,7 +147,7 @@ export default function AutomationCart({ recipientEmail, preheader, firstName, h
 
           {/* S4 Hoteldeals: vergelijkbare arrangementen als alternatief */}
           {alternatives && alternatives.length > 0 && (
-            <Section className="m-pad" style={{ padding: "44px 32px 0" }}>
+            <Section className="m-pad" style={{ padding: "44px 24px 0" }}>
               {alternativesTitle && <Heading as="h2" className="m-h1 d-head" style={s.h1}>{alternativesTitle}</Heading>}
               {alternatives.map((d, i) => (
                 <AutomationDealRow key={d.url} deal={d} top={i ? cardGap : undefined} />
@@ -160,7 +160,7 @@ export default function AutomationCart({ recipientEmail, preheader, firstName, h
 
           {/* S15 Serviceregel, onder het hotelblok */}
           {service && (
-            <Section className="m-pad" style={{ padding: "28px 32px 0" }}>
+            <Section className="m-pad" style={{ padding: "28px 24px 0" }}>
               <ServiceSection />
             </Section>
           )}

@@ -112,7 +112,7 @@ export function AutomationBand({ children, top = "0" }: { children: React.ReactN
   return (
     <Section className="d-band" style={{ backgroundColor: "#F4F1EC", width: "100%", marginTop: top }}>
       <Container style={{ width: "100%", maxWidth: "626px" }}>
-        <Section className="m-pad" style={{ padding: "24px 32px 28px" }}>{children}</Section>
+        <Section className="m-pad" style={{ padding: "24px 24px 28px" }}>{children}</Section>
       </Container>
     </Section>
   );
@@ -483,7 +483,7 @@ export function AutomationFooter({ recipientEmail, reason }: { recipientEmail: s
       {/* Klantenservice: lichtoranje band over de hele breedte, direct boven de footer */}
       <Section className="d-warm" style={{ backgroundColor: "#FFF0E4", width: "100%" }}>
         <Container style={{ width: "100%", maxWidth: "626px" }}>
-          <Section className="m-pad" style={{ padding: "26px 32px 28px" }}>
+          <Section className="m-pad" style={{ padding: "26px 24px 28px" }}>
             <Row>
               <Column style={{ width: "62px", verticalAlign: "middle" }}>
                 <table role="presentation" cellPadding={0} cellSpacing={0} border={0} style={{ width: "44px", height: "44px", borderCollapse: "separate" }}>
@@ -510,7 +510,7 @@ export function AutomationFooter({ recipientEmail, reason }: { recipientEmail: s
 
       <Section style={{ backgroundColor: c.frame, width: "100%" }}>
         <Container style={{ width: "100%", maxWidth: "626px" }}>
-          <Section className="m-pad" style={{ padding: "32px" }}>
+          <Section className="m-pad" style={{ padding: "32px 24px" }}>
             <Row>
               <Column className="stack m-center" style={{ width: "50%", verticalAlign: "top", paddingRight: "24px" }}>
                 <Img src={`${baseUrl}/images/logo-vialuxury-horizontal.png`} alt="ViaLuxury" width="201" className="m-mx-auto" style={{ height: "auto" }} />

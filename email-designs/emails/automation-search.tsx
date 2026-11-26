@@ -69,19 +69,19 @@ export default function AutomationSearch({ recipientEmail, preheader, firstName,
         <CrmHeader />
         <Container style={{ width: "100%", maxWidth: "626px" }}>
           {/* Opening: de kop en, als er een introtekst is, de brief met de aanhef */}
-          <Section className="m-pad" style={{ padding: "32px 32px 0" }}>
+          <Section className="m-pad" style={{ padding: "32px 24px 0" }}>
             {topHeading && <Heading as="h1" className="m-h1 d-head" style={{ ...s.h1, marginBottom: intro ? "16px" : 0 }}>{topHeading}</Heading>}
             {intro && <AutomationLetter firstName={firstName}>{intro}</AutomationLetter>}
           </Section>
 
           {/* S18 Zoekopdracht, direct onder de ondertekening */}
-          <Section className="m-pad" style={{ padding: "32px 32px 0" }}>
+          <Section className="m-pad" style={{ padding: "32px 24px 0" }}>
             <SearchSection searchTerm={searchTerm} arrivalDate={arrivalDate} persons={persons} resultsUrl={resultsUrl} />
           </Section>
 
           {/* S4 Hoteldeals: de zoekresultaten, met de kop erboven */}
           {results && results.length > 0 && (
-            <Section className="m-pad" style={{ padding: "44px 32px 0" }}>
+            <Section className="m-pad" style={{ padding: "44px 24px 0" }}>
               {heading && <Heading as={topHeading ? "h2" : "h1"} className="m-h1 d-head" style={s.h1}>{heading}</Heading>}
               <AutomationDealList deals={results} />
             </Section>
@@ -99,14 +99,14 @@ export default function AutomationSearch({ recipientEmail, preheader, firstName,
         <Container style={{ width: "100%", maxWidth: "626px" }}>
           {/* Knop onderaan */}
           {footerCta && (
-            <Section className="m-pad" style={{ padding: "28px 32px 0" }}>
+            <Section className="m-pad" style={{ padding: "28px 24px 0" }}>
               <PrimaryButton href={footerCta.href}>{footerCta.label}</PrimaryButton>
             </Section>
           )}
 
           {/* Tekstlink onderaan */}
           {footerLink && (
-            <Section className="m-pad" style={{ padding: "24px 32px 0" }}>
+            <Section className="m-pad" style={{ padding: "24px 24px 0" }}>
               <TextLink href={footerLink.href}>{footerLink.label}</TextLink>
             </Section>
           )}

@@ -424,6 +424,10 @@ jou!"), zonder aanhef, want de naam staat al in de kop. De alternatieven staan b
 onderaan als dealrij onder de subtitel "Door jou bekeken" (`viewedAtBottom`), de opzet van
 `crm-winkelmandje-2-dagen`, met dezelfde knop "Bekijk" als elke andere dealrij.
 
+Uitlijning (sinds 26-11-2026): de inhoud van een automationmail staat op dezelfde lijn als het logo in
+de zwarte kopbalk, dus 24 px van de rand van de kolom van 626 px (was 32), ook in de banden, het
+klantenserviceblok en de footer.
+
 Titelgroottes in de automationmails, zoals in de CRM-mails: de titel van de mail en de titel boven een
 lijst arrangementen of een themablok zijn 32 px serif, de regel boven één losse kaart ("Door jou
 bekeken") 20 px serif.
