@@ -500,26 +500,22 @@ export function AutomationFooter({ recipientEmail, reason }: { recipientEmail: s
       {/* Klantenservice: lichtoranje band over de hele breedte, direct boven de footer */}
       <Container style={{ width: "100%", maxWidth: "626px" }}>
         <Section className="d-warm m-pad" style={{ backgroundColor: "#FFF0E4", padding: "26px 20px 28px" }}>
-            <Row>
-              <Column style={{ width: "62px", verticalAlign: "middle" }}>
-                <table role="presentation" cellPadding={0} cellSpacing={0} border={0} style={{ width: "44px", height: "44px", borderCollapse: "separate" }}>
-                  <tbody>
-                    <tr>
-                      <td className="d-circle" style={{ width: "44px", height: "44px", padding: 0, borderRadius: "22px", backgroundColor: "#FFFFFF", textAlign: "center", verticalAlign: "middle" }}>
-                        <Img src={`${baseUrl}/images/mail/icon-phone-orange.png`} alt="" width="22" height="22" style={{ display: "block", margin: "0 auto" }} />
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </Column>
-              <Column style={{ verticalAlign: "middle" }}>
-                <Text className="d-head" style={{ ...serif, color: c.heading }}>Hulp nodig?</Text>
-                <Text className="d-text" style={{ ...body16, color: c.text, marginTop: "2px" }}>
-                  Bel <Link href="tel:+31207052222" style={orangeLink}>+31 20 705 2222</Link> of WhatsApp <Link href="https://wa.me/31208088809" style={orangeLink}>+31 20 808 8809</Link>
-                </Text>
-                <Text className="d-muted" style={{ ...body16, color: c.muted, marginTop: "2px" }}>Bereikbaar ma t/m vr 8:00 – 18:00</Text>
-              </Column>
-            </Row>
+          {/* Het cirkeltje staat boven de tekst, zodat de kop en de regels eronder op dezelfde lijn
+              staan als het logo en de rest van de mail. */}
+          <table role="presentation" cellPadding={0} cellSpacing={0} border={0} style={{ width: "44px", height: "44px", borderCollapse: "separate", marginBottom: "14px" }}>
+            <tbody>
+              <tr>
+                <td className="d-circle" style={{ width: "44px", height: "44px", padding: 0, borderRadius: "22px", backgroundColor: "#FFFFFF", textAlign: "center", verticalAlign: "middle" }}>
+                  <Img src={`${baseUrl}/images/mail/icon-phone-orange.png`} alt="" width="22" height="22" style={{ display: "block", margin: "0 auto" }} />
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <Text className="d-head" style={{ ...serif, color: c.heading }}>Hulp nodig?</Text>
+          <Text className="d-text" style={{ ...body16, color: c.text, marginTop: "2px" }}>
+            Bel <Link href="tel:+31207052222" style={orangeLink}>+31 20 705 2222</Link> of WhatsApp <Link href="https://wa.me/31208088809" style={orangeLink}>+31 20 808 8809</Link>
+          </Text>
+          <Text className="d-muted" style={{ ...body16, color: c.muted, marginTop: "2px" }}>Bereikbaar ma t/m vr 8:00 – 18:00</Text>
         </Section>
       </Container>
 
