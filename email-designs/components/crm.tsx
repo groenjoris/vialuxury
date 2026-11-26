@@ -42,6 +42,7 @@ export const commercieelCss = `
   .m-head-cell { padding: 0 8px !important; }
   .m-head-pad { padding: 12px 16px !important; }
   .m-trustpilot { width: 85px !important; height: auto !important; }
+  .m-tcenter { text-align: center !important; }
   .m-only { display: block !important; }
   .m-hide { display: none !important; }
   .m-reason { margin-top: 24px !important; }
@@ -644,9 +645,10 @@ export const openingVariants = [["native", "", "Native"], ["header-titel", "-hea
 /** Sfeerfoto over de hele breedte van de mail (van rand tot rand, net als de zwarte header; staat dus
  *  BUITEN de <Container>) met de actietitel en de knop; de inhoud van het vlak en de tekst op de foto
  *  staan in de kolom van de mail, links gelijk met het logo (32 px):
- *  - native: onder de foto een donkergroen vlak (huisstijl, rechte hoeken), witte titel, zwarte knop
- *    (de beige versie "Native 2" is op 2026-11-27 vervallen)
- *  - header-titel: de titel staat in de header (CrmHeader `title`); onder de foto alleen een grote, gecentreerde knop
+ *  - native: onder de foto een beige vlak (rechte hoeken) met een zwarte titel en een oranje knop; op
+ *    desktop links, op mobiel gecentreerd (de donkergroene versie is op 2026-11-27 vervallen)
+ *  - header-titel: de titel staat in de header (CrmHeader `title`); onder de foto een beige band met
+ *    alleen de oranje knop, gecentreerd
  *  - foto-titel: de titel groot linksboven op de foto, de zwarte knop linksonder en rechtsonder een ronde
  *    sticker (`sticker`, bijv. de vanafprijs of de korting); een verloop houdt de witte tekst leesbaar
  *  De hele foto is klikbaar (naar `href`). */
@@ -699,19 +701,23 @@ export function CampaignOpening({ variant, hero, heroAlt, title, cta, href, stic
         </Link>
       )}
       {inHeader && (
-        <Section style={{ marginTop: "24px", textAlign: "center" }}>
-          <Button href={href} style={{ backgroundColor: c.cta, color: "#FFFFFF", fontFamily: font.body, fontSize: "20px", fontWeight: 700, borderRadius: "6px", padding: "18px 48px", textDecoration: "none" }}>{cta}</Button>
+        // Titel staat al in de header: onder de foto een beige band met alleen de knop, gecentreerd
+        <Section style={{ width: "100%", backgroundColor: "#F4F1EC" }}>
+          <div style={{ padding: "18px 16px", textAlign: "center" }}>
+            <PrimaryButton href={href}>{cta}</PrimaryButton>
+          </div>
         </Section>
       )}
       {variant === "native" && (
-        <Section style={{ width: "100%", backgroundColor: "#00675F" }}>
+        <Section style={{ width: "100%", backgroundColor: "#F4F1EC" }}>
           <Container style={{ width: "100%", maxWidth: "626px" }}>
-            <Section className="m-pad" style={{ padding: "22px 32px 26px" }}>
-              <Heading as="h1" className="m-h1" style={{ ...s.h1, color: "#FFFFFF" }}>{title}</Heading>
-              <Section style={{ marginTop: "16px" }}>
-                <SecondaryButton href={href} dark>{cta}</SecondaryButton>
-              </Section>
-            </Section>
+            {/* Desktop links (gelijk met het logo), mobiel gecentreerd (klasse m-tcenter) */}
+            <div className="m-pad m-tcenter" style={{ padding: "22px 32px 26px" }}>
+              <Heading as="h1" className="m-h1 m-tcenter" style={{ ...s.h1, color: c.heading }}>{title}</Heading>
+              <div style={{ marginTop: "16px" }}>
+                <PrimaryButton href={href}>{cta}</PrimaryButton>
+              </div>
+            </div>
           </Container>
         </Section>
       )}

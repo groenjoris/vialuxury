@@ -234,16 +234,17 @@ maken we per mail. Feedback van de opdrachtgever (2026-11-26) is verwerkt:
   varianten als knoppen (twee naast elkaar, geen "Desktop | Mobiel"). Eén tik op een mail of variant opent die direct;
   de mail en variant die open stonden zijn gemarkeerd ("Nu open", zwarte knop) en niet klikbaar; het kruisje gaat terug.
 - Opening met actietitel en knop (`CampaignOpening` in crm.tsx, voor Content en Dedicated), drie varianten met een
-  schakelaar (`openingVariants`, slug `<slug>[-header-titel|-foto-titel]`; "Native 2", de beige versie, is op
-  2026-11-27 vervallen en "Native 1" heet nu "Native"): de sfeerfoto en het gekleurde vlak
+  schakelaar (`openingVariants`, slug `<slug>[-header-titel|-foto-titel]`; van "Native 1" (groen) en "Native 2"
+  (beige) is op 2026-11-27 alleen de beige over, als "Native"): de sfeerfoto en het gekleurde vlak
   eronder lopen over de hele breedte van de mail, van rand tot rand net als de zwarte header (buiten de `<Container>`),
   en de foto is klikbaar; alle
   inhoud staat links gelijk met het logo, ook de tekst op de foto (32 px: de commerciële mails geven `CrmHeader` de prop
-  `pad={32}`, de CRM-mails houden 24). Native: onder de foto een donkergroen vlak (huisstijlgroen #00675F, rechte
-  hoeken: de ronde hoeken zijn vervallen nu het vlak over de hele breedte loopt), witte titel, zwarte knop.
+  `pad={32}`, de CRM-mails houden 24). Native: onder de foto een beige vlak (rechte hoeken) met een zwarte titel en
+  een oranje knop; op desktop links, op mobiel staan titel en knop gecentreerd. De donkergroene versie (#00675F, witte
+  titel, zwarte knop) was eerst "Native 1" en is vervallen.
   Header-titel: de titel staat in de header (`CrmHeader`-prop `title`: vierkant logo 76 × 60, titel
-  32 px wit gecentreerd tussen logo en Trustpilot) en onder de foto staat een grote,
-  gecentreerde oranje knop. Titel op foto: gewone header, de titel groot (44 px, wit) linksboven op de foto, de zwarte
+  32 px wit gecentreerd tussen logo en Trustpilot) en onder de foto staat een beige band over de
+  hele breedte met alleen de oranje knop (gewone grootte), gecentreerd. Titel op foto: gewone header, de titel groot (44 px, wit) linksboven op de foto, de zwarte
   knop linksonder en rechtsonder een ronde oranje sticker (vanafprijs of korting); een donker verloop houdt de tekst
   leesbaar. Bewuste uitzondering op "geen tekst op een foto" en "geen stickers".
 - Actiemails met een code (Actie, Tekst): in de footer staan de geldigheid van de code en de link "Bekijk de
@@ -266,7 +267,9 @@ Bronnen `email-designs/emails/commercieel-*.tsx`, foto's in
    vouw de eerste interesse gewekt en vaak geklikt. Daarna de brief (`Letter`) met het aanbod vet, de tekstlink "Boek deze
    hoteldeal" (geen tweede knop) en het arrangement op de verticale kaart (`FeaturedDeal`) met álle inclusies (`allIncludes`, hier zeven,
    kan oplopen tot acht à tien; elders maximaal vier). Onder de kaart een beige band "Meer van [hotel]" met witte
-   knoppen naar het andere aanbod van het hotel (1 nacht, 3 nachten; echte arrangementen uit `deals.json`). Geen "Snel
+   knoppen naar het andere aanbod van het hotel (1 nacht, 3 nachten; echte arrangementen uit `deals.json`). Die
+   knoppen zijn zo breed als hun tekst (niet over de hele breedte) en hebben rechts van de tekst een chevron, zodat ze
+   klikbaar ogen; bewuste uitzondering op "geen chevron in de mails". Geen "Snel
    zoeken". Voorbeeld: Veluwe Hotel de Beyaerd (Stakenberg staat niet in `deals.json`). De oude schakelaars "Met prijs |
    Zonder prijs" en "Zonder titel | Met titel" zijn vervallen.
 3. `commercieel-actie` ("Actie (Goodiebox)"): een cadeau of extra bij een boeking. Actiegraphic direct onder de header over de hele breedte van de mail,

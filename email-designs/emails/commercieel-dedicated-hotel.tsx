@@ -1,8 +1,8 @@
-import { Body, Container, Head, Html, Preview, Section, Text } from "@react-email/components";
+import { Body, Container, Head, Html, Link, Preview, Section, Text } from "@react-email/components";
 import * as React from "react";
 import CrmFooter from "../components/CrmFooter";
 import CrmHeader from "../components/CrmHeader";
-import { BeigeBand, CampaignOpening, commercieelCss, crmCss, FeaturedDeal, Letter, TextLink, type OpeningVariant, type Pill, PillGrid, type RowDeal, s, site } from "../components/crm";
+import { BeigeBand, CampaignOpening, commercieelCss, crmCss, FeaturedDeal, Letter, TextLink, type OpeningVariant, type Pill, type RowDeal, s, site } from "../components/crm";
 import { font, newsletter } from "../components/theme";
 
 // Commerciële mail 2: Dedicated hotel. De hele mail gaat over één hotel. Hij opent met het headerbeeld
@@ -76,7 +76,16 @@ export default function CommercieelDedicatedHotel({ variant = "native", mobile, 
         <BeigeBand top="40px">
           <Text style={s.kop}>Meer van {deal.hotelName}</Text>
           <Text style={{ ...s.body, margin: "2px 0 0" }}>Liever korter of juist langer weg?</Text>
-          <PillGrid items={others} />
+          {/* Knoppen zo breed als hun tekst (niet over de hele breedte, anders lijken het geen knoppen),
+              met een chevron rechts van de tekst zodat ze klikbaar ogen */}
+          <div style={{ marginTop: "8px" }}>
+            {others.map((o) => (
+              <Link key={o.href} href={o.href} style={{ display: "inline-block", margin: "8px 8px 0 0", backgroundColor: "#FFFFFF", border: "1px solid #E5E5E5", borderRadius: "4px", padding: "13px 16px", fontFamily: font.body, fontSize: "16px", lineHeight: "20px", color: c.text, textDecoration: "none" }}>
+                {o.label}
+                <span style={{ marginLeft: "12px", fontSize: "20px", lineHeight: "20px", color: c.muted }}>›</span>
+              </Link>
+            ))}
+          </div>
         </BeigeBand>
 
         <CrmFooter recipientEmail={recipientEmail} reason="omdat je je hebt aangemeld voor onze nieuwsbrief" help={2} quote />
