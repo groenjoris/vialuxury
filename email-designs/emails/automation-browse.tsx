@@ -88,7 +88,7 @@ export default function AutomationBrowse({ recipientEmail, preheader, firstName,
           {/* S17 Achtergelaten arrangement: het bekeken arrangement */}
           {!viewedAtBottom && (
             <Section className="m-pad" style={{ padding: opening === "brief" ? "40px 20px 0" : "24px 20px 0" }}>
-              {viewedTitle && <Text className="d-head" style={{ ...s.kop, marginBottom: "12px" }}>{viewedTitle}</Text>}
+              {viewedTitle && <Heading as="h3" className="d-head" style={{ ...s.kop, marginBottom: "12px" }}>{viewedTitle}</Heading>}
               <AutomationFeaturedDeal deal={viewed} cta="Bekijk arrangement" />
             </Section>
           )}
@@ -115,7 +115,7 @@ export default function AutomationBrowse({ recipientEmail, preheader, firstName,
           {/* Het bekeken arrangement onderaan, als kleiner hotelblok */}
           {viewedAtBottom && (
             <Section className="m-pad" style={{ padding: "44px 20px 0" }}>
-              {viewedTitle && <Text className="d-head" style={{ ...s.kop, marginBottom: "12px" }}>{viewedTitle}</Text>}
+              {viewedTitle && <Heading as="h3" className="d-head" style={{ ...s.kop, marginBottom: "12px" }}>{viewedTitle}</Heading>}
               <AutomationDealRow deal={viewed} />
             </Section>
           )}

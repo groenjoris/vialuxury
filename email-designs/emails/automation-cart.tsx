@@ -93,7 +93,7 @@ export default function AutomationCart({ recipientEmail, preheader, firstName, h
         <Container style={{ width: "100%", maxWidth: "626px" }}>
           {/* Opening: direct de kop met de intro, of de brief met de ondertekening */}
           <Section className="m-pad" style={{ padding: "32px 20px 0" }}>
-            {(headingAt === "top" || opening !== "brief") && (
+            {headingAt !== "code" && (headingAt === "top" || opening !== "brief") && (
               <Heading as="h1" className="m-h1 d-head" style={{ ...s.h1, marginBottom: headingAt === "top" ? "16px" : undefined }}>{heading}</Heading>
             )}
             {opening === "brief" ? (
@@ -111,7 +111,7 @@ export default function AutomationCart({ recipientEmail, preheader, firstName, h
           {opening === "winkelmandje" ? (
             <>
               <Section className="m-pad" style={{ padding: "20px 20px 0" }}>
-                {cartTitle && <Text className="d-head" style={{ ...s.kop, margin: "0 0 10px" }}>{cartTitle}</Text>}
+                {cartTitle && <Heading as="h3" className="d-head" style={{ ...s.kop, margin: "0 0 10px" }}>{cartTitle}</Heading>}
                 <Text className="d-text" style={{ ...s.name, margin: 0 }}>
                   {cart.hotelName}
                   {cart.stars ? <span style={{ letterSpacing: "1px", marginLeft: "8px" }}>{"★".repeat(cart.stars)}</span> : null}

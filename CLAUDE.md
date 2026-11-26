@@ -431,6 +431,12 @@ rand van dat vlak, zodat alles op dezelfde lijn staat als het logo. Daarvoor hee
 eigen `AutomationHeader` (kopie van `CrmHeader`), zodat de CRM-mails hun balk over de hele breedte
 houden.
 
+Koppen (sinds 26-11-2026): elke automationmail heeft precies één `h1`, de titel van de mail. Een kop
+boven een lijst arrangementen of een themablok is `h2`, een subtitel van 20 px boven één kaart of blok
+`h3` ("Nog steeds interesse in:", "Door jou bekeken", het merkblok, het bedrag van de coupon, "Hulp
+nodig?") en de dealtitel in een kaart `h4`. De hotelnaam erboven blijft gewone tekst, want de
+dealtitel is de titel van het aanbod.
+
 Titelgroottes in de automationmails, zoals in de CRM-mails: de titel van de mail en de titel boven een
 lijst arrangementen of een themablok zijn 32 px serif, de regel boven één losse kaart ("Door jou
 bekeken") 20 px serif.

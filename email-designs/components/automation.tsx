@@ -182,7 +182,7 @@ function DealText({ d }: { d: AutomationDeal }) {
       )}
       {d.place && <Text className="d-muted" style={{ ...s.muted, margin: "2px 0 0" }}>{d.place}</Text>}
       {(d.hotelName || d.place) && <Section className="d-line" style={{ borderTop: "1px solid #E5E5E5", marginTop: "12px", fontSize: "1px", lineHeight: "1px" }}>&nbsp;</Section>}
-      {d.packageTitle && <Text className="d-head" style={{ ...s.kop, fontSize: "18px", margin: d.hotelName || d.place ? "10px 0 0" : 0 }}>{d.packageTitle}</Text>}
+      {d.packageTitle && <Heading as="h4" className="d-head" style={{ ...s.kop, fontSize: "18px", margin: d.hotelName || d.place ? "10px 0 0" : 0 }}>{d.packageTitle}</Heading>}
       {d.includes && d.includes.length > 0 && (
         <>
           <Text style={{ fontFamily: font.heading, fontWeight: 600, fontSize: "16px", lineHeight: "1.4", color: c.cta, margin: "12px 0 2px" }}>Arrangement</Text>
@@ -370,7 +370,7 @@ export function BrandSection({ children, greeting, link, top = "40px" }: { child
   ];
   return (
     <AutomationBand top={top}>
-      <Text className="d-head" style={{ ...s.kop, margin: 0 }}>Zorgvuldig samengestelde hotelervaringen</Text>
+      <Heading as="h3" className="d-head" style={{ ...s.kop, margin: 0 }}>Zorgvuldig samengestelde hotelervaringen</Heading>
       <Text className="d-text" style={{ ...s.body, margin: "10px 0 0" }}>{children}</Text>
       <Section style={{ marginTop: "14px" }}>
         {punten.map((p) => (
@@ -418,7 +418,7 @@ export function AutomationCodeBlock({ title, code, label = "Jouw persoonlijke co
   const center = { textAlign: "center" as const };
   return (
     <Section className="d-inv" style={{ width: "100%", border: `2px dashed ${c.cta}`, borderRadius: "8px", padding: "22px 22px 24px", textAlign: "center" }}>
-      {title && <Text style={{ ...s.h1, fontWeight: 700, color: c.cta, ...center, margin: "0 0 12px" }}>{title}</Text>}
+      {title && <Heading as="h3" style={{ ...s.h1, fontWeight: 700, color: c.cta, ...center, margin: "0 0 12px" }}>{title}</Heading>}
       <Text className="d-text" style={{ ...s.title, ...center, margin: 0 }}>{label}</Text>
       <Text style={{ fontFamily: font.heading, fontWeight: 700, fontSize: "20px", lineHeight: "1.3", letterSpacing: "0.02em", color: c.text, margin: "4px 0 0", ...center }} className="d-head">{code}</Text>
       <Text className="d-text" style={{ ...s.name, ...center, margin: "14px 0 0" }}>
@@ -511,7 +511,7 @@ export function AutomationFooter({ recipientEmail, reason }: { recipientEmail: s
               </tr>
             </tbody>
           </table>
-          <Text className="d-head" style={{ ...serif, color: c.heading }}>Hulp nodig?</Text>
+          <Heading as="h3" className="d-head" style={{ ...serif, color: c.heading }}>Hulp nodig?</Heading>
           <Text className="d-text" style={{ ...body16, color: c.text, marginTop: "2px" }}>
             Bel <Link href="tel:+31207052222" style={orangeLink}>+31 20 705 2222</Link> of WhatsApp <Link href="https://wa.me/31208088809" style={orangeLink}>+31 20 808 8809</Link>
           </Text>
