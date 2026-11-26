@@ -68,6 +68,8 @@
         <div class="start-section__buttons">
           <NuxtLink class="start-btn" to="/crm/crm-winkelmandje">CRM-mails</NuxtLink>
           <NuxtLink class="start-btn" to="/commercieel">Commerciële mails</NuxtLink>
+          <!-- De uitgewerkte automationmails voor Klaviyo (slug = de Klaviyo-naam). -->
+          <NuxtLink class="start-btn" to="/automation/v01_tf021_fl011_nl-NL_1_abandoned_cart">Automations</NuxtLink>
         </div>
       </section>
 

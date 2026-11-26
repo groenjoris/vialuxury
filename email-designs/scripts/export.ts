@@ -16,16 +16,28 @@ async function main() {
   const dataFile = resolve(here, "../../app/data/mht-emails.json");
   // CRM-concepten: alleen light, eigen lijst voor /crm/<slug>.
   const crmFile = resolve(here, "../../app/data/crm-emails.json");
+  // Automationmails: alleen light, eigen lijst voor /automation/<slug>.
+  const automationFile = resolve(here, "../../app/data/automation-emails.json");
   // Commerciële mails (nieuwsbrieven en acties): alleen light, eigen lijst voor /commercieel/<slug>.
   const commercieelFile = resolve(here, "../../app/data/commercieel-emails.json");
   const commercieel: { slug: string; title: string; description: string; subject?: string; preheader?: string; variantOf?: string; variantLabel?: string }[] = [];
   mkdirSync(outDir, { recursive: true });
   const index: { slug: string; title: string; description: string; section: string; subject?: string; preheader?: string; variantOf?: string }[] = [];
-  const crm: { slug: string; title: string; description: string; subject?: string; preheader?: string; variantOf?: string; variantLabel?: string }[] = [];
+  const crm: { slug: string; title: string; description: string; subject?: string; preheader?: string; variantOf?: string; variantLabel?: string; dark?: boolean }[] = [];
+  const automation: typeof crm = [];
   for (const e of emails) {
-    if (e.section === "crm") {
+    if (e.section === "crm" || e.section === "automation") {
+      const list = e.section === "crm" ? crm : automation;
       writeFileSync(resolve(outDir, `${e.slug}.html`), await renderEmail(e, "light"));
-      crm.push({ slug: e.slug, title: e.title, description: e.description, subject: e.subject, preheader: e.preheader, variantOf: e.variantOf, variantLabel: e.variantLabel });
+      // Heeft de mail een donkere versie, dan komen er twee bestanden bij die alleen voor de
+      // preview zijn: .light.html zonder de donkere regels en .dark.html met die regels vast aan.
+      // Zo laat de knop Light | Dark allebei de standen zien, los van hoe het scherm staat.
+      // Verstuurd wordt altijd <slug>.html, die zichzelf omzet met de mediaquery.
+      if (e.dark && e.props) {
+        writeFileSync(resolve(outDir, `${e.slug}.light.html`), await renderEmail({ ...e, props: { ...e.props, darkMode: false } }, "light"));
+        writeFileSync(resolve(outDir, `${e.slug}.dark.html`), await renderEmail({ ...e, props: { ...e.props, darkMode: "forced" } }, "light"));
+      }
+      list.push({ slug: e.slug, title: e.title, description: e.description, subject: e.subject, preheader: e.preheader, variantOf: e.variantOf, variantLabel: e.variantLabel, dark: e.dark });
       console.log("✓", e.slug);
       continue;
     }
@@ -42,6 +54,7 @@ async function main() {
   }
   writeFileSync(dataFile, JSON.stringify(index, null, 2) + "\n");
   writeFileSync(crmFile, JSON.stringify(crm, null, 2) + "\n");
+  writeFileSync(automationFile, JSON.stringify(automation, null, 2) + "\n");
   writeFileSync(commercieelFile, JSON.stringify(commercieel, null, 2) + "\n");
   console.log(`${index.length} e-mails → ${outDir}`);
 }

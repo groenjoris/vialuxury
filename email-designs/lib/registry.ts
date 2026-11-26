@@ -20,6 +20,9 @@ import CommercieelTekst from "../emails/commercieel-tekst";
 import CommercieelCadeaukaart from "../emails/commercieel-cadeaukaart";
 import CommercieelDedicatedHotel from "../emails/commercieel-dedicated-hotel";
 import { incheckMails } from "./incheckMails";
+import AutomationCart, { cart1Props, cart1ZonderNaamProps, cart2Props, cart3Props, cart4Props } from "../emails/automation-cart";
+import AutomationBrowse, { browse1Props, browse1ZonderNaamProps, browse2Props, browse3Props, browse3ZonderNaamProps } from "../emails/automation-browse";
+import AutomationSearch, { search1Props, search2Props, search2ZonderNaamProps, search3Props, search4Props } from "../emails/automation-search";
 
 /** MVP: geen accountdetailpagina, boekingslinks gaan naar het boekingenoverzicht. */
 const MVP_ACCOUNT = "https://vialuxury.vercel.app/mvp-trip/account/boekingen";
@@ -27,13 +30,19 @@ const MVP_ACCOUNT = "https://vialuxury.vercel.app/mvp-trip/account/boekingen";
 // "crm": concept-mails voor het CRM-project (alleen light, eigen lijst app/data/crm-emails.json).
 // "commercieel": commerciële mails (nieuwsbrieven en acties; alleen light, eigen lijst
 // app/data/commercieel-emails.json, preview /commercieel/<slug>).
-export type EmailSection = "designs" | "inspiration" | "crm" | "commercieel";
+// "automation": de uitgewerkte automationmails voor Klaviyo (alleen light, eigen lijst
+// app/data/automation-emails.json). De slug is exact de Klaviyo-naam uit de briefing, zodat de
+// geëxporteerde HTML (public/emails/<slug>.html) net zo heet als de template in Klaviyo.
+export type EmailSection = "designs" | "inspiration" | "crm" | "automation" | "commercieel";
 
 export type EmailEntry = {
   slug: string;
   title: string;
   description: string;
   section: EmailSection;
+  /** Deze mail heeft een donkere versie (de mail zet zichzelf om in een donkere client), dus de
+   *  preview toont de knop Light | Dark. */
+  dark?: boolean;
   /** Onderwerpregel en preheader zoals de ontvanger ze in de inbox ziet (de preheader staat ook
    *  als <Preview> in de mail zelf; hier dezelfde tekst met de voorbeelddata ingevuld). */
   subject?: string;
@@ -476,6 +485,176 @@ export const emails: EmailEntry[] = [
         Component: CommercieelCadeaukaart,
       },
   ]),
+  // ── Automationmails (fase 1) ─────────────────────────────────────────────────────────────
+  // Bron: "Automations in kaart.xlsx", tabblad Automation per variant. Elke kolom is één mail;
+  // de secties staan in de volgorde waarin ze in de mail komen. De slug is de Klaviyo-naam.
+  // Flow fl011: achtergelaten winkelmandje.
+  {
+    slug: "v01_tf021_fl011_nl-NL_1_abandoned_cart",
+    dark: true,
+    title: "Winkelmandje 1 (1 uur na verlaten)",
+    description: "Kop, intro, het winkelmandje met datums, nachten, personen en prijs, en de knop Rond je boeking af. Onderaan de serviceregel. Geen alternatieven.",
+    section: "automation",
+    subject: "Je verblijf in Hotel Des Indes staat nog klaar",
+    preheader: "Rond je boeking af wanneer het jou uitkomt.",
+    Component: AutomationCart,
+    props: cart1Props,
+    variantLabel: "Naam bekend",
+  },
+  {
+    slug: "v01_tf021_fl011_nl-NL_1_abandoned_cart-naam-onbekend",
+    dark: true,
+    variantOf: "v01_tf021_fl011_nl-NL_1_abandoned_cart",
+    title: "Winkelmandje 1 (1 uur na verlaten)",
+    description: "Variant voor als de voornaam niet bekend is: de kop begint zonder naam.",
+    section: "automation",
+    subject: "Je verblijf in Hotel Des Indes staat nog klaar",
+    preheader: "Rond je boeking af wanneer het jou uitkomt.",
+    Component: AutomationCart,
+    props: cart1ZonderNaamProps,
+    variantLabel: "Naam onbekend",
+  },
+  {
+    slug: "v01_tf022_fl011_nl-NL_2_abandoned_cart",
+    title: "Winkelmandje 2 (2 dagen na verlaten)",
+    description: "Kop We helpen je graag, daaronder de brief met de aanhef. Het winkelmandje als standaard hotelblok met de knop, daarna Anderen boekten ook met twee vergelijkbare arrangementen.",
+    section: "automation",
+    subject: "Zijn jouw data nog vrij?",
+    preheader: "Rond je boeking voor Hotel Des Indes af.",
+    Component: AutomationCart,
+    props: cart2Props,
+  },
+  {
+    slug: "v01_tf023_fl011_nl-NL_3_abandoned_cart",
+    title: "Winkelmandje 3 (3 dagen na verlaten)",
+    description: "Sociale bevestiging: het winkelmandje, daarna het gastenoordeel met de Trustpilot-score en één review, en twee alternatieven.",
+    section: "automation",
+    subject: "Twijfel je nog over Hotel Des Indes?",
+    preheader: "Dit vonden andere gasten.",
+    Component: AutomationCart,
+    props: cart3Props,
+  },
+  {
+    slug: "v01_tf024_fl011_nl-NL_4_abandoned_cart_discount_10euro",
+    title: "Winkelmandje 4 (4 dagen na verlaten)",
+    description: "Laatste mail van de flow: brief van Yvette, het winkelmandje met de knop, en daaronder de unieke code van €10 als coupon met de adviesregel eronder.",
+    section: "automation",
+    subject: "€10 cadeau voor je verblijf in Hotel Des Indes",
+    preheader: "Jouw unieke code, geldig tot en met 7 december 2026.",
+    Component: AutomationCart,
+    props: cart4Props,
+  },
+  // Flow fl012: bekeken arrangement.
+  {
+    slug: "v01_tf025_fl012_nl-NL_1_abandoned_browse",
+    title: "Bekeken arrangement 1 (2 uur na bekijken)",
+    description: "Kop met de voornaam, daaronder de brief. Het bekeken arrangement met de knop Bekijk arrangement, daarna Anderen bekeken ook met twee arrangementen in dezelfde sfeer.",
+    section: "automation",
+    subject: "Je bekeek Landgoed Lauswolt",
+    preheader: "Nog steeds zin in dit verblijf?",
+    Component: AutomationBrowse,
+    props: browse1Props,
+    variantLabel: "Naam bekend",
+  },
+  {
+    slug: "v01_tf025_fl012_nl-NL_1_abandoned_browse-naam-onbekend",
+    variantOf: "v01_tf025_fl012_nl-NL_1_abandoned_browse",
+    title: "Bekeken arrangement 1 (2 uur na bekijken)",
+    description: "Variant voor als de voornaam niet bekend is: de kop en de aanhef zonder naam.",
+    section: "automation",
+    subject: "Je bekeek Landgoed Lauswolt",
+    preheader: "Nog steeds zin in dit verblijf?",
+    Component: AutomationBrowse,
+    props: browse1ZonderNaamProps,
+    variantLabel: "Naam onbekend",
+  },
+  {
+    slug: "v01_tf026_fl012_nl-NL_2_abandoned_browse",
+    title: "Bekeken arrangement 2 (1 dag na bekijken)",
+    description: "Nadruk op wat er inbegrepen is. Zelfde opbouw als mail 1, met onderaan de merksectie Waarom ViaLuxury.",
+    section: "automation",
+    subject: "Nog steeds zin in Landgoed Lauswolt?",
+    preheader: "Dit maakt het verblijf bijzonder.",
+    Component: AutomationBrowse,
+    props: browse2Props,
+  },
+  {
+    slug: "v01_tf027_fl012_nl-NL_3_abandoned_browse",
+    title: "Bekeken arrangement 3 (2 dagen na bekijken)",
+    description: "Kop met de voornaam, daaronder de brief. Twee arrangementen in dezelfde sfeer en onderaan Door jou bekeken met het bekeken arrangement.",
+    section: "automation",
+    subject: "Misschien past deze nog beter",
+    preheader: "Twee alternatieven in dezelfde sfeer.",
+    Component: AutomationBrowse,
+    props: browse3Props,
+    variantLabel: "Naam bekend",
+  },
+  {
+    slug: "v01_tf027_fl012_nl-NL_3_abandoned_browse-naam-onbekend",
+    variantOf: "v01_tf027_fl012_nl-NL_3_abandoned_browse",
+    title: "Bekeken arrangement 3 (2 dagen na bekijken)",
+    description: "Variant voor als de voornaam niet bekend is: de kop en de aanhef zonder naam.",
+    section: "automation",
+    subject: "Misschien past deze nog beter",
+    preheader: "Twee alternatieven in dezelfde sfeer.",
+    Component: AutomationBrowse,
+    props: browse3ZonderNaamProps,
+    variantLabel: "Naam onbekend",
+  },
+  // Flow fl013: zoekopdracht.
+  {
+    slug: "v01_tf028_fl013_nl-NL_1_abandoned_search",
+    title: "Zoekopdracht 1 (1 minuut na zoeken)",
+    description: "De zoekopdracht als samenvatting met de knop naar alle resultaten, daaronder de drie best passende arrangementen.",
+    section: "automation",
+    subject: "Jouw zoekopdracht: Den Haag",
+    preheader: "De beste arrangementen voor 20 november.",
+    Component: AutomationSearch,
+    props: search1Props,
+  },
+  {
+    slug: "v01_tf029_fl013_nl-NL_2_abandoned_search",
+    title: "Zoekopdracht 2 (1 dag na zoeken)",
+    description: "Dezelfde opbouw, met de populairste arrangementen voor die data eerst.",
+    section: "automation",
+    subject: "Nog op zoek naar Den Haag?",
+    preheader: "Onze favorieten voor jouw data.",
+    Component: AutomationSearch,
+    props: search2Props,
+    variantLabel: "Naam bekend",
+  },
+  {
+    slug: "v01_tf029_fl013_nl-NL_2_abandoned_search-naam-onbekend",
+    variantOf: "v01_tf029_fl013_nl-NL_2_abandoned_search",
+    title: "Zoekopdracht 2 (1 dag na zoeken)",
+    description: "Variant voor als de voornaam niet bekend is: de kop zonder naam.",
+    section: "automation",
+    subject: "Onze favorieten voor jouw zoekopdracht",
+    preheader: "Onze favorieten voor jouw data.",
+    Component: AutomationSearch,
+    props: search2ZonderNaamProps,
+    variantLabel: "Naam onbekend",
+  },
+  {
+    slug: "v01_tf030_fl013_nl-NL_3_abandoned_search",
+    title: "Zoekopdracht 3 (3 dagen na zoeken)",
+    description: "Verbreedt de zoekopdracht: ook arrangementen net buiten het zoekgebied, zoals Scheveningen.",
+    section: "automation",
+    subject: "Meer voor jouw zoekopdracht",
+    preheader: "Misschien zit je verblijf ertussen.",
+    Component: AutomationSearch,
+    props: search3Props,
+  },
+  {
+    slug: "v01_tf031_fl013_nl-NL_4_abandoned_search",
+    title: "Zoekopdracht 4 (7 dagen na zoeken)",
+    description: "Laatste mail van de flow: drie arrangementen en daaronder de themakiezer met de vijf thema's van de verzendmaand plus Alle thema's.",
+    section: "automation",
+    subject: "Nog steeds zin in Den Haag?",
+    preheader: "Kies je thema, dan sturen we je wat bij je past.",
+    Component: AutomationSearch,
+    props: search4Props,
+  },
 ];
 
 /** Voegt van elke mail de mobiele versie toe (slug <slug>-mobiel); de schakelaar is "Desktop | Mobiel". */

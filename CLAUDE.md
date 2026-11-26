@@ -399,6 +399,218 @@ Regels voor elke CRM-mail:
 - Jesse de Groot heeft eigen CRM-mails op `origin/redesign-jesse`; mails worden daarvan per stuk
   overgenomen (niet mergen) en omgezet naar deze regels.
 
+## Automationmails voor Klaviyo (sinds 2026-11-23)
+
+De uitgewerkte automationmails die Bart in Klaviyo bouwt. Bron van de inhoud: `vakanties voorbeeld
+content/Automations in kaart.xlsx`, tabblad **Automation per variant** — elke kolom is één mail en
+leest van boven naar beneden als de volgorde van de secties (tabblad Secties geeft per S-nummer wat
+erin zit, Mergevelden de `[…]`-velden, Seizoensthema's welke thema's bij welke maand horen).
+
+Fase 1 = de drie abandoned-flows, elf mails: `fl011` winkelmandje (4, waarvan `tf024` met een
+code van €10), `fl012` bekeken arrangement (3) en `fl013` zoekopdracht (4). Drie componenten, één per flow — `email-designs/emails/automation-
+{cart,browse,search}.tsx` — met per mail een export `…Props`. **De slug is exact de Klaviyo-naam**
+(`v01_tf021_fl011_nl-NL_1_abandoned_cart`), zodat `public/emails/<slug>.html` net zo heet als de
+template in Klaviyo; die naam staat ook onder de titel in de preview. Registry-sectie `"automation"`,
+lijst `app/data/automation-emails.json`, preview `/automation/<slug>` (zelfde frame als
+de CRM-preview, paneel links gegroepeerd per flow). Startscherm: knop "Automations" in het vak CRM.
+
+**Regel: de automationmails staan los van de CRM-mails.** De CRM-mails worden door Joris beheerd en
+mogen hier nooit door veranderen, ook niet via een gedeelde bouwsteen. De automationmails hebben
+daarom hun eigen bestanden: `email-designs/components/automation.tsx` (eigen dealkaart, briefopening,
+mobiele CSS en de S-secties) en `email-designs/lib/automationDeals.ts` (eigen voorbeelddeals, met
+`secondImage`). Uit `components/crm.tsx` komt alleen wat onveranderd blijft: de tekststijlen `s`, de
+knoppen, `IconLine`, `PillGrid`, `BeigeBand`, `CodeBlock` en `CrmHelp`. De export perst alleen de
+automationmails samen (`renderEmail`), zodat de andere mails hun opmaak houden.
+
+De twee winkelmandjemails van het CRM (`crm-winkelmandje` en `crm-winkelmandje-2-dagen`) zijn
+leidend voor het ontwerp. De tien automationmails volgen die opzet. De opening hangt af van het soort
+mail, net als bij die twee: `tf021` heeft de opzet van `crm-winkelmandje` zelf — kop, intro, wat er
+klaarstaat als losse regels, de knop en daaronder de kaart zonder prijsrij. `tf022`, `tf025` en
+`tf026` beginnen ook direct met de kop en de intro, met de kaart compleet; gaat hij over suggesties of het oordeel van anderen, dan is het een
+brief van Yvette (`crm-winkelmandje-2-dagen`, `tf023`, `tf027` en alle zoekmails, zoals
+`crm-zoekopdracht`). Bij een brief staat de kop uit de sheet als titel direct boven het blok waar
+hij bij hoort. De brief heeft geen ondertekening: "Groetjes Yvette"
+verviel en er komt voorlopig niets voor in de plaats (feedback 24-11-2026). De CRM-mails houden
+hun eigen ondertekening. In de automationmails staat **alles links uitgelijnd**, met één uitzondering: de inhoud van de
+coupon (`AutomationCodeBlock`) staat gecentreerd, want een coupon is een ding op zichzelf
+(afstemming 24-11-2026). Blokken lopen over de hele breedte, daar speelt uitlijnen niet. De secties staan gewoon in de kolom op wit. Het klantenserviceblok ("Hulp nodig?") staat sinds
+24-11-2026 niet meer onderin de mail zelf maar bij de footer (afstemming met Sven: templates die
+goed te managen zijn, geen dubbele content onder elkaar): een lichtoranje band
+direct boven de zwarte footer met het telefooncirkeltje links en daarnaast de kop en de regels (bellen
+en WhatsApp op een regel), en daaronder de footer in twee
+kolommen: links het logo met daaronder "Volg ons op", de social-icoontjes en de afzenderzin, rechts de
+gastquote "Dit moeten we vaker doen!" (afbeelding `gastquote-wit.png`, handgeschreven Caveat, 253 px)
+op dezelfde hoogte als het logo met daaronder de kleine letters en de links. De kolom met de
+telefoonnummers rechtsboven is dus vervallen. Dat is de opzet uit het ontwerp van
+Joris (`CrmFooter` met `help={1}` en `quote="in"` op `main`), nagebouwd in een eigen
+`AutomationFooter` in `components/automation.tsx` (vorm vastgelegd 26-11-2026); de CRM-mails houden
+`CrmFooter` zoals hij was. Beige banden zijn er twee: de themategels in `tf031` (een keuzeblok staat altijd op
+beige) en het merkblok in `tf026`.
+
+Donkere modus (sinds 25-11-2026, alleen `tf021`): één HTML die in beide standen werkt.
+De inline stijlen blijven licht; in `automationCss` staat een blok
+`@media (prefers-color-scheme: dark)` met de regels uit `automationDarkCss`, die met `!important`
+de inline kleuren overschrijven. De elementen dragen daarvoor klassen: `d-bg` (achtergrond),
+`d-card` (kaart), `d-band` (beige band), `d-warm` (hulpband), `d-circle`, `d-line`, `d-head`,
+`d-text`, `d-muted`, `d-badge` (het kortingsblokje wordt wit met zwarte tekst), `d-old` (de
+doorgestreepte prijs), `d-box` (de regels in het zoekblok, die uit `IconLine` komen) en `d-inv`
+(donkergrijze icoontjes worden omgekeerd met een filter). React Email zet de achtergrond van de body ook op een tabelcel eromheen; die
+cel wordt met `td[style*="background-color:#FFFFFF"]` meegenomen, anders blijft het vlak wit en
+staat er witte tekst op wit. Donkere kleuren: #161616 achtergrond,
+#212121 kaart met rand #333333, #22201C band, #2A2119 hulpband, tekst #F2F2F2, gedempt #ABABAB,
+koppen wit. De oranje knop, de oranje links en de foto's blijven zoals ze zijn. In de kop staan
+`color-scheme` en `supported-color-schemes` op "light dark", zodat de client er zelf vanaf blijft.
+Apple Mail, iOS Mail en Outlook voor Mac volgen de mediaquery. Outlook.com en Outlook op het web
+volgen hem niet maar draaien in hun donkere thema zelf kleuren om; daarbij zetten ze `data-ogsc`
+(tekst) of `data-ogsb` (achtergrond) op wat ze aanpasten. Via die haakjes zet
+`automationOutlookDarkCss` (buiten de mediaquery) onze eigen kleuren er alsnog overheen, inclusief
+een regel die de zwarte kop- en voetbalk zwart houdt, anders valt het witte logo daar weg. Outlook
+op Windows negeert mediaqueries en toont gewoon de lichte mail. Gmail kent de mediaquery niet en
+draait in zijn donkere thema zelf kleuren om, zonder haakjes om op te sturen; daar valt niets aan
+te doen.
+
+Alleen de mails met `dark: true` in de registry krijgen die mediaquery en de twee metatags; de
+andere tien blijven altijd licht. Voor de preview schrijft de export er twee bestanden bij:
+`<slug>.light.html` (zonder de donkere regels) en `<slug>.dark.html` (met die regels vast aan),
+zodat de knop "Light | Dark" in de previewkop beide standen laat zien, los van hoe het scherm van
+de kijker staat. Wat naar Klaviyo gaat is altijd `<slug>.html`.
+
+Dealrij: de fotokolom toont twee foto's van hetzelfde arrangement onder elkaar (hoofdbeeld boven,
+`image` en `secondImage` uit deals.json) met 3 px wit ertussen, samen de volle kaarthoogte. Op
+mobiel valt de tweede foto weg en blijft de hoofdfoto op 16:9 boven de tekst, zoals bij elke kaart.
+
+Voor Figma staat er een tweede versie van dezelfde elf mails in `public/figma/` (met een
+overzichtspagina op `/figma/`): dezelfde inhoud, maar met `div` en flexbox in plaats van tabellen,
+achtergrondfoto's als echte `<img>` en alle afbeeldingen als volledige URL. Zo maakt een
+Figma-importer er autolayout-frames van. Gemaakt met `scripts/html-naar-flexbox.cjs` uit de gewone
+export; verzenden gaat altijd met de tabelversie onder `public/emails/`.
+
+Secties uit de sheet als bouwstenen in `email-designs/components/crm.tsx`. Bestaand: `CrmHeader` (S1),
+`FeaturedDeal`/`DealRow`/`DealList` (S4) en `CrmFooter` (S13). Nieuw voor deze flows:
+`GuestRatingSection` (S21), `BrandSection` (S6), `SearchSection` (S18) en `ThemeSection` (S7). De
+serviceregel (S15, "Vragen over dit arrangement? Onze klantenservice helpt je graag") staat alleen in
+`tf021`, onder het hotelblok. Het achtergelaten of bekeken arrangement staat op `FeaturedDeal`, de
+alternatieven en zoekresultaten op `DealList`. Verder gelden alle CRM-regels hierboven.
+
+**Regel: niets toevoegen wat niet in de sheet staat.** De mails bevatten alleen de secties die in de
+kolom aan staan, met de teksten uit de sheet; geen eigen blokkoppen, geen extra secties (ook niet de
+hulplijn die de CRM-mails wel hebben, die staat er dus niet in) en geen velden die de sheet niet noemt — de winkelmandjekaart
+toont dus geen inclusies. Wat de sheet open laat, zoals welke vijf themategels bij de verzendmaand
+horen, komt uit de tabbladen Themategels en Seizoensthema's.
+
+Het gastenoordeel (S21) toont de Trustpilot-sterren met "4,5 uit 312 reviews" en één korte review.
+
+`tf021` wijkt sinds 24-11-2026 af van de sheet: de kop is "[Voornaam], we hebben het even voor je
+bewaard" (zonder punt, dat doen we nergens) met een variant zonder naam (`-naam-onbekend`, schakelaar in de previewkop), er staat geen
+introtekst meer onder, boven de hotelgegevens staat de subtitel "Nog steeds interesse in:"
+(`cartTitle`), de kaart toont de inclusies, er staat geen prijs en geen korting in de mail en onder
+het hotelblok staat de serviceregel (S15).
+
+`tf022` wijkt sinds 24-11-2026 af van de sheet: de kop is "We helpen je graag" en staat bovenaan,
+met daaronder de brief ("Beste [voornaam], Je verblijf in [hotelnaam] staat voor je klaar. Twijfel je
+over je data of heb je een vraag? Laat het ons weten, we helpen je graag."). De oude kop "Kijk of je
+data nog vrij zijn" is helemaal vervallen; er is dus maar één versie. Het winkelmandje is het standaard hotelblok: met inclusies en met "2 personen,
+2 nachten", zonder de datumregel. Boven de alternatieven staat de titel "Anderen boekten ook".
+Doordat de kaart weer het standaard blok is, tonen `tf023` en `tf024` ook de inclusies.
+
+`tf023` wijkt sinds 24-11-2026 af van de sheet: de kop "Dit vonden andere gasten" staat bovenaan met
+de brief eronder ("Twijfel je nog? Lees wat andere gasten vinden, of bekijk onze tips die we speciaal
+voor jou uitkozen."), het gastenoordeel toont drie reviews zoals de eerste winkelmandjemail van het
+CRM (`GuestRating.reviews`) en boven de alternatieven staat "Anderen boekten ook".
+
+`tf024` wijkt sinds 24-11-2026 af van de sheet: de titel "Een extraatje om je te helpen kiezen" staat
+bovenaan, daaronder de brief ("We zien je graag binnenkort genieten als gast in [hotelnaam]. Daarom
+krijg je €10 cadeau met jouw unieke code."), dan de codesectie (`codeFirst`) met de adviesregel "Je
+code staat klaar voor [hotelnaam]. Toch liever een ander arrangement? Ook dan kun je je code gewoon
+gebruiken." en pas daarna het hotelblok met de inclusies.
+
+`tf025` wijkt sinds 24-11-2026 af van de sheet: de kop is "[Voornaam], dit vonden we voor jou" met een
+variant zonder naam (`-naam-onbekend`, kop "Dit vonden we voor jou"), staat bovenaan met de intro
+eronder ("Je bekeek net [hotelnaam]. Een mooie keuze! We hebben het voor je klaargezet."), zonder
+aanhef, want de naam staat al in de kop en boven de
+alternatieven staat "Anderen bekeken ook".
+
+`tf026` wijkt sinds 24-11-2026 af van de sheet: de kop staat bovenaan met de brief eronder ("Er is al
+veel inbegrepen, dus jij hoeft alleen te genieten. Vragen? We denken graag mee."), boven het bekeken
+arrangement staat de subtitel "Door jou bekeken:", boven de alternatieven "Anderen bekeken ook", het
+merkblok (S6) staat op een beige band met de kop "Zorgvuldig samengestelde hotelervaringen" (de
+toekomstige pay-off), de merktekst, vier punten met een vinkje (de laatste met de Trustpilot-ster:
+4.5/5 met 16.000+ reviews), de groet "Groetjes, team ViaLuxury" en onderin de tekstlink "Ontdek onze
+hotelervaringen" (die link staat dus in het blok, niet eronder). Copy van Anoeska, 24-11-2026.
+
+`tf027` wijkt sinds 24-11-2026 af van de sheet: de kop is "[Voornaam], misschien past deze jou nog
+beter" met een variant zonder naam (`-naam-onbekend`), staat bovenaan met de intro eronder ("Gasten
+die interesse hadden in [hotelnaam], boekten vaak ook de volgende deals. Misschien interessant voor
+jou!"), zonder aanhef, want de naam staat al in de kop. De alternatieven staan bovenaan (de eerste als grote kaart) en het bekeken arrangement staat
+onderaan als dealrij onder de subtitel "Door jou bekeken" (`viewedAtBottom`), de opzet van
+`crm-winkelmandje-2-dagen`, met dezelfde knop "Bekijk" als elke andere dealrij.
+
+Uitlijning (sinds 26-11-2026): de gekleurde vlakken van een automationmail (de zwarte kopbalk, de
+beige banden, het lichtoranje klantenserviceblok en de zwarte footer) zijn even breed als de mail
+zelf (626 px) en lopen dus niet door tot de rand van het scherm; de inhoud staat overal 20 px van de
+rand van dat vlak, zodat alles op dezelfde lijn staat als het logo. Daarvoor heeft de automation een
+eigen `AutomationHeader` (kopie van `CrmHeader`), zodat de CRM-mails hun balk over de hele breedte
+houden.
+
+Koppen (sinds 26-11-2026): elke automationmail heeft precies één `h1`, de titel van de mail. Een kop
+boven een lijst arrangementen of een themablok is `h2`, een subtitel van 20 px boven één kaart of blok
+`h3` ("Nog steeds interesse in:", "Door jou bekeken", het merkblok, het bedrag van de coupon, "Hulp
+nodig?") en de dealtitel in een kaart `h4`. De hotelnaam erboven blijft gewone tekst, want de
+dealtitel is de titel van het aanbod.
+
+Titelgroottes in de automationmails, zoals in de CRM-mails: de titel van de mail en de titel boven een
+lijst arrangementen of een themablok zijn 32 px serif, de regel boven één losse kaart ("Door jou
+bekeken") 20 px serif.
+
+Feedback 24-11-2026 (Anoeska, na de meeting met Bart): in `tf021` staan boven de knop geen prijs en
+geen korting meer. Dat wijkt af van de sheet, die bij S17 ook "en de prijs" noemt.
+
+`tf029`, `tf030` en `tf031` wijken sinds 24-11-2026 af van de sheet. `tf029`: alleen de kop "[Voornaam], onze
+favorieten voor jouw zoekopdracht" bovenaan (`topHeading`, variant `-naam-onbekend` zonder naam),
+geen aanhef en geen introtekst meer, geen kop boven de resultaten en onderaan de tekstlink "Bekijk
+alle ViaLuxury arrangementen". `tf030`: nieuwe intro en de
+kop "Onze verborgen parels voor jou", met onder de resultaten de knop "Vind jouw favoriet".
+`tf031`: kop "Waar heb jij zin in?" bovenaan, géén zoekresultaten, de themasectie met de titel
+"Niet jouw verblijf gevonden? Kies je thema." (32 px) en daaronder de thema's als beeldende tegels op
+de beige band — per thema een foto (16:9), de naam en de link "Bekijk" — met eronder de regel "Eén
+klik is genoeg…" (de tekstlink "Bekijk alle arrangementen" is er op 26-11-2026 uit gehaald). De themafoto's zijn arrangementfoto's
+als plaatsvervanger; de echte themafoto's volgen nog.
+
+Open punten in de sheet zelf: de preheader van `tf027` zegt "Drie alternatieven" terwijl de template
+twee dealplekken heeft (rij 20 is leeg), en voor de themategel "Hotels met experiences" bestaat nog
+geen landingspagina, dus die staat niet in de themasectie van `tf031`.
+
+Kaarthoogte: elke dealkaart is op desktop even hoog — de dealrij 425 px (`CARD_HEIGHT_ROW`; 457 px voor de kaarten met de prijs na aftrek van de code, `CARD_HEIGHT_ROW_CODE`) en de
+grote kaart 696 px, gezet als 379 px tekstblok onder de foto (`CARD_TEXT_HEIGHT_FEATURED`; een vaste
+hoogte op de kaart zelf verdeelt de ruimte over de rijen en zet een witte strook boven de foto) — want in Klaviyo moet een herhalend blok één hoogte
+hebben. Zonder die hoogte scheelt elke kaart een paar regels, afhankelijk van hoeveel regels de
+titel en de inclusies innemen. De waarden zijn de hoogste kaart die voorkomt, dus er wordt nooit
+iets afgesneden. Binnen die hoogte staat de bovenkant van de kaart (hotel, dealtitel, inclusies)
+bovenaan en de onderkant ("2 personen, 2 nachten" en de prijsrij) onderaan: de ruimte die overblijft
+valt dus tussen de inclusies en de prijsrij, zodat de prijsrijen van alle kaarten op dezelfde hoogte
+staan, ook als de ene titel één regel is en de andere drie. De winkelmandjekaart heeft geen
+inclusies en is daarom een eigen, van zichzelf al gelijke hoogte (556 px). Op mobiel vervalt de
+vaste hoogte (klasse `m-auto-h`), want daar staat de foto boven de tekst.
+
+Kaartvolgorde: de bovenste dealkaart van een mail is altijd de grote kaart (foto boven de tekst,
+`FeaturedDeal`), alle kaarten daaronder zijn dealrijen (foto links, `DealRow`). In de winkelmandje-
+en browsemails is die bovenste kaart het achtergelaten of bekeken arrangement, dus de alternatieven
+zijn rijen; in de zoekmails is het het eerste zoekresultaat.
+
+Twee breekpunten: onder 600 px stapelen de kolommen (`stack`) — een dealrij heeft dan de foto boven
+de tekst — en onder 640 px krimpt de prijsrij (`m-badge`, `m-badge-cell`, `m-price`, `m-price-big`,
+`m-cta`), want op 16 px vraagt die rij ruim 400 px en valt de knop buiten de kaart. De tekst van een
+dealrij houdt daarbij zijn ruimte tot de rand (`m-cardtext`, met `box-sizing: border-box`, anders
+telt `stack`'s `width: 100%` de padding er nog bij op). Getest van 360 tot 900 px: niets steekt
+buiten een kaart en geen mail is breder dan het scherm. Op 320 px is de kop (logo 201 + Trustpilot
+106) de beperking, niet de kaarten. Op desktop en in Outlook verandert er niets.
+
+Foto's in alle CRM- en automationmails staan op 16:9, op elke schermbreedte: de uitgelichte
+dealkaart 560×315, de dealrij 190×107 en de grote sfeerfoto's 626×352, met `object-fit: cover`.
+De hoofdfoto's houden hun verhouding met `aspect-ratio: 16 / 9` naast de breedte- en
+hoogte-attributen (die Outlook gebruikt); de achtergrondfoto van de dealrij krijgt op mobiel een
+`padding-top` van 56,25 % (klasse `m-rowphoto`), want een achtergrondfoto heeft zelf geen hoogte.
+
 ## Kaarten (Leaflet)
 
 De kaartweergave van de zoekresultaten (`*/map/HotelBrowseMap.vue`) haalt
