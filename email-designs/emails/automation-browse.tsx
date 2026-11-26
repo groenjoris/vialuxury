@@ -1,8 +1,7 @@
 import { Body, Container, Head, Heading, Html, Preview, Section, Text } from "@react-email/components";
 import * as React from "react";
-import CrmHeader from "../components/CrmHeader";
 import { s } from "../components/crm";
-import { AutomationDealRow, AutomationFeaturedDeal, AutomationLetter, automationCss, automationDarkCss, automationDarkMedia, automationOutlookDarkCss, BrandSection, cardGap, AutomationFooter } from "../components/automation";
+import { AutomationHeader, AutomationDealRow, AutomationFeaturedDeal, AutomationLetter, automationCss, automationDarkCss, automationDarkMedia, automationOutlookDarkCss, BrandSection, cardGap, AutomationFooter } from "../components/automation";
 import { type AutomationDeal } from "../lib/automationDeals";
 import { lauswolt, steenenburg, vanOys } from "../lib/automationDeals";
 import { font, newsletter } from "../components/theme";
@@ -72,10 +71,10 @@ export default function AutomationBrowse({ recipientEmail, preheader, firstName,
       </Head>
       <Preview>{preheader}</Preview>
       <Body className="d-bg" style={{ backgroundColor: c.bg, margin: 0, padding: 0, fontFamily: font.body }}>
-        <CrmHeader />
+        <AutomationHeader />
         <Container style={{ width: "100%", maxWidth: "626px" }}>
           {/* Opening: direct de kop met de intro, of de brief met de ondertekening */}
-          <Section className="m-pad" style={{ padding: "32px 24px 0" }}>
+          <Section className="m-pad" style={{ padding: "32px 20px 0" }}>
             {(headingAt === "top" || opening !== "brief") && (
               <Heading as="h1" className="m-h1 d-head" style={{ ...s.h1, marginBottom: headingAt === "top" ? "16px" : undefined }}>{heading}</Heading>
             )}
@@ -88,7 +87,7 @@ export default function AutomationBrowse({ recipientEmail, preheader, firstName,
 
           {/* S17 Achtergelaten arrangement: het bekeken arrangement */}
           {!viewedAtBottom && (
-            <Section className="m-pad" style={{ padding: opening === "brief" ? "40px 24px 0" : "24px 24px 0" }}>
+            <Section className="m-pad" style={{ padding: opening === "brief" ? "40px 20px 0" : "24px 20px 0" }}>
               {viewedTitle && <Text className="d-head" style={{ ...s.kop, marginBottom: "12px" }}>{viewedTitle}</Text>}
               <AutomationFeaturedDeal deal={viewed} cta="Bekijk arrangement" />
             </Section>
@@ -96,7 +95,7 @@ export default function AutomationBrowse({ recipientEmail, preheader, firstName,
 
           {/* S4 Hoteldeals: vergelijkbare arrangementen als alternatief. Staat het bekeken
               arrangement onderaan, dan is de eerste alternatief de grote kaart. */}
-          <Section className="m-pad" style={{ padding: viewedAtBottom ? (opening === "brief" ? "40px 24px 0" : "24px 24px 0") : "44px 24px 0" }}>
+          <Section className="m-pad" style={{ padding: viewedAtBottom ? (opening === "brief" ? "40px 20px 0" : "24px 20px 0") : "44px 20px 0" }}>
             {opening === "brief" && headingAt === "alternatives" && <Heading as="h1" className="m-h1 d-head" style={s.h1}>{heading}</Heading>}
             {alternativesTitle && <Heading as="h2" className="m-h1 d-head" style={s.h1}>{alternativesTitle}</Heading>}
             {viewedAtBottom ? (
@@ -115,7 +114,7 @@ export default function AutomationBrowse({ recipientEmail, preheader, firstName,
 
           {/* Het bekeken arrangement onderaan, als kleiner hotelblok */}
           {viewedAtBottom && (
-            <Section className="m-pad" style={{ padding: "44px 24px 0" }}>
+            <Section className="m-pad" style={{ padding: "44px 20px 0" }}>
               {viewedTitle && <Text className="d-head" style={{ ...s.kop, marginBottom: "12px" }}>{viewedTitle}</Text>}
               <AutomationDealRow deal={viewed} />
             </Section>

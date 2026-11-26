@@ -98,6 +98,25 @@ export const automationOutlookDarkCss = `
 [data-ogsb] td[style*="background-color:#141414"], td[style*="background-color:#141414"][data-ogsb] { background-color: #141414 !important; }
 `;
 
+/** Kopbalk van de automationmails: het zwarte vlak is zo breed als de mail (626 px), niet zo breed
+ *  als het scherm. Eigen versie van `CrmHeader`, zodat de CRM-mails die van hen houden. */
+export function AutomationHeader() {
+  return (
+    <Container style={{ width: "100%", maxWidth: "626px" }}>
+      <Section style={{ backgroundColor: c.frame, padding: "20px" }}>
+        <Row>
+          <Column style={{ verticalAlign: "middle" }}>
+            <Img src={`${baseUrl}/images/logo-vialuxury-horizontal.png`} alt="ViaLuxury" width="201" className="m-logo" style={{ height: "auto" }} />
+          </Column>
+          <Column align="right" style={{ verticalAlign: "middle" }}>
+            <Img src={`${baseUrl}/images/mail/trustpilot-16000.png`} alt="Trustpilot 4,5/5, 16.000+ reviews" width="106" height="50" className="m-trustpilot" />
+          </Column>
+        </Row>
+      </Section>
+    </Container>
+  );
+}
+
 /** De donkere regels als mediaquery. Staat alleen in de mails die een donkere versie hebben
  *  (nu alleen winkelmandje 1); de rest blijft licht. */
 export const automationDarkMedia = `
@@ -110,11 +129,9 @@ ${automationDarkCss}
  *  band in de donkere stand mee kan kleuren. */
 export function AutomationBand({ children, top = "0" }: { children: React.ReactNode; top?: string }) {
   return (
-    <Section className="d-band" style={{ backgroundColor: "#F4F1EC", width: "100%", marginTop: top }}>
-      <Container style={{ width: "100%", maxWidth: "626px" }}>
-        <Section className="m-pad" style={{ padding: "24px 24px 28px" }}>{children}</Section>
-      </Container>
-    </Section>
+    <Container style={{ width: "100%", maxWidth: "626px" }}>
+      <Section className="d-band m-pad" style={{ backgroundColor: "#F4F1EC", padding: "24px 20px 28px", marginTop: top }}>{children}</Section>
+    </Container>
   );
 }
 
@@ -481,9 +498,8 @@ export function AutomationFooter({ recipientEmail, reason }: { recipientEmail: s
   return (
     <>
       {/* Klantenservice: lichtoranje band over de hele breedte, direct boven de footer */}
-      <Section className="d-warm" style={{ backgroundColor: "#FFF0E4", width: "100%" }}>
-        <Container style={{ width: "100%", maxWidth: "626px" }}>
-          <Section className="m-pad" style={{ padding: "26px 24px 28px" }}>
+      <Container style={{ width: "100%", maxWidth: "626px" }}>
+        <Section className="d-warm m-pad" style={{ backgroundColor: "#FFF0E4", padding: "26px 20px 28px" }}>
             <Row>
               <Column style={{ width: "62px", verticalAlign: "middle" }}>
                 <table role="presentation" cellPadding={0} cellSpacing={0} border={0} style={{ width: "44px", height: "44px", borderCollapse: "separate" }}>
@@ -504,13 +520,11 @@ export function AutomationFooter({ recipientEmail, reason }: { recipientEmail: s
                 <Text className="d-muted" style={{ ...body16, color: c.muted, marginTop: "2px" }}>Bereikbaar ma t/m vr 8:00 – 18:00</Text>
               </Column>
             </Row>
-          </Section>
-        </Container>
-      </Section>
+        </Section>
+      </Container>
 
-      <Section style={{ backgroundColor: c.frame, width: "100%" }}>
-        <Container style={{ width: "100%", maxWidth: "626px" }}>
-          <Section className="m-pad" style={{ padding: "32px 24px" }}>
+      <Container style={{ width: "100%", maxWidth: "626px" }}>
+        <Section className="m-pad" style={{ backgroundColor: c.frame, padding: "32px 20px" }}>
             <Row>
               <Column className="stack m-center" style={{ width: "50%", verticalAlign: "top", paddingRight: "24px" }}>
                 <Img src={`${baseUrl}/images/logo-vialuxury-horizontal.png`} alt="ViaLuxury" width="201" className="m-mx-auto" style={{ height: "auto" }} />
@@ -538,9 +552,8 @@ export function AutomationFooter({ recipientEmail, reason }: { recipientEmail: s
                 </Text>
               </Column>
             </Row>
-          </Section>
-        </Container>
-      </Section>
+        </Section>
+      </Container>
     </>
   );
 }
