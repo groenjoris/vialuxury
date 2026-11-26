@@ -51,7 +51,7 @@ export default function CommercieelContentMultiDeal({ variant = "native-1", mobi
       </Head>
       <Preview>Glühwein, lichtjes en een hotel om de hoek.</Preview>
       <Body style={{ backgroundColor: c.bg, margin: 0, padding: 0, fontFamily: font.body }}>
-        <CrmHeader title={variant === "header-titel" ? title : undefined} />
+        <CrmHeader pad={32} title={variant === "header-titel" ? title : undefined} />
         <Container style={{ width: "100%", maxWidth: "626px" }}>
           <CampaignOpening variant={variant} hero={hero} heroAlt={heroAlt} title={title} cta="Bekijk aanbiedingen" href={ctaUrl} sticker={{ small: "vanaf", big: fromPrice }} />
 

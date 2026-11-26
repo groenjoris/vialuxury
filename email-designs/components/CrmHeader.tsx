@@ -4,15 +4,15 @@ import { baseUrl, font, newsletter, type EmailMode } from "./theme";
 
 /** Header van de CRM-, vakantie- en commerciële mails: zwarte balk over de hele breedte (inhoud 626px)
  *  met logo links en de Trustpilot-score rechts. Met `title` (variant "Header-titel" van de
- *  commerciële Content-mail): het vierkante logo (76 × 60) helemaal links en de hoofdtitel van de
+ *  commerciële Content-mail): het vierkante logo (76 × 60) links en de hoofdtitel van de
  *  mail in de balk, 32 px en gecentreerd tussen het logo en Trustpilot. */
-export default function CrmHeader({ mode = "light", title }: { mode?: EmailMode; /** Hoofdtitel van de mail in de header. */ title?: string }) {
+export default function CrmHeader({ mode = "light", title, pad = 24 }: { mode?: EmailMode; /** Marge links en rechts in px; de commerciële mails gebruiken 32, zodat het logo gelijk staat met de inhoud van de mail. */ pad?: number; /** Hoofdtitel van de mail in de header. */ title?: string }) {
   const c = newsletter[mode];
   const trustpilot = <Img src={`${baseUrl}/images/mail/trustpilot-16000.png`} alt="Trustpilot 4,5/5, 16.000+ reviews" width="106" height="50" className="m-trustpilot" />;
   return (
     <Section style={{ backgroundColor: c.frame, width: "100%" }}>
       <Container style={{ width: "100%", maxWidth: "626px" }}>
-        <Section className={title ? "m-head-pad" : undefined} style={{ padding: title ? "15px 24px 15px 0" : "20px 24px" }}>
+        <Section className={title ? "m-head-pad" : pad !== 24 ? "m-pad" : undefined} style={{ padding: title ? `15px ${pad}px` : `20px ${pad}px` }}>
           {title ? (
             <Row>
               <Column style={{ width: "76px", verticalAlign: "middle" }}>

@@ -34,7 +34,8 @@ body { margin: 0 !important; padding: 0 !important; }
 export const commercieelCss = `
 @media only screen and (max-width: 480px) {
   .m-hero { height: 230px !important; }
-  .m-hero-pad { padding-left: 16px !important; padding-right: 16px !important; }
+  .m-hero-left { padding-left: 16px !important; }
+  .m-hero-right { padding-right: 16px !important; }
   .m-hero-title { font-size: 32px !important; }
   .m-head-title { font-size: 18px !important; }
   .m-head-cell { padding: 0 8px !important; }
@@ -623,8 +624,8 @@ export function ThemePicker({ items = themes }: { items?: Theme[] }) {
 export type OpeningVariant = "native-1" | "native-2" | "header-titel" | "foto-titel";
 export const openingVariants = [["native-1", "", "Native 1"], ["native-2", "-native-2", "Native 2"], ["header-titel", "-header-titel", "Header-titel"], ["foto-titel", "-foto-titel", "Titel op foto"]] as const;
 
-/** Sfeerfoto binnen de marges van de header (links gelijk met het logo, rechts met het einde van het
- *  Trustpilot-logo) met de actietitel en de knop:
+/** Sfeerfoto over de hele breedte van de mailkolom (626 px, zo breed als de header) met de actietitel en
+ *  de knop; de inhoud van het vlak en de tekst op de foto staan links gelijk met het logo (32 px):
  *  - native-1: onder de foto een donkergroen vlak (huisstijl, ronde hoeken onderaan), witte titel, zwarte knop
  *  - native-2: hetzelfde in beige met een zwarte titel en een oranje knop
  *  - header-titel: de titel staat in de header (CrmHeader `title`); onder de foto alleen een grote, gecentreerde knop
@@ -635,23 +636,23 @@ export function CampaignOpening({ variant, hero, heroAlt, title, cta, href, stic
   const inHeader = variant === "header-titel";
   const native2 = variant === "native-2";
   return (
-    <Section className="m-hero-pad" style={{ padding: inHeader ? "0 24px 0 0" : "0 24px" }}>
+    <Section>
       {variant === "foto-titel" ? (
-        <table role="presentation" className="m-hero" cellPadding={0} cellSpacing={0} width="100%" style={{ width: "100%", height: "325px", borderCollapse: "collapse", backgroundImage: `linear-gradient(180deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 45%, rgba(0,0,0,0) 62%, rgba(0,0,0,0.45) 100%), url(${hero})`, backgroundSize: "cover", backgroundPosition: "center" }}>
+        <table role="presentation" className="m-hero" cellPadding={0} cellSpacing={0} width="100%" style={{ width: "100%", height: "352px", borderCollapse: "collapse", backgroundImage: `linear-gradient(180deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 45%, rgba(0,0,0,0) 62%, rgba(0,0,0,0.45) 100%), url(${hero})`, backgroundSize: "cover", backgroundPosition: "center" }}>
           <tbody>
             <tr>
-              <td colSpan={2} valign="top" style={{ padding: "24px 28px 0", verticalAlign: "top" }}>
+              <td colSpan={2} valign="top" className="m-pad" style={{ padding: "24px 32px 0", verticalAlign: "top" }}>
                 <Heading as="h1" className="m-hero-title" style={{ ...s.h1, fontSize: "44px", lineHeight: "1.1", color: "#FFFFFF", textShadow: "0 1px 12px rgba(0,0,0,0.45)" }}>
                   <Link href={href} style={{ color: "#FFFFFF", textDecoration: "none" }}>{title}</Link>
                 </Heading>
               </td>
             </tr>
             <tr>
-              <td valign="bottom" style={{ padding: "0 0 24px 28px", verticalAlign: "bottom" }}>
+              <td valign="bottom" className="m-hero-left" style={{ padding: "0 0 24px 32px", verticalAlign: "bottom" }}>
                 <SecondaryButton href={href} dark>{cta}</SecondaryButton>
               </td>
               {sticker && (
-                <td valign="bottom" align="right" style={{ padding: "0 24px 20px 0", verticalAlign: "bottom", width: "112px" }}>
+                <td valign="bottom" align="right" className="m-hero-right" style={{ padding: "0 32px 20px 0", verticalAlign: "bottom", width: "112px" }}>
                   {/* Ronde sticker: oranje, tekst in wit */}
                   <table role="presentation" cellPadding={0} cellSpacing={0} style={{ width: "104px", height: "104px", borderCollapse: "separate" }}>
                     <tbody>
@@ -672,7 +673,7 @@ export function CampaignOpening({ variant, hero, heroAlt, title, cta, href, stic
         </table>
       ) : (
         <Link href={href}>
-          <Img className="m-hero" src={hero} alt={heroAlt} width={inHeader ? 602 : 578} height="325" style={{ display: "block", width: "100%", height: "325px", objectFit: "cover" }} />
+          <Img className="m-hero" src={hero} alt={heroAlt} width="626" height="352" style={{ display: "block", width: "100%", height: "352px", objectFit: "cover" }} />
         </Link>
       )}
       {inHeader && (
@@ -681,7 +682,7 @@ export function CampaignOpening({ variant, hero, heroAlt, title, cta, href, stic
         </Section>
       )}
       {(variant === "native-1" || native2) && (
-        <Section style={{ backgroundColor: native2 ? "#F4F1EC" : "#00675F", padding: "22px 28px 26px", borderRadius: "0 0 14px 14px" }}>
+        <Section className="m-pad" style={{ backgroundColor: native2 ? "#F4F1EC" : "#00675F", padding: "22px 32px 26px", borderRadius: "0 0 14px 14px" }}>
           <Heading as="h1" className="m-h1" style={{ ...s.h1, color: native2 ? c.heading : "#FFFFFF" }}>{title}</Heading>
           <Section style={{ marginTop: "16px" }}>
             {native2 ? <PrimaryButton href={href}>{cta}</PrimaryButton> : <SecondaryButton href={href} dark>{cta}</SecondaryButton>}

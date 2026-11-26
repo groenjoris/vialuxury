@@ -48,7 +48,7 @@ export default function CommercieelActie({ mobile, recipientEmail, firstName, he
       </Head>
       <Preview>Boek voor 7 december en hij is van jou.</Preview>
       <Body style={{ backgroundColor: c.bg, margin: 0, padding: 0, fontFamily: font.body }}>
-        <CrmHeader />
+        <CrmHeader pad={32} />
         {/* Actiegraphic direct onder de header, over de hele breedte van de mail (net als de zwarte
             header buiten de <Container>) */}
         <Img src={hero} alt={heroAlt} width="700" style={{ display: "block", width: "100%", height: "auto" }} />

@@ -41,7 +41,7 @@ export default function CommercieelTekst({ recipientEmail, firstName, hero, hero
       </Head>
       <Preview>Je persoonlijke code vervalt om middernacht.</Preview>
       <Body style={{ backgroundColor: c.bg, margin: 0, padding: 0, fontFamily: font.body }}>
-        <CrmHeader />
+        <CrmHeader pad={32} />
         {/* Actiegraphic direct onder de header, over de hele breedte van de mail */}
         <Img src={hero} alt={heroAlt} width="700" style={{ display: "block", width: "100%", height: "auto" }} />
         <Container style={{ width: "100%", maxWidth: "626px" }}>

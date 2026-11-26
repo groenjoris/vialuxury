@@ -225,11 +225,13 @@ maken we per mail. Feedback van de opdrachtgever (2026-11-26) is verwerkt:
   gridview-kaart (`FeaturedDeal`: één foto boven, tekst eronder), want twee foto's naast de tekst worden te lang. Extra
   mobiele regels in `commercieelCss` (crm.tsx).
 - Opening met actietitel en knop (`CampaignOpening` in crm.tsx, voor Content en Dedicated), vier varianten met een
-  schakelaar (`openingVariants`, slug `<slug>[-native-2|-header-titel|-foto-titel]`): de sfeerfoto staat binnen de marges
-  van de header (24 px) en is klikbaar. Native 1: onder de foto een donkergroen vlak (huisstijlgroen #00675F, ronde
+  schakelaar (`openingVariants`, slug `<slug>[-native-2|-header-titel|-foto-titel]`): de sfeerfoto en het gekleurde vlak
+  eronder lopen over de hele breedte van de mailkolom (626 px, zo breed als de header) en de foto is klikbaar; alle
+  inhoud staat links gelijk met het logo, ook de tekst op de foto (32 px: de commerciële mails geven `CrmHeader` de prop
+  `pad={32}`, de CRM-mails houden 24). Native 1: onder de foto een donkergroen vlak (huisstijlgroen #00675F, ronde
   hoeken van 14 px onderaan), witte titel, zwarte knop. Native 2: hetzelfde in beige met zwarte titel en oranje knop.
-  Header-titel: de titel staat in de header (`CrmHeader`-prop `title`: vierkant logo 76 × 60 tegen de linkerrand, titel
-  32 px wit gecentreerd tussen logo en Trustpilot), de foto begint tegen de linkerrand en eronder staat een grote,
+  Header-titel: de titel staat in de header (`CrmHeader`-prop `title`: vierkant logo 76 × 60, titel
+  32 px wit gecentreerd tussen logo en Trustpilot) en onder de foto staat een grote,
   gecentreerde oranje knop. Titel op foto: gewone header, de titel groot (44 px, wit) linksboven op de foto, de zwarte
   knop linksonder en rechtsonder een ronde oranje sticker (vanafprijs of korting); een donker verloop houdt de tekst
   leesbaar. Bewuste uitzondering op "geen tekst op een foto" en "geen stickers".

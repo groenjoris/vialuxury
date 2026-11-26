@@ -49,7 +49,7 @@ export default function CommercieelDedicatedHotel({ variant = "native-1", mobile
       </Head>
       <Preview>2 nachten voor 2 personen op de Veluwe, inclusief diner.</Preview>
       <Body style={{ backgroundColor: c.bg, margin: 0, padding: 0, fontFamily: font.body }}>
-        <CrmHeader title={variant === "header-titel" ? title : undefined} />
+        <CrmHeader pad={32} title={variant === "header-titel" ? title : undefined} />
         <Container style={{ width: "100%", maxWidth: "626px" }}>
           <CampaignOpening variant={variant} hero={hero} heroAlt={heroAlt} title={title} cta="Bekijk aanbieding" href={deal.url} sticker={deal.discount ? { big: deal.discount, small: "korting" } : undefined} />
 
