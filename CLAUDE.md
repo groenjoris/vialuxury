@@ -315,8 +315,9 @@ hun eigen ondertekening. In de automationmails staat **alles links uitgelijnd**,
 coupon (`AutomationCodeBlock`) staat gecentreerd, want een coupon is een ding op zichzelf
 (afstemming 24-11-2026). Blokken lopen over de hele breedte, daar speelt uitlijnen niet. De secties staan gewoon in de kolom op wit. Het klantenserviceblok ("Hulp nodig?") staat sinds
 24-11-2026 niet meer onderin de mail zelf maar bij de footer (afstemming met Sven: templates die
-goed te managen zijn, geen dubbele content onder elkaar): een lichtoranje band over de hele breedte
-direct boven de zwarte footer met bellen en WhatsApp op een regel, en daaronder de footer in twee
+goed te managen zijn, geen dubbele content onder elkaar): een lichtoranje band
+direct boven de zwarte footer met het telefooncirkeltje links en daarnaast de kop en de regels (bellen
+en WhatsApp op een regel), en daaronder de footer in twee
 kolommen: links het logo met daaronder "Volg ons op", de social-icoontjes en de afzenderzin, rechts de
 gastquote "Dit moeten we vaker doen!" (afbeelding `gastquote-wit.png`, handgeschreven Caveat, 253 px)
 op dezelfde hoogte als het logo met daaronder de kleine letters en de links. De kolom met de
