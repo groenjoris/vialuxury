@@ -245,7 +245,7 @@ maken we per mail. Feedback van de opdrachtgever (2026-11-26) is verwerkt:
   Header-titel: de titel staat in de header (`CrmHeader`-prop `title`: vierkant logo 76 × 60, titel
   32 px wit gecentreerd tussen logo en Trustpilot) en onder de foto staat een beige band over de
   hele breedte met alleen de oranje knop (gewone grootte), gecentreerd. Titel op foto: gewone header, de titel groot (44 px, wit) linksboven op de foto, de zwarte
-  knop linksonder en rechtsonder een ronde oranje sticker (vanafprijs of korting); een donker verloop houdt de tekst
+  knop linksonder (met een chevron rechts van de tekst, zodat hij klikbaar oogt) en rechtsonder een ronde oranje sticker (vanafprijs of korting; 104 px, op mobiel 75% daarvan: 78 px); een donker verloop houdt de tekst
   leesbaar. Bewuste uitzondering op "geen tekst op een foto" en "geen stickers".
 - Actiemails met een code (Actie, Tekst): in de footer staan de geldigheid van de code en de link "Bekijk de
   actievoorwaarden" op een eigen regel eronder, bovenaan de kleine lettertjes (`CrmFooter`-prop `terms`). De

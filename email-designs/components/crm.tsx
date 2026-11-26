@@ -36,7 +36,10 @@ export const commercieelCss = `
 @media only screen and (max-width: 480px) {
   .m-hero { height: 230px !important; }
   .m-hero-left { padding-left: 16px !important; }
-  .m-hero-right { padding-right: 16px !important; }
+  .m-hero-right { padding-right: 16px !important; width: 86px !important; }
+  .m-sticker { width: 78px !important; height: 78px !important; }
+  .m-sticker-small { font-size: 11px !important; line-height: 12px !important; }
+  .m-sticker-big { font-size: 21px !important; line-height: 23px !important; }
   .m-hero-title { font-size: 32px !important; }
   .m-head-title { font-size: 18px !important; }
   .m-head-cell { padding: 0 8px !important; }
@@ -671,18 +674,22 @@ export function CampaignOpening({ variant, hero, heroAlt, title, cta, href, stic
             </tr>
             <tr>
               <td valign="bottom" className="m-hero-left" style={{ padding: "0 0 24px 32px", verticalAlign: "bottom" }}>
-                <SecondaryButton href={href} dark>{cta}</SecondaryButton>
+                {/* Chevron rechts van de tekst: de knop op de foto moet er klikbaar uitzien */}
+                <SecondaryButton href={href} dark>
+                  {cta}
+                  <span style={{ marginLeft: "10px", fontSize: "20px", lineHeight: "16px" }}>›</span>
+                </SecondaryButton>
               </td>
               {sticker && (
                 <td valign="bottom" align="right" className="m-hero-right" style={{ padding: "0 32px 20px 0", verticalAlign: "bottom", width: "112px" }}>
                   {/* Ronde sticker: oranje, tekst in wit */}
-                  <table role="presentation" cellPadding={0} cellSpacing={0} style={{ width: "104px", height: "104px", borderCollapse: "separate" }}>
+                  <table role="presentation" className="m-sticker" cellPadding={0} cellSpacing={0} style={{ width: "104px", height: "104px", borderCollapse: "separate" }}>
                     <tbody>
                       <tr>
-                        <td align="center" valign="middle" style={{ width: "104px", height: "104px", borderRadius: "52px", backgroundColor: c.cta, textAlign: "center", verticalAlign: "middle", boxShadow: "0 2px 10px rgba(0,0,0,0.25)" }}>
+                        <td align="center" valign="middle" className="m-sticker" style={{ width: "104px", height: "104px", borderRadius: "52px", backgroundColor: c.cta, textAlign: "center", verticalAlign: "middle", boxShadow: "0 2px 10px rgba(0,0,0,0.25)" }}>
                           <Link href={href} style={{ textDecoration: "none", color: "#FFFFFF", fontFamily: font.body }}>
-                            {sticker.small && <span style={{ display: "block", fontSize: "14px", lineHeight: "16px" }}>{sticker.small}</span>}
-                            <span style={{ display: "block", fontSize: "28px", lineHeight: "30px", fontWeight: 700 }}>{sticker.big}</span>
+                            {sticker.small && <span className="m-sticker-small" style={{ display: "block", fontSize: "14px", lineHeight: "16px" }}>{sticker.small}</span>}
+                            <span className="m-sticker-big" style={{ display: "block", fontSize: "28px", lineHeight: "30px", fontWeight: 700 }}>{sticker.big}</span>
                           </Link>
                         </td>
                       </tr>
