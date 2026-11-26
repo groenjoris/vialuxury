@@ -57,11 +57,52 @@ function onKey(ev: KeyboardEvent) {
 onMounted(() => window.addEventListener('keydown', onKey))
 onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 
+// Op een telefoon (smal scherm) toont de preview vanzelf de mobiele versie van de mail (<slug>-mobiel)
+// en staat boven de mail alleen een balk met de knop "Menu" (naar /commercieel/menu: alle mails en
+// hun varianten); het paneel links en de schakelaars in de kop zijn daar verborgen.
+const isPhone = ref(false)
+onMounted(() => {
+  const mq = window.matchMedia('(max-width: 700px)')
+  const set = () => { isPhone.value = mq.matches }
+  set()
+  mq.addEventListener('change', set)
+  onBeforeUnmount(() => mq.removeEventListener('change', set))
+})
+const frameSlug = computed(() => {
+  if (!isPhone.value || slug.value.endsWith('-mobiel')) return slug.value
+  const mobile = `${slug.value}-mobiel`
+  return emails.some(e => e.slug === mobile) ? mobile : slug.value
+})
+// Op een telefoon is het frame zo hoog als de mail, zodat de pagina zelf scrolt (geen scrollvak in een
+// scrollende pagina); op desktop houdt het frame zijn vaste hoogte.
+const frameHeight = ref(0)
+function onFrameLoad(ev: Event) {
+  const doc = (ev.target as HTMLIFrameElement).contentDocument
+  frameHeight.value = isPhone.value && doc ? doc.documentElement.scrollHeight : 0
+  // Afbeeldingen die later laden maken de mail nog hoger
+  if (isPhone.value && doc) setTimeout(() => { frameHeight.value = doc.documentElement.scrollHeight }, 800)
+}
+watch(isPhone, (phone) => { if (!phone) frameHeight.value = 0 })
+// Naam en gekozen variant voor in de mobiele balk ("Content" + "Titel op foto")
+const phoneLabel = computed(() => nav.find(e => e.slug === baseSlug.value)?.label ?? entry.value?.title ?? 'Commerciële mails')
+const phoneVariant = computed(() => (entry.value?.variantLabel ?? '').split(' / ').filter(p => p && p !== 'Desktop' && p !== 'Mobiel').join(' · '))
+
 useHead({ title: `${entry.value?.title ?? 'Commerciële mails'} — ViaLuxury` })
 </script>
 
 <template>
   <div class="crm">
+    <!-- Mobiel: één balk met de knop naar het menu en de naam van de mail met de gekozen variant -->
+    <header class="crm__phonebar">
+      <NuxtLink class="crm__menu" :to="{ path: '/commercieel/menu', query: { from: slug } }">
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></svg>
+        Menu
+      </NuxtLink>
+      <div class="crm__phone-title">
+        <span class="crm__phone-name">{{ phoneLabel }}</span>
+        <span v-if="phoneVariant" class="crm__phone-variant">{{ phoneVariant }}</span>
+      </div>
+    </header>
     <header class="crm__bar">
       <div class="crm__left">
         <a class="crm__back" href="/">‹ Startscherm</a>
@@ -100,7 +141,7 @@ useHead({ title: `${entry.value?.title ?? 'Commerciële mails'} — ViaLuxury` }
         <p v-if="mains.length > 1" class="crm__nav-hint">↑ ↓ om te bladeren</p>
       </nav>
       <div class="crm__center">
-        <div class="crm__mail" :class="{ 'crm__mail--mobile': slug.endsWith('-mobiel') }">
+        <div class="crm__mail" :class="{ 'crm__mail--mobile': frameSlug.endsWith('-mobiel') }">
           <template v-if="entry">
             <div class="crm__inbox">
               <span class="crm__avatar" aria-hidden="true">V</span>
@@ -110,7 +151,7 @@ useHead({ title: `${entry.value?.title ?? 'Commerciële mails'} — ViaLuxury` }
                 <p class="crm__preheader">{{ entry.preheader }}</p>
               </div>
             </div>
-            <iframe :key="slug" class="crm__frame" :src="`/emails/${slug}.html`" :title="entry.title" />
+            <iframe :key="frameSlug" class="crm__frame" :src="`/emails/${frameSlug}.html`" :title="entry.title" :style="frameHeight ? { height: `${frameHeight}px` } : undefined" @load="onFrameLoad" />
           </template>
           <div v-else class="crm__empty">
             <p class="crm__empty-title">Nog geen voorbeelden</p>
@@ -167,4 +208,20 @@ useHead({ title: `${entry.value?.title ?? 'Commerciële mails'} — ViaLuxury` }
 .crm__empty { padding: 96px 32px; text-align: center; }
 .crm__empty-title { margin: 0; font-family: var(--font-heading); font-size: 24px; font-weight: 700; }
 .crm__empty-text { margin: 8px 0 0; font-size: 15px; color: var(--color-text-secondary); }
+/* Telefoon: alleen de balk met "Menu", de mail over het hele scherm */
+.crm__phonebar { display: none; }
+@media (max-width: 700px) {
+  .crm__bar { display: none; }
+  .crm__phonebar { position: sticky; top: 0; z-index: 2; display: flex; align-items: center; gap: 12px; padding: 8px 12px; background: #fff; border-bottom: 1px solid var(--color-border); }
+  .crm__menu { display: inline-flex; align-items: center; gap: 8px; flex-shrink: 0; min-height: 44px; padding: 0 14px; border: 1px solid var(--color-border); border-radius: 8px; font-size: 15px; font-weight: 700; color: var(--color-text-primary); text-decoration: none; }
+  .crm__menu:active { background: var(--color-border-light); }
+  .crm__phone-title { display: flex; flex-direction: column; min-width: 0; }
+  .crm__phone-name { font-family: var(--font-heading); font-size: 17px; font-weight: 700; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .crm__phone-variant { font-size: 13px; line-height: 1.3; color: var(--color-text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .crm__stage { padding: 0; }
+  .crm__mail, .crm__mail--mobile { width: 100%; border: 0; border-radius: 0; }
+  .crm__inbox { padding: 12px 16px; }
+  .crm__subject { font-size: 16px; }
+  .crm__frame { height: calc(100vh - 61px); height: calc(100dvh - 61px); min-height: 0; }
+}
 </style>

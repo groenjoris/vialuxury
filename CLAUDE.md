@@ -225,6 +225,13 @@ maken we per mail. Feedback van de opdrachtgever (2026-11-26) is verwerkt:
   `<slug>-mobiel`, prop `mobile`; de preview toont die in een frame van 390 px). Mobiel staan de deals als
   gridview-kaart (`FeaturedDeal`: één foto boven, tekst eronder), want twee foto's naast de tekst worden te lang. Extra
   mobiele regels in `commercieelCss` (crm.tsx).
+- Preview op een telefoon (sinds 2026-11-27, alleen `/commercieel`): op een smal scherm (≤ 700 px) toont de preview
+  vanzelf de mobiele versie van de mail (`<slug>-mobiel`, de URL blijft gelijk) over het hele scherm; het frame is zo
+  hoog als de mail, zodat de pagina zelf scrolt. Het paneel links en de schakelaars in de kop zijn daar verborgen;
+  boven de mail staat één vaste balk met de knop "Menu" en de naam van de mail met de gekozen variant. "Menu" opent de
+  aparte pagina `/commercieel/menu?from=<slug>` (`app/pages/commercieel/menu.vue`): alle mails als kaart, per mail de
+  varianten als knoppen (twee naast elkaar, geen "Desktop | Mobiel"). Eén tik op een mail of variant opent die direct;
+  de mail en variant die open stonden zijn gemarkeerd ("Nu open", zwarte knop) en niet klikbaar; het kruisje gaat terug.
 - Opening met actietitel en knop (`CampaignOpening` in crm.tsx, voor Content en Dedicated), vier varianten met een
   schakelaar (`openingVariants`, slug `<slug>[-native-2|-header-titel|-foto-titel]`): de sfeerfoto en het gekleurde vlak
   eronder lopen over de hele breedte van de mail, van rand tot rand net als de zwarte header (buiten de `<Container>`),
