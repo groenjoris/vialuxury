@@ -198,7 +198,6 @@ export const search4Props = {
     note: "Eén klik is genoeg, dan sturen we je voortaan wat je zoekt.",
     items: novemberThemes,
   },
-  footerLink: { href: "https://www.vialuxury.com/nl-NL/", label: "Bekijk alle arrangementen" },
 } satisfies Props;
 
 AutomationSearch.PreviewProps = search1Props;

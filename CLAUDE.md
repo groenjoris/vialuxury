@@ -439,7 +439,7 @@ kop "Onze verborgen parels voor jou", met onder de resultaten de knop "Vind jouw
 `tf031`: kop "Waar heb jij zin in?" bovenaan, géén zoekresultaten, de themasectie met de titel
 "Niet jouw verblijf gevonden? Kies je thema." (32 px) en daaronder de thema's als beeldende tegels op
 de beige band — per thema een foto (16:9), de naam en de link "Bekijk" — met eronder de regel "Eén
-klik is genoeg…" en de tekstlink "Bekijk alle arrangementen". De themafoto's zijn arrangementfoto's
+klik is genoeg…" (de tekstlink "Bekijk alle arrangementen" is er op 26-11-2026 uit gehaald). De themafoto's zijn arrangementfoto's
 als plaatsvervanger; de echte themafoto's volgen nog.
 
 Open punten in de sheet zelf: de preheader van `tf027` zegt "Drie alternatieven" terwijl de template
