@@ -2,7 +2,7 @@ import { Body, Container, Head, Html, Preview, Section, Text } from "@react-emai
 import * as React from "react";
 import CrmFooter from "../components/CrmFooter";
 import CrmHeader from "../components/CrmHeader";
-import { BeigeBand, CampaignOpening, commercieelCss, crmCss, FeaturedDeal, Letter, type OpeningVariant, type Pill, PillGrid, PrimaryButton, type RowDeal, s, site } from "../components/crm";
+import { BeigeBand, CampaignOpening, commercieelCss, crmCss, FeaturedDeal, Letter, TextLink, type OpeningVariant, type Pill, PillGrid, type RowDeal, s, site } from "../components/crm";
 import { font, newsletter } from "../components/theme";
 
 // Commerciële mail 2: Dedicated hotel. De hele mail gaat over één hotel. Hij opent met het headerbeeld
@@ -10,7 +10,7 @@ import { font, newsletter } from "../components/theme";
 // daar wordt de eerste interesse gewekt, boven de vouw, en daar wordt vaak op geklikt. Vier varianten
 // van die opening, dezelfde als de Content-mail (`CampaignOpening`: Native 1, Native 2, Header-titel,
 // Titel op foto; die laatste met een ronde sticker met de korting). Daarna de brief (aanhef, een korte,
-// krachtige alinea met het aanbod vet), de knop "Bekijk aanbieding" en het arrangement op de
+// krachtige alinea met het aanbod vet), de tekstlink "Meer informatie over deze deal" en het arrangement op de
 // verticale dealkaart met ALLE inclusies (dat kunnen er acht tot tien zijn). Onder de kaart een beige
 // band met knoppen naar het andere aanbod van dit hotel (1 nacht, 3 nachten). Geen "Snel zoeken".
 // Onderwerp: "Ons beste hotelarrangement van de maand"
@@ -60,9 +60,9 @@ export default function CommercieelDedicatedHotel({ variant = "native-1", mobile
               {lead} <strong>{offer}</strong> {pitch}
             </Letter>
 
-            {/* De knop onder het bericht, boven de kaart */}
-            <Section style={{ marginTop: "24px" }}>
-              <PrimaryButton href={deal.url}>Bekijk aanbieding</PrimaryButton>
+            {/* Onder het bericht een tekstlink, geen tweede knop (de knop staat al in de opening en in de kaart) */}
+            <Section style={{ marginTop: "6px" }}>
+              <TextLink href={deal.url}>Meer informatie over deze deal</TextLink>
             </Section>
           </Section>
 

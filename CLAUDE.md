@@ -253,8 +253,8 @@ Bronnen `email-designs/emails/commercieel-*.tsx`, foto's in
    Hague staat in `deals.json`; de andere drie hebben voorbeeldprijzen en linken naar de R1-zoekpagina.
 2. `commercieel-dedicated-hotel` ("Dedicated hotel"): één hotel. Opening met het headerbeeld van het hotel en kort de
    actie ("2 nachten op de Veluwe voor €319", knop "Bekijk aanbieding", sticker "-29% korting"): daar wordt boven de
-   vouw de eerste interesse gewekt en vaak geklikt. Daarna de brief (`Letter`) met het aanbod vet, de knop "Bekijk
-   aanbieding" en het arrangement op de verticale kaart (`FeaturedDeal`) met álle inclusies (`allIncludes`, hier zeven,
+   vouw de eerste interesse gewekt en vaak geklikt. Daarna de brief (`Letter`) met het aanbod vet, de tekstlink "Meer informatie over
+   deze deal" (geen tweede knop) en het arrangement op de verticale kaart (`FeaturedDeal`) met álle inclusies (`allIncludes`, hier zeven,
    kan oplopen tot acht à tien; elders maximaal vier). Onder de kaart een beige band "Meer van [hotel]" met witte
    knoppen naar het andere aanbod van het hotel (1 nacht, 3 nachten; echte arrangementen uit `deals.json`). Geen "Snel
    zoeken". Voorbeeld: Veluwe Hotel de Beyaerd (Stakenberg staat niet in `deals.json`). De oude schakelaars "Met prijs |
