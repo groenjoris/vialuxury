@@ -227,7 +227,8 @@ maken we per mail. Feedback van de opdrachtgever (2026-11-26) is verwerkt:
   mobiele regels in `commercieelCss` (crm.tsx).
 - Opening met actietitel en knop (`CampaignOpening` in crm.tsx, voor Content en Dedicated), vier varianten met een
   schakelaar (`openingVariants`, slug `<slug>[-native-2|-header-titel|-foto-titel]`): de sfeerfoto en het gekleurde vlak
-  eronder lopen over de hele breedte van de mailkolom (626 px, zo breed als de header) en de foto is klikbaar; alle
+  eronder lopen over de hele breedte van de mail, van rand tot rand net als de zwarte header (buiten de `<Container>`),
+  en de foto is klikbaar; alle
   inhoud staat links gelijk met het logo, ook de tekst op de foto (32 px: de commerciële mails geven `CrmHeader` de prop
   `pad={32}`, de CRM-mails houden 24). Native 1: onder de foto een donkergroen vlak (huisstijlgroen #00675F, ronde
   hoeken van 14 px onderaan), witte titel, zwarte knop. Native 2: hetzelfde in beige met zwarte titel en oranje knop.

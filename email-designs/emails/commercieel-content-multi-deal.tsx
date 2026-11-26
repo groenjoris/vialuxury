@@ -50,8 +50,9 @@ export default function CommercieelContentMultiDeal({ variant = "native-1", reci
       <Preview>Glühwein, lichtjes en een hotel om de hoek.</Preview>
       <Body style={{ backgroundColor: c.bg, margin: 0, padding: 0, fontFamily: font.body }}>
         <CrmHeader pad={32} title={variant === "header-titel" ? title : undefined} />
+        {/* Opening over de hele breedte van de mail, buiten de <Container> */}
+        <CampaignOpening variant={variant} hero={hero} heroAlt={heroAlt} title={title} cta="Bekijk aanbiedingen" href={ctaUrl} sticker={{ small: "vanaf", big: fromPrice }} />
         <Container style={{ width: "100%", maxWidth: "626px" }}>
-          <CampaignOpening variant={variant} hero={hero} heroAlt={heroAlt} title={title} cta="Bekijk aanbiedingen" href={ctaUrl} sticker={{ small: "vanaf", big: fromPrice }} />
 
           {/* De brief: aanhef, één alinea, en direct eronder een knop naar het thema */}
           <Section className="m-pad" style={{ padding: "32px 32px 0" }}>
