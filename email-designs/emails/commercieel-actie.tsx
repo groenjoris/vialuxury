@@ -83,7 +83,7 @@ export default function CommercieelActie({ mobile, recipientEmail, firstName, he
             )}
 
             {/* Het cadeau geldt bij elke boeking: naar alle aanbiedingen */}
-            <Text style={{ ...s.body, margin: "28px 0 0" }}>Liever iets anders? De Goodiebox krijg je bij elk arrangement.</Text>
+            <Text style={{ ...s.body, margin: "28px 0 0" }}>Liever iets anders? Boek een arrangement naar jouw keuze, gebruik de code en je ontvangt de Goodiebox.</Text>
             <Section style={{ marginTop: "14px" }}>
               <SecondaryButton href={allDealsUrl} dark>Bekijk alle aanbiedingen</SecondaryButton>
             </Section>
@@ -112,7 +112,7 @@ CommercieelActie.PreviewProps = {
   code: "HERFSTGB372",
   deadline: "6 december 2026 23:59 uur",
   listTitle: "Voor jou geselecteerde deals",
-  listSubtitle: "Boek één van deze parels en ontvang onze Goodiebox ter waarde van €150.",
+  listSubtitle: "Gebruik de code en boek één van deze parels en ontvang onze Goodiebox ter waarde van €150.",
   // De helft van de dealrijen heeft twee foto's onder elkaar (tweede foto van het arrangement uit deals.json)
   deals: [
     lauswolt,

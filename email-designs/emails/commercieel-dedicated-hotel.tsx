@@ -7,10 +7,10 @@ import { font, newsletter } from "../components/theme";
 
 // Commerciële mail 2: Dedicated hotel. De hele mail gaat over één hotel. Hij opent met het headerbeeld
 // van het hotel met daarin kort wat de actie is ("2 nachten op de Veluwe voor €319") en een knop:
-// daar wordt de eerste interesse gewekt, boven de vouw, en daar wordt vaak op geklikt. Vier varianten
-// van die opening, dezelfde als de Content-mail (`CampaignOpening`: Native 1, Native 2, Header-titel,
+// daar wordt de eerste interesse gewekt, boven de vouw, en daar wordt vaak op geklikt. Drie varianten
+// van die opening, dezelfde als de Content-mail (`CampaignOpening`: Native, Header-titel,
 // Titel op foto; die laatste met een ronde sticker met de korting). Daarna de brief (aanhef, een korte,
-// krachtige alinea met het aanbod vet), de tekstlink "Meer informatie over deze deal" en het arrangement op de
+// krachtige alinea met het aanbod vet), de tekstlink "Boek deze hoteldeal" en het arrangement op de
 // verticale dealkaart met ALLE inclusies (dat kunnen er acht tot tien zijn). Onder de kaart een beige
 // band met knoppen naar het andere aanbod van dit hotel (1 nacht, 3 nachten). Geen "Snel zoeken".
 // Onderwerp: "Ons beste hotelarrangement van de maand"
@@ -39,7 +39,7 @@ type Props = {
   others: Pill[];
 };
 
-export default function CommercieelDedicatedHotel({ variant = "native-1", mobile, recipientEmail, firstName, hero, heroAlt, title, lead, offer, pitch, deal, others }: Props) {
+export default function CommercieelDedicatedHotel({ variant = "native", mobile, recipientEmail, firstName, hero, heroAlt, title, lead, offer, pitch, deal, others }: Props) {
   const c = newsletter.light;
   return (
     <Html lang="nl">
@@ -62,7 +62,7 @@ export default function CommercieelDedicatedHotel({ variant = "native-1", mobile
 
             {/* Onder het bericht een tekstlink, geen tweede knop (de knop staat al in de opening en in de kaart) */}
             <Section style={{ marginTop: "6px" }}>
-              <TextLink href={deal.url}>Meer informatie over deze deal</TextLink>
+              <TextLink href={deal.url}>Boek deze hoteldeal</TextLink>
             </Section>
           </Section>
 

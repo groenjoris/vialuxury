@@ -2,15 +2,15 @@ import { Body, Container, Head, Heading, Html, Preview, Section } from "@react-e
 import * as React from "react";
 import CrmFooter from "../components/CrmFooter";
 import CrmHeader from "../components/CrmHeader";
-import { BeigeBand, CampaignOpening, QuickSearch, commercieelCss, crmCss, FeaturedDeal, Letter, type OpeningVariant, PrimaryButton, type RowDeal, s, SecondaryButton, site } from "../components/crm";
+import { BeigeBand, CampaignOpening, QuickSearch, commercieelCss, crmCss, FeaturedDeal, Letter, type OpeningVariant, type RowDeal, s, SecondaryButton, site, TextLink } from "../components/crm";
 import { baseUrl, font, newsletter } from "../components/theme";
 
 // Commerciële mail 1: Content (Multi-deal). Meerdere deals rond één thema of selectie, hier
 // kerstmarkten. Lijkt op de themamail uit het CRM (die volgt op gedrag op de site), maar is
 // commerciëler. De mail opent met een sfeerfoto met de campagnetitel ("Winter Wonderweken") en een
-// knop, in vier varianten (`CampaignOpening`: Native 1, Native 2, Header-titel, Titel op foto; die
+// knop, in drie varianten (`CampaignOpening`: Native, Header-titel, Titel op foto; die
 // laatste met een ronde sticker met de vanafprijs). Daarna een korte brief (aanhef, één alinea) met de
-// knop "Bekijk aanbiedingen" eronder, de titel van de lijst ("Hotels bij de mooiste kerstmarkten")
+// tekstlink "Bekijk alle kersthotels" eronder, de titel van de lijst ("Hotels bij de mooiste kerstmarkten")
 // direct boven vier deals als gridview-kaart (foto boven, tekst eronder; geen listview), en onder de lijst de knop naar alle arrangementen van het thema. De
 // arrangementen zijn de gewone arrangementen; alleen de dealtitel en de foto zijn geladen met de
 // kerstmarkt in de buurt.
@@ -29,6 +29,8 @@ type Props = {
   title: string;
   /** Alinea van de brief. */
   intro: string;
+  /** Tekstlink onder de brief, naar het thema. */
+  introLink: string;
   /** Titel direct boven de lijst. */
   listTitle: string;
   /** Laagste vanafprijs van de lijst, op de sticker van de variant "Titel op foto". */
@@ -38,7 +40,7 @@ type Props = {
   deals: RowDeal[];
 };
 
-export default function CommercieelContentMultiDeal({ variant = "native-1", recipientEmail, firstName, hero, heroAlt, title, intro, listTitle, fromPrice, allLabel, deals }: Props) {
+export default function CommercieelContentMultiDeal({ variant = "native", recipientEmail, firstName, hero, heroAlt, title, intro, introLink, listTitle, fromPrice, allLabel, deals }: Props) {
   const c = newsletter.light;
   const ctaUrl = `${site}/first-release/search`;
   return (
@@ -54,11 +56,11 @@ export default function CommercieelContentMultiDeal({ variant = "native-1", reci
         <CampaignOpening variant={variant} hero={hero} heroAlt={heroAlt} title={title} cta="Bekijk aanbiedingen" href={ctaUrl} sticker={{ small: "vanaf", big: fromPrice }} />
         <Container style={{ width: "100%", maxWidth: "626px" }}>
 
-          {/* De brief: aanhef, één alinea, en direct eronder een knop naar het thema */}
+          {/* De brief: aanhef, één alinea, en direct eronder een tekstlink naar het thema */}
           <Section className="m-pad" style={{ padding: "32px 32px 0" }}>
             <Letter firstName={firstName}>{intro}</Letter>
-            <Section style={{ marginTop: "20px" }}>
-              <PrimaryButton href={ctaUrl}>Bekijk aanbiedingen</PrimaryButton>
+            <Section style={{ marginTop: "6px" }}>
+              <TextLink href={ctaUrl}>{introLink}</TextLink>
             </Section>
           </Section>
 
@@ -100,6 +102,7 @@ CommercieelContentMultiDeal.PreviewProps = {
   title: "Winter Wonderweken",
   intro:
     "De dagen worden korter en de lichtjes gaan aan. Tijd voor glühwein, de geur van gebrande amandelen en slenteren langs de kraampjes tot je wangen rood zijn. En daarna niet meer naar huis rijden, maar een paar straten verderop je hotelkamer in. We zochten vier hotels uit bij de mooiste kerstmarkten van dit jaar.",
+  introLink: "Bekijk alle kersthotels",
   listTitle: "Hotels bij de mooiste kerstmarkten",
   fromPrice: "€239",
   allLabel: "Bekijk alle winterarrangementen",

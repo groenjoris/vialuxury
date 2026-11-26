@@ -123,7 +123,9 @@ export default function CrmFooter({ recipientEmail, reason, transactional = fals
     <>
               {terms && (
                 <Text className="m-center m-small" style={text}>
-                  {terms.text} <Link href={terms.url} style={link}>Bekijk de actievoorwaarden</Link>.
+                  {terms.text}
+                  <br />
+                  <Link href={terms.url} style={link}>Bekijk de actievoorwaarden</Link>
                 </Text>
               )}
               <Text className="m-center m-small" style={text}>Prijswijzigingen en/of zetfouten voorbehouden.</Text>

@@ -232,20 +232,22 @@ maken we per mail. Feedback van de opdrachtgever (2026-11-26) is verwerkt:
   aparte pagina `/commercieel/menu?from=<slug>` (`app/pages/commercieel/menu.vue`): alle mails als kaart, per mail de
   varianten als knoppen (twee naast elkaar, geen "Desktop | Mobiel"). Eén tik op een mail of variant opent die direct;
   de mail en variant die open stonden zijn gemarkeerd ("Nu open", zwarte knop) en niet klikbaar; het kruisje gaat terug.
-- Opening met actietitel en knop (`CampaignOpening` in crm.tsx, voor Content en Dedicated), vier varianten met een
-  schakelaar (`openingVariants`, slug `<slug>[-native-2|-header-titel|-foto-titel]`): de sfeerfoto en het gekleurde vlak
+- Opening met actietitel en knop (`CampaignOpening` in crm.tsx, voor Content en Dedicated), drie varianten met een
+  schakelaar (`openingVariants`, slug `<slug>[-header-titel|-foto-titel]`; "Native 2", de beige versie, is op
+  2026-11-27 vervallen en "Native 1" heet nu "Native"): de sfeerfoto en het gekleurde vlak
   eronder lopen over de hele breedte van de mail, van rand tot rand net als de zwarte header (buiten de `<Container>`),
   en de foto is klikbaar; alle
   inhoud staat links gelijk met het logo, ook de tekst op de foto (32 px: de commerciële mails geven `CrmHeader` de prop
-  `pad={32}`, de CRM-mails houden 24). Native 1: onder de foto een donkergroen vlak (huisstijlgroen #00675F, rechte
-  hoeken: de ronde hoeken zijn vervallen nu het vlak over de hele breedte loopt), witte titel, zwarte knop. Native 2: hetzelfde in beige met zwarte titel en oranje knop.
+  `pad={32}`, de CRM-mails houden 24). Native: onder de foto een donkergroen vlak (huisstijlgroen #00675F, rechte
+  hoeken: de ronde hoeken zijn vervallen nu het vlak over de hele breedte loopt), witte titel, zwarte knop.
   Header-titel: de titel staat in de header (`CrmHeader`-prop `title`: vierkant logo 76 × 60, titel
   32 px wit gecentreerd tussen logo en Trustpilot) en onder de foto staat een grote,
   gecentreerde oranje knop. Titel op foto: gewone header, de titel groot (44 px, wit) linksboven op de foto, de zwarte
   knop linksonder en rechtsonder een ronde oranje sticker (vanafprijs of korting); een donker verloop houdt de tekst
   leesbaar. Bewuste uitzondering op "geen tekst op een foto" en "geen stickers".
 - Actiemails met een code (Actie, Tekst): in de footer staan de geldigheid van de code en de link "Bekijk de
-  actievoorwaarden" bovenaan de kleine lettertjes (`CrmFooter`-prop `terms`).
+  actievoorwaarden" op een eigen regel eronder, bovenaan de kleine lettertjes (`CrmFooter`-prop `terms`). De
+  Goodiebox krijg je alleen als je met de code boekt; de teksten bij de deals zeggen dat ("Gebruik de code en boek …").
 - "Snel zoeken" (`QuickSearch`: Best geboekt, Stedentrips, Aan zee, Romantisch, Wellness, Met diner; witte
   snelfilterknoppen op een beige band naar de R1-zoekpagina) staat alleen nog onderaan Content en Tekst, niet in
   Dedicated, Actie en Cadeaukaart.
@@ -253,15 +255,15 @@ Bronnen `email-designs/emails/commercieel-*.tsx`, foto's in
 `public/images/mail/commercieel/`. De voorbeelden worden per stuk gebriefd:
 1. `commercieel-content-multi-deal` ("Content (Multi-deal)"): meerdere deals rond een thema (kerstmarkten). Opening
    met de campagnetitel "Winter Wonderweken" en de knop "Bekijk aanbiedingen" (R1-zoekpagina), sticker "vanaf €239".
-   Daarna de brief (`Letter`) met dezelfde knop eronder (directe CTA bovenin), de titel "Hotels bij de mooiste
+   Daarna de brief (`Letter`) met de tekstlink "Bekijk alle kersthotels" eronder (directe CTA bovenin; geen tweede knop), de titel "Hotels bij de mooiste
    kerstmarkten" boven vier deals als gridview-kaart onder elkaar (`FeaturedDeal`: foto boven, tekst eronder; sinds
    2026-11-26 geen listview meer, ook niet op desktop) en onder de lijst de zwarte knop "Bekijk alle winterarrangementen".
    Het arrangement blijft hetzelfde; alleen dealtitel en foto verwijzen naar de kerstmarkt in de buurt. Alleen voco The
    Hague staat in `deals.json`; de andere drie hebben voorbeeldprijzen en linken naar de R1-zoekpagina.
 2. `commercieel-dedicated-hotel` ("Dedicated hotel"): één hotel. Opening met het headerbeeld van het hotel en kort de
    actie ("2 nachten op de Veluwe voor €319", knop "Bekijk aanbieding", sticker "-29% korting"): daar wordt boven de
-   vouw de eerste interesse gewekt en vaak geklikt. Daarna de brief (`Letter`) met het aanbod vet, de tekstlink "Meer informatie over
-   deze deal" (geen tweede knop) en het arrangement op de verticale kaart (`FeaturedDeal`) met álle inclusies (`allIncludes`, hier zeven,
+   vouw de eerste interesse gewekt en vaak geklikt. Daarna de brief (`Letter`) met het aanbod vet, de tekstlink "Boek deze
+   hoteldeal" (geen tweede knop) en het arrangement op de verticale kaart (`FeaturedDeal`) met álle inclusies (`allIncludes`, hier zeven,
    kan oplopen tot acht à tien; elders maximaal vier). Onder de kaart een beige band "Meer van [hotel]" met witte
    knoppen naar het andere aanbod van het hotel (1 nacht, 3 nachten; echte arrangementen uit `deals.json`). Geen "Snel
    zoeken". Voorbeeld: Veluwe Hotel de Beyaerd (Stakenberg staat niet in `deals.json`). De oude schakelaars "Met prijs |

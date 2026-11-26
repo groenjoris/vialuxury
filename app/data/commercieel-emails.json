@@ -5,7 +5,7 @@
     "description": "Meerdere deals rond één thema of selectie (kerstmarkten): sfeerfoto met campagnetitel en knop, korte brief en vier deals waarvan de dealtitel en de foto naar de kerstmarkt in de buurt verwijzen.",
     "subject": "Winter Wonderweken: slapen bij de mooiste kerstmarkten",
     "preheader": "Glühwein, lichtjes en een hotel om de hoek.",
-    "variantLabel": "Native 1 / Desktop"
+    "variantLabel": "Native / Desktop"
   },
   {
     "slug": "commercieel-content-multi-deal-mobiel",
@@ -14,25 +14,7 @@
     "subject": "Winter Wonderweken: slapen bij de mooiste kerstmarkten",
     "preheader": "Glühwein, lichtjes en een hotel om de hoek.",
     "variantOf": "commercieel-content-multi-deal",
-    "variantLabel": "Native 1 / Mobiel"
-  },
-  {
-    "slug": "commercieel-content-multi-deal-native-2",
-    "title": "Content (Multi-deal)",
-    "description": "Meerdere deals rond één thema of selectie (kerstmarkten): sfeerfoto met campagnetitel en knop, korte brief en vier deals waarvan de dealtitel en de foto naar de kerstmarkt in de buurt verwijzen.",
-    "subject": "Winter Wonderweken: slapen bij de mooiste kerstmarkten",
-    "preheader": "Glühwein, lichtjes en een hotel om de hoek.",
-    "variantOf": "commercieel-content-multi-deal",
-    "variantLabel": "Native 2 / Desktop"
-  },
-  {
-    "slug": "commercieel-content-multi-deal-native-2-mobiel",
-    "title": "Content (Multi-deal)",
-    "description": "Meerdere deals rond één thema of selectie (kerstmarkten): sfeerfoto met campagnetitel en knop, korte brief en vier deals waarvan de dealtitel en de foto naar de kerstmarkt in de buurt verwijzen.",
-    "subject": "Winter Wonderweken: slapen bij de mooiste kerstmarkten",
-    "preheader": "Glühwein, lichtjes en een hotel om de hoek.",
-    "variantOf": "commercieel-content-multi-deal",
-    "variantLabel": "Native 2 / Mobiel"
+    "variantLabel": "Native / Mobiel"
   },
   {
     "slug": "commercieel-content-multi-deal-header-titel",
@@ -76,7 +58,7 @@
     "description": "Eén hotel: headerbeeld met de actie en een knop, korte brief met het aanbod, het arrangement op de verticale dealkaart met alle inclusies en knoppen naar het andere aanbod van het hotel.",
     "subject": "Ons beste hotelarrangement van de maand",
     "preheader": "2 nachten voor 2 personen op de Veluwe, inclusief diner.",
-    "variantLabel": "Native 1 / Desktop"
+    "variantLabel": "Native / Desktop"
   },
   {
     "slug": "commercieel-dedicated-hotel-mobiel",
@@ -85,25 +67,7 @@
     "subject": "Ons beste hotelarrangement van de maand",
     "preheader": "2 nachten voor 2 personen op de Veluwe, inclusief diner.",
     "variantOf": "commercieel-dedicated-hotel",
-    "variantLabel": "Native 1 / Mobiel"
-  },
-  {
-    "slug": "commercieel-dedicated-hotel-native-2",
-    "title": "Dedicated hotel",
-    "description": "Eén hotel: headerbeeld met de actie en een knop, korte brief met het aanbod, het arrangement op de verticale dealkaart met alle inclusies en knoppen naar het andere aanbod van het hotel.",
-    "subject": "Ons beste hotelarrangement van de maand",
-    "preheader": "2 nachten voor 2 personen op de Veluwe, inclusief diner.",
-    "variantOf": "commercieel-dedicated-hotel",
-    "variantLabel": "Native 2 / Desktop"
-  },
-  {
-    "slug": "commercieel-dedicated-hotel-native-2-mobiel",
-    "title": "Dedicated hotel",
-    "description": "Eén hotel: headerbeeld met de actie en een knop, korte brief met het aanbod, het arrangement op de verticale dealkaart met alle inclusies en knoppen naar het andere aanbod van het hotel.",
-    "subject": "Ons beste hotelarrangement van de maand",
-    "preheader": "2 nachten voor 2 personen op de Veluwe, inclusief diner.",
-    "variantOf": "commercieel-dedicated-hotel",
-    "variantLabel": "Native 2 / Mobiel"
+    "variantLabel": "Native / Mobiel"
   },
   {
     "slug": "commercieel-dedicated-hotel-header-titel",
