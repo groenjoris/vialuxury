@@ -660,8 +660,23 @@ export const openingVariants = [["native", "", "Native"], ["header-titel", "-hea
  *  - foto-titel: de titel groot linksboven op de foto, de zwarte knop linksonder en rechtsonder een ronde
  *    sticker (`sticker`, bijv. de vanafprijs of de korting); een verloop houdt de witte tekst leesbaar
  *  De hele foto is klikbaar (naar `href`). */
-export function CampaignOpening({ variant, hero, heroAlt, heroPosition = "center", title, cta, href, sticker }: { variant: OpeningVariant; hero: string; heroAlt: string; /** Welk deel van de foto in beeld blijft als hij wordt bijgesneden (CSS object-position), bijv. "center 80%". */ heroPosition?: string; title: string; cta: string; href: string; /** Ronde sticker op de foto (alleen foto-titel): kleine regel en grote regel. */ sticker?: { small?: string; big: string } }) {
+export function CampaignOpening({ variant, hero, heroAlt, heroPosition = "center", title, cta, href, sticker }: { variant: OpeningVariant; hero: string; heroAlt: string; /** Welk deel van de foto in beeld blijft als hij wordt bijgesneden (CSS object-position), bijv. "center 80%". */ heroPosition?: string; title: string; cta: string; href: string; /** Ronde sticker (foto-titel: op de foto; native: rechts in het kleurvlak): kleine regel en grote regel. */ sticker?: { small?: string; big: string } }) {
   const inHeader = variant === "header-titel";
+  // Ronde sticker: oranje, tekst in wit (op de foto bij foto-titel, rechts in het kleurvlak bij native)
+  const stickerEl = sticker && (
+    <table role="presentation" className="m-sticker" cellPadding={0} cellSpacing={0} style={{ width: "104px", height: "104px", borderCollapse: "separate" }}>
+      <tbody>
+        <tr>
+          <td align="center" valign="middle" className="m-sticker" style={{ width: "104px", height: "104px", borderRadius: "52px", backgroundColor: c.cta, textAlign: "center", verticalAlign: "middle", boxShadow: variant === "foto-titel" ? "0 2px 10px rgba(0,0,0,0.25)" : undefined }}>
+            <Link href={href} style={{ textDecoration: "none", color: "#FFFFFF", fontFamily: font.body }}>
+              {sticker.small && <span className="m-sticker-small" style={{ display: "block", fontSize: "14px", lineHeight: "16px" }}>{sticker.small}</span>}
+              <span className="m-sticker-big" style={{ display: "block", fontSize: "28px", lineHeight: "30px", fontWeight: 700 }}>{sticker.big}</span>
+            </Link>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  );
   return (
     <Section style={{ width: "100%" }}>
       {variant === "foto-titel" ? (
@@ -687,19 +702,7 @@ export function CampaignOpening({ variant, hero, heroAlt, heroPosition = "center
               </td>
               {sticker && (
                 <td valign="bottom" align="right" className="m-hero-right" style={{ padding: "0 32px 20px 0", verticalAlign: "bottom", width: "112px" }}>
-                  {/* Ronde sticker: oranje, tekst in wit */}
-                  <table role="presentation" className="m-sticker" cellPadding={0} cellSpacing={0} style={{ width: "104px", height: "104px", borderCollapse: "separate" }}>
-                    <tbody>
-                      <tr>
-                        <td align="center" valign="middle" className="m-sticker" style={{ width: "104px", height: "104px", borderRadius: "52px", backgroundColor: c.cta, textAlign: "center", verticalAlign: "middle", boxShadow: "0 2px 10px rgba(0,0,0,0.25)" }}>
-                          <Link href={href} style={{ textDecoration: "none", color: "#FFFFFF", fontFamily: font.body }}>
-                            {sticker.small && <span className="m-sticker-small" style={{ display: "block", fontSize: "14px", lineHeight: "16px" }}>{sticker.small}</span>}
-                            <span className="m-sticker-big" style={{ display: "block", fontSize: "28px", lineHeight: "30px", fontWeight: 700 }}>{sticker.big}</span>
-                          </Link>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
+                  {stickerEl}
                 </td>
               )}
             </tr>
@@ -724,12 +727,24 @@ export function CampaignOpening({ variant, hero, heroAlt, heroPosition = "center
         <Section style={{ width: "100%", backgroundColor: "#F4F1EC" }}>
           <Container style={{ width: "100%", maxWidth: "626px" }}>
             {/* Desktop links (gelijk met het logo), mobiel gecentreerd (klasse m-tcenter) */}
-            <div className="m-pad m-tcenter" style={{ padding: "22px 32px 26px" }}>
-              <Heading as="h1" className="m-h1 m-tcenter" style={{ ...s.h1, color: c.heading }}>{title}</Heading>
-              <div style={{ marginTop: "16px" }}>
-                <PrimaryButton href={href}>{cta}</PrimaryButton>
-              </div>
-            </div>
+            <table role="presentation" cellPadding={0} cellSpacing={0} width="100%" style={{ width: "100%", borderCollapse: "collapse" }}>
+              <tbody>
+                <tr>
+                  <td valign="middle" className="m-hero-left m-tcenter" style={{ padding: "22px 0 26px 32px", verticalAlign: "middle" }}>
+                    <Heading as="h1" className="m-h1 m-tcenter" style={{ ...s.h1, color: c.heading }}>{title}</Heading>
+                    <div style={{ marginTop: "16px" }}>
+                      <PrimaryButton href={href}>{cta}</PrimaryButton>
+                    </div>
+                  </td>
+                  {/* De sticker rechts in het kleurvlak */}
+                  {stickerEl && (
+                    <td valign="middle" align="right" className="m-hero-right" style={{ padding: "16px 32px 16px 16px", verticalAlign: "middle", width: "104px" }}>
+                      {stickerEl}
+                    </td>
+                  )}
+                </tr>
+              </tbody>
+            </table>
           </Container>
         </Section>
       )}

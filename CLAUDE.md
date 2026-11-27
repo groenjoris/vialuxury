@@ -240,7 +240,8 @@ maken we per mail. Feedback van de opdrachtgever (2026-11-26) is verwerkt:
   en de foto is klikbaar; alle
   inhoud staat links gelijk met het logo, ook de tekst op de foto (32 px: de commerciële mails geven `CrmHeader` de prop
   `pad={32}`, de CRM-mails houden 24). Native: onder de foto een beige vlak (rechte hoeken) met een zwarte titel en
-  een oranje knop; op desktop links, op mobiel staan titel en knop gecentreerd. De donkergroene versie (#00675F, witte
+  een oranje knop; op desktop links, op mobiel staan titel en knop gecentreerd. Rechts in het vlak staat de ronde
+  oranje sticker (vanafprijs of korting). De donkergroene versie (#00675F, witte
   titel, zwarte knop) was eerst "Native 1" en is vervallen.
   Header-titel: de titel staat in de header (`CrmHeader`-prop `title`: vierkant logo 76 × 60, titel
   32 px wit gecentreerd tussen logo en Trustpilot) en onder de foto staat een beige band over de
