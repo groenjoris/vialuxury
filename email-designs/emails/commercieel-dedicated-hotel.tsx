@@ -3,10 +3,10 @@ import * as React from "react";
 import CrmFooter from "../components/CrmFooter";
 import CrmHeader from "../components/CrmHeader";
 import { BeigeBand, CampaignOpening, commercieelCss, crmCss, FeaturedDeal, Letter, TextLink, type OpeningVariant, type Pill, type RowDeal, s, site } from "../components/crm";
-import { font, newsletter } from "../components/theme";
+import { baseUrl, font, newsletter } from "../components/theme";
 
-// Commerciële mail 2: Dedicated hotel. De hele mail gaat over één hotel. Hij opent met het headerbeeld
-// van het hotel met daarin kort wat de actie is ("2 nachten op de Veluwe voor €319") en een knop:
+// Commerciële mail 2: Dedicated hotel. De hele mail gaat over één hotel. Hij opent met een sfeerbeeld
+// van de streek (de Veluwe) met daarin kort wat de actie is ("2 nachten op de Veluwe voor €319") en een knop:
 // daar wordt de eerste interesse gewekt, boven de vouw, en daar wordt vaak op geklikt. Drie varianten
 // van die opening, dezelfde als de Content-mail (`CampaignOpening`: Native, Header-titel,
 // Titel op foto; die laatste met een ronde sticker met de korting). Daarna de brief (aanhef, een korte,
@@ -51,7 +51,7 @@ export default function CommercieelDedicatedHotel({ variant = "native", mobile, 
       <Body style={{ backgroundColor: c.bg, margin: 0, padding: 0, fontFamily: font.body }}>
         <CrmHeader pad={32} title={variant === "header-titel" ? title : undefined} />
         {/* Opening over de hele breedte van de mail, buiten de <Container> */}
-        <CampaignOpening variant={variant} hero={hero} heroAlt={heroAlt} title={title} cta="Bekijk aanbieding" href={deal.url} sticker={deal.discount ? { big: deal.discount, small: "korting" } : undefined} />
+        <CampaignOpening variant={variant} hero={hero} heroAlt={heroAlt} heroPosition="center 85%" title={title} cta="Bekijk aanbieding" href={deal.url} sticker={deal.discount ? { big: deal.discount, small: "korting" } : undefined} />
         <Container style={{ width: "100%", maxWidth: "626px" }}>
 
           {/* Brief: aanhef, het aanbod (vet) met één zin over het hotel */}
@@ -102,8 +102,9 @@ const dealUrl = (permalink: string) => `${site}/first-release/deal/${permalink}`
 CommercieelDedicatedHotel.PreviewProps = {
   recipientEmail: "sanne.devries@example.com",
   firstName: "Sanne",
-  hero: asset("fb2d11b7-1881-40cb-98f4-28a384b8c3f6"),
-  heroAlt: "Veluwe Hotel de Beyaerd",
+  // Sfeerfoto van de Veluwe (aangeleverd, map "email content"); het hert staat onderin, dus de uitsnede ligt laag
+  hero: `${baseUrl}/images/mail/commercieel/veluwe.jpg`,
+  heroAlt: "Burlend edelhert tussen de dennen op de Veluwe",
   title: "2 nachten op de Veluwe voor €319",
   lead: "Dit is ons beste hotelarrangement van de maand:",
   offer: "2 nachten voor 2 personen op de Veluwe, inclusief diner, voor €319.",

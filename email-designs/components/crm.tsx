@@ -655,13 +655,13 @@ export const openingVariants = [["native", "", "Native"], ["header-titel", "-hea
  *  - foto-titel: de titel groot linksboven op de foto, de zwarte knop linksonder en rechtsonder een ronde
  *    sticker (`sticker`, bijv. de vanafprijs of de korting); een verloop houdt de witte tekst leesbaar
  *  De hele foto is klikbaar (naar `href`). */
-export function CampaignOpening({ variant, hero, heroAlt, title, cta, href, sticker }: { variant: OpeningVariant; hero: string; heroAlt: string; title: string; cta: string; href: string; /** Ronde sticker op de foto (alleen foto-titel): kleine regel en grote regel. */ sticker?: { small?: string; big: string } }) {
+export function CampaignOpening({ variant, hero, heroAlt, heroPosition = "center", title, cta, href, sticker }: { variant: OpeningVariant; hero: string; heroAlt: string; /** Welk deel van de foto in beeld blijft als hij wordt bijgesneden (CSS object-position), bijv. "center 80%". */ heroPosition?: string; title: string; cta: string; href: string; /** Ronde sticker op de foto (alleen foto-titel): kleine regel en grote regel. */ sticker?: { small?: string; big: string } }) {
   const inHeader = variant === "header-titel";
   return (
     <Section style={{ width: "100%" }}>
       {variant === "foto-titel" ? (
         // De foto als achtergrond over de hele breedte; titel, knop en sticker in de kolom van de mail
-        <Section style={{ width: "100%", backgroundImage: `linear-gradient(180deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 45%, rgba(0,0,0,0) 62%, rgba(0,0,0,0.45) 100%), url(${hero})`, backgroundSize: "cover", backgroundPosition: "center" }}>
+        <Section style={{ width: "100%", backgroundImage: `linear-gradient(180deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 45%, rgba(0,0,0,0) 62%, rgba(0,0,0,0.45) 100%), url(${hero})`, backgroundSize: "cover", backgroundPosition: heroPosition }}>
         <Container style={{ width: "100%", maxWidth: "626px" }}>
         <table role="presentation" className="m-hero" cellPadding={0} cellSpacing={0} width="100%" style={{ width: "100%", height: "352px", borderCollapse: "collapse" }}>
           <tbody>
@@ -704,7 +704,7 @@ export function CampaignOpening({ variant, hero, heroAlt, title, cta, href, stic
         </Section>
       ) : (
         <Link href={href}>
-          <Img className="m-hero" src={hero} alt={heroAlt} width="700" height="352" style={{ display: "block", width: "100%", height: "352px", objectFit: "cover" }} />
+          <Img className="m-hero" src={hero} alt={heroAlt} width="700" height="352" style={{ display: "block", width: "100%", height: "352px", objectFit: "cover", objectPosition: heroPosition }} />
         </Link>
       )}
       {inHeader && (

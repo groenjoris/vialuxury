@@ -262,7 +262,7 @@ Bronnen `email-designs/emails/commercieel-*.tsx`, foto's in
    2026-11-26 geen listview meer, ook niet op desktop) en onder de lijst de zwarte knop "Bekijk alle winterarrangementen".
    Het arrangement blijft hetzelfde; alleen dealtitel en foto verwijzen naar de kerstmarkt in de buurt. Alleen voco The
    Hague staat in `deals.json`; de andere drie hebben voorbeeldprijzen en linken naar de R1-zoekpagina.
-2. `commercieel-dedicated-hotel` ("Dedicated hotel"): één hotel. Opening met het headerbeeld van het hotel en kort de
+2. `commercieel-dedicated-hotel` ("Dedicated hotel"): één hotel. Opening met een sfeerfoto van de streek als hoofdfoto (`veluwe.jpg`: edelhert in het bos, aangeleverd) en kort de
    actie ("2 nachten op de Veluwe voor €319", knop "Bekijk aanbieding", sticker "-29% korting"): daar wordt boven de
    vouw de eerste interesse gewekt en vaak geklikt. Daarna de brief (`Letter`) met het aanbod vet, de tekstlink "Boek deze
    hoteldeal" (geen tweede knop) en het arrangement op de verticale kaart (`FeaturedDeal`) met álle inclusies (`allIncludes`, hier zeven,
