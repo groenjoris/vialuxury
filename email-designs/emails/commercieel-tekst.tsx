@@ -49,7 +49,7 @@ export default function CommercieelTekst({ recipientEmail, firstName, hero, hero
           <Section className="m-pad" style={{ padding: "32px 32px 0" }}>
             <Letter firstName={firstName}>{intro}</Letter>
             <Section style={{ marginTop: "24px" }}>
-              <CodeBlock title={gift} code={code} deadline={deadline} />
+              <CodeBlock title={gift} code={code} deadline={deadline} termsUrl="https://vialuxury.nl" />
             </Section>
           </Section>
 
@@ -74,8 +74,7 @@ export default function CommercieelTekst({ recipientEmail, firstName, hero, hero
           <QuickSearch />
         </BeigeBand>
 
-        <CrmFooter recipientEmail={recipientEmail} reason="omdat je je hebt aangemeld voor onze nieuwsbrief" help={2} quote
-          terms={{ text: `Je persoonlijke code ${code} is geldig tot en met ${deadline}.`, url: "https://vialuxury.nl" }} />
+        <CrmFooter recipientEmail={recipientEmail} reason="omdat je je hebt aangemeld voor onze nieuwsbrief" help={2} quote />
       </Body>
     </Html>
   );

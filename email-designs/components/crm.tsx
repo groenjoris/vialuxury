@@ -489,7 +489,7 @@ export function IconLine({ icon, children, bold }: { icon: string; children: Rea
  *  gestippelde rand waarin alles gecentreerd onder elkaar staat: wat je krijgt (`title`, bijv.
  *  "€20 cadeau"), het label, de code als selecteerbare tekst in oranje serif, de geldigheid en de
  *  instructie. Met `daysLeft`: "Nog 14 dagen geldig, tot en met …". */
-export function CodeBlock({ title, code, label = "Jouw persoonlijke code", deadline, daysLeft, urgent }: { title?: string; code: string; label?: string; deadline: string; daysLeft?: number; /** Herinnering: de termijn is het grootst ("Nog 14 dagen"), het bedrag staat eronder; geef het bedrag mee als `title` ("€20 cadeau"). */ urgent?: boolean }) {
+export function CodeBlock({ title, code, label = "Jouw persoonlijke code", deadline, daysLeft, urgent, termsUrl }: { title?: string; code: string; label?: string; deadline: string; daysLeft?: number; /** Actiemails: link "Bekijk de actievoorwaarden" onderaan in de coupon, bij de geldigheid van de code. */ termsUrl?: string; /** Herinnering: de termijn is het grootst ("Nog 14 dagen"), het bedrag staat eronder; geef het bedrag mee als `title` ("€20 cadeau"). */ urgent?: boolean }) {
   const center = { textAlign: "center" as const };
   if (urgent && daysLeft) {
     return (
@@ -516,6 +516,11 @@ export function CodeBlock({ title, code, label = "Jouw persoonlijke code", deadl
         {daysLeft ? `Nog ${daysLeft} dagen geldig, tot en met ${deadline}` : `Geldig tot en met ${deadline}`}
       </Text>
       <Text style={{ ...s.muted, ...center, margin: "2px 0 0" }}>Vul de code in bij het boeken.</Text>
+      {termsUrl && (
+        <Text style={{ ...s.title, ...center, margin: "10px 0 0" }}>
+          <Link href={termsUrl} style={{ color: c.link, textDecoration: "underline" }}>Bekijk de actievoorwaarden</Link>
+        </Text>
+      )}
     </Section>
   );
 }

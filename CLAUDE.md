@@ -247,8 +247,9 @@ maken we per mail. Feedback van de opdrachtgever (2026-11-26) is verwerkt:
   hele breedte met alleen de oranje knop (gewone grootte), gecentreerd. Titel op foto: gewone header, de titel groot (44 px, wit) linksboven op de foto, de zwarte
   knop linksonder (met een chevron rechts van de tekst, zodat hij klikbaar oogt) en rechtsonder een ronde oranje sticker (vanafprijs of korting; 104 px, op mobiel 75% daarvan: 78 px); een donker verloop houdt de tekst
   leesbaar. Bewuste uitzondering op "geen tekst op een foto" en "geen stickers".
-- Actiemails met een code (Actie, Tekst): in de footer staan de geldigheid van de code en de link "Bekijk de
-  actievoorwaarden" op een eigen regel eronder, bovenaan de kleine lettertjes (`CrmFooter`-prop `terms`). De
+- Actiemails met een code (Actie, Tekst): de geldigheid van de code en de link "Bekijk de actievoorwaarden" staan in
+  de coupon zelf, onder "Vul de code in bij het boeken" (`CodeBlock`-prop `termsUrl`). Eerst stonden ze in de footer;
+  dat is op 2026-11-27 teruggedraaid, omdat het logo en de quote daar dan niet meer op één lijn stonden. De
   Goodiebox krijg je alleen als je met de code boekt; de teksten bij de deals zeggen dat ("Gebruik de code en boek …").
 - "Snel zoeken" (`QuickSearch`: Best geboekt, Stedentrips, Aan zee, Romantisch, Wellness, Met diner; witte
   snelfilterknoppen op een beige band naar de R1-zoekpagina) staat alleen nog onderaan Content en Tekst, niet in
@@ -278,14 +279,13 @@ Bronnen `email-designs/emails/commercieel-*.tsx`, foto's in
    de actiecode als coupon (`CodeBlock`, HERFSTGB372, t/m 6 december 23:59 uur), daaronder de zwarte knop "Bekijk ons aanbod"
    (zoekpagina), titel "Voor jou geselecteerde deals"
    met subtitel boven vier dealrijen, en omdat het cadeau bij elke boeking geldt onderaan één regel met de zwarte knop
-   "Bekijk alle aanbiedingen" naar de R1-zoekpagina. Geen "Snel zoeken"; in de footer de geldigheid van de code en de
-   link naar de actievoorwaarden.
+   "Bekijk alle aanbiedingen" naar de R1-zoekpagina. Geen "Snel zoeken"; de link naar de actievoorwaarden staat in de coupon.
 4. `commercieel-tekst` ("Tekst (Zaterdagkorting)"): mail zonder deals. Actiegraphic over de hele breedte
    (`zaterdag-kortingsdag.jpg`: gouden coupon "€15 persoonlijke korting, alleen vandaag" met confetti op donkerblauw,
    in de stijl van de Goodiebox-graphic; gemaakt met `scripts/mail-graphics/zaterdag-coupon.py <uitvoerpad>`, Recoleta
    en Basis Grotesque uit `public/fonts`), brief, de persoonlijke code als coupon (`CodeBlock`, SV15V-2FHT, "vandaag
    23:59 uur"), "Zo verzilver je je code" in drie stappen en daaronder de oranje knop "Bekijk onze
-   arrangementen". In de footer de geldigheid van de code en de link naar de actievoorwaarden.
+   arrangementen". De link naar de actievoorwaarden staat in de coupon.
 5. `commercieel-cadeaukaart` ("Cadeaukaart"): cadeaukaarten verkopen. Sfeerbeeld in twee helften over de hele breedte
    (`cadeaukaart-hero.jpg`: links de experience, rechts de productfoto op beige), titel "Maak iemand blij met een
    cadeaukaart en ontvang zelf tot €120 korting", brief met de uitleg, de staffel als tabel met twee kolommen ("Waarde

@@ -61,7 +61,7 @@ export default function CommercieelActie({ mobile, recipientEmail, firstName, he
               <Letter firstName={firstName}>{intro}</Letter>
             </Section>
             <Section style={{ marginTop: "24px" }}>
-              <CodeBlock title={gift} code={code} label="Jouw actiecode" deadline={deadline} />
+              <CodeBlock title={gift} code={code} label="Jouw actiecode" deadline={deadline} termsUrl="https://vialuxury.nl" />
             </Section>
             {/* Knop onder de code: naar alle aanbiedingen */}
             <Section style={{ marginTop: "20px" }}>
@@ -90,8 +90,7 @@ export default function CommercieelActie({ mobile, recipientEmail, firstName, he
           </Section>
         </Container>
 
-        <CrmFooter recipientEmail={recipientEmail} reason="omdat je je hebt aangemeld voor onze nieuwsbrief" help={2} quote
-          terms={{ text: `Actiecode ${code} is geldig bij een boeking tot en met ${deadline}.`, url: "https://vialuxury.nl" }} />
+        <CrmFooter recipientEmail={recipientEmail} reason="omdat je je hebt aangemeld voor onze nieuwsbrief" help={2} quote />
       </Body>
     </Html>
   );

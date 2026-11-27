@@ -39,9 +39,6 @@ type Props = {
   quote?: boolean;
   /** Hulpblok als band boven de footer, variant 0 t/m 3 (zie boven). Leeg → de gewone footer. */
   help?: FooterHelp;
-  /** Actiemails met een code: de geldigheid van de code en een link naar de actievoorwaarden,
-   *  bovenaan de kleine lettertjes. */
-  terms?: { text: string; url: string };
   recipientEmail: string;
   /** Afzenderreden die bij de trigger past, bijv. "omdat je bij ons boekte". */
   reason: string;
@@ -50,7 +47,7 @@ type Props = {
   mode?: EmailMode;
 };
 
-export default function CrmFooter({ recipientEmail, reason, transactional = false, mode = "light", help, quote, terms }: Props) {
+export default function CrmFooter({ recipientEmail, reason, transactional = false, mode = "light", help, quote }: Props) {
   const hasHelp = help !== undefined;
   /** Variant 2 en 3: lagere hulpband en een footer van één rij, waarin de kolommen in elkaar schuiven. */
   const compact = help === 2 || help === 3;
@@ -121,13 +118,6 @@ export default function CrmFooter({ recipientEmail, reason, transactional = fals
   );
   const smallPrint = (
     <>
-              {terms && (
-                <Text className="m-center m-small" style={text}>
-                  {terms.text}
-                  <br />
-                  <Link href={terms.url} style={link}>Bekijk de actievoorwaarden</Link>
-                </Text>
-              )}
               <Text className="m-center m-small" style={text}>Prijswijzigingen en/of zetfouten voorbehouden.</Text>
               <Text className="m-center m-small" style={text}>Copyright © ViaLuxury, All Rights Reserved</Text>
               {transactional ? (
